@@ -1,9 +1,9 @@
 const nodemailer = require("nodemailer");
-const { AppError } = require("./error");
 
-const { smtp: smtpConfig } = require("../config");
+const { smtp: smtpConfig } = require("../../config");
 
-const logger = require("./logger");
+const { AppError } = require("../../utils/error");
+const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 

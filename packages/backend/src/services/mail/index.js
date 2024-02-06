@@ -1,9 +1,8 @@
-const logger = require("./utils/logger");
-const mailSchema = require("./mail.schema");
+const logger = require("../../utils/logger");
+const { AppError } = require("../../utils/error");
+const { getTransporter } = require("./transporter");
 
-const { AppError } = require("./utils/error");
-
-const { getTransporter } = require("./utils/transporter");
+const mailSchema = require("./schema");
 
 const log = logger(module.filename);
 

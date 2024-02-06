@@ -15,11 +15,9 @@ COPY ./packages/frontend-bo ./packages/frontend-bo
 
 # these variables are needed at build time because we produce a *static* app
 ARG VAO_BACKEND_URL
-ARG VAO_ENV_ID
 ARG VAO_SENTRY_DSN_FRONTEND
 
 ENV VAO_BACKEND_URL=$VAO_BACKEND_URL
-ENV VAO_ENV_ID=$VAO_ENV_ID
 ENV VAO_SENTRY_DSN_FRONTEND=$VAO_SENTRY_DSN_FRONTEND
 
 # replace environment variables

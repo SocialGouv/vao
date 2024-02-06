@@ -39,13 +39,11 @@ backend:
   env:
     - name: TZ
       value: Europe/Paris
-    - name: POSTGRES_HOST
-      value: "$(PGHOST)"
     - name: POSTGRES_USERNAME
       value: "$(PGUSER)"
     - name: POSTGRES_PASSWORD
       value: "$(PGPASSWORD)"
-    - name: POSTGRES_DATABASE
+    - name: POSTGRES_DB
       value: "$(PGDATABASE)"
     - name: VAO_BACKEND_URL
       value: "https://api-{{ .Values.global.host }}/"
@@ -75,8 +73,6 @@ jobs:
       with:
         imagePackage: backend
         dockerfile: packages/backend/Dockerfile
-        buildArgs:
-          VAO_ENV_ID: "{{ .Values.global.env }}"
 
     build-frontend-usagers:
       use: build
@@ -84,7 +80,6 @@ jobs:
         imagePackage: frontend
         dockerfile: packages/frontend-usagers/Dockerfile
         buildArgs:
-          VAO_ENV_ID: "{{ .Values.global.env }}"
           VAO_BACKEND_URL: "https://api-{{ .Values.global.host }}/"
 
     build-frontend-bo:
@@ -93,5 +88,4 @@ jobs:
         imagePackage: frontend
         dockerfile: packages/frontend-bo/Dockerfile
         buildArgs:
-          VAO_ENV_ID: "{{ .Values.global.env }}"
           VAO_BACKEND_URL: "https://api-{{ .Values.global.host }}/"
