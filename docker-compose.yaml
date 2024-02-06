@@ -1,0 +1,117 @@
+version: '3.4'
+
+volumes:
+  postgres-data:
+
+services:
+
+  frontend-usagers:
+    build:
+      context: packages/frontend-usagers
+      dockerfile: Dockerfile.local
+    working_dir: /app
+    command: /app/entrypoint.sh
+    volumes:
+      - $PWD/packages/frontend-usagers:/app:delegated
+      - $HOME/.ssh:/home/node/.ssh:ro
+      - $HOME/.gitconfig:/home/node/.gitconfig:ro
+      - $HOME/.npm:/home/node/.npm:delegated
+    env_file:
+      - ./.env
+    environment:
+      TZ: Europe/Paris
+      DEBUG: info:vao*
+    ports:
+      - 3000:3000
+
+  frontend-bo:
+    build:
+      context: packages/frontend-bo
+      dockerfile: Dockerfile.local
+    working_dir: /app
+    command: /app/entrypoint.sh
+    volumes:
+      - $PWD/packages/frontend-bo:/app:delegated
+      - $HOME/.ssh:/home/node/.ssh:ro
+      - $HOME/.gitconfig:/home/node/.gitconfig:ro
+      - $HOME/.npm:/home/node/.npm:delegated
+    env_file:
+      - ./.env
+    environment:
+      TZ: Europe/Paris
+      DEBUG: info:vao*
+    ports:
+      - 3001:3000
+
+  backend:
+    build:
+      context: packages/backend
+      dockerfile: Dockerfile.local
+    working_dir: /app
+    command: /app/entrypoint.sh
+    volumes:
+      - $PWD/packages/backend:/app:delegated
+      - $HOME/.ssh:/home/node/.ssh:ro
+      - $HOME/.gitconfig:/home/node/.gitconfig:ro
+      - $HOME/.npm:/home/node/.npm:delegated
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+    environment:
+      TZ: Europe/Paris
+      DEBUG: info:vao*
+    ports:
+      - 3010:3000
+
+  postgres:
+    image: postgres:15.1
+    restart: always
+    environment:
+      - TZ="Europe/Paris"
+      - NODE_ENV=development
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_DB=${POSTGRES_DATABASE}
+      - POSTGRES_USER=${POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_SSL="false"
+    env_file:
+      - ./.env
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pg/lancement.sh:/docker-entrypoint-initdb.d/lancement.sh
+      - ./pg/scripts:/scripts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # mail-server:
+  #   build: ./packages/mail-server
+  #   command: /app/entrypoint.sh
+  #   volumes:
+  #     - $PWD/packages/mail-server:/app:delegated
+  #   env_file:
+  #     - ./.env
+  #   environment:
+  #     - PORT=3000
+  #     - SMTP_HOST=smtp4dev
+  #     - SMTP_PORT=25
+  #     - SMTP_USER=smtp@smtp4dev.com
+  #     - SMTP_PASSWORD=AZERTYUIOP
+  #     - DEBUG=info:mail-server*
+  #     - TZ=Europe/Paris
+  #   ports:
+  #     - 3020:3000
+  #   depends_on:
+  #     - smtp4dev
+
+  # smtp4dev:
+  #   image: rnwood/smtp4dev:v3
+  #   ports:
+  #     - '8080:80'
+  #     - '2525:25'
+  #   environment:
+  #     - ServerOptions__HostName=smtp4dev

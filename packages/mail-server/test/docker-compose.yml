@@ -1,0 +1,10 @@
+version: '3.6'
+services:
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    restart: always
+    ports:
+      - '8080:80'
+      - '2525:25'
+    environment:
+      - ServerOptions__HostName=smtp4dev

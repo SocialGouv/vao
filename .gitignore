@@ -1,0 +1,8 @@
+.env
+node_modules
+.vscode
+.prettierrc
+
+yarn-error.log
+.yarn
+coverage

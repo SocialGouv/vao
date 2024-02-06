@@ -1,0 +1,97 @@
+pg:
+  ~chart: pg
+
+backend:
+  ~chart: app
+  ~needs: [build-backend]
+  imagePackage: backend
+  host: "api-{{ .Values.global.host }}"
+  probesPath: /healthz
+  containerPort: 3000
+  resources:
+    requests:
+      cpu: 0.2
+      memory: 256Mi
+    limits: # exports need a lot of CPU/RAM ATM
+      cpu: 2
+      memory: 1Gi
+  startupProbe:
+    initialDelaySeconds: 30
+    failureThreshold: 50
+    periodSeconds: 10
+  livenessProbe:
+    failureThreshold: 20
+    httpGet:
+      path: /healthz
+      port: http
+      scheme: HTTP
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    successThreshold: 1
+    timeoutSeconds: 10
+  envFrom:
+    - secretRef:
+        name: "{{ .Values.global.pgSecretName }}"
+    - secretRef:
+        name: backend-sealed-secret
+    - configMapRef:
+        name: backend-configmap
+  env:
+    - name: TZ
+      value: Europe/Paris
+    - name: POSTGRES_HOST
+      value: "$(PGHOST)"
+    - name: POSTGRES_USERNAME
+      value: "$(PGUSER)"
+    - name: POSTGRES_PASSWORD
+      value: "$(PGPASSWORD)"
+    - name: POSTGRES_DATABASE
+      value: "$(PGDATABASE)"
+    - name: VAO_BACKEND_URL
+      value: "https://api-{{ .Values.global.host }}/"
+    - name: VAO_PORTAIL_USAGERS_URL
+      value: "https://{{ .Values.global.host }}/"
+    - name: VAO_PORTAIL_BO_URL
+      value: "https://bo-{{ .Values.global.host }}/"
+
+frontend-usagers:
+  ~chart: app
+  ~needs: [build-frontend-usagers]
+  imagePackage: frontend-usagers
+  host: "{{ .Values.global.host }}"
+  containerPort: 3000
+
+frontend-bo:
+  ~chart: app
+  ~needs: [build-frontend-bo]
+  imagePackage: frontend-bo
+  host: "bo-{{ .Values.global.host }}"
+  containerPort: 3000
+
+jobs:
+  runs:
+    build-backend:
+      use: build
+      with:
+        imagePackage: backend
+        dockerfile: packages/backend/Dockerfile
+        buildArgs:
+          VAO_ENV_ID: "{{ .Values.global.env }}"
+
+    build-frontend-usagers:
+      use: build
+      with:
+        imagePackage: frontend
+        dockerfile: packages/frontend-usagers/Dockerfile
+        buildArgs:
+          VAO_ENV_ID: "{{ .Values.global.env }}"
+          VAO_BACKEND_URL: "https://api-{{ .Values.global.host }}/"
+
+    build-frontend-bo:
+      use: build
+      with:
+        imagePackage: frontend
+        dockerfile: packages/frontend-bo/Dockerfile
+        buildArgs:
+          VAO_ENV_ID: "{{ .Values.global.env }}"
+          VAO_BACKEND_URL: "https://api-{{ .Values.global.host }}/"

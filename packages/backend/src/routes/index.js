@@ -1,0 +1,9 @@
+module.exports.authentication = require("./authentication");
+module.exports.geo = require("./geo");
+module.exports.document = require("./document");
+module.exports.operateurs = require("./operateurs");
+module.exports.referentiel = require("./referentiel");
+module.exports.user = require("./user");
+module.exports.siret = require("./siret");
+module.exports.sejour = require("./sejour");
+module.exports.hebergement = require("./hebergement");

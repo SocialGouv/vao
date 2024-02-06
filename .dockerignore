@@ -1,0 +1,12 @@
+*.md
+.git
+**/node_modules
+**/packages/backend/dist
+**/packages/frontend-bo/dist
+**/packages/frontend-usagers/dist
+**/Dockerfile
+.dockerignore
+Dockerfile
+.github
+.kontinuous
+LICENSE

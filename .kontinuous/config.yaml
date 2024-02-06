@@ -1,0 +1,16 @@
+projectName: vao
+dependencies:
+  fabrique:
+    import: socialgouv/kontinuous/plugins/fabrique
+    extends:
+      - name: buildkit-service
+    # dependencies:
+    #   contrib:
+    #     preDeploy:
+    #       importSecrets:
+    #         options:
+    #           secrets:
+    #             pg-admin-user:
+    #               required: false
+    #             azure-pg-admin-user-devflex:
+    #               required: false
