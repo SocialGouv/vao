@@ -33,7 +33,7 @@ backend:
     - configMapRef:
         name: backend
     - secretRef:
-        name: "{{ .Values.global.pgSecretName }}"
+        name: "pg-app"
     - secretRef:
         name: apientreprise
     - secretRef:
@@ -97,7 +97,7 @@ jobs:
       image: ghcr.io/socialgouv/docker/psql:7.0.0
       envFrom:
         - secretRef:
-            name: "{{ $.Values.global.pgSecretName }}"
+            name: "pg-app"
       run: |
           echo "Init database"
           echo "01-init : "
@@ -114,4 +114,4 @@ jobs:
           psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/scripts/03/03-1-geo-data.sql
           echo "03-2-back-data : "
           psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/scripts/03/03-2-back-data.sql
-        
+
