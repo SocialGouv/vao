@@ -11,5 +11,6 @@ dependencies:
           importSecrets:
             options:
               secrets:
+                harbor-pull-secret:
                 vao-dev-backups-access-key:
                 vao-prod-backups-access-key:

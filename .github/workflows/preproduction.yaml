@@ -16,3 +16,5 @@ jobs:
     name: "🇫🇷 SocialGouv"
     uses: socialgouv/workflows/.github/workflows/use-ks-gh-preproduction.yaml@v1
     secrets: inherit
+    with:
+      kubeconfigContext: ovh-dev
