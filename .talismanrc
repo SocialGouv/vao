@@ -30,7 +30,7 @@ fileignoreconfig:
 - filename: docker-compose.yaml
   checksum: 968dda79a41fcd5337e9b9be92ba6fd0e2a8c737264b3740e56709ca7bada83e
 - filename: packages/backend/src/config.js
-  checksum: 407e56cc596024222935f82c454c2199150723140786de14f6b7da848b051d0e
+  checksum: 42fca58094cd8230b74ec0540b607bbb00ec25a3f77e1898e040d7748c99ef7c
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
   checksum: d66401c29c51850346868ff2d7c097fbd572bbfd8cfae77c87ae5274a7cc8409
 - filename: packages/backend/src/controllers/authentication/email/index.js
@@ -55,6 +55,8 @@ fileignoreconfig:
   checksum: 40213f6529d1282e73f0201199e28b66f9c99c76d16651d88aac0b59fb722ae2
 - filename: packages/backend/src/utils/mail-service.js
   checksum: 1ba7b350b51aafc61f6972e6170b34104dcc96b7989f9b26c2c9e31f416ccae0
+- filename: packages/backend/src/utils/pgpoolDoc.js
+  checksum: 11430387691976f5ba1e46bb1cdacfc5b96f55fd73f4aea3c09e52ec4807faf5
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue

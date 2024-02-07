@@ -1,4 +1,4 @@
-const pgPool = require("../pgpool").getPool();
+const pgPool = require("../utils/pgpool").getPool();
 const logger = require("../utils/logger");
 
 const AppError = require("../utils/error");

@@ -1,16 +1,15 @@
 const pg = require("pg");
 
-const config = require("./config");
-const logger = require("./utils/logger");
+const logger = require("./logger");
+const config = require("../config");
 
 const log = logger(module.filename);
-
 let pool;
 
 const configPool = {
   host: config.postgres.host,
   port: config.postgres.port,
-  database: config.postgres.database,
+  database: config.postgres.databaseDocument,
   user: config.postgres.user,
   password: config.postgres.password,
   max: 15,

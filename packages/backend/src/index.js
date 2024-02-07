@@ -1,8 +1,8 @@
 const app = require("./app");
 const logger = require("./utils/logger");
 
-const pgpool = require("./pgpool");
-const pgpoolDoc = require("./pgpoolDoc");
+const pgpool = require("./utils/pgpool");
+const pgpoolDoc = require("./utils/pgpoolDoc");
 
 const log = logger(module.filename);
 

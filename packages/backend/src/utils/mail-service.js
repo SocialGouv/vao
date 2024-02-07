@@ -9,7 +9,7 @@ const {
 } = require("../config");
 
 const config = require("../config");
-const sendMailTemplate = require("../helpers/mail/sendMailTemplate");
+const sendMailTemplate = require("../helpers/mail");
 
 const sendNotificationUrl = `${MAIL_URL}/api/mail`;
 
