@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 3d7d861801971f5416c32502e57b66859c2206229bd2ec8a4ab33c606d571eb7
+  checksum: d290e5298aa6a203bfe6865c6ad40bc5d4e5da4734d8383968194cc0a0917d42
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -11,8 +11,22 @@ fileignoreconfig:
   checksum: 55c6b1ac3eaf1318b6c0d1c74675a27dafc7b2273a80b59df5ceafd754537ba7
 - filename: .github/workflows/review.yaml
   checksum: 143d1566fd63f230a4dde89302c4be38292a46f246cc8a2b475790e8322b072a
+- filename: .kontinuous/dev/templates/apientreprise.sealed.secret.yaml
+  checksum: efb1426b5ed73fa1c01115aec8a3166f08fd40d3ed70fd1d8dde154449bf88fe
+- filename: .kontinuous/dev/templates/smtp.sealed.secret.yaml
+  checksum: 5d52e7281ab8b84b078d3a4de1ee0b961a5a8463b5478571ad1d6bf18240842d
+- filename: .kontinuous/preprod/templates/apientreprise.sealed.secret.yaml
+  checksum: 6e1a0def42dc791767f353c6676e385b21eb2c9c9637a2b3cae3e7a33505c76a
+- filename: .kontinuous/preprod/templates/smtp.sealed.secret.yaml
+  checksum: 894689d5e141fb8c4f8e43a8b86a5ae32cf111b3fc97503bd27a762444ce9563
+- filename: .kontinuous/prod/templates/apientreprise.sealed.secret.yaml
+  checksum: b09f2e1a45019dcf540b75a81fa1c254756e78356d3cbea8ffb196960da2af25
+- filename: .kontinuous/values.yaml
+  checksum: 1497270c5b6152e13840c19372950d8f2c3c22f30a8b3b245b2ab927f2c7df38
 - filename: _scripts/dev/local-node.dockerfile
   checksum: e18bef015dc55696295aefdd6610b20447e690cced1214ccf126842b7f1315db
+- filename: docker-compose.prod.yaml
+  checksum: ee5546b131f36001a2d6ee2cf4b01e8a8a5671d6064fcea0b1e1ef170fde8231
 - filename: docker-compose.yaml
   checksum: 968dda79a41fcd5337e9b9be92ba6fd0e2a8c737264b3740e56709ca7bada83e
 - filename: packages/backend/src/config.js

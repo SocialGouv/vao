@@ -10,7 +10,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "eslint --ext .vue,.js"
+    "lint": "eslint --ext .vue,.js src"
   },
   "dependencies": {
     "@gouvfr/dsfr": "~1.11.0",

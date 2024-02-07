@@ -1,34 +1,24 @@
 ARG NODE_VERSION=20-bullseye-slim
-FROM node:${NODE_VERSION} AS deps
-
-# RUN apt-get update -y && apt-get install gettext-base && rm -rf /var/lib/apt/lists/*
+FROM node:${NODE_VERSION} AS builder
 
 WORKDIR /app
 
-COPY yarn.lock .yarnrc.yml ./
-COPY .yarn .yarn
-RUN yarn fetch workspaces focus @vao/frontend-bo
+COPY ./package.json ./yarn.lock ./
+RUN yarn --frozen-lockfile
 
-FROM deps AS builder
-
-COPY ./packages/frontend-bo ./packages/frontend-bo
+COPY . .
 
 # these variables are needed at build time because we produce a *static* app
-ARG VAO_BACKEND_URL
-ARG VAO_SENTRY_DSN_FRONTEND
+ARG BACKEND_URL
+ARG FRONTEND_BO_SENTRY_DSN
 
-ENV VAO_BACKEND_URL=$VAO_BACKEND_URL
-ENV VAO_SENTRY_DSN_FRONTEND=$VAO_SENTRY_DSN_FRONTEND
+ENV BACKEND_URL=$BACKEND_URL
+ENV FRONTEND_BO_SENTRY_DSN=$FRONTEND_BO_SENTRY_DSN
 
 # replace environment variables
 
-RUN yarn workspace @vao/frontend-bo build
-
-RUN yarn workspaces focus @vao/frontend-bo --production && yarn cache clean
+RUN yarn generate
 
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.3
 
-COPY --from=builder --chown=101:101 /app/packages/frontend-bo/dist/vao-frontend-bo /usr/share/nginx/html
-
-
-
+COPY --from=builder --chown=101:101 /app/.output/public /usr/share/nginx/html

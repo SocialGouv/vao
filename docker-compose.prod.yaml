@@ -1,0 +1,91 @@
+version: '3.4'
+
+volumes:
+  postgres-data:
+
+services:
+  frontend-usagers:
+    build:
+      context: packages/frontend-usagers
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - $PWD/packages/frontend-usagers:/app:delegated
+      - $HOME/.ssh:/home/node/.ssh:ro
+      - $HOME/.gitconfig:/home/node/.gitconfig:ro
+      - $HOME/.npm:/home/node/.npm:delegated
+    env_file:
+      - ./.env
+    environment:
+      TZ: Europe/Paris
+      DEBUG: info:vao*
+    ports:
+      - 8080:8080
+
+  frontend-bo:
+    build:
+      context: packages/frontend-bo
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - $PWD/packages/frontend-bo:/app:delegated
+      - $HOME/.ssh:/home/node/.ssh:ro
+      - $HOME/.gitconfig:/home/node/.gitconfig:ro
+      - $HOME/.npm:/home/node/.npm:delegated
+    env_file:
+      - ./.env
+    environment:
+      TZ: Europe/Paris
+      DEBUG: info:vao*
+    ports:
+      - 8081:8080
+
+  backend:
+    build:
+      context: packages/backend
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - $PWD/packages/backend:/app:delegated
+      - $HOME/.ssh:/home/node/.ssh:ro
+      - $HOME/.gitconfig:/home/node/.gitconfig:ro
+      - $HOME/.npm:/home/node/.npm:delegated
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+    environment:
+      TZ: Europe/Paris
+      DEBUG: info:vao*
+    ports:
+      - 3010:3000
+
+  postgres:
+    image: postgres:15.1
+    restart: always
+    environment:
+      - TZ="Europe/Paris"
+      - NODE_ENV=development
+      - POSTGRES_DB=${PGDATABASE}
+      - POSTGRES_USER=${PGUSER}
+      - POSTGRES_PASSWORD=${PGPASSWORD}
+    env_file:
+      - ./.env
+    ports:
+      - 5432:5432
+    volumes:
+      - ./pg/lancement.sh:/docker-entrypoint-initdb.d/lancement.sh
+      - ./pg/scripts:/scripts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    ports:
+      - '8090:80'
+      - '2525:25'
+    environment:
+      - ServerOptions__HostName=smtp4dev

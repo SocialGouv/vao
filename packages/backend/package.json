@@ -6,8 +6,7 @@
   "license": "TODO",
   "scripts": {
     "lint": "eslint ./src",
-    "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js",
-    "production": "node src/index.js --production"
+    "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js"
   },
   "dependencies": {
     "axios": "^1.2.3",

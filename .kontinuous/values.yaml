@@ -3,10 +3,10 @@ pg:
 
 backend:
   ~chart: app
-  ~needs: [build-backend]
+  ~needs: [build-backend, seed-db]
   imagePackage: backend
   host: "api-{{ .Values.global.host }}"
-  probesPath: /healthz
+  # probesPath: /healthz
   containerPort: 3000
   resources:
     requests:
@@ -30,26 +30,22 @@ backend:
     successThreshold: 1
     timeoutSeconds: 10
   envFrom:
+    - configMapRef:
+        name: backend
     - secretRef:
         name: "{{ .Values.global.pgSecretName }}"
     - secretRef:
-        name: backend-sealed-secret
-    - configMapRef:
-        name: backend-configmap
+        name: apientreprise
+    - secretRef:
+        name: smtp
   env:
     - name: TZ
       value: Europe/Paris
-    - name: POSTGRES_USERNAME
-      value: "$(PGUSER)"
-    - name: POSTGRES_PASSWORD
-      value: "$(PGPASSWORD)"
-    - name: POSTGRES_DB
-      value: "$(PGDATABASE)"
-    - name: VAO_BACKEND_URL
+    - name: BACKEND_URL
       value: "https://api-{{ .Values.global.host }}/"
-    - name: VAO_PORTAIL_USAGERS_URL
+    - name: FRONT_USAGERS_URL
       value: "https://{{ .Values.global.host }}/"
-    - name: VAO_PORTAIL_BO_URL
+    - name: FRONT_BO_URL
       value: "https://bo-{{ .Values.global.host }}/"
 
 frontend-usagers:
@@ -57,14 +53,14 @@ frontend-usagers:
   ~needs: [build-frontend-usagers]
   imagePackage: frontend-usagers
   host: "{{ .Values.global.host }}"
-  containerPort: 3000
+  containerPort: 8080
 
 frontend-bo:
   ~chart: app
   ~needs: [build-frontend-bo]
   imagePackage: frontend-bo
   host: "bo-{{ .Values.global.host }}"
-  containerPort: 3000
+  containerPort: 8080
 
 jobs:
   runs:
@@ -72,20 +68,50 @@ jobs:
       use: build
       with:
         imagePackage: backend
-        dockerfile: packages/backend/Dockerfile
+        context: packages/backend
+        buildArgs:
+          BACKEND_SENTRY_DSN: "https://1c2b442e895c454c847d24182f8b1e90@sentry.fabrique.social.gouv.fr/102"
 
     build-frontend-usagers:
       use: build
       with:
-        imagePackage: frontend
-        dockerfile: packages/frontend-usagers/Dockerfile
+        imagePackage: frontend-usagers
+        context: packages/frontend-usagers
         buildArgs:
-          VAO_BACKEND_URL: "https://api-{{ .Values.global.host }}/"
+          BACKEND_URL: "https://api-{{ .Values.global.host }}/"
+          FRONTEND_USAGERS_SENTRY_DSN: "https://38eaf4da504d4809a74ce3134b759c91@sentry.fabrique.social.gouv.fr/103"
 
     build-frontend-bo:
       use: build
       with:
-        imagePackage: frontend
-        dockerfile: packages/frontend-bo/Dockerfile
+        imagePackage: frontend-bo
+        context: packages/frontend-bo
         buildArgs:
-          VAO_BACKEND_URL: "https://api-{{ .Values.global.host }}/"
+          BACKEND_URL: "https://api-{{ .Values.global.host }}/"
+          FRONTEND_BO_SENTRY_DSN: "https://1c0cbefef75a451ca753a4392ebea5b4@sentry.fabrique.social.gouv.fr/104"
+
+    seed-db:
+      ~needs: [pg]
+      retry: 3
+      checkout: true
+      image: ghcr.io/socialgouv/docker/psql:7.0.0
+      envFrom:
+        - secretRef:
+            name: "{{ $.Values.global.pgSecretName }}"
+      run: |
+          echo "Init database"
+          echo "01-init : "
+          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/scripts/01-init.sql
+          echo "02-1-geo-init : "
+          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/scripts/02/02-1-geo-init.sql
+          echo "02-2-pp-init : "
+          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/scripts/02/02-2-doc-init.sql
+          echo "02-3-back-init : "
+          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/scripts/02/02-3-back-init.sql
+          echo "02-4-front-init : "
+          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/scripts/02/02-4-front-init.sql
+          echo "03-1-geo-data : "
+          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/scripts/03/03-1-geo-data.sql
+          echo "03-2-back-data : "
+          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/scripts/03/03-2-back-data.sql
+        
