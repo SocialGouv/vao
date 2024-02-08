@@ -102,6 +102,8 @@ const log = logger("component/ajout-operateur");
 
 const emit = defineEmits(["add", "back"]);
 
+const config = useRuntimeConfig()
+
 const operateurs = ref([]);
 const siretRegex = /^[0-9]{14}$/;
 const listeDisplayed = ref(false);
@@ -192,7 +194,7 @@ async function fetchSiret() {
   operateurSelected.value = {};
   const siret = siretField.modelValue;
   try {
-    await $fetch(`/front-server/siret/${siret}`, {
+    await $fetch(`${config.public.backendUrl}/siret/${siret}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -220,7 +222,7 @@ async function fetchSiret() {
 async function SaveOperateur() {
   log.i("SaveOperateur -IN");
   try {
-    await $fetch("/front-server/operateurs", {
+    await $fetch(config.public.backendUrl + "/operateurs", {
       method: "POST",
       body: {
         siren: operateurSelected.value.siren,

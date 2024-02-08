@@ -132,6 +132,8 @@
 const log = logger("pages/connexion/enregistrement");
 const route = useRoute();
 
+const config = useRuntimeConfig()
+
 const links = [
   {
     to: "/",
@@ -243,7 +245,7 @@ async function renewPassword() {
   const password = passwordField.modelValue;
   log.i("renewPassword", { email, password });
   try {
-    const url = `/front-server/authentication/email/renewPassword?token=${emailToken}`;
+    const url = `${config.public.backendUrl}/authentication/email/renewPassword?token=${emailToken}`;
     await $fetch(url, {
       method: "POST",
       headers: {

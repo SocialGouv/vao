@@ -233,6 +233,8 @@ import { ref } from "vue";
 import "@vueform/multiselect/themes/default.css";
 const log = logger("pages/connexion/email/enregistrement");
 
+const config = useRuntimeConfig()
+
 const links = [
   {
     to: "/",
@@ -413,7 +415,7 @@ async function register() {
     // id du captcha que l’utilisateur a tenté de résoudre
     // const captchaId = captcha.getCaptchaId();
 
-    await $fetch("/front-server/authentication/email/register", {
+    await $fetch(config.public.backendUrl + "/authentication/email/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -469,7 +471,7 @@ async function register() {
 
 onMounted(() => {
   // captcha = $("#botdetect-captcha").captcha({
-  //   captchaEndpoint: `/front-server/captcha/simple-captcha-endpoint`,
+  //   captchaEndpoint: `${config.public.backendUrl}/captcha/simple-captcha-endpoint`,
   // });
 });
 </script>

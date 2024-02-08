@@ -26,6 +26,8 @@ const log = logger("components/connexion/email/validationToken");
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
+const config = useRuntimeConfig()
+
 const classError = ref("");
 const helpers = {
   TokenExpiredError: "Le token utilisé est déjà expiré. Cliquez sur le lien ",
@@ -33,7 +35,7 @@ const helpers = {
     "L'email associé à votre email semble déjà activé. Rendez-vous sur la page de connexion pour vous identifier.",
 };
 const { data, error, pending } = useFetch(
-  "/front-server/authentication/email/validate",
+  config.public.backendUrl + "/authentication/email/validate",
   {
     method: "POST",
     headers: {
@@ -82,7 +84,7 @@ function parseJwt(token) {
 async function renewToken() {
   log.i("renew - IN");
   const decoded = parseJwt(props.token);
-  await $fetch("/front-server/authentication/email/renewToken", {
+  await $fetch(config.public.backendUrl + "/authentication/email/renewToken", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

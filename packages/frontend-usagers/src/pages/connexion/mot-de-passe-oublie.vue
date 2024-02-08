@@ -51,6 +51,8 @@
 <script setup>
 const log = logger("pages/connexion/mot-de-passe-oublie");
 
+const config = useRuntimeConfig()
+
 const links = [
   {
     to: "/",
@@ -95,7 +97,7 @@ async function askNewPassword() {
   log.i("askNewPassword", { email: email.value });
   try {
     displayType.value = null;
-    await $fetch("/front-server/authentication/email/forgotten-password", {
+    await $fetch(config.public.backendUrl + "/authentication/email/forgotten-password", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -11,8 +11,9 @@ export const useHebergementStore = defineStore("hebergement", {
     async fetchHebergement() {
       try {
         log.i("fetchHebergement - IN");
+        const config = useRuntimeConfig()
 
-        const response = await $fetch("/front-server/hebergement");
+        const response = await $fetch(config.public.backendUrl + "/hebergement");
         this.hebergements = response.hebergements;
         log.d("fetchHebergements  - DONE");
       } catch (err) {
@@ -23,8 +24,9 @@ export const useHebergementStore = defineStore("hebergement", {
     async setHebergementCourant(id) {
       try {
         log.i("setHebergementCourant - IN", { id });
+        const config = useRuntimeConfig()
 
-        const response = await $fetch(`/front-server/hebergement/${id}`);
+        const response = await $fetch(`${config.public.backendUrl}/hebergement/${id}`);
         log.d(response);
         this.hebergementCourant = response.hebergement;
         log.d("setHebergementCourant - DONE");

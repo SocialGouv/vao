@@ -113,6 +113,8 @@ const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 const log = logger("pages/demande-sejour/operateur");
 
+const config = useRuntimeConfig()
+
 definePageMeta({
   middleware: ["is-connected"],
 });
@@ -227,7 +229,7 @@ async function validateOperateur() {
     ) {
       log.d("update");
       try {
-        const url = `/front-server/sejour/${route.params.idDemande}`;
+        const url = `${config.public.backendUrl}/sejour/${route.params.idDemande}`;
         await useFetch(url, {
           method: "POST",
           body: {

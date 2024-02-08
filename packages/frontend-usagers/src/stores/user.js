@@ -13,7 +13,8 @@ export const useUserStore = defineStore("user", {
     async refreshProfile() {
       try {
         log.i("refreshProfile - IN");
-        const response = await $fetch("/front-server/users/me", {
+        const config = useRuntimeConfig()
+        const response = await $fetch(config.public.backendUrl + "/users/me", {
           credentials: "include",
         });
         const user = response.user;

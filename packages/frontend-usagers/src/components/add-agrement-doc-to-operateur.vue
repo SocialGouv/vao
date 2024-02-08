@@ -99,6 +99,8 @@ import dayjs from "dayjs";
 import { DsfrSelect } from "@gouvminint/vue-dsfr";
 import { useRegionStore } from "@/stores/referentiels";
 
+const config = useRuntimeConfig()
+
 const log = logger("pages/component/add-document");
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
@@ -192,7 +194,7 @@ async function upload() {
   body.append("options", options);
   body.append("file", agrementFile.value);
   try {
-    const url = `/front-server/document`;
+    const url = `${config.public.backendUrl}/document`;
     await useFetch(url, {
       method: "post",
       body,
