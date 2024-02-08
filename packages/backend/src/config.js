@@ -1,12 +1,14 @@
 module.exports = {
   postgres: {
-    host: process.env.PGHOST,
-    port: process.env.PGPORT,
-    database: "vao",
-    databaseDocument: "vao_document",
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    secretKey: process.env.POSTGRES_SECRET_KEY,
+    host: process.env.POSTGRES_HOST,
+    port: process.env.POSTGRES_PORT,
+    database: process.env.POSTGRES_DB,
+    user: process.env.PG_VAO_USER,
+    password: process.env.PG_VAO_PASSWORD,
+    document: {
+      user: process.env.PG_VAO_DOCUMENT_USER,
+      password: process.env.PG_VAO_DOCUMENT_PASSWORD,
+    },
   },
 
   resetPasswordToken: {
@@ -43,7 +45,8 @@ module.exports = {
   mailUrl: process.env.MAIL_URL,
 
   senderEmail: process.env.SENDER_EMAIL,
-  frontDomain: process.env.FRONT_DOMAIN,
+  frontUsagersDomain: process.env.FRONTEND_USAGERS_URL,
+  frontBODomain: process.env.FRONTEND_BO_URL,
 
   apiInsee: {
     clientId: process.env.API_INSEE_CLIENT_ID,

@@ -25,6 +25,11 @@ export default defineNuxtConfig({
     "@/assets/css/main.css",
   ],
   modules: ["@pinia/nuxt", "nuxt3-leaflet"],
+  runtimeConfig: {
+    public: {
+      backendUrl: "",
+    }
+  },
   srcDir: "src",
   ssr: false,
 });

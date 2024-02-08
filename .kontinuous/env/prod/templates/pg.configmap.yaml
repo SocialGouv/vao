@@ -1,0 +1,9 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: pg
+  namespace: vao
+data:
+  PG_VAO_USER: "vao"
+  PG_VAO_DOCUMENT_USER: "vao_doc"
+  POSTGRES_SSL: "true"

@@ -3,9 +3,8 @@ const jwt = require("jsonwebtoken");
 const {
   SENDER_EMAIL,
   MAIL_URL,
-  FRONT_DOMAIN,
-  FRONT_DOMAIN_PP,
-  FRONT_DOMAIN_PHD,
+  frontUsagersDomain,
+  frontBODomain,
 } = require("../config");
 
 const config = require("../config");
@@ -28,10 +27,10 @@ module.exports = {
       `${config.validationToken.secret}`,
       {
         expiresIn: expireIn,
-      }
+      },
     );
 
-    const link = `${FRONT_DOMAIN}/connexion/validation/${token}?id=${dataMail.idUser}`;
+    const link = `${frontUsagersDomain}/connexion/validation/${token}?id=${dataMail.idUser}`;
     const duree = expireIn / 3600;
 
     const html = sendMailTemplate.getBody(
@@ -51,7 +50,7 @@ module.exports = {
           text: "Activer votre compte",
         },
       ],
-      "L'équipe du SI Honorabilité"
+      "L'équipe du SI Honorabilité",
     );
 
     const requestMail = {
@@ -75,7 +74,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailActivation",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -99,7 +98,7 @@ module.exports = {
       throw new AppError(message);
     }
 
-    const link = `${FRONT_DOMAIN}/connexion/validation/${token}?id=${idUser}`;
+    const link = `${frontUsagersDomain}/connexion/validation/${token}?id=${idUser}`;
     log.d("sendMailReactivation - sending reactivate mail");
 
     const html = sendMailTemplate.getBody(
@@ -119,7 +118,7 @@ module.exports = {
           text: "Valider votre mail",
         },
       ],
-      "L'équipe du SI Honorabilité"
+      "L'équipe du SI Honorabilité",
     );
 
     const params = {
@@ -143,7 +142,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailReactivation",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -167,7 +166,7 @@ module.exports = {
       throw new AppError(message);
     }
 
-    const link = `${FRONT_DOMAIN}/connexion/reset-mot-de-passe?token=${token}`;
+    const link = `${frontUsagersDomain}/connexion/reset-mot-de-passe?token=${token}`;
     log.d("sendMailForgottenPassword - sending forgotten mail");
 
     const html = sendMailTemplate.getBody(
@@ -187,7 +186,7 @@ module.exports = {
           text: "Changer mon mot de passe",
         },
       ],
-      "L'équipe du SI Honorabilité"
+      "L'équipe du SI Honorabilité",
     );
 
     const params = {
@@ -214,7 +213,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailForgottenPassword",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -241,7 +240,7 @@ module.exports = {
           code: codeTemp,
         },
       ],
-      "L'équipe du SI Honorabilité"
+      "L'équipe du SI Honorabilité",
     );
 
     const requestMail = {
@@ -265,7 +264,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailOtp",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -283,7 +282,7 @@ module.exports = {
       throw new AppError(message);
     }
 
-    const link = `${FRONT_DOMAIN_PP}/mon-compte/mes-demandes`;
+    const link = `${frontUsagersDomain}/mon-compte/mes-demandes`;
     const text = "Je demande mon attestation";
     log.d("sendMailValidationComptePP - sending validation mail");
 
@@ -304,7 +303,7 @@ module.exports = {
           text,
         },
       ],
-      "L'équipe du Portail Honorabilité"
+      "L'équipe du Portail Honorabilité",
     );
 
     const params = {
@@ -331,7 +330,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailValidationComptePP",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -349,7 +348,7 @@ module.exports = {
       throw new AppError(message);
     }
 
-    const link = `${FRONT_DOMAIN_PP}/mon-compte/profil/edition`;
+    const link = `${frontUsagersDomain}/mon-compte/profil/edition`;
     const text = "Je mets à jour mes données d'identité";
     log.d("sendMailInvalidationComptePP - sending validation mail");
 
@@ -371,7 +370,7 @@ module.exports = {
           text,
         },
       ],
-      "L'équipe du Portail Honorabilité"
+      "L'équipe du Portail Honorabilité",
     );
 
     const params = {
@@ -398,7 +397,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailInvalidationComptePP",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -417,7 +416,7 @@ module.exports = {
     }
 
     log.d("sendMailInvalidateAIAPP - sending validation mail");
-    const link = `${FRONT_DOMAIN_PP}/mon-compte/profil/edition`;
+    const link = `${frontUsagersDomain}/mon-compte/profil/edition`;
     const text = "Je mets à jour mes données d'identité";
 
     const html = sendMailTemplate.getBody(
@@ -438,7 +437,7 @@ module.exports = {
           text,
         },
       ],
-      "L'équipe du Portail Honorabilité"
+      "L'équipe du Portail Honorabilité",
     );
 
     const params = {
@@ -465,7 +464,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailInvalidateAIAPP",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -484,7 +483,7 @@ module.exports = {
       throw new AppError(message);
     }
 
-    const link = `${FRONT_DOMAIN_PP}/mon-compte/mes-demandes`;
+    const link = `${frontUsagersDomain}/mon-compte/mes-demandes`;
     const text = "Je récupère mon attestation";
 
     const html = sendMailTemplate.getBody(
@@ -504,7 +503,7 @@ module.exports = {
           text,
         },
       ],
-      "L'équipe du Portail Honorabilité"
+      "L'équipe du Portail Honorabilité",
     );
 
     const params = {
@@ -531,7 +530,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailAcceptedRequestPP",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -549,7 +548,7 @@ module.exports = {
       throw new AppError(message);
     }
 
-    const link = `${FRONT_DOMAIN_PP}/mon-compte/mes-demandes`;
+    const link = `${frontUsagersDomain}/mon-compte/mes-demandes`;
     const text = "Je corrige mes données";
 
     const html = sendMailTemplate.getBody(
@@ -570,7 +569,7 @@ module.exports = {
           text,
         },
       ],
-      "L'équipe du Portail Prévention"
+      "L'équipe du Portail Prévention",
     );
 
     const params = {
@@ -597,7 +596,7 @@ module.exports = {
           error.message,
           {
             method: "sendAIAChildrenlMailPP",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -635,7 +634,7 @@ module.exports = {
           text,
         },
       ],
-      "L'équipe du Portail Prévention"
+      "L'équipe du Portail Prévention",
     );
 
     const params = {
@@ -662,7 +661,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailDeniedRequestPP",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -687,7 +686,7 @@ module.exports = {
       throw new AppError(message);
     }
 
-    const link = `${FRONT_DOMAIN_PHD}/connexion/validation/${token}`;
+    const link = `${frontBODomain}/connexion/validation/${token}`;
     const text = "Valider votre compte";
 
     log.d("sendMailActivationPHD - sending validation mail");
@@ -709,7 +708,7 @@ module.exports = {
           text,
         },
       ],
-      "L'équipe du SI Honorabilite"
+      "L'équipe du SI Honorabilite",
     );
 
     const params = {
@@ -733,7 +732,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailActivationPHD",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",
@@ -757,7 +756,7 @@ module.exports = {
       throw new AppError(message);
     }
 
-    const link = `${FRONT_DOMAIN_PHD}/connexion/validation/${token}`;
+    const link = `${frontBODomain}/connexion/validation/${token}`;
     const text = "Valider votre compte";
 
     log.d("sendMailReactivationPHD - sending reactivate mail");
@@ -779,7 +778,7 @@ module.exports = {
           text,
         },
       ],
-      "L'équipe du SI Honorabilite"
+      "L'équipe du SI Honorabilite",
     );
 
     const params = {
@@ -806,7 +805,7 @@ module.exports = {
           error.message,
           {
             method: "sendMailReactivationPHD",
-          }
+          },
         );
         throw new AppError("le mail n'a pas pu être envoyé", {
           name: "mail-service-error",

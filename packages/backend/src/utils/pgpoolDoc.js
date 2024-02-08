@@ -9,9 +9,9 @@ let pool;
 const configPool = {
   host: config.postgres.host,
   port: config.postgres.port,
-  database: config.postgres.databaseDocument,
-  user: config.postgres.user,
-  password: config.postgres.password,
+  database: config.postgres.database,
+  user: config.postgres.document.user,
+  password: config.postgres.document.password,
   max: 15,
   idleTimeoutMillis: 30000,
 };

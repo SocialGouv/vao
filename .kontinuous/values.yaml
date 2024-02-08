@@ -32,6 +32,10 @@ backend:
   envFrom:
     - configMapRef:
         name: backend
+    - configMapRef:
+        name: pg
+    - secretRef:
+        name: pg
     - secretRef:
         name: "pg-app"
     - secretRef:
@@ -47,6 +51,12 @@ backend:
       value: "https://{{ .Values.global.host }}/"
     - name: FRONT_BO_URL
       value: "https://bo-{{ .Values.global.host }}/"
+    - name: POSTGRES_HOST
+      value: "$(PGHOST)"
+    - name: POSTGRES_PORT
+      value: "$(PGPORT)"
+    - name: POSTGRES_DB
+      value: "$(PGDATABASE)"
 
 frontend-usagers:
   ~chart: app
@@ -69,8 +79,6 @@ jobs:
       with:
         imagePackage: backend
         context: packages/backend
-        buildArgs:
-          BACKEND_SENTRY_DSN: "https://1c2b442e895c454c847d24182f8b1e90@sentry.fabrique.social.gouv.fr/102"
 
     build-frontend-usagers:
       use: build
@@ -96,22 +104,31 @@ jobs:
       checkout: true
       image: ghcr.io/socialgouv/docker/psql:7.0.0
       envFrom:
+        - configMapRef:
+            name: pg
+        - secretRef:
+            name: pg
         - secretRef:
             name: "pg-app"
       run: |
           echo "Init database"
           echo "01-init : "
-          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/pg/scripts/01-init.sql
+          psql -f /workspace/scripts/01-init.sql
           echo "02-1-geo-init : "
-          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/pg/scripts/02/02-1-geo-init.sql
-          echo "02-2-pp-init : "
-          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/pg/scripts/02/02-2-doc-init.sql
-          echo "02-3-back-init : "
-          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/pg/scripts/02/02-3-back-init.sql
-          echo "02-4-front-init : "
-          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/pg/scripts/02/02-4-front-init.sql
-          echo "03-1-geo-data : "
-          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/pg/scripts/03/03-1-geo-data.sql
-          echo "03-2-back-data : "
-          psql -d ${PGDATABASE} -U ${PGUSER} -f /workspace/pg/scripts/03/03-2-back-data.sql
 
+          echo "Users creation : "
+          psql -c "CREATE USER \"$PG_VAO_USER\" WITH password \"$PG_VAO_PASSWORD\""
+          psql -c "CREATE USER \"$PG_VAO_DOCUMENT_USER\" WITH password \"$PG_VAO_DOCUMENT_PASSWORD\""
+
+          psql -f /workspace/scripts/02/02-1-geo-init.sql
+          echo "02-2-pp-init : "
+          psql -f /workspace/scripts/02/02-2-doc-init.sql
+          echo "02-3-back-init : "
+          psql -f /workspace/scripts/02/02-3-back-init.sql
+          echo "02-4-front-init : "
+          psql -f /workspace/scripts/02/02-4-front-init.sql
+          echo "03-1-geo-data : "
+          psql -f /workspace/scripts/03/03-1-geo-data.sql
+          echo "03-2-back-data : "
+          psql -f /workspace/scripts/03/03-2-back-data.sql
+        

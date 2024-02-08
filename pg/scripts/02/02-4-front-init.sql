@@ -1,5 +1,3 @@
-\c vao;
-
 DROP SCHEMA IF EXISTS front CASCADE;           -- données spécifiques au portail PP
 CREATE SCHEMA front;
 
@@ -124,10 +122,7 @@ create table front.hebergement (
    constraint pk_hebergement primary key (id)
 );
 
-GRANT USAGE ON SCHEMA front TO u_front;
-GRANT USAGE ON SCHEMA front TO u_back;
+GRANT USAGE ON SCHEMA front TO vao;
 
-GRANT ALL ON ALL TABLES IN SCHEMA front TO u_front;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA front TO u_front;
-GRANT ALL ON ALL TABLES IN SCHEMA front TO u_back;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA front TO u_back;
+GRANT ALL ON ALL TABLES IN SCHEMA front TO vao;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA front TO vao;

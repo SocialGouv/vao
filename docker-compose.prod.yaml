@@ -4,7 +4,7 @@ volumes:
   postgres-data:
 
 services:
-  frontend-usagers:
+  frontend-usagers-built:
     build:
       context: packages/frontend-usagers
       dockerfile: Dockerfile
@@ -22,7 +22,7 @@ services:
     ports:
       - 8080:8080
 
-  frontend-bo:
+  frontend-bo-built:
     build:
       context: packages/frontend-bo
       dockerfile: Dockerfile
@@ -40,7 +40,7 @@ services:
     ports:
       - 8081:8080
 
-  backend:
+  backend-built:
     build:
       context: packages/backend
       dockerfile: Dockerfile
@@ -63,21 +63,19 @@ services:
   postgres:
     image: postgres:15.1
     restart: always
+    env_file:
+      - ./.env
     environment:
       - TZ="Europe/Paris"
       - NODE_ENV=development
-      - POSTGRES_DB=${PGDATABASE}
-      - POSTGRES_USER=${PGUSER}
       - POSTGRES_PASSWORD=${PGPASSWORD}
-    env_file:
-      - ./.env
     ports:
       - 5432:5432
     volumes:
       - ./pg/lancement.sh:/docker-entrypoint-initdb.d/lancement.sh
       - ./pg/scripts:/scripts
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${PGUSER}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5

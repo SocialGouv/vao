@@ -3,13 +3,10 @@
 /* Date de création :  08/12/2022                               */
 /*==============================================================*/
 
-\c vao
-
 DROP SCHEMA IF EXISTS geo CASCADE;          -- données géographiques communes aux 3 portails
 CREATE SCHEMA geo;
 
-GRANT USAGE ON SCHEMA geo TO u_front;
-GRANT USAGE ON SCHEMA geo TO u_back;
+GRANT USAGE ON SCHEMA geo TO vao;
 
 
 /*==============================================================*/
@@ -37,7 +34,5 @@ create table geo.communes (
    constraint pk_communes primary key (id)
 );
 
-GRANT SELECT ON ALL TABLES IN SCHEMA geo TO u_front;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA geo TO u_front;
-GRANT SELECT ON ALL TABLES IN SCHEMA geo TO u_back;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA geo TO u_back;
+GRANT SELECT ON ALL TABLES IN SCHEMA geo TO vao;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA geo TO vao;

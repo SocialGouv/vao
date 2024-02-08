@@ -1,5 +1,3 @@
-\c vao;
-
 DROP SCHEMA IF EXISTS back CASCADE;          -- données spécifiques au portail back
 CREATE SCHEMA back;
 
@@ -51,7 +49,7 @@ CREATE TABLE back.user_territoires (
 );
 
 
-GRANT USAGE ON SCHEMA back TO u_back;
+GRANT USAGE ON SCHEMA back TO vao;
 
-GRANT ALL ON ALL TABLES IN SCHEMA back TO u_back;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA back TO u_back;
+GRANT ALL ON ALL TABLES IN SCHEMA back TO vao;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA back TO vao;
