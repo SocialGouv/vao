@@ -15,20 +15,22 @@ backend:
     limits: # exports need a lot of CPU/RAM ATM
       cpu: 2
       memory: 1Gi
-  startupProbe:
-    initialDelaySeconds: 30
-    failureThreshold: 50
-    periodSeconds: 10
   livenessProbe:
-    failureThreshold: 20
-    httpGet:
-      path: /healthz
-      port: http
-      scheme: HTTP
-    initialDelaySeconds: 30
+    tcpSocket:
+      port: 3000
+    initialDelaySeconds: 15
     periodSeconds: 10
-    successThreshold: 1
-    timeoutSeconds: 10
+  startupProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    periodSeconds: 10
   envFrom:
     - configMapRef:
         name: backend
@@ -37,26 +39,35 @@ backend:
     - secretRef:
         name: pg
     - secretRef:
-        name: "pg-app"
-    - secretRef:
         name: apientreprise
     - secretRef:
         name: smtp
   env:
+    - name: DEBUG
+      value: "*info*"
     - name: TZ
       value: Europe/Paris
     - name: BACKEND_URL
-      value: "https://api-{{ .Values.global.host }}/"
+      value: "https://api-{{ .Values.global.host }}"
     - name: FRONT_USAGERS_URL
-      value: "https://{{ .Values.global.host }}/"
+      value: "https://{{ .Values.global.host }}"
     - name: FRONT_BO_URL
-      value: "https://bo-{{ .Values.global.host }}/"
+      value: "https://bo-{{ .Values.global.host }}"
     - name: POSTGRES_HOST
-      value: "$(PGHOST)"
+      valueFrom:
+        secretKeyRef:
+          name: pg-app
+          key: PGHOST
     - name: POSTGRES_PORT
-      value: "$(PGPORT)"
+      valueFrom:
+        secretKeyRef:
+          name: pg-app
+          key: PGPORT
     - name: POSTGRES_DB
-      value: "$(PGDATABASE)"
+      valueFrom:
+        secretKeyRef:
+          name: pg-app
+          key: PGDATABASE
 
 frontend-usagers:
   ~chart: app
@@ -64,6 +75,15 @@ frontend-usagers:
   imagePackage: frontend-usagers
   host: "{{ .Values.global.host }}"
   containerPort: 8080
+  livenessProbe:
+    tcpSocket:
+      port: 8080
+    periodSeconds: 10  
+  readinessProbe:
+    initialDelaySeconds: 5
+    httpGet:
+      path: /
+      port: 8080
 
 frontend-bo:
   ~chart: app
@@ -71,6 +91,15 @@ frontend-bo:
   imagePackage: frontend-bo
   host: "bo-{{ .Values.global.host }}"
   containerPort: 8080
+  livenessProbe:
+    tcpSocket:
+      port: 8080
+    periodSeconds: 10  
+  readinessProbe:
+    initialDelaySeconds: 5
+    httpGet:
+      path: /
+      port: 8080
 
 jobs:
   runs:
@@ -86,7 +115,7 @@ jobs:
         imagePackage: frontend-usagers
         context: packages/frontend-usagers
         buildArgs:
-          BACKEND_URL: "https://api-{{ .Values.global.host }}/"
+          BACKEND_URL: "https://api-{{ .Values.global.host }}"
           FRONTEND_USAGERS_SENTRY_DSN: "https://38eaf4da504d4809a74ce3134b759c91@sentry.fabrique.social.gouv.fr/103"
 
     build-frontend-bo:
@@ -95,7 +124,7 @@ jobs:
         imagePackage: frontend-bo
         context: packages/frontend-bo
         buildArgs:
-          BACKEND_URL: "https://api-{{ .Values.global.host }}/"
+          BACKEND_URL: "https://api-{{ .Values.global.host }}"
           FRONTEND_BO_SENTRY_DSN: "https://1c0cbefef75a451ca753a4392ebea5b4@sentry.fabrique.social.gouv.fr/104"
 
     seed-db:
@@ -108,27 +137,47 @@ jobs:
             name: pg
         - secretRef:
             name: pg
-        - secretRef:
-            name: "pg-app"
+      env:
+        - name: PGUSER
+          valueFrom:
+            secretKeyRef:
+              name: pg-superuser
+              key: user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pg-superuser
+              key: password
+        - name: PGHOST
+          valueFrom:
+            secretKeyRef:
+              name: pg-superuser
+              key: host
       run: |
-          echo "Init database"
-          echo "01-init : "
-          psql -f /workspace/scripts/01-init.sql
-          echo "02-1-geo-init : "
+          echo "Start seeding"
 
-          echo "Users creation : "
-          psql -c "CREATE USER \"$PG_VAO_USER\" WITH password \"$PG_VAO_PASSWORD\""
-          psql -c "CREATE USER \"$PG_VAO_DOCUMENT_USER\" WITH password \"$PG_VAO_DOCUMENT_PASSWORD\""
+          if [[ $(psql -c "\dt geo.*") ]]
+          then
+              echo "Data already loaded"
+          else
+            echo "01-init : "
+            psql -f /workspace/pg/scripts/01-init.sql
+            
+            echo "Users creation : "
+            psql -c "CREATE USER \"$PG_VAO_USER\" WITH password '$PG_VAO_PASSWORD'"
+            psql -c "CREATE USER \"$PG_VAO_DOCUMENT_USER\" WITH password '$PG_VAO_DOCUMENT_PASSWORD'"
 
-          psql -f /workspace/scripts/02/02-1-geo-init.sql
-          echo "02-2-pp-init : "
-          psql -f /workspace/scripts/02/02-2-doc-init.sql
-          echo "02-3-back-init : "
-          psql -f /workspace/scripts/02/02-3-back-init.sql
-          echo "02-4-front-init : "
-          psql -f /workspace/scripts/02/02-4-front-init.sql
-          echo "03-1-geo-data : "
-          psql -f /workspace/scripts/03/03-1-geo-data.sql
-          echo "03-2-back-data : "
-          psql -f /workspace/scripts/03/03-2-back-data.sql
+            echo "02-1-geo-init : "
+            psql -f /workspace/pg/scripts/02/02-1-geo-init.sql
+            echo "02-2-pp-init : "
+            psql -f /workspace/pg/scripts/02/02-2-doc-init.sql
+            echo "02-3-back-init : "
+            psql -f /workspace/pg/scripts/02/02-3-back-init.sql
+            echo "02-4-front-init : "
+            psql -f /workspace/pg/scripts/02/02-4-front-init.sql
+            echo "03-1-geo-data : "
+            psql -f /workspace/pg/scripts/03/03-1-geo-data.sql
+            echo "03-2-back-data : "
+            psql -f /workspace/pg/scripts/03/03-2-back-data.sql
+          fi
         

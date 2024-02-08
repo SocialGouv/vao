@@ -23,6 +23,6 @@ COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/src /app/src
 
 # Note: Don't use "yarn start" as it doesn't handle linux signals (graceful shutdown for instance)
-CMD ["node", "src/app.js"]
+CMD ["node", "src/index.js"]
 
 

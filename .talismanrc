@@ -28,11 +28,11 @@ fileignoreconfig:
 - filename: .kontinuous/prod/templates/pg.sealed.secret.yaml
   checksum: ebaeaef58dff99ed0a70ace0cb1cfceb31c0656d921999e19ce183e2adc9431f
 - filename: .kontinuous/values.yaml
-  checksum: 1497270c5b6152e13840c19372950d8f2c3c22f30a8b3b245b2ab927f2c7df38
+  checksum: 9bb15d9ada4a0f92aac19924399ce519ba4a18e580121f396b2da14dc2263870
 - filename: _scripts/dev/local-node.dockerfile
   checksum: e18bef015dc55696295aefdd6610b20447e690cced1214ccf126842b7f1315db
 - filename: docker-compose.prod.yaml
-  checksum: ee5546b131f36001a2d6ee2cf4b01e8a8a5671d6064fcea0b1e1ef170fde8231
+  checksum: 0ce7bc6d1cee2ea56cd94f0d7eac46b722d0f56380911ee6a98c2fd74a82f192
 - filename: docker-compose.yaml
   checksum: f4fc98c9f7af1169a8c75e3f11586c36665fef55807326ec9af55037c7bc34d4
 - filename: packages/backend/src/config.js

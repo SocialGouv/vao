@@ -23,6 +23,7 @@ module.exports = {
     if (pool) return pool;
     log.i("getPool - connecting");
     pool = new pg.Pool(configPool);
+    log.i("getPool - connected");
     return pool;
   },
   async disconnect() {

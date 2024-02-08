@@ -3,10 +3,10 @@ const express = require("express");
 const app = express();
 
 const cookieParser = require("cookie-parser");
-const cors = require("cors");
+// const cors = require("cors");
 const bodyParser = require("body-parser");
 
-const config = require("./config");
+// const config = require("./config");
 const routes = require("./routes");
 
 const logger = require("./utils/logger");
@@ -15,19 +15,24 @@ const ValidationAppError = require("./utils/validation-error");
 
 const log = logger(module.filename);
 
-const whitelist = [config.frontUsagersDomain, config.frontBODomain];
-const corsOptions = {
-  credentials: true,
-  origin(origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-};
+// const whitelist = [
+//   config.frontUsagersDomain,
+//   config.frontBODomain,
+//   config.domain,
+// ];
+// const corsOptions = {
+//   credentials: true,
+//   origin(origin, callback) {
+//     if (whitelist.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new AppError(`Not allowed by CORS`));
+//     }
+//   },
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+
 app.use(bodyParser.json());
 app.use(
   bodyParser.urlencoded({
