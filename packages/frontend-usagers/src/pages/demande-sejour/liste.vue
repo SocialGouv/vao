@@ -100,7 +100,10 @@
 
 <script setup>
 // import dayjs from "dayjs";
-import Multiselect from "@vueform/multiselect/src/Multiselect";
+import Multiselect from "@vueform/multiselect";
+
+import "@vueform/multiselect/themes/default.css";
+
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 // import { useUserStore } from "@/stores/userStore";
@@ -238,5 +241,3 @@ th.suivi {
   cursor: pointer;
 }
 </style>
-
-<style src="@vueform/multiselect/themes/default.css"></style>

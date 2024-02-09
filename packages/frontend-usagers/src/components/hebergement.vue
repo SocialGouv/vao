@@ -166,6 +166,8 @@ const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 const log = logger("component/hebergement");
 
+const config = useRuntimeConfig()
+
 // const emit = defineEmits(["add", "back"]);
 const hebergementStore = useHebergementStore();
 
@@ -272,7 +274,7 @@ async function searchAPIAdresse(queryString) {
   if (queryString.length > 4) {
     log.i("searchAPIAdresse -In");
     try {
-      const url = "/front-server/geo/adresse/";
+      const url = config.public.backendUrl + "/geo/adresse/";
       await $fetch(url, {
         method: "POST",
         body: { queryString },
@@ -293,7 +295,7 @@ async function searchAPIAdresse(queryString) {
 async function next() {
   log.d("next - IN");
   try {
-    const url = `/front-server/hebergement`;
+    const url = `${config.public.backendUrl}/hebergement`;
     await useFetch(url, {
       method: "POST",
       body: {

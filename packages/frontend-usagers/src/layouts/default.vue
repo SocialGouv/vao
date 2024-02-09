@@ -2,6 +2,8 @@
 import logo from "@/assets/LogoDGCS.png";
 import { useUserStore } from "@/stores/user";
 
+const config = useRuntimeConfig()
+
 const log = logger("layouts/default");
 const userStore = useUserStore();
 
@@ -34,7 +36,7 @@ const homeTo = computed(() => {
 async function logout() {
   const sub = userStore.user.sub ?? null;
   log.i("logout - IN");
-  await $fetch("/front-server/authentication/disconnect", {
+  await $fetch(config.public.backendUrl + "/authentication/disconnect", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

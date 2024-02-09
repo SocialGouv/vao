@@ -11,8 +11,9 @@ export const useOperateurStore = defineStore("operateurs", {
     async fetchOperateurs() {
       try {
         log.i("fetchOperateurs - IN");
+        const config = useRuntimeConfig()
 
-        const response = await $fetch("/front-server/operateurs");
+        const response = await $fetch(config.public.backendUrl + "/operateurs");
         const operateurs = response.operateurs;
         this.operateurs = operateurs;
         log.d("fetchOperateurs - DONE");
@@ -24,8 +25,9 @@ export const useOperateurStore = defineStore("operateurs", {
     async setOperateurCourant(id) {
       try {
         log.i("setOperateurCourant - IN", { id });
+        const config = useRuntimeConfig()
 
-        const response = await $fetch(`/front-server/operateurs/${id}`);
+        const response = await $fetch(`${config.public.backendUrl}/operateurs/${id}`);
         log.d(response);
         this.operateurCourant = response.operateur;
         log.d("setOperateurCourant - DONE");

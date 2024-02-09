@@ -31,8 +31,9 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     async fetchDemandes() {
       try {
         log.i("fetchDemandes - IN");
+        const config = useRuntimeConfig()
 
-        const response = await $fetch("/front-server/sejour");
+        const response = await $fetch(config.public.backendUrl + "/sejour");
         const demandes = response.demandes;
         this.demandes = demandes;
         log.d("fetchDemandes - DONE");
@@ -44,8 +45,9 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     async setDemandeCourante(id) {
       try {
         log.i("setDemandeCourante - IN", { id });
+        const config = useRuntimeConfig()
 
-        const response = await $fetch(`/front-server/sejour/${id}`);
+        const response = await $fetch(`${config.public.backendUrl}/sejour/${id}`);
         log.d(response);
         this.demandeCourante = response.demande;
         log.d("setDemandeCourante - DONE");
@@ -57,8 +59,9 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     async postDemande(demande) {
       try {
         log.i("postDemande - IN", { demande });
+        const config = useRuntimeConfig()
 
-        const response = await $fetch(`/front-server/demandes-sejour/`);
+        const response = await $fetch(`${config.public.backendUrl}/demandes-sejour/`);
         log.d(response);
         const idDemande = response.demande;
         log.d("postDemande - DONE", idDemande);

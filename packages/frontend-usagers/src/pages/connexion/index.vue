@@ -96,6 +96,8 @@ import { useUserStore } from "@/stores/user";
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
+const config = useRuntimeConfig()
+
 const log = logger("pages/connexion/email");
 
 const links = [
@@ -166,7 +168,7 @@ async function login() {
   log.i("login", { email: email.value });
   try {
     displayType.value = null;
-    await $fetch("/front-server/authentication/email/login", {
+    await $fetch(config.public.backendUrl + "/authentication/email/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

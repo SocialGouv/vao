@@ -1,16 +1,20 @@
 projectName: vao
+ciNamespace: ci-vao
+
+private: true
+deployKeySecretName: gh-deploy-key
+
 dependencies:
   fabrique:
-    import: socialgouv/kontinuous/plugins/fabrique
     extends:
-      - name: buildkit-service
-    # dependencies:
-    #   contrib:
-    #     preDeploy:
-    #       importSecrets:
-    #         options:
-    #           secrets:
-    #             pg-admin-user:
-    #               required: false
-    #             azure-pg-admin-user-devflex:
-    #               required: false
+      - name: ovh
+    dependencies:
+      contrib:
+        preDeploy:
+          importSecrets:
+            options:
+              secrets:
+                harbor-pull-secret:
+                gh-deploy-key:
+                vao-dev-backups-access-key:
+                vao-prod-backups-access-key:

@@ -1,5 +1,3 @@
-\c document;
-
 DROP SCHEMA IF EXISTS doc CASCADE;
 CREATE SCHEMA doc;
 
@@ -14,10 +12,7 @@ CREATE TABLE doc.agrements (
    	constraint pk_identites primary key (uuid)
 );
 
-GRANT USAGE ON SCHEMA doc TO u_front;
-GRANT USAGE ON SCHEMA doc TO u_back;
+GRANT USAGE ON SCHEMA doc TO vao_doc;
 
-GRANT ALL ON ALL TABLES IN SCHEMA doc TO u_front;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA doc TO u_front;
-GRANT ALL ON ALL TABLES IN SCHEMA doc TO u_back;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA doc TO u_back;
+GRANT ALL ON ALL TABLES IN SCHEMA doc TO vao_doc;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA doc TO vao_doc;

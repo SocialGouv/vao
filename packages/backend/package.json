@@ -6,8 +6,7 @@
   "license": "TODO",
   "scripts": {
     "lint": "eslint ./src",
-    "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js",
-    "production": "node src/index.js --production"
+    "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js"
   },
   "dependencies": {
     "axios": "^1.2.3",
@@ -24,7 +23,8 @@
     "multer": "^1.4.5-lts.1",
     "pg": "~8.8.0",
     "pg-format": "~1.0.4",
-    "yup": "~1.1.1"
+    "yup": "~1.1.1",
+    "nodemailer": "^6.8.0"
   },
   "devDependencies": {
     "@socialgouv/eslint-config-recommended": "^1.131.0",

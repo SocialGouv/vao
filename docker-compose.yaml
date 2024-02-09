@@ -4,7 +4,6 @@ volumes:
   postgres-data:
 
 services:
-
   frontend-usagers:
     build:
       context: packages/frontend-usagers
@@ -20,6 +19,8 @@ services:
       - ./.env
     environment:
       TZ: Europe/Paris
+      NUXT_PUBLIC_BACKEND_URL: ${BACKEND_URL}
+      SENTRY_DSN: ${FRONTEND_USAGERS_SENTRY_DSN}
       DEBUG: info:vao*
     ports:
       - 3000:3000
@@ -70,11 +71,7 @@ services:
     environment:
       - TZ="Europe/Paris"
       - NODE_ENV=development
-      - PGDATA=/var/lib/postgresql/data/pgdata
-      - POSTGRES_DB=${POSTGRES_DATABASE}
-      - POSTGRES_USER=${POSTGRES_USERNAME}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_SSL="false"
+      - POSTGRES_PASSWORD=postgres
     env_file:
       - ./.env
     ports:
@@ -83,35 +80,15 @@ services:
       - ./pg/lancement.sh:/docker-entrypoint-initdb.d/lancement.sh
       - ./pg/scripts:/scripts
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USERNAME}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # mail-server:
-  #   build: ./packages/mail-server
-  #   command: /app/entrypoint.sh
-  #   volumes:
-  #     - $PWD/packages/mail-server:/app:delegated
-  #   env_file:
-  #     - ./.env
-  #   environment:
-  #     - PORT=3000
-  #     - SMTP_HOST=smtp4dev
-  #     - SMTP_PORT=25
-  #     - SMTP_USER=smtp@smtp4dev.com
-  #     - SMTP_PASSWORD=AZERTYUIOP
-  #     - DEBUG=info:mail-server*
-  #     - TZ=Europe/Paris
-  #   ports:
-  #     - 3020:3000
-  #   depends_on:
-  #     - smtp4dev
-
-  # smtp4dev:
-  #   image: rnwood/smtp4dev:v3
-  #   ports:
-  #     - '8080:80'
-  #     - '2525:25'
-  #   environment:
-  #     - ServerOptions__HostName=smtp4dev
+  smtp4dev:
+    image: rnwood/smtp4dev:v3
+    ports:
+      - '8080:80'
+      - '2525:25'
+    environment:
+      - ServerOptions__HostName=smtp4dev

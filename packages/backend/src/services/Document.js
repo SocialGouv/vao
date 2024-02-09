@@ -1,6 +1,6 @@
 const fs = require("fs");
 const logger = require("../utils/logger");
-const poolDoc = require("../pgpoolDoc").getPool();
+const poolDoc = require("../utils/pgpoolDoc").getPool();
 const AppError = require("../utils/error");
 
 const log = logger(module.filename);
