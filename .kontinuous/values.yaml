@@ -49,9 +49,9 @@ backend:
       value: Europe/Paris
     - name: BACKEND_URL
       value: "https://api-{{ .Values.global.host }}"
-    - name: FRONT_USAGERS_URL
+    - name: FRONTEND_USAGERS_URL
       value: "https://{{ .Values.global.host }}"
-    - name: FRONT_BO_URL
+    - name: FRONTEND_BO_URL
       value: "https://bo-{{ .Values.global.host }}"
     - name: POSTGRES_HOST
       valueFrom:
