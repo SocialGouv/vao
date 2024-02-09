@@ -6,7 +6,6 @@ backend:
   ~needs: [build-backend, seed-db]
   imagePackage: backend
   host: "api-{{ .Values.global.host }}"
-  # probesPath: /healthz
   containerPort: 3000
   resources:
     requests:
@@ -42,6 +41,8 @@ backend:
         name: apientreprise
     - secretRef:
         name: smtp
+    - secretRef:
+        name: token
   env:
     - name: DEBUG
       value: "*info*"
@@ -153,10 +154,15 @@ jobs:
             secretKeyRef:
               name: pg-superuser
               key: host
+        - name: PGDATABASE
+          valueFrom:
+            secretKeyRef:
+              name: pg-app
+              key: PGDATABASE
       run: |
           echo "Start seeding"
 
-          if [[ $(psql -c "\dt geo.*") ]]
+          if [[ $(psql -d $PGDATABASE -c "\dt geo.*") ]]
           then
               echo "Data already loaded"
           else
@@ -164,20 +170,20 @@ jobs:
             psql -f /workspace/pg/scripts/01-init.sql
             
             echo "Users creation : "
-            psql -c "CREATE USER \"$PG_VAO_USER\" WITH password '$PG_VAO_PASSWORD'"
-            psql -c "CREATE USER \"$PG_VAO_DOCUMENT_USER\" WITH password '$PG_VAO_DOCUMENT_PASSWORD'"
+            psql -d $PGDATABASE -c "CREATE USER \"$PG_VAO_USER\" WITH password '$PG_VAO_PASSWORD'"
+            psql -d $PGDATABASE -c "CREATE USER \"$PG_VAO_DOCUMENT_USER\" WITH password '$PG_VAO_DOCUMENT_PASSWORD'"
 
             echo "02-1-geo-init : "
-            psql -f /workspace/pg/scripts/02/02-1-geo-init.sql
+            psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-1-geo-init.sql
             echo "02-2-pp-init : "
-            psql -f /workspace/pg/scripts/02/02-2-doc-init.sql
+            psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-2-doc-init.sql
             echo "02-3-back-init : "
-            psql -f /workspace/pg/scripts/02/02-3-back-init.sql
+            psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-3-back-init.sql
             echo "02-4-front-init : "
-            psql -f /workspace/pg/scripts/02/02-4-front-init.sql
+            psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-4-front-init.sql
             echo "03-1-geo-data : "
-            psql -f /workspace/pg/scripts/03/03-1-geo-data.sql
+            psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-1-geo-data.sql
             echo "03-2-back-data : "
-            psql -f /workspace/pg/scripts/03/03-2-back-data.sql
+            psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-2-back-data.sql
           fi
         

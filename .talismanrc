@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: f27bad03d9a3efdb25e7e38f1bde69cfa63892b3538797513a3debb94362778e
+  checksum: dd6aeb2dc5a362ffb07608b012df3be67aff0c584a8815cc505c28aa5894294e
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -17,6 +17,28 @@ fileignoreconfig:
   checksum: 4781dbc9445d6f91299d128d56e2b5728131fd1a690e4fb7b8f65f7a6d37f63b
 - filename: .kontinuous/dev/templates/smtp.sealed.secret.yaml
   checksum: 5d52e7281ab8b84b078d3a4de1ee0b961a5a8463b5478571ad1d6bf18240842d
+- filename: .kontinuous/env/dev/templates/smtp.sealed.secret.yaml
+  checksum: b43b48e350f4b1957598febc30e1c75517f69f34855dec00e621308ae9deb81e
+- filename: .kontinuous/env/dev/templates/smtp/deployment.yaml
+  checksum: 4c8ff230678e8b659f305b2da0895269eeea1fe26b9395014c0ec060d8262857
+- filename: .kontinuous/env/dev/templates/smtp/ingress.yaml
+  checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
+- filename: .kontinuous/env/dev/templates/token.sealed.secret.yaml
+  checksum: d34abc14a5fa56743458018458b0875498e860d11f7203bd3a7cc55e9b4a90b6
+- filename: .kontinuous/env/preprod/templates/smtp.sealed.secret.yaml
+  checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
+- filename: .kontinuous/env/preprod/templates/smtp/deployment.yaml
+  checksum: e05745b618cdfe033bd27bb7baffa0c77024de76b79fcd346f2ab33c5530fac0
+- filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
+  checksum: 2414a3f1746ccd11cbb12b86dd2bb4a16cbc5bd6fe1450c308579972128176e6
+- filename: .kontinuous/env/preprod/templates/token.sealed.secret.yaml
+  checksum: 68cab0f65faeef452b1002fdff36da0db6568565bae95384778db26e0d9954fd
+- filename: .kontinuous/env/prod/templates/pg.sealed.secret.yaml
+  checksum: fded223748506dc16896866d0bc86d5b89bc1c0003e3b2667a5e2913f7a61baf
+- filename: .kontinuous/env/prod/templates/smtp.sealed.secret.yaml
+  checksum: 4ae48f571c64fbd4be31924a76c89283a27cb28e2f72f9c88f8767250f4da4e2
+- filename: .kontinuous/env/prod/templates/token.sealed.secret.yaml
+  checksum: c66caeabb86b840fc8aa1925beb817ee71e57dea9e47b78b79d5ae229fe4622e
 - filename: .kontinuous/preprod/templates/apientreprise.sealed.secret.yaml
   checksum: 6e1a0def42dc791767f353c6676e385b21eb2c9c9637a2b3cae3e7a33505c76a
 - filename: .kontinuous/preprod/templates/pg.sealed.secret.yaml
@@ -28,7 +50,7 @@ fileignoreconfig:
 - filename: .kontinuous/prod/templates/pg.sealed.secret.yaml
   checksum: ebaeaef58dff99ed0a70ace0cb1cfceb31c0656d921999e19ce183e2adc9431f
 - filename: .kontinuous/values.yaml
-  checksum: 9bb15d9ada4a0f92aac19924399ce519ba4a18e580121f396b2da14dc2263870
+  checksum: 68cbdbaf71744084f961dc59caa497389fde8397bc58bddcf86592f111f357c3
 - filename: _scripts/dev/local-node.dockerfile
   checksum: e18bef015dc55696295aefdd6610b20447e690cced1214ccf126842b7f1315db
 - filename: docker-compose.prod.yaml
@@ -61,6 +83,8 @@ fileignoreconfig:
   checksum: 40213f6529d1282e73f0201199e28b66f9c99c76d16651d88aac0b59fb722ae2
 - filename: packages/backend/src/utils/mail-service.js
   checksum: bf5f3c01e2edcf3a7ef6d8cbde306deb931a01df88ef90fe911c0c9ace41135c
+- filename: packages/backend/src/utils/mail.js
+  checksum: 5fb957266eb36e90c59d073d6d7b2bbfb223ecbc6d53ec4cbb708f8998a8b174
 - filename: packages/backend/src/utils/pgpoolDoc.js
   checksum: f37080643cf3fc30196f7dca54ce06701db75944c51f07787c68ea04063243a2
 - filename: packages/frontend-usagers/src/components/customInput.vue
@@ -97,6 +121,8 @@ fileignoreconfig:
   checksum: d65e191f22dd46a53fd07dd02856d505a01f38b6274ef1989536aa193faebb2d
 - filename: pg/scripts/03/03-3-front-data.sql
   checksum: 413817c8133c69f883087a7042258dcb75e4f75a45897ea830f86d8a5cba561a
+- filename: pod-backend-66df4cdf46-82vfh.yaml
+  checksum: 6505514978ef8de3b512962a9e93eb5f6bece8b86fcbf32d2d55a780e06592a7
 scopeconfig:
 - scope: node
 version: "1.0"

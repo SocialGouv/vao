@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken");
 
 const User = require("../../../services/User");
+const Send = require("../../../services/mail").mailService.send;
 
 const config = require("../../../config");
 const { status } = require("../../../helpers/users");
 
-const { sendMailValidationMail } = require("../../../utils/mail-service");
+const MailUtils = require("../../../utils/mail");
 const AppError = require("../../../utils/error");
 const logger = require("../../../utils/logger");
 const normalize = require("../../../utils/normalize");
@@ -37,9 +38,15 @@ module.exports = async function register(req, res) {
       config.validationToken.secret,
       {
         expiresIn: config.validationToken.expiresIn / 1000,
-      }
+      },
     );
-    sendMailValidationMail({ email, token });
+    try {
+      await Send(
+        MailUtils.usagers.authentication.sendValidationMail({ email, token }),
+      );
+    } catch (error) {
+      log.w(error.name, error.message);
+    }
     log.i("DONE");
     return res.status(200).json({ message: "Email envoyé avec succès." });
   } catch (error) {

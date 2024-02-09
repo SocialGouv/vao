@@ -5,3 +5,4 @@ metadata:
   namespace: vao
 data:
   BACKEND_TMP_DIRECTORY: "/tmp"
+  SENDER_EMAIL: "nepasrepondre@vao.social.gouv.fr"  

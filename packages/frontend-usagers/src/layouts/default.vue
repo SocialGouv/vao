@@ -68,7 +68,7 @@ function acceptAll() {
       service-title="VAO : Vacances Adaptées Organisées"
       service-description="Portail des organisateurs"
       :home-to="homeTo"
-      operator-img-alt="Logo du SI Honorabilité"
+      operator-img-alt="Logo du SI VAO"
       :operator-img-src="logo"
       :operator-img-style="header.dimension"
       :logo-text="header.logoText"

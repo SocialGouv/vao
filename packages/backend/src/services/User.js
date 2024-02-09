@@ -111,7 +111,6 @@ module.exports.registerByEmail = async ({ email, password, nom, prenom }) => {
     prenom,
   ]);
   log.i("registerByEmail - DONE", { response });
-  log.i({ response });
   const [user] = response.rows;
   return { user, code: "CreationCompte" };
 };

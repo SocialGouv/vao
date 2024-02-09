@@ -1,12 +1,13 @@
 const jwt = require("jsonwebtoken");
 
 const User = require("../../../services/User");
+const Send = require("../../../services/mail").mailService.send;
 
 const config = require("../../../config");
 const registerSchema = require("../../../schemas/register");
 
 const logger = require("../../../utils/logger");
-const { sendMailValidationMail } = require("../../../utils/mail-service");
+const MailUtils = require("../../../utils/mail");
 const { buildEmailToken } = require("../../../utils/token");
 const ValidationAppError = require("../../../utils/validation-error");
 
@@ -37,10 +38,15 @@ module.exports = async function register(req, res, next) {
       config.validationToken.secret,
       {
         expiresIn: config.validationToken.expiresIn / 1000,
-      }
+      },
     );
     try {
-      await sendMailValidationMail({ email, token });
+      await Send(
+        MailUtils.usagers.authentication.sendValidationMail({
+          email,
+          token,
+        }),
+      );
     } catch (error) {
       log.w(error.name, error.message);
     }
