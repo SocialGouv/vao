@@ -85,10 +85,8 @@ services:
       timeout: 5s
       retries: 5
 
-  smtp4dev:
-    image: rnwood/smtp4dev:v3
+  maildev:
+    image: maildev/maildev:2.1.0
     ports:
-      - '8080:80'
-      - '2525:25'
-    environment:
-      - ServerOptions__HostName=smtp4dev
+      - '1080:1080'
+      - '1025:1025'

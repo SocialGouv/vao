@@ -42,17 +42,10 @@ module.exports = {
     },
   },
 
-  mailUrl: process.env.MAIL_URL,
-
-  senderEmail: process.env.SENDER_EMAIL,
   frontUsagersDomain: process.env.FRONTEND_USAGERS_URL,
   frontBODomain: process.env.FRONTEND_BO_URL,
   domain: process.env.BACKEND_URL,
 
-  apiInsee: {
-    clientId: process.env.API_INSEE_CLIENT_ID,
-    clientSecret: process.env.API_INSEE_CLIENT_SECRET,
-  },
-
+  senderEmail: process.env.SENDER_EMAIL,
   tmpDirectory: process.env.TMP_DIRECTORY,
 };

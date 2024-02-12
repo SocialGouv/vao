@@ -1,5 +1,5 @@
 const logger = require("../../utils/logger");
-const { AppError } = require("../../utils/error");
+const AppError = require("../../utils/error");
 const { getTransporter } = require("./transporter");
 
 const mailSchema = require("./schema");
@@ -52,7 +52,5 @@ module.exports.mailService = {
     }
 
     log.i("send - DONE");
-    const message = "mail sent";
-    return { message };
   },
 };

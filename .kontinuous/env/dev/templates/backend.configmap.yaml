@@ -4,3 +4,4 @@ metadata:
   name: backend
 data:
   BACKEND_TMP_DIRECTORY: "/tmp"
+  SENDER_EMAIL: "nepasrepondre@vao.social.gouv.fr"

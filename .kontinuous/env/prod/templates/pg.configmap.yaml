@@ -4,5 +4,5 @@ metadata:
   name: pg
   namespace: vao
 data:
-  PG_VAO_USER: "vao"
-  PG_VAO_DOCUMENT_USER: "vao_doc"
+  # PG_VAO_USER: "vao"
+  # PG_VAO_DOCUMENT_USER: "vao_doc"

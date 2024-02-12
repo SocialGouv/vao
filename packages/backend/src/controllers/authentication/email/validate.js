@@ -1,11 +1,12 @@
 const jwt = require("jsonwebtoken");
 const config = require("../../../config");
 const User = require("../../../services/User");
+const Send = require("../../../services/mail").mailService.send;
 
 const AppError = require("../../../utils/error");
 
 const logger = require("../../../utils/logger");
-const { sendMailActivationMail } = require("../../../utils/mail-service");
+const MailUtils = require("../../../utils/mail");
 
 const log = logger(module.filename);
 
@@ -19,14 +20,15 @@ module.exports = async (req, res) => {
   try {
     const { email } = await jwt.verify(
       validationToken,
-      `${config.validationToken.secret}`
+      `${config.validationToken.secret}`,
     );
     log.d({ email });
     const user = await User.activate(email);
     log.d({ user });
     try {
-      // TODO: queue me
-      await sendMailActivationMail({ email });
+      await Send(
+        MailUtils.usagers.authentication.sendActivationMail({ email }),
+      );
     } catch (error) {
       log.w(error.name, error.message);
     }
