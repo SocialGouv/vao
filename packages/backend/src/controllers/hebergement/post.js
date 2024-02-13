@@ -6,19 +6,22 @@ const log = logger(module.filename);
 
 module.exports = async function post(req, res) {
   log.i("IN");
-  const { body } = req;
+  const { body, decoded } = req;
 
-  const { typeHebergement, nomHebergement } = body;
+  const { nomHebergement, caracteristiques } = body;
+  const userId = decoded.id;
 
-  if (!typeHebergement || !nomHebergement) {
+  log.i(userId);
+  if (!nomHebergement || !caracteristiques) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
   }
 
   try {
     const hebergementId = await Hebergement.create(
-      typeHebergement,
-      nomHebergement
+      userId,
+      nomHebergement,
+      caracteristiques
     );
     if (!hebergementId) {
       log.w("error while creating hebergement");

@@ -74,7 +74,9 @@ const query = {
         id as id,
         mail as email,
         pwd is not null as "hasPwd",
-        status_code as "statusCode"
+        status_code as "statusCode",
+        nom as "nom",
+        prenom as "prenom"
       FROM front.users
       WHERE 1=1 
       ${Object.keys(criterias)
@@ -134,7 +136,7 @@ module.exports.editStatus = async (userId, statusCode) => {
 };
 
 module.exports.activate = async (email) => {
-  log.i("active - IN", { email });
+  log.i("active - IN", { email }, ...query.select({ mail: normalize(email) }));
   let response = await pool.query(...query.select({ mail: normalize(email) }));
   if (response.rows.length === 0) {
     throw new AppError("Utilisateur non trouvé", { name: "UserNotFound" });

@@ -7,18 +7,29 @@ const log = logger(module.filename);
 module.exports = {
   fetch: async function fetch(req, res) {
     log.i("In", req.body);
+
     const queryString = encodeURI(req.body.queryString);
     log.d(queryString);
     try {
       const url = `https://api-adresse.data.gouv.fr/search/?q=${queryString}`;
       axios
         .get(url)
-        .then((response) => res.json({ adresses: response.data.features }))
+        .then((response) => {
+          log.d(response.data.features);
+          res.json({ adresses: response.data.features });
+        })
         .catch((error) => {
           log.w(error);
+          res
+            .status(400)
+            .json({ message: "erreur lors de l'appel à l'API adresse" });
         });
     } catch (error) {
-      log.w(error);
+      // log.w(error);
+      return res
+        .status(404)
+        .json({ message: "erreur lors de l'appel à l'API adresse" });
     }
+    return true;
   },
 };

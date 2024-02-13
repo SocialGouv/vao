@@ -1,2 +1,2 @@
-module.exports.get = require("./get");
-module.exports.post = require("./post");
+module.exports.agrementPost = require("./agrement/post");
+module.exports.downloadAgrement = require("./agrement/download");

@@ -31,6 +31,7 @@ function uploadFile(req, res, next) {
   });
 }
 
-router.post("/", checkJWT, uploadFile, documentController.post);
+router.get("/:uuid", checkJWT, documentController.downloadAgrement);
+router.post("/agrement", checkJWT, uploadFile, documentController.agrementPost);
 
 module.exports = router;

@@ -42,6 +42,14 @@ module.exports = {
     },
   },
 
+  apiEntreprise: {
+    token: process.env.API_ENTREPRISE_TOKEN,
+    uri: "https://entreprise.api.gouv.fr/v3",
+    context: "vacances_adaptees_organisees",
+    recipient: "13000680200016",
+    object: "operateur_sejour_vao",
+  },
+
   frontUsagersDomain: process.env.FRONTEND_USAGERS_URL,
   frontBODomain: process.env.FRONTEND_BO_URL,
   domain: process.env.BACKEND_URL,

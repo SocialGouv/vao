@@ -7,27 +7,15 @@ const log = logger(module.filename);
 const query = {
   get: `
     SELECT
-      o.id as "operateurId",
-      o.supprime as "supprime",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
-      o.created_at as "createdAt",
-      o.edited_at as "editedAt",
-      (SELECT jsonb_agg(json_build_object(
-        'numero', numero,
-        'uuid', uuid,
-        'regionDelivrance', region_delivrance,
-        'dateObtention', a.date_obtention,
-        'createdAt',a.created_at
-      ))
-      FROM front.agrements a            
-      WHERE operateur_id = o.id
-      ) AS agrement         
-    FROM front.operateurs o
-    JOIN front.user_operateur uo ON uo.ope_id = o.id 
-    JOIN front.users u ON u.id = uo.use_id
+      id as "hebergementId",
+      supprime as "supprime",
+      nom as "nomHebergement",
+      caracteristiques as "caracteristiques",
+      created_at as "createdAt",
+      edited_at as "editedAt"
+    FROM front.hebergement 
     WHERE 
-      u.id = $1
+      user_id = $1
     `,
 
   getOne: (criterias) => [
@@ -59,46 +47,34 @@ const query = {
   ],
 
   create: `
-    INSERT INTO front.hebergement(type_hebergement,nom,created_at,edited_at)
-    VALUES ($1,$2,NOW(),NOW())
+    INSERT INTO front.hebergement(user_id,nom,caracteristiques,created_at,edited_at)
+    VALUES ($1,$2,$3,NOW(),NOW())
     RETURNING id as "hebergementId"
     `,
 };
 
-module.exports.create = async (typeHebergement, nomHebergement) => {
+module.exports.create = async (userId, nomHebergement, caracteristiques) => {
   log.i("create - IN");
   const response = await pool.query(query.create, [
-    typeHebergement,
+    userId,
     nomHebergement,
+    caracteristiques,
   ]);
-  log.i(response);
-  const { hebergementId } = response.rows[0];
-  log.d("create - DONE", { hebergementId });
-  return hebergementId;
-};
-
-module.exports.link = async (userId, operateurId) => {
-  log.i("link - IN", { userId, operateurId });
-  const response = await pool.query(query.link, [userId, operateurId]);
-  const { userId: insertedUserId, operateurId: insertedOperateurId } =
-    response.rows[0];
-  log.d("link - DONE", { insertedUserId, insertedOperateurId });
-  return { insertedUserId, insertedOperateurId };
-};
-
-module.exports.checkLink = async (userId, siret) => {
-  log.i("checkLink - IN", { userId, siret });
-  const { rowCount } = await pool.query(query.checkLink, [userId, siret]);
-  log.d("checkLink - DONE", { rowCount });
-  return rowCount;
+  if (response) {
+    log.i(response);
+    const { hebergementId } = response.rows[0];
+    log.d("create - DONE", { hebergementId });
+    return hebergementId;
+  }
+  return false;
 };
 
 module.exports.get = async (userId) => {
   log.i("get - IN", { userId });
   const response = await pool.query(query.get, [userId]);
   log.d("get - DONE");
-  const operateurs = response.rows;
-  return operateurs;
+  const hebergements = response.rows;
+  return hebergements;
 };
 
 module.exports.getOne = async (criterias = {}) => {

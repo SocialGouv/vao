@@ -15,8 +15,6 @@ module.exports = async function post(req, res) {
     sejourEtranger,
     duree,
   } = req.body;
-  log.i(req.decoded);
-  const userId = req.decoded.id;
   if (!dateDebut || !dateFin || !duree) {
     log.w("missing parameter");
     return res.status(400).json({ message: "paramètre manquant." });
@@ -24,7 +22,6 @@ module.exports = async function post(req, res) {
 
   try {
     const idDemande = await DemandeSejour.create(
-      userId,
       operateurId,
       libelle,
       dateDebut,

@@ -49,7 +49,7 @@ app.get("", (req, res) => {
 app.use(`/authentication`, routes.authentication);
 app.use(`/users`, routes.user);
 app.use(`/document`, routes.document);
-app.use(`/operateurs`, routes.operateurs);
+app.use(`/operateur`, routes.operateur);
 app.use(`/sejour`, routes.sejour);
 app.use(`/hebergement`, routes.hebergement);
 app.use(`/siret`, routes.siret);
@@ -61,9 +61,8 @@ app.use((req, res, next) => {
 });
 
 app.use(async (err, req, res, next) => {
-  log.w(err.name, err.message);
-
   if (!err.isOperational) {
+    log.w(err);
     res.status(500).send("Une erreur inattendue est survenue");
     throw err;
   }

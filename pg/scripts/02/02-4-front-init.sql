@@ -39,10 +39,14 @@ create table front.sessions (
 /* Table : operateur                                            */
 /*==============================================================*/
 create table front.operateurs (
-   id                           SERIAL               NOT NULL,
+   id                           SERIAL               NOT NULL, 
    supprime                     BOOLEAN              NOT NULL DEFAULT false,
+   complet                      BOOLEAN              NOT NULL DEFAULT false,
+   type_operateur               VARCHAR(20)          NOT NULL DEFAULT 'personne_morale',
    personne_morale              JSONB                ,
    personne_physique            JSONB                ,
+   protocole_transport          JSONB                ,
+   protocole_sanitaire          JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_operateurs    primary key (id)
@@ -52,7 +56,7 @@ create table front.operateurs (
 /* Table : user_operateur                                       */
 /*==============================================================*/
 create table front.user_operateur (
-   use_id                       INTEGER              NOT NULL REFERENCES front.users(id) ON DELETE CASCADE,
+   use_id                       INTEGER              UNIQUE NOT NULL REFERENCES front.users(id) ON DELETE CASCADE,
    ope_id                       INTEGER              NOT NULL REFERENCES front.operateurs(id) ON DELETE CASCADE,
    constraint pk_user_operateur primary key (use_id,ope_id)
 );
@@ -61,9 +65,12 @@ create table front.user_operateur (
 /* Table : agrements				                                  */
 /*==============================================================*/
 CREATE TABLE front.agrements (
-	uuid                      		uuid              		NOT NULL,
+   id                            SERIAL                  NOT NULL,
    operateur_id                  INTEGER                 NOT NULL REFERENCES front.operateurs(id),
+	uuid                      		uuid              		NOT NULL,
+   supprime                      BOOLEAN                 NOT NULL DEFAULT false,
 	numero                        VARCHAR(10)             NOT NULL,
+   filename                      VARCHAR(50)             NOT NULL,
    region_delivrance             VARCHAR(4)              NOT NULL,
    date_obtention                DATE                    NOT NULL,
    date_fin_validite             DATE                    NOT NULL,
@@ -87,7 +94,7 @@ CREATE TYPE sejour_status AS ENUM (
 create table front.demande_sejour (
    id                           SERIAL               NOT NULL,
    statut                       sejour_status        NOT NULL,
-   user_id                      INTEGER              NOT NULL REFERENCES front.users(id),
+   departement_suivi            VARCHAR(3)           REFERENCES geo.territoires(code),
    operateur_id                 INTEGER              NOT NULL REFERENCES front.operateurs(id),
    id_fonctionnelle             VARCHAR(10)          ,
    libelle                      VARCHAR(50)          NOT NULL,
@@ -97,11 +104,10 @@ create table front.demande_sejour (
    itinerant_etranger           BOOLEAN              DEFAULT false NOT NULL,
    duree                        INTEGER              DEFAULT 1 NOT NULL,
    nb_hebergement               INTEGER              ,
-   herbergement                 JSONB                ,
+   hebergement                  JSONB                ,
    vacanciers                   JSONB                ,
    personnel                    JSONB                ,
    transport                    JSONB                ,
-   operateur                    JSONB                ,
    projet_sejour                JSONB                ,
    sanitaires                   JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
@@ -114,9 +120,10 @@ create table front.demande_sejour (
 /*==============================================================*/
 create table front.hebergement (
    id                           SERIAL               NOT NULL,
-   type_hebergement             VARCHAR(15)          NOT NULL,
-   nom                          VARCHAR(40)          NOT NULL,
-   adresse                      JSONB                ,
+   supprime                     BOOLEAN              NOT NULL DEFAULT false,
+   user_id                      INTEGER              NOT NULL REFERENCES front.users(id),
+   nom                          VARCHAR(80)          NOT NULL,
+   caracteristiques             JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_hebergement primary key (id)

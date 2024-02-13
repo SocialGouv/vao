@@ -14,13 +14,15 @@ const { buildEmailToken } = require("../../../utils/token");
 
 const log = logger(module.filename);
 
-module.exports = async function register(req, res) {
+module.exports = async function register(req, res, next) {
   const { email } = req.body;
   log.i("IN", { email });
-  if (!email) {
-    return res.status(400).json({ message: "Paramètres manquants" });
-  }
   try {
+    if (!email) {
+      throw new AppError("Paramètres manquants", {
+        name: "MalformedQuery",
+      });
+    }
     const [user] = await User.read({ mail: normalize(email) });
     log.d({ user });
     if (!user) {
@@ -50,10 +52,7 @@ module.exports = async function register(req, res) {
     log.i("DONE");
     return res.status(200).json({ message: "Email envoyé avec succès." });
   } catch (error) {
-    log.w(error);
-    if (error instanceof AppError) {
-      return res.status(400).json({ code: error.name });
-    }
-    return res.status(400).json({ message: "Une erreur est survenue." });
+    log.w("DONE with error", error.name, error.message);
+    return next(error);
   }
 };

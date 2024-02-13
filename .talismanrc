@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: dd6aeb2dc5a362ffb07608b012df3be67aff0c584a8815cc505c28aa5894294e
+  checksum: 5d899176f8cbcdc4949866176832780de04be5ba969361d32abab6530bed1a06
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -116,7 +116,7 @@ fileignoreconfig:
 - filename: pg/scripts/02/02-3-back-init.sql
   checksum: 5a57a150059114c6819fbbe397d5cb5bc7861234c3768e590cf3cc540d8a224d
 - filename: pg/scripts/02/02-4-front-init.sql
-  checksum: 00f123702d1c49476c6cfbe6aa4df8556b5e911c136eb755277d2c3269927aea
+  checksum: 05f0518e415eb2de4ad18badf819d807d0749cd4249d515cf3e660a8b39ab045
 - filename: pg/scripts/03/03-1-geo-data.sql
   checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
 - filename: pg/scripts/03/03-2-back-data.sql
