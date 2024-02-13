@@ -8,7 +8,6 @@ const query = {
   create: `
     INSERT INTO front.demande_sejour(
       statut,
-      user_id,
       operateur_id,
       libelle,
       date_debut,
@@ -16,7 +15,7 @@ const query = {
       itinerant,
       itinerant_etranger,
       duree) 
-    VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8)
+    VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7)
     RETURNING
         id as "idDemande"
     ;
@@ -25,7 +24,6 @@ const query = {
     SELECT
       ds.id as "demandeSejourId",
       ds.statut as "statut",
-      ds.user_id as "userId",
       ds.operateur_id as "operateurId",
       ds.libelle as "libelle",
       ds.date_debut as "dateDebut",
@@ -38,15 +36,15 @@ const query = {
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
     JOIN front.operateurs o ON o.id = ds.operateur_id
+    JOIN front.use_ope uo ON uo.ope_id = o.id
     WHERE
-      ds.user_id = $1
+      up.use_id = $1
     `,
   getOne: (criterias) => [
     `
     SELECT
       ds.id as "id",
       ds.statut as "statut",
-      ds.user_id as "userId",
       ds.operateur_id as "operateurId",
       ds.id_fonctionnelle as "idFonctionnelle",
       ds.libelle as "libelle",
@@ -55,13 +53,12 @@ const query = {
       ds.itinerant as "sejourItinerant",
       ds.itinerant_etranger as "sejourEtranger",
       ds.duree as "duree",
-      ds.operateur as "informationsOperateur",
       ds.vacanciers as "informationsVacanciers",
       ds.personnel as "informationsPersonnel",
       ds.projet_sejour as "informationsProjetSejour",
       ds.transport as "informationsTransport",
       ds.sanitaires as "informationsSanitaires",
-      ds.herbergement as "hebergement",
+      ds.hebergement as "hebergement",
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
     JOIN front.operateurs o ON o.id = ds.operateur_id
@@ -146,10 +143,19 @@ const query = {
   RETURNING
     id as "idDemande"
     `,
+  updateHebergements: `
+    UPDATE front.demande_sejour ds
+    SET 
+    hebergement = $1,
+    edited_at=NOW()
+  WHERE
+    ds.id = $2
+  RETURNING
+    id as "idDemande"
+    `,
 };
 
 module.exports.create = async (
-  userId,
   operateurId,
   libelle,
   dateDebut,
@@ -159,7 +165,6 @@ module.exports.create = async (
   duree
 ) => {
   log.i("create - IN", {
-    userId,
     operateurId,
     libelle,
     dateDebut,
@@ -169,7 +174,6 @@ module.exports.create = async (
     duree,
   });
   const response = await pool.query(query.create, [
-    userId,
     operateurId,
     libelle,
     dateDebut,
@@ -272,6 +276,15 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       log.i(informationsSanitaires, demandeSejourId);
       response = await pool.query(query.updateInformationsSanitaires, [
         informationsSanitaires,
+        demandeSejourId,
+      ]);
+      break;
+    }
+    case "hebergements": {
+      const { hebergements } = parametre;
+      log.i(hebergements, demandeSejourId);
+      response = await pool.query(query.updateHebergements, [
+        hebergements,
         demandeSejourId,
       ]);
       break;

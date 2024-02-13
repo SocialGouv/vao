@@ -1,6 +1,6 @@
 <script setup>
-import logo from "@/assets/LogoDGCS.png";
 import { useUserStore } from "@/stores/user";
+import { navItems } from "@/helpers/menuNavItem";
 
 const config = useRuntimeConfig()
 
@@ -12,7 +12,7 @@ const header = reactive({
   logoText: ["Republique", "française"],
   quickLinks: [
     {
-      label: computed(() => userStore.user?.email),
+      label: "Mon compte",
       to: "/",
       icon: "ri-account-circle-line",
       iconRight: false,
@@ -30,7 +30,7 @@ const header = reactive({
 });
 
 const homeTo = computed(() => {
-  return userStore.isConnected ? "/mon-compte" : "/";
+  return userStore.isConnected ? "/" : "/connexion/";
 });
 
 async function logout() {
@@ -60,33 +60,58 @@ const consentCookie = useCookie("PP_consent", {
 function acceptAll() {
   consentCookie.value = true;
 }
+
+function onClickOnLogo() {
+  log.i("click !!");
+}
 </script>
 
 <template>
   <div>
-    <DsfrHeader
-      service-title="VAO : Vacances Adaptées Organisées"
-      service-description="Portail des organisateurs"
-      :home-to="homeTo"
-      operator-img-alt="Logo du SI VAO"
-      :operator-img-src="logo"
-      :operator-img-style="header.dimension"
-      :logo-text="header.logoText"
-      :quick-links="header.quickLinks"
-    >
-    </DsfrHeader>
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+          <DsfrHeader
+            service-title="Vacances Adaptées Organisées (VAO)"
+            service-description="La plateforme de déclaration et suivi des séjours organisés pour les personnes handicapées majeures"
+            :home-to="homeTo"
+            :quick-links="header.quickLinks"
+            :show-search="false"
+            :logo-text="header.logoText"
+            @click="onClickOnLogo"
+          >
+            <template #default="mainnav"
+              ><DsfrNavigation :nav-items="navItems"
+            /></template>
+          </DsfrHeader>
+        </div>
+      </div>
+    </div>
+ 
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+          <slot />
+        </div>
+      </div>
+    </div>
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+          <DsfrFooter />
+          <DsfrNotice
+            v-if="!consentCookie"
+            title="L'utilisation de cookies est nécessaire au bon fonctionnement de
+           l'application. Ceux-ci ne sont transmis à aucun service tiers ni
+           utilisés dans un cadre publicitaire."
+            closeable
+            @close="acceptAll"
+          />
+        </div>
+      </div>
+    </div>
 
-    <slot />
 
-    <DsfrFooter />
-    <DsfrNotice
-      v-if="!consentCookie"
-      title="L'utilisation de cookies est nécessaire au bon fonctionnement de
-          l'application. Ceux-ci ne sont transmis à aucun service tiers ni
-          utilisés dans un cadre publicitaire."
-      closeable
-      @close="acceptAll"
-    />
   </div>
 </template>
 

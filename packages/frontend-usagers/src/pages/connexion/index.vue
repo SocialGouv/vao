@@ -5,13 +5,9 @@
     <div>
       <h1>Identification</h1>
       <div v-if="displayType">
-        <DsfrAlert
-          class="fr-my-3v"
-          :title="displayInfos[displayType].title"
-          :description="displayInfos[displayType].description"
-          :type="displayInfos[displayType].type"
-          :closeable="false"
-        />
+        <DsfrAlert class="fr-my-3v" :title="displayInfos[displayType].title"
+          :description="displayInfos[displayType].description" :type="displayInfos[displayType].type"
+          :closeable="false" />
       </div>
       <div class="fr-grid-row fr-grid-row--center fr-my-5v">
         <div class="fr-col-12 fr-col-md-9 fr-col-lg-9">
@@ -21,65 +17,33 @@
                 <fieldset class="fr-fieldset">
                   <div class="fr-fieldset__element fr-col-12">
                     <div class="fr-input-group">
-                      <DsfrInputGroup
-                        :model-value="email"
-                        type="text"
-                        name="email"
-                        label="Email"
-                        :label-visible="true"
-                        placeholder="Veuillez saisir votre email"
-                        @update:model-value="editMail"
-                      />
+                      <DsfrInputGroup :model-value="email" type="text" name="email" label="Email" :label-visible="true"
+                        placeholder="Veuillez saisir votre email" @update:model-value="editMail" />
                     </div>
                   </div>
                   <div class="fr-fieldset__element fr-col-12">
                     <div class="fr-input-group">
-                      <DsfrInputGroup
-                        :model-value="password"
-                        :type="showPassword ? 'text' : 'password'"
-                        label="Mot de passe"
-                        name="password"
-                        :label-visible="true"
-                        placeholder="Veuillez saisir votre mot de passe"
-                        @update:model-value="editPwd"
-                      />
+                      <DsfrInputGroup :model-value="password" :type="showPassword ? 'text' : 'password'"
+                        label="Mot de passe" name="password" :label-visible="true"
+                        placeholder="Veuillez saisir votre mot de passe" @update:model-value="editPwd" />
                     </div>
 
-                    <div
-                      class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm"
-                    >
-                      <input
-                        id="password-show"
-                        v-model="showPassword"
-                        aria-label="Afficher le mot de passe"
-                        type="checkbox"
-                        aria-describedby="password-show-messages"
-                      />
-                      <label
-                        class="fr-password__checkbox fr-label"
-                        for="password-show"
-                      >
+                    <div class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm">
+                      <input id="password-show" v-model="showPassword" aria-label="Afficher le mot de passe"
+                        type="checkbox" aria-describedby="password-show-messages" />
+                      <label class="fr-password__checkbox fr-label" for="password-show">
                         Afficher
                       </label>
-                      <div
-                        id="password-show-messages"
-                        class="fr-messages-group"
-                        aria-live="assertive"
-                      ></div>
+                      <div id="password-show-messages" class="fr-messages-group" aria-live="assertive"></div>
                     </div>
                     <p>
-                      <NuxtLink
-                        class="fr-link"
-                        to="/connexion/mot-de-passe-oublie"
-                      >
+                      <NuxtLink class="fr-link" to="/connexion/mot-de-passe-oublie">
                         Mot de passe oublié ?
                       </NuxtLink>
                     </p>
                   </div>
                   <div class="fr-fieldset__element">
-                    <DsfrButton :disabled="!canLogin" @click.prevent="login"
-                      >Se connecter</DsfrButton
-                    >
+                    <DsfrButton :disabled="!canLogin" @click.prevent="login">Se connecter</DsfrButton>
                   </div>
                 </fieldset>
               </form>
@@ -169,6 +133,7 @@ async function login() {
   try {
     displayType.value = null;
     await $fetch(config.public.backendUrl + "/authentication/email/login", {
+      credentials: "include",
       method: "POST",
       headers: {
         "Content-Type": "application/json",

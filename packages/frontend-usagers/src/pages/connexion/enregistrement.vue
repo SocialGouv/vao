@@ -3,183 +3,175 @@
     <DsfrBreadcrumb :links="links" />
 
     <div>
-      <h1>Créer mon compte</h1>
-      <div v-if="formStatus === formStates.VALIDATED">
-        <DsfrAlert
-          class="fr-my-3v"
-          :title="displayInfos[displayType].title"
-          :description="displayInfos[displayType].description"
-          :type="displayInfos[displayType].type"
-          :closeable="false"
-        />
-      </div>
-      <div v-else>
-        <div class="fr-grid-row fr-grid-row--center fr-my-5v">
-          <div class="fr-col-12 fr-col-md-9 fr-col-lg-9">
-            <div class="fr-container fr-mt-5v">
-              <div class="fr-grid-row fr-grid-row--center">
-                <div
-                  v-if="formStatus === formStates.CREATION"
-                  class="fr-col-12 fr-alert fr-alert--info"
-                >
-                  <p>Les champs suivis d'un astérisque sont obligatoires</p>
+      <div>
+        <div
+          v-if="formStatus === formStates.VALIDATED"
+          class="fr-grid-row fr-grid-row--center fr-my-5v fr-col-12"
+        >
+          <DsfrAlert
+            :title="displayInfos[displayType].title"
+            :description="displayInfos[displayType].description"
+            :type="displayInfos[displayType].type"
+            :closeable="false"
+          />
+        </div>
+        <div v-else>
+          <form>
+            <fieldset
+              class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v"
+            >
+              <h1
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+              >
+                Créer mon compte
+              </h1>
+              <div
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+              >
+                <div class="fr-input-group">
+                  <DsfrInputGroup
+                    :error-message="emailField.errorMessage"
+                    :model-value="emailField.modelValue"
+                    type="text"
+                    label="Email"
+                    name="email"
+                    :required="true"
+                    :label-visible="true"
+                    placeholder="Veuillez saisir votre email"
+                    :is-valid="emailField.isValid"
+                    @update:model-value="checkValidEmail"
+                  />
                 </div>
               </div>
-              <div v-if="formStatus === formStates.SUBMITTED">
-                <DsfrAlert
-                  class="fr-my-3v"
-                  :title="displayInfos[displayType].title"
-                  :description="displayInfos[displayType].description"
-                  :type="displayInfos[displayType].type"
-                  :closeable="false"
-                />
+              <div
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+              >
+                <div class="fr-input-group">
+                  <DsfrInputGroup
+                    :error-message="passwordField.errorMessage"
+                    :model-value="passwordField.modelValue"
+                    type="password"
+                    name="new-password"
+                    autocomplete="off"
+                    label="Mot de passe"
+                    :required="true"
+                    :label-visible="true"
+                    placeholder="Veuillez saisir votre mot de passe"
+                    :is-valid="passwordField.isValid"
+                    @update:model-value="checkValidPassword"
+                  />
+                </div>
+                <div
+                  v-if="!passwordField.isValid"
+                  class="fr-messages-group"
+                  aria-live="assertive"
+                >
+                  <p class="fr-message">Votre mot de passe doit contenir :</p>
+                  <div class="fr-grid-row">
+                    <p
+                      :class="[
+                        'fr-col-6 fr-message',
+                        isPwdLong ? 'fr-valid-text' : ' fr-error-text',
+                      ]"
+                    >
+                      12 caractères minimum
+                    </p>
+                    <p
+                      :class="[
+                        'fr-col-6 fr-message',
+                        isPwdMin ? 'fr-valid-text' : ' fr-error-text',
+                      ]"
+                    >
+                      1 lettre minuscule minimum
+                    </p>
+                    <p
+                      :class="[
+                        'fr-col-6 fr-message',
+                        isPwdMaj ? 'fr-valid-text' : ' fr-error-text',
+                      ]"
+                    >
+                      1 lettre majuscule minimum
+                    </p>
+                    <p
+                      :class="[
+                        'fr-col-6 fr-message',
+                        isPwdNumber ? 'fr-valid-text' : ' fr-error-text',
+                      ]"
+                    >
+                      1 chiffre minimum
+                    </p>
+                    <p
+                      :class="[
+                        'fr-col-6 fr-message',
+                        isPwdSpecial ? 'fr-valid-text' : ' fr-error-text',
+                      ]"
+                    >
+                      1 caractère spécial minimum
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div class="fr-grid-row fr-grid-row--center">
-                <form class="fr-col-12">
-                  <fieldset class="fr-fieldset">
-                    <div class="fr-fieldset__element fr-col-12">
-                      <div class="fr-input-group">
-                        <DsfrInputGroup
-                          :error-message="emailField.errorMessage"
-                          :model-value="emailField.modelValue"
-                          type="text"
-                          label="Email"
-                          name="email"
-                          :required="true"
-                          :label-visible="true"
-                          placeholder="Veuillez saisir votre email"
-                          :is-valid="emailField.isValid"
-                          @update:model-value="checkValidEmail"
-                        />
-                      </div>
-                    </div>
-                    <div class="fr-fieldset__element fr-col-12">
-                      <div class="fr-input-group">
-                        <DsfrInputGroup
-                          :error-message="passwordField.errorMessage"
-                          :model-value="passwordField.modelValue"
-                          type="password"
-                          name="new-password"
-                          autocomplete="off"
-                          label="Mot de passe"
-                          :required="true"
-                          :label-visible="true"
-                          placeholder="Veuillez saisir votre mot de passe"
-                          :is-valid="passwordField.isValid"
-                          @update:model-value="checkValidPassword"
-                        />
-                      </div>
-                      <div
-                        v-if="!passwordField.isValid"
-                        class="fr-messages-group"
-                        aria-live="assertive"
-                      >
-                        <p class="fr-message">
-                          Votre mot de passe doit contenir :
-                        </p>
-                        <div class="fr-grid-row">
-                          <p
-                            :class="[
-                              'fr-col-6 fr-message',
-                              isPwdLong ? 'fr-valid-text' : ' fr-error-text',
-                            ]"
-                          >
-                            12 caractères minimum
-                          </p>
-                          <p
-                            :class="[
-                              'fr-col-6 fr-message',
-                              isPwdMin ? 'fr-valid-text' : ' fr-error-text',
-                            ]"
-                          >
-                            1 lettre minuscule minimum
-                          </p>
-                          <p
-                            :class="[
-                              'fr-col-6 fr-message',
-                              isPwdMaj ? 'fr-valid-text' : ' fr-error-text',
-                            ]"
-                          >
-                            1 lettre majuscule minimum
-                          </p>
-                          <p
-                            :class="[
-                              'fr-col-6 fr-message',
-                              isPwdNumber ? 'fr-valid-text' : ' fr-error-text',
-                            ]"
-                          >
-                            1 chiffre minimum
-                          </p>
-                          <p
-                            :class="[
-                              'fr-col-6 fr-message',
-                              isPwdSpecial ? 'fr-valid-text' : ' fr-error-text',
-                            ]"
-                          >
-                            1 caractère spécial minimum
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="fr-fieldset__element fr-col-12">
-                      <div class="fr-input-group">
-                        <DsfrInputGroup
-                          :error-message="confirmField.errorMessage"
-                          :model-value="confirmField.modelValue"
-                          type="password"
-                          name="repeat-password"
-                          autocomplete="off"
-                          :required="true"
-                          label="Confirmation mot de passe"
-                          :label-visible="true"
-                          placeholder="Veuillez répéter le mot de passe"
-                          :is-valid="confirmField.isValid"
-                          @update:model-value="
-                            (confirm) => (confirmField.modelValue = confirm)
-                          "
-                        />
-                      </div>
-                    </div>
+              <div
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+              >
+                <div class="fr-input-group">
+                  <DsfrInputGroup
+                    :error-message="confirmField.errorMessage"
+                    :model-value="confirmField.modelValue"
+                    type="password"
+                    name="repeat-password"
+                    autocomplete="off"
+                    :required="true"
+                    label="Confirmation mot de passe"
+                    :label-visible="true"
+                    placeholder="Veuillez répéter le mot de passe"
+                    :is-valid="confirmField.isValid"
+                    @update:model-value="
+                      (confirm) => (confirmField.modelValue = confirm)
+                    "
+                  />
+                </div>
+              </div>
 
-                    <div
-                      class="fr-fieldset__element fr-fieldset__element--inline fr-col-12"
-                    >
-                      <div class="fr-input-group">
-                        <DsfrInputGroup
-                          :error-message="nomField.errorMessage"
-                          :model-value="nomField.modelValue"
-                          type="text"
-                          label="Nom"
-                          name="nom"
-                          :required="true"
-                          :label-visible="true"
-                          placeholder="Veuillez saisir votre nom"
-                          :is-valid="nomField.isValid"
-                          @update:model-value="checkValidNom"
-                        />
-                      </div>
-                    </div>
+              <div
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+              >
+                <div class="fr-input-group">
+                  <DsfrInputGroup
+                    :error-message="nomField.errorMessage"
+                    :model-value="nomField.modelValue"
+                    type="text"
+                    label="Nom"
+                    name="nom"
+                    :required="true"
+                    :label-visible="true"
+                    placeholder="Veuillez saisir votre nom"
+                    :is-valid="nomField.isValid"
+                    @update:model-value="checkValidNom"
+                  />
+                </div>
+              </div>
 
-                    <div
-                      class="fr-fieldset__element fr-fieldset__element--inline fr-col-6"
-                    >
-                      <div class="fr-input-group">
-                        <DsfrInputGroup
-                          :error-message="prenomField.errorMessage"
-                          :model-value="prenomField.modelValue"
-                          type="text"
-                          label="Prénom"
-                          name="prenom"
-                          :required="true"
-                          :label-visible="true"
-                          placeholder="Veuillez saisir votre prénom"
-                          :is-valid="prenomField.isValid"
-                          @update:model-value="checkValidPrenom"
-                        />
-                      </div>
-                    </div>
+              <div
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+              >
+                <div class="fr-input-group">
+                  <DsfrInputGroup
+                    :error-message="prenomField.errorMessage"
+                    :model-value="prenomField.modelValue"
+                    type="text"
+                    label="Prénom"
+                    name="prenom"
+                    :required="true"
+                    :label-visible="true"
+                    placeholder="Veuillez saisir votre prénom"
+                    :is-valid="prenomField.isValid"
+                    @update:model-value="checkValidPrenom"
+                  />
+                </div>
+              </div>
 
-                    <!-- <div class="fr-fieldset__element">
+              <!-- <div class="fr-fieldset__element">
                       <div
                         id="botdetect-captcha"
                         data-captchastylename="numerique6_7CaptchaFR"
@@ -198,30 +190,27 @@
                       />
                     </div> -->
 
-                    <div class="fr-fieldset__element">
-                      <ul class="fr-btns-group fr-btns-group--right">
-                        <li>
-                          <p>
-                            <NuxtLink to="/"
-                              >J'ai déjà un compte</NuxtLink
-                            >
-                          </p>
-                        </li>
-                        <li>
-                          <DsfrButton
-                            :disabled="!canRegister"
-                            @click.prevent="register"
-                            >Créer mon compte</DsfrButton
-                          >
-                        </li>
-                      </ul>
-                    </div>
-                    <div class="fr-messages-group" aria-live="assertive"></div>
-                  </fieldset>
-                </form>
+              <div
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+              >
+                <ul class="fr-btns-group fr-btns-group--right">
+                  <li>
+                    <p>
+                      <NuxtLink to="/">J'ai déjà un compte</NuxtLink>
+                    </p>
+                  </li>
+                  <li>
+                    <DsfrButton
+                      :disabled="!canRegister"
+                      @click.prevent="register"
+                      >Créer mon compte</DsfrButton
+                    >
+                  </li>
+                </ul>
               </div>
-            </div>
-          </div>
+              <div class="fr-messages-group" aria-live="assertive"></div>
+            </fieldset>
+          </form>
         </div>
       </div>
     </div>

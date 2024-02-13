@@ -1,37 +1,12 @@
-const buildAuthToken = ({ id, email, modedoublea }, login, otp) => ({
-  user: {
-    id,
-    email,
-    modedoublea,
-  },
-  login,
-  otp,
-});
-
-const buildAccessToken = ({
+const buildAccessToken = ({ id, email, personneId }) => ({
   id,
   email,
-  roles,
-  territoires,
-  sousdispositifs,
-  dispositifs,
-}) => ({
-  id,
-  email,
-  roles,
-  territoires,
-  sousdispositifs,
-  dispositifs,
+  personneId,
 });
 
 const buildRefreshToken = ({ id: userId }) => ({ userId });
-const buildValidationToken = (id) => ({
-  id,
-});
-const buildEmailToken = (id, email) => ({ id, email });
+const buildEmailToken = (email) => ({ email });
 
-module.exports.buildEmailToken = buildEmailToken;
-module.exports.buildValidationToken = buildValidationToken;
-module.exports.buildAuthToken = buildAuthToken;
 module.exports.buildAccessToken = buildAccessToken;
+module.exports.buildEmailToken = buildEmailToken;
 module.exports.buildRefreshToken = buildRefreshToken;

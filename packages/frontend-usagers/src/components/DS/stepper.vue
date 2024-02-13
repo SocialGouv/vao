@@ -3,7 +3,7 @@
 </template>
 <script setup>
 const props = defineProps({
-  step: { type: Number, required: true },
+  step: { type: Number, default: 1, required: false },
 });
 const steps = ref([
   "Sélection de l'opérateur",
@@ -13,9 +13,9 @@ const steps = ref([
   "projet de séjour",
   "informations sur le transport des vacanciers",
   "informations sanitaires",
-  "Hébergement",
-]);
+  "séletion des hébergements",
+  "recapitulatif",]);
 const currentStep = computed(() => {
-  return props.step ?? "1";
+  return props.step ?? 1;
 });
 </script>

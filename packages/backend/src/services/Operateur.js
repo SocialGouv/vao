@@ -5,58 +5,69 @@ const pool = require("../utils/pgpool").getPool();
 const log = logger(module.filename);
 
 const query = {
-  createPersonneMorale: `
-    INSERT INTO front.operateurs(personne_morale) 
-    VALUES ($1)
+  create: `
+    INSERT INTO front.operateurs(type_operateur,personne_morale,personne_physique) 
+    VALUES ($1,$2,$3)
     RETURNING
         id as "operateurId"
     ;
     `,
-  get: `
-    SELECT
-      o.id as "operateurId",
-      o.supprime as "supprime",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
-      o.created_at as "createdAt",
-      o.edited_at as "editedAt",
-      (SELECT jsonb_agg(json_build_object(
-        'numero', numero,
-        'uuid', uuid,
-        'regionDelivrance', region_delivrance,
-        'dateObtention', a.date_obtention,
-        'createdAt',a.created_at
-      ))
-      FROM front.agrements a            
-      WHERE operateur_id = o.id
-      ) AS agrement         
-    FROM front.operateurs o
-    JOIN front.user_operateur uo ON uo.ope_id = o.id 
-    JOIN front.users u ON u.id = uo.use_id
-    WHERE 
-      u.id = $1
-    `,
-
-  getOne: (criterias) => [
+  link: `INSERT INTO front.user_operateur(use_id,ope_id)
+  VALUES($1,$2)
+  RETURNING use_id as "userLinked"`,
+  update: `
+    UPDATE front.operateurs SET type_operateur=$2,personne_morale = $3, personne_physique = $4
+    WHERE id = $1
+    RETURNING
+      id as "updateOperateurId"
+  `,
+  updateTransport: `
+    UPDATE front.operateurs SET protocole_transport =$2,
+    complet = (CASE WHEN $3 = true THEN false ELSE complet END)
+    WHERE id = $1
+    RETURNING
+      id as "updateOperateurId"
+`,
+  updateSanitaire: `
+    UPDATE front.operateurs SET protocole_sanitaire =$2,
+    complet = (CASE WHEN $3 = true THEN false ELSE complet END)
+    WHERE id = $1
+    RETURNING
+      id as "updateOperateurId"
+`,
+  updateFinalisation: `
+UPDATE front.operateurs SET complet = true
+WHERE id = $1
+RETURNING
+  id as "updateOperateurId"
+`,
+  get: (criterias) => [
     `
     SELECT
       o.id as "operateurId",
       o.supprime as "supprime",
+      o.complet as "complet",
+      o.type_operateur as "typeOperateur",
       o.personne_morale as "personneMorale",
       o.personne_physique as "personnePhysique",
+      o.protocole_transport as "protocoleTransport",
+      o.protocole_sanitaire as "protocoleSanitaire",
       o.created_at as "createdAt",
       o.edited_at as "editedAt",
       (SELECT jsonb_agg(json_build_object(
       'numero', numero,
+      'filename', filename,
       'uuid', uuid,
       'regionDelivrance', region_delivrance,
       'dateObtention', date_obtention,
       'createdAt',a.created_at
-    ))                   
+    ) ORDER BY date_obtention)                   
     FROM front.agrements a            
     WHERE operateur_id = o.id
+    AND a.supprime = false
   ) AS agrement
     FROM front.operateurs o
+    JOIN front.user_operateur uo ON o.id = ope_id
     WHERE 1=1 
     ${Object.keys(criterias)
       .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
@@ -64,63 +75,119 @@ const query = {
     `,
     Object.values(criterias),
   ],
-  link: `
-    INSERT INTO front.user_operateur 
-      (use_id,ope_id) 
-    VALUES
-      ($1,$2)
-    RETURNING
-      use_id as "userId",
-      ope_id as "operateurId"
-    `,
-  checkLink: `
+  getBySiret: `
     SELECT
-      uo.use_id as "userId",
-      uo.ope_id as "operateurId"
-    FROM front.user_operateur uo
-    WHERE
-      uo.use_id = $1 AND
-      uo.ope_id = $2
+      o.id as "operateurId",
+      o.supprime as "supprime",
+      o.complet as "complet",
+      o.type_operateur as "typeOperateur",
+      o.personne_morale as "personneMorale",
+      o.personne_physique as "personnePhysique",
+      o.protocole_transport as "protocoleTransport",
+      o.protocole_sanitaire as "protocoleSanitaire",
+      o.created_at as "createdAt",
+      o.edited_at as "editedAt",
+      (SELECT jsonb_agg(json_build_object(
+      'numero', numero,
+      'filename', filename,
+      'uuid', uuid,
+      'regionDelivrance', region_delivrance,
+      'dateObtention', date_obtention,
+      'createdAt',a.created_at
+    ) ORDER BY date_obtention)                   
+    FROM front.agrements a            
+    WHERE operateur_id = o.id
+    AND a.supprime = false
+  ) AS agrement
+    FROM front.operateurs o
+    JOIN front.user_operateur uo ON o.id = ope_id
+    WHERE o.personne_morale->>'siret' = $1
     `,
 };
 
-module.exports.create = async (personneMorale) => {
-  log.i("create - IN", { personneMorale });
-  const response = await pool.query(query.createPersonneMorale, [
-    personneMorale,
-  ]);
-  const { operateurId } = response.rows[0];
+module.exports.create = async (type, parametre) => {
+  log.i("create - IN", { type });
+  const response =
+    type === "personne_morale"
+      ? await pool.query(query.create, [type, parametre, {}])
+      : await pool.query(query.create, [type, {}, parametre]);
+  const { operateurId } = response && response.rows[0];
   log.d("create - DONE", { operateurId });
   return operateurId;
 };
 
 module.exports.link = async (userId, operateurId) => {
-  log.i("link - IN", { userId, operateurId });
+  log.i("link - IN");
   const response = await pool.query(query.link, [userId, operateurId]);
-  const { userId: insertedUserId, operateurId: insertedOperateurId } =
-    response.rows[0];
-  log.d("link - DONE", { insertedUserId, insertedOperateurId });
-  return { insertedUserId, insertedOperateurId };
+  const { userLinked } = response && response.rows[0];
+  log.d("link - DONE", { userLinked });
+  return userLinked;
 };
 
-module.exports.checkLink = async (userId, siret) => {
-  log.i("checkLink - IN", { userId, siret });
-  const { rowCount } = await pool.query(query.checkLink, [userId, siret]);
-  log.d("checkLink - DONE", { rowCount });
-  return rowCount;
+module.exports.update = async (type, parametre, operateurId) => {
+  log.i("update - IN", { type });
+  let response;
+  switch (type) {
+    case "personne_morale": {
+      response = await pool.query(query.update, [
+        operateurId,
+        type,
+        parametre,
+        {},
+      ]);
+      break;
+    }
+    case "personne_physique": {
+      response = await pool.query(query.update, [
+        operateurId,
+        type,
+        {},
+        parametre,
+      ]);
+      break;
+    }
+    case "protocole_transport": {
+      const notComplete = parametre.meta === false;
+      response = await pool.query(query.updateTransport, [
+        operateurId,
+        parametre,
+        notComplete,
+      ]);
+      break;
+    }
+    case "protocole_sanitaire": {
+      const notComplete = parametre.meta === false;
+      response = await pool.query(query.updateSanitaire, [
+        operateurId,
+        parametre,
+        notComplete,
+      ]);
+      break;
+    }
+    case "recapitulatif": {
+      response = await pool.query(query.updateFinalisation, [operateurId]);
+      break;
+    }
+    default:
+      log.d("wrong type");
+      return null;
+  }
+  const { updatedOperateurId } = response && response.rows[0];
+  log.d("update - DONE", { updatedOperateurId });
+  return operateurId;
 };
 
-module.exports.get = async (userId) => {
-  log.i("get - IN", { userId });
-  const response = await pool.query(query.get, [userId]);
+module.exports.get = async (criterias = {}) => {
+  log.i("get - IN", { criterias });
+  const { rows: operateurs } = await pool.query(...query.get(criterias));
   log.d("get - DONE");
-  const operateurs = response.rows;
-  return operateurs;
+  return operateurs[0] ?? [];
 };
 
-module.exports.getOne = async (criterias = {}) => {
-  log.i("getOne - IN", { criterias });
-  const { rows: operateurs } = await pool.query(...query.getOne(criterias));
-  log.d("getOne - DONE");
+module.exports.getBySiret = async (siret) => {
+  log.i("getBySiret - IN", siret);
+  const { rows: operateurs } = await pool.query(query.getBySiret, [siret]);
+  log.d("getBySiret - DONE");
+  log.d(operateurs);
   return operateurs[0] ?? [];
 };

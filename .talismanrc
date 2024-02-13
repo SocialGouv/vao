@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: dd6aeb2dc5a362ffb07608b012df3be67aff0c584a8815cc505c28aa5894294e
+  checksum: 5d899176f8cbcdc4949866176832780de04be5ba969361d32abab6530bed1a06
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -92,13 +92,15 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue
   checksum: 05743cc5c3dfd946e8ee41cb11571b1e505bbdb5260e9c59a53e4ca16cb11f08
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
-  checksum: 451c7e9dc68fc864814dca7a111485545e6a4c9464ea9144ae05258c2ab72b0a
+  checksum: 9299336a33bf30541c51bb1492150dfe6e799c42042b002ce0f9a05e2e869bb7
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
-  checksum: 1596907510b0c98d178f8fb1d969f42d52830425ef04e48526cebb1a2c7bb639
+  checksum: a0761381e713ab364653e73c1f1b5338fed8d1b965e427bbace2d2ec3c1ab415
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
   checksum: a30047520f10c9428ebb0865e8019baf9799801d99b0a6606eec58154a73c91b
 - filename: packages/frontend-usagers/src/pages/connexion/reset-mot-de-passe.vue
   checksum: 16110da80f0985b77a0f35313944f9bfe6a045386a455d8dbd6bca4927c71d92
+- filename: packages/frontend-usagers/src/pages/operateur/renseignements-generaux/[[idOperateur]].vue
+  checksum: 3a6a45bbf16e8501e4d9bae581348c9b620df3417e0bc4953ef00b67e4213050
 - filename: packages/frontend-usagers/src/public/js/jquery.min.js
   checksum: 4b7f60ebe1ca4218cb89023b0dc7202a187996f4016b32fbeda6c8f06175c8d0
 - filename: packages/frontend-usagers/src/public/js/jquery.min.map
@@ -114,7 +116,7 @@ fileignoreconfig:
 - filename: pg/scripts/02/02-3-back-init.sql
   checksum: 5a57a150059114c6819fbbe397d5cb5bc7861234c3768e590cf3cc540d8a224d
 - filename: pg/scripts/02/02-4-front-init.sql
-  checksum: 00f123702d1c49476c6cfbe6aa4df8556b5e911c136eb755277d2c3269927aea
+  checksum: 05f0518e415eb2de4ad18badf819d807d0749cd4249d515cf3e660a8b39ab045
 - filename: pg/scripts/03/03-1-geo-data.sql
   checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
 - filename: pg/scripts/03/03-2-back-data.sql

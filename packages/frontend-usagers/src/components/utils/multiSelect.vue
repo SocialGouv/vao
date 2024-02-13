@@ -1,11 +1,10 @@
 <template>
   <label>{{ props.label }}</label>
-  <DsfrTags :tags="formatedTags"> </DsfrTags>
+  <DsfrTags :tags="formatedTags" />
   <div class="fr-input-group">
     <DsfrSelect
       label=""
       label-visible="false"
-      name="sports"
       :required="false"
       :options="optionsToDisplay"
       @update:model-value="addItem"
@@ -14,18 +13,16 @@
 </template>
 
 <script setup>
-const log = logger("component/utils/multiSelect");
 const props = defineProps({
   options: { type: Array, required: true },
   values: { type: Array, required: true },
   label: { type: String, required: true },
 });
-const emit = defineEmits(["addItem"]);
+const emit = defineEmits(["add-item"]);
 
 const tagsToDisplay = ref([]);
 
 const formatedTags = computed(() => {
-  log.d("formatage ! ");
   tagsToDisplay.value = props.values;
   return tagsToDisplay.value.map((t) => {
     return {
@@ -37,7 +34,7 @@ const formatedTags = computed(() => {
         tagsToDisplay.value = tagsToDisplay.value.filter(
           (t) => t !== c.target.id
         );
-        emit("addItem", tagsToDisplay.value);
+        emit("add-item", tagsToDisplay.value);
       },
     };
   });
@@ -47,9 +44,9 @@ const optionsToDisplay = computed(() => {
 });
 
 function addItem(i) {
-  log.d("addItem", i);
   tagsToDisplay.value.push(i);
-  emit("addItem", tagsToDisplay.value);
+  console.log("add-item", i, tagsToDisplay.value);
+  emit("add-item", tagsToDisplay.value);
 }
 </script>
 

@@ -40,7 +40,7 @@ module.exports = async function login(req, res) {
       config.accessToken.secret,
       {
         expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde
-      }
+      },
     );
 
     const refreshToken = jwt.sign(
@@ -48,7 +48,7 @@ module.exports = async function login(req, res) {
       config.refreshToken.secret,
       {
         expiresIn: config.refreshToken.expiresIn / 1000,
-      }
+      },
     );
 
     await Session.create(user.id, refreshToken);
@@ -56,6 +56,7 @@ module.exports = async function login(req, res) {
     res.cookie("PP_access_token", accessToken, {
       httpOnly: true,
       secure: true,
+      sameSite: "strict",
       maxAge: config.accessToken.expiresIn,
     });
 
