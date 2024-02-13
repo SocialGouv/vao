@@ -56,6 +56,7 @@ module.exports = async function login(req, res) {
     res.cookie("PP_access_token", accessToken, {
       httpOnly: true,
       secure: true,
+      sameSite: "strict",
       maxAge: config.accessToken.expiresIn,
     });
 

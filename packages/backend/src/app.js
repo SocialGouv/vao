@@ -22,6 +22,8 @@ const whitelist = [
 ];
 const corsOptions = {
   credentials: true,
+  methods: "GET,HEAD,POST,PATCH,DELETE,OPTIONS",
+  allowedHeaders: "Content-Type,Authorization,X-Requested-With,Accept",
   origin(origin, callback) {
     log.d("cors", { origin, whitelist });
     if (!origin || whitelist.indexOf(origin) !== -1) {

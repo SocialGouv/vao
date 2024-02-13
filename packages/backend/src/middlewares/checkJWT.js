@@ -31,7 +31,7 @@ async function checkJWT(req, res, next) {
       try {
         const decoded = await jwt.verify(
           accessToken,
-          `${config.accessToken.secret}`
+          `${config.accessToken.secret}`,
         );
         log.i("DONE - access_token decoded");
         req.decoded = decoded;
@@ -57,7 +57,7 @@ async function checkJWT(req, res, next) {
 
     const rtDecoded = await jwt.verify(
       refreshToken,
-      `${config.refreshToken.secret}`
+      `${config.refreshToken.secret}`,
     );
 
     log.d({ rtDecoded });
@@ -73,7 +73,7 @@ async function checkJWT(req, res, next) {
       config.accessToken.secret,
       {
         expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde
-      }
+      },
     );
 
     const newRefreshToken = jwt.sign(
@@ -81,7 +81,7 @@ async function checkJWT(req, res, next) {
       config.refreshToken.secret,
       {
         expiresIn: config.refreshToken.expiresIn / 1000,
-      }
+      },
     );
     //   TODO; gérer session
     //   await Session.create(user.id, newRefreshToken);
@@ -89,6 +89,7 @@ async function checkJWT(req, res, next) {
     res.cookie("PP_access_token", newAccessToken, {
       httpOnly: true,
       secure: true,
+      sameSite: "strict",
       maxAge: config.accessToken.expiresIn,
     });
 

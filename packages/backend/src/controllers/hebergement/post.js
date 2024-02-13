@@ -11,7 +11,7 @@ module.exports = async function post(req, res) {
   const { nomHebergement, caracteristiques } = body;
   const userId = decoded.id;
 
-  log.i(userId);
+  log.d(userId);
   if (!nomHebergement || !caracteristiques) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
@@ -21,7 +21,7 @@ module.exports = async function post(req, res) {
     const hebergementId = await Hebergement.create(
       userId,
       nomHebergement,
-      caracteristiques
+      caracteristiques,
     );
     if (!hebergementId) {
       log.w("error while creating hebergement");
