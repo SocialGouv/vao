@@ -1,97 +1,91 @@
 <template>
   <div>
-    <DsfrBreadcrumb :links="links" />
-    <DSStepper :step="5"></DSStepper>
-    <div class="fr-container">
-      <div class="fr-my-5v">
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element fr-col-12">
-            <div class="fr-input-group">
-              <DsfrCheckboxSet
-                v-model="destination"
-                name="destination"
-                legend="Destination"
-                :inline="true"
-                :options="[
-                  { label: 'Mer', id: 'mer', name: 'mer' },
-                  { label: 'Montagne', id: 'montagne', name: 'montagne' },
-                  { label: 'Campagne', id: 'campagne', name: 'campagne' },
-                  {
-                    label: 'Séjour à thème',
-                    id: 'sejour_a_theme',
-                    name: 'sejour_a_theme',
-                  },
-                  { label: 'Etranger', id: 'etranger', name: 'etranger' },
-                ]"
-                :small="true"
-                :required="true"
-              />
-            </div>
-          </div>
-        </fieldset>
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element fr-col-12">
-            <DsfrInputGroup
-              name="periode"
-              label="Période"
-              :label-visible="true"
-              :model-value="periode"
-              :disabled="true"
-            />
-          </div>
-        </fieldset>
-
-        <DsfrHighlight
-          text="Activités spécifiques proposées"
-          :small="false"
-          :large="true"
-        />
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element fr-col-12">
-            <UtilsMultiSelect
-              :options="sportOptions"
-              :values="activitesSpecifiques.sport ?? []"
-              label="Sports et loisirs"
-              @add-item="addActiviteSport"
-            ></UtilsMultiSelect>
-          </div>
-        </fieldset>
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element fr-col-12">
-            <UtilsMultiSelect
-              :options="cultureOptions"
-              :values="activitesSpecifiques.culture ?? []"
-              label="Culture et découverte"
-              @add-item="addActiviteCulture"
-            ></UtilsMultiSelect>
-          </div>
-        </fieldset>
-
-        <fieldset class="fr-fieldset">
-          <div class="fr-col-4">
-            <div class="fr-input-group">
-              <DsfrButton id="retour" :secondary="true" @click="back"
-                >Retour</DsfrButton
-              >
-            </div>
-          </div>
-          <div class="fr-col-4">
-            <div class="fr-input-group">
-              <DsfrButton id="precedent" :secondary="true" @click="previous"
-                >Précédent</DsfrButton
-              >
-            </div>
-          </div>
-          <div class="fr-col-4">
-            <div class="fr-input-group">
-              <DsfrButton id="Suivant" :disabled="!meta" @click="next"
-                >Suivant</DsfrButton
-              >
-            </div>
-          </div>
-        </fieldset>
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__element fr-col-12">
+        <div class="fr-input-group">
+          <DsfrCheckboxSet
+            v-model="destination"
+            name="destination"
+            legend="Destination"
+            :inline="true"
+            :options="[
+              { label: 'Mer', id: 'mer', name: 'mer' },
+              { label: 'Montagne', id: 'montagne', name: 'montagne' },
+              { label: 'Campagne', id: 'campagne', name: 'campagne' },
+              {
+                label: 'Séjour à thème',
+                id: 'sejour_a_theme',
+                name: 'sejour_a_theme',
+              },
+              { label: 'Etranger', id: 'etranger', name: 'etranger' },
+            ]"
+            :small="true"
+            :required="true"
+          />
+        </div>
       </div>
-    </div>
+    </fieldset>
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__element fr-col-12">
+        <DsfrInputGroup
+          name="periode"
+          label="Période"
+          :label-visible="true"
+          :model-value="periode"
+          :disabled="true"
+        />
+      </div>
+    </fieldset>
+
+    <DsfrHighlight
+      text="Activités spécifiques proposées"
+      :small="false"
+      :large="true"
+    />
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__element fr-col-12">
+        <UtilsMultiSelect
+          :options="sportOptions"
+          :values="activitesSpecifiques.sport ?? []"
+          label="Sports et loisirs"
+          @add-item="addActiviteSport"
+        ></UtilsMultiSelect>
+      </div>
+    </fieldset>
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__element fr-col-12">
+        <UtilsMultiSelect
+          :options="cultureOptions"
+          :values="activitesSpecifiques.culture ?? []"
+          label="Culture et découverte"
+          @add-item="addActiviteCulture"
+        ></UtilsMultiSelect>
+      </div>
+    </fieldset>
+
+    <fieldset class="fr-fieldset">
+      <div class="fr-col-4">
+        <div class="fr-input-group">
+          <DsfrButton id="retour" :secondary="true" @click="back"
+            >Retour</DsfrButton
+          >
+        </div>
+      </div>
+      <div class="fr-col-4">
+        <div class="fr-input-group">
+          <DsfrButton id="precedent" :secondary="true" @click="previous"
+            >Précédent</DsfrButton
+          >
+        </div>
+      </div>
+      <div class="fr-col-4">
+        <div class="fr-input-group">
+          <DsfrButton id="Suivant" :disabled="!meta" @click="next"
+            >Suivant</DsfrButton
+          >
+        </div>
+      </div>
+    </fieldset>
   </div>
 </template>
 
@@ -100,6 +94,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import { useDemandeSejourStore } from "@/stores/demande-sejour";
+import { useLayoutStore } from "@/stores/layout";
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
@@ -108,24 +103,14 @@ const config = useRuntimeConfig()
 
 definePageMeta({
   middleware: ["is-connected"],
+  layout: "demande-sejour",
 });
 
 const log = logger("demande-sejour/projet-sejour");
-const links = [
-  {
-    to: "/",
-    text: "Accueil",
-  },
-  {
-    to: "/demande-sejour/liste",
-    text: "Demande de séjour",
-  },
-  {
-    text: "Projet de séjour",
-  },
-];
 
 const demandeSejourStore = useDemandeSejourStore();
+const layoutStore = useLayoutStore();
+
 const demandeCourante = computed(() => {
   return demandeSejourStore.demandeCourante;
 });
@@ -258,8 +243,10 @@ async function next() {
   }
 }
 
-onMounted(async () => {
-  await demandeSejourStore.setDemandeCourante(route.params.idDemande);
+onMounted(() => {
+  layoutStore.breadCrumb = "Projet de séjour";
+  layoutStore.stepperIndex = 4;
+  demandeSejourStore.setDemandeCourante(route.params.idDemande);
   activitesSpecifiques.sport =
     demandeCourante.value.informationsProjetSejour?.activitesSpecifiques
       ?.sport || [];

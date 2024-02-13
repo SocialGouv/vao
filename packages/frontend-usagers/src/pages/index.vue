@@ -1,93 +1,143 @@
 <template>
-  <div class="fr-container">
-    <DsfrBreadcrumb :links="links" />
-    <div>
-      <div class="fr-grid-row fr-grid-row--center fr-my-5v">
-        <div class="fr-col-12 fr-col-md-8 fr-col-lg-8">
-          <div class="fr-container fr-mt-5v">
-            <div class="fr-grid-row fr-grid-row--center">
-              <form class="fr-col-12">
-                <fieldset class="fr-fieldset">
-                  <div class="fr-fieldset__element fr-col-6">
-                    <DsfrTile
-                      title="Demande d'agrément"
-                      :img-src="encours"
-                      description="En cours de construction"
-                      :disabled="true"
-                      :no-background="true"
-                      :grey="false"
-                    />
-                  </div>
-                  <div class="fr-fieldset__element fr-col-6">
-                    <div class="fr-input-group">
-                      <DsfrTile
-                        title="Demande de séjour"
-                        :img-src="sejour"
-                        description="Je déclare un séjour"
-                        :disabled="false"
-                        to="/demande-sejour/operateur"
-                        :icon="false"
-                        :no-border="true"
-                        :shadow="false"
-                        :no-background="true"
-                        :grey="false"
-                      />
-                    </div>
-                  </div>
-                </fieldset>
-                <fieldset class="fr-fieldset">
-                  <div class="fr-fieldset__element fr-col-6">
-                    <DsfrTile
-                      title="Contrôles"
-                      :img-src="controle"
-                      description="En cours de construction"
-                      :disabled="true"
-                      :small="true"
-                      :no-background="true"
-                      :grey="false"
-                    />
-                  </div>
-                  <div class="fr-fieldset__element fr-col-6">
-                    <div class="fr-input-group">
-                      <DsfrTile
-                        title="Mes demandes"
-                        :img-src="info"
-                        description="liste des demandes de séjour"
-                        :disabled="false"
-                        to="/demande-sejour/liste"
-                        :small="true"
-                        :no-border="true"
-                        :no-background="true"
-                        :grey="false"
-                      />
-                    </div>
-                  </div>
-                </fieldset>
-              </form>
+  <div>
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--left fr-col-12 fr-py-5w">
+        <h3>Bienvenue {{ userStore.user.prenom }} !</h3>
+      </div>
+    </div>
+    <div class="fr-container--fluid">
+      <div v-if="!operateurCourant || !operateurCourant.complet">
+        <div class="fr-grid-row fr-grid-row--left">
+          <DsfrHighlight
+            :text="libelleMessageAccueil"
+            :large="true"
+            style="background-color: #eeeeee"
+            class="fr-col-12 fr-py-5v"
+          >
+            <div class="fr-grid-row fr-grid-row-left fr-pt-5v">
+              <DsfrButton id="Suivant" @click="saisieFicheOperateur"
+                >Renseigner ma fiche organisme</DsfrButton
+              >
             </div>
+          </DsfrHighlight>
+        </div>
+      </div>
+    </div>
+    <div class="fr-container">
+      <div class="fr-grid-row">
+        <div
+          class="fr-col-4 fr-col-sm-12 fr-col-md-6 fr-col-lg-4 fr-py-5v fr-pr-5v"
+        >
+          <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
+            <div class="fr-py-1v">
+              <h3>Opérateur</h3>
+            </div>
+            <div class="fr-py-1v">
+              <a
+                class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                :href="
+                  operateurStore.operateurCourant
+                    ? `/front/operateur/renseignements-generaux/${operateurStore.operateurCourant.operateurId}`
+                    : '#'
+                "
+                >Ma fiche opérateur</a
+              >
+            </div>
+            <div class="fr-py-1v"><p></p></div>
+            <div class="fr-py-1v"><p></p></div>
+          </div>
+        </div>
+        <div
+          class="fr-col-4 fr-col-sm-12 fr-col-md-6 fr-col-lg-4 fr-py-5v fr-pr-5v"
+        >
+          <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
+            <div>
+              <h3 class="fr-py-1v">Demande de séjour</h3>
+            </div>
+            <div class="fr-py-1v">
+              <a
+                class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                href="/front/demande-sejour/liste"
+                >Mes séjours déclarés</a
+              >
+            </div>
+            <div class="fr-py-1v">
+              <a
+                class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                href="/front/demande-sejour/informations-generales"
+                >Déclarer un séjour</a
+              >
+            </div>
+            <div class="fr-py-1v">
+              <a
+                class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                href="#"
+                >Déclarer un incident</a
+              >
+            </div>
+          </div>
+        </div>
+        <div
+          class="fr-col-4 fr-col-sm-12 fr-col-md-6 fr-col-lg-4 fr-py-5v fr-pr-5v"
+        >
+          <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
+            <div class="fr-py-1v">
+              <h3>Messagerie</h3>
+            </div>
+            <div class="fr-py-1v">
+              <a
+                class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                href="#"
+                >Mes messages</a
+              >
+            </div>
+            <div class="fr-py-1v"><p></p></div>
+            <div class="fr-py-1v"><p></p></div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- <div class="fr-col-2 fr-pr-3w fr-my-5v" style="background-color: #eeeeee">
+      <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="#"
+        >test</a
+      >
+    </div>
+    <div class="fr-col-2 fr-pr-3w fr-my-5v" style="background-color: #eeeeee">
+      <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="#"
+        >test</a
+      >
+    </div> -->
   </div>
 </template>
 
 <script setup>
-import encours from "@/assets/E.jpg";
-import sejour from "@/assets/B.jpg";
-import controle from "@/assets/C.jpg";
 import info from "@/assets/D.jpeg";
+import { useUserStore } from "@/stores/user";
+import { useOperateurStore } from "@/stores/operateur";
+
+import sejour from "@/assets/B.jpg";
 const nuxtApp = useNuxtApp();
 
 definePageMeta({
   middleware: ["is-connected"],
 });
 
-const links = [
-  {
-    text: "Accueil",
-  },
-];
+const userStore = useUserStore();
+const operateurStore = useOperateurStore();
+const operateurCourant = computed(() => {
+  return operateurStore.operateurCourant;
+});
+
+const libelleMessageAccueil =
+  "Afin de profiter de toutes les fonctionnalités de ce site, nous vous invitons à renseigner votre fiche organisme";
+
+function saisieFicheOperateur() {
+  navigateTo("/operateur/renseignements-generaux");
+}
+onMounted(async () => {
+  await operateurStore.setMyOperateur();
+});
 </script>
 
 <style lang="scss" scoped>

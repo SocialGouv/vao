@@ -1,135 +1,125 @@
 <template>
   <div>
-    <DsfrBreadcrumb :links="links" />
-    <DSStepper :step="2"></DSStepper>
-    <div class="fr-container">
-      <div class="fr-my-5v">
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element fr-col-12">
-            <div class="fr-input-group">
-              <DsfrInputGroup
-                name="libelle"
-                label="Titre"
-                :label-visible="true"
-                :model-value="libelle"
-                :required="true"
-                :is-valid="libelleMeta.valid"
-                :error-message="libelleErrorMessage"
-                placeholder="nom de votre demande de séjour"
-                @update:model-value="onLibelleChange"
-              />
-            </div>
-          </div>
-        </fieldset>
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element fr-col-6">
-            <div class="fr-input-group">
-              <DsfrInputGroup
-                name="dateDebut"
-                type="date"
-                label="Date de début"
-                :label-visible="true"
-                :model-value="dateDebut"
-                :required="true"
-                :is-valid="dateDebutMeta.valid"
-                :error-message="dateDebutErrorMessage"
-                placeholder="Date de début"
-                @update:model-value="onDateDebutChange"
-              />
-            </div>
-          </div>
-          <div class="fr-fieldset__element fr-col-6">
-            <div class="fr-input-group">
-              <DsfrInputGroup
-                name="dateFin"
-                type="date"
-                label="Date de fin"
-                :label-visible="true"
-                :model-value="dateFin"
-                :required="true"
-                :is-valid="dateFinMeta.valid"
-                :error-message="dateFinErrorMessage"
-                placeholder="Date de fin"
-                @update:model-value="onDateFinChange"
-              />
-            </div>
-          </div>
-        </fieldset>
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element fr-col-12">
-            <div class="fr-input-group">
-              <DsfrInputGroup
-                v-if="duree > 0"
-                name="duree"
-                label="Durée du séjour (en jours)"
-                :label-visible="true"
-                :model-value="duree"
-                :disabled="true"
-              />
-            </div>
-          </div>
-        </fieldset>
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element fr-col-6">
-            <div class="fr-input-group">
-              <DsfrRadioButtonSet
-                name="sejourItinerant"
-                legend="Séjour itinerant"
-                :required="true"
-                :model-value="sejourItinerant"
-                :options="ouiNonOptions"
-                :is-valid="sejourItinerantMeta"
-                :inline="true"
-                :error-message="sejourItinerantErrorMessage"
-                @update:model-value="onSejourItinerantChange"
-              />
-            </div>
-          </div>
-          <div class="fr-fieldset__element fr-col-6">
-            <div class="fr-input-group">
-              <DsfrRadioButtonSet
-                v-if="sejourItinerant"
-                name="sejourEtranger"
-                legend="Séjour à l'étranger"
-                :required="true"
-                :model-value="sejourEtranger"
-                :options="ouiNonOptions"
-                :is-valid="sejourEtrangerMeta"
-                :inline="true"
-                :error-message="sejourEtrangerErrorMessage"
-                @update:model-value="onSejourEtrangerChange"
-              />
-            </div>
-          </div>
-        </fieldset>
-        <fieldset class="fr-fieldset">
-          <div class="fr-col-4">
-            <div class="fr-input-group">
-              <DsfrButton id="retour" :secondary="true" @click="back"
-                >Retour</DsfrButton
-              >
-            </div>
-          </div>
-          <div class="fr-col-4">
-            <div class="fr-input-group">
-              <DsfrButton id="precedent" :secondary="true" @click="previous"
-                >Précédent</DsfrButton
-              >
-            </div>
-          </div>
-          <div class="fr-col-4">
-            <div class="fr-input-group">
-              <DsfrButton
-                id="Suivant"
-                :disabled="!meta.valid"
-                @click.prevent="next"
-                >Suivant</DsfrButton
-              >
-            </div>
-          </div>
-        </fieldset>
+    <div class="fr-col-12">
+      <div class="fr-input-group">
+        <DsfrInputGroup
+          name="libelle"
+          label="Titre"
+          :label-visible="true"
+          :model-value="libelle"
+          :required="true"
+          :is-valid="libelleMeta.valid"
+          :error-message="libelleErrorMessage"
+          placeholder="nom de votre demande de séjour"
+          @update:model-value="onLibelleChange"
+        />
       </div>
     </div>
+
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__element fr-col-6">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            name="dateDebut"
+            type="date"
+            label="Date de début"
+            :label-visible="true"
+            :model-value="dateDebut"
+            :required="true"
+            :is-valid="dateDebutMeta.valid"
+            :error-message="dateDebutErrorMessage"
+            placeholder="Date de début"
+            @update:model-value="onDateDebutChange"
+          />
+        </div>
+      </div>
+      <div class="fr-fieldset__element fr-col-6">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            name="dateFin"
+            type="date"
+            label="Date de fin"
+            :label-visible="true"
+            :model-value="dateFin"
+            :required="true"
+            :is-valid="dateFinMeta.valid"
+            :error-message="dateFinErrorMessage"
+            placeholder="Date de fin"
+            @update:model-value="onDateFinChange"
+          />
+        </div>
+      </div>
+    </fieldset>
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__element fr-col-12">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-if="duree > 0"
+            name="duree"
+            label="Durée du séjour (en jours)"
+            :label-visible="true"
+            :model-value="duree"
+            :disabled="true"
+          />
+        </div>
+      </div>
+    </fieldset>
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__element fr-col-6">
+        <div class="fr-input-group">
+          <DsfrRadioButtonSet
+            name="sejourItinerant"
+            legend="Séjour itinerant"
+            :required="true"
+            :model-value="sejourItinerant"
+            :options="ouiNonOptions"
+            :is-valid="sejourItinerantMeta"
+            :inline="true"
+            :error-message="sejourItinerantErrorMessage"
+            @update:model-value="onSejourItinerantChange"
+          />
+        </div>
+      </div>
+      <div class="fr-fieldset__element fr-col-6">
+        <div class="fr-input-group">
+          <DsfrRadioButtonSet
+            v-if="sejourItinerant"
+            name="sejourEtranger"
+            legend="Séjour à l'étranger"
+            :required="true"
+            :model-value="sejourEtranger"
+            :options="ouiNonOptions"
+            :is-valid="sejourEtrangerMeta"
+            :inline="true"
+            :error-message="sejourEtrangerErrorMessage"
+            @update:model-value="onSejourEtrangerChange"
+          />
+        </div>
+      </div>
+    </fieldset>
+    <fieldset class="fr-fieldset">
+      <div class="fr-col-4">
+        <div class="fr-input-group">
+          <DsfrButton id="retour" :secondary="true" @click="back"
+            >Retour</DsfrButton
+          >
+        </div>
+      </div>
+      <div class="fr-col-4">
+        <div class="fr-input-group">
+          <DsfrButton id="precedent" :secondary="true" @click="previous"
+            >Précédent</DsfrButton
+          >
+        </div>
+      </div>
+      <div class="fr-col-4">
+        <div class="fr-input-group">
+          <DsfrButton id="Suivant" :disabled="!meta.valid" @click.prevent="next"
+            >Suivant</DsfrButton
+          >
+        </div>
+      </div>
+    </fieldset>
   </div>
 </template>
 
@@ -139,31 +129,22 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import { useOperateurStore } from "@/stores/operateur";
 import { useDemandeSejourStore } from "@/stores/demande-sejour";
+import { useLayoutStore } from "@/stores/layout";
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
 definePageMeta({
   middleware: ["is-connected"],
+  layout: "demande-sejour",
 });
 
 const log = logger("demande-sejour/informations-generales");
-const links = [
-  {
-    to: "/",
-    text: "Accueil",
-  },
-  {
-    to: "/demande-sejour/liste",
-    text: "Demande de séjour",
-  },
-  {
-    text: "informations générales",
-  },
-];
 
 const operateurStore = useOperateurStore();
 const demandeSejourStore = useDemandeSejourStore();
+const layoutStore = useLayoutStore();
+
 const demandeCourante = computed(() => {
   return demandeSejourStore.demandeCourante;
 });
@@ -328,9 +309,12 @@ async function next() {
   }
 }
 
-onMounted(async () => {
+onMounted(() => {
+  layoutStore.breadCrumb = "informations générales";
+  layoutStore.stepperIndex = 1;
+  operateurStore.setMyOperateur();
   if (isUpdate.value)
-    await demandeSejourStore.setDemandeCourante(route.params.idDemande);
+    demandeSejourStore.setDemandeCourante(route.params.idDemande);
 });
 </script>
 

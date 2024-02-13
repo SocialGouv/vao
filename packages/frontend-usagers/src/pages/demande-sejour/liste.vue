@@ -2,7 +2,6 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
-    <DsfrBreadcrumb :links="links" />
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
@@ -83,35 +82,17 @@
       :search="search"
       :row-navigate="navigate"
     ></UtilsTableFull>
-    <!--<fieldset class="fr-fieldset">
-      <div
-        class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-6 fr-col-lg-3"
-      >
-        <DsfrButton label="Ajouter cadre interdit" @click="addCadreInterdit" />
-      </div>
-      <div
-        class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-6 fr-col-lg-3"
-      >
-        <DsfrButton label="Exporter au format CSV" @click="exportArretes" />
-      </div>
-    </fieldset> -->
   </div>
 </template>
 
 <script setup>
-// import dayjs from "dayjs";
+import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
 
 import "@vueform/multiselect/themes/default.css";
 
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
-// import { useUserStore } from "@/stores/userStore";
-// import { roles } from "@/helpers/roles";
-
-// const DsfrButton = resolveComponent("DsfrButton");
-// const nuxtApp = useNuxtApp();
-// const toaster = nuxtApp.vueApp.$toast;
 const log = logger("pages/demande-sejour/liste");
 
 definePageMeta({
@@ -129,7 +110,7 @@ const links = [
 ];
 
 const navigate = (item) => {
-  navigateTo(`/demande-sejour/operateur/${item.demandeSejourId}`);
+  navigateTo(`/demande-sejour/informations-generales/${item.demandeSejourId}`);
 };
 
 const search = reactive({
@@ -221,6 +202,7 @@ const headers = [
   {
     column: "editedAt",
     sorter: "editedAt",
+    format: (value) => dayjs(value.editedAt).format("DD/MM/YYYY HH:mm"),
     text: "Date de modification",
 
     headerAttrs: {

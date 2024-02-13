@@ -1,83 +1,77 @@
 <template>
   <div>
-    <DsfrBreadcrumb :links="links" />
-    <DSStepper :step="4"></DSStepper>
-    <div class="fr-container">
-      <div class="fr-my-5v">
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element fr-col-12">
-            <div class="fr-input-group">
-              <DsfrInputGroup
-                name="nombreResponsable"
-                label="Nombre total de personnes responsables du déroulement du séjour sur le(s) lieu(x) de séjour"
-                :label-visible="true"
-                :model-value="nombreResponsable"
-                :required="true"
-                :is-valid="nombreResponsableMeta.valid"
-                :error-message="nombreResponsableErrorMessage"
-                placeholder="nombre total de responsable"
-                @update:model-value="onNombreResponsableChange"
-              />
-            </div>
-          </div>
-        </fieldset>
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element fr-col-12">
-            <div class="fr-input-group">
-              <DsfrRadioButtonSet
-                name="procedureRecrutementSupplementaire"
-                legend="Séjour à l'étranger"
-                :required="true"
-                :model-value="procedureRecrutementSupplementaire"
-                :options="ouiNonOptions"
-                :is-valid="procedureRecrutementSupplementaireMeta"
-                :inline="true"
-                :error-message="procedureRecrutementSupplementaireErrorMessage"
-                @update:model-value="onProcedureRecrutementSupplementaireChange"
-              />
-            </div>
-          </div>
-          <div class="fr-fieldset__element fr-col-12">
-            <div class="fr-input-group">
-              <DsfrInputGroup
-                name="nombreAccompagnant"
-                label="Nombre total d'accompagnants sur le(s) lieu(x) de séjour"
-                :label-visible="true"
-                :model-value="nombreAccompagnant"
-                :required="true"
-                :is-valid="nombreAccompagnantMeta.valid"
-                :error-message="nombreAccompagnantErrorMessage"
-                placeholder="nombre total d'accompagnant"
-                @update:model-value="onNombreAccompagnantChange"
-              />
-            </div>
-          </div>
-        </fieldset>
-        <fieldset class="fr-fieldset">
-          <div class="fr-col-4">
-            <div class="fr-input-group">
-              <DsfrButton id="retour" :secondary="true" @click="back"
-                >Retour</DsfrButton
-              >
-            </div>
-          </div>
-          <div class="fr-col-4">
-            <div class="fr-input-group">
-              <DsfrButton id="precedent" :secondary="true" @click="previous"
-                >Précédent</DsfrButton
-              >
-            </div>
-          </div>
-          <div class="fr-col-4">
-            <div class="fr-input-group">
-              <DsfrButton id="Suivant" :disabled="!meta.valid" @click="next"
-                >Suivant</DsfrButton
-              >
-            </div>
-          </div>
-        </fieldset>
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__element fr-col-12">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            name="nombreResponsable"
+            label="Nombre total de personnes responsables du déroulement du séjour sur le(s) lieu(x) de séjour"
+            :label-visible="true"
+            :model-value="nombreResponsable"
+            :required="true"
+            :is-valid="nombreResponsableMeta.valid"
+            :error-message="nombreResponsableErrorMessage"
+            placeholder="nombre total de responsable"
+            @update:model-value="onNombreResponsableChange"
+          />
+        </div>
       </div>
-    </div>
+    </fieldset>
+    <fieldset class="fr-fieldset">
+      <div class="fr-fieldset__element fr-col-12">
+        <div class="fr-input-group">
+          <DsfrRadioButtonSet
+            name="procedureRecrutementSupplementaire"
+            legend="Séjour à l'étranger"
+            :required="true"
+            :model-value="procedureRecrutementSupplementaire"
+            :options="ouiNonOptions"
+            :is-valid="procedureRecrutementSupplementaireMeta"
+            :inline="true"
+            :error-message="procedureRecrutementSupplementaireErrorMessage"
+            @update:model-value="onProcedureRecrutementSupplementaireChange"
+          />
+        </div>
+      </div>
+      <div class="fr-fieldset__element fr-col-12">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            name="nombreAccompagnant"
+            label="Nombre total d'accompagnants sur le(s) lieu(x) de séjour"
+            :label-visible="true"
+            :model-value="nombreAccompagnant"
+            :required="true"
+            :is-valid="nombreAccompagnantMeta.valid"
+            :error-message="nombreAccompagnantErrorMessage"
+            placeholder="nombre total d'accompagnant"
+            @update:model-value="onNombreAccompagnantChange"
+          />
+        </div>
+      </div>
+    </fieldset>
+    <fieldset class="fr-fieldset">
+      <div class="fr-col-4">
+        <div class="fr-input-group">
+          <DsfrButton id="retour" :secondary="true" @click="back"
+            >Retour</DsfrButton
+          >
+        </div>
+      </div>
+      <div class="fr-col-4">
+        <div class="fr-input-group">
+          <DsfrButton id="precedent" :secondary="true" @click="previous"
+            >Précédent</DsfrButton
+          >
+        </div>
+      </div>
+      <div class="fr-col-4">
+        <div class="fr-input-group">
+          <DsfrButton id="Suivant" :disabled="!meta.valid" @click="next"
+            >Suivant</DsfrButton
+          >
+        </div>
+      </div>
+    </fieldset>
   </div>
 </template>
 
@@ -85,32 +79,22 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { useDemandeSejourStore } from "@/stores/demande-sejour";
+import { useLayoutStore } from "@/stores/layout";
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
 definePageMeta({
   middleware: ["is-connected"],
+  layout: "demande-sejour",
 });
 
 const config = useRuntimeConfig()
 
 const log = logger("demande-sejour/informations-generales");
-const links = [
-  {
-    to: "/",
-    text: "Accueil",
-  },
-  {
-    to: "/demande-sejour/liste",
-    text: "Demande de séjour",
-  },
-  {
-    text: "informations prévisionnelles sur les vacanciers",
-  },
-];
 
 const demandeSejourStore = useDemandeSejourStore();
+const layoutStore = useLayoutStore();
 const ouiNonOptions = [
   {
     label: "Oui",
@@ -219,6 +203,8 @@ function previous() {
 }
 
 onMounted(async () => {
+  layoutStore.breadCrumb = "informations sur le personnel";
+  layoutStore.stepperIndex = 3;
   await demandeSejourStore.setDemandeCourante(route.params.idDemande);
 });
 </script>

@@ -92,13 +92,15 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue
   checksum: 05743cc5c3dfd946e8ee41cb11571b1e505bbdb5260e9c59a53e4ca16cb11f08
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
-  checksum: 451c7e9dc68fc864814dca7a111485545e6a4c9464ea9144ae05258c2ab72b0a
+  checksum: 9299336a33bf30541c51bb1492150dfe6e799c42042b002ce0f9a05e2e869bb7
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
   checksum: 1596907510b0c98d178f8fb1d969f42d52830425ef04e48526cebb1a2c7bb639
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
   checksum: a30047520f10c9428ebb0865e8019baf9799801d99b0a6606eec58154a73c91b
 - filename: packages/frontend-usagers/src/pages/connexion/reset-mot-de-passe.vue
   checksum: 16110da80f0985b77a0f35313944f9bfe6a045386a455d8dbd6bca4927c71d92
+- filename: packages/frontend-usagers/src/pages/operateur/renseignements-generaux/[[idOperateur]].vue
+  checksum: 3a6a45bbf16e8501e4d9bae581348c9b620df3417e0bc4953ef00b67e4213050
 - filename: packages/frontend-usagers/src/public/js/jquery.min.js
   checksum: 4b7f60ebe1ca4218cb89023b0dc7202a187996f4016b32fbeda6c8f06175c8d0
 - filename: packages/frontend-usagers/src/public/js/jquery.min.map
