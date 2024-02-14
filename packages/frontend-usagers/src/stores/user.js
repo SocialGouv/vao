@@ -1,4 +1,6 @@
 import { defineStore } from "pinia";
+import { useRuntimeConfig, useFetch } from "#app";
+import { logger } from "#imports";
 
 const log = logger("stores/user");
 
@@ -11,18 +13,21 @@ export const useUserStore = defineStore("user", {
   },
   actions: {
     async refreshProfile() {
-      try {
-        log.i("refreshProfile - IN");
-        const config = useRuntimeConfig()
-        const response = await $fetch(config.public.backendUrl + "/users/me", {
+      log.i("refreshProfile - IN");
+      const config = useRuntimeConfig();
+      const { data, error } = await useFetch(
+        config.public.backendUrl + "/users/me",
+        {
           credentials: "include",
-        });
-        const user = response.user;
-        this.user = user;
+        },
+      );
+      if (data.value) {
         log.i("refreshProfile - DONE");
-      } catch (err) {
+        this.user = data.value.user;
+      }
+      if (error.value) {
+        log.w("refreshProfile - DONE with error", error.value);
         this.user = null;
-        log.i("refreshProfile - DONE with error");
       }
     },
   },

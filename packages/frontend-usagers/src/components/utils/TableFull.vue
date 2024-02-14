@@ -3,7 +3,7 @@
     <div>
       <DsfrTable
         style="display: table"
-        :headers="headers"
+        :headers="h"
         :rows="displayedData"
         :no-caption="true"
       />
@@ -68,7 +68,7 @@ const onUpdateItemByPage = (val) => {
 
 const sortBy = ref("id");
 const sortDirection = ref(1);
-let headers = [];
+const h = ref([]);
 
 const sorter = (col) => () => {
   if (sortBy.value !== col) {
@@ -118,7 +118,7 @@ const filteredData = computed(() => {
       if (typeof values === "string") {
         const noMatch = Array.isArray(target)
           ? target.findIndex((item) =>
-              values.toLowerCase().includes(item.toString().toLowerCase())
+              values.toLowerCase().includes(item.toString().toLowerCase()),
             ) === -1
           : !target.toString().toLowerCase().includes(values.toLowerCase());
         return noMatch;
@@ -169,7 +169,7 @@ const filteredData = computed(() => {
 
 const displayableData = computed(() => {
   return filteredData.value.map((item) => {
-    const rowdata = headers.map((header) => {
+    const rowdata = h.value.map((header) => {
       if (header.component) {
         return header.component(item);
       }
@@ -198,14 +198,14 @@ const displayableData = computed(() => {
 const displayedData = computed(() => {
   return displayableData.value.slice(
     currentPage.value * (itemByPage.value ?? 10),
-    (currentPage.value + 1) * (itemByPage.value ?? 10)
+    (currentPage.value + 1) * (itemByPage.value ?? 10),
   );
 });
 
 const currentPage = ref(props.currentPage);
 const pages = computed(() => {
   const numberOfPages = Math.ceil(
-    displayableData.value.length / (itemByPage.value ?? 10)
+    displayableData.value.length / (itemByPage.value ?? 10),
   );
   if (numberOfPages < 2) {
     return null;
@@ -220,7 +220,7 @@ const pages = computed(() => {
 });
 
 onMounted(() => {
-  headers = props.headers.map((h) => {
+  h.value = props.headers.map((h) => {
     if (h.sorter) {
       return {
         ...h,

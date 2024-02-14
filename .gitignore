@@ -2,6 +2,7 @@
 node_modules
 .vscode
 .prettierrc
+.eslintcache
 
 yarn-error.log
 .yarn

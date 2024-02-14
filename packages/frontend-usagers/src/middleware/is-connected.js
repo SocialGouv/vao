@@ -1,4 +1,7 @@
 import { useUserStore } from "~/stores/user";
+import { defineNuxtRouteMiddleware, navigateTo } from "#app";
+import { logger } from "#imports";
+
 const log = logger("middlewares/is-connected");
 
 export default defineNuxtRouteMiddleware(() => {

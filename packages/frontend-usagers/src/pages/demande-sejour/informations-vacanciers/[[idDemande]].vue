@@ -165,7 +165,7 @@ const schemaInfosVacanciers = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaInfosVacanciers,
-  })
+  }),
 );
 
 const initialValues = computed(() => ({
@@ -215,7 +215,7 @@ function back() {
 async function previous() {
   log.d("previous - IN");
   await navigateTo(
-    `/demande-sejour/informations-generales/${route.params.idDemande}`
+    `/demande-sejour/informations-generales/${route.params.idDemande}`,
   );
 }
 
@@ -234,13 +234,13 @@ async function next() {
       async onResponse({ response }) {
         if (!response.ok) {
           toaster.error(
-            response._data.message ?? "Erreur lors de la sauvegarde"
+            response._data.message ?? "Erreur lors de la sauvegarde",
           );
         } else {
           log.d("demande de sejour mise à jour");
           toaster.success("informations sur les vacanciers sauvegardées");
           await navigateTo(
-            `/demande-sejour/informations-personnel/${route.params.idDemande}`
+            `/demande-sejour/informations-personnel/${route.params.idDemande}`,
           );
         }
       },

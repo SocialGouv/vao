@@ -2,7 +2,7 @@
 import { useUserStore } from "@/stores/user";
 import { navItems } from "@/helpers/menuNavItem";
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 
 const log = logger("layouts/default");
 const userStore = useUserStore();
@@ -80,14 +80,14 @@ function onClickOnLogo() {
             :logo-text="header.logoText"
             @click="onClickOnLogo"
           >
-            <template #default="mainnav"
+            <template #mainnav
               ><DsfrNavigation :nav-items="navItems"
             /></template>
           </DsfrHeader>
         </div>
       </div>
     </div>
- 
+
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
@@ -110,8 +110,6 @@ function onClickOnLogo() {
         </div>
       </div>
     </div>
-
-
   </div>
 </template>
 

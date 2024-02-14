@@ -533,7 +533,7 @@ const schemaMorale = {
     .test(
       "siret",
       "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
-      (siret) => siretRegex.test(siret)
+      (siret) => siretRegex.test(siret),
     )
     .required(),
   email: yup
@@ -545,7 +545,7 @@ const schemaMorale = {
     .test(
       "telephone",
       "Format de numéro de téléphone invalide",
-      (telephoneEP) => numTelephoneRegex.test(telephoneEP)
+      (telephoneEP) => numTelephoneRegex.test(telephoneEP),
     )
     .required(),
 };
@@ -594,44 +594,44 @@ const schemaPhysique = {
   nomNaissance: yup
     .string()
     .test("acceptedChars", "Caractères non acceptés détectés", (nomNaissance) =>
-      acceptedCharsRegex.test(nomNaissance)
+      acceptedCharsRegex.test(nomNaissance),
     )
     .test(
       "doubleSpaces",
       "Le nom ne peut contenir deux espaces successifs",
-      (nomNaissance) => !doubleSpacesRegex.test(nomNaissance)
+      (nomNaissance) => !doubleSpacesRegex.test(nomNaissance),
     )
     .test(
       "spaceFollowingDash",
       "Le nom ne peut contenir d'espace suivant un tiret",
-      (nomNaissance) => !spaceFollowingDashRegex.test(nomNaissance)
+      (nomNaissance) => !spaceFollowingDashRegex.test(nomNaissance),
     )
     .test(
       "tripleDash",
       "Le nom ne peut contenir trois tirets consécutifs",
-      (nomNaissance) => !tripleDashRegex.test(nomNaissance)
+      (nomNaissance) => !tripleDashRegex.test(nomNaissance),
     )
     .required(),
   nomUsage: yup.string().nullable(true),
   prenom: yup
     .string()
     .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
-      acceptedCharsRegex.test(prenom)
+      acceptedCharsRegex.test(prenom),
     )
     .test(
       "doubleSpaces",
       "Le prénom ne peut contenir deux espaces successifs",
-      (prenom) => !doubleSpacesRegex.test(prenom)
+      (prenom) => !doubleSpacesRegex.test(prenom),
     )
     .test(
       "spaceFollowingDash",
       "Le prénom ne peut contenir d'espace suivant un tiret",
-      (prenom) => !spaceFollowingDashRegex.test(prenom)
+      (prenom) => !spaceFollowingDashRegex.test(prenom),
     )
     .test(
       "doubleDash",
       "Le prénom ne peut contenir deux tirets consécutifs",
-      (prenom) => !doubleDashRegex.test(prenom)
+      (prenom) => !doubleDashRegex.test(prenom),
     )
     .required(),
   profession: yup.string().required(),
@@ -639,7 +639,7 @@ const schemaPhysique = {
   telephone: yup
     .string()
     .test("telephone", "Format de numéro de téléphone invalide", (telephone) =>
-      numTelephoneRegex.test(telephone)
+      numTelephoneRegex.test(telephone),
     )
     .required(),
   adresseDomicile: yup.lazy((value) => {
@@ -872,7 +872,7 @@ async function searchApiEntreprise() {
     }
   } catch (error) {
     toaster.error(
-      "erreur lors de la récupération des données à partir du SIRET"
+      "erreur lors de la récupération des données à partir du SIRET",
     );
     log.w("searchApiEntreprise - erreur:", { error });
   }
@@ -895,7 +895,7 @@ async function searchOperateurBySiret() {
     }
   } catch (error) {
     toaster.error(
-      "erreur lors de la récupération des données internes à partir du SIRET"
+      "erreur lors de la récupération des données internes à partir du SIRET",
     );
     log.w("searchOperateurBySiret - erreur:", { error });
   }
@@ -963,8 +963,8 @@ async function validateOperateur() {
     const url = isUpdate.value
       ? `/front-server/operateur/${route.params.idOperateur}`
       : operateurDejaExistant?.value?.length > 0
-      ? `/front-server/operateur/link/${operateurDejaExistant.value.operateurId}`
-      : "/front-server/operateur";
+        ? `/front-server/operateur/link/${operateurDejaExistant.value.operateurId}`
+        : "/front-server/operateur";
     const { data, error } = await useFetch(url, {
       method: "POST",
       body: {

@@ -444,7 +444,7 @@ const toaster = nuxtApp.vueApp.$toast;
 const emit = defineEmits(["add", "back"]);
 const log = logger("component/hebergement");
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 
 const adresses = ref([]);
 
@@ -471,7 +471,7 @@ const schemaHebergement = {
     .test(
       "telephone",
       "Format de numéro de téléphone invalide",
-      (numTelephone1) => numTelephoneRegex.test(numTelephone1)
+      (numTelephone1) => numTelephoneRegex.test(numTelephone1),
     )
     .required(),
   numTelephone2: yup
@@ -479,7 +479,7 @@ const schemaHebergement = {
     .test(
       "telephone",
       "Format de numéro de téléphone invalide",
-      (numTelephone2) => numTelephoneRegex.test(numTelephone2)
+      (numTelephone2) => numTelephoneRegex.test(numTelephone2),
     )
     .nullable(),
   email: yup.string().email().nullable(),
@@ -502,7 +502,7 @@ const schemaHebergement = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaHebergement,
-  })
+  }),
 );
 
 const initialValues = computed(() => ({
@@ -713,7 +713,7 @@ async function next() {
         if (!response.ok) {
           toaster.error(
             response._data.message ??
-              "Erreur lors de la sauvegarde de l'hébergement"
+              "Erreur lors de la sauvegarde de l'hébergement",
           );
         } else {
           log.d("hebergement sauvegardé");
@@ -724,7 +724,7 @@ async function next() {
     });
   } catch (error) {
     toaster.error(
-      response._data.message ?? "Erreur lors de la sauvegarde de l'hébergement"
+      response._data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
     );
     log.w("next - erreur", { error });
   }
