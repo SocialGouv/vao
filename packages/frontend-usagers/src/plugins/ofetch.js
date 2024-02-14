@@ -1,8 +1,9 @@
 import { ofetch } from "ofetch";
+import { defineNuxtPlugin, navigateTo } from "#app";
 
-export default defineNuxtPlugin((_nuxtApp) => {
+export default defineNuxtPlugin(() => {
   globalThis.$fetch = ofetch.create({
-    async onResponseError({ request, response, options }) {
+    async onResponseError({ response }) {
       if (response.status === 403) {
         await navigateTo("/connexion/login");
       }

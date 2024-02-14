@@ -1,4 +1,6 @@
 import { defineStore } from "pinia";
+import { useRuntimeConfig, useFetch } from "#app";
+import { logger } from "#imports";
 
 const log = logger("stores/hebergement");
 
@@ -9,30 +11,35 @@ export const useHebergementStore = defineStore("hebergement", {
   }),
   actions: {
     async fetchHebergement() {
-      try {
-        log.i("fetchHebergement - IN");
-        const config = useRuntimeConfig()
+      log.i("fetchHebergement - IN");
 
-        const response = await $fetch(config.public.backendUrl + "/hebergement");
-        this.hebergements = response.hebergements;
-        log.d("fetchHebergements  - DONE");
-      } catch (err) {
+      const config = useRuntimeConfig();
+      const { data, error } = await useFetch(
+        config.public.backendUrl + "/hebergement",
+      );
+      if (data.value) {
+        log.i("fetchHebergement - DONE");
+        this.hebergements = data.value.hebergements;
+      }
+      if (error.value) {
+        log.w("fetchHebergement - DONE with error", error.value);
         this.hebergements = [];
-        log.i("fetchHebergement - DONE with error");
       }
     },
     async setHebergementCourant(id) {
-      try {
-        log.i("setHebergementCourant - IN", { id });
-        const config = useRuntimeConfig()
+      log.i("setHebergementCourant - IN", { id });
 
-        const response = await $fetch(`${config.public.backendUrl}/hebergement/${id}`);
-        log.d(response);
-        this.hebergementCourant = response.hebergement;
-        log.d("setHebergementCourant - DONE");
-      } catch (err) {
+      const config = useRuntimeConfig();
+      const { data, error } = await useFetch(
+        `${config.public.backendUrl}/hebergement/${id}`,
+      );
+      if (data.value) {
+        log.i("setHebergementCourant - DONE");
+        this.hebergementCourant = data.value.hebergement;
+      }
+      if (error.value) {
+        log.w("setHebergementCourant - DONE with error", error.value);
         this.hebergementCourant = {};
-        log.i("setHebergementCourant - DONE with error");
       }
     },
   },

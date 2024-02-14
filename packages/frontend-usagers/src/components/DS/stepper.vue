@@ -14,7 +14,8 @@ const steps = ref([
   "informations sur le transport des vacanciers",
   "informations sanitaires",
   "séletion des hébergements",
-  "recapitulatif",]);
+  "recapitulatif",
+]);
 const currentStep = computed(() => {
   return props.step ?? 1;
 });

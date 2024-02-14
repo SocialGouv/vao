@@ -171,7 +171,7 @@ const schemaAgrement = {
     .test(
       "acceptedReferentiels",
       "Valeur non présente dans le référentiel",
-      (regionDelivrance) => !regionStore.regions.includes(regionDelivrance)
+      (regionDelivrance) => !regionStore.regions.includes(regionDelivrance),
     )
     .required(),
   numeroAgrement: yup.string().length(5).required(),
@@ -180,7 +180,7 @@ const schemaAgrement = {
     .max(new Date(), "La date doit être inférieure à la date du jour.")
     .min(
       dayjs().add(-5, "year"),
-      "L'agrément ne peut pas avoir été délivré il y a plus de 5 ans"
+      "L'agrément ne peut pas avoir été délivré il y a plus de 5 ans",
     )
     .required(),
 };
@@ -188,7 +188,7 @@ const schemaAgrement = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaAgrement,
-  })
+  }),
 );
 
 const initialValues = computed(() => {
@@ -200,7 +200,7 @@ const initialValues = computed(() => {
       numeroAgrement: operateurCourant.value.agrement[lastIndex].numero || null,
       dateDelivrance:
         dayjs(operateurCourant.value.agrement[lastIndex].dateObtention).format(
-          "YYYY-MM-DD"
+          "YYYY-MM-DD",
         ) || null,
     };
   } else {
@@ -255,12 +255,12 @@ async function upload() {
       onResponse({ response }) {
         if (!response.ok) {
           toaster.error(
-            response._data.msg ?? "Une erreur inattendue est survenue."
+            response._data.msg ?? "Une erreur inattendue est survenue.",
           );
         } else {
           toaster.success("Bien reçu, merci.");
           navigateTo(
-            `/operateur/protocole-transport/${route.params.idOperateur}`
+            `/operateur/protocole-transport/${route.params.idOperateur}`,
           );
         }
         cancelUpload();

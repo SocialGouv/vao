@@ -113,7 +113,7 @@ const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 
 definePageMeta({
   middleware: ["is-connected"],
@@ -157,7 +157,7 @@ const schemaInfosTransport = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaInfosTransport,
-  })
+  }),
 );
 
 const initialValues = computed(() => ({
@@ -229,15 +229,15 @@ async function next() {
       async onResponse({ response }) {
         if (!response.ok) {
           toaster.error(
-            response._data.message ?? "Erreur lors de la sauvegarde"
+            response._data.message ?? "Erreur lors de la sauvegarde",
           );
         } else {
           log.d("demande de sejour mise à jour");
           toaster.success(
-            "informations sur le transport des vacanciers sauvegardées"
+            "informations sur le transport des vacanciers sauvegardées",
           );
           await navigateTo(
-            `/demande-sejour/informations-sanitaires/${route.params.idDemande}`
+            `/demande-sejour/informations-sanitaires/${route.params.idDemande}`,
           );
         }
       },

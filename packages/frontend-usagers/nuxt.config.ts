@@ -3,9 +3,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: "VAO - Vacances Adaptées Organisées",
-      link: [
-        { rel: "icon", type: "image/png", href: "/favicon.png" },
-      ],
+      link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
       script: [
         {
           src: "/js/jquery.min.js",
@@ -28,7 +26,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       backendUrl: "",
-    }
+    },
   },
   srcDir: "src",
   ssr: false,

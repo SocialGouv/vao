@@ -130,7 +130,7 @@ const selectedOperateur = computed(() => {
 
 function navigate(item) {
   lineSelected.value = operateurs.value.find(
-    (o) => o.operateurId === item.operateurId
+    (o) => o.operateurId === item.operateurId,
   );
 }
 

@@ -32,7 +32,7 @@ const formatedTags = computed(() => {
       tagName: "button",
       onClick: (c) => {
         tagsToDisplay.value = tagsToDisplay.value.filter(
-          (t) => t !== c.target.id
+          (t) => t !== c.target.id,
         );
         emit("add-item", tagsToDisplay.value);
       },

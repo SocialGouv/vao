@@ -126,7 +126,7 @@ const schemaInfosTransport = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaInfosTransport,
-  })
+  }),
 );
 
 const initialValues = computed(() => ({

@@ -1,21 +1,24 @@
 {
+    "root": true,
     "env": {
         "browser": true,
         "node": true,
         "es2021": true
     },
     "extends": [
-        "eslint:recommended",
-        "plugin:import/recommended",
-        "plugin:security/recommended",
-        "plugin:nuxt/recommended",
-        "@nuxtjs",
-        "@nuxtjs/typescript",
-        "plugin:vue/vue3-recommended",
+        "@nuxt/eslint-config",
         "plugin:prettier/recommended"
     ],
     "parserOptions": {
         "ecmaVersion": "latest"
     },
-    "rules": {}
+    "rules": {
+        "prettier/prettier": [
+            "error"
+        ],
+        "vue/multi-word-component-names": "warn"
+    },
+    "ignorePatterns": [
+        "src/public"
+    ]
 }

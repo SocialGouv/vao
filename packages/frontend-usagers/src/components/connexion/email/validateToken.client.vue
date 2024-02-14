@@ -26,7 +26,7 @@ const log = logger("components/connexion/email/validationToken");
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 
 const classError = ref("");
 const helpers = {
@@ -42,7 +42,7 @@ const { data, error, pending } = useFetch(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ token: props.token }),
-  }
+  },
 );
 
 watch(error, () => {
@@ -59,7 +59,7 @@ watch(data, () => {
     return;
   }
   toaster.success(
-    `Votre compte est maintenant activé. Vous allez être redirigé vers la page de connexion pour terminer votre inscription.`
+    `Votre compte est maintenant activé. Vous allez être redirigé vers la page de connexion pour terminer votre inscription.`,
   );
 
   return navigateTo("/connexion");
@@ -75,7 +75,7 @@ function parseJwt(token) {
       .map(function (c) {
         return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
       })
-      .join("")
+      .join(""),
   );
 
   return JSON.parse(jsonPayload);
@@ -93,14 +93,14 @@ async function renewToken() {
   })
     .then(() => {
       toaster.success(
-        `Un nouvel email de validation a été envoyé sur votre boîte mail.`
+        `Un nouvel email de validation a été envoyé sur votre boîte mail.`,
       );
 
       log.i("renew - Done");
     })
     .catch((error) => {
       toaster.error(
-        `Une erreur est survenue lors de l'envoi de l'email. Veuillez contacter l'assistance.`
+        `Une erreur est survenue lors de l'envoi de l'email. Veuillez contacter l'assistance.`,
       );
       log.w("renew", error);
     });

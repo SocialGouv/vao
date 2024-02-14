@@ -3,7 +3,7 @@
     <div>
       <DsfrTable
         style="display: table"
-        :headers="headers"
+        :headers="h"
         :rows="displayedData"
         :no-caption="true"
       />
@@ -29,11 +29,11 @@ const props = defineProps({
 });
 const selectedColor = "#AACCEE";
 
-let headers = [];
+const h = ref([]);
 
 const displayedData = computed(() => {
   return props.data.map((item) => {
-    const rowdata = headers.map((header) => {
+    const rowdata = h.value.map((header) => {
       if (header.component) {
         return header.component(item);
       }
@@ -73,7 +73,7 @@ const displayedData = computed(() => {
 
 onMounted(() => {
   log.i("mounted comp");
-  headers = props.headers.map((h) => {
+  h.value = props.headers.map((h) => {
     return {
       ...h,
       headerAttrs: {

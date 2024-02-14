@@ -26,10 +26,9 @@
                 placeholder="Date de début"
                 @update:model-value="onDateDebutChange"
               />
-
-    
             </div>
-            +          </div>
+            +
+          </div>
           <div class="fr-fieldset__element fr-col-6">
             <div class="fr-input-group">
               <DsfrInputGroup
@@ -46,9 +45,9 @@
                 placeholder="Date de début"
                 @update:model-value="onDateFinChange"
               />
-
             </div>
-            +          </div>
+            +
+          </div>
         </fieldset>
         <fieldset v-if="!displayAddHebergement" class="fr-fieldset">
           <div
@@ -94,7 +93,6 @@
           @back="annulerAjoutHebergement"
           @add="ajoutHebergement"
         />
-
       </div>
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element fr-col-12">
@@ -136,7 +134,6 @@
           </div>
         </div>
       </fieldset>
-
     </div>
   </div>
 </template>
@@ -145,7 +142,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
- import { useDemandeSejourStore } from "@/stores/demande-sejour";
+import { useDemandeSejourStore } from "@/stores/demande-sejour";
 import { useHebergementStore } from "@/stores/hebergement";
 import { useLayoutStore } from "@/stores/layout";
 
@@ -156,10 +153,9 @@ const toaster = nuxtApp.vueApp.$toast;
 definePageMeta({
   middleware: ["is-connected"],
   layout: "demande-sejour",
-
 });
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 
 const log = logger("demande-sejour/informations-generales");
 
@@ -194,14 +190,14 @@ const schemaHebergement = {
     .test(
       "dateDebut",
       "La date de début doit être identique à la date de fin précédente",
-      (dateDebut) => testDateDebut(dateDebut)
+      (dateDebut) => testDateDebut(dateDebut),
     ),
   dateFin: yup
     .date()
     .test(
       "dateFin",
       "La date de fin ne peut pas être supérieure à la date de fin du séjour ou inférieure à une précédente date de fin",
-      (dateFin) => testDateFin(dateFin)
+      (dateFin) => testDateFin(dateFin),
     ),
   hebergementSelectionne: yup
     .string()
@@ -210,7 +206,7 @@ const schemaHebergement = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaHebergement,
-  })
+  }),
 );
 const { meta } = useForm({ validationSchema });
 const {
@@ -250,7 +246,7 @@ const syntheseRows = computed(() => {
   return hebergements.value.map((h, index) => {
     const currentHebergement =
       hebergementStore.hebergements.find(
-        (elem) => elem.hebergementId.toString() === h.hebergementId.toString()
+        (elem) => elem.hebergementId.toString() === h.hebergementId.toString(),
       ) ?? {};
     return [
       `${index + 1}`,
@@ -281,11 +277,11 @@ function nextHebergement() {
   dateDebut.value = dateFin.value;
   dateFin.value = dayjs(dateDebut.value).add(1, "day").format("YYYY-MM-DD");
 }
- 
+
 function previous() {
   log.d("previous - IN");
   navigateTo(
-    `/demande-sejour/informations-sanitaires/${route.params.idDemande}`
+    `/demande-sejour/informations-sanitaires/${route.params.idDemande}`,
   );
 }
 
@@ -293,7 +289,6 @@ function back() {
   log.d("back - IN");
   navigateTo("/demande-sejour/liste");
 }
-
 
 function changeDisplayAddHebergement() {
   log.d("changeDisplayAddHebergement - IN");
@@ -332,8 +327,6 @@ function testDateFin(d) {
         dayjs(d).diff(dayjs(dateDebut.value), "day") > 0;
 }
 
-
-
 async function next() {
   log.d("next - IN");
   try {
@@ -352,7 +345,7 @@ async function next() {
       async onResponse({ response }) {
         if (!response.ok) {
           toaster.error(
-            response._data.message ?? "Erreur lors de la sauvegarde"
+            response._data.message ?? "Erreur lors de la sauvegarde",
           );
         } else {
           log.d("demande de sejour mise à jour");
@@ -377,7 +370,7 @@ onMounted(async () => {
   } else {
     log.i("init with null");
     dateDebut.value = dayjs(demandeCourante.value.dateDebut).format(
-      "YYYY-MM-DD"
+      "YYYY-MM-DD",
     );
     dateFin.value = dayjs(demandeCourante.value.dateDebut)
       .add(1, "day")
