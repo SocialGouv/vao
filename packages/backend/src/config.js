@@ -55,5 +55,5 @@ module.exports = {
   domain: process.env.BACKEND_URL,
 
   senderEmail: process.env.SENDER_EMAIL,
-  tmpDirectory: process.env.TMP_DIRECTORY,
+  tmpDirectory: process.env.TMP_DIRECTORY || "/tmp/",
 };

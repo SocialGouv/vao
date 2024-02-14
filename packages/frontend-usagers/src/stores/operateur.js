@@ -5,15 +5,15 @@ const log = logger("stores/operateurs");
 export const useOperateurStore = defineStore("operateurs", {
   state: () => ({
     operateurs: [],
-    operateurCourant: {},
+    operateurCourant: {}
   }),
   actions: {
     async fetchOperateurs() {
       try {
         log.i("fetchOperateurs - IN");
-        const config = useRuntimeConfig()
-
-        const response = await $fetch(config.public.backendUrl + "/operateur");
+        const response = await $fetch("http://localhost:3010/operateur", {
+          credentials: "include"
+        });
         const operateurs = response.operateurs;
         this.operateurs = operateurs;
         log.d("fetchOperateurs - DONE");
@@ -24,10 +24,11 @@ export const useOperateurStore = defineStore("operateurs", {
     },
     async setMyOperateur() {
       try {
-        log.i("setMyOperateur - IN");
-        const config = useRuntimeConfig()
+        const { public: { backendUrl } } = useRuntimeConfig();
+        const response = await $fetch(`${backendUrl}/operateur/`, {
+          credentials: "include"
+        });
 
-        const response = await $fetch(`${config.public.backendUrl}/operateurs/`);
         log.d(response);
         this.operateurCourant = response.operateur;
         log.d("setOperateurCourant - DONE");
@@ -35,6 +36,6 @@ export const useOperateurStore = defineStore("operateurs", {
         this.operateurCourant = {};
         log.i("setOperateurCourant - DONE with error");
       }
-    },
-  },
+    }
+  }
 });

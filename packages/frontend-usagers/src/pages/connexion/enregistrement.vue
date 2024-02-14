@@ -404,6 +404,18 @@ async function register() {
     // id du captcha que l’utilisateur a tenté de résoudre
     // const captchaId = captcha.getCaptchaId();
 
+    log.w(`
+
+
+
+
+
+
+
+
+
+    ${config}`, config, process.env)
+
     await $fetch(config.public.backendUrl + "/authentication/email/register", {
       method: "POST",
       headers: {

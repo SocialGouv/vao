@@ -66,8 +66,8 @@
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <label>{{
-            props.representantLegal.adresse ? "Nouvelle adresse" : "Adresse"
-          }}</label>
+              props.representantLegal.adresse ? "Nouvelle adresse" : "Adresse"
+            }}</label>
           <Multiselect
             v-model="adresse"
             mode="single"
@@ -106,7 +106,8 @@
           :secondary="true"
           :disabled="!meta.valid"
           @click="validateRepresentantLegal"
-          >Valider les informations du réprésentant légal</DsfrButton
+        >Valider les informations du réprésentant légal
+        </DsfrButton
         >
       </div>
     </fieldset>
@@ -119,9 +120,10 @@ import * as yup from "yup";
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 
+const config = useRuntimeConfig();
 const props = defineProps({
   representantLegal: { type: Object, default: null, required: true },
-  index: { type: Number, default: null, required: true },
+  index: { type: Number, default: null, required: true }
 });
 const emit = defineEmits(["valid"]);
 const log = logger("pages/component/operateur/representantLegal");
@@ -194,7 +196,7 @@ const schemaRepresentantLegal = {
       case "string":
         return yup.string().required();
     }
-  }),
+  })
 };
 
 const validationSchema = computed(() => {
@@ -207,39 +209,39 @@ const initialValues = computed(() => {
     prenom: props.representantLegal?.prenom ?? "",
     fonction: props.representantLegal?.fonction ?? "",
     adresse: props.representantLegal?.adresseShort ?? "",
-    telephone: props.representantLegal?.telephone ?? "",
+    telephone: props.representantLegal?.telephone ?? ""
   };
 });
 
 const { meta, values } = useForm({
   validationSchema,
-  initialValues,
+  initialValues
 });
 
 const {
   value: nom,
   errorMessage: nomErrorMessage,
   handleChange: onNomChange,
-  meta: nomMeta,
+  meta: nomMeta
 } = useField("nom");
 const {
   value: prenom,
   errorMessage: prenomErrorMessage,
   handleChange: onPrenomChange,
-  meta: prenomMeta,
+  meta: prenomMeta
 } = useField("prenom");
 const {
   value: fonction,
   errorMessage: fonctionErrorMessage,
   handleChange: onFonctionChange,
-  meta: fonctionMeta,
+  meta: fonctionMeta
 } = useField("fonction");
 const { value: adresse } = useField("adresse");
 const {
   value: telephone,
   errorMessage: telephoneErrorMessage,
   handleChange: onTelephoneChange,
-  meta: telephoneMeta,
+  meta: telephoneMeta
 } = useField("telephone");
 
 const adressesRLOptions = computed(() => {
@@ -261,10 +263,10 @@ const adresseInitiale = computed(() => {
 async function searchAdresseRL(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseRLInProgress.value = true;
-    const url = "/front-server/geo/adresse/";
+    const url = config.public.backendUrl + "/geo/adresse/";
     const { data } = await useFetch(url, {
       body: { queryString },
-      method: "POST",
+      method: "POST"
     });
     if (data.value?.adresses) {
       adresses.value = data.value.adresses;
@@ -279,7 +281,7 @@ function validateRepresentantLegal() {
     "valid",
     {
       ...values,
-      adresseShort: adresse.value.properties?.label ?? adresse.value,
+      adresseShort: adresse.value.properties?.label ?? adresse.value
     },
     props.index,
     meta

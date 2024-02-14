@@ -9,7 +9,7 @@ const { documentController } = require("../controllers");
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
-    cb(null, config.TMP_DIRECTORY);
+    cb(null, config.tmpDirectory);
   },
 });
 const upload = multer({

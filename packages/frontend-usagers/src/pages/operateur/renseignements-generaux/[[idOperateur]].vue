@@ -41,7 +41,8 @@
               id="chercherSiret"
               :disabled="!siretMeta.valid"
               @click.prevent="searchOperateur"
-              >Récupérer informations</DsfrButton
+            >Récupérer informations
+            </DsfrButton
             >
           </div>
         </div>
@@ -277,8 +278,8 @@
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-8">
             <label>{{
-              isUpdate ? "Nouvelle adresse de domicile " : "Adresse du domicile"
-            }}</label>
+                isUpdate ? "Nouvelle adresse de domicile " : "Adresse du domicile"
+              }}</label>
             <Multiselect
               v-model="adresseDomicile"
               mode="single"
@@ -323,10 +324,10 @@
           </div>
           <div class="fr-input-group fr-col-8">
             <label>{{
-              isUpdate
-                ? "Nouvelle adresse du siège des activités VAO "
-                : "Adresse du siège des activités VAO"
-            }}</label>
+                isUpdate
+                  ? "Nouvelle adresse du siège des activités VAO "
+                  : "Adresse du siège des activités VAO"
+              }}</label>
             <Multiselect
               v-model="adresseSiege"
               mode="single"
@@ -362,14 +363,17 @@ import "@vueform/multiselect/themes/default.css";
 import * as yup from "yup";
 import { useLayoutStore } from "@/stores/layout";
 import { useOperateurStore } from "@/stores/operateur";
+
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 const log = logger("pages/operateur/idOperateur");
 
+const config = useRuntimeConfig();
+
 definePageMeta({
   middleware: ["is-connected", "has-id-operateur"],
-  layout: "operateur",
+  layout: "operateur"
 });
 
 const NB_CAR_ADRESSE_MIN = 6;
@@ -383,91 +387,91 @@ const operateurCourant = computed(() => {
 const typeOptions = [
   {
     label: "Personne physique",
-    value: "personne_physique",
+    value: "personne_physique"
   },
   {
     label: "Personne morale",
-    value: "personne_morale",
-  },
+    value: "personne_morale"
+  }
 ];
 const ouiNonOptions = [
   {
     label: "Oui",
-    value: 1,
+    value: 1
   },
   {
     label: "Non",
-    value: 0,
-  },
+    value: 0
+  }
 ];
 const professionOptions = [
   {
     text: "Agriculture, sylviculture et pêche",
-    value: "Agriculture, sylviculture et pêche",
+    value: "Agriculture, sylviculture et pêche"
   },
   { text: "Industries extractives", value: "Industries extractives" },
   { text: "Industries manufacturières", value: "Industries manufacturières" },
   {
     text: "Production et distribution d’électricité, de gaz, de vapeur et d’air conditionné",
     value:
-      "Production et distribution d’électricité, de gaz, de vapeur et d’air conditionné",
+      "Production et distribution d’électricité, de gaz, de vapeur et d’air conditionné"
   },
   {
     text: "Production et distribution d’eau ; assainissement, gestion des déchets et dépollution",
     value:
-      "Production et distribution d’eau ; assainissement, gestion des déchets et dépollution",
+      "Production et distribution d’eau ; assainissement, gestion des déchets et dépollution"
   },
   { text: "Construction", value: "Construction" },
   {
     text: "Commerce ; réparation d’automobiles et de motocycles",
-    value: "Commerce ; réparation d’automobiles et de motocycles",
+    value: "Commerce ; réparation d’automobiles et de motocycles"
   },
   { text: "Transports et entreposage", value: "Transports et entreposage" },
   { text: "Hébergement et restauration", value: "Hébergement et restauration" },
   {
     text: "Information et communication",
-    value: "Information et communication",
+    value: "Information et communication"
   },
   {
     text: "Activités financières et d’assurances",
-    value: "Activités financières et d’assurances",
+    value: "Activités financières et d’assurances"
   },
   { text: "Activités immobilières", value: "Activités immobilières" },
   {
     text: "Activités spécialisées, scientifiques et techniques",
-    value: "Activités spécialisées, scientifiques et techniques",
+    value: "Activités spécialisées, scientifiques et techniques"
   },
   {
     text: "Activités de services administratifs et de soutien",
-    value: "Activités de services administratifs et de soutien",
+    value: "Activités de services administratifs et de soutien"
   },
   { text: "Administration publique", value: "Administration publique" },
   { text: "Enseignement", value: "Enseignement" },
   {
     text: "Santé humaine et action sociale",
-    value: "Santé humaine et action sociale",
+    value: "Santé humaine et action sociale"
   },
   {
     text: "Arts, spectacles et activités récréatives",
-    value: "Arts, spectacles et activités récréatives",
+    value: "Arts, spectacles et activités récréatives"
   },
   {
     text: "Autres activités de services",
-    value: "Autres activités de services",
+    value: "Autres activités de services"
   },
   {
     text: "Activités des ménages en tant qu’employeur ; activités indifférenciées des ménages en tant que",
     value:
-      "Activités des ménages en tant qu’employeur ; activités indifférenciées des ménages en tant que",
+      "Activités des ménages en tant qu’employeur ; activités indifférenciées des ménages en tant que"
   },
   {
     text: "producteur de biens et services pour usage propre",
-    value: "producteur de biens et services pour usage propre",
+    value: "producteur de biens et services pour usage propre"
   },
   {
     text: "Activités extraterritoriales. ",
-    value: "Activités extraterritoriales. ",
-  },
+    value: "Activités extraterritoriales. "
+  }
 ];
 // const boutonOptions = [
 //   {
@@ -505,25 +509,25 @@ const operateurDejaExistant = ref();
 
 // Schéma et données de base
 const schemaBase = {
-  typeOperateur: yup.string().required(),
+  typeOperateur: yup.string().required()
 };
 const validationSchemaBase = computed(() => {
   return yup.object({ ...schemaBase });
 });
 const initialValuesBase = computed(() => {
   return {
-    typeOperateur: operateurCourant.value.typeOperateur ?? "",
+    typeOperateur: operateurCourant.value.typeOperateur ?? ""
   };
 });
 const { meta: metaBase, resetForm: resetFormBase } = useForm({
   initialValues: initialValuesBase,
-  validationSchema: validationSchemaBase,
+  validationSchema: validationSchemaBase
 });
 const {
   value: typeOperateur,
   errorMessage: typeOperateurErrorMessage,
   handleChange: onTypeOperateurChange,
-  meta: typeOperateurMeta,
+  meta: typeOperateurMeta
 } = useField("typeOperateur");
 
 // Schéma et données liées à une personne morale
@@ -547,7 +551,7 @@ const schemaMorale = {
       "Format de numéro de téléphone invalide",
       (telephoneEP) => numTelephoneRegex.test(telephoneEP)
     )
-    .required(),
+    .required()
 };
 const validationSchemaMorale = computed(() => {
   return yup.object({ ...schemaMorale });
@@ -558,35 +562,35 @@ const initialValuesMorale = computed(() => {
     email: operateurCourant.value.personneMorale?.email ?? "",
     formatedPersonneMorale: {
       raisonSociale: operateurCourant.value.personneMorale?.raisonSociale ?? "",
-      statut: operateurCourant.value.personneMorale?.statut ?? "",
+      statut: operateurCourant.value.personneMorale?.statut ?? ""
     },
     telephoneEP: operateurCourant.value.personneMorale?.telephoneEP ?? "",
     representantLegaux:
-      operateurCourant.value.personneMorale?.representantLegaux ?? [],
+      operateurCourant.value.personneMorale?.representantLegaux ?? []
   };
 });
 const { meta: metaMorale, resetForm: resetFormMorale } = useForm({
   initialValues: initialValuesMorale,
-  validationSchema: validationSchemaMorale,
+  validationSchema: validationSchemaMorale
 });
 const {
   value: siret,
   errorMessage: siretErrorMessage,
   handleChange: onSiretChange,
-  meta: siretMeta,
+  meta: siretMeta
 } = useField("siret");
 const {
   value: email,
   errorMessage: emailErrorMessage,
   handleChange: onEmailChange,
-  meta: emailMeta,
+  meta: emailMeta
 } = useField("email");
 const {
   value: telephoneEP,
   errorMessage: telephoneEPErrorMessage,
   validMessage: telephoneEPValidMessage,
   handleChange: onTelephoneEPChange,
-  meta: telephoneEPMeta,
+  meta: telephoneEPMeta
 } = useField("telephoneEP");
 
 // Schéma et données liées à une personne physique
@@ -657,7 +661,7 @@ const schemaPhysique = {
       case "string":
         return yup.string().required();
     }
-  }),
+  })
 };
 const validationSchemaPhysique = computed(() => {
   return yup.object({ ...schemaPhysique });
@@ -673,53 +677,53 @@ const initialValuesPhysique = computed(() => {
     adresseSiege: operateurCourant.value.personnePhysique?.adresseSiege ?? "",
     telephone: operateurCourant.value.personnePhysique?.telephone ?? "",
     adresseIdentique:
-      operateurCourant.value.personnePhysique?.adresseIdentique ?? "",
+      operateurCourant.value.personnePhysique?.adresseIdentique ?? ""
   };
 });
 const {
   meta: metaPhysique,
   values: valuesPhysique,
-  resetForm: resetFormPhysique,
+  resetForm: resetFormPhysique
 } = useForm({
   initialValues: initialValuesPhysique,
-  validationSchema: validationSchemaPhysique,
+  validationSchema: validationSchemaPhysique
 });
 const {
   value: nomNaissance,
   errorMessage: nomNaissanceErrorMessage,
   handleChange: onNomNaissanceChange,
-  meta: nomNaissanceMeta,
+  meta: nomNaissanceMeta
 } = useField("nomNaissance");
 const {
   value: nomUsage,
   errorMessage: nomUsageErrorMessage,
   handleChange: onNomUsageChange,
-  meta: nomUsageMeta,
+  meta: nomUsageMeta
 } = useField("nomUsage");
 const {
   value: prenom,
   errorMessage: prenomErrorMessage,
   handleChange: onPrenomChange,
-  meta: prenomMeta,
+  meta: prenomMeta
 } = useField("prenom");
 const {
   value: profession,
   errorMessage: professionErrorMessage,
   handleChange: onProfessionChange,
-  meta: professionMeta,
+  meta: professionMeta
 } = useField("profession");
 const { value: adresseDomicile } = useField("adresseDomicile");
 const {
   value: adresseIdentique,
   errorMessage: adresseIdentiqueErrorMessage,
-  meta: adresseIdentiqueMeta,
+  meta: adresseIdentiqueMeta
 } = useField("adresseIdentique");
 const { value: adresseSiege } = useField("adresseSiege");
 const {
   value: telephone,
   errorMessage: telephoneErrorMessage,
   handleChange: onTelephoneChange,
-  meta: telephoneMeta,
+  meta: telephoneMeta
 } = useField("telephone");
 
 function setAdresseSiege(v) {
@@ -727,13 +731,14 @@ function setAdresseSiege(v) {
   adresseSiege.value = adresseDomicile.value;
   adresseIdentique.value = v;
 }
+
 async function searchAdresseDomicile(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseDomicileInProgress.value = true;
-    const url = "/front-server/geo/adresse/";
+    const url = config.public.backendUrl + "/geo/adresse/";
     const { data } = await useFetch(url, {
       body: { queryString },
-      method: "POST",
+      method: "POST"
     });
     if (data.value?.adresses) {
       log.i("resultat found");
@@ -746,10 +751,10 @@ async function searchAdresseDomicile(queryString) {
 async function searchAdresseSiege(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseSiegeInProgress.value = true;
-    const url = "/front-server/geo/adresse/";
+    const url = config.public.backendUrl + "/geo/adresse/";
     const { data } = await useFetch(url, {
       body: { queryString },
-      method: "POST",
+      method: "POST"
     });
     if (data.value?.adresses) {
       adressesSiege.value = data.value.adresses;
@@ -757,6 +762,7 @@ async function searchAdresseSiege(queryString) {
     }
   }
 }
+
 const adressesDomicileOptions = computed(() => {
   if (adressesDomicile.value && adressesDomicile.value.length > 0) {
     return adressesDomicile.value.map((a) => {
@@ -801,12 +807,12 @@ const formatedPersonneMorale = computed(() => {
     return {
       siret: personneMorale.value.siret,
       raisonSociale:
-        personneMorale.value.unite_legale.personne_morale_attributs
-          .raison_sociale,
+      personneMorale.value.unite_legale.personne_morale_attributs
+        .raison_sociale,
       statut: personneMorale.value.unite_legale.forme_juridique.libelle,
       adresse: adresse.trim(),
       adresseComplete: personneMorale.value.adresse,
-      pays: personneMorale.value.adresse.libelle_pays_etranger ?? "France",
+      pays: personneMorale.value.adresse.libelle_pays_etranger ?? "France"
     };
   }
   if (operateurDejaExistant.value) {
@@ -820,7 +826,7 @@ const formatedPersonneMorale = computed(() => {
       statut: operateurDejaExistant.value.personneMorale.statut,
       adresse: operateurDejaExistant.value.personneMorale.adresseShort,
       adresseComplete: operateurDejaExistant.value.personneMorale.adresse,
-      pays: operateurDejaExistant.value.personneMorale.pays,
+      pays: operateurDejaExistant.value.personneMorale.pays
     };
   }
   if (isUpdate.value) {
@@ -830,7 +836,7 @@ const formatedPersonneMorale = computed(() => {
       statut: operateurCourant.value.personneMorale.statut,
       adresse: operateurCourant.value.personneMorale.adresseShort,
       adresseComplete: operateurCourant.value.personneMorale.adresse,
-      pays: operateurCourant.value.personneMorale.pays,
+      pays: operateurCourant.value.personneMorale.pays
     };
   }
   return {
@@ -839,7 +845,7 @@ const formatedPersonneMorale = computed(() => {
     statut: null,
     adresse: null,
     adresseComplete: null,
-    pays: null,
+    pays: null
   };
 });
 
@@ -853,13 +859,13 @@ const nomPrenomRepresentantLegal = computed(() => {
 
 async function searchApiEntreprise() {
   log.i("searchApiEntreprise - IN");
-  const url = `/front-server/siret/${siret.value}`;
+  const url = config.public.backendUrl + `/siret/${siret.value}`;
   if (personneMorale.value) {
     personneMorale.value = null;
   }
   try {
     const { data, error } = await useFetch(url, {
-      method: "GET",
+      method: "GET"
     });
     if (data.value) {
       toaster.success("Données récupérées");
@@ -880,10 +886,10 @@ async function searchApiEntreprise() {
 
 async function searchOperateurBySiret() {
   log.i("searchOperateurBySiret - IN");
-  const url = `/front-server/operateur/siret/${siret.value}`;
+  const url = config.public.backendUrl + `/operateur/siret/${siret.value}`;
   try {
     const { data, error } = await useFetch(url, {
-      method: "GET",
+      method: "GET"
     });
     if (data.value) {
       toaster.success("L'opérateur est déjà présent en base");
@@ -909,6 +915,7 @@ async function searchOperateur() {
     await searchApiEntreprise();
   }
 }
+
 function addRepresentantLegal() {
   representantLegaux.value.push({});
   expandedId.value = representantLegaux.value.length;
@@ -939,38 +946,39 @@ async function validateOperateur() {
   const parametre =
     typeOperateur.value === "personne_physique"
       ? {
-          ...valuesPhysique,
-          adresseDomicileShort: adresseDomicile?.value?.properties?.label,
-          adresseSiegeShort:
-            adresseIdentique.value === 1
-              ? adresseDomicile?.value?.properties?.label
-              : adresseSiege?.value?.properties?.label,
-        }
+        ...valuesPhysique,
+        adresseDomicileShort: adresseDomicile?.value?.properties?.label,
+        adresseSiegeShort:
+          adresseIdentique.value === 1
+            ? adresseDomicile?.value?.properties?.label
+            : adresseSiege?.value?.properties?.label
+      }
       : {
-          siret: siret.value,
-          raisonSociale: formatedPersonneMorale.value.raisonSociale,
-          statut: formatedPersonneMorale.value.statut,
-          adresseShort: formatedPersonneMorale.value.adresse,
-          adresse: formatedPersonneMorale.value.adresseComplete,
-          pays: formatedPersonneMorale.value.pays,
-          email: email.value,
-          telephoneEP: telephoneEP.value,
-          representantLegaux: representantLegaux.value,
-          meta: metaBase.value.valid && metaMorale.value.valid,
-        };
+        siret: siret.value,
+        raisonSociale: formatedPersonneMorale.value.raisonSociale,
+        statut: formatedPersonneMorale.value.statut,
+        adresseShort: formatedPersonneMorale.value.adresse,
+        adresse: formatedPersonneMorale.value.adresseComplete,
+        pays: formatedPersonneMorale.value.pays,
+        email: email.value,
+        telephoneEP: telephoneEP.value,
+        representantLegaux: representantLegaux.value,
+        meta: metaBase.value.valid && metaMorale.value.valid
+      };
 
   try {
     const url = isUpdate.value
-      ? `/front-server/operateur/${route.params.idOperateur}`
+      ? config.public.backendUrl + `/operateur/${route.params.idOperateur}`
       : operateurDejaExistant?.value?.length > 0
-      ? `/front-server/operateur/link/${operateurDejaExistant.value.operateurId}`
-      : "/front-server/operateur";
+        ? config.public.backendUrl + `/operateur/link/${operateurDejaExistant.value.operateurId}`
+        : config.public.backendUrl + "/operateur";
     const { data, error } = await useFetch(url, {
       method: "POST",
+      credentials: "include",
       body: {
         parametre,
-        type: typeOperateur.value,
-      },
+        type: typeOperateur.value
+      }
     });
     if (data.value) {
       log.i("operateur créé", data.value.operateurId);

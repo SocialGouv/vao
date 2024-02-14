@@ -121,11 +121,14 @@ import dayjs from "dayjs";
 import { useLayoutStore } from "@/stores/layout";
 import { useRegionStore } from "@/stores/referentiels";
 import { useOperateurStore } from "@/stores/operateur";
+import { useFetchWithCredentials } from "~/composables/useFetchWithCredentials";
 
 definePageMeta({
   middleware: ["is-connected", "has-id-operateur"],
-  layout: "operateur",
+  layout: "operateur"
 });
+
+const config = useRuntimeConfig();
 
 const log = logger("pages/operateur/agrement");
 const nuxtApp = useNuxtApp();
@@ -144,14 +147,14 @@ const agrementCourant = computed(() => {
   if (operateurCourant.value.agrement) {
     return {
       filename:
-        operateurCourant.value.agrement[
-          operateurCourant.value.agrement.length - 1
+      operateurCourant.value.agrement[
+      operateurCourant.value.agrement.length - 1
         ].filename,
-      lien: `/front-server/document/${
+      lien: `${config.public.backendUrl}/document/${
         operateurCourant.value.agrement[
-          operateurCourant.value.agrement.length - 1
-        ].uuid
-      }`,
+        operateurCourant.value.agrement.length - 1
+          ].uuid
+      }`
     };
   }
 });
@@ -161,8 +164,8 @@ const refFormAgrement = ref(null);
 
 yup.setLocale({
   mixed: {
-    required: "Le champs est obligatoire.",
-  },
+    required: "Le champs est obligatoire."
+  }
 });
 
 const schemaAgrement = {
@@ -182,12 +185,12 @@ const schemaAgrement = {
       dayjs().add(-5, "year"),
       "L'agrément ne peut pas avoir été délivré il y a plus de 5 ans"
     )
-    .required(),
+    .required()
 };
 
 const validationSchema = computed(() =>
   yup.object({
-    ...schemaAgrement,
+    ...schemaAgrement
   })
 );
 
@@ -201,13 +204,13 @@ const initialValues = computed(() => {
       dateDelivrance:
         dayjs(operateurCourant.value.agrement[lastIndex].dateObtention).format(
           "YYYY-MM-DD"
-        ) || null,
+        ) || null
     };
   } else {
     return {
       regionDelivrance: null,
       numeroAgrement: null,
-      dateDelivrance: null,
+      dateDelivrance: null
     };
   }
 });
@@ -218,19 +221,19 @@ const {
   value: numeroAgrement,
   errorMessage: numeroAgrementErrorMessage,
   handleChange: onNumeroAgrementChange,
-  meta: numeroAgrementMeta,
+  meta: numeroAgrementMeta
 } = useField("numeroAgrement");
 const {
   value: dateDelivrance,
   errorMessage: dateDelivranceErrorMessage,
   handleChange: onDateDelivranceChange,
-  meta: dateDelivranceMeta,
+  meta: dateDelivranceMeta
 } = useField("dateDelivrance");
 const {
   value: regionDelivrance,
   errorMessage: regionDelivranceErrorMessage,
   handleChange: onRegionDelivranceChange,
-  meta: regionDelivranceMeta,
+  meta: regionDelivranceMeta
 } = useField("regionDelivrance");
 
 function cancelUpload() {
@@ -243,13 +246,13 @@ async function upload() {
   const body = new FormData();
   const options = JSON.stringify({
     ...values,
-    operateurId: route.params.idOperateur,
+    operateurId: route.params.idOperateur
   });
   body.append("options", options);
   body.append("file", agrementFile.value);
   try {
-    const url = `/front-server/document/agrement`;
-    await useFetch(url, {
+    const url = `/document/agrement`;
+    await useFetchWithCredentials(url, {
       method: "post",
       body,
       onResponse({ response }) {
@@ -264,7 +267,7 @@ async function upload() {
           );
         }
         cancelUpload();
-      },
+      }
     });
   } catch (error) {
     cancelUpload();

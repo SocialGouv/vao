@@ -17,7 +17,7 @@ import { useOperateurStore } from "@/stores/operateur";
 
 definePageMeta({
   middleware: ["is-connected", "has-id-operateur"],
-  layout: "operateur",
+  layout: "operateur"
 });
 
 const log = logger("pages/operateur/protocole-transport");
@@ -31,13 +31,13 @@ const operateurStore = useOperateurStore();
 async function saveOperateur(transportData) {
   log.i("saveOperateur - IN");
   try {
-    const url = `/front-server/operateur/${route.params.idOperateur}`;
-    const { data, error } = await useFetch(url, {
+    const url = `/operateur/${route.params.idOperateur}`;
+    const { data, error } = await useFetchWithCredentials(url, {
       method: "POST",
       body: {
         parametre: transportData,
-        type: "protocole_transport",
-      },
+        type: "protocole_transport"
+      }
     });
     if (data.value) {
       const operateurId = data.value.operateurId;

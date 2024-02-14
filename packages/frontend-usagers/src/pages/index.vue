@@ -37,7 +37,7 @@
                 class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
                 :href="
                   operateurStore.operateurCourant
-                    ? `/front/operateur/renseignements-generaux/${operateurStore.operateurCourant.operateurId}`
+                    ? `/operateur/renseignements-generaux/${operateurStore.operateurCourant.operateurId}`
                     : '#'
                 "
                 >Ma fiche opérateur</a
@@ -57,14 +57,14 @@
             <div class="fr-py-1v">
               <a
                 class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-                href="/front/demande-sejour/liste"
+                href="/demande-sejour/liste"
                 >Mes séjours déclarés</a
               >
             </div>
             <div class="fr-py-1v">
               <a
                 class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-                href="/front/demande-sejour/informations-generales"
+                href="/demande-sejour/informations-generales"
                 >Déclarer un séjour</a
               >
             </div>
