@@ -1,4 +1,6 @@
 import { defineStore } from "pinia";
+import { useRuntimeConfig, useFetch } from "#app";
+import { logger } from "#imports";
 
 const log = logger("stores/demande-sejour");
 
@@ -29,44 +31,47 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
   }),
   actions: {
     async fetchDemandes() {
-      try {
-        log.i("fetchDemandes - IN");
-        const config = useRuntimeConfig()
-
-        const response = await $fetch(config.public.backendUrl + "/sejour");
-        const demandes = response.demandes;
-        this.demandes = demandes;
-        log.d("fetchDemandes - DONE");
-      } catch (err) {
-        this.requests = [];
-        log.i("fetchDemandes - DONE with error");
+      log.i("fetchDemandes - IN");
+      const config = useRuntimeConfig();
+      const { data, error } = await useFetch(
+        config.public.backendUrl + "/sejour",
+      );
+      if (data.value) {
+        log.i("fetchDemandes - DONE");
+        this.demandes = data.value.demandes;
+      }
+      if (error.value) {
+        log.w("fetchDemandes - DONE with error", error.value);
+        this.demandes = [];
       }
     },
     async setDemandeCourante(id) {
-      try {
-        log.i("setDemandeCourante - IN", { id });
-        const config = useRuntimeConfig()
-
-        const response = await $fetch(`${config.public.backendUrl}/sejour/${id}`);
-        log.d(response);
-        this.demandeCourante = response.demande;
-        log.d("setDemandeCourante - DONE");
-      } catch (err) {
+      log.i("setDemandeCourante - IN");
+      const config = useRuntimeConfig();
+      const { data, error } = await useFetch(
+        `${config.public.backendUrl}/sejour/${id}`,
+      );
+      if (data.value) {
+        log.i("setDemandeCourante - DONE");
+        this.demandeCourante = data.value.demande;
+      }
+      if (error.value) {
+        log.w("setDemandeCourante - DONE with error", error.value);
         this.demandeCourante = {};
-        log.i("setDemandeCourante - DONE with error");
       }
     },
     async postDemande(demande) {
-      try {
-        log.i("postDemande - IN", { demande });
-        const config = useRuntimeConfig()
-
-        const response = await $fetch(`${config.public.backendUrl}/demandes-sejour/`);
-        log.d(response);
-        const idDemande = response.demande;
-        log.d("postDemande - DONE", idDemande);
-      } catch (err) {
-        log.i("postDemande - DONE with error");
+      log.i("postDemande - IN", { demande });
+      const config = useRuntimeConfig();
+      const { data, error } = await useFetch(
+        `${config.public.backendUrl}/demandes-sejour`,
+        { body: JSON.stringify(demande) },
+      );
+      if (data.value) {
+        log.i("postDemande - DONE");
+      }
+      if (error.value) {
+        log.w("postDemande - DONE with error", error.value);
       }
     },
   },

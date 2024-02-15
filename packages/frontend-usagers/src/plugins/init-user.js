@@ -1,5 +1,6 @@
 import { defineNuxtPlugin } from "#app";
 import { useUserStore } from "~/stores/user";
+import { logger } from "#imports";
 
 const log = logger("plugins/init-user");
 

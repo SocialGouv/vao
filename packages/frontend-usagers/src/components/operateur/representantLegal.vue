@@ -143,50 +143,50 @@ const schemaRepresentantLegal = {
   nom: yup
     .string()
     .test("acceptedChars", "Caractères non acceptés détectés", (nom) =>
-      acceptedCharsRegex.test(nom)
+      acceptedCharsRegex.test(nom),
     )
     .test(
       "doubleSpaces",
       "Le nom ne peut contenir deux espaces successifs",
-      (nom) => !doubleSpacesRegex.test(nom)
+      (nom) => !doubleSpacesRegex.test(nom),
     )
     .test(
       "spaceFollowingDash",
       "Le nom ne peut contenir d'espace suivant un tiret",
-      (nom) => !spaceFollowingDashRegex.test(nom)
+      (nom) => !spaceFollowingDashRegex.test(nom),
     )
     .test(
       "tripleDash",
       "Le nom ne peut contenir trois tirets consécutifs",
-      (nom) => !tripleDashRegex.test(nom)
+      (nom) => !tripleDashRegex.test(nom),
     )
     .required(),
   prenom: yup
     .string()
     .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
-      acceptedCharsRegex.test(prenom)
+      acceptedCharsRegex.test(prenom),
     )
     .test(
       "doubleSpaces",
       "Le prénom ne peut contenir deux espaces successifs",
-      (prenom) => !doubleSpacesRegex.test(prenom)
+      (prenom) => !doubleSpacesRegex.test(prenom),
     )
     .test(
       "spaceFollowingDash",
       "Le prénom ne peut contenir d'espace suivant un tiret",
-      (prenom) => !spaceFollowingDashRegex.test(prenom)
+      (prenom) => !spaceFollowingDashRegex.test(prenom),
     )
     .test(
       "doubleDash",
       "Le prénom ne peut contenir deux tirets consécutifs",
-      (prenom) => !doubleDashRegex.test(prenom)
+      (prenom) => !doubleDashRegex.test(prenom),
     )
     .required(),
   fonction: yup.string().required(),
   telephone: yup
     .string()
     .test("telephone", "Format de numéro de téléphone invalide", (telephone) =>
-      numTelephoneRegex.test(telephone)
+      numTelephoneRegex.test(telephone),
     )
     .required(),
   adresse: yup.lazy((value) => {
@@ -284,7 +284,7 @@ function validateRepresentantLegal() {
       adresseShort: adresse.value.properties?.label ?? adresse.value
     },
     props.index,
-    meta
+    meta,
   );
 }
 </script>

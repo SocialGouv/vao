@@ -9,8 +9,6 @@ const userStore = useUserStore();
 const layoutStore = useLayoutStore();
 const operateurStore = useOperateurStore();
 
-const config = useRuntimeConfig();
-
 const header = reactive({
   dimension: { height: "80px" },
   logoText: ["Republique", "française"],
@@ -20,7 +18,7 @@ const header = reactive({
       to: "/",
       icon: "ri-account-circle-line",
       iconRight: false,
-      class: computed(() => (userStore.isConnected ? "" : "fr-hidden"))
+      class: computed(() => (userStore.isConnected ? "" : "fr-hidden")),
     },
     {
       label: "Se déconnecter",
@@ -28,19 +26,19 @@ const header = reactive({
       icon: "ri-logout-box-line",
       iconRight: false,
       button: true,
-      class: computed(() => (userStore.isConnected ? "" : "fr-hidden"))
-    }
-  ]
+      class: computed(() => (userStore.isConnected ? "" : "fr-hidden")),
+    },
+  ],
 });
 
 const links = [
   {
     to: "/",
-    text: "Accueil"
+    text: "Accueil",
   },
   {
-    text: "Opérateurs"
-  }
+    text: "Opérateurs",
+  },
 ];
 
 const homeTo = computed(() => {
@@ -50,12 +48,12 @@ const homeTo = computed(() => {
 async function logout() {
   const sub = userStore.user.sub ?? null;
   log.i("logout - IN");
-  await $fetch(config.public.backendUrl + "/authentication/disconnect", {
+  await $fetch("/front-server/authentication/disconnect", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json"
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ sub })
+    body: JSON.stringify({ sub }),
   })
     .then(async () => {
       await navigateTo("/connexion");
@@ -68,7 +66,7 @@ async function logout() {
 }
 
 const consentCookie = useCookie("PP_consent", {
-  default: () => false
+  default: () => false,
 });
 
 function acceptAll() {
@@ -89,11 +87,7 @@ function acceptAll() {
           :logo-text="header.logoText"
           @click="navigateTo('/')"
         >
-          <template #default="mainnav"
-          >
-            <DsfrNavigation :nav-items="navItems"
-            />
-          </template>
+          <template #mainnav><DsfrNavigation :nav-items="navItems" /></template>
         </DsfrHeader>
 
         <div class="fr-col-11 fr-mb-1w">

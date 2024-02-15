@@ -650,7 +650,7 @@ const schemaInfosSanitaires = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaInfosSanitaires,
-  })
+  }),
 );
 
 const initialValues = computed(() => ({
@@ -728,7 +728,7 @@ const {
   meta: troussePharmacieMeta,
 } = useField("troussePharmacie");
 const { value: responsableAdministrationMedicament } = useField(
-  "responsableAdministrationMedicament"
+  "responsableAdministrationMedicament",
 );
 const {
   value: precisionResponsableAdministrationMedicament,

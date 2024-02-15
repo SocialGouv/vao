@@ -132,7 +132,7 @@
 const log = logger("pages/connexion/enregistrement");
 const route = useRoute();
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 
 const links = [
   {
@@ -160,7 +160,7 @@ function parseJwt(token) {
       .map(function (c) {
         return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
       })
-      .join("")
+      .join(""),
   );
 
   return JSON.parse(jsonPayload);
@@ -233,7 +233,7 @@ watch(
       confirmField.modelValue === passwordField.modelValue
         ? ""
         : "Les mots-de-passe diffèrent";
-  }
+  },
 );
 
 const canRenewPassword = computed(() => {

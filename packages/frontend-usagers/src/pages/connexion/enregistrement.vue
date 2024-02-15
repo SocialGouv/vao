@@ -222,7 +222,7 @@ import { ref } from "vue";
 import "@vueform/multiselect/themes/default.css";
 const log = logger("pages/connexion/email/enregistrement");
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 
 const links = [
   {
@@ -376,7 +376,7 @@ watch(
       confirmField.modelValue === passwordField.modelValue
         ? ""
         : "Les mots de passe diffèrent";
-  }
+  },
 );
 
 const canRegister = computed(() => {

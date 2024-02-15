@@ -192,7 +192,7 @@ const schemaInfosGenerales = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaInfosGenerales,
-  })
+  }),
 );
 
 const initialValues = computed(() => ({
@@ -247,7 +247,7 @@ function back() {
 function previous() {
   log.d("previous - IN");
   navigateTo(
-    `/demande-sejour/operateur/${isUpdate.value ? route.params.idDemande : ""}`
+    `/demande-sejour/operateur/${isUpdate.value ? route.params.idDemande : ""}`,
   );
 }
 
@@ -265,13 +265,13 @@ async function next() {
         async onResponse({ response }) {
           if (!response.ok) {
             toaster.error(
-              response._data.message ?? "Erreur lors de la sauvegarde"
+              response._data.message ?? "Erreur lors de la sauvegarde",
             );
           } else {
             log.d("demande de sejour mise à jour");
             toaster.success("informations générales sauvegardées");
             await navigateTo(
-              `/demande-sejour/informations-vacanciers/${route.params.idDemande}`
+              `/demande-sejour/informations-vacanciers/${route.params.idDemande}`,
             );
           }
         },
@@ -291,14 +291,14 @@ async function next() {
               response._data.message ?? `Erreur lors de la sauvegarde`,
               {
                 type: "error",
-              }
+              },
             );
           } else {
             log.d("demande de sejour créée");
             const idDemande = response._data.id;
             toaster.success("Demande de séjour enregistrée");
             await navigateTo(
-              `/demande-sejour/informations-vacanciers/${idDemande}`
+              `/demande-sejour/informations-vacanciers/${idDemande}`,
             );
           }
         },

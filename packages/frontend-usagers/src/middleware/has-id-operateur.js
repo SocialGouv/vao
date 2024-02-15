@@ -1,4 +1,7 @@
 import { useOperateurStore } from "~/stores/operateur";
+import { defineNuxtRouteMiddleware, navigateTo } from "#app";
+import { logger } from "#imports";
+
 const log = logger("middlewares/has-id-operateur");
 
 export default defineNuxtRouteMiddleware(async (to) => {

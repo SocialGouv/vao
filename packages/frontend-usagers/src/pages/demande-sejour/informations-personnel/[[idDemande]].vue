@@ -89,6 +89,8 @@ definePageMeta({
   layout: "demande-sejour",
 });
 
+const config = useRuntimeConfig();
+
 const log = logger("demande-sejour/informations-generales");
 
 const demandeSejourStore = useDemandeSejourStore();
@@ -122,7 +124,7 @@ const schemaInfosPersonnel = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaInfosPersonnel,
-  })
+  }),
 );
 
 const initialValues = computed(() => ({
@@ -167,8 +169,8 @@ function back() {
 async function next() {
   log.d("next - IN");
   try {
-    const url = `/sejour/${route.params.idDemande}`;
-    await useFetchWithCredentials(url, {
+    const url = `${config.public.backendUrl}/sejour/${route.params.idDemande}`;
+    await useFetch(url, {
       method: "POST",
       body: {
         parametre: { informationsPersonnel: { ...values } },
@@ -177,13 +179,13 @@ async function next() {
       async onResponse({ response }) {
         if (!response.ok) {
           toaster.error(
-            response._data.message ?? "Erreur lors de la sauvegarde"
+            response._data.message ?? "Erreur lors de la sauvegarde",
           );
         } else {
           log.d("demande de sejour mise à jour");
           toaster.success("informations sur le personnel sauvegardées");
           await navigateTo(
-            `/demande-sejour/projet-sejour/${route.params.idDemande}`
+            `/demande-sejour/projet-sejour/${route.params.idDemande}`,
           );
         }
       },
@@ -196,7 +198,7 @@ async function next() {
 function previous() {
   log.d("previous - IN");
   navigateTo(
-    `/demande-sejour/informations-vacanciers/${route.params.idDemande}`
+    `/demande-sejour/informations-vacanciers/${route.params.idDemande}`,
   );
 }
 

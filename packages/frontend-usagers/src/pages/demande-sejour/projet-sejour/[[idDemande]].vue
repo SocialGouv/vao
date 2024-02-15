@@ -99,6 +99,8 @@ const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
+const config = useRuntimeConfig();
+
 definePageMeta({
   middleware: ["is-connected"],
   layout: "demande-sejour",
@@ -163,7 +165,7 @@ const schemaProjetSejour = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaProjetSejour,
-  })
+  }),
 );
 
 const initialValues = computed(() => ({
@@ -202,15 +204,15 @@ function back() {
 function previous() {
   log.d("previous - IN");
   navigateTo(
-    `/demande-sejour/informations-personnel/${route.params.idDemande}`
+    `/demande-sejour/informations-personnel/${route.params.idDemande}`,
   );
 }
 
 async function next() {
   log.d("next - IN");
   try {
-    const url = `/sejour/${route.params.idDemande}`;
-    await useFetchWithCredentials(url, {
+    const url = `${config.public.backendUrl}/sejour/${route.params.idDemande}`;
+    await useFetch(url, {
       method: "POST",
       body: {
         parametre: {
@@ -225,13 +227,13 @@ async function next() {
       async onResponse({ response }) {
         if (!response.ok) {
           toaster.error(
-            response._data.message ?? "Erreur lors de la sauvegarde"
+            response._data.message ?? "Erreur lors de la sauvegarde",
           );
         } else {
           log.d("demande de sejour mise à jour");
           toaster.success("informations sur les vacanciers sauvegardées");
           await navigateTo(
-            `/demande-sejour/informations-transport/${route.params.idDemande}`
+            `/demande-sejour/informations-transport/${route.params.idDemande}`,
           );
         }
       },

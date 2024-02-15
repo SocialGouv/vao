@@ -582,6 +582,8 @@ const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
+const config = useRuntimeConfig();
+
 definePageMeta({
   middleware: ["is-connected"],
   layout: "demande-sejour",
@@ -630,7 +632,7 @@ const schemaInfosSanitaires = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaInfosSanitaires,
-  })
+  }),
 );
 
 const initialValues = computed(() => ({
@@ -666,8 +668,8 @@ const initialValues = computed(() => ({
     demandeCourante.value?.informationsSanitaires
       ?.precisionConservationMedicament || "",
   individualisationMedicaments:
-    demandeCourante.value?.informationsSanitaires
-      ?.individualisationMedicaments || "",
+    demandeCourant /
+      fronte.value?.informationsSanitaires?.individualisationMedicaments || "",
   precisionIndividualisationMedicaments:
     demandeCourante.value?.informationsSanitaires
       ?.precisionIndividualisationMedicaments || "",
@@ -741,7 +743,7 @@ const {
   meta: troussePharmacieMeta,
 } = useField("troussePharmacie");
 const { value: responsableAdministrationMedicament } = useField(
-  "responsableAdministrationMedicament"
+  "responsableAdministrationMedicament",
 );
 const {
   value: precisionResponsableAdministrationMedicament,
@@ -884,15 +886,15 @@ function back() {
 function previous() {
   log.d("previous - IN");
   navigateTo(
-    `/demande-sejour/informations-transport/${route.params.idDemande}`
+    `/demande-sejour/informations-transport/${route.params.idDemande}`,
   );
 }
 
 async function next() {
   log.d("next - IN");
   try {
-    const url = `/sejour/${route.params.idDemande}`;
-    await useFetchWithCredentials(url, {
+    const url = `${config.public.backendUrl}/sejour/${route.params.idDemande}`;
+    await useFetch(url, {
       method: "POST",
       body: {
         parametre: {
@@ -903,13 +905,13 @@ async function next() {
       async onResponse({ response }) {
         if (!response.ok) {
           toaster.error(
-            response._data.message ?? "Erreur lors de la sauvegarde"
+            response._data.message ?? "Erreur lors de la sauvegarde",
           );
         } else {
           log.d("demande de sejour mise à jour");
           toaster.success("informations sanitaires sauvegardées");
           await navigateTo(
-            `/demande-sejour/hebergement/${route.params.idDemande}`
+            `/demande-sejour/hebergement/${route.params.idDemande}`,
           );
         }
       },

@@ -113,6 +113,8 @@ const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
+const config = useRuntimeConfig();
+
 definePageMeta({
   middleware: ["is-connected"],
   layout: "demande-sejour",
@@ -155,7 +157,7 @@ const schemaInfosTransport = {
 const validationSchema = computed(() =>
   yup.object({
     ...schemaInfosTransport,
-  })
+  }),
 );
 
 const initialValues = computed(() => ({
@@ -212,8 +214,8 @@ function addModeTransport(liste) {
 async function next() {
   log.d("next - IN");
   try {
-    const url = `/sejour/${route.params.idDemande}`;
-    await useFetchWithCredentials(url, {
+    const url = `${config.public.backendUrl}/sejour/${route.params.idDemande}`;
+    await useFetch(url, {
       method: "POST",
       body: {
         parametre: {
@@ -227,16 +229,15 @@ async function next() {
       async onResponse({ response }) {
         if (!response.ok) {
           toaster.error(
-            response._data.message ?? "Erreur lors de la sauvegarde"
+            response._data.message ?? "Erreur lors de la sauvegarde",
           );
         } else {
           log.d("demande de sejour mise à jour");
           toaster.success(
-            "informations sur le transport des vacanciers sauvegardées"
+            "informations sur le transport des vacanciers sauvegardées",
           );
-          console.log(route.params)
           await navigateTo(
-            `/demande-sejour/informations-sanitaires/${route.params.idDemande}`
+            `/demande-sejour/informations-sanitaires/${route.params.idDemande}`,
           );
         }
       },
