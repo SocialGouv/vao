@@ -88,7 +88,7 @@ function acceptAll() {
           :logo-text="header.logoText"
           @click="navigateTo('/')"
         >
-          <template #default="mainnav">
+          <template #mainnav>
             <DsfrNavigation :nav-items="navItems" />
           </template>
         </DsfrHeader>

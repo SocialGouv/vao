@@ -12,35 +12,6 @@ const query = {
         id as "operateurId"
     ;
     `,
-  link: `INSERT INTO front.user_operateur(use_id,ope_id)
-  VALUES($1,$2)
-  RETURNING use_id as "userLinked"`,
-  update: `
-    UPDATE front.operateurs SET type_operateur=$2,personne_morale = $3, personne_physique = $4
-    WHERE id = $1
-    RETURNING
-      id as "updateOperateurId"
-  `,
-  updateTransport: `
-    UPDATE front.operateurs SET protocole_transport =$2,
-    complet = (CASE WHEN $3 = true THEN false ELSE complet END)
-    WHERE id = $1
-    RETURNING
-      id as "updateOperateurId"
-`,
-  updateSanitaire: `
-    UPDATE front.operateurs SET protocole_sanitaire =$2,
-    complet = (CASE WHEN $3 = true THEN false ELSE complet END)
-    WHERE id = $1
-    RETURNING
-      id as "updateOperateurId"
-`,
-  updateFinalisation: `
-UPDATE front.operateurs SET complet = true
-WHERE id = $1
-RETURNING
-  id as "updateOperateurId"
-`,
   get: (criterias) => [
     `
     SELECT
@@ -103,6 +74,35 @@ RETURNING
     JOIN front.user_operateur uo ON o.id = ope_id
     WHERE o.personne_morale->>'siret' = $1
     `,
+  link: `INSERT INTO front.user_operateur(use_id,ope_id)
+  VALUES($1,$2)
+  RETURNING use_id as "userLinked"`,
+  update: `
+    UPDATE front.operateurs SET type_operateur=$2,personne_morale = $3, personne_physique = $4
+    WHERE id = $1
+    RETURNING
+      id as "updateOperateurId"
+  `,
+  updateFinalisation: `
+UPDATE front.operateurs SET complet = true
+WHERE id = $1
+RETURNING
+  id as "updateOperateurId"
+`,
+  updateSanitaire: `
+    UPDATE front.operateurs SET protocole_sanitaire =$2,
+    complet = (CASE WHEN $3 = true THEN false ELSE complet END)
+    WHERE id = $1
+    RETURNING
+      id as "updateOperateurId"
+`,
+  updateTransport: `
+    UPDATE front.operateurs SET protocole_transport =$2,
+    complet = (CASE WHEN $3 = true THEN false ELSE complet END)
+    WHERE id = $1
+    RETURNING
+      id as "updateOperateurId"
+`,
 };
 
 module.exports.create = async (type, parametre) => {

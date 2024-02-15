@@ -17,7 +17,7 @@ import { useOperateurStore } from "@/stores/operateur";
 
 definePageMeta({
   middleware: ["is-connected", "has-id-operateur"],
-  layout: "operateur"
+  layout: "operateur",
 });
 
 const log = logger("pages/operateur/protocole-transport");
@@ -36,8 +36,8 @@ async function saveOperateur(transportData) {
       method: "POST",
       body: {
         parametre: transportData,
-        type: "protocole_transport"
-      }
+        type: "protocole_transport",
+      },
     });
     if (data.value) {
       const operateurId = data.value.operateurId;

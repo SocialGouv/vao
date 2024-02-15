@@ -5,6 +5,6 @@ const pwdRegex =
 
 module.exports = string()
   .test("acceptedChars", "Caractères non acceptés détectés", (password) =>
-    pwdRegex.test(password)
+    pwdRegex.test(password),
   )
   .required();

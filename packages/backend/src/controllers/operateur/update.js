@@ -19,7 +19,7 @@ module.exports = async function post(req, res) {
     const updatedOperateurId = await Operateur.update(
       type,
       parametre,
-      operateurId
+      operateurId,
     );
     if (!updatedOperateurId || updatedOperateurId !== operateurId) {
       log.w("error while creating operator");

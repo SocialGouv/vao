@@ -4,6 +4,9 @@
     "commonjs": true,
     "es2021": true
   },
+  "parserOptions": {
+    "ecmaVersion": "latest"
+  },
   "extends": [
     "@socialgouv/eslint-config-recommended",
     "plugin:prettier/recommended"
@@ -17,8 +20,5 @@
         "ignorePropertyModificationsFor": ["memo"]
       }
     ]
-  },
-  "parserOptions": {
-    "ecmaVersion": "latest"
   }
 }

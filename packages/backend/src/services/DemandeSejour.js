@@ -69,14 +69,15 @@ const query = {
     `,
     Object.values(criterias),
   ],
-  updateOperateur: `
+  updateHebergements: `
     UPDATE front.demande_sejour ds
-      SET operateur_id=$1,
-          edited_at=NOW()
-    WHERE
-      ds.id = $2
-    RETURNING  
-      id as "idDemande"
+    SET 
+    hebergement = $1,
+    edited_at=NOW()
+  WHERE
+    ds.id = $2
+  RETURNING
+    id as "idDemande"
     `,
   updateInformationsGenerales: `
     UPDATE front.demande_sejour ds
@@ -90,16 +91,6 @@ const query = {
       edited_at=NOW()
     WHERE
       ds.id = $7
-    RETURNING
-      id as "idDemande"
-    `,
-  updateInformationsVacanciers: `
-    UPDATE front.demande_sejour ds
-      SET 
-      vacanciers = $1,
-      edited_at=NOW()
-    WHERE
-      ds.id = $2
     RETURNING
       id as "idDemande"
     `,
@@ -123,16 +114,6 @@ const query = {
   RETURNING
     id as "idDemande"
     `,
-  updateInformationsTransport: `
-    UPDATE front.demande_sejour ds
-    SET 
-    transport = $1,
-    edited_at=NOW()
-  WHERE
-    ds.id = $2
-  RETURNING
-    id as "idDemande"
-    `,
   updateInformationsSanitaires: `
     UPDATE front.demande_sejour ds
     SET 
@@ -143,15 +124,34 @@ const query = {
   RETURNING
     id as "idDemande"
     `,
-  updateHebergements: `
+  updateInformationsTransport: `
     UPDATE front.demande_sejour ds
     SET 
-    hebergement = $1,
+    transport = $1,
     edited_at=NOW()
   WHERE
     ds.id = $2
   RETURNING
     id as "idDemande"
+    `,
+  updateInformationsVacanciers: `
+    UPDATE front.demande_sejour ds
+      SET 
+      vacanciers = $1,
+      edited_at=NOW()
+    WHERE
+      ds.id = $2
+    RETURNING
+      id as "idDemande"
+    `,
+  updateOperateur: `
+    UPDATE front.demande_sejour ds
+      SET operateur_id=$1,
+          edited_at=NOW()
+    WHERE
+      ds.id = $2
+    RETURNING  
+      id as "idDemande"
     `,
 };
 
@@ -162,16 +162,16 @@ module.exports.create = async (
   dateFin,
   itinerant,
   itinerantEtranger,
-  duree
+  duree,
 ) => {
   log.i("create - IN", {
-    operateurId,
-    libelle,
     dateDebut,
     dateFin,
+    duree,
     itinerant,
     itinerantEtranger,
-    duree,
+    libelle,
+    operateurId,
   });
   const response = await pool.query(query.create, [
     operateurId,

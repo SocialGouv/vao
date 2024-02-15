@@ -8,14 +8,14 @@ module.exports = async function get() {
     "https://api.insee.fr/token",
     {},
     {
-      params: {
-        grant_type: "client_credentials",
-      },
       headers: {
         Authorization: authHeader,
         "Content-type": "application/x-www-form-urlencoded",
       },
-    }
+      params: {
+        grant_type: "client_credentials",
+      },
+    },
   );
   return token.data.access_token;
 };

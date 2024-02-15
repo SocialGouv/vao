@@ -17,7 +17,7 @@ module.exports = async function register(req, res, next) {
   log.i("IN");
   const { email, password, nom, prenom } = req.body;
 
-  const part = { email, password, nom, prenom };
+  const part = { email, nom, password, prenom };
   try {
     await registerSchema.validate(part);
   } catch (error) {
@@ -27,8 +27,8 @@ module.exports = async function register(req, res, next) {
   try {
     const { user, code } = await User.registerByEmail({
       email,
-      password,
       nom,
+      password,
       prenom,
     });
 

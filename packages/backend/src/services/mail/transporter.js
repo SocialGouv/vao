@@ -33,13 +33,13 @@ async function verifyConnection() {
   } catch (error) {
     log.w("verifyConnection", error.message);
     throw new AppError("erreur lors de la connexion", {
-      name: "mailserver-connection-failed",
       cause: error,
+      name: "mailserver-connection-failed",
     });
   }
 }
 
 module.exports = {
-  verifyConnection,
   getTransporter,
+  verifyConnection,
 };

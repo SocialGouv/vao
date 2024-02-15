@@ -17,14 +17,14 @@ module.exports = async function get(req, res) {
     try {
       const { data: reponse } = await axios.get(
         `https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/13002526500013/${siret}?date=${dateJour}&champs=${displayedFields}`,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       return res.status(200).json({ etablissements: [reponse.etablissement] });
     } catch (err) {
       try {
         const { data: liste } = await axios.get(
           `https://api.insee.fr/entreprises/sirene/V3/siret?q=siren:${siren}&champs=${displayedFields}`,
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         return res.status(200).json({ etablissements: liste.etablissements });
       } catch (error) {

@@ -11,11 +11,11 @@ router.post("/email/validate", authenticationController.email.validate);
 router.post("/email/renewToken", authenticationController.email.renewToken);
 router.post(
   "/email/forgotten-password",
-  authenticationController.email.forgottenPassword
+  authenticationController.email.forgottenPassword,
 );
 router.post(
   "/email/renewPassword",
-  authenticationController.email.renewPassword
+  authenticationController.email.renewPassword,
 );
 
 router.post("/disconnect", authenticationController.disconnect);

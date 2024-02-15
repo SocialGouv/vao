@@ -8,7 +8,7 @@ module.exports = {
   fetch: async function fetch(req, res) {
     const { departement, date = null } = req.query;
     log.i("In");
-    const communes = await Commune.fetch({ departement, date });
+    const communes = await Commune.fetch({ date, departement });
     log.i("Done");
     return res.json({ communes });
   },

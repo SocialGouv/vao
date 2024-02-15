@@ -666,7 +666,8 @@ const initialValues = computed(() => ({
     demandeCourante.value?.informationsSanitaires
       ?.precisionConservationMedicament || "",
   individualisationMedicaments:
-    demandeCourante.value?.informationsSanitaires?.individualisationMedicaments || "",
+    demandeCourante.value?.informationsSanitaires
+      ?.individualisationMedicaments || "",
   precisionIndividualisationMedicaments:
     demandeCourante.value?.informationsSanitaires
       ?.precisionIndividualisationMedicaments || "",

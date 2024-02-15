@@ -66,7 +66,7 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/authentication/email/login.js
   checksum: 7ac4c97b5d6c36b5f944c339e0411947d59b12ed2f653497ea4017d9992e1058
 - filename: packages/backend/src/controllers/authentication/email/register.js
-  checksum: d416ed35ec1bc5c16ecefb84db8bedaecfc6a686ee58a639e593aaddc259a697
+  checksum: 6331a82bff8be5d26ae958092ac9be2b938eac65af30186f58ca3d806c6feade
 - filename: packages/backend/src/controllers/authentication/email/renewPassword.js
   checksum: 71c7f6afdca8903cb4ad4120ac93e5296cc5bac40dac63391722bb4c2079b422
 - filename: packages/backend/src/pgpool.js
@@ -74,19 +74,21 @@ fileignoreconfig:
 - filename: packages/backend/src/pgpoolDoc.js
   checksum: 1c379109d80c35d0a4f2169ae9935ddc1f4c7ea635f8b920be772a39658a7230
 - filename: packages/backend/src/schemas/parts/password.js
-  checksum: e65005105f87a956844991a4ca605eb8e29ec04ab1e5e9a3609ca546d4419361
+  checksum: ae9405e5c5b394094e086173e2085cfaf45e6210f226aeb29e8ec1de89ee47b7
 - filename: packages/backend/src/schemas/register.js
   checksum: e8ac4a2937be739bf473857cbb64ef399358396479c6b0593e7d62c7e75aca0d
 - filename: packages/backend/src/services/User.js
-  checksum: fd2f0897decaaecb92bffd6d19ae7afeabd21a11ed9dffd5768a28b3be5384d2
+  checksum: e9ba85c65e139f1c094047e954a1932d65504b3d23a198c009af236fcbdd7907
 - filename: packages/backend/src/services/geo/Commune.js
   checksum: 40213f6529d1282e73f0201199e28b66f9c99c76d16651d88aac0b59fb722ae2
 - filename: packages/backend/src/utils/mail-service.js
   checksum: bf5f3c01e2edcf3a7ef6d8cbde306deb931a01df88ef90fe911c0c9ace41135c
 - filename: packages/backend/src/utils/mail.js
-  checksum: 5fb957266eb36e90c59d073d6d7b2bbfb223ecbc6d53ec4cbb708f8998a8b174
+  checksum: d3ff02d91bb5ee4540156f5f65766838e434cf9669f3de14549ad2d75b39d5b1
+- filename: packages/backend/src/utils/pgpool.js
+  checksum: 5e8464a6bf71468b80886e18e08a705b0c3a523bb907833dd63bfcdd67cd4641
 - filename: packages/backend/src/utils/pgpoolDoc.js
-  checksum: f37080643cf3fc30196f7dca54ce06701db75944c51f07787c68ea04063243a2
+  checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue

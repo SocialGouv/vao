@@ -1,6 +1,6 @@
 const buildAccessToken = ({ id, email, personneId }) => ({
-  id,
   email,
+  id,
   personneId,
 });
 

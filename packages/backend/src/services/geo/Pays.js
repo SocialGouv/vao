@@ -29,7 +29,7 @@ module.exports.fetch = async (criterias = {}) => {
 module.exports.get = async (paysCode) => {
   log.i("get - IN");
   const { rows, rowCount } = await pool.query(
-    ...query.select({ geo_pay_code: paysCode })
+    ...query.select({ geo_pay_code: paysCode }),
   );
   log.i("get - DONE");
   if (rowCount > 0) {
