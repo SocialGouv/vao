@@ -7,6 +7,8 @@ const log = logger("layouts/demande-sejour");
 const userStore = useUserStore();
 const layoutStore = useLayoutStore();
 
+const config = useRuntimeConfig();
+
 const header = reactive({
   dimension: { height: "80px" },
   logoText: ["Republique", "française"],
@@ -47,7 +49,7 @@ const homeTo = computed(() => {
 async function logout() {
   const sub = userStore.user.sub ?? null;
   log.i("logout - IN");
-  await $fetch("/front-server/authentication/disconnect", {
+  await useFetchWithCredentials("/authentication/disconnect", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -86,7 +88,9 @@ function acceptAll() {
           :logo-text="header.logoText"
           @click="navigateTo('/')"
         >
-          <template #mainnav><DsfrNavigation :nav-items="navItems" /></template>
+          <template #default="mainnav">
+            <DsfrNavigation :nav-items="navItems" />
+          </template>
         </DsfrHeader>
 
         <div class="fr-col-12 fr-mb-1w">

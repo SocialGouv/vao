@@ -255,8 +255,8 @@ async function next() {
   log.d("next - IN");
   try {
     if (isUpdate.value) {
-      const url = `${config.public.backendUrl}/sejour/${route.params.idDemande}`;
-      await useFetch(url, {
+      const url = `/sejour/${route.params.idDemande}`;
+      await useFetchWithCredentials(url, {
         method: "POST",
         body: {
           parametre: { ...values, duree: duree.value },
@@ -277,8 +277,8 @@ async function next() {
         },
       });
     } else {
-      const url = `${config.public.backendUrl}/sejour`;
-      await useFetch(url, {
+      const url = `/sejour`;
+      await useFetchWithCredentials(url, {
         method: "POST",
         body: {
           ...values,

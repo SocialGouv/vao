@@ -705,8 +705,8 @@ function back() {
 async function next() {
   log.d("next - IN");
   try {
-    const url = `${config.public.backendUrl}/hebergement`;
-    await useFetch(url, {
+    const url = `/hebergement`;
+    await useFetchWithCredentials(url, {
       method: "POST",
       body: { nomHebergement, caracteristiques: { ...values } },
       onResponse({ response }) {

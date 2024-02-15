@@ -36,7 +36,7 @@ const homeTo = computed(() => {
 async function logout() {
   const sub = userStore.user.sub ?? null;
   log.i("logout - IN");
-  await $fetch(config.public.backendUrl + "/authentication/disconnect", {
+  await useFetchWithCredentials("/authentication/disconnect", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -80,9 +80,9 @@ function onClickOnLogo() {
             :logo-text="header.logoText"
             @click="onClickOnLogo"
           >
-            <template #mainnav
-              ><DsfrNavigation :nav-items="navItems"
-            /></template>
+            <template #mainnav>
+              <DsfrNavigation :nav-items="navItems" />
+            </template>
           </DsfrHeader>
         </div>
       </div>

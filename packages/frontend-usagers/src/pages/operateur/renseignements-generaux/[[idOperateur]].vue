@@ -41,8 +41,8 @@
               id="chercherSiret"
               :disabled="!siretMeta.valid"
               @click.prevent="searchOperateur"
-              >Récupérer informations</DsfrButton
-            >
+              >Récupérer informations
+            </DsfrButton>
           </div>
         </div>
       </fieldset>
@@ -362,6 +362,7 @@ import "@vueform/multiselect/themes/default.css";
 import * as yup from "yup";
 import { useLayoutStore } from "@/stores/layout";
 import { useOperateurStore } from "@/stores/operateur";
+
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
@@ -727,11 +728,12 @@ function setAdresseSiege(v) {
   adresseSiege.value = adresseDomicile.value;
   adresseIdentique.value = v;
 }
+
 async function searchAdresseDomicile(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseDomicileInProgress.value = true;
-    const url = "/front-server/geo/adresse/";
-    const { data } = await useFetch(url, {
+    const url = "/geo/adresse/";
+    const { data } = await useFetchWithCredentials(url, {
       body: { queryString },
       method: "POST",
     });
@@ -746,8 +748,8 @@ async function searchAdresseDomicile(queryString) {
 async function searchAdresseSiege(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseSiegeInProgress.value = true;
-    const url = "/front-server/geo/adresse/";
-    const { data } = await useFetch(url, {
+    const url = "/geo/adresse/";
+    const { data } = await useFetchWithCredentials(url, {
       body: { queryString },
       method: "POST",
     });
@@ -757,6 +759,7 @@ async function searchAdresseSiege(queryString) {
     }
   }
 }
+
 const adressesDomicileOptions = computed(() => {
   if (adressesDomicile.value && adressesDomicile.value.length > 0) {
     return adressesDomicile.value.map((a) => {
@@ -853,12 +856,12 @@ const nomPrenomRepresentantLegal = computed(() => {
 
 async function searchApiEntreprise() {
   log.i("searchApiEntreprise - IN");
-  const url = `/front-server/siret/${siret.value}`;
+  const url = `/siret/${siret.value}`;
   if (personneMorale.value) {
     personneMorale.value = null;
   }
   try {
-    const { data, error } = await useFetch(url, {
+    const { data, error } = await useFetchWithCredentials(url, {
       method: "GET",
     });
     if (data.value) {
@@ -880,9 +883,9 @@ async function searchApiEntreprise() {
 
 async function searchOperateurBySiret() {
   log.i("searchOperateurBySiret - IN");
-  const url = `/front-server/operateur/siret/${siret.value}`;
+  const url = `/operateur/siret/${siret.value}`;
   try {
-    const { data, error } = await useFetch(url, {
+    const { data, error } = await useFetchWithCredentials(url, {
       method: "GET",
     });
     if (data.value) {
@@ -909,6 +912,7 @@ async function searchOperateur() {
     await searchApiEntreprise();
   }
 }
+
 function addRepresentantLegal() {
   representantLegaux.value.push({});
   expandedId.value = representantLegaux.value.length;
@@ -961,11 +965,11 @@ async function validateOperateur() {
 
   try {
     const url = isUpdate.value
-      ? `/front-server/operateur/${route.params.idOperateur}`
+      ? `/operateur/${route.params.idOperateur}`
       : operateurDejaExistant?.value?.length > 0
-        ? `/front-server/operateur/link/${operateurDejaExistant.value.operateurId}`
-        : "/front-server/operateur";
-    const { data, error } = await useFetch(url, {
+        ? `/operateur/link/${operateurDejaExistant.value.operateurId}`
+        : "/operateur";
+    const { data, error } = await useFetchWithCredentials(url, {
       method: "POST",
       body: {
         parametre,

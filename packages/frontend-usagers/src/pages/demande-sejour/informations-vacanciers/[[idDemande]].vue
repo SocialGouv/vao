@@ -222,8 +222,8 @@ async function previous() {
 async function next() {
   log.d("next - IN");
   try {
-    const url = `${config.public.backendUrl}/sejour/${route.params.idDemande}`;
-    await useFetch(url, {
+    const url = `/sejour/${route.params.idDemande}`;
+    await useFetchWithCredentials(url, {
       method: "POST",
       body: {
         parametre: {

@@ -113,8 +113,6 @@ const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
-const config = useRuntimeConfig();
-
 definePageMeta({
   middleware: ["is-connected"],
   layout: "demande-sejour",
@@ -214,8 +212,8 @@ function addModeTransport(liste) {
 async function next() {
   log.d("next - IN");
   try {
-    const url = `${config.public.backendUrl}/sejour/${route.params.idDemande}`;
-    await useFetch(url, {
+    const url = `/sejour/${route.params.idDemande}`;
+    await useFetchWithCredentials(url, {
       method: "POST",
       body: {
         parametre: {

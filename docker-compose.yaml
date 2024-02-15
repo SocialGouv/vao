@@ -21,7 +21,7 @@ services:
       TZ: Europe/Paris
       NUXT_PUBLIC_BACKEND_URL: ${BACKEND_URL}
       SENTRY_DSN: ${FRONTEND_USAGERS_SENTRY_DSN}
-      DEBUG: info:vao*
+      DEBUG: info:vao*, debug:vao*
     ports:
       - 3000:3000
 
@@ -62,6 +62,7 @@ services:
     environment:
       TZ: Europe/Paris
       DEBUG: info:vao*
+      TMP_DIRECTORY: ${BACKEND_TMP_DIRECTORY}
     ports:
       - 3010:3000
 
@@ -75,7 +76,7 @@ services:
     env_file:
       - ./.env
     ports:
-      - 5432:5432
+      - 5436:5432
     volumes:
       - ./pg/lancement.sh:/docker-entrypoint-initdb.d/lancement.sh
       - ./pg/scripts:/scripts

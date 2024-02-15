@@ -64,7 +64,7 @@ import { useOperateurStore } from "@/stores/operateur";
 
 definePageMeta({
   middleware: ["is-connected", "has-id-operateur"],
-  layout: "operateur",
+  layout: "operateur"
 });
 
 const log = logger("pages/operateur/protocole-transport");
@@ -77,30 +77,31 @@ const operateurStore = useOperateurStore();
 
 const renseignementsGeneraux = ref({
   label: "complet",
-  type: "success",
+  type: "success"
 });
 const agrement = ref({
   label: "",
-  type: "",
+  type: ""
 });
 const protocoleTransport = ref({
   label: "",
-  type: "",
+  type: ""
 });
 const protocoleSanitaire = ref({
   label: "",
-  type: "",
+  type: ""
 });
+
 async function saveOperateur() {
   log.i("saveOperateur - IN");
   try {
-    const url = `/front-server/operateur/${route.params.idOperateur}`;
-    const { data, error } = await useFetch(url, {
+    const url = `/operateur/${route.params.idOperateur}`;
+    const { data, error } = await useFetchWithCredentials(url, {
       method: "POST",
       body: {
         parametre: {},
-        type: "recapitulatif",
-      },
+        type: "recapitulatif"
+      }
     });
     if (data.value) {
       const url = `/`;

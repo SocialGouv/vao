@@ -106,8 +106,8 @@
           :secondary="true"
           :disabled="!meta.valid"
           @click="validateRepresentantLegal"
-          >Valider les informations du réprésentant légal</DsfrButton
-        >
+          >Valider les informations du réprésentant légal
+        </DsfrButton>
       </div>
     </fieldset>
   </div>
@@ -119,6 +119,7 @@ import * as yup from "yup";
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 
+const config = useRuntimeConfig();
 const props = defineProps({
   representantLegal: { type: Object, default: null, required: true },
   index: { type: Number, default: null, required: true },
@@ -261,8 +262,8 @@ const adresseInitiale = computed(() => {
 async function searchAdresseRL(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseRLInProgress.value = true;
-    const url = "/front-server/geo/adresse/";
-    const { data } = await useFetch(url, {
+    const url = "/geo/adresse/";
+    const { data } = await useFetchWithCredentials(url, {
       body: { queryString },
       method: "POST",
     });

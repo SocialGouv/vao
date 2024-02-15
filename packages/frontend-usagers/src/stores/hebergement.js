@@ -1,6 +1,4 @@
 import { defineStore } from "pinia";
-import { useRuntimeConfig, useFetch } from "#app";
-import { logger } from "#imports";
 
 const log = logger("stores/hebergement");
 
@@ -11,35 +9,32 @@ export const useHebergementStore = defineStore("hebergement", {
   }),
   actions: {
     async fetchHebergement() {
-      log.i("fetchHebergement - IN");
+      try {
+        log.i("fetchHebergement - IN");
 
-      const config = useRuntimeConfig();
-      const { data, error } = await useFetch(
-        config.public.backendUrl + "/hebergement",
-      );
-      if (data.value) {
-        log.i("fetchHebergement - DONE");
-        this.hebergements = data.value.hebergements;
-      }
-      if (error.value) {
-        log.w("fetchHebergement - DONE with error", error.value);
+        const { data } = await useFetchWithCredentials("/hebergement");
+        if (data.value?.hebergements) {
+          this.hebergements = data.value.hebergements;
+        }
+        log.d("fetchHebergements  - DONE");
+      } catch (err) {
         this.hebergements = [];
+        log.i("fetchHebergement - DONE with error");
       }
     },
     async setHebergementCourant(id) {
-      log.i("setHebergementCourant - IN", { id });
+      try {
+        log.i("setHebergementCourant - IN", { id });
 
-      const config = useRuntimeConfig();
-      const { data, error } = await useFetch(
-        `${config.public.backendUrl}/hebergement/${id}`,
-      );
-      if (data.value) {
-        log.i("setHebergementCourant - DONE");
-        this.hebergementCourant = data.value.hebergement;
-      }
-      if (error.value) {
-        log.w("setHebergementCourant - DONE with error", error.value);
+        const { data } = await useFetchWithCredentials(`/hebergement/${id}`);
+        log.d(data);
+        if (data.value?.hebergement) {
+          this.hebergementCourant = data.value.hebergement;
+        }
+        log.d("setHebergementCourant - DONE");
+      } catch (err) {
         this.hebergementCourant = {};
+        log.i("setHebergementCourant - DONE with error");
       }
     },
   },

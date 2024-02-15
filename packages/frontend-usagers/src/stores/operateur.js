@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
-import { useRuntimeConfig, useFetch } from "#app";
-import { logger } from "#imports";
+// import { useFetchWithCredentials, logger } from "#app";
 
 const log = logger("stores/operateurs");
 
@@ -11,35 +10,29 @@ export const useOperateurStore = defineStore("operateurs", {
   }),
   actions: {
     async fetchOperateurs() {
-      log.i("fetchOperateurs - IN");
-      const config = useRuntimeConfig();
-
-      const { data, error } = await useFetch(
-        config.public.backendUrl + "/operateur",
-      );
-      if (data.value) {
-        log.i("fetchOperateurs - DONE");
-        this.operateurs = data.value.operateurs;
-      }
-      if (error.value) {
-        log.w("fetchOperateurs - DONE with error", error.value);
+      try {
+        log.i("fetchOperateurs - IN");
+        const { data } = await useFetchWithCredentials("/operateur");
+        if (data.value?.operateurs) {
+          this.operateurs = data.value.operateurs;
+        }
+        log.d("fetchOperateurs - DONE");
+      } catch (err) {
         this.operateurs = [];
+        log.i("fetchOperateurs - DONE with error");
       }
     },
     async setMyOperateur() {
-      log.i("setMyOperateur - IN");
-      const config = useRuntimeConfig();
-
-      const { data, error } = await useFetch(
-        config.public.backendUrl + "/operateurs",
-      );
-      if (data.value) {
-        log.i("setMyOperateur - DONE");
-        this.operateurCourant = data.value.operateur;
-      }
-      if (error.value) {
-        log.w("setMyOperateur - DONE with error", error.value);
+      try {
+        const { data } = await useFetchWithCredentials(`/operateur`);
+        log.d(data);
+        if (data.value?.operateur) {
+          this.operateurCourant = data.value.operateur;
+        }
+        log.d("setOperateurCourant - DONE");
+      } catch (err) {
         this.operateurCourant = {};
+        log.i("setOperateurCourant - DONE with error");
       }
     },
   },

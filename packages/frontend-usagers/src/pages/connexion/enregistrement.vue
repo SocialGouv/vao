@@ -203,8 +203,8 @@
                     <DsfrButton
                       :disabled="!canRegister"
                       @click.prevent="register"
-                      >Créer mon compte</DsfrButton
-                    >
+                      >Créer mon compte
+                    </DsfrButton>
                   </li>
                 </ul>
               </div>
@@ -403,7 +403,6 @@ async function register() {
     // const userEnteredCaptchaCode = captcha.getUserEnteredCaptchaCode();
     // id du captcha que l’utilisateur a tenté de résoudre
     // const captchaId = captcha.getCaptchaId();
-
     await $fetch(config.public.backendUrl + "/authentication/email/register", {
       method: "POST",
       headers: {
