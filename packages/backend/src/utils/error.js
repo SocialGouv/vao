@@ -1,7 +1,7 @@
 class AppError extends Error {
   constructor(
     message,
-    { name, statusCode = 400, cause, isOperational = true } = {}
+    { name, statusCode = 400, cause, isOperational = true } = {},
   ) {
     if (cause) {
       super(message, { cause });

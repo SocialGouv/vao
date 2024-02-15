@@ -17,9 +17,8 @@ import { useOperateurStore } from "@/stores/operateur";
 
 definePageMeta({
   middleware: ["is-connected", "has-id-operateur"],
-  layout: "operateur"
+  layout: "operateur",
 });
-
 
 const log = logger("pages/operateur/protocole-sanitaire");
 const nuxtApp = useNuxtApp();
@@ -37,8 +36,8 @@ async function saveOperateur(transportData) {
       method: "POST",
       body: {
         parametre: transportData,
-        type: "protocole_sanitaire"
-      }
+        type: "protocole_sanitaire",
+      },
     });
     if (data.value) {
       const operateurId = data.value.operateurId;

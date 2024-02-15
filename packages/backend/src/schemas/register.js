@@ -7,18 +7,18 @@ const nomRegex = /^[A-Za-z'-]+$/;
 const schema = object({
   email: string()
     .test("acceptedChars", "Caractères non acceptés détectés", (email) =>
-      emailRegex.test(email)
+      emailRegex.test(email),
+    )
+    .required(),
+  nom: string()
+    .test("acceptedChars", "Caractères non acceptés détectés", (nom) =>
+      nomRegex.test(nom),
     )
     .required(),
   password,
-  nom: string()
-    .test("acceptedChars", "Caractères non acceptés détectés", (nom) =>
-      nomRegex.test(nom)
-    )
-    .required(),
   prenom: string()
     .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
-      nomRegex.test(prenom)
+      nomRegex.test(prenom),
     )
     .required(),
 });

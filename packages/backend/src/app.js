@@ -21,9 +21,9 @@ const whitelist = [
   config.domain,
 ];
 const corsOptions = {
+  allowedHeaders: "Content-Type,Authorization,X-Requested-With,Accept",
   credentials: true,
   methods: "GET,HEAD,POST,PATCH,DELETE,OPTIONS",
-  allowedHeaders: "Content-Type,Authorization,X-Requested-With,Accept",
   origin(origin, callback) {
     log.d("cors", { origin, whitelist });
     if (!origin || whitelist.indexOf(origin) !== -1) {
@@ -62,6 +62,7 @@ app.use((req, res, next) => {
   next(new AppError(`Path "${req.url}" not found`, { statusCode: 404 }));
 });
 
+// eslint-disable-next-line no-unused-vars
 app.use(async (err, req, res, next) => {
   if (!err.isOperational) {
     log.w(err);

@@ -19,7 +19,7 @@ module.exports = async function post(req, res) {
     const idDemande = await DemandeSejour.update(
       type,
       demandeSejourId,
-      parametre
+      parametre,
     );
     if (!idDemande) {
       log.w("update query returned null, idDemande expected");

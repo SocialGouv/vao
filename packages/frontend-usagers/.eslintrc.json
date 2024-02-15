@@ -5,13 +5,13 @@
         "node": true,
         "es2021": true
     },
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
     "extends": [
         "@nuxt/eslint-config",
         "plugin:prettier/recommended"
     ],
-    "parserOptions": {
-        "ecmaVersion": "latest"
-    },
     "rules": {
         "prettier/prettier": [
             "error"

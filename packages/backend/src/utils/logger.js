@@ -2,7 +2,7 @@ const path = require("path");
 const $debug = require("debug");
 
 const root = `${path.dirname(
-  (require.main && require.main.filename) || process.filename
+  (require.main && require.main.filename) || process.filename,
 )}/`;
 
 function logger(caller) {

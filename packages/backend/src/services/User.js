@@ -10,6 +10,10 @@ const { status } = require("../helpers/users");
 const log = logger(module.filename);
 
 const query = {
+  activate: `UPDATE front.users 
+  SET verified = NOW(),
+  edited_at = NOW()
+  WHERE id = $1`,
   create: `
     INSERT INTO front.users (
       mail, 
@@ -34,18 +38,6 @@ const query = {
       status_code as "statusCode"
     ;
     `,
-  login: `
-    SELECT 
-      id as id,
-      mail as email,
-      pwd is not null as "hasPwd",
-      status_code as "statusCode"
-    FROM front.users
-    WHERE 
-      mail = $1
-      AND pwd = crypt($2, pwd)
-      AND deleted is False
-    `,
   editPassword: (email, password) => [
     `
       UPDATE front.users
@@ -68,6 +60,18 @@ const query = {
       `,
     [userId, statusCode],
   ],
+  login: `
+    SELECT 
+      id as id,
+      mail as email,
+      pwd is not null as "hasPwd",
+      status_code as "statusCode"
+    FROM front.users
+    WHERE 
+      mail = $1
+      AND pwd = crypt($2, pwd)
+      AND deleted is False
+    `,
   select: (criterias) => [
     `
       SELECT 
@@ -85,10 +89,6 @@ const query = {
       `,
     Object.values(criterias),
   ],
-  activate: `UPDATE front.users 
-  SET verified = NOW(),
-  edited_at = NOW()
-  WHERE id = $1`,
 };
 
 module.exports.registerByEmail = async ({ email, password, nom, prenom }) => {
@@ -114,7 +114,7 @@ module.exports.registerByEmail = async ({ email, password, nom, prenom }) => {
   ]);
   log.i("registerByEmail - DONE", { response });
   const [user] = response.rows;
-  return { user, code: "CreationCompte" };
+  return { code: "CreationCompte", user };
 };
 
 module.exports.editPassword = async ({ email, password }) => {
@@ -130,7 +130,7 @@ module.exports.editPassword = async ({ email, password }) => {
 };
 
 module.exports.editStatus = async (userId, statusCode) => {
-  log.i("editStatus - IN", { userId, statusCode });
+  log.i("editStatus - IN", { statusCode, userId });
   await pool.query(...query.editStatus(userId, statusCode));
   log.i("editStatus - DONE");
 };

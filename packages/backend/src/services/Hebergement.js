@@ -5,6 +5,12 @@ const pool = require("../utils/pgpool").getPool();
 const log = logger(module.filename);
 
 const query = {
+  create: `
+    INSERT INTO front.hebergement(user_id,nom,caracteristiques,created_at,edited_at)
+    VALUES ($1,$2,$3,NOW(),NOW())
+    RETURNING id as "hebergementId"
+    `,
+
   get: `
     SELECT
       id as "hebergementId",
@@ -45,12 +51,6 @@ const query = {
     `,
     Object.values(criterias),
   ],
-
-  create: `
-    INSERT INTO front.hebergement(user_id,nom,caracteristiques,created_at,edited_at)
-    VALUES ($1,$2,$3,NOW(),NOW())
-    RETURNING id as "hebergementId"
-    `,
 };
 
 module.exports.create = async (userId, nomHebergement, caracteristiques) => {

@@ -34,6 +34,7 @@ async function checkJWT(req, res, next) {
           `${config.accessToken.secret}`,
         );
         log.i("DONE - access_token decoded");
+        // eslint-disable-next-line no-param-reassign
         req.decoded = decoded;
         return next();
       } catch (error) {
@@ -88,18 +89,19 @@ async function checkJWT(req, res, next) {
 
     res.cookie("PP_access_token", newAccessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
       maxAge: config.accessToken.expiresIn,
+      sameSite: "strict",
+      secure: true,
     });
 
     res.cookie("PP_refresh_token", newRefreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
       maxAge: config.refreshToken.expiresIn,
+      sameSite: "strict",
+      secure: true,
     });
 
+    // eslint-disable-next-line no-param-reassign
     req.decoded = buildAccessToken(user);
 
     log.d("access_token & refresh_otken renewed");

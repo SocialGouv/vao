@@ -25,9 +25,8 @@ module.exports = async (req, res) => {
   try {
     if (req.file) {
       // suppression logique des anciens agrements
-      const nbDeletedAgrement = await AgrementService.deleteByOperatorId(
-        operateurId
-      );
+      const nbDeletedAgrement =
+        await AgrementService.deleteByOperatorId(operateurId);
       log.i(nbDeletedAgrement, "old agrements have been deleted");
       const uuid = await AgrementService.uploadFile(req.file);
       if (!uuid) {
@@ -44,7 +43,7 @@ module.exports = async (req, res) => {
         regionDelivrance,
         numeroAgrement,
         dateDelivrance,
-        dateFinValidite
+        dateFinValidite,
       );
       if (newUuid !== uuid) {
         log.w("error while saving agrement meta values");
@@ -62,7 +61,7 @@ module.exports = async (req, res) => {
         numeroAgrement,
         regionDelivrance,
         dateDelivrance,
-        dateFinValidite
+        dateFinValidite,
       );
       log.d("updated meta values - DONE", updatedAgrementId);
       return res.json({ updatedAgrementId });

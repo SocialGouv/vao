@@ -27,9 +27,9 @@ module.exports.mailService = {
     } catch (error) {
       log.w(error.name, error.errors.join(", "));
       throw new AppError(error.errors.join(", "), {
+        cause: error,
         name: "ValidationError",
         statusCode: 423,
-        cause: error,
       });
     }
 
@@ -46,8 +46,8 @@ module.exports.mailService = {
     } catch (error) {
       log.w(error.message);
       throw new AppError("An unexpected error happens !", {
-        statusCode: 500,
         cause: error,
+        statusCode: 500,
       });
     }
 

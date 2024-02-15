@@ -55,16 +55,16 @@ module.exports = async function login(req, res) {
 
     res.cookie("PP_access_token", accessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
       maxAge: config.accessToken.expiresIn,
+      sameSite: "strict",
+      secure: true,
     });
 
     res.cookie("PP_refresh_token", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
       maxAge: config.refreshToken.expiresIn,
+      sameSite: "strict",
+      secure: true,
     });
 
     log.i("DONE");

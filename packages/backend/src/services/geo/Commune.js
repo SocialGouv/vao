@@ -19,7 +19,7 @@ const query = {
       ${q}
       ORDER BY geo_com_label ASC
       `,
-      ...values
+      ...values,
     ),
   selectWithDep: (criterias) => [
     `
@@ -41,7 +41,7 @@ const query = {
             (!Array.isArray(criterias[criteria]) &&
               criterias[criteria] !== null &&
               criterias[criteria] !== undefined &&
-              criterias[criteria] !== "")
+              criterias[criteria] !== ""),
         )
         .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
         .join(" ")}
@@ -54,19 +54,19 @@ const query = {
 const dict = {
   code: (code) => `
     AND geo_com_code_fijais IN (${format.literal(code)})`,
-  departement: (departement) => `
-    AND geo_ter_code = ${format.literal(departement)}`,
   date: (date) => `
     AND (
       TO_DATE(${format.literal(
-        date
+        date,
       )}, 'YYYY-MM-DD') >= geo_com_date_debut OR geo_com_date_debut is null
     )
     AND (
       geo_com_date_fin > TO_DATE(${format.literal(
-        date
+        date,
       )}, 'YYYY-MM-DD') OR geo_com_date_fin is null
     )`,
+  departement: (departement) => `
+    AND geo_ter_code = ${format.literal(departement)}`,
 };
 
 const transpose = (search) =>
@@ -76,7 +76,7 @@ const transpose = (search) =>
         value !== null &&
         value !== undefined &&
         value !== "" &&
-        (!Array.isArray(value) || value.length > 0)
+        (!Array.isArray(value) || value.length > 0),
     )
     .reduce(
       (memo, [key, value]) => {
@@ -95,7 +95,7 @@ const transpose = (search) =>
       {
         query: "",
         values: [],
-      }
+      },
     );
 
 module.exports.fetch = async (criterias = {}) => {

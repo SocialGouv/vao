@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { logger, useFetchWithCredentials } from "#imports";
 
 const log = logger("stores/hebergement");
 
