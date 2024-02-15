@@ -28,7 +28,7 @@ module.exports = async function post(req, res) {
       dateFin,
       sejourItinerant,
       sejourEtranger,
-      duree
+      duree,
     );
     if (!idDemande) {
       return res.status(400).json({

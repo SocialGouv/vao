@@ -58,7 +58,7 @@ fileignoreconfig:
 - filename: docker-compose.yaml
   checksum: f4fc98c9f7af1169a8c75e3f11586c36665fef55807326ec9af55037c7bc34d4
 - filename: packages/backend/src/config.js
-  checksum: 06ea2e0466d3cd95182dd657e403fc5d4e0eabe22ad9a9ebb2c4e24f1c30a044
+  checksum: ee40db09f52fe21ddfa6a66a849d8848989238c0b6cc19a06b7875ce5c86ed56
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
   checksum: d66401c29c51850346868ff2d7c097fbd572bbfd8cfae77c87ae5274a7cc8409
 - filename: packages/backend/src/controllers/authentication/email/index.js
