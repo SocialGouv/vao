@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
-import { useFetchWithCredentials } from "#app";
-import { logger } from "#imports";
+import { logger, useFetchWithCredentials } from "#imports";
 
 const log = logger("stores/operateurs");
 
