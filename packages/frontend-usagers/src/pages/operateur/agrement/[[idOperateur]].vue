@@ -248,8 +248,8 @@ async function upload() {
   body.append("options", options);
   body.append("file", agrementFile.value);
   try {
-    const url = `/front-server/document/agrement`;
-    await useFetch(url, {
+    const url = `/document/agrement`;
+    await useFetchWithCredentials(url, {
       method: "post",
       body,
       onResponse({ response }) {

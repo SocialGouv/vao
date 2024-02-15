@@ -48,7 +48,7 @@ const homeTo = computed(() => {
 async function logout() {
   const sub = userStore.user.sub ?? null;
   log.i("logout - IN");
-  await $fetch("/front-server/authentication/disconnect", {
+  await useFetchWithCredentials("/authentication/disconnect", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

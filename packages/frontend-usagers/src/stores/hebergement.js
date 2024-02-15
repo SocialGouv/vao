@@ -5,18 +5,17 @@ const log = logger("stores/hebergement");
 export const useHebergementStore = defineStore("hebergement", {
   state: () => ({
     hebergements: [],
-    hebergementCourant: {}
+    hebergementCourant: {},
   }),
   actions: {
     async fetchHebergement() {
       try {
         log.i("fetchHebergement - IN");
-        const config = useRuntimeConfig();
 
-        const response = await $fetch(config.public.backendUrl + "/hebergement", {
-          credentials: "include"
-        });
-        this.hebergements = response.hebergements;
+        const { data } = await useFetchWithCredentials("/hebergement");
+        if (data.value?.hebergements) {
+          this.hebergements = data.value.hebergements;
+        }
         log.d("fetchHebergements  - DONE");
       } catch (err) {
         this.hebergements = [];
@@ -26,18 +25,17 @@ export const useHebergementStore = defineStore("hebergement", {
     async setHebergementCourant(id) {
       try {
         log.i("setHebergementCourant - IN", { id });
-        const config = useRuntimeConfig();
 
-        const response = await $fetch(`${config.public.backendUrl}/hebergement/${id}`, {
-          credentials: "include"
-        });
-        log.d(response);
-        this.hebergementCourant = response.hebergement;
+        const { data } = await useFetchWithCredentials(`/hebergement/${id}`);
+        log.d(data);
+        if (data.value?.hebergement) {
+          this.hebergementCourant = data.value.hebergement;
+        }
         log.d("setHebergementCourant - DONE");
       } catch (err) {
         this.hebergementCourant = {};
         log.i("setHebergementCourant - DONE with error");
       }
-    }
-  }
+    },
+  },
 });

@@ -67,22 +67,22 @@
       <div class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton id="retour" :secondary="true" @click="back"
-            >Retour</DsfrButton
-          >
+            >Retour
+          </DsfrButton>
         </div>
       </div>
       <div class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton id="precedent" :secondary="true" @click="previous"
-            >Précédent</DsfrButton
-          >
+            >Précédent
+          </DsfrButton>
         </div>
       </div>
       <div class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton id="Suivant" :disabled="!meta" @click="next"
-            >Suivant</DsfrButton
-          >
+            >Suivant
+          </DsfrButton>
         </div>
       </div>
     </fieldset>
@@ -95,11 +95,10 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import { useDemandeSejourStore } from "@/stores/demande-sejour";
 import { useLayoutStore } from "@/stores/layout";
+
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
-
-const config = useRuntimeConfig();
 
 definePageMeta({
   middleware: ["is-connected"],
@@ -211,8 +210,8 @@ function previous() {
 async function next() {
   log.d("next - IN");
   try {
-    const url = `${config.public.backendUrl}/sejour/${route.params.idDemande}`;
-    await useFetch(url, {
+    const url = `/sejour/${route.params.idDemande}`;
+    await useFetchWithCredentials(url, {
       method: "POST",
       body: {
         parametre: {

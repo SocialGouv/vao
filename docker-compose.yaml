@@ -62,6 +62,7 @@ services:
     environment:
       TZ: Europe/Paris
       DEBUG: info:vao*
+      TMP_DIRECTORY: ${BACKEND_TMP_DIRECTORY}
     ports:
       - 3010:3000
 

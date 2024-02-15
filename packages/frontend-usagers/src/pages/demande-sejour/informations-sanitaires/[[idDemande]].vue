@@ -582,8 +582,6 @@ const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
-const config = useRuntimeConfig();
-
 definePageMeta({
   middleware: ["is-connected"],
   layout: "demande-sejour",
@@ -668,8 +666,7 @@ const initialValues = computed(() => ({
     demandeCourante.value?.informationsSanitaires
       ?.precisionConservationMedicament || "",
   individualisationMedicaments:
-    demandeCourant /
-      fronte.value?.informationsSanitaires?.individualisationMedicaments || "",
+    demandeCourante.value?.informationsSanitaires?.individualisationMedicaments || "",
   precisionIndividualisationMedicaments:
     demandeCourante.value?.informationsSanitaires
       ?.precisionIndividualisationMedicaments || "",
@@ -893,8 +890,8 @@ function previous() {
 async function next() {
   log.d("next - IN");
   try {
-    const url = `${config.public.backendUrl}/sejour/${route.params.idDemande}`;
-    await useFetch(url, {
+    const url = `/sejour/${route.params.idDemande}`;
+    await useFetchWithCredentials(url, {
       method: "POST",
       body: {
         parametre: {

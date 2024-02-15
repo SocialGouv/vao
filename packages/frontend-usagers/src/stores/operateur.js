@@ -1,21 +1,21 @@
 import { defineStore } from "pinia";
+// import { useFetchWithCredentials, logger } from "#app";
 
 const log = logger("stores/operateurs");
 
 export const useOperateurStore = defineStore("operateurs", {
   state: () => ({
     operateurs: [],
-    operateurCourant: {}
+    operateurCourant: {},
   }),
   actions: {
     async fetchOperateurs() {
       try {
         log.i("fetchOperateurs - IN");
-        const response = await $fetch("http://localhost:3010/operateur", {
-          credentials: "include"
-        });
-        const operateurs = response.operateurs;
-        this.operateurs = operateurs;
+        const { data } = await useFetchWithCredentials("/operateur");
+        if (data.value?.operateurs) {
+          this.operateurs = data.value.operateurs;
+        }
         log.d("fetchOperateurs - DONE");
       } catch (err) {
         this.operateurs = [];
@@ -24,18 +24,16 @@ export const useOperateurStore = defineStore("operateurs", {
     },
     async setMyOperateur() {
       try {
-        const { public: { backendUrl } } = useRuntimeConfig();
-        const response = await $fetch(`${backendUrl}/operateur/`, {
-          credentials: "include"
-        });
-
-        log.d(response);
-        this.operateurCourant = response.operateur;
+        const { data } = await useFetchWithCredentials(`/operateur`);
+        log.d(data);
+        if (data.value?.operateur) {
+          this.operateurCourant = data.value.operateur;
+        }
         log.d("setOperateurCourant - DONE");
       } catch (err) {
         this.operateurCourant = {};
         log.i("setOperateurCourant - DONE with error");
       }
-    }
-  }
+    },
+  },
 });
