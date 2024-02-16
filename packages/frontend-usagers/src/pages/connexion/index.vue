@@ -3,7 +3,7 @@
     <DsfrBreadcrumb :links="links" />
 
     <div>
-      <h1>Identification</h1>
+      <h1>Connexion au compte</h1>
       <div v-if="displayType">
         <DsfrAlert
           class="fr-my-3v"
@@ -13,77 +13,50 @@
           :closeable="false"
         />
       </div>
-      <div class="fr-grid-row fr-grid-row--center fr-my-5v">
-        <div class="fr-col-12 fr-col-md-9 fr-col-lg-9">
-          <div class="fr-container fr-mt-5v">
-            <div class="fr-grid-row fr-grid-row--center">
-              <form class="fr-col-12">
-                <fieldset class="fr-fieldset">
-                  <div class="fr-fieldset__element fr-col-12">
-                    <div class="fr-input-group">
-                      <DsfrInputGroup
-                        :model-value="email"
-                        type="text"
-                        name="email"
-                        label="Email"
-                        :label-visible="true"
-                        placeholder="Veuillez saisir votre email"
-                        @update:model-value="editMail"
-                      />
-                    </div>
-                  </div>
-                  <div class="fr-fieldset__element fr-col-12">
-                    <div class="fr-input-group">
-                      <DsfrInputGroup
-                        :model-value="password"
-                        :type="showPassword ? 'text' : 'password'"
-                        label="Mot de passe"
-                        name="password"
-                        :label-visible="true"
-                        placeholder="Veuillez saisir votre mot de passe"
-                        @update:model-value="editPwd"
-                      />
-                    </div>
-
-                    <div
-                      class="fr-password__checkbox fr-checkbox-group fr-checkbox-group--sm"
-                    >
-                      <input
-                        id="password-show"
-                        v-model="showPassword"
-                        aria-label="Afficher le mot de passe"
-                        type="checkbox"
-                        aria-describedby="password-show-messages"
-                      />
-                      <label
-                        class="fr-password__checkbox fr-label"
-                        for="password-show"
-                      >
-                        Afficher
-                      </label>
-                      <div
-                        id="password-show-messages"
-                        class="fr-messages-group"
-                        aria-live="assertive"
-                      ></div>
-                    </div>
-                    <p>
-                      <NuxtLink
-                        class="fr-link"
-                        to="/connexion/mot-de-passe-oublie"
-                      >
-                        Mot de passe oublié ?
-                      </NuxtLink>
-                    </p>
-                  </div>
-                  <div class="fr-fieldset__element">
-                    <DsfrButton :disabled="!canLogin" @click.prevent="login"
-                      >Se connecter</DsfrButton
-                    >
-                  </div>
-                </fieldset>
-              </form>
-            </div>
+      <div class="fr-container fr-mt-5v">
+        <div class="fr-grid-row fr-grid-row--gutters">
+          <form class="fr-col-6">
+            <h2 class="form-title">Se connecter</h2>
+            <p>Tous les champs sont obligatoires</p>
+            <DsfrFieldset>
+              <DsfrInputGroup
+                autocomplete="off"
+                :required="true"
+                :model-value="email"
+                type="text"
+                name="email"
+                label="Adresse électronique"
+                :label-visible="true"
+                hint="Veuillez saisir votre email"
+                @update:model-value="editMail"
+              />
+              <PasswordInput
+                id="password"
+                autocomplete="off"
+                :required="true"
+                :model-value="password"
+                :type="showPassword ? 'text' : 'password'"
+                label="Mot de passe"
+                name="password"
+                hint="Veuillez saisir votre mot de passe"
+                @update:model-value="editPwd"
+              ></PasswordInput>
+              <p>
+                <NuxtLink class="fr-link" to="/connexion/mot-de-passe-oublie">
+                  Mot de passe oublié ?
+                </NuxtLink>
+              </p>
+            </DsfrFieldset>
+            <DsfrButton :disabled="!canLogin" @click.prevent="login"
+              >Se connecter</DsfrButton
+            >
+          </form>
+          <div class="fr-col-6">
+            <DsfrCallout
+              title="Créer un compte"
+              content="Vous êtes responsable dans un organisme ?"
+              :button="buttonAttrs"
+            />
           </div>
         </div>
       </div>
@@ -153,6 +126,13 @@ const displayInfos = {
 };
 const displayType = ref(null);
 
+const buttonAttrs = {
+  label: "Créer un compte",
+  onClick: () => {
+    return navigateTo("/connexion/enregistrement");
+  },
+};
+
 const canLogin = computed(() => {
   return (
     email.value !== null &&
@@ -168,45 +148,38 @@ async function login() {
   log.i("login", { email: email.value });
   try {
     displayType.value = null;
-    await $fetch(config.public.backendUrl + "/authentication/email/login", {
-      credentials: "include",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await $fetch(
+      config.public.backendUrl + "/authentication/email/login",
+      {
+        credentials: "include",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email.value, password: password.value }),
       },
-      body: JSON.stringify({ email: email.value, password: password.value }),
-    })
-      .then(async (response) => {
-        log.i("login", response.user, userStore.user);
-        userStore.user = response.user;
-        toaster.success(`Authentification réalisée avec succès`);
-        displayType.value = "Success";
-        await userStore.refreshProfile();
-        return navigateTo("/");
-      })
-      .catch((error) => {
-        const body = error.data;
-        const codeError = body.code;
-        log.w("login", { body, codeError });
-
-        switch (codeError) {
-          case "WrongCredentials":
-            displayType.value = "WrongCredentials";
-            break;
-          case "NotValidatedAccount":
-            displayType.value = "NotValidatedAccount";
-            break;
-          default:
-            displayType.value = "DefaultError";
-            break;
-        }
-      });
-  } catch (error) {
-    log.w("login", { error });
-    displayType.value = "DefaultError";
-  } finally {
-    log.i("finally");
+    );
     formStatus.value = formStates.SUBMITTED;
+    userStore.user = response.user;
+    toaster.success(`Authentification réalisée avec succès`);
+    displayType.value = "Success";
+    return navigateTo("/");
+  } catch (error) {
+    formStatus.value = formStates.SUBMITTED;
+    const codeError = error?.data?.code;
+    log.w("login", { error: codeError ?? error?.data ?? error });
+
+    switch (codeError) {
+      case "WrongCredentials":
+        displayType.value = "WrongCredentials";
+        break;
+      case "NotValidatedAccount":
+        displayType.value = "NotValidatedAccount";
+        break;
+      default:
+        displayType.value = "DefaultError";
+        break;
+    }
   }
 }
 </script>
