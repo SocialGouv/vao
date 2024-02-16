@@ -53,22 +53,22 @@
       <div class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton id="retour" :secondary="true" @click="back"
-            >Retour</DsfrButton
-          >
+            >Retour
+          </DsfrButton>
         </div>
       </div>
       <div class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton id="precedent" :secondary="true" @click="previous"
-            >Précédent</DsfrButton
-          >
+            >Précédent
+          </DsfrButton>
         </div>
       </div>
       <div class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton id="Suivant" :disabled="!meta.valid" @click="next"
-            >Suivant</DsfrButton
-          >
+            >Suivant
+          </DsfrButton>
         </div>
       </div>
     </fieldset>
@@ -80,6 +80,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { useDemandeSejourStore } from "@/stores/demande-sejour";
 import { useLayoutStore } from "@/stores/layout";
+
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
@@ -164,11 +165,13 @@ function back() {
   log.d("back - IN");
   navigateTo("/demande-sejour/liste");
 }
+
 async function next() {
   log.d("next - IN");
   try {
     const url = `/sejour/${route.params.idDemande}`;
-    await useFetchWithCredentials(url, {
+    await $fetchBackend(url, {
+      credentials: "include",
       method: "POST",
       body: {
         parametre: { informationsPersonnel: { ...values } },

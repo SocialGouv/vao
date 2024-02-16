@@ -13,8 +13,8 @@
         v-if="classError === 'TokenExpiredError'"
         class="fr-grid-row fr-grid-row--center fr-my-5v"
         @click.prevent="renewToken"
-        >Générer un nouveau token</DsfrButton
-      >
+        >Générer un nouveau token
+      </DsfrButton>
     </div>
   </div>
 </template>
@@ -34,8 +34,8 @@ const helpers = {
   UserAlreadyVerified:
     "L'email associé à votre email semble déjà activé. Rendez-vous sur la page de connexion pour vous identifier.",
 };
-const { data, error, pending } = useFetch(
-  config.public.backendUrl + "/authentication/email/validate",
+const { data, error, pending } = useFetchBackend(
+  "/authentication/email/validate",
   {
     method: "POST",
     headers: {

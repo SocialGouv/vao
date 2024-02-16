@@ -32,23 +32,19 @@ async function saveOperateur(transportData) {
   log.i("saveOperateur - IN");
   try {
     const url = `/operateur/${route.params.idOperateur}`;
-    const { data, error } = await useFetchWithCredentials(url, {
+    const { operateurId } = await $fetchBackend(url, {
       method: "POST",
+      credentials: "include",
       body: {
         parametre: transportData,
         type: "protocole_transport",
       },
     });
-    if (data.value) {
-      const operateurId = data.value.operateurId;
+    if (operateurId) {
       const url = `/operateur/protocole-sanitaire/${operateurId}`;
 
       toaster.success("Fiche opérateur sauvegardée");
       navigateTo(url);
-    }
-    if (error.value) {
-      log.w(error.value);
-      toaster.error(`une erreur est survenue : ${error.value}`);
     }
   } catch (error) {
     log.w("Modification d'operateur - erreur", { error });

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { logger, useFetchWithCredentials } from "#imports";
+import { $fetchBackend, logger } from "#imports";
 
 const log = logger("stores/operateurs");
 
@@ -12,9 +12,11 @@ export const useOperateurStore = defineStore("operateurs", {
     async fetchOperateurs() {
       try {
         log.i("fetchOperateurs - IN");
-        const { data } = await useFetchWithCredentials("/operateur");
-        if (data.value?.operateurs) {
-          this.operateurs = data.value.operateurs;
+        const { operateurs } = await $fetchBackend("/operateur", {
+          credentials: "include",
+        });
+        if (operateurs) {
+          this.operateurs = operateurs;
         }
         log.d("fetchOperateurs - DONE");
       } catch (err) {
@@ -24,10 +26,12 @@ export const useOperateurStore = defineStore("operateurs", {
     },
     async setMyOperateur() {
       try {
-        const { data } = await useFetchWithCredentials(`/operateur`);
-        log.d(data);
-        if (data.value?.operateur) {
-          this.operateurCourant = data.value.operateur;
+        const { operateur } = await $fetchBackend(`/operateur`, {
+          credentials: "include",
+        });
+        log.d(operateur);
+        if (operateur) {
+          this.operateurCourant = operateur;
         }
         log.d("setOperateurCourant - DONE");
       } catch (err) {

@@ -733,13 +733,13 @@ async function searchAdresseDomicile(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseDomicileInProgress.value = true;
     const url = "/geo/adresse/";
-    const { data } = await useFetchWithCredentials(url, {
+    const { adresses } = await $fetchBackend(url, {
       body: { queryString },
       method: "POST",
     });
-    if (data.value?.adresses) {
+    if (adresses) {
       log.i("resultat found");
-      adressesDomicile.value = data.value.adresses;
+      adressesDomicile.value = adresses;
       searchAdresseDomicileInProgress.value = false;
     }
   }
@@ -749,12 +749,12 @@ async function searchAdresseSiege(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseSiegeInProgress.value = true;
     const url = "/geo/adresse/";
-    const { data } = await useFetchWithCredentials(url, {
+    const { adresses } = await $fetchBackend(url, {
       body: { queryString },
       method: "POST",
     });
-    if (data.value?.adresses) {
-      adressesSiege.value = data.value.adresses;
+    if (adresses) {
+      adressesSiege.value = adresses;
       searchAdresseSiegeInProgress.value = false;
     }
   }
@@ -861,17 +861,13 @@ async function searchApiEntreprise() {
     personneMorale.value = null;
   }
   try {
-    const { data, error } = await useFetchWithCredentials(url, {
+    const { uniteLegale } = await $fetchBackend(url, {
       method: "GET",
     });
-    if (data.value) {
+    if (uniteLegale) {
       toaster.success("Données récupérées");
-      personneMorale.value = data.value.uniteLegale[0];
+      personneMorale.value = uniteLegale[0];
       log.d(personneMorale.value);
-    }
-    if (error.value) {
-      toaster.error("SIRET non reconnu");
-      log.w(error.value);
     }
   } catch (error) {
     toaster.error(
@@ -885,12 +881,12 @@ async function searchOperateurBySiret() {
   log.i("searchOperateurBySiret - IN");
   const url = `/operateur/siret/${siret.value}`;
   try {
-    const { data, error } = await useFetchWithCredentials(url, {
+    const { operateur } = await $fetchBackend(url, {
       method: "GET",
     });
-    if (data.value) {
+    if (operateur) {
       toaster.success("L'opérateur est déjà présent en base");
-      operateurDejaExistant.value = data.value.operateur;
+      operateurDejaExistant.value = operateur;
       log.d(operateurDejaExistant.value);
     }
     if (error.value) {
@@ -969,26 +965,23 @@ async function validateOperateur() {
       : operateurDejaExistant?.value?.length > 0
         ? `/operateur/link/${operateurDejaExistant.value.operateurId}`
         : "/operateur";
-    const { data, error } = await useFetchWithCredentials(url, {
+    const { operateurId } = await $fetchBackend(url, {
       method: "POST",
+      credentials: "include",
       body: {
         parametre,
         type: typeOperateur.value,
       },
     });
-    if (data.value) {
-      log.i("operateur créé", data.value.operateurId);
-      const operateurId = data.value.operateurId;
+    if (operateurId) {
+      log.i("operateur créé", operateurId);
       const url = `/operateur/agrement/${operateurId}`;
       log.i(url);
       toaster.success("Fiche opérateur sauvegardée");
       navigateTo(url);
     }
-    if (error.value) {
-      log.w(error.value);
-      toaster.error(`une erreur est survenue : ${error.value}`);
-    }
   } catch (error) {
+    toaster.error(`une erreur est survenue : ${error}`);
     log.w("Creation/modification d'operateur - erreur", { error });
   }
 }

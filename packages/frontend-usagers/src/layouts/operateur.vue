@@ -48,8 +48,9 @@ const homeTo = computed(() => {
 async function logout() {
   const sub = userStore.user.sub ?? null;
   log.i("logout - IN");
-  await useFetchWithCredentials("/authentication/disconnect", {
+  await $fetchBackend("/authentication/disconnect", {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -87,7 +88,9 @@ function acceptAll() {
           :logo-text="header.logoText"
           @click="navigateTo('/')"
         >
-          <template #mainnav><DsfrNavigation :nav-items="navItems" /></template>
+          <template #mainnav>
+            <DsfrNavigation :nav-items="navItems" />
+          </template>
         </DsfrHeader>
 
         <div class="fr-col-11 fr-mb-1w">

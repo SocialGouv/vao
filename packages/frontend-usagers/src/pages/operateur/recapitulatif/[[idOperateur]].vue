@@ -96,23 +96,17 @@ async function saveOperateur() {
   log.i("saveOperateur - IN");
   try {
     const url = `/operateur/${route.params.idOperateur}`;
-    const { data, error } = await useFetchWithCredentials(url, {
+    await $fetchBackend(url, {
       method: "POST",
+      credentials: "include",
       body: {
         parametre: {},
         type: "recapitulatif",
       },
     });
-    if (data.value) {
-      const url = `/`;
 
-      toaster.success("Fiche opérateur validée");
-      navigateTo(url);
-    }
-    if (error.value) {
-      log.w(error.value);
-      toaster.error(`une erreur est survenue : ${error.value}`);
-    }
+    toaster.success("Fiche opérateur validée");
+    navigateTo(`/`);
   } catch (error) {
     log.w("Validation d'operateur - erreur", { error });
   }

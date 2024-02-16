@@ -256,8 +256,9 @@ async function next() {
   try {
     if (isUpdate.value) {
       const url = `/sejour/${route.params.idDemande}`;
-      await useFetchWithCredentials(url, {
+      await $fetchBackend(url, {
         method: "POST",
+        credentials: "include",
         body: {
           parametre: { ...values, duree: duree.value },
           type: "informationsGenerales",
@@ -278,8 +279,9 @@ async function next() {
       });
     } else {
       const url = `/sejour`;
-      await useFetchWithCredentials(url, {
+      await $fetchBackend(url, {
         method: "POST",
+        credentials: "include",
         body: {
           ...values,
           operateurId: operateurStore.operateurCourant.operateurId,

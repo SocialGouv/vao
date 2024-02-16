@@ -211,14 +211,15 @@ async function next() {
   log.d("next - IN");
   try {
     const url = `/sejour/${route.params.idDemande}`;
-    await useFetchWithCredentials(url, {
+    await $fetchBackend(url, {
       method: "POST",
+      credentials: "include",
       body: {
         parametre: {
           informationsProjetSejour: {
-            destination,
-            activitesSpecifiques,
-            periode,
+            destination: destination.value,
+            activitesSpecifiques: activitesSpecifiques.value,
+            periode: periode.value,
           },
         },
         type: "informationsProjetSejour",

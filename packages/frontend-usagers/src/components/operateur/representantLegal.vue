@@ -262,12 +262,12 @@ async function searchAdresseRL(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseRLInProgress.value = true;
     const url = "/geo/adresse/";
-    const { data } = await useFetchWithCredentials(url, {
+    const { adresses } = await $fetchBackend(url, {
       body: { queryString },
       method: "POST",
     });
-    if (data.value?.adresses) {
-      adresses.value = data.value.adresses;
+    if (adresses) {
+      adresses.value = adresses;
       searchAdresseRLInProgress.value = false;
     }
   }
