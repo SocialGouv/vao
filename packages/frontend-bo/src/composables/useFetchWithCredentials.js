@@ -1,14 +1,10 @@
 import { useRuntimeConfig, useFetch } from "#app";
 
-export const useFetchWithCredentials = async (
-  url,
-  option = null,
-  baseUrl = null,
-) => {
+export const useFetchWithCredentials = async (url, option = {}) => {
   const config = useRuntimeConfig();
   return useFetch(url, {
-    ...(option ?? {}),
+    ...option,
     credentials: "include",
-    baseURL: baseUrl ?? config.public.backendUrl,
+    baseURL: option.baseUrl ?? config.public.backendUrl,
   });
 };

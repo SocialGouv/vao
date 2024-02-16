@@ -1,8 +1,8 @@
 import $debug from "debug";
 export default (path) => {
-  const debug = $debug(`debug:vao-frontend-usagers/${path}`);
-  const info = $debug(`info:vao-frontend-usagers/${path}`);
-  const warn = $debug(`warn:vao-frontend-usagers/${path}`);
+  const debug = $debug(`debug:vao-frontend-bo/${path}`);
+  const info = $debug(`info:vao-frontend-bo/${path}`);
+  const warn = $debug(`warn:vao-frontend-bo/${path}`);
   return {
     d(message, ...args) {
       if (debug.enabled) {
