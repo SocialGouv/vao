@@ -1,4 +1,5 @@
 import $debug from "debug";
+
 export default (path) => {
   const debug = $debug(`debug:vao-frontend-usagers/${path}`);
   const info = $debug(`info:vao-frontend-usagers/${path}`);
