@@ -16,8 +16,8 @@
           >
             <div class="fr-grid-row fr-grid-row-left fr-pt-5v">
               <DsfrButton id="Suivant" @click="saisieFicheOperateur"
-                >Renseigner ma fiche organisme</DsfrButton
-              >
+                >Renseigner ma fiche organisme
+              </DsfrButton>
             </div>
           </DsfrHighlight>
         </div>
@@ -131,6 +131,7 @@ const libelleMessageAccueil =
 function saisieFicheOperateur() {
   navigateTo("/operateur/renseignements-generaux");
 }
+
 onMounted(async () => {
   await operateurStore.setMyOperateur();
 });
