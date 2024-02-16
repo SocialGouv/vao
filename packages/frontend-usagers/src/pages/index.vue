@@ -112,12 +112,8 @@
 </template>
 
 <script setup>
-import info from "@/assets/D.jpeg";
 import { useUserStore } from "@/stores/user";
 import { useOperateurStore } from "@/stores/operateur";
-
-import sejour from "@/assets/B.jpg";
-const nuxtApp = useNuxtApp();
 
 definePageMeta({
   middleware: ["is-connected"],

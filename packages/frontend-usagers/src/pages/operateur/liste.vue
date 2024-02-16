@@ -57,9 +57,6 @@
 import { useOperateurStore } from "@/stores/operateur";
 import { useLayoutStore } from "@/stores/layout";
 import "@vueform/multiselect/themes/default.css";
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
-const log = logger("pages/operateur/liste");
 
 definePageMeta({
   middleware: ["is-connected"],

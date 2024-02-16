@@ -70,7 +70,7 @@ function onClickOnLogo() {
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
           <DsfrHeader
-            service-title="Vacances Adaptées Organisées (VAO)"
+            service-title="Back-office : Vacances Adaptées Organisées (VAO)"
             service-description="La plateforme de déclaration et suivi des séjours organisés pour les personnes handicapées majeures"
             :home-to="homeTo"
             :quick-links="header.quickLinks"

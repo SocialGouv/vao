@@ -7,8 +7,6 @@ const log = logger("layouts/demande-sejour");
 const userStore = useUserStore();
 const layoutStore = useLayoutStore();
 
-const config = useRuntimeConfig();
-
 const header = reactive({
   dimension: { height: "80px" },
   logoText: ["Republique", "française"],
