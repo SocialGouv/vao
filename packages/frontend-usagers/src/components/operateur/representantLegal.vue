@@ -119,7 +119,6 @@ import * as yup from "yup";
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 
-const config = useRuntimeConfig();
 const props = defineProps({
   representantLegal: { type: Object, default: null, required: true },
   index: { type: Number, default: null, required: true },

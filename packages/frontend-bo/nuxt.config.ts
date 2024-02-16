@@ -23,6 +23,11 @@ export default defineNuxtConfig({
     "@gouvfr/dsfr/dist/utility/icons/icons.min.css",
   ],
   modules: ["@pinia/nuxt"],
+  runtimeConfig: {
+    public: {
+      backendUrl: "",
+    },
+  },
   srcDir: "src",
   ssr: false,
 });
