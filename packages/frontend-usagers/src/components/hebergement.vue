@@ -418,15 +418,15 @@
       <div class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton id="Suivant" :secondary="true" @click="back"
-            >Retour</DsfrButton
-          >
+            >Retour
+          </DsfrButton>
         </div>
       </div>
       <div class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton id="Suivant" :disabled="!meta.valid" @click="next"
-            >Ajouter hebergement</DsfrButton
-          >
+            >Ajouter hebergement
+          </DsfrButton>
         </div>
       </div>
     </fieldset>
@@ -439,6 +439,7 @@ import * as yup from "yup";
 import Multiselect from "@vueform/multiselect";
 
 import "@vueform/multiselect/themes/default.css";
+
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 const emit = defineEmits(["add", "back"]);
@@ -699,16 +700,22 @@ async function searchAPIAdresse(queryString) {
     }
   }
 }
+
 function back() {
   emit("back");
 }
+
 async function next() {
   log.d("next - IN");
   try {
     const url = `/hebergement`;
-    await useFetchWithCredentials(url, {
+    await $fetchBackend(url, {
       method: "POST",
-      body: { nomHebergement, caracteristiques: { ...values } },
+      credentials: "include",
+      body: {
+        nomHebergement: nomHebergement.value,
+        caracteristiques: { ...values },
+      },
       onResponse({ response }) {
         if (!response.ok) {
           toaster.error(

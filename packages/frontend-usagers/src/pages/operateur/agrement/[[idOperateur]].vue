@@ -249,8 +249,9 @@ async function upload() {
   body.append("file", agrementFile.value);
   try {
     const url = `/document/agrement`;
-    await useFetchWithCredentials(url, {
+    await $fetchBackend(url, {
       method: "post",
+      credentials: "include",
       body,
       onResponse({ response }) {
         if (!response.ok) {

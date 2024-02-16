@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { logger, useFetchWithCredentials } from "#imports";
+import { logger, $fetchBackend } from "#imports";
 
 const log = logger("stores/hebergement");
 
@@ -12,10 +12,11 @@ export const useHebergementStore = defineStore("hebergement", {
     async fetchHebergement() {
       try {
         log.i("fetchHebergement - IN");
-
-        const { data } = await useFetchWithCredentials("/hebergement");
-        if (data.value?.hebergements) {
-          this.hebergements = data.value.hebergements;
+        const { hebergements } = await $fetchBackend("/hebergement", {
+          credentials: "include",
+        });
+        if (hebergements) {
+          this.hebergements = hebergements;
         }
         log.d("fetchHebergements  - DONE");
       } catch (err) {
@@ -27,10 +28,12 @@ export const useHebergementStore = defineStore("hebergement", {
       try {
         log.i("setHebergementCourant - IN", { id });
 
-        const { data } = await useFetchWithCredentials(`/hebergement/${id}`);
-        log.d(data);
-        if (data.value?.hebergement) {
-          this.hebergementCourant = data.value.hebergement;
+        const { hebergement } = await $fetchBackend(`/hebergement/${id}`, {
+          credentials: "include",
+        });
+        log.d(hebergement);
+        if (hebergement) {
+          this.hebergementCourant = hebergement;
         }
         log.d("setHebergementCourant - DONE");
       } catch (err) {

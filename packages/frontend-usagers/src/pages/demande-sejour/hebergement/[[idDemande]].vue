@@ -71,8 +71,8 @@
               id="retour"
               :secondary="true"
               @click="changeDisplayAddHebergement"
-              >Ajouter un hébergement</DsfrButton
-            >
+              >Ajouter un hébergement
+            </DsfrButton>
           </div>
         </fieldset>
         <fieldset v-if="!displayAddHebergement" class="fr-fieldset">
@@ -112,15 +112,15 @@
         <div class="fr-col-4">
           <div class="fr-input-group">
             <DsfrButton id="retour" :secondary="true" @click="back"
-              >Retour</DsfrButton
-            >
+              >Retour
+            </DsfrButton>
           </div>
         </div>
         <div class="fr-col-4">
           <div class="fr-input-group">
             <DsfrButton id="precedent" :secondary="true" @click="previous"
-              >Précédent</DsfrButton
-            >
+              >Précédent
+            </DsfrButton>
           </div>
         </div>
         <div class="fr-col-4">
@@ -129,8 +129,8 @@
               id="Suivant"
               :disabled="!meta.valid || !rejoindreEtape"
               @click="next"
-              >Suivant</DsfrButton
-            >
+              >Suivant
+            </DsfrButton>
           </div>
         </div>
       </fieldset>
@@ -329,8 +329,9 @@ async function next() {
   log.d("next - IN");
   try {
     const url = `/sejour/${route.params.idDemande}`;
-    await useFetchWithCredentials(url, {
+    await $fetchBackend(url, {
       method: "POST",
+      credentials: "include",
       body: {
         parametre: {
           hebergements: {

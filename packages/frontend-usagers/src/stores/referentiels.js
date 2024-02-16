@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { useRuntimeConfig, useFetch } from "#app";
+import { $fetchBackend } from "#imports";
 
 export const useDepartementStore = defineStore("departement", {
   state: () => ({
@@ -7,18 +7,15 @@ export const useDepartementStore = defineStore("departement", {
   }),
   actions: {
     async fetch() {
-      const config = useRuntimeConfig();
-
-      const { data, error } = await useFetch(
-        config.public.backendUrl + "/geo/departements",
-      );
-      if (data.value) {
-        this.departements = data.value.departements.map((departement) => ({
-          text: `${departement.value} - ${departement.text}`,
-          value: departement.value,
-        }));
-      }
-      if (error.value) {
+      try {
+        const { departements } = await $fetchBackend("/geo/departements");
+        if (departements) {
+          this.departements = departements.map((departement) => ({
+            text: `${departement.value} - ${departement.text}`,
+            value: departement.value,
+          }));
+        }
+      } catch (err) {
         this.departements = [];
       }
     },
@@ -31,18 +28,15 @@ export const useRegionStore = defineStore("region", {
   }),
   actions: {
     async fetch() {
-      const config = useRuntimeConfig();
-
-      const { data, error } = await useFetch(
-        config.public.backendUrl + "/geo/regions",
-      );
-      if (data.value) {
-        this.regions = data.value.regions.map((region) => ({
-          text: `${region.value} - ${region.text}`,
-          value: region.value,
-        }));
-      }
-      if (error.value) {
+      try {
+        const { regions } = await $fetchBackend("/geo/regions");
+        if (regions) {
+          this.regions = regions.map((region) => ({
+            text: `${region.value} - ${region.text}`,
+            value: region.value,
+          }));
+        }
+      } catch (err) {
         this.regions = [];
       }
     },
