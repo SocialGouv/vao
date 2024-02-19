@@ -16,6 +16,30 @@ module.exports = async function post(req, res) {
   }
 
   try {
+    if (type === "personne_morale") {
+      let { operateurId } = await Operateur.getBySiret(parametre.siret);
+      if (!operateurId) {
+        log.d("operateur inexistant, a créer");
+        operateurId = await Operateur.create(type, parametre);
+        if (!operateurId) {
+          log.w("error while creating operator");
+          return res.status(400).json({
+            message: "une erreur est survenue durant l'ajout de l'opérateur",
+          });
+        }
+      }
+      const userLinkedToOperateur = await Operateur.link(userId, operateurId);
+      if (!userLinkedToOperateur) {
+        log.w("error while linking user and operator");
+        return res.status(400).json({
+          message:
+            "une erreur est survenue durant la création de liaison entre utilisateur et opérateur",
+        });
+      }
+      return res
+        .status(200)
+        .json({ message: "sauvegarde opérateur OK", operateurId });
+    }
     const operateurId = await Operateur.create(type, parametre);
     if (!operateurId) {
       log.w("error while creating operator");
@@ -23,7 +47,6 @@ module.exports = async function post(req, res) {
         message: "une erreur est survenue durant l'ajout de l'opérateur",
       });
     }
-
     const userLinkedToOperateur = await Operateur.link(userId, operateurId);
     if (!userLinkedToOperateur) {
       log.w("error while linking user and operator");
@@ -32,7 +55,6 @@ module.exports = async function post(req, res) {
           "une erreur est survenue durant la création de liaison entre utilisateur et opérateur",
       });
     }
-
     return res
       .status(200)
       .json({ message: "sauvegarde opérateur OK", operateurId });

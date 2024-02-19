@@ -66,7 +66,7 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/authentication/email/login.js
   checksum: 7ac4c97b5d6c36b5f944c339e0411947d59b12ed2f653497ea4017d9992e1058
 - filename: packages/backend/src/controllers/authentication/email/register.js
-  checksum: 6331a82bff8be5d26ae958092ac9be2b938eac65af30186f58ca3d806c6feade
+  checksum: 405b78b09927ec0c3feb4eec6aada0b4875e63f0065863962c446be5ce8ca5e7
 - filename: packages/backend/src/controllers/authentication/email/renewPassword.js
   checksum: 71c7f6afdca8903cb4ad4120ac93e5296cc5bac40dac63391722bb4c2079b422
 - filename: packages/backend/src/pgpool.js
@@ -93,6 +93,10 @@ fileignoreconfig:
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
+- filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
+  checksum: b8537a48fdf7ac1c94899336409a4543e9de4342bf2d4211ad2c6e735cb41cf4
+- filename: packages/frontend-usagers/src/components/organisateur.vue
+  checksum: 5be487a1e995dd4207baabe268d2d4c7159d7a3b3ec05663825400e47590fdee
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue
   checksum: 05743cc5c3dfd946e8ee41cb11571b1e505bbdb5260e9c59a53e4ca16cb11f08
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
@@ -120,7 +124,7 @@ fileignoreconfig:
 - filename: pg/scripts/02/02-3-back-init.sql
   checksum: 5a57a150059114c6819fbbe397d5cb5bc7861234c3768e590cf3cc540d8a224d
 - filename: pg/scripts/02/02-4-front-init.sql
-  checksum: 05f0518e415eb2de4ad18badf819d807d0749cd4249d515cf3e660a8b39ab045
+  checksum: bc1b589d062b8003ad3b7323d397fee3279f79712a52444ae20ce434e9b0939e
 - filename: pg/scripts/03/03-1-geo-data.sql
   checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
 - filename: pg/scripts/03/03-2-back-data.sql

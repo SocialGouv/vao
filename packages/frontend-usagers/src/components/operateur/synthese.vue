@@ -47,11 +47,12 @@
         <DsfrButton
           label="Finaliser la fiche opérateur"
           :disabled="
-            !protocoleSanitaire.type === 'success' ||
-            !protocoleTransport.type === 'success' ||
-            !agrement.type === 'success'
+            renseignementsGeneraux.type === 'warning' ||
+            protocoleSanitaire.type === 'warning' ||
+            protocoleTransport.type === 'warning' ||
+            agrement.type === 'warning'
           "
-          @click="saveOperateur"
+          @click="finalizeOrganisme"
         />
       </div>
     </div>
@@ -59,25 +60,17 @@
 </template>
 
 <script setup>
-import { useLayoutStore } from "@/stores/layout";
-import { useOperateurStore } from "@/stores/operateur";
+const log = logger("components/operateur/synthese");
 
-definePageMeta({
-  middleware: ["is-connected", "has-id-operateur"],
-  layout: "operateur",
+const props = defineProps({
+  initData: { type: Object, default: null, required: true },
 });
 
-const log = logger("pages/operateur/protocole-transport");
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
-const route = useRoute();
-
-const layoutStore = useLayoutStore();
-const operateurStore = useOperateurStore();
+const emit = defineEmits(["valid"]);
 
 const renseignementsGeneraux = ref({
-  label: "complet",
-  type: "success",
+  label: "",
+  type: "",
 });
 const agrement = ref({
   label: "",
@@ -92,51 +85,51 @@ const protocoleSanitaire = ref({
   type: "",
 });
 
-async function saveOperateur() {
-  log.i("saveOperateur - IN");
-  try {
-    const url = `/operateur/${route.params.idOperateur}`;
-    await $fetchBackend(url, {
-      method: "POST",
-      credentials: "include",
-      body: {
-        parametre: {},
-        type: "recapitulatif",
-      },
-    });
-
-    toaster.success("Fiche opérateur validée");
-    navigateTo(`/`);
-  } catch (error) {
-    log.w("Validation d'operateur - erreur", { error });
-  }
+function finalizeOrganisme() {
+  log.i("finalizeOrganisme - IN");
+  emit("valid", {});
 }
 
-onMounted(async () => {
-  layoutStore.stepperIndex = 5;
-  await operateurStore.setMyOperateur();
-  if (operateurStore.operateurCourant.agrement) {
+onMounted(() => {
+  if (props.initData.typeOperateur === "personne_morale") {
+    if (props.initData.personneMorale.meta) {
+      renseignementsGeneraux.value.label = "complet";
+      renseignementsGeneraux.value.type = "success";
+    } else {
+      renseignementsGeneraux.value.label = "à compléter";
+      renseignementsGeneraux.value.type = "warning";
+    }
+  }
+  if (props.initData.typeOperateur === "personne_physique") {
+    if (props.initData.personnePhysique.meta) {
+      renseignementsGeneraux.value.label = "complet";
+      renseignementsGeneraux.value.type = "success";
+    } else {
+      renseignementsGeneraux.value.label = "à compléter";
+      renseignementsGeneraux.value.type = "warning";
+    }
+  }
+  if (props.initData.agrement) {
     agrement.value.label = "complet";
     agrement.value.type = "success";
   } else {
     agrement.value.label = "à compléter";
     agrement.value.type = "warning";
   }
-  if (operateurStore.operateurCourant.protocoleTransport.meta) {
+  if (props.initData.protocoleTransport.meta) {
     protocoleTransport.value.label = "complet";
     protocoleTransport.value.type = "success";
   } else {
     protocoleTransport.value.label = "à compléter";
     protocoleTransport.value.type = "warning";
   }
-  if (operateurStore.operateurCourant.protocoleSanitaire.meta) {
+  if (props.initData.protocoleSanitaire.meta) {
     protocoleSanitaire.value.label = "complet";
     protocoleSanitaire.value.type = "success";
   } else {
     protocoleSanitaire.value.label = "à compléter";
     protocoleSanitaire.value.type = "warning";
   }
-  log.d("mounted Done");
 });
 </script>
 

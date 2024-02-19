@@ -30,17 +30,17 @@
         >
           <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
             <div class="fr-py-1v">
-              <h3>Opérateur</h3>
+              <h3>Organisme</h3>
             </div>
             <div class="fr-py-1v">
               <a
                 class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
                 :href="
                   operateurStore.operateurCourant
-                    ? `/operateur/renseignements-generaux/${operateurStore.operateurCourant.operateurId}`
+                    ? `/front/operateur/${operateurStore.operateurCourant.operateurId}`
                     : '#'
                 "
-                >Ma fiche opérateur</a
+                >Ma fiche organisme</a
               >
             </div>
             <div class="fr-py-1v"><p></p></div>
@@ -129,7 +129,7 @@ const libelleMessageAccueil =
   "Afin de profiter de toutes les fonctionnalités de ce site, nous vous invitons à renseigner votre fiche organisme";
 
 function saisieFicheOperateur() {
-  navigateTo("/operateur/renseignements-generaux");
+  return navigateTo("/operateur");
 }
 
 onMounted(async () => {

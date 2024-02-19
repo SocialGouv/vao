@@ -6,15 +6,14 @@ const props = defineProps({
   step: { type: Number, default: 1, required: false },
 });
 const steps = ref([
-  "Sélection de l'opérateur",
-  "informations générales",
-  "informations prévisionnelles sur les vacanciers",
-  "informations indicatives sur le personnel",
-  "projet de séjour",
-  "informations sur le transport des vacanciers",
-  "informations sanitaires",
-  "séletion des hébergements",
-  "recapitulatif",
+  "Informations générales",
+  "Organisateurs du séjour",
+  "Informations prévisionnelles sur les vacanciers",
+  "Informations indicatives sur le personnel",
+  "Projet de séjour",
+  "Informations sur le transport des vacanciers",
+  "Informations sanitaires",
+  "Sélection des hébergements",
 ]);
 const currentStep = computed(() => {
   return props.step ?? 1;

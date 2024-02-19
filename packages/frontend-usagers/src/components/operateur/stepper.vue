@@ -10,6 +10,7 @@ const steps = ref([
   "Agrément",
   "Protocole transport",
   "Protocole sanitaire",
+  "Organisateurs de séjour",
   "Récapitulatif",
 ]);
 const currentStep = computed(() => {

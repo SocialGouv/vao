@@ -1,7 +1,39 @@
 <template>
   <div>
     <div class="fr-col-12">
-      <div v-if="demandeCourante.sejourItinerant && hebergements.length > 0">
+      <fieldset class="fr-fieldset">
+        <div class="fr-fieldset__element fr-col-6">
+          <div class="fr-input-group">
+            <DsfrRadioButtonSet
+              name="sejourItinerant"
+              legend="Séjour itinerant"
+              :required="true"
+              :model-value="sejourItinerant"
+              :options="ouiNonOptions"
+              :is-valid="sejourItinerantMeta"
+              :inline="true"
+              :error-message="sejourItinerantErrorMessage"
+              @update:model-value="onSejourItinerantChange"
+            />
+          </div>
+        </div>
+        <div v-if="sejourItinerant" class="fr-fieldset__element fr-col-6">
+          <div class="fr-input-group">
+            <DsfrRadioButtonSet
+              name="sejourEtranger"
+              legend="Séjour à l'étranger"
+              :required="true"
+              :model-value="sejourEtranger"
+              :options="ouiNonOptions"
+              :is-valid="sejourEtrangerMeta"
+              :inline="true"
+              :error-message="sejourEtrangerErrorMessage"
+              @update:model-value="onSejourEtrangerChange"
+            />
+          </div>
+        </div>
+      </fieldset>
+      <div v-if="sejourItinerant && hebergements.length > 0">
         <span>Récapitulatif des hébergements sélectionnés jusque là :</span>
         <DsfrTable :headers="headers" :rows="syntheseRows" />
       </div>
@@ -75,6 +107,20 @@
             </DsfrButton>
           </div>
         </fieldset>
+        <fieldset class="fr-fieldset">
+          <div class="fr-fieldset__element fr-col-12">
+            <DsfrInputGroup
+              name="rejoindreEtape"
+              :required="true"
+              label="Précisez le mode de transport utilisé pour rejoindre cette étape"
+              :label-visible="true"
+              :is-textarea="true"
+              placeholder=""
+              :model-value="rejoindreEtape"
+              @update:model-value="onRejoindreEtapeChange"
+            />
+          </div>
+        </fieldset>
         <fieldset v-if="!displayAddHebergement" class="fr-fieldset">
           <div
             class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-10 fr-col-lg-6"
@@ -94,20 +140,7 @@
           @add="ajoutHebergement"
         />
       </div>
-      <fieldset class="fr-fieldset">
-        <div class="fr-fieldset__element fr-col-12">
-          <DsfrInputGroup
-            name="rejoindreEtape"
-            :required="true"
-            label="Précisez la fréquence, les distances et le mode de transport utilisé pour rejoindre les différentes étapes dans le cas d’un séjour itinérant"
-            :label-visible="true"
-            :is-textarea="true"
-            placeholder=""
-            :model-value="rejoindreEtape"
-            @update:model-value="onRejoindreEtapeChange"
-          />
-        </div>
-      </fieldset>
+
       <fieldset v-if="!displayAddHebergement" class="fr-fieldset">
         <div class="fr-col-4">
           <div class="fr-input-group">
@@ -142,6 +175,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
+import { ouiNonOptions } from "@/helpers/ouiNonOptions";
 import { useDemandeSejourStore } from "@/stores/demande-sejour";
 import { useHebergementStore } from "@/stores/hebergement";
 import { useLayoutStore } from "@/stores/layout";
@@ -155,7 +189,7 @@ definePageMeta({
   layout: "demande-sejour",
 });
 
-const log = logger("demande-sejour/informations-generales");
+const log = logger("demande-sejour/hebergement");
 
 const demandeSejourStore = useDemandeSejourStore();
 const hebergementStore = useHebergementStore();
@@ -181,8 +215,9 @@ const headers = ref([
 ]);
 const displayAddHebergement = ref(false);
 const displaySelectHebergement = ref(true);
-const hebergements = ref([]);
+// const hebergements = ref([]);
 const schemaHebergement = {
+  sejourItinerant: yup.boolean().required(),
   dateDebut: yup
     .date()
     .test(
@@ -197,8 +232,9 @@ const schemaHebergement = {
       "La date de fin ne peut pas être supérieure à la date de fin du séjour ou inférieure à une précédente date de fin",
       (dateFin) => testDateFin(dateFin),
     ),
-  hebergementSelectionne: yup
-    .string()
+  hebergements: yup
+    .array()
+    .min(1, "vous devez sélectionner au moins un hébergement")
     .required("le choix d'un hébergement dans la liste est obligatoire"),
 };
 const validationSchema = computed(() =>
@@ -206,7 +242,12 @@ const validationSchema = computed(() =>
     ...schemaHebergement,
   }),
 );
-const { meta } = useForm({ validationSchema });
+const initialValues = computed(() => ({
+  sejourItinerant: demandeCourante.value?.hebergement?.sejourItinerant ?? false,
+  sejourEtranger: demandeCourante.value?.hebergement?.sejourEtranger ?? false,
+  hebergements: demandeCourante.value?.hebergement?.hebergements ?? [],
+}));
+const { meta } = useForm({ initialValues, validationSchema });
 const {
   value: dateDebut,
   errorMessage: dateDebutErrorMessage,
@@ -220,11 +261,24 @@ const {
   meta: dateFinMeta,
 } = useField("dateFin");
 const {
+  value: sejourItinerant,
+  errorMessage: sejourItinerantErrorMessage,
+  handleChange: onSejourItinerantChange,
+  meta: sejourItinerantMeta,
+} = useField("sejourItinerant");
+const {
+  value: sejourEtranger,
+  errorMessage: sejourEtrangerErrorMessage,
+  handleChange: onSejourEtrangerChange,
+  meta: sejourEtrangerMeta,
+} = useField("sejourEtranger");
+const {
   value: hebergementSelectionne,
   errorMessage: hebergementSelectionneErrorMessage,
   handleChange: onHebergementSelectionneChange,
   meta: hebergementSelectionneMeta,
 } = useField("hebergementSelectionne");
+const { value: hebergements } = useField("hebergements");
 const { value: rejoindreEtape, handleChange: onRejoindreEtapeChange } =
   useField("rejoindreEtape");
 const dateFinMax = computed(() => {
@@ -246,6 +300,7 @@ const syntheseRows = computed(() => {
       hebergementStore.hebergements.find(
         (elem) => elem.hebergementId.toString() === h.hebergementId.toString(),
       ) ?? {};
+    log.i(currentHebergement);
     return [
       `${index + 1}`,
       dayjs(h.dateFin).diff(dayjs(h.dateDebut), "day").toString(),
@@ -257,12 +312,23 @@ const syntheseRows = computed(() => {
   });
 });
 
+watch(sejourItinerant, () => {
+  if (sejourItinerant.value) {
+    dateFin.value = dayjs(demandeCourante.value.dateDebut)
+      .add(1, "day")
+      .format("YYYY-MM-DD");
+  } else {
+    dateFin.value = dayjs(demandeCourante.value.dateFin).format("YYYY-MM-DD");
+  }
+});
+
 function nextHebergement() {
   log.d("nextHebergement - IN");
   hebergements.value.push({
     dateDebut: dateDebut.value,
     dateFin: dateFin.value,
     hebergementId: hebergementSelectionne.value,
+    rejoindreEtape: rejoindreEtape.value,
   });
   toaster.success(`hebergement n°${hebergements.value.length} défini`);
   if (
@@ -271,6 +337,7 @@ function nextHebergement() {
     displaySelectHebergement.value = false;
   } else {
     hebergementSelectionne.value = null;
+    rejoindreEtape.value = null;
   }
   dateDebut.value = dateFin.value;
   dateFin.value = dayjs(dateDebut.value).add(1, "day").format("YYYY-MM-DD");
@@ -336,7 +403,9 @@ async function next() {
         parametre: {
           hebergements: {
             hebergements: hebergements.value,
-            rejoindreEtape: rejoindreEtape.value,
+            sejourItinerant,
+            sejourEtranger,
+            nombreHebergements: hebergements.value.length,
           },
         },
         type: "hebergements",
@@ -360,20 +429,16 @@ async function next() {
 
 onMounted(async () => {
   layoutStore.breadCrumb = "choix des hébergements";
-  layoutStore.stepperIndex = 7;
+  layoutStore.stepperIndex = 8;
   await demandeSejourStore.setDemandeCourante(route.params.idDemande);
   hebergementStore.fetchHebergement();
   if (demandeCourante.value?.hebergements?.length > 0) {
-    log.i("init");
     hebergements.value = demandeCourante.value?.hebergements;
   } else {
-    log.i("init with null");
     dateDebut.value = dayjs(demandeCourante.value.dateDebut).format(
       "YYYY-MM-DD",
     );
-    dateFin.value = dayjs(demandeCourante.value.dateDebut)
-      .add(1, "day")
-      .format("YYYY-MM-DD");
+    dateFin.value = dayjs(demandeCourante.value.dateFin).format("YYYY-MM-DD");
   }
 });
 </script>

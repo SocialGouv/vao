@@ -13,10 +13,7 @@
             legend="Des dispositions d’ordre sanitaire spécifiques sont-elles prévues ?"
             :required="true"
             :model-value="dispositionsSpecifiques"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="dispositionsSpecifiquesMeta"
             :inline="true"
             :error-message="dispositionsSpecifiquesErrorMessage"
@@ -25,7 +22,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="dispositionsSpecifiques" class="fr-fieldset">
+    <fieldset v-if="dispositionsSpecifiques === 'oui'" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -100,10 +97,7 @@
             legend="Présence d’une trousse à pharmacie de premier secours ?"
             :required="true"
             :model-value="troussePharmacie"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="troussePharmacieMeta"
             :inline="true"
             :error-message="troussePharmacieErrorMessage"
@@ -185,10 +179,7 @@
             legend="Stockage des médicaments dans un lieu sécurisé ?"
             :required="true"
             :model-value="stockageMedicamentSecurise"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="stockageMedicamentSecuriseMeta"
             :inline="true"
             :error-message="stockageMedicamentSecuriseErrorMessage"
@@ -197,7 +188,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset class="fr-fieldset">
+    <fieldset v-if="stockageMedicamentSecurise === 'oui'" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -223,10 +214,7 @@
             legend="Un dispositif est-il prévu pour la conservation des médicaments thermosensibles ?"
             :required="true"
             :model-value="conservationMedicamentThermosensible"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="conservationMedicamentThermosensibleMeta"
             :inline="true"
             :error-message="conservationMedicamentThermosensibleErrorMessage"
@@ -235,7 +223,10 @@
         </div>
       </div>
     </fieldset>
-    <fieldset class="fr-fieldset">
+    <fieldset
+      v-if="conservationMedicamentThermosensible === 'oui'"
+      class="fr-fieldset"
+    >
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -261,10 +252,7 @@
             legend="Individualisation des médicaments ?"
             :required="true"
             :model-value="individualisationMedicaments"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="individualisationMedicamentsMeta"
             :inline="true"
             :error-message="individualisationMedicamentsErrorMessage"
@@ -273,7 +261,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="individualisationMedicaments" class="fr-fieldset">
+    <fieldset v-if="individualisationMedicaments === 'oui'" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -352,10 +340,7 @@
             legend="une prescription médicale est-elle jointe à chaque pilulier ?"
             :required="true"
             :model-value="prescriptionMedicaleJointe"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="prescriptionMedicaleJointeMeta"
             :inline="true"
             :error-message="prescriptionMedicaleJointeErrorMessage"
@@ -372,10 +357,7 @@
             legend="Existe-t-il un protocole en cas de modification de traitement en cours de séjour ?"
             :required="true"
             :model-value="protocoleModificationTraitement"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="protocoleModificationTraitementMeta"
             :inline="true"
             :error-message="protocoleModificationTraitementErrorMessage"
@@ -384,7 +366,10 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="protocoleModificationTraitement" class="fr-fieldset">
+    <fieldset
+      v-if="protocoleModificationTraitement === 'oui'"
+      class="fr-fieldset"
+    >
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -414,10 +399,7 @@
             legend="Existe-t-il une fiche de suivi de la distribution, de l’administration et de l’enregistrement des médicaments ?"
             :required="true"
             :model-value="ficheSuiviMedicaments"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="ficheSuiviMedicamentsMeta"
             :inline="true"
             :error-message="ficheSuiviMedicamentsErrorMessage"
@@ -434,10 +416,7 @@
             legend="Existe-t-il un protocole d’évacuation et de rapatriement des vacanciers si nécessaire au cours du séjour ?"
             :required="true"
             :model-value="protocoleEvacuation"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="protocoleEvacuationMeta"
             :inline="true"
             :error-message="protocoleEvacuationErrorMessage"
@@ -446,7 +425,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="protocoleEvacuation" class="fr-fieldset">
+    <fieldset v-if="protocoleEvacuation === 'oui'" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -472,10 +451,7 @@
             legend="Existe-t-il un protocole en cas de chute, d’intoxication (alimentaire, médicamenteuse, etc.) ou autre accident ?"
             :required="true"
             :model-value="protocoleAccident"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="protocoleAccidentMeta"
             :inline="true"
             :error-message="protocoleAccidentErrorMessage"
@@ -484,7 +460,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="protocoleAccident" class="fr-fieldset">
+    <fieldset v-if="protocoleAccident === 'oui'" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -510,10 +486,7 @@
             legend="Existe-t-il un protocole en cas de réorientation (inadaptation des conditions générales du séjour à la situation de la personne handicapée) des vacanciers ?"
             :required="true"
             :model-value="protocoleReorientation"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="protocoleReorientationMeta"
             :inline="true"
             :error-message="protocoleReorientationErrorMessage"
@@ -522,7 +495,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="protocoleReorientation" class="fr-fieldset">
+    <fieldset v-if="protocoleReorientation === 'oui'" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -548,10 +521,7 @@
             legend="Existe-t-il un protocole en cas d’alerte canicule (locaux, transports…) ?"
             :required="true"
             :model-value="protocoleCanicule"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="protocoleCaniculeMeta"
             :inline="true"
             :error-message="protocoleCaniculeErrorMessage"
@@ -560,7 +530,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="protocoleCanicule" class="fr-fieldset">
+    <fieldset v-if="protocoleCanicule === 'oui'" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -609,6 +579,7 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+import { ouiNonOptions } from "@/helpers/ouiNonOptions";
 
 const props = defineProps({
   initData: { type: Object, default: null, required: true },
@@ -619,31 +590,117 @@ const log = logger("components/protocole-sanitaire");
 
 const schemaInfosSanitaires = {
   dispositionsSpecifiques: yup.string().required(),
-  precisionDispositionsSpecifiques: yup.string(),
+  precisionDispositionsSpecifiques: yup
+    .string()
+    .when("dispositionsSpecifiques", {
+      is: (val) => val === "oui",
+      then: (precision) =>
+        precision
+          .min(5, "Vous devez préciser votre réponse précédente")
+          .required(),
+      otherwise: (precision) => precision.nullable(),
+    }),
   constitutionEquipe: yup.array().required(),
-  precisionConstitutionEquipe: yup.string(),
+  precisionConstitutionEquipe: yup.string().when("constitutionEquipe", {
+    is: (val) => val === "oui",
+    then: (precision) =>
+      precision
+        .min(5, "Vous devez préciser votre réponse précédente")
+        .required(),
+    otherwise: (precision) => precision.nullable(),
+  }),
   troussePharmacie: yup.string().required(),
   responsableAdministrationMedicament: yup.array().required(),
   stockageMedicamentSecurise: yup.string().required(),
-  precisionStockageMedicamentSecurise: yup.string(),
+  precisionStockageMedicamentSecurise: yup
+    .string()
+    .when("stockageMedicamentSecurise", {
+      is: (val) => val === "oui",
+      then: (precision) =>
+        precision
+          .min(5, "Vous devez préciser votre réponse précédente")
+          .required(),
+      otherwise: (precision) => precision.nullable(),
+    }),
   conservationMedicamentThermosensible: yup.string().required(),
-  precisionConservationMedicament: yup.string().required(),
+  precisionConservationMedicament: yup.string().when("conservationMedicament", {
+    is: (val) => val === "oui",
+    then: (precision) =>
+      precision
+        .min(5, "Vous devez préciser votre réponse précédente")
+        .required(),
+    otherwise: (precision) => precision.nullable(),
+  }),
   individualisationMedicaments: yup.string().required(),
-  precisionIndividualisationMedicaments: yup.string(),
+  precisionIndividualisationMedicaments: yup
+    .string()
+    .when("individualisationMedicaments", {
+      is: (val) => val === "oui",
+      then: (precision) =>
+        precision
+          .min(5, "Vous devez préciser votre réponse précédente")
+          .required(),
+      otherwise: (precision) => precision.nullable(),
+    }),
   preparationPilluliers: yup.string().required(),
-  precisionPreparationPilluliers: yup.string(),
+  precisionPreparationPilluliers: yup.string().when("preparationPilluliers", {
+    is: (val) => val === "oui",
+    then: (precision) =>
+      precision
+        .min(5, "Vous devez préciser votre réponse précédente")
+        .required(),
+    otherwise: (precision) => precision.nullable(),
+  }),
   prescriptionMedicaleJointe: yup.string().required(),
   protocoleModificationTraitement: yup.string().required(),
-  precisionProtocoleModificationTraitement: yup.string(),
+  precisionProtocoleModificationTraitement: yup
+    .string()
+    .when("protocoleModificationTraitement", {
+      is: (val) => val === "oui",
+      then: (precision) =>
+        precision
+          .min(5, "Vous devez préciser votre réponse précédente")
+          .required(),
+      otherwise: (precision) => precision.nullable(),
+    }),
   ficheSuiviMedicaments: yup.string().required(),
   protocoleEvacuation: yup.string().required(),
-  precisionProtocoleEvacuation: yup.string(),
+  precisionProtocoleEvacuation: yup.string().when("protocoleEvacuation", {
+    is: (val) => val === "oui",
+    then: (precision) =>
+      precision
+        .min(5, "Vous devez préciser votre réponse précédente")
+        .required(),
+    otherwise: (precision) => precision.nullable(),
+  }),
   protocoleAccident: yup.string().required(),
-  precisionProtocoleAccident: yup.string(),
+  precisionProtocoleAccident: yup.string().when("protocoleAccident", {
+    is: (val) => val === "oui",
+    then: (precision) =>
+      precision
+        .min(5, "Vous devez préciser votre réponse précédente")
+        .required(),
+    otherwise: (precision) => precision.nullable(),
+  }),
   protocoleReorientation: yup.string().required(),
-  precisionProtocoleReorientation: yup.string(),
+  precisionProtocoleReorientation: yup.string().when("protocoleReorientation", {
+    is: (val) => val === "oui",
+    then: (precision) =>
+      precision
+        .min(5, "Vous devez préciser votre réponse précédente")
+        .required(),
+    otherwise: (precision) => precision.nullable(),
+  }),
+  //
   protocoleCanicule: yup.string().required(),
-  precisionProtocoleCanicule: yup.string().required(),
+  precisionProtocoleCanicule: yup.string().when("protocoleCanicule", {
+    is: (val) => val === "oui",
+    then: (precision) =>
+      precision
+        .min(5, "Vous devez préciser votre réponse précédente")
+        .required(),
+    otherwise: (precision) => precision.nullable(),
+  }),
   gestionBudgetPersonnel: yup.string().required(),
 };
 
@@ -697,7 +754,7 @@ const initialValues = computed(() => ({
   precisionProtocoleCanicule: props.initData?.precisionProtocoleCanicule || "",
   gestionBudgetPersonnel: props.initData?.gestionBudgetPersonnel || "",
 }));
-const { meta, values } = useForm({
+const { meta, values, resetForm } = useForm({
   validationSchema,
   initialValues,
 });
@@ -865,8 +922,12 @@ const {
 
 function valid() {
   log.d("valid - IN");
-  emit("valid", { ...values, meta: meta.value.valid });
+  emit("valid", { ...values, meta: meta.value.valid }, "protocole_sanitaire");
 }
+
+onMounted(() => {
+  resetForm({ values: initialValues.value });
+});
 </script>
 
 <style lang="scss" scoped>

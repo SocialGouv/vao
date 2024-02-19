@@ -22,7 +22,7 @@
         <div class="fr-input-group">
           <DsfrRadioButtonSet
             name="procedureRecrutementSupplementaire"
-            legend="Séjour à l'étranger"
+            legend="Procédure en cas de recrutement de personnels supplémentaires durant le séjour"
             :required="true"
             :model-value="procedureRecrutementSupplementaire"
             :options="ouiNonOptions"
@@ -80,13 +80,14 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { useDemandeSejourStore } from "@/stores/demande-sejour";
 import { useLayoutStore } from "@/stores/layout";
+import { ouiNonOptions } from "@/helpers/ouiNonOptions";
 
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
 definePageMeta({
-  middleware: ["is-connected"],
+  middleware: ["is-connected", "has-id-demande-sejour"],
   layout: "demande-sejour",
 });
 
@@ -94,16 +95,6 @@ const log = logger("demande-sejour/informations-generales");
 
 const demandeSejourStore = useDemandeSejourStore();
 const layoutStore = useLayoutStore();
-const ouiNonOptions = [
-  {
-    label: "Oui",
-    value: 1,
-  },
-  {
-    label: "Non",
-    value: 0,
-  },
-];
 
 const demandeCourante = computed(() => {
   return demandeSejourStore.demandeCourante;
@@ -111,12 +102,14 @@ const demandeCourante = computed(() => {
 const schemaInfosPersonnel = {
   nombreResponsable: yup
     .number()
-    .typeError("Doit être un nombre entier")
+    .typeError("Ce champ doit contenir un nombre entier")
     .required(),
-  procedureRecrutementSupplementaire: yup.bool().required(),
+  procedureRecrutementSupplementaire: yup
+    .bool()
+    .required("La saisie de ce champ est obligatoire"),
   nombreAccompagnant: yup
     .number()
-    .typeError("Doit être un nombre entier")
+    .typeError("Ce champ doit contenir un nombre entier")
     .required(),
 };
 
@@ -203,10 +196,9 @@ function previous() {
   );
 }
 
-onMounted(async () => {
+onMounted(() => {
   layoutStore.breadCrumb = "informations sur le personnel";
-  layoutStore.stepperIndex = 3;
-  await demandeSejourStore.setDemandeCourante(route.params.idDemande);
+  layoutStore.stepperIndex = 4;
 });
 </script>
 
