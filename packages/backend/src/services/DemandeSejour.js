@@ -12,10 +12,13 @@ const query = {
       libelle,
       date_debut,
       date_fin,
-      itinerant,
-      itinerant_etranger,
-      duree) 
-    VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7)
+      duree,
+      periode,
+      transport,
+      sanitaires,
+      organisateurs
+    ) 
+    VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9)
     RETURNING
         id as "idDemande"
     ;
@@ -30,15 +33,13 @@ const query = {
       ds.date_fin as "dateFin",
       ds.created_at as "createdAt",
       ds.edited_at as "editedAt",
-      ds.itinerant as "sejourItinerant",
-      ds.itinerant_etranger as "sejourEtranger",
       ds.duree as "duree",
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
     JOIN front.operateurs o ON o.id = ds.operateur_id
-    JOIN front.use_ope uo ON uo.ope_id = o.id
+    JOIN front.user_operateur uo ON uo.ope_id = o.id
     WHERE
-      up.use_id = $1
+      uo.use_id = $1
     `,
   getOne: (criterias) => [
     `
@@ -50,8 +51,6 @@ const query = {
       ds.libelle as "libelle",
       ds.date_debut as "dateDebut",
       ds.date_fin as "dateFin",
-      ds.itinerant as "sejourItinerant",
-      ds.itinerant_etranger as "sejourEtranger",
       ds.duree as "duree",
       ds.vacanciers as "informationsVacanciers",
       ds.personnel as "informationsPersonnel",
@@ -59,6 +58,7 @@ const query = {
       ds.transport as "informationsTransport",
       ds.sanitaires as "informationsSanitaires",
       ds.hebergement as "hebergement",
+      ds.organisateurs->'organisateurs' as "organisateurs", 
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
     JOIN front.operateurs o ON o.id = ds.operateur_id
@@ -85,12 +85,10 @@ const query = {
       libelle = $1,
       date_debut = $2,
       date_fin = $3,
-      itinerant = $4,
-      itinerant_etranger = $5,
-      duree = $6,   
+      duree = $4,   
       edited_at=NOW()
     WHERE
-      ds.id = $7
+      ds.id = $5
     RETURNING
       id as "idDemande"
     `,
@@ -153,6 +151,16 @@ const query = {
     RETURNING  
       id as "idDemande"
     `,
+  updateOrganisateurs: `
+    UPDATE front.demande_sejour ds
+      SET 
+      organisateurs = $1,
+      edited_at=NOW()
+    WHERE
+      ds.id = $2
+    RETURNING
+      id as "idDemande"
+    `,
 };
 
 module.exports.create = async (
@@ -160,27 +168,23 @@ module.exports.create = async (
   libelle,
   dateDebut,
   dateFin,
-  itinerant,
-  itinerantEtranger,
   duree,
+  periode,
+  protocoleTransport,
+  protocoleSanitaire,
+  organisateurs,
 ) => {
-  log.i("create - IN", {
-    dateDebut,
-    dateFin,
-    duree,
-    itinerant,
-    itinerantEtranger,
-    libelle,
-    operateurId,
-  });
+  log.i("create - IN");
   const response = await pool.query(query.create, [
     operateurId,
     libelle,
     dateDebut,
     dateFin,
-    itinerant,
-    itinerantEtranger,
     duree,
+    periode,
+    protocoleTransport,
+    protocoleSanitaire,
+    organisateurs,
   ]);
   log.d(response);
   const { idDemande } = response.rows[0];
@@ -217,22 +221,21 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       break;
     }
     case "informationsGenerales": {
-      const {
-        libelle,
-        dateDebut,
-        dateFin,
-        sejourItinerant,
-        sejourEtranger,
-        duree,
-      } = parametre;
+      const { libelle, dateDebut, dateFin, duree } = parametre;
 
       response = await pool.query(query.updateInformationsGenerales, [
         libelle,
         dateDebut,
         dateFin,
-        sejourItinerant,
-        sejourEtranger,
         duree,
+        demandeSejourId,
+      ]);
+      break;
+    }
+    case "organisateurs": {
+      const { organisateurs } = parametre;
+      response = await pool.query(query.updateOrganisateurs, [
+        organisateurs,
         demandeSejourId,
       ]);
       break;

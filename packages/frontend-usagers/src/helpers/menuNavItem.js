@@ -13,11 +13,11 @@ export const navItems = [
     ],
   },
   {
-    title: "Opérateur",
+    title: "Organisme",
     links: [
       {
-        text: "Ma fiche opérateur",
-        to: "/operateur/renseignements-generaux",
+        text: "Ma fiche organisme",
+        to: "/operateur",
       },
     ],
   },

@@ -11,31 +11,27 @@ export default defineNuxtRouteMiddleware(async (to) => {
   await operateurStore.setMyOperateur();
 
   if (isNaN(to.params.idOperateur)) {
-    return navigateTo("/");
+    log.w("invalid param");
+    return navigateTo("/operateur");
   }
-  if (hasId && operateurStore.operateurCourant.operateurId) {
-    if (
-      operateurStore.operateurCourant.operateurId.toString() !==
-      to.params.idOperateur
-    ) {
-      log.w(`operator ${to.params.idOperateur} is not owned by current user`);
-      log.d("adding correct operateurId to url");
-      const url = `${to.fullPath}${operateurStore.operateurCourant.operateurId}`;
-      return navigateTo(url.replace("//", "/"));
+  if (operateurStore.operateurCourant.operateurId) {
+    if (hasId) {
+      if (
+        operateurStore.operateurCourant.operateurId.toString() !==
+        to.params.idOperateur
+      ) {
+        log.w(`operator ${to.params.idOperateur} is not owned by current user`);
+        log.d("adding correct operateurId to url");
+        const url = `/operateur/${operateurStore.operateurCourant.operateurId}`;
+        return navigateTo(url);
+      }
+    } else {
+      log.d("adding operateurId to url");
+      const url = `/operateur/${operateurStore.operateurCourant.operateurId}`;
+      return navigateTo(url);
     }
-    log.d("nothing to do");
+  } else if (hasId) {
+    return navigateTo("/operateur");
   }
-  if (!hasId && operateurStore.operateurCourant.operateurId) {
-    log.d("adding operateurId to url");
-    const formatedUrl =
-      to.fullPath.slice(-1) === "/" ? to.fullPath : to.fullPath + "/";
-    const url = `${formatedUrl}${operateurStore.operateurCourant.operateurId}`;
-    return navigateTo(url.replace("//", "/"));
-  }
-  if (!operateurStore.operateurCourant.operateurId) {
-    if (to.fullPath !== "/operateur/renseignements-generaux") {
-      log.w("no operator linked to current user, sending back to beginning");
-      return navigateTo("/operateur/renseignements-generaux");
-    }
-  }
+  log.d("Done");
 });

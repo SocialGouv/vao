@@ -136,7 +136,7 @@ const initialValues = computed(() => ({
   deplacementDurantSejour: props.initData?.deplacementDurantSejour || "",
   modeTransport: props.initData?.modeTransport ?? [],
 }));
-const { meta, values } = useForm({
+const { meta, values, resetForm } = useForm({
   validationSchema,
   initialValues,
 });
@@ -168,12 +168,20 @@ function addModeTransport(element) {
 
 function valid() {
   log.d("valid - IN");
-  emit("valid", {
-    ...values,
-    modeTransport: modeTransport.value,
-    meta: meta.value.valid,
-  });
+  emit(
+    "valid",
+    {
+      ...values,
+      modeTransport: modeTransport.value,
+      meta: meta.value.valid,
+    },
+    "protocole_transport",
+  );
 }
+
+onMounted(() => {
+  resetForm({ values: initialValues.value });
+});
 </script>
 
 <style lang="scss" scoped>
