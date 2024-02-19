@@ -14,7 +14,7 @@ const query = {
       date_fin,
       itinerant,
       itinerant_etranger,
-      duree) 
+      duree)
     VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7)
     RETURNING
         id as "idDemande"
@@ -39,6 +39,28 @@ const query = {
     JOIN front.use_ope uo ON uo.ope_id = o.id
     WHERE
       up.use_id = $1
+    `,
+  getByAdminId: `
+    SELECT
+      ds.id as "demandeSejourId",
+      ds.statut as "statut",
+      ds.operateur_id as "operateurId",
+      ds.libelle as "libelle",
+      ds.date_debut as "dateDebut",
+      ds.date_fin as "dateFin",
+      ds.created_at as "createdAt",
+      ds.edited_at as "editedAt",
+      ds.itinerant as "sejourItinerant",
+      ds.itinerant_etranger as "sejourEtranger",
+      ds.duree as "duree",
+      ds.vacanciers as "vacanciers",
+      ds.personnel as "personnel",
+      ds.transport as "transport",
+      ds.projet_sejour as "projet_sejour",
+      ds.sanitaires as "sanitaires",
+      o.personne_morale->>'siret' as "siret"
+    FROM front.demande_sejour ds
+      JOIN front.operateurs o ON o.id = ds.operateur_id
     `,
   getOne: (criterias) => [
     `
@@ -71,7 +93,7 @@ const query = {
   ],
   updateHebergements: `
     UPDATE front.demande_sejour ds
-    SET 
+    SET
     hebergement = $1,
     edited_at=NOW()
   WHERE
@@ -81,13 +103,13 @@ const query = {
     `,
   updateInformationsGenerales: `
     UPDATE front.demande_sejour ds
-      SET 
+      SET
       libelle = $1,
       date_debut = $2,
       date_fin = $3,
       itinerant = $4,
       itinerant_etranger = $5,
-      duree = $6,   
+      duree = $6,
       edited_at=NOW()
     WHERE
       ds.id = $7
@@ -96,7 +118,7 @@ const query = {
     `,
   updateInformationsPersonnel: `
     UPDATE front.demande_sejour ds
-      SET 
+      SET
       personnel = $1,
       edited_at=NOW()
     WHERE
@@ -106,7 +128,7 @@ const query = {
     `,
   updateInformationsProjetSejour: `
     UPDATE front.demande_sejour ds
-    SET 
+    SET
     projet_sejour = $1,
     edited_at=NOW()
   WHERE
@@ -116,7 +138,7 @@ const query = {
     `,
   updateInformationsSanitaires: `
     UPDATE front.demande_sejour ds
-    SET 
+    SET
     sanitaires = $1,
     edited_at=NOW()
   WHERE
@@ -126,7 +148,7 @@ const query = {
     `,
   updateInformationsTransport: `
     UPDATE front.demande_sejour ds
-    SET 
+    SET
     transport = $1,
     edited_at=NOW()
   WHERE
@@ -136,7 +158,7 @@ const query = {
     `,
   updateInformationsVacanciers: `
     UPDATE front.demande_sejour ds
-      SET 
+      SET
       vacanciers = $1,
       edited_at=NOW()
     WHERE
@@ -150,7 +172,7 @@ const query = {
           edited_at=NOW()
     WHERE
       ds.id = $2
-    RETURNING  
+    RETURNING
       id as "idDemande"
     `,
 };
@@ -202,6 +224,24 @@ module.exports.getOne = async (criterias = {}) => {
   log.d("getOne - DONE");
   log.d(demandes[0]);
   return demandes[0] ?? [];
+};
+
+module.exports.getBy = async (criterias = {}) => {
+  log.i("getOne - IN", { criterias });
+  const { rows: demandes } = await pool.query(...query.getOne(criterias));
+  log.d("getOne - DONE");
+  log.d(demandes[0]);
+  return demandes[0] ?? [];
+};
+
+module.exports.getByAdminId = async (adminId) => {
+  //  TODO : create the logic (here or in the service) to get the department of the admin.
+  //  For me, the list of demandes that are goven to the admin are the list of all demands of the department
+
+  log.i("getByAdminId - IN", adminId);
+  const response = await pool.query(query.getByAdminId);
+  log.d("getByAdminId - DONE");
+  return response.rows;
 };
 
 module.exports.update = async (type, demandeSejourId, parametre) => {

@@ -1,5 +1,5 @@
 <template>
-  <div>toto</div>
+  <div>Main</div>
 </template>
 
 <script setup>
