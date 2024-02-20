@@ -39,13 +39,13 @@ const headers = [
     column: "demandeSejourSaison",
     sorter: "demandeSejourSaison",
     text: "Saison",
-    format: (value) => sejourStore.saison(value.id),
+    format: (value) => sejourStore.saison(value.demandeSejourId),
   },
   {
     column: "demandeSejourOrganisme",
     sorter: "demandeSejourOrganisme",
     text: "Organisme",
-    format: (value) => sejourStore.organismeTitle(value.id),
+    format: (value) => sejourStore.organismeTitle(value.demandeSejourId),
   },
   {
     column: "demandeSejourstatut",
@@ -57,8 +57,6 @@ const headers = [
     }),
   },
 ];
-
-console.log(demandeStatusSejour);
 
 const navigate = () => console.log("toto");
 </script>

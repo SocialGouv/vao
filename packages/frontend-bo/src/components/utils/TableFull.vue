@@ -171,7 +171,6 @@ const displayableData = computed(() => {
   return filteredData.value.map((item) => {
     const rowdata = h.value.map((header) => {
       if (header.component) {
-        console.log("iciiiiiii", header.component(item));
         return header.component(item);
       }
       if (header.format) {

@@ -22,11 +22,18 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       };
     },
     organismeTitle: (state) => (stateId) => {
-      const demande = state.demandes.find((d) => d.id === stateId);
-      if (demande?.personne_physique) {
+      const demande = state.demandes.find((d) => d.demandeSejourId === stateId);
+
+      if (
+        demande?.personne_physique &&
+        Object.keys(demande?.personne_physique).length
+      ) {
         return `${demande.personne_physique.prenom} ${demande.personne_physique.nomUsage}`;
       }
-      if (demande?.personne_morale) {
+      if (
+        demande?.personne_morale &&
+        Object.keys(demande.personne_morale).length
+      ) {
         return demande.personne_morale.raisonSociale;
       }
     },
