@@ -10,6 +10,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const operateurStore = useOperateurStore();
   await operateurStore.setMyOperateur();
 
+  log.i(to.params);
   if (isNaN(to.params.idOperateur)) {
     log.w("invalid param");
     return navigateTo("/operateur");
@@ -24,6 +25,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
         log.d("adding correct operateurId to url");
         const url = `/operateur/${operateurStore.operateurCourant.operateurId}`;
         return navigateTo(url);
+      } else {
+        log.d("nothing to do");
       }
     } else {
       log.d("adding operateurId to url");
@@ -31,6 +34,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       return navigateTo(url);
     }
   } else if (hasId) {
+    log.i("return home");
     return navigateTo("/operateur");
   }
   log.d("Done");

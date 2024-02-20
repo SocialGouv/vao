@@ -37,30 +37,23 @@ async function next(organisateurs) {
   log.d("next - IN");
   try {
     if (isUpdate.value) {
-      const url = `/front-server/sejour/${route.params.idDemande}`;
-      await useFetch(url, {
+      const url = `/sejour/${route.params.idDemande}`;
+      await $fetchBackend(url, {
         method: "POST",
+        credentials: "include",
         body: {
           parametre: { organisateurs },
           type: "organisateurs",
         },
-        async onResponse({ response }) {
-          if (!response.ok) {
-            toaster.error(
-              response._data.message ?? "Erreur lors de la sauvegarde",
-            );
-          } else {
-            log.d("demande de sejour mise à jour");
-            toaster.success("Liste des organisateurs du séjour sauvegardée");
-            await navigateTo(
-              `/demande-sejour/informations-vacanciers/${route.params.idDemande}`,
-            );
-          }
-        },
       });
+      log.d("demande de sejour mise à jour");
+      toaster.success("Liste des organisateurs du séjour sauvegardée");
+      await navigateTo(
+        `/demande-sejour/informations-vacanciers/${route.params.idDemande}`,
+      );
     }
   } catch (error) {
-    log.w("submitCompte - erreur", { error });
+    log.w("next - erreur", { error });
   }
 }
 

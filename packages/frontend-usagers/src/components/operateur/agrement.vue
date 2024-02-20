@@ -113,6 +113,7 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import { useRegionStore } from "@/stores/referentiels";
 
+const config = useRuntimeConfig();
 const log = logger("components/operateur/agrement");
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
@@ -129,7 +130,7 @@ const agrementCourant = computed(() => {
     return {
       filename:
         props.initData.agrement[props.initData.agrement.length - 1].filename,
-      lien: `/front-server/document/${
+      lien: `${config.public.backendUrl}/document/${
         props.initData.agrement[props.initData.agrement.length - 1].uuid
       }`,
     };
