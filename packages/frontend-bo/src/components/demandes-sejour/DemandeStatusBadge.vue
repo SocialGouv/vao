@@ -1,9 +1,5 @@
 <template>
-  <DsfrBadge
-    :small="true"
-    :type="type"
-    :label="demandeStatusSejour[props.statut]"
-  />
+  <DsfrBadge :small="true" :type="type" :label="props.statut" />
 </template>
 
 <script setup>

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div>sejours</div>
+  <div class="fr-container">
+    <h1>Liste des séjours déclarés ({{ sejourStore.demandes.length }})</h1>
     <UtilsTableFull
       :headers="headers"
       :data="sejourStore.demandes"
