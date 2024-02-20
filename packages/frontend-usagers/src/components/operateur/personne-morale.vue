@@ -158,50 +158,6 @@
           </div>
         </div>
       </div>
-      <!-- <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-8">
-          <DsfrHighlight
-            text="Responsables de l'organisation des séjours"
-            :large="true"
-          />
-        </div>
-      </div>
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-8">
-          <DsfrAccordionsGroup>
-            <div v-for="(item, index) in organisateurs" :key="index">
-              <li>
-                <DsfrAccordion
-                  :id="index + 1"
-                  :title="nomPrenomResponsableOrganisation[index]"
-                  :expanded-id="expandedOrganisateurId"
-                  @expand="(id) => (expandedOrganisateurId = id)"
-                >
-                  <Personne
-                    :personne="item"
-                    :index="index"
-                    :show-adresse="false"
-                    :show-telephone="true"
-                    :show-email="true"
-                    @valid="validResponsableOrganisation"
-                  >
-                  </Personne>
-                </DsfrAccordion>
-              </li>
-            </div>
-          </DsfrAccordionsGroup>
-        </div>
-      </div>
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-8">
-          <DsfrButton
-            :label="`Ajouter un organisateur n°${organisateurs?.length + 1}`"
-            :disabled="expandedOrganisateurId !== 0"
-            :secondary="true"
-            @click="addResponsableOrganisation"
-          ></DsfrButton>
-        </div>
-      </div> -->
     </div>
 
     <DsfrButton label="Suivant" @click="next" />
@@ -224,9 +180,7 @@ const emit = defineEmits(["valid"]);
 
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 const representantsLegaux = ref([{ nom: "" }]);
-// const organisateurs = ref([{}]);
 const expandedRepresentantLegalId = ref(1);
-// const expandedOrganisateurId = ref(1);
 const siretRegex = /^[0-9]{14}$/;
 const personneMorale = ref();
 const operateurDejaExistant = ref();
@@ -263,7 +217,6 @@ const initialValues = computed(() => {
     email: props.initData?.email ?? "",
     telephoneEP: props.initData?.telephoneEP ?? "",
     representantsLegaux: props.initData?.representantsLegaux ?? [],
-    // organisateurs: props.initData?.organisateurs ?? [],
   };
 });
 const { meta, resetForm } = useForm({
@@ -323,8 +276,6 @@ const formatedPersonneMorale = computed(() => {
   if (operateurDejaExistant.value) {
     representantsLegaux.value =
       operateurDejaExistant.value.personneMorale?.representantsLegaux;
-    // organisateurs.value =
-    //   operateurDejaExistant.value.personneMorale?.organisateurs;
     email.value = operateurDejaExistant.value.personneMorale?.email;
     telephoneEP.value = operateurDejaExistant.value.personneMorale?.telephoneEP;
     return {
@@ -368,13 +319,6 @@ const nomPrenomRepresentantLegal = computed(() => {
   });
 });
 
-watch(siret, (siretSaisi) => {
-  const formatedSiret = siretSaisi.trim();
-  siret.value = formatedSiret.replace(
-    /(\d{3})(\d{3})(\d{3})(\d{5})/,
-    "$1 $2 $3 $4",
-  );
-});
 async function searchApiEntreprise() {
   log.i("searchApiEntreprise - IN");
   const url = `/siret/${siret.value}`;
@@ -444,21 +388,24 @@ function validRepresentantLegal(representantLegal, index) {
 
 function next() {
   log.i("next - IN");
-  emit("valid", {
-    siret: siret.value,
-    siren: formatedPersonneMorale.value.siren,
-    siegeSocial: formatedPersonneMorale.value.siegeSocial,
-    raisonSociale: formatedPersonneMorale.value.raisonSociale,
-    statut: formatedPersonneMorale.value.statut,
-    adresseShort: formatedPersonneMorale.value.adresse,
-    adresse: formatedPersonneMorale.value.adresseComplete,
-    pays: formatedPersonneMorale.value.pays,
-    email: email.value,
-    telephoneEP: telephoneEP.value,
-    representantsLegaux: representantsLegaux.value,
-    // organisateurs: organisateurs.value,
-    meta: meta.value.valid,
-  });
+  emit(
+    "valid",
+    {
+      siret: siret.value,
+      siren: formatedPersonneMorale.value.siren,
+      siegeSocial: formatedPersonneMorale.value.siegeSocial,
+      raisonSociale: formatedPersonneMorale.value.raisonSociale,
+      statut: formatedPersonneMorale.value.statut,
+      adresseShort: formatedPersonneMorale.value.adresse,
+      adresse: formatedPersonneMorale.value.adresseComplete,
+      pays: formatedPersonneMorale.value.pays,
+      email: email.value,
+      telephoneEP: telephoneEP.value,
+      representantsLegaux: representantsLegaux.value,
+      meta: meta.value.valid,
+    },
+    "personne_morale",
+  );
 }
 
 onMounted(() => {
