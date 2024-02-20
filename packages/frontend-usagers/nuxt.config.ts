@@ -22,6 +22,7 @@ export default defineNuxtConfig({
     "@gouvfr/dsfr/dist/utility/icons/icons.min.css",
     "@/assets/css/main.css",
   ],
+  devtools: { enabled: false },
   modules: ["@pinia/nuxt", "nuxt3-leaflet"],
   runtimeConfig: {
     public: {

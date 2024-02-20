@@ -144,7 +144,6 @@ const boutonOptions = [
   },
   {
     label: "Suivant",
-    onClick: "",
   },
 ];
 const agrementFile = ref(null);

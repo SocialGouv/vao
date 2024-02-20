@@ -331,6 +331,8 @@ const schema = {
         return yup.object().required(); // schema for object
       case "string":
         return yup.string().required();
+      default:
+        return yup.string().required();
     }
   }),
 };
