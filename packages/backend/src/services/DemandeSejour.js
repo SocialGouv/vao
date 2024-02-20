@@ -33,15 +33,33 @@ const query = {
       ds.date_fin as "dateFin",
       ds.created_at as "createdAt",
       ds.edited_at as "editedAt",
-      ds.itinerant as "sejourItinerant",
-      ds.itinerant_etranger as "sejourEtranger",
       ds.duree as "duree",
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
     JOIN front.operateurs o ON o.id = ds.operateur_id
-    JOIN front.use_ope uo ON uo.ope_id = o.id
+    JOIN front.user_operateur uo ON uo.ope_id = o.id
     WHERE
-      up.use_id = $1
+      uo.use_id = $1
+    `,
+  getByAdminId: `
+    SELECT
+      ds.id as "demandeSejourId",
+      ds.statut as "statut",
+      ds.operateur_id as "operateurId",
+      ds.libelle as "libelle",
+      ds.date_debut as "dateDebut",
+      ds.date_fin as "dateFin",
+      ds.created_at as "createdAt",
+      ds.edited_at as "editedAt",
+      ds.duree as "duree",
+      ds.vacanciers as "vacanciers",
+      ds.personnel as "personnel",
+      ds.transport as "transport",
+      ds.projet_sejour as "projet_sejour",
+      ds.sanitaires as "sanitaires",
+      o.personne_morale->>'siret' as "siret"
+    FROM front.demande_sejour ds
+      JOIN front.operateurs o ON o.id = ds.operateur_id
     `,
   getOne: (criterias) => [
     `
@@ -53,8 +71,6 @@ const query = {
       ds.libelle as "libelle",
       ds.date_debut as "dateDebut",
       ds.date_fin as "dateFin",
-      ds.itinerant as "sejourItinerant",
-      ds.itinerant_etranger as "sejourEtranger",
       ds.duree as "duree",
       ds.vacanciers as "informationsVacanciers",
       ds.personnel as "informationsPersonnel",
@@ -62,6 +78,7 @@ const query = {
       ds.transport as "informationsTransport",
       ds.sanitaires as "informationsSanitaires",
       ds.hebergement as "hebergement",
+      ds.organisateurs->'organisateurs' as "organisateurs",
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
     JOIN front.operateurs o ON o.id = ds.operateur_id
@@ -91,7 +108,7 @@ const query = {
       duree = $4,
       edited_at=NOW()
     WHERE
-      ds.id = $7
+      ds.id = $5
     RETURNING
       id as "idDemande"
     `,
@@ -154,6 +171,16 @@ const query = {
     RETURNING
       id as "idDemande"
     `,
+  updateOrganisateurs: `
+    UPDATE front.demande_sejour ds
+      SET
+      organisateurs = $1,
+      edited_at=NOW()
+    WHERE
+      ds.id = $2
+    RETURNING
+      id as "idDemande"
+    `,
 };
 
 module.exports.create = async (
@@ -161,27 +188,23 @@ module.exports.create = async (
   libelle,
   dateDebut,
   dateFin,
-  itinerant,
-  itinerantEtranger,
   duree,
+  periode,
+  protocoleTransport,
+  protocoleSanitaire,
+  organisateurs,
 ) => {
-  log.i("create - IN", {
-    dateDebut,
-    dateFin,
-    duree,
-    itinerant,
-    itinerantEtranger,
-    libelle,
-    operateurId,
-  });
+  log.i("create - IN");
   const response = await pool.query(query.create, [
     operateurId,
     libelle,
     dateDebut,
     dateFin,
-    itinerant,
-    itinerantEtranger,
     duree,
+    periode,
+    protocoleTransport,
+    protocoleSanitaire,
+    organisateurs,
   ]);
   log.d(response);
   const { idDemande } = response.rows[0];
@@ -205,6 +228,16 @@ module.exports.getOne = async (criterias = {}) => {
   return demandes[0] ?? [];
 };
 
+module.exports.getByAdminId = async (adminId) => {
+  //  TODO : create the logic (here or in the service) to get the department of the admin.
+  //  For me, the list of demandes that are goven to the admin are the list of all demands of the department
+
+  log.i("getByAdminId - IN", adminId);
+  const response = await pool.query(query.getByAdminId);
+  log.d("getByAdminId - DONE");
+  return response.rows;
+};
+
 module.exports.update = async (type, demandeSejourId, parametre) => {
   log.i("update - IN", { demandeSejourId });
   let response;
@@ -218,22 +251,21 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       break;
     }
     case "informationsGenerales": {
-      const {
-        libelle,
-        dateDebut,
-        dateFin,
-        sejourItinerant,
-        sejourEtranger,
-        duree,
-      } = parametre;
+      const { libelle, dateDebut, dateFin, duree } = parametre;
 
       response = await pool.query(query.updateInformationsGenerales, [
         libelle,
         dateDebut,
         dateFin,
-        sejourItinerant,
-        sejourEtranger,
         duree,
+        demandeSejourId,
+      ]);
+      break;
+    }
+    case "organisateurs": {
+      const { organisateurs } = parametre;
+      response = await pool.query(query.updateOrganisateurs, [
+        organisateurs,
         demandeSejourId,
       ]);
       break;
