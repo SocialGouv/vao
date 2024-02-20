@@ -15,11 +15,18 @@ const props = defineProps({
   operateur: { type: Object, default: null, required: true },
 });
 
+const menus = organismeMenus.map((menu) => {
+  return {
+    ...menu,
+    to: { hash: "#" + menu.id },
+  };
+});
+
 const sommaireOptionsToDisplay = computed(() => {
   if (props.operateur.length === 0) {
-    return [{ ...organismeMenus[0], active: true }];
+    return [{ ...menus[0], active: true }];
   } else {
-    return organismeMenus.map((s) => {
+    return menus.map((s) => {
       return { ...s, active: s.id === props.activeId };
     });
   }
