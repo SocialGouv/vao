@@ -2,7 +2,6 @@
   "name": "@vao/frontend-usagers",
   "version": "0.1.0",
   "description": "Client pour les usages du projet VAO",
-  "license": "TODO",
   "scripts": {
     "build": "nuxt build",
     "dev": "rm -rf /tmp/nitro && nuxt dev",
