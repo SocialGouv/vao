@@ -89,6 +89,8 @@ fileignoreconfig:
   checksum: 5e8464a6bf71468b80886e18e08a705b0c3a523bb907833dd63bfcdd67cd4641
 - filename: packages/backend/src/utils/pgpoolDoc.js
   checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
+- filename: packages/frontend-bo/src/components/utils/TableFull.vue
+  checksum: 4317693488a43b3e46c75ab31f0750aacb929c60d6e96af89cdc75bf9ad22afd
 - filename: packages/frontend-usagers/src/components/PasswordInput.vue
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
 - filename: packages/frontend-usagers/src/components/customInput.vue

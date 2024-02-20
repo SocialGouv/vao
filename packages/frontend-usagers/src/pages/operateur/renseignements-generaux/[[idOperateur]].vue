@@ -863,6 +863,7 @@ async function searchApiEntreprise() {
   try {
     const { uniteLegale } = await $fetchBackend(url, {
       method: "GET",
+      credentials: "include",
     });
     if (uniteLegale) {
       toaster.success("Données récupérées");
@@ -883,6 +884,7 @@ async function searchOperateurBySiret() {
   try {
     const { operateur } = await $fetchBackend(url, {
       method: "GET",
+      credentials: "includes",
     });
     if (operateur) {
       toaster.success("L'opérateur est déjà présent en base");

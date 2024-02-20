@@ -39,6 +39,7 @@ services:
     env_file:
       - ./.env
     environment:
+      NUXT_PUBLIC_BACKEND_URL: ${BACKEND_URL}
       TZ: Europe/Paris
       DEBUG: info:vao*
     ports:

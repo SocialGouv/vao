@@ -58,7 +58,8 @@ const query = {
       ds.transport as "transport",
       ds.projet_sejour as "projet_sejour",
       ds.sanitaires as "sanitaires",
-      o.personne_morale->>'siret' as "siret"
+      o.personne_morale as "personne_morale",
+      o.personne_physique as "personne_physique"
     FROM front.demande_sejour ds
       JOIN front.operateurs o ON o.id = ds.operateur_id
     `,
