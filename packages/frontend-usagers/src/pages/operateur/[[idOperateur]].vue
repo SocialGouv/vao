@@ -158,7 +158,7 @@ function nextHash(hash) {
   return navigateTo({ hash: "#" + sommaireOptions[index + 1] });
 }
 
-async function updateOrCreate(operatorData) {
+async function updateOrCreate(operatorData, updatetype) {
   log.i("updateOrCreate - IN");
   log.d(operatorData);
   try {
@@ -170,7 +170,7 @@ async function updateOrCreate(operatorData) {
       credentials: "include",
       body: {
         parametre: { ...operatorData },
-        type: typeOperateur.value,
+        type: updatetype,
       },
     });
 
