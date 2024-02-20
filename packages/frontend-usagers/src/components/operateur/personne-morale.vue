@@ -237,8 +237,8 @@ const schema = {
     .string()
     .test(
       "siret",
-      "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
-      (siret) => siretRegex.test(siret),
+      "Le numéro SIRET doit faire exactement 14 chiffres",
+      (siret) => siretRegex.test(siret.replace(/ /g, "")),
     )
     .required(),
   email: yup
@@ -368,14 +368,13 @@ const nomPrenomRepresentantLegal = computed(() => {
   });
 });
 
-// const nomPrenomResponsableOrganisation = computed(() => {
-//   return organisateurs?.value.map((r) => {
-//     return r.nom
-//       ? `${r.nom.toUpperCase()}  ${r.prenom.toUpperCase()} - ${r.fonction}`
-//       : "Nouvel organisateur de séjour - A RENSEIGNER";
-//   });
-// });
-
+watch(siret, (siretSaisi) => {
+  const formatedSiret = siretSaisi.trim();
+  siret.value = formatedSiret.replace(
+    /(\d{3})(\d{3})(\d{3})(\d{5})/,
+    "$1 $2 $3 $4",
+  );
+});
 async function searchApiEntreprise() {
   log.i("searchApiEntreprise - IN");
   const url = `/siret/${siret.value}`;
@@ -437,22 +436,11 @@ function addRepresentantLegal() {
   expandedRepresentantLegalId.value = representantsLegaux.value.length;
 }
 
-// function addResponsableOrganisation() {
-//   organisateurs.value.push({});
-//   expandedOrganisateurId.value = organisateurs.value.length;
-// }
-
 function validRepresentantLegal(representantLegal, index) {
   log.i("validRepresentantLegal - IN");
   representantsLegaux.value[index] = representantLegal;
   expandedRepresentantLegalId.value = 0;
 }
-
-// function validResponsableOrganisation(organisateur, index) {
-//   log.i("validResponsableOrganisation - IN");
-//   organisateurs.value[index] = organisateur;
-//   expandedOrganisateurId.value = 0;
-// }
 
 function next() {
   log.i("next - IN");
