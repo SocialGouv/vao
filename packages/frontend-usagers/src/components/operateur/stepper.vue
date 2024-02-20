@@ -1,19 +1,13 @@
 <template>
-  <DsfrStepper :steps="steps" :current-step="currentStep" />
+  <DsfrStepper :steps="steps" :current-step="currentStep + 1" />
 </template>
 <script setup>
 const props = defineProps({
-  step: { type: Number, default: 1, required: false },
+  step: { type: String, default: organismeMenus[0].id, required: false },
 });
-const steps = ref([
-  "Renseignements généraux",
-  "Agrément",
-  "Protocole transport",
-  "Protocole sanitaire",
-  "Organisateurs de séjour",
-  "Récapitulatif",
-]);
+
+const steps = organismeMenus.map((o) => o.text);
 const currentStep = computed(() => {
-  return props.step ?? 1;
+  return organismeMenus.findIndex((o) => o.id === props.step);
 });
 </script>

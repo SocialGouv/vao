@@ -10,63 +10,16 @@
 </template>
 
 <script setup>
-const route = useRoute();
 const props = defineProps({
-  activeId: { type: Number, default: 1, required: false },
+  activeId: { type: String, default: organismeMenus[0].id, required: false },
   operateur: { type: Object, default: null, required: true },
 });
-// const log = logger("pages/component/operateur/menu-operateur");
-const isUpdate = computed(() => {
-  return !!route.params.idOperateur;
-});
-
-const sommaireOptions = computed(() => [
-  {
-    id: "1",
-    text: "Renseignements généraux",
-    to: isUpdate.value
-      ? `/operateur/${route.params.idOperateur}#generales`
-      : "/operateur/#1",
-  },
-  {
-    id: "2",
-    text: "Agrément",
-    to: `/operateur/${route.params.idOperateur}#agrement`,
-  },
-  {
-    id: "3",
-    text: "Protocoles transport",
-    to: `/operateur/${route.params.idOperateur}#transport`,
-  },
-  {
-    id: "4",
-    text: "Protocoles sanitaires",
-    to: `/operateur/${route.params.idOperateur}#sanitaire`,
-  },
-  {
-    id: "5",
-    text: "Organisateurs",
-    to: `/operateur/${route.params.idOperateur}#organisateurs`,
-  },
-  {
-    id: "6",
-    text: "Synthèse",
-    to: `/operateur/${route.params.idOperateur}#synthese`,
-  },
-]);
 
 const sommaireOptionsToDisplay = computed(() => {
   if (props.operateur.length === 0) {
-    return [
-      {
-        id: 1,
-        text: "1. Renseignements généraux",
-        to: "/operateur",
-        active: true,
-      },
-    ];
+    return [{ ...organismeMenus[0], active: true }];
   } else {
-    return sommaireOptions.value.map((s) => {
+    return organismeMenus.map((s) => {
       return { ...s, active: s.id === props.activeId };
     });
   }
