@@ -1,4 +1,5 @@
 const DemandeSejour = require("../../services/DemandeSejour");
+const Operateur = require("../../services/Operateur");
 
 const logger = require("../../utils/logger");
 
@@ -6,29 +7,35 @@ const log = logger(module.filename);
 
 module.exports = async function post(req, res) {
   log.i("IN");
-  const {
-    operateurId,
-    libelle,
-    dateDebut,
-    dateFin,
-    sejourItinerant,
-    sejourEtranger,
-    duree,
-  } = req.body;
+  const { id: userId } = req.decoded;
+  const { libelle, dateDebut, dateFin, duree, periode } = req.body;
+  log.d(libelle, dateDebut, dateFin, duree, periode);
   if (!dateDebut || !dateFin || !duree) {
     log.w("missing parameter");
     return res.status(400).json({ message: "paramètre manquant." });
   }
 
   try {
+    const operateur = await Operateur.get({ "uo.use_id": userId });
+    if (!operateur.complet) {
+      log.w("operateur isn't fully filled");
+      return res.status(400).json({
+        message:
+          "Vous devez compléter la fiche Organisme avant de saisir une demande de séjour",
+      });
+    }
+    log.d(operateur);
+
     const idDemande = await DemandeSejour.create(
-      operateurId,
+      operateur.operateurId,
       libelle,
       dateDebut,
       dateFin,
-      sejourItinerant,
-      sejourEtranger,
       duree,
+      periode,
+      operateur.protocoleTransport,
+      operateur.protocoleSanitaire,
+      { organisateurs: operateur.organisateurs },
     );
     if (!idDemande) {
       return res.status(400).json({

@@ -96,18 +96,11 @@
       </fieldset>
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-12">
-            <DsfrButton
-              style="margin: 0 0.5rem 0 0.5rem"
-              label="Annuler"
-              @click.stop.prevent="cancelUpload"
-            />
-            <DsfrButton
-              style="margin: 0 0.5rem 0 0.5rem"
-              label="Suivant"
-              :disabled="!meta.valid || !(agrementFile || agrementCourant)"
-            />
-          </div>
+          <DsfrButtonGroup
+            :buttons="boutonOptions"
+            :inline-layout-when="true"
+            :reverse="true"
+          />
         </div>
       </fieldset>
     </form>
@@ -118,44 +111,42 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { useLayoutStore } from "@/stores/layout";
 import { useRegionStore } from "@/stores/referentiels";
-import { useOperateurStore } from "@/stores/operateur";
 
-definePageMeta({
-  middleware: ["is-connected", "has-id-operateur"],
-  layout: "operateur",
-});
-
-const log = logger("pages/operateur/agrement");
+const config = useRuntimeConfig();
+const log = logger("components/operateur/agrement");
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
-const route = useRoute();
-
-const layoutStore = useLayoutStore();
-const regionStore = useRegionStore();
-const operateurStore = useOperateurStore();
-
-const operateurCourant = computed(() => {
-  return operateurStore.operateurCourant ?? {};
+const props = defineProps({
+  initData: { type: Object, default: null, required: true },
 });
 
+const emit = defineEmits(["valid"]);
+
+const regionStore = useRegionStore();
+
 const agrementCourant = computed(() => {
-  if (operateurCourant.value.agrement) {
+  if (props.initData.agrement) {
     return {
       filename:
-        operateurCourant.value.agrement[
-          operateurCourant.value.agrement.length - 1
-        ].filename,
-      lien: `/front-server/document/${
-        operateurCourant.value.agrement[
-          operateurCourant.value.agrement.length - 1
-        ].uuid
+        props.initData.agrement[props.initData.agrement.length - 1].filename,
+      lien: `${config.public.backendUrl}/document/${
+        props.initData.agrement[props.initData.agrement.length - 1].uuid
       }`,
     };
   }
 });
 
+const boutonOptions = [
+  {
+    label: "Retour",
+    secondary: true,
+  },
+  {
+    label: "Suivant",
+    onClick: "",
+  },
+];
 const agrementFile = ref(null);
 const refFormAgrement = ref(null);
 
@@ -174,7 +165,7 @@ const schemaAgrement = {
       (regionDelivrance) => !regionStore.regions.includes(regionDelivrance),
     )
     .required(),
-  numeroAgrement: yup.string().length(5).required(),
+  numeroAgrement: yup.string().required(),
   dateDelivrance: yup
     .date()
     .max(new Date(), "La date doit être inférieure à la date du jour.")
@@ -192,14 +183,14 @@ const validationSchema = computed(() =>
 );
 
 const initialValues = computed(() => {
-  if (operateurCourant.value.agrement) {
-    const lastIndex = operateurCourant.value.agrement.length - 1;
+  if (props.initData.agrement) {
+    const lastIndex = props.initData.agrement.length - 1;
     return {
       regionDelivrance:
-        operateurCourant.value.agrement[lastIndex].regionDelivrance || null,
-      numeroAgrement: operateurCourant.value.agrement[lastIndex].numero || null,
+        props.initData.agrement[lastIndex].regionDelivrance || null,
+      numeroAgrement: props.initData.agrement[lastIndex].numero || null,
       dateDelivrance:
-        dayjs(operateurCourant.value.agrement[lastIndex].dateObtention).format(
+        dayjs(props.initData.agrement[lastIndex].dateObtention).format(
           "YYYY-MM-DD",
         ) || null,
     };
@@ -243,7 +234,7 @@ async function upload() {
   const body = new FormData();
   const options = JSON.stringify({
     ...values,
-    operateurId: route.params.idOperateur,
+    operateurId: props.initData.operateurId,
   });
   body.append("options", options);
   body.append("file", agrementFile.value);
@@ -260,9 +251,7 @@ async function upload() {
           );
         } else {
           toaster.success("Bien reçu, merci.");
-          navigateTo(
-            `/operateur/protocole-transport/${route.params.idOperateur}`,
-          );
+          emit("valid");
         }
         cancelUpload();
       },
@@ -278,9 +267,7 @@ function changeFile(fileList) {
 }
 
 onMounted(async () => {
-  layoutStore.stepperIndex = 2;
   await regionStore.fetch();
-  await operateurStore.setMyOperateur();
 });
 </script>
 

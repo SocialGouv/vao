@@ -18,83 +18,56 @@
 
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-6">
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            name="dateDebut"
-            type="date"
-            label="Date de début"
-            :label-visible="true"
-            :model-value="dateDebut"
-            :required="true"
-            :is-valid="dateDebutMeta.valid"
-            :error-message="dateDebutErrorMessage"
-            placeholder="Date de début"
-            @update:model-value="onDateDebutChange"
-          />
-        </div>
+        <DsfrInputGroup
+          name="dateDebut"
+          type="date"
+          label="Date de début"
+          :label-visible="true"
+          :model-value="dateDebut"
+          :required="true"
+          :is-valid="dateDebutMeta.valid"
+          :error-message="dateDebutErrorMessage"
+          placeholder="Date de début"
+          @update:model-value="onDateDebutChange"
+        />
       </div>
       <div class="fr-fieldset__element fr-col-6">
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            name="dateFin"
-            type="date"
-            label="Date de fin"
-            :label-visible="true"
-            :model-value="dateFin"
-            :required="true"
-            :is-valid="dateFinMeta.valid"
-            :error-message="dateFinErrorMessage"
-            placeholder="Date de fin"
-            @update:model-value="onDateFinChange"
-          />
-        </div>
+        <DsfrInputGroup
+          name="dateFin"
+          type="date"
+          label="Date de fin"
+          :label-visible="true"
+          :model-value="dateFin"
+          :required="true"
+          :is-valid="dateFinMeta.valid"
+          :error-message="dateFinErrorMessage"
+          placeholder="Date de fin"
+          @update:model-value="onDateFinChange"
+        />
       </div>
     </fieldset>
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            v-if="duree > 0"
-            name="duree"
-            label="Durée du séjour (en jours)"
-            :label-visible="true"
-            :model-value="duree"
-            :disabled="true"
-          />
-        </div>
+        <DsfrInputGroup
+          name="periode"
+          label="Période"
+          :label-visible="true"
+          :model-value="saison"
+          :disabled="true"
+        />
       </div>
     </fieldset>
+
     <fieldset class="fr-fieldset">
-      <div class="fr-fieldset__element fr-col-6">
-        <div class="fr-input-group">
-          <DsfrRadioButtonSet
-            name="sejourItinerant"
-            legend="Séjour itinerant"
-            :required="true"
-            :model-value="sejourItinerant"
-            :options="ouiNonOptions"
-            :is-valid="sejourItinerantMeta"
-            :inline="true"
-            :error-message="sejourItinerantErrorMessage"
-            @update:model-value="onSejourItinerantChange"
-          />
-        </div>
-      </div>
-      <div class="fr-fieldset__element fr-col-6">
-        <div class="fr-input-group">
-          <DsfrRadioButtonSet
-            v-if="sejourItinerant"
-            name="sejourEtranger"
-            legend="Séjour à l'étranger"
-            :required="true"
-            :model-value="sejourEtranger"
-            :options="ouiNonOptions"
-            :is-valid="sejourEtrangerMeta"
-            :inline="true"
-            :error-message="sejourEtrangerErrorMessage"
-            @update:model-value="onSejourEtrangerChange"
-          />
-        </div>
+      <div class="fr-fieldset__element fr-col-12">
+        <DsfrInputGroup
+          v-if="duree > 0"
+          name="duree"
+          label="Durée du séjour (en jours)"
+          :label-visible="true"
+          :model-value="duree"
+          :disabled="true"
+        />
       </div>
     </fieldset>
     <fieldset class="fr-fieldset">
@@ -127,22 +100,22 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { useOperateurStore } from "@/stores/operateur";
 import { useDemandeSejourStore } from "@/stores/demande-sejour";
+import { useOperateurStore } from "@/stores/operateur";
 import { useLayoutStore } from "@/stores/layout";
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
 definePageMeta({
-  middleware: ["is-connected"],
+  middleware: ["is-connected", "has-id-demande-sejour"],
   layout: "demande-sejour",
 });
 
 const log = logger("demande-sejour/informations-generales");
 
-const operateurStore = useOperateurStore();
 const demandeSejourStore = useDemandeSejourStore();
+const operateurStore = useOperateurStore();
 const layoutStore = useLayoutStore();
 
 const demandeCourante = computed(() => {
@@ -153,17 +126,6 @@ const isUpdate = computed(() => {
   return !!route.params.idDemande;
 });
 
-const ouiNonOptions = [
-  {
-    label: "Oui",
-    value: 1,
-  },
-  {
-    label: "Non",
-    value: 0,
-  },
-];
-
 const duree = computed(() => {
   const nbjours = dayjs(dateFin.value).diff(dateDebut.value, "day");
   return nbjours.toString();
@@ -171,10 +133,10 @@ const duree = computed(() => {
 const schemaInfosGenerales = {
   libelle: yup.string().typeError("le libellé est requis").required(),
   dateDebut: yup
-    .date()
+    .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
     .typeError("date invalide")
     .min(new Date(), "La date doit être supérieure à la date du jour.")
-    .required(),
+    .required("La saisie de ce champ est obligatoire"),
   dateFin: yup
     .date()
     .typeError("date invalide")
@@ -184,10 +146,16 @@ const schemaInfosGenerales = {
         message: "La date de fin doit être supérieure à la date de début",
       });
     })
-    .required(),
-  sejourItinerant: yup.boolean().required(),
-  sejourEtranger: yup.boolean(),
+    .required("La saisie de ce champ est obligatoire"),
 };
+
+const saison = computed(() => {
+  const moisDebut = dayjs(dateDebut.value).month();
+  if (moisDebut < 3) return "hiver";
+  if (moisDebut < 6) return "printemps";
+  if (moisDebut < 9) return "été";
+  if (moisDebut < 12) return "automne";
+});
 
 const validationSchema = computed(() =>
   yup.object({
@@ -196,11 +164,10 @@ const validationSchema = computed(() =>
 );
 
 const initialValues = computed(() => ({
-  libelle: demandeCourante.value.libelle ?? null,
-  dateDebut: dayjs(demandeCourante.value.dateDebut).format("YYYY-MM-DD") ?? "",
-  dateFin: dayjs(demandeCourante.value?.dateFin).format("YYYY-MM-DD") ?? "",
-  sejourItinerant: demandeCourante.value?.sejourItinerant ? 1 : 0,
-  sejourEtranger: demandeCourante.value?.sejourEtranger ? 1 : 0,
+  libelle: demandeCourante.value.libelle ?? "premier séjour",
+  dateDebut:
+    dayjs(demandeCourante.value.dateDebut).format("YYYY-MM-DD") ?? null,
+  dateFin: dayjs(demandeCourante.value?.dateFin).format("YYYY-MM-DD") ?? null,
 }));
 
 const { meta, values } = useForm({
@@ -226,18 +193,6 @@ const {
   handleChange: onDateFinChange,
   meta: dateFinMeta,
 } = useField("dateFin");
-const {
-  value: sejourItinerant,
-  errorMessage: sejourItinerantErrorMessage,
-  handleChange: onSejourItinerantChange,
-  meta: sejourItinerantMeta,
-} = useField("sejourItinerant");
-const {
-  value: sejourEtranger,
-  errorMessage: sejourEtrangerErrorMessage,
-  handleChange: onSejourEtrangerChange,
-  meta: sejourEtrangerMeta,
-} = useField("sejourEtranger");
 
 function back() {
   log.d("back - IN");
@@ -251,6 +206,26 @@ function previous() {
   );
 }
 
+async function checkSiege() {
+  log.i("IN - checkSiege");
+  try {
+    const url = `/operateur/siege/${operateurStore.operateurCourant.personneMorale.siren}`;
+    const data = await $fetchBackend(url, {
+      method: "GET",
+      credentials: "include",
+    });
+    const etablissementPrincipal = data.operateur;
+    log.d(etablissementPrincipal);
+    if (!etablissementPrincipal || etablissementPrincipal.length === 0) {
+      toaster.error(
+        "L'établissement principal n'a pas encore déclaré son agrément sur la plateforme VAO.",
+      );
+      return navigateTo("/");
+    }
+  } catch (error) {
+    log.w(error);
+  }
+}
 async function next() {
   log.d("next - IN");
   try {
@@ -260,7 +235,7 @@ async function next() {
         method: "POST",
         credentials: "include",
         body: {
-          parametre: { ...values, duree: duree.value },
+          parametre: { ...values, duree: duree.value, periode: saison.value },
           type: "informationsGenerales",
         },
         async onResponse({ response }) {
@@ -272,7 +247,7 @@ async function next() {
             log.d("demande de sejour mise à jour");
             toaster.success("informations générales sauvegardées");
             await navigateTo(
-              `/demande-sejour/informations-vacanciers/${route.params.idDemande}`,
+              `/demande-sejour/organisateurs/${route.params.idDemande}`,
             );
           }
         },
@@ -284,8 +259,8 @@ async function next() {
         credentials: "include",
         body: {
           ...values,
-          operateurId: operateurStore.operateurCourant.operateurId,
           duree: duree.value,
+          periode: saison.value,
         },
         async onResponse({ response }) {
           if (!response.ok) {
@@ -299,9 +274,7 @@ async function next() {
             log.d("demande de sejour créée");
             const idDemande = response._data.id;
             toaster.success("Demande de séjour enregistrée");
-            await navigateTo(
-              `/demande-sejour/informations-vacanciers/${idDemande}`,
-            );
+            await navigateTo(`/demande-sejour/organisateurs/${idDemande}`);
           }
         },
       });
@@ -311,12 +284,16 @@ async function next() {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   layoutStore.breadCrumb = "informations générales";
   layoutStore.stepperIndex = 1;
-  operateurStore.setMyOperateur();
-  if (isUpdate.value)
-    demandeSejourStore.setDemandeCourante(route.params.idDemande);
+  await operateurStore.setMyOperateur();
+  if (
+    operateurStore.operateurCourant.personneMorale &&
+    !operateurStore.operateurCourant.personneMorale.siegeSocial
+  ) {
+    await checkSiege();
+  }
 });
 </script>
 

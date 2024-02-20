@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Vacances Adaptées Organisées",
   "author": "orgs/SocialGouv/teams/vao",
-  "license": "TODO",
+  "license": "Apache-2.0",
   "private": true,
   "scripts": {
     "prepare": "husky install",

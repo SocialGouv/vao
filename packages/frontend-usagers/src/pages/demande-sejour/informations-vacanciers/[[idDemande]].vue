@@ -122,7 +122,7 @@ const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
 definePageMeta({
-  middleware: ["is-connected"],
+  middleware: ["is-connected", "has-id-demande-sejour"],
   layout: "demande-sejour",
 });
 
@@ -148,18 +148,14 @@ const schemaInfosVacanciers = {
     .number()
     .typeError("Le nombre de femmes doit un être un nombre entier")
     .required(),
-  trancheAge: yup.array().required(),
-  typeDeficiences: yup.array().required(),
-  // dateFin: yup
-  //   .date()
-  //   .typeError("date invalide")
-  //   .when("dateDebut", (dateDebut, schema) => {
-  //     return schema.test({
-  //       test: (dateFin) => !!dateDebut && dayjs(dateFin) > dayjs(dateDebut),
-  //       message: "La date de fin doit être supérieure à la date de début",
-  //     });
-  //   })
-  //   .required(),
+  trancheAge: yup
+    .array()
+    .min(1, "vous devez cocher au moins une case")
+    .required(),
+  typeDeficiences: yup
+    .array()
+    .min(1, "vous devez cocher au moins une case")
+    .required(),
 };
 
 const validationSchema = computed(() =>
@@ -228,7 +224,7 @@ async function next() {
       credentials: "include",
       body: {
         parametre: {
-          informationsVacanciers: { ...values },
+          informationsVacanciers: { ...values, meta },
         },
         type: "informationsVacanciers",
       },
@@ -253,8 +249,7 @@ async function next() {
 
 onMounted(() => {
   layoutStore.breadCrumb = "informations sur les vacanciers";
-  layoutStore.stepperIndex = 2;
-  demandeSejourStore.setDemandeCourante(route.params.idDemande);
+  layoutStore.stepperIndex = 3;
 });
 </script>
 

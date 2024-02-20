@@ -37,7 +37,7 @@ const links = [
     text: "Accueil",
   },
   {
-    text: "Opérateurs",
+    text: "Ma fiche organisme",
   },
 ];
 

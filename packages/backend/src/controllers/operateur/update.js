@@ -14,7 +14,6 @@ module.exports = async function post(req, res) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
   }
-
   try {
     const updatedOperateurId = await Operateur.update(
       type,

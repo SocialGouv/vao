@@ -20,14 +20,16 @@ const query = {
       pwd, 
       status_code, 
       nom,
-      prenom
+      prenom,
+      telephone
     ) 
     VALUES (
       $1,
       crypt($2, gen_salt('bf')),
       $3,
       $4,
-      $5
+      $5,
+      $6
     )
     RETURNING
       id as id,
@@ -80,7 +82,8 @@ const query = {
         pwd is not null as "hasPwd",
         status_code as "statusCode",
         nom as "nom",
-        prenom as "prenom"
+        prenom as "prenom",
+        telephone as "telephone"
       FROM front.users
       WHERE 1=1 
       ${Object.keys(criterias)
@@ -91,7 +94,13 @@ const query = {
   ],
 };
 
-module.exports.registerByEmail = async ({ email, password, nom, prenom }) => {
+module.exports.registerByEmail = async ({
+  email,
+  password,
+  nom,
+  prenom,
+  telephone,
+}) => {
   log.i("registerByEmail - IN", { email });
   let response = await pool.query(...query.select({ mail: normalize(email) }));
   if (response.rows.length !== 0) {
@@ -111,8 +120,10 @@ module.exports.registerByEmail = async ({ email, password, nom, prenom }) => {
     status.NEED_EMAIL_VALIDATION,
     nom,
     prenom,
+    telephone,
   ]);
   log.i("registerByEmail - DONE", { response });
+  log.i({ response });
   const [user] = response.rows;
   return { code: "CreationCompte", user };
 };
@@ -136,7 +147,7 @@ module.exports.editStatus = async (userId, statusCode) => {
 };
 
 module.exports.activate = async (email) => {
-  log.i("active - IN", { email }, ...query.select({ mail: normalize(email) }));
+  log.i("active - IN", { email });
   let response = await pool.query(...query.select({ mail: normalize(email) }));
   if (response.rows.length === 0) {
     throw new AppError("Utilisateur non trouvé", { name: "UserNotFound" });

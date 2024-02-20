@@ -1,12 +1,12 @@
 <template>
-  <div>
+  <nav class="fr-sidemenu fr-sidemenu--sticky">
     <DsfrSideMenu heading-title="">
       <DsfrSideMenuList
         id="menuLateral"
         :menu-items="sommaireOptionsToDisplay"
       />
     </DsfrSideMenu>
-  </div>
+  </nav>
 </template>
 
 <script setup>
@@ -20,33 +20,38 @@ const isUpdate = computed(() => {
   return !!route.params.idOperateur;
 });
 
-const sommaireOptions = ref([
+const sommaireOptions = computed(() => [
   {
-    id: 1,
-    text: "1. Renseignements généraux",
-    to: isUpdate
-      ? `/operateur/renseignements-generaux/${route.params.idOperateur}`
-      : "/operateur/renseignements-generaux",
+    id: "1",
+    text: "Renseignements généraux",
+    to: isUpdate.value
+      ? `/operateur/${route.params.idOperateur}#generales`
+      : "/operateur/#1",
   },
   {
-    id: 2,
-    text: "2. Agrément",
-    to: `/operateur/agrement/${route.params.idOperateur}`,
+    id: "2",
+    text: "Agrément",
+    to: `/operateur/${route.params.idOperateur}#agrement`,
   },
   {
-    id: 3,
-    text: "3. Protocoles transport",
-    to: `/operateur/protocole-transport/${route.params.idOperateur}`,
+    id: "3",
+    text: "Protocoles transport",
+    to: `/operateur/${route.params.idOperateur}#transport`,
   },
   {
-    id: 4,
-    text: "4. Protocoles sanitaires",
-    to: `/operateur/protocole-sanitaire/${route.params.idOperateur}`,
+    id: "4",
+    text: "Protocoles sanitaires",
+    to: `/operateur/${route.params.idOperateur}#sanitaire`,
   },
   {
-    id: 5,
-    text: "5. Récapitulatif",
-    to: `/operateur/recapitulatif/${route.params.idOperateur}`,
+    id: "5",
+    text: "Organisateurs",
+    to: `/operateur/${route.params.idOperateur}#organisateurs`,
+  },
+  {
+    id: "6",
+    text: "Synthèse",
+    to: `/operateur/${route.params.idOperateur}#synthese`,
   },
 ]);
 
@@ -56,7 +61,7 @@ const sommaireOptionsToDisplay = computed(() => {
       {
         id: 1,
         text: "1. Renseignements généraux",
-        to: "/operateur/renseignements-generaux",
+        to: "/operateur",
         active: true,
       },
     ];

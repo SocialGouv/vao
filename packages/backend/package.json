@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "Backend du projet VAO",
   "main": "src/index.js",
-  "license": "TODO",
   "scripts": {
     "lint": "eslint ./src",
     "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js"

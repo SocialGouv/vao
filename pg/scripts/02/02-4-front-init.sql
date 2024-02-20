@@ -16,6 +16,7 @@ create table front.users (
    pwd                          VARCHAR(255)         DEFAULT NULL,
    nom                          VARCHAR(40)          NOT NULL,
    prenom                       VARCHAR(40)          NOT NULL,
+   telephone                    VARCHAR(12)          NOT NULL,
    status_code                  user_status          NOT NULL,
    deleted                      BOOLEAN              NOT NULL DEFAULT false,
    verified                     timestamp            DEFAULT current_timestamp NOT NULL,
@@ -47,6 +48,7 @@ create table front.operateurs (
    personne_physique            JSONB                ,
    protocole_transport          JSONB                ,
    protocole_sanitaire          JSONB                ,
+   organisateurs                JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_operateurs    primary key (id)
@@ -84,8 +86,10 @@ CREATE TYPE sejour_status AS ENUM (
    'A MODIFIER',
    'EN ATTENTE VALIDATION HEBERGEMENT',
    'EN ATTENTE DECLARATION 8 JOURS',
+   'TRANSMISE 8J',
    'VALIDEE',
-   'REFUSEE'
+   'REFUSEE',
+   'MAJ POST 8J'
 );
 
 /*==============================================================*/
@@ -100,9 +104,8 @@ create table front.demande_sejour (
    libelle                      VARCHAR(50)          NOT NULL,
    date_debut                   DATE                 NOT NULL,
    date_fin                     DATE                 NOT NULL,
-   itinerant                    BOOLEAN              DEFAULT false NOT NULL,
-   itinerant_etranger           BOOLEAN              DEFAULT false NOT NULL,
    duree                        INTEGER              DEFAULT 1 NOT NULL,
+   periode                      VARCHAR(10)          NOT NULL,
    nb_hebergement               INTEGER              ,
    hebergement                  JSONB                ,
    vacanciers                   JSONB                ,
@@ -110,6 +113,7 @@ create table front.demande_sejour (
    transport                    JSONB                ,
    projet_sejour                JSONB                ,
    sanitaires                   JSONB                ,
+   organisateurs                JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_demande_sejour primary key (id)

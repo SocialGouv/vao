@@ -56,7 +56,8 @@
                     label="Mot de passe"
                     :required="true"
                     :label-visible="true"
-                    placeholder="Veuillez saisir votre mot de passe"
+                    placeholder=""
+                    hint="Veuillez saisir votre mot de passe"
                     :is-valid="passwordField.isValid"
                     @update:model-value="checkValidPassword"
                   />
@@ -124,7 +125,8 @@
                     :required="true"
                     label="Confirmation mot de passe"
                     :label-visible="true"
-                    placeholder="Veuillez répéter le mot de passe"
+                    placeholder=""
+                    hint="Veuillez répéter le mot de passe"
                     :is-valid="confirmField.isValid"
                     @update:model-value="
                       (confirm) => (confirmField.modelValue = confirm)
@@ -145,7 +147,8 @@
                     name="nom"
                     :required="true"
                     :label-visible="true"
-                    placeholder="Veuillez saisir votre nom"
+                    placeholder=""
+                    hint="Veuillez saisir votre nom d'usage"
                     :is-valid="nomField.isValid"
                     @update:model-value="checkValidNom"
                   />
@@ -164,9 +167,29 @@
                     name="prenom"
                     :required="true"
                     :label-visible="true"
-                    placeholder="Veuillez saisir votre prénom"
+                    hint="Veuillez saisir votre prénom"
+                    placeholder=""
                     :is-valid="prenomField.isValid"
                     @update:model-value="checkValidPrenom"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+              >
+                <div class="fr-input-group">
+                  <DsfrInputGroup
+                    :error-message="telephoneField.errorMessage"
+                    :model-value="telephoneField.modelValue"
+                    type="text"
+                    label="Numéro de téléphone"
+                    name="telephone"
+                    :required="true"
+                    :label-visible="true"
+                    hint="Veuillez saisir votre numéro de téléphone"
+                    :is-valid="telephoneField.isValid"
+                    @update:model-value="checkValidTelephone"
                   />
                 </div>
               </div>
@@ -276,6 +299,12 @@ const prenomField = reactive({
   isValid: false,
 });
 
+const telephoneField = reactive({
+  errorMessage: "",
+  modelValue: null,
+  isValid: false,
+});
+
 // const captchaFormulaireExtInput = reactive({
 //   errorMessage: "",
 //   modelValue: null,
@@ -283,6 +312,7 @@ const prenomField = reactive({
 // });
 
 const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 
 const pwdRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*)(<>,~;])(?=.{12,})/;
@@ -355,6 +385,14 @@ function checkValidPrenom(p) {
       : "Le prénom contient des caractères incorrects";
 }
 
+function checkValidTelephone(p) {
+  telephoneField.modelValue = p;
+  telephoneField.isValid = p !== null && numTelephoneRegex.test(p);
+  telephoneField.errorMessage =
+    !p || telephoneField.isValid
+      ? ""
+      : "Le numéro de téléphone n'est pas au format attendu";
+}
 // function checkValidCaptcha(catpcha) {
 //   captchaFormulaireExtInput.modelValue = catpcha;
 //   captchaFormulaireExtInput.isValid = catpcha;
@@ -385,7 +423,8 @@ const canRegister = computed(() => {
     confirmField.isValid &&
     emailField.isValid &&
     nomField.isValid &&
-    prenomField.isValid
+    prenomField.isValid &&
+    telephoneField.isValid
     // captchaFormulaireExtInput.isValid
   );
 });
@@ -397,6 +436,7 @@ async function register() {
   const password = passwordField.modelValue;
   const nom = nomField.modelValue;
   const prenom = prenomField.modelValue;
+  const telephone = telephoneField.modelValue;
   log.i("register - IN");
   try {
     // Le code entré par l’utilisateur récupéré en backend
@@ -413,6 +453,7 @@ async function register() {
         password,
         nom,
         prenom,
+        telephone,
         // userEnteredCaptchaCode,
         // captchaId,
       }),

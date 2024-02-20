@@ -3,6 +3,7 @@ const password = require("./parts/password");
 
 const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const nomRegex = /^[A-Za-z'-]+$/;
+const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 
 const schema = object({
   email: string()
@@ -19,6 +20,11 @@ const schema = object({
   prenom: string()
     .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
       nomRegex.test(prenom),
+    )
+    .required(),
+  telephone: string()
+    .test("telephone", "Format de numéro de téléphone invalide", (telephone) =>
+      numTelephoneRegex.test(telephone),
     )
     .required(),
 });
