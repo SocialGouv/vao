@@ -22,36 +22,36 @@ const isUpdate = computed(() => {
 
 const sommaireOptions = computed(() => [
   {
-    id: 1,
-    text: "1. Renseignements généraux",
+    id: "1",
+    text: "Renseignements généraux",
     to: isUpdate.value
-      ? `/operateur/${route.params.idOperateur}#1`
+      ? `/operateur/${route.params.idOperateur}#generales`
       : "/operateur/#1",
   },
   {
-    id: 2,
-    text: "2. Agrément",
+    id: "2",
+    text: "Agrément",
     to: `/operateur/${route.params.idOperateur}#agrement`,
   },
   {
-    id: 3,
-    text: "3. Protocoles transport",
+    id: "3",
+    text: "Protocoles transport",
     to: `/operateur/${route.params.idOperateur}#transport`,
   },
   {
-    id: 4,
-    text: "4. Protocoles sanitaires",
-    to: `/operateur/${route.params.idOperateur}`,
+    id: "4",
+    text: "Protocoles sanitaires",
+    to: `/operateur/${route.params.idOperateur}#sanitaire`,
   },
   {
-    id: 5,
-    text: "5. Organisateurs",
-    to: `/operateur/${route.params.idOperateur}`,
+    id: "5",
+    text: "Organisateurs",
+    to: `/operateur/${route.params.idOperateur}#organisateurs`,
   },
   {
-    id: 6,
-    text: "6. Synthèse",
-    to: `/operateur/${route.params.idOperateur}`,
+    id: "6",
+    text: "Synthèse",
+    to: `/operateur/${route.params.idOperateur}#synthese`,
   },
 ]);
 

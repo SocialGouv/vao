@@ -209,27 +209,19 @@ function previous() {
 async function checkSiege() {
   log.i("IN - checkSiege");
   try {
-    const url = `/front-server/operateur/siege/${operateurStore.operateurCourant.personneMorale.siren}`;
-    await useFetch(url, {
+    const url = `/operateur/siege/${operateurStore.operateurCourant.personneMorale.siren}`;
+    const data = await $fetchBackend(url, {
       method: "GET",
-      onResponse({ response }) {
-        if (!response.ok) {
-          toaster.error(
-            response._data.message ??
-              "Erreur lors de la recherche de l'établissement principal",
-          );
-        } else {
-          const etablissementPrincipal = response._data.operateur;
-          log.d(etablissementPrincipal);
-          if (!etablissementPrincipal || etablissementPrincipal.length === 0) {
-            toaster.error(
-              "L'établissement principal n'a pas encore déclaré son agrément sur la plateforme VAO.",
-            );
-            return navigateTo("/");
-          }
-        }
-      },
+      credentials: "include",
     });
+    const etablissementPrincipal = data.operateur;
+    log.d(etablissementPrincipal);
+    if (!etablissementPrincipal || etablissementPrincipal.length === 0) {
+      toaster.error(
+        "L'établissement principal n'a pas encore déclaré son agrément sur la plateforme VAO.",
+      );
+      return navigateTo("/");
+    }
   } catch (error) {
     log.w(error);
   }

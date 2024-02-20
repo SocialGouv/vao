@@ -378,22 +378,17 @@ const nomPrenomRepresentantLegal = computed(() => {
 
 async function searchApiEntreprise() {
   log.i("searchApiEntreprise - IN");
-  const url = `/front-server/siret/${siret.value}`;
+  const url = `/siret/${siret.value}`;
   try {
-    const { data, error } = await useFetch(url, {
+    const data = await $fetchBackend(url, {
       method: "GET",
+      credentials: "include",
     });
-    if (data.value) {
-      log.d("Données récupérées");
-      toaster.success("Données récupérées");
-      personneMorale.value = data.value.uniteLegale[0];
 
-      log.d(personneMorale.value);
-    }
-    if (error.value) {
-      toaster.error("Ce numéro SIRET n'est pas connu de l'INSEE");
-      log.w(error.value);
-    }
+    log.d("Données récupérées");
+    toaster.success("Données récupérées");
+    personneMorale.value = data.uniteLegale[0];
+    log.d(personneMorale.value);
   } catch (error) {
     toaster.error(
       "erreur lors de la récupération des données à partir du SIRET",
@@ -404,10 +399,11 @@ async function searchApiEntreprise() {
 
 async function searchOperateurBySiret() {
   log.i("searchOperateurBySiret - IN");
-  const url = `/front-server/operateur/siret/${siret.value}`;
+  const url = `/operateur/siret/${siret.value}`;
   try {
-    const { data, error } = await useFetch(url, {
+    const { data, error } = await $fetchBackend(url, {
       method: "GET",
+      credentials: "include",
     });
     log.d("data.value.operateur");
     log.d(data.value.operateur);

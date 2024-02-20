@@ -37,7 +37,7 @@
                 class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
                 :href="
                   operateurStore.operateurCourant
-                    ? `/front/operateur/${operateurStore.operateurCourant.operateurId}`
+                    ? `/operateur/${operateurStore.operateurCourant.operateurId}`
                     : '#'
                 "
                 >Ma fiche organisme</a

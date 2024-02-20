@@ -321,6 +321,8 @@ const schema = {
         return yup.object().required(); // schema for object
       case "string":
         return yup.string().required();
+      default:
+        return yup.string().required();
     }
   }),
   adresseSiege: yup.lazy((value) => {
@@ -397,15 +399,21 @@ function setAdresseSiege(v) {
 async function searchAdresseDomicile(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseDomicileInProgress.value = true;
-    const url = "/front-server/geo/adresse/";
-    const { data } = await useFetch(url, {
-      body: { queryString },
-      method: "POST",
-    });
-    if (data.value?.adresses) {
-      log.i("resultat found");
-      adressesDomicile.value = data.value.adresses;
-      searchAdresseDomicileInProgress.value = false;
+    const url = "/geo/adresse/";
+    try {
+      const data = await $fetchBackend(url, {
+        body: { queryString },
+        method: "POST",
+        credentials: "include",
+      });
+      if (data.adresses) {
+        log.d("resultat found");
+        adressesDomicile.value = data.adresses;
+        searchAdresseDomicileInProgress.value = false;
+      }
+    } catch (error) {
+      log.w(error);
+      toaster.error("erreur lors de l'appel à l'API adresse");
     }
   }
 }
@@ -413,14 +421,21 @@ async function searchAdresseDomicile(queryString) {
 async function searchAdresseSiege(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseSiegeInProgress.value = true;
-    const url = "/front-server/geo/adresse/";
-    const { data } = await useFetch(url, {
-      body: { queryString },
-      method: "POST",
-    });
-    if (data.value?.adresses) {
-      adressesSiege.value = data.value.adresses;
-      searchAdresseSiegeInProgress.value = false;
+    const url = "/geo/adresse/";
+    try {
+      const data = await $fetchBackend(url, {
+        body: { queryString },
+        method: "POST",
+        credentials: "include",
+      });
+      if (data.adresses) {
+        log.d("resultat found");
+        adressesSiege.value = data.adresses;
+        searchAdresseSiegeInProgress.value = false;
+      }
+    } catch (error) {
+      log.w(error);
+      toaster.error("erreur lors de l'appel à l'API adresse");
     }
   }
 }
