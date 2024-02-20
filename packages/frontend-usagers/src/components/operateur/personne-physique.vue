@@ -461,15 +461,19 @@ const adressesSiegeOptions = computed(() => {
 
 function next() {
   log.i("next - IN");
-  emit("valid", {
-    ...values,
-    adresseDomicileShort: adresseDomicile?.value?.properties?.label,
-    adresseSiegeShort:
-      adresseIdentique.value === 1
-        ? adresseDomicile?.value?.properties?.label
-        : adresseSiege?.value?.properties?.label,
-    meta: meta.value.valid,
-  });
+  emit(
+    "valid",
+    {
+      ...values,
+      adresseDomicileShort: adresseDomicile?.value?.properties?.label,
+      adresseSiegeShort:
+        adresseIdentique.value === 1
+          ? adresseDomicile?.value?.properties?.label
+          : adresseSiege?.value?.properties?.label,
+      meta: meta.value.valid,
+    },
+    "personne_physique",
+  );
 }
 
 onMounted(() => {
