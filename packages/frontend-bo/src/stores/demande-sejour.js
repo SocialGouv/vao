@@ -9,9 +9,13 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     demandes: [],
   }),
   getters: {
+    getById: (state) => (stateId) =>
+      state.demandes.find((d) => d.demandeSejourId === parseInt(stateId)),
     saison: (state) => {
       return (stateId) => {
-        const demande = state.demandes.find((d) => d.id === stateId);
+        const demande = state.demandes.find(
+          (d) => d.demandeSejourId === stateId,
+        );
         if (demande?.dateDebut) {
           const moisDebut = getMonth(demande.dateDebut);
           if (moisDebut < 3) return "Hiver";

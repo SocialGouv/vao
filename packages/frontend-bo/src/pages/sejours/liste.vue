@@ -1,21 +1,21 @@
 <template>
   <div class="fr-container">
-    <h1>Liste des séjours déclarés ({{ sejourStore.demandes.length }})</h1>
+    <h1 class="header">
+      Liste des séjours déclarés ({{ sejourStore.demandes.length }})
+    </h1>
     <UtilsTableFull
       :headers="headers"
       :data="sejourStore.demandes"
       :row-navigate="navigate"
     ></UtilsTableFull>
-    <!--      :search="search"-->
-    <pre>{{ sejourStore.demandes }}</pre>
   </div>
 </template>
 
 <script setup>
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 import { formatDate } from "date-fns/format";
-import { demandeStatusSejour } from "~/utils/demandes-sejour/enum";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
+import Declaration from "~/components/demandes-sejour/Declaration.vue";
 
 const sejourStore = useDemandeSejourStore();
 
@@ -48,9 +48,17 @@ const headers = [
     format: (value) => sejourStore.organismeTitle(value.demandeSejourId),
   },
   {
-    column: "demandeSejourstatut",
-    sorter: "demandeSejourstatut",
-    text: "statut",
+    column: "demandeSejourDeclaration",
+    sorter: "demandeSejourDeclaration",
+    text: "Declaration",
+    component: () => ({
+      component: Declaration,
+    }),
+  },
+  {
+    column: "demandeSejourStatut",
+    sorter: "demandeSejourStatut",
+    text: "Statut",
     component: ({ statut }) => ({
       component: DemandeStatusBadge,
       statut: statut,
@@ -58,7 +66,7 @@ const headers = [
   },
 ];
 
-const navigate = () => console.log("toto");
+const navigate = (state) => navigateTo(`/sejours/${state.demandeSejourId}`);
 </script>
 
 <style>
@@ -68,5 +76,9 @@ tr.pointer {
 
 th.pointer {
   color: #959292;
+}
+
+.header {
+  padding: 1em 0em;
 }
 </style>
