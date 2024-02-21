@@ -43,7 +43,7 @@
                   v-model="search.dateDebut"
                   type="date"
                   name="libelle"
-                  label="Voyage a partir du"
+                  label="Voyage avant le"
                   :label-visible="true"
                 />
               </div>
@@ -112,7 +112,7 @@ const search = reactive({
 });
 
 const dict = {
-  dateDebut: (item, value) => new Date(item.dateDebut) > new Date(value),
+  dateDebut: (item, value) => new Date(item.dateDebut) < new Date(value),
   organisme: (item, value = "") =>
     sejourStore
       .organismeTitle(item.demandeSejourId)
