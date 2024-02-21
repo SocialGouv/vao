@@ -55,6 +55,7 @@ function togglePasswordType() {
         </slot>
       </slot>
       <DsfrButton
+        type="button"
         style="float: right"
         :icon="icon"
         :tertiary="true"
