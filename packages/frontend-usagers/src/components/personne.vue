@@ -124,11 +124,7 @@
     </fieldset>
     <fieldset class="fr-fieldset">
       <div class="fr-input-group">
-        <DsfrButton
-          id="Suivant"
-          :secondary="true"
-          :disabled="!meta.valid"
-          @click="validatePersonne"
+        <DsfrButton id="Suivant" :secondary="true" @click="validatePersonne"
           >Valider
         </DsfrButton>
       </div>
@@ -239,6 +235,8 @@ const schemaPersonne = {
             return yup.object().required(); // schema for object
           case "string":
             return yup.string().required();
+          default:
+            return yup.string().required();
         }
       }),
     otherwise: (adresse) => adresse.nullable(),
@@ -298,7 +296,8 @@ const {
 } = useField("email");
 
 const adressesRLOptions = computed(() => {
-  if (adresses.value && adresses.value.length > 0) {
+  if (adresses && adresses.value.length > 0) {
+    log.i("options ...");
     return adresses.value.map((a) => {
       return { value: a, label: a.properties.label };
     });
@@ -317,9 +316,10 @@ async function searchAdresseRL(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseRLInProgress.value = true;
     const url = "/geo/adresse/";
-    const { adresses } = await $fetchBackend(url, {
+    const adresses = await $fetchBackend(url, {
       body: { queryString },
       method: "POST",
+      credentials: "include",
     });
     if (adresses) {
       adresses.value = adresses;
