@@ -48,6 +48,9 @@ app.get("", (req, res) => {
   res.send("Bienvenue sur le server du portail Front");
 });
 
+
+app.use(`/bo/authentication`, routes.boauthentication);
+app.use(`/bo/users`, routes.bouser);
 app.use(`/authentication`, routes.authentication);
 app.use(`/users`, routes.user);
 app.use(`/document`, routes.document);
