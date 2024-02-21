@@ -20,7 +20,6 @@ CREATE TABLE back.users (
    mail               VARCHAR(50)          UNIQUE NOT NULL,
    name               VARCHAR(50)          NULL,
    firstname          VARCHAR(50)          NULL,
-   secret             VARCHAR(20)          NULL,
    pwd                VARCHAR(255)         NULL,
    enddate            TIMESTAMP            NOT NULL,
    created_at         TIMESTAMP            DEFAULT current_timestamp NOT NULL,
