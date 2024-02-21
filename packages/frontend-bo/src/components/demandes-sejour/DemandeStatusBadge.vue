@@ -1,40 +1,35 @@
 <template>
-  <DsfrBadge :small="true" :type="type" :label="props.statut" />
+  <Pointable>
+    <DsfrBadge :small="true" :type="type" :label="props.statut" />
+  </Pointable>
 </template>
 
 <script setup>
-import { demandeStatusSejour } from "~/utils/demandes-sejour/enum";
+import { demandeSejourStatut } from "~/utils/demandes-sejour/enum";
 import { DsfrBadge } from "@gouvminint/vue-dsfr";
+import Pointable from "~/components/utils/Pointable.vue";
 
 const props = defineProps({
   statut: {
     required: true,
     type: String,
-    validator: (value) =>
-      [
-        demandeStatusSejour.EN_COURS,
-        demandeStatusSejour.TRANSMISE,
-        demandeStatusSejour.ATTENTE_HEBERGEMENT,
-        demandeStatusSejour.VALIDEE,
-        demandeStatusSejour.A_MODIFIER,
-        demandeStatusSejour.ATTENTE_8_JOUR,
-        demandeStatusSejour.REFUSEE,
-      ].includes(value),
+    validator: (value) => Object.values(demandeSejourStatut).includes(value),
   },
 });
 
 const type = computed(() => {
   switch (props.statut) {
-    case demandeStatusSejour.EN_COURS:
-    case demandeStatusSejour.TRANSMISE:
+    case demandeSejourStatut.EN_COURS:
+    case demandeSejourStatut.TRANSMISE:
+    case demandeSejourStatut.ATTENTE_8_JOUR:
+    case demandeSejourStatut.TRANSMISE_8J:
       return "new";
-    case demandeStatusSejour.VALIDEE:
+    case demandeSejourStatut.VALIDEE:
       return "success";
-    case demandeStatusSejour.ATTENTE_8_JOUR:
-    case demandeStatusSejour.ATTENTE_HEBERGEMENT:
-    case demandeStatusSejour.A_MODIFIER:
+    case demandeSejourStatut.ATTENTE_HEBERGEMENT:
+    case demandeSejourStatut.A_MODIFIER:
       return "warning";
-    case demandeStatusSejour.REFUSEE:
+    case demandeSejourStatut.REFUSEE:
       return "error";
     default:
       return "union";

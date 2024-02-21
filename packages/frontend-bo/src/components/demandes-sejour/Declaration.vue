@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <Pointable>
     <div class="two-month">
       <span class="fr-icon-file-text-line" aria-hidden="true"></span>
       <span>2 mois</span>
@@ -9,35 +9,32 @@
       :class="{ is_not_height_days: !isDeclaration8Jours }"
       >+ 8 jours</span
     >
-  </div>
+  </Pointable>
 </template>
 
 <script setup>
-import { demandeStatusSejour } from "~/utils/demandes-sejour/enum";
+import { demandeSejourStatut } from "~/utils/demandes-sejour/enum";
+import Pointable from "~/components/utils/Pointable.vue";
 
 const props = defineProps({
   statut: {
     required: true,
     type: String,
-    validator: (value) =>
-      [
-        demandeStatusSejour.EN_COURS,
-        demandeStatusSejour.TRANSMISE,
-        demandeStatusSejour.ATTENTE_HEBERGEMENT,
-        demandeStatusSejour.VALIDEE,
-        demandeStatusSejour.A_MODIFIER,
-        demandeStatusSejour.ATTENTE_8_JOUR,
-        demandeStatusSejour.REFUSEE,
-      ].includes(value),
+    validator: (value) => Object.values(demandeSejourStatut).includes(value),
   },
 });
 
-const isDeclaration8Jours = computed(
-  () => props.statut === demandeStatusSejour.ATTENTE_8_JOUR,
+const isDeclaration8Jours = computed(() =>
+  [
+    demandeSejourStatut.ATTENTE_8_JOUR,
+    demandeSejourStatut.TRANSMISE_8J,
+    demandeSejourStatut.VALIDEE,
+    demandeSejourStatut.REFUSEE,
+  ].includes(props.statut),
 );
 </script>
 
-<style>
+<style scoped>
 .two-month {
   display: flex;
   gap: 1em;
