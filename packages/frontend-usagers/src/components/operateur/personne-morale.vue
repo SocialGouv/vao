@@ -7,13 +7,13 @@
             name="siret"
             label="Numéro SIRET"
             :label-visible="true"
-            :model-value="siret"
+            :model-value="siretDisplayed"
             :required="true"
             :is-valid="siretMeta.valid"
             :error-message="siretErrorMessage"
             placeholder=""
             hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
-            @update:model-value="onSiretChange"
+            @update:model-value="trimSiret"
           />
         </div>
       </div>
@@ -223,12 +223,7 @@ const { meta, resetForm } = useForm({
   initialValues,
   validationSchema,
 });
-const {
-  value: siret,
-  errorMessage: siretErrorMessage,
-  handleChange: onSiretChange,
-  meta: siretMeta,
-} = useField("siret");
+
 const {
   value: email,
   errorMessage: emailErrorMessage,
@@ -319,6 +314,39 @@ const nomPrenomRepresentantLegal = computed(() => {
   });
 });
 
+const siretDisplayed = computed(() => {
+  const siretSaisi = siret.value;
+  let formatedSiret;
+  for (let i = 0; i < siretSaisi.length; i++) {
+    i === 0
+      ? (formatedSiret = siretSaisi[i])
+      : (formatedSiret = formatedSiret + siretSaisi[i]);
+    switch (i) {
+      case 2:
+        formatedSiret = formatedSiret + " ";
+        break;
+      case 5:
+        formatedSiret = formatedSiret + " ";
+        break;
+      case 8:
+        formatedSiret = formatedSiret + " ";
+        break;
+    }
+  }
+  return formatedSiret;
+});
+
+function trimSiret(s) {
+  return onSiretChange(s.replace(/ /g, ""));
+}
+
+const {
+  value: siret,
+  errorMessage: siretErrorMessage,
+  handleChange: onSiretChange,
+  meta: siretMeta,
+} = useField("siret");
+
 async function searchApiEntreprise() {
   log.i("searchApiEntreprise - IN");
   const url = `/siret/${siret.value}`;
@@ -344,16 +372,11 @@ async function searchOperateurBySiret() {
   log.i("searchOperateurBySiret - IN");
   const url = `/operateur/siret/${siret.value}`;
   try {
-    const { data, error } = await $fetchBackend(url, {
+    const data = await $fetchBackend(url, {
       method: "GET",
       credentials: "include",
     });
-    log.d("data.value.operateur");
-    log.d(data.value.operateur);
-    if (error.value) {
-      log.w(error.value);
-    }
-    if (data.value && data.value.operateur.length > 0) {
+    if (data.operateur.length > 0) {
       log.d("L'opérateur est déjà présent en base");
       toaster.success("L'opérateur est déjà présent en base");
       operateurDejaExistant.value = data.value.operateur;
@@ -410,7 +433,6 @@ function next() {
 
 onMounted(() => {
   representantsLegaux.value = props.initData.representantsLegaux ?? [{}];
-  // organisateurs.value = props.initData.organisateurs ?? [{}];
   resetForm({ values: initialValues.value });
 });
 </script>
