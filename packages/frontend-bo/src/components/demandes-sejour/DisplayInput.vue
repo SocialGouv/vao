@@ -1,27 +1,88 @@
 <template>
-  <div v-if="props.inputType === InputTypes.TEXT">toto</div>
+  <div v-if="!!displayValue" class="container">
+    <h5 class="title">{{ input.label }}</h5>
+    <span>{{ displayValue }}</span>
+    <DsfrInput
+      ref="textarea"
+      :is-textarea="true"
+      label="Commentaire"
+      placeholder="Ajouter un commentaire"
+      @update:model-value="$emit('emitComment', $event)"
+    />
+  </div>
 </template>
 
 <script setup>
 import { InputTypes } from "~/utils/demande-sejour/display-input";
+import { DsfrInput } from "@gouvminint/vue-dsfr";
+
+defineEmits(["emitComment"]);
 
 const props = defineProps({
-  inputType: {
+  input: {
     required: true,
-    validator: (value) => Object.values(InputTypes).includes(value),
-  },
-  label: {
-    required: true,
-    type: String,
+    validator: (value) => {
+      if (!value.inputType || !value.label || !value.label.length) {
+        return false;
+      }
+      return Object.values(InputTypes).includes(value.inputType);
+    },
   },
   value: {
     required: true,
     validator: (value, props) => {
-      console.log(props);
+      if (props.input.inputType === InputTypes.TEXT) {
+        return (
+          typeof value === "string" || value === null || value === undefined
+        );
+      }
+
+      if (props.input.inputType === InputTypes.RADIO && !props.input.options) {
+        return false;
+      }
+
+      if (
+        props.input.inputType === InputTypes.MULTISELECT &&
+        Array.isArray(props.value) === false
+      ) {
+        return false;
+      }
+
       return true;
     },
   },
 });
+
+const displayValue = computed(() => {
+  switch (props.input.inputType) {
+    case InputTypes.TEXT:
+      return props.value !== null && props.value !== undefined
+        ? props.value.toString()
+        : null;
+    case InputTypes.NUMBER:
+      return isNaN(parseInt(props.value)) ? null : parseInt(props.value);
+    case InputTypes.RADIO:
+      return Object.keys(props.input.options).includes(props.value.toString())
+        ? props.input.options[props.value]
+        : null;
+    case InputTypes.MULTISELECT:
+      return Array.isArray(props.value) ? props.value.join(" / ") : null;
+    default:
+      return "error";
+  }
+});
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  align-items: start;
+  margin-bottom: 1em;
+}
+
+.title {
+  margin: 0;
+}
+</style>

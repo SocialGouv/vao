@@ -2,12 +2,7 @@
 
 <template>
   <div class="fr-container header">
-    <h1>Demande : {{ demande.libelle }}</h1>
-    <div class="detail-container">
-      <div v-for="detail in demandeDetails" :key="detail.name">
-        <strong>{{ detail.name }} : </strong>{{ detail.value }}
-      </div>
-    </div>
+    <Details></Details>
     <DsfrTabs
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
@@ -20,10 +15,100 @@
         :selected="selectedTabIndex === 0"
         :asc="asc"
       >
-        <div v-for="(organisateur, i) in demande.organisateur" :key="i">
-          <pre>{{ organisateur }}</pre>
-        </div>
-        <pre>{{ demande }}</pre>
+        <DsfrAccordionsGroup>
+          <li v-if="demande?.organisateurs?.organisateurs">
+            <DsfrAccordion
+              title="Organisateurs"
+              :expanded-id="expandedId"
+              @expand="expandedId = $event"
+            >
+              <div
+                v-for="(organisateur, i) in demande?.organisateurs
+                  ?.organisateurs ?? {}"
+                :key="i"
+              >
+                <h2>Organisateur {{ i + 1 }}</h2>
+                <DisplayInput
+                  v-for="entry in Object.keys(Iorganisateur)"
+                  :key="`organisateur-${i}+${entry}`"
+                  :value="organisateur[entry]"
+                  :input="Iorganisateur[entry]"
+                  @emit-comment="(toto) => console.log(toto)"
+                />
+              </div>
+            </DsfrAccordion>
+          </li>
+          <li v-if="demande.vacanciers">
+            <DsfrAccordion
+              title="Vacanciers"
+              :expanded-id="expandedId"
+              @expand="expandedId = $event"
+            >
+              TO DO, bug quand on sauvegarde le vacancier
+              <pre>
+                message:"Converting circular structure to JSON\n    --> starting at object with constructor 'ComputedRefImpl'\n    |     property 'dep' -> object with constructor 'Map'\n    --- property 'computed' closes the circle"stack:
+              </pre>
+            </DsfrAccordion>
+          </li>
+          <li v-if="demande?.personnel">
+            <DsfrAccordion
+              title="Personnel"
+              :expanded-id="expandedId"
+              @expand="expandedId = $event"
+            >
+              <DisplayInput
+                v-for="entry in Object.keys(Ipersonnel)"
+                :key="`personnel-${entry}`"
+                :value="demande.personnel[entry]"
+                :input="Ipersonnel[entry]"
+              />
+            </DsfrAccordion>
+          </li>
+          <li v-if="demande?.projet_sejour">
+            <DsfrAccordion
+              title="Projet de séjour"
+              :expanded-id="expandedId"
+              @expand="expandedId = $event"
+            >
+              <DisplayInput
+                v-for="entry in Object.keys(IProjetSejour)"
+                :key="`projet-sejour-${entry}`"
+                :value="demande.projet_sejour[entry]"
+                :input="IProjetSejour[entry]"
+              />
+            </DsfrAccordion>
+          </li>
+          <li v-if="demande?.transport">
+            <DsfrAccordion
+              title="Informations sur le transport"
+              :expanded-id="expandedId"
+              @expand="expandedId = $event"
+            >
+              <DisplayInput
+                v-for="entry in Object.keys(ITransport)"
+                :key="`transport-${entry}`"
+                :value="demande.transport[entry]"
+                :input="ITransport[entry]"
+              />
+            </DsfrAccordion>
+          </li>
+          <li v-if="demande?.sanitaires">
+            <DsfrAccordion
+              title="Informations sanitaires"
+              :expanded-id="expandedId"
+              @expand="expandedId = $event"
+            >
+              <DisplayInput
+                v-for="entry in Object.keys(ISanitaire)"
+                :key="`transport-${entry}`"
+                :value="demande.sanitaires[entry]"
+                :input="ISanitaire[entry]"
+              />
+            </DsfrAccordion>
+          </li>
+        </DsfrAccordionsGroup>
+
+        <pre>{{ comments }}</pre>
       </DsfrTabContent>
 
       <DsfrTabContent
@@ -48,41 +133,48 @@
 </template>
 
 <script setup>
-import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
-import { formatDate } from "date-fns/format";
-import { isDemande8Jours } from "~/utils/demande-sejour/statuts";
+import {
+  DsfrAccordion,
+  DsfrAccordionsGroup,
+  DsfrTabContent,
+  DsfrTabs,
+} from "@gouvminint/vue-dsfr";
+import DisplayInput from "~/components/demandes-sejour/DisplayInput.vue";
+import {
+  Iorganisateur,
+  Ipersonnel,
+  IProjetSejour,
+  ISanitaire,
+  ITransport,
+} from "~/utils/demande-sejour/display-input";
+import Details from "~/components/demandes-sejour/Details.vue";
+
+const expandedId = ref("");
 
 const route = useRoute();
 const demandeStore = useDemandeSejourStore();
 
 const demande = demandeStore.getById(route.params.idDemande);
-const demandeDetails = computed(() => [
-  {
-    name: "Organisme",
-    value: demandeStore.organismeTitle(demande.demandeSejourId),
-  },
-  {
-    name: "Date (debut / fin)",
-    value: `${formatDate(demande.dateDebut, "dd/MM/yyyy")} - ${formatDate(demande.dateFin, "dd/MM/yyyy")}`,
-  },
-  { name: "Saison", value: demandeStore.saison(demande.demandeSejourId) },
-  {
-    name: "Déclaration",
-    value: isDemande8Jours(demande.statut)
-      ? "Demande à 8 jours"
-      : "Demande à 2 mois",
-  },
-  {
-    name: "Statut",
-    value: demande.statut,
-  },
-]);
 
 const tabTitles = [
   { title: " Formulaire" },
   { title: "Documents joints" },
   { title: "historique" },
 ];
+
+const comments = ref({});
+
+/*const addCommentOrganisateurs = (index, attribute, value) => {
+  if (!comments?.organisateurs?.organisateurs) {
+    comments.organisateurs = {
+      organisateurs: new Array(
+        demande?.organisateurs?.organisateurs.length,
+      ).fill(null),
+    };
+  }
+
+  comments.organisateurs.organisateurs[index][attribute] = value;
+};*/
 
 const initialSelectedIndex = 0;
 
@@ -98,12 +190,5 @@ const selectTab = (idx) => {
 <style scoped>
 .header {
   padding: 1em 0em;
-}
-
-.detail-container {
-  display: flex;
-  flex-direction: column;
-  padding: 0em 1em;
-  margin-bottom: 2em;
 }
 </style>
