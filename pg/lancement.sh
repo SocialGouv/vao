@@ -23,3 +23,6 @@ psql -d $POSTGRES_DB -f /scripts/03/03-1-geo-data.sql
 echo '03-2-back-data : '
 psql -d $POSTGRES_DB -f /scripts/03/03-2-back-data.sql
 
+echo '04-1-back-user : '
+psql -d $POSTGRES_DB -f /scripts/04/04-1-back-user.sql
+
