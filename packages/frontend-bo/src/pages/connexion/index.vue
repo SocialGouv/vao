@@ -135,7 +135,7 @@ async function login() {
   try {
     displayType.value = null;
     const response = await $fetch(
-      config.public.backendUrl + "/bo/authentication/email/login",
+      config.public.backendUrl + "/bo-authentication/email/login",
       {
         credentials: "include",
         method: "POST",

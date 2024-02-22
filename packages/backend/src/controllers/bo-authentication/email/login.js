@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
-const config = require("../../../../config");
+const config = require("../../../config");
 
-const User = require("../../../../services/BoUser");
-const Session = require("../../../../services/Session");
+const User = require("../../../services/BoUser");
+const Session = require("../../../services/Session");
 
-const logger = require("../../../../utils/logger");
+const logger = require("../../../utils/logger");
 
-const { status } = require("../../../../helpers/users");
-const { buildAccessToken, buildRefreshToken } = require("../../../../utils/token");
+const { status } = require("../../../helpers/users");
+const { buildAccessToken, buildRefreshToken } = require("../../../utils/token");
 
 const log = logger(module.filename);
 

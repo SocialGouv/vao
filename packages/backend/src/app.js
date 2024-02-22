@@ -49,8 +49,8 @@ app.get("", (req, res) => {
 });
 
 
-app.use(`/bo/authentication`, routes.boauthentication);
-app.use(`/bo/users`, routes.bouser);
+app.use(`/bo-authentication`, routes.BOAuthentication);
+app.use(`/bo-users`, routes.BOUser);
 app.use(`/authentication`, routes.authentication);
 app.use(`/users`, routes.user);
 app.use(`/document`, routes.document);

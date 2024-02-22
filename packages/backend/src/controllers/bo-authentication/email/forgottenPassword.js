@@ -1,13 +1,13 @@
 const jwt = require("jsonwebtoken");
-const config = require("../../../../config");
+const config = require("../../../config");
 
-const User = require("../../../../services/BoUser");
-const Send = require("../../../../services/mail").mailService.send;
+const User = require("../../../services/BoUser");
+const Send = require("../../../services/mail").mailService.send;
 
-const logger = require("../../../../utils/logger");
-const normalize = require("../../../../utils/normalize");
-const MailUtils = require("../../../../utils/mail");
-const { buildEmailToken } = require("../../../../utils/token");
+const logger = require("../../../utils/logger");
+const normalize = require("../../../utils/normalize");
+const MailUtils = require("../../../utils/mail");
+const { buildEmailToken } = require("../../../utils/token");
 
 const log = logger(module.filename);
 
@@ -38,7 +38,7 @@ module.exports = async function login(req, res) {
       },
     );
     await Send(
-      MailUtils.usagers.authentication.sendForgottenPassword({
+      MailUtils.bo.authentication.sendForgottenPassword({
         email,
         token,
       }),

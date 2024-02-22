@@ -1,16 +1,16 @@
 const jwt = require("jsonwebtoken");
 
-const User = require("../../../../services/User");
-const Send = require("../../../../services/mail").mailService.send;
+const User = require("../../../services/BoUser");
+const Send = require("../../../services/mail").mailService.send;
 
-const config = require("../../../../config");
-const { status } = require("../../../../helpers/users");
+const config = require("../../../config");
+const { status } = require("../../../helpers/users");
 
-const MailUtils = require("../../../../utils/mail");
-const AppError = require("../../../../utils/error");
-const logger = require("../../../../utils/logger");
-const normalize = require("../../../../utils/normalize");
-const { buildEmailToken } = require("../../../../utils/token");
+const MailUtils = require("../../../utils/mail");
+const AppError = require("../../../utils/error");
+const logger = require("../../../utils/logger");
+const normalize = require("../../../utils/normalize");
+const { buildEmailToken } = require("../../../utils/token");
 
 const log = logger(module.filename);
 

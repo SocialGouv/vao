@@ -1,8 +1,8 @@
-const User = require("../../../services/User");
+const User = require("../../services/BoUser");
 // const Session = require("../../services/Session");
 
-const logger = require("../../../utils/logger");
-const normalize = require("../../../utils/normalize");
+const logger = require("../../utils/logger");
+const normalize = require("../../utils/normalize");
 
 const log = logger(module.filename);
 
@@ -11,7 +11,7 @@ module.exports = async function getMe(req, res) {
   log.i("In");
   const users = await User.read({ mail: normalize(decoded.email) });
   if (users.length === 0) {
-    log.w("Utilisateur inexistant");
+    log.w("Utilisateur BO inexistant");
     return res.status(404).json({ code: "UserNotFound" });
   }
 

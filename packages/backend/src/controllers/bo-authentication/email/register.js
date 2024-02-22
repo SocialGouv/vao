@@ -1,23 +1,23 @@
 const jwt = require("jsonwebtoken");
 
-const User = require("../../../../services/User");
-const Send = require("../../../../services/mail").mailService.send;
+const User = require("../../../services/BoUser");
+const Send = require("../../../services/mail").mailService.send;
 
-const config = require("../../../../config");
-const registerSchema = require("../../../../schemas/register");
+const config = require("../../../config");
+const registerSchema = require("../../../schemas/register");
 
-const logger = require("../../../../utils/logger");
-const MailUtils = require("../../../../utils/mail");
-const { buildEmailToken } = require("../../../../utils/token");
-const ValidationAppError = require("../../../../utils/validation-error");
+const logger = require("../../../utils/logger");
+const MailUtils = require("../../../utils/mail");
+const { buildEmailToken } = require("../../../utils/token");
+const ValidationAppError = require("../../../utils/validation-error");
 
 const log = logger(module.filename);
 
 module.exports = async function register(req, res, next) {
   log.i("IN");
-  const { email, password, nom, prenom, telephone } = req.body;
+  const { email, password, nom, prenom } = req.body;
 
-  const part = { email, nom, password, prenom, telephone };
+  const part = { email, nom, password, prenom };
   try {
     await registerSchema.validate(part);
   } catch (error) {
@@ -30,7 +30,6 @@ module.exports = async function register(req, res, next) {
       nom,
       password,
       prenom,
-      telephone,
     });
 
     log.d({ user });
@@ -43,7 +42,7 @@ module.exports = async function register(req, res, next) {
     );
     try {
       await Send(
-        MailUtils.usagers.authentication.sendValidationMail({
+        MailUtils.bo.authentication.sendValidationMail({
           email,
           token,
         }),
