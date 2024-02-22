@@ -48,7 +48,7 @@
           :options="sportOptions"
           :values="activitesSportives"
           label="Sports et loisirs"
-          @add-item="addActiviteSport"
+          @update="addActiviteSport"
         ></UtilsMultiSelect>
       </div>
     </fieldset>
@@ -58,7 +58,7 @@
           :options="cultureOptions"
           :values="activitesCulturelles"
           label="Culture et découverte"
-          @add-item="addActiviteCulture"
+          @update="addActiviteCulture"
         ></UtilsMultiSelect>
       </div>
     </fieldset>

@@ -156,7 +156,7 @@
             :options="prestationsHotelieresOptions"
             :values="prestationsHotelieres ?? []"
             label="Prestations hôtelières assurées par le lieu d’accueil"
-            @add-item="addPrestationHoteliere"
+            @update="addPrestationHoteliere"
           ></UtilsMultiSelect>
         </div>
       </div>
