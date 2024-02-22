@@ -7,13 +7,13 @@
             name="siret"
             label="Numéro SIRET"
             :label-visible="true"
-            :model-value="siret"
+            :model-value="siretDisplayed"
             :required="true"
             :is-valid="siretMeta.valid"
             :error-message="siretErrorMessage"
             placeholder=""
             hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
-            @update:model-value="onSiretChange"
+            @update:model-value="trimSiret"
           />
         </div>
       </div>
@@ -158,50 +158,6 @@
           </div>
         </div>
       </div>
-      <!-- <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-8">
-          <DsfrHighlight
-            text="Responsables de l'organisation des séjours"
-            :large="true"
-          />
-        </div>
-      </div>
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-8">
-          <DsfrAccordionsGroup>
-            <div v-for="(item, index) in organisateurs" :key="index">
-              <li>
-                <DsfrAccordion
-                  :id="index + 1"
-                  :title="nomPrenomResponsableOrganisation[index]"
-                  :expanded-id="expandedOrganisateurId"
-                  @expand="(id) => (expandedOrganisateurId = id)"
-                >
-                  <Personne
-                    :personne="item"
-                    :index="index"
-                    :show-adresse="false"
-                    :show-telephone="true"
-                    :show-email="true"
-                    @valid="validResponsableOrganisation"
-                  >
-                  </Personne>
-                </DsfrAccordion>
-              </li>
-            </div>
-          </DsfrAccordionsGroup>
-        </div>
-      </div>
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-8">
-          <DsfrButton
-            :label="`Ajouter un organisateur n°${organisateurs?.length + 1}`"
-            :disabled="expandedOrganisateurId !== 0"
-            :secondary="true"
-            @click="addResponsableOrganisation"
-          ></DsfrButton>
-        </div>
-      </div> -->
     </div>
 
     <DsfrButton label="Suivant" @click="next" />
@@ -224,9 +180,7 @@ const emit = defineEmits(["valid"]);
 
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 const representantsLegaux = ref([{ nom: "" }]);
-// const organisateurs = ref([{}]);
 const expandedRepresentantLegalId = ref(1);
-// const expandedOrganisateurId = ref(1);
 const siretRegex = /^[0-9]{14}$/;
 const personneMorale = ref();
 const operateurDejaExistant = ref();
@@ -263,19 +217,13 @@ const initialValues = computed(() => {
     email: props.initData?.email ?? "",
     telephoneEP: props.initData?.telephoneEP ?? "",
     representantsLegaux: props.initData?.representantsLegaux ?? [],
-    // organisateurs: props.initData?.organisateurs ?? [],
   };
 });
 const { meta, resetForm } = useForm({
   initialValues,
   validationSchema,
 });
-const {
-  value: siret,
-  errorMessage: siretErrorMessage,
-  handleChange: onSiretChange,
-  meta: siretMeta,
-} = useField("siret");
+
 const {
   value: email,
   errorMessage: emailErrorMessage,
@@ -323,8 +271,6 @@ const formatedPersonneMorale = computed(() => {
   if (operateurDejaExistant.value) {
     representantsLegaux.value =
       operateurDejaExistant.value.personneMorale?.representantsLegaux;
-    // organisateurs.value =
-    //   operateurDejaExistant.value.personneMorale?.organisateurs;
     email.value = operateurDejaExistant.value.personneMorale?.email;
     telephoneEP.value = operateurDejaExistant.value.personneMorale?.telephoneEP;
     return {
@@ -368,13 +314,38 @@ const nomPrenomRepresentantLegal = computed(() => {
   });
 });
 
-// const nomPrenomResponsableOrganisation = computed(() => {
-//   return organisateurs?.value.map((r) => {
-//     return r.nom
-//       ? `${r.nom.toUpperCase()}  ${r.prenom.toUpperCase()} - ${r.fonction}`
-//       : "Nouvel organisateur de séjour - A RENSEIGNER";
-//   });
-// });
+const siretDisplayed = computed(() => {
+  const siretSaisi = siret.value;
+  let formatedSiret;
+  for (let i = 0; i < siretSaisi.length; i++) {
+    i === 0
+      ? (formatedSiret = siretSaisi[i])
+      : (formatedSiret = formatedSiret + siretSaisi[i]);
+    switch (i) {
+      case 2:
+        formatedSiret = formatedSiret + " ";
+        break;
+      case 5:
+        formatedSiret = formatedSiret + " ";
+        break;
+      case 8:
+        formatedSiret = formatedSiret + " ";
+        break;
+    }
+  }
+  return formatedSiret;
+});
+
+function trimSiret(s) {
+  return onSiretChange(s.replace(/ /g, ""));
+}
+
+const {
+  value: siret,
+  errorMessage: siretErrorMessage,
+  handleChange: onSiretChange,
+  meta: siretMeta,
+} = useField("siret");
 
 async function searchApiEntreprise() {
   log.i("searchApiEntreprise - IN");
@@ -401,16 +372,11 @@ async function searchOperateurBySiret() {
   log.i("searchOperateurBySiret - IN");
   const url = `/operateur/siret/${siret.value}`;
   try {
-    const { data, error } = await $fetchBackend(url, {
+    const data = await $fetchBackend(url, {
       method: "GET",
       credentials: "include",
     });
-    log.d("data.value.operateur");
-    log.d(data.value.operateur);
-    if (error.value) {
-      log.w(error.value);
-    }
-    if (data.value && data.value.operateur.length > 0) {
+    if (data.operateur.length > 0) {
       log.d("L'opérateur est déjà présent en base");
       toaster.success("L'opérateur est déjà présent en base");
       operateurDejaExistant.value = data.value.operateur;
@@ -437,45 +403,36 @@ function addRepresentantLegal() {
   expandedRepresentantLegalId.value = representantsLegaux.value.length;
 }
 
-// function addResponsableOrganisation() {
-//   organisateurs.value.push({});
-//   expandedOrganisateurId.value = organisateurs.value.length;
-// }
-
 function validRepresentantLegal(representantLegal, index) {
   log.i("validRepresentantLegal - IN");
   representantsLegaux.value[index] = representantLegal;
   expandedRepresentantLegalId.value = 0;
 }
 
-// function validResponsableOrganisation(organisateur, index) {
-//   log.i("validResponsableOrganisation - IN");
-//   organisateurs.value[index] = organisateur;
-//   expandedOrganisateurId.value = 0;
-// }
-
 function next() {
   log.i("next - IN");
-  emit("valid", {
-    siret: siret.value,
-    siren: formatedPersonneMorale.value.siren,
-    siegeSocial: formatedPersonneMorale.value.siegeSocial,
-    raisonSociale: formatedPersonneMorale.value.raisonSociale,
-    statut: formatedPersonneMorale.value.statut,
-    adresseShort: formatedPersonneMorale.value.adresse,
-    adresse: formatedPersonneMorale.value.adresseComplete,
-    pays: formatedPersonneMorale.value.pays,
-    email: email.value,
-    telephoneEP: telephoneEP.value,
-    representantsLegaux: representantsLegaux.value,
-    // organisateurs: organisateurs.value,
-    meta: meta.value.valid,
-  });
+  emit(
+    "valid",
+    {
+      siret: siret.value,
+      siren: formatedPersonneMorale.value.siren,
+      siegeSocial: formatedPersonneMorale.value.siegeSocial,
+      raisonSociale: formatedPersonneMorale.value.raisonSociale,
+      statut: formatedPersonneMorale.value.statut,
+      adresseShort: formatedPersonneMorale.value.adresse,
+      adresse: formatedPersonneMorale.value.adresseComplete,
+      pays: formatedPersonneMorale.value.pays,
+      email: email.value,
+      telephoneEP: telephoneEP.value,
+      representantsLegaux: representantsLegaux.value,
+      meta: meta.value.valid,
+    },
+    "personne_morale",
+  );
 }
 
 onMounted(() => {
   representantsLegaux.value = props.initData.representantsLegaux ?? [{}];
-  // organisateurs.value = props.initData.organisateurs ?? [{}];
   resetForm({ values: initialValues.value });
 });
 </script>

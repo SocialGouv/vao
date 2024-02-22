@@ -331,6 +331,8 @@ const schema = {
         return yup.object().required(); // schema for object
       case "string":
         return yup.string().required();
+      default:
+        return yup.string().required();
     }
   }),
 };
@@ -459,15 +461,19 @@ const adressesSiegeOptions = computed(() => {
 
 function next() {
   log.i("next - IN");
-  emit("valid", {
-    ...values,
-    adresseDomicileShort: adresseDomicile?.value?.properties?.label,
-    adresseSiegeShort:
-      adresseIdentique.value === 1
-        ? adresseDomicile?.value?.properties?.label
-        : adresseSiege?.value?.properties?.label,
-    meta: meta.value.valid,
-  });
+  emit(
+    "valid",
+    {
+      ...values,
+      adresseDomicileShort: adresseDomicile?.value?.properties?.label,
+      adresseSiegeShort:
+        adresseIdentique.value === 1
+          ? adresseDomicile?.value?.properties?.label
+          : adresseSiege?.value?.properties?.label,
+      meta: meta.value.valid,
+    },
+    "personne_physique",
+  );
 }
 
 onMounted(() => {

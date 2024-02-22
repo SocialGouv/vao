@@ -1,13 +1,9 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
-import { useLayoutStore } from "@/stores/layout";
-import { useOperateurStore } from "@/stores/operateur";
 import { navItems } from "@/helpers/menuNavItem";
 
 const log = logger("layouts/demande-sejour");
 const userStore = useUserStore();
-const layoutStore = useLayoutStore();
-const operateurStore = useOperateurStore();
 
 const header = reactive({
   dimension: { height: "80px" },
@@ -97,19 +93,7 @@ function acceptAll() {
           <DsfrBreadcrumb :links="links" />
         </div>
       </div>
-      <div class="fr-grid-row fr-px-3w">
-        <div class="fr-col-3">
-          <OperateurMenuOperateur
-            :active-id="layoutStore.stepperIndex"
-            :operateur="operateurStore.operateurCourant"
-          ></OperateurMenuOperateur>
-        </div>
-
-        <div class="fr-col-9 fr-py-3w">
-          <OperateurStepper :step="layoutStore.stepperIndex"></OperateurStepper>
-          <slot />
-        </div>
-      </div>
+      <slot />
     </div>
 
     <DsfrFooter />

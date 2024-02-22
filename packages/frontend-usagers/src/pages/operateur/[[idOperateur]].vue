@@ -1,81 +1,84 @@
 <template>
-  <div>
-    <div id="generales">
-      <div v-if="layoutStore.stepperIndex === 1">
-        <fieldset class="fr-fieldset">
-          <div class="fr-fieldset__element">
-            <div class="fr-input-group fr-col-12">
-              <DsfrRadioButtonSet
-                name="typeOperateur"
-                legend="Type de personne qui organise des séjours"
-                :required="true"
-                :model-value="typeOperateur"
-                :options="typeOptions"
-                :is-valid="typeOperateurMeta"
-                :inline="false"
-                :error-message="typeOperateurErrorMessage"
-                @update:model-value="onTypeOperateurChange"
-              />
+  <div class="fr-grid-row fr-px-3w">
+    <div class="fr-col-3">
+      <OperateurMenuOperateur
+        :active-id="hash"
+        :operateur="operateurStore.operateurCourant"
+      ></OperateurMenuOperateur>
+    </div>
+
+    <div class="fr-col-9 fr-py-3w">
+      <OperateurStepper :step="hash"></OperateurStepper>
+      <div>
+        <div id="info-generales">
+          <div v-if="hash === 'info-generales'">
+            <fieldset class="fr-fieldset">
+              <div class="fr-fieldset__element">
+                <div class="fr-input-group fr-col-12">
+                  <DsfrRadioButtonSet
+                    name="typeOperateur"
+                    legend="Type de personne qui organise des séjours"
+                    :required="true"
+                    :model-value="typeOperateur"
+                    :options="typeOptions"
+                    :is-valid="typeOperateurMeta"
+                    :inline="false"
+                    :error-message="typeOperateurErrorMessage"
+                    @update:model-value="onTypeOperateurChange"
+                  />
+                </div>
+              </div>
+            </fieldset>
+            <div v-if="typeOperateur === 'personne_morale'">
+              <OperateurPersonneMorale
+                :init-data="operateurCourant.personneMorale ?? {}"
+                @valid="updateOrCreate"
+              ></OperateurPersonneMorale>
+            </div>
+            <div v-if="typeOperateur === 'personne_physique'">
+              <OperateurPersonnePhysique
+                :init-data="operateurCourant.personnePhysique ?? {}"
+                @valid="updateOrCreate"
+              ></OperateurPersonnePhysique>
             </div>
           </div>
-        </fieldset>
-        <div v-if="typeOperateur === 'personne_morale'">
-          <OperateurPersonneMorale
-            :init-data="operateurCourant.personneMorale ?? {}"
-            @valid="UpdateOrCreate"
-          ></OperateurPersonneMorale>
         </div>
-        <div v-if="typeOperateur === 'personne_physique'">
-          <OperateurPersonnePhysique
-            :init-data="operateurCourant.personnePhysique ?? {}"
-            @valid="UpdateOrCreate"
-          ></OperateurPersonnePhysique>
+        <div id="agrement">
+          <OperateurAgrement
+            v-if="hash === 'agrement'"
+            :init-data="operateurCourant"
+            @valid="nextHash(hash)"
+          ></OperateurAgrement>
         </div>
-      </div>
-    </div>
-    <div id="agrement">
-      <div v-if="layoutStore.stepperIndex === 2">
-        <OperateurAgrement
-          :init-data="operateurCourant"
-          @valid="updateAgrement"
-        ></OperateurAgrement>
-      </div>
-    </div>
-    <div id="transport">
-      <div v-if="layoutStore.stepperIndex === 3">
-        <protocole-transport
-          :init-data="operateurCourant.protocoleTransport ?? {}"
-          @valid="update"
-        ></protocole-transport>
-      </div>
-    </div>
-    <div id="sanitaire">
-      <div v-if="layoutStore.stepperIndex === 4">
-        <protocole-sanitaire
-          :init-data="operateurCourant.protocoleSanitaire ?? {}"
-          @valid="update"
-        ></protocole-sanitaire>
-      </div>
-    </div>
-    <div id="organisateurs">
-      <div v-if="layoutStore.stepperIndex === 5">
-        <Organisateur
-          :init-data="operateurCourant.organisateurs ?? []"
-          @valid="update"
-        >
-        </Organisateur>
-        <!-- <OperateurOrganisateur -->
-        <!-- :init-data="operateurCourant.organisateurs ?? []" -->
-        <!-- @valid="update" -->
-        <!-- ></OperateurOrganisateur> -->
-      </div>
-    </div>
-    <div id="synthse">
-      <div v-if="layoutStore.stepperIndex === 6">
-        <OperateurSynthese
-          :init-data="operateurCourant"
-          @valid="finalizeOperateur"
-        ></OperateurSynthese>
+        <div id="protocole-transport">
+          <protocole-transport
+            v-if="hash === 'protocole-transport'"
+            :init-data="operateurCourant.protocoleTransport ?? {}"
+            @valid="updateOrCreate"
+          ></protocole-transport>
+        </div>
+        <div id="protocole-sanitaire">
+          <protocole-sanitaire
+            v-if="hash === 'protocole-sanitaire'"
+            :init-data="operateurCourant.protocoleSanitaire ?? {}"
+            @valid="updateOrCreate"
+          ></protocole-sanitaire>
+        </div>
+        <div id="organisateurs">
+          <Organisateur
+            v-if="hash === 'organisateurs'"
+            :init-data="operateurCourant.organisateurs ?? []"
+            @valid="updateOrCreate"
+          >
+          </Organisateur>
+        </div>
+        <div id="synthese">
+          <OperateurSynthese
+            v-if="hash === 'synthese'"
+            :init-data="operateurCourant"
+            @valid="finalizeOperateur"
+          ></OperateurSynthese>
+        </div>
       </div>
     </div>
   </div>
@@ -84,10 +87,6 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { useLayoutStore } from "@/stores/layout";
-import { useOperateurStore } from "@/stores/operateur";
-import { logger } from "#imports";
-import { watch } from "vue";
 
 const route = useRoute();
 const nuxtApp = useNuxtApp();
@@ -100,7 +99,6 @@ definePageMeta({
 });
 
 const operateurStore = useOperateurStore();
-const layoutStore = useLayoutStore();
 
 const operateurCourant = computed(() => {
   return operateurStore.operateurCourant;
@@ -116,10 +114,6 @@ const typeOptions = [
     value: "personne_morale",
   },
 ];
-
-const isUpdate = computed(() => {
-  return !!route.params.idOperateur;
-});
 
 // Schéma et données de base
 const schemaBase = {
@@ -144,11 +138,31 @@ const {
   meta: typeOperateurMeta,
 } = useField("typeOperateur");
 
-async function UpdateOrCreate(operatorData) {
-  log.i("UpdateOrCreate - IN");
+const sommaireOptions = organismeMenus.map((m) => m.id);
+
+const hash = computed(() => {
+  if (route.hash) {
+    return route.hash.slice(1);
+  }
+  return sommaireOptions[0];
+});
+
+function previousHash(hash) {
+  const index = sommaireOptions.findIndex((o) => o === hash);
+  return navigateTo({ hash: "#" + sommaireOptions[index - 1] });
+}
+
+function nextHash(hash) {
+  const index = sommaireOptions.findIndex((o) => o === hash);
+  log.i({ hash, index, next: sommaireOptions[index + 1] });
+  return navigateTo({ hash: "#" + sommaireOptions[index + 1] });
+}
+
+async function updateOrCreate(operatorData, updatetype) {
+  log.i("updateOrCreate - IN");
   log.d(operatorData);
   try {
-    const url = isUpdate.value
+    const url = route.params.idOperateur
       ? `/operateur/${route.params.idOperateur}`
       : "/operateur";
     const data = await $fetchBackend(url, {
@@ -156,7 +170,7 @@ async function UpdateOrCreate(operatorData) {
       credentials: "include",
       body: {
         parametre: { ...operatorData },
-        type: typeOperateur.value,
+        type: updatetype,
       },
     });
 
@@ -164,38 +178,10 @@ async function UpdateOrCreate(operatorData) {
     log.d(`operateur ${operateurId} mis à jour`);
     await operateurStore.setMyOperateur();
     toaster.success("Fiche opérateur sauvegardée");
-    layoutStore.stepperIndex++;
+    return nextHash(hash.value);
   } catch (error) {
     log.w("Creation/modification d'operateur : ", { error });
   }
-}
-
-async function update(operatorData, type) {
-  log.i("update - IN");
-  log.d(operatorData);
-  try {
-    const url = `/operateur/${operateurCourant.value.operateurId}`;
-    const data = await useFetch(url, {
-      method: "POST",
-      credentials: "include",
-      body: {
-        parametre: { ...operatorData },
-        type,
-      },
-    });
-    const operateurId = data.operateurId;
-    log.d(`operateur ${operateurId} mis à jour`);
-    await operateurStore.setMyOperateur();
-    toaster.success("Fiche opérateur sauvegardée");
-    layoutStore.stepperIndex++;
-  } catch (error) {
-    log.w("Creation/modification d'operateur : ", { error });
-  }
-}
-
-function updateAgrement() {
-  log.i("updateAgrement - IN");
-  layoutStore.stepperIndex++;
 }
 
 async function finalizeOperateur() {
@@ -220,51 +206,7 @@ async function finalizeOperateur() {
   }
 }
 
-watch(
-  () => route.hash,
-  (oldValue, newValue) => {
-    log.i("oldValue, newValue");
-    log.i(oldValue, newValue);
-    if (route.hash === "#agrement") {
-      layoutStore.stepperIndex = 2;
-    }
-    if (route.hash === "#transport") {
-      layoutStore.stepperIndex = 3;
-    }
-    if (route.hash === "#sanitaire") {
-      layoutStore.stepperIndex = 4;
-    }
-    if (route.hash === "#organisateurs") {
-      layoutStore.stepperIndex = 5;
-    }
-    if (route.hash === "#synthese") {
-      layoutStore.stepperIndex = 6;
-    }
-    if (!route.hash || route.hash === "#generales") {
-      layoutStore.stepperIndex = 1;
-    }
-  },
-);
-
 onMounted(async () => {
-  if (route.hash === "#agrement") {
-    layoutStore.stepperIndex = 2;
-  }
-  if (route.hash === "#transport") {
-    layoutStore.stepperIndex = 3;
-  }
-  if (route.hash === "#sanitaire") {
-    layoutStore.stepperIndex = 4;
-  }
-  if (route.hash === "#organisateurs") {
-    layoutStore.stepperIndex = 5;
-  }
-  if (route.hash === "#synthese") {
-    layoutStore.stepperIndex = 6;
-  }
-  if (!route.hash || route.hash === "#generales") {
-    layoutStore.stepperIndex = 1;
-  }
   await operateurStore.setMyOperateur();
   resetFormBase({ values: initialValuesBase.value });
 });
