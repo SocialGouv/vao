@@ -20,11 +20,15 @@
         :selected="selectedTabIndex === 0"
         :asc="asc"
       >
+        <div v-for="(organisateur, i) in demande.organisateur" :key="i">
+          <pre>{{ organisateur }}</pre>
+        </div>
         <pre>{{ demande }}</pre>
       </DsfrTabContent>
 
       <DsfrTabContent
-        panel-id="tab-content-1"
+        panel-id=" tab-content-1
+        "
         tab-id="tab-1"
         :selected="selectedTabIndex === 1"
         :asc="asc"
@@ -46,7 +50,7 @@
 <script setup>
 import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
 import { formatDate } from "date-fns/format";
-import { isDemande8Jours } from "~/utils/demande-sejour";
+import { isDemande8Jours } from "~/utils/demande-sejour/statuts";
 
 const route = useRoute();
 const demandeStore = useDemandeSejourStore();
