@@ -19,8 +19,8 @@ async function checkJWT(req, res, next) {
       throw new AppError("Utilisateur non identifié", { name: "UnsignedUser" });
     }
 
-    const accessToken = cookies.PP_access_token;
-    const refreshToken = cookies.PP_refresh_token;
+    const accessToken = cookies.VAO_BO_access_token;
+    const refreshToken = cookies.VAO_BO_refresh_token;
 
     if (!accessToken && !refreshToken) {
       log.i("DONE - Aucun token présent");
@@ -40,7 +40,7 @@ async function checkJWT(req, res, next) {
       } catch (error) {
         if (error instanceof jwt.TokenExpiredError) {
           log.d("accessToken expired");
-          res.clearCookie("PP_access_token", {
+          res.clearCookie("VAO_BO_access_token", {
             httpOnly: true,
             secure: true,
           });
@@ -87,14 +87,14 @@ async function checkJWT(req, res, next) {
     //   TODO; gérer session
     //   await Session.create(user.id, newRefreshToken);
 
-    res.cookie("PP_access_token", newAccessToken, {
+    res.cookie("VAO_BO_access_token", newAccessToken, {
       httpOnly: true,
       maxAge: config.accessToken.expiresIn,
       sameSite: "strict",
       secure: true,
     });
 
-    res.cookie("PP_refresh_token", newRefreshToken, {
+    res.cookie("VAO_BO_refresh_token", newRefreshToken, {
       httpOnly: true,
       maxAge: config.refreshToken.expiresIn,
       sameSite: "strict",
