@@ -1,24 +1,29 @@
 <template>
-  <label>{{ props.label }}</label>
-  <DsfrTags :tags="formatedTags" />
-  <div class="fr-input-group">
-    <DsfrSelect
-      label=""
-      label-visible="false"
-      :required="false"
-      :options="optionsToDisplay"
-      @update:model-value="addItem"
-    />
-  </div>
+  <DsfrSelect
+    :options="optionsToDisplay"
+    :model-value="null"
+    :select-id="selectId"
+    v-bind="$attrs"
+    @update:model-value="addItem"
+  >
+    <template #label>
+      <label
+        >{{ props.label }}
+        <span v-if="required" class="required">&nbsp;*</span></label
+      >
+      <DsfrTags :tags="formatedTags" />
+    </template>
+  </DsfrSelect>
 </template>
 
 <script setup>
 const props = defineProps({
+  required: { type: Boolean, default: false },
   options: { type: Array, required: true },
   values: { type: Array, required: true },
   label: { type: String, required: true },
 });
-const emit = defineEmits(["add-item"]);
+const emit = defineEmits(["update"]);
 
 const tagsToDisplay = ref([]);
 
@@ -28,13 +33,14 @@ const formatedTags = computed(() => {
     return {
       id: t,
       label: t,
+      name: t,
       class: "fr-tag--dismiss",
       tagName: "button",
       onClick: (c) => {
         tagsToDisplay.value = tagsToDisplay.value.filter(
           (t) => t !== c.target.id,
         );
-        emit("add-item", tagsToDisplay.value);
+        emit("update", tagsToDisplay.value);
       },
     };
   });
@@ -43,11 +49,18 @@ const optionsToDisplay = computed(() => {
   return props.options.filter((o) => !tagsToDisplay.value.includes(o.value));
 });
 
+const refSelect = ref();
 function addItem(i) {
+  refSelect.value.selectedIndex = 0;
   tagsToDisplay.value.push(i);
-  console.log("add-item", i, tagsToDisplay.value);
-  emit("add-item", tagsToDisplay.value);
+  emit("update", tagsToDisplay.value);
 }
+
+const selectId = random.getRandomId("select");
+
+onMounted(() => {
+  refSelect.value = document.getElementById(selectId);
+});
 </script>
 
 <style scoped></style>
