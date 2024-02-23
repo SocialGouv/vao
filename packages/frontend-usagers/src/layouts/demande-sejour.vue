@@ -43,7 +43,7 @@ const homeTo = computed(() => {
 });
 
 async function logout() {
-  const sub = userStore.user.sub ?? null;
+  const sub = userStore.user.sub;
   log.i("logout - IN");
   await $fetchBackend("/authentication/disconnect", {
     method: "POST",

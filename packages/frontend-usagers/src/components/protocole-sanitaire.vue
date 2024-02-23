@@ -263,8 +263,8 @@
     </fieldset>
     <fieldset
       v-if="
-        preparationPilluliers.includes('prepares_prealablement') ||
-        preparationPilluliers.includes('au_fur_et_a_mesure')
+        preparationPilluliers === 'prepares_prealablement' ||
+        preparationPilluliers === 'au_fur_et_a_mesure'
       "
       class="fr-fieldset"
     >
@@ -575,7 +575,7 @@ const responsableAdministrationMedicamentOptions = [
 ];
 
 const preparationPilluliersOptions = [
-  { label: "Aucune méthode", id: "aucune", name: "aucune" },
+  { label: "Aucune méthode", id: "aucune", value: "aucune" },
   {
     label:
       "Piluliers préparés préalablement au séjour par le vacancier, sa famille, le représentant légal, l’établissement de résidence habituelle, le médecin",
@@ -645,7 +645,10 @@ const schemaInfosSanitaires = {
     }),
   preparationPilluliers: yup.string().required(),
   precisionPreparationPilluliers: yup.string().when("preparationPilluliers", {
-    is: (val) => !!val,
+    is: (preparationPilluliers) =>
+      preparationPilluliers === "prepares_prealablement" ||
+      preparationPilluliers === "au_fur_et_a_mesure",
+
     then: (precision) =>
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
@@ -712,50 +715,45 @@ const validationSchema = computed(() =>
 );
 
 const initialValues = computed(() => ({
-  dispositionsSpecifiques: props.initData?.dispositionsSpecifiques ?? null,
+  dispositionsSpecifiques: props.initData?.dispositionsSpecifiques,
   precisionDispositionsSpecifiques:
-    props.initData?.precisionDispositionsSpecifiques ?? "",
+    props.initData?.precisionDispositionsSpecifiques,
   constitutionEquipe: props.initData?.constitutionEquipe ?? [],
-  precisionConstitutionEquipe:
-    props.initData?.precisionConstitutionEquipe ?? "",
-  troussePharmacie: props.initData?.troussePharmacie ?? null,
+  precisionConstitutionEquipe: props.initData?.precisionConstitutionEquipe,
+  troussePharmacie: props.initData?.troussePharmacie,
   responsableAdministrationMedicament:
     props.initData?.responsableAdministrationMedicament ?? [],
   precisionResponsableAdministrationMedicament:
-    props.initData?.precisionResponsableAdministrationMedicament ?? "",
-  stockageMedicamentSecurise:
-    props.initData?.stockageMedicamentSecurise ?? null,
+    props.initData?.precisionResponsableAdministrationMedicament,
+  stockageMedicamentSecurise: props.initData?.stockageMedicamentSecurise,
   precisionStockageMedicamentSecurise:
-    props.initData?.precisionStockageMedicamentSecurise ?? "",
+    props.initData?.precisionStockageMedicamentSecurise,
   conservationMedicamentThermosensible:
-    props.initData?.conservationMedicamentThermosensible ?? null,
+    props.initData?.conservationMedicamentThermosensible,
   precisionConservationMedicament:
-    props.initData?.precisionConservationMedicament ?? "",
-  individualisationMedicaments:
-    props.initData?.individualisationMedicaments ?? null,
+    props.initData?.precisionConservationMedicament,
+  individualisationMedicaments: props.initData?.individualisationMedicaments,
   precisionIndividualisationMedicaments:
-    props.initData?.precisionIndividualisationMedicaments ?? "",
-  preparationPilluliers: props.initData?.preparationPilluliers ?? null,
+    props.initData?.precisionIndividualisationMedicaments,
+  preparationPilluliers: props.initData?.preparationPilluliers,
   precisionPreparationPilluliers:
-    props.initData?.precisionPreparationPilluliers ?? "",
-  prescriptionMedicaleJointe:
-    props.initData?.prescriptionMedicaleJointe ?? null,
+    props.initData?.precisionPreparationPilluliers,
+  prescriptionMedicaleJointe: props.initData?.prescriptionMedicaleJointe,
   protocoleModificationTraitement:
-    props.initData?.protocoleModificationTraitement ?? null,
+    props.initData?.protocoleModificationTraitement,
   precisionProtocoleModificationTraitement:
-    props.initData?.precisionProtocoleModificationTraitement ?? "",
-  ficheSuiviMedicaments: props.initData?.ficheSuiviMedicaments ?? null,
-  protocoleEvacuation: props.initData?.protocoleEvacuation ?? null,
-  precisionProtocoleEvacuation:
-    props.initData?.precisionProtocoleEvacuation ?? "",
-  protocoleAccident: props.initData?.protocoleAccident ?? null,
-  precisionProtocoleAccident: props.initData?.precisionProtocoleAccident ?? "",
-  protocoleReorientation: props.initData?.protocoleReorientation ?? null,
+    props.initData?.precisionProtocoleModificationTraitement,
+  ficheSuiviMedicaments: props.initData?.ficheSuiviMedicaments,
+  protocoleEvacuation: props.initData?.protocoleEvacuation,
+  precisionProtocoleEvacuation: props.initData?.precisionProtocoleEvacuation,
+  protocoleAccident: props.initData?.protocoleAccident,
+  precisionProtocoleAccident: props.initData?.precisionProtocoleAccident,
+  protocoleReorientation: props.initData?.protocoleReorientation,
   precisionProtocoleReorientation:
-    props.initData?.precisionProtocoleReorientation ?? "",
-  protocoleCanicule: props.initData?.protocoleCanicule ?? null,
-  precisionProtocoleCanicule: props.initData?.precisionProtocoleCanicule ?? "",
-  gestionBudgetPersonnel: props.initData?.gestionBudgetPersonnel ?? null,
+    props.initData?.precisionProtocoleReorientation,
+  protocoleCanicule: props.initData?.protocoleCanicule,
+  precisionProtocoleCanicule: props.initData?.precisionProtocoleCanicule,
+  gestionBudgetPersonnel: props.initData?.gestionBudgetPersonnel,
 }));
 const { meta, values, resetForm } = useForm({
   validationSchema,

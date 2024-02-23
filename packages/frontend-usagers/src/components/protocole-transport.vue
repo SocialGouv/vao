@@ -129,9 +129,9 @@ const validationSchema = computed(() =>
 
 const initialValues = computed(() => ({
   responsableTransportLieuSejour:
-    props.initData?.responsableTransportLieuSejour ?? "",
-  precisionModeOrganisation: props.initData?.precisionModeOrganisation ?? "",
-  deplacementDurantSejour: props.initData?.deplacementDurantSejour ?? "",
+    props.initData?.responsableTransportLieuSejour,
+  precisionModeOrganisation: props.initData?.precisionModeOrganisation,
+  deplacementDurantSejour: props.initData?.deplacementDurantSejour,
   modeTransport: props.initData?.modeTransport ?? [],
 }));
 const { meta, values, resetForm } = useForm({

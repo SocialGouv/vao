@@ -190,10 +190,8 @@
       </div>
       <div
         v-if="
-          props.initData.preparationPilluliers.includes(
-            'prepares_prealablement',
-          ) ||
-          props.initData.preparationPilluliers.includes('au_fur_et_a_mesure')
+          props.initData.preparationPilluliers === 'prepares_prealablement' ||
+          props.initData.preparationPilluliers === 'au_fur_et_a_mesure'
         "
         class="fr-fieldset__element"
       >
@@ -402,17 +400,17 @@ const responsableAdministrationMedicamentOptions = [
 ];
 
 const preparationPilluliersOptions = [
-  { label: "Aucune méthode", id: "aucune", name: "aucune" },
+  { label: "Aucune méthode", id: "aucune", value: "aucune" },
   {
     label:
       "Piluliers préparés préalablement au séjour par le vacancier, sa famille, le représentant légal, l’établissement de résidence habituelle, le médecin",
     id: "prepares_prealablement",
-    name: "prepares_prealablement",
+    value: "prepares_prealablement",
   },
   {
     label: "Piluliers préparés durant le séjour",
     id: "au_fur_et_a_mesure",
-    name: "au_fur_et_a_mesure",
+    value: "au_fur_et_a_mesure",
   },
 ];
 </script>

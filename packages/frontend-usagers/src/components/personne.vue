@@ -124,7 +124,11 @@
     </fieldset>
     <fieldset class="fr-fieldset">
       <div class="fr-input-group">
-        <DsfrButton id="Suivant" :secondary="true" @click="validatePersonne"
+        <DsfrButton
+          id="Suivant"
+          :secondary="true"
+          :disabled="!meta.valid"
+          @click="validatePersonne"
           >Valider
         </DsfrButton>
       </div>
@@ -139,14 +143,13 @@ import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 
 const props = defineProps({
-  personne: { type: Object, default: null, required: true },
-  index: { type: Number, default: null, required: true },
+  personne: { type: Object, required: true },
   showAdresse: { type: Boolean, default: false, required: false },
   showTelephone: { type: Boolean, default: false, required: false },
   showEmail: { type: Boolean, default: false, required: false },
 });
+
 const emit = defineEmits(["valid"]);
-const log = logger("pages/component/personne");
 
 const NB_CAR_ADRESSE_MIN = 6;
 const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
@@ -235,8 +238,6 @@ const schemaPersonne = {
             return yup.object().required(); // schema for object
           case "string":
             return yup.string().required();
-          default:
-            return yup.string().required();
         }
       }),
     otherwise: (adresse) => adresse.nullable(),
@@ -249,12 +250,12 @@ const validationSchema = computed(() => {
 
 const initialValues = computed(() => {
   return {
-    nom: props.personne?.nom ?? "",
-    prenom: props.personne?.prenom ?? "",
-    fonction: props.personne?.fonction ?? "",
-    adresse: props.personne?.adresseShort ?? "",
-    telephone: props.personne?.telephone ?? "",
-    email: props.personne?.email ?? "",
+    nom: props.personne?.nom,
+    prenom: props.personne?.prenom,
+    fonction: props.personne?.fonction,
+    adresse: props.personne?.adresse,
+    telephone: props.personne?.telephone,
+    email: props.personne?.email,
   };
 });
 
@@ -296,8 +297,7 @@ const {
 } = useField("email");
 
 const adressesRLOptions = computed(() => {
-  if (adresses && adresses.value.length > 0) {
-    log.i("options ...");
+  if (adresses.value && adresses.value.length > 0) {
     return adresses.value.map((a) => {
       return { value: a, label: a.properties.label };
     });
@@ -316,10 +316,9 @@ async function searchAdresseRL(queryString) {
   if (queryString.length > NB_CAR_ADRESSE_MIN) {
     searchAdresseRLInProgress.value = true;
     const url = "/geo/adresse/";
-    const adresses = await $fetchBackend(url, {
+    const { adresses } = await $fetchBackend(url, {
       body: { queryString },
       method: "POST",
-      credentials: "include",
     });
     if (adresses) {
       adresses.value = adresses;
@@ -329,16 +328,7 @@ async function searchAdresseRL(queryString) {
 }
 
 function validatePersonne() {
-  log.i("validatePersonne");
-  emit(
-    "valid",
-    {
-      ...values,
-      adresseShort: adresse.value.properties?.label ?? adresse.value,
-    },
-    props.index,
-    meta,
-  );
+  emit("valid", { ...values });
 }
 </script>
 

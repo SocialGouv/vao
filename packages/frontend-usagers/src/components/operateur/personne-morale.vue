@@ -213,9 +213,9 @@ const validationSchema = computed(() => {
 });
 const initialValues = computed(() => {
   return {
-    siret: props.initData?.siret ?? "",
-    email: props.initData?.email ?? "",
-    telephoneEP: props.initData?.telephoneEP ?? "",
+    siret: props.initData?.siret,
+    email: props.initData?.email,
+    telephoneEP: props.initData?.telephoneEP,
     representantsLegaux: props.initData?.representantsLegaux ?? [],
   };
 });
@@ -249,11 +249,7 @@ const isEtablissementPrincipal = computed(() => {
 const formatedPersonneMorale = computed(() => {
   // les infos proviennent de l'API entreprise
   if (personneMorale.value) {
-    const adresse = `${personneMorale.value.adresse.numero_voie ?? ""} ${
-      personneMorale.value.adresse.type_voie ?? ""
-    } ${personneMorale.value.adresse.libelle_voie ?? ""} ${
-      personneMorale.value.adresse.code_postal ?? ""
-    } ${personneMorale.value.adresse.libelle_commune ?? ""}`;
+    const adresse = `${personneMorale.value.adresse.numero_voie} ${personneMorale.value.adresse.type_voie} ${personneMorale.value.adresse.libelle_voie} ${personneMorale.value.adresse.code_postal} ${personneMorale.value.adresse.libelle_commune}`;
     return {
       siret: personneMorale.value.siret,
       siren: personneMorale.value.unite_legale.siren,
@@ -432,7 +428,7 @@ function next() {
 }
 
 onMounted(() => {
-  representantsLegaux.value = props.initData.representantsLegaux ?? [{}];
+  representantsLegaux.value = props.initData.representantsLegaux ?? [];
   resetForm({ values: initialValues.value });
 });
 </script>
