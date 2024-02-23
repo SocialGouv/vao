@@ -1,8 +1,17 @@
 <template>
   <div v-if="!!displayValue" class="container">
-    <h5 class="title">{{ input.label }}</h5>
-    <span>{{ displayValue }}</span>
+    <div class="display-info-bloc">
+      <h5 class="title">{{ input.label }}</h5>
+      <span>{{ displayValue }}</span>
+      <DsfrButton
+        icon="fr-icon-edit-box-line"
+        icon-only
+        class="display-info-button"
+        @click="showComment = !showComment"
+      />
+    </div>
     <DsfrInput
+      v-if="showComment"
       ref="textarea"
       :is-textarea="true"
       label="Commentaire"
@@ -14,7 +23,9 @@
 
 <script setup>
 import { InputTypes } from "~/utils/demande-sejour/display-input";
-import { DsfrInput } from "@gouvminint/vue-dsfr";
+import { DsfrButton, DsfrInput } from "@gouvminint/vue-dsfr";
+
+const showComment = ref(false);
 
 defineEmits(["emitComment"]);
 
@@ -84,5 +95,16 @@ const displayValue = computed(() => {
 
 .title {
   margin: 0;
+}
+
+.display-info-bloc {
+  position: relative;
+  width: 100%;
+}
+
+.display-info-button {
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 </style>

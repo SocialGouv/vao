@@ -33,7 +33,9 @@
                   :key="`organisateur-${i}+${entry}`"
                   :value="organisateur[entry]"
                   :input="Iorganisateur[entry]"
-                  @emit-comment="(toto) => console.log(toto)"
+                  @emit-comment="
+                    (comment) => addCommentOrganisateurs(i, entry, comment)
+                  "
                 />
               </div>
             </DsfrAccordion>
@@ -162,19 +164,23 @@ const tabTitles = [
   { title: "historique" },
 ];
 
-const comments = ref({});
+const comments = reactive({});
 
-/*const addCommentOrganisateurs = (index, attribute, value) => {
+const addCommentOrganisateurs = (index, attribute, value) => {
   if (!comments?.organisateurs?.organisateurs) {
     comments.organisateurs = {
       organisateurs: new Array(
         demande?.organisateurs?.organisateurs.length,
       ).fill(null),
     };
+    console.log(comments.organisateurs);
   }
 
-  comments.organisateurs.organisateurs[index][attribute] = value;
-};*/
+  comments.organisateurs.organisateurs[index] = {
+    ...comments.organisateurs.organisateurs[index],
+    [attribute]: value,
+  };
+};
 
 const initialSelectedIndex = 0;
 
