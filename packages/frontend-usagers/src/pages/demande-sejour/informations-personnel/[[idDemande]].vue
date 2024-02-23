@@ -80,7 +80,6 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { useDemandeSejourStore } from "@/stores/demande-sejour";
 import { useLayoutStore } from "@/stores/layout";
-import { ouiNonOptions } from "@/helpers/ouiNonOptions";
 
 const route = useRoute();
 const nuxtApp = useNuxtApp();

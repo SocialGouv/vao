@@ -121,40 +121,17 @@
           </div>
         </div>
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-8">
-            <DsfrAccordionsGroup>
-              <div v-for="(item, index) in representantsLegaux" :key="index">
-                <li>
-                  <DsfrAccordion
-                    :id="index + 1"
-                    :title="nomPrenomRepresentantLegal[index]"
-                    :expanded-id="expandedRepresentantLegalId"
-                    @expand="(id) => (expandedRepresentantLegalId = id)"
-                  >
-                    <Personne
-                      :personne="item"
-                      :index="index"
-                      :show-adresse="true"
-                      :show-telephone="true"
-                      @valid="validRepresentantLegal"
-                    >
-                    </Personne>
-                  </DsfrAccordion>
-                </li>
-              </div>
-            </DsfrAccordionsGroup>
-          </div>
-        </div>
-        <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-8">
-            <DsfrButton
-              :label="`Ajouter un représentant légal n°${
-                representantsLegaux?.length + 1
-              }`"
-              :disabled="expandedRepresentantLegalId !== 0"
-              :secondary="true"
-              @click="addRepresentantLegal"
-            ></DsfrButton>
+          <div class="fr-input-group fr-col-12">
+            <Personnes
+              :personnes="representantsLegaux"
+              :show-adresse="true"
+              :show-telephone="true"
+              :show-email="true"
+              titre="Représentant légal"
+              :headers="headers"
+              @valid="onRepresentantsLegauxChange"
+            >
+            </Personnes>
           </div>
         </div>
       </div>
@@ -179,8 +156,6 @@ const props = defineProps({
 const emit = defineEmits(["valid"]);
 
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
-const representantsLegaux = ref([{ nom: "" }]);
-const expandedRepresentantLegalId = ref(1);
 const siretRegex = /^[0-9]{14}$/;
 const personneMorale = ref();
 const operateurDejaExistant = ref();
@@ -213,13 +188,13 @@ const validationSchema = computed(() => {
 });
 const initialValues = computed(() => {
   return {
-    siret: props.initData?.siret ?? "",
-    email: props.initData?.email ?? "",
-    telephoneEP: props.initData?.telephoneEP ?? "",
+    siret: props.initData?.siret,
+    email: props.initData?.email,
+    telephoneEP: props.initData?.telephoneEP,
     representantsLegaux: props.initData?.representantsLegaux ?? [],
   };
 });
-const { meta, resetForm } = useForm({
+const { meta } = useForm({
   initialValues,
   validationSchema,
 });
@@ -230,6 +205,12 @@ const {
   handleChange: onEmailChange,
   meta: emailMeta,
 } = useField("email");
+
+const {
+  value: representantsLegaux,
+  handleChange: onRepresentantsLegauxChange,
+} = useField("representantsLegaux");
+
 const {
   value: telephoneEP,
   errorMessage: telephoneEPErrorMessage,
@@ -249,11 +230,7 @@ const isEtablissementPrincipal = computed(() => {
 const formatedPersonneMorale = computed(() => {
   // les infos proviennent de l'API entreprise
   if (personneMorale.value) {
-    const adresse = `${personneMorale.value.adresse.numero_voie ?? ""} ${
-      personneMorale.value.adresse.type_voie ?? ""
-    } ${personneMorale.value.adresse.libelle_voie ?? ""} ${
-      personneMorale.value.adresse.code_postal ?? ""
-    } ${personneMorale.value.adresse.libelle_commune ?? ""}`;
+    const adresse = `${personneMorale.value.adresse.numero_voie} ${personneMorale.value.adresse.type_voie} ${personneMorale.value.adresse.libelle_voie} ${personneMorale.value.adresse.code_postal} ${personneMorale.value.adresse.libelle_commune}`;
     return {
       siret: personneMorale.value.siret,
       siren: personneMorale.value.unite_legale.siren,
@@ -269,10 +246,6 @@ const formatedPersonneMorale = computed(() => {
   }
   // les infos proviennent d'un operateur déjà présent en base
   if (operateurDejaExistant.value) {
-    representantsLegaux.value =
-      operateurDejaExistant.value.personneMorale?.representantsLegaux;
-    email.value = operateurDejaExistant.value.personneMorale?.email;
-    telephoneEP.value = operateurDejaExistant.value.personneMorale?.telephoneEP;
     return {
       siret: operateurDejaExistant.value.personneMorale?.siret,
       siren: operateurDejaExistant.value.personneMorale?.siren,
@@ -306,15 +279,22 @@ const formatedPersonneMorale = computed(() => {
   };
 });
 
-const nomPrenomRepresentantLegal = computed(() => {
-  return representantsLegaux?.value.map((r) => {
-    return r.nom
-      ? `${r.nom.toUpperCase()}  ${r.prenom.toUpperCase()} - ${r.fonction}`
-      : "Nouveau représentant légal - A RENSEIGNER";
-  });
-});
+const headers = [
+  {
+    label: "Nom",
+    value: "nom",
+  },
+  { label: "Prénom", value: "prenom" },
+  {
+    label: "Fonction",
+    value: "fonction",
+  },
+];
 
 const siretDisplayed = computed(() => {
+  if (!siret.value) {
+    return "";
+  }
   const siretSaisi = siret.value;
   let formatedSiret;
   for (let i = 0; i < siretSaisi.length; i++) {
@@ -380,6 +360,14 @@ async function searchOperateurBySiret() {
       log.d("L'opérateur est déjà présent en base");
       toaster.success("L'opérateur est déjà présent en base");
       operateurDejaExistant.value = data.value.operateur;
+      if (operateurDejaExistant.value) {
+        onRepresentantsLegauxChange(
+          operateurDejaExistant.value.personneMorale?.representantsLegaux,
+        );
+        email.value = operateurDejaExistant.value.personneMorale?.email;
+        telephoneEP.value =
+          operateurDejaExistant.value.personneMorale?.telephoneEP;
+      }
       log.d(operateurDejaExistant.value);
     }
   } catch (error) {
@@ -397,16 +385,6 @@ async function searchOperateur() {
     log.d("appel API entreprise");
     await searchApiEntreprise();
   }
-}
-function addRepresentantLegal() {
-  representantsLegaux.value.push({});
-  expandedRepresentantLegalId.value = representantsLegaux.value.length;
-}
-
-function validRepresentantLegal(representantLegal, index) {
-  log.i("validRepresentantLegal - IN");
-  representantsLegaux.value[index] = representantLegal;
-  expandedRepresentantLegalId.value = 0;
 }
 
 function next() {
@@ -430,11 +408,6 @@ function next() {
     "personne_morale",
   );
 }
-
-onMounted(() => {
-  representantsLegaux.value = props.initData.representantsLegaux ?? [{}];
-  resetForm({ values: initialValues.value });
-});
 </script>
 
 <style lang="scss" scoped>

@@ -185,13 +185,11 @@ const initialValues = computed(() => {
   if (props.initData.agrement) {
     const lastIndex = props.initData.agrement.length - 1;
     return {
-      regionDelivrance:
-        props.initData.agrement[lastIndex].regionDelivrance || null,
-      numeroAgrement: props.initData.agrement[lastIndex].numero || null,
-      dateDelivrance:
-        dayjs(props.initData.agrement[lastIndex].dateObtention).format(
-          "YYYY-MM-DD",
-        ) || null,
+      regionDelivrance: props.initData.agrement[lastIndex].regionDelivrance,
+      numeroAgrement: props.initData.agrement[lastIndex].numero,
+      dateDelivrance: dayjs(
+        props.initData.agrement[lastIndex].dateObtention,
+      ).format("YYYY-MM-DD"),
     };
   } else {
     return {

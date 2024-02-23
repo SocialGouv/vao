@@ -1,8 +1,6 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
 import { useLayoutStore } from "@/stores/layout";
-import { navItems } from "@/helpers/menuNavItem";
-
 const log = logger("layouts/demande-sejour");
 const userStore = useUserStore();
 const layoutStore = useLayoutStore();
@@ -45,7 +43,7 @@ const homeTo = computed(() => {
 });
 
 async function logout() {
-  const sub = userStore.user.sub ?? null;
+  const sub = userStore.user.sub;
   log.i("logout - IN");
   await $fetchBackend("/authentication/disconnect", {
     method: "POST",

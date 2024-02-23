@@ -2,39 +2,17 @@
   <div>
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-8">
-          <DsfrAccordionsGroup>
-            <div v-for="(item, index) in organisateurs" :key="index">
-              <li>
-                <DsfrAccordion
-                  :id="index + 1"
-                  :title="nomPrenomResponsableOrganisation[index]"
-                  :expanded-id="expandedOrganisateurId"
-                  @expand="(id) => (expandedOrganisateurId = id)"
-                >
-                  <Personne
-                    :personne="item"
-                    :index="index"
-                    :show-adresse="false"
-                    :show-telephone="true"
-                    :show-email="true"
-                    @valid="validResponsableOrganisation"
-                  >
-                  </Personne>
-                </DsfrAccordion>
-              </li>
-            </div>
-          </DsfrAccordionsGroup>
-        </div>
-      </div>
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-8">
-          <DsfrButton
-            :label="`Ajouter un organisateur n°${organisateurs?.length + 1}`"
-            :disabled="expandedOrganisateurId !== 0"
-            :secondary="true"
-            @click="addResponsableOrganisation"
-          ></DsfrButton>
+        <div class="fr-input-group fr-col-12">
+          <Personnes
+            :personnes="organisateurs"
+            :show-adresse="false"
+            :show-telephone="true"
+            :show-email="true"
+            titre="Organisateur du séjour"
+            :headers="headers"
+            @valid="validResponsableOrganisation"
+          >
+          </Personnes>
         </div>
       </div>
     </fieldset>
@@ -43,39 +21,34 @@
 </template>
 
 <script setup>
-import { useUserStore } from "~/stores/user";
 const log = logger("components/operateur/organisateur");
 
 const props = defineProps({
-  initData: { type: Object, default: null, required: true },
+  initData: { type: Array, required: true },
 });
 
 const emit = defineEmits(["valid"]);
 
-const userStore = useUserStore();
-
-const organisateurs = ref([{}]);
-const expandedOrganisateurId = ref(1);
+const organisateurs = ref(props.initData);
 const metaOrganisateur = ref(true);
+const headers = [
+  {
+    label: "Nom",
+    value: "nom",
+  },
+  { label: "Prénom", value: "prenom" },
+  { label: "Courriel", value: "email" },
+  {
+    label: "Fonction",
+    value: "fonction",
+  },
+  { label: "Téléphone", value: "telephone" },
+];
 
-const nomPrenomResponsableOrganisation = computed(() => {
-  return organisateurs?.value.map((r) => {
-    return r.nom
-      ? `${r.nom.toUpperCase()}  ${r.prenom.toUpperCase()}`
-      : "Nouvel organisateur de séjour - A RENSEIGNER";
-  });
-});
-
-function addResponsableOrganisation() {
-  organisateurs.value.push({});
-  expandedOrganisateurId.value = organisateurs.value.length;
-}
-
-function validResponsableOrganisation(organisateur, index, meta) {
+function validResponsableOrganisation(organisateurs) {
   log.i("validResponsableOrganisation - IN");
-  organisateurs.value[index] = organisateur;
-  expandedOrganisateurId.value = 0;
-  metaOrganisateur.value = metaOrganisateur.value && meta.value.valid;
+  organisateurs.value = organisateurs;
+  metaOrganisateur.value = organisateurs.length > 0;
 }
 
 function next() {
@@ -90,20 +63,7 @@ function next() {
   );
 }
 
-onMounted(() => {
-  if (props.initData) {
-    organisateurs.value = props.initData;
-    expandedOrganisateurId.value = 0;
-  } else {
-    organisateurs.value = {
-      nom: userStore.user.nom,
-      prenom: userStore.user.prenom,
-      email: userStore.user.email,
-      telephone: userStore.user.telephone,
-    };
-    expandedOrganisateurId.value = 1;
-  }
-});
+onMounted(() => {});
 </script>
 
 <style lang="scss" scoped>

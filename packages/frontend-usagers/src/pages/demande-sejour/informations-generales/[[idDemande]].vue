@@ -165,9 +165,8 @@ const validationSchema = computed(() =>
 
 const initialValues = computed(() => ({
   libelle: demandeCourante.value.libelle ?? "premier séjour",
-  dateDebut:
-    dayjs(demandeCourante.value.dateDebut).format("YYYY-MM-DD") ?? null,
-  dateFin: dayjs(demandeCourante.value?.dateFin).format("YYYY-MM-DD") ?? null,
+  dateDebut: dayjs(demandeCourante.value.dateDebut).format("YYYY-MM-DD"),
+  dateFin: dayjs(demandeCourante.value?.dateFin).format("YYYY-MM-DD"),
 }));
 
 const { meta, values } = useForm({
