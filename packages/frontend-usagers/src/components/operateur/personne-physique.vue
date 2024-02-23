@@ -363,7 +363,6 @@ function setAdresseSiege(v) {
 }
 
 function next() {
-  log.i("next - IN");
   emit(
     "valid",
     {

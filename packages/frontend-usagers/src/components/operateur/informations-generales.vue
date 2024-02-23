@@ -44,22 +44,6 @@ const emit = defineEmits(["valid"]);
 function valid(data, type) {
   emit("valid", data, type);
 }
-// Schéma et données de base
-// const schemaBase = {
-//   typeOperateur: yup.string().required(),
-// };
-// const validationSchemaBase = computed(() => {
-//   return yup.object({ ...schemaBase });
-// });
-// const initialValuesBase = computed(() => {
-//   return {
-//     typeOperateur: props.initData.value.typeOperateur ?? "",
-//   };
-// });
-// const { resetForm: resetFormBase } = useForm({
-//   initialValues: initialValuesBase,
-//   validationSchema: validationSchemaBase,
-// });
 
 const typeOptions = [
   {

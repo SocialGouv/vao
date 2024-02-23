@@ -91,7 +91,7 @@ function previousHash(hash) {
 
 function nextHash(hash) {
   const index = sommaireOptions.findIndex((o) => o === hash);
-  log.i({ hash, index, next: sommaireOptions[index + 1] });
+  log.d({ hash, index, next: sommaireOptions[index + 1] });
   return navigateTo({ hash: "#" + sommaireOptions[index + 1] });
 }
 
