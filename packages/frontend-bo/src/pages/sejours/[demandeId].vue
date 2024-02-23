@@ -46,10 +46,12 @@
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
-              TO DO, bug quand on sauvegarde le vacancier
-              <pre>
-                message:"Converting circular structure to JSON\n    --> starting at object with constructor 'ComputedRefImpl'\n    |     property 'dep' -> object with constructor 'Map'\n    --- property 'computed' closes the circle"stack:
-              </pre>
+              <DisplayInput
+                v-for="entry in Object.keys(IVacancier)"
+                :key="`personnel-${entry}`"
+                :value="demande.vacanciers[entry]"
+                :input="IVacancier[entry]"
+              />
             </DsfrAccordion>
           </li>
           <li v-if="demande?.personnel">
@@ -111,6 +113,7 @@
         </DsfrAccordionsGroup>
 
         <pre>{{ comments }}</pre>
+        <pre>{{ demande }}</pre>
       </DsfrTabContent>
 
       <DsfrTabContent
@@ -148,6 +151,7 @@ import {
   IProjetSejour,
   ISanitaire,
   ITransport,
+  IVacancier,
 } from "~/utils/demande-sejour/display-input";
 import Details from "~/components/demandes-sejour/Details.vue";
 

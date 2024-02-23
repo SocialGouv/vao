@@ -38,6 +38,29 @@ export const Iorganisateur = {
   },
 };
 
+export const IVacancier = {
+  effectifPrevisionnel: {
+    inputType: InputTypes.NUMBER,
+    label: "Effectif prévisionnel des vacanciers",
+  },
+  effectifPrevisionnelFemme: {
+    inputType: InputTypes.NUMBER,
+    label: "Femme",
+  },
+  effectifPrevisionnelHomme: {
+    inputType: InputTypes.NUMBER,
+    label: "Homme",
+  },
+  trancheAge: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Tranches d'âge",
+  },
+  typeDeficiences: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Type de déficiences",
+  },
+};
+
 export const Ipersonnel = {
   nombreResponsable: {
     inputType: InputTypes.NUMBER,
