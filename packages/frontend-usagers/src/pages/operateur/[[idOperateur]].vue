@@ -142,10 +142,6 @@ async function finalizeOperateur() {
     log.w("Creation/modification d'operateur : ", { error });
   }
 }
-
-onMounted(async () => {
-  await operateurStore.setMyOperateur();
-});
 </script>
 
 <style lang="scss" scoped>

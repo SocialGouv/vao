@@ -1,8 +1,6 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
 import { useLayoutStore } from "@/stores/layout";
-import { navItems } from "@/helpers/menuNavItem";
-
 const log = logger("layouts/demande-sejour");
 const userStore = useUserStore();
 const layoutStore = useLayoutStore();

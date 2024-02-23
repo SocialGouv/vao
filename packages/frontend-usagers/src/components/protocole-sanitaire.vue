@@ -22,7 +22,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="dispositionsSpecifiques === 'oui'" class="fr-fieldset">
+    <fieldset v-if="dispositionsSpecifiques" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -47,24 +47,7 @@
             v-model="constitutionEquipe"
             name="constitutionEquipe"
             legend="L’équipe comprend-elle ?"
-            :options="[
-              {
-                label:
-                  'Une personne formée aux gestes et soins d’urgence (PSC 1, SST, AFGSU 1, AFGSU 2, AFSGSU)',
-                id: 'personne_formee',
-                name: 'personne_formee',
-              },
-              {
-                label: 'Un(e) infirmier(e)',
-                id: 'infirmier',
-                name: 'infirmier',
-              },
-              {
-                label: 'Un(e) aide soignant(e)',
-                id: 'aide_soignant',
-                name: 'aide_soignant',
-              },
-            ]"
+            :options="constitutionEquipeOptions"
             :small="true"
             :required="true"
           />
@@ -75,7 +58,7 @@
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
-            name="precisionDispositionsSpecifiques"
+            name="precisionConstitutionEquipe"
             :required="false"
             label="Précisez"
             :label-visible="true"
@@ -113,23 +96,7 @@
             v-model="responsableAdministrationMedicament"
             name="responsableAdministrationMedicament"
             legend="Personne désignée en charge de la distribution et de l’administration des médicaments et de l’enregistrement de l’administration"
-            :options="[
-              {
-                label: 'Responsable du séjour',
-                id: 'responsable_sejour',
-                name: 'responsable_sejour',
-              },
-              {
-                label: 'Accompagnant(s)',
-                id: 'accompagnant',
-                name: 'accompagnant',
-              },
-              {
-                label: 'Professionnel de santé',
-                id: 'professionnel_sante',
-                name: 'professionnel_sante',
-              },
-            ]"
+            :options="responsableAdministrationMedicamentOptions"
             :small="true"
             :required="true"
           />
@@ -188,7 +155,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="stockageMedicamentSecurise === 'oui'" class="fr-fieldset">
+    <fieldset v-if="stockageMedicamentSecurise" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -223,10 +190,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset
-      v-if="conservationMedicamentThermosensible === 'oui'"
-      class="fr-fieldset"
-    >
+    <fieldset v-if="conservationMedicamentThermosensible" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -261,7 +225,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="individualisationMedicaments === 'oui'" class="fr-fieldset">
+    <fieldset v-if="individualisationMedicaments" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -288,18 +252,7 @@
             legend="Méthode retenue pour la préparation des piluliers"
             :required="true"
             :model-value="preparationPilluliers"
-            :options="[
-              { label: 'Aucune méthode', value: 'aucune' },
-              {
-                label:
-                  'Piluliers préparés préalablement au séjour par le vacancier, sa famille, le représentant légal, l’établissement de résidence habituelle, le médecin',
-                value: 'prepares_prealablement',
-              },
-              {
-                label: 'Piluliers préparés durant le séjour',
-                value: 'au_fur_et_a_mesure',
-              },
-            ]"
+            :options="preparationPilluliersOptions"
             :is-valid="preparationPilluliersMeta"
             :inline="true"
             :error-message="preparationPilluliersErrorMessage"
@@ -366,10 +319,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset
-      v-if="protocoleModificationTraitement === 'oui'"
-      class="fr-fieldset"
-    >
+    <fieldset v-if="protocoleModificationTraitement" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -425,7 +375,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="protocoleEvacuation === 'oui'" class="fr-fieldset">
+    <fieldset v-if="protocoleEvacuation" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -460,7 +410,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="protocoleAccident === 'oui'" class="fr-fieldset">
+    <fieldset v-if="protocoleAccident" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -495,7 +445,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="protocoleReorientation === 'oui'" class="fr-fieldset">
+    <fieldset v-if="protocoleReorientation" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -530,7 +480,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="protocoleCanicule === 'oui'" class="fr-fieldset">
+    <fieldset v-if="protocoleCanicule" class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -579,7 +529,6 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { ouiNonOptions } from "@/helpers/ouiNonOptions";
 
 const props = defineProps({
   initData: { type: Object, default: null, required: true },
@@ -588,12 +537,64 @@ const emit = defineEmits(["valid"]);
 
 const log = logger("components/protocole-sanitaire");
 
+const constitutionEquipeOptions = [
+  {
+    label:
+      "Une personne formée aux gestes et soins d’urgence (PSC 1, SST, AFGSU 1, AFGSU 2, AFSGSU)",
+    id: "personne_formee",
+    name: "personne_formee",
+  },
+  {
+    label: "Un(e) infirmier(e)",
+    id: "infirmier",
+    name: "infirmier",
+  },
+  {
+    label: "Un(e) aide soignant(e)",
+    id: "aide_soignant",
+    name: "aide_soignant",
+  },
+];
+
+const responsableAdministrationMedicamentOptions = [
+  {
+    label: "Responsable du séjour",
+    id: "responsable_sejour",
+    name: "responsable_sejour",
+  },
+  {
+    label: "Accompagnant(s)",
+    id: "accompagnant",
+    name: "accompagnant",
+  },
+  {
+    label: "Professionnel de santé",
+    id: "professionnel_sante",
+    name: "professionnel_sante",
+  },
+];
+
+const preparationPilluliersOptions = [
+  { label: "Aucune méthode", id: "aucune", name: "aucune" },
+  {
+    label:
+      "Piluliers préparés préalablement au séjour par le vacancier, sa famille, le représentant légal, l’établissement de résidence habituelle, le médecin",
+    id: "prepares_prealablement",
+    value: "prepares_prealablement",
+  },
+  {
+    label: "Piluliers préparés durant le séjour",
+    id: "au_fur_et_a_mesure",
+    value: "au_fur_et_a_mesure",
+  },
+];
+
 const schemaInfosSanitaires = {
-  dispositionsSpecifiques: yup.string().required(),
+  dispositionsSpecifiques: yup.boolean().required(),
   precisionDispositionsSpecifiques: yup
     .string()
     .when("dispositionsSpecifiques", {
-      is: (val) => val === "oui",
+      is: (val) => !!val,
       then: (precision) =>
         precision
           .min(5, "Vous devez préciser votre réponse précédente")
@@ -602,40 +603,40 @@ const schemaInfosSanitaires = {
     }),
   constitutionEquipe: yup.array().required(),
   precisionConstitutionEquipe: yup.string().when("constitutionEquipe", {
-    is: (val) => val === "oui",
+    is: (val) => !!val,
     then: (precision) =>
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
     otherwise: (precision) => precision.nullable(),
   }),
-  troussePharmacie: yup.string().required(),
+  troussePharmacie: yup.boolean().required(),
   responsableAdministrationMedicament: yup.array().required(),
-  stockageMedicamentSecurise: yup.string().required(),
+  stockageMedicamentSecurise: yup.boolean().required(),
   precisionStockageMedicamentSecurise: yup
     .string()
     .when("stockageMedicamentSecurise", {
-      is: (val) => val === "oui",
+      is: (val) => !!val,
       then: (precision) =>
         precision
           .min(5, "Vous devez préciser votre réponse précédente")
           .required(),
       otherwise: (precision) => precision.nullable(),
     }),
-  conservationMedicamentThermosensible: yup.string().required(),
+  conservationMedicamentThermosensible: yup.boolean().required(),
   precisionConservationMedicament: yup.string().when("conservationMedicament", {
-    is: (val) => val === "oui",
+    is: (val) => !!val,
     then: (precision) =>
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
     otherwise: (precision) => precision.nullable(),
   }),
-  individualisationMedicaments: yup.string().required(),
+  individualisationMedicaments: yup.boolean().required(),
   precisionIndividualisationMedicaments: yup
     .string()
     .when("individualisationMedicaments", {
-      is: (val) => val === "oui",
+      is: (val) => !!val,
       then: (precision) =>
         precision
           .min(5, "Vous devez préciser votre réponse précédente")
@@ -644,19 +645,19 @@ const schemaInfosSanitaires = {
     }),
   preparationPilluliers: yup.string().required(),
   precisionPreparationPilluliers: yup.string().when("preparationPilluliers", {
-    is: (val) => val === "oui",
+    is: (val) => !!val,
     then: (precision) =>
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
     otherwise: (precision) => precision.nullable(),
   }),
-  prescriptionMedicaleJointe: yup.string().required(),
-  protocoleModificationTraitement: yup.string().required(),
+  prescriptionMedicaleJointe: yup.boolean().required(),
+  protocoleModificationTraitement: yup.boolean().required(),
   precisionProtocoleModificationTraitement: yup
     .string()
     .when("protocoleModificationTraitement", {
-      is: (val) => val === "oui",
+      is: (val) => !!val,
       then: (precision) =>
         precision
           .min(5, "Vous devez préciser votre réponse précédente")
@@ -664,27 +665,27 @@ const schemaInfosSanitaires = {
       otherwise: (precision) => precision.nullable(),
     }),
   ficheSuiviMedicaments: yup.string().required(),
-  protocoleEvacuation: yup.string().required(),
+  protocoleEvacuation: yup.boolean().required(),
   precisionProtocoleEvacuation: yup.string().when("protocoleEvacuation", {
-    is: (val) => val === "oui",
+    is: (val) => !!val,
     then: (precision) =>
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
     otherwise: (precision) => precision.nullable(),
   }),
-  protocoleAccident: yup.string().required(),
+  protocoleAccident: yup.boolean().required(),
   precisionProtocoleAccident: yup.string().when("protocoleAccident", {
-    is: (val) => val === "oui",
+    is: (val) => !!val,
     then: (precision) =>
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
     otherwise: (precision) => precision.nullable(),
   }),
-  protocoleReorientation: yup.string().required(),
+  protocoleReorientation: yup.boolean().required(),
   precisionProtocoleReorientation: yup.string().when("protocoleReorientation", {
-    is: (val) => val === "oui",
+    is: (val) => !!val,
     then: (precision) =>
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
@@ -692,9 +693,9 @@ const schemaInfosSanitaires = {
     otherwise: (precision) => precision.nullable(),
   }),
   //
-  protocoleCanicule: yup.string().required(),
+  protocoleCanicule: yup.boolean().required(),
   precisionProtocoleCanicule: yup.string().when("protocoleCanicule", {
-    is: (val) => val === "oui",
+    is: (val) => !!val,
     then: (precision) =>
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
@@ -711,48 +712,50 @@ const validationSchema = computed(() =>
 );
 
 const initialValues = computed(() => ({
-  dispositionsSpecifiques: props.initData?.dispositionsSpecifiques || "",
+  dispositionsSpecifiques: props.initData?.dispositionsSpecifiques ?? null,
   precisionDispositionsSpecifiques:
-    props.initData?.precisionDispositionsSpecifiques || "",
-  constitutionEquipe: props.initData?.constitutionEquipe || [],
+    props.initData?.precisionDispositionsSpecifiques ?? "",
+  constitutionEquipe: props.initData?.constitutionEquipe ?? [],
   precisionConstitutionEquipe:
-    props.initData?.precisionConstitutionEquipe || "",
-  troussePharmacie: props.initData?.troussePharmacie || "",
+    props.initData?.precisionConstitutionEquipe ?? "",
+  troussePharmacie: props.initData?.troussePharmacie ?? null,
   responsableAdministrationMedicament:
-    props.initData?.responsableAdministrationMedicament || [],
+    props.initData?.responsableAdministrationMedicament ?? [],
   precisionResponsableAdministrationMedicament:
-    props.initData?.precisionResponsableAdministrationMedicament || "",
-  stockageMedicamentSecurise: props.initData?.stockageMedicamentSecurise || "",
+    props.initData?.precisionResponsableAdministrationMedicament ?? "",
+  stockageMedicamentSecurise:
+    props.initData?.stockageMedicamentSecurise ?? null,
   precisionStockageMedicamentSecurise:
-    props.initData?.precisionStockageMedicamentSecurise || "",
+    props.initData?.precisionStockageMedicamentSecurise ?? "",
   conservationMedicamentThermosensible:
-    props.initData?.conservationMedicamentThermosensible || "",
+    props.initData?.conservationMedicamentThermosensible ?? null,
   precisionConservationMedicament:
-    props.initData?.precisionConservationMedicament || "",
+    props.initData?.precisionConservationMedicament ?? "",
   individualisationMedicaments:
-    props.initData?.individualisationMedicaments || "",
+    props.initData?.individualisationMedicaments ?? null,
   precisionIndividualisationMedicaments:
-    props.initData?.precisionIndividualisationMedicaments || "",
-  preparationPilluliers: props.initData?.preparationPilluliers || "",
+    props.initData?.precisionIndividualisationMedicaments ?? "",
+  preparationPilluliers: props.initData?.preparationPilluliers ?? null,
   precisionPreparationPilluliers:
-    props.initData?.precisionPreparationPilluliers || "",
-  prescriptionMedicaleJointe: props.initData?.prescriptionMedicaleJointe || "",
+    props.initData?.precisionPreparationPilluliers ?? "",
+  prescriptionMedicaleJointe:
+    props.initData?.prescriptionMedicaleJointe ?? null,
   protocoleModificationTraitement:
-    props.initData?.protocoleModificationTraitement || "",
+    props.initData?.protocoleModificationTraitement ?? null,
   precisionProtocoleModificationTraitement:
-    props.initData?.precisionProtocoleModificationTraitement || "",
-  ficheSuiviMedicaments: props.initData?.ficheSuiviMedicaments || "",
-  protocoleEvacuation: props.initData?.protocoleEvacuation || "",
+    props.initData?.precisionProtocoleModificationTraitement ?? "",
+  ficheSuiviMedicaments: props.initData?.ficheSuiviMedicaments ?? null,
+  protocoleEvacuation: props.initData?.protocoleEvacuation ?? null,
   precisionProtocoleEvacuation:
-    props.initData?.precisionProtocoleEvacuation || "",
-  protocoleAccident: props.initData?.protocoleAccident || "",
-  precisionProtocoleAccident: props.initData?.precisionProtocoleAccident || "",
-  protocoleReorientation: props.initData?.protocoleReorientation || "",
+    props.initData?.precisionProtocoleEvacuation ?? "",
+  protocoleAccident: props.initData?.protocoleAccident ?? null,
+  precisionProtocoleAccident: props.initData?.precisionProtocoleAccident ?? "",
+  protocoleReorientation: props.initData?.protocoleReorientation ?? null,
   precisionProtocoleReorientation:
-    props.initData?.precisionProtocoleReorientation || "",
-  protocoleCanicule: props.initData?.protocoleCanicule || "",
-  precisionProtocoleCanicule: props.initData?.precisionProtocoleCanicule || "",
-  gestionBudgetPersonnel: props.initData?.gestionBudgetPersonnel || "",
+    props.initData?.precisionProtocoleReorientation ?? "",
+  protocoleCanicule: props.initData?.protocoleCanicule ?? null,
+  precisionProtocoleCanicule: props.initData?.precisionProtocoleCanicule ?? "",
+  gestionBudgetPersonnel: props.initData?.gestionBudgetPersonnel ?? null,
 }));
 const { meta, values, resetForm } = useForm({
   validationSchema,

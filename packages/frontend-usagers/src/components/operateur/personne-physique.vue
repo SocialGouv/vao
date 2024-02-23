@@ -151,7 +151,6 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { ouiNonOptions } from "@/helpers/ouiNonOptions";
 const log = logger("components/operateur/personne-physique");
 
 const props = defineProps({

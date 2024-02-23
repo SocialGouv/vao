@@ -1,6 +1,6 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
-import { navItems } from "@/helpers/menuNavItem";
+import { navItems } from "#imports";
 
 const log = logger("layouts/default");
 const userStore = useUserStore();

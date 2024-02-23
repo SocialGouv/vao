@@ -186,12 +186,12 @@ const initialValues = computed(() => {
     const lastIndex = props.initData.agrement.length - 1;
     return {
       regionDelivrance:
-        props.initData.agrement[lastIndex].regionDelivrance || null,
-      numeroAgrement: props.initData.agrement[lastIndex].numero || null,
+        props.initData.agrement[lastIndex].regionDelivrance ?? null,
+      numeroAgrement: props.initData.agrement[lastIndex].numero ?? null,
       dateDelivrance:
         dayjs(props.initData.agrement[lastIndex].dateObtention).format(
           "YYYY-MM-DD",
-        ) || null,
+        ) ?? null,
     };
   } else {
     return {
