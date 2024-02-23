@@ -77,13 +77,16 @@
       </div>
     </fieldset>
     <fieldset class="fr-fieldset">
-      <div v-if="isUpdate" class="fr-fieldset__element">
+      <div
+        v-if="props.initData.adresseDomicile?.label"
+        class="fr-fieldset__element"
+      >
         <div class="fr-input-group fr-col-8">
           <DsfrInputGroup
             name="adresseDomicileSauvegardée"
             label="Adresse du domicile enregistrée"
             :label-visible="true"
-            :model-value="adresseDomicileInitiale"
+            :model-value="props.initData.adresseDomicile?.label"
             :disabled="true"
           />
         </div>
@@ -93,16 +96,9 @@
           <label>{{
             isUpdate ? "Nouvelle adresse de domicile " : "Adresse du domicile"
           }}</label>
-          <Multiselect
-            v-model="adresseDomicile"
-            mode="single"
-            :close-on-select="true"
-            :searchable="true"
-            :internal-search="false"
-            :loading="searchAdresseDomicileInProgress"
-            :options="adressesDomicileOptions"
-            :options-limit="10"
-            @search-change="searchAdresseDomicile"
+          <SearchAddress
+            :value="adresseDomicile"
+            @select="onAddressDomicileChange"
           />
         </div>
       </div>
@@ -126,12 +122,15 @@
     </fieldset>
     <fieldset class="fr-fieldset">
       <div v-if="adresseIdentique === 0" class="fr-fieldset__element">
-        <div v-if="isUpdate" class="fr-input-group fr-col-8">
+        <div
+          v-if="props.initData.adresseSiege?.label"
+          class="fr-input-group fr-col-8"
+        >
           <DsfrInputGroup
             name="adresseSiegeSauvegardée"
             label="Adresse du siège enregistrée"
             :label-visible="true"
-            :model-value="adresseSiegeInitiale"
+            :model-value="props.initData.adresseSiege?.label"
             :disabled="true"
           />
         </div>
@@ -141,17 +140,7 @@
               ? "Nouvelle adresse du siège des activités VAO "
               : "Adresse du siège des activités VAO"
           }}</label>
-          <Multiselect
-            v-model="adresseSiege"
-            mode="single"
-            :close-on-select="false"
-            :searchable="true"
-            :internal-search="false"
-            :loading="searchAdresseSiegeInProgress"
-            :options="adressesSiegeOptions"
-            :options-limit="10"
-            @search-change="searchAdresseSiege"
-          />
+          <SearchAddress :value="adresseSiege" @select="onAddressSiegeChange" />
         </div>
       </div>
     </fieldset>
@@ -161,8 +150,6 @@
 
 <script setup>
 import { useField, useForm } from "vee-validate";
-import Multiselect from "@vueform/multiselect";
-import "@vueform/multiselect/themes/default.css";
 import * as yup from "yup";
 import { ouiNonOptions } from "@/helpers/ouiNonOptions";
 const log = logger("components/operateur/personne-physique");
@@ -172,8 +159,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["valid"]);
-
-const NB_CAR_ADRESSE_MIN = 6;
 
 const professionOptions = [
   {
@@ -252,12 +237,6 @@ const spaceFollowingDashRegex = /( -)|(- )/i;
 const doubleSpacesRegex = / {2}/i;
 const tripleDashRegex = /-{3}/i;
 const doubleDashRegex = /-{2}/i;
-const adressesDomicile = ref([]);
-const adresseDomicileInitiale = ref();
-const adressesSiege = ref([]);
-const adresseSiegeInitiale = ref();
-const searchAdresseDomicileInProgress = ref(false);
-const searchAdresseSiegeInProgress = ref(false);
 
 const isUpdate = computed(() => {
   return !!props.initData;
@@ -315,26 +294,8 @@ const schema = {
       numTelephoneRegex.test(telephone),
     )
     .required(),
-  adresseDomicile: yup.lazy((value) => {
-    switch (typeof value) {
-      case "object":
-        return yup.object().required(); // schema for object
-      case "string":
-        return yup.string().required();
-      default:
-        return yup.string().required();
-    }
-  }),
-  adresseSiege: yup.lazy((value) => {
-    switch (typeof value) {
-      case "object":
-        return yup.object().required(); // schema for object
-      case "string":
-        return yup.string().required();
-      default:
-        return yup.string().required();
-    }
-  }),
+  adresseDomicile: yup.object().required(),
+  adresseSiege: yup.object().required(),
 };
 const validationSchema = computed(() => {
   return yup.object({ ...schema });
@@ -345,13 +306,13 @@ const initialValues = computed(() => {
     nomUsage: props.initData.nomUsage ?? "",
     prenom: props.initData.prenom ?? "",
     profession: props.initData.profession ?? "",
-    adresseDomicile: props.initData.adresseDomicile ?? "",
-    adresseSiege: props.initData.adresseSiege ?? "",
     telephone: props.initData.telephone ?? "",
-    adresseIdentique: props.initData.adresseIdentique ?? "",
+    adresseDomicile: props.initData.adresseDomicile,
+    adresseIdentique: props.initData.adresseIdentique,
+    adresseSiege: props.initData.adresseSiege,
   };
 });
-const { meta, values, resetForm } = useForm({
+const { meta, values } = useForm({
   initialValues,
   validationSchema,
 });
@@ -379,13 +340,15 @@ const {
   handleChange: onProfessionChange,
   meta: professionMeta,
 } = useField("profession");
-const { value: adresseDomicile } = useField("adresseDomicile");
+const { value: adresseDomicile, handleChange: onAddressDomicileChange } =
+  useField("adresseDomicile");
 const {
   value: adresseIdentique,
   errorMessage: adresseIdentiqueErrorMessage,
   meta: adresseIdentiqueMeta,
 } = useField("adresseIdentique");
-const { value: adresseSiege } = useField("adresseSiege");
+const { value: adresseSiege, handleChange: onAddressSiegeChange } =
+  useField("adresseSiege");
 const {
   value: telephone,
   errorMessage: telephoneErrorMessage,
@@ -398,66 +361,6 @@ function setAdresseSiege(v) {
   adresseSiege.value = adresseDomicile.value;
   adresseIdentique.value = v;
 }
-async function searchAdresseDomicile(queryString) {
-  if (queryString.length > NB_CAR_ADRESSE_MIN) {
-    searchAdresseDomicileInProgress.value = true;
-    const url = "/geo/adresse/";
-    try {
-      const data = await $fetchBackend(url, {
-        body: { queryString },
-        method: "POST",
-        credentials: "include",
-      });
-      if (data.adresses) {
-        log.d("resultat found");
-        adressesDomicile.value = data.adresses;
-        searchAdresseDomicileInProgress.value = false;
-      }
-    } catch (error) {
-      log.w(error);
-      toaster.error("erreur lors de l'appel à l'API adresse");
-    }
-  }
-}
-
-async function searchAdresseSiege(queryString) {
-  if (queryString.length > NB_CAR_ADRESSE_MIN) {
-    searchAdresseSiegeInProgress.value = true;
-    const url = "/geo/adresse/";
-    try {
-      const data = await $fetchBackend(url, {
-        body: { queryString },
-        method: "POST",
-        credentials: "include",
-      });
-      if (data.adresses) {
-        log.d("resultat found");
-        adressesSiege.value = data.adresses;
-        searchAdresseSiegeInProgress.value = false;
-      }
-    } catch (error) {
-      log.w(error);
-      toaster.error("erreur lors de l'appel à l'API adresse");
-    }
-  }
-}
-const adressesDomicileOptions = computed(() => {
-  if (adressesDomicile.value && adressesDomicile.value.length > 0) {
-    return adressesDomicile.value.map((a) => {
-      return { value: a, label: a.properties.label };
-    });
-  }
-  return [];
-});
-
-const adressesSiegeOptions = computed(() => {
-  if (adressesSiege.value && adressesSiege.value.length > 0) {
-    return adressesSiege.value.map((a) => {
-      return { value: a, label: a.properties.label };
-    });
-  }
-  return [];
-});
 
 function next() {
   log.i("next - IN");
@@ -465,24 +368,11 @@ function next() {
     "valid",
     {
       ...values,
-      adresseDomicileShort: adresseDomicile?.value?.properties?.label,
-      adresseSiegeShort:
-        adresseIdentique.value === 1
-          ? adresseDomicile?.value?.properties?.label
-          : adresseSiege?.value?.properties?.label,
       meta: meta.value.valid,
     },
     "personne_physique",
   );
 }
-
-onMounted(() => {
-  adresseDomicile.value = props.initData.adresseDomicile;
-  adresseDomicileInitiale.value = props.initData.adresseDomicileShort;
-  adresseSiege.value = props.initData.adresseSiege;
-  adresseSiegeInitiale.value = props.initData.adresseSiegeShort;
-  resetForm({ values: initialValues.value });
-});
 </script>
 
 <style lang="scss" scoped>

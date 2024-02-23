@@ -115,6 +115,8 @@ fileignoreconfig:
   checksum: 4b7f60ebe1ca4218cb89023b0dc7202a187996f4016b32fbeda6c8f06175c8d0
 - filename: packages/frontend-usagers/src/public/js/jquery.min.map
   checksum: 7cebe8de3254bdddc87e4d59d15d513f739f34c7149093bace241069a58d45ae
+- filename: packages/frontend-usagers/src/utils/random.js
+  checksum: ae46dcd8940b0757de155906c1c7d037ceb0cad95b0303f1756f33e3c870563d
 - filename: packages/mail-server/src/config.js
   checksum: c792d383dfec26115dfab5a391e6427b5b9c4416da783388c7ef00d4f97585bb
 - filename: pg/scripts/01-init.sql

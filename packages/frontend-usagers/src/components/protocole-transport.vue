@@ -33,8 +33,9 @@
           <UtilsMultiSelect
             :options="transportOptions"
             :values="modeTransport"
-            label="Précisez le ou les modes de transport utilisés *"
-            @add-item="addModeTransport"
+            label="Précisez le ou les modes de transport utilisés"
+            :required="true"
+            @update="addModeTransport"
           ></UtilsMultiSelect>
         </div>
       </div>
