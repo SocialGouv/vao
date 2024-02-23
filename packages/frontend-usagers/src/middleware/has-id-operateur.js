@@ -5,12 +5,12 @@ import { logger } from "#imports";
 const log = logger("middlewares/has-id-operateur");
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  log.i("IN");
+  log.i("IN", { to });
+
   const hasId = !!to.params.idOperateur;
   const operateurStore = useOperateurStore();
   await operateurStore.setMyOperateur();
 
-  log.i(to.params);
   if (isNaN(to.params.idOperateur)) {
     log.w("invalid param");
     return navigateTo("/operateur");
@@ -31,7 +31,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     } else {
       log.d("adding operateurId to url");
       const url = `/operateur/${operateurStore.operateurCourant.operateurId}`;
-      return navigateTo(url);
+      return navigateTo({ path: url, hash: to.hash });
     }
   } else if (hasId) {
     log.i("return home");
