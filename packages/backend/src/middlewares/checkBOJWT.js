@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config");
 
-const User = require("../services/User");
+const BOUser = require("../services/BoUser");
 const AppError = require("../utils/error");
 // const Session = require("../services/Session");
 

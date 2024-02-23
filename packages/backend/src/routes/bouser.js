@@ -2,10 +2,10 @@ const express = require("express");
 
 const router = express.Router();
 
-const checkJWT = require("../middlewares/checkJWT");
+const checkBOJWT = require("../middlewares/checkBOJWT");
 const BOUserController = require("../controllers/bo-user");
 
 // Gère une connexion via mot de passe.
-router.get("/me", checkJWT, BOUserController.getMe);
+router.get("/me", checkBOJWT, BOUserController.getMe);
 
 module.exports = router;
