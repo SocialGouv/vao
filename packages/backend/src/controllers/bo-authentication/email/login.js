@@ -53,7 +53,7 @@ module.exports = async function login(req, res) {
 
     await Session.create(user.id, refreshToken);
 
-    res.cookie("VAO_BO_access_token", accessToken, {
+    res.cookie("VAO_access_token", accessToken, {
       httpOnly: true,
       maxAge: config.accessToken.expiresIn,
       sameSite: "strict",
