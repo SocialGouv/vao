@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
     log.d({ user });
     try {
       await Send(
-        MailUtils.usagers.authentication.sendActivationMail({ email }),
+        MailUtils.bo.authentication.sendActivationMail({ email }),
       );
     } catch (error) {
       log.w(error.name, error.message);

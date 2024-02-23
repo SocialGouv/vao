@@ -28,12 +28,12 @@ module.exports = {
         const duree = expireIn / 3600;
 
         const html = sendTemplate.getBody(
-          "PORTAIL VAO INSTRUCTEURS - ACTIVATION DE COMPTE",
+          "PORTAIL VAO ADMINISTRATION - ACTIVATION DE COMPTE",
           [
             {
               p: [
                 "Bonjour,",
-                "Vous recevez ce mail car votre compte vient d'être réactivé sur le Portail VAO Instructeurs.",
+                "Vous recevez ce mail car votre compte vient d'être réactivé sur le Portail VAO Administration.",
                 `Pour activer votre compte, veuillez cliquer sur lien ci dessous. Attention, ce lien ne sera valable que ${duree} heures`,
               ],
               type: "p",
@@ -51,7 +51,7 @@ module.exports = {
           from: senderEmail,
           html,
           replyTo: senderEmail,
-          subject: "Portail VAO Instructeurs - Activation de compte",
+          subject: "Portail VAO Administation - Activation de compte",
           to: dataMail.mail,
         };
 
@@ -79,12 +79,12 @@ module.exports = {
         log.d("sendForgottenPassword - sending forgotten mail");
 
         const html = sendTemplate.getBody(
-          "PORTAIL VAO INSTRUCTEURS - MOT DE PASSE OUBLIE",
+          "PORTAIL VAO ADMINISTRATION - MOT DE PASSE OUBLIE",
           [
             {
               p: [
                 "Bonjour,",
-                "Vous recevez ce mail car vous avez demandé le renouvellement de votre mot de passe sur le Portail VAO Instructeurs.",
+                "Vous recevez ce mail car vous avez demandé le renouvellement de votre mot de passe sur le Portail VAO Administration.",
                 "Pour définir un nouveau mot de passe, veuillez cliquer sur lien ci dessous.",
               ],
               type: "p",
@@ -102,7 +102,7 @@ module.exports = {
           from: senderEmail,
           html,
           replyTo: senderEmail,
-          subject: `Portail VAO Instructeurs - Renouvellement du mot de passe`,
+          subject: `Portail VAO Administration - Renouvellement du mot de passe`,
           to: email,
         };
         log.d("sendForgottenPassword post email", { params });
@@ -113,12 +113,12 @@ module.exports = {
         log.i("sendOtp - In", mail);
 
         const html = sendTemplate.getBody(
-          "PORTAIL VAO INSTRUCTEURS - AUTHENTIFICATION PAR CODE",
+          "PORTAIL VAO ADMINISTRATION - AUTHENTIFICATION PAR CODE",
           [
             {
               p: [
                 "Bonjour,",
-                "Vous recevez ce mail car vous souhaitez accéder au Portail VAO Instructeurs.",
+                "Vous recevez ce mail car vous souhaitez accéder au Portail VAO Administration.",
                 "Pour accéder au portail, veuillez entrer le code ci dessous.",
               ],
               type: "p",
@@ -135,7 +135,7 @@ module.exports = {
           from: senderEmail,
           html,
           replyTo: senderEmail,
-          subject: "Portail VAO Instructeurs - code authentification",
+          subject: "Portail VAO Administration - code authentification",
           to: mail,
         };
 
@@ -163,12 +163,12 @@ module.exports = {
         log.d("sendReactivation - sending reactivate mail");
 
         const html = sendTemplate.getBody(
-          "PORTAIL VAO INSTRUCTEURS - ACTIVATION DE COMPTE",
+          "PORTAIL VAO ADMINISTRATION - ACTIVATION DE COMPTE",
           [
             {
               p: [
                 "Bonjour,",
-                "Vous recevez ce mail car votre compte vient d'être réactivé sur le Portail VAO Instructeurs.",
+                "Vous recevez ce mail car votre compte vient d'être réactivé sur le Portail VAO Administration.",
                 "Pour activer votre compte, veuillez cliquer sur lien ci dessous.",
               ],
               type: "p",
