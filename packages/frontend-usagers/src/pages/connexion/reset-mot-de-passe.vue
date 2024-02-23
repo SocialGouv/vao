@@ -245,7 +245,7 @@ async function renewPassword() {
   const password = passwordField.modelValue;
   log.i("renewPassword", { email, password });
   try {
-    const url = `${config.public.backendUrl}/authentication/email/renewPassword?token=${emailToken}`;
+    const url = `${config.public.backendUrl}/authentication/email/renew-password?token=${emailToken}`;
     await $fetch(url, {
       method: "POST",
       headers: {
