@@ -93,11 +93,11 @@
       </div>
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
-          <label>{{
-            isUpdate ? "Nouvelle adresse de domicile " : "Adresse du domicile"
-          }}</label>
           <SearchAddress
             :value="adresseDomicile"
+            :label="
+              isUpdate ? 'Nouvelle adresse de domicile' : 'Adresse du domicile'
+            "
             @select="onAddressDomicileChange"
           />
         </div>
@@ -135,12 +135,15 @@
           />
         </div>
         <div class="fr-input-group fr-col-8">
-          <label>{{
-            isUpdate
-              ? "Nouvelle adresse du siège des activités VAO "
-              : "Adresse du siège des activités VAO"
-          }}</label>
-          <SearchAddress :value="adresseSiege" @select="onAddressSiegeChange" />
+          <SearchAddress
+            :value="adresseSiege"
+            :label="
+              isUpdate
+                ? 'Nouvelle adresse du siège des activités VAO'
+                : 'Adresse du siège des activités VAO'
+            "
+            @select="onAddressSiegeChange"
+          />
         </div>
       </div>
     </fieldset>

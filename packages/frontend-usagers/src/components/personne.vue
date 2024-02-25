@@ -53,34 +53,13 @@
         </div>
       </div>
       <div v-if="props.showAdresse" class="fr-col-12">
-        <div v-if="adresseInitiale" class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-12">
-            <DsfrInputGroup
-              name="adresseDomicileSauvegardée"
-              label="Adresse enregistrée"
-              :label-visible="true"
-              :model-value="adresseInitiale"
-              :disabled="true"
-            />
-          </div>
-        </div>
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
-            <label>{{
-              props.personne.adresse ? "Nouvelle adresse" : "Adresse"
-            }}</label>
-            <SearchAddress :value="adresse" @select="onAddressChange" />
-            <!-- <Multiselect
-              v-model="adresse"
-              mode="single"
-              :close-on-select="true"
-              :searchable="true"
-              :internal-search="false"
-              :loading="searchAdresseRLInProgress"
-              :options="adressesRLOptions"
-              :options-limit="10"
-              @search-change="searchAdresseRL"
-            /> -->
+            <SearchAddress
+              :value="adresse"
+              :label="props.personne.adresse ? 'Nouvelle adresse' : 'Adresse'"
+              @select="onAddressChange"
+            />
           </div>
         </div>
       </div>
@@ -284,13 +263,6 @@ const {
 } = useField("email");
 
 const { value: adresse, handleChange: onAddressChange } = useField("adresse");
-
-const adresseInitiale = computed(() => {
-  if (props.personne.adresse) {
-    adresse.value = props.personne.adresse;
-    return props.personne.adresseShort;
-  }
-});
 
 function validatePersonne() {
   emit("valid", { ...values });
