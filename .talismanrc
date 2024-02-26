@@ -128,7 +128,7 @@ fileignoreconfig:
 - filename: pg/scripts/02/02-3-back-init.sql
   checksum: 5a57a150059114c6819fbbe397d5cb5bc7861234c3768e590cf3cc540d8a224d
 - filename: pg/scripts/02/02-4-front-init.sql
-  checksum: bc1b589d062b8003ad3b7323d397fee3279f79712a52444ae20ce434e9b0939e
+  checksum: 9429e18fde24d0bb8d199ae78fdb782bf9d070840241502eb67326dbe57803aa
 - filename: pg/scripts/03/03-1-geo-data.sql
   checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
 - filename: pg/scripts/03/03-2-back-data.sql

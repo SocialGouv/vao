@@ -40,7 +40,7 @@ create table front.sessions (
 /* Table : operateur                                            */
 /*==============================================================*/
 create table front.operateurs (
-   id                           SERIAL               NOT NULL, 
+   id                           SERIAL               NOT NULL,
    supprime                     BOOLEAN              NOT NULL DEFAULT false,
    complet                      BOOLEAN              NOT NULL DEFAULT false,
    type_operateur               VARCHAR(20)          NOT NULL DEFAULT 'personne_morale',
@@ -80,9 +80,9 @@ CREATE TABLE front.agrements (
    constraint pk_agrements primary key (uuid)
 );
 CREATE TYPE sejour_status AS ENUM (
-   'BROUILLON', 
-   'TRANMISE', 
-   'EN COURS', 
+   'BROUILLON',
+   'TRANSMISE',
+   'EN COURS',
    'A MODIFIER',
    'EN ATTENTE VALIDATION HEBERGEMENT',
    'EN ATTENTE DECLARATION 8 JOURS',
@@ -132,6 +132,24 @@ create table front.hebergement (
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_hebergement primary key (id)
 );
+
+/*==============================================================*/
+/* Table : demande_sejour_history                               */
+/*==============================================================*/
+create table front.demande_sejour_history (
+   id                           SERIAL               NOT NULL,
+   source                       VARCHAR(80)          NOT NULL,
+   demande_sejour_id            INTEGER              NOT NULL REFERENCES front.demande_sejour(id),
+   usager_user_id               INTEGER              REFERENCES front.users(id),
+   bo_user_id                   INTEGER              REFERENCES back.users(id),
+   type                         VARCHAR(80)          NOT NULL,
+   type_precision               VARCHAR(80)          ,
+   metadata                     JSONB                ,
+   created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
+   edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
+   constraint pk_demande_sejour_history primary key (id)
+);
+
 
 GRANT USAGE ON SCHEMA front TO vao;
 
