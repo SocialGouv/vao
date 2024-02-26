@@ -1,6 +1,5 @@
 module.exports.BOAuthenticationController = require("./bo-authentication");
 module.exports.authenticationController = require("./authentication");
-module.exports.referentielController = require("./referentiel");
 module.exports.BOUserController = require("./bo-user");
 module.exports.userController = require("./user");
 module.exports.operateurController = require("./operateur");
