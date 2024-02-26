@@ -84,7 +84,7 @@ function parseJwt(token) {
 async function renewToken() {
   log.i("renew - IN");
   const decoded = parseJwt(props.token);
-  await $fetch(config.public.backendUrl + "/authentication/email/renewToken", {
+  await $fetch(config.public.backendUrl + "/authentication/email/renew-token", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

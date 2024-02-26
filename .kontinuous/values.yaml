@@ -175,7 +175,7 @@ jobs:
 
           echo "02-1-geo-init : "
           psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-1-geo-init.sql
-          echo "02-2-pp-init : "
+          echo "02-2-doc-init : "
           psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-2-doc-init.sql
           echo "02-3-back-init : "
           psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-3-back-init.sql

@@ -1,7 +1,6 @@
-const buildAccessToken = ({ id, email, personneId }) => ({
+const buildAccessToken = ({ id, email }) => ({
   email,
   id,
-  personneId,
 });
 
 const buildRefreshToken = ({ id: userId }) => ({ userId });

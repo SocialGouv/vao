@@ -17,10 +17,9 @@ CREATE TABLE back.users (
    id                 SERIAL               NOT NULL,
    validated          BOOLEAN              default false,
    deleted            BOOLEAN              default false,
-   mail               VARCHAR(50)          UNIQUE NOT NULL,
-   name               VARCHAR(50)          NULL,
-   firstname          VARCHAR(50)          NULL,
-   secret             VARCHAR(20)          NULL,
+   mail               VARCHAR(320)          UNIQUE NOT NULL,
+   prenom             VARCHAR(128)          NULL,
+   nom                VARCHAR(128)          NULL,
    pwd                VARCHAR(255)         NULL,
    enddate            TIMESTAMP            NOT NULL,
    created_at         TIMESTAMP            DEFAULT current_timestamp NOT NULL,
@@ -28,6 +27,17 @@ CREATE TABLE back.users (
    auth_try           INT                  NOT NULL default 0,
    blocked            TIMESTAMP            NULL,
    CONSTRAINT pk_back_users PRIMARY KEY (id)
+);
+
+/*==============================================================*/
+/* Table : sessions                                             */
+/*==============================================================*/
+create table back.sessions (
+   id                   SERIAL               NOT NULL,
+   cle                  VARCHAR(50)          NOT NULL,
+   refresh_token        VARCHAR(200)         NOT NULL,
+   created_at           TIMESTAMP            DEFAULT current_timestamp NOT NULL,
+   constraint pk_session primary key (refresh_token)
 );
 
 /*==============================================================*/

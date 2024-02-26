@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config");
 
-const User = require("../services/User");
-const Session = require("../services/Session");
+const User = require("../services/BoUser");
+const Session = require("../services/BoSession");
 
 const AppError = require("../utils/error");
 const logger = require("../utils/logger");
@@ -23,8 +23,8 @@ async function checkJWT(req, res, next) {
       });
     }
 
-    const accessToken = cookies.VAO_access_token;
-    const refreshToken = cookies.VAO_refresh_token;
+    const accessToken = cookies.VAO_BO_access_token;
+    const refreshToken = cookies.VAO_BO_refresh_token;
 
     if (accessToken) {
       log.d("accessToken found");
@@ -41,7 +41,7 @@ async function checkJWT(req, res, next) {
           log.d("accessToken expired");
         } else {
           log.w("Unknown error", error);
-          res.clearCookie("VAO_accessToken", {
+          res.clearCookie("VAO_BO_accessToken", {
             httpOnly: true,
             secure: true,
           });
@@ -84,7 +84,7 @@ async function checkJWT(req, res, next) {
           }),
         );
       }
-      res.clearCookie("VAO_refreshToken", {
+      res.clearCookie("VAO_BO_refreshToken", {
         httpOnly: true,
         secure: true,
       });
@@ -133,14 +133,14 @@ async function checkJWT(req, res, next) {
       });
     }
 
-    res.cookie("VAO_access_token", newAccessToken, {
+    res.cookie("VAO_BO_access_token", newAccessToken, {
       httpOnly: true,
       maxAge: `${config.accessToken.expiresIn}`,
       sameSite: "strict",
       secure: true,
     });
 
-    res.cookie("VAO_refresh_token", newRefreshToken, {
+    res.cookie("VAO_BO_refresh_token", newRefreshToken, {
       httpOnly: true,
       maxAge: `${config.refreshToken.expiresIn}`,
       sameSite: "strict",

@@ -11,7 +11,7 @@ psql -d $POSTGRES_DB -c "CREATE USER \"$PG_VAO_DOCUMENT_USER\" WITH password '$P
 
 echo '02-1-geo-init : '
 psql -d $POSTGRES_DB -f /scripts/02/02-1-geo-init.sql
-echo '02-2-pp-init : '
+echo '02-2-doc-init : '
 psql -d $POSTGRES_DB -f /scripts/02/02-2-doc-init.sql
 echo '02-3-back-init : '
 psql -d $POSTGRES_DB -f /scripts/02/02-3-back-init.sql
@@ -22,4 +22,7 @@ echo '03-1-geo-data : '
 psql -d $POSTGRES_DB -f /scripts/03/03-1-geo-data.sql
 echo '03-2-back-data : '
 psql -d $POSTGRES_DB -f /scripts/03/03-2-back-data.sql
+
+echo '04-1-back-user : '
+psql -d $POSTGRES_DB -f /scripts/04/04-1-back-user.sql
 
