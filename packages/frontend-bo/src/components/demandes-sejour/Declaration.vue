@@ -1,20 +1,17 @@
 <template>
-  <Pointable>
-    <div class="two-month">
-      <span class="fr-icon-file-text-line" aria-hidden="true"></span>
-      <span>2 mois</span>
-    </div>
-    <span
-      class="height-days"
-      :class="{ is_not_height_days: !isDeclaration8Jours }"
-      >+ 8 jours</span
-    >
-  </Pointable>
+  <div class="two-month pointer">
+    <span class="fr-icon-file-text-line" aria-hidden="true"></span>
+    <span>2 mois</span>
+  </div>
+  <span
+    class="height-days"
+    :class="{ is_not_height_days: !isDeclaration8Jours }"
+    >+ 8 jours</span
+  >
 </template>
 
 <script setup>
 import { demandeSejourStatut } from "~/utils/demandes-sejour/enum";
-import Pointable from "~/components/utils/Pointable.vue";
 
 const props = defineProps({
   statut: {

@@ -1,13 +1,10 @@
 <template>
-  <Pointable>
-    <DsfrBadge :small="true" :type="type" :label="props.statut" />
-  </Pointable>
+  <DsfrBadge :small="true" :type="type" :label="props.statut" class="pointer" />
 </template>
 
 <script setup>
 import { demandeSejourStatut } from "~/utils/demandes-sejour/enum";
 import { DsfrBadge } from "@gouvminint/vue-dsfr";
-import Pointable from "~/components/utils/Pointable.vue";
 
 const props = defineProps({
   statut: {

@@ -21,6 +21,7 @@ export default defineNuxtConfig({
     "@gouvfr/dsfr/dist/dsfr.min.css",
     "@gouvminint/vue-dsfr/styles",
     "@gouvfr/dsfr/dist/utility/icons/icons.min.css",
+    "@/assets/css/main.css",
   ],
   modules: ["@pinia/nuxt"],
   runtimeConfig: {

@@ -12,7 +12,7 @@
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
-                  v-model="search.libelle"
+                  v-model="searchState.libelle"
                   type="text"
                   name="libelle"
                   label="Identifiant Séjour"
@@ -26,7 +26,7 @@
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
-                  v-model="search.organisme"
+                  v-model="searchState.organisme"
                   type="text"
                   name="organisme"
                   label="Organisme"
@@ -39,22 +39,9 @@
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
-                <DsfrInputGroup
-                  v-model="search.dateDebut"
-                  type="date"
-                  name="libelle"
-                  label="Voyage avant le"
-                  :label-visible="true"
-                />
-              </div>
-            </div>
-            <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
-            >
-              <div class="fr-input-group">
                 <label class="fr-label"> Statut </label>
                 <DsfrSelect
-                  :model-value="search.statut"
+                  :model-value="searchState.statut"
                   name="status"
                   mode="tags"
                   :searchable="true"
@@ -71,13 +58,19 @@
         </form>
       </div>
     </div>
-    <UtilsTableFull
+    <UtilsTable
       :headers="headers"
       :data="sejourStore.demandes"
-      :row-navigate="navigate"
-      :search="search"
-      :dict="dict"
-    ></UtilsTableFull>
+      :total-items="sejourStore.total"
+      :current-page="currentPageState"
+      :sort-by="sortState.sortBy"
+      :sort-direction="sortState.sortDirection"
+      :items-by-page="limitState"
+      :on-click-cell="navigate"
+      @update-sort="updateSort"
+      @update-items-by-page="updateItemsByPage"
+      @update-current-page="updateCurrentPage"
+    ></UtilsTable>
   </div>
 </template>
 
@@ -88,74 +81,85 @@ import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
 import { DsfrInputGroup, DsfrSelect } from "@gouvminint/vue-dsfr";
 import { demandeSejourStatut } from "~/utils/demandes-sejour/enum";
-import PointableLabel from "~/components/demandes-sejour/PointableLabel.vue";
 
 const sejourStore = useDemandeSejourStore();
 
-onMounted(() => {
-  sejourStore.fetchDemandes();
-});
+const defaultLimit = 10;
+const defaultOffset = 0;
 
-const onStatutSelect = (value) => {
-  if (value === "Tous les statuts") {
-    search.statut = null;
-  } else {
-    search.statut = value;
-  }
-};
-
-const search = reactive({
+const sortState = ref({});
+const currentPageState = ref(defaultOffset);
+const limitState = ref(defaultLimit);
+const searchState = reactive({
   libelle: null,
-  dateDebut: null,
   organisme: null,
   statut: null,
 });
 
-const dict = {
-  dateDebut: (item, value) => new Date(item.dateDebut) < new Date(value),
-  organisme: (item, value = "") =>
-    sejourStore
-      .organismeTitle(item.demandeSejourId)
-      .toLowerCase()
-      .match(value.toLowerCase()),
+onMounted(() => {
+  sejourStore.fetchDemandes({ limit: defaultLimit, offset: defaultOffset });
+});
+
+watch(
+  [sortState, limitState, currentPageState],
+  ([sortValue, limitValue, currentPageValue]) => {
+    sejourStore.fetchDemandes({
+      sortBy: sortValue.sortBy,
+      sortDirection: sortValue.sortDirection,
+      limit: limitValue,
+      offset: currentPageValue * limitValue,
+      search: searchState,
+    });
+  },
+);
+
+const fetchDemandesDebounce = debounce((search) => {
+  sejourStore.fetchDemandes({
+    sortBy: sortState.value.sortBy,
+    sortDirection: sortState.value.sortDirection,
+    limit: limitState.value,
+    offset: currentPageState.value * limitState.value,
+    search,
+  });
+});
+
+watch([searchState], ([searchValue]) => {
+  fetchDemandesDebounce(searchValue);
+});
+
+const onStatutSelect = (value) => {
+  if (value === "Tous les statuts") {
+    searchState.statut = null;
+  } else {
+    searchState.statut = value;
+  }
 };
 
 const headers = [
   {
-    sorter: "demandeSejourLibelle",
+    column: "libelle",
     text: "Libelle",
-    component: ({ libelle }) => ({
-      component: PointableLabel,
-      label: libelle,
-    }),
+    sort: true,
   },
   {
-    sorter: "demandeSejourLibelle",
+    column: "dateDebut",
     text: "Dates (Début-fin)",
-    component: (value) => ({
-      component: PointableLabel,
-      label: `${formatDate(value.dateDebut, "dd/MM/yyyy")} - ${formatDate(value.dateFin, "dd/MM/yyyy")}`,
-    }),
+    format: (value) =>
+      `${formatDate(value.dateDebut, "dd/MM/yyyy")} - ${formatDate(value.dateFin, "dd/MM/yyyy")}`,
+    sort: true,
   },
   {
-    sorter: "demandeSejourSaison",
+    column: "demandeSejourSaison",
     text: "Saison",
-    component: (value) => ({
-      component: PointableLabel,
-      label: sejourStore.saison(value.demandeSejourId),
-    }),
+    format: (value) => sejourStore.saison(value.demandeSejourId),
   },
   {
-    sorter: "demandeSejourOrganisme",
+    column: "demandeSejourOrganisme",
     text: "Organisme",
-    component: (value) => ({
-      component: PointableLabel,
-      label: sejourStore.organismeTitle(value.demandeSejourId),
-    }),
+    format: (value) => sejourStore.organismeTitle(value.demandeSejourId),
   },
   {
     column: "demandeSejourDeclaration",
-    sorter: "demandeSejourDeclaration",
     text: "Declaration",
     component: ({ statut }) => ({
       component: Declaration,
@@ -164,7 +168,6 @@ const headers = [
   },
   {
     column: "demandeSejourStatut",
-    sorter: "demandeSejourStatut",
     text: "Statut",
     component: ({ statut }) => ({
       component: DemandeStatusBadge,
@@ -173,6 +176,19 @@ const headers = [
   },
 ];
 const navigate = (state) => navigateTo(`/sejours/${state.demandeSejourId}`);
+
+const updateSort = ({ sortBy: sb, sortDirection: sd }) => {
+  sortState.value = {
+    sortBy: sb,
+    sortDirection: sd,
+  };
+};
+const updateItemsByPage = (val) => {
+  limitState.value = parseInt(val);
+};
+const updateCurrentPage = (val) => {
+  currentPageState.value = val;
+};
 </script>
 
 <style scoped>

@@ -12,9 +12,17 @@ module.exports = async function getByAdminId(req, res) {
   log.d("userId", { adminId });
 
   try {
-    const demandes = await DemandeSejour.getByAdminId(adminId);
-    log.d(demandes);
-    return res.status(200).json({ demandes });
+    const { limit, offset, sortBy, sortDirection, search } = req.query;
+
+    const demandesWithPagination = await DemandeSejour.getByAdminId(adminId, {
+      limit,
+      offset,
+      search: JSON.parse(search ?? "{}"),
+      sortBy,
+      sortDirection,
+    });
+    log.d(demandesWithPagination);
+    return res.status(200).json({ demandesWithPagination });
   } catch (error) {
     log.w(error);
     return res.status(400).json({

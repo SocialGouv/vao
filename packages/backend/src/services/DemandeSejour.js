@@ -41,7 +41,7 @@ const query = {
     WHERE
       uo.use_id = $1
     `,
-  getByAdminId: `
+  getByAdminId: (search) => `
     SELECT
       ds.id as "demandeSejourId",
       ds.statut as "statut",
@@ -62,6 +62,15 @@ const query = {
       o.personne_physique as "personne_physique"
     FROM front.demande_sejour ds
       JOIN front.operateurs o ON o.id = ds.operateur_id
+    WHERE 1 = 1
+       ${search.map((s) => ` AND ${s} `).join("")}
+    `,
+  getByAdminIdTotal: (search) => `
+  SELECT COUNT(DISTINCT ds.id)
+    FROM front.demande_sejour ds
+      JOIN front.operateurs o ON o.id = ds.operateur_id
+    WHERE 1 = 1
+       ${search.map((s) => ` AND ${s} `).join("")}
     `,
   getOne: (criterias) => [
     `
@@ -230,14 +239,57 @@ module.exports.getOne = async (criterias = {}) => {
   return demandes[0] ?? [];
 };
 
-module.exports.getByAdminId = async (adminId) => {
+module.exports.getByAdminId = async (
+  adminId,
+  { limit, offset, sortBy, sortDirection = "ASC", search } = {},
+) => {
   //  TODO : create the logic (here or in the service) to get the department of the admin.
   //  For me, the list of demandes that are goven to the admin are the list of all demands of the department
 
   log.i("getByAdminId - IN", adminId);
-  const response = await pool.query(query.getByAdminId);
+  const searchQuery = [];
+
+  // Search management
+  if (search?.libelle && search.libelle.length) {
+    searchQuery.push(`libelle ilike '%${search.libelle}%'`);
+  }
+  if (search?.organisme && search.organisme.length) {
+    searchQuery.push(`(
+      personne_morale ->> 'raisonSociale' ilike '%${search.organisme}%'
+      OR personne_physique ->> 'prenom' ilike '%${search.organisme}%'
+      OR personne_physique ->> 'nomUsage' ilike '%${search.organisme}%'
+      )`);
+  }
+  if (search?.statut && search.statut.length) {
+    searchQuery.push(`statut = '${search.statut}'`);
+  }
+  let queryWithPagination = query.getByAdminId(searchQuery);
+
+  // Order management
+  if (sortBy && sortDirection) {
+    queryWithPagination += `
+    ORDER BY "${sortBy}" ${sortDirection}, "createdAt" DESC
+    `;
+  } else {
+    queryWithPagination += '\n ORDER BY "createdAt" DESC';
+  }
+
+  // Pagination management
+  if (limit && offset) {
+    queryWithPagination += `
+    OFFSET ${offset}
+    LIMIT ${limit}
+    `;
+  }
+
+  const response = await pool.query(queryWithPagination);
+  const total = await pool.query(query.getByAdminIdTotal(searchQuery));
+
   log.d("getByAdminId - DONE");
-  return response.rows;
+  return {
+    demandes_sejour: response.rows,
+    total: total.rows.find((t) => t.count)?.count ?? 0,
+  };
 };
 
 module.exports.update = async (type, demandeSejourId, parametre) => {
