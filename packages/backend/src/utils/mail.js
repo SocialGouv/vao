@@ -213,9 +213,9 @@ module.exports = {
           html: `
                 <p>Bonjour,</p>
     
-                <p>Vous recevez ce mail car vous vous êtes inscrit sur le portail Prévention.</p>
+                <p>Vous recevez ce mail car vous vous êtes inscrit sur le portail VAO.</p>
     
-                <p>Votre email a bien été validé. Vous pouvez continuer la procédure de création de compte en vous connectant à nouveau sur le portail Honorabilté.</p>
+                <p>Votre email a bien été validé. Vous pouvez continuer la procédure de création de compte en vous connectant à nouveau sur le portail VAO.</p>
     
                 <p><a href="${frontUsagersDomain}/mon-compte">Je complète mon compte.</a></p>
                 `,
@@ -249,7 +249,7 @@ module.exports = {
           html: `
                 <p>Bonjour,</p>
     
-                <p>Vous recevez ce mail car vous ne trouvez plus votre mot de passe sur le portail Prévention</p>
+                <p>Vous recevez ce mail car vous ne trouvez plus votre mot de passe sur le portail VAO</p>
     
                 <p>Afin de modifier votre mot de passe, veuillez cliquer sur le lien suivant qui vous redirigera vers le portail :</p>
     

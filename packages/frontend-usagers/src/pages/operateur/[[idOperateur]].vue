@@ -11,37 +11,11 @@
       <OperateurStepper :step="hash"></OperateurStepper>
       <div>
         <div id="info-generales">
-          <div v-if="hash === 'info-generales'">
-            <fieldset class="fr-fieldset">
-              <div class="fr-fieldset__element">
-                <div class="fr-input-group fr-col-12">
-                  <DsfrRadioButtonSet
-                    name="typeOperateur"
-                    legend="Type de personne qui organise des séjours"
-                    :required="true"
-                    :model-value="typeOperateur"
-                    :options="typeOptions"
-                    :is-valid="typeOperateurMeta"
-                    :inline="false"
-                    :error-message="typeOperateurErrorMessage"
-                    @update:model-value="onTypeOperateurChange"
-                  />
-                </div>
-              </div>
-            </fieldset>
-            <div v-if="typeOperateur === 'personne_morale'">
-              <OperateurPersonneMorale
-                :init-data="operateurCourant.personneMorale ?? {}"
-                @valid="updateOrCreate"
-              ></OperateurPersonneMorale>
-            </div>
-            <div v-if="typeOperateur === 'personne_physique'">
-              <OperateurPersonnePhysique
-                :init-data="operateurCourant.personnePhysique ?? {}"
-                @valid="updateOrCreate"
-              ></OperateurPersonnePhysique>
-            </div>
-          </div>
+          <OperateurInformationsGenerales
+            v-if="hash === 'info-generales'"
+            :init-data="operateurCourant"
+            @valid="updateOrCreate"
+          />
         </div>
         <div id="agrement">
           <OperateurAgrement
@@ -85,9 +59,6 @@
 </template>
 
 <script setup>
-import { useField, useForm } from "vee-validate";
-import * as yup from "yup";
-
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
@@ -103,40 +74,6 @@ const operateurStore = useOperateurStore();
 const operateurCourant = computed(() => {
   return operateurStore.operateurCourant;
 });
-
-const typeOptions = [
-  {
-    label: "Personne physique",
-    value: "personne_physique",
-  },
-  {
-    label: "Personne morale",
-    value: "personne_morale",
-  },
-];
-
-// Schéma et données de base
-const schemaBase = {
-  typeOperateur: yup.string().required(),
-};
-const validationSchemaBase = computed(() => {
-  return yup.object({ ...schemaBase });
-});
-const initialValuesBase = computed(() => {
-  return {
-    typeOperateur: operateurCourant.value.typeOperateur ?? "",
-  };
-});
-const { resetForm: resetFormBase } = useForm({
-  initialValues: initialValuesBase,
-  validationSchema: validationSchemaBase,
-});
-const {
-  value: typeOperateur,
-  errorMessage: typeOperateurErrorMessage,
-  handleChange: onTypeOperateurChange,
-  meta: typeOperateurMeta,
-} = useField("typeOperateur");
 
 const sommaireOptions = organismeMenus.map((m) => m.id);
 
@@ -154,7 +91,7 @@ function previousHash(hash) {
 
 function nextHash(hash) {
   const index = sommaireOptions.findIndex((o) => o === hash);
-  log.i({ hash, index, next: sommaireOptions[index + 1] });
+  log.d({ hash, index, next: sommaireOptions[index + 1] });
   return navigateTo({ hash: "#" + sommaireOptions[index + 1] });
 }
 
@@ -205,11 +142,6 @@ async function finalizeOperateur() {
     log.w("Creation/modification d'operateur : ", { error });
   }
 }
-
-onMounted(async () => {
-  await operateurStore.setMyOperateur();
-  resetFormBase({ values: initialValuesBase.value });
-});
 </script>
 
 <style lang="scss" scoped>

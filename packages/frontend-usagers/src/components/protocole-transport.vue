@@ -65,10 +65,7 @@
             legend="Des déplacements sont-ils prévus durant le séjour ?"
             :required="true"
             :model-value="deplacementDurantSejour"
-            :options="[
-              { label: 'Oui', value: 'oui' },
-              { label: 'Non', value: 'non' },
-            ]"
+            :options="ouiNonOptions"
             :is-valid="deplacementDurantSejourMeta"
             :inline="true"
             :error-message="deplacementDurantSejourErrorMessage"
@@ -132,9 +129,9 @@ const validationSchema = computed(() =>
 
 const initialValues = computed(() => ({
   responsableTransportLieuSejour:
-    props.initData?.responsableTransportLieuSejour || "",
-  precisionModeOrganisation: props.initData?.precisionModeOrganisation || "",
-  deplacementDurantSejour: props.initData?.deplacementDurantSejour || "",
+    props.initData?.responsableTransportLieuSejour,
+  precisionModeOrganisation: props.initData?.precisionModeOrganisation,
+  deplacementDurantSejour: props.initData?.deplacementDurantSejour,
   modeTransport: props.initData?.modeTransport ?? [],
 }));
 const { meta, values, resetForm } = useForm({

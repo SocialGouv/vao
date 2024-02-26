@@ -175,7 +175,6 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { ouiNonOptions } from "@/helpers/ouiNonOptions";
 import { useDemandeSejourStore } from "@/stores/demande-sejour";
 import { useHebergementStore } from "@/stores/hebergement";
 import { useLayoutStore } from "@/stores/layout";

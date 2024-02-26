@@ -121,7 +121,7 @@
       </div>
     </fieldset>
     <fieldset class="fr-fieldset">
-      <div v-if="adresseIdentique === 0" class="fr-fieldset__element">
+      <div v-if="adresseIdentique === false" class="fr-fieldset__element">
         <div
           v-if="props.initData.adresseSiege?.label"
           class="fr-input-group fr-col-8"
@@ -151,7 +151,6 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { ouiNonOptions } from "@/helpers/ouiNonOptions";
 const log = logger("components/operateur/personne-physique");
 
 const props = defineProps({
@@ -287,7 +286,7 @@ const schema = {
     )
     .required(),
   profession: yup.string().required(),
-  adresseIdentique: yup.number().required(),
+  adresseIdentique: yup.boolean().required(),
   telephone: yup
     .string()
     .test("telephone", "Format de numéro de téléphone invalide", (telephone) =>
@@ -302,11 +301,11 @@ const validationSchema = computed(() => {
 });
 const initialValues = computed(() => {
   return {
-    nomNaissance: props.initData.nomNaissance ?? "",
-    nomUsage: props.initData.nomUsage ?? "",
-    prenom: props.initData.prenom ?? "",
-    profession: props.initData.profession ?? "",
-    telephone: props.initData.telephone ?? "",
+    nomNaissance: props.initData.nomNaissance,
+    nomUsage: props.initData.nomUsage,
+    prenom: props.initData.prenom,
+    profession: props.initData.profession,
+    telephone: props.initData.telephone,
     adresseDomicile: props.initData.adresseDomicile,
     adresseIdentique: props.initData.adresseIdentique,
     adresseSiege: props.initData.adresseSiege,
@@ -363,7 +362,6 @@ function setAdresseSiege(v) {
 }
 
 function next() {
-  log.i("next - IN");
   emit(
     "valid",
     {
