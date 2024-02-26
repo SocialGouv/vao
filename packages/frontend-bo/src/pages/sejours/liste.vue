@@ -15,7 +15,7 @@
                   v-model="searchState.libelle"
                   type="text"
                   name="libelle"
-                  label="Identifiant Séjour"
+                  label="Nom du séjour"
                   placeholder="Nom du séjour"
                   :label-visible="true"
                 />
