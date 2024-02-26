@@ -5,7 +5,7 @@
       <span>2 mois</span>
     </div>
     <span
-      class="height-days"
+      class="height-days unbreakable"
       :class="{ is_not_height_days: !isDeclaration8Jours }"
       >+ 8 jours</span
     >
@@ -45,5 +45,9 @@ const isDeclaration8Jours = computed(() =>
 
 .is_not_height_days {
   color: #cecece;
+}
+
+.unbreakable {
+  white-space: nowrap;
 }
 </style>
