@@ -1,13 +1,15 @@
 <template>
-  <div class="two-month pointer">
-    <span class="fr-icon-file-text-line" aria-hidden="true"></span>
-    <span>2 mois</span>
+  <div>
+    <div class="two-month pointer">
+      <span class="fr-icon-file-text-line" aria-hidden="true"></span>
+      <span>2 mois</span>
+    </div>
+    <span
+      class="height-days"
+      :class="{ is_not_height_days: !isDeclaration8Jours }"
+      >+ 8 jours</span
+    >
   </div>
-  <span
-    class="height-days"
-    :class="{ is_not_height_days: !isDeclaration8Jours }"
-    >+ 8 jours</span
-  >
 </template>
 
 <script setup>
