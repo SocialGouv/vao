@@ -7,7 +7,7 @@ const log = logger(module.filename);
 
 const query = {
   create: (id, token) => [
-    `INSERT INTO front.sessions (cle, refresh_token, created_at) 
+    `INSERT INTO back.sessions (cle, refresh_token, created_at) 
     VALUES (
       $1,
       $2,
@@ -23,7 +23,7 @@ const query = {
   ],
   delete: (criterias) => [
     `
-      DELETE FROM front.sessions
+      DELETE FROM back.sessions
       WHERE 1=1 
       ${Object.keys(criterias)
         .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
@@ -38,7 +38,7 @@ const query = {
       cle as "userId",
       refresh_token  as "refreshToken",
       created_at as "created"
-      FROM front.sessions
+      FROM back.sessions
       WHERE 1=1 
       ${Object.keys(criterias)
         .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)

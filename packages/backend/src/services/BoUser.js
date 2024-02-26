@@ -94,12 +94,7 @@ const query = {
   ],
 };
 
-module.exports.registerByEmail = async ({
-  email,
-  password,
-  nom,
-  prenom,
-}) => {
+module.exports.registerByEmail = async ({ email, password, nom, prenom }) => {
   log.i("registerByEmail - IN", { email });
   let response = await pool.query(...query.select({ mail: normalize(email) }));
   if (response.rows.length !== 0) {

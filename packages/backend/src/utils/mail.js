@@ -13,7 +13,7 @@ const log = logger(module.filename);
 module.exports = {
   bo: {
     authentication: {
-      sendActivation: (dataMail) => {
+      sendActivationMail: (dataMail) => {
         log.i("sendActivation - In");
         const expireIn = config.validationToken.expiresIn / 1000;
         const token = jwt.sign(
@@ -51,7 +51,7 @@ module.exports = {
           from: senderEmail,
           html,
           replyTo: senderEmail,
-          subject: "Portail VAO Administation - Activation de compte",
+          subject: "Portail VAO Administration - Activation de compte",
           to: dataMail.mail,
         };
 
@@ -109,87 +109,41 @@ module.exports = {
 
         return params;
       },
-      sendOtp: ({ mail, codeTemp }) => {
-        log.i("sendOtp - In", mail);
-
-        const html = sendTemplate.getBody(
-          "PORTAIL VAO ADMINISTRATION - AUTHENTIFICATION PAR CODE",
-          [
-            {
-              p: [
-                "Bonjour,",
-                "Vous recevez ce mail car vous souhaitez accéder au Portail VAO Administration.",
-                "Pour accéder au portail, veuillez entrer le code ci dessous.",
-              ],
-              type: "p",
-            },
-            {
-              code: codeTemp,
-              type: "code",
-            },
-          ],
-          "L'équipe du SI VAO",
-        );
-
-        const params = {
-          from: senderEmail,
-          html,
-          replyTo: senderEmail,
-          subject: "Portail VAO Administration - code authentification",
-          to: mail,
-        };
-
-        log.d("sendOtp - DONE", { params });
-
-        return params;
-      },
-      sendReactivation: ({ email, token, idUser }) => {
-        log.i("sendReactivation - In", {
+      sendValidationMail: ({ email, token }) => {
+        log.i("sendValidationMail - In", {
           email,
           token,
         });
         if (!email) {
           const message = `Le paramètre email manque à la requête`;
-          log.w(`sendReactivation - ${message}`);
+          log.w(`sendValidationMail - ${message}`);
           throw new AppError(message);
         }
         if (!token) {
           const message = `Le paramètre token manque à la requête`;
-          log.w(`sendReactivation - ${message}`);
+          log.w(`sendValidationMail - ${message}`);
           throw new AppError(message);
         }
 
-        const link = `${frontBODomain}/connexion/validation/${token}?id=${idUser}`;
-        log.d("sendReactivation - sending reactivate mail");
-
-        const html = sendTemplate.getBody(
-          "PORTAIL VAO ADMINISTRATION - ACTIVATION DE COMPTE",
-          [
-            {
-              p: [
-                "Bonjour,",
-                "Vous recevez ce mail car votre compte vient d'être réactivé sur le Portail VAO Administration.",
-                "Pour activer votre compte, veuillez cliquer sur lien ci dessous.",
-              ],
-              type: "p",
-            },
-            {
-              link,
-              text: "Valider votre mail",
-              type: "link",
-            },
-          ],
-          "L'équipe du SI VAO",
-        );
-
+        log.d("sendValidationMail - sending validation mail");
         const params = {
           from: senderEmail,
-          html,
+          html: `
+                <p>Bonjour,</p>
+    
+                <p>Vous recevez ce mail car vous vous êtes inscrit sur le portail VAO Administration</p>
+    
+                <p>Afin de bénéficier de toutes les fonctionnalités, veuillez valider votre email en cliquant sur le lien suivant:</p>
+    
+                <p><a href="${frontBODomain}/connexion/validation?token=${token}">J'active mon compte.</a></p>
+                `,
           replyTo: senderEmail,
-          subject: `Portail VAO Instructeurs - Valider votre email`,
+          subject: `Portail VAO Administration - Validez votre email`,
           to: email,
         };
-        log.d("sendReactivation post email", { params });
+        log.d("sendValidationMail post email", {
+          params,
+        });
 
         return params;
       },

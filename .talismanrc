@@ -73,10 +73,14 @@ fileignoreconfig:
   checksum: 06f9f5367c53fbdf6bf5d2ee9758d3a5302339f9f4d0c42e2c0f0831733097d0
 - filename: packages/backend/src/pgpoolDoc.js
   checksum: 1c379109d80c35d0a4f2169ae9935ddc1f4c7ea635f8b920be772a39658a7230
+- filename: packages/backend/src/schemas/bo-register.js
+  checksum: 92ff3812408289e410d6fda20e1da5607908cfb4239481453dad6d15d2a0c14e
 - filename: packages/backend/src/schemas/parts/password.js
   checksum: ae9405e5c5b394094e086173e2085cfaf45e6210f226aeb29e8ec1de89ee47b7
 - filename: packages/backend/src/schemas/register.js
   checksum: e8ac4a2937be739bf473857cbb64ef399358396479c6b0593e7d62c7e75aca0d
+- filename: packages/backend/src/services/BoUser.js
+  checksum: 9d24a422579f39aaf319b76d3d93d94547e6842a72fdb0bc6cc68be229c24ba2
 - filename: packages/backend/src/services/User.js
   checksum: e9ba85c65e139f1c094047e954a1932d65504b3d23a198c009af236fcbdd7907
 - filename: packages/backend/src/services/geo/Commune.js
@@ -126,9 +130,9 @@ fileignoreconfig:
 - filename: pg/scripts/02/02-2-doc-init.sql
   checksum: 4950ecbe3515ff3db733a4367070f9d6bc0c8162af0c65d151f6be7dbe5594cb
 - filename: pg/scripts/02/02-3-back-init.sql
-  checksum: 5a57a150059114c6819fbbe397d5cb5bc7861234c3768e590cf3cc540d8a224d
+  checksum: 2212858d82852bbef797353c755b24f9eb7631e5c559233ac4d30c6a9eedfd49
 - filename: pg/scripts/02/02-4-front-init.sql
-  checksum: 9429e18fde24d0bb8d199ae78fdb782bf9d070840241502eb67326dbe57803aa
+  checksum: 8ab0ded677bb94ba239c7be2486a4c1d1e29e94942c7e0c49d7de03fb92f6667
 - filename: pg/scripts/03/03-1-geo-data.sql
   checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
 - filename: pg/scripts/03/03-2-back-data.sql

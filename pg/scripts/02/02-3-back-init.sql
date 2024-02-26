@@ -30,6 +30,17 @@ CREATE TABLE back.users (
 );
 
 /*==============================================================*/
+/* Table : sessions                                             */
+/*==============================================================*/
+create table back.sessions (
+   id                   SERIAL               NOT NULL,
+   cle                  VARCHAR(50)          NOT NULL,
+   refresh_token        VARCHAR(200)         NOT NULL,
+   created_at           TIMESTAMP            DEFAULT current_timestamp NOT NULL,
+   constraint pk_session primary key (refresh_token)
+);
+
+/*==============================================================*/
 /* Table : user_roles                                           */
 /*==============================================================*/
 CREATE TABLE back.user_roles (

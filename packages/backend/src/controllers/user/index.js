@@ -1,1 +1,1 @@
-module.exports.getMe = require("./getMe");
+module.exports.getMe = require("./get-me");

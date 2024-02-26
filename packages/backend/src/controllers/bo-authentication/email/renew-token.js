@@ -44,7 +44,7 @@ module.exports = async function register(req, res, next) {
     );
     try {
       await Send(
-        MailUtils.usagers.authentication.sendValidationMail({ email, token }),
+        MailUtils.bo.authentication.sendValidationMail({ email, token }),
       );
     } catch (error) {
       log.w(error.name, error.message);

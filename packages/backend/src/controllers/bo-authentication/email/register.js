@@ -4,7 +4,7 @@ const User = require("../../../services/BoUser");
 const Send = require("../../../services/mail").mailService.send;
 
 const config = require("../../../config");
-const registerSchema = require("../../../schemas/register");
+const registerSchema = require("../../../schemas/bo-register");
 
 const logger = require("../../../utils/logger");
 const MailUtils = require("../../../utils/mail");

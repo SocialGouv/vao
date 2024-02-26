@@ -1,4 +1,4 @@
-DROP SCHEMA IF EXISTS front CASCADE;           -- données spécifiques au portail PP
+DROP SCHEMA IF EXISTS front CASCADE;           -- données spécifiques au portail usagers
 CREATE SCHEMA front;
 
 CREATE TYPE user_status AS ENUM (

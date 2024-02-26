@@ -48,7 +48,6 @@ app.get("", (req, res) => {
   res.send("Bienvenue sur le server du portail Front");
 });
 
-
 app.use(`/bo-authentication`, routes.BOAuthentication);
 app.use(`/bo-users`, routes.BOUser);
 app.use(`/authentication`, routes.authentication);
@@ -59,7 +58,6 @@ app.use(`/sejour`, routes.sejour);
 app.use(`/hebergement`, routes.hebergement);
 app.use(`/siret`, routes.siret);
 app.use(`/geo`, routes.geo);
-app.use("/referentiel", routes.referentiel);
 
 app.use((req, res, next) => {
   next(new AppError(`Path "${req.url}" not found`, { statusCode: 404 }));
@@ -67,8 +65,9 @@ app.use((req, res, next) => {
 
 // eslint-disable-next-line no-unused-vars
 app.use(async (err, req, res, next) => {
+  log.w(err.name, err.message);
+
   if (!err.isOperational) {
-    log.w(err);
     res.status(500).send("Une erreur inattendue est survenue");
     throw err;
   }

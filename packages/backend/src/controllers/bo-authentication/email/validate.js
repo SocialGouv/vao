@@ -26,9 +26,7 @@ module.exports = async (req, res) => {
     const user = await User.activate(email);
     log.d({ user });
     try {
-      await Send(
-        MailUtils.bo.authentication.sendActivationMail({ email }),
-      );
+      await Send(MailUtils.bo.authentication.sendActivationMail({ email }));
     } catch (error) {
       log.w(error.name, error.message);
     }
