@@ -138,7 +138,7 @@ const departementOptions = computed(() => {
 const statutOptions = computed(() => {
   return [
     { label: "BROUILLON", value: "BROUILLON" },
-    { label: "TRANMISE", value: "TRANMISE" },
+    { label: "TRANSMISE", value: "TRANSMISE" },
     { label: "EN COURS", value: "EN COURS" },
     { label: "A MODIFIER", value: "A MODIFIER" },
     {
