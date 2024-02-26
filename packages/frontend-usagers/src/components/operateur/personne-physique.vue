@@ -77,20 +77,6 @@
       </div>
     </fieldset>
     <fieldset class="fr-fieldset">
-      <div
-        v-if="props.initData.adresseDomicile?.label"
-        class="fr-fieldset__element"
-      >
-        <div class="fr-input-group fr-col-8">
-          <DsfrInputGroup
-            name="adresseDomicileSauvegardée"
-            label="Adresse du domicile enregistrée"
-            :label-visible="true"
-            :model-value="props.initData.adresseDomicile?.label"
-            :disabled="true"
-          />
-        </div>
-      </div>
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
           <SearchAddress
@@ -122,18 +108,6 @@
     </fieldset>
     <fieldset class="fr-fieldset">
       <div v-if="adresseIdentique === false" class="fr-fieldset__element">
-        <div
-          v-if="props.initData.adresseSiege?.label"
-          class="fr-input-group fr-col-8"
-        >
-          <DsfrInputGroup
-            name="adresseSiegeSauvegardée"
-            label="Adresse du siège enregistrée"
-            :label-visible="true"
-            :model-value="props.initData.adresseSiege?.label"
-            :disabled="true"
-          />
-        </div>
         <div class="fr-input-group fr-col-8">
           <SearchAddress
             :value="adresseSiege"

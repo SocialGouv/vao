@@ -15,13 +15,7 @@ const NB_CAR_ADDRESSE_MIN = 6;
 
 const options = ref([]);
 const isLoading = ref(false);
-
-const adresseInitiale = computed(() => {
-  if (props.personne?.adresse) {
-    adresse.value = props.personne?.adresse;
-    return props.personne?.adresseShort;
-  }
-});
+const adresseInitiale = props.value?.label;
 
 async function searchAddress(queryString) {
   if (queryString.length > NB_CAR_ADDRESSE_MIN && isLoading.value === false) {
