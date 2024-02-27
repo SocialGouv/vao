@@ -290,7 +290,7 @@
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
             name="prescriptionMedicaleJointe"
-            legend="une prescription médicale est-elle jointe à chaque pilulier ?"
+            legend="Une prescription médicale est-elle jointe à chaque pilulier ?"
             :required="true"
             :model-value="prescriptionMedicaleJointe"
             :options="ouiNonOptions"
