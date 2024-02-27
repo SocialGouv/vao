@@ -48,7 +48,7 @@
                   :close-on-select="false"
                   :options="[
                     'Tous les statuts',
-                    ...Object.values(demandeSejourStatut),
+                    ...Object.values(demandesSejours.statuts),
                   ]"
                   @update:model-value="onStatutSelect"
                 />
@@ -80,7 +80,6 @@ import { formatDate } from "date-fns/format";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
 import { DsfrInputGroup, DsfrSelect } from "@gouvminint/vue-dsfr";
-import { demandeSejourStatut } from "~/utils/demandes-sejours";
 
 const sejourStore = useDemandeSejourStore();
 
@@ -151,12 +150,12 @@ const headers = [
   {
     column: "demandeSejourSaison",
     text: "Saison",
-    format: (value) => sejourStore.saison(value.demandeSejourId),
+    format: (value) => demandesSejours.getSaison(value),
   },
   {
     column: "demandeSejourOrganisme",
     text: "Organisme",
-    format: (value) => sejourStore.organismeTitle(value.demandeSejourId),
+    format: (value) => demandesSejours.getOrganismeTitle(value),
   },
   {
     column: "demandeSejourDeclaration",

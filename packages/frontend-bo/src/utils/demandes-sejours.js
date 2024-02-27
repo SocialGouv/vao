@@ -1,6 +1,8 @@
+import { getMonth } from "date-fns/getMonth";
+
 /*  Sur l'espace admin, le status BROUILLON ne sera jamais vu,
 il ne fait donc pas parti de la liste des status possibles*/
-export const demandeSejourStatut = {
+const statuts = {
   TRANSMISE: "TRANSMISE",
   EN_COURS: "EN COURS",
   A_MODIFIER: "A MODIFIER",
@@ -11,3 +13,26 @@ export const demandeSejourStatut = {
   REFUSEE: "REFUSEE",
   MAJ_POST_8J: "MAJ POST 8J",
 };
+
+const getSaison = (demande) => {
+  if (demande?.dateDebut) {
+    const moisDebut = getMonth(demande.dateDebut);
+    if (moisDebut < 3) return "Hiver";
+    if (moisDebut < 6) return "Printemps";
+    if (moisDebut < 9) return "Eté";
+    if (moisDebut < 12) return "Automne";
+  }
+};
+const getOrganismeTitle = (demande) => {
+  if (
+    demande?.personne_physique &&
+    Object.keys(demande?.personne_physique).length
+  ) {
+    return `${demande.personne_physique.prenom} ${demande.personne_physique.nomUsage}`;
+  }
+  if (demande?.personne_morale && Object.keys(demande.personne_morale).length) {
+    return demande.personne_morale.raisonSociale;
+  }
+};
+
+export default { statuts, getSaison, getOrganismeTitle };

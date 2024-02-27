@@ -13,22 +13,21 @@
 </template>
 
 <script setup>
-import { demandeSejourStatut } from "~/utils/demandes-sejours";
-
 const props = defineProps({
   statut: {
     required: true,
     type: String,
-    validator: (value) => Object.values(demandeSejourStatut).includes(value),
+    validator: (value) =>
+      Object.values(demandesSejours.statuts).includes(value),
   },
 });
 
 const isDeclaration8Jours = computed(() =>
   [
-    demandeSejourStatut.ATTENTE_8_JOUR,
-    demandeSejourStatut.TRANSMISE_8J,
-    demandeSejourStatut.VALIDEE,
-    demandeSejourStatut.REFUSEE,
+    demandesSejours.statuts.ATTENTE_8_JOUR,
+    demandesSejours.statuts.TRANSMISE_8J,
+    demandesSejours.statuts.VALIDEE,
+    demandesSejours.statuts.REFUSEE,
   ].includes(props.statut),
 );
 </script>
