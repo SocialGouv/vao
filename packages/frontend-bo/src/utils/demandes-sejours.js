@@ -24,13 +24,11 @@ const getSaison = (demande) => {
   }
 };
 const getOrganismeTitle = (demande) => {
-  if (
-    demande?.personne_physique &&
-    Object.keys(demande?.personne_physique).length
-  ) {
-    return `${demande.personne_physique.prenom} ${demande.personne_physique.nomUsage}`;
+  if (demande.type_operateur === "personne_physique") {
+    return `${demande.personne_physique.prenom} ${demande.personne_physique.nomUsage ?? demande.personne_physique.nomNaissance}`;
   }
-  if (demande?.personne_morale && Object.keys(demande.personne_morale).length) {
+
+  if (demande.type_operateur === "personne_morale") {
     return demande.personne_morale.raisonSociale;
   }
 };

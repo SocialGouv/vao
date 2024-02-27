@@ -59,7 +59,8 @@ const query = {
       ds.sanitaires as "sanitaires",
       ds.organisateurs as "projet_sejour",
       o.personne_morale as "personne_morale",
-      o.personne_physique as "personne_physique"
+      o.personne_physique as "personne_physique",
+      o.type_operateur as "type_operateur"
     FROM front.demande_sejour ds
       JOIN front.operateurs o ON o.id = ds.operateur_id
     WHERE 1 = 1
