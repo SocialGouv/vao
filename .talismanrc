@@ -93,12 +93,14 @@ fileignoreconfig:
   checksum: 5e8464a6bf71468b80886e18e08a705b0c3a523bb907833dd63bfcdd67cd4641
 - filename: packages/backend/src/utils/pgpoolDoc.js
   checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
+- filename: packages/frontend-bo/src/components/utils/TableFull.vue
+  checksum: 4317693488a43b3e46c75ab31f0750aacb929c60d6e96af89cdc75bf9ad22afd
 - filename: packages/frontend-usagers/src/components/PasswordInput.vue
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
-  checksum: b8537a48fdf7ac1c94899336409a4543e9de4342bf2d4211ad2c6e735cb41cf4
+  checksum: 2237d2a196392be19f0ac6d116954898a4e68b24b1793fb8a060ba1da83564b0
 - filename: packages/frontend-usagers/src/components/organisateur.vue
   checksum: 5be487a1e995dd4207baabe268d2d4c7159d7a3b3ec05663825400e47590fdee
 - filename: packages/frontend-usagers/src/components/personnes-read-only.vue
