@@ -8,7 +8,7 @@ export const navItems = [
     links: [
       {
         text: "Mes demandes",
-        to: "/sejours/liste",
+        to: "/sejours",
       },
     ],
   },

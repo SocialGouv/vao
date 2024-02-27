@@ -80,7 +80,7 @@ import { formatDate } from "date-fns/format";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
 import { DsfrInputGroup, DsfrSelect } from "@gouvminint/vue-dsfr";
-import { demandeSejourStatut } from "~/utils/demandes-sejour/enum";
+import { demandeSejourStatut } from "~/utils/demandes-sejours";
 
 const sejourStore = useDemandeSejourStore();
 
@@ -175,7 +175,7 @@ const headers = [
     }),
   },
 ];
-const navigate = (state) => navigateTo(`/sejours/${state.demandeSejourId}`);
+const navigate = (state) => navigateTo(`/sejour/${state.demandeSejourId}`);
 
 const updateSort = ({ sortBy: sb, sortDirection: sd }) => {
   sortState.value = {

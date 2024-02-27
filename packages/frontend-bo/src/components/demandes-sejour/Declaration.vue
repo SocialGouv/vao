@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { demandeSejourStatut } from "~/utils/demandes-sejour/enum";
+import { demandeSejourStatut } from "~/utils/demandes-sejours";
 
 const props = defineProps({
   statut: {

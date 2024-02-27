@@ -275,7 +275,7 @@ module.exports.getByAdminId = async (
   }
 
   // Pagination management
-  if (limit && offset) {
+  if (limit != null && offset != null) {
     queryWithPagination += `
     OFFSET ${offset}
     LIMIT ${limit}

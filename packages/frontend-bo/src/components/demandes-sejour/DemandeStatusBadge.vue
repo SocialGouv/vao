@@ -3,8 +3,8 @@
 </template>
 
 <script setup>
-import { demandeSejourStatut } from "~/utils/demandes-sejour/enum";
 import { DsfrBadge } from "@gouvminint/vue-dsfr";
+import { demandeSejourStatut } from "~/utils/demandes-sejours";
 
 const props = defineProps({
   statut: {
