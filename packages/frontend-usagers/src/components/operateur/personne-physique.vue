@@ -77,27 +77,13 @@
       </div>
     </fieldset>
     <fieldset class="fr-fieldset">
-      <div
-        v-if="props.initData.adresseDomicile?.label"
-        class="fr-fieldset__element"
-      >
-        <div class="fr-input-group fr-col-8">
-          <DsfrInputGroup
-            name="adresseDomicileSauvegardée"
-            label="Adresse du domicile enregistrée"
-            :label-visible="true"
-            :model-value="props.initData.adresseDomicile?.label"
-            :disabled="true"
-          />
-        </div>
-      </div>
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
-          <label>{{
-            isUpdate ? "Nouvelle adresse de domicile " : "Adresse du domicile"
-          }}</label>
           <SearchAddress
             :value="adresseDomicile"
+            :label="
+              isUpdate ? 'Nouvelle adresse de domicile' : 'Adresse du domicile'
+            "
             @select="onAddressDomicileChange"
           />
         </div>
@@ -122,25 +108,16 @@
     </fieldset>
     <fieldset class="fr-fieldset">
       <div v-if="adresseIdentique === false" class="fr-fieldset__element">
-        <div
-          v-if="props.initData.adresseSiege?.label"
-          class="fr-input-group fr-col-8"
-        >
-          <DsfrInputGroup
-            name="adresseSiegeSauvegardée"
-            label="Adresse du siège enregistrée"
-            :label-visible="true"
-            :model-value="props.initData.adresseSiege?.label"
-            :disabled="true"
-          />
-        </div>
         <div class="fr-input-group fr-col-8">
-          <label>{{
-            isUpdate
-              ? "Nouvelle adresse du siège des activités VAO "
-              : "Adresse du siège des activités VAO"
-          }}</label>
-          <SearchAddress :value="adresseSiege" @select="onAddressSiegeChange" />
+          <SearchAddress
+            :value="adresseSiege"
+            :label="
+              isUpdate
+                ? 'Nouvelle adresse du siège des activités VAO'
+                : 'Adresse du siège des activités VAO'
+            "
+            @select="onAddressSiegeChange"
+          />
         </div>
       </div>
     </fieldset>
