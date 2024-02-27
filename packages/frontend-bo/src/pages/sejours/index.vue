@@ -174,7 +174,7 @@ const headers = [
     }),
   },
 ];
-const navigate = (state) => navigateTo(`/sejour/${state.demandeSejourId}`);
+const navigate = (state) => navigateTo(`/sejours/${state.demandeSejourId}`);
 
 const updateSort = ({ sortBy: sb, sortDirection: sd }) => {
   sortState.value = {
