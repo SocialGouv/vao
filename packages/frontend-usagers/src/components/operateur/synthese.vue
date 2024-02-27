@@ -20,6 +20,15 @@
                 :type="renseignementsGeneraux.type"
               />
             </template>
+
+            <OperateurPersonnePhysiqueReadOnly
+              v-if="props.initData.typeOperateur === 'personne_physique'"
+              :init-data="props.initData.personnePhysique"
+            />
+            <OperateurPersonneMoraleReadOnly
+              v-if="props.initData.typeOperateur === 'personne_morale'"
+              :init-data="props.initData.personneMorale"
+            />
           </DsfrAccordion>
           <DsfrAccordion
             :id="2"
@@ -34,8 +43,10 @@
                 :type="agrement.type"
               />
             </template>
-            <OperateurAgrementReadOnly :init-data="props.initData.agrement">
-            </OperateurAgrementReadOnly>
+            <OperateurAgrementReadOnly
+              v-if="props.initData.typeOperateur === 'personne_morale'"
+              :init-data="props.initData.agrement"
+            />
           </DsfrAccordion>
           <DsfrAccordion
             :id="3"
