@@ -17,11 +17,15 @@ echo '02-3-back-init : '
 psql -d $POSTGRES_DB -f /scripts/02/02-3-back-init.sql
 echo '02-4-front-init : '
 psql -d $POSTGRES_DB -f /scripts/02/02-4-front-init.sql
+echo '02-5-ref-init : '
+psql -d $POSTGRES_DB -f /scripts/02/02-5-ref-init.sql
 
 echo '03-1-geo-data : '
 psql -d $POSTGRES_DB -f /scripts/03/03-1-geo-data.sql
 echo '03-2-back-data : '
 psql -d $POSTGRES_DB -f /scripts/03/03-2-back-data.sql
+echo '03-3-ref-data : '
+psql -d $POSTGRES_DB -f /scripts/03/03-3-ref-data.sql
 
 echo '04-1-back-user : '
 psql -d $POSTGRES_DB -f /scripts/04/04-1-back-user.sql

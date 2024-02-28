@@ -117,6 +117,25 @@
       <div v-if="isEtablissementPrincipal">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-8">
+            <DsfrHighlight text="Liste des établissements" :large="true" />
+          </div>
+        </div>
+        <div class="fr-fieldset__element">
+          <div class="fr-input-group fr-col-12">
+            <DsfrTable
+              :headers="[
+                'code NIC',
+                'Adresse',
+                'Code postal',
+                'Commune',
+                'Autorisé à déclarer des séjours ?',
+              ]"
+              :rows="etablissementsToDisplay"
+            />
+          </div>
+        </div>
+        <div class="fr-fieldset__element">
+          <div class="fr-input-group fr-col-8">
             <DsfrHighlight text="Représentants légaux" :large="true" />
           </div>
         </div>
@@ -182,6 +201,8 @@ const schema = {
       (telephoneEP) => numTelephoneRegex.test(telephoneEP),
     )
     .required("Le numéro de téléphone de l'établissement est obligatoire"),
+  representantsLegaux: yup.array().min(1, "pas bien").required(),
+  etablissements: yup.array().min(1, "pas bien").required(),
 };
 const validationSchema = computed(() => {
   return yup.object({ ...schema });
@@ -192,6 +213,7 @@ const initialValues = computed(() => {
     email: props.initData?.email,
     telephoneEP: props.initData?.telephoneEP,
     representantsLegaux: props.initData?.representantsLegaux ?? [],
+    etablissements: props.initData?.etablissements ?? [],
   };
 });
 const { meta } = useForm({
@@ -218,6 +240,8 @@ const {
   handleChange: onTelephoneEPChange,
   meta: telephoneEPMeta,
 } = useField("telephoneEP");
+const { value: etablissements, handleChange: onEtablissementsChange } =
+  useField("etablissements");
 
 const isEtablissementFound = computed(() => {
   return !!siret.value;
@@ -230,18 +254,18 @@ const isEtablissementPrincipal = computed(() => {
 const formatedPersonneMorale = computed(() => {
   // les infos proviennent de l'API entreprise
   if (personneMorale.value) {
-    const adresse = `${personneMorale.value.adresse.numero_voie} ${personneMorale.value.adresse.type_voie} ${personneMorale.value.adresse.libelle_voie} ${personneMorale.value.adresse.code_postal} ${personneMorale.value.adresse.libelle_commune}`;
+    const adresse = `${personneMorale.value.adresseEtablissement.numeroVoieEtablissement} ${personneMorale.value.adresseEtablissement.typeVoieEtablissement} ${personneMorale.value.adresseEtablissement.libelleVoieEtablissement} ${personneMorale.value.adresseEtablissement.codePostalEtablissement} ${personneMorale.value.adresseEtablissement.libelleCommuneEtablissement}`;
     return {
       siret: personneMorale.value.siret,
-      siren: personneMorale.value.unite_legale.siren,
-      siegeSocial: personneMorale.value.siege_social,
-      raisonSociale:
-        personneMorale.value.unite_legale.personne_morale_attributs
-          .raison_sociale,
-      statut: personneMorale.value.unite_legale.forme_juridique.libelle,
+      siren: personneMorale.value.siren,
+      siegeSocial: personneMorale.value.etablissementSiege,
+      raisonSociale: personneMorale.value.uniteLegale.denominationUniteLegale,
+      statut: personneMorale.value.uniteLegale.categorieJuridiqueUniteLegale,
       adresse: adresse.trim(),
-      adresseComplete: personneMorale.value.adresse,
-      pays: personneMorale.value.adresse.libelle_pays_etranger ?? "France",
+      adresseComplete: personneMorale.value.adresseEtablissement,
+      pays:
+        personneMorale.value.adresseEtablissement
+          .libellePaysEtrangerEtablissement ?? "France",
     };
   }
   // les infos proviennent d'un operateur déjà présent en base
@@ -316,6 +340,30 @@ const siretDisplayed = computed(() => {
   return formatedSiret;
 });
 
+const etablissementsToDisplay = computed(() => {
+  return etablissements.value.map((e, index) => {
+    const row = [];
+    row.push(e.nic);
+    row.push(
+      `${e.adresseEtablissement.numeroVoieEtablissement ? e.adresseEtablissement.numeroVoieEtablissement : ""} ${e.adresseEtablissement.typeVoieEtablissement} ${e.adresseEtablissement.libelleVoieEtablissement}`,
+    );
+    row.push(e.adresseEtablissement.codePostalEtablissement);
+    row.push(e.adresseEtablissement.libelleCommuneEtablissement);
+    row.push({
+      component: "DsfrToggleSwitch",
+      modelValue: etablissements.value[index].autorise,
+      onChange: () => {
+        etablissements.value[index].autorise =
+          !etablissements.value[index].autorise;
+      },
+    });
+    return {
+      rowData: row,
+      rowAttrs: { class: "pointer" },
+    };
+  });
+});
+
 function trimSiret(s) {
   return onSiretChange(s.replace(/ /g, ""));
 }
@@ -327,8 +375,8 @@ const {
   meta: siretMeta,
 } = useField("siret");
 
-async function searchApiEntreprise() {
-  log.i("searchApiEntreprise - IN");
+async function searchApiInsee() {
+  log.i("searchApiInsee - IN");
   const url = `/siret/${siret.value}`;
   try {
     const data = await $fetchBackend(url, {
@@ -338,13 +386,14 @@ async function searchApiEntreprise() {
 
     log.d("Données récupérées");
     toaster.success("Données récupérées");
-    personneMorale.value = data.uniteLegale[0];
-    log.d(personneMorale.value);
+    personneMorale.value = data.uniteLegale;
+    etablissements.value = data.etablissements;
+    etablissements.value.map((e) => (e.autorise = true));
   } catch (error) {
     toaster.error(
       "erreur lors de la récupération des données à partir du SIRET",
     );
-    log.w("searchApiEntreprise - erreur:", { error });
+    log.w("searchApiInsee - erreur:", { error });
   }
 }
 
@@ -356,19 +405,23 @@ async function searchOperateurBySiret() {
       method: "GET",
       credentials: "include",
     });
-    if (data.operateur.length > 0) {
+    log.d("searchOperateurBySiret", data);
+    if (data.operateur) {
       log.d("L'opérateur est déjà présent en base");
       toaster.success("L'opérateur est déjà présent en base");
-      operateurDejaExistant.value = data.value.operateur;
+      operateurDejaExistant.value = data.operateur;
       if (operateurDejaExistant.value) {
         onRepresentantsLegauxChange(
           operateurDejaExistant.value.personneMorale?.representantsLegaux,
+        );
+        onEtablissementsChange(
+          operateurDejaExistant.value.personneMorale?.etablissements,
         );
         email.value = operateurDejaExistant.value.personneMorale?.email;
         telephoneEP.value =
           operateurDejaExistant.value.personneMorale?.telephoneEP;
       }
-      log.d(operateurDejaExistant.value);
+      return operateurDejaExistant.value;
     }
   } catch (error) {
     toaster.error(
@@ -379,11 +432,12 @@ async function searchOperateurBySiret() {
 }
 
 async function searchOperateur() {
+  log.i("searchOperateur - In");
   const operateur = await searchOperateurBySiret();
   log.d("operateur", operateur);
   if (!operateur) {
-    log.d("appel API entreprise");
-    await searchApiEntreprise();
+    log.d("appel API INSEE");
+    await searchApiInsee();
   }
 }
 
@@ -403,6 +457,7 @@ function next() {
       email: email.value,
       telephoneEP: telephoneEP.value,
       representantsLegaux: representantsLegaux.value,
+      etablissements: etablissements.value,
       meta: meta.value.valid,
     },
     "personne_morale",

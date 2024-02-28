@@ -58,7 +58,7 @@ fileignoreconfig:
 - filename: docker-compose.yaml
   checksum: f4fc98c9f7af1169a8c75e3f11586c36665fef55807326ec9af55037c7bc34d4
 - filename: packages/backend/src/config.js
-  checksum: ee40db09f52fe21ddfa6a66a849d8848989238c0b6cc19a06b7875ce5c86ed56
+  checksum: 78f9abb7d80e6cd47c42938ad5a33cf7cc5ed605a05432c591ac4e2649e5c4e5
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
   checksum: d66401c29c51850346868ff2d7c097fbd572bbfd8cfae77c87ae5274a7cc8409
 - filename: packages/backend/src/controllers/authentication/email/index.js
@@ -135,12 +135,16 @@ fileignoreconfig:
   checksum: 2212858d82852bbef797353c755b24f9eb7631e5c559233ac4d30c6a9eedfd49
 - filename: pg/scripts/02/02-4-front-init.sql
   checksum: 8ab0ded677bb94ba239c7be2486a4c1d1e29e94942c7e0c49d7de03fb92f6667
+- filename: pg/scripts/02/02-5-ref-init.sql
+  checksum: c80c2eae776be18cf0c1e6cb4de92fc0e555cb2bbf73ac535d3931f408c7b249
 - filename: pg/scripts/03/03-1-geo-data.sql
   checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
 - filename: pg/scripts/03/03-2-back-data.sql
   checksum: d65e191f22dd46a53fd07dd02856d505a01f38b6274ef1989536aa193faebb2d
 - filename: pg/scripts/03/03-3-front-data.sql
   checksum: 413817c8133c69f883087a7042258dcb75e4f75a45897ea830f86d8a5cba561a
+- filename: pg/scripts/03/03-3-ref-data.sql
+  checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
 - filename: pod-backend-66df4cdf46-82vfh.yaml
   checksum: 6505514978ef8de3b512962a9e93eb5f6bece8b86fcbf32d2d55a780e06592a7
 scopeconfig:

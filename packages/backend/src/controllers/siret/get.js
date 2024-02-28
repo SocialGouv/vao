@@ -1,28 +1,57 @@
 const axios = require("axios");
-const config = require("../../config");
 const logger = require("../../utils/logger");
+const config = require("../../config");
+const dayjs = require("dayjs");
+const getToken = require("./getToken");
+const Referentiel = require("../../services/Referentiel");
 
 const log = logger(module.filename);
 
 module.exports = async function get(req, res) {
+  const { apiInsee } = config;
+  // const { apiEntreprise } = config;
   const { siret } = req.params;
   log.i("In", siret);
-  try {
-    const { apiEntreprise } = config;
-    log.i(apiEntreprise);
-    // const displayedFields = `siren,nic,denominationUniteLegale,statutDiffusionEtablissement,numeroVoieEtablissement,typeVoieEtablissement,complementAdresseEtablissement,libelleVoieEtablissement,codePostalEtablissement,libelleCommuneEtablissement`;
-    // const params = `date=${dateJour}`;
 
-    const url = `${apiEntreprise.uri}/insee/sirene/etablissements/${siret}?context=${apiEntreprise.context}&recipient=${apiEntreprise.recipient}&object=${apiEntreprise.object}`;
-    const { data: reponse } = await axios.get(url, {
-      headers: { Authorization: `Bearer ${config.apiEntreprise.token}` },
-    });
-    log.i(reponse.data);
-    return res.status(200).json({ uniteLegale: [reponse.data] });
+  const siren = siret.length === 14 && siret.substring(0, 9);
+  if (!siren) {
+    log.w("siret isn't properly set");
+    return res.status(400).json({ message: "parametre d'appel incorrect" });
+  }
+  try {
+    const token = await getToken();
+    const dateDuJour = dayjs().format("YYYY-MM-DD");
+    const { data: reponse } = await axios.get(
+      `${apiInsee.URL}/entreprises/sirene/V3/siret/${siret}?date=${dateDuJour}`,
+      { headers: { Authorization: `Bearer ${token}` } },
+    );
+    const uniteLegale = reponse.etablissement;
+    if (uniteLegale.uniteLegale.categorieJuridiqueUniteLegale) {
+      uniteLegale.uniteLegale.categorieJuridiqueUniteLegale =
+        (await Referentiel.getLibelle(
+          uniteLegale.uniteLegale.categorieJuridiqueUniteLegale,
+        )) ?? "statut indéterminé";
+    }
+
+    let etablissements = [];
+    if (uniteLegale.etablissementSiege) {
+      const { data: liste } = await axios.get(
+        `${apiInsee.URL}/entreprises/sirene/V3/siret?q=siren:${siren}&nombre=50&champs=numeroVoieEtablissement,typeVoieEtablissement,libelleVoieEtablissement,codePostalEtablissement,libelleCommuneEtablissement,nic`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      etablissements = liste.etablissements ?? [];
+    }
+    // const url = `${apiEntreprise.uri}/insee/sirene/etablissements/${siret}?context=${apiEntreprise.context}&recipient=${apiEntreprise.recipient}&object=${apiEntreprise.object}`;
+    // const { data: mandataires } = await axios.get(url, {
+    //   headers: { Authorization: `Bearer ${config.apiEntreprise.token}` },
+    // });
+    // log.i(mandataires);
+
+    return res.status(200).json({ etablissements, uniteLegale });
   } catch (err) {
     log.w(err);
     return res
       .status(400)
-      .json({ message: "erreur sur l'appel de l'api entreprise" });
+      .json({ message: "erreur sur l'appel de l'api INSEE" });
   }
 };
