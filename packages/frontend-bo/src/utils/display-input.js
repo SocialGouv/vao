@@ -11,7 +11,7 @@ const ouiNon = {
   true: "Oui",
 };
 
-const Iorganisateur = {
+const IOrganisateur = {
   nom: {
     inputType: InputTypes.TEXT,
     label: "Nom",
@@ -269,7 +269,7 @@ const ISanitaire = {
 
 export default {
   InputTypes,
-  Iorganisateur,
+  IOrganisateur,
   IVacancier,
   Ipersonnel,
   IProjetSejour,

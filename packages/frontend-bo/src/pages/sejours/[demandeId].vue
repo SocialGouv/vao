@@ -1,7 +1,7 @@
 <!--  Doc utilisée pour construire le dsfr tab : https://docs.vue-ds.fr/composants/DsfrTabs-->
 
 <template>
-  <div class="fr-container header">
+  <div v-if="!!demande" class="fr-container header">
     <Details></Details>
     <DsfrTabs
       tab-list-name="display-formulaire"
@@ -29,10 +29,10 @@
               >
                 <h2>Organisateur {{ i + 1 }}</h2>
                 <DisplayInput
-                  v-for="entry in Object.keys(Iorganisateur)"
+                  v-for="entry in Object.keys(displayInput.IOrganisateur)"
                   :key="`organisateur-${i}+${entry}`"
                   :value="organisateur[entry]"
-                  :input="Iorganisateur[entry]"
+                  :input="displayInput.IOrganisateur[entry]"
                   @emit-comment="
                     (comment) => addCommentOrganisateurs(i, entry, comment)
                   "
@@ -47,10 +47,10 @@
               @expand="expandedId = $event"
             >
               <DisplayInput
-                v-for="entry in Object.keys(IVacancier)"
+                v-for="entry in Object.keys(displayInput.IVacancier)"
                 :key="`personnel-${entry}`"
                 :value="demande.vacanciers[entry]"
-                :input="IVacancier[entry]"
+                :input="displayInput.IVacancier[entry]"
               />
             </DsfrAccordion>
           </li>
@@ -61,10 +61,10 @@
               @expand="expandedId = $event"
             >
               <DisplayInput
-                v-for="entry in Object.keys(Ipersonnel)"
+                v-for="entry in Object.keys(displayInput.Ipersonnel)"
                 :key="`personnel-${entry}`"
                 :value="demande.personnel[entry]"
-                :input="Ipersonnel[entry]"
+                :input="displayInput.Ipersonnel[entry]"
               />
             </DsfrAccordion>
           </li>
@@ -75,10 +75,10 @@
               @expand="expandedId = $event"
             >
               <DisplayInput
-                v-for="entry in Object.keys(IProjetSejour)"
+                v-for="entry in Object.keys(displayInput.IProjetSejour)"
                 :key="`projet-sejour-${entry}`"
                 :value="demande.projet_sejour[entry]"
-                :input="IProjetSejour[entry]"
+                :input="displayInput.IProjetSejour[entry]"
               />
             </DsfrAccordion>
           </li>
@@ -89,10 +89,10 @@
               @expand="expandedId = $event"
             >
               <DisplayInput
-                v-for="entry in Object.keys(ITransport)"
+                v-for="entry in Object.keys(displayInput.ITransport)"
                 :key="`transport-${entry}`"
                 :value="demande.transport[entry]"
-                :input="ITransport[entry]"
+                :input="displayInput.ITransport[entry]"
               />
             </DsfrAccordion>
           </li>
@@ -103,10 +103,10 @@
               @expand="expandedId = $event"
             >
               <DisplayInput
-                v-for="entry in Object.keys(ISanitaire)"
+                v-for="entry in Object.keys(displayInput.ISanitaire)"
                 :key="`transport-${entry}`"
                 :value="demande.sanitaires[entry]"
-                :input="ISanitaire[entry]"
+                :input="displayInput.ISanitaire[entry]"
               />
             </DsfrAccordion>
           </li>
@@ -145,6 +145,7 @@ import {
 } from "@gouvminint/vue-dsfr";
 import DisplayInput from "~/components/demandes-sejour/DisplayInput.vue";
 import Details from "~/components/demandes-sejour/Details.vue";
+import displayInput from "~/utils/display-input";
 
 const expandedId = ref("");
 
@@ -152,6 +153,10 @@ const route = useRoute();
 const demandeStore = useDemandeSejourStore();
 
 const demande = demandeStore.getById(route.params.idDemande);
+
+if (!demande) {
+  navigateTo("/sejours");
+}
 
 const tabTitles = [
   { title: " Formulaire" },
@@ -168,7 +173,6 @@ const addCommentOrganisateurs = (index, attribute, value) => {
         demande?.organisateurs?.organisateurs.length,
       ).fill(null),
     };
-    console.log(comments.organisateurs);
   }
 
   comments.organisateurs.organisateurs[index] = {

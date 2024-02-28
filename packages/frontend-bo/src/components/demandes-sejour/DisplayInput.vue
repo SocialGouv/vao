@@ -1,6 +1,10 @@
 <template>
   <div v-if="!!displayValue" class="container">
-    <div class="display-info-bloc">
+    <div
+      class="display-info-bloc"
+      @mouseenter="isHover = true"
+      @mouseleave="isHover = false"
+    >
       <div class="fr-col-10">
         <span class="read-only-label">{{ input.label }}</span>
       </div>
@@ -8,9 +12,12 @@
         <span class="read-only-value">{{ displayValue }}</span>
       </div>
       <DsfrButton
+        v-show="isHover"
         icon="fr-icon-edit-box-line"
         icon-only
         class="display-info-button"
+        tertiary
+        no-outline
         @click="showComment = !showComment"
       />
     </div>
@@ -26,9 +33,10 @@
 </template>
 
 <script setup>
-import { InputTypes } from "~/utils/display-input";
 import { DsfrButton, DsfrInput } from "@gouvminint/vue-dsfr";
+import displayInput from "~/utils/display-input";
 
+const isHover = ref(false);
 const showComment = ref(false);
 
 defineEmits(["emitComment"]);
@@ -40,24 +48,27 @@ const props = defineProps({
       if (!value.inputType || !value.label || !value.label.length) {
         return false;
       }
-      return Object.values(InputTypes).includes(value.inputType);
+      return Object.values(displayInput.InputTypes).includes(value.inputType);
     },
   },
   value: {
     required: true,
     validator: (value, props) => {
-      if (props.input.inputType === InputTypes.TEXT) {
+      if (props.input.inputType === displayInput.InputTypes.TEXT) {
         return (
           typeof value === "string" || value === null || value === undefined
         );
       }
 
-      if (props.input.inputType === InputTypes.RADIO && !props.input.options) {
+      if (
+        props.input.inputType === displayInput.InputTypes.RADIO &&
+        !props.input.options
+      ) {
         return false;
       }
 
       if (
-        props.input.inputType === InputTypes.MULTISELECT &&
+        props.input.inputType === displayInput.InputTypes.MULTISELECT &&
         Array.isArray(props.value) === false
       ) {
         return false;
@@ -70,17 +81,17 @@ const props = defineProps({
 
 const displayValue = computed(() => {
   switch (props.input.inputType) {
-    case InputTypes.TEXT:
+    case displayInput.InputTypes.TEXT:
       return props.value !== null && props.value !== undefined
         ? props.value.toString()
         : null;
-    case InputTypes.NUMBER:
+    case displayInput.InputTypes.NUMBER:
       return isNaN(parseInt(props.value)) ? null : parseInt(props.value);
-    case InputTypes.RADIO:
+    case displayInput.InputTypes.RADIO:
       return Object.keys(props.input.options).includes(props.value.toString())
         ? props.input.options[props.value]
         : null;
-    case InputTypes.MULTISELECT:
+    case displayInput.InputTypes.MULTISELECT:
       return Array.isArray(props.value) ? props.value.join(" / ") : null;
     default:
       return "error";
