@@ -116,10 +116,7 @@ const ITransport = {
   deplacementDurantSejour: {
     inputType: InputTypes.RADIO,
     label: "Des déplacements sont-ils prévus durant le séjour ?",
-    options: {
-      oui: "Oui",
-      non: "Non",
-    },
+    options: ouiNon,
   },
 };
 
@@ -267,6 +264,30 @@ const ISanitaire = {
   },
 };
 
+const displayCommentForOneCategory = (categoryInterface, comments, title) => {
+  const commentsByQuestionVacancier = Object.entries(categoryInterface)
+    .map(([entry, value]) => {
+      if (comments?.[entry] != null) {
+        return `
+                  <div>
+                  <b>${value.label}</b> :
+                  <pre style="background-color:#e5e5e5;padding: 1em; margin: 0; font-family: inherit; white-space: pre-wrap">${comments[entry].replace("<", "&#60;")}</pre>
+                  </div>
+              `;
+      } else {
+        return null;
+      }
+    })
+    .filter((c) => c != null);
+  if (commentsByQuestionVacancier.length > 0) {
+    return (
+      `<h5 style="margin: 0.5em 0">${title}</h5>` +
+      commentsByQuestionVacancier.join("\n")
+    );
+  }
+  return "";
+};
+
 export default {
   InputTypes,
   IOrganisateur,
@@ -275,4 +296,5 @@ export default {
   IProjetSejour,
   ITransport,
   ISanitaire,
+  displayCommentForOneCategory,
 };

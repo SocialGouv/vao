@@ -1,5 +1,10 @@
 <template>
-  <DsfrBadge :small="true" :type="type" :label="props.statut" class="pointer" />
+  <DsfrBadge
+    :small="small"
+    :type="type"
+    :label="props.statut"
+    class="pointer"
+  />
 </template>
 
 <script setup>
@@ -12,6 +17,7 @@ const props = defineProps({
     validator: (value) =>
       Object.values(demandesSejours.statuts).includes(value),
   },
+  small: { default: true, type: Boolean },
 });
 
 const type = computed(() => {

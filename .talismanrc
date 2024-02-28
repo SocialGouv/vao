@@ -106,7 +106,7 @@ fileignoreconfig:
 - filename: packages/backend/src/utils/pgpoolDoc.js
   checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
 - filename: packages/frontend-bo/src/components/demandes-sejour/Details.vue
-  checksum: c554758b69bb410a477cbdee9723d60fe59e1e9cc7f8437f0aac947c75dc2059
+  checksum: adfdd518ca458612dd0bb913548a55ca71bfdf1048d5db6ac22d0bf51c25657b
 - filename: packages/frontend-bo/src/components/utils/TableFull.vue
   checksum: 4317693488a43b3e46c75ab31f0750aacb929c60d6e96af89cdc75bf9ad22afd
 - filename: packages/frontend-bo/src/pages/sejours/[[idDemande]].vue

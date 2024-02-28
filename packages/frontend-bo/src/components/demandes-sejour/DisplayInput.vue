@@ -27,6 +27,7 @@
       :is-textarea="true"
       label="Commentaire"
       placeholder="Ajouter un commentaire"
+      :model-value="comment"
       @update:model-value="$emit('emitComment', $event)"
     />
   </div>
@@ -77,6 +78,7 @@ const props = defineProps({
       return true;
     },
   },
+  comment: { required: false, type: String },
 });
 
 const displayValue = computed(() => {

@@ -1,13 +1,22 @@
 <template>
   <div class="detail-container">
     <h1>Demande : {{ demande.libelle }}</h1>
-    <div v-for="detail in demandeDetails" :key="detail.name">
-      <strong>{{ detail.name }} : </strong>{{ detail.value }}
+    <div class="fr-grid-row">
+      <div class="fr-col-10">
+        <div v-for="detail in demandeDetails" :key="detail.name">
+          <strong>{{ detail.name }} : </strong>{{ detail.value }}
+        </div>
+      </div>
+      <div class="fr-col-2">
+        <DemandeStatusBadge :statut="demande.statut" :small="false" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
+
 const route = useRoute();
 const demandeStore = useDemandeSejourStore();
 
@@ -25,10 +34,6 @@ const demandeDetails = computed(() => [
   {
     name: "Déclaration",
     value: "TO DO : indiquer demande à 8 jours",
-  },
-  {
-    name: "Statut",
-    value: demande.statut,
   },
 ]);
 </script>
