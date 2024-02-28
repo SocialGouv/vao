@@ -8,9 +8,6 @@
 </template>
 
 <script setup>
-import { formatDate } from "date-fns/format";
-import { isDemande8Jours } from "~/utils/demande-sejour/statuts";
-
 const route = useRoute();
 const demandeStore = useDemandeSejourStore();
 
@@ -18,18 +15,16 @@ const demande = demandeStore.getById(route.params.idDemande);
 const demandeDetails = computed(() => [
   {
     name: "Organisme",
-    value: demandeStore.organismeTitle(demande.demandeSejourId),
+    value: demandesSejours.getOrganismeTitle(demande),
   },
   {
-    name: "Date (debut / fin)",
-    value: `${formatDate(demande.dateDebut, "dd/MM/yyyy")} - ${formatDate(demande.dateFin, "dd/MM/yyyy")}`,
+    name: "Date (début / fin)",
+    value: demandesSejours.getDateDebutFin(demande),
   },
-  { name: "Saison", value: demandeStore.saison(demande.demandeSejourId) },
+  { name: "Saison", value: demandesSejours.getSaison(demande) },
   {
     name: "Déclaration",
-    value: isDemande8Jours(demande.statut)
-      ? "Demande à 8 jours"
-      : "Demande à 2 mois",
+    value: "TO DO : indiquer demande à 8 jours",
   },
   {
     name: "Statut",

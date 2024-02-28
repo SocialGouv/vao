@@ -117,8 +117,7 @@
       </DsfrTabContent>
 
       <DsfrTabContent
-        panel-id=" tab-content-1
-        "
+        panel-id="tab-content-1"
         tab-id="tab-1"
         :selected="selectedTabIndex === 1"
         :asc="asc"
@@ -145,14 +144,6 @@ import {
   DsfrTabs,
 } from "@gouvminint/vue-dsfr";
 import DisplayInput from "~/components/demandes-sejour/DisplayInput.vue";
-import {
-  Iorganisateur,
-  Ipersonnel,
-  IProjetSejour,
-  ISanitaire,
-  ITransport,
-  IVacancier,
-} from "~/utils/demande-sejour/display-input";
 import Details from "~/components/demandes-sejour/Details.vue";
 
 const expandedId = ref("");

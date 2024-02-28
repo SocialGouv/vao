@@ -1,4 +1,5 @@
 import { getMonth } from "date-fns/getMonth";
+import { formatDate } from "date-fns/format";
 
 /*  Sur l'espace admin, le status BROUILLON ne sera jamais vu,
 il ne fait donc pas parti de la liste des status possibles*/
@@ -33,4 +34,7 @@ const getOrganismeTitle = (demande) => {
   }
 };
 
-export default { statuts, getSaison, getOrganismeTitle };
+const getDateDebutFin = (demande) =>
+  `${formatDate(demande.dateDebut, "dd/MM/yyyy")} - ${formatDate(demande.dateFin, "dd/MM/yyyy")}`;
+
+export default { statuts, getSaison, getOrganismeTitle, getDateDebutFin };

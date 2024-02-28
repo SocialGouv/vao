@@ -1,4 +1,4 @@
-export const InputTypes = {
+const InputTypes = {
   TEXT: "text",
   RADIO: "radio",
   SELECT: "select",
@@ -7,11 +7,11 @@ export const InputTypes = {
 };
 
 const ouiNon = {
-  0: "Non",
-  1: "Oui",
+  false: "Non",
+  true: "Oui",
 };
 
-export const Iorganisateur = {
+const Iorganisateur = {
   nom: {
     inputType: InputTypes.TEXT,
     label: "Nom",
@@ -38,7 +38,7 @@ export const Iorganisateur = {
   },
 };
 
-export const IVacancier = {
+const IVacancier = {
   effectifPrevisionnel: {
     inputType: InputTypes.NUMBER,
     label: "Effectif prévisionnel des vacanciers",
@@ -61,7 +61,7 @@ export const IVacancier = {
   },
 };
 
-export const Ipersonnel = {
+const Ipersonnel = {
   nombreResponsable: {
     inputType: InputTypes.NUMBER,
     label:
@@ -79,7 +79,7 @@ export const Ipersonnel = {
   },
 };
 
-export const IProjetSejour = {
+const IProjetSejour = {
   destination: {
     inputType: InputTypes.MULTISELECT,
     label: "Destination",
@@ -94,7 +94,7 @@ export const IProjetSejour = {
   },
 };
 
-export const ITransport = {
+const ITransport = {
   responsableTransportLieuSejour: {
     inputType: InputTypes.RADIO,
     label: "Qui est responsable du transport jusqu'au lieu de séjour ? ",
@@ -123,7 +123,7 @@ export const ITransport = {
   },
 };
 
-export const ISanitaire = {
+const ISanitaire = {
   dispositionsSpecifiques: {
     inputType: InputTypes.RADIO,
     label:
@@ -132,9 +132,8 @@ export const ISanitaire = {
   },
 
   precisionDispositionsSpecifiques: {
-    inputType: InputTypes.RADIO,
+    inputType: InputTypes.TEXT,
     label: "Précisez ?",
-    options: ouiNon,
   },
   constitutionEquipe: {
     inputType: InputTypes.MULTISELECT,
@@ -266,4 +265,14 @@ export const ISanitaire = {
     inputType: InputTypes.TEXT,
     label: "Précisez",
   },
+};
+
+export default {
+  InputTypes,
+  Iorganisateur,
+  IVacancier,
+  Ipersonnel,
+  IProjetSejour,
+  ITransport,
+  ISanitaire,
 };

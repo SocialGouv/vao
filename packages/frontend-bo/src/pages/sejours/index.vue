@@ -100,7 +100,6 @@ definePageMeta({
 });
 
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
-import { formatDate } from "date-fns/format";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
 import { DsfrInputGroup, DsfrSelect } from "@gouvminint/vue-dsfr";
@@ -173,8 +172,7 @@ const headers = [
   {
     column: "dateDebut",
     text: "Dates (Début-fin)",
-    format: (value) =>
-      `${formatDate(value.dateDebut, "dd/MM/yyyy")} - ${formatDate(value.dateFin, "dd/MM/yyyy")}`,
+    format: (value) => demandesSejours.getDateDebutFin(value),
     sort: true,
   },
   {
