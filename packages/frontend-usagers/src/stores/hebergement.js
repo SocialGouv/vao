@@ -6,7 +6,7 @@ const log = logger("stores/hebergement");
 export const useHebergementStore = defineStore("hebergement", {
   state: () => ({
     hebergements: [],
-    hebergementCourant: {},
+    hebergementCourant: null,
   }),
   actions: {
     async fetchHebergements() {
@@ -24,9 +24,9 @@ export const useHebergementStore = defineStore("hebergement", {
         log.i("fetchHebergements - DONE with error");
       }
     },
-    async setHebergementCourant(id) {
+    async fetchHebergement(id) {
       try {
-        log.i("setHebergementCourant - IN", { id });
+        log.i("fetchHebergement - IN", { id });
 
         const { hebergement } = await $fetchBackend(`/hebergement/${id}`, {
           credentials: "include",
@@ -35,10 +35,10 @@ export const useHebergementStore = defineStore("hebergement", {
         if (hebergement) {
           this.hebergementCourant = hebergement;
         }
-        log.d("setHebergementCourant - DONE");
+        log.d("fetchHebergement - DONE");
       } catch (err) {
-        this.hebergementCourant = {};
-        log.i("setHebergementCourant - DONE with error");
+        this.hebergementCourant = null;
+        log.i("fetchHebergement - DONE with error");
       }
     },
   },

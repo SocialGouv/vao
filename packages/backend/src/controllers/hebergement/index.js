@@ -1,3 +1,4 @@
 module.exports.get = require("./get");
-module.exports.getByHebergementId = require("./getByHebergementId");
+module.exports.getById = require("./getById");
 module.exports.post = require("./post");
+module.exports.update = require("./update");

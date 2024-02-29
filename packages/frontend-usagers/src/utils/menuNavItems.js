@@ -22,6 +22,10 @@ export const navItems = [
     ],
   },
   {
+    text: "Mes hébergements",
+    to: "/hebergements",
+  },
+  {
     title: "Demande de séjour",
     links: [
       {

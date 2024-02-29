@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const AppError = require("../utils/error");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 
@@ -8,42 +9,31 @@ const query = {
   create: `
     INSERT INTO front.hebergement(user_id,nom,caracteristiques,created_at,edited_at)
     VALUES ($1,$2,$3,NOW(),NOW())
-    RETURNING id as "hebergementId"
+    RETURNING id
     `,
-
   get: `
     SELECT
-      id as "hebergementId",
-      supprime as "supprime",
-      nom as "nomHebergement",
-      caracteristiques as "caracteristiques",
+      id,
+      caracteristiques#> '{adresse, departement}' as departement,
+      caracteristiques#> '{adresse, label}' as adresse,
+      supprime,
+      nom,
       created_at as "createdAt",
       edited_at as "editedAt"
     FROM front.hebergement 
     WHERE 
       user_id = $1
     `,
-
   getOne: (criterias) => [
     `
     SELECT
-      o.id as "operateurId",
-      o.supprime as "supprime",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
-      o.created_at as "createdAt",
-      o.edited_at as "editedAt",
-      (SELECT jsonb_agg(json_build_object(
-      'numero', numero,
-      'uuid', uuid,
-      'regionDelivrance', region_delivrance,
-      'dateObtention', date_obtention,
-      'createdAt',a.created_at
-    ))                   
-    FROM front.agrements a            
-    WHERE operateur_id = o.id
-  ) AS agrement
-    FROM front.operateurs o
+      id,
+      supprime,
+      nom,
+      caracteristiques,
+      created_at as "createdAt",
+      edited_at as "editedAt"
+    FROM front.hebergement          
     WHERE 1=1 
     ${Object.keys(criterias)
       .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
@@ -51,22 +41,42 @@ const query = {
     `,
     Object.values(criterias),
   ],
+  update: `
+    UPDATE front.hebergement
+    SET 
+      nom = $2, 
+      caracteristiques = $3, 
+      edited_at = NOW()
+    WHERE id = $1
+  `,
 };
 
-module.exports.create = async (userId, nomHebergement, caracteristiques) => {
+module.exports.create = async (userId, nom, caracteristiques) => {
   log.i("create - IN");
   const response = await pool.query(query.create, [
     userId,
-    nomHebergement,
+    nom,
     caracteristiques,
   ]);
   if (response) {
     log.i(response);
-    const { hebergementId } = response.rows[0];
-    log.d("create - DONE", { hebergementId });
-    return hebergementId;
+    const { id } = response.rows[0];
+    log.d("create - DONE", { id });
+    return id;
   }
   return false;
+};
+
+module.exports.update = async (id, nom, caracteristiques) => {
+  log.i("create - IN");
+  const { rowCount } = await pool.query(query.update, [
+    id,
+    nom,
+    caracteristiques,
+  ]);
+  if (rowCount === 0) {
+    throw new AppError("hebergement " + id + " not found");
+  }
 };
 
 module.exports.get = async (userId) => {

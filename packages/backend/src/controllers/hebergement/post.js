@@ -8,22 +8,18 @@ module.exports = async function post(req, res) {
   log.i("IN");
   const { body, decoded } = req;
 
-  const { nomHebergement, caracteristiques } = body;
+  const { nom, caracteristiques } = body;
   const userId = decoded.id;
 
   log.d(userId);
-  if (!nomHebergement || !caracteristiques) {
+  if (!nom || !caracteristiques) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
   }
 
   try {
-    const hebergementId = await Hebergement.create(
-      userId,
-      nomHebergement,
-      caracteristiques,
-    );
-    if (!hebergementId) {
+    const id = await Hebergement.create(userId, nom, caracteristiques);
+    if (!id) {
       log.w("error while creating hebergement");
       return res.status(400).json({
         message: "une erreur est survenue durant l'ajout de l'hébergement",
@@ -31,7 +27,7 @@ module.exports = async function post(req, res) {
     }
 
     return res.status(200).json({
-      hebergementId,
+      id,
       message: "sauvegarde opérateur OK",
     });
   } catch (error) {

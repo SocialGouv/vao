@@ -1,0 +1,51 @@
+<template>
+  <Hebergement
+    :init-nom="hebergementStore.hebergementCourant.nom"
+    :caracteristiques="hebergementStore.hebergementCourant.caracteristiques"
+    label-next="Modifier hébergement"
+    @cancel="back"
+    @submit="editHebergement"
+  ></Hebergement>
+</template>
+
+<script setup>
+definePageMeta({
+  middleware: ["is-connected", "has-id-hebergement"],
+});
+
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
+const log = logger("pages/hebermgents/[idHebergement]");
+const hebergementStore = useHebergementStore();
+
+const route = useRoute();
+const idHebergement = route.params.idHebergement;
+
+async function editHebergement(hebergement) {
+  log.d("editHebergement - IN");
+  try {
+    const url = `/hebergement/${idHebergement}`;
+    await $fetchBackend(url, {
+      method: "POST",
+      credentials: "include",
+      body: {
+        nom: hebergement.nom,
+        caracteristiques: hebergement,
+      },
+    });
+    log.d("hebergement sauvegardé");
+    toaster.success("Hébergement sauvegardé");
+  } catch (error) {
+    toaster.error(
+      error.data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+    );
+    log.w("editHebergement - erreur", { error });
+  }
+}
+
+function back() {
+  navigateTo("/hebergements");
+}
+</script>
+
+<style scoped></style>
