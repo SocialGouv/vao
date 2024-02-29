@@ -186,16 +186,18 @@ onMounted(() => {
     ] ?? {};
 });
 
-useInterval(() => {
+const saveComment = debounce((comments) => {
   const currentStorage = JSON.parse(localStorage.getItem("comments") ?? "{}");
   localStorage.setItem(
     "comments",
     JSON.stringify({
       ...currentStorage,
-      [route.params.idDemande]: comments.value,
+      [route.params.idDemande]: comments,
     }),
   );
-}, 2000);
+});
+
+watch(comments, (c) => saveComment(c), { deep: true });
 
 const tabTitles = [
   { title: " Formulaire" },
