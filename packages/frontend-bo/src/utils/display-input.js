@@ -288,6 +288,80 @@ const displayCommentForOneCategory = (categoryInterface, comments, title) => {
   return "";
 };
 
+const getHtmlComments = (comments) => {
+  let resOrganisateur = "";
+
+  //  Organisateurs
+  for (const [
+    index,
+    organisateurComment,
+  ] of comments.organisateurs?.entries() ?? []) {
+    const commentsByQuestion = Object.entries(IOrganisateur)
+      .map(([entry, value]) => {
+        if (organisateurComment?.[entry] != null) {
+          return `
+                  <div>
+                  <span style="color: gray">${value.label}</span> :
+                  <pre style="background-color:#e5e5e5;padding: 1em; margin: 0; font-family: inherit; white-space: pre-wrap">${organisateurComment[entry].replaceAll("<", "&#60;")}</pre>
+                  </div>
+              `;
+        } else {
+          return null;
+        }
+      })
+      .filter((c) => c != null);
+    if (commentsByQuestion.length > 0) {
+      resOrganisateur +=
+        `<h6 style="margin: 0">Organisateur ${index + 1} : </h6>` +
+        commentsByQuestion.join("\n");
+    }
+  }
+
+  //  Vacancier
+  const resVacanciers = displayCommentForOneCategory(
+    IVacancier,
+    comments.vacanciers,
+    "Vacancier",
+  );
+
+  //  Personnel
+  const resPersonnel = displayCommentForOneCategory(
+    Ipersonnel,
+    comments.personnel,
+    "Personnel",
+  );
+
+  //  ProjetSejour
+  const resProjetSejour = displayCommentForOneCategory(
+    IProjetSejour,
+    comments.projet_sejour,
+    "Projet de séjour",
+  );
+
+  //  Transport
+  const resTransport = displayCommentForOneCategory(
+    ITransport,
+    comments.transport,
+    "Informations sur le transport",
+  );
+
+  //  Sanitaire
+  const resSanitaire = displayCommentForOneCategory(
+    ISanitaire,
+    comments.sanitaires,
+    "Informations sanitaires",
+  );
+
+  return (
+    resOrganisateur +
+    resVacanciers +
+    resPersonnel +
+    resProjetSejour +
+    resTransport +
+    resSanitaire
+  );
+};
+
 export default {
   InputTypes,
   IOrganisateur,
@@ -296,5 +370,5 @@ export default {
   IProjetSejour,
   ITransport,
   ISanitaire,
-  displayCommentForOneCategory,
+  getHtmlComments,
 };

@@ -169,15 +169,21 @@ import Details from "~/components/demandes-sejour/Details.vue";
 import displayInput from "~/utils/display-input";
 
 const route = useRoute();
+
+const initialSelectedIndex = 0;
+
+const asc = ref(true);
+const selectedTabIndex = ref(initialSelectedIndex);
+
+const selectTab = (idx) => {
+  asc.value = selectedTabIndex.value < idx;
+  selectedTabIndex.value = idx;
+};
+
 const demandeStore = useDemandeSejourStore();
 
 const expandedId = ref("");
 const comments = ref({});
-
-const demande = demandeStore.getById(route.params.idDemande);
-if (!demande) {
-  navigateTo("/sejours");
-}
 
 onMounted(() => {
   comments.value =
@@ -185,6 +191,13 @@ onMounted(() => {
       route.params.idDemande
     ] ?? {};
 });
+
+watch(comments, (c) => saveComment(c), { deep: true });
+
+const demande = demandeStore.getById(route.params.idDemande);
+if (!demande) {
+  navigateTo("/sejours");
+}
 
 const saveComment = debounce((comments) => {
   const currentStorage = JSON.parse(localStorage.getItem("comments") ?? "{}");
@@ -196,8 +209,6 @@ const saveComment = debounce((comments) => {
     }),
   );
 });
-
-watch(comments, (c) => saveComment(c), { deep: true });
 
 const tabTitles = [
   { title: " Formulaire" },
@@ -227,88 +238,9 @@ const addComment = (category, attribute, value) => {
   }
 };
 
-const commentsInHtml = computed(() => {
-  let resOrganisateur = "";
-
-  //  Organisateurs
-  for (const [
-    index,
-    organisateurComment,
-  ] of comments.value.organisateurs?.entries() ?? []) {
-    const commentsByQuestion = Object.entries(displayInput.IOrganisateur)
-      .map(([entry, value]) => {
-        if (organisateurComment?.[entry] != null) {
-          return `
-                  <div>
-                  <span style="color: gray">${value.label}</span> :
-                  <pre style="background-color:#e5e5e5;padding: 1em; margin: 0; font-family: inherit; white-space: pre-wrap">${organisateurComment[entry].replaceAll("<", "&#60;")}</pre>
-                  </div>
-              `;
-        } else {
-          return null;
-        }
-      })
-      .filter((c) => c != null);
-    if (commentsByQuestion.length > 0) {
-      resOrganisateur +=
-        `<h6 style="margin: 0">Organisateur ${index + 1} : </h6>` +
-        commentsByQuestion.join("\n");
-    }
-  }
-
-  //  Vacancier
-  const resVacanciers = displayInput.displayCommentForOneCategory(
-    displayInput.IVacancier,
-    comments.value.vacanciers,
-    "Vacancier",
-  );
-
-  //  Personnel
-  const resPersonnel = displayInput.displayCommentForOneCategory(
-    displayInput.Ipersonnel,
-    comments.value.personnel,
-    "Personnel",
-  );
-
-  //  ProjetSejour
-  const resProjetSejour = displayInput.displayCommentForOneCategory(
-    displayInput.IProjetSejour,
-    comments.value.projet_sejour,
-    "Projet de séjour",
-  );
-
-  //  Transport
-  const resTransport = displayInput.displayCommentForOneCategory(
-    displayInput.ITransport,
-    comments.value.transport,
-    "Informations sur le transport",
-  );
-
-  //  Sanitaire
-  const resSanitaire = displayInput.displayCommentForOneCategory(
-    displayInput.ISanitaire,
-    comments.value.sanitaires,
-    "Informations sanitaires",
-  );
-
-  return (
-    resOrganisateur +
-    resVacanciers +
-    resPersonnel +
-    resProjetSejour +
-    resTransport +
-    resSanitaire
-  );
-});
-const initialSelectedIndex = 0;
-
-const asc = ref(true);
-const selectedTabIndex = ref(initialSelectedIndex);
-
-const selectTab = (idx) => {
-  asc.value = selectedTabIndex.value < idx;
-  selectedTabIndex.value = idx;
-};
+const commentsInHtml = computed(() =>
+  displayInput.getHtmlComments(comments.value),
+);
 </script>
 
 <style scoped>
