@@ -54,11 +54,7 @@
           :inline="true"
           name="trancheAge"
           legend="Tranches d'âge"
-          :options="[
-            { label: '18-39 ans', id: '18+', name: '18_39' },
-            { label: '40-59 ans', id: '40+', name: '40_59' },
-            { label: 'Plus de 59 ans', id: '59+', name: '59_et_plus' },
-          ]"
+          :options="trancheAgeOptions"
           :small="true"
           :required="true"
         />
@@ -69,71 +65,44 @@
           :inline="true"
           name="typeDeficiences"
           legend="Type de déficiences"
-          :options="[
-            { label: 'Auditif', id: 'auditif', name: 'auditif' },
-            { label: 'Visuel', id: 'visuel', name: 'visuel' },
-            { label: 'Mental/Psychique', id: 'mental', name: 'mental' },
-            { label: 'Moteur', id: 'moteur', name: 'moteur' },
-            {
-              label: 'Polyhandicap',
-              id: 'polyhandicap',
-              name: 'polyhandicap',
-            },
-          ]"
+          :options="typeDeficiencesOptions"
           :small="true"
           :required="true"
         />
       </div>
     </fieldset>
-    <fieldset class="fr-fieldset">
-      <div class="fr-col-4">
-        <div class="fr-input-group">
-          <DsfrButton id="retour" :secondary="true" @click="back"
-            >Retour</DsfrButton
-          >
-        </div>
-      </div>
-      <div class="fr-col-4">
-        <div class="fr-input-group">
-          <DsfrButton id="precedent" :secondary="true" @click="previous"
-            >Précédent</DsfrButton
-          >
-        </div>
-      </div>
-      <div class="fr-col-4">
-        <div class="fr-input-group">
-          <DsfrButton id="Suivant" :disabled="!meta.valid" @click="next"
-            >Suivant</DsfrButton
-          >
-        </div>
-      </div>
-    </fieldset>
+    <DsfrButton label="Suivant" @click="next" />
   </div>
 </template>
 
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { useDemandeSejourStore } from "@/stores/demande-sejour";
-import { useLayoutStore } from "@/stores/layout";
-
-const route = useRoute();
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
-
-definePageMeta({
-  middleware: ["is-connected", "has-id-demande-sejour"],
-  layout: "demande-sejour",
+const props = defineProps({
+  initData: { type: Object, default: null, required: true },
 });
 
-const log = logger("demande-sejour/informations-vacanciers");
+const emit = defineEmits(["valid"]);
 
-const demandeSejourStore = useDemandeSejourStore();
-const layoutStore = useLayoutStore();
+const log = logger("components/DS/informations-vacanciers");
 
-const demandeCourante = computed(() => {
-  return demandeSejourStore.demandeCourante;
-});
+const trancheAgeOptions = [
+  { label: "18-39 ans", id: "18+", name: "18_39" },
+  { label: "40-59 ans", id: "40+", name: "40_59" },
+  { label: "Plus de 59 ans", id: "59+", name: "59_et_plus" },
+];
+
+const typeDeficiencesOptions = [
+  { label: "Auditif", id: "auditif", name: "auditif" },
+  { label: "Visuel", id: "visuel", name: "visuel" },
+  { label: "Mental/Psychique", id: "mental", name: "mental" },
+  { label: "Moteur", id: "moteur", name: "moteur" },
+  {
+    label: "Polyhandicap",
+    id: "polyhandicap",
+    name: "polyhandicap",
+  },
+];
 
 const schemaInfosVacanciers = {
   effectifPrevisionnel: yup
@@ -165,17 +134,11 @@ const validationSchema = computed(() =>
 );
 
 const initialValues = computed(() => ({
-  effectifPrevisionnel:
-    demandeCourante.value?.informationsVacanciers?.effectifPrevisionnel || null,
-  effectifPrevisionnelHomme:
-    demandeCourante.value?.informationsVacanciers?.effectifPrevisionnelHomme ||
-    null,
-  effectifPrevisionnelFemme:
-    demandeCourante.value?.informationsVacanciers?.effectifPrevisionnelFemme ||
-    null,
-  trancheAge: demandeCourante.value?.informationsVacanciers?.trancheAge || [],
-  typeDeficiences:
-    demandeCourante.value?.informationsVacanciers?.typeDeficiences || [],
+  effectifPrevisionnel: props.initData.effectifPrevisionnel ?? null,
+  effectifPrevisionnelHomme: props.initData.effectifPrevisionnelHomme ?? null,
+  effectifPrevisionnelFemme: props.initData.effectifPrevisionnelFemme ?? null,
+  trancheAge: props.initData.trancheAge ?? [],
+  typeDeficiences: props.initData.typeDeficiences ?? [],
 }));
 const { meta, values } = useForm({
   validationSchema,
@@ -203,60 +166,13 @@ const {
 const { value: trancheAge } = useField("trancheAge");
 const { value: typeDeficiences } = useField("typeDeficiences");
 
-function back() {
-  log.d("back - IN");
-  navigateTo("/demande-sejour/liste");
-}
-
-async function previous() {
-  log.d("previous - IN");
-  await navigateTo(
-    `/demande-sejour/informations-generales/${route.params.idDemande}`,
+function next() {
+  emit(
+    "valid",
+    { ...values, meta: meta.value.valid },
+    "informationsVacanciers",
   );
 }
-
-async function next() {
-  log.d("next - IN");
-  try {
-    const url = `/sejour/${route.params.idDemande}`;
-    await $fetchBackend(url, {
-      method: "POST",
-      credentials: "include",
-      body: {
-        parametre: {
-          informationsVacanciers: { ...values, meta },
-        },
-        type: "informationsVacanciers",
-      },
-      async onResponse({ response }) {
-        if (!response.ok) {
-          toaster.error(
-            response._data.message ?? "Erreur lors de la sauvegarde",
-          );
-        } else {
-          log.d("demande de sejour mise à jour");
-          toaster.success("informations sur les vacanciers sauvegardées");
-          await navigateTo(
-            `/demande-sejour/informations-personnel/${route.params.idDemande}`,
-          );
-        }
-      },
-    });
-  } catch (error) {
-    log.w("next - erreur", { error });
-  }
-}
-
-onMounted(() => {
-  layoutStore.breadCrumb = "informations sur les vacanciers";
-  layoutStore.stepperIndex = 3;
-});
 </script>
 
-<style lang="scss" scoped>
-#bloc-connexion {
-  color: #000091;
-  border-radius: 10px;
-  border: solid;
-}
-</style>
+<style lang="scss" scoped></style>

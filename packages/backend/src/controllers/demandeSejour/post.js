@@ -8,8 +8,9 @@ const log = logger(module.filename);
 module.exports = async function post(req, res) {
   log.i("IN");
   const { id: userId } = req.decoded;
-  const { libelle, dateDebut, dateFin, duree, periode } = req.body;
-  log.d(libelle, dateDebut, dateFin, duree, periode);
+  const { libelle, dateDebut, dateFin, duree, periode, organisme } =
+    req.body.parametre;
+  log.d(libelle, dateDebut, dateFin, duree, periode, organisme);
   if (!dateDebut || !dateFin || !duree) {
     log.w("missing parameter");
     return res.status(400).json({ message: "paramètre manquant." });
@@ -24,7 +25,6 @@ module.exports = async function post(req, res) {
           "Vous devez compléter la fiche Organisme avant de saisir une demande de séjour",
       });
     }
-    log.d(operateur);
 
     const idDemande = await DemandeSejour.create(
       operateur.operateurId,
@@ -35,7 +35,7 @@ module.exports = async function post(req, res) {
       periode,
       operateur.protocoleTransport,
       operateur.protocoleSanitaire,
-      { organisateurs: operateur.organisateurs },
+      organisme,
     );
     if (!idDemande) {
       return res.status(400).json({

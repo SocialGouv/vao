@@ -110,7 +110,7 @@ const links = [
 ];
 
 const navigate = (item) => {
-  navigateTo(`/demande-sejour/informations-generales/${item.demandeSejourId}`);
+  navigateTo(`/demande-sejour/${item.demandeSejourId}`);
 };
 
 const search = reactive({
@@ -211,11 +211,8 @@ const headers = [
   },
 ];
 
-onMounted(async () => {
-  log.i("mounted");
-  await departementStore.fetch();
-  await demandeSejourStore.fetchDemandes();
-});
+departementStore.fetch();
+demandeSejourStore.fetchDemandes();
 </script>
 
 <style>

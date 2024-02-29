@@ -57,10 +57,4 @@ const props = defineProps({
 });
 </script>
 
-<style lang="scss" scoped>
-#bloc-connexion {
-  color: #000091;
-  border-radius: 10px;
-  border: solid;
-}
-</style>
+<style lang="scss" scoped></style>

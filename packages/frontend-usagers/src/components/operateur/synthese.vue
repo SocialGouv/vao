@@ -84,24 +84,6 @@
               :init-data="props.initData.protocoleSanitaire"
             ></protocole-sanitaire-read-only>
           </DsfrAccordion>
-          <DsfrAccordion
-            :id="5"
-            title="Organisateurs"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Organisateurs du séjour &nbsp;</span>
-              <DsfrBadge
-                :label="organisateur.label"
-                :small="true"
-                :type="organisateur.type"
-              />
-            </template>
-            <personnes-read-only
-              :personnes="props.initData.organisateurs"
-            ></personnes-read-only>
-          </DsfrAccordion>
         </DsfrAccordionsGroup>
       </div>
     </div>
@@ -133,73 +115,85 @@ const props = defineProps({
 const emit = defineEmits(["valid"]);
 const expandedId = ref(0);
 
-const renseignementsGeneraux = ref({
-  label: "",
-  type: "",
+const renseignementsGeneraux = computed(() => {
+  if (props.initData.typeOperateur === "personne_morale") {
+    if (props.initData.personneMorale?.meta) {
+      return {
+        label: "complet",
+        type: "success",
+      };
+    } else {
+      return {
+        label: "incomplet",
+        type: "warning",
+      };
+    }
+  }
+  if (props.initData.typeOperateur === "personne_physique") {
+    if (props.initData.personnePhysique?.meta) {
+      return {
+        label: "complet",
+        type: "success",
+      };
+    } else {
+      return {
+        label: "incomplet",
+        type: "warning",
+      };
+    }
+  }
+  return {
+    label: "incomplet",
+    type: "warning",
+  };
 });
-const agrement = ref({
-  label: "",
-  type: "",
+
+const agrement = computed(() => {
+  if (props.initData.agrement) {
+    return {
+      label: "complet",
+      type: "success",
+    };
+  } else {
+    return {
+      label: "incomplet",
+      type: "warning",
+    };
+  }
 });
-const protocoleTransport = ref({
-  label: "",
-  type: "",
+
+const protocoleTransport = computed(() => {
+  if (props.initData.protocoleTransport?.meta) {
+    return {
+      label: "complet",
+      type: "success",
+    };
+  } else {
+    return {
+      label: "incomplet",
+      type: "warning",
+    };
+  }
 });
-const protocoleSanitaire = ref({
-  label: "",
-  type: "",
-});
-const organisateur = ref({
-  label: "complet",
-  type: "success",
+
+const protocoleSanitaire = computed(() => {
+  if (props.initData.protocoleSanitaire?.meta) {
+    return {
+      label: "complet",
+      type: "success",
+    };
+  } else {
+    return {
+      label: "incomplet",
+      type: "warning",
+    };
+  }
 });
 
 function finalizeOrganisme() {
   log.i("finalizeOrganisme - IN");
   emit("valid", {});
 }
-
-onMounted(() => {
-  if (props.initData.typeOperateur === "personne_morale") {
-    if (props.initData.personneMorale?.meta) {
-      renseignementsGeneraux.value.label = "complet";
-      renseignementsGeneraux.value.type = "success";
-    } else {
-      renseignementsGeneraux.value.label = "incomplet";
-      renseignementsGeneraux.value.type = "warning";
-    }
-  }
-  if (props.initData.typeOperateur === "personne_physique") {
-    if (props.initData.personnePhysique?.meta) {
-      renseignementsGeneraux.value.label = "complet";
-      renseignementsGeneraux.value.type = "success";
-    } else {
-      renseignementsGeneraux.value.label = "incomplet";
-      renseignementsGeneraux.value.type = "warning";
-    }
-  }
-  if (props.initData.agrement) {
-    agrement.value.label = "complet";
-    agrement.value.type = "success";
-  } else {
-    agrement.value.label = "incomplet";
-    agrement.value.type = "warning";
-  }
-  if (props.initData.protocoleTransport?.meta) {
-    protocoleTransport.value.label = "complet";
-    protocoleTransport.value.type = "success";
-  } else {
-    protocoleTransport.value.label = "incomplet";
-    protocoleTransport.value.type = "warning";
-  }
-  if (props.initData.protocoleSanitaire?.meta) {
-    protocoleSanitaire.value.label = "complet";
-    protocoleSanitaire.value.type = "success";
-  } else {
-    protocoleSanitaire.value.label = "incomplet";
-    protocoleSanitaire.value.type = "warning";
-  }
-});
 </script>
 
 <style lang="scss" scoped></style>

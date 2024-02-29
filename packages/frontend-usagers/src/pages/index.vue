@@ -64,7 +64,7 @@
             <div class="fr-py-1v">
               <a
                 class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-                href="/demande-sejour/informations-generales"
+                href="/demande-sejour/#info-generales"
                 >Déclarer un séjour</a
               >
             </div>
@@ -132,15 +132,7 @@ function saisieFicheOperateur() {
   return navigateTo("/operateur");
 }
 
-onMounted(async () => {
-  await operateurStore.setMyOperateur();
-});
+operateurStore.setMyOperateur();
 </script>
 
-<style lang="scss" scoped>
-#bloc-connexion {
-  color: #000091;
-  border-radius: 10px;
-  border: solid;
-}
-</style>
+<style lang="scss" scoped></style>

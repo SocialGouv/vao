@@ -49,67 +49,35 @@
         </div>
       </div>
     </fieldset>
-    <fieldset class="fr-fieldset">
-      <div class="fr-col-4">
-        <div class="fr-input-group">
-          <DsfrButton id="retour" :secondary="true" @click="back"
-            >Retour
-          </DsfrButton>
-        </div>
-      </div>
-      <div class="fr-col-4">
-        <div class="fr-input-group">
-          <DsfrButton id="precedent" :secondary="true" @click="previous"
-            >Précédent
-          </DsfrButton>
-        </div>
-      </div>
-      <div class="fr-col-4">
-        <div class="fr-input-group">
-          <DsfrButton id="Suivant" :disabled="!meta.valid" @click="next"
-            >Suivant
-          </DsfrButton>
-        </div>
-      </div>
-    </fieldset>
+    <DsfrButton label="Suivant" @click="next" />
   </div>
 </template>
 
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { useDemandeSejourStore } from "@/stores/demande-sejour";
-import { useLayoutStore } from "@/stores/layout";
-
-const route = useRoute();
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
-
-definePageMeta({
-  middleware: ["is-connected", "has-id-demande-sejour"],
-  layout: "demande-sejour",
+const props = defineProps({
+  initData: { type: Object, default: null, required: true },
 });
 
-const log = logger("demande-sejour/informations-generales");
+const emit = defineEmits(["valid"]);
 
-const demandeSejourStore = useDemandeSejourStore();
-const layoutStore = useLayoutStore();
+const log = logger("components/DS/informations-personnel");
 
-const demandeCourante = computed(() => {
-  return demandeSejourStore.demandeCourante;
-});
 const schemaInfosPersonnel = {
   nombreResponsable: yup
-    .number()
+    .number("Ce champ doit contenir un nombre entier")
+    .integer("Ce champ doit contenir un nombre entier")
     .typeError("Ce champ doit contenir un nombre entier")
-    .required(),
+    .required("Ce champ doit contenir un nombre entier"),
   procedureRecrutementSupplementaire: yup
-    .bool()
+    .bool("La saisie de ce champ est obligatoire")
     .required("La saisie de ce champ est obligatoire"),
   nombreAccompagnant: yup
-    .number()
+    .number("Ce champ doit contenir un nombre entier")
+    .integer("Ce champ doit contenir un nombre entier")
     .typeError("Ce champ doit contenir un nombre entier")
-    .required(),
+    .required("Ce champ doit contenir un nombre entier"),
 };
 
 const validationSchema = computed(() =>
@@ -119,14 +87,10 @@ const validationSchema = computed(() =>
 );
 
 const initialValues = computed(() => ({
-  nombreResponsable:
-    demandeCourante.value?.informationsPersonnel?.nombreResponsable || null,
-  procedureRecrutementSupplementaire: demandeCourante.value
-    ?.informationsPersonnel?.procedureRecrutementSupplementaire
-    ? 1
-    : 0,
-  nombreAccompagnant:
-    demandeCourante.value?.informationsPersonnel?.nombreAccompagnant || null,
+  nombreResponsable: props.initData.nombreResponsable ?? null,
+  procedureRecrutementSupplementaire:
+    props.initData.procedureRecrutementSupplementaire ?? null,
+  nombreAccompagnant: props.initData.nombreAccompagnant ?? null,
 }));
 
 const { meta, values } = useForm({
@@ -153,58 +117,9 @@ const {
   meta: procedureRecrutementSupplementaireMeta,
 } = useField("procedureRecrutementSupplementaire");
 
-function back() {
-  log.d("back - IN");
-  navigateTo("/demande-sejour/liste");
+function next() {
+  emit("valid", { ...values, meta: meta.value.valid }, "informationsPersonnel");
 }
-
-async function next() {
-  log.d("next - IN");
-  try {
-    const url = `/sejour/${route.params.idDemande}`;
-    await $fetchBackend(url, {
-      credentials: "include",
-      method: "POST",
-      body: {
-        parametre: { informationsPersonnel: { ...values } },
-        type: "informationsPersonnel",
-      },
-      async onResponse({ response }) {
-        if (!response.ok) {
-          toaster.error(
-            response._data.message ?? "Erreur lors de la sauvegarde",
-          );
-        } else {
-          log.d("demande de sejour mise à jour");
-          toaster.success("informations sur le personnel sauvegardées");
-          await navigateTo(
-            `/demande-sejour/projet-sejour/${route.params.idDemande}`,
-          );
-        }
-      },
-    });
-  } catch (error) {
-    log.w("submitCompte - erreur", { error });
-  }
-}
-
-function previous() {
-  log.d("previous - IN");
-  navigateTo(
-    `/demande-sejour/informations-vacanciers/${route.params.idDemande}`,
-  );
-}
-
-onMounted(() => {
-  layoutStore.breadCrumb = "informations sur le personnel";
-  layoutStore.stepperIndex = 4;
-});
 </script>
 
-<style lang="scss" scoped>
-#bloc-connexion {
-  color: #000091;
-  border-radius: 10px;
-  border: solid;
-}
-</style>
+<style lang="scss" scoped></style>

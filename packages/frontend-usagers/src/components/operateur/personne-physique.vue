@@ -217,8 +217,8 @@ const doubleDashRegex = /-{2}/i;
 const isUpdate = computed(() => {
   return !!props.initData;
 });
-// Schéma et données liées à une personne physique
-const schema = {
+
+const validationSchema = yup.object({
   nomNaissance: yup
     .string()
     .test("acceptedChars", "Caractères non acceptés détectés", (nomNaissance) =>
@@ -272,9 +272,6 @@ const schema = {
     .required(),
   adresseDomicile: yup.object().required(),
   adresseSiege: yup.object().required(),
-};
-const validationSchema = computed(() => {
-  return yup.object({ ...schema });
 });
 const initialValues = computed(() => {
   return {
@@ -350,10 +347,4 @@ function next() {
 }
 </script>
 
-<style lang="scss" scoped>
-#bloc-connexion {
-  color: #000091;
-  border-radius: 10px;
-  border: solid;
-}
-</style>
+<style lang="scss" scoped></style>

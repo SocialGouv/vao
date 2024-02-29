@@ -9,9 +9,9 @@ export const useHebergementStore = defineStore("hebergement", {
     hebergementCourant: {},
   }),
   actions: {
-    async fetchHebergement() {
+    async fetchHebergements() {
       try {
-        log.i("fetchHebergement - IN");
+        log.i("fetchHebergements - IN");
         const { hebergements } = await $fetchBackend("/hebergement", {
           credentials: "include",
         });
@@ -21,7 +21,7 @@ export const useHebergementStore = defineStore("hebergement", {
         log.d("fetchHebergements  - DONE");
       } catch (err) {
         this.hebergements = [];
-        log.i("fetchHebergement - DONE with error");
+        log.i("fetchHebergements - DONE with error");
       }
     },
     async setHebergementCourant(id) {

@@ -38,14 +38,6 @@
             @valid="updateOrCreate"
           ></protocole-sanitaire>
         </div>
-        <div id="organisateurs">
-          <Organisateur
-            v-if="hash === 'organisateurs'"
-            :init-data="operateurCourant.organisateurs ?? []"
-            @valid="updateOrCreate"
-          >
-          </Organisateur>
-        </div>
         <div id="synthese">
           <OperateurSynthese
             v-if="hash === 'synthese'"
@@ -62,7 +54,7 @@
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
-const log = logger("pages/operateur/idOperateur");
+const log = logger("pages/operateur/[[idOperateur]]");
 
 definePageMeta({
   middleware: ["is-connected", "has-id-operateur"],
@@ -96,8 +88,7 @@ function nextHash(hash) {
 }
 
 async function updateOrCreate(operatorData, updatetype) {
-  log.i("updateOrCreate - IN");
-  log.d(operatorData);
+  log.i("updateOrCreate - IN", { operatorData, updatetype });
   try {
     const url = route.params.idOperateur
       ? `/operateur/${route.params.idOperateur}`
@@ -113,8 +104,9 @@ async function updateOrCreate(operatorData, updatetype) {
 
     const operateurId = data.operateurId;
     log.d(`operateur ${operateurId} mis à jour`);
-    await operateurStore.setMyOperateur();
-    toaster.success("Fiche opérateur sauvegardée");
+    toaster.success(
+      `Fiche organisme ${route.params.idOperateur ? "sauvegardée" : "créée"}`,
+    );
     return nextHash(hash.value);
   } catch (error) {
     log.w("Creation/modification d'operateur : ", { error });
@@ -144,10 +136,4 @@ async function finalizeOperateur() {
 }
 </script>
 
-<style lang="scss" scoped>
-#bloc-connexion {
-  color: #000091;
-  border-radius: 10px;
-  border: solid;
-}
-</style>
+<style lang="scss" scoped></style>

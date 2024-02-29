@@ -8,7 +8,7 @@
             legend="Type de personne qui organise des séjours"
             :required="true"
             :model-value="typeOperateur"
-            :options="typeOptions"
+            :options="organisme.types"
             :is-valid="typeOperateurMeta"
             :inline="false"
             :error-message="typeOperateurErrorMessage"
@@ -35,37 +35,23 @@
 <script setup>
 import { useField } from "vee-validate";
 
+const emit = defineEmits(["valid"]);
 const props = defineProps({
   initData: { type: Object, default: null, required: true },
 });
-
-const emit = defineEmits(["valid"]);
-
-function valid(data, type) {
-  emit("valid", data, type);
-}
-
-const typeOptions = [
-  {
-    label: "Personne physique",
-    value: "personne_physique",
-  },
-  {
-    label: "Personne morale",
-    value: "personne_morale",
-  },
-];
 
 const {
   value: typeOperateur,
   errorMessage: typeOperateurErrorMessage,
   handleChange: onTypeOperateurChange,
   meta: typeOperateurMeta,
-} = useField("typeOperateur");
-
-onMounted(() => {
-  typeOperateur.value = props.initData.typeOperateur;
+} = useField("typeOperateur", null, {
+  initialValue: props.initData.typeOperateur,
 });
+
+function valid(data, type) {
+  emit("valid", data, type);
+}
 </script>
 
 <style lang="scss" scoped></style>

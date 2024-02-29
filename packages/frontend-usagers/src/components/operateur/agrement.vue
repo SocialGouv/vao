@@ -263,9 +263,7 @@ function changeFile(fileList) {
   agrementFile.value = fileList.length === 1 ? fileList[0] : null;
 }
 
-onMounted(async () => {
-  await regionStore.fetch();
-});
+regionStore.fetch();
 </script>
 
 <style lang="scss" scoped></style>

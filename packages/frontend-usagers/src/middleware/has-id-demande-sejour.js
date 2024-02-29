@@ -25,10 +25,13 @@ export default defineNuxtRouteMiddleware(async (to) => {
     log.w(`demande ${to.params.idDemande} is not linked with current user`);
     return navigateTo("/");
   }
-  if (!hasId && to.fullPath !== "/demande-sejour/informations-generales") {
-    return navigateTo("/");
-  }
+
   if (hasId) {
+    log.d(`loading current demande`);
     await demandeStore.setDemandeCourante(to.params.idDemande);
+  }
+
+  if (!hasId && demandeStore.demandeCourante) {
+    demandeStore.resetDemandeCourante();
   }
 });

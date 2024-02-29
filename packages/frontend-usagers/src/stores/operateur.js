@@ -6,7 +6,7 @@ const log = logger("stores/operateurs");
 export const useOperateurStore = defineStore("operateurs", {
   state: () => ({
     operateurs: [],
-    operateurCourant: {},
+    operateurCourant: null,
   }),
   actions: {
     async fetchOperateurs() {
@@ -35,7 +35,7 @@ export const useOperateurStore = defineStore("operateurs", {
         }
         log.d("setOperateurCourant - DONE");
       } catch (err) {
-        this.operateurCourant = {};
+        this.operateurCourant = null;
         log.i("setOperateurCourant - DONE with error");
       }
     },
