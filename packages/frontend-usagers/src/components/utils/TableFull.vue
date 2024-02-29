@@ -220,6 +220,15 @@ const pages = computed(() => {
 
 onMounted(() => {
   h.value = props.headers.map((h) => {
+    if (h.sort) {
+      return {
+        ...h,
+        headerAttrs: {
+          class: "pointer",
+          onClick: sorter(h.column),
+        },
+      };
+    }
     if (h.sorter) {
       return {
         ...h,

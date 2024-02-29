@@ -5,8 +5,11 @@ import "@vueform/multiselect/themes/default.css";
 const log = logger("components/search-address");
 
 const props = defineProps({
-  value: { type: Object, default: null },
   label: { type: String, required: true },
+  initialAdress: { type: String, default: null },
+  value: { type: Object, default: null },
+  errorMessage: { type: String, default: null },
+  validMessage: { type: String, default: null },
 });
 
 const emits = defineEmits(["select"]);
@@ -15,7 +18,11 @@ const NB_CAR_ADDRESSE_MIN = 6;
 
 const options = ref([]);
 const isLoading = ref(false);
-const adresseInitiale = props.value?.label;
+
+const message = computed(() => props.errorMessage || props.validMessage);
+const messageClass = computed(() =>
+  props.errorMessage ? "fr-error-text" : "fr-valid-text",
+);
 
 async function searchAddress(queryString) {
   if (queryString.length > NB_CAR_ADDRESSE_MIN && isLoading.value === false) {
@@ -61,22 +68,30 @@ function select(_value, option) {
 </script>
 
 <template>
-  <div>
-    <fieldset class="fr-fieldset">
-      <div v-if="adresseInitiale" class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
-          <DsfrInputGroup
-            name="adresseSauvegardée"
-            label="Adresse enregistrée"
-            :label-visible="true"
-            :model-value="adresseInitiale"
-            :disabled="true"
-          />
-        </div>
+  <fieldset class="fr-fieldset">
+    <div v-if="initialAdress" class="fr-fieldset__element">
+      <div class="fr-input-group fr-col-12">
+        <DsfrInputGroup
+          name="adresseSauvegardée"
+          label="Adresse enregistrée"
+          :label-visible="true"
+          :model-value="initialAdress"
+          :read-only="true"
+        />
       </div>
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
-          <label>{{ props.label }}</label>
+    </div>
+    <div class="fr-fieldset__element">
+      <div class="fr-input-group fr-col-12">
+        <div
+          class="fr-input-group"
+          :class="{
+            'fr-input-group--error': errorMessage,
+            'fr-input-group--valid': validMessage,
+          }"
+        >
+          <label class="fr-label">
+            {{ label }}
+          </label>
           <Multiselect
             :value="props.value?.label"
             value-prop="label"
@@ -92,10 +107,19 @@ function select(_value, option) {
             @search-change="searchAddress"
             @select="select"
           />
+          <div v-if="message" class="fr-messages-group">
+            <p
+              :id="descriptionId"
+              :data-testid="descriptionId"
+              :class="messageClass"
+            >
+              <span>{{ message }}</span>
+            </p>
+          </div>
         </div>
       </div>
-    </fieldset>
-  </div>
+    </div>
+  </fieldset>
 </template>
 
 <style lang="scss" scoped></style>

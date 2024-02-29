@@ -119,7 +119,7 @@ const addHebergementOpened = ref(false);
 const hebergementStore = useHebergementStore();
 const hebergementsFavoris = computed(() => {
   return hebergementStore.hebergements.map((h) => {
-    return { text: h.nomHebergement, value: h.hebergementId };
+    return { text: h.nom, value: h.id };
   });
 });
 
@@ -173,8 +173,7 @@ const initialValues = computed(() => {
           dayjs(props.initData[props.currentIndex].dateFin).format(
             "YYYY-MM-DD",
           ) ?? null,
-        hebergementSelectionne:
-          props.initData[props.currentIndex].hebergementId ?? null,
+        hebergementSelectionne: props.initData[props.currentIndex].id ?? null,
         rejoindreEtape:
           props.initData[props.currentIndex].rejoindreEtape ?? null,
       };
@@ -275,7 +274,7 @@ async function next() {
     {
       dateDebut: dateDebut.value,
       dateFin: dateFin.value,
-      hebergementId: hebergementSelectionne.value,
+      id: hebergementSelectionne.value,
       rejoindreEtape: rejoindreEtape.value,
     },
     props.currentIndex,

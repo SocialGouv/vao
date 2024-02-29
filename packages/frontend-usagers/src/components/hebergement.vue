@@ -3,15 +3,15 @@
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
-          name="nomHebergement"
+          name="nom"
           :required="true"
           label="Nom de l'hébergement"
           :label-visible="true"
           placeholder=""
-          :model-value="nomHebergement"
-          :error-message="nomHebergementErrorMessage"
-          :is-valid="nomHebergementMeta"
-          @update:model-value="onNomHebergementChange"
+          :model-value="nom"
+          :error-message="nomErrorMessage"
+          :is-valid="nomMeta"
+          @update:model-value="onNomChange"
         />
       </div>
     </fieldset>
@@ -44,21 +44,18 @@
         </div>
       </div>
     </fieldset>
-    <fieldset class="fr-fieldset">
-      <div class="fr-fieldset__element fr-col-12">
-        <label>Adresse :</label>
-        <Multiselect
-          v-model="adresse"
-          mode="single"
-          :close-on-select="false"
-          :searchable="true"
-          :internal-search="false"
-          :options="adressesOptions"
-          :options-limit="10"
-          @search-change="searchAPIAdresse"
-        />
-      </div>
-    </fieldset>
+    <SearchAddress
+      :value="adresse"
+      :label="
+        caracteristiques.adresse
+          ? 'Nouvelle adresse de l\'hébergement'
+          : 'Adresse de l\'hébergement'
+      "
+      :initial-adress="caracteristiques.adresse?.label"
+      :error-message="adresseErrorMessage"
+      @select="onAdresseChange"
+    ></SearchAddress>
+
     <fieldset class="fr-fieldset">
       <div v-if="adresse" class="fr-fieldset__element fr-col-12">
         <div style="height: 50vh; width: 50vw">
@@ -365,7 +362,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset v-if="amenagementsSpecifiques" class="fr-fieldset">
+    <fieldset v-if="amenagementsSpecifiques === 'oui'" class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="precisionAmenagementsSpecifiques"
@@ -392,7 +389,6 @@
           placeholder=""
           :model-value="deplacementProximite"
           :error-message="deplacementProximiteErrorMessage"
-          valid-message="bien joué"
           :is-valid="deplacementProximiteMeta"
           @update:model-value="onDeplacementProximiteChange"
         />
@@ -424,8 +420,8 @@
       </div>
       <div class="fr-col-4">
         <div class="fr-input-group">
-          <DsfrButton id="Suivant" :disabled="!meta.valid" @click="next"
-            >Ajouter hebergement
+          <DsfrButton id="Suivant" :disabled="!meta.valid" @click="submit"
+            >{{ labelNext }}
           </DsfrButton>
         </div>
       </div>
@@ -436,18 +432,19 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import Multiselect from "@vueform/multiselect";
 
-import "@vueform/multiselect/themes/default.css";
+const emit = defineEmits(["cancel", "submit"]);
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
-const emit = defineEmits(["add", "back"]);
-const log = logger("component/hebergement");
+const props = defineProps({
+  initNom: { type: String, default: "" },
+  caracteristiques: {
+    type: Object,
+    default: () => ({}),
+  },
+  labelNext: { type: String, default: "Ajouter hébergement" },
+});
 
-const config = useRuntimeConfig();
-
-const adresses = ref([]);
+const log = logger("components/hebergement");
 
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 const zoom = ref(16);
@@ -465,7 +462,7 @@ const prestationsHotelieresOptions = [
 ];
 const schemaHebergement = {
   typeHebergement: yup.string().required(),
-  nomHebergement: yup.string().required(),
+  nom: yup.string().required(),
   adresse: yup.object().required(),
   numTelephone1: yup
     .string()
@@ -480,7 +477,8 @@ const schemaHebergement = {
     .test(
       "telephone",
       "Format de numéro de téléphone invalide",
-      (numTelephone2) => numTelephoneRegex.test(numTelephone2),
+      (numTelephone2) =>
+        numTelephone2 == null || numTelephoneRegex.test(numTelephone2),
     )
     .nullable(),
   email: yup.string().email().nullable(),
@@ -495,7 +493,15 @@ const schemaHebergement = {
   chambresUnisexes: yup.string().required(),
   chambresDoubles: yup.string().required(),
   amenagementsSpecifiques: yup.string().required(),
-  precisionAmenagementsSpecifiques: yup.string().nullable(),
+  precisionAmenagementsSpecifiques: yup
+    .string()
+    .when("amenagementsSpecifiques", {
+      is: (amenagementsSpecifiques) => amenagementsSpecifiques === "oui",
+      then: (precisionAmenagementsSpecifiques) =>
+        precisionAmenagementsSpecifiques.required(),
+      otherwise: (precisionAmenagementsSpecifiques) =>
+        precisionAmenagementsSpecifiques.nullable(),
+    }),
   deplacementProximite: yup.string().required(),
   excursion: yup.string().required(),
 };
@@ -506,29 +512,31 @@ const validationSchema = computed(() =>
   }),
 );
 
-const initialValues = computed(() => ({
-  typeHebergement: "",
-  nomHebergement: "",
-  numTelephone1: "",
-  numTelephone2: "",
-  email: "",
-  info: "",
+const initialValues = {
+  typeHebergement: null,
+  nom: props.initNom ?? null,
+  adresse: null,
+  numTelephone1: null,
+  numTelephone2: null,
+  email: null,
+  info: null,
   prestationsHotelieres: [],
-  visiteLocaux: "",
-  descriptionLieuHebergement: "",
-  nombreLits: "",
-  nombreLitsSuperposes: "",
-  litsDessus: "",
-  nombreMaxPersonnesCouchage: "",
-  couchageIndividuel: "",
-  rangementIndividuel: "",
-  chambresUnisexes: "",
-  chambresDoubles: "",
-  amenagementsSpecifiques: "",
-  precisionAmenagementsSpecifiques: "",
-  deplacementProximite: "",
-  excursion: "",
-}));
+  visiteLocaux: null,
+  descriptionLieuHebergement: null,
+  nombreLits: null,
+  nombreLitsSuperposes: null,
+  litsDessus: null,
+  nombreMaxPersonnesCouchage: null,
+  couchageIndividuel: null,
+  rangementIndividuel: null,
+  chambresUnisexes: null,
+  chambresDoubles: null,
+  amenagementsSpecifiques: null,
+  precisionAmenagementsSpecifiques: null,
+  deplacementProximite: null,
+  excursion: null,
+  ...props.caracteristiques,
+};
 
 const { meta, values } = useForm({
   validationSchema,
@@ -542,12 +550,16 @@ const {
   meta: typeHebergementMeta,
 } = useField("typeHebergement");
 const {
-  value: nomHebergement,
-  errorMessage: nomHebergementErrorMessage,
-  handleChange: onNomHebergementChange,
-  meta: nomHebergementMeta,
-} = useField("nomHebergement");
-const { value: adresse } = useField("adresse");
+  value: nom,
+  errorMessage: nomErrorMessage,
+  handleChange: onNomChange,
+  meta: nomMeta,
+} = useField("nom");
+const {
+  value: adresse,
+  errorMessage: adresseErrorMessage,
+  handleChange: onAdresseChange,
+} = useField("adresse");
 const {
   value: numTelephone1,
   errorMessage: numTelephone1ErrorMessage,
@@ -658,20 +670,8 @@ const {
   meta: excursionMeta,
 } = useField("excursion");
 
-const adressesOptions = computed(() => {
-  if (adresses.value.length > 0) {
-    return adresses.value.map((a) => {
-      return { value: a, label: a.properties.label };
-    });
-  }
-  return [];
-});
-
 const markerLatLng = computed(() => {
-  return [
-    adresse.value.geometry.coordinates[1],
-    adresse.value.geometry.coordinates[0],
-  ];
+  return [adresse.value.coordinates[1], adresse.value.coordinates[0]];
 });
 
 function addPrestationHoteliere(liste) {
@@ -679,62 +679,12 @@ function addPrestationHoteliere(liste) {
   prestationsHotelieres.value = liste;
 }
 
-async function searchAPIAdresse(queryString) {
-  if (queryString.length > 4) {
-    log.i("searchAPIAdresse -In");
-    try {
-      const url = config.public.backendUrl + "/geo/adresse/";
-      await $fetch(url, {
-        method: "POST",
-        body: { queryString },
-      })
-        .then((response) => {
-          // log.d(response.adresses);
-          adresses.value = response.adresses;
-        })
-        .catch((error) => {
-          log.w(error);
-        });
-    } catch (error) {
-      log.w("searchAPIAdresse - erreur", { error });
-    }
-  }
-}
-
 function back() {
-  emit("back");
+  emit("cancel");
 }
 
-async function next() {
-  log.d("next - IN");
-  try {
-    const url = `/hebergement`;
-    await $fetchBackend(url, {
-      method: "POST",
-      credentials: "include",
-      body: {
-        nomHebergement: nomHebergement.value,
-        caracteristiques: { ...values },
-      },
-      onResponse({ response }) {
-        if (!response.ok) {
-          toaster.error(
-            response._data.message ??
-              "Erreur lors de la sauvegarde de l'hébergement",
-          );
-        } else {
-          log.d("hebergement sauvegardé");
-          toaster.success("hebergement sauvegardé");
-          emit("add");
-        }
-      },
-    });
-  } catch (error) {
-    toaster.error(
-      response._data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
-    );
-    log.w("next - erreur", { error });
-  }
+async function submit() {
+  emit("submit", { ...values });
 }
 </script>
 
