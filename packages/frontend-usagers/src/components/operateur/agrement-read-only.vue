@@ -67,11 +67,9 @@ const agrementCourant = computed(() => {
   }
 });
 
-onMounted(async () => {
-  if (!regionStore.regions || regionStore.regions.length === 0) {
-    await regionStore.fetch();
-  }
-});
+if (!regionStore.regions || regionStore.regions.length === 0) {
+  regionStore.fetch();
+}
 </script>
 
 <style lang="scss" scoped></style>

@@ -95,9 +95,7 @@ const searchState = reactive({
   statut: null,
 });
 
-onMounted(() => {
-  sejourStore.fetchDemandes({ limit: defaultLimit, offset: defaultOffset });
-});
+sejourStore.fetchDemandes({ limit: defaultLimit, offset: defaultOffset });
 
 watch(
   [sortState, limitState, currentPageState],

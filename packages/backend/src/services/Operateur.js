@@ -23,7 +23,6 @@ const query = {
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
       o.protocole_sanitaire as "protocoleSanitaire",
-      o.organisateurs->'organisateurs' as "organisateurs",
       o.created_at as "createdAt",
       o.edited_at as "editedAt",
       (SELECT jsonb_agg(json_build_object(
@@ -57,7 +56,6 @@ const query = {
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
       o.protocole_sanitaire as "protocoleSanitaire",
-      o.organisateurs->'organisateurs' as "organisateurs",
       o.created_at as "createdAt",
       o.edited_at as "editedAt",
       (SELECT jsonb_agg(json_build_object(
@@ -86,7 +84,6 @@ const query = {
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
       o.protocole_sanitaire as "protocoleSanitaire",
-      o.organisateurs->'organisateurs' as "organisateurs",
       o.created_at as "createdAt",
       o.edited_at as "editedAt",
       (SELECT jsonb_agg(json_build_object(
@@ -124,12 +121,6 @@ UPDATE front.operateurs SET complet = true
 WHERE id = $1
 RETURNING
   id as "updateOperateurId"
-`,
-  updateOrganisateurs: `
-UPDATE front.operateurs SET organisateurs =$2
-WHERE id = $1
-RETURNING 
-  id as "updatedOperateurId"
 `,
   updateSanitaire: `
     UPDATE front.operateurs SET protocole_sanitaire =$2,
@@ -204,13 +195,6 @@ module.exports.update = async (type, parametre, operateurId) => {
         operateurId,
         parametre,
         notComplete,
-      ]);
-      break;
-    }
-    case "organisateurs": {
-      response = await pool.query(query.updateOrganisateurs, [
-        operateurId,
-        parametre,
       ]);
       break;
     }

@@ -48,7 +48,6 @@ create table front.operateurs (
    personne_physique            JSONB                ,
    protocole_transport          JSONB                ,
    protocole_sanitaire          JSONB                ,
-   organisateurs                JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_operateurs    primary key (id)
@@ -107,13 +106,13 @@ create table front.demande_sejour (
    duree                        INTEGER              DEFAULT 1 NOT NULL,
    periode                      VARCHAR(10)          NOT NULL,
    nb_hebergement               INTEGER              ,
+   organisme                    JSONB                ,
    hebergement                  JSONB                ,
    vacanciers                   JSONB                ,
    personnel                    JSONB                ,
    transport                    JSONB                ,
    projet_sejour                JSONB                ,
    sanitaires                   JSONB                ,
-   organisateurs                JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_demande_sejour primary key (id)

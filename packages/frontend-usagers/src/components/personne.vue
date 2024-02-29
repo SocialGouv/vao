@@ -102,7 +102,7 @@
         </div>
       </div>
     </fieldset>
-    <fieldset class="fr-fieldset">
+    <fieldset v-if="showButton" class="fr-fieldset">
       <div class="fr-input-group">
         <DsfrButton
           id="Suivant"
@@ -120,14 +120,17 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 
+const log = logger("components/personne");
+
 const props = defineProps({
   personne: { type: Object, required: true },
   showAdresse: { type: Boolean, default: false, required: false },
   showTelephone: { type: Boolean, default: false, required: false },
   showEmail: { type: Boolean, default: false, required: false },
+  showButton: { type: Boolean, default: true, required: false },
 });
 
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["valid", "update:personne"]);
 
 const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
@@ -138,93 +141,89 @@ const doubleSpacesRegex = / {2}/i;
 const tripleDashRegex = /-{3}/i;
 const doubleDashRegex = /-{2}/i;
 
-const schemaPersonne = {
-  nom: yup
-    .string()
-    .test("acceptedChars", "Caractères non acceptés détectés", (nom) =>
-      acceptedCharsRegex.test(nom),
-    )
-    .test(
-      "doubleSpaces",
-      "Le nom ne peut contenir deux espaces successifs",
-      (nom) => !doubleSpacesRegex.test(nom),
-    )
-    .test(
-      "spaceFollowingDash",
-      "Le nom ne peut contenir d'espace suivant un tiret",
-      (nom) => !spaceFollowingDashRegex.test(nom),
-    )
-    .test(
-      "tripleDash",
-      "Le nom ne peut contenir trois tirets consécutifs",
-      (nom) => !tripleDashRegex.test(nom),
-    )
-    .required(),
-  prenom: yup
-    .string()
-    .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
-      acceptedCharsRegex.test(prenom),
-    )
-    .test(
-      "doubleSpaces",
-      "Le prénom ne peut contenir deux espaces successifs",
-      (prenom) => !doubleSpacesRegex.test(prenom),
-    )
-    .test(
-      "spaceFollowingDash",
-      "Le prénom ne peut contenir d'espace suivant un tiret",
-      (prenom) => !spaceFollowingDashRegex.test(prenom),
-    )
-    .test(
-      "doubleDash",
-      "Le prénom ne peut contenir deux tirets consécutifs",
-      (prenom) => !doubleDashRegex.test(prenom),
-    )
-    .required(),
-  fonction: yup.string().required(),
-  telephone: yup.string().when("props.showTelephone", {
-    is: () => props.showTelephone === true,
-    then: (telephone) =>
-      telephone
+const validationSchema = computed(() =>
+  yup.object({
+    nom: yup
+      .string()
+      .test("acceptedChars", "Caractères non acceptés détectés", (nom) =>
+        acceptedCharsRegex.test(nom),
+      )
+      .test(
+        "doubleSpaces",
+        "Le nom ne peut contenir deux espaces successifs",
+        (nom) => !doubleSpacesRegex.test(nom),
+      )
+      .test(
+        "spaceFollowingDash",
+        "Le nom ne peut contenir d'espace suivant un tiret",
+        (nom) => !spaceFollowingDashRegex.test(nom),
+      )
+      .test(
+        "tripleDash",
+        "Le nom ne peut contenir trois tirets consécutifs",
+        (nom) => !tripleDashRegex.test(nom),
+      )
+      .required(),
+    prenom: yup
+      .string()
+      .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
+        acceptedCharsRegex.test(prenom),
+      )
+      .test(
+        "doubleSpaces",
+        "Le prénom ne peut contenir deux espaces successifs",
+        (prenom) => !doubleSpacesRegex.test(prenom),
+      )
+      .test(
+        "spaceFollowingDash",
+        "Le prénom ne peut contenir d'espace suivant un tiret",
+        (prenom) => !spaceFollowingDashRegex.test(prenom),
+      )
+      .test(
+        "doubleDash",
+        "Le prénom ne peut contenir deux tirets consécutifs",
+        (prenom) => !doubleDashRegex.test(prenom),
+      )
+      .required(),
+    fonction: yup.string().required(),
+    ...(props.showTelephone && {
+      telephone: yup
+        .string()
         .test(
           "telephone",
           "Format de numéro de téléphone invalide",
           (telephone) => numTelephoneRegex.test(telephone),
         )
         .required(),
-    otherwise: (telephone) => telephone.nullable(),
-  }),
-  email: yup.string().when("props.showTelephone", {
-    is: () => props.showEmail === true,
-    then: (email) =>
-      email
+    }),
+    ...(props.showEmail && {
+      email: yup
+        .string()
         .test("email", "l'email n'est pas au format attendu", (email) =>
           emailRegex.test(email),
         )
         .required(),
-    otherwise: (email) => email.nullable(),
+    }),
+    ...(props.showAdresse && {
+      adresse: yup.object().required(),
+    }),
   }),
-  adresse: yup.string().when("props.showAdresse", {
-    is: () => props.showAdresse === true,
-    then: () => yup.object().required(),
-    otherwise: (adresse) => adresse.nullable(),
+);
+
+const initialValues = {
+  nom: props.personne.nom,
+  prenom: props.personne.prenom,
+  fonction: props.personne.fonction,
+  ...(props.showTelephone && {
+    telephone: props.personne.telephone,
+  }),
+  ...(props.showEmail && {
+    email: props.personne.email,
+  }),
+  ...(props.showAdresse && {
+    adresse: props.personne.adresse,
   }),
 };
-
-const validationSchema = computed(() => {
-  return yup.object({ ...schemaPersonne });
-});
-
-const initialValues = computed(() => {
-  return {
-    nom: props.personne?.nom,
-    prenom: props.personne?.prenom,
-    fonction: props.personne?.fonction,
-    adresse: props.personne?.adresse,
-    telephone: props.personne?.telephone,
-    email: props.personne?.email,
-  };
-});
 
 const { meta, values } = useForm({
   validationSchema,
@@ -267,6 +266,10 @@ const { value: adresse, handleChange: onAddressChange } = useField("adresse");
 function validatePersonne() {
   emit("valid", { ...values });
 }
+
+watch(meta, () => {
+  emit("update:personne", { ...values }, meta);
+});
 </script>
 
 <style scoped></style>

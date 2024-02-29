@@ -1,6 +1,6 @@
 <template>
   <div style="margin-bottom: 1em">
-    <div>
+    <div v-if="displayedData.length">
       <DsfrTable
         style="display: table"
         :headers="h"
@@ -16,6 +16,7 @@
           @update:current-page="(p) => (currentPage = p)"
         />
         <DsfrSelect
+          v-if="pages && pages !== 0"
           :model-value="itemByPage"
           name="itemByPage"
           label=""
@@ -32,8 +33,6 @@ const log = logger("components/TableFull");
 
 const itemByPageOptions = [10, 20, 50, 100];
 const itemByPage = ref(50);
-
-const emit = defineEmits(["currentPageChange2"]);
 
 const props = defineProps({
   headers: { type: Object, required: true },
@@ -237,10 +236,6 @@ onMounted(() => {
       },
     };
   });
-});
-
-watch(currentPage, () => {
-  emit("currentPageChange", currentPage);
 });
 
 defineExpose({

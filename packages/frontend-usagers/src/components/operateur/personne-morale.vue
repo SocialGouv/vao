@@ -135,6 +135,20 @@
           </div>
         </div>
       </div>
+      <div class="fr-fieldset__element">
+        <div class="fr-input-group fr-col-8">
+          <h6>Responsable de l'organisation du séjour</h6>
+          <Personne
+            :personne="responsableSejour"
+            :show-adresse="true"
+            :show-telephone="true"
+            :show-email="true"
+            :show-button="false"
+            :model-value="responsableSejour"
+            @update:personne="onResponsableSejourChange"
+          ></Personne>
+        </div>
+      </div>
     </div>
 
     <DsfrButton label="Suivant" @click="next" />
@@ -149,75 +163,29 @@ const toaster = nuxtApp.vueApp.$toast;
 
 const log = logger("components/operateur/personne-morale");
 
+const emit = defineEmits(["valid"]);
+
 const props = defineProps({
   initData: { type: Object, default: null, required: true },
 });
 
-const emit = defineEmits(["valid"]);
+const headers = [
+  {
+    label: "Nom",
+    value: "nom",
+  },
+  { label: "Prénom", value: "prenom" },
+  {
+    label: "Fonction",
+    value: "fonction",
+  },
+];
 
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 const siretRegex = /^[0-9]{14}$/;
+
 const personneMorale = ref();
 const operateurDejaExistant = ref();
-
-// Schéma et données liées à une personne morale
-const schema = {
-  siret: yup
-    .string()
-    .test(
-      "siret",
-      "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
-      (siret) => siretRegex.test(siret),
-    )
-    .required(),
-  email: yup
-    .string()
-    .email("le format de l'email n'est pas valide")
-    .required("L'email de contact est obligatoire"),
-  telephoneEP: yup
-    .string()
-    .test(
-      "telephone",
-      "Format de numéro de téléphone invalide",
-      (telephoneEP) => numTelephoneRegex.test(telephoneEP),
-    )
-    .required("Le numéro de téléphone de l'établissement est obligatoire"),
-};
-const validationSchema = computed(() => {
-  return yup.object({ ...schema });
-});
-const initialValues = computed(() => {
-  return {
-    siret: props.initData?.siret,
-    email: props.initData?.email,
-    telephoneEP: props.initData?.telephoneEP,
-    representantsLegaux: props.initData?.representantsLegaux ?? [],
-  };
-});
-const { meta } = useForm({
-  initialValues,
-  validationSchema,
-});
-
-const {
-  value: email,
-  errorMessage: emailErrorMessage,
-  handleChange: onEmailChange,
-  meta: emailMeta,
-} = useField("email");
-
-const {
-  value: representantsLegaux,
-  handleChange: onRepresentantsLegauxChange,
-} = useField("representantsLegaux");
-
-const {
-  value: telephoneEP,
-  errorMessage: telephoneEPErrorMessage,
-  validMessage: telephoneEPValidMessage,
-  handleChange: onTelephoneEPChange,
-  meta: telephoneEPMeta,
-} = useField("telephoneEP");
 
 const isEtablissementFound = computed(() => {
   return !!siret.value;
@@ -279,18 +247,6 @@ const formatedPersonneMorale = computed(() => {
   };
 });
 
-const headers = [
-  {
-    label: "Nom",
-    value: "nom",
-  },
-  { label: "Prénom", value: "prenom" },
-  {
-    label: "Fonction",
-    value: "fonction",
-  },
-];
-
 const siretDisplayed = computed(() => {
   if (!siret.value) {
     return "";
@@ -316,9 +272,71 @@ const siretDisplayed = computed(() => {
   return formatedSiret;
 });
 
-function trimSiret(s) {
-  return onSiretChange(s.replace(/ /g, ""));
-}
+const validationSchema = yup.object({
+  siret: yup
+    .string()
+    .test(
+      "siret",
+      "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
+      (siret) => siretRegex.test(siret),
+    )
+    .required(),
+  email: yup
+    .string()
+    .email("le format de l'email n'est pas valide")
+    .required("L'email de contact est obligatoire"),
+  telephoneEP: yup
+    .string()
+    .test(
+      "telephone",
+      "Format de numéro de téléphone invalide",
+      (telephoneEP) => numTelephoneRegex.test(telephoneEP),
+    )
+    .required("Le numéro de téléphone de l'établissement est obligatoire"),
+  responsableSejour: yup.object().required(),
+  representantsLegaux: yup
+    .array()
+    .min(1, "au moins un représentant légal")
+    .required(),
+});
+
+const initialValues = computed(() => {
+  return {
+    siret: props.initData?.siret,
+    email: props.initData?.email,
+    telephoneEP: props.initData?.telephoneEP,
+    representantsLegaux: props.initData?.representantsLegaux ?? [],
+    responsableSejour: props.initData?.responsableSejour ?? {},
+  };
+});
+
+const { meta, values } = useForm({
+  initialValues,
+  validationSchema,
+});
+
+const {
+  value: email,
+  errorMessage: emailErrorMessage,
+  handleChange: onEmailChange,
+  meta: emailMeta,
+} = useField("email");
+
+const {
+  value: representantsLegaux,
+  handleChange: onRepresentantsLegauxChange,
+} = useField("representantsLegaux");
+
+const {
+  value: telephoneEP,
+  errorMessage: telephoneEPErrorMessage,
+  validMessage: telephoneEPValidMessage,
+  handleChange: onTelephoneEPChange,
+  meta: telephoneEPMeta,
+} = useField("telephoneEP");
+
+const { value: responsableSejour, handleChange: onResponsableSejourChange } =
+  useField("responsableSejour");
 
 const {
   value: siret,
@@ -326,6 +344,23 @@ const {
   handleChange: onSiretChange,
   meta: siretMeta,
 } = useField("siret");
+
+function next() {
+  log.i("next - IN");
+  emit(
+    "valid",
+    {
+      ...values,
+      ...formatedPersonneMorale.value,
+      meta: meta.value.valid,
+    },
+    "personne_morale",
+  );
+}
+
+function trimSiret(s) {
+  return onSiretChange(s.replace(/ /g, ""));
+}
 
 async function searchApiEntreprise() {
   log.i("searchApiEntreprise - IN");
@@ -361,9 +396,8 @@ async function searchOperateurBySiret() {
       toaster.success("L'opérateur est déjà présent en base");
       operateurDejaExistant.value = data.value.operateur;
       if (operateurDejaExistant.value) {
-        onRepresentantsLegauxChange(
-          operateurDejaExistant.value.personneMorale?.representantsLegaux,
-        );
+        representantsLegaux.value =
+          operateurDejaExistant.value.personneMorale?.representantsLegaux;
         email.value = operateurDejaExistant.value.personneMorale?.email;
         telephoneEP.value =
           operateurDejaExistant.value.personneMorale?.telephoneEP;
@@ -386,34 +420,6 @@ async function searchOperateur() {
     await searchApiEntreprise();
   }
 }
-
-function next() {
-  log.i("next - IN");
-  emit(
-    "valid",
-    {
-      siret: siret.value,
-      siren: formatedPersonneMorale.value.siren,
-      siegeSocial: formatedPersonneMorale.value.siegeSocial,
-      raisonSociale: formatedPersonneMorale.value.raisonSociale,
-      statut: formatedPersonneMorale.value.statut,
-      adresseShort: formatedPersonneMorale.value.adresse,
-      adresse: formatedPersonneMorale.value.adresseComplete,
-      pays: formatedPersonneMorale.value.pays,
-      email: email.value,
-      telephoneEP: telephoneEP.value,
-      representantsLegaux: representantsLegaux.value,
-      meta: meta.value.valid,
-    },
-    "personne_morale",
-  );
-}
 </script>
 
-<style lang="scss" scoped>
-#bloc-connexion {
-  color: #000091;
-  border-radius: 10px;
-  border: solid;
-}
-</style>
+<style lang="scss" scoped></style>

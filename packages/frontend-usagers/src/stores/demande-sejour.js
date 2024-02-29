@@ -3,30 +3,20 @@ import { logger, $fetchBackend } from "#imports";
 
 const log = logger("stores/demande-sejour");
 
+const resetDemandeCourante = () => ({
+  informationsOperateur: {},
+  informationsVacanciers: {},
+  informationsPersonnel: {},
+  informationsProjetSejour: {},
+  informationsTransport: {},
+  informationsSanitaires: {},
+  hebergement: [],
+});
+
 export const useDemandeSejourStore = defineStore("demandeSejour", {
   state: () => ({
     demandes: [],
-    demandeCourante: {
-      id: null,
-      statut: null,
-      userId: null,
-      operateurId: null,
-      siret: null,
-      idFonctionnelle: null,
-      libelle: null,
-      dateDebut: null,
-      dateFin: null,
-      sejourItinerant: null,
-      sejourEtranger: null,
-      duree: null,
-      informationsOperateur: {},
-      informationsVacanciers: {},
-      informationsPersonnel: {},
-      informationsProjetSejour: {},
-      informationsTransport: {},
-      informationsSanitaires: {},
-      hebergement: [],
-    },
+    demandeCourante: resetDemandeCourante(),
   }),
   actions: {
     async fetchDemandes() {
@@ -58,8 +48,12 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         }
       } catch (err) {
         log.w("setDemandeCourante - DONE with error", err);
-        this.demandeCourante = {};
+        this.demandeCourante = resetDemandeCourante();
       }
+    },
+    async resetDemandeCourante() {
+      log.i("resetDemandeCourante - IN");
+      this.demandeCourante = resetDemandeCourante();
     },
     async postDemande(demande) {
       log.i("postDemande - IN", { demande });

@@ -16,8 +16,8 @@ const query = {
       periode,
       transport,
       sanitaires,
-      organisateurs
-    )
+      organisme
+    ) 
     VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9)
     RETURNING
         id as "idDemande"
@@ -90,7 +90,7 @@ const query = {
       ds.transport as "informationsTransport",
       ds.sanitaires as "informationsSanitaires",
       ds.hebergement as "hebergement",
-      ds.organisateurs->'organisateurs' as "organisateurs",
+      ds.organisme as "organisme",
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
     JOIN front.operateurs o ON o.id = ds.operateur_id
@@ -118,9 +118,10 @@ const query = {
       date_debut = $2,
       date_fin = $3,
       duree = $4,
+      organisme = $5,   
       edited_at=NOW()
     WHERE
-      ds.id = $5
+      ds.id = $6
     RETURNING
       id as "idDemande"
     `,
@@ -183,16 +184,6 @@ const query = {
     RETURNING
       id as "idDemande"
     `,
-  updateOrganisateurs: `
-    UPDATE front.demande_sejour ds
-      SET
-      organisateurs = $1,
-      edited_at=NOW()
-    WHERE
-      ds.id = $2
-    RETURNING
-      id as "idDemande"
-    `,
 };
 
 module.exports.create = async (
@@ -204,7 +195,7 @@ module.exports.create = async (
   periode,
   protocoleTransport,
   protocoleSanitaire,
-  organisateurs,
+  organisme,
 ) => {
   log.i("create - IN");
   const response = await pool.query(query.create, [
@@ -216,7 +207,7 @@ module.exports.create = async (
     periode,
     protocoleTransport,
     protocoleSanitaire,
-    organisateurs,
+    organisme,
   ]);
   log.d(response);
   const { idDemande } = response.rows[0];
@@ -295,6 +286,7 @@ module.exports.getByAdminId = async (
 
 module.exports.update = async (type, demandeSejourId, parametre) => {
   log.i("update - IN", { demandeSejourId });
+  log.i(type);
   let response;
   switch (type) {
     case "operateur": {
@@ -317,62 +309,50 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       ]);
       break;
     }
-    case "organisateurs": {
-      const { organisateurs } = parametre;
-      response = await pool.query(query.updateOrganisateurs, [
-        organisateurs,
-        demandeSejourId,
-      ]);
-      break;
-    }
     case "informationsVacanciers": {
-      const { informationsVacanciers } = parametre;
+      log.d("informationsVacanciers", demandeSejourId);
       response = await pool.query(query.updateInformationsVacanciers, [
-        informationsVacanciers,
+        parametre,
         demandeSejourId,
       ]);
       break;
     }
     case "informationsPersonnel": {
-      const { informationsPersonnel } = parametre;
+      log.d("informationsProjetSejour", demandeSejourId);
       response = await pool.query(query.updateInformationsPersonnel, [
-        informationsPersonnel,
+        parametre,
         demandeSejourId,
       ]);
       break;
     }
     case "informationsProjetSejour": {
-      const { informationsProjetSejour } = parametre;
-      log.i(informationsProjetSejour, demandeSejourId);
+      log.d("informationsProjetSejour", demandeSejourId);
       response = await pool.query(query.updateInformationsProjetSejour, [
-        informationsProjetSejour,
+        parametre,
         demandeSejourId,
       ]);
       break;
     }
-    case "informationsTransport": {
-      const { informationsTransport } = parametre;
-      log.i(informationsTransport, demandeSejourId);
+    case "protocole_transport": {
+      log.d("protocole_transport", demandeSejourId);
       response = await pool.query(query.updateInformationsTransport, [
-        informationsTransport,
+        parametre,
         demandeSejourId,
       ]);
       break;
     }
-    case "informationsSanitaires": {
-      const { informationsSanitaires } = parametre;
-      log.i(informationsSanitaires, demandeSejourId);
+    case "protocole_sanitaire": {
+      log.d("protocole_sanitaire", demandeSejourId);
       response = await pool.query(query.updateInformationsSanitaires, [
-        informationsSanitaires,
+        parametre,
         demandeSejourId,
       ]);
       break;
     }
     case "hebergements": {
-      const { hebergements } = parametre;
-      log.i(hebergements, demandeSejourId);
+      log.d("hebergements", demandeSejourId);
       response = await pool.query(query.updateHebergements, [
-        hebergements,
+        parametre,
         demandeSejourId,
       ]);
       break;

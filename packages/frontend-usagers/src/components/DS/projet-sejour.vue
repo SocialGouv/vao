@@ -8,17 +8,7 @@
             name="destination"
             legend="Destination"
             :inline="true"
-            :options="[
-              { label: 'Mer', id: 'mer', name: 'mer' },
-              { label: 'Montagne', id: 'montagne', name: 'montagne' },
-              { label: 'Campagne', id: 'campagne', name: 'campagne' },
-              {
-                label: 'Séjour à thème',
-                id: 'sejour_a_theme',
-                name: 'sejour_a_theme',
-              },
-              { label: 'Etranger', id: 'etranger', name: 'etranger' },
-            ]"
+            :options="destinationOptions"
             :small="true"
             :required="true"
           />
@@ -87,6 +77,17 @@ const emit = defineEmits(["valid"]);
 
 const log = logger("components/DS/projet-sejour");
 
+const destinationOptions = [
+  { label: "Mer", id: "mer", name: "mer" },
+  { label: "Montagne", id: "montagne", name: "montagne" },
+  { label: "Campagne", id: "campagne", name: "campagne" },
+  {
+    label: "Séjour à thème",
+    id: "sejour_a_theme",
+    name: "sejour_a_theme",
+  },
+  { label: "Etranger", id: "etranger", name: "etranger" },
+];
 const sportOptions = [
   { text: "Baignade", value: "Baignade", id: "1" },
   { text: "Randonnée", value: "Randonnée", id: "2" },
@@ -138,11 +139,11 @@ const validationSchema = computed(() =>
 );
 
 const initialValues = computed(() => ({
-  destination: props.initData.informationsProjetSejour?.destination || [],
-  activitesCulturelles: props.initData?.activitesCulturelles ?? [],
-  activitesSportives: props.initData?.activitesSportives ?? [],
+  destination: props.initData.destination ?? [],
+  activitesCulturelles: props.initData.activitesCulturelles ?? [],
+  activitesSportives: props.initData.activitesSportives ?? [],
 }));
-const { meta, values, resetForm } = useForm({
+const { meta, values } = useForm({
   validationSchema,
   initialValues,
 });
@@ -156,32 +157,18 @@ function addActiviteCulture(liste) {
   activitesCulturelles.value = liste;
 }
 
-// const periode = computed(() => {
-//   const moisDebut = dayjs(demandeCourante.value.dateDebut).month();
-//   if (moisDebut < 3) return "hiver";
-//   if (moisDebut < 6) return "printemps";
-//   if (moisDebut < 9) return "été";
-//   if (moisDebut < 12) return "automne";
-// });
-
 const { value: destination } = useField("destination");
 const { value: activitesSportives } = useField("activitesSportives");
 const { value: activitesCulturelles } = useField("activitesCulturelles");
 
 function valid() {
   log.d("valid - IN");
-  emit("valid", { ...values, meta: meta.value.valid });
+  emit(
+    "valid",
+    { ...values, meta: meta.value.valid },
+    "informationsProjetSejour",
+  );
 }
-
-onMounted(() => {
-  resetForm({ values: initialValues.value });
-});
 </script>
 
-<style lang="scss" scoped>
-#bloc-connexion {
-  color: #000091;
-  border-radius: 10px;
-  border: solid;
-}
-</style>
+<style lang="scss" scoped></style>

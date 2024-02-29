@@ -9,15 +9,11 @@ export default [
   },
   {
     id: "protocole-transport",
-    text: "Protocoles transport",
+    text: "Protocole transport",
   },
   {
     id: "protocole-sanitaire",
-    text: "Protocoles sanitaires",
-  },
-  {
-    id: "organisateurs",
-    text: "Organisateurs",
+    text: "Protocole sanitaire",
   },
   {
     id: "synthese",

@@ -4,9 +4,7 @@
       <div class="fr-fieldset__element">
         <div v-for="(item, index) in props.personnes" :key="index">
           <div class="fr-col-12">
-            <span class="read-only-value">{{
-              `${item.nom} ${item.prenom}, ${item.fonction} : ${item.email}`
-            }}</span>
+            <PersonneReadOnly :personne="item" />
           </div>
         </div>
       </div>
@@ -16,7 +14,7 @@
 
 <script setup>
 const props = defineProps({
-  personnes: { type: Object, default: null, required: true },
+  personnes: { type: Array, required: true },
 });
 </script>
 
