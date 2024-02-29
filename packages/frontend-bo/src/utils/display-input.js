@@ -270,8 +270,8 @@ const displayCommentForOneCategory = (categoryInterface, comments, title) => {
       if (comments?.[entry] != null) {
         return `
                   <div>
-                  <b>${value.label}</b> :
-                  <pre style="background-color:#e5e5e5;padding: 1em; margin: 0; font-family: inherit; white-space: pre-wrap">${comments[entry].replace("<", "&#60;")}</pre>
+                  <span style="color: gray">${value.label}</span> :
+                  <pre style="background-color:#e5e5e5;padding: 1em; margin: 0; font-family: inherit; white-space: pre-wrap">${comments[entry].replaceAll("<", "&#60;")}</pre>
                   </div>
               `;
       } else {
@@ -281,7 +281,7 @@ const displayCommentForOneCategory = (categoryInterface, comments, title) => {
     .filter((c) => c != null);
   if (commentsByQuestionVacancier.length > 0) {
     return (
-      `<h5 style="margin: 0.5em 0">${title}</h5>` +
+      `<h5 style="margin: 0.5em 0 0 0">${title}</h5>` +
       commentsByQuestionVacancier.join("\n")
     );
   }

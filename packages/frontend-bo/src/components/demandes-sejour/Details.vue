@@ -2,12 +2,12 @@
   <div class="detail-container">
     <h1>Demande : {{ demande.libelle }}</h1>
     <div class="fr-grid-row">
-      <div class="fr-col-10">
+      <div class="fr-col-7">
         <div v-for="detail in demandeDetails" :key="detail.name">
           <strong>{{ detail.name }} : </strong>{{ detail.value }}
         </div>
       </div>
-      <div class="fr-col-2">
+      <div class="fr-col-5 badge">
         <DemandeStatusBadge :statut="demande.statut" :small="false" />
       </div>
     </div>
@@ -33,7 +33,9 @@ const demandeDetails = computed(() => [
   { name: "Saison", value: demandesSejours.getSaison(demande) },
   {
     name: "Déclaration",
-    value: "TO DO : indiquer demande à 8 jours",
+    value: demandesSejours.isDeclaration8Jours(demande.statut)
+      ? "Demande à 8 jours"
+      : "Demande a 2 mois",
   },
 ]);
 </script>
@@ -44,5 +46,11 @@ const demandeDetails = computed(() => [
   flex-direction: column;
   padding: 0em 1em;
   margin-bottom: 2em;
+}
+
+.badge {
+  display: flex;
+  justify-content: end;
+  align-items: start;
 }
 </style>

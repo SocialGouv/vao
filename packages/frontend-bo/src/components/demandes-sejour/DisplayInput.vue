@@ -22,7 +22,7 @@
       />
     </div>
     <DsfrInput
-      v-if="showComment"
+      v-if="showComment || comment?.length > 0"
       ref="textarea"
       :is-textarea="true"
       label="Commentaire"

@@ -23,12 +23,7 @@ const props = defineProps({
 });
 
 const isDeclaration8Jours = computed(() =>
-  [
-    demandesSejours.statuts.ATTENTE_8_JOUR,
-    demandesSejours.statuts.TRANSMISE_8J,
-    demandesSejours.statuts.VALIDEE,
-    demandesSejours.statuts.REFUSEE,
-  ].includes(props.statut),
+  demandesSejours.isDeclaration8Jours(props.statut),
 );
 </script>
 

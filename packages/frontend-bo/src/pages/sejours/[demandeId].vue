@@ -6,7 +6,7 @@
     <DsfrTabs
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
-      initial-selected-index="initialSelectedIndex"
+      :initial-selected-index="initialSelectedIndex"
       @select-tab="selectTab"
     >
       <DsfrTabContent
@@ -144,7 +144,7 @@
     <div class="fr-grid-row">
       <div class="fr-col-8 fr-p-4v">
         <DsfrNotice title="Commentaires sur la demande" />
-        <div v-html="commentsInHtml"></div>
+        <div class="comment fr-my-4v" v-html="commentsInHtml"></div>
       </div>
       <div class="fr-col-4 fr-p-4v">
         <DsfrButtonGroup>
@@ -161,14 +161,12 @@ import {
   DsfrAccordionsGroup,
   DsfrButton,
   DsfrButtonGroup,
-  DsfrCallout,
   DsfrTabContent,
   DsfrTabs,
 } from "@gouvminint/vue-dsfr";
 import DisplayInput from "~/components/demandes-sejour/DisplayInput.vue";
 import Details from "~/components/demandes-sejour/Details.vue";
 import displayInput from "~/utils/display-input";
-import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 
 const route = useRoute();
 const demandeStore = useDemandeSejourStore();
@@ -240,8 +238,8 @@ const commentsInHtml = computed(() => {
         if (organisateurComment?.[entry] != null) {
           return `
                   <div>
-                  <b>${value.label}</b> :
-                  <pre style="background-color:#e5e5e5;padding: 1em; margin: 0; font-family: inherit; white-space: pre-wrap">${organisateurComment[entry].replace("<", "&#60;")}</pre>
+                  <span style="color: gray">${value.label}</span> :
+                  <pre style="background-color:#e5e5e5;padding: 1em; margin: 0; font-family: inherit; white-space: pre-wrap">${organisateurComment[entry].replaceAll("<", "&#60;")}</pre>
                   </div>
               `;
         } else {
@@ -251,13 +249,9 @@ const commentsInHtml = computed(() => {
       .filter((c) => c != null);
     if (commentsByQuestion.length > 0) {
       resOrganisateur +=
-        `<h6 style="margin: 0.5em 0">Organisateur ${index + 1} : </h6>` +
+        `<h6 style="margin: 0">Organisateur ${index + 1} : </h6>` +
         commentsByQuestion.join("\n");
     }
-  }
-  if (resOrganisateur.length > 0) {
-    resOrganisateur =
-      "<h5 style='margin: 0.5em 0'>Organisateurs</h5>" + resOrganisateur;
   }
 
   //  Vacancier
@@ -318,5 +312,15 @@ const selectTab = (idx) => {
 <style scoped>
 .header {
   padding: 1em 0em;
+}
+
+.comment {
+  max-height: 30vh;
+  overflow: hidden;
+}
+
+.comment:hover {
+  max-height: 30vh;
+  overflow: auto;
 }
 </style>

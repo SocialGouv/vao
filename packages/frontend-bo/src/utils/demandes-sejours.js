@@ -24,6 +24,15 @@ const getSaison = (demande) => {
     if (moisDebut < 12) return "Automne";
   }
 };
+
+const isDeclaration8Jours = (statut) =>
+  [
+    statuts.ATTENTE_8_JOUR,
+    statuts.TRANSMISE_8J,
+    statuts.VALIDEE,
+    statuts.REFUSEE,
+  ].includes(statut);
+
 const getOrganismeTitle = (demande) => {
   if (demande.typeOrganisme === "personne_physique") {
     return `${demande.personne_physique.prenom} ${demande.personne_physique.nomUsage ?? demande.personne_physique.nomNaissance}`;
@@ -37,4 +46,10 @@ const getOrganismeTitle = (demande) => {
 const getDateDebutFin = (demande) =>
   `${formatDate(demande.dateDebut, "dd/MM/yyyy")} - ${formatDate(demande.dateFin, "dd/MM/yyyy")}`;
 
-export default { statuts, getSaison, getOrganismeTitle, getDateDebutFin };
+export default {
+  statuts,
+  getSaison,
+  getOrganismeTitle,
+  getDateDebutFin,
+  isDeclaration8Jours,
+};
