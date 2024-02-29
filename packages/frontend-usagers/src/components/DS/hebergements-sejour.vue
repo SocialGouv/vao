@@ -73,8 +73,6 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import { useHebergementStore } from "@/stores/hebergement";
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
 
 const props = defineProps({
   initData: { type: Object, default: null, required: true },
@@ -146,7 +144,7 @@ const syntheseRows = computed(() => {
   if (hebergementStore.hebergements.length > 0) {
     return hebergements.value.map((h, index) => {
       const currentHebergement = hebergementStore.hebergements.find((elem) => {
-        return elem.hebergementId.toString() === h.hebergementId.toString();
+        return elem.id.toString() === h.id.toString();
       });
       if (currentHebergement) {
         const rows = [
@@ -154,7 +152,7 @@ const syntheseRows = computed(() => {
           dayjs(h.dateFin).diff(dayjs(h.dateDebut), "day").toString(),
           dayjs(h.dateDebut).format("DD/MM/YYYY"),
           dayjs(h.dateFin).format("DD/MM/YYYY"),
-          currentHebergement.nomHebergement,
+          currentHebergement.nom,
           currentHebergement.caracteristiques.adresse.properties.label,
         ];
         return {
