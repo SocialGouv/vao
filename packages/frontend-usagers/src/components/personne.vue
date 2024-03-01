@@ -56,8 +56,10 @@
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
             <SearchAddress
+              :initial-adress="props.personne.adresse?.label"
               :value="adresse"
               :label="props.personne.adresse ? 'Nouvelle adresse' : 'Adresse'"
+              :error-message="adresseErrorMessage"
               @select="onAddressChange"
             />
           </div>
@@ -119,8 +121,6 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-
-const log = logger("components/personne");
 
 const props = defineProps({
   personne: { type: Object, required: true },
@@ -261,7 +261,11 @@ const {
   meta: emailMeta,
 } = useField("email");
 
-const { value: adresse, handleChange: onAddressChange } = useField("adresse");
+const {
+  value: adresse,
+  errorMessage: adresseErrorMessage,
+  handleChange: onAddressChange,
+} = useField("adresse");
 
 function validatePersonne() {
   emit("valid", { ...values });

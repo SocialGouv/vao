@@ -80,10 +80,12 @@
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
           <SearchAddress
-            :value="adresseDomicile"
+            :initial-adress="props.initData.adresseDomicile?.label"
+            :error-message="adresseDomicileErrorMessage"
             :label="
-              isUpdate ? 'Nouvelle adresse de domicile' : 'Adresse du domicile'
+              props.initData.adresseDomicile ? 'Nouvelle adresse' : 'Adresse'
             "
+            :value="adresseDomicile"
             @select="onAddressDomicileChange"
           />
         </div>
@@ -110,12 +112,12 @@
       <div v-if="adresseIdentique === false" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
           <SearchAddress
-            :value="adresseSiege"
+            :initial-adress="props.initData.adresseSiege?.label"
+            :error-message="adresseSiegeErrorMessage"
             :label="
-              isUpdate
-                ? 'Nouvelle adresse du siège des activités VAO'
-                : 'Adresse du siège des activités VAO'
+              props.initData.adresseSiege ? 'Nouvelle adresse' : 'Adresse'
             "
+            :value="adresseSiege"
             @select="onAddressSiegeChange"
           />
         </div>
@@ -214,10 +216,6 @@ const doubleSpacesRegex = / {2}/i;
 const tripleDashRegex = /-{3}/i;
 const doubleDashRegex = /-{2}/i;
 
-const isUpdate = computed(() => {
-  return !!props.initData;
-});
-
 const validationSchema = yup.object({
   nomNaissance: yup
     .string()
@@ -313,15 +311,21 @@ const {
   handleChange: onProfessionChange,
   meta: professionMeta,
 } = useField("profession");
-const { value: adresseDomicile, handleChange: onAddressDomicileChange } =
-  useField("adresseDomicile");
+const {
+  value: adresseDomicile,
+  errorMessage: adresseDomicileErrorMessage,
+  handleChange: onAddressDomicileChange,
+} = useField("adresseDomicile");
 const {
   value: adresseIdentique,
   errorMessage: adresseIdentiqueErrorMessage,
   meta: adresseIdentiqueMeta,
 } = useField("adresseIdentique");
-const { value: adresseSiege, handleChange: onAddressSiegeChange } =
-  useField("adresseSiege");
+const {
+  value: adresseSiege,
+  errorMessage: adresseSiegeErrorMessage,
+  handleChange: onAddressSiegeChange,
+} = useField("adresseSiege");
 const {
   value: telephone,
   errorMessage: telephoneErrorMessage,
