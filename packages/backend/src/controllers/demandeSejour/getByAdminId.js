@@ -1,6 +1,7 @@
 const DemandeSejour = require("../../services/DemandeSejour");
 
 const logger = require("../../utils/logger");
+const User = require("../../services/BoUser");
 
 const log = logger(module.filename);
 
@@ -9,6 +10,11 @@ module.exports = async function getByAdminId(req, res) {
   const { decoded } = req;
   const { id: adminId } = decoded ?? {};
   log.d("userId", { adminId });
+
+  const { role_ids, ter_codes } =
+    await User.getRolesAndTerritoiresByUserId(adminId);
+
+  console.log(role_ids, ter_codes);
 
   try {
     const { limit, offset, sortBy, sortDirection, search } = req.query;
