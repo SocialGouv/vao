@@ -18,7 +18,7 @@
         <DsfrAccordionsGroup>
           <li v-if="demande?.organisateurs?.organisateurs">
             <DsfrAccordion
-              title="Organisateurs"
+              :title="`Organisateurs (${getCommentsNumber('organisateurs')})`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -43,7 +43,7 @@
           </li>
           <li v-if="demande.vacanciers">
             <DsfrAccordion
-              title="Vacanciers"
+              :title="`Vacanciers (${getCommentsNumber('vacanciers')})`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -59,7 +59,7 @@
           </li>
           <li v-if="demande?.personnel">
             <DsfrAccordion
-              title="Personnel"
+              :title="`Personnel (${getCommentsNumber('personnel')})`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -75,7 +75,7 @@
           </li>
           <li v-if="demande?.projet_sejour">
             <DsfrAccordion
-              title="Projet de séjour"
+              :title="`Projet de séjour (${getCommentsNumber('projet_sejour')})`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -91,7 +91,7 @@
           </li>
           <li v-if="demande?.transport">
             <DsfrAccordion
-              title="Informations sur le transport"
+              :title="`Information sur le transport (${getCommentsNumber('transport')})`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -107,7 +107,7 @@
           </li>
           <li v-if="demande?.sanitaires">
             <DsfrAccordion
-              title="Informations sanitaires"
+              :title="`Information sanitaires (${getCommentsNumber('sanitaires')})`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -142,6 +142,19 @@
       </DsfrTabContent>
     </DsfrTabs>
     <div class="fr-grid-row">
+      <div class="fr-col-12 fr-p-4v">
+        <h4>Commentaires généraux</h4>
+        <DsfrInput
+          ref="textarea"
+          v-model="comments.generalComment"
+          :is-textarea="true"
+          label="Commentaires"
+          placeholder="Ajouter un commentaire"
+          rows="10"
+        />
+      </div>
+    </div>
+    <div class="fr-grid-row">
       <div class="fr-col-8 fr-p-4v">
         <DsfrNotice title="Commentaires sur la demande" />
         <div class="comment fr-my-4v" v-html="commentsInHtml"></div>
@@ -163,6 +176,8 @@ import {
   DsfrButtonGroup,
   DsfrTabContent,
   DsfrTabs,
+  DsfrNotice,
+  DsfrInput,
 } from "@gouvminint/vue-dsfr";
 import DisplayInput from "~/components/demandes-sejour/DisplayInput.vue";
 import Details from "~/components/demandes-sejour/Details.vue";
@@ -193,6 +208,20 @@ onMounted(() => {
 });
 
 watch(comments, (c) => saveComment(c), { deep: true });
+
+const getCommentsNumber = (category) => {
+  if (category === "organisateurs") {
+    return (
+      comments.value.organisateurs
+        ?.filter((o) => !!o)
+        ?.map((o) => Object.values(o).filter((v) => !!v).length)
+        .reduce((a, c) => a + c, 0) ?? 0
+    );
+  }
+  return comments.value[category]
+    ? Object.values(comments.value[category]).filter((o) => !!o).length
+    : 0;
+};
 
 const demande = demandeStore.getById(route.params.idDemande);
 if (!demande) {

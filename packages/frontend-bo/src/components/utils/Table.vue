@@ -113,21 +113,22 @@ const pages = computed(() => {
 
 const displayable = computed(() => {
   return props.data.map((item) => {
-    return headers.map((header) => {
-      if (header.component) {
-        return header.component(item);
-      }
-      const data = header.format ? header.format(item) : item[header.column];
-      return {
-        text: data?.toString() ?? "",
-        ...(props.onClickCell && {
-          cellAttrs: {
-            class: "pointer",
-            onClick: () => props.onClickCell(item),
-          },
-        }),
-      };
-    });
+    return {
+      rowAttrs: {
+        class: "pointer",
+        onClick: () => props.onClickCell(item),
+      },
+      rowData: headers.map((header) => {
+        if (header.component) {
+          return header.component(item);
+        }
+        const data = header.format ? header.format(item) : item[header.column];
+        return {
+          text: data?.toString() ?? "",
+          ...(props.onClickCell && {}),
+        };
+      }),
+    };
   });
 });
 </script>

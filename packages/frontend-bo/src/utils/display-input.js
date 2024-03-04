@@ -271,7 +271,7 @@ const displayCommentForOneCategory = (categoryInterface, comments, title) => {
         return `
                   <div>
                   <span style="color: gray">${value.label}</span> :
-                  <pre style="background-color:#e5e5e5;padding: 1em; margin: 0; font-family: inherit; white-space: pre-wrap">${comments[entry].replaceAll("<", "&#60;")}</pre>
+                  <pre style="margin: 0; font-family: inherit; white-space: pre-wrap; margin: 0">${comments[entry].replaceAll("<", "&#60;")}</pre>
                   </div>
               `;
       } else {
@@ -289,8 +289,14 @@ const displayCommentForOneCategory = (categoryInterface, comments, title) => {
 };
 
 const getHtmlComments = (comments) => {
-  let resOrganisateur = "";
+  const resGeneralComment = comments.generalComment
+    ? `
+<h6 style="margin: 0">Commentaire Général : </h6>
+<pre style="font-family: inherit; white-space: pre-wrap; margin: 0 0 2em 0">${comments.generalComment.replaceAll("<", "&#60;")}</pre>
+`
+    : "";
 
+  let resOrganisateur = "";
   //  Organisateurs
   for (const [
     index,
@@ -302,7 +308,7 @@ const getHtmlComments = (comments) => {
           return `
                   <div>
                   <span style="color: gray">${value.label}</span> :
-                  <pre style="background-color:#e5e5e5;padding: 1em; margin: 0; font-family: inherit; white-space: pre-wrap">${organisateurComment[entry].replaceAll("<", "&#60;")}</pre>
+                  <pre style="font-family: inherit; white-space: pre-wrap; margin: 0">${organisateurComment[entry].replaceAll("<", "&#60;")}</pre>
                   </div>
               `;
         } else {
@@ -353,6 +359,7 @@ const getHtmlComments = (comments) => {
   );
 
   return (
+    resGeneralComment +
     resOrganisateur +
     resVacanciers +
     resPersonnel +

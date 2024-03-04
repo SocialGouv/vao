@@ -1,10 +1,6 @@
 <template>
   <div v-if="!!displayValue" class="container">
-    <div
-      class="display-info-bloc"
-      @mouseenter="isHover = true"
-      @mouseleave="isHover = false"
-    >
+    <div class="display-info-bloc">
       <div class="fr-col-10">
         <span class="read-only-label">{{ input.label }}</span>
       </div>
@@ -12,17 +8,26 @@
         <span class="read-only-value">{{ displayValue }}</span>
       </div>
       <DsfrButton
-        v-show="isHover"
-        icon="fr-icon-edit-box-line"
+        v-show="comment?.length === 0"
+        icon="fr-icon-discuss-line"
         icon-only
-        class="display-info-button"
+        class="display-info-icon"
+        tertiary
+        no-outline
+        @click="showComment = !showComment"
+      />
+      <DsfrButton
+        v-show="comment?.length > 0"
+        icon="fr-icon-discuss-fill"
+        icon-only
+        class="display-info-icon"
         tertiary
         no-outline
         @click="showComment = !showComment"
       />
     </div>
     <DsfrInput
-      v-if="showComment || comment?.length > 0"
+      v-if="showComment"
       ref="textarea"
       :is-textarea="true"
       label="Commentaire"
@@ -37,7 +42,6 @@
 import { DsfrButton, DsfrInput } from "@gouvminint/vue-dsfr";
 import displayInput from "~/utils/display-input";
 
-const isHover = ref(false);
 const showComment = ref(false);
 
 defineEmits(["emitComment"]);
@@ -115,9 +119,10 @@ const displayValue = computed(() => {
   width: 100%;
 }
 
-.display-info-button {
+.display-info-icon {
   position: absolute;
   top: 0;
   right: 0;
+  color: #000091;
 }
 </style>
