@@ -103,7 +103,6 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { useOperateurStore } from "@/stores/operateur";
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
@@ -119,6 +118,7 @@ const emit = defineEmits(["next", "update"]);
 const log = logger("components/DS/informations-generales");
 
 const operateurStore = useOperateurStore();
+const userStore = useUserStore();
 
 const duree = computed(() => {
   const nbjours = dayjs(dateFin.value).diff(dateDebut.value, "day");
@@ -133,12 +133,13 @@ const saison = computed(() => {
   if (moisDebut < 12) return "automne";
 });
 
-if (!operateurStore.operateurCourant) {
-  await operateurStore.setMyOperateur();
-}
+const operateurCourant = computed(() => {
+  return operateurStore.operateurCourant;
+});
+
 if (
-  operateurStore.operateurCourant.typeOperateur === "personne_morale" &&
-  !operateurStore.operateurCourant.personneMorale.siegeSocial
+  operateurCourant.value.typeOperateur === "personne_morale" &&
+  !operateurCourant.value.personneMorale.siegeSocial
 ) {
   await checkSiege();
 }
@@ -173,8 +174,16 @@ const validationSchema = yup.object({
 });
 
 const initialValues = computed(() => {
-  const responsableSejour =
-    operateurStore.operateurCourant.personneMorale?.responsableSejour ?? {};
+  const responsableSejour = operateurCourant.value.personneMorale.siret
+    ? operateurCourant.value.personneMorale.responsableSejour
+    : {
+        nom: operateurCourant.value.personnePhysique.nomNaissance,
+        prenom: operateurCourant.value.personnePhysique.prenom,
+        fonction: "organisateur de séjour",
+        email: userStore.user.email,
+        telephone: operateurCourant.value.personnePhysique.telephone,
+        adresse: operateurCourant.value.personnePhysique.adresseSiege,
+      };
   return {
     libelle: props.initData.libelle,
     dateDebut: props.initData.dateDebut
@@ -225,25 +234,30 @@ async function checkSiege() {
     const nic =
       operateurStore.operateurCourant.personneMorale.siret.substring(9);
     log.d(etablissementPrincipal);
-    if (!etablissementPrincipal || etablissementPrincipal.length === 0) {
+    if (!etablissementPrincipal) {
       toaster.error(
         "L'établissement principal n'a pas encore déclaré son agrément sur la plateforme VAO.",
       );
       return navigateTo("/");
-    } else {
-      if (
-        !etablissementPrincipal.personneMorale.etablissements.filter(
-          (e) => e.nic === nic,
-        )[0].enabled
-      ) {
-        toaster.error(
-          "L'établissement principal n'a pas autorisé votre établissement à saisir des déclarations.",
-        );
-        return navigateTo("/");
-      }
+    }
+    const e = (
+      etablissementPrincipal.personneMorale?.etablissements ?? []
+    ).find((e) => e.nic === nic);
+    if (!e) {
+      toaster.error(
+        "Votre établissement n'est pas rattaché à l'établissement principal. Rapprochez-vous de l'établissement principal.",
+      );
+      return navigateTo("/");
+    }
+    if (!e.enabled) {
+      toaster.error(
+        "L'établissement principal n'a pas autorisé votre établissement à saisir des déclarations.",
+      );
+      return navigateTo("/");
     }
   } catch (error) {
     log.w(error);
+    toaster.error("Une erreur est survenue. Veuillez réessayer ultérieurement");
   }
 }
 

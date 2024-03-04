@@ -88,22 +88,22 @@ const query = {
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
       o.protocole_sanitaire as "protocoleSanitaire",
-      o.created_at as "createdAt",
-      o.edited_at as "editedAt",
       (
         SELECT 
-          json_build_object(
-            'numero', numero,
-            'filename', filename,
-            'uuid', uuid,
-            'regionDelivrance', region_delivrance,
-            'dateObtention', date_obtention,
-            'createdAt',a.created_at
+        json_build_object(
+          'numero', numero,
+          'filename', filename,
+          'uuid', uuid,
+          'regionDelivrance', region_delivrance,
+          'dateObtention', date_obtention,
+          'createdAt',a.created_at
           )                  
-        FROM front.agrements a            
-        WHERE operateur_id = o.id
-        AND a.supprime = false
-      ) AS agrement
+          FROM front.agrements a            
+          WHERE operateur_id = o.id
+          AND a.supprime = false
+          ) AS agrement,
+      o.created_at as "createdAt",
+      o.edited_at as "editedAt"
     FROM front.operateurs o
     JOIN front.user_operateur uo ON o.id = ope_id
     WHERE o.personne_morale->>'siren' = $1 

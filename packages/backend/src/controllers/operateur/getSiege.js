@@ -6,13 +6,13 @@ const log = logger(module.filename);
 
 module.exports = async function get(req, res) {
   log.i("In");
-  const { siret } = req.params;
-  if (!siret) {
+  const { siren } = req.params;
+  if (!siren) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
   }
   try {
-    const operateur = await Operateur.getSiege(siret);
+    const operateur = await Operateur.getSiege(siren);
     log.d(operateur);
     return res.status(200).json({ operateur });
   } catch (error) {
