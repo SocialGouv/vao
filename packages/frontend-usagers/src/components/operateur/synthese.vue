@@ -45,7 +45,7 @@
             </template>
             <OperateurAgrementReadOnly
               v-if="props.initData.typeOperateur === 'personne_morale'"
-              :init-data="props.initData.agrement"
+              :init-data="props.initData.agrement ?? {}"
             />
           </DsfrAccordion>
           <DsfrAccordion
@@ -63,7 +63,7 @@
               />
             </template>
             <protocole-transport-read-only
-              :init-data="props.initData.protocoleTransport"
+              :init-data="props.initData.protocoleTransport ?? {}"
             ></protocole-transport-read-only>
           </DsfrAccordion>
           <DsfrAccordion
@@ -81,7 +81,7 @@
               />
             </template>
             <protocole-sanitaire-read-only
-              :init-data="props.initData.protocoleSanitaire"
+              :init-data="props.initData.protocoleSanitaire ?? {}"
             ></protocole-sanitaire-read-only>
           </DsfrAccordion>
         </DsfrAccordionsGroup>

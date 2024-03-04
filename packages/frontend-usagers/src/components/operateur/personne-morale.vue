@@ -117,6 +117,25 @@
       <div v-if="isEtablissementPrincipal">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-8">
+            <DsfrHighlight text="Liste des établissements" :large="true" />
+          </div>
+        </div>
+        <div class="fr-fieldset__element">
+          <div class="fr-input-group fr-col-12">
+            <DsfrTable
+              :headers="[
+                'code NIC',
+                'Adresse',
+                'Code postal',
+                'Commune',
+                'Autorisé à déclarer des séjours ?',
+              ]"
+              :rows="etablissementsToDisplay"
+            />
+          </div>
+        </div>
+        <div class="fr-fieldset__element">
+          <div class="fr-input-group fr-col-8">
             <DsfrHighlight text="Représentants légaux" :large="true" />
           </div>
         </div>
@@ -124,9 +143,9 @@
           <div class="fr-input-group fr-col-12">
             <Personnes
               :personnes="representantsLegaux"
-              :show-adresse="true"
-              :show-telephone="true"
-              :show-email="true"
+              :show-adresse="false"
+              :show-telephone="false"
+              :show-email="false"
               titre="Représentant légal"
               :headers="headers"
               @valid="onRepresentantsLegauxChange"
@@ -139,6 +158,7 @@
         <div class="fr-input-group fr-col-8">
           <h6>Responsable de l'organisation du séjour</h6>
           <Personne
+            :key="randomId"
             :personne="responsableSejour"
             :show-adresse="true"
             :show-telephone="true"
@@ -183,35 +203,91 @@ const headers = [
 
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 const siretRegex = /^[0-9]{14}$/;
-
+const randomId = ref(random.getRandomId());
 const personneMorale = ref();
 const operateurDejaExistant = ref();
 
+// Schéma et données liées à une personne morale
+const schema = {
+  siret: yup
+    .string()
+    .test(
+      "siret",
+      "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
+      (siret) => siretRegex.test(siret),
+    )
+    .required(),
+  email: yup
+    .string()
+    .email("le format de l'email n'est pas valide")
+    .required("L'email de contact est obligatoire"),
+  telephoneEP: yup
+    .string()
+    .test(
+      "telephone",
+      "Format de numéro de téléphone invalide",
+      (telephoneEP) => numTelephoneRegex.test(telephoneEP),
+    )
+    .required("Le numéro de téléphone de l'établissement est obligatoire"),
+  representantsLegaux: yup.array().min(1, "pas bien").required(),
+  etablissements: yup.array().min(1, "pas bien").required(),
+};
+const validationSchema = computed(() => {
+  return yup.object({ ...schema });
+});
+
+const initialValues = computed(() => {
+  return {
+    siret: props.initData?.siret,
+    email: props.initData?.email,
+    telephoneEP: props.initData?.telephoneEP,
+    representantsLegaux: props.initData?.representantsLegaux ?? [],
+    etablissements: props.initData?.etablissements ?? [],
+    responsableSejour: props.initData?.responsableSejour ?? {},
+  };
+});
+
+const { meta } = useForm({
+  initialValues,
+  validationSchema,
+});
+
+const {
+  value: siret,
+  errorMessage: siretErrorMessage,
+  handleChange: onSiretChange,
+  meta: siretMeta,
+} = useField("siret");
+const {
+  value: email,
+  errorMessage: emailErrorMessage,
+  handleChange: onEmailChange,
+  meta: emailMeta,
+} = useField("email");
+const {
+  value: representantsLegaux,
+  handleChange: onRepresentantsLegauxChange,
+} = useField("representantsLegaux");
+const {
+  value: telephoneEP,
+  errorMessage: telephoneEPErrorMessage,
+  validMessage: telephoneEPValidMessage,
+  handleChange: onTelephoneEPChange,
+  meta: telephoneEPMeta,
+} = useField("telephoneEP");
+const { value: etablissements } = useField("etablissements");
+const { value: responsableSejour, handleChange: onResponsableSejourChange } =
+  useField("responsableSejour");
+
 const isEtablissementFound = computed(() => {
-  return !!siret.value;
+  return !!formatedPersonneMorale.value;
 });
 
 const isEtablissementPrincipal = computed(() => {
-  return !!formatedPersonneMorale.value.siegeSocial;
+  return formatedPersonneMorale.value.siegeSocial;
 });
 
 const formatedPersonneMorale = computed(() => {
-  // les infos proviennent de l'API entreprise
-  if (personneMorale.value) {
-    const adresse = `${personneMorale.value.adresse.numero_voie} ${personneMorale.value.adresse.type_voie} ${personneMorale.value.adresse.libelle_voie} ${personneMorale.value.adresse.code_postal} ${personneMorale.value.adresse.libelle_commune}`;
-    return {
-      siret: personneMorale.value.siret,
-      siren: personneMorale.value.unite_legale.siren,
-      siegeSocial: personneMorale.value.siege_social,
-      raisonSociale:
-        personneMorale.value.unite_legale.personne_morale_attributs
-          .raison_sociale,
-      statut: personneMorale.value.unite_legale.forme_juridique.libelle,
-      adresse: adresse.trim(),
-      adresseComplete: personneMorale.value.adresse,
-      pays: personneMorale.value.adresse.libelle_pays_etranger ?? "France",
-    };
-  }
   // les infos proviennent d'un operateur déjà présent en base
   if (operateurDejaExistant.value) {
     return {
@@ -225,6 +301,23 @@ const formatedPersonneMorale = computed(() => {
       pays: operateurDejaExistant.value.personneMorale?.pays,
     };
   }
+  // les infos proviennent de l'API entreprise
+  if (personneMorale.value) {
+    const adresse = `${personneMorale.value.adresseEtablissement.numeroVoieEtablissement} ${personneMorale.value.adresseEtablissement.typeVoieEtablissement} ${personneMorale.value.adresseEtablissement.libelleVoieEtablissement} ${personneMorale.value.adresseEtablissement.codePostalEtablissement} ${personneMorale.value.adresseEtablissement.libelleCommuneEtablissement}`;
+    return {
+      siret: personneMorale.value.siret,
+      siren: personneMorale.value.siren,
+      siegeSocial: personneMorale.value.etablissementSiege,
+      raisonSociale: personneMorale.value.uniteLegale.denominationUniteLegale,
+      statut: personneMorale.value.uniteLegale.categorieJuridiqueUniteLegale,
+      adresse: adresse.trim(),
+      adresseComplete: personneMorale.value.adresseEtablissement,
+      pays:
+        personneMorale.value.adresseEtablissement
+          .libellePaysEtrangerEtablissement ?? "France",
+    };
+  }
+  // initialisation
   if (props.initData) {
     return {
       siret: props.initData.siret,
@@ -272,97 +365,35 @@ const siretDisplayed = computed(() => {
   return formatedSiret;
 });
 
-const validationSchema = yup.object({
-  siret: yup
-    .string()
-    .test(
-      "siret",
-      "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
-      (siret) => siretRegex.test(siret),
-    )
-    .required(),
-  email: yup
-    .string()
-    .email("le format de l'email n'est pas valide")
-    .required("L'email de contact est obligatoire"),
-  telephoneEP: yup
-    .string()
-    .test(
-      "telephone",
-      "Format de numéro de téléphone invalide",
-      (telephoneEP) => numTelephoneRegex.test(telephoneEP),
-    )
-    .required("Le numéro de téléphone de l'établissement est obligatoire"),
-  responsableSejour: yup.object().required(),
-  representantsLegaux: yup
-    .array()
-    .min(1, "au moins un représentant légal")
-    .required(),
+const etablissementsToDisplay = computed(() => {
+  if (etablissements.value) {
+    return etablissements.value.map((e, index) => {
+      const row = [
+        e.nic,
+        e.adresse,
+        e.codePostal,
+        e.commune,
+        {
+          component: "DsfrToggleSwitch",
+          modelValue: etablissements.value[index].enabled,
+          onChange: () => {
+            etablissements.value[index].enabled =
+              !etablissements.value[index].enabled;
+          },
+        },
+      ];
+      return row;
+    });
+  } else {
+    return [];
+  }
 });
-
-const initialValues = computed(() => {
-  return {
-    siret: props.initData?.siret,
-    email: props.initData?.email,
-    telephoneEP: props.initData?.telephoneEP,
-    representantsLegaux: props.initData?.representantsLegaux ?? [],
-    responsableSejour: props.initData?.responsableSejour ?? {},
-  };
-});
-
-const { meta, values } = useForm({
-  initialValues,
-  validationSchema,
-});
-
-const {
-  value: email,
-  errorMessage: emailErrorMessage,
-  handleChange: onEmailChange,
-  meta: emailMeta,
-} = useField("email");
-
-const {
-  value: representantsLegaux,
-  handleChange: onRepresentantsLegauxChange,
-} = useField("representantsLegaux");
-
-const {
-  value: telephoneEP,
-  errorMessage: telephoneEPErrorMessage,
-  validMessage: telephoneEPValidMessage,
-  handleChange: onTelephoneEPChange,
-  meta: telephoneEPMeta,
-} = useField("telephoneEP");
-
-const { value: responsableSejour, handleChange: onResponsableSejourChange } =
-  useField("responsableSejour");
-
-const {
-  value: siret,
-  errorMessage: siretErrorMessage,
-  handleChange: onSiretChange,
-  meta: siretMeta,
-} = useField("siret");
-
-function next() {
-  log.i("next - IN");
-  emit(
-    "valid",
-    {
-      ...values,
-      ...formatedPersonneMorale.value,
-      meta: meta.value.valid,
-    },
-    "personne_morale",
-  );
-}
 
 function trimSiret(s) {
   return onSiretChange(s.replace(/ /g, ""));
 }
 
-async function searchApiEntreprise() {
+async function searchApiInsee() {
   log.i("searchApiEntreprise - IN");
   const url = `/siret/${siret.value}`;
   try {
@@ -370,16 +401,19 @@ async function searchApiEntreprise() {
       method: "GET",
       credentials: "include",
     });
-
-    log.d("Données récupérées");
     toaster.success("Données récupérées");
-    personneMorale.value = data.uniteLegale[0];
-    log.d(personneMorale.value);
+    personneMorale.value = data.uniteLegale;
+    etablissements.value = data.etablissements;
+    representantsLegaux.value = data.representantsLegaux;
+    responsableSejour.value = {};
   } catch (error) {
     toaster.error(
       "erreur lors de la récupération des données à partir du SIRET",
     );
-    log.w("searchApiEntreprise - erreur:", { error });
+    log.w("searchApiInsee - erreur:", { error });
+    personneMorale.value = null;
+    etablissements.value = null;
+    representantsLegaux.value = null;
   }
 }
 
@@ -391,35 +425,62 @@ async function searchOperateurBySiret() {
       method: "GET",
       credentials: "include",
     });
-    if (data.operateur.length > 0) {
-      log.d("L'opérateur est déjà présent en base");
+    log.d("searchOperateurBySiret", data);
+    if (data.operateur) {
       toaster.success("L'opérateur est déjà présent en base");
-      operateurDejaExistant.value = data.value.operateur;
-      if (operateurDejaExistant.value) {
-        representantsLegaux.value =
-          operateurDejaExistant.value.personneMorale?.representantsLegaux;
-        email.value = operateurDejaExistant.value.personneMorale?.email;
-        telephoneEP.value =
-          operateurDejaExistant.value.personneMorale?.telephoneEP;
-      }
-      log.d(operateurDejaExistant.value);
+      operateurDejaExistant.value = data.operateur;
+      representantsLegaux.value =
+        operateurDejaExistant.value.personneMorale.representantsLegaux ?? [];
+      etablissements.value =
+        operateurDejaExistant.value.personneMorale?.etablissements;
+      responsableSejour.value =
+        operateurDejaExistant.value.personneMorale?.responsableSejour;
+      email.value = operateurDejaExistant.value.personneMorale?.email;
+      telephoneEP.value =
+        operateurDejaExistant.value.personneMorale?.telephoneEP;
+      return operateurDejaExistant.value;
     }
   } catch (error) {
     toaster.error(
       "erreur lors de la récupération des données internes à partir du SIRET",
     );
     log.w("searchOperateurBySiret - erreur:", { error });
+    return null;
   }
 }
 
 async function searchOperateur() {
-  const operateur = await searchOperateurBySiret();
-  log.d("operateur", operateur);
-  if (!operateur) {
-    log.d("appel API entreprise");
-    await searchApiEntreprise();
+  log.i("searchOperateur - In");
+  operateurDejaExistant.value = await searchOperateurBySiret();
+  if (!operateurDejaExistant.value) {
+    log.d("appel API INSEE");
+    await searchApiInsee();
   }
+  randomId.value = random.getRandomId();
+}
+
+function next() {
+  log.i("next - IN");
+  log.i(responsableSejour.value);
+  emit(
+    "valid",
+    {
+      siret: siret.value,
+      siren: formatedPersonneMorale.value.siren,
+      siegeSocial: formatedPersonneMorale.value.siegeSocial,
+      raisonSociale: formatedPersonneMorale.value.raisonSociale,
+      statut: formatedPersonneMorale.value.statut,
+      adresseShort: formatedPersonneMorale.value.adresse,
+      adresse: formatedPersonneMorale.value.adresseComplete,
+      pays: formatedPersonneMorale.value.pays,
+      email: email.value,
+      telephoneEP: telephoneEP.value,
+      representantsLegaux: representantsLegaux.value,
+      etablissements: etablissements.value,
+      responsableSejour: responsableSejour.value,
+      meta: meta.value.valid,
+    },
+    "personne_morale",
+  );
 }
 </script>
-
-<style lang="scss" scoped></style>

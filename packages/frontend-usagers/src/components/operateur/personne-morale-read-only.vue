@@ -20,16 +20,54 @@
         </div>
       </div>
     </fieldset>
+
     <div v-if="initData.siegeSocial">
-      <div class="fr-col-12">
-        <span class="read-only-label">Représentants légaux</span>
-      </div>
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
-          <PersonnesReadOnly :personnes="props.initData.representantsLegaux">
-          </PersonnesReadOnly>
+      <fieldset class="fr-fieldset">
+        <div class="fr-fieldset__element">
+          <div class="fr-col-12">
+            <span class="read-only-label"
+              >Liste des établissements autorisés:</span
+            >
+          </div>
+          <div class="fr-col-12">
+            <span class="read-only-value">{{
+              initData.etablissements
+                .filter((e) => {
+                  return e.enabled;
+                })
+                .map((e) => `${e.nic} ${e.commune}`)
+                .join(", ")
+            }}</span>
+          </div>
         </div>
-      </div>
+      </fieldset>
+      <fieldset class="fr-fieldset">
+        <div class="fr-fieldset__element">
+          <div class="fr-col-12">
+            <span class="read-only-label">Représentants légaux</span>
+          </div>
+          <div class="fr-fieldset__element">
+            <div class="fr-input-group fr-col-12">
+              <PersonnesReadOnly
+                :personnes="props.initData.representantsLegaux"
+              >
+              </PersonnesReadOnly>
+            </div>
+          </div>
+          <div class="fr-col-12">
+            <span class="read-only-label"
+              >Responsable de l'organisation des séjours</span
+            >
+          </div>
+          <div class="fr-fieldset__element">
+            <div class="fr-input-group fr-col-12">
+              <PersonneReadOnly
+                :personne="props.initData.responsableSejour"
+              ></PersonneReadOnly>
+            </div>
+          </div>
+        </div>
+      </fieldset>
     </div>
   </div>
 </template>

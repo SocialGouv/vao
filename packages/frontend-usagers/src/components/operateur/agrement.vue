@@ -128,11 +128,8 @@ const regionStore = useRegionStore();
 const agrementCourant = computed(() => {
   if (props.initData.agrement) {
     return {
-      filename:
-        props.initData.agrement[props.initData.agrement.length - 1].filename,
-      lien: `${config.public.backendUrl}/document/${
-        props.initData.agrement[props.initData.agrement.length - 1].uuid
-      }`,
+      filename: props.initData.agrement.filename,
+      lien: `${config.public.backendUrl}/document/${props.initData.agrement.uuid}`,
     };
   }
 });
@@ -183,13 +180,12 @@ const validationSchema = computed(() =>
 
 const initialValues = computed(() => {
   if (props.initData.agrement) {
-    const lastIndex = props.initData.agrement.length - 1;
     return {
-      regionDelivrance: props.initData.agrement[lastIndex].regionDelivrance,
-      numeroAgrement: props.initData.agrement[lastIndex].numero,
-      dateDelivrance: dayjs(
-        props.initData.agrement[lastIndex].dateObtention,
-      ).format("YYYY-MM-DD"),
+      regionDelivrance: props.initData.agrement.regionDelivrance,
+      numeroAgrement: props.initData.agrement.numero,
+      dateDelivrance: dayjs(props.initData.agrement.dateObtention).format(
+        "YYYY-MM-DD",
+      ),
     };
   } else {
     return {

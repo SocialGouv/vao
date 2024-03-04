@@ -19,7 +19,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.modeTransport.join()
+            props.initData.modeTransport?.join()
           }}</span>
         </div>
       </div>
@@ -41,7 +41,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.deplacementDurantSejour ? "Oui" : "Non"
+            props.initData.deplacementDurantSejour
+              ? "Oui"
+              : props.initData.deplacementDurantSejour === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
