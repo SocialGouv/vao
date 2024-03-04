@@ -9,7 +9,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.dispositionsSpecifiques ? " Oui" : "Non"
+            props.initData.dispositionsSpecifiques
+              ? " Oui"
+              : props.initData.dispositionsSpecifiques === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -34,7 +38,7 @@
           <span class="read-only-value">{{
             constitutionEquipeOptions
               .filter((f) => {
-                return props.initData.constitutionEquipe.includes(f.name);
+                return props.initData.constitutionEquipe?.includes(f.name);
               })
               .map((i) => i.label)
               .join()
@@ -42,7 +46,7 @@
         </div>
       </div>
       <div
-        v-if="props.initData.constitutionEquipe.length > 0"
+        v-if="props.initData.constitutionEquipe?.length > 0"
         class="fr-fieldset__element"
       >
         <div class="fr-col-12">
@@ -62,7 +66,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.troussePharmacie ? " Oui" : "Non"
+            props.initData.troussePharmacie
+              ? " Oui"
+              : props.initData.troussePharmacie === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -76,7 +84,7 @@
           <span class="read-only-value">{{
             responsableAdministrationMedicamentOptions
               .filter((f) => {
-                return props.initData.responsableAdministrationMedicament.includes(
+                return props.initData.responsableAdministrationMedicament?.includes(
                   f.name,
                 );
               })
@@ -86,7 +94,7 @@
         </div>
       </div>
       <div
-        v-if="props.initData.responsableAdministrationMedicament.length > 0"
+        v-if="props.initData.responsableAdministrationMedicament?.length > 0"
         class="fr-fieldset__element"
       >
         <div class="fr-col-12">
@@ -106,7 +114,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.stockageMedicamentSecurise ? " Oui" : "Non"
+            props.initData.stockageMedicamentSecurise
+              ? " Oui"
+              : props.initData.stockageMedicamentSecurise === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -131,7 +143,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.conservationMedicamentThermosensible ? " Oui" : "Non"
+            props.initData.conservationMedicamentThermosensible
+              ? " Oui"
+              : props.initData.conservationMedicamentThermosensible === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -154,7 +170,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.individualisationMedicaments ? " Oui" : "Non"
+            props.initData.individualisationMedicaments
+              ? " Oui"
+              : props.initData.individualisationMedicaments === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -180,9 +200,7 @@
         <div class="fr-col-12">
           <span class="read-only-value">{{
             preparationPilluliersOptions
-              .filter((f) => {
-                return props.initData.preparationPilluliers === f.name;
-              })
+              .filter((f) => props.initData.preparationPilluliers === f.value)
               .map((i) => i.label)
               .join()
           }}</span>
@@ -210,7 +228,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.prescriptionMedicaleJointe ? " Oui" : "Non"
+            props.initData.prescriptionMedicaleJointe
+              ? " Oui"
+              : props.initData.prescriptionMedicaleJointe === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -222,7 +244,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.protocoleModificationTraitement ? " Oui" : "Non"
+            props.initData.protocoleModificationTraitement
+              ? " Oui"
+              : props.initData.protocoleModificationTraitement === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -245,7 +271,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.ficheSuiviMedicaments ? " Oui" : "Non"
+            props.initData.ficheSuiviMedicaments
+              ? " Oui"
+              : props.initData.ficheSuiviMedicaments === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -257,7 +287,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.protocoleEvacuation ? " Oui" : "Non"
+            props.initData.protocoleEvacuation
+              ? " Oui"
+              : props.initData.protocoleEvacuation === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -280,7 +314,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.protocoleAccident ? " Oui" : "Non"
+            props.initData.protocoleAccident
+              ? " Oui"
+              : props.initData.protocoleAccident === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -302,7 +340,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.protocoleReorientation ? " Oui" : "Non"
+            props.initData.protocoleReorientation
+              ? " Oui"
+              : props.initData.protocoleReorientation === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>
@@ -325,7 +367,11 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.protocoleCanicule ? " Oui" : "Non"
+            props.initData.protocoleCanicule
+              ? " Oui"
+              : props.initData.protocoleCanicule === false
+                ? "Non"
+                : ""
           }}</span>
         </div>
       </div>

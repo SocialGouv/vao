@@ -6,7 +6,7 @@
           <span class="read-only-label">Numéro d'agrément</span>
         </div>
         <div class="fr-col-12">
-          <span class="read-only-value">{{ props.initData[0]?.numero }}</span>
+          <span class="read-only-value">{{ props.initData?.numero }}</span>
         </div>
       </div>
       <div class="fr-fieldset__element">
@@ -15,7 +15,9 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            dayjs(props.initData[0]?.dateObtention).format("DD/MM/YYYY")
+            props.initData?.dateObtention
+              ? dayjs(props.initData?.dateObtention).format("DD/MM/YYYY")
+              : null
           }}</span>
         </div>
       </div>
@@ -26,7 +28,7 @@
         <div class="fr-col-12">
           <span class="read-only-value">{{
             regionStore.regions
-              .filter((r) => r.value === props.initData[0]?.regionDelivrance)
+              .filter((r) => r.value === props.initData?.regionDelivrance)
               .map((r) => r.text)
               .join()
           }}</span>
@@ -37,8 +39,8 @@
           <span class="read-only-label">Agrément téléversé :</span>
         </div>
         <div class="fr-col-12">
-          <a class="read-only-value" :href="agrementCourant.lien">{{
-            agrementCourant.filename
+          <a class="read-only-value" :href="agrementCourant?.lien">{{
+            agrementCourant?.filename
           }}</a>
         </div>
       </div>
@@ -59,10 +61,10 @@ const props = defineProps({
 const regionStore = useRegionStore();
 
 const agrementCourant = computed(() => {
-  if (props.initData[0]) {
+  if (props.initData) {
     return {
-      filename: props.initData[0].filename,
-      lien: `${config.public.backendUrl}/document/${props.initData[0].uuid}`,
+      filename: props.initData?.filename,
+      lien: `${config.public.backendUrl}/document/${props.initData?.uuid}`,
     };
   }
 });

@@ -13,6 +13,12 @@ module.exports = {
     uri: "https://entreprise.api.gouv.fr/v3",
   },
 
+  apiInsee: {
+    CLIENT_ID: process.env.API_INSEE_CLIENT_ID,
+    CLIENT_SECRET: process.env.API_INSEE_CLIENT_SECRET,
+    URL: "https://api.insee.fr",
+  },
+
   domain: process.env.BACKEND_URL,
   frontBODomain: process.env.FRONTEND_BO_URL,
   frontUsagersDomain: process.env.FRONTEND_USAGERS_URL,

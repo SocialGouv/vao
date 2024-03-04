@@ -45,7 +45,7 @@ const log = logger("pages/component/personnes");
 const modalPersonne = reactive({
   opened: false,
 });
-const localPersonnes = ref(props.personnes);
+// const localPersonnes = ref();
 
 const headersToDisplay = computed(() => {
   const columns = props.headers.map((h) => h.label);
@@ -55,7 +55,7 @@ const headersToDisplay = computed(() => {
 
 const personnesToDisplay = computed(() => {
   const displayedFields = props.headers.map((h) => h.value);
-  return localPersonnes.value.map((p, index) => {
+  return props.personnes.map((p, index) => {
     const row = [];
     displayedFields.forEach((f) => {
       row.push(p[f]);
@@ -79,7 +79,11 @@ const personnesToDisplay = computed(() => {
 
 function deleteItem(i) {
   log.i("deleteItem - In");
-  localPersonnes.value.splice(i, 1);
+  const personnes = [
+    ...props.personnes.slice(0, i),
+    ...props.personnes.slice(i + 1),
+  ];
+  emit("valid", personnes);
 }
 
 const indexCourant = ref();
@@ -95,21 +99,25 @@ function addPersonne() {
 function editItem(i) {
   log.i("editItem - In");
   indexCourant.value = i;
-  personne.value = localPersonnes.value[indexCourant.value];
+  personne.value = props.personnes[i];
   modalPersonne.opened = true;
 }
 
 function updatePersonne(data) {
   log.i("updatePersonne", data);
-  log.i(data);
+  let personnes;
   if (indexCourant.value === -1) {
-    localPersonnes.value.push(data);
+    personnes = [...props.personnes, data];
   } else {
-    localPersonnes.value[indexCourant.value] = data;
+    personnes = [
+      ...props.personnes.slice(0, indexCourant.value),
+      data,
+      ...props.personnes.slice(indexCourant.value + 1),
+    ];
   }
+  emit("valid", personnes);
   indexCourant.value = null;
   modalPersonne.opened = false;
-  emit("valid", localPersonnes.value);
 }
 
 function onClose() {

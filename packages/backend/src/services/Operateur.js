@@ -25,18 +25,20 @@ const query = {
       o.protocole_sanitaire as "protocoleSanitaire",
       o.created_at as "createdAt",
       o.edited_at as "editedAt",
-      (SELECT jsonb_agg(json_build_object(
-      'numero', numero,
-      'filename', filename,
-      'uuid', uuid,
-      'regionDelivrance', region_delivrance,
-      'dateObtention', date_obtention,
-      'createdAt',a.created_at
-    ) ORDER BY date_obtention)                   
-    FROM front.agrements a            
-    WHERE operateur_id = o.id
-    AND a.supprime = false
-  ) AS agrement
+      (
+        SELECT 
+          json_build_object(
+            'numero', numero,
+            'filename', filename,
+            'uuid', uuid,
+            'regionDelivrance', region_delivrance,
+            'dateObtention', date_obtention,
+            'createdAt',a.created_at
+          )                  
+        FROM front.agrements a            
+        WHERE operateur_id = o.id
+        AND a.supprime = false
+      ) AS agrement
     FROM front.operateurs o
     JOIN front.user_operateur uo ON o.id = ope_id
     WHERE 1=1 
@@ -215,15 +217,14 @@ module.exports.get = async (criterias = {}) => {
   log.i("get - IN", { criterias });
   const { rows: operateurs } = await pool.query(...query.get(criterias));
   log.d("get - DONE");
-  return operateurs[0] ?? [];
+  return !operateurs || operateurs.length === 0 ? [] : operateurs[0];
 };
 
 module.exports.getBySiret = async (siret) => {
-  log.i("getBySiret - IN", siret);
+  log.i(`getBySiret - IN ${siret}`);
   const { rows: operateurs } = await pool.query(query.getBySiret, [siret]);
   log.d("getBySiret - DONE");
-  log.d(operateurs);
-  return operateurs[0] ?? [];
+  return !operateurs || operateurs.length === 0 ? null : operateurs[0];
 };
 
 module.exports.getSiege = async (siret) => {
@@ -233,5 +234,5 @@ module.exports.getSiege = async (siret) => {
   const { rows: operateurs } = await pool.query(query.getSiege, [siren]);
   log.d("getSiege - DONE");
   log.d(operateurs);
-  return operateurs[0] ?? [];
+  return !operateurs || operateurs.length === 0 ? null : operateurs[0];
 };

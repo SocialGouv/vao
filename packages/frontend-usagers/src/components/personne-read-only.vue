@@ -1,6 +1,6 @@
 <template>
   <span class="read-only-value">{{
-    `${personne.nom} ${personne.prenom}, ${personne.fonction} : ${personne.email}`
+    `${personne.nom ? personne.nom : ""} ${personne.prenom ? personne.prenom : ""} ${personne.fonction ? `, ${personne.fonction}` : ""}  ${personne.email ? `: ${personne.email}` : ""}`
   }}</span>
 </template>
 
