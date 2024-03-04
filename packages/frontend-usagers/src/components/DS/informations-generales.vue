@@ -97,6 +97,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import { useOperateurStore } from "@/stores/operateur";
+import { useUserStore } from "@/stores/user";
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
@@ -112,6 +113,7 @@ const emit = defineEmits(["valid"]);
 const log = logger("components/DS/informations-generales");
 
 const operateurStore = useOperateurStore();
+const userStore = useUserStore();
 
 const duree = computed(() => {
   const nbjours = dayjs(dateFin.value).diff(dateDebut.value, "day");
@@ -129,9 +131,14 @@ const saison = computed(() => {
 if (!operateurStore.operateurCourant) {
   await operateurStore.setMyOperateur();
 }
+
+const operateurCourant = computed(() => {
+  return operateurStore.operateurCourant;
+});
+
 if (
-  operateurStore.operateurCourant.typeOperateur === "personne_morale" &&
-  !operateurStore.operateurCourant.personneMorale.siegeSocial
+  operateurCourant.value.typeOperateur === "personne_morale" &&
+  !operateurCourant.value.personneMorale.siegeSocial
 ) {
   await checkSiege();
 }
@@ -166,8 +173,16 @@ const validationSchema = yup.object({
 });
 
 const initialValues = computed(() => {
-  const responsableSejour =
-    operateurStore.operateurCourant?.personneMorale?.responsableSejour ?? {};
+  const responsableSejour = operateurCourant.value.personneMorale.siret
+    ? operateurCourant.value.personneMorale.responsableSejour
+    : {
+        nom: operateurCourant.value.personnePhysique.nomNaissance,
+        prenom: operateurCourant.value.personnePhysique.prenom,
+        fonction: "organisateur de séjour",
+        email: userStore.user.email,
+        telephone: operateurCourant.value.personnePhysique.telephone,
+        adresse: operateurCourant.value.personnePhysique.adresseSiege,
+      };
   return {
     libelle: props.initData.libelle,
     dateDebut: props.initData.dateDebut
