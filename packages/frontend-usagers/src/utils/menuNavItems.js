@@ -13,10 +13,10 @@ export const navItems = [
     ],
   },
   {
-    title: "Organisme",
+    title: "Organisateur",
     links: [
       {
-        text: "Ma fiche organisme",
+        text: "Ma fiche organisateur",
         to: "/operateur",
       },
     ],
@@ -26,7 +26,7 @@ export const navItems = [
     to: "/hebergements",
   },
   {
-    title: "Demande de séjour",
+    title: "Déclaration de séjour",
     links: [
       {
         text: "Nouvelle demande",

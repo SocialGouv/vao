@@ -29,7 +29,7 @@
               :model-value="numeroAgrement"
               :is-valid="numeroAgrementMeta.valid"
               :error-message="numeroAgrementErrorMessage"
-              placeholder="Veuillez saisir le prénom de votre mère"
+              placeholder="Veuillez saisir le numéro d'agrément"
               @update:model-value="onNumeroAgrementChange"
             />
           </div>
@@ -90,7 +90,11 @@
             class="fr-input-group fr-col-6"
             style="margin-bottom: 2rem"
           >
-            <DsfrFileUpload label="" @change="changeFile" />
+            <DsfrFileUpload
+              label="Ajouter une copie de votre agrément"
+              hint="La copie de l'agrément qui vous a été délivré est obligatoire."
+              @change="changeFile"
+            />
           </div>
         </div>
       </fieldset>
@@ -167,7 +171,7 @@ const schemaAgrement = {
     .max(new Date(), "La date doit être inférieure à la date du jour.")
     .min(
       dayjs().add(-5, "year"),
-      "L'agrément ne peut pas avoir été délivré il y a plus de 5 ans",
+      "La date de validité de votre agrément a expiré",
     )
     .required(),
 };

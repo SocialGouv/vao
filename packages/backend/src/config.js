@@ -58,7 +58,7 @@ module.exports = {
   },
   tmpDirectory: process.env.TMP_DIRECTORY,
   validationToken: {
-    expiresIn: 5 * 60 * 1000, // 5 min
+    expiresIn: 30 * 60 * 1000, // 30 min
     secret: process.env.VALIDATION_TOKEN_SECRET,
   },
 };
