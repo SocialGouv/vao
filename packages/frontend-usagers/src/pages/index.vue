@@ -16,7 +16,7 @@
           >
             <div class="fr-grid-row fr-grid-row-left fr-pt-5v">
               <DsfrButton id="Suivant" @click="saisieFicheOperateur"
-                >Renseigner ma fiche organisme
+                >Renseigner ma fiche organisateur
               </DsfrButton>
             </div>
           </DsfrHighlight>
@@ -30,7 +30,7 @@
         >
           <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
             <div class="fr-py-1v">
-              <h3>Organisme</h3>
+              <h3>Organisateur</h3>
             </div>
             <div class="fr-py-1v">
               <a
@@ -40,7 +40,7 @@
                     ? `/operateur/${operateurStore.operateurCourant.operateurId}`
                     : '#'
                 "
-                >Ma fiche organisme</a
+                >Ma fiche organisateur</a
               >
             </div>
             <div class="fr-py-1v"><p></p></div>
@@ -52,7 +52,7 @@
         >
           <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
             <div>
-              <h3 class="fr-py-1v">Demande de séjour</h3>
+              <h3 class="fr-py-1v">Déclaration de séjour</h3>
             </div>
             <div class="fr-py-1v">
               <a
@@ -126,7 +126,7 @@ const operateurCourant = computed(() => {
 });
 
 const libelleMessageAccueil =
-  "Afin de profiter de toutes les fonctionnalités de ce site, nous vous invitons à renseigner votre fiche organisme";
+  "Afin de profiter de toutes les fonctionnalités de ce site, nous vous invitons à renseigner votre fiche organisateur";
 
 function saisieFicheOperateur() {
   return navigateTo("/operateur");

@@ -13,7 +13,7 @@
         v-if="classError === 'TokenExpiredError'"
         class="fr-grid-row fr-grid-row--center fr-my-5v"
         @click.prevent="renewToken"
-        >Générer un nouveau token
+        >Générer un nouveau lien
       </DsfrButton>
     </div>
   </div>
@@ -30,7 +30,8 @@ const config = useRuntimeConfig();
 
 const classError = ref("");
 const helpers = {
-  TokenExpiredError: "Le token utilisé est déjà expiré. Cliquez sur le lien ",
+  TokenExpiredError:
+    "Le lien utilisé est déjà expiré. Cliquer sur le bouton « Générer un nouveau lien »",
   UserAlreadyVerified:
     "L'email associé à votre email semble déjà activé. Rendez-vous sur la page de connexion pour vous identifier.",
 };

@@ -151,36 +151,6 @@ module.exports = {
   },
   usagers: {
     authentication: {
-      sendActivationMail: ({ email }) => {
-        log.i("sendActivationMail - In", {
-          email,
-        });
-        if (!email) {
-          const message = `Le paramètre email manque à la requête`;
-          log.w(`sendActivationMail - ${message}`);
-          throw new AppError(message);
-        }
-
-        log.d("sendActivationMail - sending Activation mail");
-        const params = {
-          from: senderEmail,
-          html: `
-                <p>Bonjour,</p>
-    
-                <p>Vous recevez ce mail car vous vous êtes inscrit sur le portail VAO.</p>
-    
-                <p>Votre email a bien été validé. Vous pouvez continuer la procédure de création de compte en vous connectant à nouveau sur le portail VAO.</p>
-    
-                <p><a href="${frontUsagersDomain}/mon-compte">Je complète mon compte.</a></p>
-                `,
-          replyTo: senderEmail,
-          subject: `Portail VAO - Votre email a été validé`,
-          to: email,
-        };
-        log.d("sendActivationMail", { params });
-
-        return params;
-      },
       sendForgottenPassword: ({ email, token }) => {
         log.i("sendForgottenPassword - In", {
           email,
@@ -239,11 +209,12 @@ module.exports = {
           html: `
                 <p>Bonjour,</p>
     
-                <p>Vous recevez ce mail car vous vous êtes inscrit sur le portail VAO</p>
+                <p>Pour finaliser la création de votre compte sur la plateforme VAO, confirmez votre adresse e-mail en
+                cliquant sur le lien ci dessous : </p> 
     
-                <p>Afin de bénéficier de toutes les fonctionnalités, veuillez valider votre email en cliquant sur le lien suivant:</p>
-    
-                <p><a href="${frontUsagersDomain}/connexion/validation?token=${token}">J'active mon compte.</a></p>
+                <p><a href="${frontUsagersDomain}/connexion/validation?token=${token}">Valider mon e-mail</a></p>
+
+                <p>Attention, ce lien ne sera valide que pendant ${config.validationToken.expiresIn / 60000} minutes </p>  
                 `,
           replyTo: senderEmail,
           subject: `VAO - Validez votre email`,

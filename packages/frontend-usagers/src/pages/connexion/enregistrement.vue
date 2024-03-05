@@ -333,7 +333,7 @@ const displayInfos = {
   CreationDoneWithSucces: {
     title: "Votre compte a été créé avec succès",
     description:
-      "Veuillez consulter votre boîte mail afin de procéder à la validation votre compte.",
+      "Veuillez consulter votre boite mail afin de procéder à la validation de votre compte organisateur VAO.",
     type: "success",
   },
   // CaptchaError: {
