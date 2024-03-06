@@ -35,7 +35,7 @@
                     <DsfrButton
                       :disabled="!isValidEmail"
                       @click.prevent="askNewPassword"
-                      >Renouveler mon mot de passe</DsfrButton
+                      >Réinitialiser mon mot de passe</DsfrButton
                     >
                   </div>
                 </fieldset>
@@ -81,7 +81,7 @@ const displayInfos = {
   Success: {
     title: "Email envoyé",
     description:
-      "Un email a été envoyé sur la boîte mail à l'adresse renseignée si un compte y est rattaché . Veuillez le consulter pour réinitialiser votre mot de passe",
+      "Si un compte est rattaché à cette adresse électronique, vous allez recevoir un courriel dans quelques instants. Il vous permettra de réinitialiser votre mot de passe en quelques clics",
     type: "success",
   },
   DefaultError: {
