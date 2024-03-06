@@ -215,12 +215,25 @@ async function checkSiege() {
       credentials: "include",
     });
     const etablissementPrincipal = data.operateur;
+    const nic =
+      operateurStore.operateurCourant.personneMorale.siret.substring(9);
     log.d(etablissementPrincipal);
     if (!etablissementPrincipal || etablissementPrincipal.length === 0) {
       toaster.error(
         "L'établissement principal n'a pas encore déclaré son agrément sur la plateforme VAO.",
       );
       return navigateTo("/");
+    } else {
+      if (
+        !etablissementPrincipal.personneMorale.etablissements.filter(
+          (e) => e.nic === nic,
+        )[0].enabled
+      ) {
+        toaster.error(
+          "L'établissement principal n'a pas autorisé votre établissement à saisir des déclarations.",
+        );
+        return navigateTo("/");
+      }
     }
   } catch (error) {
     log.w(error);

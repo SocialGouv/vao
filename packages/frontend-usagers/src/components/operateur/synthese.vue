@@ -31,6 +31,7 @@
             />
           </DsfrAccordion>
           <DsfrAccordion
+            v-if="isSiege"
             :id="2"
             :expanded-id="expandedId"
             @expand="(id) => (expandedId = id)"
@@ -49,6 +50,7 @@
             />
           </DsfrAccordion>
           <DsfrAccordion
+            v-if="isSiege"
             :id="3"
             title="Protocole de transport"
             :expanded-id="expandedId"
@@ -67,6 +69,7 @@
             ></protocole-transport-read-only>
           </DsfrAccordion>
           <DsfrAccordion
+            v-if="isSiege"
             :id="4"
             title="Protocole sanitaire"
             :expanded-id="expandedId"
@@ -92,12 +95,7 @@
       <div class="fr-input-group fr-col-12">
         <DsfrButton
           label="Finaliser la fiche opérateur"
-          :disabled="
-            renseignementsGeneraux.type === 'warning' ||
-            protocoleSanitaire.type === 'warning' ||
-            protocoleTransport.type === 'warning' ||
-            agrement.type === 'warning'
-          "
+          :disabled="incompleteOrganisme"
           @click="finalizeOrganisme"
         />
       </div>
@@ -114,6 +112,19 @@ const props = defineProps({
 
 const emit = defineEmits(["valid"]);
 const expandedId = ref(0);
+
+const isSiege = computed(
+  () => props.initData.personneMorale?.siegeSocial === true,
+);
+
+const incompleteOrganisme = computed(() => {
+  return !isSiege.value
+    ? renseignementsGeneraux.value.type === "warning"
+    : renseignementsGeneraux.value.type === "warning" ||
+        protocoleSanitaire.value.type === "warning" ||
+        protocoleTransport.value.type === "warning" ||
+        agrement.value.type === "warning";
+});
 
 const renseignementsGeneraux = computed(() => {
   if (props.initData.typeOperateur === "personne_morale") {

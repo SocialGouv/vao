@@ -17,21 +17,21 @@
             @valid="updateOrCreate"
           />
         </div>
-        <div id="agrement">
+        <div v-if="isSiege" id="agrement">
           <OperateurAgrement
             v-if="hash === 'agrement'"
             :init-data="operateurCourant"
             @valid="nextHash(hash)"
           ></OperateurAgrement>
         </div>
-        <div id="protocole-transport">
+        <div v-if="isSiege" id="protocole-transport">
           <protocole-transport
             v-if="hash === 'protocole-transport'"
             :init-data="operateurCourant.protocoleTransport ?? {}"
             @valid="updateOrCreate"
           ></protocole-transport>
         </div>
-        <div id="protocole-sanitaire">
+        <div v-if="isSiege" id="protocole-sanitaire">
           <protocole-sanitaire
             v-if="hash === 'protocole-sanitaire'"
             :init-data="operateurCourant.protocoleSanitaire ?? {}"
@@ -67,24 +67,31 @@ const operateurCourant = computed(() => {
   return operateurStore.operateurCourant;
 });
 
-const sommaireOptions = organismeMenus.map((m) => m.id);
+const isSiege = computed(() => {
+  return operateurCourant.value?.personneMorale.siegeSocial === true;
+});
+const sommaireOptions = computed(() =>
+  organismeMenus
+    .filter((m) => m.displayForEtabSecondaire || isSiege.value)
+    .map((m) => m.id),
+);
 
 const hash = computed(() => {
   if (route.hash) {
     return route.hash.slice(1);
   }
-  return sommaireOptions[0];
+  return sommaireOptions.value[0];
 });
 
 function previousHash(hash) {
-  const index = sommaireOptions.findIndex((o) => o === hash);
+  const index = sommaireOptions.value.findIndex((o) => o === hash);
   return navigateTo({ hash: "#" + sommaireOptions[index - 1] });
 }
 
 function nextHash(hash) {
-  const index = sommaireOptions.findIndex((o) => o === hash);
-  log.d({ hash, index, next: sommaireOptions[index + 1] });
-  return navigateTo({ hash: "#" + sommaireOptions[index + 1] });
+  const index = sommaireOptions.value.findIndex((o) => o === hash);
+  log.d({ hash, index, next: sommaireOptions.value[index + 1] });
+  return navigateTo({ hash: "#" + sommaireOptions.value[index + 1] });
 }
 
 async function updateOrCreate(operatorData, updatetype) {

@@ -15,6 +15,9 @@ const props = defineProps({
   operateur: { type: Object, default: null, required: true },
 });
 
+const isSiege = computed(
+  () => props.operateur.personneMorale?.siegeSocial === true,
+);
 const menus = organismeMenus.map((menu) => {
   return {
     ...menu,
@@ -26,9 +29,11 @@ const sommaireOptionsToDisplay = computed(() => {
   if (props.operateur.length === 0) {
     return [{ ...menus[0], active: true }];
   } else {
-    return menus.map((s) => {
-      return { ...s, active: s.id === props.activeId };
-    });
+    return menus
+      .filter((m) => m.displayForEtabSecondaire || isSiege.value)
+      .map((s) => {
+        return { ...s, active: s.id === props.activeId };
+      });
   }
 });
 </script>
