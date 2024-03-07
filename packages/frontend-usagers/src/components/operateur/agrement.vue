@@ -115,7 +115,6 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { useRegionStore } from "@/stores/referentiels";
 
 const config = useRuntimeConfig();
 const log = logger("components/operateur/agrement");
@@ -147,6 +146,7 @@ const boutonOptions = [
     label: "Suivant",
   },
 ];
+
 const agrementFile = ref(null);
 const refFormAgrement = ref(null);
 

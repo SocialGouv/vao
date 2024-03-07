@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: .env.dev.example.env
-  checksum: 577969d953076bd8813ab0a7edb1a8d9d7e8c629ae707b1549486fee5146ddf1
+- filename: yarn.lock
+  checksum: fa8fe36e44c0026ada22796453429a7eba326f6f36a0cc6b7748c90b4a2a2fdd
 version: ""
+ersion: ""
 filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
   checksum: 709d3ed89b83eb106ba6a8a3b625839dfc7feced17a1e2a544dac608c4683491
 - filename: pg/scripts/02/02-5-ref-init.sql

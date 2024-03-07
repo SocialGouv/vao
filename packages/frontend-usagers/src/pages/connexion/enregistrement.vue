@@ -194,25 +194,6 @@
                 </div>
               </div>
 
-              <!-- <div class="fr-fieldset__element">
-                      <div
-                        id="botdetect-captcha"
-                        data-captchastylename="numerique6_7CaptchaFR"
-                      ></div>
-                      <DsfrInput
-                        id="captchaFormulaireExtInput"
-                        name="captcha"
-                        label="Captcha"
-                        type="text"
-                        placeholder=""
-                        :label-visible="true"
-                        :model-value="captchaFormulaireExtInput.modelValue"
-                        :error-message="captchaFormulaireExtInput.errorMessage"
-                        :is-valid="captchaFormulaireExtInput.isValid"
-                        @update:model-value="checkValidCaptcha"
-                      />
-                    </div> -->
-
               <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
@@ -305,12 +286,6 @@ const telephoneField = reactive({
   isValid: false,
 });
 
-// const captchaFormulaireExtInput = reactive({
-//   errorMessage: "",
-//   modelValue: null,
-//   isValid: false,
-// });
-
 const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 
@@ -328,7 +303,6 @@ const isPwdNumber = ref(false);
 const isPwdMaj = ref(false);
 const isPwdMin = ref(false);
 
-// const headerForm = ref(null);
 const displayInfos = {
   CreationDoneWithSucces: {
     title: "Votre compte a été créé avec succès",
@@ -336,12 +310,6 @@ const displayInfos = {
       "Veuillez consulter votre boite mail afin de procéder à la validation de votre compte organisateur VAO.",
     type: "success",
   },
-  // CaptchaError: {
-  //   title: "Erreur de saisie du captcha",
-  //   description:
-  //     "Le code saisit est erroné. Merci de remplir à nouveau le captcha.",
-  //   type: "error",
-  // },
   DefaultError: {
     title: "Une erreur est survenue",
     description:
@@ -393,14 +361,6 @@ function checkValidTelephone(p) {
       ? ""
       : "Le numéro de téléphone n'est pas au format attendu";
 }
-// function checkValidCaptcha(catpcha) {
-//   captchaFormulaireExtInput.modelValue = catpcha;
-//   captchaFormulaireExtInput.isValid = catpcha;
-//   captchaFormulaireExtInput.errorMessage =
-//     catpcha || captchaFormulaireExtInput.isValid
-//       ? ""
-//       : "Le captcha doit être saisie";
-// }
 
 watch(
   [() => passwordField.modelValue, () => confirmField.modelValue],
@@ -425,12 +385,10 @@ const canRegister = computed(() => {
     nomField.isValid &&
     prenomField.isValid &&
     telephoneField.isValid
-    // captchaFormulaireExtInput.isValid
   );
 });
 
 async function register() {
-  // log.d($("#botdetect-captcha"));
   formStatus.value = formStates.CREATION;
   const email = emailField.modelValue;
   const password = passwordField.modelValue;
@@ -439,10 +397,6 @@ async function register() {
   const telephone = telephoneField.modelValue;
   log.i("register - IN");
   try {
-    // Le code entré par l’utilisateur récupéré en backend
-    // const userEnteredCaptchaCode = captcha.getUserEnteredCaptchaCode();
-    // id du captcha que l’utilisateur a tenté de résoudre
-    // const captchaId = captcha.getCaptchaId();
     await $fetch(config.public.backendUrl + "/authentication/email/register", {
       method: "POST",
       headers: {
@@ -454,37 +408,24 @@ async function register() {
         nom,
         prenom,
         telephone,
-        // userEnteredCaptchaCode,
-        // captchaId,
       }),
     })
       .then((response) => {
-        // Reset captcha
-        // captcha.reloadImage();
-        // checkValidCaptcha(null);
         displayType.value = "CreationDoneWithSucces";
         formStatus.value = formStates.VALIDATED;
         log.d("register", { response });
       })
       .catch((error) => {
-        // Reset captcha
-        // captcha.reloadImage();
-        // checkValidCaptcha(null);
         const body = error.data;
         const codeError = body.code;
 
         log.w("register", { body, codeError });
         switch (codeError) {
-          // case "CaptchaError":
-          //   displayType.value = "CaptchaError";
-          //   formStatus.value = formStates.VALIDATED;
-          //   break;
           default:
             displayType.value = "DefaultError";
             formStatus.value = formStates.VALIDATED;
             break;
         }
-        // headerForm.value.scrollIntoView({ behavior: "smooth" });
         formStatus.value = formStates.SUBMITTED;
       });
   } catch (error) {
