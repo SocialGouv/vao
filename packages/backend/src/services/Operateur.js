@@ -65,7 +65,7 @@ const query = {
       'filename', filename,
       'uuid', uuid,
       'regionDelivrance', region_delivrance,
-      'dateObtention', date_obtention,
+      'dateObtention', date_obtention::text,
       'createdAt',a.created_at
     ) ORDER BY date_obtention)                   
     FROM front.agrements a            
@@ -93,7 +93,7 @@ const query = {
       'filename', filename,
       'uuid', uuid,
       'regionDelivrance', region_delivrance,
-      'dateObtention', date_obtention,
+      'dateObtention', date_obtention::text,
       'createdAt',a.created_at
     ) ORDER BY date_obtention)                   
     FROM front.agrements a            

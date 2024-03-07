@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="fr-col-12">
+    <div v-if="!nuiteeOpened">
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
@@ -42,29 +42,21 @@
           <DsfrButton
             label="Ajouter une nuitée"
             :disabled="meta.valid"
-            @click="nuiteeOnOpen"
+            @click="onOpenNuitee"
           />
         </div>
       </fieldset>
 
-      <DsfrButton label="Suivant" :disabled="!meta.valid" @click="next" />
+      <DsfrButton label="Suivant" @click="next" />
     </div>
-    <DsfrModal
-      ref="nuitee"
-      name="nuitee"
-      :opened="nuiteeOpened"
-      title="Sélection de la nuitée"
-      size="md"
-      @close="NuiteeOnClose"
-    >
-      <DSHebergementsSejourDetail
-        :init-data="hebergements"
-        :date-debut-ini="dayjs(props.initData.dateDebut).format('YYYY-MM-DD')"
-        :date-fin-ini="dayjs(props.initData.dateFin).format('YYYY-MM-DD')"
-        :current-index="currentIndex"
-        @valid="addNuitee"
-      />
-    </DsfrModal>
+    <DSHebergementsSejourDetail
+      v-else
+      :hebergement="hebergementCourant"
+      :date-debut-ini="nextMinDate"
+      :date-fin-ini="dayjs(props.dateFin).format('YYYY-MM-DD')"
+      @update="addNuitee"
+      @cancel="onCloseNuitee"
+    />
   </div>
 </template>
 
@@ -75,26 +67,30 @@ import dayjs from "dayjs";
 import { useHebergementStore } from "@/stores/hebergement";
 
 const props = defineProps({
-  initData: { type: Object, default: null, required: true },
+  dateDebut: {
+    type: String,
+    required: true,
+  },
+  dateFin: {
+    type: String,
+    required: true,
+  },
+  hebergement: {
+    type: Object,
+    required: true,
+  },
 });
 
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["update"]);
 
 const log = logger("demande-sejour/hebergement");
 
+const headers = ["Numéro", "Nombre de nuits", "Du", "Au", "Nom", "Adresse"];
 const hebergementStore = useHebergementStore();
 const nuiteeOpened = ref(false);
 const currentIndex = ref(-1);
-const headers = ref([
-  "Numéro",
-  "Nombre de nuits",
-  "Du",
-  "Au",
-  "Nom",
-  "Adresse",
-]);
 
-const schemaGlobal = {
+const validationSchema = yup.object({
   sejourItinerant: yup.boolean().required(),
   sejourEtranger: yup.boolean().when("sejourItinerant", {
     is: (sejourItinerant) => !!sejourItinerant,
@@ -109,17 +105,13 @@ const schemaGlobal = {
       (hebergements) => testSejourComplet(hebergements),
     )
     .required("le choix d'un hébergement dans la liste est obligatoire"),
+});
+
+const initialValues = {
+  sejourItinerant: props.hebergement.sejourItinerant ?? false,
+  sejourEtranger: props.hebergement.sejourEtranger ?? false,
+  hebergements: props.hebergement.hebergements ?? [],
 };
-const validationSchema = computed(() =>
-  yup.object({
-    ...schemaGlobal,
-  }),
-);
-const initialValues = computed(() => ({
-  sejourItinerant: props.initData.hebergement?.sejourItinerant ?? false,
-  sejourEtranger: props.initData.hebergement?.sejourEtranger ?? false,
-  hebergements: props.initData.hebergement?.hebergements ?? [],
-}));
 
 const { meta, values, resetForm } = useForm({
   initialValues,
@@ -138,28 +130,31 @@ const {
   handleChange: onSejourEtrangerChange,
   meta: sejourEtrangerMeta,
 } = useField("sejourEtranger");
-const { value: hebergements } = useField("hebergements");
+const { value: hebergements, handleChange: onHebergementsChange } =
+  useField("hebergements");
 
 const syntheseRows = computed(() => {
   if (hebergementStore.hebergements.length > 0) {
-    return hebergements.value.map((h, index) => {
+    return hebergements.value.map((hebergement, index) => {
       const currentHebergement = hebergementStore.hebergements.find((elem) => {
-        return elem.id.toString() === h.id.toString();
+        return elem.id.toString() === hebergement.hebergementId.toString();
       });
       if (currentHebergement) {
         const rows = [
           `${index + 1}`,
-          dayjs(h.dateFin).diff(dayjs(h.dateDebut), "day").toString(),
-          dayjs(h.dateDebut).format("DD/MM/YYYY"),
-          dayjs(h.dateFin).format("DD/MM/YYYY"),
+          dayjs(hebergement.dateFin)
+            .diff(dayjs(hebergement.dateDebut), "day")
+            .toString(),
+          dayjs(hebergement.dateDebut).format("DD/MM/YYYY"),
+          dayjs(hebergement.dateFin).format("DD/MM/YYYY"),
           currentHebergement.nom,
-          currentHebergement.caracteristiques.adresse.properties.label,
+          currentHebergement.adresse,
         ];
         return {
           rowData: rows,
           rowAttrs: {
             class: "pointer",
-            onClick: () => editRow(index),
+            onClick: () => editNuitee(index),
           },
         };
       } else return [];
@@ -172,54 +167,81 @@ function testSejourComplet(h) {
   if (h.length === 0) {
     return false;
   }
-  // on check la date de debut et de fin
-  if (
-    dayjs(h[h.length - 1].dateFin).format("YYYY-MM-DD") ===
-      dayjs(props.initData.dateFin).format("YYYY-MM-DD") &&
-    dayjs(h[0].dateDebut).format("YYYY-MM-DD") ===
-      dayjs(props.initData.dateDebut).format("YYYY-MM-DD")
-  ) {
-    // on checke toutes les dates intermédiaires.
-    let nuiteesCoherentes = true;
-    h.forEach((element, index) => {
-      if (index > 0) {
-        nuiteesCoherentes =
-          dayjs(element[index].dateDebut).format("YYYY-MM-DD") ===
-          dayjs(element[index - 1].dateFin).format("YYYY-MM-DD");
-      }
-    });
-    return nuiteesCoherentes;
-  } else {
+
+  let memoDate = props.dateDebut;
+
+  for (let i = 0; i < h.length; i++) {
+    log.i(h[i].dateDebut, memoDate);
+    if (h[i].dateDebut !== memoDate) {
+      return false;
+    }
+    memoDate = h[i].dateFin;
+  }
+
+  log.i(memoDate, props.dateFin);
+  if (memoDate !== props.dateFin) {
     return false;
   }
+  return true;
 }
 
-function editRow(index) {
-  log.i("editRow -IN", index);
-  currentIndex.value = index;
-  nuiteeOpened.value = true;
-}
+const hebergementCourant = ref();
 
-function addNuitee(data, index) {
-  log.d("addNuitee - In");
-  if (index === -1) {
-    log.i("push");
-    hebergements.value.push(data);
-  } else {
-    hebergements.value[index] = data;
+const nextMinDate = computed(() => {
+  if (currentIndex.value !== -1) {
+    return dayjs(props.dateDebut).format("YYYY-MM-DD");
   }
-  nuiteeOpened.value = false;
+
+  if (hebergements.value.length === 0) {
+    return dayjs(props.dateDebut).format("YYYY-MM-DD");
+  }
+  return dayjs(
+    Math.max(
+      ...hebergements.value.map((hebergement) => dayjs(hebergement.dateFin)),
+    ),
+  ).format("YYYY-MM-DD");
+});
+
+function onOpenNuitee() {
   currentIndex.value = -1;
+  nuiteeOpened.value = true;
+  hebergementCourant.value = {};
+}
+
+function onCloseNuitee() {
+  currentIndex.value = -1;
+  nuiteeOpened.value = false;
+}
+
+function sortByDate(hebergements) {
+  return hebergements.sort(({ dateDebut: a }, { dateDebut: b }) => {
+    return dayjs(a).diff(dayjs(b));
+  });
+}
+
+function addNuitee(hebergement) {
+  log.d("addNuitee - In");
+  let newHebergements;
+  if (currentIndex.value === -1) {
+    newHebergements = [...hebergements.value, hebergement];
+  } else {
+    newHebergements = [
+      ...hebergements.value.slice(0, currentIndex.value),
+      hebergement,
+      ...hebergements.value.slice(currentIndex.value + 1),
+    ];
+  }
+  sortByDate(newHebergements);
+  onHebergementsChange(newHebergements);
+  onCloseNuitee();
   resetForm({ values });
 }
-function nuiteeOnOpen() {
-  currentIndex.value = -1;
-  nuiteeOpened.value = true;
-}
 
-function NuiteeOnClose() {
-  currentIndex.value = -1;
-  nuiteeOpened.value = false;
+function editNuitee(index) {
+  log.i("editNuitee -IN", index);
+  currentIndex.value = index;
+  nuiteeOpened.value = true;
+  hebergementCourant.value = hebergements.value[index];
 }
 
 async function next() {
@@ -229,7 +251,7 @@ async function next() {
     sejourEtranger: sejourEtranger.value,
     nombreHebergements: hebergements.value.length,
   };
-  emit("valid", data, "hebergements");
+  emit("update", data, "hebergements");
 }
 
 hebergementStore.fetchHebergements();

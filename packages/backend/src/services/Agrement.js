@@ -31,8 +31,8 @@ const query = {
       uuid AS "uuid",
       numero as "numero",
       filename as "filename",
-      date_obtention as "dateObtention",
-      date_fin_validite as "dateFinValidite"
+      date_obtention::text as "dateObtention",
+      date_fin_validite::text as "dateFinValidite"
     FROM front.agrements 
     WHERE operateur_id =$1 
     AND supprime=false`,
@@ -42,12 +42,16 @@ const query = {
                       file as file
     FROM doc.agrements 
     WHERE uuid =$1;`,
-  updateOptions: `UPDATE front.agrements 
-                  SET numero = $2,region_delivrance =$3,date_obtention = $4,date_fin_validite = $5
-                  WHERE operateur_id=$1
-                  AND supprime = false
-                  RETURNING id AS "agrementId"
-                  `,
+  updateOptions: `
+    UPDATE front.agrements 
+    SET numero = $2, 
+      region_delivrance = $3, 
+      date_obtention = $4, 
+      date_fin_validite = $5
+    WHERE operateur_id=$1
+    AND supprime = false
+    RETURNING id AS "agrementId"
+  `,
 };
 
 module.exports.create = async (

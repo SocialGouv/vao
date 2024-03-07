@@ -41,5 +41,16 @@ export const useHebergementStore = defineStore("hebergement", {
         log.i("fetchHebergement - DONE with error");
       }
     },
+    async addHebergement(hebergement) {
+      log.i("addHebergement - IN", { hebergement });
+      const url = `/hebergement`;
+      const { id } = await $fetchBackend(url, {
+        method: "POST",
+        body: hebergement,
+        credentials: "include",
+      });
+      log.i("addHebergement - Done", { id });
+      return id;
+    },
   },
 });

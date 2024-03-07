@@ -5,10 +5,9 @@ const logger = require("../../utils/logger");
 const log = logger(module.filename);
 
 module.exports = async function post(req, res) {
-  log.i("IN");
   const demandeSejourId = req.params.id;
   const { type, parametre } = req.body;
-  log.d(parametre);
+  log.i("IN", { demandeSejourId, parametre, type });
 
   if (!type || !demandeSejourId || !parametre) {
     log.w("missing parameter");
