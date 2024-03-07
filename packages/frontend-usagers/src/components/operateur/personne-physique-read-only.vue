@@ -50,7 +50,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            initData.adresseDomicile.label
+            initData.adresseDomicile?.label
           }}</span>
         </div>
       </div>
@@ -67,7 +67,7 @@
           </div>
           <div class="fr-col-12">
             <span class="read-only-value">{{
-              initData.adresseSiege.label
+              initData?.adresseSiege.label
             }}</span>
           </div>
         </div>

@@ -29,8 +29,12 @@ export const useOperateurStore = defineStore("operateurs", {
         const { operateur } = await $fetchBackend(`/operateur`, {
           credentials: "include",
         });
-        log.d(operateur);
-        if (operateur) {
+        // TODO : à retirer après que cette api ne renvoie que l'opérateur souhaité
+        if (!operateur || operateur.length === 0) {
+          this.operateurCourant = null;
+        } else if (operateur.length) {
+          this.operateurCourant = operateur[0];
+        } else {
           this.operateurCourant = operateur;
         }
         log.d("setOperateurCourant - DONE");

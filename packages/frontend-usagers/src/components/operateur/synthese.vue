@@ -113,9 +113,13 @@ const props = defineProps({
 const emit = defineEmits(["valid"]);
 const expandedId = ref(0);
 
-const isSiege = computed(
-  () => props.initData.personneMorale?.siegeSocial === true,
-);
+const isSiege = computed(() => {
+  return (
+    !props.initData ||
+    props.initData.typeOperateur === "personne_physique" ||
+    props.initData.personneMorale?.siegeSocial === true
+  );
+});
 
 const incompleteOrganisme = computed(() => {
   return !isSiege.value

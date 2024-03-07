@@ -68,12 +68,6 @@
           :disabled="true"
         />
       </div>
-    </fieldset>
-    <div
-      v-if="
-        operateurStore.operateurCourant?.typeOperateur === 'personne_morale'
-      "
-    >
       <h6>Responsable de l'organisation du séjour</h6>
       <Personne
         :personne="initialValues.responsableSejour"
@@ -83,6 +77,10 @@
         :show-button="false"
         @update:personne="onResponsableSejourChange"
       ></Personne>
+    </fieldset>
+    <div
+      v-if="operateurStore.operateurCourant.typeOperateur === 'personne_morale'"
+    >
       <h6>Organisme</h6>
       <OperateurPersonneMoraleReadOnly
         :init-data="operateurStore.operateurCourant.personneMorale"
@@ -167,7 +165,7 @@ const validationSchema = yup.object({
 
 const initialValues = computed(() => {
   const responsableSejour =
-    operateurStore.operateurCourant?.personneMorale?.responsableSejour ?? {};
+    operateurStore.operateurCourant.personneMorale?.responsableSejour ?? {};
   return {
     libelle: props.initData.libelle,
     dateDebut: props.initData.dateDebut

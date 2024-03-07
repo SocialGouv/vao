@@ -7,35 +7,36 @@ const log = logger("middlewares/has-id-operateur");
 export default defineNuxtRouteMiddleware(async (to) => {
   log.i("IN", { to });
 
-  const hasId = !!to.params.idOperateur;
-  const operateurStore = useOperateurStore();
-  await operateurStore.setMyOperateur();
-
-  if (isNaN(to.params.idOperateur)) {
+  if (to.params.idOperateur && isNaN(to.params.idOperateur)) {
     log.w("invalid param");
     return navigateTo("/operateur");
   }
-  if (operateurStore.operateurCourant.operateurId) {
-    if (hasId) {
-      if (
-        operateurStore.operateurCourant.operateurId.toString() !==
-        to.params.idOperateur
-      ) {
-        log.w(`operator ${to.params.idOperateur} is not owned by current user`);
-        log.d("adding correct operateurId to url");
-        const url = `/operateur/${operateurStore.operateurCourant.operateurId}`;
-        return navigateTo(url);
-      } else {
-        log.d("nothing to do");
-      }
-    } else {
-      log.d("adding operateurId to url");
-      const url = `/operateur/${operateurStore.operateurCourant.operateurId}`;
-      return navigateTo({ path: url, hash: to.hash });
-    }
-  } else if (hasId) {
-    log.i("return home");
+
+  const operateurStore = useOperateurStore();
+  await operateurStore.setMyOperateur();
+
+  if (!to.params.idOperateur && !operateurStore.operateurCourant) {
+    log.d("Création organisme");
+    return;
+  }
+  if (to.params.idOperateur && !operateurStore.operateurCourant) {
     return navigateTo("/operateur");
   }
+
+  if (!to.params.idOperateur) {
+    const url = `/operateur/${operateurStore.operateurCourant.operateurId}`;
+    return navigateTo({ path: url, hash: to.hash });
+  }
+
+  if (
+    operateurStore.operateurCourant.operateurId.toString() !==
+    to.params.idOperateur
+  ) {
+    log.w(`operator ${to.params.idOperateur} is not owned by current user`);
+    log.d("adding correct operateurId to url");
+    const url = `/operateur/${operateurStore.operateurCourant.operateurId}`;
+    return navigateTo(url);
+  }
+
   log.d("Done");
 });

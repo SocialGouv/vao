@@ -3,7 +3,7 @@
     <div class="fr-col-3">
       <OperateurMenuOperateur
         :active-id="hash"
-        :operateur="operateurStore.operateurCourant"
+        :operateur="operateurStore.operateurCourant ?? {}"
       ></OperateurMenuOperateur>
     </div>
 
@@ -13,35 +13,39 @@
         <div id="info-generales">
           <OperateurInformationsGenerales
             v-if="hash === 'info-generales'"
-            :init-data="operateurCourant"
+            :init-data="operateurStore.operateurCourant ?? {}"
             @valid="updateOrCreate"
           />
         </div>
         <div v-if="isSiege" id="agrement">
           <OperateurAgrement
             v-if="hash === 'agrement'"
-            :init-data="operateurCourant"
+            :init-data="operateurStore.operateurCourant ?? {}"
             @valid="nextHash(hash)"
           ></OperateurAgrement>
         </div>
         <div v-if="isSiege" id="protocole-transport">
           <protocole-transport
             v-if="hash === 'protocole-transport'"
-            :init-data="operateurCourant.protocoleTransport ?? {}"
+            :init-data="
+              operateurStore.operateurCourant.protocoleTransport ?? {}
+            "
             @valid="updateOrCreate"
           ></protocole-transport>
         </div>
         <div v-if="isSiege" id="protocole-sanitaire">
           <protocole-sanitaire
             v-if="hash === 'protocole-sanitaire'"
-            :init-data="operateurCourant.protocoleSanitaire ?? {}"
+            :init-data="
+              operateurStore.operateurCourant.protocoleSanitaire ?? {}
+            "
             @valid="updateOrCreate"
           ></protocole-sanitaire>
         </div>
         <div id="synthese">
           <OperateurSynthese
             v-if="hash === 'synthese'"
-            :init-data="operateurCourant"
+            :init-data="operateurStore.operateurCourant ?? {}"
             @valid="finalizeOperateur"
           ></OperateurSynthese>
         </div>
@@ -63,16 +67,16 @@ definePageMeta({
 
 const operateurStore = useOperateurStore();
 
-const operateurCourant = computed(() => {
-  return operateurStore.operateurCourant;
-});
-
 const isSiege = computed(() => {
-  return operateurCourant.value?.personneMorale.siegeSocial === true;
+  return (
+    !operateurStore.operateurCourant ||
+    operateurStore.operateurCourant.typeOperateur === "personne_physique" ||
+    operateurStore.operateurCourant.personneMorale?.siegeSocial === true
+  );
 });
 const sommaireOptions = computed(() =>
   organismeMenus
-    .filter((m) => m.displayForEtabSecondaire || isSiege.value)
+    .filter((m) => isSiege.value || m.displayForEtabSecondaire)
     .map((m) => m.id),
 );
 
@@ -123,7 +127,7 @@ async function updateOrCreate(operatorData, updatetype) {
 async function finalizeOperateur() {
   log.i("finalizeOperateur - IN");
   try {
-    const url = `/operateur/${operateurCourant.value.operateurId}`;
+    const url = `/operateur/${operateurStore.operateurCourant.operateurId}`;
     const data = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
