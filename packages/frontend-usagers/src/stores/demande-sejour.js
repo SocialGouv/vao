@@ -10,7 +10,7 @@ const resetDemandeCourante = () => ({
   informationsProjetSejour: {},
   informationsTransport: {},
   informationsSanitaires: {},
-  hebergement: [],
+  hebergement: {},
 });
 
 export const useDemandeSejourStore = defineStore("demandeSejour", {

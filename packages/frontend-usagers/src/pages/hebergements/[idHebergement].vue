@@ -28,10 +28,7 @@ async function editHebergement(hebergement) {
     await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
-      body: {
-        nom: hebergement.nom,
-        caracteristiques: hebergement,
-      },
+      body: hebergement,
     });
     log.d("hebergement sauvegardé");
     toaster.success("Hébergement sauvegardé");

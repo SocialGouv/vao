@@ -10,22 +10,14 @@ definePageMeta({
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 const log = logger("pages/hebermgents/new");
-
+const hebergementStore = useHebergementStore();
 async function addHebergement(hebergement) {
   log.d("addHebergement - IN");
   try {
-    const url = `/hebergement`;
-    const data = await $fetchBackend(url, {
-      method: "POST",
-      body: {
-        nom: hebergement.nom,
-        caracteristiques: hebergement,
-      },
-      credentials: "include",
-    });
+    const id = await hebergementStore.addHebergement(hebergement);
     log.d("hebergement sauvegardé");
     toaster.success("Hébergement sauvegardé");
-    navigateTo("/hebergements/" + data.id);
+    navigateTo("/hebergements/" + id);
   } catch (error) {
     toaster.error(
       error.data.message ?? "Erreur lors de la sauvegarde de l'hébergement",

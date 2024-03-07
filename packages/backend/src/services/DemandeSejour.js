@@ -29,8 +29,8 @@ const query = {
       ds.statut as "statut",
       ds.operateur_id as "operateurId",
       ds.libelle as "libelle",
-      ds.date_debut as "dateDebut",
-      ds.date_fin as "dateFin",
+      ds.date_debut::text as "dateDebut",
+      ds.date_fin::text as "dateFin",
       ds.created_at as "createdAt",
       ds.edited_at as "editedAt",
       ds.duree as "duree",
@@ -47,8 +47,8 @@ const query = {
       ds.statut as "statut",
       ds.operateur_id as "operateurId",
       ds.libelle as "libelle",
-      ds.date_debut as "dateDebut",
-      ds.date_fin as "dateFin",
+      ds.date_debut::text as "dateDebut",
+      ds.date_fin::text as "dateFin",
       ds.created_at as "createdAt",
       ds.edited_at as "editedAt",
       ds.duree as "duree",
@@ -81,8 +81,8 @@ const query = {
       ds.operateur_id as "operateurId",
       ds.id_fonctionnelle as "idFonctionnelle",
       ds.libelle as "libelle",
-      ds.date_debut as "dateDebut",
-      ds.date_fin as "dateFin",
+      ds.date_debut::text as "dateDebut",
+      ds.date_fin::text as "dateFin",
       ds.duree as "duree",
       ds.vacanciers as "informationsVacanciers",
       ds.personnel as "informationsPersonnel",
@@ -111,7 +111,15 @@ const query = {
   RETURNING
     id as "idDemande"
     `,
-  updateInformationsGenerales: `
+  updateInformationsGenerales: (
+    libelle,
+    dateDebut,
+    dateFin,
+    duree,
+    organisme,
+    demandeSejourId,
+  ) => [
+    `
     UPDATE front.demande_sejour ds
       SET
       libelle = $1,
@@ -125,6 +133,8 @@ const query = {
     RETURNING
       id as "idDemande"
     `,
+    [libelle, dateDebut, dateFin, duree, organisme, demandeSejourId],
+  ],
   updateInformationsPersonnel: `
     UPDATE front.demande_sejour ds
       SET
@@ -285,8 +295,7 @@ module.exports.getByAdminId = async (
 };
 
 module.exports.update = async (type, demandeSejourId, parametre) => {
-  log.i("update - IN", { demandeSejourId });
-  log.i(type);
+  log.w("update - IN", { demandeSejourId, parametre, type });
   let response;
   switch (type) {
     case "operateur": {
@@ -300,14 +309,16 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
     case "informationsGenerales": {
       const { libelle, dateDebut, dateFin, duree, organisme } = parametre;
 
-      response = await pool.query(query.updateInformationsGenerales, [
-        libelle,
-        dateDebut,
-        dateFin,
-        duree,
-        organisme,
-        demandeSejourId,
-      ]);
+      response = await pool.query(
+        ...query.updateInformationsGenerales(
+          libelle,
+          dateDebut,
+          dateFin,
+          duree,
+          organisme,
+          demandeSejourId,
+        ),
+      );
       break;
     }
     case "informationsVacanciers": {

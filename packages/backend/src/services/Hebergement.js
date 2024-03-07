@@ -14,10 +14,10 @@ const query = {
   get: `
     SELECT
       id,
-      caracteristiques#> '{adresse, departement}' as departement,
-      caracteristiques#> '{adresse, label}' as adresse,
-      supprime,
       nom,
+      caracteristiques#> '{coordonnees, adresse, departement}' as departement,
+      caracteristiques#> '{coordonnees, adresse, label}' as adresse,
+      supprime,
       created_at as "createdAt",
       edited_at as "editedAt"
     FROM front.hebergement 

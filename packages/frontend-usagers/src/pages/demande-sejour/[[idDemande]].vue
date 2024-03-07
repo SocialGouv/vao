@@ -55,10 +55,13 @@
         <div id="hebergements">
           <DSHebergementsSejour
             v-if="hash === 'hebergements'"
-            :init-data="demandeCourante ?? {}"
-            @valid="updateOrCreate"
+            :date-debut="demandeCourante.dateDebut"
+            :date-fin="demandeCourante.dateFin"
+            :hebergement="demandeCourante.hebergement ?? {}"
+            @update="updateOrCreate"
           />
         </div>
+        <div id="synthese"></div>
       </div>
     </div>
   </div>
