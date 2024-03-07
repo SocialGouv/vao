@@ -29,4 +29,8 @@ psql -d $POSTGRES_DB -f /scripts/03/03-3-ref-data.sql
 
 echo '04-1-back-user : '
 psql -d $POSTGRES_DB -f /scripts/04/04-1-back-user.sql
+echo '04-2-back-user-territoire : '
+psql -d $POSTGRES_DB -f /scripts/04/04-2-back-user-territoire.sql
+echo 'BO-1-back-user : '
+psql -d $POSTGRES_DB -f /seeds/BO-1-back-user.sql
 
