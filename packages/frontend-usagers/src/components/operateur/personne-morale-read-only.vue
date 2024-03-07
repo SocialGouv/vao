@@ -31,7 +31,7 @@
           </div>
           <div class="fr-col-12">
             <span class="read-only-value">{{
-              initData.etablissements
+              (initData.etablissements ?? [])
                 .filter((e) => {
                   return e.enabled;
                 })

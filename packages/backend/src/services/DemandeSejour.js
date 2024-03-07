@@ -298,13 +298,14 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       break;
     }
     case "informationsGenerales": {
-      const { libelle, dateDebut, dateFin, duree } = parametre;
+      const { libelle, dateDebut, dateFin, duree, organisme } = parametre;
 
       response = await pool.query(query.updateInformationsGenerales, [
         libelle,
         dateDebut,
         dateFin,
         duree,
+        organisme,
         demandeSejourId,
       ]);
       break;
