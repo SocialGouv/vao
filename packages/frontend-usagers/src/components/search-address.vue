@@ -2,6 +2,9 @@
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
+
 const log = logger("components/search-address");
 
 const props = defineProps({
