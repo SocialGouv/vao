@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: packages/backend/src/config.js
-  checksum: 412c4f79410ade82188c3c220d29a9f86da1c8eb3ff7383380839d2130c98441
-- filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
+- filename: .env.dev.example.env
+  checksum: 577969d953076bd8813ab0a7edb1a8d9d7e8c629ae707b1549486fee5146ddf1
+version: ""
+filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
   checksum: 709d3ed89b83eb106ba6a8a3b625839dfc7feced17a1e2a544dac608c4683491
 - filename: pg/scripts/02/02-5-ref-init.sql
   checksum: c80c2eae776be18cf0c1e6cb4de92fc0e555cb2bbf73ac535d3931f408c7b249
