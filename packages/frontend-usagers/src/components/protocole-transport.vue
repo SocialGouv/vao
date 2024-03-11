@@ -8,17 +8,7 @@
             legend="Qui est responsable du transport jusqu'au lieu de séjour ?"
             :required="true"
             :model-value="responsableTransportLieuSejour"
-            :options="[
-              {
-                label: 'Les vacanciers viennent par leurs propres moyens',
-                value: 'vacanciers',
-              },
-              {
-                label:
-                  'Le transport vers le lieu de séjour est assuré par l\'organisateur',
-                value: 'organisateur',
-              },
-            ]"
+            :options="protocoleTransport.responsableTransportLieuSejourOptions"
             :is-valid="responsableTransportLieuSejourMeta"
             :inline="true"
             :error-message="responsableTransportLieuSejourErrorMessage"
@@ -31,7 +21,7 @@
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <UtilsMultiSelect
-            :options="transportOptions"
+            :options="protocoleTransport.transportOptions"
             :values="modeTransport"
             label="Précisez le ou les modes de transport utilisés"
             :required="true"
@@ -102,32 +92,7 @@ const props = defineProps({
 });
 const emit = defineEmits(["previous", "next", "update"]);
 
-const transportOptions = [
-  { text: "Avion", value: "Avion", id: "1" },
-  { text: "Train", value: "Train", id: "2" },
-  {
-    text: "Autobus, car",
-    value: "Autobus, car",
-    id: "3",
-  },
-  { text: "Automobile", value: "Automobile", id: "4" },
-  { text: "Bateau", value: "Bateau", id: "5" },
-  { text: "Autre", value: "Autre", id: "6" },
-];
-
-const schemaInfosTransport = {
-  responsableTransportLieuSejour: yup.string().required(),
-  deplacementDurantSejour: yup
-    .string()
-    .required("Le remplissage de ce champ est obligatoire"),
-  precisionModeOrganisation: yup
-    .string()
-    .required()
-    .min(5, "Les précisions sur le mode d'organisation sont obligatoires'"),
-  modeTransport: yup
-    .array()
-    .min(1, "vous devez sélectionner au moins un mode de transport"),
-};
+const schemaInfosTransport = { ...protocoleTransport.schema };
 
 const validationSchema = computed(() =>
   yup.object({

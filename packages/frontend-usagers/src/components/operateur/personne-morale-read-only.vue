@@ -74,7 +74,7 @@
 
 <script setup>
 const props = defineProps({
-  initData: { type: Object, default: null, required: true },
+  initData: { type: Object, required: true },
 });
 
 const siretDisplayed = computed(() => {

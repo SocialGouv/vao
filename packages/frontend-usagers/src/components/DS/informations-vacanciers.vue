@@ -94,7 +94,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 const props = defineProps({
-  initData: { type: Object, default: null, required: true },
+  initData: { type: Object, required: true },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);

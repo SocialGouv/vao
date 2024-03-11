@@ -55,7 +55,7 @@ import { useRegionStore } from "@/stores/referentiels";
 const config = useRuntimeConfig();
 const log = logger("components/operateur/agrement-read-only");
 const props = defineProps({
-  initData: { type: Object, default: null, required: true },
+  initData: { type: Object, required: true },
 });
 
 const regionStore = useRegionStore();

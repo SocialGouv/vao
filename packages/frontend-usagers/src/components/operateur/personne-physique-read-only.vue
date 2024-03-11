@@ -78,7 +78,7 @@
 
 <script setup>
 defineProps({
-  initData: { type: Object, default: null, required: true },
+  initData: { type: Object, required: true },
 });
 </script>
 
