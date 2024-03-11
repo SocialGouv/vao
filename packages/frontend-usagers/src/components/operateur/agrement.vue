@@ -65,33 +65,11 @@
         </div>
       </fieldset>
       <fieldset class="fr-fieldset">
-        <div class="fr-fieldset__element">
-          <div
-            v-if="agrementCourant"
-            class="fr-input-group fr-col-6"
-            style="margin-bottom: 2rem"
-          >
-            <label> Fichier téléversé : </label>
-            <a :href="agrementCourant.lien">{{ agrementCourant.filename }}</a>
-            <DsfrFileUpload
-              class="fr-input-group fr-col-12"
-              style="margin-top: 2rem"
-              label="Si vous souhaitez remplacer le fichier, veuillez cliquer sur le bouton Parcourir ci dessous."
-              @change="changeFile"
-            />
-          </div>
-          <div
-            v-else
-            class="fr-input-group fr-col-6"
-            style="margin-bottom: 2rem"
-          >
-            <DsfrFileUpload
-              label="Ajouter une copie de votre agrément"
-              hint="La copie de l'agrément qui vous a été délivré est obligatoire."
-              @change="changeFile"
-            />
-          </div>
-        </div>
+        <UtilsFileUpload
+          v-model="fileAgrement"
+          :init-file="agrementCourant"
+          :label="label"
+        />
       </fieldset>
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element">
