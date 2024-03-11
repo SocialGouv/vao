@@ -5,7 +5,7 @@
 - [] Intégrer renovate
 - [x] Conventionner commit
 - [x] Ajouter le cors pour le backend
-- [] Conventionner versionning
+- [x] Conventionner versionning
 
 # Intégration Fabrique
 

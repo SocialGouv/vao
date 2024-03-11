@@ -415,14 +415,17 @@
     <fieldset class="fr-fieldset">
       <div class="fr-col-4">
         <div class="fr-input-group">
-          <DsfrButton id="Suivant" :secondary="true" @click="back"
+          <DsfrButton id="previous-step" :secondary="true" @click.prevent="back"
             >Retour
           </DsfrButton>
         </div>
       </div>
       <div class="fr-col-4">
         <div class="fr-input-group">
-          <DsfrButton id="Suivant" :disabled="!meta.valid" @click="submit"
+          <DsfrButton
+            id="next-step"
+            :disabled="!meta.valid"
+            @click.prevent="submit"
             >{{ labelNext }}
           </DsfrButton>
         </div>

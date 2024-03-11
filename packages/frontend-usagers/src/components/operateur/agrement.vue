@@ -1,11 +1,6 @@
 <template>
   <div>
-    <form
-      ref="refFormAgrement"
-      enctype="multipart/form-data"
-      :meta="meta"
-      @submit.prevent="upload"
-    >
+    <form ref="refFormAgrement" enctype="multipart/form-data" :meta="meta">
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
@@ -70,41 +65,29 @@
         </div>
       </fieldset>
       <fieldset class="fr-fieldset">
-        <div class="fr-fieldset__element">
-          <div
-            v-if="agrementCourant"
-            class="fr-input-group fr-col-6"
-            style="margin-bottom: 2rem"
-          >
-            <label> Fichier téléversé : </label>
-            <a :href="agrementCourant.lien">{{ agrementCourant.filename }}</a>
-            <DsfrFileUpload
-              class="fr-input-group fr-col-12"
-              style="margin-top: 2rem"
-              label="Si vous souhaitez remplacer le fichier, veuillez cliquer sur le bouton Parcourir ci dessous."
-              @change="changeFile"
-            />
-          </div>
-          <div
-            v-else
-            class="fr-input-group fr-col-6"
-            style="margin-bottom: 2rem"
-          >
-            <DsfrFileUpload
-              label="Ajouter une copie de votre agrément"
-              hint="La copie de l'agrément qui vous a été délivré est obligatoire."
-              @change="changeFile"
-            />
-          </div>
-        </div>
+        <UtilsFileUpload
+          v-model="fileAgrement"
+          :init-file="agrementCourant"
+          :label="label"
+        />
       </fieldset>
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element">
-          <DsfrButtonGroup
-            :buttons="boutonOptions"
-            :inline-layout-when="true"
-            :reverse="true"
-          />
+          <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+            <DsfrButton
+              id="previous-step"
+              :secondary="true"
+              @click.prevent="
+                () => {
+                  emit('previous');
+                }
+              "
+              >Précédent</DsfrButton
+            >
+            <DsfrButton id="next-step" @click.prevent="next"
+              >Suivant</DsfrButton
+            >
+          </DsfrButtonGroup>
         </div>
       </fieldset>
     </form>
@@ -115,7 +98,6 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { useRegionStore } from "@/stores/referentiels";
 
 const config = useRuntimeConfig();
 const log = logger("components/operateur/agrement");
@@ -125,9 +107,10 @@ const props = defineProps({
   initData: { type: Object, default: null, required: true },
 });
 
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["previous", "next"]);
 
 const regionStore = useRegionStore();
+regionStore.fetch();
 
 const agrementCourant = computed(() => {
   if (props.initData.agrement) {
@@ -138,17 +121,13 @@ const agrementCourant = computed(() => {
   }
 });
 
-const boutonOptions = [
-  {
-    label: "Retour",
-    secondary: true,
-  },
-  {
-    label: "Suivant",
-  },
-];
-const agrementFile = ref(null);
-const refFormAgrement = ref(null);
+const label = computed(() => {
+  if (agrementCourant.value) {
+    return "Si vous souhaitez remplacer le fichier, veuillez cliquer sur le bouton Parcourir ci dessous.";
+  } else {
+    return "Ajouter une copie de votre agrément";
+  }
+});
 
 yup.setLocale({
   mixed: {
@@ -157,6 +136,7 @@ yup.setLocale({
 });
 
 const schemaAgrement = {
+  numeroAgrement: yup.string().required(),
   regionDelivrance: yup
     .string()
     .test(
@@ -165,7 +145,6 @@ const schemaAgrement = {
       (regionDelivrance) => !regionStore.regions.includes(regionDelivrance),
     )
     .required(),
-  numeroAgrement: yup.string().required(),
   dateDelivrance: yup
     .date()
     .max(new Date(), "La date doit être inférieure à la date du jour.")
@@ -182,7 +161,7 @@ const validationSchema = computed(() =>
   }),
 );
 
-const initialValues = computed(() => {
+const initialValues = (() => {
   if (props.initData.agrement) {
     return {
       regionDelivrance: props.initData.agrement.regionDelivrance,
@@ -198,7 +177,7 @@ const initialValues = computed(() => {
       dateDelivrance: null,
     };
   }
-});
+})();
 
 const { meta, values } = useForm({ initialValues, validationSchema });
 
@@ -214,6 +193,7 @@ const {
   handleChange: onDateDelivranceChange,
   meta: dateDelivranceMeta,
 } = useField("dateDelivrance");
+
 const {
   value: regionDelivrance,
   errorMessage: regionDelivranceErrorMessage,
@@ -221,49 +201,44 @@ const {
   meta: regionDelivranceMeta,
 } = useField("regionDelivrance");
 
+const fileAgrement = ref(null);
+const refFormAgrement = ref(null);
+
 function cancelUpload() {
-  agrementFile.value = null;
+  fileAgrement.value = null;
   refFormAgrement.value.reset();
 }
 
-async function upload() {
-  log.i("upload - IN");
+async function next() {
+  log.i("next - IN");
+
+  if (!meta.value.valid || !meta.value.dirty || fileAgrement.value === null) {
+    return emit("next");
+  }
+
   const body = new FormData();
   const options = JSON.stringify({
     ...values,
     operateurId: props.initData.operateurId,
   });
   body.append("options", options);
-  body.append("file", agrementFile.value);
+  body.append("file", fileAgrement.value);
   try {
     const url = `/document/agrement`;
     await $fetchBackend(url, {
       method: "post",
       credentials: "include",
       body,
-      onResponse({ response }) {
-        if (!response.ok) {
-          toaster.error(
-            response._data.msg ?? "Une erreur inattendue est survenue.",
-          );
-        } else {
-          toaster.success("Bien reçu, merci.");
-          emit("valid");
-        }
-        cancelUpload();
-      },
     });
-  } catch (error) {
+    toaster.success("Votre agrément a bien été déposé.");
     cancelUpload();
-    log.w("upload", { error });
+    emit("next");
+    log.i("next - DONE");
+  } catch (error) {
+    toaster.error(error.data.message ?? "Une erreur inattendue est survenue.");
+    log.w("next", { error });
   }
 }
-
-function changeFile(fileList) {
-  agrementFile.value = fileList.length === 1 ? fileList[0] : null;
-}
-
-regionStore.fetch();
 </script>
 
 <style lang="scss" scoped></style>

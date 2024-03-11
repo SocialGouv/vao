@@ -15,17 +15,6 @@
         </div>
       </div>
     </fieldset>
-    <!-- <fieldset class="fr-fieldset">
-      <div class="fr-fieldset__element fr-col-12">
-        <DsfrInputGroup
-          name="periode"
-          label="Période"
-          :label-visible="true"
-          :model-value="periode"
-          :disabled="true"
-        />
-      </div>
-    </fieldset> -->
 
     <DsfrHighlight
       text="Activités spécifiques proposées"
@@ -54,13 +43,35 @@
     </fieldset>
 
     <fieldset class="fr-fieldset">
-      <div class="fr-col-4">
-        <div class="fr-input-group">
-          <DsfrButton id="Suivant" :disabled="!meta" @click="valid"
-            >Suivant</DsfrButton
-          >
-        </div>
-      </div>
+      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+        <DsfrButton
+          id="previous-step"
+          :secondary="true"
+          @click.prevent="
+            () => {
+              emit('previous');
+            }
+          "
+          >Précédent</DsfrButton
+        >
+        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+      </DsfrButtonGroup>
+    </fieldset>
+
+    <fieldset class="fr-fieldset">
+      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+        <DsfrButton
+          id="previous-step"
+          :secondary="true"
+          @click.prevent="
+            () => {
+              emit('previous');
+            }
+          "
+          >Précédent</DsfrButton
+        >
+        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+      </DsfrButtonGroup>
     </fieldset>
   </div>
 </template>
@@ -73,7 +84,7 @@ const props = defineProps({
   initData: { type: Object, default: null, required: true },
 });
 
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["previous", "next", "update"]);
 
 const log = logger("components/DS/projet-sejour");
 
@@ -161,10 +172,12 @@ const { value: destination } = useField("destination");
 const { value: activitesSportives } = useField("activitesSportives");
 const { value: activitesCulturelles } = useField("activitesCulturelles");
 
-function valid() {
-  log.d("valid - IN");
+function next() {
+  if (!meta.value.dirty) {
+    return emit("next");
+  }
   emit(
-    "valid",
+    "update",
     { ...values, meta: meta.value.valid },
     "informationsProjetSejour",
   );

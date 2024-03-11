@@ -21,10 +21,11 @@ const query = {
     VALUES 
       ( $1, $2, $3) 
     RETURNING uuid`,
-  deleteByOperatorId: `UPDATE front.agrements 
-                  SET supprime=true 
-                  WHERE operateur_id=$1
-                  `,
+  deleteByOperatorId: `
+    UPDATE front.agrements 
+    SET supprime = true 
+    WHERE operateur_id = $1
+  `,
   getByOperateurId: `
     SELECT 
       id as "id",
@@ -36,15 +37,18 @@ const query = {
     FROM front.agrements 
     WHERE operateur_id =$1 
     AND supprime=false`,
-  getByUuid: `SELECT  uuid AS uuid,
-                      filename as filename,
-                      mime_type as mimeType,
-                      file as file
+  getByUuid: `
+    SELECT 
+      uuid AS uuid,
+      filename as filename,
+      mime_type as mimeType,
+      file as file
     FROM doc.agrements 
     WHERE uuid =$1;`,
   updateOptions: `
     UPDATE front.agrements 
-    SET numero = $2, 
+    SET 
+      numero = $2, 
       region_delivrance = $3, 
       date_obtention = $4, 
       date_fin_validite = $5

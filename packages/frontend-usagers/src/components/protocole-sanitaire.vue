@@ -517,11 +517,19 @@
       </div>
     </fieldset>
     <fieldset class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-4">
-          <DsfrButton id="Suivant" @click="valid">Suivant</DsfrButton>
-        </div>
-      </div>
+      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+        <DsfrButton
+          id="previous-step"
+          :secondary="true"
+          @click.prevent="
+            () => {
+              emit('previous');
+            }
+          "
+          >Précédent</DsfrButton
+        >
+        <DsfrButton id="next-step" @click.prevent="valid">Suivant</DsfrButton>
+      </DsfrButtonGroup>
     </fieldset>
   </div>
 </template>
@@ -533,7 +541,7 @@ import * as yup from "yup";
 const props = defineProps({
   initData: { type: Object, default: null, required: true },
 });
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["previous", "next", "update"]);
 
 const log = logger("components/protocole-sanitaire");
 
@@ -923,7 +931,10 @@ const {
 
 function valid() {
   log.d("valid - IN");
-  emit("valid", { ...values, meta: meta.value.valid }, "protocole_sanitaire");
+  if (!meta.value.dirty) {
+    return emit("next");
+  }
+  emit("update", { ...values, meta: meta.value.valid }, "protocole_sanitaire");
 }
 
 onMounted(() => {

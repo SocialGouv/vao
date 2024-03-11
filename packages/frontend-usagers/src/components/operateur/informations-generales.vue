@@ -20,13 +20,15 @@
     <div v-if="typeOperateur === 'personne_morale'">
       <OperateurPersonneMorale
         :init-data="initData.personneMorale ?? {}"
-        @valid="valid"
+        @next="next"
+        @update="update"
       ></OperateurPersonneMorale>
     </div>
     <div v-if="typeOperateur === 'personne_physique'">
       <OperateurPersonnePhysique
         :init-data="initData.personnePhysique ?? {}"
-        @valid="valid"
+        @next="next"
+        @update="update"
       ></OperateurPersonnePhysique>
     </div>
   </div>
@@ -35,7 +37,7 @@
 <script setup>
 import { useField } from "vee-validate";
 
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["next", "update"]);
 const props = defineProps({
   initData: { type: Object, required: true },
 });
@@ -49,8 +51,11 @@ const {
   initialValue: props.initData.typeOperateur,
 });
 
-function valid(data, type) {
-  emit("valid", data, type);
+function update(data, type) {
+  emit("update", data, type);
+}
+function next() {
+  emit("next");
 }
 </script>
 

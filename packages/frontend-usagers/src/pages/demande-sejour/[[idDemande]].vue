@@ -14,42 +14,53 @@
           <DSInformationsGenerales
             v-if="hash === 'info-generales'"
             :init-data="demandeCourante ?? {}"
-            @valid="updateOrCreate"
+            @update="updateOrCreate"
+            @next="nextHash"
           />
         </div>
         <div id="info-vacanciers">
           <DSInformationsVacanciers
             v-if="hash === 'info-vacanciers'"
             :init-data="demandeCourante.informationsVacanciers ?? {}"
-            @valid="updateOrCreate"
+            @update="updateOrCreate"
+            @next="nextHash"
+            @previous="previousHash"
           />
         </div>
         <div id="info-transport">
           <protocole-transport
             v-if="hash === 'info-transport'"
             :init-data="demandeCourante.informationsTransport ?? {}"
-            @valid="updateOrCreate"
+            @update="updateOrCreate"
+            @next="nextHash"
+            @previous="previousHash"
           ></protocole-transport>
         </div>
         <div id="info-sanitaires">
           <protocole-sanitaire
             v-if="hash === 'info-sanitaires'"
             :init-data="demandeCourante.informationsSanitaires ?? {}"
-            @valid="updateOrCreate"
+            @update="updateOrCreate"
+            @next="nextHash"
+            @previous="previousHash"
           ></protocole-sanitaire>
         </div>
         <div id="info-personnel">
           <DSInformationsPersonnel
             v-if="hash === 'info-personnel'"
             :init-data="demandeCourante.informationsPersonnel ?? {}"
-            @valid="updateOrCreate"
+            @update="updateOrCreate"
+            @next="nextHash"
+            @previous="previousHash"
           />
         </div>
         <div id="projet-sejour">
           <DSProjetSejour
             v-if="hash === 'projet-sejour'"
             :init-data="demandeCourante.informationsProjetSejour ?? {}"
-            @valid="updateOrCreate"
+            @update="updateOrCreate"
+            @next="nextHash"
+            @previous="previousHash"
           />
         </div>
         <div id="hebergements">
@@ -59,6 +70,8 @@
             :date-fin="demandeCourante.dateFin"
             :hebergement="demandeCourante.hebergement ?? {}"
             @update="updateOrCreate"
+            @next="nextHash"
+            @previous="previousHash"
           />
         </div>
         <div id="synthese"></div>
@@ -93,21 +106,12 @@ const hash = computed(() => {
   return sommaireOptions[0];
 });
 
-function nextHash(hash, sejourId) {
-  const index = sommaireOptions.findIndex((o) => o === hash);
-  log.d({ hash, index, next: sommaireOptions[index + 1] });
-  return navigateTo({
-    path: `/demande-sejour/${sejourId}`,
-    hash: "#" + sommaireOptions[index + 1],
-  });
-}
+const sejourId = ref(route.params.idDemande);
 
 async function updateOrCreate(sejourData, updatetype) {
   log.i("updateOrCreate - IN", { sejourData, updatetype });
   try {
-    const url = route.params.idDemande
-      ? `/sejour/${route.params.idDemande}`
-      : "/sejour";
+    const url = sejourId.value ? `/sejour/${sejourId.value}` : "/sejour";
     log.d(url);
     const data = await $fetchBackend(url, {
       method: "POST",
@@ -118,15 +122,28 @@ async function updateOrCreate(sejourData, updatetype) {
       },
     });
 
-    const sejourId = data.id;
-    log.d(`demande de séjour ${sejourId} mis à jour`);
     toaster.success(
-      `Demande de séjour ${route.params.idDemande ? "sauvegardée" : "créée"}`,
+      `Demande de séjour ${sejourId.value ? "sauvegardée" : "créée"}`,
     );
-    return nextHash(hash.value, sejourId);
+    log.d(`demande de séjour ${sejourId.value} mis à jour`);
+    sejourId.value = data.id;
+    return nextHash();
   } catch (error) {
     log.w("Creation/modification d'operateur : ", { error });
   }
+}
+
+function previousHash() {
+  const index = sommaireOptions.value.findIndex((o) => o === hash.value);
+  return navigateTo({ hash: "#" + sommaireOptions.value[index - 1] });
+}
+
+function nextHash() {
+  const index = sommaireOptions.findIndex((o) => o === hash.value);
+  return navigateTo({
+    path: `/demande-sejour/${sejourId.value}`,
+    hash: "#" + sommaireOptions[index + 1],
+  });
 }
 </script>
 

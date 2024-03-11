@@ -123,7 +123,10 @@
         </div>
       </div>
     </fieldset>
-    <DsfrButton label="Suivant" @click="next" />
+
+    <fieldset class="fr-fieldset">
+      <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+    </fieldset>
   </div>
 </template>
 
@@ -133,10 +136,10 @@ import * as yup from "yup";
 const log = logger("components/operateur/personne-physique");
 
 const props = defineProps({
-  initData: { type: Object, default: null, required: true },
+  initData: { type: Object, required: true },
 });
 
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["update", "next"]);
 
 const professionOptions = [
   {
@@ -340,8 +343,12 @@ function setAdresseSiege(v) {
 }
 
 function next() {
+  if (!meta.value.dirty) {
+    return emit("next");
+  }
+
   emit(
-    "valid",
+    "update",
     {
       ...values,
       meta: meta.value.valid,

@@ -16,7 +16,7 @@
         </div>
       </div>
     </fieldset>
-    <DsfrButton label="Suivant" @click="next" />
+    <DsfrButton label="Suivant" @click.prevent="next" />
   </div>
 </template>
 
@@ -27,7 +27,7 @@ const props = defineProps({
   initData: { type: Array, required: true },
 });
 
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["next", "update"]);
 
 const organisateurs = ref(props.initData);
 const metaOrganisateur = ref(true);
@@ -53,8 +53,11 @@ function validResponsableOrganisation(organisateurs) {
 
 function next() {
   log.i("next - IN");
+  if (!meta.value.dirty) {
+    return emit("next");
+  }
   emit(
-    "valid",
+    "update",
     {
       organisateurs: organisateurs.value,
       meta: metaOrganisateur.value,

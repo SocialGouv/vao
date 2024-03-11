@@ -1,15 +1,12 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 577969d953076bd8813ab0a7edb1a8d9d7e8c629ae707b1549486fee5146ddf1
-version: ""
-filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
-  checksum: 709d3ed89b83eb106ba6a8a3b625839dfc7feced17a1e2a544dac608c4683491
-- filename: pg/scripts/02/02-5-ref-init.sql
-  checksum: c80c2eae776be18cf0c1e6cb4de92fc0e555cb2bbf73ac535d3931f408c7b249
-- filename: pg/scripts/03/03-3-ref-data.sql
-  checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
-version: ""
-m: 5e21dfc40b41f4ee43ea755bbe17e9de43c2cc3a0eb7df40087775524348d3fd
+  checksum: 8e9989983392b5cab59ec15524c744ae4e6ee52ea7b3f783b1d6202ad90d7402
+- filename: .github/workflows/deactivate.yaml
+  checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
+- filename: .github/workflows/preproduction.yaml
+  checksum: 232cf78cc8ef9d85c8591e73bec37350e8592fcd5617280541cb8addafcf8e4c
+- filename: .github/workflows/production.yaml
+  checksum: 5e21dfc40b41f4ee43ea755bbe17e9de43c2cc3a0eb7df40087775524348d3fd
 - filename: .github/workflows/review-auto.yaml
   checksum: 55c6b1ac3eaf1318b6c0d1c74675a27dafc7b2273a80b59df5ceafd754537ba7
 - filename: .github/workflows/review.yaml
@@ -61,7 +58,7 @@ m: 5e21dfc40b41f4ee43ea755bbe17e9de43c2cc3a0eb7df40087775524348d3fd
 - filename: docker-compose.yaml
   checksum: f4fc98c9f7af1169a8c75e3f11586c36665fef55807326ec9af55037c7bc34d4
 - filename: packages/backend/src/config.js
-  checksum: 78f9abb7d80e6cd47c42938ad5a33cf7cc5ed605a05432c591ac4e2649e5c4e5
+  checksum: ee40db09f52fe21ddfa6a66a849d8848989238c0b6cc19a06b7875ce5c86ed56
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
   checksum: d66401c29c51850346868ff2d7c097fbd572bbfd8cfae77c87ae5274a7cc8409
 - filename: packages/backend/src/controllers/authentication/email/index.js
@@ -103,11 +100,13 @@ m: 5e21dfc40b41f4ee43ea755bbe17e9de43c2cc3a0eb7df40087775524348d3fd
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
-  checksum: 68cc1b268d7ddfb33b18ecb2952015d6b66a6ba3817c75b5021ed540b4778948
+  checksum: 2237d2a196392be19f0ac6d116954898a4e68b24b1793fb8a060ba1da83564b0
 - filename: packages/frontend-usagers/src/components/organisateur.vue
   checksum: 5be487a1e995dd4207baabe268d2d4c7159d7a3b3ec05663825400e47590fdee
 - filename: packages/frontend-usagers/src/components/personnes-read-only.vue
   checksum: 9a477eeb49f3aa3011e88b8ec11b9735f7166d1400bf5fd53fe04a29b59ad848
+- filename: packages/frontend-usagers/src/components/utils/MultiFilesUpload.vue
+  checksum: 846543dfd36589a6fe10859c28fe0ca4e3a4f084f58ea56b42fce695d30b31c8
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue
   checksum: 05743cc5c3dfd946e8ee41cb11571b1e505bbdb5260e9c59a53e4ca16cb11f08
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
@@ -137,27 +136,15 @@ m: 5e21dfc40b41f4ee43ea755bbe17e9de43c2cc3a0eb7df40087775524348d3fd
 - filename: pg/scripts/02/02-3-back-init.sql
   checksum: 2212858d82852bbef797353c755b24f9eb7631e5c559233ac4d30c6a9eedfd49
 - filename: pg/scripts/02/02-4-front-init.sql
-  checksum: 8ab0ded677bb94ba239c7be2486a4c1d1e29e94942c7e0c49d7de03fb92f6667
-- filename: pg/scripts/02/02-5-ref-init.sql
-  checksum: c80c2eae776be18cf0c1e6cb4de92fc0e555cb2bbf73ac535d3931f408c7b249
+  checksum: 9bf5a764f03058890580e66ffa956d9a17dd37b2cdf0851fa25e693a580c91c8
 - filename: pg/scripts/03/03-1-geo-data.sql
   checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
 - filename: pg/scripts/03/03-2-back-data.sql
   checksum: d65e191f22dd46a53fd07dd02856d505a01f38b6274ef1989536aa193faebb2d
 - filename: pg/scripts/03/03-3-front-data.sql
   checksum: 413817c8133c69f883087a7042258dcb75e4f75a45897ea830f86d8a5cba561a
-- filename: pg/scripts/03/03-3-ref-data.sql
-  checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
 - filename: pod-backend-66df4cdf46-82vfh.yaml
   checksum: 6505514978ef8de3b512962a9e93eb5f6bece8b86fcbf32d2d55a780e06592a7
 scopeconfig:
 - scope: node
 version: "1.0"
-  - filename: pg/scripts/03/03-3-ref-data.sql
-    checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
-  - filename: pod-backend-66df4cdf46-82vfh.yaml
-    checksum: 6505514978ef8de3b512962a9e93eb5f6bece8b86fcbf32d2d55a780e06592a7
-  - filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
-    checksum: 68cc1b268d7ddfb33b18ecb2952015d6b66a6ba3817c75b5021ed540b4778948
-scopeconfig:
-  - scope: node

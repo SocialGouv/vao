@@ -6,12 +6,12 @@ const log = logger(module.filename);
 
 const query = {
   create: `
-    INSERT INTO front.operateurs(type_operateur,personne_morale,personne_physique) 
-    VALUES ($1,$2,$3)
+    INSERT INTO front.operateurs (type_operateur, personne_morale, personne_physique) 
+    VALUES ($1, $2, $3)
     RETURNING
-        id as "operateurId"
+      id as "operateurId"
     ;
-    `,
+`,
   get: (criterias) => [
     `
     SELECT
@@ -60,22 +60,24 @@ const query = {
       o.protocole_sanitaire as "protocoleSanitaire",
       o.created_at as "createdAt",
       o.edited_at as "editedAt",
-      (SELECT jsonb_agg(json_build_object(
-      'numero', numero,
-      'filename', filename,
-      'uuid', uuid,
-      'regionDelivrance', region_delivrance,
-      'dateObtention', date_obtention::text,
-      'createdAt',a.created_at
-    ) ORDER BY date_obtention)                   
-    FROM front.agrements a            
-    WHERE operateur_id = o.id
-    AND a.supprime = false
-  ) AS agrement
+      (
+        SELECT 
+          json_build_object(
+            'numero', numero,
+            'filename', filename,
+            'uuid', uuid,
+            'regionDelivrance', region_delivrance,
+            'dateObtention', date_obtention,
+            'createdAt',a.created_at
+          )                  
+        FROM front.agrements a            
+        WHERE operateur_id = o.id
+        AND a.supprime = false
+      ) AS agrement
     FROM front.operateurs o
     JOIN front.user_operateur uo ON o.id = ope_id
     WHERE o.personne_morale->>'siret' = $1
-    `,
+`,
   getSiege: `
     SELECT
       o.id as "operateurId",
@@ -88,29 +90,34 @@ const query = {
       o.protocole_sanitaire as "protocoleSanitaire",
       o.created_at as "createdAt",
       o.edited_at as "editedAt",
-      (SELECT jsonb_agg(json_build_object(
-      'numero', numero,
-      'filename', filename,
-      'uuid', uuid,
-      'regionDelivrance', region_delivrance,
-      'dateObtention', date_obtention::text,
-      'createdAt',a.created_at
-    ) ORDER BY date_obtention)                   
-    FROM front.agrements a            
-    WHERE operateur_id = o.id
-    AND a.supprime = false
-  ) AS agrement
+      (
+        SELECT 
+          json_build_object(
+            'numero', numero,
+            'filename', filename,
+            'uuid', uuid,
+            'regionDelivrance', region_delivrance,
+            'dateObtention', date_obtention,
+            'createdAt',a.created_at
+          )                  
+        FROM front.agrements a            
+        WHERE operateur_id = o.id
+        AND a.supprime = false
+      ) AS agrement
     FROM front.operateurs o
     JOIN front.user_operateur uo ON o.id = ope_id
     WHERE o.personne_morale->>'siren' = $1 
-    AND o.personne_morale->>'siegeSocial' = 'true'
-    `,
-  link: `INSERT INTO front.user_operateur(use_id,ope_id)
-  VALUES($1,$2)
-  RETURNING use_id as "userLinked"`,
+      AND o.personne_morale->>'siegeSocial' = 'true'
+`,
+  link: `
+    INSERT INTO front.user_operateur (use_id, ope_id)
+      VALUES($1, $2)
+    RETURNING use_id as "userLinked"
+`,
   update: `
-    UPDATE front.operateurs SET 
-      type_operateur=$2,
+    UPDATE front.operateurs 
+    SET 
+      type_operateur = $2,
       personne_morale = $3, 
       personne_physique = $4,
       complet = (CASE WHEN $5 = true THEN false ELSE complet END)
@@ -119,21 +126,36 @@ const query = {
       id as "updatedOperateurId"
   `,
   updateFinalisation: `
-UPDATE front.operateurs SET complet = true
-WHERE id = $1
-RETURNING
-  id as "updateOperateurId"
+    UPDATE front.operateurs 
+    SET complet = true
+    WHERE id = $1
+    RETURNING
+      id as "updateOperateurId"
 `,
   updateSanitaire: `
-    UPDATE front.operateurs SET protocole_sanitaire =$2,
-    complet = (CASE WHEN $3 = true THEN false ELSE complet END)
+    UPDATE front.operateurs 
+    SET 
+      protocole_sanitaire = $2,
+      complet = (
+        CASE WHEN $3 = true 
+          THEN false 
+          ELSE complet 
+        END
+      )
     WHERE id = $1
     RETURNING 
       id as "updatedOperateurId"
 `,
   updateTransport: `
-    UPDATE front.operateurs SET protocole_transport =$2,
-    complet = (CASE WHEN $3 = true THEN false ELSE complet END)
+    UPDATE front.operateurs 
+    SET 
+      protocole_transport = $2,
+      complet = (
+        CASE WHEN $3 = true 
+          THEN false 
+          ELSE complet 
+        END
+      )
     WHERE id = $1
     RETURNING
       id as "updatedOperateurId"
@@ -161,7 +183,7 @@ module.exports.link = async (userId, operateurId) => {
 
 module.exports.update = async (type, parametre, operateurId) => {
   log.i("update - IN", { type });
-  const notComplete = parametre.meta === false;
+  const isComplete = parametre.meta === true;
   let response;
   switch (type) {
     case "personne_morale": {
@@ -170,7 +192,7 @@ module.exports.update = async (type, parametre, operateurId) => {
         type,
         parametre,
         {},
-        notComplete,
+        isComplete,
       ]);
       break;
     }
@@ -180,7 +202,7 @@ module.exports.update = async (type, parametre, operateurId) => {
         type,
         {},
         parametre,
-        notComplete,
+        isComplete,
       ]);
       break;
     }
@@ -188,7 +210,7 @@ module.exports.update = async (type, parametre, operateurId) => {
       response = await pool.query(query.updateTransport, [
         operateurId,
         parametre,
-        notComplete,
+        isComplete,
       ]);
       break;
     }
@@ -196,7 +218,7 @@ module.exports.update = async (type, parametre, operateurId) => {
       response = await pool.query(query.updateSanitaire, [
         operateurId,
         parametre,
-        notComplete,
+        isComplete,
       ]);
       break;
     }

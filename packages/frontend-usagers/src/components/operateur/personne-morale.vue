@@ -171,7 +171,9 @@
       </div>
     </div>
 
-    <DsfrButton label="Suivant" @click="next" />
+    <fieldset class="fr-fieldset">
+      <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+    </fieldset>
   </div>
 </template>
 
@@ -183,7 +185,7 @@ const toaster = nuxtApp.vueApp.$toast;
 
 const log = logger("components/operateur/personne-morale");
 
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["previous", "next", "update"]);
 
 const props = defineProps({
   initData: { type: Object, default: null, required: true },
@@ -461,9 +463,11 @@ async function searchOperateur() {
 
 function next() {
   log.i("next - IN");
-  log.i(responsableSejour.value);
+  if (!meta.value.dirty) {
+    emit("next");
+  }
   emit(
-    "valid",
+    "update",
     {
       siret: siret.value,
       siren: formatedPersonneMorale.value.siren,
