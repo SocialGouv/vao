@@ -68,7 +68,7 @@ const toaster = nuxtApp.vueApp.$toast;
 const log = logger("pages/operateur/[[idOperateur]]");
 
 definePageMeta({
-  middleware: ["is-connected", "has-id-operateur"],
+  middleware: ["is-connected", "check-id-operateur-param"],
   layout: "operateur",
 });
 

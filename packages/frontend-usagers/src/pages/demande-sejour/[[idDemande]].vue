@@ -86,7 +86,7 @@ const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
 definePageMeta({
-  middleware: ["is-connected", "has-id-demande-sejour"],
+  middleware: ["is-connected", "check-id-demande-sejour-param"],
   layout: "demande-sejour",
 });
 

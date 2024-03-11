@@ -10,7 +10,7 @@
 
 <script setup>
 definePageMeta({
-  middleware: ["is-connected", "has-id-hebergement"],
+  middleware: ["is-connected", "check-id-hebergement-param"],
 });
 
 const nuxtApp = useNuxtApp();
