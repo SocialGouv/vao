@@ -49,7 +49,21 @@
         </div>
       </div>
     </fieldset>
-    <DsfrButton label="Suivant" @click="next" />
+    <fieldset class="fr-fieldset">
+      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+        <DsfrButton
+          id="previous-step"
+          :secondary="true"
+          @click.prevent="
+            () => {
+              emit('previous');
+            }
+          "
+          >Précédent</DsfrButton
+        >
+        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+      </DsfrButtonGroup>
+    </fieldset>
   </div>
 </template>
 
@@ -60,9 +74,7 @@ const props = defineProps({
   initData: { type: Object, default: null, required: true },
 });
 
-const emit = defineEmits(["valid"]);
-
-const log = logger("components/DS/informations-personnel");
+const emit = defineEmits(["previous", "next", "update"]);
 
 const schemaInfosPersonnel = {
   nombreResponsable: yup
@@ -118,7 +130,14 @@ const {
 } = useField("procedureRecrutementSupplementaire");
 
 function next() {
-  emit("valid", { ...values, meta: meta.value.valid }, "informationsPersonnel");
+  if (!meta.value.dirty) {
+    return emit("next");
+  }
+  emit(
+    "update",
+    { ...values, meta: meta.value.valid },
+    "informationsPersonnel",
+  );
 }
 </script>
 

@@ -71,7 +71,22 @@
         />
       </div>
     </fieldset>
-    <DsfrButton label="Suivant" @click="next" />
+
+    <fieldset class="fr-fieldset">
+      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+        <DsfrButton
+          id="previous-step"
+          :secondary="true"
+          @click.prevent="
+            () => {
+              emit('previous');
+            }
+          "
+          >Précédent</DsfrButton
+        >
+        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+      </DsfrButtonGroup>
+    </fieldset>
   </div>
 </template>
 
@@ -82,9 +97,7 @@ const props = defineProps({
   initData: { type: Object, default: null, required: true },
 });
 
-const emit = defineEmits(["valid"]);
-
-const log = logger("components/DS/informations-vacanciers");
+const emit = defineEmits(["previous", "next", "update"]);
 
 const trancheAgeOptions = [
   { label: "18-39 ans", id: "18+", name: "18_39" },
@@ -167,8 +180,11 @@ const { value: trancheAge } = useField("trancheAge");
 const { value: typeDeficiences } = useField("typeDeficiences");
 
 function next() {
+  if (!meta.value.dirty) {
+    return emit("next");
+  }
   emit(
-    "valid",
+    "update",
     { ...values, meta: meta.value.valid },
     "informationsVacanciers",
   );

@@ -110,7 +110,7 @@
           id="Suivant"
           :secondary="true"
           :disabled="!meta.valid"
-          @click="validatePersonne"
+          @click.prevent="validatePersonne"
           >Valider
         </DsfrButton>
       </div>

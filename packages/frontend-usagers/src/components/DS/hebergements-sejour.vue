@@ -42,12 +42,26 @@
           <DsfrButton
             label="Ajouter une nuitée"
             :disabled="meta.valid"
-            @click="onOpenNuitee"
+            @click.prevent="onOpenNuitee"
           />
         </div>
       </fieldset>
 
-      <DsfrButton label="Suivant" @click="next" />
+      <fieldset class="fr-fieldset">
+        <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+          <DsfrButton
+            id="previous-step"
+            :secondary="true"
+            @click.prevent="
+              () => {
+                emit('previous');
+              }
+            "
+            >Précédent</DsfrButton
+          >
+          <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+        </DsfrButtonGroup>
+      </fieldset>
     </div>
     <DSHebergementsSejourDetail
       v-else
@@ -81,7 +95,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["update"]);
+const emit = defineEmits(["previous", "next", "update"]);
 
 const log = logger("demande-sejour/hebergement");
 
@@ -245,6 +259,9 @@ function editNuitee(index) {
 }
 
 async function next() {
+  if (!meta.value.dirty) {
+    return emit("next");
+  }
   const data = {
     hebergements: hebergements.value,
     sejourItinerant: sejourItinerant.value,

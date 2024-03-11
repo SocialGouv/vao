@@ -8,7 +8,7 @@
       label="Ajouter un élément"
       size="sm"
       :secondary="true"
-      @click="addPersonne"
+      @click.prevent="addPersonne"
     />
     <DsfrModal
       ref="modal"
@@ -16,7 +16,7 @@
       :opened="modalPersonne.opened"
       :title="props.title"
       size="md"
-      @close="onClose"
+      @close.prevent="onClose"
     >
       <Personne
         :personne="personne"

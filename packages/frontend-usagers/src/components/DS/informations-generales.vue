@@ -86,7 +86,16 @@
         :init-data="operateurStore.operateurCourant.personneMorale"
       ></OperateurPersonneMoraleReadOnly>
     </div>
-    <DsfrButton label="Suivant" :disabled="!meta.valid" @click="next" />
+
+    <fieldset class="fr-fieldset">
+      <DsfrButton
+        id="next-step"
+        label="Suivant"
+        :disabled="!meta.valid"
+        @click.prevent="next"
+        >Suivant</DsfrButton
+      >
+    </fieldset>
   </div>
 </template>
 
@@ -105,7 +114,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["next", "update"]);
 
 const log = logger("components/DS/informations-generales");
 
@@ -239,10 +248,13 @@ async function checkSiege() {
 }
 
 function next() {
+  if (!meta.value.dirty) {
+    return emit("next");
+  }
   const organismeData = operateurStore.operateurCourant.personneMorale;
   organismeData.responsableSejour = responsableSejour.value;
   emit(
-    "valid",
+    "update",
     {
       ...values,
       duree: duree.value,

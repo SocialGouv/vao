@@ -567,7 +567,7 @@
           id="cancel-add-hebergement"
           label="Annuler l'ajout d'étape"
           :secondary="true"
-          @click="cancel"
+          @click.prevent="cancel"
         >
         </DsfrButton>
       </div>
@@ -576,7 +576,7 @@
           id="submit-add-hebergement"
           label="Valider l'étape"
           :disabled="!meta.valid"
-          @click="next"
+          @click.prevent="next"
         >
         </DsfrButton>
       </div>

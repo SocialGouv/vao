@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!-- <protocole-transport-read-only
-      :init-data="props.initData.protocoleTransport"
-    > -->
     <fieldset class="fr-fieldset"></fieldset>
     <div class="fr-fieldset__element">
       <div class="fr-input-group fr-col-12">
@@ -91,15 +88,26 @@
       </div>
     </div>
 
-    <div class="fr-fieldset__element">
-      <div class="fr-input-group fr-col-12">
+    <fieldset class="fr-fieldset">
+      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+        <DsfrButton
+          id="previous-step"
+          :secondary="true"
+          @click.prevent="
+            () => {
+              emit('previous');
+            }
+          "
+          >Précédent</DsfrButton
+        >
+
         <DsfrButton
           label="Finaliser la fiche opérateur"
           :disabled="incompleteOrganisme"
-          @click="finalizeOrganisme"
+          @click.prevent="finalizeOrganisme"
         />
-      </div>
-    </div>
+      </DsfrButtonGroup>
+    </fieldset>
   </div>
 </template>
 
@@ -110,7 +118,7 @@ const props = defineProps({
   initData: { type: Object, default: null, required: true },
 });
 
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["previous", "finalize"]);
 const expandedId = ref(0);
 
 const isSiege = computed(() => {
@@ -207,7 +215,7 @@ const protocoleSanitaire = computed(() => {
 
 function finalizeOrganisme() {
   log.i("finalizeOrganisme - IN");
-  emit("valid", {});
+  emit("finalize");
 }
 </script>
 

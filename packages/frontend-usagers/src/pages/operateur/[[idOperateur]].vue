@@ -14,14 +14,16 @@
           <OperateurInformationsGenerales
             v-if="hash === 'info-generales'"
             :init-data="operateurStore.operateurCourant ?? {}"
-            @valid="updateOrCreate"
+            @update="updateOrCreate"
+            @next="nextHash"
           />
         </div>
         <div v-if="isSiege" id="agrement">
           <OperateurAgrement
             v-if="hash === 'agrement'"
             :init-data="operateurStore.operateurCourant ?? {}"
-            @valid="nextHash(hash)"
+            @previous="previousHash"
+            @next="nextHash"
           ></OperateurAgrement>
         </div>
         <div v-if="isSiege" id="protocole-transport">
@@ -30,7 +32,9 @@
             :init-data="
               operateurStore.operateurCourant.protocoleTransport ?? {}
             "
-            @valid="updateOrCreate"
+            @update="updateOrCreate"
+            @previous="previousHash"
+            @next="nextHash"
           ></protocole-transport>
         </div>
         <div v-if="isSiege" id="protocole-sanitaire">
@@ -39,14 +43,17 @@
             :init-data="
               operateurStore.operateurCourant.protocoleSanitaire ?? {}
             "
-            @valid="updateOrCreate"
+            @update="updateOrCreate"
+            @previous="previousHash"
+            @next="nextHash"
           ></protocole-sanitaire>
         </div>
         <div id="synthese">
           <OperateurSynthese
             v-if="hash === 'synthese'"
             :init-data="operateurStore.operateurCourant ?? {}"
-            @valid="finalizeOperateur"
+            @finalize="finalizeOperateur"
+            @previous="previousHash"
           ></OperateurSynthese>
         </div>
       </div>
@@ -87,38 +94,45 @@ const hash = computed(() => {
   return sommaireOptions.value[0];
 });
 
-function previousHash(hash) {
-  const index = sommaireOptions.value.findIndex((o) => o === hash);
-  return navigateTo({ hash: "#" + sommaireOptions[index - 1] });
+const idOrganisme = ref(route.params.idOperateur);
+
+function previousHash() {
+  const index = sommaireOptions.value.findIndex((o) => o === hash.value);
+  log.d({ hash: hash.value, index, next: sommaireOptions.value[index - 1] });
+  return navigateTo({ hash: "#" + sommaireOptions.value[index - 1] });
 }
 
-function nextHash(hash) {
-  const index = sommaireOptions.value.findIndex((o) => o === hash);
+function nextHash() {
+  const index = sommaireOptions.value.findIndex((o) => o === hash.value);
   log.d({ hash, index, next: sommaireOptions.value[index + 1] });
-  return navigateTo({ hash: "#" + sommaireOptions.value[index + 1] });
+  return navigateTo({
+    path: `/operateur/${idOrganisme.value}`,
+    hash: "#" + sommaireOptions.value[index + 1],
+  });
 }
 
-async function updateOrCreate(operatorData, updatetype) {
-  log.i("updateOrCreate - IN", { operatorData, updatetype });
+async function updateOrCreate(operatorData, type) {
+  log.i("updateOrCreate - IN", { operatorData, type });
   try {
-    const url = route.params.idOperateur
-      ? `/operateur/${route.params.idOperateur}`
+    const url = idOrganisme.value
+      ? `/operateur/${idOrganisme.value}`
       : "/operateur";
     const data = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
       body: {
         parametre: { ...operatorData },
-        type: updatetype,
+        type,
       },
     });
 
-    const operateurId = data.operateurId;
-    log.d(`operateur ${operateurId} mis à jour`);
     toaster.success(
-      `Fiche organisme ${route.params.idOperateur ? "sauvegardée" : "créée"}`,
+      `Fiche organisme ${idOrganisme.value ? "sauvegardée" : "créée"}`,
     );
-    return nextHash(hash.value);
+    idOrganisme.value = data.operateurId;
+    log.d(`operateur ${idOrganisme.value} mis à jour`);
+
+    return nextHash();
   } catch (error) {
     log.w("Creation/modification d'operateur : ", { error });
   }
@@ -138,7 +152,6 @@ async function finalizeOperateur() {
     });
     const operateurId = data.operateurId;
     log.d(`operateur ${operateurId} finalisé`);
-    await operateurStore.setMyOperateur();
     toaster.success("Fiche organisme finalisée");
     return navigateTo("/");
   } catch (error) {

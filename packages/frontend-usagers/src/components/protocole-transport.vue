@@ -75,11 +75,19 @@
       </div>
     </fieldset>
     <fieldset class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
-          <DsfrButton id="Suivant" @click="valid">Suivant</DsfrButton>
-        </div>
-      </div>
+      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+        <DsfrButton
+          id="previous-step"
+          :secondary="true"
+          @click.prevent="
+            () => {
+              emit('previous');
+            }
+          "
+          >Précédent</DsfrButton
+        >
+        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+      </DsfrButtonGroup>
     </fieldset>
   </div>
 </template>
@@ -92,7 +100,7 @@ const log = logger("components/protocole-transport");
 const props = defineProps({
   initData: { type: Object, default: null, required: true },
 });
-const emit = defineEmits(["valid"]);
+const emit = defineEmits(["previous", "next", "update"]);
 
 const transportOptions = [
   { text: "Avion", value: "Avion", id: "1" },
@@ -164,10 +172,14 @@ function addModeTransport(element) {
   modeTransport.value = element;
 }
 
-function valid() {
-  log.d("valid - IN");
+function next() {
+  log.d("next - IN", meta.value.dirty);
+  if (!meta.value.dirty) {
+    return emit("next");
+  }
+
   emit(
-    "valid",
+    "update",
     {
       ...values,
       modeTransport: modeTransport.value,
