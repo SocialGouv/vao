@@ -2,6 +2,8 @@
 const log = logger("layouts/default");
 const userStore = useUserStore();
 
+const config = useRuntimeConfig();
+
 const header = reactive({
   dimension: { height: "80px" },
   logoText: ["Republique", "française"],
@@ -77,7 +79,7 @@ function acceptAll() {
       <slot />
     </main>
 
-    <DsfrFooter />
+    <DsfrFooter :desc-text="`Version ${config.public.appVersion}`" />
     <DsfrNotice
       v-if="!consentCookie"
       title="L'utilisation de cookies est nécessaire au bon fonctionnement de

@@ -20,6 +20,7 @@ services:
     environment:
       NUXT_PUBLIC_SENTRY_DSN: ${FRONTEND_USAGERS_SENTRY_DSN}
       NUXT_PUBLIC_BACKEND_URL: ${BACKEND_URL}
+      NUXT_PUBLIC_APP_VERSION: development
       TZ: Europe/Paris
       DEBUG: info:vao*, debug:vao*
     ports:

@@ -17,6 +17,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       backendUrl: "",
+      appVersion: "",
     },
   },
   srcDir: "src",

@@ -1,0 +1,6 @@
+jobs:
+  runs:
+    build-frontend-usagers:
+      with:
+        buildArgs:
+          NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
