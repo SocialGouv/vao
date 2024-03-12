@@ -51,6 +51,30 @@
         class="fr-col-4 fr-col-sm-12 fr-col-md-6 fr-col-lg-4 fr-py-5v fr-pr-5v"
       >
         <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
+          <div class="fr-py-1v">
+            <h3>Hébergements</h3>
+          </div>
+          <div class="fr-py-1v">
+            <NuxtLink
+              class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+              href="/hebergements"
+              >Mes hébergements</NuxtLink
+            >
+          </div>
+          <div class="fr-py-1v">
+            <NuxtLink
+              class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+              href="/hebergements/new"
+              >Déclarer un hébergement</NuxtLink
+            >
+          </div>
+          <div class="fr-py-1v"><p></p></div>
+        </div>
+      </div>
+      <div
+        class="fr-col-4 fr-col-sm-12 fr-col-md-6 fr-col-lg-4 fr-py-5v fr-pr-5v"
+      >
+        <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
           <div>
             <h3 class="fr-py-1v">Déclarations de séjour</h3>
           </div>
@@ -75,30 +99,6 @@
               >Déclarer un incident</NuxtLink
             >
           </div>
-        </div>
-      </div>
-      <div
-        class="fr-col-4 fr-col-sm-12 fr-col-md-6 fr-col-lg-4 fr-py-5v fr-pr-5v"
-      >
-        <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
-          <div class="fr-py-1v">
-            <h3>Hébergements</h3>
-          </div>
-          <div class="fr-py-1v">
-            <NuxtLink
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-              href="/hebergements"
-              >Mes hébergements</NuxtLink
-            >
-          </div>
-          <div class="fr-py-1v">
-            <NuxtLink
-              class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-              href="/hebergements/new"
-              >Déclarer un hébergement</NuxtLink
-            >
-          </div>
-          <div class="fr-py-1v"><p></p></div>
         </div>
       </div>
       <div
