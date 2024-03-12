@@ -165,6 +165,7 @@
         </DsfrButtonGroup>
       </div>
     </div>
+    <pre>{{ demande }}</pre>
   </div>
 </template>
 
