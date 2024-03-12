@@ -1,64 +1,59 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
-
-    <div>
-      <h1>Connexion au compte</h1>
-      <div v-if="displayType">
-        <DsfrAlert
-          class="fr-my-3v"
-          :title="displayInfos[displayType].title"
-          :description="displayInfos[displayType].description"
-          :type="displayInfos[displayType].type"
-          :closeable="false"
+    <h1>Connexion au compte</h1>
+    <div v-if="displayType" class="fr-grid-row">
+      <DsfrAlert
+        class="fr-my-3v"
+        :title="displayInfos[displayType].title"
+        :description="displayInfos[displayType].description"
+        :type="displayInfos[displayType].type"
+        :closeable="false"
+      />
+    </div>
+    <div class="fr-grid-row fr-grid-row--gutters fr-mb-1w">
+      <form class="fr-col-6">
+        <h2 class="form-title">Se connecter</h2>
+        <p>Tous les champs sont obligatoires</p>
+        <DsfrFieldset>
+          <DsfrInputGroup
+            autocomplete="off"
+            :required="true"
+            :model-value="email"
+            type="text"
+            name="email"
+            label="Adresse électronique"
+            :label-visible="true"
+            hint="Veuillez saisir votre email"
+            @update:model-value="editMail"
+          />
+          <PasswordInput
+            id="password"
+            autocomplete="off"
+            :required="true"
+            :model-value="password"
+            :type="showPassword ? 'text' : 'password'"
+            label="Mot de passe"
+            name="password"
+            hint="Veuillez saisir votre mot de passe"
+            @update:model-value="editPwd"
+          ></PasswordInput>
+          <p>
+            <NuxtLink class="fr-link" to="/connexion/mot-de-passe-oublie">
+              Mot de passe oublié ?
+            </NuxtLink>
+          </p>
+        </DsfrFieldset>
+        <DsfrButton :disabled="!canLogin" @click.prevent="login"
+          >Se connecter</DsfrButton
+        >
+      </form>
+      <div class="fr-col-6">
+        <DsfrCallout
+          title="Créer un compte"
+          content="Vous êtes responsable dans un organisme ?"
+          :button="buttonAttrs"
         />
-      </div>
-      <div class="fr-container fr-mt-5v">
-        <div class="fr-grid-row fr-grid-row--gutters">
-          <form class="fr-col-6">
-            <h2 class="form-title">Se connecter</h2>
-            <p>Tous les champs sont obligatoires</p>
-            <DsfrFieldset>
-              <DsfrInputGroup
-                autocomplete="off"
-                :required="true"
-                :model-value="email"
-                type="text"
-                name="email"
-                label="Adresse électronique"
-                :label-visible="true"
-                hint="Veuillez saisir votre email"
-                @update:model-value="editMail"
-              />
-              <PasswordInput
-                id="password"
-                autocomplete="off"
-                :required="true"
-                :model-value="password"
-                :type="showPassword ? 'text' : 'password'"
-                label="Mot de passe"
-                name="password"
-                hint="Veuillez saisir votre mot de passe"
-                @update:model-value="editPwd"
-              ></PasswordInput>
-              <p>
-                <NuxtLink class="fr-link" to="/connexion/mot-de-passe-oublie">
-                  Mot de passe oublié ?
-                </NuxtLink>
-              </p>
-            </DsfrFieldset>
-            <DsfrButton :disabled="!canLogin" @click.prevent="login"
-              >Se connecter</DsfrButton
-            >
-          </form>
-          <div class="fr-col-6">
-            <DsfrCallout
-              title="Créer un compte"
-              content="Vous êtes responsable dans un organisme ?"
-              :button="buttonAttrs"
-            />
-          </div>
-        </div>
       </div>
     </div>
   </div>

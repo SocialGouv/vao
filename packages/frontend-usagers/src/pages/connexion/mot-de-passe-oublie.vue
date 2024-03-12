@@ -13,36 +13,30 @@
           :closeable="false"
         />
       </div>
-      <div class="fr-grid-row fr-grid-row--center fr-my-5v">
-        <div class="fr-col-12 fr-col-md-9 fr-col-lg-9">
-          <div class="fr-container fr-mt-5v">
-            <div class="fr-grid-row fr-grid-row--center">
-              <form class="fr-col-12">
-                <fieldset class="fr-fieldset">
-                  <div class="fr-fieldset__element fr-col-12">
-                    <div class="fr-input-group">
-                      <DsfrInputGroup
-                        :model-value="email"
-                        type="text"
-                        label="Email"
-                        :label-visible="true"
-                        placeholder="Veuillez saisir votre email"
-                        @update:model-value="editMail"
-                      />
-                    </div>
-                  </div>
-                  <div class="fr-fieldset__element fr-my-5v">
-                    <DsfrButton
-                      :disabled="!isValidEmail"
-                      @click.prevent="askNewPassword"
-                      >Réinitialiser mon mot de passe</DsfrButton
-                    >
-                  </div>
-                </fieldset>
-              </form>
+      <div class="fr-grid-row fr-grid-row--center">
+        <form class="fr-col-12 fr-col-md-9 fr-col-lg-9">
+          <fieldset class="fr-fieldset">
+            <div class="fr-fieldset__element fr-col-12">
+              <div class="fr-input-group">
+                <DsfrInputGroup
+                  :model-value="email"
+                  type="text"
+                  label="Email"
+                  :label-visible="true"
+                  placeholder="Veuillez saisir votre email"
+                  @update:model-value="editMail"
+                />
+              </div>
             </div>
-          </div>
-        </div>
+            <div class="fr-fieldset__element fr-my-5v">
+              <DsfrButton
+                :disabled="!isValidEmail"
+                @click.prevent="askNewPassword"
+                >Réinitialiser mon mot de passe</DsfrButton
+              >
+            </div>
+          </fieldset>
+        </form>
       </div>
     </div>
   </div>

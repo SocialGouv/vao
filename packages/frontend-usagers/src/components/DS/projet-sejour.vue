@@ -57,22 +57,6 @@
         <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
       </DsfrButtonGroup>
     </fieldset>
-
-    <fieldset class="fr-fieldset">
-      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
-        <DsfrButton
-          id="previous-step"
-          :secondary="true"
-          @click.prevent="
-            () => {
-              emit('previous');
-            }
-          "
-          >Précédent</DsfrButton
-        >
-        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
-      </DsfrButtonGroup>
-    </fieldset>
   </div>
 </template>
 

@@ -1,11 +1,42 @@
 <template>
-  <Hebergement @cancel="back" @submit="addHebergement"></Hebergement>
+  <div class="fr-container">
+    <div class="fr-grid-row">
+      <div class="fr-col">
+        <DsfrBreadcrumb :links="links" />
+      </div>
+    </div>
+
+    <div class="fr-grid-row">
+      <div class="fr-col">
+        <h1>Création d'un nouveau lieu d'hébergement</h1>
+      </div>
+    </div>
+    <div class="fr-grid-row">
+      <div class="fr-col-12">
+        <Hebergement @cancel="back" @submit="addHebergement"></Hebergement>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 definePageMeta({
   middleware: ["is-connected"],
 });
+
+const links = [
+  {
+    to: "/",
+    text: "Accueil",
+  },
+  {
+    to: "/hebergements",
+    text: "Mes hébergements",
+  },
+  {
+    text: "Nouvel hébergement",
+  },
+];
 
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;

@@ -1,80 +1,88 @@
 <template>
-  <div class="fr-grid-row fr-px-3w">
-    <div class="fr-col-3">
-      <DSMenuDemandeSejour
-        :active-id="hash"
-        :demande="demandeCourante"
-      ></DSMenuDemandeSejour>
-    </div>
+  <div class="fr-container">
+    <div class="fr-grid-row fr-px-3w">
+      <div class="fr-col-3">
+        <DSMenuDemandeSejour
+          :active-id="hash"
+          :demande="demandeCourante"
+        ></DSMenuDemandeSejour>
+      </div>
 
-    <div class="fr-col-9 fr-py-3w">
-      <DSStepper :step="hash"></DSStepper>
-      <div>
-        <div id="info-generales">
-          <DSInformationsGenerales
-            v-if="hash === 'info-generales'"
-            :init-data="demandeCourante ?? {}"
-            @update="updateOrCreate"
-            @next="nextHash"
-          />
+      <div class="fr-col-9 fr-py-3w">
+        <div class="fr-grid-row">
+          <div class="fr-col">
+            <DsfrBreadcrumb :links="links" />
+          </div>
         </div>
-        <div id="info-vacanciers">
-          <DSInformationsVacanciers
-            v-if="hash === 'info-vacanciers'"
-            :init-data="demandeCourante.informationsVacanciers ?? {}"
-            @update="updateOrCreate"
-            @next="nextHash"
-            @previous="previousHash"
-          />
+
+        <DSStepper :step="hash"></DSStepper>
+        <div>
+          <div id="info-generales">
+            <DSInformationsGenerales
+              v-if="hash === 'info-generales'"
+              :init-data="demandeCourante ?? {}"
+              @update="updateOrCreate"
+              @next="nextHash"
+            />
+          </div>
+          <div id="info-vacanciers">
+            <DSInformationsVacanciers
+              v-if="hash === 'info-vacanciers'"
+              :init-data="demandeCourante.informationsVacanciers ?? {}"
+              @update="updateOrCreate"
+              @next="nextHash"
+              @previous="previousHash"
+            />
+          </div>
+          <div id="info-transport">
+            <protocole-transport
+              v-if="hash === 'info-transport'"
+              :init-data="demandeCourante.informationsTransport ?? {}"
+              @update="updateOrCreate"
+              @next="nextHash"
+              @previous="previousHash"
+            ></protocole-transport>
+          </div>
+          <div id="info-sanitaires">
+            <protocole-sanitaire
+              v-if="hash === 'info-sanitaires'"
+              :init-data="demandeCourante.informationsSanitaires ?? {}"
+              @update="updateOrCreate"
+              @next="nextHash"
+              @previous="previousHash"
+            ></protocole-sanitaire>
+          </div>
+          <div id="info-personnel">
+            <DSInformationsPersonnel
+              v-if="hash === 'info-personnel'"
+              :init-data="demandeCourante.informationsPersonnel ?? {}"
+              @update="updateOrCreate"
+              @next="nextHash"
+              @previous="previousHash"
+            />
+          </div>
+          <div id="projet-sejour">
+            <DSProjetSejour
+              v-if="hash === 'projet-sejour'"
+              :init-data="demandeCourante.informationsProjetSejour ?? {}"
+              @update="updateOrCreate"
+              @next="nextHash"
+              @previous="previousHash"
+            />
+          </div>
+          <div id="hebergements">
+            <DSHebergementsSejour
+              v-if="hash === 'hebergements'"
+              :date-debut="demandeCourante.dateDebut"
+              :date-fin="demandeCourante.dateFin"
+              :hebergement="demandeCourante.hebergement ?? {}"
+              @update="updateOrCreate"
+              @next="nextHash"
+              @previous="previousHash"
+            />
+          </div>
+          <div id="synthese"></div>
         </div>
-        <div id="info-transport">
-          <protocole-transport
-            v-if="hash === 'info-transport'"
-            :init-data="demandeCourante.informationsTransport ?? {}"
-            @update="updateOrCreate"
-            @next="nextHash"
-            @previous="previousHash"
-          ></protocole-transport>
-        </div>
-        <div id="info-sanitaires">
-          <protocole-sanitaire
-            v-if="hash === 'info-sanitaires'"
-            :init-data="demandeCourante.informationsSanitaires ?? {}"
-            @update="updateOrCreate"
-            @next="nextHash"
-            @previous="previousHash"
-          ></protocole-sanitaire>
-        </div>
-        <div id="info-personnel">
-          <DSInformationsPersonnel
-            v-if="hash === 'info-personnel'"
-            :init-data="demandeCourante.informationsPersonnel ?? {}"
-            @update="updateOrCreate"
-            @next="nextHash"
-            @previous="previousHash"
-          />
-        </div>
-        <div id="projet-sejour">
-          <DSProjetSejour
-            v-if="hash === 'projet-sejour'"
-            :init-data="demandeCourante.informationsProjetSejour ?? {}"
-            @update="updateOrCreate"
-            @next="nextHash"
-            @previous="previousHash"
-          />
-        </div>
-        <div id="hebergements">
-          <DSHebergementsSejour
-            v-if="hash === 'hebergements'"
-            :date-debut="demandeCourante.dateDebut"
-            :date-fin="demandeCourante.dateFin"
-            :hebergement="demandeCourante.hebergement ?? {}"
-            @update="updateOrCreate"
-            @next="nextHash"
-            @previous="previousHash"
-          />
-        </div>
-        <div id="synthese"></div>
       </div>
     </div>
   </div>
@@ -87,8 +95,21 @@ const toaster = nuxtApp.vueApp.$toast;
 
 definePageMeta({
   middleware: ["is-connected", "check-id-demande-sejour-param"],
-  layout: "demande-sejour",
 });
+
+const links = [
+  {
+    to: "/",
+    text: "Accueil",
+  },
+  {
+    to: "/demande-sejour/liste",
+    text: "Mes déclarations de séjour",
+  },
+  {
+    text: "Ma déclaration de séjour",
+  },
+];
 
 const log = logger("pages/demande-sejour/[[idDemande]]");
 
@@ -134,8 +155,8 @@ async function updateOrCreate(sejourData, updatetype) {
 }
 
 function previousHash() {
-  const index = sommaireOptions.value.findIndex((o) => o === hash.value);
-  return navigateTo({ hash: "#" + sommaireOptions.value[index - 1] });
+  const index = sommaireOptions.findIndex((o) => o === hash.value);
+  return navigateTo({ hash: "#" + sommaireOptions[index - 1] });
 }
 
 function nextHash() {

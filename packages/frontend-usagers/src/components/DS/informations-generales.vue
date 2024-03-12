@@ -93,8 +93,7 @@
         label="Suivant"
         :disabled="!meta.valid"
         @click.prevent="next"
-        >Suivant</DsfrButton
-      >
+      />
     </fieldset>
   </div>
 </template>
