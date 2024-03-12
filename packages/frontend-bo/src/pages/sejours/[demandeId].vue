@@ -16,29 +16,22 @@
         :asc="asc"
       >
         <DsfrAccordionsGroup>
-          <li v-if="demande?.organisateurs?.organisateurs">
+          <li v-if="demande?.organismes">
             <DsfrAccordion
-              :title="`Organisateurs (${getCommentsNumber('organisateurs')})`"
+              :title="`organismes (${getCommentsNumber('organismes')})`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
-              <div
-                v-for="(organisateur, i) in demande?.organisateurs
-                  ?.organisateurs ?? {}"
-                :key="i"
-              >
-                <h2>Organisateur {{ i + 1 }}</h2>
-                <DisplayInput
-                  v-for="entry in Object.keys(displayInput.IOrganisateur)"
-                  :key="`organisateur-${i}+${entry}`"
-                  :value="organisateur[entry]"
-                  :input="displayInput.IOrganisateur[entry]"
-                  :comment="comments?.organisateurs?.[i]?.[entry] ?? ''"
-                  @emit-comment="
-                    (comment) => addCommentOrganisateurs(i, entry, comment)
-                  "
-                />
-              </div>
+              <DisplayInput
+                v-for="entry in Object.keys(displayInput.IOrganisme)"
+                :key="`organismes-${entry}`"
+                :value="demande.organismes[entry]"
+                :input="displayInput.IOrganisme[entry]"
+                :comment="comments?.organismes?.[entry] ?? ''"
+                @emit-comment="
+                  (comment) => addComment('organismes', entry, comment)
+                "
+              />
             </DsfrAccordion>
           </li>
           <li v-if="demande.vacanciers">
@@ -211,14 +204,6 @@ onMounted(() => {
 watch(comments, (c) => saveComment(c), { deep: true });
 
 const getCommentsNumber = (category) => {
-  if (category === "organisateurs") {
-    return (
-      comments.value.organisateurs
-        ?.filter((o) => !!o)
-        ?.map((o) => Object.values(o).filter((v) => !!v).length)
-        .reduce((a, c) => a + c, 0) ?? 0
-    );
-  }
   return comments.value[category]
     ? Object.values(comments.value[category]).filter((o) => !!o).length
     : 0;
@@ -248,18 +233,6 @@ const tabTitles = [
 
 const getCommentValue = (value) => (value != "" ? value : null);
 
-const addCommentOrganisateurs = (index, attribute, value) => {
-  if (!comments.value?.organisateurs) {
-    comments.value.organisateurs = new Array(
-      demande?.organisateurs?.organisateurs.length,
-    ).fill(null);
-  }
-
-  comments.value.organisateurs[index] = {
-    ...comments.value.organisateurs[index],
-    [attribute]: getCommentValue(value),
-  };
-};
 const addComment = (category, attribute, value) => {
   if (!comments.value[category]) {
     comments.value[category] = { [attribute]: getCommentValue(value) };

@@ -11,20 +11,32 @@ const ouiNon = {
   true: "Oui",
 };
 
-const IOrganisateur = {
-  nom: {
+const IOrganisme = {
+  raisonSociale: {
     inputType: InputTypes.TEXT,
-    label: "Nom",
+    label: "Raison sociale",
   },
-  prenom: {
+  siren: {
     inputType: InputTypes.TEXT,
-    label: "Prénom",
+    label: "Siren",
+  },
+  siret: {
+    inputType: InputTypes.TEXT,
+    label: "Siret",
   },
   fonction: {
     inputType: InputTypes.TEXT,
     label: "Fonction",
   },
+  statut: {
+    inputType: InputTypes.TEXT,
+    label: "Statut",
+  },
   telephone: {
+    inputType: InputTypes.TEXT,
+    label: "Téléphone",
+  },
+  telephoneEP: {
     inputType: InputTypes.TEXT,
     label: "Téléphone",
   },
@@ -35,6 +47,20 @@ const IOrganisateur = {
   adresse: {
     inputType: InputTypes.TEXT,
     label: "Adresse",
+  },
+  adresseShort: {
+    inputType: InputTypes.TEXT,
+    label: "Adresse",
+  },
+  responsableSejour: {
+    nom: {
+      inputType: InputTypes.TEXT,
+      label: "Nom",
+    },
+    prenom: {
+      inputType: InputTypes.TEXT,
+      label: "Prénom",
+    },
   },
 };
 
@@ -298,31 +324,11 @@ const getHtmlComments = (comments) => {
 
   let resOrganisateur = "";
   //  Organisateurs
-  for (const [
-    index,
-    organisateurComment,
-  ] of comments.organisateurs?.entries() ?? []) {
-    const commentsByQuestion = Object.entries(IOrganisateur)
-      .map(([entry, value]) => {
-        if (organisateurComment?.[entry] != null) {
-          return `
-                  <div>
-                  <span style="color: gray">${value.label}</span> :
-                  <pre style="font-family: inherit; white-space: pre-wrap; margin: 0">${organisateurComment[entry].replaceAll("<", "&#60;")}</pre>
-                  </div>
-              `;
-        } else {
-          return null;
-        }
-      })
-      .filter((c) => c != null);
-    if (commentsByQuestion.length > 0) {
-      resOrganisateur +=
-        `<h6 style="margin: 0">Organisateur ${index + 1} : </h6>` +
-        commentsByQuestion.join("\n");
-    }
-  }
-
+  const resOrganismes = displayCommentForOneCategory(
+    IOrganisme,
+    comments.organismes,
+    "Organismes",
+  );
   //  Vacancier
   const resVacanciers = displayCommentForOneCategory(
     IVacancier,
@@ -360,6 +366,7 @@ const getHtmlComments = (comments) => {
 
   return (
     resGeneralComment +
+    resOrganismes +
     resOrganisateur +
     resVacanciers +
     resPersonnel +
@@ -371,7 +378,7 @@ const getHtmlComments = (comments) => {
 
 export default {
   InputTypes,
-  IOrganisateur,
+  IOrganisme,
   IVacancier,
   Ipersonnel,
   IProjetSejour,
