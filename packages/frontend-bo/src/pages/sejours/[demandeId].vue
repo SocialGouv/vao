@@ -22,6 +22,7 @@
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
+              <h4 v-if="demande?.organismes?.siret">Organisme</h4>
               <DisplayInput
                 v-for="entry in Object.keys(displayInput.IOrganisme)"
                 :key="`organismes-${entry}`"
@@ -31,6 +32,13 @@
                 @emit-comment="
                   (comment) => addComment('organismes', entry, comment)
                 "
+              />
+              <h4>Responsable du séjour</h4>
+              <DisplayInput
+                v-for="entry in Object.keys(displayInput.IResponsableSejour)"
+                :key="`organismes-responsableSejour-${entry}`"
+                :value="demande.organismes.responsableSejour[entry]"
+                :input="displayInput.IResponsableSejour[entry]"
               />
             </DsfrAccordion>
           </li>
@@ -158,7 +166,6 @@
         </DsfrButtonGroup>
       </div>
     </div>
-    <pre>{{ demande }}</pre>
   </div>
 </template>
 

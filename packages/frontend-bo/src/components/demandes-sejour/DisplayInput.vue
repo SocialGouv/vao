@@ -99,6 +99,8 @@ const displayValue = computed(() => {
         : null;
     case displayInput.InputTypes.MULTISELECT:
       return Array.isArray(props.value) ? props.value.join(" / ") : null;
+    case displayInput.InputTypes.TO_FORMAT:
+      return props.input.formatter(props.value);
     default:
       return "error";
   }

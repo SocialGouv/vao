@@ -4,6 +4,7 @@ const InputTypes = {
   SELECT: "select",
   MULTISELECT: "multiselect",
   NUMBER: "number",
+  TO_FORMAT: "to_format",
 };
 
 const ouiNon = {
@@ -24,43 +25,45 @@ const IOrganisme = {
     inputType: InputTypes.TEXT,
     label: "Siret",
   },
-  fonction: {
-    inputType: InputTypes.TEXT,
-    label: "Fonction",
-  },
   statut: {
     inputType: InputTypes.TEXT,
     label: "Statut",
-  },
-  telephone: {
-    inputType: InputTypes.TEXT,
-    label: "Téléphone",
   },
   telephoneEP: {
     inputType: InputTypes.TEXT,
     label: "Téléphone",
   },
-  email: {
-    inputType: InputTypes.TEXT,
-    label: "Email",
-  },
-  adresse: {
-    inputType: InputTypes.TEXT,
-    label: "Adresse",
-  },
   adresseShort: {
     inputType: InputTypes.TEXT,
     label: "Adresse",
   },
-  responsableSejour: {
-    nom: {
-      inputType: InputTypes.TEXT,
-      label: "Nom",
-    },
-    prenom: {
-      inputType: InputTypes.TEXT,
-      label: "Prénom",
-    },
+};
+
+const IResponsableSejour = {
+  nom: {
+    inputType: InputTypes.TEXT,
+    label: "Nom",
+  },
+  prenom: {
+    inputType: InputTypes.TEXT,
+    label: "Prénom",
+  },
+  fonction: {
+    inputType: InputTypes.TEXT,
+    label: "Fonction",
+  },
+  email: {
+    inputType: InputTypes.TEXT,
+    label: "Email",
+  },
+  telephone: {
+    inputType: InputTypes.TEXT,
+    label: "Téléphone",
+  },
+  adresse: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Adresse",
+    formatter: (value) => value.label,
   },
 };
 
@@ -384,5 +387,6 @@ export default {
   IProjetSejour,
   ITransport,
   ISanitaire,
+  IResponsableSejour,
   getHtmlComments,
 };
