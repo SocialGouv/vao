@@ -61,8 +61,6 @@
 </template>
 
 <script setup>
-import { DsfrButton, DsfrInputGroup } from "@gouvminint/vue-dsfr";
-
 const hebergementStore = useHebergementStore();
 hebergementStore.fetchHebergements();
 
