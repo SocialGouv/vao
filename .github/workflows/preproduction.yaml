@@ -1,11 +1,6 @@
 name: 😎 PreProd
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - "main"
-    tags-ignore:
-      - v*
 
 concurrency:
   cancel-in-progress: true
