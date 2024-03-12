@@ -1,5 +1,5 @@
 <template>
-  <div class="fr-my-5v">
+  <div>
     <DsfrFieldset legend="Informations sur le lieu de l'hébergement">
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup

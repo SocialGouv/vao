@@ -30,7 +30,7 @@ export const navItems = [
     links: [
       {
         text: "Nouvelle demande",
-        to: "/demande-sejour/#informations-generales",
+        to: "/demande-sejour",
       },
       {
         text: "Mes demandes",

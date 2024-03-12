@@ -1,13 +1,23 @@
 <template>
   <div class="fr-container">
-    <h1 class="header">Lieux d'hébergements déclarés</h1>
-    <div v-if="hebergementStore.hebergements.length">
+    <div class="fr-grid-row">
+      <div class="fr-col">
+        <DsfrBreadcrumb :links="links" />
+      </div>
+    </div>
+
+    <div class="fr-grid-row">
+      <div class="fr-col">
+        <h1>Lieux d'hébergements déclarés</h1>
+      </div>
+    </div>
+    <template v-if="hebergementStore.hebergements.length">
       <div class="fr-grid-row">
-        <div class="fr-col-12">
+        <div class="fr-col">
           <form>
             <fieldset class="fr-fieldset">
               <div
-                class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-lg-6"
+                class="fr-fieldset__element fr-fieldset__element--inline fr-col fr-col-lg-6"
               >
                 <div class="fr-input-group">
                   <DsfrInputGroup
@@ -20,7 +30,7 @@
                 </div>
               </div>
               <div
-                class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-lg-6"
+                class="fr-fieldset__element fr-fieldset__element--inline fr-col fr-col-lg-6"
               >
                 <div class="fr-input-group">
                   <DsfrInputGroup
@@ -36,16 +46,20 @@
           </form>
         </div>
       </div>
-      <UtilsTableFull
-        :headers="headers"
-        :data="hebergementStore.hebergements"
-        :search="search"
-        :row-navigate="navigate"
-      />
-    </div>
+      <div class="fr-grid-row">
+        <div class="fr-col">
+          <UtilsTableFull
+            :headers="headers"
+            :data="hebergementStore.hebergements"
+            :search="search"
+            :row-navigate="navigate"
+          />
+        </div>
+      </div>
+    </template>
     <p v-else>Aucun hébergement déclaré actuellement</p>
     <div class="fr-grid-row">
-      <div class="fr-col-12">
+      <div class="fr-col">
         <form>
           <fieldset class="fr-fieldset">
             <DsfrButton>
@@ -63,6 +77,16 @@
 <script setup>
 const hebergementStore = useHebergementStore();
 hebergementStore.fetchHebergements();
+
+const links = [
+  {
+    to: "/",
+    text: "Accueil",
+  },
+  {
+    text: "Mes hébergements",
+  },
+];
 
 const search = reactive({
   nom: null,

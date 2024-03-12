@@ -1,60 +1,63 @@
 <template>
-  <div class="fr-grid-row fr-px-3w">
-    <div class="fr-col-3">
-      <OperateurMenuOperateur
-        :active-id="hash"
-        :operateur="operateurStore.operateurCourant ?? {}"
-      ></OperateurMenuOperateur>
-    </div>
+  <div class="fr-container">
+    <div class="fr-grid-row fr-px-3w">
+      <div class="fr-col-3">
+        <OperateurMenuOperateur
+          :active-id="hash"
+          :operateur="operateurStore.operateurCourant ?? {}"
+        ></OperateurMenuOperateur>
+      </div>
 
-    <div class="fr-col-9 fr-py-3w">
-      <OperateurStepper :step="hash"></OperateurStepper>
-      <div>
-        <div id="info-generales">
-          <OperateurInformationsGenerales
-            v-if="hash === 'info-generales'"
-            :init-data="operateurStore.operateurCourant ?? {}"
-            @update="updateOrCreate"
-            @next="nextHash"
-          />
-        </div>
-        <div v-if="isSiege" id="agrement">
-          <OperateurAgrement
-            v-if="hash === 'agrement'"
-            :init-data="operateurStore.operateurCourant ?? {}"
-            @previous="previousHash"
-            @next="nextHash"
-          ></OperateurAgrement>
-        </div>
-        <div v-if="isSiege" id="protocole-transport">
-          <protocole-transport
-            v-if="hash === 'protocole-transport'"
-            :init-data="
-              operateurStore.operateurCourant.protocoleTransport ?? {}
-            "
-            @update="updateOrCreate"
-            @previous="previousHash"
-            @next="nextHash"
-          ></protocole-transport>
-        </div>
-        <div v-if="isSiege" id="protocole-sanitaire">
-          <protocole-sanitaire
-            v-if="hash === 'protocole-sanitaire'"
-            :init-data="
-              operateurStore.operateurCourant.protocoleSanitaire ?? {}
-            "
-            @update="updateOrCreate"
-            @previous="previousHash"
-            @next="nextHash"
-          ></protocole-sanitaire>
-        </div>
-        <div id="synthese">
-          <OperateurSynthese
-            v-if="hash === 'synthese'"
-            :init-data="operateurStore.operateurCourant ?? {}"
-            @finalize="finalizeOperateur"
-            @previous="previousHash"
-          ></OperateurSynthese>
+      <div class="fr-col-9 fr-py-3w">
+        <DsfrBreadcrumb :links="links" />
+        <OperateurStepper :step="hash"></OperateurStepper>
+        <div>
+          <div id="info-generales">
+            <OperateurInformationsGenerales
+              v-if="hash === 'info-generales'"
+              :init-data="operateurStore.operateurCourant ?? {}"
+              @update="updateOrCreate"
+              @next="nextHash"
+            />
+          </div>
+          <div v-if="isSiege" id="agrement">
+            <OperateurAgrement
+              v-if="hash === 'agrement'"
+              :init-data="operateurStore.operateurCourant ?? {}"
+              @previous="previousHash"
+              @next="nextHash"
+            ></OperateurAgrement>
+          </div>
+          <div v-if="isSiege" id="protocole-transport">
+            <protocole-transport
+              v-if="hash === 'protocole-transport'"
+              :init-data="
+                operateurStore.operateurCourant.protocoleTransport ?? {}
+              "
+              @update="updateOrCreate"
+              @previous="previousHash"
+              @next="nextHash"
+            ></protocole-transport>
+          </div>
+          <div v-if="isSiege" id="protocole-sanitaire">
+            <protocole-sanitaire
+              v-if="hash === 'protocole-sanitaire'"
+              :init-data="
+                operateurStore.operateurCourant.protocoleSanitaire ?? {}
+              "
+              @update="updateOrCreate"
+              @previous="previousHash"
+              @next="nextHash"
+            ></protocole-sanitaire>
+          </div>
+          <div id="synthese">
+            <OperateurSynthese
+              v-if="hash === 'synthese'"
+              :init-data="operateurStore.operateurCourant ?? {}"
+              @finalize="finalizeOperateur"
+              @previous="previousHash"
+            ></OperateurSynthese>
+          </div>
         </div>
       </div>
     </div>
@@ -69,8 +72,17 @@ const log = logger("pages/operateur/[[idOperateur]]");
 
 definePageMeta({
   middleware: ["is-connected", "check-id-operateur-param"],
-  layout: "operateur",
 });
+
+const links = [
+  {
+    to: "/",
+    text: "Accueil",
+  },
+  {
+    text: "Ma fiche organisateur",
+  },
+];
 
 const operateurStore = useOperateurStore();
 

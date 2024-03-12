@@ -1,90 +1,113 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
   <div class="fr-container">
-    <DsfrBreadcrumb :links="links" />
     <div class="fr-grid-row">
-      <div class="fr-col-12">
+      <div class="fr-col">
+        <DsfrBreadcrumb :links="links" />
+      </div>
+    </div>
+
+    <template v-if="demandeSejourStore.demandes.length">
+      <div class="fr-grid-row">
+        <div class="fr-col">
+          <form>
+            <fieldset class="fr-fieldset">
+              <div
+                class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+              >
+                <div class="fr-input-group">
+                  <label class="fr-label"> ID </label>
+                  <Multiselect
+                    :model-value="search.id"
+                    name="id"
+                    mode="tags"
+                    :searchable="true"
+                    :close-on-select="false"
+                    :options="idOptions"
+                    @update:model-value="onUpdateId"
+                  />
+                </div>
+              </div>
+              <div
+                class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+              >
+                <div class="fr-input-group">
+                  <DsfrInputGroup
+                    v-model="search.siret"
+                    type="text"
+                    name="siret"
+                    label="SIRET"
+                    placeholder="n° siret"
+                    :label-visible="true"
+                  />
+                </div>
+              </div>
+
+              <div
+                class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+              >
+                <div class="fr-input-group">
+                  <label class="fr-label"> Département d'instruction </label>
+                  <Multiselect
+                    :model-value="search.departement"
+                    :searchable="true"
+                    :close-on-select="false"
+                    value-prop="code"
+                    label="label"
+                    mode="tags"
+                    :options="departementOptions"
+                    @update:model-value="onUpdateDepartement"
+                  />
+                </div>
+              </div>
+              <div
+                class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+              >
+                <div class="fr-input-group">
+                  <label class="fr-label"> Statut</label>
+                  <Multiselect
+                    :model-value="search.statut"
+                    :hide-selected="true"
+                    :searchable="false"
+                    :close-on-select="false"
+                    mode="tags"
+                    name="statut"
+                    :options="statutOptions"
+                    @update:model-value="onUpdateStatut"
+                  />
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </div>
+      </div>
+      <div class="fr-grid-row">
+        <div class="fr-col">
+          <UtilsTableFull
+            :headers="headers"
+            :data="demandeSejourStore.demandes"
+            :search="search"
+            :row-navigate="navigate"
+          ></UtilsTableFull>
+        </div>
+      </div>
+    </template>
+    <p v-else>Aucune demande de séjour déclarée actuellement</p>
+    <div class="fr-grid-row">
+      <div class="fr-col">
         <form>
           <fieldset class="fr-fieldset">
-            <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
-            >
-              <div class="fr-input-group">
-                <label class="fr-label"> ID </label>
-                <Multiselect
-                  :model-value="search.id"
-                  name="id"
-                  mode="tags"
-                  :searchable="true"
-                  :close-on-select="false"
-                  :options="idOptions"
-                  @update:model-value="onUpdateId"
-                />
-              </div>
-            </div>
-            <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
-            >
-              <div class="fr-input-group">
-                <DsfrInputGroup
-                  v-model="search.siret"
-                  type="text"
-                  name="siret"
-                  label="SIRET"
-                  placeholder="n° siret"
-                  :label-visible="true"
-                />
-              </div>
-            </div>
-
-            <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
-            >
-              <div class="fr-input-group">
-                <label class="fr-label"> Département d'instruction </label>
-                <Multiselect
-                  :model-value="search.departement"
-                  :searchable="true"
-                  :close-on-select="false"
-                  value-prop="code"
-                  label="label"
-                  mode="tags"
-                  :options="departementOptions"
-                  @update:model-value="onUpdateDepartement"
-                />
-              </div>
-            </div>
-            <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
-            >
-              <div class="fr-input-group">
-                <label class="fr-label"> Statut</label>
-                <Multiselect
-                  :model-value="search.statut"
-                  :hide-selected="true"
-                  :searchable="false"
-                  :close-on-select="false"
-                  mode="tags"
-                  name="statut"
-                  :options="statutOptions"
-                  @update:model-value="onUpdateStatut"
-                />
-              </div>
-            </div>
+            <DsfrButton>
+              <NuxtLink to="/demande-sejour">
+                Déclarer un nouveau séjour
+              </NuxtLink>
+            </DsfrButton>
           </fieldset>
         </form>
       </div>
     </div>
-
-    <UtilsTableFull
-      :headers="headers"
-      :data="demandeSejourStore.demandes"
-      :search="search"
-      :row-navigate="navigate"
-    ></UtilsTableFull>
   </div>
 </template>
-
 <script setup>
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
@@ -93,7 +116,6 @@ import "@vueform/multiselect/themes/default.css";
 
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
-const log = logger("pages/demande-sejour/liste");
 
 definePageMeta({
   middleware: ["is-connected"],
