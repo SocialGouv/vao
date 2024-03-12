@@ -286,17 +286,6 @@ const telephoneField = reactive({
   isValid: false,
 });
 
-const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
-
-const pwdRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*)(<>,~;])(?=.{12,})/;
-const pwdRegexSpecial = /^(?=.*[!@#$%^&*)(<>,~;])/;
-const pwdRegexNumber = /^(?=.*[0-9])/;
-const pwdRegexMaj = /^(?=.*[A-Z])/;
-const pwdRegexMin = /^(?=.*[a-z])/;
-const nomRegex = /^[A-Za-z'-]+$/;
-
 const isPwdLong = ref(false);
 const isPwdSpecial = ref(false);
 const isPwdNumber = ref(false);
@@ -321,32 +310,42 @@ const displayType = ref("DefaultError");
 
 function checkValidEmail(email) {
   emailField.modelValue = email;
-  emailField.isValid = !email || emailRegex.test(email);
+  emailField.isValid = !email || regex.emailRegex.test(email);
   emailField.errorMessage =
     !email || emailField.isValid ? "" : "Cet email semble incorrect";
 }
 
 function checkValidPassword(pwd) {
   passwordField.modelValue = pwd;
-  passwordField.isValid = !pwd || pwdRegex.test(pwd);
+  passwordField.isValid = !pwd || regex.pwdRegex.test(pwd);
 
   isPwdLong.value = pwd.length > 11;
-  isPwdSpecial.value = pwdRegexSpecial.test(pwd);
-  isPwdNumber.value = pwdRegexNumber.test(pwd);
-  isPwdMaj.value = pwdRegexMaj.test(pwd);
-  isPwdMin.value = pwdRegexMin.test(pwd);
+  isPwdSpecial.value = regex.pwdRegexSpecial.test(pwd);
+  isPwdNumber.value = regex.pwdRegexNumber.test(pwd);
+  isPwdMaj.value = regex.pwdRegexMaj.test(pwd);
+  isPwdMin.value = regex.pwdRegexMin.test(pwd);
 }
 
 function checkValidNom(n) {
   nomField.modelValue = n;
-  nomField.isValid = n !== null && nomRegex.test(n);
+  nomField.isValid =
+    n !== null &&
+    regex.acceptedCharsRegex.test(n) &&
+    !regex.doubleSpacesRegex.test(n) &&
+    !regex.spaceFollowingDashRegex.test(n) &&
+    !regex.tripleDashRegex.test(n);
   nomField.errorMessage =
     !n || nomField.isValid ? "" : "Le nom contient des caractères incorrects";
 }
 
 function checkValidPrenom(p) {
   prenomField.modelValue = p;
-  prenomField.isValid = p !== null && nomRegex.test(p);
+  prenomField.isValid =
+    p !== null &&
+    regex.acceptedCharsRegex.test(p) &&
+    !regex.doubleSpacesRegex.test(p) &&
+    !regex.spaceFollowingDashRegex.test(p) &&
+    !regex.doubleDashRegex.test(p);
   prenomField.errorMessage =
     !p || prenomField.isValid
       ? ""
@@ -355,7 +354,7 @@ function checkValidPrenom(p) {
 
 function checkValidTelephone(p) {
   telephoneField.modelValue = p;
-  telephoneField.isValid = p !== null && numTelephoneRegex.test(p);
+  telephoneField.isValid = p !== null && regex.numTelephoneRegex.test(p);
   telephoneField.errorMessage =
     !p || telephoneField.isValid
       ? ""

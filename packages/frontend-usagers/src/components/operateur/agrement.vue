@@ -104,7 +104,7 @@ const log = logger("components/operateur/agrement");
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 const props = defineProps({
-  initData: { type: Object, default: null, required: true },
+  initData: { type: Object, required: true },
 });
 
 const emit = defineEmits(["previous", "next"]);
@@ -129,31 +129,7 @@ const label = computed(() => {
   }
 });
 
-yup.setLocale({
-  mixed: {
-    required: "Le champs est obligatoire.",
-  },
-});
-
-const schemaAgrement = {
-  numeroAgrement: yup.string().required(),
-  regionDelivrance: yup
-    .string()
-    .test(
-      "acceptedReferentiels",
-      "Valeur non présente dans le référentiel",
-      (regionDelivrance) => !regionStore.regions.includes(regionDelivrance),
-    )
-    .required(),
-  dateDelivrance: yup
-    .date()
-    .max(new Date(), "La date doit être inférieure à la date du jour.")
-    .min(
-      dayjs().add(-5, "year"),
-      "La date de validité de votre agrément a expiré",
-    )
-    .required(),
-};
+const schemaAgrement = { ...organisme.schema.agrement };
 
 const validationSchema = computed(() =>
   yup.object({

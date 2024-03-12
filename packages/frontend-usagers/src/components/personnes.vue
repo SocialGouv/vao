@@ -31,12 +31,12 @@
 
 <script setup>
 const props = defineProps({
-  personnes: { type: Array, default: null, required: true },
+  personnes: { type: Array, required: true },
   showAdresse: { type: Boolean, default: false, required: false },
   showTelephone: { type: Boolean, default: false, required: false },
   showEmail: { type: Boolean, default: false, required: false },
   titre: { type: String, default: null, required: false },
-  headers: { type: Array, default: null, required: true },
+  headers: { type: Array, required: true },
 });
 
 const emit = defineEmits(["valid"]);

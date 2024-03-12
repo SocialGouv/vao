@@ -53,7 +53,7 @@
             name="profession"
             label="Profession"
             :required="true"
-            :options="professionOptions"
+            :options="organisme.professionOptions"
             :is-valid="professionMeta.valid"
             :error-message="professionErrorMessage"
             @update:model-value="onProfessionChange"
@@ -83,7 +83,9 @@
             :initial-adress="props.initData.adresseDomicile?.label"
             :error-message="adresseDomicileErrorMessage"
             :label="
-              props.initData.adresseDomicile ? 'Nouvelle adresse' : 'Adresse'
+              props.initData.adresseDomicile
+                ? 'Nouvelle adresse de domicile'
+                : 'Adresse du domicile'
             "
             :value="adresseDomicile"
             @select="onAddressDomicileChange"
@@ -103,7 +105,7 @@
             :is-valid="adresseIdentiqueMeta"
             :inline="false"
             :error-message="adresseIdentiqueErrorMessage"
-            @update:model-value="setAdresseSiege"
+            @update:model-value="setAdresseIdentique"
           />
         </div>
       </div>
@@ -115,10 +117,12 @@
             :initial-adress="props.initData.adresseSiege?.label"
             :error-message="adresseSiegeErrorMessage"
             :label="
-              props.initData.adresseSiege ? 'Nouvelle adresse' : 'Adresse'
+              props.initData.adresseSiege
+                ? 'Nouvelle adresse du siège'
+                : 'Adresse du siège'
             "
             :value="adresseSiege"
-            @select="onAddressSiegeChange"
+            @select="onAdressSiegeChange"
           />
         </div>
       </div>
@@ -141,138 +145,8 @@ const props = defineProps({
 
 const emit = defineEmits(["update", "next"]);
 
-const professionOptions = [
-  {
-    text: "Agriculture, sylviculture et pêche",
-    value: "Agriculture, sylviculture et pêche",
-  },
-  { text: "Industries extractives", value: "Industries extractives" },
-  { text: "Industries manufacturières", value: "Industries manufacturières" },
-  {
-    text: "Production et distribution d’électricité, de gaz, de vapeur et d’air conditionné",
-    value:
-      "Production et distribution d’électricité, de gaz, de vapeur et d’air conditionné",
-  },
-  {
-    text: "Production et distribution d’eau ; assainissement, gestion des déchets et dépollution",
-    value:
-      "Production et distribution d’eau ; assainissement, gestion des déchets et dépollution",
-  },
-  { text: "Construction", value: "Construction" },
-  {
-    text: "Commerce ; réparation d’automobiles et de motocycles",
-    value: "Commerce ; réparation d’automobiles et de motocycles",
-  },
-  { text: "Transports et entreposage", value: "Transports et entreposage" },
-  { text: "Hébergement et restauration", value: "Hébergement et restauration" },
-  {
-    text: "Information et communication",
-    value: "Information et communication",
-  },
-  {
-    text: "Activités financières et d’assurances",
-    value: "Activités financières et d’assurances",
-  },
-  { text: "Activités immobilières", value: "Activités immobilières" },
-  {
-    text: "Activités spécialisées, scientifiques et techniques",
-    value: "Activités spécialisées, scientifiques et techniques",
-  },
-  {
-    text: "Activités de services administratifs et de soutien",
-    value: "Activités de services administratifs et de soutien",
-  },
-  { text: "Administration publique", value: "Administration publique" },
-  { text: "Enseignement", value: "Enseignement" },
-  {
-    text: "Santé humaine et action sociale",
-    value: "Santé humaine et action sociale",
-  },
-  {
-    text: "Arts, spectacles et activités récréatives",
-    value: "Arts, spectacles et activités récréatives",
-  },
-  {
-    text: "Autres activités de services",
-    value: "Autres activités de services",
-  },
-  {
-    text: "Activités des ménages en tant qu’employeur ; activités indifférenciées des ménages en tant que",
-    value:
-      "Activités des ménages en tant qu’employeur ; activités indifférenciées des ménages en tant que",
-  },
-  {
-    text: "producteur de biens et services pour usage propre",
-    value: "producteur de biens et services pour usage propre",
-  },
-  {
-    text: "Activités extraterritoriales. ",
-    value: "Activités extraterritoriales. ",
-  },
-];
-
-const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
-const acceptedCharsRegex =
-  /^([AÀÂBCÇDEÉÈÊËFGHIÎÏJKLMNOÔPQRSTUÙÛÜVWXYŸZÆŒ\- ']+)$/i;
-const spaceFollowingDashRegex = /( -)|(- )/i;
-const doubleSpacesRegex = / {2}/i;
-const tripleDashRegex = /-{3}/i;
-const doubleDashRegex = /-{2}/i;
-
-const validationSchema = yup.object({
-  nomNaissance: yup
-    .string()
-    .test("acceptedChars", "Caractères non acceptés détectés", (nomNaissance) =>
-      acceptedCharsRegex.test(nomNaissance),
-    )
-    .test(
-      "doubleSpaces",
-      "Le nom ne peut contenir deux espaces successifs",
-      (nomNaissance) => !doubleSpacesRegex.test(nomNaissance),
-    )
-    .test(
-      "spaceFollowingDash",
-      "Le nom ne peut contenir d'espace suivant un tiret",
-      (nomNaissance) => !spaceFollowingDashRegex.test(nomNaissance),
-    )
-    .test(
-      "tripleDash",
-      "Le nom ne peut contenir trois tirets consécutifs",
-      (nomNaissance) => !tripleDashRegex.test(nomNaissance),
-    )
-    .required(),
-  nomUsage: yup.string().nullable(true),
-  prenom: yup
-    .string()
-    .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
-      acceptedCharsRegex.test(prenom),
-    )
-    .test(
-      "doubleSpaces",
-      "Le prénom ne peut contenir deux espaces successifs",
-      (prenom) => !doubleSpacesRegex.test(prenom),
-    )
-    .test(
-      "spaceFollowingDash",
-      "Le prénom ne peut contenir d'espace suivant un tiret",
-      (prenom) => !spaceFollowingDashRegex.test(prenom),
-    )
-    .test(
-      "doubleDash",
-      "Le prénom ne peut contenir deux tirets consécutifs",
-      (prenom) => !doubleDashRegex.test(prenom),
-    )
-    .required(),
-  profession: yup.string().required(),
-  adresseIdentique: yup.boolean().required(),
-  telephone: yup
-    .string()
-    .test("telephone", "Format de numéro de téléphone invalide", (telephone) =>
-      numTelephoneRegex.test(telephone),
-    )
-    .required(),
-  adresseDomicile: yup.object().required(),
-  adresseSiege: yup.object().required(),
+const validationSchema = computed(() => {
+  return yup.object({ ...organisme.schema.personnePhysique });
 });
 const initialValues = {
   nomNaissance: props.initData.nomNaissance,
@@ -280,15 +154,16 @@ const initialValues = {
   prenom: props.initData.prenom,
   profession: props.initData.profession,
   telephone: props.initData.telephone,
-  adresseDomicile: props.initData.adresseDomicile,
+  adresseDomicile: props.initData.adresseDomicile ?? null,
   adresseIdentique: props.initData.adresseIdentique,
-  adresseSiege: props.initData.adresseSiege,
+  adresseSiege: props.initData.adresseSiege ?? null,
 };
 
 const { meta, values } = useForm({
   initialValues,
   validationSchema,
 });
+
 const {
   value: nomNaissance,
   errorMessage: nomNaissanceErrorMessage,
@@ -322,11 +197,13 @@ const {
   value: adresseIdentique,
   errorMessage: adresseIdentiqueErrorMessage,
   meta: adresseIdentiqueMeta,
+  handleChange: onAddressIdentiqueChange,
 } = useField("adresseIdentique");
 const {
   value: adresseSiege,
   errorMessage: adresseSiegeErrorMessage,
-  handleChange: onAddressSiegeChange,
+  resetField: resetAdressSiegeField,
+  handleChange: onAdressSiegeChange,
 } = useField("adresseSiege");
 const {
   value: telephone,
@@ -335,10 +212,13 @@ const {
   meta: telephoneMeta,
 } = useField("telephone");
 
-function setAdresseSiege(v) {
-  log.i("setAdresseSiege -IN");
-  adresseSiege.value = adresseDomicile.value;
+function setAdresseIdentique(v) {
+  log.d("setAdresseIdentique - IN");
+  resetAdressSiegeField({
+    value: v ? adresseDomicile.value : null,
+  });
   adresseIdentique.value = v;
+  log.d("setAdresseIdentique - Done");
 }
 
 function next() {

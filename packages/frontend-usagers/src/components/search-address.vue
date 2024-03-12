@@ -111,11 +111,7 @@ function select(_value, option) {
             @select="select"
           />
           <div v-if="message" class="fr-messages-group">
-            <p
-              :id="descriptionId"
-              :data-testid="descriptionId"
-              :class="messageClass"
-            >
+            <p :class="messageClass">
               <span>{{ message }}</span>
             </p>
           </div>
