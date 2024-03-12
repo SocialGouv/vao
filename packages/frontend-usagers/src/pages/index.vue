@@ -82,6 +82,30 @@
         >
           <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
             <div class="fr-py-1v">
+              <h3>Hébergement</h3>
+            </div>
+            <div class="fr-py-1v">
+              <a
+                class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                href="/hebergements"
+                >Mes hébergements</a
+              >
+            </div>
+            <div class="fr-py-1v">
+              <a
+                class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
+                href="/hebergements/new"
+                >Déclarer un hébergement</a
+              >
+            </div>
+            <div class="fr-py-1v"><p></p></div>
+          </div>
+        </div>
+        <div
+          class="fr-col-4 fr-col-sm-12 fr-col-md-6 fr-col-lg-4 fr-py-5v fr-pr-5v"
+        >
+          <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">
+            <div class="fr-py-1v">
               <h3>Messagerie</h3>
             </div>
             <div class="fr-py-1v">
@@ -97,24 +121,10 @@
         </div>
       </div>
     </div>
-
-    <!-- <div class="fr-col-2 fr-pr-3w fr-my-5v" style="background-color: #eeeeee">
-      <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="#"
-        >test</a
-      >
-    </div>
-    <div class="fr-col-2 fr-pr-3w fr-my-5v" style="background-color: #eeeeee">
-      <a class="fr-link fr-icon-arrow-right-line fr-link--icon-right" href="#"
-        >test</a
-      >
-    </div> -->
   </div>
 </template>
 
 <script setup>
-import { useUserStore } from "@/stores/user";
-import { useOperateurStore } from "@/stores/operateur";
-
 definePageMeta({
   middleware: ["is-connected"],
 });
@@ -131,8 +141,6 @@ const libelleMessageAccueil =
 function saisieFicheOperateur() {
   return navigateTo("/operateur");
 }
-
-operateurStore.setMyOperateur();
 </script>
 
 <style lang="scss" scoped></style>
