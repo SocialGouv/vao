@@ -731,29 +731,6 @@ const {
   meta: hebergementIdMeta,
 } = useField("hebergementId");
 
-async function handleHebergementIdChange(hebergementId) {
-  if (hebergementId) {
-    await hebergementStore.fetchHebergement(hebergementId);
-    const newValues = {
-      hebergementId,
-      caracteristiques: {
-        informationsLocaux: {
-          ...hebergementStore.hebergementCourant.caracteristiques
-            .informationsLocaux,
-        },
-        informationsTransport: {
-          ...hebergementStore.hebergementCourant.caracteristiques
-            .informationsTransport,
-        },
-      },
-    };
-    resetForm({
-      values: newValues,
-    });
-    log.i({ newValues, values });
-  }
-}
-
 // caracteristiques.informationsLocaux
 const {
   value: type,
@@ -917,10 +894,11 @@ const {
   meta: attestationAtMeta,
 } = useField("caracteristiques.attestation.at");
 
-watch(hebergementId, async (hebergementId) => {
+async function handleHebergementIdChange(hebergementId) {
   if (hebergementId) {
     await hebergementStore.fetchHebergement(hebergementId);
     const newValues = {
+      hebergementId,
       caracteristiques: {
         informationsLocaux: {
           ...hebergementStore.hebergementCourant.caracteristiques
@@ -935,9 +913,9 @@ watch(hebergementId, async (hebergementId) => {
     resetForm({
       values: newValues,
     });
-    log.i({ newValues, values });
+    log.d("handleHebergementIdChange - done", { ...values });
   }
-});
+}
 
 async function next() {
   emit("update", {

@@ -188,7 +188,7 @@ const log = logger("components/operateur/personne-morale");
 const emit = defineEmits(["previous", "next", "update"]);
 
 const props = defineProps({
-  initData: { type: Object, default: null, required: true },
+  initData: { type: Object, required: true },
 });
 
 const headers = [
@@ -234,20 +234,16 @@ const schema = {
   representantsLegaux: yup.array().min(1, "pas bien").required(),
   etablissements: yup.array().min(1, "pas bien").required(),
 };
-const validationSchema = computed(() => {
-  return yup.object({ ...schema });
-});
+const validationSchema = yup.object({ ...schema });
 
-const initialValues = computed(() => {
-  return {
-    siret: props.initData?.siret,
-    email: props.initData?.email,
-    telephoneEP: props.initData?.telephoneEP,
-    representantsLegaux: props.initData?.representantsLegaux ?? [],
-    etablissements: props.initData?.etablissements ?? [],
-    responsableSejour: props.initData?.responsableSejour ?? {},
-  };
-});
+const initialValues = {
+  siret: props.initData.siret,
+  email: props.initData.email,
+  telephoneEP: props.initData.telephoneEP,
+  representantsLegaux: props.initData.representantsLegaux ?? [],
+  etablissements: props.initData.etablissements ?? [],
+  responsableSejour: props.initData.responsableSejour ?? {},
+};
 
 const { meta } = useForm({
   initialValues,

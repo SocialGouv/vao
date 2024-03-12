@@ -127,17 +127,15 @@ const schemaProjetSejour = {
     .required("La saisie de ce champ est obligatoire"),
 };
 
-const validationSchema = computed(() =>
-  yup.object({
-    ...schemaProjetSejour,
-  }),
-);
+const validationSchema = yup.object({
+  ...schemaProjetSejour,
+});
 
-const initialValues = computed(() => ({
+const initialValues = {
   destination: props.initData.destination ?? [],
   activitesCulturelles: props.initData.activitesCulturelles ?? [],
   activitesSportives: props.initData.activitesSportives ?? [],
-}));
+};
 const { meta, values } = useForm({
   validationSchema,
   initialValues,

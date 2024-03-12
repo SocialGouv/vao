@@ -716,13 +716,11 @@ const schemaInfosSanitaires = {
   gestionBudgetPersonnel: yup.string().required(),
 };
 
-const validationSchema = computed(() =>
-  yup.object({
-    ...schemaInfosSanitaires,
-  }),
-);
+const validationSchema = yup.object({
+  ...schemaInfosSanitaires,
+});
 
-const initialValues = computed(() => ({
+const initialValues = {
   dispositionsSpecifiques: props.initData?.dispositionsSpecifiques,
   precisionDispositionsSpecifiques:
     props.initData?.precisionDispositionsSpecifiques,
@@ -762,8 +760,9 @@ const initialValues = computed(() => ({
   protocoleCanicule: props.initData?.protocoleCanicule,
   precisionProtocoleCanicule: props.initData?.precisionProtocoleCanicule,
   gestionBudgetPersonnel: props.initData?.gestionBudgetPersonnel,
-}));
-const { meta, values, resetForm } = useForm({
+};
+
+const { meta, values } = useForm({
   validationSchema,
   initialValues,
 });
@@ -936,10 +935,6 @@ function valid() {
   }
   emit("update", { ...values, meta: meta.value.valid }, "protocole_sanitaire");
 }
-
-onMounted(() => {
-  resetForm({ values: initialValues.value });
-});
 </script>
 
 <style lang="scss" scoped></style>

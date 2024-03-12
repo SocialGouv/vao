@@ -98,7 +98,7 @@ import * as yup from "yup";
 const log = logger("components/protocole-transport");
 
 const props = defineProps({
-  initData: { type: Object, default: null, required: true },
+  initData: { type: Object, required: true },
 });
 const emit = defineEmits(["previous", "next", "update"]);
 
@@ -135,14 +135,13 @@ const validationSchema = computed(() =>
   }),
 );
 
-const initialValues = computed(() => ({
-  responsableTransportLieuSejour:
-    props.initData?.responsableTransportLieuSejour,
-  precisionModeOrganisation: props.initData?.precisionModeOrganisation,
-  deplacementDurantSejour: props.initData?.deplacementDurantSejour,
-  modeTransport: props.initData?.modeTransport ?? [],
-}));
-const { meta, values, resetForm } = useForm({
+const initialValues = {
+  responsableTransportLieuSejour: props.initData.responsableTransportLieuSejour,
+  precisionModeOrganisation: props.initData.precisionModeOrganisation,
+  deplacementDurantSejour: props.initData.deplacementDurantSejour,
+  modeTransport: props.initData.modeTransport ?? [],
+};
+const { meta, values } = useForm({
   validationSchema,
   initialValues,
 });
@@ -188,10 +187,6 @@ function next() {
     "protocole_transport",
   );
 }
-
-onMounted(() => {
-  resetForm({ values: initialValues.value });
-});
 </script>
 
 <style lang="scss" scoped></style>

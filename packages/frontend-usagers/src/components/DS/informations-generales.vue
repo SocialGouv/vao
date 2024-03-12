@@ -172,7 +172,7 @@ const validationSchema = yup.object({
     .required(),
 });
 
-const initialValues = computed(() => {
+const initialValues = (() => {
   const responsableSejour = operateurCourant.value.personneMorale.siret
     ? operateurCourant.value.personneMorale.responsableSejour
     : {
@@ -193,7 +193,7 @@ const initialValues = computed(() => {
       : dayjs().add(8, "day").format("YYYY-MM-DD"),
     responsableSejour,
   };
-});
+})();
 
 const { meta, values } = useForm({
   validationSchema,

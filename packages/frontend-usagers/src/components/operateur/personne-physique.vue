@@ -274,18 +274,17 @@ const validationSchema = yup.object({
   adresseDomicile: yup.object().required(),
   adresseSiege: yup.object().required(),
 });
-const initialValues = computed(() => {
-  return {
-    nomNaissance: props.initData.nomNaissance,
-    nomUsage: props.initData.nomUsage,
-    prenom: props.initData.prenom,
-    profession: props.initData.profession,
-    telephone: props.initData.telephone,
-    adresseDomicile: props.initData.adresseDomicile,
-    adresseIdentique: props.initData.adresseIdentique,
-    adresseSiege: props.initData.adresseSiege,
-  };
-});
+const initialValues = {
+  nomNaissance: props.initData.nomNaissance,
+  nomUsage: props.initData.nomUsage,
+  prenom: props.initData.prenom,
+  profession: props.initData.profession,
+  telephone: props.initData.telephone,
+  adresseDomicile: props.initData.adresseDomicile,
+  adresseIdentique: props.initData.adresseIdentique,
+  adresseSiege: props.initData.adresseSiege,
+};
+
 const { meta, values } = useForm({
   initialValues,
   validationSchema,

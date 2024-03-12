@@ -140,19 +140,18 @@ const schemaInfosVacanciers = {
     .required(),
 };
 
-const validationSchema = computed(() =>
-  yup.object({
-    ...schemaInfosVacanciers,
-  }),
-);
+const validationSchema = yup.object({
+  ...schemaInfosVacanciers,
+});
 
-const initialValues = computed(() => ({
+const initialValues = {
   effectifPrevisionnel: props.initData.effectifPrevisionnel ?? null,
   effectifPrevisionnelHomme: props.initData.effectifPrevisionnelHomme ?? null,
   effectifPrevisionnelFemme: props.initData.effectifPrevisionnelFemme ?? null,
   trancheAge: props.initData.trancheAge ?? [],
   typeDeficiences: props.initData.typeDeficiences ?? [],
-}));
+};
+
 const { meta, values } = useForm({
   validationSchema,
   initialValues,

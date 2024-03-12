@@ -92,18 +92,16 @@ const schemaInfosPersonnel = {
     .required("Ce champ doit contenir un nombre entier"),
 };
 
-const validationSchema = computed(() =>
-  yup.object({
-    ...schemaInfosPersonnel,
-  }),
-);
+const validationSchema = yup.object({
+  ...schemaInfosPersonnel,
+});
 
-const initialValues = computed(() => ({
+const initialValues = {
   nombreResponsable: props.initData.nombreResponsable ?? null,
   procedureRecrutementSupplementaire:
     props.initData.procedureRecrutementSupplementaire ?? null,
   nombreAccompagnant: props.initData.nombreAccompagnant ?? null,
-}));
+};
 
 const { meta, values } = useForm({
   validationSchema,

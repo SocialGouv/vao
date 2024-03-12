@@ -127,7 +127,7 @@ const initialValues = {
   hebergements: props.hebergement.hebergements ?? [],
 };
 
-const { meta, values, resetForm } = useForm({
+const { meta, values } = useForm({
   initialValues,
   validationSchema,
 });
@@ -248,7 +248,6 @@ function addNuitee(hebergement) {
   sortByDate(newHebergements);
   onHebergementsChange(newHebergements);
   onCloseNuitee();
-  resetForm({ values });
 }
 
 function editNuitee(index) {
@@ -263,9 +262,7 @@ async function next() {
     return emit("next");
   }
   const data = {
-    hebergements: hebergements.value,
-    sejourItinerant: sejourItinerant.value,
-    sejourEtranger: sejourEtranger.value,
+    ...values,
     nombreHebergements: hebergements.value.length,
   };
   emit("update", data, "hebergements");
