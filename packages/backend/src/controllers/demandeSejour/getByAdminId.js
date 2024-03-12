@@ -14,7 +14,7 @@ module.exports = async function getByAdminId(req, res) {
   const { role_ids, ter_codes } =
     await User.getRolesAndTerritoiresByUserId(adminId);
 
-  console.log(role_ids, ter_codes);
+  log.i("User", { role_ids, ter_codes });
 
   try {
     const { limit, offset, sortBy, sortDirection, search } = req.query;
