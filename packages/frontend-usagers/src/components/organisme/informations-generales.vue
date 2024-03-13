@@ -4,32 +4,32 @@
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
-            name="typeOperateur"
+            name="typeOrganisme"
             legend="Type de personne qui organise des séjours"
             :required="true"
-            :model-value="typeOperateur"
+            :model-value="typeOrganisme"
             :options="organisme.types"
-            :is-valid="typeOperateurMeta"
+            :is-valid="typeOrganismeMeta"
             :inline="false"
-            :error-message="typeOperateurErrorMessage"
-            @update:model-value="onTypeOperateurChange"
+            :error-message="typeOrganismeErrorMessage"
+            @update:model-value="onTypeOrganismeChange"
           />
         </div>
       </div>
     </fieldset>
-    <div v-if="typeOperateur === 'personne_morale'">
-      <OperateurPersonneMorale
+    <div v-if="typeOrganisme === 'personne_morale'">
+      <OrganismePersonneMorale
         :init-data="initData.personneMorale ?? {}"
         @next="next"
         @update="update"
-      ></OperateurPersonneMorale>
+      ></OrganismePersonneMorale>
     </div>
-    <div v-if="typeOperateur === 'personne_physique'">
-      <OperateurPersonnePhysique
+    <div v-if="typeOrganisme === 'personne_physique'">
+      <OrganismePersonnePhysique
         :init-data="initData.personnePhysique ?? {}"
         @next="next"
         @update="update"
-      ></OperateurPersonnePhysique>
+      ></OrganismePersonnePhysique>
     </div>
   </div>
 </template>
@@ -43,12 +43,12 @@ const props = defineProps({
 });
 
 const {
-  value: typeOperateur,
-  errorMessage: typeOperateurErrorMessage,
-  handleChange: onTypeOperateurChange,
-  meta: typeOperateurMeta,
-} = useField("typeOperateur", null, {
-  initialValue: props.initData.typeOperateur,
+  value: typeOrganisme,
+  errorMessage: typeOrganismeErrorMessage,
+  handleChange: onTypeOrganismeChange,
+  meta: typeOrganismeMeta,
+} = useField("typeOrganisme", null, {
+  initialValue: props.initData.typeOrganisme,
 });
 
 function update(data, type) {

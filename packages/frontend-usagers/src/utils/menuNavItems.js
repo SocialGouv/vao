@@ -17,7 +17,7 @@ export const navItems = [
     links: [
       {
         text: "Ma fiche organisateur",
-        to: "/operateur",
+        to: "/organisme",
       },
     ],
   },

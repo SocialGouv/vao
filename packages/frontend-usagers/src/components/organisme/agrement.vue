@@ -100,7 +100,7 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 
 const config = useRuntimeConfig();
-const log = logger("components/operateur/agrement");
+const log = logger("components/organisme/agrement");
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 const props = defineProps({
@@ -195,7 +195,7 @@ async function next() {
   const body = new FormData();
   const options = JSON.stringify({
     ...values,
-    operateurId: props.initData.operateurId,
+    organismeId: props.initData.organismeId,
   });
   body.append("options", options);
   body.append("file", fileAgrement.value);

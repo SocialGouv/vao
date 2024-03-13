@@ -22,7 +22,7 @@
           <DsfrButton
             id="chercherSiret"
             :disabled="!siretMeta.valid"
-            @click.prevent="searchOperateur"
+            @click.prevent="searchOrganisme"
             >Récupérer informations</DsfrButton
           >
         </div>
@@ -183,7 +183,7 @@ import * as yup from "yup";
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
-const log = logger("components/operateur/personne-morale");
+const log = logger("components/organisme/personne-morale");
 
 const emit = defineEmits(["previous", "next", "update"]);
 
@@ -205,7 +205,7 @@ const headers = [
 
 const randomId = ref(random.getRandomId());
 const personneMorale = ref();
-const operateurDejaExistant = ref();
+const organismeDejaExistant = ref();
 
 const validationSchema = yup.object({ ...organisme.schema.personneMorale });
 
@@ -259,17 +259,17 @@ const isEtablissementPrincipal = computed(() => {
 });
 
 const formatedPersonneMorale = computed(() => {
-  // les infos proviennent d'un operateur déjà présent en base
-  if (operateurDejaExistant.value) {
+  // les infos proviennent d'un organisme déjà présent en base
+  if (organismeDejaExistant.value) {
     return {
-      siret: operateurDejaExistant.value.personneMorale?.siret,
-      siren: operateurDejaExistant.value.personneMorale?.siren,
-      siegeSocial: operateurDejaExistant.value.personneMorale?.siegeSocial,
-      raisonSociale: operateurDejaExistant.value.personneMorale?.raisonSociale,
-      statut: operateurDejaExistant.value.personneMorale?.statut,
-      adresse: operateurDejaExistant.value.personneMorale?.adresseShort,
-      adresseComplete: operateurDejaExistant.value.personneMorale?.adresse,
-      pays: operateurDejaExistant.value.personneMorale?.pays,
+      siret: organismeDejaExistant.value.personneMorale?.siret,
+      siren: organismeDejaExistant.value.personneMorale?.siren,
+      siegeSocial: organismeDejaExistant.value.personneMorale?.siegeSocial,
+      raisonSociale: organismeDejaExistant.value.personneMorale?.raisonSociale,
+      statut: organismeDejaExistant.value.personneMorale?.statut,
+      adresse: organismeDejaExistant.value.personneMorale?.adresseShort,
+      adresseComplete: organismeDejaExistant.value.personneMorale?.adresse,
+      pays: organismeDejaExistant.value.personneMorale?.pays,
     };
   }
   // les infos proviennent de l'API entreprise
@@ -388,42 +388,42 @@ async function searchApiInsee() {
   }
 }
 
-async function searchOperateurBySiret() {
-  log.i("searchOperateurBySiret - IN");
-  const url = `/operateur/siret/${siret.value}`;
+async function searchOrganismeBySiret() {
+  log.i("searchOrganismeBySiret - IN");
+  const url = `/organisme/siret/${siret.value}`;
   try {
     const data = await $fetchBackend(url, {
       method: "GET",
       credentials: "include",
     });
-    log.d("searchOperateurBySiret", data);
-    if (data.operateur) {
-      toaster.success("L'opérateur est déjà présent en base");
-      operateurDejaExistant.value = data.operateur;
+    log.d("searchOrganismeBySiret", data);
+    if (data.organisme) {
+      toaster.success("L'organisme est déjà présent en base");
+      organismeDejaExistant.value = data.organisme;
       representantsLegaux.value =
-        operateurDejaExistant.value.personneMorale.representantsLegaux ?? [];
+        organismeDejaExistant.value.personneMorale.representantsLegaux ?? [];
       etablissements.value =
-        operateurDejaExistant.value.personneMorale?.etablissements;
+        organismeDejaExistant.value.personneMorale?.etablissements;
       responsableSejour.value =
-        operateurDejaExistant.value.personneMorale?.responsableSejour;
-      email.value = operateurDejaExistant.value.personneMorale?.email;
+        organismeDejaExistant.value.personneMorale?.responsableSejour;
+      email.value = organismeDejaExistant.value.personneMorale?.email;
       telephoneEP.value =
-        operateurDejaExistant.value.personneMorale?.telephoneEP;
-      return operateurDejaExistant.value;
+        organismeDejaExistant.value.personneMorale?.telephoneEP;
+      return organismeDejaExistant.value;
     }
   } catch (error) {
     toaster.error(
       "erreur lors de la récupération des données internes à partir du SIRET",
     );
-    log.w("searchOperateurBySiret - erreur:", { error });
+    log.w("searchOrganismeBySiret - erreur:", { error });
     return null;
   }
 }
 
-async function searchOperateur() {
-  log.i("searchOperateur - In");
-  operateurDejaExistant.value = await searchOperateurBySiret();
-  if (!operateurDejaExistant.value) {
+async function searchOrganisme() {
+  log.i("searchOrganisme - In");
+  organismeDejaExistant.value = await searchOrganismeBySiret();
+  if (!organismeDejaExistant.value) {
     log.d("appel API INSEE");
     await searchApiInsee();
   }

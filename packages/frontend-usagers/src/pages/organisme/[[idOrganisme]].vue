@@ -2,37 +2,37 @@
   <div class="fr-container">
     <div class="fr-grid-row fr-px-3w">
       <div class="fr-col-3">
-        <OperateurMenuOperateur
+        <OrganismeMenuOrganisme
           :active-id="hash"
-          :operateur="operateurStore.operateurCourant ?? {}"
-        ></OperateurMenuOperateur>
+          :organisme="organismeStore.organismeCourant ?? {}"
+        ></OrganismeMenuOrganisme>
       </div>
 
       <div class="fr-col-9 fr-py-3w">
         <DsfrBreadcrumb :links="links" />
-        <OperateurStepper :step="hash"></OperateurStepper>
+        <OrganismeStepper :step="hash"></OrganismeStepper>
         <div>
           <div id="info-generales">
-            <OperateurInformationsGenerales
+            <OrganismeInformationsGenerales
               v-if="hash === 'info-generales'"
-              :init-data="operateurStore.operateurCourant ?? {}"
+              :init-data="organismeStore.organismeCourant ?? {}"
               @update="updateOrCreate"
               @next="nextHash"
             />
           </div>
           <div v-if="isSiege" id="agrement">
-            <OperateurAgrement
+            <OrganismeAgrement
               v-if="hash === 'agrement'"
-              :init-data="operateurStore.operateurCourant ?? {}"
+              :init-data="organismeStore.organismeCourant ?? {}"
               @previous="previousHash"
               @next="nextHash"
-            ></OperateurAgrement>
+            ></OrganismeAgrement>
           </div>
           <div v-if="isSiege" id="protocole-transport">
             <protocole-transport
               v-if="hash === 'protocole-transport'"
               :init-data="
-                operateurStore.operateurCourant.protocoleTransport ?? {}
+                organismeStore.organismeCourant.protocoleTransport ?? {}
               "
               @update="updateOrCreate"
               @previous="previousHash"
@@ -43,7 +43,7 @@
             <protocole-sanitaire
               v-if="hash === 'protocole-sanitaire'"
               :init-data="
-                operateurStore.operateurCourant.protocoleSanitaire ?? {}
+                organismeStore.organismeCourant.protocoleSanitaire ?? {}
               "
               @update="updateOrCreate"
               @previous="previousHash"
@@ -51,12 +51,12 @@
             ></protocole-sanitaire>
           </div>
           <div id="synthese">
-            <OperateurSynthese
+            <OrganismeSynthese
               v-if="hash === 'synthese'"
-              :init-data="operateurStore.operateurCourant ?? {}"
-              @finalize="finalizeOperateur"
+              :init-data="organismeStore.organismeCourant ?? {}"
+              @finalize="finalizeOrganisme"
               @previous="previousHash"
-            ></OperateurSynthese>
+            ></OrganismeSynthese>
           </div>
         </div>
       </div>
@@ -68,10 +68,10 @@
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
-const log = logger("pages/operateur/[[idOperateur]]");
+const log = logger("pages/organisme/[[idOrganisme]]");
 
 definePageMeta({
-  middleware: ["is-connected", "check-id-operateur-param"],
+  middleware: ["is-connected", "check-id-organisme-param"],
 });
 
 const links = [
@@ -84,13 +84,13 @@ const links = [
   },
 ];
 
-const operateurStore = useOperateurStore();
+const organismeStore = useOrganismeStore();
 
 const isSiege = computed(() => {
   return (
-    !operateurStore.operateurCourant ||
-    operateurStore.operateurCourant.typeOperateur === "personne_physique" ||
-    operateurStore.operateurCourant.personneMorale?.siegeSocial === true
+    !organismeStore.organismeCourant ||
+    organismeStore.organismeCourant.typeOrganisme === "personne_physique" ||
+    organismeStore.organismeCourant.personneMorale?.siegeSocial === true
   );
 });
 const sommaireOptions = computed(() =>
@@ -106,7 +106,7 @@ const hash = computed(() => {
   return sommaireOptions.value[0];
 });
 
-const idOrganisme = ref(route.params.idOperateur);
+const idOrganisme = ref(route.params.idOrganisme);
 
 function previousHash() {
   const index = sommaireOptions.value.findIndex((o) => o === hash.value);
@@ -118,22 +118,22 @@ function nextHash() {
   const index = sommaireOptions.value.findIndex((o) => o === hash.value);
   log.d({ hash, index, next: sommaireOptions.value[index + 1] });
   return navigateTo({
-    path: `/operateur/${idOrganisme.value}`,
+    path: `/organisme/${idOrganisme.value}`,
     hash: "#" + sommaireOptions.value[index + 1],
   });
 }
 
-async function updateOrCreate(operatorData, type) {
-  log.i("updateOrCreate - IN", { operatorData, type });
+async function updateOrCreate(organismeData, type) {
+  log.i("updateOrCreate - IN", { organismeData, type });
   try {
     const url = idOrganisme.value
-      ? `/operateur/${idOrganisme.value}`
-      : "/operateur";
+      ? `/organisme/${idOrganisme.value}`
+      : "/organisme";
     const data = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
       body: {
-        parametre: { ...operatorData },
+        parametre: { ...organismeData },
         type,
       },
     });
@@ -141,19 +141,19 @@ async function updateOrCreate(operatorData, type) {
     toaster.success(
       `Fiche organisme ${idOrganisme.value ? "sauvegardée" : "créée"}`,
     );
-    idOrganisme.value = data.operateurId;
-    log.d(`operateur ${idOrganisme.value} mis à jour`);
+    idOrganisme.value = data.organismeId;
+    log.d(`organisme ${idOrganisme.value} mis à jour`);
 
     return nextHash();
   } catch (error) {
-    log.w("Creation/modification d'operateur : ", { error });
+    log.w("Creation/modification d'organisme : ", { error });
   }
 }
 
-async function finalizeOperateur() {
-  log.i("finalizeOperateur - IN");
+async function finalizeOrganisme() {
+  log.i("finalizeOrganisme - IN");
   try {
-    const url = `/operateur/${operateurStore.operateurCourant.operateurId}`;
+    const url = `/organisme/${organismeStore.organismeCourant.organismeId}`;
     const data = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
@@ -162,12 +162,12 @@ async function finalizeOperateur() {
         type: "synthese",
       },
     });
-    const operateurId = data.operateurId;
-    log.d(`operateur ${operateurId} finalisé`);
+    const organismeId = data.organismeId;
+    log.d(`organisme ${organismeId} finalisé`);
     toaster.success("Fiche organisme finalisée");
     return navigateTo("/");
   } catch (error) {
-    log.w("Creation/modification d'operateur : ", { error });
+    log.w("Creation/modification d'organisme : ", { error });
   }
 }
 </script>

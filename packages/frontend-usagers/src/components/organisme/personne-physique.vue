@@ -137,7 +137,7 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-const log = logger("components/operateur/personne-physique");
+const log = logger("components/organisme/personne-physique");
 
 const props = defineProps({
   initData: { type: Object, required: true },

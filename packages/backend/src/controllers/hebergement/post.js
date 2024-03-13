@@ -28,7 +28,7 @@ module.exports = async function post(req, res) {
 
     return res.status(200).json({
       id,
-      message: "sauvegarde opérateur OK",
+      message: "sauvegarde organisme OK",
     });
   } catch (error) {
     log.w(error);

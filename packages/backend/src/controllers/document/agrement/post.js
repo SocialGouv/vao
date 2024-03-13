@@ -13,9 +13,9 @@ module.exports = async (req, res) => {
     log.w("missing parameter");
     return res.status(400).json({ msg: "paramètre d'appels incorrects" });
   }
-  const { regionDelivrance, numeroAgrement, dateDelivrance, operateurId } =
+  const { regionDelivrance, numeroAgrement, dateDelivrance, organismeId } =
     JSON.parse(options);
-  if (!regionDelivrance || !numeroAgrement || !dateDelivrance || !operateurId) {
+  if (!regionDelivrance || !numeroAgrement || !dateDelivrance || !organismeId) {
     log.w("options parameter is incorrect");
     return res.status(400).json({ msg: "paramètre options incorrect" });
   }
@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     if (req.file) {
       // suppression logique des anciens agrements
       const nbDeletedAgrement =
-        await AgrementService.deleteByOperatorId(operateurId);
+        await AgrementService.deleteByOrganismeId(organismeId);
       log.i(nbDeletedAgrement, "old agrements have been deleted");
       const uuid = await AgrementService.uploadFile(req.file);
       if (!uuid) {
@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
       const newUuid = await AgrementService.create(
         uuid,
         req.file.originalname,
-        operateurId,
+        organismeId,
         regionDelivrance,
         numeroAgrement,
         dateDelivrance,
@@ -54,10 +54,10 @@ module.exports = async (req, res) => {
       log.d("Add meta values - DONE", uuid);
       return res.json({ document: uuid });
     }
-    const agrementId = await AgrementService.getByOperateurId(operateurId);
+    const agrementId = await AgrementService.getByOrganismeId(organismeId);
     if (agrementId) {
       const updatedAgrementId = await AgrementService.updateOptions(
-        operateurId,
+        organismeId,
         numeroAgrement,
         regionDelivrance,
         dateDelivrance,

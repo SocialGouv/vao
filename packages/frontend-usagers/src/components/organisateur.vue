@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-const log = logger("components/operateur/organisateur");
+const log = logger("components/organisateur");
 
 const props = defineProps({
   initData: { type: Array, required: true },

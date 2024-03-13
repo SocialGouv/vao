@@ -150,7 +150,7 @@ async function updateOrCreate(sejourData, updatetype) {
     sejourId.value = data.id;
     return nextHash();
   } catch (error) {
-    log.w("Creation/modification d'operateur : ", { error });
+    log.w("Creation/modification d'organisme : ", { error });
   }
 }
 

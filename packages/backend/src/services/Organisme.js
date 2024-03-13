@@ -6,19 +6,19 @@ const log = logger(module.filename);
 
 const query = {
   create: `
-    INSERT INTO front.operateurs (type_operateur, personne_morale, personne_physique) 
+    INSERT INTO front.organismes (type_organisme, personne_morale, personne_physique) 
     VALUES ($1, $2, $3)
     RETURNING
-      id as "operateurId"
+      id as "organismeId"
     ;
 `,
   get: (criterias) => [
     `
     SELECT
-      o.id as "operateurId",
+      o.id as "organismeId",
       o.supprime as "supprime",
       o.complet as "complet",
-      o.type_operateur as "typeOperateur",
+      o.type_organisme as "typeOrganisme",
       o.personne_morale as "personneMorale",
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
@@ -36,11 +36,11 @@ const query = {
             'createdAt',a.created_at
           )                  
         FROM front.agrements a            
-        WHERE operateur_id = o.id
+        WHERE organisme_id = o.id
         AND a.supprime = false
       ) AS agrement
-    FROM front.operateurs o
-    JOIN front.user_operateur uo ON o.id = ope_id
+    FROM front.organismes o
+    JOIN front.user_organisme uo ON o.id = org_id
     WHERE 1=1 
     ${Object.keys(criterias)
       .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
@@ -50,10 +50,10 @@ const query = {
   ],
   getBySiret: `
     SELECT
-      o.id as "operateurId",
+      o.id as "organismeId",
       o.supprime as "supprime",
       o.complet as "complet",
-      o.type_operateur as "typeOperateur",
+      o.type_organisme as "typeOrganisme",
       o.personne_morale as "personneMorale",
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
@@ -71,19 +71,19 @@ const query = {
             'createdAt',a.created_at
           )                  
         FROM front.agrements a            
-        WHERE operateur_id = o.id
+        WHERE organisme_id = o.id
         AND a.supprime = false
       ) AS agrement
-    FROM front.operateurs o
-    JOIN front.user_operateur uo ON o.id = ope_id
+    FROM front.organismes o
+    JOIN front.user_organisme uo ON o.id = org_id
     WHERE o.personne_morale->>'siret' = $1
 `,
   getSiege: `
     SELECT
-      o.id as "operateurId",
+      o.id as "organismeId",
       o.supprime as "supprime",
       o.complet as "complet",
-      o.type_operateur as "typeOperateur",
+      o.type_organisme as "typeOrganisme",
       o.personne_morale as "personneMorale",
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
@@ -99,41 +99,41 @@ const query = {
           'createdAt',a.created_at
           )                  
           FROM front.agrements a            
-          WHERE operateur_id = o.id
+          WHERE organisme_id = o.id
           AND a.supprime = false
           ) AS agrement,
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
-    FROM front.operateurs o
-    JOIN front.user_operateur uo ON o.id = ope_id
+    FROM front.organismes o
+    JOIN front.user_organisme uo ON o.id = org_id
     WHERE o.personne_morale->>'siren' = $1 
       AND o.personne_morale->>'siegeSocial' = 'true'
 `,
   link: `
-    INSERT INTO front.user_operateur (use_id, ope_id)
+    INSERT INTO front.user_organisme (use_id, org_id)
       VALUES($1, $2)
     RETURNING use_id as "userLinked"
 `,
   update: `
-    UPDATE front.operateurs 
+    UPDATE front.organismes 
     SET 
-      type_operateur = $2,
+      type_organisme = $2,
       personne_morale = $3, 
       personne_physique = $4,
       complet = (CASE WHEN $5 = true THEN false ELSE complet END)
     WHERE id = $1
     RETURNING
-      id as "updatedOperateurId"
+      id as "updatedOrganismeId"
   `,
   updateFinalisation: `
-    UPDATE front.operateurs 
+    UPDATE front.organismes 
     SET complet = true
     WHERE id = $1
     RETURNING
-      id as "updateOperateurId"
+      id as "updatedOrganismeId"
 `,
   updateSanitaire: `
-    UPDATE front.operateurs 
+    UPDATE front.organismes 
     SET 
       protocole_sanitaire = $2,
       complet = (
@@ -144,10 +144,10 @@ const query = {
       )
     WHERE id = $1
     RETURNING 
-      id as "updatedOperateurId"
+      id as "updatedOrganismeId"
 `,
   updateTransport: `
-    UPDATE front.operateurs 
+    UPDATE front.organismes 
     SET 
       protocole_transport = $2,
       complet = (
@@ -158,7 +158,7 @@ const query = {
       )
     WHERE id = $1
     RETURNING
-      id as "updatedOperateurId"
+      id as "updatedOrganismeId"
 `,
 };
 
@@ -168,27 +168,27 @@ module.exports.create = async (type, parametre) => {
     type === "personne_morale"
       ? await pool.query(query.create, [type, parametre, {}])
       : await pool.query(query.create, [type, {}, parametre]);
-  const { operateurId } = response && response.rows[0];
-  log.d("create - DONE", { operateurId });
-  return operateurId;
+  const { organismeId } = response && response.rows[0];
+  log.d("create - DONE", { organismeId });
+  return organismeId;
 };
 
-module.exports.link = async (userId, operateurId) => {
+module.exports.link = async (userId, organismeId) => {
   log.i("link - IN");
-  const response = await pool.query(query.link, [userId, operateurId]);
+  const response = await pool.query(query.link, [userId, organismeId]);
   const { userLinked } = response && response.rows[0];
   log.d("link - DONE", { userLinked });
   return userLinked;
 };
 
-module.exports.update = async (type, parametre, operateurId) => {
+module.exports.update = async (type, parametre, organismeId) => {
   log.i("update - IN", { type });
   const isComplete = parametre.meta === true;
   let response;
   switch (type) {
     case "personne_morale": {
       response = await pool.query(query.update, [
-        operateurId,
+        organismeId,
         type,
         parametre,
         {},
@@ -198,7 +198,7 @@ module.exports.update = async (type, parametre, operateurId) => {
     }
     case "personne_physique": {
       response = await pool.query(query.update, [
-        operateurId,
+        organismeId,
         type,
         {},
         parametre,
@@ -208,7 +208,7 @@ module.exports.update = async (type, parametre, operateurId) => {
     }
     case "protocole_transport": {
       response = await pool.query(query.updateTransport, [
-        operateurId,
+        organismeId,
         parametre,
         isComplete,
       ]);
@@ -216,45 +216,45 @@ module.exports.update = async (type, parametre, operateurId) => {
     }
     case "protocole_sanitaire": {
       response = await pool.query(query.updateSanitaire, [
-        operateurId,
+        organismeId,
         parametre,
         isComplete,
       ]);
       break;
     }
     case "synthese": {
-      response = await pool.query(query.updateFinalisation, [operateurId]);
+      response = await pool.query(query.updateFinalisation, [organismeId]);
       break;
     }
     default:
       log.d("wrong type");
       return null;
   }
-  const { updatedOperateurId } = response && response.rows[0];
-  log.d("update - DONE", { updatedOperateurId });
-  return operateurId;
+  const { updatedOrganismeId } = response && response.rows[0];
+  log.d("update - DONE", { updatedOrganismeId });
+  return organismeId;
 };
 
 module.exports.get = async (criterias = {}) => {
   log.i("get - IN", { criterias });
-  const { rows: operateurs } = await pool.query(...query.get(criterias));
+  const { rows: organismes } = await pool.query(...query.get(criterias));
   log.d("get - DONE");
-  return !operateurs || operateurs.length === 0 ? [] : operateurs[0];
+  return !organismes || organismes.length === 0 ? [] : organismes[0];
 };
 
 module.exports.getBySiret = async (siret) => {
   log.i(`getBySiret - IN ${siret}`);
-  const { rows: operateurs } = await pool.query(query.getBySiret, [siret]);
+  const { rows: organismes } = await pool.query(query.getBySiret, [siret]);
   log.d("getBySiret - DONE");
-  return !operateurs || operateurs.length === 0 ? null : operateurs[0];
+  return !organismes || organismes.length === 0 ? null : organismes[0];
 };
 
 module.exports.getSiege = async (siret) => {
   log.i("getSiege - IN", siret);
   const siren = siret.substr(0, 9);
   log.w("SIREN", siren);
-  const { rows: operateurs } = await pool.query(query.getSiege, [siren]);
+  const { rows: organismes } = await pool.query(query.getSiege, [siren]);
   log.d("getSiege - DONE");
-  log.d(operateurs);
-  return !operateurs || operateurs.length === 0 ? null : operateurs[0];
+  log.d(organismes);
+  return !organismes || organismes.length === 0 ? null : organismes[0];
 };

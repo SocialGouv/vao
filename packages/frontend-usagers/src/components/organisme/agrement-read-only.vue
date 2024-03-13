@@ -53,7 +53,7 @@ import dayjs from "dayjs";
 import { useRegionStore } from "@/stores/referentiels";
 
 const config = useRuntimeConfig();
-const log = logger("components/operateur/agrement-read-only");
+const log = logger("components/organisme/agrement-read-only");
 const props = defineProps({
   initData: { type: Object, required: true },
 });

@@ -89,7 +89,9 @@ module.exports.get = async (userId) => {
 
 module.exports.getOne = async (criterias = {}) => {
   log.i("getOne - IN", { criterias });
-  const { rows: operateurs } = await pool.query(...query.getOne(criterias));
+  const { rows: hebergements, rowCount } = await pool.query(
+    ...query.getOne(criterias),
+  );
   log.d("getOne - DONE");
-  return operateurs[0] ?? [];
+  return rowCount > 0 ? hebergements[0] : null;
 };

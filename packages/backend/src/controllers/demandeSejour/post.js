@@ -1,5 +1,5 @@
 const DemandeSejour = require("../../services/DemandeSejour");
-const Operateur = require("../../services/Operateur");
+const Organisme = require("../../services/Organisme");
 
 const logger = require("../../utils/logger");
 
@@ -17,9 +17,9 @@ module.exports = async function post(req, res) {
   }
 
   try {
-    const operateur = await Operateur.get({ "uo.use_id": userId });
-    if (!operateur.complet) {
-      log.w("operateur isn't fully filled");
+    const organisme = await Organisme.get({ "uo.use_id": userId });
+    if (!organisme.complet) {
+      log.w("organisme isn't fully filled");
       return res.status(400).json({
         message:
           "Vous devez compléter la fiche Organisme avant de saisir une demande de séjour",
@@ -27,14 +27,14 @@ module.exports = async function post(req, res) {
     }
 
     const idDemande = await DemandeSejour.create(
-      operateur.operateurId,
+      organisme.organismeId,
       libelle,
       dateDebut,
       dateFin,
       duree,
       periode,
-      operateur.protocoleTransport,
-      operateur.protocoleSanitaire,
+      organisme.protocoleTransport,
+      organisme.protocoleSanitaire,
       organisme,
     );
     if (!idDemande) {

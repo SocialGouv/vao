@@ -1,5 +1,5 @@
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
-import { useOperateurStore } from "~/stores/operateur";
+import { useOrganismeStore } from "~/stores/organisme";
 import { logger } from "#imports";
 import { navigateTo, defineNuxtRouteMiddleware } from "#app";
 
@@ -9,21 +9,21 @@ export default defineNuxtRouteMiddleware(async (to) => {
   log.i("IN", to.params.idDemande);
   const hasId = !!to.params.idDemande;
   const demandeStore = useDemandeSejourStore();
-  const operateurStore = useOperateurStore();
+  const organismeStore = useOrganismeStore();
 
   if (isNaN(to.params.idDemande)) {
     log.w(`incorrect demandeId : ${to.params.idDemande}`);
     return navigateTo("/");
   }
 
-  await operateurStore.setMyOperateur();
+  await organismeStore.setMyOrganisme();
   await demandeStore.fetchDemandes();
 
   if (
-    !operateurStore.operateurCourant ||
-    !operateurStore.operateurCourant.complet
+    !organismeStore.organismeCourant ||
+    !organismeStore.organismeCourant.complet
   ) {
-    log.w("current operateur is not defined or incomplete, back to home");
+    log.w("current organisme is not defined or incomplete, back to home");
     return navigateTo("/");
   }
 

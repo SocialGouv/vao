@@ -18,12 +18,12 @@
               />
             </template>
 
-            <OperateurPersonnePhysiqueReadOnly
-              v-if="props.initData.typeOperateur === 'personne_physique'"
+            <OrganismePersonnePhysiqueReadOnly
+              v-if="props.initData.typeOrganisme === 'personne_physique'"
               :init-data="props.initData.personnePhysique"
             />
-            <OperateurPersonneMoraleReadOnly
-              v-if="props.initData.typeOperateur === 'personne_morale'"
+            <OrganismePersonneMoraleReadOnly
+              v-if="props.initData.typeOrganisme === 'personne_morale'"
               :init-data="props.initData.personneMorale"
             />
           </DsfrAccordion>
@@ -41,8 +41,8 @@
                 :type="agrement.type"
               />
             </template>
-            <OperateurAgrementReadOnly
-              v-if="props.initData.typeOperateur === 'personne_morale'"
+            <OrganismeAgrementReadOnly
+              v-if="props.initData.typeOrganisme === 'personne_morale'"
               :init-data="props.initData.agrement ?? {}"
             />
           </DsfrAccordion>
@@ -102,7 +102,7 @@
         >
 
         <DsfrButton
-          label="Finaliser la fiche opérateur"
+          label="Finaliser la fiche organisme"
           :disabled="incompleteOrganisme"
           @click.prevent="finalizeOrganisme"
         />
@@ -112,7 +112,7 @@
 </template>
 
 <script setup>
-const log = logger("components/operateur/synthese");
+const log = logger("components/organisme/synthese");
 
 const props = defineProps({
   initData: { type: Object, default: null, required: true },
@@ -124,7 +124,7 @@ const expandedId = ref(0);
 const isSiege = computed(() => {
   return (
     !props.initData ||
-    props.initData.typeOperateur === "personne_physique" ||
+    props.initData.typeOrganisme === "personne_physique" ||
     props.initData.personneMorale?.siegeSocial === true
   );
 });
@@ -139,7 +139,7 @@ const incompleteOrganisme = computed(() => {
 });
 
 const renseignementsGeneraux = computed(() => {
-  if (props.initData.typeOperateur === "personne_morale") {
+  if (props.initData.typeOrganisme === "personne_morale") {
     if (props.initData.personneMorale?.meta) {
       return {
         label: "complet",
@@ -152,7 +152,7 @@ const renseignementsGeneraux = computed(() => {
       };
     }
   }
-  if (props.initData.typeOperateur === "personne_physique") {
+  if (props.initData.typeOrganisme === "personne_physique") {
     if (props.initData.personnePhysique?.meta) {
       return {
         label: "complet",

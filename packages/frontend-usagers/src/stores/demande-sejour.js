@@ -4,7 +4,7 @@ import { logger, $fetchBackend } from "#imports";
 const log = logger("stores/demande-sejour");
 
 const resetDemandeCourante = () => ({
-  informationsOperateur: {},
+  informationsOrganisme: {},
   informationsVacanciers: {},
   informationsPersonnel: {},
   informationsProjetSejour: {},

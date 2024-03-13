@@ -1,4 +1,4 @@
-const Operateur = require("../../services/Operateur");
+const Organisme = require("../../services/Organisme");
 
 const logger = require("../../utils/logger");
 
@@ -7,33 +7,33 @@ const log = logger(module.filename);
 module.exports = async function post(req, res) {
   log.i("IN", req.body);
   const { body } = req;
-  const operateurId = req.params.id;
+  const organismeId = req.params.id;
   const { type, parametre } = body;
 
-  if (!type || !parametre || !operateurId) {
+  if (!type || !parametre || !organismeId) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
   }
   try {
-    const updatedOperateurId = await Operateur.update(
+    const updatedOrganismeId = await Organisme.update(
       type,
       parametre,
-      operateurId,
+      organismeId,
     );
-    if (!updatedOperateurId || updatedOperateurId !== operateurId) {
-      log.w("error while creating operator");
+    if (!updatedOrganismeId || updatedOrganismeId !== organismeId) {
+      log.w("error while creating organisme");
       return res.status(400).json({
-        message: "une erreur est survenue durant l'ajout de l'opérateur",
+        message: "une erreur est survenue durant l'ajout de l'organisme",
       });
     }
     return res.status(200).json({
-      message: "sauvegarde opérateur OK",
-      operateurId: updatedOperateurId,
+      message: "sauvegarde organisme OK",
+      organismeId: updatedOrganismeId,
     });
   } catch (error) {
     log.w(error);
     return res.status(400).json({
-      messagee: "Une erreur est survenue durant l'ajout de l'opérateur",
+      messagee: "Une erreur est survenue durant l'ajout de l'organisme",
     });
   }
 };

@@ -37,29 +37,29 @@ create table front.sessions (
 );
 
 /*==============================================================*/
-/* Table : operateur                                            */
+/* Table : organisme                                            */
 /*==============================================================*/
-create table front.operateurs (
+create table front.organismes (
    id                           SERIAL               NOT NULL,
    supprime                     BOOLEAN              NOT NULL DEFAULT false,
    complet                      BOOLEAN              NOT NULL DEFAULT false,
-   type_operateur               VARCHAR(20)          NOT NULL DEFAULT 'personne_morale',
+   type_organisme               VARCHAR(20)          NOT NULL DEFAULT 'personne_morale',
    personne_morale              JSONB                ,
    personne_physique            JSONB                ,
    protocole_transport          JSONB                ,
    protocole_sanitaire          JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
-   constraint pk_operateurs    primary key (id)
+   constraint pk_organismes    primary key (id)
 );
 
 /*==============================================================*/
-/* Table : user_operateur                                       */
+/* Table : user_organisme                                       */
 /*==============================================================*/
-create table front.user_operateur (
+create table front.user_organisme (
    use_id                       INTEGER              UNIQUE NOT NULL REFERENCES front.users(id) ON DELETE CASCADE,
-   ope_id                       INTEGER              NOT NULL REFERENCES front.operateurs(id) ON DELETE CASCADE,
-   constraint pk_user_operateur primary key (use_id,ope_id)
+   org_id                       INTEGER              NOT NULL REFERENCES front.organismes(id) ON DELETE CASCADE,
+   constraint pk_user_organisme primary key (use_id, org_id)
 );
 
 /*==============================================================*/
@@ -67,7 +67,7 @@ create table front.user_operateur (
 /*==============================================================*/
 CREATE TABLE front.agrements (
    id                            SERIAL                  NOT NULL,
-   operateur_id                  INTEGER                 NOT NULL REFERENCES front.operateurs(id),
+   organisme_id                  INTEGER                 NOT NULL REFERENCES front.organismes(id),
 	uuid                      		uuid              		NOT NULL,
    supprime                      BOOLEAN                 NOT NULL DEFAULT false,
 	numero                        VARCHAR(10)             NOT NULL,
@@ -78,6 +78,8 @@ CREATE TABLE front.agrements (
    created_at                   TIMESTAMP                DEFAULT current_timestamp NOT NULL,
    constraint pk_agrements primary key (uuid)
 );
+
+
 CREATE TYPE sejour_status AS ENUM (
    'BROUILLON',
    'TRANSMISE',
@@ -98,7 +100,7 @@ create table front.demande_sejour (
    id                           SERIAL               NOT NULL,
    statut                       sejour_status        NOT NULL,
    departement_suivi            VARCHAR(3)           REFERENCES geo.territoires(code),
-   operateur_id                 INTEGER              NOT NULL REFERENCES front.operateurs(id),
+   organisme_id                 INTEGER              NOT NULL REFERENCES front.organismes(id),
    id_fonctionnelle             VARCHAR(10)          ,
    libelle                      VARCHAR(50)          NOT NULL,
    date_debut                   DATE                 NOT NULL,

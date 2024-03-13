@@ -79,12 +79,12 @@
       ></Personne>
     </fieldset>
     <div
-      v-if="operateurStore.operateurCourant.typeOperateur === 'personne_morale'"
+      v-if="organismeStore.organismeCourant.typeOrganisme === 'personne_morale'"
     >
       <h6>Organisme</h6>
-      <OperateurPersonneMoraleReadOnly
-        :init-data="operateurStore.operateurCourant.personneMorale"
-      ></OperateurPersonneMoraleReadOnly>
+      <OrganismePersonneMoraleReadOnly
+        :init-data="organismeStore.organismeCourant.personneMorale"
+      ></OrganismePersonneMoraleReadOnly>
     </div>
 
     <fieldset class="fr-fieldset">
@@ -116,7 +116,7 @@ const emit = defineEmits(["next", "update"]);
 
 const log = logger("components/DS/informations-generales");
 
-const operateurStore = useOperateurStore();
+const organismeStore = useOrganismeStore();
 const userStore = useUserStore();
 
 const duree = computed(() => {
@@ -132,13 +132,13 @@ const saison = computed(() => {
   if (moisDebut < 12) return "automne";
 });
 
-const operateurCourant = computed(() => {
-  return operateurStore.operateurCourant;
+const organismeCourant = computed(() => {
+  return organismeStore.organismeCourant;
 });
 
 if (
-  operateurCourant.value.typeOperateur === "personne_morale" &&
-  !operateurCourant.value.personneMorale.siegeSocial
+  organismeCourant.value.typeOrganisme === "personne_morale" &&
+  !organismeCourant.value.personneMorale.siegeSocial
 ) {
   await checkSiege();
 }
@@ -173,15 +173,15 @@ const validationSchema = yup.object({
 });
 
 const initialValues = (() => {
-  const responsableSejour = operateurCourant.value.personneMorale.siret
-    ? operateurCourant.value.personneMorale.responsableSejour
+  const responsableSejour = organismeCourant.value.personneMorale.siret
+    ? organismeCourant.value.personneMorale.responsableSejour
     : {
-        nom: operateurCourant.value.personnePhysique.nomNaissance,
-        prenom: operateurCourant.value.personnePhysique.prenom,
+        nom: organismeCourant.value.personnePhysique.nomNaissance,
+        prenom: organismeCourant.value.personnePhysique.prenom,
         fonction: "organisateur de séjour",
         email: userStore.user.email,
-        telephone: operateurCourant.value.personnePhysique.telephone,
-        adresse: operateurCourant.value.personnePhysique.adresseSiege,
+        telephone: organismeCourant.value.personnePhysique.telephone,
+        adresse: organismeCourant.value.personnePhysique.adresseSiege,
       };
   return {
     libelle: props.initData.libelle,
@@ -224,14 +224,14 @@ const { value: responsableSejour, handleChange: onResponsableSejourChange } =
 async function checkSiege() {
   log.i("IN - checkSiege");
   try {
-    const url = `/operateur/siege/${operateurStore.operateurCourant.personneMorale.siret.substring(0, 9)}`;
+    const url = `/organisme/siege/${organismeStore.organismeCourant.personneMorale.siret.substring(0, 9)}`;
     const data = await $fetchBackend(url, {
       method: "GET",
       credentials: "include",
     });
-    const etablissementPrincipal = data.operateur;
+    const etablissementPrincipal = data.organisme;
     const nic =
-      operateurStore.operateurCourant.personneMorale.siret.substring(9);
+      organismeStore.organismeCourant.personneMorale.siret.substring(9);
     log.d(etablissementPrincipal);
     if (!etablissementPrincipal) {
       toaster.error(
@@ -264,7 +264,7 @@ function next() {
   if (!meta.value.dirty) {
     return emit("next");
   }
-  const organismeData = operateurStore.operateurCourant.personneMorale;
+  const organismeData = organismeStore.organismeCourant.personneMorale;
   organismeData.responsableSejour = responsableSejour.value;
   emit(
     "update",

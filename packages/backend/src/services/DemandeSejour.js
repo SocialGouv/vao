@@ -8,7 +8,7 @@ const query = {
   create: `
     INSERT INTO front.demande_sejour(
       statut,
-      operateur_id,
+      organisme_id,
       libelle,
       date_debut,
       date_fin,
@@ -27,7 +27,7 @@ const query = {
     SELECT
       ds.id as "demandeSejourId",
       ds.statut as "statut",
-      ds.operateur_id as "operateurId",
+      ds.organisme_id as "organismeId",
       ds.libelle as "libelle",
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
@@ -36,8 +36,8 @@ const query = {
       ds.duree as "duree",
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
-    JOIN front.operateurs o ON o.id = ds.operateur_id
-    JOIN front.user_operateur uo ON uo.ope_id = o.id
+    JOIN front.organismes o ON o.id = ds.organisme_id
+    JOIN front.user_organisme uo ON uo.org_id = o.id
     WHERE
       uo.use_id = $1
     `,
@@ -45,7 +45,7 @@ const query = {
     SELECT
       ds.id as "demandeSejourId",
       ds.statut as "statut",
-      ds.operateur_id as "operateurId",
+      ds.organisme_id as "organismeId",
       ds.libelle as "libelle",
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
@@ -60,16 +60,16 @@ const query = {
       ds.organisateurs as "projet_sejour",
       o.personne_morale as "personne_morale",
       o.personne_physique as "personne_physique",
-      o.type_operateur as "type_operateur"
+      o.type_organisme as "type_organisme"
     FROM front.demande_sejour ds
-      JOIN front.operateurs o ON o.id = ds.operateur_id
+      JOIN front.organismes o ON o.id = ds.organisme_id
     WHERE 1 = 1
        ${search.map((s) => ` AND ${s} `).join("")}
     `,
   getByAdminIdTotal: (search) => `
   SELECT COUNT(DISTINCT ds.id)
     FROM front.demande_sejour ds
-      JOIN front.operateurs o ON o.id = ds.operateur_id
+      JOIN front.organismes o ON o.id = ds.organisme_id
     WHERE 1 = 1
        ${search.map((s) => ` AND ${s} `).join("")}
     `,
@@ -78,7 +78,7 @@ const query = {
     SELECT
       ds.id as "id",
       ds.statut as "statut",
-      ds.operateur_id as "operateurId",
+      ds.organisme_id as "organismeId",
       ds.id_fonctionnelle as "idFonctionnelle",
       ds.libelle as "libelle",
       ds.date_debut::text as "dateDebut",
@@ -93,7 +93,7 @@ const query = {
       ds.organisme as "organisme",
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
-    JOIN front.operateurs o ON o.id = ds.operateur_id
+    JOIN front.organismes o ON o.id = ds.organisme_id
     WHERE 1=1
     ${Object.keys(criterias)
       .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
@@ -185,9 +185,9 @@ const query = {
     RETURNING
       id as "idDemande"
     `,
-  updateOperateur: `
+  updateOrganisme: `
     UPDATE front.demande_sejour ds
-      SET operateur_id=$1,
+      SET organisme_id=$1,
           edited_at=NOW()
     WHERE
       ds.id = $2
@@ -197,7 +197,7 @@ const query = {
 };
 
 module.exports.create = async (
-  operateurId,
+  organismeId,
   libelle,
   dateDebut,
   dateFin,
@@ -209,7 +209,7 @@ module.exports.create = async (
 ) => {
   log.i("create - IN");
   const response = await pool.query(query.create, [
-    operateurId,
+    organismeId,
     libelle,
     dateDebut,
     dateFin,
@@ -298,10 +298,10 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
   log.w("update - IN", { demandeSejourId, parametre, type });
   let response;
   switch (type) {
-    case "operateur": {
-      const { operateurId } = parametre;
-      response = await pool.query(query.updateOperateur, [
-        operateurId,
+    case "organisme": {
+      const { organismeId } = parametre;
+      response = await pool.query(query.updateOrganisme, [
+        organismeId,
         demandeSejourId,
       ]);
       break;

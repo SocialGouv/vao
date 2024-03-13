@@ -18,7 +18,7 @@ module.exports = async function get(req, res) {
   } catch (error) {
     log.w(error);
     return res.status(400).json({
-      message: "une erreur est survenue durant la récupération de l'opérateur",
+      message: "une erreur est survenue durant la récupération de l'organisme",
     });
   }
 };

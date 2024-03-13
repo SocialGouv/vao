@@ -9,7 +9,7 @@ const log = logger(module.filename);
 
 const query = {
   add: `
-    INSERT INTO front.agrements(uuid,filename,operateur_id,numero,region_delivrance,date_obtention,date_fin_validite) 
+    INSERT INTO front.agrements(uuid,filename,organisme_id,numero,region_delivrance,date_obtention,date_fin_validite) 
     VALUES ($1,$2,$3,$4,$5,$6,$7)
     RETURNING
         uuid as "uuid"
@@ -21,12 +21,12 @@ const query = {
     VALUES 
       ( $1, $2, $3) 
     RETURNING uuid`,
-  deleteByOperatorId: `
+  deleteByOrganismeId: `
     UPDATE front.agrements 
     SET supprime = true 
-    WHERE operateur_id = $1
+    WHERE organisme_id = $1
   `,
-  getByOperateurId: `
+  getByOrganismeId: `
     SELECT 
       id as "id",
       uuid AS "uuid",
@@ -35,7 +35,7 @@ const query = {
       date_obtention::text as "dateObtention",
       date_fin_validite::text as "dateFinValidite"
     FROM front.agrements 
-    WHERE operateur_id =$1 
+    WHERE organisme_id =$1 
     AND supprime=false`,
   getByUuid: `
     SELECT 
@@ -52,7 +52,7 @@ const query = {
       region_delivrance = $3, 
       date_obtention = $4, 
       date_fin_validite = $5
-    WHERE operateur_id=$1
+    WHERE organisme_id=$1
     AND supprime = false
     RETURNING id AS "agrementId"
   `,
@@ -61,7 +61,7 @@ const query = {
 module.exports.create = async (
   uuid,
   filename,
-  operateurId,
+  organismeId,
   regionDelivrance,
   numeroAgrement,
   dateDelivrance,
@@ -70,7 +70,7 @@ module.exports.create = async (
   const response = await pool.query(query.add, [
     uuid,
     filename,
-    operateurId,
+    organismeId,
     numeroAgrement,
     regionDelivrance,
     dateDelivrance,
@@ -96,10 +96,10 @@ module.exports.getByUuid = async (uuid) => {
     throw new AppError("query.getByUuid failed", { cause: err });
   }
 };
-module.exports.getByOperateurId = async (operateurId) => {
+module.exports.getByOrganismeId = async (organismeId) => {
   log.i("In");
   try {
-    const response = await pool.query(query.getByOperateurId, [operateurId]);
+    const response = await pool.query(query.getByOrganismeId, [organismeId]);
     if (response.rows.length > 0) {
       log.i("Done", response.rows[0]);
       return response.rows[0];
@@ -140,21 +140,21 @@ module.exports.uploadFile = async (file) => {
   }
 };
 
-module.exports.deleteByOperatorId = async (operateurId) => {
-  log.i("deleteByOperatorId - In");
+module.exports.deleteByOrganismeId = async (organismeId) => {
+  log.i("deleteByOrganismeId - In");
   try {
-    const response = await pool.query(query.deleteByOperatorId, [operateurId]);
+    const response = await pool.query(query.deleteByOrganismeId, [organismeId]);
     const ndDeletedAgrements = response.rowCount;
-    log.i("deleteByOperatorId - Done");
+    log.i("deleteByOrganismeId - Done");
     return ndDeletedAgrements;
   } catch (err) {
     log.w(err);
-    throw new AppError("deleteByOperatorId failed", { cause: err });
+    throw new AppError("deleteByOrganismeId failed", { cause: err });
   }
 };
 
 module.exports.updateOptions = async (
-  operateurId,
+  organismeId,
   numero,
   regionDelivrance,
   dateObtention,
@@ -163,7 +163,7 @@ module.exports.updateOptions = async (
   log.i("updateOptions - In");
   try {
     const response = await pool.query(query.updateOptions, [
-      operateurId,
+      organismeId,
       numero,
       regionDelivrance,
       dateObtention,

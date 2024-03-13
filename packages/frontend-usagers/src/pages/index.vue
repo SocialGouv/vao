@@ -4,7 +4,7 @@
       <h3>Bienvenue {{ userStore.user.prenom }} !</h3>
     </div>
     <div
-      v-if="!operateurCourant || !operateurCourant.complet"
+      v-if="!organismeCourant || !organismeCourant.complet"
       class="fr-grid-row fr-grid-row--left"
     >
       <DsfrHighlight
@@ -16,7 +16,7 @@
         <div class="fr-grid-row fr-grid-row-left fr-pt-5v">
           <NuxtLink
             class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
-            href="/operateur"
+            href="/organisme"
           >
             Renseigner ma fiche organisateur
           </NuxtLink>
@@ -35,8 +35,8 @@
             <NuxtLink
               class="fr-link fr-icon-arrow-right-line fr-link--icon-right"
               :href="
-                operateurStore.operateurCourant
-                  ? `/operateur/${operateurStore.operateurCourant.operateurId}`
+                organismeStore.organismeCourant
+                  ? `/organisme/${organismeStore.organismeCourant.organismeId}`
                   : '#'
               "
             >
@@ -129,12 +129,12 @@ definePageMeta({
 });
 
 const userStore = useUserStore();
-const operateurStore = useOperateurStore();
+const organismeStore = useOrganismeStore();
 
-await operateurStore.setMyOperateur();
+await organismeStore.setMyOrganisme();
 
-const operateurCourant = computed(() => {
-  return operateurStore.operateurCourant;
+const organismeCourant = computed(() => {
+  return organismeStore.organismeCourant;
 });
 
 const libelleMessageAccueil =

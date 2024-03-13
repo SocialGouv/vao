@@ -146,7 +146,7 @@
           du passage de la commission de sécurité datant de moins de 5 ans pour
           séjours se déroulant en établissement recevant du public (ERP).A
           défaut de transmission de ces justificatifs, la DDETS met en demeure
-          l'opérateur de produire ces pièces et propose au Préfet de département
+          l'organisme de produire ces pièces et propose au Préfet de département
           une annulation des séjours, si absence de tous les justificatifs.On
           distingue 3 catégories d’hébergements :1 - Les établissements recevant
           du public (ERP, tous les hôtels et les gros meubles de tourisme de

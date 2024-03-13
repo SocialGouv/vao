@@ -4,7 +4,7 @@ module.exports.user = require("./user");
 module.exports.BOAuthentication = require("./bo-authentication");
 module.exports.BOUser = require("./bo-user");
 
-module.exports.operateur = require("./operateur");
+module.exports.organisme = require("./organisme");
 module.exports.siret = require("./siret");
 module.exports.sejour = require("./sejour");
 module.exports.hebergement = require("./hebergement");

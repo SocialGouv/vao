@@ -1,4 +1,4 @@
-module.exports.getByOperateurId = require("./getByOperateurId");
+module.exports.getByOrganismeId = require("./getByOrganismeId");
 module.exports.getBySiret = require("./getBySiret");
 module.exports.getSiege = require("./getSiege");
 module.exports.post = require("./post");

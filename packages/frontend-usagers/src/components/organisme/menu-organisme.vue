@@ -12,14 +12,14 @@
 <script setup>
 const props = defineProps({
   activeId: { type: String, default: organismeMenus[0].id, required: false },
-  operateur: { type: Object, required: true },
+  organisme: { type: Object, required: true },
 });
 
 const isSiege = computed(() => {
   return (
-    !props.operateur ||
-    props.operateur.typeOperateur === "personne_physique" ||
-    props.operateur.personneMorale?.siegeSocial === true
+    !props.organisme ||
+    props.organisme.typeOrganisme === "personne_physique" ||
+    props.organisme.personneMorale?.siegeSocial === true
   );
 });
 
@@ -31,7 +31,7 @@ const menus = organismeMenus.map((menu) => {
 });
 
 const sommaireOptionsToDisplay = computed(() => {
-  if (!props.operateur) {
+  if (!props.organisme) {
     return [{ ...menus[0], active: true }];
   } else {
     return menus

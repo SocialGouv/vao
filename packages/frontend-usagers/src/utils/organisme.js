@@ -93,7 +93,7 @@ yup.setLocale({
 });
 
 const schema = {
-  typeOperateur: yup
+  typeOrganisme: yup
     .string()
     .required()
     .oneOf(["personne_morale", "personne_physique"]),
