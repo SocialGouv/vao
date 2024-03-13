@@ -293,6 +293,158 @@ const ISanitaire = {
   },
 };
 
+export const IHebergement = {
+  dateDebut: {
+    inputType: InputTypes.TEXT,
+    label: "Du",
+  },
+  dateFin: {
+    inputType: InputTypes.TEXT,
+    label: "Au",
+  },
+  hebergementId: "1",
+};
+
+export const IHebergementAttestation = {
+  aCertifie: {
+    inputType: InputTypes.TEXT,
+    label:
+      "Je certifie sur l'honneur que les renseignements portés sur cette déclaration sont exacts",
+  },
+  at: {
+    inputType: InputTypes.TEXT,
+    label: "Date",
+  },
+  nom: {
+    inputType: InputTypes.TEXT,
+    label: "Nom",
+  },
+  prenom: {
+    inputType: InputTypes.TEXT,
+    label: "Prénom",
+  },
+  qualite: {
+    inputType: InputTypes.TEXT,
+    label: "Qualité",
+  },
+};
+
+export const IHebergementInformationLocaux = {
+  type: {
+    inputType: InputTypes.RADIO,
+    label: "Type du lieu d'hébergement",
+    options: {
+      hotel: "Hôtel",
+      meuble_tourisme: "Meublé de tourisme",
+      residence_tourisme: "Résidence de tourisme, chambre d'hôte",
+      camping: "Camping, caravaning, mobile home",
+      autre: "Autre",
+    },
+  },
+  visiteLocaux: {
+    inputType: InputTypes.RADIO,
+    label: "Une visite des locaux par l’organisateur a-t-elle été effectuée ? ",
+    options: ouiNon,
+  },
+  accessibilite: {
+    inputType: InputTypes.RADIO,
+    label: "Accessibilité",
+    options: {
+      accessible: "Accessible",
+      non_adapte: "Signalé comme non adapté",
+      commentaires: "Commentaires",
+      non_renseigne: "Non renseigné",
+    },
+  },
+  pension: {
+    inputType: InputTypes.RADIO,
+    label: "Accessibilité",
+    options: {
+      accessible: "Accessible",
+      non_adapte: "Signalé comme non adapté",
+      commentaires: "Commentaires",
+      non_renseigne: "Non renseigné",
+    },
+  },
+  prestationsHotelieres: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Prestations hôtelières assurées par le lieu d’accueil",
+  },
+  descriptionLieuHebergement: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Description du lieu d’hébergement (parties communes et notamment équipements sanitaires) ?",
+    options: ouiNon,
+  },
+  nombreLits: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre de lits dans le lieu d'hébergement",
+  },
+  nombreLitsSuperposes: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre de lits superposés inclus",
+  },
+  litsDessus: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Pour les lits superposés, les lits « du dessus » seront-ils occupés par des vacanciers ?",
+    options: ouiNon,
+  },
+  nombreMaxPersonnesCouchage: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre maximum de personnes prévues par espace de couchage",
+  },
+  couchageIndividuel: {
+    inputType: InputTypes.RADIO,
+    label: "Chaque vacancier bénéficie-t-il d’un couchage individuel ? ",
+    options: ouiNon,
+  },
+  rangementIndividuel: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Chaque vacancier bénéficie t-il d’un espace de rangement des affaires personnelles ? ",
+    options: ouiNon,
+  },
+  chambresUnisexes: {
+    inputType: InputTypes.RADIO,
+    label: "Les femmes et les hommes dorment-ils dans des lieux séparés ? ",
+    options: ouiNon,
+  },
+  chambresDoubles: {
+    inputType: InputTypes.RADIO,
+    label: "Les couples de vacanciers bénéficient t-ils de chambres doubles ? ",
+    options: ouiNon,
+  },
+  amenagementsSpecifiques: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Des aménagements spécifiques des locaux sont-ils prévus pour accueillir les vacanciers ? ",
+    options: ouiNon,
+  },
+  precisionAmenagementsSpecifiques: null,
+};
+export const IHebergementInformationstransport = {
+  vehiculesAdaptes: {
+    inputType: InputTypes.RADIO,
+    label: "Les véhicules utilisés sont-ils adaptés ? ",
+    options: ouiNon,
+  },
+  deplacementProximite: {
+    inputType: InputTypes.TEXT,
+    label:
+      "Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité",
+  },
+  excursion: {
+    inputType: InputTypes.TEXT,
+    label:
+      "Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions",
+  },
+  rejoindreEtape: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez le mode de transport utilisé pour rejoindre cette étape  ",
+  },
+};
+
 const displayCommentForOneCategory = (categoryInterface, comments, title) => {
   const commentsByQuestionVacancier = Object.entries(categoryInterface)
     .map(([entry, value]) => {

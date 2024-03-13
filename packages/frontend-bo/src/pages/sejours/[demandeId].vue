@@ -17,21 +17,32 @@
       >
         <DsfrAccordionsGroup>
           <li v-if="demande?.organismes">
+            <!--            <DsfrAccordion
+                          :title="`organismes (${getCommentsNumber('organismes')})`"
+                          :expanded-id="expandedId"
+                          @expand="expandedId = $event"
+                        >-->
             <DsfrAccordion
-              :title="`organismes (${getCommentsNumber('organismes')})`"
+              :title="`organismes`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
               <h4 v-if="demande?.organismes?.siret">Organisme</h4>
+              <!--              <DisplayInput
+                              v-for="entry in Object.keys(displayInput.IOrganisme)"
+                              :key="`organismes-${entry}`"
+                              :value="demande.organismes[entry]"
+                              :input="displayInput.IOrganisme[entry]"
+                              :comment="comments?.organismes?.[entry] ?? ''"
+                              @emit-comment="
+                                (comment) => addComment('organismes', entry, comment)
+                              "
+                            />-->
               <DisplayInput
                 v-for="entry in Object.keys(displayInput.IOrganisme)"
                 :key="`organismes-${entry}`"
                 :value="demande.organismes[entry]"
                 :input="displayInput.IOrganisme[entry]"
-                :comment="comments?.organismes?.[entry] ?? ''"
-                @emit-comment="
-                  (comment) => addComment('organismes', entry, comment)
-                "
               />
               <h4>Responsable du séjour</h4>
               <DisplayInput
@@ -44,7 +55,7 @@
           </li>
           <li v-if="demande.vacanciers">
             <DsfrAccordion
-              :title="`Vacanciers (${getCommentsNumber('vacanciers')})`"
+              :title="`Vacanciers`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -53,14 +64,12 @@
                 :key="`personnel-${entry}`"
                 :value="demande.vacanciers[entry]"
                 :input="displayInput.IVacancier[entry]"
-                :comment="comments?.vacanciers?.[entry] ?? ''"
-                @emit-comment="addComment('vacanciers', entry, $event)"
               />
             </DsfrAccordion>
           </li>
           <li v-if="demande?.personnel">
             <DsfrAccordion
-              :title="`Personnel (${getCommentsNumber('personnel')})`"
+              :title="`Personnel`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -69,14 +78,12 @@
                 :key="`personnel-${entry}`"
                 :value="demande.personnel[entry]"
                 :input="displayInput.Ipersonnel[entry]"
-                :comment="comments?.personnel?.[entry] ?? ''"
-                @emit-comment="addComment('personnel', entry, $event)"
               />
             </DsfrAccordion>
           </li>
           <li v-if="demande?.projet_sejour">
             <DsfrAccordion
-              :title="`Projet de séjour (${getCommentsNumber('projet_sejour')})`"
+              :title="`Projet de séjour`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -85,14 +92,12 @@
                 :key="`projet-sejour-${entry}`"
                 :value="demande.projet_sejour[entry]"
                 :input="displayInput.IProjetSejour[entry]"
-                :comment="comments?.projet_sejour?.[entry] ?? ''"
-                @emit-comment="addComment('projet_sejour', entry, $event)"
               />
             </DsfrAccordion>
           </li>
           <li v-if="demande?.transport">
             <DsfrAccordion
-              :title="`Information sur le transport (${getCommentsNumber('transport')})`"
+              :title="`Information sur le transport`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -101,14 +106,12 @@
                 :key="`transport-${entry}`"
                 :value="demande.transport[entry]"
                 :input="displayInput.ITransport[entry]"
-                :comment="comments?.transport?.[entry] ?? ''"
-                @emit-comment="addComment('transport', entry, $event)"
               />
             </DsfrAccordion>
           </li>
           <li v-if="demande?.sanitaires">
             <DsfrAccordion
-              :title="`Information sanitaires (${getCommentsNumber('sanitaires')})`"
+              :title="`Information sanitaires`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
@@ -117,8 +120,6 @@
                 :key="`transport-${entry}`"
                 :value="demande.sanitaires[entry]"
                 :input="displayInput.ISanitaire[entry]"
-                :comment="comments?.sanitaires?.[entry] ?? ''"
-                @emit-comment="addComment('sanitaires', entry, $event)"
               />
             </DsfrAccordion>
           </li>
@@ -238,7 +239,7 @@ const tabTitles = [
   { title: "historique" },
 ];
 
-const getCommentValue = (value) => (value != "" ? value : null);
+/*const getCommentValue = (value) => (value != "" ? value : null);
 
 const addComment = (category, attribute, value) => {
   if (!comments.value[category]) {
@@ -246,7 +247,7 @@ const addComment = (category, attribute, value) => {
   } else {
     comments.value[category][attribute] = getCommentValue(value);
   }
-};
+};*/
 
 const commentsInHtml = computed(() =>
   displayInput.getHtmlComments(comments.value),

@@ -112,7 +112,7 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/pages/sejours/[[idDemande]].vue
   checksum: e076b4e667aeda0b354d743dd92a8ae129c61a3fbdfc6bea4e39b603caa90791
 - filename: packages/frontend-bo/src/pages/sejours/[idDemande].vue
-  checksum: 411265ddcf965ba979a473a32929af484b0c446c3b64168be1839a5f4bc875f0
+  checksum: 9bed4ce4335be9ab7b032521a7bb8295f94ecc11ca03109b8de88f5177e66c3c
 - filename: packages/frontend-usagers/src/components/PasswordInput.vue
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
 - filename: packages/frontend-usagers/src/components/customInput.vue
