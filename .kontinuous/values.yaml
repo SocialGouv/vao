@@ -38,7 +38,9 @@ backend:
     - secretRef:
         name: pg
     - secretRef:
-        name: apientreprise
+        name: api-entreprise
+    - secretRef:
+        name: api-insee
     - secretRef:
         name: smtp
     - secretRef:
