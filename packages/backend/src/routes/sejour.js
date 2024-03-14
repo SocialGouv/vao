@@ -15,6 +15,12 @@ router.get(
   getDepartements,
   demandeSejourController.getByAdminId,
 );
+router.get(
+  "/admin/:id",
+  boCheckJWT,
+  getDepartements,
+  demandeSejourController.getByIdBo,
+);
 router.get("/:id", checkJWT, demandeSejourController.getById);
 router.get("/", checkJWT, demandeSejourController.get);
 router.post("/depose/:id", checkJWT, demandeSejourController.depose);

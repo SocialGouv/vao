@@ -1,7 +1,7 @@
 <!--  Doc utilisée pour construire le dsfr tab : https://docs.vue-ds.fr/composants/DsfrTabs-->
 
 <template>
-  <div v-if="!!demande" class="fr-container header">
+  <div v-if="!!demandeStore.currentDemande" class="fr-container header">
     <Details />
     <DsfrTabs
       tab-list-name="display-formulaire"
@@ -16,44 +16,41 @@
         :asc="asc"
       >
         <DsfrAccordionsGroup>
-          <li v-if="demande?.organismes">
-            <!--            <DsfrAccordion
-                          :title="`organismes (${getCommentsNumber('organismes')})`"
-                          :expanded-id="expandedId"
-                          @expand="expandedId = $event"
-                        >-->
+          <li v-if="demandeStore.currentDemande?.organismes">
             <DsfrAccordion
-              :title="`organismes`"
+              :title="`Organismes`"
               :expanded-id="expandedId"
               @expand="expandedId = $event"
             >
-              <h4 v-if="demande?.organismes?.siret">Organisme</h4>
-              <!--              <DisplayInput
-                              v-for="entry in Object.keys(displayInput.IOrganisme)"
-                              :key="`organismes-${entry}`"
-                              :value="demande.organismes[entry]"
-                              :input="displayInput.IOrganisme[entry]"
-                              :comment="comments?.organismes?.[entry] ?? ''"
-                              @emit-comment="
-                                (comment) => addComment('organismes', entry, comment)
-                              "
-                            />-->
-              <DisplayInput
-                v-for="entry in Object.keys(displayInput.IOrganisme)"
-                :key="`organismes-${entry}`"
-                :value="demande.organismes[entry]"
-                :input="displayInput.IOrganisme[entry]"
-              />
-              <h4>Responsable du séjour</h4>
-              <DisplayInput
-                v-for="entry in Object.keys(displayInput.IResponsableSejour)"
-                :key="`organismes-responsableSejour-${entry}`"
-                :value="demande.organismes.responsableSejour[entry]"
-                :input="displayInput.IResponsableSejour[entry]"
-              />
+              <div
+                v-if="
+                  demandeStore.currentDemande?.organismes?.typeOrganisme ===
+                  'personne_morale'
+                "
+              >
+                <h4>Organisme</h4>
+                <DisplayInput
+                  v-for="entry in Object.keys(displayInput.IOrganisme)"
+                  :key="`organismes-${entry}`"
+                  :value="
+                    demandeStore.currentDemande.organismes.personneMorale[entry]
+                  "
+                  :input="displayInput.IOrganisme[entry]"
+                />
+                <h4>Responsable du séjour</h4>
+                <DisplayInput
+                  v-for="entry in Object.keys(displayInput.IResponsableSejour)"
+                  :key="`organismes-responsableSejour-${entry}`"
+                  :value="
+                    demandeStore.currentDemande.organismes.personneMorale
+                      .responsableSejour[entry]
+                  "
+                  :input="displayInput.IResponsableSejour[entry]"
+                />
+              </div>
             </DsfrAccordion>
           </li>
-          <li v-if="demande.vacanciers">
+          <li v-if="demandeStore.currentDemande?.vacanciers">
             <DsfrAccordion
               :title="`Vacanciers`"
               :expanded-id="expandedId"
@@ -62,12 +59,12 @@
               <DisplayInput
                 v-for="entry in Object.keys(displayInput.IVacancier)"
                 :key="`personnel-${entry}`"
-                :value="demande.vacanciers[entry]"
+                :value="demandeStore.currentDemande.vacanciers[entry]"
                 :input="displayInput.IVacancier[entry]"
               />
             </DsfrAccordion>
           </li>
-          <li v-if="demande?.personnel">
+          <li v-if="demandeStore.currentDemande?.personnel">
             <DsfrAccordion
               :title="`Personnel`"
               :expanded-id="expandedId"
@@ -76,12 +73,12 @@
               <DisplayInput
                 v-for="entry in Object.keys(displayInput.Ipersonnel)"
                 :key="`personnel-${entry}`"
-                :value="demande.personnel[entry]"
+                :value="demandeStore.currentDemande.personnel[entry]"
                 :input="displayInput.Ipersonnel[entry]"
               />
             </DsfrAccordion>
           </li>
-          <li v-if="demande?.projet_sejour">
+          <li v-if="demandeStore.currentDemande?.projet_sejour">
             <DsfrAccordion
               :title="`Projet de séjour`"
               :expanded-id="expandedId"
@@ -90,12 +87,12 @@
               <DisplayInput
                 v-for="entry in Object.keys(displayInput.IProjetSejour)"
                 :key="`projet-sejour-${entry}`"
-                :value="demande.projet_sejour[entry]"
+                :value="demandeStore.currentDemande.projet_sejour[entry]"
                 :input="displayInput.IProjetSejour[entry]"
               />
             </DsfrAccordion>
           </li>
-          <li v-if="demande?.transport">
+          <li v-if="demandeStore.currentDemande?.transport">
             <DsfrAccordion
               :title="`Information sur le transport`"
               :expanded-id="expandedId"
@@ -104,12 +101,12 @@
               <DisplayInput
                 v-for="entry in Object.keys(displayInput.ITransport)"
                 :key="`transport-${entry}`"
-                :value="demande.transport[entry]"
+                :value="demandeStore.currentDemande.transport[entry]"
                 :input="displayInput.ITransport[entry]"
               />
             </DsfrAccordion>
           </li>
-          <li v-if="demande?.sanitaires">
+          <li v-if="demandeStore.currentDemande?.sanitaires">
             <DsfrAccordion
               :title="`Information sanitaires`"
               :expanded-id="expandedId"
@@ -118,7 +115,7 @@
               <DisplayInput
                 v-for="entry in Object.keys(displayInput.ISanitaire)"
                 :key="`transport-${entry}`"
-                :value="demande.sanitaires[entry]"
+                :value="demandeStore.currentDemande.sanitaires[entry]"
                 :input="displayInput.ISanitaire[entry]"
               />
             </DsfrAccordion>
@@ -202,7 +199,13 @@ const demandeStore = useDemandeSejourStore();
 const expandedId = ref("");
 const comments = ref({});
 
-onMounted(() => {
+onMounted(async () => {
+  try {
+    await demandeStore.setCurrentDemande(route.params.idDemande);
+  } catch (e) {
+    console.log("je catch");
+    navigateTo("/sejours");
+  }
   comments.value =
     JSON.parse(localStorage.getItem("comments") ?? "{}")[
       route.params.idDemande
@@ -211,16 +214,11 @@ onMounted(() => {
 
 watch(comments, (c) => saveComment(c), { deep: true });
 
-const getCommentsNumber = (category) => {
-  return comments.value[category]
-    ? Object.values(comments.value[category]).filter((o) => !!o).length
-    : 0;
-};
-
-const demande = demandeStore.getById(route.params.idDemande);
-if (!demande) {
-  navigateTo("/sejours");
-}
+// const getCommentsNumber = (category) => {
+//   return comments.value[category]
+//     ? Object.values(comments.value[category]).filter((o) => !!o).length
+//     : 0;
+// };
 
 const saveComment = debounce((comments) => {
   const currentStorage = JSON.parse(localStorage.getItem("comments") ?? "{}");

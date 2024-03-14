@@ -118,7 +118,13 @@ const searchState = reactive({
   statut: null,
 });
 
-sejourStore.fetchDemandes({ limit: defaultLimit, offset: defaultOffset });
+onMounted(async () => {
+  sejourStore.currentDemande = null;
+  await sejourStore.fetchDemandes({
+    limit: defaultLimit,
+    offset: defaultOffset,
+  });
+});
 
 watch(
   [sortState, limitState, currentPageState],
@@ -208,7 +214,9 @@ const headers = [
     sort: true,
   },
 ];
-const navigate = (state) => navigateTo(`/sejours/${state.demandeSejourId}`);
+const navigate = (state) => {
+  navigateTo(`/sejours/${state.demandeSejourId}`);
+};
 
 const updateSort = ({ sortBy: sb, sortDirection: sd }) => {
   sortState.value = {

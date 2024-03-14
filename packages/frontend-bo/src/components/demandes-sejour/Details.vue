@@ -17,10 +17,9 @@
 <script setup>
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 
-const route = useRoute();
 const demandeStore = useDemandeSejourStore();
 
-const demande = demandeStore.getById(route.params.idDemande);
+const demande = demandeStore.currentDemande;
 const demandeDetails = computed(() => [
   {
     name: "Organisme",
