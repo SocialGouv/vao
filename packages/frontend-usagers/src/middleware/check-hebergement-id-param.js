@@ -2,20 +2,20 @@ import { useHebergementStore } from "~/stores/hebergement";
 import { defineNuxtRouteMiddleware, navigateTo } from "#app";
 import { logger } from "#imports";
 
-const log = logger("middlewares/check-id-hebergement-param");
+const log = logger("middlewares/check-id-demande-sejour");
 
 export default defineNuxtRouteMiddleware(async (to) => {
   log.i("IN", { to });
 
-  const idHebergement = to.params.idHebergement;
+  const hebergementId = to.params.hebergementId;
   const hebergementStore = useHebergementStore();
 
-  if (isNaN(idHebergement)) {
+  if (isNaN(hebergementId)) {
     log.w("invalid param");
     return navigateTo("/hebergements");
   }
 
-  await hebergementStore.fetchHebergement(idHebergement);
+  await hebergementStore.fetchHebergement(hebergementId);
 
   if (!hebergementStore.hebergementCourant) {
     log.i("naviagteTo /hebergements");

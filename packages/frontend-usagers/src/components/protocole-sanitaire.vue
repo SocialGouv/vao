@@ -1,6 +1,15 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset">
+    <DsfrFieldset
+      legend="Téléversement des pièces justificatives concernant les protocoles de santé"
+    >
+      <UtilsMultiFilesUpload
+        v-model="files"
+        label="Merci de joindre les documents requis pour les informations sanitaires"
+        hint="Taille maximale : 500 Mo. Formats supportés : pdf. Plusieurs fichiers possibles."
+      />
+    </DsfrFieldset>
+    <DsfrFieldset legend="Modalités d’ordre sanitaire ">
       <DsfrHighlight
         text="L’acte d’administration proprement dit consiste à faire prendre le bon médicament au bon patient, à la bonne posologie, au bon moment, par la bonne voie. Cet acte inclut le contrôle de la prise effective du traitement. Il est recommandé que la distribution des médicaments préalablement préparés, leur administration et son enregistrement soient réalisés par la même personne."
         :small="false"
@@ -21,14 +30,13 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="dispositionsSpecifiques" class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+      <div v-if="dispositionsSpecifiques" class="fr-fieldset__element">
+        <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionDispositionsSpecifiques"
-            :required="false"
-            label="Précisez"
+            :required="true"
+            label="Quels sont les protocoles en vigueur pour assurer le suivi sanitaire et médical ?"
+            hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
@@ -39,8 +47,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrCheckboxSet
@@ -53,9 +59,7 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="constitutionEquipe.length > 0" class="fr-fieldset">
-      <div class="fr-fieldset__element">
+      <div v-if="constitutionEquipe.length > 0" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="precisionConstitutionEquipe"
@@ -71,8 +75,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -88,10 +90,16 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
+    </DsfrFieldset>
+    <DsfrFieldset
+      legend="Organisation prévue en matière de distribution et de stockage des médicaments"
+    >
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
+          <DsfrHighlight
+            text="L’acte d’administration proprement dit consiste à faire prendre le bon médicament au bon patient, à la bonne posologie, au bon moment, par la bonne voie. Cet acte inclut le contrôle de la prise effective du traitement. Il est recommandé que la distribution des médicaments préalablement préparés, leur administration et son enregistrement soient réalisés par la même personne."
+          />
+
           <DsfrCheckboxSet
             v-model="responsableAdministrationMedicament"
             name="responsableAdministrationMedicament"
@@ -104,12 +112,11 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset
-      v-if="responsableAdministrationMedicament?.length > 0"
-      class="fr-fieldset"
-    >
-      <div class="fr-fieldset__element">
+
+      <div
+        v-if="responsableAdministrationMedicament?.length > 0"
+        class="fr-fieldset__element"
+      >
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="precisionResponsableAdministrationMedicament"
@@ -129,23 +136,16 @@
           />
         </div>
       </div>
-    </fieldset>
-    <DsfrHighlight
-      text="Quelle est l’organisation prévue en matière de distribution et de stockage des médicaments ?"
-      :small="false"
-      :large="true"
-    />
-    <DsfrHighlight
-      text="Il est souhaitable que les modalités de détention, de mise à disposition et de transmission des clés, codes d’accès, etc. des différents dispositifs de rangement des médicaments fassent l’objet d’une procédure écrite."
-      :small="false"
-      :large="true"
-    />
-    <fieldset class="fr-fieldset">
+      <DsfrHighlight
+        text="Dispositif de rangement fermé à clé ou disposant d’un mode de fermeture assurant la même sécurité, dont les modalités d’accès sont maîtrisées et contrôlées.Il est souhaitable que les modalités de détention, de mise à disposition et de transmission des clés, codes d’accès, etc. des différents dispositifs de rangement des médicaments fassent l’objet d’une procédure écrite."
+        :small="false"
+        :large="true"
+      />
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
             name="stockageMedicamentSecurise"
-            legend="Stockage des médicaments dans un lieu sécurisé ?"
+            legend="Les médicaments sont-ils stockés dans un lieu sécurisé ?"
             :required="true"
             :model-value="stockageMedicamentSecurise"
             :options="ouiNonOptions"
@@ -156,14 +156,13 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="stockageMedicamentSecurise" class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+      <div v-if="stockageMedicamentSecurise" class="fr-fieldset__element">
+        <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionStockageMedicamentSecurise"
             :required="true"
-            label="Précisez"
+            label="Précisez le protocole en vigueur concernant le stockage sécurisé des médicaments."
+            hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
@@ -174,8 +173,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -191,14 +188,17 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="conservationMedicamentThermosensible" class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+
+      <div
+        v-if="conservationMedicamentThermosensible"
+        class="fr-fieldset__element"
+      >
+        <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionConservationMedicament"
             :required="true"
-            label="Stockage des médicaments dans un lieu garantissant leur parfaite conservation. Précisez"
+            label="Précisez le protocole en vigueur concernant le stockage garantissant la parfaite conservation des médicaments."
+            hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
@@ -209,13 +209,12 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
             name="individualisationMedicaments"
-            legend="Individualisation des médicaments ?"
+            legend="Un dispositif est-il prévu pour individualiser les traitements de chaque vacancier ?"
+            hint="Les traitements de chaque vacancier doivent être identifiés a minima par son nom et son prénom. Il est recommandé de compléter ces mentions de la date de naissance, de la photographie, voire du nom de jeune fille des résidentes en cas d’homonymie."
             :required="true"
             :model-value="individualisationMedicaments"
             :options="ouiNonOptions"
@@ -226,14 +225,13 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="individualisationMedicaments" class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+      <div v-if="individualisationMedicaments" class="fr-fieldset__element">
+        <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionIndividualisationMedicaments"
             :required="false"
-            label="Précisez"
+            label="Précisez le protocole en vigueur concernant le stockage permettant l’individualisation des médicaments."
+            hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
             placeholder=""
             :is-textarea="true"
@@ -244,9 +242,6 @@
           />
         </div>
       </div>
-    </fieldset>
-
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -262,16 +257,15 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset
-      v-if="
-        preparationPilluliers === 'prepares_prealablement' ||
-        preparationPilluliers === 'au_fur_et_a_mesure'
-      "
-      class="fr-fieldset"
-    >
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+      <div
+        v-if="
+          preparationPilluliers === 'prepares_prealablement' ||
+          preparationPilluliers === 'au_fur_et_a_mesure'
+        "
+        class="fr-fieldset__element"
+      >
+        >
+        <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionPreparationPilluliers"
             :required="false"
@@ -286,8 +280,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -303,8 +295,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -320,10 +310,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="protocoleModificationTraitement" class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+      <div v-if="protocoleModificationTraitement" class="fr-fieldset__element">
+        <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionProtocoleModificationTraitement"
             :required="true"
@@ -342,8 +330,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -359,8 +345,11 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
+    </DsfrFieldset>
+    <DsfrFieldset legend="Autres protocoles">
+      <DsfrHighlight
+        text="Dispositif de rangement fermé à clé ou disposant d’un mode de fermeture assurant la même sécurité, dont les modalités d’accès sont maîtrisées et contrôlées.Il est souhaitable que les modalités de détention, de mise à disposition et de transmission des clés, codes d’accès, etc. des différents dispositifs de rangement des médicaments fassent l’objet d’une procédure écrite."
+      />
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -376,10 +365,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="protocoleEvacuation" class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+      <div v-if="protocoleEvacuation" class="fr-fieldset__element">
+        <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionProtocoleEvacuation"
             :required="true"
@@ -394,8 +381,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -411,10 +396,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="protocoleAccident" class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+      <div v-if="protocoleAccident" class="fr-fieldset__element">
+        <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionProtocoleAccident"
             :required="true"
@@ -429,8 +412,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -446,10 +427,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="protocoleReorientation" class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+      <div v-if="protocoleReorientation" class="fr-fieldset__element">
+        <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionProtocoleReorientation"
             :required="true"
@@ -464,8 +443,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -481,10 +458,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="protocoleCanicule" class="fr-fieldset">
-      <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+      <div v-if="protocoleCanicule" class="fr-fieldset__element">
+        <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionProtocoleCanicule"
             :required="true"
@@ -499,8 +474,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -517,7 +490,7 @@
           />
         </div>
       </div>
-    </fieldset>
+    </DsfrFieldset>
     <fieldset class="fr-fieldset">
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
@@ -537,6 +510,7 @@
 </template>
 
 <script setup>
+import { DsfrFieldset, DsfrHighlight } from "@gouvminint/vue-dsfr";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 
@@ -554,6 +528,7 @@ const validationSchema = yup.object({
 });
 
 const initialValues = {
+  files: props.initData.files ?? [],
   dispositionsSpecifiques: props.initData.dispositionsSpecifiques,
   precisionDispositionsSpecifiques:
     props.initData.precisionDispositionsSpecifiques,
@@ -598,6 +573,8 @@ const { meta, values } = useForm({
   validationSchema,
   initialValues,
 });
+
+const { value: files } = useField("files");
 
 const {
   value: dispositionsSpecifiques,

@@ -1,15 +1,14 @@
 const stream = require("stream");
-const AppError = require("../../../utils/error");
-const AgrementService = require("../../../services/Agrement");
-
-const logger = require("../../../utils/logger");
+const DocumentService = require("../../services/Document");
+const AppError = require("../../utils/error");
+const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 
 module.exports = async (req, res, next) => {
   const { uuid } = req.params;
   log.i("In", { uuid });
-  const file = await AgrementService.getByUuid(uuid);
+  const file = await DocumentService.download(uuid);
   if (!file) {
     log.w("missing file");
     return next(new AppError("fichier introuvable", { statusCode: 404 }));

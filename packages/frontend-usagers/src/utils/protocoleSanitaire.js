@@ -59,6 +59,7 @@ yup.setLocale({
 });
 
 const schema = {
+  files: yup.array().min(1).required(),
   dispositionsSpecifiques: yup.boolean().required(),
   precisionDispositionsSpecifiques: yup
     .string()

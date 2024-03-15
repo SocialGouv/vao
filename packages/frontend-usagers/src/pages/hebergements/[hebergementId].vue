@@ -10,21 +10,21 @@
 
 <script setup>
 definePageMeta({
-  middleware: ["is-connected", "check-id-hebergement-param"],
+  middleware: ["is-connected", "check-id-demande-sejour"],
 });
 
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
-const log = logger("pages/hebermgents/[idHebergement]");
+const log = logger("pages/hebermgents/[hebergementId]");
 const hebergementStore = useHebergementStore();
 
 const route = useRoute();
-const idHebergement = route.params.idHebergement;
+const hebergementId = route.params.hebergementId;
 
 async function editHebergement(hebergement) {
   log.d("editHebergement - IN");
   try {
-    const url = `/hebergement/${idHebergement}`;
+    const url = `/hebergement/${hebergementId}`;
     await $fetchBackend(url, {
       method: "POST",
       credentials: "include",

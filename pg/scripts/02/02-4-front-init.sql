@@ -68,17 +68,15 @@ create table front.user_organisme (
 CREATE TABLE front.agrements (
    id                            SERIAL                  NOT NULL,
    organisme_id                  INTEGER                 NOT NULL REFERENCES front.organismes(id),
-	uuid                      		uuid              		NOT NULL,
+	numero                        VARCHAR(10)             ,
+   region_obtention              VARCHAR(4)              ,
+   date_obtention                DATE                    ,
+   date_fin_validite             DATE                    ,
+   file                          JSONB                   ,
    supprime                      BOOLEAN                 NOT NULL DEFAULT false,
-	numero                        VARCHAR(10)             NOT NULL,
-   filename                      VARCHAR(50)             NOT NULL,
-   region_delivrance             VARCHAR(4)              NOT NULL,
-   date_obtention                DATE                    NOT NULL,
-   date_fin_validite             DATE                    NOT NULL,
    created_at                   TIMESTAMP                DEFAULT current_timestamp NOT NULL,
    constraint pk_agrements primary key (uuid)
 );
-
 
 CREATE TYPE sejour_status AS ENUM (
    'BROUILLON',

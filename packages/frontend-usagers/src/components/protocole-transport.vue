@@ -1,6 +1,15 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset">
+    <DsfrFieldset
+      legend="Téléversement des pièces justificatives concernant les protocoles de transport"
+    >
+      <UtilsMultiFilesUpload
+        v-model="files"
+        label="Merci de joindre les documents requis pour les informations transport"
+        hint="Taille maximale : 500 Mo. Formats supportés : pdf. Plusieurs fichiers possibles."
+      />
+    </DsfrFieldset>
+    <DsfrFieldset legend="Transports vers le site de séjour">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -16,8 +25,6 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <UtilsMultiSelect
@@ -25,12 +32,10 @@
             :values="modeTransport"
             label="Précisez le ou les modes de transport utilisés"
             :required="true"
-            @update="addModeTransport"
+            @update="updateModeTransport"
           ></UtilsMultiSelect>
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -46,8 +51,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
+    </DsfrFieldset>
+    <DsfrFieldset legend="Déplacements sur le séjour">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -63,8 +68,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
+    </DsfrFieldset>
+    <DsfrFieldset>
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
           id="previous-step"
@@ -78,7 +83,7 @@
         >
         <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
       </DsfrButtonGroup>
-    </fieldset>
+    </DsfrFieldset>
   </div>
 </template>
 
@@ -104,6 +109,7 @@ const initialValues = {
   responsableTransportLieuSejour: props.initData.responsableTransportLieuSejour,
   precisionModeOrganisation: props.initData.precisionModeOrganisation,
   deplacementDurantSejour: props.initData.deplacementDurantSejour,
+  files: props.initData.files ?? [],
   modeTransport: props.initData.modeTransport ?? [],
 };
 const { meta, values } = useForm({
@@ -130,10 +136,10 @@ const {
   meta: deplacementDurantSejourMeta,
 } = useField("deplacementDurantSejour");
 const { value: modeTransport } = useField("modeTransport");
+const { value: files } = useField("files");
 
-function addModeTransport(element) {
-  log.d("addModeTransport -IN");
-  modeTransport.value = element;
+function updateModeTransport(modes) {
+  modeTransport.value = modes;
 }
 
 function next() {
@@ -146,7 +152,6 @@ function next() {
     "update",
     {
       ...values,
-      modeTransport: modeTransport.value,
       meta: meta.value.valid,
     },
     "protocole_transport",

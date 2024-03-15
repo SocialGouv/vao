@@ -1,22 +1,8 @@
 <template>
   <div class="fr-fieldset__element">
     <div class="fr-input-group" style="margin-bottom: 2rem">
-      <div v-if="props.initFiles.length > 0">
-        <label> Fichier(s) téléversé(s) : </label>
-        <ul>
-          <li v-for="file in props.initFiles" :key="file.uid">
-            <a
-              :class="{
-                line: files.length > 0,
-              }"
-              :href="file.lien"
-              >{{ file.filename }}</a
-            >
-          </li>
-          <li v-for="(file, index) in files" :key="index">
-            <span>{{ file.name }}</span>
-          </li>
-        </ul>
+      <div v-if="rows.length > 0">
+        <DsfrTable :headers="headers" :rows="rows" />
       </div>
 
       <DsfrFileUpload v-bind="$attrs" @change="changeFiles" />
@@ -25,22 +11,58 @@
 </template>
 
 <script setup>
-const props = defineProps({
-  initFiles: {
-    type: Array,
-    default: () => [],
-  },
-});
+import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
+import dayjs from "dayjs";
+
+const config = useRuntimeConfig();
+
+const headers = ["Fichier", "Date de création", "Actions"];
 
 const files = defineModel({ type: Array });
 
+const rows = computed(() => {
+  return files.value.map((file, index) => {
+    const name = file.uuid
+      ? {
+          component: "a",
+          text: file.name,
+          href: `${config.public.backendUrl}/documents/${file.uuid}`,
+          download: true,
+        }
+      : file.name;
+    const buttons = [
+      {
+        icon: "ri-delete-bin-2-line",
+        iconOnly: true,
+        tertiary: true,
+        noOutline: true,
+        onClick: () => removeFile(index),
+      },
+    ];
+    const createdAt = file.createdAt
+      ? dayjs(file.createdAt).format("YYYY-MM-DD HH:mm")
+      : "";
+    return [
+      name,
+      createdAt,
+      {
+        component: DsfrButtonGroup,
+        buttons,
+      },
+    ];
+  });
+});
+
+function removeFile(index) {
+  files.value = [
+    ...files.value.slice(0, index),
+    ...files.value.slice(index + 1),
+  ];
+}
+
 function changeFiles(fileList) {
-  files.value = fileList;
+  files.value = [...files.value, ...fileList];
 }
 </script>
 
-<style lang="scss" scoped>
-.line {
-  text-decoration: line-through;
-}
-</style>
+<style lang="scss" scoped></style>
