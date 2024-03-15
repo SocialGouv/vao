@@ -9,6 +9,7 @@
             :label-visible="true"
             :model-value="effectifPrevisionnel"
             :required="true"
+            :disabled="!props.modifiable"
             :is-valid="effectifPrevisionnelMeta.valid"
             :error-message="effectifPrevisionnelErrorMessage"
             placeholder="nombre de vacanciers"
@@ -24,6 +25,7 @@
             :label-visible="true"
             :model-value="effectifPrevisionnelHomme"
             :required="true"
+            :disabled="!props.modifiable"
             :is-valid="effectifPrevisionnelHommeMeta.valid"
             :error-message="effectifPrevisionnelHommeErrorMessage"
             placeholder="nombre d'hommes prévus"
@@ -39,6 +41,7 @@
             :label-visible="true"
             :model-value="effectifPrevisionnelFemme"
             :required="true"
+            :disabled="!props.modifiable"
             :is-valid="effectifPrevisionnelFemmeMeta.valid"
             :error-message="effectifPrevisionnelFemmeErrorMessage"
             placeholder="nombre de femmes prévues"
@@ -54,9 +57,10 @@
           :inline="true"
           name="trancheAge"
           legend="Tranches d'âge"
-          :options="trancheAgeOptions"
+          :options="informationsVacanciers.trancheAgeOptions"
           :small="true"
           :required="true"
+          :disabled="!props.modifiable"
         />
       </div>
       <div class="fr-fieldset__element fr-col-12">
@@ -65,9 +69,10 @@
           :inline="true"
           name="typeDeficiences"
           legend="Type de déficiences"
-          :options="typeDeficiencesOptions"
+          :options="informationsVacanciers.typeDeficiencesOptions"
           :small="true"
           :required="true"
+          :disabled="!props.modifiable"
         />
       </div>
     </fieldset>
@@ -77,6 +82,7 @@
         <DsfrButton
           id="previous-step"
           :secondary="true"
+          :disabled="!props.modifiable"
           @click.prevent="
             () => {
               emit('previous');
@@ -84,7 +90,12 @@
           "
           >Précédent</DsfrButton
         >
-        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+        <DsfrButton
+          id="next-step"
+          :disabled="!props.modifiable"
+          @click.prevent="next"
+          >Suivant</DsfrButton
+        >
       </DsfrButtonGroup>
     </fieldset>
   </div>
@@ -95,53 +106,13 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 const props = defineProps({
   initData: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
 
-const trancheAgeOptions = [
-  { label: "18-39 ans", id: "18+", name: "18_39" },
-  { label: "40-59 ans", id: "40+", name: "40_59" },
-  { label: "Plus de 59 ans", id: "59+", name: "59_et_plus" },
-];
-
-const typeDeficiencesOptions = [
-  { label: "Auditif", id: "auditif", name: "auditif" },
-  { label: "Visuel", id: "visuel", name: "visuel" },
-  { label: "Mental/Psychique", id: "mental", name: "mental" },
-  { label: "Moteur", id: "moteur", name: "moteur" },
-  {
-    label: "Polyhandicap",
-    id: "polyhandicap",
-    name: "polyhandicap",
-  },
-];
-
-const schemaInfosVacanciers = {
-  effectifPrevisionnel: yup
-    .number()
-    .typeError("L'effectif prévisionnel doit être un nombre entier")
-    .required(),
-  effectifPrevisionnelHomme: yup
-    .number()
-    .typeError("Le nombre d'hommes doit un être un nombre entier")
-    .required(),
-  effectifPrevisionnelFemme: yup
-    .number()
-    .typeError("Le nombre de femmes doit un être un nombre entier")
-    .required(),
-  trancheAge: yup
-    .array()
-    .min(1, "vous devez cocher au moins une case")
-    .required(),
-  typeDeficiences: yup
-    .array()
-    .min(1, "vous devez cocher au moins une case")
-    .required(),
-};
-
 const validationSchema = yup.object({
-  ...schemaInfosVacanciers,
+  ...informationsVacanciers.schema,
 });
 
 const initialValues = {

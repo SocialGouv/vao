@@ -49,10 +49,10 @@
                 <div class="fr-input-group">
                   <label class="fr-label"> Département d'instruction </label>
                   <Multiselect
-                    :model-value="search.departement"
+                    :model-value="search.departementSuivi"
                     :searchable="true"
                     :close-on-select="false"
-                    value-prop="code"
+                    value-prop="value"
                     label="label"
                     mode="tags"
                     :options="departementOptions"
@@ -111,7 +111,8 @@
 <script setup>
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
-
+const NuxtLink = resolveComponent("NuxtLink");
+const DsfrBadge = resolveComponent("DsfrBadge");
 import "@vueform/multiselect/themes/default.css";
 
 import { useDepartementStore } from "~/stores/referentiels";
@@ -139,7 +140,7 @@ const search = reactive({
   id: null,
   siret: null,
   statut: null,
-  departement: null,
+  departementSuivi: null,
 });
 
 const departementStore = useDepartementStore();
@@ -181,7 +182,7 @@ const onUpdateId = (id) => {
 };
 
 const onUpdateDepartement = (d) => {
-  search.departement = d;
+  search.departementSuivi = d;
 };
 
 const onUpdateStatut = (s) => {
@@ -193,6 +194,14 @@ const headers = [
     column: "demandeSejourId",
     sorter: "demandeSejourId",
     text: "Id",
+    headerAttrs: {
+      class: "suivi",
+    },
+  },
+  {
+    column: "departementSuivi",
+    sorter: "departementSuivi",
+    text: "Département instructeur",
     headerAttrs: {
       class: "suivi",
     },
@@ -214,9 +223,45 @@ const headers = [
     },
   },
   {
+    column: "saison",
+    text: "Saison",
+    sorter: "saison",
+    headerAttrs: {
+      class: "suivi",
+    },
+  },
+  {
+    column: "dateDebut",
+    text: "Date de début",
+    sorter: "dateDebut",
+    format: (value) => dayjs(value.dateDebut).format("DD/MM/YYYY"),
+    headerAttrs: {
+      class: "suivi",
+    },
+  },
+  {
+    column: "dateFin",
+    text: "Date de fin",
+    sorter: "dateFin",
+    format: (value) => dayjs(value.dateFin).format("DD/MM/YYYY"),
+    headerAttrs: {
+      class: "suivi",
+    },
+  },
+  {
     column: "statut",
     sorter: "statut",
     text: "Statut",
+    format: (value) => ({
+      component: DsfrBadge,
+      label: value.statut,
+      noIcon: true,
+      type: ["TRANSMISE", "EN COURS"].includes(value.statut)
+        ? "success"
+        : ["BROUILLON"].includes(value.statut)
+          ? "info"
+          : "",
+    }),
     headerAttrs: {
       class: "suivi",
     },

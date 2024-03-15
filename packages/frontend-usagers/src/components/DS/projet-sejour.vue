@@ -7,8 +7,9 @@
             v-model="destination"
             name="destination"
             legend="Destination"
+            :disabled="!props.modifiable"
             :inline="true"
-            :options="destinationOptions"
+            :options="projetSejour.destinationOptions"
             :small="true"
             :required="true"
           />
@@ -24,8 +25,9 @@
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <UtilsMultiSelect
-          :options="sportOptions"
+          :options="projetSejour.sportOptions"
           :values="activitesSportives"
+          :modifiable="props.modifiable"
           label="Sports et loisirs"
           @update="addActiviteSport"
         ></UtilsMultiSelect>
@@ -34,8 +36,9 @@
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <UtilsMultiSelect
-          :options="cultureOptions"
+          :options="projetSejour.cultureOptions"
           :values="activitesCulturelles"
+          :modifiable="props.modifiable"
           label="Culture et découverte"
           @update="addActiviteCulture"
         ></UtilsMultiSelect>
@@ -47,6 +50,7 @@
         <DsfrButton
           id="previous-step"
           :secondary="true"
+          :disabled="!props.modifiable"
           @click.prevent="
             () => {
               emit('previous');
@@ -54,7 +58,12 @@
           "
           >Précédent</DsfrButton
         >
-        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+        <DsfrButton
+          id="next-step"
+          :disabled="!props.modifiable"
+          @click.prevent="next"
+          >Suivant</DsfrButton
+        >
       </DsfrButtonGroup>
     </fieldset>
   </div>
@@ -66,69 +75,15 @@ import * as yup from "yup";
 
 const props = defineProps({
   initData: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
 
 const log = logger("components/DS/projet-sejour");
 
-const destinationOptions = [
-  { label: "Mer", id: "mer", name: "mer" },
-  { label: "Montagne", id: "montagne", name: "montagne" },
-  { label: "Campagne", id: "campagne", name: "campagne" },
-  {
-    label: "Séjour à thème",
-    id: "sejour_a_theme",
-    name: "sejour_a_theme",
-  },
-  { label: "Etranger", id: "etranger", name: "etranger" },
-];
-const sportOptions = [
-  { text: "Baignade", value: "Baignade", id: "1" },
-  { text: "Randonnée", value: "Randonnée", id: "2" },
-  {
-    text: "Voile, char à voile, rafting",
-    value: "Voile, char à voile, rafting",
-    id: "3",
-  },
-  { text: "Tir à l'arc", value: "Tir à l'arc", id: "4" },
-  { text: "ULM", value: "ULM", id: "5" },
-  { text: "Equitation", value: "Equitation", id: "6" },
-  { text: "Ski", value: "Ski", id: "7" },
-  { text: "Sports nautiques", value: "Sports nautiques", id: "8" },
-  { text: "Pêche", value: "Pêche", id: "9" },
-  { text: "Autres", value: "Autres", id: "10" },
-];
-
-const cultureOptions = [
-  {
-    text: "Visites touristiques, géographiques",
-    value: "Visites touristiques, géographiques",
-    id: "1",
-  },
-  {
-    text: "Spectacles, animations, musées",
-    value: "Spectacles, animations, musées",
-    id: "2",
-  },
-  { text: "Musique", value: "Musique", id: "3" },
-  { text: "Expression théâtrale", value: "Expression théätrale", id: "4" },
-  { text: "Arts plastiques", value: "Arts plastiques", id: "5" },
-  { text: "Danse", value: "Danse", id: "6" },
-  { text: "Chant", value: "Chant", id: "7" },
-  { text: "Soirées dansantes", value: "Soirées dansantes", id: "8" },
-  { text: "Ferme pédagogique", value: "Ferme pédagogique", id: "9" },
-  { text: "Autres", value: "Autres", id: "10" },
-];
-const schemaProjetSejour = {
-  destination: yup
-    .array()
-    .min(1, "Vous devez cocher au moins une case")
-    .required("La saisie de ce champ est obligatoire"),
-};
-
 const validationSchema = yup.object({
-  ...schemaProjetSejour,
+  ...projetSejour.schema,
 });
 
 const initialValues = {

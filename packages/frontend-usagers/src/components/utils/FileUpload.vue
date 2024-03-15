@@ -5,7 +5,11 @@
         <DsfrTable :headers="headers" :rows="rows" />
       </div>
 
-      <DsfrFileUpload v-bind="$attrs" @change="changeFile" />
+      <DsfrFileUpload
+        v-if="props.modifiable"
+        v-bind="$attrs"
+        @change="changeFile"
+      />
     </div>
   </div>
 </template>
@@ -14,6 +18,9 @@
 import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
 import dayjs from "dayjs";
 
+const props = defineProps({
+  modifiable: { type: Boolean, default: true },
+});
 const config = useRuntimeConfig();
 
 const headers = ["Fichier", "Date de création", "Actions"];
@@ -21,36 +28,39 @@ const headers = ["Fichier", "Date de création", "Actions"];
 const file = defineModel({ type: Object });
 
 const rows = computed(() => {
-  const name = file.value.uuid
-    ? {
-        component: "a",
-        text: file.value.name,
-        href: `${config.public.backendUrl}/documents/${file.value.uuid}`,
-        download: true,
-      }
-    : file.value.name;
-  const buttons = [
-    {
-      icon: "ri-delete-bin-2-line",
-      iconOnly: true,
-      tertiary: true,
-      noOutline: true,
-      onClick: removeFile,
-    },
-  ];
-  const createdAt = file.value.createdAt
-    ? dayjs(file.value.createdAt).format("YYYY-MM-DD HH:mm")
-    : "";
-  return [
-    [
-      name,
-      createdAt,
+  if (file.value) {
+    const name = file.value.uuid
+      ? {
+          component: "a",
+          text: file.value.name,
+          href: `${config.public.backendUrl}/documents/${file.value.uuid}`,
+          download: true,
+        }
+      : file.value.name;
+
+    const buttons = [
       {
-        component: DsfrButtonGroup,
-        buttons,
+        icon: "ri-delete-bin-2-line",
+        iconOnly: true,
+        tertiary: true,
+        noOutline: true,
+        onClick: removeFile,
       },
-    ],
-  ];
+    ];
+    const createdAt = file.value.createdAt
+      ? dayjs(file.value.createdAt).format("YYYY-MM-DD HH:mm")
+      : "";
+    return [
+      [
+        name,
+        createdAt,
+        {
+          component: DsfrButtonGroup,
+          buttons: props.modifiable && buttons,
+        },
+      ],
+    ];
+  } else return [];
 });
 
 function removeFile() {
