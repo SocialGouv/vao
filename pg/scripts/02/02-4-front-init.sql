@@ -75,7 +75,7 @@ CREATE TABLE front.agrements (
    file                          JSONB                   ,
    supprime                      BOOLEAN                 NOT NULL DEFAULT false,
    created_at                   TIMESTAMP                DEFAULT current_timestamp NOT NULL,
-   constraint pk_agrements primary key (uuid)
+   constraint pk_agrements primary key (id)
 );
 
 CREATE TYPE sejour_status AS ENUM (
