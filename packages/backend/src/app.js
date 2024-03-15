@@ -52,11 +52,12 @@ app.use(`/bo-authentication`, routes.BOAuthentication);
 app.use(`/bo-users`, routes.BOUser);
 app.use(`/authentication`, routes.authentication);
 app.use(`/users`, routes.user);
-app.use(`/document`, routes.document);
+app.use(`/agrements`, routes.agrement);
 app.use(`/organisme`, routes.organisme);
 app.use(`/sejour`, routes.sejour);
 app.use(`/hebergement`, routes.hebergement);
 app.use(`/siret`, routes.siret);
+app.use(`/documents`, routes.documents);
 app.use(`/geo`, routes.geo);
 
 app.use((req, res, next) => {

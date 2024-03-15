@@ -192,17 +192,18 @@ const schema = {
     adresseSiege: yup.object({ ...adresse.schema(true) }).required(),
   },
   agrement: {
-    numeroAgrement: yup.string().required(),
-    regionDelivrance: yup
+    file: yup.object().required(),
+    numero: yup.string().required(),
+    regionObtention: yup
       .string()
       .test(
         "acceptedReferentiels",
         "Valeur non présente dans le référentiel",
-        (regionDelivrance) =>
-          !useRegionStore().regions.includes(regionDelivrance),
+        (regionObtention) =>
+          !useRegionStore().regions.includes(regionObtention),
       )
       .required(),
-    dateDelivrance: yup
+    dateObtention: yup
       .date()
       .max(new Date(), "La date doit être inférieure à la date du jour.")
       .min(

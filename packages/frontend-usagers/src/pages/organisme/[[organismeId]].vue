@@ -23,9 +23,10 @@
           <div v-if="isSiege" id="agrement">
             <OrganismeAgrement
               v-if="hash === 'agrement'"
-              :init-data="organismeStore.organismeCourant ?? {}"
+              :init-agrement="organismeStore.organismeCourant.agrement ?? {}"
               @previous="previousHash"
               @next="nextHash"
+              @update="updateOrCreateAgrement"
             ></OrganismeAgrement>
           </div>
           <div v-if="isSiege" id="protocole-transport">
@@ -68,10 +69,10 @@
 const route = useRoute();
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
-const log = logger("pages/organisme/[[idOrganisme]]");
+const log = logger("pages/organisme/[[organismeId]]");
 
 definePageMeta({
-  middleware: ["is-connected", "check-id-organisme-param"],
+  middleware: ["is-connected", "check-organisme-id-param"],
 });
 
 const links = [
@@ -106,7 +107,7 @@ const hash = computed(() => {
   return sommaireOptions.value[0];
 });
 
-const idOrganisme = ref(route.params.idOrganisme);
+const organismeId = ref(route.params.organismeId);
 
 function previousHash() {
   const index = sommaireOptions.value.findIndex((o) => o === hash.value);
@@ -118,16 +119,84 @@ function nextHash() {
   const index = sommaireOptions.value.findIndex((o) => o === hash.value);
   log.d({ hash, index, next: sommaireOptions.value[index + 1] });
   return navigateTo({
-    path: `/organisme/${idOrganisme.value}`,
+    path: `/organisme/${organismeId.value}`,
     hash: "#" + sommaireOptions.value[index + 1],
   });
 }
 
+async function uploadFile(category, file) {
+  log.d("uploadFile - IN", { category, name: file.name });
+  const body = new FormData();
+  body.append("category", category);
+  body.append("file", file);
+  const url = `/documents`;
+  const { uuid } = await $fetchBackend(url, {
+    method: "post",
+    credentials: "include",
+    body,
+  });
+  log.i("uploadFile - DONE");
+  return uuid;
+}
+
 async function updateOrCreate(organismeData, type) {
   log.i("updateOrCreate - IN", { organismeData, type });
+  let counter = 0;
+
+  if (organismeData.file) {
+    log.d("updateOrCreate - look at organismeData.file");
+    const file = unref(organismeData.file);
+    if (!file.uuid) {
+      try {
+        const uuid = await uploadFile(type, file);
+        organismeData.file = {
+          uuid,
+          name: file.name,
+          createdAt: new Date(),
+        };
+        toaster.info(`Document déposé`);
+      } catch (error) {
+        return toaster.error(
+          `Une erreur est survenue lors du dépôt du document ${file.name}`,
+        );
+      }
+    }
+  }
+
+  if (organismeData.files && organismeData.files.length) {
+    log.d("updateOrCreate - look at organismeData.files");
+    const files = [];
+    for (let i = 0; i < organismeData.files.length; i++) {
+      const file = unref(organismeData.files[i]);
+      if (!file.name) {
+        continue;
+      }
+      log.d(file.name);
+      if (file.uuid) {
+        files.push(file);
+        continue;
+      }
+      try {
+        const uuid = await uploadFile(type, file);
+        files.push({
+          uuid,
+          name: file.name,
+          createdAt: new Date(),
+        });
+        counter++;
+      } catch (error) {
+        return toaster.error(
+          `Une erreur est survenue lors du dépôt du document ${file.name}`,
+        );
+      }
+    }
+    toaster.info(`${counter} documents déposés`);
+    organismeData.files = files;
+  }
+
   try {
-    const url = idOrganisme.value
-      ? `/organisme/${idOrganisme.value}`
+    const url = organismeId.value
+      ? `/organisme/${organismeId.value}`
       : "/organisme";
     const data = await $fetchBackend(url, {
       method: "POST",
@@ -139,14 +208,57 @@ async function updateOrCreate(organismeData, type) {
     });
 
     toaster.success(
-      `Fiche organisme ${idOrganisme.value ? "sauvegardée" : "créée"}`,
+      `Fiche organisme ${organismeId.value ? "sauvegardée" : "créée"}`,
     );
-    idOrganisme.value = data.organismeId;
-    log.d(`organisme ${idOrganisme.value} mis à jour`);
+    organismeId.value = data.organismeId;
+    log.d(`organisme ${organismeId.value} mis à jour`);
 
     return nextHash();
   } catch (error) {
     log.w("Creation/modification d'organisme : ", { error });
+  }
+}
+
+async function updateOrCreateAgrement(agrementData, type) {
+  log.i("updateOrCreateAgrement - IN", { agrementData, type });
+
+  if (agrementData.file) {
+    log.d("updateOrCreateAgrement - look at agrementData.file");
+    const file = unref(agrementData.file);
+    if (!file.uuid) {
+      try {
+        const uuid = await uploadFile(type, file);
+        agrementData.file = {
+          uuid,
+          name: file.name,
+          createdAt: new Date(),
+        };
+        toaster.info(`Agrément téléversé`);
+      } catch (error) {
+        return toaster.error(
+          `Une erreur est survenue lors du dépôt du document ${file.name}`,
+        );
+      }
+    }
+  }
+
+  try {
+    const url = "/agrements";
+    await $fetchBackend(url, {
+      method: "POST",
+      credentials: "include",
+      body: { ...agrementData, organismeId: organismeId.value },
+    });
+
+    toaster.success(`Agrément sauvegardée`);
+    log.d(`agrement mis à jour`);
+
+    return nextHash();
+  } catch (error) {
+    log.w("Creation/modification d'agrement : ", { error });
+    return toaster.error(
+      `Une erreur est survenue lors de la mise à jour des informations de l'agrément`,
+    );
   }
 }
 

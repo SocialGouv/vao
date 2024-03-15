@@ -46,7 +46,7 @@
           <div class="fr-input-group fr-col-8">
             <DsfrInputGroup
               name="statut"
-              label="Status, forme juridique"
+              label="Statut, forme juridique"
               :label-visible="true"
               :model-value="formatedPersonneMorale?.statut"
               :required="false"
@@ -274,7 +274,8 @@ const formatedPersonneMorale = computed(() => {
   }
   // les infos proviennent de l'API entreprise
   if (personneMorale.value) {
-    const adresse = `${personneMorale.value.adresseEtablissement.numeroVoieEtablissement} ${personneMorale.value.adresseEtablissement.typeVoieEtablissement} ${personneMorale.value.adresseEtablissement.libelleVoieEtablissement} ${personneMorale.value.adresseEtablissement.codePostalEtablissement} ${personneMorale.value.adresseEtablissement.libelleCommuneEtablissement}`;
+    const adresse =
+      `${personneMorale.value.adresseEtablissement.numeroVoieEtablissement ?? ""} ${personneMorale.value.adresseEtablissement.typeVoieEtablissement ?? ""} ${personneMorale.value.adresseEtablissement.libelleVoieEtablissement} ${personneMorale.value.adresseEtablissement.codePostalEtablissement} ${personneMorale.value.adresseEtablissement.libelleCommuneEtablissement}`.trim();
     return {
       siret: personneMorale.value.siret,
       siren: personneMorale.value.siren,

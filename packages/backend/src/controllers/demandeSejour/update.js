@@ -15,18 +15,18 @@ module.exports = async function post(req, res) {
   }
 
   try {
-    const idDemande = await DemandeSejour.update(
+    const demandeId = await DemandeSejour.update(
       type,
       demandeSejourId,
       parametre,
     );
-    if (!idDemande) {
-      log.w("update query returned null, idDemande expected");
+    if (!demandeId) {
+      log.w("update query returned null, demandeId expected");
       return res.status(400).json({
         message: "une erreur est survenue durant la sauvegarde de la demande",
       });
     }
-    return res.status(200).json({ id: idDemande });
+    return res.status(200).json({ id: demandeId });
   } catch (error) {
     log.w(error);
     return res.status(400).json({

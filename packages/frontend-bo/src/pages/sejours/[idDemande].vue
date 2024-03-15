@@ -1,6 +1,6 @@
 <template>
   <pre>
-    {{ demandeStore.getById(route.params.idDemande) }}
+    {{ demandeStore.getById(route.params.demandeId) }}
   </pre>
 </template>
 

@@ -20,7 +20,7 @@ const query = {
     ) 
     VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9)
     RETURNING
-        id as "idDemande"
+        id as "demandeId"
     ;
     `,
   get: `
@@ -109,7 +109,7 @@ const query = {
   WHERE
     ds.id = $2
   RETURNING
-    id as "idDemande"
+    id as "demandeId"
     `,
   updateInformationsGenerales: (
     libelle,
@@ -131,7 +131,7 @@ const query = {
     WHERE
       ds.id = $6
     RETURNING
-      id as "idDemande"
+      id as "demandeId"
     `,
     [libelle, dateDebut, dateFin, duree, organisme, demandeSejourId],
   ],
@@ -143,7 +143,7 @@ const query = {
     WHERE
       ds.id = $2
     RETURNING
-      id as "idDemande"
+      id as "demandeId"
     `,
   updateInformationsProjetSejour: `
     UPDATE front.demande_sejour ds
@@ -153,7 +153,7 @@ const query = {
   WHERE
     ds.id = $2
   RETURNING
-    id as "idDemande"
+    id as "demandeId"
     `,
   updateInformationsSanitaires: `
     UPDATE front.demande_sejour ds
@@ -163,7 +163,7 @@ const query = {
   WHERE
     ds.id = $2
   RETURNING
-    id as "idDemande"
+    id as "demandeId"
     `,
   updateInformationsTransport: `
     UPDATE front.demande_sejour ds
@@ -173,7 +173,7 @@ const query = {
   WHERE
     ds.id = $2
   RETURNING
-    id as "idDemande"
+    id as "demandeId"
     `,
   updateInformationsVacanciers: `
     UPDATE front.demande_sejour ds
@@ -183,7 +183,7 @@ const query = {
     WHERE
       ds.id = $2
     RETURNING
-      id as "idDemande"
+      id as "demandeId"
     `,
   updateOrganisme: `
     UPDATE front.demande_sejour ds
@@ -192,7 +192,7 @@ const query = {
     WHERE
       ds.id = $2
     RETURNING
-      id as "idDemande"
+      id as "demandeId"
     `,
 };
 
@@ -220,9 +220,9 @@ module.exports.create = async (
     organisme,
   ]);
   log.d(response);
-  const { idDemande } = response.rows[0];
-  log.d("create - DONE", { idDemande });
-  return idDemande;
+  const { demandeId } = response.rows[0];
+  log.d("create - DONE", { demandeId });
+  return demandeId;
 };
 
 module.exports.get = async (userId) => {
@@ -374,6 +374,6 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       return null;
   }
   log.d("update - DONE");
-  const idDemande = response.rows[0].idDemande ?? null;
-  return idDemande;
+  const demandeId = response.rows[0].demandeId ?? null;
+  return demandeId;
 };

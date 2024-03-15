@@ -1,105 +1,116 @@
 /* eslint-disable no-param-reassign */
-const fs = require("fs");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
-const poolDoc = require("../utils/pgpoolDoc").getPool();
 const AppError = require("../utils/error");
 
 const log = logger(module.filename);
 
 const query = {
-  add: `
-    INSERT INTO front.agrements(uuid,filename,organisme_id,numero,region_delivrance,date_obtention,date_fin_validite) 
-    VALUES ($1,$2,$3,$4,$5,$6,$7)
-    RETURNING
-        uuid as "uuid"
-    ;
-    `,
-  create: `
-    INSERT INTO doc.agrements 
-      (filename, mime_type, file) 
-    VALUES 
-      ( $1, $2, $3) 
-    RETURNING uuid`,
-  deleteByOrganismeId: `
+  create: (
+    organismeId,
+    numero,
+    regionObtention,
+    dateObtention,
+    dateFinValidite,
+    file,
+  ) => [
+    `
+    INSERT INTO front.agrements(organisme_id, numero, region_obtention, date_obtention, date_fin_validite, file) 
+    VALUES ($1,$2,$3,$4,$5,$6)
+    RETURNING id AS "agrementId"
+    ;`,
+    [
+      organismeId,
+      numero,
+      regionObtention,
+      dateObtention,
+      dateFinValidite,
+      file,
+    ],
+  ],
+  deleteByOrganismeId: (organismeId) => [
+    `
     UPDATE front.agrements 
     SET supprime = true 
     WHERE organisme_id = $1
   `,
-  getByOrganismeId: `
+    [organismeId],
+  ],
+  getByOrganismeId: (organismeId) => [
+    `
     SELECT 
-      id as "id",
-      uuid AS "uuid",
-      numero as "numero",
-      filename as "filename",
+      id,
+      numero,
+      file,
       date_obtention::text as "dateObtention",
       date_fin_validite::text as "dateFinValidite"
     FROM front.agrements 
-    WHERE organisme_id =$1 
-    AND supprime=false`,
-  getByUuid: `
-    SELECT 
-      uuid AS uuid,
-      filename as filename,
-      mime_type as mimeType,
-      file as file
-    FROM doc.agrements 
-    WHERE uuid =$1;`,
-  updateOptions: `
+    WHERE 
+      organisme_id =$1 
+      AND supprime=false
+  `,
+    [organismeId],
+  ],
+  update: (
+    organismeId,
+    numero,
+    regionObtention,
+    dateObtention,
+    dateFinValidite,
+    file,
+  ) => [
+    `
     UPDATE front.agrements 
     SET 
       numero = $2, 
-      region_delivrance = $3, 
+      region_obtention = $3, 
       date_obtention = $4, 
-      date_fin_validite = $5
-    WHERE organisme_id=$1
-    AND supprime = false
+      date_fin_validite = $5,
+      file = $6
+    WHERE 
+      organisme_id = $1
+      AND supprime = false
     RETURNING id AS "agrementId"
-  `,
+    `,
+    [
+      organismeId,
+      numero,
+      regionObtention,
+      dateObtention,
+      dateFinValidite,
+      file,
+    ],
+  ],
 };
 
 module.exports.create = async (
-  uuid,
-  filename,
   organismeId,
-  regionDelivrance,
-  numeroAgrement,
-  dateDelivrance,
+  numero,
+  regionObtention,
+  dateObtention,
   dateFinValidite,
+  file,
 ) => {
-  const response = await pool.query(query.add, [
-    uuid,
-    filename,
-    organismeId,
-    numeroAgrement,
-    regionDelivrance,
-    dateDelivrance,
-    dateFinValidite,
-  ]);
-  const newUuid = response.rows[0].uuid;
-  log.d("create - DONE", { uuid: newUuid });
-  return uuid;
+  const {
+    rows: [{ id: agrementId }],
+  } = await pool.query(
+    ...query.create(
+      organismeId,
+      numero,
+      regionObtention,
+      dateObtention,
+      dateFinValidite,
+      file,
+    ),
+  );
+  log.d("create - DONE", { agrementId });
+  return agrementId;
 };
 
-module.exports.getByUuid = async (uuid) => {
-  log.i("In");
-  try {
-    const response = await poolDoc.query(query.getByUuid, [uuid]);
-    if (response.rows.length > 0) {
-      log.i("Done", response.rows[0]);
-      return response.rows[0];
-    }
-    log.i("Done");
-    return null;
-  } catch (err) {
-    log.w(err);
-    throw new AppError("query.getByUuid failed", { cause: err });
-  }
-};
 module.exports.getByOrganismeId = async (organismeId) => {
   log.i("In");
   try {
-    const response = await pool.query(query.getByOrganismeId, [organismeId]);
+    const response = await pool.query(...query.getByOrganismeId(organismeId));
     if (response.rows.length > 0) {
       log.i("Done", response.rows[0]);
       return response.rows[0];
@@ -112,68 +123,48 @@ module.exports.getByOrganismeId = async (organismeId) => {
   }
 };
 
-module.exports.uploadFile = async (file) => {
-  log.i("uploadFile - In");
+module.exports.update = async (
+  organismeId,
+  numero,
+  regionObtention,
+  dateObtention,
+  dateFinValidite,
+  file,
+) => {
+  log.i("update - In");
   try {
-    const { path } = file;
-    return new Promise((resolve, reject) => {
-      fs.readFile(path, (err, data) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(data);
-      });
-    }).then(async (data) => {
-      log.d("uploadFile", [file.originalname, file.mimetype, data]);
-      const response = await poolDoc.query(query.create, [
-        file.originalname,
-        file.mimetype,
-        data,
-      ]);
-      log.d("uploadFile - Done");
-      return response.rows[0].uuid;
-    });
+    const { rows, rowCount } = await pool.query(
+      ...query.update(
+        organismeId,
+        numero,
+        regionObtention,
+        dateObtention,
+        dateFinValidite,
+        file,
+      ),
+    );
+    if (rowCount === 0) {
+      throw new AppError("Agrément non trouvé", { statusCode: 404 });
+    }
+    const updatedAgrementId = rows[0].agrementId;
+    log.i("update - Done");
+    return updatedAgrementId;
   } catch (err) {
     log.w(err);
-    throw new AppError("uploadFile failed", { cause: err });
+    throw new AppError("update failed", { cause: err });
   }
 };
 
 module.exports.deleteByOrganismeId = async (organismeId) => {
   log.i("deleteByOrganismeId - In");
   try {
-    const response = await pool.query(query.deleteByOrganismeId, [organismeId]);
-    const ndDeletedAgrements = response.rowCount;
+    const { rowCount: ndDeletedAgrements } = await pool.query(
+      ...query.deleteByOrganismeId(organismeId),
+    );
     log.i("deleteByOrganismeId - Done");
     return ndDeletedAgrements;
   } catch (err) {
     log.w(err);
     throw new AppError("deleteByOrganismeId failed", { cause: err });
-  }
-};
-
-module.exports.updateOptions = async (
-  organismeId,
-  numero,
-  regionDelivrance,
-  dateObtention,
-  dateFinValidite,
-) => {
-  log.i("updateOptions - In");
-  try {
-    const response = await pool.query(query.updateOptions, [
-      organismeId,
-      numero,
-      regionDelivrance,
-      dateObtention,
-      dateFinValidite,
-    ]);
-    const updatedAgrementId = response.rows[0].agrementId;
-    log.i("updateOptions - Done");
-    return updatedAgrementId;
-  } catch (err) {
-    log.w(err);
-    throw new AppError("updateOptions failed", { cause: err });
   }
 };

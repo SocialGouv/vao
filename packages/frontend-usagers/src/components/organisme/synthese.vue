@@ -42,8 +42,7 @@
               />
             </template>
             <OrganismeAgrementReadOnly
-              v-if="props.initData.typeOrganisme === 'personne_morale'"
-              :init-data="props.initData.agrement ?? {}"
+              :init-agrement="props.initData.agrement ?? {}"
             />
           </DsfrAccordion>
           <DsfrAccordion

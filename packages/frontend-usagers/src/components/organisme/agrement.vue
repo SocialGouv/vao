@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form ref="refFormAgrement" enctype="multipart/form-data" :meta="meta">
+    <form>
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
@@ -16,16 +16,16 @@
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-6">
             <DsfrInputGroup
-              name="numeroAgrement"
+              name="numero"
               type="text"
               :label-visible="true"
-              label="Numéro d'agrément"
+              label="Numéro d'agrément “Vacances adaptées organisées”"
               :required="true"
-              :model-value="numeroAgrement"
-              :is-valid="numeroAgrementMeta.valid"
-              :error-message="numeroAgrementErrorMessage"
+              :model-value="numero"
+              :is-valid="numeroMeta.valid"
+              :error-message="numeroErrorMessage"
               placeholder="Veuillez saisir le numéro d'agrément"
-              @update:model-value="onNumeroAgrementChange"
+              @update:model-value="onNumeroChange"
             />
           </div>
         </div>
@@ -34,16 +34,16 @@
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-6">
             <DsfrInputGroup
-              name="dateDelivrance"
+              name="dateObtention"
               type="date"
-              label="Date de délivrance"
+              label="Date d'obtention de l'agrément"
               :label-visible="true"
-              :model-value="dateDelivrance"
+              :model-value="dateObtention"
               :required="true"
-              :is-valid="dateDelivranceMeta.valid"
-              :error-message="dateDelivranceErrorMessage"
-              placeholder="Date de délivrance de l'agrément"
-              @update:model-value="onDateDelivranceChange"
+              :is-valid="dateObtentionMeta.valid"
+              :error-message="dateObtentionErrorMessage"
+              placeholder="Date d'obtention de l'agrément"
+              @update:model-value="onDateObtentionChange"
             />
           </div>
         </div>
@@ -52,25 +52,26 @@
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-6">
             <DsfrSelect
-              :model-value="regionDelivrance"
-              name="regionDelivrance"
-              label="Région de délivrance"
+              :model-value="regionObtention"
+              name="regionObtention"
+              label="Région d’obtention de l’agrément"
               :required="true"
               :options="regionStore.regions"
-              :is-valid="regionDelivranceMeta.valid"
-              :error-message="regionDelivranceErrorMessage"
-              @update:model-value="onRegionDelivranceChange"
+              :is-valid="regionObtentionMeta.valid"
+              :error-message="regionObtentionErrorMessage"
+              @update:model-value="onRegionObtentionChange"
             />
           </div>
         </div>
       </fieldset>
-      <fieldset class="fr-fieldset">
+      <DsfrFieldset legend="Téléversement de l'attestation de l'agrément">
         <UtilsFileUpload
-          v-model="fileAgrement"
-          :init-file="agrementCourant"
+          v-model="file"
+          :init-file="initFile"
           :label="label"
+          hint="Taille maximale : 500 Mo. Formats supportés : jpg, png, pdf."
         />
-      </fieldset>
+      </DsfrFieldset>
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element">
           <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
@@ -95,34 +96,23 @@
 </template>
 
 <script setup>
+import { DsfrFieldset } from "@gouvminint/vue-dsfr";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import dayjs from "dayjs";
 
 const config = useRuntimeConfig();
 const log = logger("components/organisme/agrement");
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
 const props = defineProps({
-  initData: { type: Object, required: true },
+  initAgrement: { type: Object, required: true },
 });
 
-const emit = defineEmits(["previous", "next"]);
+const emit = defineEmits(["previous", "next", "update"]);
 
 const regionStore = useRegionStore();
 regionStore.fetch();
 
-const agrementCourant = computed(() => {
-  if (props.initData.agrement) {
-    return {
-      filename: props.initData.agrement.filename,
-      lien: `${config.public.backendUrl}/document/${props.initData.agrement.uuid}`,
-    };
-  }
-});
-
 const label = computed(() => {
-  if (agrementCourant.value) {
+  if (file.value) {
     return "Si vous souhaitez remplacer le fichier, veuillez cliquer sur le bouton Parcourir ci dessous.";
   } else {
     return "Ajouter une copie de votre agrément";
@@ -137,83 +127,57 @@ const validationSchema = computed(() =>
   }),
 );
 
-const initialValues = (() => {
-  if (props.initData.agrement) {
-    return {
-      regionDelivrance: props.initData.agrement.regionDelivrance,
-      numeroAgrement: props.initData.agrement.numero,
-      dateDelivrance: dayjs(props.initData.agrement.dateObtention).format(
-        "YYYY-MM-DD",
-      ),
-    };
-  } else {
-    return {
-      regionDelivrance: null,
-      numeroAgrement: null,
-      dateDelivrance: null,
-    };
-  }
-})();
+const initialValues = {
+  regionObtention: null,
+  numero: null,
+  dateObtention: null,
+  file: null,
+  ...props.initAgrement,
+};
 
 const { meta, values } = useForm({ initialValues, validationSchema });
 
 const {
-  value: numeroAgrement,
-  errorMessage: numeroAgrementErrorMessage,
-  handleChange: onNumeroAgrementChange,
-  meta: numeroAgrementMeta,
-} = useField("numeroAgrement");
+  value: numero,
+  errorMessage: numeroErrorMessage,
+  handleChange: onNumeroChange,
+  meta: numeroMeta,
+} = useField("numero");
 const {
-  value: dateDelivrance,
-  errorMessage: dateDelivranceErrorMessage,
-  handleChange: onDateDelivranceChange,
-  meta: dateDelivranceMeta,
-} = useField("dateDelivrance");
-
+  value: dateObtention,
+  errorMessage: dateObtentionErrorMessage,
+  handleChange: onDateObtentionChange,
+  meta: dateObtentionMeta,
+} = useField("dateObtention");
 const {
-  value: regionDelivrance,
-  errorMessage: regionDelivranceErrorMessage,
-  handleChange: onRegionDelivranceChange,
-  meta: regionDelivranceMeta,
-} = useField("regionDelivrance");
+  value: regionObtention,
+  errorMessage: regionObtentionErrorMessage,
+  handleChange: onRegionObtentionChange,
+  meta: regionObtentionMeta,
+} = useField("regionObtention");
 
-const fileAgrement = ref(null);
-const refFormAgrement = ref(null);
+const { value: file } = useField("file");
 
-function cancelUpload() {
-  fileAgrement.value = null;
-  refFormAgrement.value.reset();
-}
+const initFile = computed(() => {
+  if (props.initAgrement.file) {
+    return {
+      lien: `${config.public.backendUrl}/documents/${props.initAgrement.file.uuid}`,
+      name: props.initAgrement.file.name,
+    };
+  }
+  return null;
+});
 
 async function next() {
   log.i("next - IN");
 
-  if (!meta.value.valid || !meta.value.dirty || fileAgrement.value === null) {
+  if (!meta.value.dirty) {
     return emit("next");
   }
 
-  const body = new FormData();
-  const options = JSON.stringify({
+  emit("update", {
     ...values,
-    organismeId: props.initData.organismeId,
   });
-  body.append("options", options);
-  body.append("file", fileAgrement.value);
-  try {
-    const url = `/document/agrement`;
-    await $fetchBackend(url, {
-      method: "post",
-      credentials: "include",
-      body,
-    });
-    toaster.success("Votre agrément a bien été déposé.");
-    cancelUpload();
-    emit("next");
-    log.i("next - DONE");
-  } catch (error) {
-    toaster.error(error.data.message ?? "Une erreur inattendue est survenue.");
-    log.w("next", { error });
-  }
 }
 </script>
 

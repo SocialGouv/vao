@@ -26,7 +26,7 @@ module.exports = async function post(req, res) {
       });
     }
 
-    const idDemande = await DemandeSejour.create(
+    const demandeId = await DemandeSejour.create(
       organisme.organismeId,
       libelle,
       dateDebut,
@@ -37,12 +37,12 @@ module.exports = async function post(req, res) {
       organisme.protocoleSanitaire,
       organisme,
     );
-    if (!idDemande) {
+    if (!demandeId) {
       return res.status(400).json({
         message: "une erreur est survenue durant la création de la demande",
       });
     }
-    return res.status(200).json({ id: idDemande });
+    return res.status(200).json({ id: demandeId });
   } catch (error) {
     log.w(error);
     return res.status(400).json({

@@ -5,7 +5,7 @@ const checkJWT = require("../middlewares/checkJWT");
 
 const router = express.Router();
 
-const { documentController } = require("../controllers");
+const { documentsController } = require("../controllers");
 
 const storage = multer.diskStorage({
   destination(req, file, cb) {
@@ -22,16 +22,14 @@ function uploadFile(req, res, next) {
   // eslint-disable-next-line consistent-return
   uploadSingle(req, res, (err) => {
     if (err) {
-      // An unknown error occurred when uploading.
+      console.error("uploadSingle", err);
       return res.status(400).send({ message: "Erreur inattendue." });
     }
-
-    // Everything went fine.
     next();
   });
 }
 
-router.get("/:uuid", checkJWT, documentController.downloadAgrement);
-router.post("/agrement", checkJWT, uploadFile, documentController.agrementPost);
+router.get("/:uuid", checkJWT, documentsController.download);
+router.post("/", checkJWT, uploadFile, documentsController.upload);
 
 module.exports = router;

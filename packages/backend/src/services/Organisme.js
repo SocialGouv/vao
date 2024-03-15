@@ -29,11 +29,10 @@ const query = {
         SELECT 
           json_build_object(
             'numero', numero,
-            'filename', filename,
-            'uuid', uuid,
-            'regionDelivrance', region_delivrance,
+            'regionObtention', region_obtention,
             'dateObtention', date_obtention,
-            'createdAt',a.created_at
+            'file', file,
+            'createdAt', a.created_at
           )                  
         FROM front.agrements a            
         WHERE organisme_id = o.id
@@ -64,11 +63,10 @@ const query = {
         SELECT 
           json_build_object(
             'numero', numero,
-            'filename', filename,
-            'uuid', uuid,
-            'regionDelivrance', region_delivrance,
+            'regionObtention', region_obtention,
             'dateObtention', date_obtention,
-            'createdAt',a.created_at
+            'file', file,
+            'createdAt', a.created_at
           )                  
         FROM front.agrements a            
         WHERE organisme_id = o.id
@@ -90,18 +88,17 @@ const query = {
       o.protocole_sanitaire as "protocoleSanitaire",
       (
         SELECT 
-        json_build_object(
-          'numero', numero,
-          'filename', filename,
-          'uuid', uuid,
-          'regionDelivrance', region_delivrance,
-          'dateObtention', date_obtention,
-          'createdAt',a.created_at
+          json_build_object(
+            'numero', numero,
+            'regionObtention', region_obtention,
+            'dateObtention', date_obtention,
+            'file', file,
+            'createdAt', a.created_at
           )                  
-          FROM front.agrements a            
-          WHERE organisme_id = o.id
+        FROM front.agrements a            
+        WHERE organisme_id = o.id
           AND a.supprime = false
-          ) AS agrement,
+      ) AS agrement,
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
