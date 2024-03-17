@@ -99,7 +99,7 @@ create table front.demande_sejour (
    statut                       sejour_status        NOT NULL,
    departement_suivi            VARCHAR(3)           REFERENCES geo.territoires(code),
    organisme_id                 INTEGER              NOT NULL REFERENCES front.organismes(id),
-   id_fonctionnelle             VARCHAR(10)          ,
+   id_fonctionnelle             VARCHAR(16)          ,
    libelle                      VARCHAR(50)          NOT NULL,
    date_debut                   DATE                 NOT NULL,
    date_fin                     DATE                 NOT NULL,
