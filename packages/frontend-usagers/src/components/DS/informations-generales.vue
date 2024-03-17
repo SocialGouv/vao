@@ -8,6 +8,7 @@
           :label-visible="true"
           :model-value="libelle"
           :required="true"
+          :disabled="!props.modifiable"
           :is-valid="libelleMeta.valid"
           :error-message="libelleErrorMessage"
           hint="nom de votre demande de séjour"
@@ -25,6 +26,7 @@
           :label-visible="true"
           :model-value="dateDebut"
           :required="true"
+          :disabled="!props.modifiable"
           :is-valid="dateDebutMeta.valid"
           :error-message="dateDebutErrorMessage"
           hint="Date du premier jour du séjour"
@@ -40,6 +42,7 @@
           :model-value="dateFin"
           :required="true"
           :is-valid="dateFinMeta.valid"
+          :disabled="!props.modifiable"
           :error-message="dateFinErrorMessage"
           hint="Date de fin du séjour"
           @update:model-value="onDateFinChange"
@@ -70,6 +73,7 @@
       </div>
       <h6>Responsable de l'organisation du séjour</h6>
       <Personne
+        :modifiable="props.modifiable"
         :personne="initialValues.responsableSejour"
         :show-adresse="true"
         :show-telephone="true"
@@ -84,6 +88,7 @@
       <h6>Organisme</h6>
       <OrganismePersonneMoraleReadOnly
         :init-data="organismeStore.organismeCourant.personneMorale"
+        :show-responsable-sejour="false"
       ></OrganismePersonneMoraleReadOnly>
     </div>
 
@@ -91,7 +96,7 @@
       <DsfrButton
         id="next-step"
         label="Suivant"
-        :disabled="!meta.valid"
+        :disabled="!meta.valid || !props.modifiable"
         @click.prevent="next"
       />
     </fieldset>
@@ -110,6 +115,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  modifiable: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["next", "update"]);
@@ -172,17 +178,19 @@ const validationSchema = yup.object({
     .required(),
 });
 
-const initialValues = (() => {
-  const responsableSejour = organismeCourant.value.personneMorale.siret
-    ? organismeCourant.value.personneMorale.responsableSejour
-    : {
-        nom: organismeCourant.value.personnePhysique.nomNaissance,
-        prenom: organismeCourant.value.personnePhysique.prenom,
-        fonction: "organisateur de séjour",
-        email: userStore.user.email,
-        telephone: organismeCourant.value.personnePhysique.telephone,
-        adresse: organismeCourant.value.personnePhysique.adresseSiege,
-      };
+const initialValues = computed(() => {
+  const responsableSejour = props.initData?.organisme?.responsableSejour
+    ? props.initData.organisme.responsableSejour
+    : organismeCourant.value.personneMorale.siret
+      ? organismeCourant.value.personneMorale.responsableSejour
+      : {
+          nom: organismeCourant.value.personnePhysique.nomNaissance,
+          prenom: organismeCourant.value.personnePhysique.prenom,
+          fonction: "organisateur de séjour",
+          email: userStore.user.email,
+          telephone: organismeCourant.value.personnePhysique.telephone,
+          adresse: organismeCourant.value.personnePhysique.adresseSiege,
+        };
   return {
     libelle: props.initData.libelle,
     dateDebut: props.initData.dateDebut
@@ -193,11 +201,11 @@ const initialValues = (() => {
       : dayjs().add(8, "day").format("YYYY-MM-DD"),
     responsableSejour,
   };
-})();
+});
 
 const { meta, values } = useForm({
   validationSchema,
-  initialValues,
+  initialValues: initialValues.value,
 });
 
 const {

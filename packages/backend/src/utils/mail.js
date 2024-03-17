@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const dayjs = require("dayjs");
 const { senderEmail, frontUsagersDomain, frontBODomain } = require("../config");
 
 const config = require("../config");
@@ -223,6 +224,37 @@ module.exports = {
         log.d("sendValidationMail post email", {
           params,
         });
+
+        return params;
+      },
+    },
+    declarationSejour: {
+      sendAR2mois: ({ dest, cc, declaration }) => {
+        log.i("sendAR2mois - In", {
+          cc,
+          dest,
+        });
+        if (!dest || !declaration) {
+          const message = `paramètre manquant à la requête`;
+          log.w(`sendForgottenPassword - ${message}`);
+          throw new AppError(message);
+        }
+
+        log.d("sendAR2mois - sending AR2mois mail");
+        const params = {
+          cc: cc,
+          from: senderEmail,
+          html: `
+                <p>Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${declaration.organisme.agrement.dateObtention} et avez déposé en date du ${dayjs().format("DD/MM/YYYY")}, une déclaration pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.dateFin).format("DD/MM/YYYY")}.</p>
+                <p>Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.</p>
+                <p>Vous devrez, huit jours avant le déroulement de ce séjour, me faire parvenir la déclaration complémentaire prévue à l’article R. 412-14 du code du tourisme.</p>
+                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Portail VAO - la déclaration ${declaration.idFonctionnelle} a bien été transmise`,
+          to: dest,
+        };
+        log.d("sendAR2mois post email", { params });
 
         return params;
       },

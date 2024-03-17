@@ -11,6 +11,7 @@
           :label-visible="true"
           :model-value="dateDebut"
           :required="true"
+          :disabled="!props.modifiable"
           :is-valid="dateDebutMeta.valid"
           :error-message="dateDebutErrorMessage"
           placeholder="Date de début"
@@ -27,6 +28,7 @@
           :label-visible="true"
           :model-value="dateFin"
           :required="true"
+          :disabled="!props.modifiable"
           :is-valid="dateFinMeta.valid"
           :error-message="dateFinErrorMessage"
           placeholder="Date de fin"
@@ -41,6 +43,7 @@
           name="hebergementId"
           label="Hebergement"
           :required="true"
+          :disabled="!props.modifiable"
           :options="hebergementsFavoris"
           :is-valid="hebergementIdMeta.valid"
           :error-message="hebergementIdErrorMessage"
@@ -172,6 +175,7 @@
               name="caracteristiques.informationsLocaux.type"
               legend="Type du lieu d'hébergement"
               :model-value="type"
+              :disabled="!props.modifiable"
               :options="hebergementUtils.typeOptions"
               :is-valid="typeMeta.valid"
               :inline="false"
@@ -189,6 +193,7 @@
               name="caracteristiques.informationsLocaux.visiteLocaux"
               legend="Une visite des locaux par l’organisateur a-t-elle été effectuée ?"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="visiteLocaux"
               :options="ouiNonOptions"
               :is-valid="visiteLocauxMeta.valid"
@@ -206,6 +211,7 @@
             :label-visible="true"
             :model-value="visiteLocauxAt"
             :required="true"
+            :disabled="!props.modifiable"
             :is-valid="visiteLocauxAtMeta.valid"
             :error-message="visiteLocauxAtErrorMessage"
             @update:model-value="onVisiteLocauxAtChange"
@@ -217,6 +223,7 @@
               name="caracteristiques.informationsLocaux.accessibilite"
               legend="Accessibilité"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="accessibilite"
               :options="hebergementUtils.accessibiliteOptions"
               :is-valid="accessibiliteMeta.valid"
@@ -232,6 +239,7 @@
               name="caracteristiques.informationsLocaux.pension"
               legend="Type de pension"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="pension"
               :options="hebergementUtils.pensionOptions"
               :is-valid="pensionMeta.valid"
@@ -250,6 +258,7 @@
             :options="hebergementUtils.prestationsHotelieresOptions"
             :small="true"
             :required="true"
+            :disabled="!props.modifiable"
             :error-message="prestationsHotelieresErrorMessage"
             @update:model-value="onPrestationsHotelieresChange"
           />
@@ -259,6 +268,7 @@
           <DsfrInputGroup
             name="caracteristiques.informationsLocaux.descriptionLieuHebergement"
             :required="false"
+            :disabled="!props.modifiable"
             label="Description du lieu d’hébergement (parties communes et notamment équipements sanitaires)"
             :label-visible="true"
             :is-textarea="true"
@@ -275,6 +285,7 @@
             name="caracteristiques.informationsLocaux.nombreLits"
             type="number"
             :required="true"
+            :disabled="!props.modifiable"
             label="Nombre de lits dans le lieu d'hébergement"
             :label-visible="true"
             placeholder=""
@@ -289,6 +300,7 @@
           <DsfrInputGroup
             name="caracteristiques.informationsLocaux.nombreLitsSuperposes"
             :required="true"
+            :disabled="!props.modifiable"
             type="number"
             label="Nombre de lits superposés inclus"
             :label-visible="true"
@@ -309,6 +321,7 @@
               name="caracteristiques.informationsLocaux.litsDessus"
               legend="Pour les lits superposés, les lits « du dessus » seront-ils occupés par des vacanciers  ?"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="litsDessus"
               :options="ouiNonOptions"
               :is-valid="litsDessusMeta.valid"
@@ -325,6 +338,7 @@
             label="Nombre maximum de personnes prévues par espace de couchage"
             type="number"
             :required="true"
+            :disabled="!props.modifiable"
             :label-visible="true"
             :model-value="nombreMaxPersonnesCouchage"
             :error-message="nombreMaxPersonnesCouchageErrorMessage"
@@ -339,6 +353,7 @@
               name="caracteristiques.informationsLocaux.couchageIndividuel"
               legend="Chaque vacancier bénéficie-t-il d’un couchage individuel ?"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="couchageIndividuel"
               :options="ouiNonOptions"
               :is-valid="couchageIndividuelMeta.valid"
@@ -355,6 +370,7 @@
               name="caracteristiques.informationsLocaux.rangementIndividuel"
               legend="Chaque vacancier bénéficie t-il d’un espace de rangement des affaires personnelles ?"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="rangementIndividuel"
               :options="ouiNonOptions"
               :is-valid="rangementIndividuelMeta.valid"
@@ -371,6 +387,7 @@
               name="caracteristiques.informationsLocaux.chambresUnisexes"
               legend="Les femmes et les hommes dorment-ils dans des lieux séparés ?"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="chambresUnisexes"
               :options="ouiNonOptions"
               :is-valid="chambresUnisexesMeta.valid"
@@ -387,6 +404,7 @@
               name="caracteristiques.informationsLocaux.chambresDoubles"
               legend="Les couples de vacanciers bénéficient t-ils de chambres doubles ?"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="chambresDoubles"
               :options="ouiNonOptions"
               :is-valid="chambresDoublesMeta.valid"
@@ -403,6 +421,7 @@
               name="caracteristiques.informationsLocaux.amenagementsSpecifiques"
               legend="Des aménagements spécifiques des locaux sont-ils prévus pour accueillir les vacanciers ?"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="amenagementsSpecifiques"
               :options="ouiNonOptions"
               :is-valid="amenagementsSpecifiquesMeta.valid"
@@ -422,6 +441,7 @@
             label="Précisez"
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :required="true"
+            :disabled="!props.modifiable"
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
@@ -439,6 +459,7 @@
               name="caracteristiques.informationsTransport.vehiculesAdaptes"
               legend="Les véhicules utilisés sont-ils adaptés ?"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="vehiculesAdaptes"
               :options="ouiNonOptions"
               :is-valid="vehiculesAdaptesMeta.valid"
@@ -453,6 +474,7 @@
           <DsfrInputGroup
             name="caracteristiques.informationsTransport.deplacementProximite"
             :required="true"
+            :disabled="!props.modifiable"
             label="Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité"
             :label-visible="true"
             :is-textarea="true"
@@ -468,6 +490,7 @@
           <DsfrInputGroup
             name="caracteristiques.informationsTransport.excursion"
             :required="true"
+            :disabled="!props.modifiable"
             label="Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions"
             :label-visible="true"
             :is-textarea="true"
@@ -482,6 +505,7 @@
           <DsfrInputGroup
             name="caracteristiques.informationsTransport.rejoindreEtape"
             :required="true"
+            :disabled="!props.modifiable"
             label="Précisez le mode de transport utilisé pour rejoindre cette étape"
             :label-visible="true"
             :is-textarea="true"
@@ -499,6 +523,7 @@
             name="caracteristiques.attestation.aCertifie"
             label="Je certifie sur l'honneur que les renseignements portés sur cette déclaration sont exacts."
             :small="true"
+            :disabled="!props.modifiable"
             @update:model-value="onAttestationACertifieChange"
           />
         </div>
@@ -508,6 +533,7 @@
             name="caracteristiques.attestation.nom"
             label="Nom"
             :required="true"
+            :disabled="!props.modifiable"
             :label-visible="true"
             placeholder=""
             :model-value="attestationNom"
@@ -522,6 +548,7 @@
             name="caracteristiques.attestation.prenom"
             label="Prénom"
             :required="true"
+            :disabled="!props.modifiable"
             :label-visible="true"
             placeholder=""
             :model-value="attestationPrenom"
@@ -536,6 +563,7 @@
             name="caracteristiques.attestation.qualite"
             label="Qualité"
             :required="true"
+            :disabled="!props.modifiable"
             :label-visible="true"
             placeholder=""
             :model-value="attestationQualite"
@@ -551,6 +579,7 @@
             label="Date"
             type="date"
             :required="true"
+            :disabled="!props.modifiable"
             :label-visible="true"
             placeholder=""
             :model-value="attestationAt"
@@ -567,6 +596,7 @@
           id="cancel-add-hebergement"
           label="Annuler l'ajout d'étape"
           :secondary="true"
+          :disabled="!props.modifiable"
           @click.prevent="cancel"
         >
         </DsfrButton>
@@ -575,7 +605,7 @@
         <DsfrButton
           id="submit-add-hebergement"
           label="Valider l'étape"
-          :disabled="!meta.valid"
+          :disabled="!meta.valid || !props.modifiable"
           @click.prevent="next"
         >
         </DsfrButton>
@@ -606,6 +636,7 @@ const props = defineProps({
   hebergement: { type: Object, required: true },
   dateDebutIni: { type: String, required: true },
   dateFinIni: { type: String, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["cancel", "update"]);

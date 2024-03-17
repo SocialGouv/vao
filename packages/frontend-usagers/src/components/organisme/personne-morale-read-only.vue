@@ -16,12 +16,12 @@
           <span class="read-only-label">Raison sociale</span>
         </div>
         <div class="fr-col-12">
-          <span class="read-only-value">{{ initData.raisonSociale }}</span>
+          <span class="read-only-value">{{ initData?.raisonSociale }}</span>
         </div>
       </div>
     </fieldset>
 
-    <div v-if="initData.siegeSocial">
+    <div v-if="initData?.siegeSocial">
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element">
           <div class="fr-col-12">
@@ -54,18 +54,20 @@
               </PersonnesReadOnly>
             </div>
           </div>
-          <div class="fr-col-12">
-            <span class="read-only-label"
-              >Responsable de l'organisation des séjours</span
-            >
-          </div>
-          <div class="fr-fieldset__element">
-            <div class="fr-input-group fr-col-12">
-              <PersonneReadOnly
-                :personne="props.initData.responsableSejour"
-              ></PersonneReadOnly>
+          <template v-if="showResponsableSejour">
+            <div class="fr-col-12">
+              <span class="read-only-label"
+                >Responsable de l'organisation des séjours</span
+              >
             </div>
-          </div>
+            <div class="fr-fieldset__element">
+              <div class="fr-input-group fr-col-12">
+                <PersonneReadOnly
+                  :personne="props.initData.responsableSejour"
+                ></PersonneReadOnly>
+              </div>
+            </div>
+          </template>
         </div>
       </fieldset>
     </div>
@@ -75,6 +77,7 @@
 <script setup>
 const props = defineProps({
   initData: { type: Object, required: true },
+  showResponsableSejour: { type: Boolean, default: true },
 });
 
 const siretDisplayed = computed(() => {

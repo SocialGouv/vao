@@ -7,6 +7,7 @@
         v-model="files"
         label="Merci de joindre les documents requis pour les informations sanitaires"
         hint="Taille maximale : 500 Mo. Formats supportés : pdf. Plusieurs fichiers possibles."
+        :modifiable="props.modifiable"
       />
     </DsfrFieldset>
     <DsfrFieldset legend="Modalités d’ordre sanitaire ">
@@ -21,6 +22,7 @@
             name="dispositionsSpecifiques"
             legend="Des dispositions d’ordre sanitaire spécifiques sont-elles prévues ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="dispositionsSpecifiques"
             :options="ouiNonOptions"
             :is-valid="dispositionsSpecifiquesMeta"
@@ -35,6 +37,7 @@
           <DsfrInputGroup
             name="precisionDispositionsSpecifiques"
             :required="true"
+            :disabled="!props.modifiable"
             label="Quels sont les protocoles en vigueur pour assurer le suivi sanitaire et médical ?"
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
@@ -56,6 +59,7 @@
             :options="protocoleSanitaire.constitutionEquipeOptions"
             :small="true"
             :required="true"
+            :disabled="!props.modifiable"
           />
         </div>
       </div>
@@ -64,6 +68,7 @@
           <DsfrInputGroup
             name="precisionConstitutionEquipe"
             :required="false"
+            :disabled="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -81,6 +86,7 @@
             name="troussePharmacie"
             legend="Présence d’une trousse à pharmacie de premier secours ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="troussePharmacie"
             :options="ouiNonOptions"
             :is-valid="troussePharmacieMeta"
@@ -109,6 +115,7 @@
             "
             :small="true"
             :required="true"
+            :disabled="!props.modifiable"
           />
         </div>
       </div>
@@ -121,6 +128,7 @@
           <DsfrInputGroup
             name="precisionResponsableAdministrationMedicament"
             :required="false"
+            :disabled="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -147,6 +155,7 @@
             name="stockageMedicamentSecurise"
             legend="Les médicaments sont-ils stockés dans un lieu sécurisé ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="stockageMedicamentSecurise"
             :options="ouiNonOptions"
             :is-valid="stockageMedicamentSecuriseMeta"
@@ -161,6 +170,7 @@
           <DsfrInputGroup
             name="precisionStockageMedicamentSecurise"
             :required="true"
+            :disabled="!props.modifiable"
             label="Précisez le protocole en vigueur concernant le stockage sécurisé des médicaments."
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
@@ -179,6 +189,7 @@
             name="conservationMedicamentThermosensible"
             legend="Un dispositif est-il prévu pour la conservation des médicaments thermosensibles ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="conservationMedicamentThermosensible"
             :options="ouiNonOptions"
             :is-valid="conservationMedicamentThermosensibleMeta"
@@ -197,6 +208,7 @@
           <DsfrInputGroup
             name="precisionConservationMedicament"
             :required="true"
+            :disabled="!props.modifiable"
             label="Précisez le protocole en vigueur concernant le stockage garantissant la parfaite conservation des médicaments."
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
@@ -216,6 +228,7 @@
             legend="Un dispositif est-il prévu pour individualiser les traitements de chaque vacancier ?"
             hint="Les traitements de chaque vacancier doivent être identifiés a minima par son nom et son prénom. Il est recommandé de compléter ces mentions de la date de naissance, de la photographie, voire du nom de jeune fille des résidentes en cas d’homonymie."
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="individualisationMedicaments"
             :options="ouiNonOptions"
             :is-valid="individualisationMedicamentsMeta"
@@ -230,6 +243,7 @@
           <DsfrInputGroup
             name="precisionIndividualisationMedicaments"
             :required="false"
+            :disabled="!props.modifiable"
             label="Précisez le protocole en vigueur concernant le stockage permettant l’individualisation des médicaments."
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
@@ -248,6 +262,7 @@
             name="preparationPilluliers"
             legend="Méthode retenue pour la préparation des piluliers"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="preparationPilluliers"
             :options="protocoleSanitaire.preparationPilluliersOptions"
             :is-valid="preparationPilluliersMeta"
@@ -269,6 +284,7 @@
           <DsfrInputGroup
             name="precisionPreparationPilluliers"
             :required="false"
+            :disabled="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             placeholder=""
@@ -286,6 +302,7 @@
             name="prescriptionMedicaleJointe"
             legend="Une prescription médicale est-elle jointe à chaque pilulier ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="prescriptionMedicaleJointe"
             :options="ouiNonOptions"
             :is-valid="prescriptionMedicaleJointeMeta"
@@ -301,6 +318,7 @@
             name="protocoleModificationTraitement"
             legend="Existe-t-il un protocole en cas de modification de traitement en cours de séjour ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="protocoleModificationTraitement"
             :options="ouiNonOptions"
             :is-valid="protocoleModificationTraitementMeta"
@@ -315,6 +333,7 @@
           <DsfrInputGroup
             name="precisionProtocoleModificationTraitement"
             :required="true"
+            :disabled="!props.modifiable"
             placeholder=""
             label="Précisez"
             :label-visible="true"
@@ -336,6 +355,7 @@
             name="ficheSuiviMedicaments"
             legend="Existe-t-il une fiche de suivi de la distribution, de l’administration et de l’enregistrement des médicaments ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="ficheSuiviMedicaments"
             :options="ouiNonOptions"
             :is-valid="ficheSuiviMedicamentsMeta"
@@ -356,6 +376,7 @@
             name="protocoleEvacuation"
             legend="Existe-t-il un protocole d’évacuation et de rapatriement des vacanciers si nécessaire au cours du séjour ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="protocoleEvacuation"
             :options="ouiNonOptions"
             :is-valid="protocoleEvacuationMeta"
@@ -370,6 +391,7 @@
           <DsfrInputGroup
             name="precisionProtocoleEvacuation"
             :required="true"
+            :disabled="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -387,6 +409,7 @@
             name="protocoleAccident"
             legend="Existe-t-il un protocole en cas de chute, d’intoxication (alimentaire, médicamenteuse, etc.) ou autre accident ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="protocoleAccident"
             :options="ouiNonOptions"
             :is-valid="protocoleAccidentMeta"
@@ -401,6 +424,7 @@
           <DsfrInputGroup
             name="precisionProtocoleAccident"
             :required="true"
+            :disabled="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -418,6 +442,7 @@
             name="protocoleReorientation"
             legend="Existe-t-il un protocole en cas de réorientation (inadaptation des conditions générales du séjour à la situation de la personne handicapée) des vacanciers ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="protocoleReorientation"
             :options="ouiNonOptions"
             :is-valid="protocoleReorientationMeta"
@@ -432,6 +457,7 @@
           <DsfrInputGroup
             name="precisionProtocoleReorientation"
             :required="true"
+            :disabled="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -449,6 +475,7 @@
             name="protocoleCanicule"
             legend="Existe-t-il un protocole en cas d’alerte canicule (locaux, transports…) ?"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="protocoleCanicule"
             :options="ouiNonOptions"
             :is-valid="protocoleCaniculeMeta"
@@ -463,6 +490,7 @@
           <DsfrInputGroup
             name="precisionProtocoleCanicule"
             :required="true"
+            :disabled="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -479,6 +507,7 @@
           <DsfrInputGroup
             name="gestionBudgetPersonnel"
             :required="true"
+            :disabled="!props.modifiable"
             label="Précisez les conditions prévues pour la gestion sur place du budget personnel des vacanciers (si les vacanciers en font la demande)"
             :label-visible="true"
             :is-textarea="true"
@@ -496,6 +525,7 @@
         <DsfrButton
           id="previous-step"
           :secondary="true"
+          :disabled="!props.modifiable"
           @click.prevent="
             () => {
               emit('previous');
@@ -503,7 +533,12 @@
           "
           >Précédent</DsfrButton
         >
-        <DsfrButton id="next-step" @click.prevent="valid">Suivant</DsfrButton>
+        <DsfrButton
+          id="next-step"
+          :disabled="!props.modifiable"
+          @click.prevent="valid"
+          >Suivant</DsfrButton
+        >
       </DsfrButtonGroup>
     </fieldset>
   </div>
@@ -516,6 +551,7 @@ import * as yup from "yup";
 
 const props = defineProps({
   initData: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 const emit = defineEmits(["previous", "next", "update"]);
 

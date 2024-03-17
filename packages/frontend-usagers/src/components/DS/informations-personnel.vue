@@ -9,6 +9,7 @@
             :label-visible="true"
             :model-value="nombreResponsable"
             :required="true"
+            :disabled="!props.modifiable"
             :is-valid="nombreResponsableMeta.valid"
             :error-message="nombreResponsableErrorMessage"
             placeholder="nombre total de responsable"
@@ -24,6 +25,7 @@
             name="procedureRecrutementSupplementaire"
             legend="Procédure en cas de recrutement de personnels supplémentaires durant le séjour"
             :required="true"
+            :disabled="!props.modifiable"
             :model-value="procedureRecrutementSupplementaire"
             :options="ouiNonOptions"
             :is-valid="procedureRecrutementSupplementaireMeta"
@@ -41,6 +43,7 @@
             :label-visible="true"
             :model-value="nombreAccompagnant"
             :required="true"
+            :disabled="!props.modifiable"
             :is-valid="nombreAccompagnantMeta.valid"
             :error-message="nombreAccompagnantErrorMessage"
             placeholder="nombre total d'accompagnant"
@@ -54,6 +57,7 @@
         <DsfrButton
           id="previous-step"
           :secondary="true"
+          :disabled="!props.modifiable"
           @click.prevent="
             () => {
               emit('previous');
@@ -61,7 +65,12 @@
           "
           >Précédent</DsfrButton
         >
-        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+        <DsfrButton
+          id="next-step"
+          :disabled="!props.modifiable"
+          @click.prevent="next"
+          >Suivant</DsfrButton
+        >
       </DsfrButtonGroup>
     </fieldset>
   </div>
@@ -72,6 +81,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 const props = defineProps({
   initData: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);

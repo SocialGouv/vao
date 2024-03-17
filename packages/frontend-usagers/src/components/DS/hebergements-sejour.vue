@@ -8,6 +8,7 @@
               name="sejourItinerant"
               legend="Séjour itinerant"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="sejourItinerant"
               :options="ouiNonOptions"
               :is-valid="sejourItinerantMeta"
@@ -23,6 +24,7 @@
               name="sejourEtranger"
               legend="Séjour à l'étranger"
               :required="true"
+              :disabled="!props.modifiable"
               :model-value="sejourEtranger"
               :options="ouiNonOptions"
               :is-valid="sejourEtrangerMeta"
@@ -41,7 +43,7 @@
           </div>
           <DsfrButton
             label="Ajouter une nuitée"
-            :disabled="meta.valid"
+            :disabled="meta.valid || !props.modifiable"
             @click.prevent="onOpenNuitee"
           />
         </div>
@@ -52,6 +54,7 @@
           <DsfrButton
             id="previous-step"
             :secondary="true"
+            :disabled="!props.modifiable"
             @click.prevent="
               () => {
                 emit('previous');
@@ -59,7 +62,12 @@
             "
             >Précédent</DsfrButton
           >
-          <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+          <DsfrButton
+            id="next-step"
+            :disabled="!props.modifiable"
+            @click.prevent="next"
+            >Suivant</DsfrButton
+          >
         </DsfrButtonGroup>
       </fieldset>
     </div>
@@ -68,6 +76,7 @@
       :hebergement="hebergementCourant"
       :date-debut-ini="nextMinDate"
       :date-fin-ini="dayjs(props.dateFin).format('YYYY-MM-DD')"
+      :modifiable="props.modifiable"
       @update="addNuitee"
       @cancel="onCloseNuitee"
     />
@@ -81,18 +90,10 @@ import dayjs from "dayjs";
 import { useHebergementStore } from "@/stores/hebergement";
 
 const props = defineProps({
-  dateDebut: {
-    type: String,
-    required: true,
-  },
-  dateFin: {
-    type: String,
-    required: true,
-  },
-  hebergement: {
-    type: Object,
-    required: true,
-  },
+  dateDebut: { type: String, required: true },
+  dateFin: { type: String, required: true },
+  hebergement: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);

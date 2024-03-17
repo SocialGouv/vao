@@ -5,7 +5,11 @@
         <DsfrTable :headers="headers" :rows="rows" />
       </div>
 
-      <DsfrFileUpload v-bind="$attrs" @change="changeFiles" />
+      <DsfrFileUpload
+        v-if="props.modifiable"
+        v-bind="$attrs"
+        @change="changeFiles"
+      />
     </div>
   </div>
 </template>
@@ -14,6 +18,9 @@
 import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
 import dayjs from "dayjs";
 
+const props = defineProps({
+  modifiable: { type: Boolean, default: true },
+});
 const config = useRuntimeConfig();
 
 const headers = ["Fichier", "Date de création", "Actions"];
@@ -47,7 +54,7 @@ const rows = computed(() => {
       createdAt,
       {
         component: DsfrButtonGroup,
-        buttons,
+        buttons: props.modifiable && buttons,
       },
     ];
   });

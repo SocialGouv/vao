@@ -9,6 +9,7 @@ const demandeSejourController = require("../controllers/demandeSejour");
 router.get("/admin", demandeSejourController.getByAdminId);
 router.get("/:id", checkJWT, demandeSejourController.getById);
 router.get("/", checkJWT, demandeSejourController.get);
+router.post("/depose/:id", checkJWT, demandeSejourController.depose);
 router.post("/:id", checkJWT, demandeSejourController.update);
 router.post("/", checkJWT, demandeSejourController.post);
 

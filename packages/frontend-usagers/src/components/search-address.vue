@@ -13,6 +13,7 @@ const props = defineProps({
   value: { type: Object, default: null },
   errorMessage: { type: String, default: null },
   validMessage: { type: String, default: null },
+  modifiable: { type: Boolean, default: true },
 });
 
 const emits = defineEmits(["select"]);
@@ -80,10 +81,11 @@ function select(_value, option) {
           :label-visible="true"
           :model-value="initialAdress"
           :read-only="true"
+          :disabled="!props.modifiable"
         />
       </div>
     </div>
-    <div class="fr-fieldset__element">
+    <div v-if="props.modifiable" class="fr-fieldset__element">
       <div class="fr-input-group fr-col-12">
         <div
           class="fr-input-group"

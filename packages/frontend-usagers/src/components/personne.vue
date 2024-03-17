@@ -9,7 +9,7 @@
             :label-visible="true"
             :model-value="nom"
             :required="true"
-            :disabled="false"
+            :disabled="!props.modifiable"
             :is-valid="nomMeta.valid"
             :error-message="nomErrorMessage"
             placeholder=""
@@ -26,7 +26,7 @@
             :label-visible="true"
             :model-value="prenom"
             :required="true"
-            :disabled="false"
+            :disabled="!props.modifiable"
             :is-valid="prenomMeta.valid"
             :error-message="prenomErrorMessage"
             placeholder=""
@@ -43,7 +43,7 @@
             :label-visible="true"
             :model-value="fonction"
             :required="true"
-            :disabled="false"
+            :disabled="!props.modifiable"
             :is-valid="fonctionMeta.valid"
             :error-message="fonctionErrorMessage"
             placeholder=""
@@ -57,6 +57,7 @@
           <div class="fr-input-group fr-col-12">
             <SearchAddress
               :initial-adress="props.personne.adresse?.label"
+              :modifiable="props.modifiable"
               :value="adresse"
               :label="props.personne.adresse ? 'Nouvelle adresse' : 'Adresse'"
               :error-message="adresseErrorMessage"
@@ -74,7 +75,7 @@
               :label-visible="true"
               :model-value="telephone"
               :required="true"
-              :disabled="false"
+              :disabled="!props.modifiable"
               :is-valid="telephoneMeta.valid"
               :error-message="telephoneErrorMessage"
               placeholder=""
@@ -93,7 +94,7 @@
               :label-visible="true"
               :model-value="email"
               :required="true"
-              :disabled="false"
+              :disabled="!props.modifiable"
               :is-valid="emailMeta.valid"
               :error-message="emailErrorMessage"
               placeholder=""
@@ -124,6 +125,7 @@ import * as yup from "yup";
 
 const props = defineProps({
   personne: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
   showAdresse: { type: Boolean, default: false, required: false },
   showTelephone: { type: Boolean, default: false, required: false },
   showEmail: { type: Boolean, default: false, required: false },

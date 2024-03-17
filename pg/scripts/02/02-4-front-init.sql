@@ -149,6 +149,7 @@ create table front.demande_sejour_history (
    constraint pk_demande_sejour_history primary key (id)
 );
 
+CREATE SEQUENCE front.seq_declaration_sejour INCREMENT 1 MINVALUE 1 MAXVALUE 9999 START 1 ;
 
 GRANT USAGE ON SCHEMA front TO vao;
 

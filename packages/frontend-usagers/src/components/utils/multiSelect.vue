@@ -3,6 +3,7 @@
     :options="optionsToDisplay"
     :model-value="null"
     :select-id="selectId"
+    :disabled="!props.modifiable"
     v-bind="$attrs"
     @update:model-value="addItem"
   >
@@ -22,6 +23,7 @@ const props = defineProps({
   options: { type: Array, required: true },
   values: { type: Array, required: true },
   label: { type: String, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 const emit = defineEmits(["update"]);
 
@@ -34,6 +36,7 @@ const formatedTags = computed(() => {
       id: t,
       label: t,
       name: t,
+      disabled: !props.modifiable,
       class: "fr-tag--dismiss",
       tagName: "button",
       onClick: (c) => {

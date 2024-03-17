@@ -21,6 +21,7 @@
             <DSInformationsGenerales
               v-if="hash === 'info-generales'"
               :init-data="demandeCourante ?? {}"
+              :modifiable="canModify"
               @update="updateOrCreate"
               @next="nextHash"
             />
@@ -29,6 +30,7 @@
             <DSInformationsVacanciers
               v-if="hash === 'info-vacanciers'"
               :init-data="demandeCourante.informationsVacanciers ?? {}"
+              :modifiable="canModify"
               @update="updateOrCreate"
               @next="nextHash"
               @previous="previousHash"
@@ -38,6 +40,7 @@
             <protocole-transport
               v-if="hash === 'info-transport'"
               :init-data="demandeCourante.informationsTransport ?? {}"
+              :modifiable="canModify"
               @update="updateOrCreate"
               @next="nextHash"
               @previous="previousHash"
@@ -47,6 +50,7 @@
             <protocole-sanitaire
               v-if="hash === 'info-sanitaires'"
               :init-data="demandeCourante.informationsSanitaires ?? {}"
+              :modifiable="canModify"
               @update="updateOrCreate"
               @next="nextHash"
               @previous="previousHash"
@@ -55,6 +59,7 @@
           <div id="info-personnel">
             <DSInformationsPersonnel
               v-if="hash === 'info-personnel'"
+              :modifiable="canModify"
               :init-data="demandeCourante.informationsPersonnel ?? {}"
               @update="updateOrCreate"
               @next="nextHash"
@@ -65,6 +70,7 @@
             <DSProjetSejour
               v-if="hash === 'projet-sejour'"
               :init-data="demandeCourante.informationsProjetSejour ?? {}"
+              :modifiable="canModify"
               @update="updateOrCreate"
               @next="nextHash"
               @previous="previousHash"
@@ -76,7 +82,18 @@
               :date-debut="demandeCourante.dateDebut"
               :date-fin="demandeCourante.dateFin"
               :hebergement="demandeCourante.hebergement ?? {}"
+              :modifiable="canModify"
               @update="updateOrCreate"
+              @next="nextHash"
+              @previous="previousHash"
+            />
+          </div>
+          <div id="synthese">
+            <DSSynthese
+              v-if="hash === 'synthese'"
+              :declaration-courante="demandeCourante ?? {}"
+              :modifiable="canModify"
+              @finalize="finalize"
               @next="nextHash"
               @previous="previousHash"
             />
@@ -128,6 +145,10 @@ const hash = computed(() => {
 });
 
 const sejourId = ref(route.params.demandeId);
+
+const canModify = computed(() => {
+  return demandeCourante.value.statut.includes("BROUILLON");
+});
 
 async function uploadFile(category, file) {
   log.d("uploadFile - IN", { category, name: file.name });
@@ -220,7 +241,27 @@ async function updateOrCreate(sejourData, type) {
     sejourId.value = data.id;
     return nextHash();
   } catch (error) {
-    log.w("Creation/modification d'organisme : ", { error });
+    log.w("Creation/modification de declaration de sejour: ", { error });
+  }
+}
+
+async function finalize() {
+  log.i("finalize -IN");
+  try {
+    const url = `/sejour/depose/${sejourId.value}`;
+    await $fetchBackend(url, {
+      method: "POST",
+      credentials: "include",
+      body: {},
+    });
+
+    toaster.success(
+      `Félicitations, votre déclaration de séjour n°${sejourId.value} a été transmise`,
+    );
+    log.d(`demande de séjour ${sejourId.value} transmise`);
+    return navigateTo("/demande-sejour/liste");
+  } catch (error) {
+    log.w("Finalisation de la declaration de sejour : ", { error });
   }
 }
 

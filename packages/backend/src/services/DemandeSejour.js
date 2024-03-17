@@ -23,12 +23,25 @@ const query = {
         id as "demandeId"
     ;
     `,
+  finalize: `
+    UPDATE front.demande_sejour ds
+      SET id_fonctionnelle=$1,
+          departement_suivi=$2,
+          statut = 'TRANSMISE',
+          edited_at=NOW()
+    WHERE
+      ds.id = $3
+    RETURNING
+      id as "demandeId"
+    `,
   get: `
     SELECT
       ds.id as "demandeSejourId",
       ds.statut as "statut",
+      ds.departement_suivi as "departementSuivi",
       ds.organisme_id as "organismeId",
       ds.libelle as "libelle",
+      ds.periode as "saison",
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
       ds.created_at as "createdAt",
@@ -73,6 +86,24 @@ const query = {
     WHERE 1 = 1
        ${search.map((s) => ` AND ${s} `).join("")}
     `,
+  getEmailCcList: `
+    SELECT u.mail AS mail
+    FROM front.users u
+    JOIN front.user_organisme uo ON u.id = uo.use_id
+    JOIN front.organismes o ON uo.org_id = o.id
+    WHERE 
+      o.personne_morale->>'siren' = $1 AND
+      o.personne_morale->>'siegeSocial' = 'true'
+`,
+  getEmailToList: `
+    SELECT u.mail AS mail
+    FROM front.users u
+    JOIN front.user_organisme uo ON u.id = uo.use_id
+    WHERE uo.org_id = $1
+  `,
+  getNextIndex: `
+    SELECT nextval('front.seq_declaration_sejour') AS index
+  `,
   getOne: (criterias) => [
     `
     SELECT
@@ -369,6 +400,16 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       ]);
       break;
     }
+    case "finalisation": {
+      log.d("finalisation", demandeSejourId);
+      log.i(parametre);
+      response = await pool.query(query.finalize, [
+        parametre.idFonctionnelle,
+        parametre.departementSuivi,
+        demandeSejourId,
+      ]);
+      break;
+    }
     default:
       log.d("wrong type");
       return null;
@@ -376,4 +417,25 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
   log.d("update - DONE");
   const demandeId = response.rows[0].demandeId ?? null;
   return demandeId;
+};
+
+module.exports.getNextIndex = async () => {
+  log.i("getNextIndex - IN");
+  const { rows: data } = await pool.query(query.getNextIndex);
+  log.d(data[0].index);
+  log.d("getNextIndex - DONE");
+  return data[0].index ?? null;
+};
+
+module.exports.getEmailToList = async (organismeId) => {
+  log.i("getEmailToList - IN", organismeId);
+  const { rows: data } = await pool.query(query.getEmailToList, [organismeId]);
+  log.d("getEmailToList - DONE");
+  return data.map((m) => m.mail).join(",") ?? null;
+};
+module.exports.getEmailCcList = async (siren) => {
+  log.i("getEmailCcList - IN", siren);
+  const { rows: data } = await pool.query(query.getEmailCcList, [siren]);
+  log.d("getEmailCcList - DONE");
+  return data.map((m) => m.mail).join(",") ?? null;
 };
