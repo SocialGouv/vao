@@ -1,20 +1,5 @@
 projectName: vao
-ciNamespace: ci-vao
-
-private: true
-deployKeySecretName: gh-deploy-key
-
 dependencies:
   fabrique:
     extends:
       - name: ovh
-    dependencies:
-      contrib:
-        preDeploy:
-          importSecrets:
-            options:
-              secrets:
-                harbor-pull-secret:
-                gh-deploy-key:
-                vao-dev-backups-access-key:
-                vao-prod-backups-access-key:
