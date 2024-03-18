@@ -4,6 +4,10 @@ export const navItems = [
     to: "/",
   },
   {
+    text: "Comptes",
+    to: "/comptes",
+  },
+  {
     title: "Demande de séjour",
     links: [
       {

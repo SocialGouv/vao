@@ -128,8 +128,8 @@ module.exports.getList = async (
   //  TODO : create the logic (here or in the service) to get the department of the admin.
   //  For me, the list of demandes that are goven to the admin are the list of all demands of the department
 
-  log.i("getList - IN", adminId);
-  log.i("getList - search",search);
+    log.i("getList - IN");
+    log.d("getList - search",search);
     const searchQuery = [];
 
   // Search management
@@ -167,13 +167,11 @@ module.exports.getList = async (
     `;
   }
 
-  log.w("getList",queryWithPagination);
+  log.d("getList",queryWithPagination);
   const response = await pool.query(queryWithPagination);
   const total = await pool.query(query.getListTotal(searchQuery));
   
-  log.w("getList",response.rows);
-  log.w("getListTotal",total.rows[0].count);
-  log.w("getList - DONE");
+  log.i("getList - DONE");
   return {
     users: response.rows,
     total: total.rows[0].count,

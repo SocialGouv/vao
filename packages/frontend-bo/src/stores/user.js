@@ -54,6 +54,9 @@ export const useUserStore = defineStore("user", {
         this.total = usersWithPagination.total;
         log.i("fetchDemandes - DONE");
       } catch (error) {
+        // Retour vide en cas d'erreur
+        this.users = [];
+        this.total = 0;
         log.w("fetchDemandes - Erreur",{ error });
       }
 
