@@ -250,8 +250,10 @@ module.exports.getSiege = async (siret) => {
   log.i("getSiege - IN", siret);
   const siren = siret.substr(0, 9);
   log.w("SIREN", siren);
-  const { rows: organismes } = await pool.query(query.getSiege, [siren]);
+  const { rowCount, rows: organismes } = await pool.query(query.getSiege, [
+    siren,
+  ]);
   log.d("getSiege - DONE");
   log.d(organismes);
-  return !organismes || organismes.length === 0 ? null : organismes[0];
+  return rowCount === 0 ? null : organismes[0];
 };

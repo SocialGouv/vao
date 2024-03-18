@@ -26,6 +26,19 @@ module.exports = async function post(req, res) {
       });
     }
 
+    if (
+      organisme.typeOrganisme === "personne_morale" &&
+      organisme.personneMorale?.siegeSocial === false
+    ) {
+      const siege = await Organisme.getSiege(organisme.personneMorale.siret);
+      if (!siege)
+        log.w("error while getting infos from etablissement principal");
+      else {
+        organisme.protocoleTransport = siege.protocoleTransport;
+        organisme.protocoleSanitaire = siege.protocoleSanitaire;
+      }
+    }
+
     const demandeId = await DemandeSejour.create(
       organisme.organismeId,
       libelle,
