@@ -67,7 +67,7 @@
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="precisionConstitutionEquipe"
-            :required="false"
+            :required="true"
             :disabled="!props.modifiable"
             label="Précisez"
             :label-visible="true"
@@ -127,7 +127,7 @@
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="precisionResponsableAdministrationMedicament"
-            :required="false"
+            :required="true"
             :disabled="!props.modifiable"
             label="Précisez"
             :label-visible="true"
@@ -242,7 +242,7 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionIndividualisationMedicaments"
-            :required="false"
+            :required="true"
             :disabled="!props.modifiable"
             label="Précisez le protocole en vigueur concernant le stockage permettant l’individualisation des médicaments."
             hint="Redimensionnez le champ pour saisir plus de ligne"
@@ -283,7 +283,7 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionPreparationPilluliers"
-            :required="false"
+            :required="true"
             :disabled="!props.modifiable"
             label="Précisez"
             :label-visible="true"

@@ -54,8 +54,6 @@
 </template>
 
 <script setup>
-const log = logger("components/protocole-transport-read-only");
-
 const props = defineProps({
   initData: { type: Object, required: true },
 });

@@ -3,7 +3,8 @@ import dayjs from "dayjs";
 import regex from "./regex";
 import adresse from "./adresse";
 import personne from "./personne";
-import { useRegionStore } from "@/stores/referentiels";
+import protocoleTransport from "./protocoleTransport";
+import protocoleSanitaire from "./protocoleSanitaire";
 
 const types = [
   {
@@ -92,130 +93,176 @@ yup.setLocale({
   },
 });
 
-const schema = {
+const personneMoraleSchema = {
+  siret: yup
+    .string()
+    .test(
+      "siret",
+      "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
+      (siret) => regex.siretRegex.test(siret),
+    )
+    .required(),
+  siren: yup
+    .string()
+    .test(
+      "siret",
+      "Le numéro SIREN doit faire exactement 9 chiffres, sans espace",
+      (siren) => regex.sirenRegex.test(siren),
+    )
+    .required(),
+  siegeSocial: yup.boolean().required(),
+  raisonSociale: yup.string().required(),
+  statut: yup.string().required(),
+  adresse: yup.string().required(),
+  pays: yup.string().required(),
+  email: yup
+    .string()
+    .email("le format de l'email n'est pas valide")
+    .required("L'email de contact est obligatoire"),
+  telephone: yup
+    .string()
+    .test("telephone", "Format de numéro de téléphone invalide", (telephone) =>
+      regex.numTelephoneRegex.test(telephone),
+    )
+    .required("Le numéro de téléphone de l'établissement est obligatoire"),
+  representantsLegaux: yup
+    .array()
+    .min(1, "Au moins un représentant légal est requis")
+    .required(),
+  etablissements: yup
+    .array()
+    .required()
+    .when("siegeSocial", {
+      is: true,
+      then: (schema) =>
+        schema.min(1, "Vous devez sélectionner au moins un établissement"),
+    }),
+  responsableSejour: yup.object({
+    ...personne.schema({
+      showAdresse: true,
+      showTelephone: false,
+      showEmail: true,
+    }),
+  }),
+};
+const personnePhysiqueSchema = {
+  nomNaissance: yup
+    .string()
+    .test("acceptedChars", "Caractères non acceptés détectés", (nom) =>
+      regex.acceptedCharsRegex.test(nom),
+    )
+    .test(
+      "doubleSpaces",
+      "Le nom ne peut contenir deux espaces successifs",
+      (nom) => !regex.doubleSpacesRegex.test(nom),
+    )
+    .test(
+      "spaceFollowingDash",
+      "Le nom ne peut contenir d'espace suivant un tiret",
+      (nom) => !regex.spaceFollowingDashRegex.test(nom),
+    )
+    .test(
+      "tripleDash",
+      "Le nom ne peut contenir trois tirets consécutifs",
+      (nom) => !regex.tripleDashRegex.test(nom),
+    )
+    .required(),
+  nomUsage: yup.string().nullable(true),
+  prenom: yup
+    .string()
+    .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
+      regex.acceptedCharsRegex.test(prenom),
+    )
+    .test(
+      "doubleSpaces",
+      "Le prénom ne peut contenir deux espaces successifs",
+      (prenom) => !regex.doubleSpacesRegex.test(prenom),
+    )
+    .test(
+      "spaceFollowingDash",
+      "Le prénom ne peut contenir d'espace suivant un tiret",
+      (prenom) => !regex.spaceFollowingDashRegex.test(prenom),
+    )
+    .test(
+      "doubleDash",
+      "Le prénom ne peut contenir deux tirets consécutifs",
+      (prenom) => !regex.doubleDashRegex.test(prenom),
+    )
+    .required(),
+  profession: yup
+    .string()
+    .required()
+    .oneOf(professionOptions.map((o) => o.value)),
+  telephone: yup
+    .string()
+    .test("telephone", "Format de numéro de téléphone invalide", (tel) =>
+      regex.numTelephoneRegex.test(tel),
+    ),
+  adresseIdentique: yup.boolean().required(),
+  adresseDomicile: yup.object({ ...adresse.schema(true) }).required(),
+  adresseSiege: yup.object({ ...adresse.schema(true) }).required(),
+};
+const agrementSchema = (regions) => ({
+  file: yup.object().required(),
+  numero: yup.string().required(),
+  regionObtention: yup
+    .string()
+    .test(
+      "acceptedReferentiels",
+      "Valeur non présente dans le référentiel",
+      (regionObtention) => !regions.includes(regionObtention),
+    )
+    .required(),
+  dateObtention: yup
+    .date()
+    .max(new Date(), "La date doit être inférieure à la date du jour.")
+    .min(
+      dayjs().add(-5, "year"),
+      "La date de validité de votre agrément a expiré",
+    )
+    .required(),
+});
+
+const schema = (regions) => ({
+  organismeId: yup.number().required(),
   typeOrganisme: yup
     .string()
     .required()
     .oneOf(["personne_morale", "personne_physique"]),
-  personneMorale: {
-    siret: yup
-      .string()
-      .test(
-        "siret",
-        "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
-        (siret) => regex.siretRegex.test(siret),
-      )
-      .required(),
-    email: yup
-      .string()
-      .email("le format de l'email n'est pas valide")
-      .required("L'email de contact est obligatoire"),
-    telephone: yup
-      .string()
-      .test(
-        "telephone",
-        "Format de numéro de téléphone invalide",
-        (telephone) => regex.numTelephoneRegex.test(telephone),
-      )
-      .required("Le numéro de téléphone de l'établissement est obligatoire"),
-    representantsLegaux: yup
-      .array()
-      .min(1, "Au moins un représentant légal est recquis")
-      .required(),
-    etablissements: yup
-      .array()
-      .min(1, "Vous devez sélectionner au moins un établissement")
-      .required(),
-    responsableSejour: yup.object({
-      ...personne.schema({
-        showAdresse: true,
-        showTelephone: false,
-        showEmail: true,
-      }),
+  personneMorale: yup
+    .object()
+    .required("Aucune information renseignée")
+    .when("typeOrganisme", {
+      is: (typeOrganisme) => typeOrganisme === "personne_morale",
+      then: (schema) => schema.shape(personneMoraleSchema),
     }),
-  },
-  personnePhysique: {
-    nomNaissance: yup
-      .string()
-      .test("acceptedChars", "Caractères non acceptés détectés", (nom) =>
-        regex.acceptedCharsRegex.test(nom),
-      )
-      .test(
-        "doubleSpaces",
-        "Le nom ne peut contenir deux espaces successifs",
-        (nom) => !regex.doubleSpacesRegex.test(nom),
-      )
-      .test(
-        "spaceFollowingDash",
-        "Le nom ne peut contenir d'espace suivant un tiret",
-        (nom) => !regex.spaceFollowingDashRegex.test(nom),
-      )
-      .test(
-        "tripleDash",
-        "Le nom ne peut contenir trois tirets consécutifs",
-        (nom) => !regex.tripleDashRegex.test(nom),
-      )
-      .required(),
-    nomUsage: yup.string().nullable(true),
-    prenom: yup
-      .string()
-      .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
-        regex.acceptedCharsRegex.test(prenom),
-      )
-      .test(
-        "doubleSpaces",
-        "Le prénom ne peut contenir deux espaces successifs",
-        (prenom) => !regex.doubleSpacesRegex.test(prenom),
-      )
-      .test(
-        "spaceFollowingDash",
-        "Le prénom ne peut contenir d'espace suivant un tiret",
-        (prenom) => !regex.spaceFollowingDashRegex.test(prenom),
-      )
-      .test(
-        "doubleDash",
-        "Le prénom ne peut contenir deux tirets consécutifs",
-        (prenom) => !regex.doubleDashRegex.test(prenom),
-      )
-      .required(),
-    profession: yup
-      .string()
-      .required()
-      .oneOf(professionOptions.map((o) => o.value)),
-    telephone: yup
-      .string()
-      .test("telephone", "Format de numéro de téléphone invalide", (tel) =>
-        regex.numTelephoneRegex.test(tel),
-      ),
-    adresseIdentique: yup.boolean().required(),
-    adresseDomicile: yup.object({ ...adresse.schema(true) }).required(),
-    adresseSiege: yup.object({ ...adresse.schema(true) }).required(),
-  },
-  agrement: {
-    file: yup.object().required(),
-    numero: yup.string().required(),
-    regionObtention: yup
-      .string()
-      .test(
-        "acceptedReferentiels",
-        "Valeur non présente dans le référentiel",
-        (regionObtention) =>
-          !useRegionStore().regions.includes(regionObtention),
-      )
-      .required(),
-    dateObtention: yup
-      .date()
-      .max(new Date(), "La date doit être inférieure à la date du jour.")
-      .min(
-        dayjs().add(-5, "year"),
-        "La date de validité de votre agrément a expiré",
-      )
-      .required(),
-  },
-};
+  personnePhysique: yup
+    .object()
+    .required("Aucune information renseignée")
+    .when("typeOrganisme", {
+      is: (typeOrganisme) => typeOrganisme === "personne_physique",
+      then: (schema) => schema.shape(personnePhysiqueSchema),
+    }),
+  agrement: yup
+    .object()
+    .required("Aucune information renseignée")
+    .when("typeOrganisme", {
+      is: (typeOrganisme) => typeOrganisme === "personne_physique",
+      then: (schema) => schema.shape(agrementSchema(regions)),
+    }),
+  protocoleTransport: yup
+    .object(protocoleTransport.schema)
+    .required("Aucune information renseignée"),
+  protocoleSanitaire: yup
+    .object(protocoleSanitaire.schema)
+    .required("Aucune information renseignée"),
+});
 
 export default {
   types,
   professionOptions,
+  personneMoraleSchema,
+  personnePhysiqueSchema,
+  agrementSchema,
   schema,
 };

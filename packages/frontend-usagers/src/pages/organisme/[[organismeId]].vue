@@ -30,7 +30,7 @@
             ></OrganismeAgrement>
           </div>
           <div v-if="isSiege" id="protocole-transport">
-            <protocole-transport
+            <ProtocoleTransport
               v-if="hash === 'protocole-transport'"
               :init-data="
                 organismeStore.organismeCourant.protocoleTransport ?? {}
@@ -38,10 +38,10 @@
               @update="updateOrCreate"
               @previous="previousHash"
               @next="nextHash"
-            ></protocole-transport>
+            ></ProtocoleTransport>
           </div>
           <div v-if="isSiege" id="protocole-sanitaire">
-            <protocole-sanitaire
+            <ProtocoleSanitaire
               v-if="hash === 'protocole-sanitaire'"
               :init-data="
                 organismeStore.organismeCourant.protocoleSanitaire ?? {}
@@ -49,12 +49,12 @@
               @update="updateOrCreate"
               @previous="previousHash"
               @next="nextHash"
-            ></protocole-sanitaire>
+            ></ProtocoleSanitaire>
           </div>
           <div id="synthese">
             <OrganismeSynthese
               v-if="hash === 'synthese'"
-              :init-data="organismeStore.organismeCourant ?? {}"
+              :init-organisme="organismeStore.organismeCourant ?? {}"
               @finalize="finalizeOrganisme"
               @previous="previousHash"
             ></OrganismeSynthese>
@@ -89,9 +89,8 @@ const organismeStore = useOrganismeStore();
 
 const isSiege = computed(() => {
   return (
-    !organismeStore.organismeCourant ||
-    organismeStore.organismeCourant.typeOrganisme === "personne_physique" ||
-    organismeStore.organismeCourant.personneMorale?.siegeSocial === true
+    organismeStore.organismeCourant?.typeOrganisme === "personne_physique" ||
+    organismeStore.organismeCourant?.personneMorale?.siegeSocial === true
   );
 });
 const sommaireOptions = computed(() =>

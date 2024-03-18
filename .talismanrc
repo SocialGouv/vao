@@ -115,6 +115,8 @@ fileignoreconfig:
   checksum: 2237d2a196392be19f0ac6d116954898a4e68b24b1793fb8a060ba1da83564b0
 - filename: packages/frontend-usagers/src/components/organisateur.vue
   checksum: 5be487a1e995dd4207baabe268d2d4c7159d7a3b3ec05663825400e47590fdee
+- filename: packages/frontend-usagers/src/components/organisme/synthese.vue
+  checksum: c9d27cea7175d829b78e524c08dd744b097f08a2fae2dffddab01f6703f3055c
 - filename: packages/frontend-usagers/src/components/personnes-read-only.vue
   checksum: 9a477eeb49f3aa3011e88b8ec11b9735f7166d1400bf5fd53fe04a29b59ad848
 - filename: packages/frontend-usagers/src/components/utils/MultiFilesUpload.vue
