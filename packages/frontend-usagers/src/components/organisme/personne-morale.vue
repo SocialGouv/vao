@@ -225,7 +225,7 @@ const initialValues = {
   ...props.initData,
 };
 
-const { meta, values, resetForm } = useForm({
+const { meta, values, setValues } = useForm({
   initialValues,
   validationSchema,
 });
@@ -326,38 +326,32 @@ async function searchApiInsee() {
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
 
-    resetForm({
-      values: {
-        ...values,
-        siren: uniteLegale.siren,
-        siegeSocial: uniteLegale.etablissementSiege,
-        raisonSociale: uniteLegale.uniteLegale.denominationUniteLegale,
-        statut: uniteLegale.uniteLegale.categorieJuridiqueUniteLegale,
-        adresse,
-        pays:
-          uniteLegale.adresseEtablissement.libellePaysEtrangerEtablissement ??
-          "France",
-        representantsLegaux: representantsLegaux ?? [],
-        etablissements: etablissements ?? [],
-      },
+    setValues({
+      siren: uniteLegale.siren,
+      siegeSocial: uniteLegale.etablissementSiege,
+      raisonSociale: uniteLegale.uniteLegale.denominationUniteLegale,
+      statut: uniteLegale.uniteLegale.categorieJuridiqueUniteLegale,
+      adresse,
+      pays:
+        uniteLegale.adresseEtablissement.libellePaysEtrangerEtablissement ??
+        "France",
+      representantsLegaux: representantsLegaux ?? [],
+      etablissements: etablissements ?? [],
     });
   } catch (error) {
     toaster.error(
       "erreur lors de la récupération des données à partir du SIRET",
     );
     log.w("searchApiInsee - erreur:", { error });
-    resetForm({
-      values: {
-        ...values,
-        siren: null,
-        siegeSocial: null,
-        raisonSociale: null,
-        statut: null,
-        adresse: null,
-        pays: null,
-        representantsLegaux: [],
-        etablissements: [],
-      },
+    setValues({
+      siren: null,
+      siegeSocial: null,
+      raisonSociale: null,
+      statut: null,
+      adresse: null,
+      pays: null,
+      representantsLegaux: [],
+      etablissements: [],
     });
   }
 }
@@ -372,11 +366,8 @@ async function searchOrganismeBySiret() {
     });
     log.d("searchOrganismeBySiret", data);
     if (data.organisme && data.organisme.personneMorale) {
-      resetForm({
-        values: {
-          ...values,
-          ...data.organisme.personneMorale,
-        },
+      setValues({
+        ...data.organisme.personneMorale,
       });
       toaster.success("L'organisme est déjà présent en base");
 
@@ -404,7 +395,7 @@ async function searchOrganisme() {
 function next() {
   log.i("next - IN");
   if (!meta.value.dirty) {
-    emit("next");
+    return emit("next");
   }
   emit(
     "update",

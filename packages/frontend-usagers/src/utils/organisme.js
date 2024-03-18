@@ -243,19 +243,40 @@ const schema = (regions) => ({
       is: (typeOrganisme) => typeOrganisme === "personne_physique",
       then: (schema) => schema.shape(personnePhysiqueSchema),
     }),
-  agrement: yup
-    .object()
-    .required("Aucune information renseignée")
-    .when("typeOrganisme", {
-      is: (typeOrganisme) => typeOrganisme === "personne_physique",
-      then: (schema) => schema.shape(agrementSchema(regions)),
-    }),
+  agrement: yup.object().when(["typeOrganisme", "personneMorale.siegeSocial"], {
+    is: (typeOrganisme, siegeSocial) => {
+      return typeOrganisme === "personne_physique" || siegeSocial === true;
+    },
+    then: (schema) =>
+      schema
+        .shape(agrementSchema(regions))
+        .required("Aucune information renseignée"),
+    otherwise: (schema) => schema.nullable(),
+  }),
   protocoleTransport: yup
-    .object(protocoleTransport.schema)
-    .required("Aucune information renseignée"),
+    .object()
+    .when(["typeOrganisme", "personneMorale.siegeSocial"], {
+      is: (typeOrganisme, siegeSocial) => {
+        return typeOrganisme === "personne_physique" || siegeSocial === true;
+      },
+      then: (schema) =>
+        schema
+          .shape(protocoleTransport.schema)
+          .required("Aucune information renseignée"),
+      otherwise: (schema) => schema.nullable(),
+    }),
   protocoleSanitaire: yup
-    .object(protocoleSanitaire.schema)
-    .required("Aucune information renseignée"),
+    .object()
+    .when(["typeOrganisme", "personneMorale.siegeSocial"], {
+      is: (typeOrganisme, siegeSocial) => {
+        return typeOrganisme === "personne_physique" || siegeSocial === true;
+      },
+      then: (schema) =>
+        schema
+          .shape(protocoleSanitaire.schema)
+          .required("Aucune information renseignée"),
+      otherwise: (schema) => schema.nullable(),
+    }),
 });
 
 export default {

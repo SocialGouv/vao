@@ -93,6 +93,7 @@ const isSiege = computed(() => {
     organismeStore.organismeCourant?.personneMorale?.siegeSocial === true
   );
 });
+
 const sommaireOptions = computed(() =>
   organismeMenus
     .filter((m) => isSiege.value || m.displayForEtabSecondaire)
@@ -116,7 +117,7 @@ function previousHash() {
 
 function nextHash() {
   const index = sommaireOptions.value.findIndex((o) => o === hash.value);
-  log.d({ hash, index, next: sommaireOptions.value[index + 1] });
+  log.d({ index, next: sommaireOptions.value[index + 1] });
   return navigateTo({
     path: `/organisme/${organismeId.value}`,
     hash: "#" + sommaireOptions.value[index + 1],
@@ -210,8 +211,8 @@ async function updateOrCreate(organismeData, type) {
       `Fiche organisme ${organismeId.value ? "sauvegardée" : "créée"}`,
     );
     organismeId.value = data.organismeId;
+    await organismeStore.setMyOrganisme();
     log.d(`organisme ${organismeId.value} mis à jour`);
-
     return nextHash();
   } catch (error) {
     log.w("Creation/modification d'organisme : ", { error });

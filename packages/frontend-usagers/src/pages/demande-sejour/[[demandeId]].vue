@@ -147,7 +147,8 @@ const hash = computed(() => {
 const sejourId = ref(route.params.demandeId);
 
 const canModify = computed(() => {
-  return demandeCourante.value.statut.includes("BROUILLON");
+  !demandeSejourStore.demandeCourante.statut ||
+    demandeSejourStore.demandeCourante.statut === "BROUILLON";
 });
 
 async function uploadFile(category, file) {

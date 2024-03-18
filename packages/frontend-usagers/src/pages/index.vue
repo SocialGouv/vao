@@ -72,6 +72,10 @@
         </div>
       </div>
       <div
+        v-if="
+          organismeStore.organismeCourant &&
+          organismeStore.organismeCourant.complet
+        "
         class="fr-col-4 fr-col-sm-12 fr-col-md-6 fr-col-lg-4 fr-py-5v fr-pr-5v"
       >
         <div class="fr-col-12 fr-p-5v" style="background-color: #f5f5fe">

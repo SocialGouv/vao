@@ -23,7 +23,7 @@ const menus = demandeSejourMenus.map((menu) => {
 });
 
 const sommaireOptionsToDisplay = computed(() => {
-  if (props.demande === null) {
+  if (!props.demande.id) {
     return [{ ...menus[0], active: true }];
   } else {
     return menus.map((s) => {
