@@ -27,6 +27,7 @@ psql -d $POSTGRES_DB -f /scripts/03/03-2-back-data.sql
 echo '03-3-ref-data : '
 psql -d $POSTGRES_DB -f /scripts/03/03-3-ref-data.sql
 
-echo '04-1-back-user : '
-psql -d $POSTGRES_DB -f /scripts/04/04-1-back-user.sql
+
+echo 'BO-1-back-user : '
+psql -d $POSTGRES_DB -f /seeds/BO-1-back-user.sql
 

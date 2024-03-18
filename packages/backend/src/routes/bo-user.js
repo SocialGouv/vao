@@ -7,5 +7,7 @@ const BOUserController = require("../controllers/bo-user");
 
 // Gère une connexion via mot de passe.
 router.get("/me", BOcheckJWT, BOUserController.getMe);
+// Renvoie la liste des utilisateurs du BO
+router.get("/list", BOcheckJWT, BOUserController.getList);
 
 module.exports = router;
