@@ -110,12 +110,12 @@ const schema = {
       .string()
       .email("le format de l'email n'est pas valide")
       .required("L'email de contact est obligatoire"),
-    telephoneEP: yup
+    telephone: yup
       .string()
       .test(
         "telephone",
         "Format de numéro de téléphone invalide",
-        (telephoneEP) => regex.numTelephoneRegex.test(telephoneEP),
+        (telephone) => regex.numTelephoneRegex.test(telephone),
       )
       .required("Le numéro de téléphone de l'établissement est obligatoire"),
     representantsLegaux: yup

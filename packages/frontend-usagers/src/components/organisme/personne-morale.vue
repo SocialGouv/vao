@@ -98,18 +98,18 @@
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-8">
             <DsfrInputGroup
-              name="telephoneEP"
+              name="telephone"
               label="Téléphone"
               :label-visible="true"
-              :model-value="telephoneEP"
+              :model-value="telephone"
               :required="true"
               :disabled="false"
-              :is-valid="telephoneEPMeta.valid"
-              :valid-message="telephoneEPValidMessage"
-              :error-message="telephoneEPErrorMessage"
+              :is-valid="telephoneMeta.valid"
+              :valid-message="telephoneValidMessage"
+              :error-message="telephoneErrorMessage"
               placeholder=""
               hint="Au format 0X, +33X ou 0033"
-              @update:model-value="onTelephoneEPChange"
+              @update:model-value="onTelephoneChange"
             />
           </div>
         </div>
@@ -207,57 +207,6 @@ const randomId = ref(random.getRandomId());
 const personneMorale = ref();
 const organismeDejaExistant = ref();
 
-const validationSchema = yup.object({ ...organisme.schema.personneMorale });
-
-const initialValues = {
-  siret: props.initData.siret,
-  email: props.initData.email,
-  telephoneEP: props.initData.telephoneEP,
-  representantsLegaux: props.initData.representantsLegaux ?? [],
-  etablissements: props.initData.etablissements ?? [],
-  responsableSejour: props.initData.responsableSejour ?? {},
-};
-
-const { meta } = useForm({
-  initialValues,
-  validationSchema,
-});
-
-const {
-  value: siret,
-  errorMessage: siretErrorMessage,
-  handleChange: onSiretChange,
-  meta: siretMeta,
-} = useField("siret");
-const {
-  value: email,
-  errorMessage: emailErrorMessage,
-  handleChange: onEmailChange,
-  meta: emailMeta,
-} = useField("email");
-const {
-  value: representantsLegaux,
-  handleChange: onRepresentantsLegauxChange,
-} = useField("representantsLegaux");
-const {
-  value: telephoneEP,
-  errorMessage: telephoneEPErrorMessage,
-  validMessage: telephoneEPValidMessage,
-  handleChange: onTelephoneEPChange,
-  meta: telephoneEPMeta,
-} = useField("telephoneEP");
-const { value: etablissements } = useField("etablissements");
-const { value: responsableSejour, handleChange: onResponsableSejourChange } =
-  useField("responsableSejour");
-
-const isEtablissementFound = computed(() => {
-  return !!formatedPersonneMorale.value;
-});
-
-const isEtablissementPrincipal = computed(() => {
-  return formatedPersonneMorale.value.siegeSocial;
-});
-
 const formatedPersonneMorale = computed(() => {
   // les infos proviennent d'un organisme déjà présent en base
   if (organismeDejaExistant.value) {
@@ -310,6 +259,62 @@ const formatedPersonneMorale = computed(() => {
     adresseComplete: null,
     pays: null,
   };
+});
+const isEtablissementPrincipal = computed(() => {
+  return formatedPersonneMorale.value.siegeSocial;
+});
+
+const validationSchema = computed(() =>
+  yup.object({
+    ...organisme.schema.personneMorale({
+      isSiegeSocial: isEtablissementPrincipal.value,
+    }),
+  }),
+);
+
+const initialValues = {
+  siret: props.initData.siret,
+  email: props.initData.email,
+  telephone: props.initData.telephone,
+  representantsLegaux: props.initData.representantsLegaux ?? [],
+  etablissements: props.initData.etablissements ?? [],
+  responsableSejour: props.initData.responsableSejour ?? {},
+};
+
+const { meta } = useForm({
+  initialValues,
+  validationSchema,
+});
+
+const {
+  value: siret,
+  errorMessage: siretErrorMessage,
+  handleChange: onSiretChange,
+  meta: siretMeta,
+} = useField("siret");
+const {
+  value: email,
+  errorMessage: emailErrorMessage,
+  handleChange: onEmailChange,
+  meta: emailMeta,
+} = useField("email");
+const {
+  value: representantsLegaux,
+  handleChange: onRepresentantsLegauxChange,
+} = useField("representantsLegaux");
+const {
+  value: telephone,
+  errorMessage: telephoneErrorMessage,
+  validMessage: telephoneValidMessage,
+  handleChange: onTelephoneChange,
+  meta: telephoneMeta,
+} = useField("telephone");
+const { value: etablissements } = useField("etablissements");
+const { value: responsableSejour, handleChange: onResponsableSejourChange } =
+  useField("responsableSejour");
+
+const isEtablissementFound = computed(() => {
+  return !!formatedPersonneMorale.value;
 });
 
 const siretDisplayed = computed(() => {
@@ -408,8 +413,7 @@ async function searchOrganismeBySiret() {
       responsableSejour.value =
         organismeDejaExistant.value.personneMorale?.responsableSejour;
       email.value = organismeDejaExistant.value.personneMorale?.email;
-      telephoneEP.value =
-        organismeDejaExistant.value.personneMorale?.telephoneEP;
+      telephone.value = organismeDejaExistant.value.personneMorale?.telephone;
       return organismeDejaExistant.value;
     }
   } catch (error) {
@@ -448,7 +452,7 @@ function next() {
       adresse: formatedPersonneMorale.value.adresseComplete,
       pays: formatedPersonneMorale.value.pays,
       email: email.value,
-      telephoneEP: telephoneEP.value,
+      telephone: telephone.value,
       representantsLegaux: representantsLegaux.value,
       etablissements: etablissements.value,
       responsableSejour: responsableSejour.value,

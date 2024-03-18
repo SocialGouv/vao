@@ -197,7 +197,6 @@ const {
   value: adresseIdentique,
   errorMessage: adresseIdentiqueErrorMessage,
   meta: adresseIdentiqueMeta,
-  handleChange: onAddressIdentiqueChange,
 } = useField("adresseIdentique");
 const {
   value: adresseSiege,
