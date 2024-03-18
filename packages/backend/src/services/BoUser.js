@@ -83,7 +83,8 @@ const query = {
         pwd is not null as "hasPwd",
         blocked as "isBlocked",
         nom as "nom",
-        prenom as "prenom"
+        prenom as "prenom",
+        validated as "valide"
       FROM back.users
       WHERE 1=1 
       ${Object.keys(criterias)
@@ -92,6 +93,91 @@ const query = {
       `,
     Object.values(criterias),
   ],
+  getList: (search) => `
+      SELECT
+        us.id as id,
+        us.mail as email,
+        us.pwd is not null as "hasPwd",
+        us.blocked as "isBlocked",
+        us.nom as "nom",
+        us.prenom as "prenom",
+        replace(replace(us.validated::text,'true','Oui')::text,'false','Non') as "valide",
+        te.label as "territoire"
+      FROM back.users AS us
+      INNER JOIN back.user_territoires AS ut on ut.use_id = us.id
+      INNER JOIN geo.territoires AS te on te.code = ut.ter_code
+      WHERE 1 = 1
+      ${search.map((s) => ` AND ${s} `).join("")}
+  `,
+  getListTotal: (search) => `
+  SELECT COUNT(DISTINCT us.id)
+    FROM back.users AS us
+    INNER JOIN back.user_territoires AS ut on ut.use_id = us.id
+    INNER JOIN geo.territoires AS te on te.code = ut.ter_code
+    WHERE 1 = 1
+       ${search.map((s) => ` AND ${s} `).join("")}
+    `,
+  };
+
+
+
+module.exports.getList = async (
+  adminId,
+  { limit, offset, sortBy, sortDirection = "ASC", search } = {},
+) => {
+  //  TODO : create the logic (here or in the service) to get the department of the admin.
+  //  For me, the list of demandes that are goven to the admin are the list of all demands of the department
+
+  log.i("getList - IN", adminId);
+  log.i("getList - search",search);
+    const searchQuery = [];
+
+  // Search management
+  if (search?.nom && search.nom.length) {
+    searchQuery.push(`nom ilike '%${search.nom}%'`);
+  }
+  if (search?.prenom && search.prenom.length) {
+    searchQuery.push(`prenom ilike '%${search.prenom}%'`);;
+  }
+  if (search?.email && search.email.length) {
+    searchQuery.push(`mail ilike '%${search.email}%'`);;
+  }
+  if (search?.territoire && search.territoire.length) {
+    searchQuery.push(`te.label ilike '%${search.territoire}%'`);;
+  }
+  //if (search?.valide && search.valide.length) {
+    searchQuery.push(`validated = ${search.valide}`);;
+  //}
+  let queryWithPagination = query.getList(searchQuery);
+
+  // Order management
+  if (sortBy && sortDirection) {
+    queryWithPagination += `
+    ORDER BY "${sortBy}" ${sortDirection} 
+    `;
+  } else {
+    queryWithPagination += '\n ORDER BY nom, prenom';
+  }
+
+  // Pagination management
+  if (limit != null && offset != null) {
+    queryWithPagination += `
+    OFFSET ${offset}
+    LIMIT ${limit}
+    `;
+  }
+
+  log.w("getList",queryWithPagination);
+  const response = await pool.query(queryWithPagination);
+  const total = await pool.query(query.getListTotal(searchQuery));
+  
+  log.w("getList",response.rows);
+  log.w("getListTotal",total.rows[0].count);
+  log.w("getList - DONE");
+  return {
+    users: response.rows,
+    total: total.rows[0].count,
+  };
 };
 
 module.exports.registerByEmail = async ({ email, password, nom, prenom }) => {
