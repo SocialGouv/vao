@@ -31,18 +31,18 @@ yup.setLocale({
 });
 
 const schema = {
-  files: yup.array().min(1).required(),
+  files: yup.array(),
   responsableTransportLieuSejour: yup.string().required(),
-  deplacementDurantSejour: yup
-    .string()
-    .required("Le remplissage de ce champ est obligatoire"),
+  modeTransport: yup
+    .array()
+    .min(1, "vous devez sélectionner au moins un mode de transport"),
   precisionModeOrganisation: yup
     .string()
     .required()
     .min(5, "Les précisions sur le mode d'organisation sont obligatoires'"),
-  modeTransport: yup
-    .array()
-    .min(1, "vous devez sélectionner au moins un mode de transport"),
+  deplacementDurantSejour: yup
+    .string()
+    .required("Le remplissage de ce champ est obligatoire"),
 };
 
 export default {

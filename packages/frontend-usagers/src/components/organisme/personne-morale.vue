@@ -7,7 +7,7 @@
             name="siret"
             label="Numéro SIRET"
             :label-visible="true"
-            :model-value="siretDisplayed"
+            :model-value="formatedSiret"
             :required="true"
             :is-valid="siretMeta.valid"
             :error-message="siretErrorMessage"
@@ -28,7 +28,7 @@
         </div>
       </div>
     </fieldset>
-    <div v-if="isEtablissementFound">
+    <div v-if="siren">
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-8">
@@ -36,7 +36,7 @@
               name="raisonSociale"
               label="Raison sociale"
               :label-visible="true"
-              :model-value="formatedPersonneMorale?.raisonSociale"
+              :model-value="raisonSociale"
               :required="false"
               :disabled="true"
             />
@@ -48,7 +48,7 @@
               name="statut"
               label="Statut, forme juridique"
               :label-visible="true"
-              :model-value="formatedPersonneMorale?.statut"
+              :model-value="statut"
               :required="false"
               :disabled="true"
             />
@@ -60,7 +60,7 @@
               name="adresse"
               label="adresse"
               :label-visible="true"
-              :model-value="formatedPersonneMorale?.adresse"
+              :model-value="adresse"
               :required="false"
               :disabled="true"
             />
@@ -72,7 +72,7 @@
               name="pays"
               label="Pays"
               :label-visible="true"
-              :model-value="formatedPersonneMorale?.pays"
+              :model-value="pays"
               :required="false"
               :disabled="true"
             />
@@ -98,23 +98,23 @@
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-8">
             <DsfrInputGroup
-              name="telephoneEP"
+              name="telephone"
               label="Téléphone"
               :label-visible="true"
-              :model-value="telephoneEP"
+              :model-value="telephone"
               :required="true"
               :disabled="false"
-              :is-valid="telephoneEPMeta.valid"
-              :valid-message="telephoneEPValidMessage"
-              :error-message="telephoneEPErrorMessage"
+              :is-valid="telephoneMeta.valid"
+              :valid-message="telephoneValidMessage"
+              :error-message="telephoneErrorMessage"
               placeholder=""
               hint="Au format 0X, +33X ou 0033"
-              @update:model-value="onTelephoneEPChange"
+              @update:model-value="onTelephoneChange"
             />
           </div>
         </div>
       </fieldset>
-      <div v-if="isEtablissementPrincipal">
+      <div v-if="siegeSocial">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-8">
             <DsfrHighlight text="Liste des établissements" :large="true" />
@@ -130,7 +130,7 @@
                 'Commune',
                 'Autorisé à déclarer des séjours ?',
               ]"
-              :rows="etablissementsToDisplay"
+              :rows="formatedEtablissements"
             />
           </div>
         </div>
@@ -204,21 +204,28 @@ const headers = [
 ];
 
 const randomId = ref(random.getRandomId());
-const personneMorale = ref();
-const organismeDejaExistant = ref();
 
-const validationSchema = yup.object({ ...organisme.schema.personneMorale });
+const validationSchema = computed(() =>
+  yup.object(organisme.personneMoraleSchema),
+);
 
 const initialValues = {
-  siret: props.initData.siret,
-  email: props.initData.email,
-  telephoneEP: props.initData.telephoneEP,
-  representantsLegaux: props.initData.representantsLegaux ?? [],
-  etablissements: props.initData.etablissements ?? [],
-  responsableSejour: props.initData.responsableSejour ?? {},
+  siret: null,
+  siren: null,
+  siegeSocial: null,
+  raisonSociale: null,
+  statut: null,
+  adresse: null,
+  pays: null,
+  email: null,
+  telephone: null,
+  representantsLegaux: [],
+  etablissements: [],
+  responsableSejour: {},
+  ...props.initData,
 };
 
-const { meta } = useForm({
+const { meta, values, setValues } = useForm({
   initialValues,
   validationSchema,
 });
@@ -229,6 +236,12 @@ const {
   handleChange: onSiretChange,
   meta: siretMeta,
 } = useField("siret");
+const { value: siren } = useField("siren");
+const { value: siegeSocial } = useField("siegeSocial");
+const { value: raisonSociale } = useField("raisonSociale");
+const { value: statut } = useField("statut");
+const { value: adresse } = useField("adresse");
+const { value: pays } = useField("pays");
 const {
   value: email,
   errorMessage: emailErrorMessage,
@@ -236,83 +249,21 @@ const {
   meta: emailMeta,
 } = useField("email");
 const {
+  value: telephone,
+  errorMessage: telephoneErrorMessage,
+  validMessage: telephoneValidMessage,
+  handleChange: onTelephoneChange,
+  meta: telephoneMeta,
+} = useField("telephone");
+const {
   value: representantsLegaux,
   handleChange: onRepresentantsLegauxChange,
 } = useField("representantsLegaux");
-const {
-  value: telephoneEP,
-  errorMessage: telephoneEPErrorMessage,
-  validMessage: telephoneEPValidMessage,
-  handleChange: onTelephoneEPChange,
-  meta: telephoneEPMeta,
-} = useField("telephoneEP");
 const { value: etablissements } = useField("etablissements");
 const { value: responsableSejour, handleChange: onResponsableSejourChange } =
   useField("responsableSejour");
 
-const isEtablissementFound = computed(() => {
-  return !!formatedPersonneMorale.value;
-});
-
-const isEtablissementPrincipal = computed(() => {
-  return formatedPersonneMorale.value.siegeSocial;
-});
-
-const formatedPersonneMorale = computed(() => {
-  // les infos proviennent d'un organisme déjà présent en base
-  if (organismeDejaExistant.value) {
-    return {
-      siret: organismeDejaExistant.value.personneMorale?.siret,
-      siren: organismeDejaExistant.value.personneMorale?.siren,
-      siegeSocial: organismeDejaExistant.value.personneMorale?.siegeSocial,
-      raisonSociale: organismeDejaExistant.value.personneMorale?.raisonSociale,
-      statut: organismeDejaExistant.value.personneMorale?.statut,
-      adresse: organismeDejaExistant.value.personneMorale?.adresseShort,
-      adresseComplete: organismeDejaExistant.value.personneMorale?.adresse,
-      pays: organismeDejaExistant.value.personneMorale?.pays,
-    };
-  }
-  // les infos proviennent de l'API entreprise
-  if (personneMorale.value) {
-    const adresse =
-      `${personneMorale.value.adresseEtablissement.numeroVoieEtablissement ?? ""} ${personneMorale.value.adresseEtablissement.typeVoieEtablissement ?? ""} ${personneMorale.value.adresseEtablissement.libelleVoieEtablissement} ${personneMorale.value.adresseEtablissement.codePostalEtablissement} ${personneMorale.value.adresseEtablissement.libelleCommuneEtablissement}`.trim();
-    return {
-      siret: personneMorale.value.siret,
-      siren: personneMorale.value.siren,
-      siegeSocial: personneMorale.value.etablissementSiege,
-      raisonSociale: personneMorale.value.uniteLegale.denominationUniteLegale,
-      statut: personneMorale.value.uniteLegale.categorieJuridiqueUniteLegale,
-      adresse: adresse.trim(),
-      adresseComplete: personneMorale.value.adresseEtablissement,
-      pays:
-        personneMorale.value.adresseEtablissement
-          .libellePaysEtrangerEtablissement ?? "France",
-    };
-  }
-  // initialisation
-  if (props.initData) {
-    return {
-      siret: props.initData.siret,
-      siren: props.initData.siren,
-      siegeSocial: props.initData.siegeSocial,
-      raisonSociale: props.initData.raisonSociale,
-      statut: props.initData.statut,
-      adresse: props.initData.adresseShort,
-      adresseComplete: props.initData.adresse,
-      pays: props.initData.pays,
-    };
-  }
-  return {
-    siret: null,
-    raisonSociale: null,
-    statut: null,
-    adresse: null,
-    adresseComplete: null,
-    pays: null,
-  };
-});
-
-const siretDisplayed = computed(() => {
+const formatedSiret = computed(() => {
   if (!siret.value) {
     return "";
   }
@@ -337,28 +288,24 @@ const siretDisplayed = computed(() => {
   return formatedSiret;
 });
 
-const etablissementsToDisplay = computed(() => {
-  if (etablissements.value) {
-    return etablissements.value.map((e, index) => {
-      const row = [
-        e.nic,
-        e.adresse,
-        e.codePostal,
-        e.commune,
-        {
-          component: "DsfrToggleSwitch",
-          modelValue: etablissements.value[index].enabled,
-          onChange: () => {
-            etablissements.value[index].enabled =
-              !etablissements.value[index].enabled;
-          },
+const formatedEtablissements = computed(() => {
+  return etablissements.value.map((e, index) => {
+    const row = [
+      e.nic,
+      e.adresse,
+      e.codePostal,
+      e.commune,
+      {
+        component: "DsfrToggleSwitch",
+        modelValue: etablissements.value[index].enabled,
+        onChange: () => {
+          etablissements.value[index].enabled =
+            !etablissements.value[index].enabled;
         },
-      ];
-      return row;
-    });
-  } else {
-    return [];
-  }
+      },
+    ];
+    return row;
+  });
 });
 
 function trimSiret(s) {
@@ -366,26 +313,46 @@ function trimSiret(s) {
 }
 
 async function searchApiInsee() {
-  log.i("searchApiEntreprise - IN");
+  log.i("searchApiInsee - IN");
   const url = `/siret/${siret.value}`;
   try {
-    const data = await $fetchBackend(url, {
-      method: "GET",
-      credentials: "include",
-    });
+    const { uniteLegale, etablissements, representantsLegaux } =
+      await $fetchBackend(url, {
+        method: "GET",
+        credentials: "include",
+      });
     toaster.success("Données récupérées");
-    personneMorale.value = data.uniteLegale;
-    etablissements.value = data.etablissements;
-    representantsLegaux.value = data.representantsLegaux;
-    responsableSejour.value = {};
+
+    const adresse =
+      `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
+
+    setValues({
+      siren: uniteLegale.siren,
+      siegeSocial: uniteLegale.etablissementSiege,
+      raisonSociale: uniteLegale.uniteLegale.denominationUniteLegale,
+      statut: uniteLegale.uniteLegale.categorieJuridiqueUniteLegale,
+      adresse,
+      pays:
+        uniteLegale.adresseEtablissement.libellePaysEtrangerEtablissement ??
+        "France",
+      representantsLegaux: representantsLegaux ?? [],
+      etablissements: etablissements ?? [],
+    });
   } catch (error) {
     toaster.error(
       "erreur lors de la récupération des données à partir du SIRET",
     );
     log.w("searchApiInsee - erreur:", { error });
-    personneMorale.value = null;
-    etablissements.value = null;
-    representantsLegaux.value = null;
+    setValues({
+      siren: null,
+      siegeSocial: null,
+      raisonSociale: null,
+      statut: null,
+      adresse: null,
+      pays: null,
+      representantsLegaux: [],
+      etablissements: [],
+    });
   }
 }
 
@@ -398,19 +365,13 @@ async function searchOrganismeBySiret() {
       credentials: "include",
     });
     log.d("searchOrganismeBySiret", data);
-    if (data.organisme) {
+    if (data.organisme && data.organisme.personneMorale) {
+      setValues({
+        ...data.organisme.personneMorale,
+      });
       toaster.success("L'organisme est déjà présent en base");
-      organismeDejaExistant.value = data.organisme;
-      representantsLegaux.value =
-        organismeDejaExistant.value.personneMorale.representantsLegaux ?? [];
-      etablissements.value =
-        organismeDejaExistant.value.personneMorale?.etablissements;
-      responsableSejour.value =
-        organismeDejaExistant.value.personneMorale?.responsableSejour;
-      email.value = organismeDejaExistant.value.personneMorale?.email;
-      telephoneEP.value =
-        organismeDejaExistant.value.personneMorale?.telephoneEP;
-      return organismeDejaExistant.value;
+
+      return data.organisme;
     }
   } catch (error) {
     toaster.error(
@@ -423,8 +384,8 @@ async function searchOrganismeBySiret() {
 
 async function searchOrganisme() {
   log.i("searchOrganisme - In");
-  organismeDejaExistant.value = await searchOrganismeBySiret();
-  if (!organismeDejaExistant.value) {
+  const organismeFound = await searchOrganismeBySiret();
+  if (!organismeFound) {
     log.d("appel API INSEE");
     await searchApiInsee();
   }
@@ -434,24 +395,12 @@ async function searchOrganisme() {
 function next() {
   log.i("next - IN");
   if (!meta.value.dirty) {
-    emit("next");
+    return emit("next");
   }
   emit(
     "update",
     {
-      siret: siret.value,
-      siren: formatedPersonneMorale.value.siren,
-      siegeSocial: formatedPersonneMorale.value.siegeSocial,
-      raisonSociale: formatedPersonneMorale.value.raisonSociale,
-      statut: formatedPersonneMorale.value.statut,
-      adresseShort: formatedPersonneMorale.value.adresse,
-      adresse: formatedPersonneMorale.value.adresseComplete,
-      pays: formatedPersonneMorale.value.pays,
-      email: email.value,
-      telephoneEP: telephoneEP.value,
-      representantsLegaux: representantsLegaux.value,
-      etablissements: etablissements.value,
-      responsableSejour: responsableSejour.value,
+      ...values,
       meta: meta.value.valid,
     },
     "personne_morale",

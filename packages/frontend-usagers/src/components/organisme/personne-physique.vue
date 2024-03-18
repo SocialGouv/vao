@@ -146,7 +146,7 @@ const props = defineProps({
 const emit = defineEmits(["update", "next"]);
 
 const validationSchema = computed(() => {
-  return yup.object({ ...organisme.schema.personnePhysique });
+  return yup.object(organisme.personnePhysiqueSchema);
 });
 const initialValues = {
   nomNaissance: props.initData.nomNaissance,
@@ -197,7 +197,6 @@ const {
   value: adresseIdentique,
   errorMessage: adresseIdentiqueErrorMessage,
   meta: adresseIdentiqueMeta,
-  handleChange: onAddressIdentiqueChange,
 } = useField("adresseIdentique");
 const {
   value: adresseSiege,

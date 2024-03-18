@@ -1,6 +1,7 @@
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 const siretRegex = /^[0-9]{14}$/;
+const sirenRegex = /^[0-9]{9}$/;
 const acceptedCharsRegex =
   /^([AÀÂBCÇDEÉÈÊËFGHIÎÏJKLMNOÔPQRSTUÙÛÜVWXYŸZÆŒ\- ']+)$/i;
 const spaceFollowingDashRegex = /( -)|(- )/i;
@@ -18,6 +19,7 @@ export default {
   numTelephoneRegex,
   emailRegex,
   siretRegex,
+  sirenRegex,
   acceptedCharsRegex,
   spaceFollowingDashRegex,
   doubleSpacesRegex,

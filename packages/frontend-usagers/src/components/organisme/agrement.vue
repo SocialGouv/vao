@@ -119,12 +119,8 @@ const label = computed(() => {
   }
 });
 
-const schemaAgrement = { ...organisme.schema.agrement };
-
 const validationSchema = computed(() =>
-  yup.object({
-    ...schemaAgrement,
-  }),
+  yup.object(organisme.agrementSchema(regionStore.regions)),
 );
 
 const initialValues = {

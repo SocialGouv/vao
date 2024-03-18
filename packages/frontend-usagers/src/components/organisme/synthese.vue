@@ -1,219 +1,197 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset"></fieldset>
-    <div class="fr-fieldset__element">
-      <div class="fr-input-group fr-col-12">
-        <DsfrAccordionsGroup>
-          <DsfrAccordion
-            :id="1"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Renseignements généraux &nbsp;</span>
-              <DsfrBadge
-                :label="renseignementsGeneraux.label"
-                :small="true"
-                :type="renseignementsGeneraux.type"
-              />
-            </template>
+    <div class="fr-grid-row fr-my-5v">
+      <DsfrAccordionsGroup>
+        <DsfrAccordion
+          :id="1"
+          :expanded-id="expandedId"
+          @expand="(id) => (expandedId = id)"
+        >
+          <template #title>
+            <span>Renseignements généraux &nbsp;</span>
+            <DsfrBadge
+              :label="renseignementsGeneraux.label"
+              :small="true"
+              :type="renseignementsGeneraux.type"
+            />
+          </template>
 
-            <OrganismePersonnePhysiqueReadOnly
-              v-if="props.initData.typeOrganisme === 'personne_physique'"
-              :init-data="props.initData.personnePhysique"
+          <OrganismePersonnePhysiqueReadOnly
+            v-if="props.initOrganisme.typeOrganisme === 'personne_physique'"
+            :init-data="props.initOrganisme.personnePhysique"
+          />
+          <OrganismePersonneMoraleReadOnly
+            v-if="props.initOrganisme.typeOrganisme === 'personne_morale'"
+            :init-data="props.initOrganisme.personneMorale"
+          />
+        </DsfrAccordion>
+        <DsfrAccordion
+          v-if="isSiege"
+          :id="2"
+          :expanded-id="expandedId"
+          @expand="(id) => (expandedId = id)"
+        >
+          <template #title>
+            <span>Agrément &nbsp;</span>
+            <DsfrBadge
+              :label="agrement.label"
+              :small="true"
+              :type="agrement.type"
             />
-            <OrganismePersonneMoraleReadOnly
-              v-if="props.initData.typeOrganisme === 'personne_morale'"
-              :init-data="props.initData.personneMorale"
+          </template>
+          <OrganismeAgrementReadOnly
+            :init-agrement="props.initOrganisme.agrement ?? {}"
+          />
+        </DsfrAccordion>
+        <DsfrAccordion
+          v-if="isSiege"
+          :id="3"
+          title="Protocole de transport"
+          :expanded-id="expandedId"
+          @expand="(id) => (expandedId = id)"
+        >
+          <template #title>
+            <span>Protocole de transport &nbsp;</span>
+            <DsfrBadge
+              :label="protocoleTransport.label"
+              :small="true"
+              :type="protocoleTransport.type"
             />
-          </DsfrAccordion>
-          <DsfrAccordion
-            v-if="isSiege"
-            :id="2"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Agrément &nbsp;</span>
-              <DsfrBadge
-                :label="agrement.label"
-                :small="true"
-                :type="agrement.type"
-              />
-            </template>
-            <OrganismeAgrementReadOnly
-              :init-agrement="props.initData.agrement ?? {}"
+          </template>
+          <protocole-transport-read-only
+            :init-data="props.initOrganisme.protocoleTransport ?? {}"
+          ></protocole-transport-read-only>
+        </DsfrAccordion>
+        <DsfrAccordion
+          v-if="isSiege"
+          :id="4"
+          title="Protocole sanitaire"
+          :expanded-id="expandedId"
+          @expand="(id) => (expandedId = id)"
+        >
+          <template #title>
+            <span>Protocole sanitaire &nbsp;</span>
+            <DsfrBadge
+              :label="protocoleSanitaire.label"
+              :small="true"
+              :type="protocoleSanitaire.type"
             />
-          </DsfrAccordion>
-          <DsfrAccordion
-            v-if="isSiege"
-            :id="3"
-            title="Protocole de transport"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Protocole de transport &nbsp;</span>
-              <DsfrBadge
-                :label="protocoleTransport.label"
-                :small="true"
-                :type="protocoleTransport.type"
-              />
-            </template>
-            <protocole-transport-read-only
-              :init-data="props.initData.protocoleTransport ?? {}"
-            ></protocole-transport-read-only>
-          </DsfrAccordion>
-          <DsfrAccordion
-            v-if="isSiege"
-            :id="4"
-            title="Protocole sanitaire"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Protocole sanitaire &nbsp;</span>
-              <DsfrBadge
-                :label="protocoleSanitaire.label"
-                :small="true"
-                :type="protocoleSanitaire.type"
-              />
-            </template>
-            <protocole-sanitaire-read-only
-              :init-data="props.initData.protocoleSanitaire ?? {}"
-            ></protocole-sanitaire-read-only>
-          </DsfrAccordion>
-        </DsfrAccordionsGroup>
-      </div>
+          </template>
+          <protocole-sanitaire-read-only
+            :init-data="props.initOrganisme.protocoleSanitaire ?? {}"
+          ></protocole-sanitaire-read-only>
+        </DsfrAccordion>
+      </DsfrAccordionsGroup>
     </div>
 
-    <fieldset class="fr-fieldset">
-      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
-        <DsfrButton
-          id="previous-step"
-          :secondary="true"
-          @click.prevent="
-            () => {
-              emit('previous');
-            }
-          "
-          >Précédent</DsfrButton
-        >
+    <form>
+      <fieldset class="fr-fieldset">
+        <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+          <DsfrButton
+            id="previous-step"
+            :secondary="true"
+            @click.prevent="
+              () => {
+                emit('previous');
+              }
+            "
+            >Précédent</DsfrButton
+          >
 
-        <DsfrButton
-          label="Finaliser la fiche organisme"
-          :disabled="incompleteOrganisme"
-          @click.prevent="finalizeOrganisme"
-        />
-      </DsfrButtonGroup>
-    </fieldset>
+          <DsfrButton
+            label="Finaliser la fiche organisme"
+            :disabled="!meta.valid"
+            @click.prevent="finalizeOrganisme"
+          />
+        </DsfrButtonGroup>
+      </fieldset>
+    </form>
   </div>
 </template>
 
 <script setup>
-const log = logger("components/organisme/synthese");
+import * as yup from "yup";
+import { useForm } from "vee-validate";
 
 const props = defineProps({
-  initData: { type: Object, default: null, required: true },
+  initOrganisme: { type: Object, default: null, required: true },
 });
+
+const regionStore = useRegionStore();
+regionStore.fetch();
 
 const emit = defineEmits(["previous", "finalize"]);
 const expandedId = ref(0);
 
+const initialValues = { ...props.initOrganisme };
+const validationSchema = computed(() =>
+  yup.object(organisme.schema(regionStore.regions)),
+);
+const { meta, errors } = useForm({
+  initialValues,
+  validationSchema,
+  validateOnMount: true,
+});
+
 const isSiege = computed(() => {
   return (
-    !props.initData ||
-    props.initData.typeOrganisme === "personne_physique" ||
-    props.initData.personneMorale?.siegeSocial === true
+    !props.initOrganisme ||
+    props.initOrganisme.typeOrganisme === "personne_physique" ||
+    props.initOrganisme.personneMorale?.siegeSocial === true
   );
 });
 
-const incompleteOrganisme = computed(() => {
-  return !isSiege.value
-    ? renseignementsGeneraux.value.type === "warning"
-    : renseignementsGeneraux.value.type === "warning" ||
-        protocoleSanitaire.value.type === "warning" ||
-        protocoleTransport.value.type === "warning" ||
-        agrement.value.type === "warning";
-});
-
-const renseignementsGeneraux = computed(() => {
-  if (props.initData.typeOrganisme === "personne_morale") {
-    if (props.initData.personneMorale?.meta) {
-      return {
+const renseignementsGeneraux = computed(() =>
+  !Object.keys(errors.value).find(
+    (k) => k.includes("personneMorale") || k.includes("personnePhysique"),
+  )
+    ? {
         label: "complet",
         type: "success",
-      };
-    } else {
-      return {
+      }
+    : {
         label: "incomplet",
         type: "warning",
-      };
-    }
-  }
-  if (props.initData.typeOrganisme === "personne_physique") {
-    if (props.initData.personnePhysique?.meta) {
-      return {
+      },
+);
+
+const agrement = computed(() =>
+  !Object.keys(errors.value).find((k) => k.includes("agrement"))
+    ? {
         label: "complet",
         type: "success",
-      };
-    } else {
-      return {
+      }
+    : {
         label: "incomplet",
         type: "warning",
-      };
-    }
-  }
-  return {
-    label: "incomplet",
-    type: "warning",
-  };
-});
+      },
+);
 
-const agrement = computed(() => {
-  if (props.initData.agrement) {
-    return {
-      label: "complet",
-      type: "success",
-    };
-  } else {
-    return {
-      label: "incomplet",
-      type: "warning",
-    };
-  }
-});
+const protocoleTransport = computed(() =>
+  !Object.keys(errors.value).find((k) => k.includes("protocoleTransport"))
+    ? {
+        label: "complet",
+        type: "success",
+      }
+    : {
+        label: "incomplet",
+        type: "warning",
+      },
+);
 
-const protocoleTransport = computed(() => {
-  if (props.initData.protocoleTransport?.meta) {
-    return {
-      label: "complet",
-      type: "success",
-    };
-  } else {
-    return {
-      label: "incomplet",
-      type: "warning",
-    };
-  }
-});
-
-const protocoleSanitaire = computed(() => {
-  if (props.initData.protocoleSanitaire?.meta) {
-    return {
-      label: "complet",
-      type: "success",
-    };
-  } else {
-    return {
-      label: "incomplet",
-      type: "warning",
-    };
-  }
-});
+const protocoleSanitaire = computed(() =>
+  !Object.keys(errors.value).find((k) => k.includes("protocoleSanitaire"))
+    ? {
+        label: "complet",
+        type: "success",
+      }
+    : {
+        label: "incomplet",
+        type: "warning",
+      },
+);
 
 function finalizeOrganisme() {
-  log.i("finalizeOrganisme - IN");
   emit("finalize");
 }
 </script>

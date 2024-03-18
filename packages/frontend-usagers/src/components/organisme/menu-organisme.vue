@@ -17,7 +17,6 @@ const props = defineProps({
 
 const isSiege = computed(() => {
   return (
-    !props.organisme ||
     props.organisme.typeOrganisme === "personne_physique" ||
     props.organisme.personneMorale?.siegeSocial === true
   );
@@ -31,11 +30,11 @@ const menus = organismeMenus.map((menu) => {
 });
 
 const sommaireOptionsToDisplay = computed(() => {
-  if (!props.organisme) {
+  if (!props.organisme.organismeId) {
     return [{ ...menus[0], active: true }];
   } else {
     return menus
-      .filter((m) => m.displayForEtabSecondaire || isSiege.value)
+      .filter((m) => isSiege.value || m.displayForEtabSecondaire)
       .map((s) => {
         return { ...s, active: s.id === props.activeId };
       });
