@@ -97,43 +97,48 @@ const schema = {
     .string()
     .required()
     .oneOf(["personne_morale", "personne_physique"]),
-  personneMorale: {
-    siret: yup
-      .string()
-      .test(
-        "siret",
-        "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
-        (siret) => regex.siretRegex.test(siret),
-      )
-      .required(),
-    email: yup
-      .string()
-      .email("le format de l'email n'est pas valide")
-      .required("L'email de contact est obligatoire"),
-    telephoneEP: yup
-      .string()
-      .test(
-        "telephone",
-        "Format de numéro de téléphone invalide",
-        (telephoneEP) => regex.numTelephoneRegex.test(telephoneEP),
-      )
-      .required("Le numéro de téléphone de l'établissement est obligatoire"),
-    representantsLegaux: yup
-      .array()
-      .min(1, "Au moins un représentant légal est recquis")
-      .required(),
-    etablissements: yup
-      .array()
-      .min(1, "Vous devez sélectionner au moins un établissement")
-      .required(),
-    responsableSejour: yup.object({
-      ...personne.schema({
-        showAdresse: true,
-        showTelephone: false,
-        showEmail: true,
+  personneMorale: ({ isSiegeSocial } = {}) => {
+    return {
+      siret: yup
+        .string()
+        .test(
+          "siret",
+          "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
+          (siret) => regex.siretRegex.test(siret),
+        )
+        .required(),
+      email: yup
+        .string()
+        .email("le format de l'email n'est pas valide")
+        .required("L'email de contact est obligatoire"),
+      telephoneEP: yup
+        .string()
+        .test(
+          "telephone",
+          "Format de numéro de téléphone invalide",
+          (telephoneEP) => regex.numTelephoneRegex.test(telephoneEP),
+        )
+        .required("Le numéro de téléphone de l'établissement est obligatoire"),
+      representantsLegaux: yup
+        .array()
+        .min(1, "Au moins un représentant légal est recquis")
+        .required(),
+      ...(isSiegeSocial && {
+        etablissements: yup
+          .array()
+          .min(1, "Vous devez sélectionner au moins un établissement")
+          .required(),
       }),
-    }),
+      responsableSejour: yup.object({
+        ...personne.schema({
+          showAdresse: true,
+          showTelephone: false,
+          showEmail: true,
+        }),
+      }),
+    };
   },
+
   personnePhysique: {
     nomNaissance: yup
       .string()

@@ -89,9 +89,8 @@ const organismeStore = useOrganismeStore();
 
 const isSiege = computed(() => {
   return (
-    !organismeStore.organismeCourant ||
-    organismeStore.organismeCourant.typeOrganisme === "personne_physique" ||
-    organismeStore.organismeCourant.personneMorale?.siegeSocial === true
+    organismeStore.organismeCourant?.typeOrganisme === "personne_physique" ||
+    organismeStore.organismeCourant?.personneMorale?.siegeSocial === true
   );
 });
 const sommaireOptions = computed(() =>

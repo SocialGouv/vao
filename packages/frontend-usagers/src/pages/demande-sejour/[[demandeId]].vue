@@ -147,7 +147,7 @@ const hash = computed(() => {
 const sejourId = ref(route.params.demandeId);
 
 const canModify = computed(() => {
-  return demandeCourante.value.statut.includes("BROUILLON");
+  return demandeCourante.value?.statut?.includes("BROUILLON");
 });
 
 async function uploadFile(category, file) {

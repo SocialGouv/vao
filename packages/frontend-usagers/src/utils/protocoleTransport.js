@@ -31,7 +31,7 @@ yup.setLocale({
 });
 
 const schema = {
-  files: yup.array().min(1).required(),
+  files: yup.array(),
   responsableTransportLieuSejour: yup.string().required(),
   deplacementDurantSejour: yup
     .string()
