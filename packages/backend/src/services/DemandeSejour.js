@@ -132,6 +132,21 @@ const query = {
     `,
     Object.values(criterias),
   ],
+  insertEvent: `
+    INSERT INTO front.demande_sejour_history(
+      source,
+      demande_sejour_id,
+      usager_user_id,
+      type,
+      type_precision,
+      metadata,
+      created_at,
+      edited_at
+    )
+    VALUES ($1,$2,$3,$4,$5,$6,NOW(),NOW())
+    RETURNING
+      id as "eventId"
+  `,
   updateHebergements: `
     UPDATE front.demande_sejour ds
     SET
@@ -438,4 +453,25 @@ module.exports.getEmailCcList = async (siren) => {
   const { rows: data } = await pool.query(query.getEmailCcList, [siren]);
   log.d("getEmailCcList - DONE");
   return data.map((m) => m.mail).join(",") ?? null;
+};
+
+module.exports.insertEvent = async (
+  source,
+  declarationId,
+  userId,
+  type,
+  typePrecision,
+  metaData,
+) => {
+  log.i("insertEvent - IN");
+  const { rows: response } = await pool.query(query.insertEvent, [
+    source,
+    declarationId,
+    userId,
+    type,
+    typePrecision,
+    metaData,
+  ]);
+  log.d("insertEvent - DONE");
+  return response[0].eventId ?? null;
 };

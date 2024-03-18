@@ -10,6 +10,7 @@ const log = logger(module.filename);
 
 module.exports = async function post(req, res) {
   const demandeSejourId = req.params.id;
+  const { id: userId } = req.decoded;
   log.i("IN", { demandeSejourId });
 
   if (!demandeSejourId) {
@@ -75,6 +76,18 @@ module.exports = async function post(req, res) {
       return res.status(400).json({
         message: "une erreur est survenue durant la sauvegarde de la demande",
       });
+    }
+
+    const eventId = await DemandeSejour.insertEvent(
+      "organisme",
+      demandeId,
+      userId,
+      "declaration_sejour",
+      "depose à 2 mois",
+      demande,
+    );
+    if (!eventId) {
+      log.w("error while inserting event");
     }
 
     const destinataires = await DemandeSejour.getEmailToList(
