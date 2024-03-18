@@ -243,6 +243,9 @@ async function updateOrCreate(sejourData, type) {
     return nextHash();
   } catch (error) {
     log.w("Creation/modification de declaration de sejour: ", { error });
+    return toaster.error(
+      `Une erreur est survenue lors de la mise à jour de la déclaration de séjour`,
+    );
   }
 }
 
@@ -263,6 +266,9 @@ async function finalize() {
     return navigateTo("/demande-sejour/liste");
   } catch (error) {
     log.w("Finalisation de la declaration de sejour : ", { error });
+    return toaster.error(
+      `Une erreur est survenue lors de la transmission de la déclaration de séjour`,
+    );
   }
 }
 
