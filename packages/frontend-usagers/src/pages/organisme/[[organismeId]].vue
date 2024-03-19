@@ -124,21 +124,6 @@ function nextHash() {
   });
 }
 
-async function uploadFile(category, file) {
-  log.d("uploadFile - IN", { category, name: file.name });
-  const body = new FormData();
-  body.append("category", category);
-  body.append("file", file);
-  const url = `/documents`;
-  const { uuid } = await $fetchBackend(url, {
-    method: "post",
-    credentials: "include",
-    body,
-  });
-  log.i("uploadFile - DONE");
-  return uuid;
-}
-
 async function updateOrCreate(organismeData, type) {
   log.i("updateOrCreate - IN", { organismeData, type });
   let counter = 0;
@@ -148,7 +133,7 @@ async function updateOrCreate(organismeData, type) {
     const file = unref(organismeData.file);
     if (!file.uuid) {
       try {
-        const uuid = await uploadFile(type, file);
+        const uuid = await UploadFile(type, file);
         organismeData.file = {
           uuid,
           name: file.name,
@@ -177,7 +162,7 @@ async function updateOrCreate(organismeData, type) {
         continue;
       }
       try {
-        const uuid = await uploadFile(type, file);
+        const uuid = await UploadFile(type, file);
         files.push({
           uuid,
           name: file.name,
@@ -227,7 +212,7 @@ async function updateOrCreateAgrement(agrementData, type) {
     const file = unref(agrementData.file);
     if (!file.uuid) {
       try {
-        const uuid = await uploadFile(type, file);
+        const uuid = await UploadFile(type, file);
         agrementData.file = {
           uuid,
           name: file.name,

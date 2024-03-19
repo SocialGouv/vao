@@ -11,7 +11,7 @@
           :disabled="!props.modifiable"
           :is-valid="libelleMeta.valid"
           :error-message="libelleErrorMessage"
-          hint="nom de votre demande de séjour"
+          hint="Nom de votre demande de séjour"
           @update:model-value="onLibelleChange"
         />
       </div>
@@ -138,13 +138,9 @@ const saison = computed(() => {
   if (moisDebut < 12) return "automne";
 });
 
-const organismeCourant = computed(() => {
-  return organismeStore.organismeCourant;
-});
-
 if (
-  organismeCourant.value.typeOrganisme === "personne_morale" &&
-  !organismeCourant.value.personneMorale.siegeSocial
+  organismeStore.organismeCourant.typeOrganisme === "personne_morale" &&
+  !organismeStore.organismeCourant.personneMorale.siegeSocial
 ) {
   await checkSiege();
 }
@@ -181,15 +177,16 @@ const validationSchema = yup.object({
 const initialValues = computed(() => {
   const responsableSejour = props.initData?.organisme?.responsableSejour
     ? props.initData.organisme.responsableSejour
-    : organismeCourant.value.personneMorale.siret
-      ? organismeCourant.value.personneMorale.responsableSejour
+    : organismeStore.organismeCourant.personneMorale.siret
+      ? organismeStore.organismeCourant.personneMorale.responsableSejour
       : {
-          nom: organismeCourant.value.personnePhysique.nomNaissance,
-          prenom: organismeCourant.value.personnePhysique.prenom,
+          nom: organismeStore.organismeCourant.personnePhysique.nomNaissance,
+          prenom: organismeStore.organismeCourant.personnePhysique.prenom,
           fonction: "organisateur de séjour",
           email: userStore.user.email,
-          telephone: organismeCourant.value.personnePhysique.telephone,
-          adresse: organismeCourant.value.personnePhysique.adresseSiege,
+          telephone: organismeStore.organismeCourant.personnePhysique.telephone,
+          adresse:
+            organismeStore.organismeCourant.personnePhysique.adresseSiege,
         };
   return {
     libelle: props.initData.libelle,

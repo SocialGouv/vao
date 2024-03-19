@@ -31,11 +31,13 @@
         name="caracteristiques.adresse"
         :value="adresse"
         :label="
-          caracteristiques.coordonnees?.adresse
+          props.initHebergement.caracteristiques?.coordonnees?.adresse
             ? 'Nouvelle adresse de l\'hébergement'
             : 'Adresse de l\'hébergement'
         "
-        :initial-adress="caracteristiques.coordonnees?.adresse?.label"
+        :initial-adress="
+          props.initHebergement.caracteristiques?.coordonnees?.adresse?.label
+        "
         :error-message="adresseErrorMessage"
         @select="onAdresseChange"
       ></SearchAddress>
@@ -441,8 +443,7 @@ import * as yup from "yup";
 const emit = defineEmits(["cancel", "submit"]);
 
 const props = defineProps({
-  initNom: { type: String, default: "" },
-  caracteristiques: {
+  initHebergement: {
     type: Object,
     default: () => ({}),
   },
@@ -453,25 +454,10 @@ const log = logger("components/hebergement");
 
 const zoom = 16;
 
-const schema = {
-  nom: yup.string().required(),
-  caracteristiques: yup.object({
-    coordonnees: yup.object({
-      ...hebergementUtils.schema.caracteristiques.coordonnees,
-    }),
-    informationsLocaux: yup.object({
-      ...hebergementUtils.schema.caracteristiques.informationsLocaux,
-    }),
-    informationsTransport: yup.object({
-      ...hebergementUtils.schema.caracteristiques.informationsTransport,
-    }),
-  }),
-};
-
-const validationSchema = yup.object(schema);
+const validationSchema = yup.object(hebergementUtils.schema);
 
 const initialValues = {
-  nom: props.initNom ?? null,
+  nom: props.initHebergement.nom ?? null,
   caracteristiques: {
     coordonnees: {
       adresse: null,
@@ -479,7 +465,7 @@ const initialValues = {
       numTelephone1: null,
       numTelephone2: null,
       email: null,
-      ...(props.caracteristiques?.coordonnees || {}),
+      ...(props.initHebergement.caracteristiques?.coordonnees || {}),
     },
     informationsLocaux: {
       type: null,
@@ -499,12 +485,12 @@ const initialValues = {
       chambresDoubles: null,
       amenagementsSpecifiques: null,
       precisionAmenagementsSpecifiques: null,
-      ...(props.caracteristiques?.informationsLocaux || {}),
+      ...(props.initHebergement.caracteristiques?.informationsLocaux || {}),
     },
     informationsTransport: {
       deplacementProximite: null,
       excursion: null,
-      ...(props.caracteristiques?.informationsTransport || {}),
+      ...(props.initHebergement.caracteristiques?.informationsTransport || {}),
     },
   },
 };
