@@ -579,7 +579,7 @@ const {
   handleChange: onPensionChange,
 } = useField("caracteristiques.informationsLocaux.pension");
 const {
-  values: prestationsHotelieres,
+  value: prestationsHotelieres,
   errorMessage: prestationsHotelieresErrorMessage,
   handleChange: onPrestationsHotelieresChange,
 } = useField("caracteristiques.informationsLocaux.prestationsHotelieres");
