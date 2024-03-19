@@ -2,6 +2,7 @@ name: 👓 Review Auto
 on:
   push:
     branches:
+      - main
       - "feat/**"
       - "fix/**"
 
