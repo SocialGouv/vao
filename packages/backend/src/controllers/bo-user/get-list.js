@@ -2,7 +2,6 @@ const BoUser = require("../../services/BoUser");
 // const Session = require("../../services/Session");
 
 const logger = require("../../utils/logger");
-const normalize = require("../../utils/normalize");
 
 const log = logger(module.filename);
 
@@ -16,7 +15,7 @@ module.exports = async function getList(req, res) {
   try {
     const { limit, offset, sortBy, sortDirection, search } = req.query;
 
-    const usersWithPagination = await BoUser.getList(adminId, {
+    const usersWithPagination = await BoUser.getList({
       limit,
       offset,
       search: JSON.parse(search ?? "{}"),

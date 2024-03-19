@@ -54,6 +54,26 @@
                 />
               </div>
             </div>
+            <div
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+            >
+              <div class="fr-input-group">
+                <label class="fr-label"> Action </label>
+                <DsfrSelect
+                  :model-value="searchState.estInstructeurPrincipal"
+                  name="action"
+                  mode="tags"
+                  :searchable="true"
+                  :close-on-select="false"
+                  :options="[
+                    'Tous les statuts',
+                    'A instruire',
+                    'Lecture seule',
+                  ]"
+                  @update:model-value="onActionSelect"
+                />
+              </div>
+            </div>
           </fieldset>
         </form>
       </div>
@@ -75,6 +95,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: ["is-connected"],
+});
+
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 import { formatDate } from "date-fns/format";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
@@ -132,6 +156,14 @@ const onStatutSelect = (value) => {
   }
 };
 
+const onActionSelect = (value) => {
+  if (value === "Tous les statuts") {
+    searchState.estInstructeurPrincipal = null;
+  } else {
+    searchState.estInstructeurPrincipal = value === "A instruire";
+  }
+};
+
 const headers = [
   {
     column: "libelle",
@@ -170,6 +202,12 @@ const headers = [
       component: DemandeStatusBadge,
       statut: statut,
     }),
+  },
+  {
+    column: "a_instruire",
+    text: "Action",
+    format: (value) => (value.a_instruire ? "A instruire" : "Lecture seule"),
+    sort: true,
   },
 ];
 const navigate = (state) => navigateTo(`/sejours/${state.demandeSejourId}`);

@@ -10,19 +10,19 @@ const { status } = require("../helpers/users");
 const log = logger(module.filename);
 
 const query = {
-  activate: `UPDATE back.users 
+  activate: `UPDATE back.users
   SET verified = NOW(),
   edited_at = NOW()
   WHERE id = $1`,
   create: `
     INSERT INTO back.users (
-      mail, 
-      pwd, 
-      blocked, 
+      mail,
+      pwd,
+      blocked,
       nom,
       prenom,
       validated
-    ) 
+    )
     VALUES (
       $1,
       crypt($2, gen_salt('bf')),
@@ -44,10 +44,10 @@ const query = {
   editPassword: (email, password) => [
     `
       UPDATE back.users
-      SET 
+      SET
         pwd = crypt($2, gen_salt('bf')),
         edited_at = NOW()
-      WHERE 
+      WHERE
         mail = $1
       `,
     [normalize(email), password],
@@ -55,43 +55,13 @@ const query = {
   editStatus: (userId, isBlocked) => [
     `
       UPDATE back.users
-      SET 
+      SET
         blocked = $2,
         edited_at = NOW()
-      WHERE 
+      WHERE
         id = $1
       `,
     [userId, isBlocked],
-  ],
-  login: `
-    SELECT 
-      id as id,
-      mail as email,
-      pwd is not null as "hasPwd",
-      blocked as "isBlocked"
-    FROM back.users
-    WHERE 
-      mail = $1
-      AND pwd = crypt($2, pwd)
-      AND deleted is False
-    `,
-  select: (criterias) => [
-    `
-      SELECT 
-        id as id,
-        mail as email,
-        pwd is not null as "hasPwd",
-        blocked as "isBlocked",
-        nom as "nom",
-        prenom as "prenom",
-        validated as "valide"
-      FROM back.users
-      WHERE 1=1 
-      ${Object.keys(criterias)
-        .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
-        .join(" ")}
-      `,
-    Object.values(criterias),
   ],
   getList: (search) => `
       SELECT
@@ -101,62 +71,92 @@ const query = {
         us.blocked as "isBlocked",
         us.nom as "nom",
         us.prenom as "prenom",
-        replace(replace(us.validated::text,'true','Oui')::text,'false','Non') as "valide",
-        te.label as "territoire"
+        us.validated as "validated",
+        t.label as "territoire"
       FROM back.users AS us
-      INNER JOIN back.user_territoires AS ut on ut.use_id = us.id
-      INNER JOIN geo.territoires AS te on te.code = ut.ter_code
+      LEFT JOIN geo.territoires t on t.code = us.ter_code
       WHERE 1 = 1
       ${search.map((s) => ` AND ${s} `).join("")}
   `,
   getListTotal: (search) => `
   SELECT COUNT(DISTINCT us.id)
     FROM back.users AS us
-    INNER JOIN back.user_territoires AS ut on ut.use_id = us.id
-    INNER JOIN geo.territoires AS te on te.code = ut.ter_code
+    LEFT JOIN geo.territoires t on t.code = us.ter_code
     WHERE 1 = 1
        ${search.map((s) => ` AND ${s} `).join("")}
     `,
-  };
+  login: `
+    SELECT
+      id as id,
+      mail as email,
+      pwd is not null as "hasPwd",
+      blocked as "isBlocked",
+      ter_code as "territoireCode"
+    FROM back.users
+    WHERE
+      mail = $1
+      AND pwd = crypt($2, pwd)
+      AND deleted is False
+    `,
+  select: (criterias) => [
+    `
+      SELECT
+        id as id,
+        mail as email,
+        pwd is not null as "hasPwd",
+        blocked as "isBlocked",
+        nom as "nom",
+        prenom as "prenom",
+        validated as "valide"
+      FROM back.users
+      WHERE 1=1
+      ${Object.keys(criterias)
+        .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
+        .join(" ")}
+      `,
+    Object.values(criterias),
+  ],
+};
 
-
-
-module.exports.getList = async (
-  adminId,
-  { limit, offset, sortBy, sortDirection = "ASC", search } = {},
-) => {
+module.exports.getList = async ({
+  limit,
+  offset,
+  sortBy,
+  sortDirection = "ASC",
+  search,
+} = {}) => {
   //  TODO : create the logic (here or in the service) to get the department of the admin.
   //  For me, the list of demandes that are goven to the admin are the list of all demands of the department
 
-    log.i("getList - IN");
-    log.d("getList - search",search);
-    const searchQuery = [];
+  log.i("getList - IN");
+  log.d("getList - search", search);
+  const searchQuery = [];
 
   // Search management
   if (search?.nom && search.nom.length) {
     searchQuery.push(`nom ilike '%${search.nom}%'`);
   }
   if (search?.prenom && search.prenom.length) {
-    searchQuery.push(`prenom ilike '%${search.prenom}%'`);;
+    searchQuery.push(`prenom ilike '%${search.prenom}%'`);
   }
   if (search?.email && search.email.length) {
-    searchQuery.push(`mail ilike '%${search.email}%'`);;
+    searchQuery.push(`mail ilike '%${search.email}%'`);
   }
   if (search?.territoire && search.territoire.length) {
-    searchQuery.push(`te.label ilike '%${search.territoire}%'`);;
+    searchQuery.push(`t.label ilike '%${search.territoire}%'`);
   }
   //if (search?.valide && search.valide.length) {
-    searchQuery.push(`validated = ${search.valide}`);;
+  searchQuery.push(`validated = ${search.valide}`);
   //}
   let queryWithPagination = query.getList(searchQuery);
 
   // Order management
   if (sortBy && sortDirection) {
     queryWithPagination += `
-    ORDER BY "${sortBy}" ${sortDirection} 
+    ORDER BY "${sortBy}" ${sortDirection}
     `;
   } else {
-    queryWithPagination += '\n ORDER BY nom, prenom';
+    queryWithPagination += "\n ORDER BY nom, prenom";
   }
 
   // Pagination management
@@ -167,14 +167,14 @@ module.exports.getList = async (
     `;
   }
 
-  log.d("getList",queryWithPagination);
+  log.d("getList", queryWithPagination);
   const response = await pool.query(queryWithPagination);
   const total = await pool.query(query.getListTotal(searchQuery));
-  
+
   log.i("getList - DONE");
   return {
-    users: response.rows,
     total: total.rows[0].count,
+    users: response.rows,
   };
 };
 

@@ -4,6 +4,13 @@ const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 
+const getHebergementWhereQuery = (hebergementIds) =>
+  hebergementIds
+    .map(
+      (h) => `DS.HEBERGEMENT -> 'hebergements' @> '[{"hebergementId":"${h}"}]'`,
+    )
+    .join(" OR ");
+
 const query = {
   create: `
     INSERT INTO front.demande_sejour(
@@ -17,7 +24,7 @@ const query = {
       transport,
       sanitaires,
       organisme
-    ) 
+    )
     VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9)
     RETURNING
         id as "demandeId"
@@ -54,7 +61,7 @@ const query = {
     WHERE
       uo.use_id = $1
     `,
-  getByAdminId: (search) => `
+  getByAdminId: (search, hebergementIds) => `
     SELECT
       ds.id as "demandeSejourId",
       ds.statut as "statut",
@@ -70,28 +77,36 @@ const query = {
       ds.transport as "transport",
       ds.projet_sejour as "projet_sejour",
       ds.sanitaires as "sanitaires",
-      ds.organisateurs as "projet_sejour",
+      ds.organisme as "organisme",
       o.personne_morale as "personne_morale",
       o.personne_physique as "personne_physique",
-      o.type_organisme as "type_organisme"
+      o.type_organisme as "typeOrganisme",
+      (DS.HEBERGEMENT -> 'hebergements')[0] ->> 'hebergementId' IN ('${hebergementIds.join("','")}') as "a_instruire"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-    WHERE 1 = 1
+    WHERE  (${getHebergementWhereQuery(hebergementIds)})
        ${search.map((s) => ` AND ${s} `).join("")}
     `,
-  getByAdminIdTotal: (search) => `
+  getByAdminIdTotal: (search, hebergementIds) => `
   SELECT COUNT(DISTINCT ds.id)
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-    WHERE 1 = 1
+    WHERE (${getHebergementWhereQuery(hebergementIds)})
        ${search.map((s) => ` AND ${s} `).join("")}
     `,
+  getDepartementByDep: (departement_codes) => `
+  SELECT *
+    FROM
+    FRONT.HEBERGEMENT
+    WHERE
+  (${departement_codes.map((code) => `CARACTERISTIQUES -> 'coordonnees' -> 'adresse' ->> 'departement' = '${code}'`).join(" OR ")})
+  `,
   getEmailCcList: `
     SELECT u.mail AS mail
     FROM front.users u
     JOIN front.user_organisme uo ON u.id = uo.use_id
     JOIN front.organismes o ON uo.org_id = o.id
-    WHERE 
+    WHERE
       o.personne_morale->>'siren' = $1 AND
       o.personne_morale->>'siegeSocial' = 'true'
 `,
@@ -172,7 +187,7 @@ const query = {
       date_debut = $2,
       date_fin = $3,
       duree = $4,
-      organisme = $5,   
+      organisme = $5,
       edited_at=NOW()
     WHERE
       ds.id = $6
@@ -288,14 +303,22 @@ module.exports.getOne = async (criterias = {}) => {
 };
 
 module.exports.getByAdminId = async (
-  adminId,
   { limit, offset, sortBy, sortDirection = "ASC", search } = {},
+  departement_codes,
 ) => {
-  //  TODO : create the logic (here or in the service) to get the department of the admin.
-  //  For me, the list of demandes that are goven to the admin are the list of all demands of the department
-
-  log.i("getByAdminId - IN", adminId);
   const searchQuery = [];
+
+  const possibleHebergementsIds =
+    (await pool.query(query.getDepartementByDep(departement_codes)))?.rows?.map(
+      (h) => h.id,
+    ) ?? [];
+
+  if (possibleHebergementsIds.length === 0) {
+    return {
+      demandes_sejour: [],
+      total: 0,
+    };
+  }
 
   // Search management
   if (search?.libelle && search.libelle.length) {
@@ -311,7 +334,23 @@ module.exports.getByAdminId = async (
   if (search?.statut && search.statut.length) {
     searchQuery.push(`statut = '${search.statut}'`);
   }
-  let queryWithPagination = query.getByAdminId(searchQuery);
+
+  if (search?.estInstructeurPrincipal === true) {
+    searchQuery.push(
+      `(DS.HEBERGEMENT -> 'hebergements')[0] ->> 'hebergementId' IN ('${possibleHebergementsIds.join("','")}')`,
+    );
+  }
+
+  if (search?.estInstructeurPrincipal === false) {
+    searchQuery.push(
+      `(DS.HEBERGEMENT -> 'hebergements')[0] ->> 'hebergementId' NOT IN ('${possibleHebergementsIds.join("','")}')`,
+    );
+  }
+
+  let queryWithPagination = query.getByAdminId(
+    searchQuery,
+    possibleHebergementsIds,
+  );
 
   // Order management
   if (sortBy && sortDirection) {
@@ -331,7 +370,9 @@ module.exports.getByAdminId = async (
   }
 
   const response = await pool.query(queryWithPagination);
-  const total = await pool.query(query.getByAdminIdTotal(searchQuery));
+  const total = await pool.query(
+    query.getByAdminIdTotal(searchQuery, possibleHebergementsIds),
+  );
 
   log.d("getByAdminId - DONE");
   return {
