@@ -183,10 +183,12 @@ jobs:
           psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-3-back-init.sql
           echo "02-4-front-init : "
           psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-4-front-init.sql
+          echo "02-5-front-init : "
+          psql -d $PGDATABASE -f /workspace/pg/scripts/02/02-5-ref-init.sql
           echo "03-1-geo-data : "
           psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-1-geo-data.sql
           echo "03-2-back-data : "
           psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-2-back-data.sql
           echo "03-2-ref-data : "
-          psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-2-ref-data.sql
+          psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-3-ref-data.sql
         fi
