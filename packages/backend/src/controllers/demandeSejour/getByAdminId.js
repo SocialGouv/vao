@@ -7,20 +7,22 @@ const log = logger(module.filename);
 module.exports = async function getByAdminId(req, res) {
   log.i("In");
   const { decoded } = req;
-  //  TODO : check what the jwt contains. Here i suppose that the id the the admin id
   const { id: adminId } = decoded ?? {};
   log.d("userId", { adminId });
 
   try {
     const { limit, offset, sortBy, sortDirection, search } = req.query;
 
-    const demandesWithPagination = await DemandeSejour.getByAdminId(adminId, {
-      limit,
-      offset,
-      search: JSON.parse(search ?? "{}"),
-      sortBy,
-      sortDirection,
-    });
+    const demandesWithPagination = await DemandeSejour.getByAdminId(
+      {
+        limit,
+        offset,
+        search: JSON.parse(search ?? "{}"),
+        sortBy,
+        sortDirection,
+      },
+      req.departements.map((d) => d.value),
+    );
     log.d(demandesWithPagination);
     return res.status(200).json({ demandesWithPagination });
   } catch (error) {

@@ -26,6 +26,7 @@ CREATE TABLE back.users (
    edited_at          TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    auth_try           INT                  NOT NULL default 0,
    blocked            TIMESTAMP            NULL,
+   ter_code           VARCHAR(4)           NOT NULL REFERENCES geo.territoires(code),
    CONSTRAINT pk_back_users PRIMARY KEY (id)
 );
 
@@ -47,15 +48,6 @@ CREATE TABLE back.user_roles (
    use_id             INT               NOT NULL REFERENCES back.users(id) ON DELETE CASCADE,
    rol_id             INT               NOT NULL REFERENCES back.roles(id) ON DELETE CASCADE,
    CONSTRAINT pk_user_roles PRIMARY KEY (use_id,rol_id)
-);
-
-/*==============================================================*/
-/* Table : user_territoires                                     */
-/*==============================================================*/
-CREATE TABLE back.user_territoires (
-   use_id             INT               NOT NULL REFERENCES back.users(id) ON DELETE CASCADE,
-   ter_code           VARCHAR(4)        NOT NULL REFERENCES geo.territoires(code),
-   CONSTRAINT pk_user_geo PRIMARY KEY (use_id,ter_code)
 );
 
 

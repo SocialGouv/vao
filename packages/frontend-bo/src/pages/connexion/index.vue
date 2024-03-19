@@ -48,8 +48,8 @@
               </p>
             </DsfrFieldset>
             <DsfrButton :disabled="!canLogin" @click.prevent="login"
-              >Se connecter</DsfrButton
-            >
+              >Se connecter
+            </DsfrButton>
           </form>
         </div>
       </div>
@@ -59,6 +59,7 @@
 
 <script setup>
 import { useUserStore } from "@/stores/user";
+
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 

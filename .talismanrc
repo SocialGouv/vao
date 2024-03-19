@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 8e9989983392b5cab59ec15524c744ae4e6ee52ea7b3f783b1d6202ad90d7402
+  checksum: 577969d953076bd8813ab0a7edb1a8d9d7e8c629ae707b1549486fee5146ddf1
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -70,7 +70,7 @@ fileignoreconfig:
 - filename: docker-compose.yaml
   checksum: f4fc98c9f7af1169a8c75e3f11586c36665fef55807326ec9af55037c7bc34d4
 - filename: packages/backend/src/config.js
-  checksum: ee40db09f52fe21ddfa6a66a849d8848989238c0b6cc19a06b7875ce5c86ed56
+  checksum: 8d3ce0e1bbbaed0225f0fbda881cf0e748ef32296e3a4857464a104e805e4281
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
   checksum: d66401c29c51850346868ff2d7c097fbd572bbfd8cfae77c87ae5274a7cc8409
 - filename: packages/backend/src/controllers/authentication/email/index.js
@@ -115,6 +115,8 @@ fileignoreconfig:
   checksum: 2237d2a196392be19f0ac6d116954898a4e68b24b1793fb8a060ba1da83564b0
 - filename: packages/frontend-usagers/src/components/organisateur.vue
   checksum: 5be487a1e995dd4207baabe268d2d4c7159d7a3b3ec05663825400e47590fdee
+- filename: packages/frontend-usagers/src/components/organisme/personne-morale-read-only.vue
+  checksum: 2b3e374044b3d7142a81fd3a6720e197e7839c281d74b594755d0df9035c3576
 - filename: packages/frontend-usagers/src/components/organisme/synthese.vue
   checksum: c9d27cea7175d829b78e524c08dd744b097f08a2fae2dffddab01f6703f3055c
 - filename: packages/frontend-usagers/src/components/personnes-read-only.vue
@@ -140,7 +142,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/utils/random.js
   checksum: ae46dcd8940b0757de155906c1c7d037ceb0cad95b0303f1756f33e3c870563d
 - filename: packages/frontend-usagers/src/utils/regex.js
-  checksum: ae09367c61d8d12d69af5086483167d6e4ff0170c85c6c7cb610fe6bb4eec247
+  checksum: fdd5fd3d1b645ad5e53f3ee8b6300c95c6ef3589e8e956aeefbc7ee37945c310
 - filename: packages/mail-server/src/config.js
   checksum: c792d383dfec26115dfab5a391e6427b5b9c4416da783388c7ef00d4f97585bb
 - filename: pg/scripts/01-init.sql
@@ -150,15 +152,21 @@ fileignoreconfig:
 - filename: pg/scripts/02/02-2-doc-init.sql
   checksum: d797566c2dcc2b9420e320de3a08ddb2349181f0ad9dead26cf4b169c381f2bb
 - filename: pg/scripts/02/02-3-back-init.sql
-  checksum: 2212858d82852bbef797353c755b24f9eb7631e5c559233ac4d30c6a9eedfd49
+  checksum: 96d98b024d36e64a1b03ff13dc56f5fee7f40abaf3555f76fe5abafc65ee14dd
 - filename: pg/scripts/02/02-4-front-init.sql
   checksum: eb15cba42ed673b186ad9d0d67c3ba7c484e09fd45549b3ab09c66678bb5529e
+- filename: pg/scripts/02/02-5-ref-init.sql
+  checksum: c80c2eae776be18cf0c1e6cb4de92fc0e555cb2bbf73ac535d3931f408c7b249
 - filename: pg/scripts/03/03-1-geo-data.sql
   checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
 - filename: pg/scripts/03/03-2-back-data.sql
   checksum: d65e191f22dd46a53fd07dd02856d505a01f38b6274ef1989536aa193faebb2d
 - filename: pg/scripts/03/03-3-front-data.sql
   checksum: 413817c8133c69f883087a7042258dcb75e4f75a45897ea830f86d8a5cba561a
+- filename: pg/scripts/03/03-3-ref-data.sql
+  checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
+- filename: pg/seeds/BO-1-back-user.sql
+  checksum: 7215057cd09f7f877755446eb06c6f5949e4aa6e5d5282c5939bbe1bc16dc098
 - filename: pod-backend-66df4cdf46-82vfh.yaml
   checksum: 6505514978ef8de3b512962a9e93eb5f6bece8b86fcbf32d2d55a780e06592a7
 scopeconfig:

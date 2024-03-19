@@ -5,6 +5,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: ["is-connected"],
+});
+
 const route = useRoute();
 const demandeStore = useDemandeSejourStore();
 </script>

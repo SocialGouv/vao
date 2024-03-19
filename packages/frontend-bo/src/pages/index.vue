@@ -5,5 +5,6 @@
 <script setup>
 definePageMeta({
   layout: "default",
+  middleware: ["is-connected"],
 });
 </script>

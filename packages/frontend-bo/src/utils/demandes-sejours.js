@@ -24,11 +24,11 @@ const getSaison = (demande) => {
   }
 };
 const getOrganismeTitle = (demande) => {
-  if (demande.type_organisme === "personne_physique") {
+  if (demande.typeOrganisme === "personne_physique") {
     return `${demande.personne_physique.prenom} ${demande.personne_physique.nomUsage ?? demande.personne_physique.nomNaissance}`;
   }
 
-  if (demande.type_organisme === "personne_morale") {
+  if (demande.typeOrganisme === "personne_morale") {
     return demande.personne_morale.raisonSociale;
   }
 };
