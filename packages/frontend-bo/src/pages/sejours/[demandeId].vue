@@ -201,14 +201,14 @@ const comments = ref({});
 
 onMounted(async () => {
   try {
-    await demandeStore.setCurrentDemande(route.params.idDemande);
+    await demandeStore.setCurrentDemande(route.params.demandeId);
   } catch (e) {
     console.log("je catch");
     navigateTo("/sejours");
   }
   comments.value =
     JSON.parse(localStorage.getItem("comments") ?? "{}")[
-      route.params.idDemande
+      route.params.demandeId
     ] ?? {};
 });
 
@@ -226,7 +226,7 @@ const saveComment = debounce((comments) => {
     "comments",
     JSON.stringify({
       ...currentStorage,
-      [route.params.idDemande]: comments,
+      [route.params.demandeId]: comments,
     }),
   );
 });
