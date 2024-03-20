@@ -166,7 +166,7 @@ fileignoreconfig:
 - filename: pg/scripts/03/03-3-ref-data.sql
   checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
 - filename: pg/seeds/BO-1-back-user.sql
-  checksum: 7215057cd09f7f877755446eb06c6f5949e4aa6e5d5282c5939bbe1bc16dc098
+  checksum: 0195772a66c59092fa723632cff09c74d222cf5aa339493f7e382d25f23122ae
 - filename: pod-backend-66df4cdf46-82vfh.yaml
   checksum: 6505514978ef8de3b512962a9e93eb5f6bece8b86fcbf32d2d55a780e06592a7
 scopeconfig:
