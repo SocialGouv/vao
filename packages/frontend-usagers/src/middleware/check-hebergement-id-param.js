@@ -2,7 +2,7 @@ import { useHebergementStore } from "~/stores/hebergement";
 import { defineNuxtRouteMiddleware, navigateTo } from "#app";
 import { logger } from "#imports";
 
-const log = logger("middlewares/check-id-demande-sejour");
+const log = logger("middlewares/check-hebergement-id-param");
 
 export default defineNuxtRouteMiddleware(async (to) => {
   log.i("IN", { to });

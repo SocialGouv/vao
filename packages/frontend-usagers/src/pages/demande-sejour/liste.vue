@@ -256,7 +256,7 @@ const headers = [
     },
   },
   {
-    column: "saison",
+    column: "periode",
     text: "Saison",
     sorter: "saison",
     headerAttrs: {

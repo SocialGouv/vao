@@ -27,8 +27,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.type
+            props.hebergement?.informationsLocaux.type
           }}</span>
         </div>
       </div>
@@ -37,9 +36,7 @@
           <span class="read-only-label">Nom du lieu d'hébergement</span>
         </div>
         <div class="fr-col-12">
-          <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.nom
-          }}</span>
+          <span class="read-only-value">{{ props.hebergement?.nom }}</span>
         </div>
       </div>
       <div class="fr-fieldset__element">
@@ -48,8 +45,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques.coordonnees
-              .nomGestionnaire
+            props.hebergement?.coordonnees.nomGestionnaire
           }}</span>
         </div>
       </div>
@@ -59,8 +55,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques.coordonnees
-              .adresse.label
+            props.hebergement?.coordonnees.adresse.label
           }}</span>
         </div>
       </div>
@@ -70,8 +65,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques.coordonnees
-              .numTelephone1
+            props.hebergement?.coordonnees.numTelephone1
           }}</span>
         </div>
       </div>
@@ -81,8 +75,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques.coordonnees
-              .email
+            props.hebergement?.coordonnees.email
           }}</span>
         </div>
       </div>
@@ -94,11 +87,9 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.visiteLocaux
+            props.hebergement?.informationsLocaux.visiteLocaux
               ? dayjs(
-                  hebergementStore.hebergementCourant?.caracteristiques
-                    .informationsLocaux.visiteLocauxAt,
+                  props.hebergement?.informationsLocaux.visiteLocauxAt,
                 ).format("DD/MM/YYYY")
               : "Non"
           }}</span>
@@ -112,9 +103,7 @@
           <span class="read-only-value">{{
             hebergementUtils.accessibiliteOptions.find(
               (h) =>
-                h.value ===
-                hebergementStore.hebergementCourant?.caracteristiques
-                  .informationsLocaux.accessibilite,
+                h.value === props.hebergement?.informationsLocaux.accessibilite,
             )?.label
           }}</span>
         </div>
@@ -126,10 +115,7 @@
         <div class="fr-col-12">
           <span class="read-only-value">{{
             hebergementUtils.pensionOptions.find(
-              (h) =>
-                h.value ===
-                hebergementStore.hebergementCourant?.caracteristiques
-                  .informationsLocaux.pension,
+              (h) => h.value === props.hebergement?.informationsLocaux.pension,
             )?.label
           }}</span>
         </div>
@@ -142,7 +128,7 @@
           <span class="read-only-value">{{
             hebergementUtils.prestationsHotelieresOptions
               .filter((p) =>
-                hebergementStore.hebergementCourant?.caracteristiques.informationsLocaux.prestationsHotelieres.includes(
+                props.hebergement?.informationsLocaux.prestationsHotelieres.includes(
                   p.name,
                 ),
               )
@@ -157,8 +143,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.descriptionLieuHebergement
+            props.hebergement?.informationsLocaux.descriptionLieuHebergement
           }}</span>
         </div>
       </div>
@@ -168,8 +153,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.nombreLits
+            props.hebergement?.informationsLocaux.nombreLits
           }}</span>
         </div>
       </div>
@@ -179,8 +163,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.nombreLitsSuperposes
+            props.hebergement?.informationsLocaux.nombreLitsSuperposes
           }}</span>
         </div>
       </div>
@@ -192,10 +175,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.litsDessus
-              ? "Oui"
-              : "Non"
+            props.hebergement?.informationsLocaux.litsDessus ? "Oui" : "Non"
           }}</span>
         </div>
       </div>
@@ -207,8 +187,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.nombreMaxPersonnesCouchage
+            props.hebergement?.informationsLocaux.nombreMaxPersonnesCouchage
           }}</span>
         </div>
       </div>
@@ -220,8 +199,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.couchageIndividuel
+            props.hebergement?.informationsLocaux.couchageIndividuel
               ? "Oui"
               : "Non"
           }}</span>
@@ -235,8 +213,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.rangementIndividuel
+            props.hebergement?.informationsLocaux.rangementIndividuel
               ? "Oui"
               : "Non"
           }}</span>
@@ -248,8 +225,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.chambresUnisexes
+            props.hebergement?.informationsLocaux.chambresUnisexes
               ? "Oui"
               : "Non"
           }}</span>
@@ -261,8 +237,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.chambresDoubles
+            props.hebergement?.informationsLocaux.chambresDoubles
               ? "Oui"
               : "Non"
           }}</span>
@@ -274,8 +249,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsLocaux.amenagementsSpecifiques
+            props.hebergement?.informationsLocaux.amenagementsSpecifiques
               ? "Oui"
               : "Non"
           }}</span>
@@ -289,8 +263,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsTransport.vehiculesAdaptes
+            props.hebergement?.informationsTransport.vehiculesAdaptes
               ? "Oui"
               : "Non"
           }}</span>
@@ -302,8 +275,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsTransport.deplacementProximite
+            props.hebergement?.informationsTransport.deplacementProximite
           }}</span>
         </div>
       </div>
@@ -313,8 +285,7 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            hebergementStore.hebergementCourant?.caracteristiques
-              .informationsTransport.excursion
+            props.hebergement?.informationsTransport.excursion
           }}</span>
         </div>
       </div>
@@ -326,27 +297,9 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">
-            {{
-              hebergementStore.hebergementCourant?.caracteristiques
-                .informationsTransport.rejoindreEtape
-            }}
+            {{ props.hebergement?.informationsTransport?.rejoindreEtape }}
           </span>
         </div>
-      </div>
-    </DsfrFieldset>
-    <DsfrFieldset legend="Attestation sur l'honneur">
-      <div class="fr-col-12">
-        <span
-          v-if="props.hebergement.caracteristiques.attestation.aCertifie"
-          class="read-only-value"
-        >
-          Je soussigné,
-          {{ props.hebergement.caracteristiques.attestation.prenom }}
-          {{ props.hebergement.caracteristiques.attestation.nom }}, en qualité
-          de {{ props.hebergement.caracteristiques.attestation.qualite }},
-          certifie sur l'honneur que les renseignements portés sur cette
-          déclaration sont exacts.
-        </span>
       </div>
     </DsfrFieldset>
   </div>

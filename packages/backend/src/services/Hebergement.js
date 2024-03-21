@@ -7,16 +7,32 @@ const log = logger(module.filename);
 
 const query = {
   create: `
-    INSERT INTO front.hebergement(user_id,nom,caracteristiques,created_at,edited_at)
-    VALUES ($1,$2,$3,NOW(),NOW())
+    INSERT INTO front.hebergement(
+      user_id, 
+      nom,  
+      coordonnees,
+      informations_locaux,
+      informations_transport,
+      created_at,
+      edited_at
+    )
+    VALUES (
+      $1, 
+      $2, 
+      $3, 
+      $4, 
+      $5, 
+      NOW(),
+      NOW()
+    )
     RETURNING id
     `,
   get: `
     SELECT
       id,
       nom,
-      caracteristiques#> '{coordonnees, adresse, departement}' as departement,
-      caracteristiques#> '{coordonnees, adresse, label}' as adresse,
+      coordonnees#> '{adresse, departement}' as departement,
+      coordonnees#> '{adresse, label}' as adresse,
       supprime,
       created_at as "createdAt",
       edited_at as "editedAt"
@@ -30,11 +46,13 @@ const query = {
       id,
       supprime,
       nom,
-      caracteristiques,
+      coordonnees,
+      informations_locaux as "informationsLocaux",
+      informations_transport as "informationsTransport",
       created_at as "createdAt",
       edited_at as "editedAt"
     FROM front.hebergement          
-    WHERE 1=1 
+    WHERE 1 = 1 
     ${Object.keys(criterias)
       .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
       .join(" ")}
@@ -45,18 +63,28 @@ const query = {
     UPDATE front.hebergement
     SET 
       nom = $2, 
-      caracteristiques = $3, 
+      coordonnees = $3,
+      informations_locaux = $4,
+      informations_transport = $5, 
       edited_at = NOW()
     WHERE id = $1
   `,
 };
 
-module.exports.create = async (userId, nom, caracteristiques) => {
+module.exports.create = async (
+  userId,
+  nom,
+  coordonnees,
+  informationsLocaux,
+  informationsTransport,
+) => {
   log.i("create - IN");
   const response = await pool.query(query.create, [
     userId,
     nom,
-    caracteristiques,
+    coordonnees,
+    informationsLocaux,
+    informationsTransport,
   ]);
   if (response) {
     log.i(response);
@@ -67,12 +95,20 @@ module.exports.create = async (userId, nom, caracteristiques) => {
   return false;
 };
 
-module.exports.update = async (id, nom, caracteristiques) => {
+module.exports.update = async (
+  id,
+  nom,
+  coordonnees,
+  informationsLocaux,
+  informationsTransport,
+) => {
   log.i("create - IN");
   const { rowCount } = await pool.query(query.update, [
     id,
     nom,
-    caracteristiques,
+    coordonnees,
+    informationsLocaux,
+    informationsTransport,
   ]);
   if (rowCount === 0) {
     throw new AppError("hebergement " + id + " not found");

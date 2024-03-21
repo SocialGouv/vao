@@ -6,15 +6,34 @@ const log = logger(module.filename);
 
 module.exports = async function post(req, res) {
   const hebergementId = req.params.id;
-  const { nom, caracteristiques } = req.body;
-  log.i("IN", { caracteristiques, hebergementId, nom });
+  const { nom, coordonnees, informationsLocaux, informationsTransport } =
+    req.body;
+  log.i("IN", {
+    coordonnees,
+    hebergementId,
+    informationsLocaux,
+    informationsTransport,
+    nom,
+  });
 
-  if (!nom || !caracteristiques || !hebergementId) {
+  if (
+    !nom ||
+    !coordonnees ||
+    !informationsLocaux ||
+    !informationsTransport ||
+    !hebergementId
+  ) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
   }
   try {
-    await Hebergement.update(hebergementId, nom, caracteristiques);
+    await Hebergement.update(
+      hebergementId,
+      nom,
+      coordonnees,
+      informationsLocaux,
+      informationsTransport,
+    );
     return res.sendStatus(200);
   } catch (error) {
     log.w(error);

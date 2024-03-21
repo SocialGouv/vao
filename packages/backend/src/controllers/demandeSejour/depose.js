@@ -13,6 +13,7 @@ const log = logger(module.filename);
 module.exports = async function post(req, res) {
   const demandeSejourId = req.params.id;
   const { id: userId } = req.decoded;
+  const { attestation } = req.body;
   log.i("IN", { demandeSejourId });
 
   if (!demandeSejourId) {
@@ -21,6 +22,11 @@ module.exports = async function post(req, res) {
   }
 
   let demandeId, ARuuid, DSuuid, declaration, idFonctionnelle, departementSuivi;
+  if (!attestation) {
+    log.w("missing parameter");
+    return res.status(400).json({ message: "paramètre manquant." });
+  }
+
   try {
     declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
     if (!declaration) {
@@ -48,8 +54,7 @@ module.exports = async function post(req, res) {
           "Une erreur est survenue durant la transmission de la declaration",
       });
     }
-    departementSuivi =
-      hebergement?.caracteristiques?.coordonnees?.adresse?.departement;
+    const departementSuivi = hebergement?.coordonnees?.adresse?.departement;
     if (!departementSuivi) {
       log.w("error while getting departement");
       return res.status(400).json({
@@ -68,10 +73,15 @@ module.exports = async function post(req, res) {
     const currentYear = dayjs(declaration.dateDebut).format("YY");
     idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
 
-    demandeId = await DemandeSejour.update("finalisation", demandeSejourId, {
-      departementSuivi,
-      idFonctionnelle,
-    });
+    const demandeId = await DemandeSejour.update(
+      "finalisation",
+      demandeSejourId,
+      {
+        attestation,
+        departementSuivi,
+        idFonctionnelle,
+      },
+    );
 
     if (!demandeId) {
       log.w("update query returned null, demandeId expected");

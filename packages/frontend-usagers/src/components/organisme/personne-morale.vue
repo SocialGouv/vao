@@ -38,7 +38,7 @@
               :label-visible="true"
               :model-value="raisonSociale"
               :required="false"
-              :disabled="true"
+              :readonly="true"
             />
           </div>
         </div>
@@ -50,7 +50,7 @@
               :label-visible="true"
               :model-value="statut"
               :required="false"
-              :disabled="true"
+              :readonly="true"
             />
           </div>
         </div>
@@ -62,7 +62,7 @@
               :label-visible="true"
               :model-value="adresse"
               :required="false"
-              :disabled="true"
+              :readonly="true"
             />
           </div>
         </div>
@@ -74,7 +74,7 @@
               :label-visible="true"
               :model-value="pays"
               :required="false"
-              :disabled="true"
+              :readonly="true"
             />
           </div>
         </div>
@@ -86,7 +86,7 @@
               :label-visible="true"
               :model-value="email"
               :required="true"
-              :disabled="false"
+              :readonly="false"
               :is-valid="emailMeta.valid"
               :error-message="emailErrorMessage"
               placeholder=""
@@ -103,7 +103,7 @@
               :label-visible="true"
               :model-value="telephone"
               :required="true"
-              :disabled="false"
+              :readonly="false"
               :is-valid="telephoneMeta.valid"
               :valid-message="telephoneValidMessage"
               :error-message="telephoneErrorMessage"

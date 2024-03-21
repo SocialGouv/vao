@@ -40,8 +40,9 @@ const links = [
 
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
-const log = logger("pages/hebermgents/new");
+const log = logger("pages/hebergement/creation");
 const hebergementStore = useHebergementStore();
+
 async function addHebergement(hebergement) {
   log.d("addHebergement - IN");
   try {
