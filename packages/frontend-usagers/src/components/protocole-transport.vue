@@ -109,13 +109,7 @@ const props = defineProps({
 });
 const emit = defineEmits(["previous", "next", "update"]);
 
-const schemaInfosTransport = { ...protocoleTransport.schema };
-
-const validationSchema = computed(() =>
-  yup.object({
-    ...schemaInfosTransport,
-  }),
-);
+const validationSchema = yup.object(protocoleTransport.schema);
 
 const initialValues = {
   responsableTransportLieuSejour: props.initData.responsableTransportLieuSejour,

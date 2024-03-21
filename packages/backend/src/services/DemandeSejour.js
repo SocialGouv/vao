@@ -12,131 +12,158 @@ const getHebergementWhereQuery = (hebergementIds) =>
     .join(" OR ");
 
 const query = {
-  create: `
-    INSERT INTO front.demande_sejour(
-      statut,
-      organisme_id,
+  create: (
+    organismeId,
+    libelle,
+    dateDebut,
+    dateFin,
+    duree,
+    periode,
+    responsableSejour,
+    protocoleTransport,
+    protocoleSanitaire,
+    organisme,
+  ) => [
+    `
+  INSERT INTO front.demande_sejour(
+    statut,
+    organisme_id,
+    libelle,
+    date_debut,
+    date_fin,
+    duree,
+    periode,
+    responsable_sejour,
+    transport,
+    sanitaires,
+    organisme
+  )
+  VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+  RETURNING
+      id as "demandeId"
+  ;`,
+    [
+      organismeId,
       libelle,
-      date_debut,
-      date_fin,
+      dateDebut,
+      dateFin,
       duree,
       periode,
-      transport,
-      sanitaires,
-      organisme
-    )
-    VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9)
-    RETURNING
-        id as "demandeId"
-    ;
-    `,
+      responsableSejour,
+      protocoleTransport,
+      protocoleSanitaire,
+      organisme,
+    ],
+  ],
   finalize: `
-    UPDATE front.demande_sejour ds
-      SET id_fonctionnelle=$1,
-          departement_suivi=$2,
-          statut = 'TRANSMISE',
-          edited_at=NOW()
-    WHERE
-      ds.id = $3
-    RETURNING
-      id as "demandeId"
-    `,
+  UPDATE front.demande_sejour ds
+  SET id_fonctionnelle=$1,
+    departement_suivi=$2,
+    statut = 'TRANSMISE',
+    edited_at = NOW()
+  WHERE
+    ds.id = $3
+  RETURNING
+    id as "demandeId"
+  ;`,
   get: `
-    SELECT
-      ds.id as "demandeSejourId",
-      ds.statut as "statut",
-      ds.departement_suivi as "departementSuivi",
-      ds.organisme_id as "organismeId",
-      ds.libelle as "libelle",
-      ds.periode as "saison",
-      ds.date_debut::text as "dateDebut",
-      ds.date_fin::text as "dateFin",
-      ds.created_at as "createdAt",
-      ds.edited_at as "editedAt",
-      ds.duree as "duree",
-      o.personne_morale->>'siret' as "siret"
-    FROM front.demande_sejour ds
-    JOIN front.organismes o ON o.id = ds.organisme_id
-    JOIN front.user_organisme uo ON uo.org_id = o.id
-    WHERE
-      uo.use_id = $1
-    `,
+  SELECT
+    ds.id as "demandeSejourId",
+    ds.statut as "statut",
+    ds.departement_suivi as "departementSuivi",
+    ds.organisme_id as "organismeId",
+    ds.libelle as "libelle",
+    ds.date_debut::text as "dateDebut",
+    ds.date_fin::text as "dateFin",
+    ds.periode,
+    ds.duree as "duree",
+    ds.responsable_sejour as "responsableSejour",
+    o.personne_morale->>'siret' as "siret",
+    ds.created_at as "createdAt",
+    ds.edited_at as "editedAt"
+  FROM front.demande_sejour ds
+  JOIN front.organismes o ON o.id = ds.organisme_id
+  JOIN front.user_organisme uo ON uo.org_id = o.id
+  WHERE
+    uo.use_id = $1
+  ;`,
   getByAdminId: (search, hebergementIds) => `
-    SELECT
-      ds.id as "demandeSejourId",
-      ds.statut as "statut",
-      ds.organisme_id as "organismeId",
-      ds.libelle as "libelle",
-      ds.date_debut::text as "dateDebut",
-      ds.date_fin::text as "dateFin",
-      ds.created_at as "createdAt",
-      ds.edited_at as "editedAt",
-      ds.duree as "duree",
-      ds.vacanciers as "vacanciers",
-      ds.personnel as "personnel",
-      ds.transport as "transport",
-      ds.projet_sejour as "projet_sejour",
-      ds.sanitaires as "sanitaires",
-      ds.organisme as "organisme",
-      o.personne_morale as "personne_morale",
-      o.personne_physique as "personne_physique",
-      o.type_organisme as "typeOrganisme",
-      (DS.HEBERGEMENT -> 'hebergements')[0] ->> 'hebergementId' IN ('${hebergementIds.join("','")}') as "a_instruire"
-    FROM front.demande_sejour ds
-      JOIN front.organismes o ON o.id = ds.organisme_id
-    WHERE  (${getHebergementWhereQuery(hebergementIds)})
-       ${search.map((s) => ` AND ${s} `).join("")}
-    `,
+  SELECT
+    ds.id as "demandeSejourId",
+    ds.statut as "statut",
+    ds.organisme_id as "organismeId",
+    ds.libelle as "libelle",
+    ds.date_debut::text as "dateDebut",
+    ds.date_fin::text as "dateFin",
+    ds.duree as "duree",
+    ds.responsable_sejour as "responsableSejour",
+    ds.vacanciers as "vacanciers",
+    ds.personnel as "personnel",
+    ds.transport as "transport",
+    ds.projet_sejour as "projet_sejour",
+    ds.sanitaires as "sanitaires",
+    ds.organisme as "organisme",
+    o.personne_morale as "personne_morale",
+    o.personne_physique as "personne_physique",
+    o.type_organisme as "typeOrganisme",
+    (DS.HEBERGEMENT -> 'hebergements')[0] ->> 'hebergementId' IN ('${hebergementIds.join("','")}') as "a_instruire",
+    ds.created_at as "createdAt",
+    ds.edited_at as "editedAt"
+  FROM front.demande_sejour ds
+  JOIN front.organismes o ON o.id = ds.organisme_id
+  WHERE  (${getHebergementWhereQuery(hebergementIds)})
+      ${search.map((s) => ` AND ${s} `).join("")}
+  ;`,
   getByAdminIdTotal: (search, hebergementIds) => `
   SELECT COUNT(DISTINCT ds.id)
-    FROM front.demande_sejour ds
-      JOIN front.organismes o ON o.id = ds.organisme_id
-    WHERE (${getHebergementWhereQuery(hebergementIds)})
-       ${search.map((s) => ` AND ${s} `).join("")}
-    `,
+  FROM front.demande_sejour ds
+  JOIN front.organismes o ON o.id = ds.organisme_id
+  WHERE (${getHebergementWhereQuery(hebergementIds)})
+      ${search.map((s) => ` AND ${s} `).join("")}
+  ;`,
   getDepartementByDep: (departement_codes) => `
   SELECT *
-    FROM
-    FRONT.HEBERGEMENT
-    WHERE
-  (${departement_codes.map((code) => `CARACTERISTIQUES -> 'coordonnees' -> 'adresse' ->> 'departement' = '${code}'`).join(" OR ")})
+  FROM FRONT.HEBERGEMENT
+  WHERE
+   (${departement_codes.map((code) => `CARACTERISTIQUES -> 'coordonnees' -> 'adresse' ->> 'departement' = '${code}'`).join(" OR ")})
   `,
   getEmailCcList: `
-    SELECT u.mail AS mail
-    FROM front.users u
-    JOIN front.user_organisme uo ON u.id = uo.use_id
-    JOIN front.organismes o ON uo.org_id = o.id
-    WHERE
-      o.personne_morale->>'siren' = $1 AND
-      o.personne_morale->>'siegeSocial' = 'true'
+  SELECT u.mail AS mail
+  FROM front.users u
+  JOIN front.user_organisme uo ON u.id = uo.use_id
+  JOIN front.organismes o ON uo.org_id = o.id
+  WHERE
+    o.personne_morale->>'siren' = $1 AND
+    o.personne_morale->>'siegeSocial' = 'true'
 `,
   getEmailToList: `
-    SELECT u.mail AS mail
-    FROM front.users u
-    JOIN front.user_organisme uo ON u.id = uo.use_id
-    WHERE uo.org_id = $1
+  SELECT u.mail AS mail
+  FROM front.users u
+  JOIN front.user_organisme uo ON u.id = uo.use_id
+  WHERE uo.org_id = $1
   `,
   getNextIndex: `
-    SELECT nextval('front.seq_declaration_sejour') AS index
+  SELECT nextval('front.seq_declaration_sejour') AS index
   `,
   getOne: (criterias) => [
     `
     SELECT
-      ds.id as "id",
-      ds.statut as "statut",
+      ds.id,
+      ds.statut,
       ds.organisme_id as "organismeId",
       ds.id_fonctionnelle as "idFonctionnelle",
-      ds.libelle as "libelle",
+      ds.libelle,
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
-      ds.duree as "duree",
+      ds.responsable_sejour as "responsableSejour",
+      ds.duree,
       ds.vacanciers as "informationsVacanciers",
       ds.personnel as "informationsPersonnel",
       ds.projet_sejour as "informationsProjetSejour",
       ds.transport as "informationsTransport",
       ds.sanitaires as "informationsSanitaires",
-      ds.hebergement as "hebergement",
-      ds.organisme as "organisme",
+      ds.hebergement,
+      ds.organisme,
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
     JOIN front.organismes o ON o.id = ds.organisme_id
@@ -148,25 +175,25 @@ const query = {
     Object.values(criterias),
   ],
   insertEvent: `
-    INSERT INTO front.demande_sejour_history(
-      source,
-      demande_sejour_id,
-      usager_user_id,
-      type,
-      type_precision,
-      metadata,
-      created_at,
-      edited_at
-    )
-    VALUES ($1,$2,$3,$4,$5,$6,NOW(),NOW())
-    RETURNING
-      id as "eventId"
+  INSERT INTO front.demande_sejour_history(
+    source,
+    demande_sejour_id,
+    usager_user_id,
+    type,
+    type_precision,
+    metadata,
+    created_at,
+    edited_at
+  )
+  VALUES ($1,$2,$3,$4,$5,$6,NOW(),NOW())
+  RETURNING
+    id as "eventId"
   `,
   updateHebergements: `
-    UPDATE front.demande_sejour ds
-    SET
+  UPDATE front.demande_sejour ds
+  SET
     hebergement = $1,
-    edited_at=NOW()
+    edited_at = NOW()
   WHERE
     ds.id = $2
   RETURNING
@@ -177,84 +204,98 @@ const query = {
     dateDebut,
     dateFin,
     duree,
+    periode,
+    responsableSejour,
     organisme,
     demandeSejourId,
   ) => [
     `
     UPDATE front.demande_sejour ds
-      SET
+    SET
       libelle = $1,
       date_debut = $2,
       date_fin = $3,
       duree = $4,
-      organisme = $5,
-      edited_at=NOW()
+      periode = $5,
+      responsable_sejour = $6,
+      organisme = $7,
+      edited_at = NOW()
     WHERE
-      ds.id = $6
+      ds.id = $8
     RETURNING
       id as "demandeId"
     `,
-    [libelle, dateDebut, dateFin, duree, organisme, demandeSejourId],
+    [
+      libelle,
+      dateDebut,
+      dateFin,
+      duree,
+      periode,
+      responsableSejour,
+      organisme,
+      demandeSejourId,
+    ],
   ],
   updateInformationsPersonnel: `
-    UPDATE front.demande_sejour ds
-      SET
-      personnel = $1,
-      edited_at=NOW()
-    WHERE
-      ds.id = $2
-    RETURNING
-      id as "demandeId"
-    `,
-  updateInformationsProjetSejour: `
-    UPDATE front.demande_sejour ds
-    SET
-    projet_sejour = $1,
-    edited_at=NOW()
+  UPDATE front.demande_sejour ds
+  SET
+    personnel = $1,
+    edited_at = NOW()
   WHERE
     ds.id = $2
   RETURNING
     id as "demandeId"
-    `,
+  `,
+  updateInformationsProjetSejour: `
+  UPDATE front.demande_sejour ds
+  SET
+    projet_sejour = $1,
+    edited_at = NOW()
+  WHERE
+    ds.id = $2
+  RETURNING
+    id as "demandeId"
+  `,
   updateInformationsSanitaires: `
-    UPDATE front.demande_sejour ds
-    SET
+  UPDATE front.demande_sejour ds
+  SET
     sanitaires = $1,
-    edited_at=NOW()
+    edited_at = NOW()
   WHERE
     ds.id = $2
   RETURNING
     id as "demandeId"
     `,
   updateInformationsTransport: `
-    UPDATE front.demande_sejour ds
-    SET
+  UPDATE front.demande_sejour ds
+  SET
     transport = $1,
-    edited_at=NOW()
+    edited_at = NOW()
   WHERE
     ds.id = $2
   RETURNING
     id as "demandeId"
-    `,
+  `,
   updateInformationsVacanciers: `
-    UPDATE front.demande_sejour ds
-      SET
-      vacanciers = $1,
-      edited_at=NOW()
-    WHERE
-      ds.id = $2
-    RETURNING
-      id as "demandeId"
-    `,
+  UPDATE front.demande_sejour ds
+  SET
+    vacanciers = $1,
+    edited_at = NOW()
+  WHERE
+    ds.id = $2
+  RETURNING
+    id as "demandeId"
+  `,
   updateOrganisme: `
-    UPDATE front.demande_sejour ds
-      SET organisme_id=$1,
-          edited_at=NOW()
-    WHERE
-      ds.id = $2
-    RETURNING
-      id as "demandeId"
-    `,
+  UPDATE front.demande_sejour ds
+  SET 
+    organisme_id = $1,
+    edited_at = NOW()
+  WHERE
+    ds.id = $2
+  RETURNING
+    id as "demandeId"
+  `,
 };
 
 module.exports.create = async (
@@ -264,22 +305,26 @@ module.exports.create = async (
   dateFin,
   duree,
   periode,
+  responsableSejour,
   protocoleTransport,
   protocoleSanitaire,
   organisme,
 ) => {
   log.i("create - IN");
-  const response = await pool.query(query.create, [
-    organismeId,
-    libelle,
-    dateDebut,
-    dateFin,
-    duree,
-    periode,
-    protocoleTransport,
-    protocoleSanitaire,
-    organisme,
-  ]);
+  const response = await pool.query(
+    ...query.create(
+      organismeId,
+      libelle,
+      dateDebut,
+      dateFin,
+      duree,
+      periode,
+      responsableSejour,
+      protocoleTransport,
+      protocoleSanitaire,
+      organisme,
+    ),
+  );
   log.d(response);
   const { demandeId } = response.rows[0];
   log.d("create - DONE", { demandeId });
@@ -394,14 +439,23 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       break;
     }
     case "informationsGenerales": {
-      const { libelle, dateDebut, dateFin, duree, organisme } = parametre;
-
+      const {
+        libelle,
+        dateDebut,
+        dateFin,
+        duree,
+        periode,
+        responsableSejour,
+        organisme,
+      } = parametre;
       response = await pool.query(
         ...query.updateInformationsGenerales(
           libelle,
           dateDebut,
           dateFin,
           duree,
+          periode,
+          responsableSejour,
           organisme,
           demandeSejourId,
         ),
@@ -482,7 +536,6 @@ module.exports.getNextIndex = async () => {
   log.d("getNextIndex - DONE");
   return data[0].index ?? null;
 };
-
 module.exports.getEmailToList = async (organismeId) => {
   log.i("getEmailToList - IN", organismeId);
   const { rows: data } = await pool.query(query.getEmailToList, [organismeId]);
@@ -495,7 +548,6 @@ module.exports.getEmailCcList = async (siren) => {
   log.d("getEmailCcList - DONE");
   return data.map((m) => m.mail).join(",") ?? null;
 };
-
 module.exports.insertEvent = async (
   source,
   declarationId,

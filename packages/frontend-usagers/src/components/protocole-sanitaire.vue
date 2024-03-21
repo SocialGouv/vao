@@ -557,11 +557,7 @@ const emit = defineEmits(["previous", "next", "update"]);
 
 const log = logger("components/protocole-sanitaire");
 
-const schemaInfosSanitaires = { ...protocoleSanitaire.schema };
-
-const validationSchema = yup.object({
-  ...schemaInfosSanitaires,
-});
+const validationSchema = yup.object(protocoleSanitaire.schema);
 
 const initialValues = {
   files: props.initData.files ?? [],

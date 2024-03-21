@@ -55,7 +55,7 @@
           name="periode"
           label="Période"
           :label-visible="true"
-          :model-value="saison"
+          :model-value="periode"
           :disabled="true"
         />
       </div>
@@ -74,7 +74,7 @@
       <h6>Responsable de l'organisation du séjour</h6>
       <Personne
         :modifiable="props.modifiable"
-        :personne="initialValues.responsableSejour"
+        :personne="responsableSejour"
         :show-adresse="true"
         :show-telephone="true"
         :show-email="true"
@@ -130,7 +130,7 @@ const duree = computed(() => {
   return nbjours.toString();
 });
 
-const saison = computed(() => {
+const periode = computed(() => {
   const moisDebut = dayjs(dateDebut.value).month();
   if (moisDebut < 3) return "hiver";
   if (moisDebut < 6) return "printemps";
@@ -145,39 +145,12 @@ if (
   await checkSiege();
 }
 
-const validationSchema = yup.object({
-  libelle: yup.string().typeError("le libellé est requis").required(),
-  dateDebut: yup
-    .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
-    .typeError("date invalide")
-    .min(new Date(), "La date doit être supérieure à la date du jour.")
-    .required("La saisie de ce champ est obligatoire"),
-  dateFin: yup
-    .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
-    .typeError("date invalide")
-    .when("dateDebut", (dateDebut, schema) => {
-      return schema.test({
-        test: (dateFin) => !!dateDebut && dayjs(dateFin) > dayjs(dateDebut),
-        message: "La date de fin doit être supérieure à la date de début",
-      });
-    })
-    .required("La saisie de ce champ est obligatoire"),
-  responsableSejour: yup
-    .object({
-      nom: yup.string().required(),
-      prenom: yup.string().required(),
-      fonction: yup.string().required(),
-      adresse: yup.object().required(),
-      telephone: yup.string().required(),
-      email: yup.string().required(),
-    })
-    .required(),
-});
+const validationSchema = yup.object(DeclarationSejour.baseSchema);
 
-const initialValues = computed(() => {
-  const responsableSejour = props.initData?.organisme?.responsableSejour
-    ? props.initData.organisme.responsableSejour
-    : organismeStore.organismeCourant.personneMorale.siret
+const initialValues = (() => {
+  const responsableSejour =
+    props.initData.responsableSejour ??
+    (organismeStore.organismeCourant.typeOrganisme === "personne_morale"
       ? organismeStore.organismeCourant.personneMorale.responsableSejour
       : {
           nom: organismeStore.organismeCourant.personnePhysique.nomNaissance,
@@ -187,7 +160,7 @@ const initialValues = computed(() => {
           telephone: organismeStore.organismeCourant.personnePhysique.telephone,
           adresse:
             organismeStore.organismeCourant.personnePhysique.adresseSiege,
-        };
+        });
   return {
     libelle: props.initData.libelle,
     dateDebut: props.initData.dateDebut
@@ -198,11 +171,11 @@ const initialValues = computed(() => {
       : dayjs().add(8, "day").format("YYYY-MM-DD"),
     responsableSejour,
   };
-});
+})();
 
 const { meta, values } = useForm({
   validationSchema,
-  initialValues: initialValues.value,
+  initialValues,
 });
 
 const {
@@ -269,15 +242,13 @@ function next() {
   if (!meta.value.dirty) {
     return emit("next");
   }
-  const organismeData = organismeStore.organismeCourant.personneMorale;
-  organismeData.responsableSejour = responsableSejour.value;
   emit(
     "update",
     {
       ...values,
       duree: duree.value,
-      periode: saison.value,
-      organisme: organismeData,
+      periode: periode.value,
+      organisme: organismeStore.organismeCourant,
     },
     "informationsGenerales",
   );

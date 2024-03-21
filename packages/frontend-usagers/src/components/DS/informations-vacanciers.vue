@@ -111,9 +111,7 @@ const props = defineProps({
 
 const emit = defineEmits(["previous", "next", "update"]);
 
-const validationSchema = yup.object({
-  ...informationsVacanciers.schema,
-});
+const validationSchema = yup.object(informationsVacanciers.schema);
 
 const initialValues = {
   effectifPrevisionnel: props.initData.effectifPrevisionnel ?? null,

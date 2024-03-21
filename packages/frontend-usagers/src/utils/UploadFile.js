@@ -1,4 +1,4 @@
-import $fetchBackend from "./fetchBackend";
+import { $fetchBackend } from "./fetchBackend";
 import { logger } from "#imports";
 
 const log = logger("utils/UploadFile");

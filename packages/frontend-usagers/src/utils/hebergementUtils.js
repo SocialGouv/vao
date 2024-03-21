@@ -173,5 +173,8 @@ export default {
   prestationsHotelieresOptions,
   accessibiliteOptions,
   typeOptions,
+  coordonneesSchema,
+  informationsLocauxSchema,
+  informationsTransportSchema,
   schema,
 };

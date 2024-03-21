@@ -86,25 +86,9 @@ const props = defineProps({
 
 const emit = defineEmits(["previous", "next", "update"]);
 
-const schemaInfosPersonnel = {
-  nombreResponsable: yup
-    .number("Ce champ doit contenir un nombre entier")
-    .integer("Ce champ doit contenir un nombre entier")
-    .typeError("Ce champ doit contenir un nombre entier")
-    .required("Ce champ doit contenir un nombre entier"),
-  procedureRecrutementSupplementaire: yup
-    .bool("La saisie de ce champ est obligatoire")
-    .required("La saisie de ce champ est obligatoire"),
-  nombreAccompagnant: yup
-    .number("Ce champ doit contenir un nombre entier")
-    .integer("Ce champ doit contenir un nombre entier")
-    .typeError("Ce champ doit contenir un nombre entier")
-    .required("Ce champ doit contenir un nombre entier"),
-};
-
-const validationSchema = yup.object({
-  ...schemaInfosPersonnel,
-});
+const validationSchema = yup.object(
+  DeclarationSejour.informationsPersonnelSchema,
+);
 
 const initialValues = {
   nombreResponsable: props.initData.nombreResponsable ?? null,
