@@ -24,7 +24,7 @@
               name="sejourEtranger"
               legend="Séjour à l'étranger"
               :required="true"
-              :disabled="!props.modifiable"
+              :readonly="!props.modifiable"
               :model-value="sejourEtranger"
               :options="ouiNonOptions"
               :is-valid="sejourEtrangerMeta"
@@ -54,7 +54,6 @@
           <DsfrButton
             id="previous-step"
             :secondary="true"
-            :disabled="!props.modifiable"
             @click.prevent="
               () => {
                 emit('previous');
@@ -62,12 +61,7 @@
             "
             >Précédent</DsfrButton
           >
-          <DsfrButton
-            id="next-step"
-            :disabled="!props.modifiable"
-            @click.prevent="next"
-            >Suivant</DsfrButton
-          >
+          <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
         </DsfrButtonGroup>
       </fieldset>
     </div>

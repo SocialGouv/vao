@@ -8,7 +8,7 @@
           :label-visible="true"
           :model-value="libelle"
           :required="true"
-          :disabled="!props.modifiable"
+          :readonly="!props.modifiable"
           :is-valid="libelleMeta.valid"
           :error-message="libelleErrorMessage"
           hint="Nom de votre demande de séjour"
@@ -26,7 +26,7 @@
           :label-visible="true"
           :model-value="dateDebut"
           :required="true"
-          :disabled="!props.modifiable"
+          :readonly="!props.modifiable"
           :is-valid="dateDebutMeta.valid"
           :error-message="dateDebutErrorMessage"
           hint="Date du premier jour du séjour"
@@ -40,9 +40,8 @@
           label="Date de fin"
           :label-visible="true"
           :model-value="dateFin"
-          :required="true"
+          :readonly="!props.modifiable"
           :is-valid="dateFinMeta.valid"
-          :disabled="!props.modifiable"
           :error-message="dateFinErrorMessage"
           hint="Date de fin du séjour"
           @update:model-value="onDateFinChange"
@@ -56,7 +55,7 @@
           label="Période"
           :label-visible="true"
           :model-value="periode"
-          :disabled="true"
+          :readonly="true"
         />
       </div>
     </fieldset>
@@ -68,7 +67,7 @@
           label="Durée du séjour (en jours)"
           :label-visible="true"
           :model-value="duree"
-          :disabled="true"
+          :readonly="true"
         />
       </div>
       <h6>Responsable de l'organisation du séjour</h6>
@@ -96,7 +95,7 @@
       <DsfrButton
         id="next-step"
         label="Suivant"
-        :disabled="!meta.valid || !props.modifiable"
+        :disabled="!meta.valid"
         @click.prevent="next"
       />
     </fieldset>

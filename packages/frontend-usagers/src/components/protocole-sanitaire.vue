@@ -37,7 +37,7 @@
           <DsfrInputGroup
             name="precisionDispositionsSpecifiques"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Quels sont les protocoles en vigueur pour assurer le suivi sanitaire et médical ?"
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
@@ -68,7 +68,7 @@
           <DsfrInputGroup
             name="precisionConstitutionEquipe"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -128,7 +128,7 @@
           <DsfrInputGroup
             name="precisionResponsableAdministrationMedicament"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -170,7 +170,7 @@
           <DsfrInputGroup
             name="precisionStockageMedicamentSecurise"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez le protocole en vigueur concernant le stockage sécurisé des médicaments."
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
@@ -208,7 +208,7 @@
           <DsfrInputGroup
             name="precisionConservationMedicament"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez le protocole en vigueur concernant le stockage garantissant la parfaite conservation des médicaments."
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
@@ -243,7 +243,7 @@
           <DsfrInputGroup
             name="precisionIndividualisationMedicaments"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez le protocole en vigueur concernant le stockage permettant l’individualisation des médicaments."
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :label-visible="true"
@@ -284,7 +284,7 @@
           <DsfrInputGroup
             name="precisionPreparationPilluliers"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             placeholder=""
@@ -333,7 +333,7 @@
           <DsfrInputGroup
             name="precisionProtocoleModificationTraitement"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             placeholder=""
             label="Précisez"
             :label-visible="true"
@@ -391,7 +391,7 @@
           <DsfrInputGroup
             name="precisionProtocoleEvacuation"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -424,7 +424,7 @@
           <DsfrInputGroup
             name="precisionProtocoleAccident"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -457,7 +457,7 @@
           <DsfrInputGroup
             name="precisionProtocoleReorientation"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -490,7 +490,7 @@
           <DsfrInputGroup
             name="precisionProtocoleCanicule"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
             :is-textarea="true"
@@ -507,7 +507,7 @@
           <DsfrInputGroup
             name="gestionBudgetPersonnel"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez les conditions prévues pour la gestion sur place du budget personnel des vacanciers (si les vacanciers en font la demande)"
             :label-visible="true"
             :is-textarea="true"
@@ -525,7 +525,6 @@
         <DsfrButton
           id="previous-step"
           :secondary="true"
-          :disabled="!props.modifiable"
           @click.prevent="
             () => {
               emit('previous');
@@ -533,12 +532,7 @@
           "
           >Précédent</DsfrButton
         >
-        <DsfrButton
-          id="next-step"
-          :disabled="!props.modifiable"
-          @click.prevent="valid"
-          >Suivant</DsfrButton
-        >
+        <DsfrButton id="next-step" @click.prevent="valid">Suivant</DsfrButton>
       </DsfrButtonGroup>
     </fieldset>
   </div>

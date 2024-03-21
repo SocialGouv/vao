@@ -11,7 +11,7 @@
           :label-visible="true"
           :model-value="dateDebut"
           :required="true"
-          :disabled="!props.modifiable"
+          :readonly="!props.modifiable"
           :is-valid="dateDebutMeta.valid"
           :error-message="dateDebutErrorMessage"
           placeholder="Date de début"
@@ -28,7 +28,7 @@
           :label-visible="true"
           :model-value="dateFin"
           :required="true"
-          :disabled="!props.modifiable"
+          :readonly="!props.modifiable"
           :is-valid="dateFinMeta.valid"
           :error-message="dateFinErrorMessage"
           placeholder="Date de fin"
@@ -50,7 +50,7 @@
           @update:model-value="handleHebergementIdChange"
         />
       </div>
-      <div class="fr-fieldset__element fr-col-4">
+      <div v-if="props.modifiable" class="fr-fieldset__element fr-col-4">
         <DsfrButton id="retour" :secondary="true" @click="openAddHebergement"
           >Créer un lieu d'hébergement
         </DsfrButton>
@@ -201,7 +201,7 @@
             :label-visible="true"
             :model-value="visiteLocauxAt"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             :is-valid="visiteLocauxAtMeta.valid"
             :error-message="visiteLocauxAtErrorMessage"
             @update:model-value="onVisiteLocauxAtChange"
@@ -258,7 +258,7 @@
           <DsfrInputGroup
             name="informationsLocaux.descriptionLieuHebergement"
             :required="false"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Description du lieu d’hébergement (parties communes et notamment équipements sanitaires)"
             :label-visible="true"
             :is-textarea="true"
@@ -275,7 +275,7 @@
             name="informationsLocaux.nombreLits"
             type="number"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Nombre de lits dans le lieu d'hébergement"
             :label-visible="true"
             placeholder=""
@@ -290,7 +290,7 @@
           <DsfrInputGroup
             name="informationsLocaux.nombreLitsSuperposes"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             type="number"
             label="Nombre de lits superposés inclus"
             :label-visible="true"
@@ -328,7 +328,7 @@
             label="Nombre maximum de personnes prévues par espace de couchage"
             type="number"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             :label-visible="true"
             :model-value="nombreMaxPersonnesCouchage"
             :error-message="nombreMaxPersonnesCouchageErrorMessage"
@@ -431,7 +431,7 @@
             label="Précisez"
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
@@ -464,7 +464,7 @@
           <DsfrInputGroup
             name="informationsTransport.deplacementProximite"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité"
             :label-visible="true"
             :is-textarea="true"
@@ -480,7 +480,7 @@
           <DsfrInputGroup
             name="informationsTransport.excursion"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions"
             :label-visible="true"
             :is-textarea="true"
@@ -495,7 +495,7 @@
           <DsfrInputGroup
             name="informationsTransport.rejoindreEtape"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez le mode de transport utilisé pour rejoindre cette étape"
             :label-visible="true"
             :is-textarea="true"
@@ -511,17 +511,25 @@
     <fieldset class="fr-fieldset">
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
+          v-if="!props.modifiable"
           id="cancel-add-hebergement"
-          label="Annuler l'ajout d'étape"
+          label="Retourner à la liste"
           :secondary="true"
-          :disabled="!props.modifiable"
           @click.prevent="cancel"
         >
         </DsfrButton>
         <DsfrButton
+          v-if="props.modifiable"
+          id="cancel-add-hebergement"
+          label="Annuler l'ajout d'étape"
+          :secondary="true"
+          @click.prevent="cancel"
+        >
+        </DsfrButton>
+        <DsfrButton
+          v-if="props.modifiable"
           id="submit-add-hebergement"
           label="Valider l'étape"
-          :disabled="!props.modifiable"
           @click.prevent="next"
         >
         </DsfrButton>

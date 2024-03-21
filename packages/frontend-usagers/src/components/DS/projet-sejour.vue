@@ -49,7 +49,6 @@
         <DsfrButton
           id="previous-step"
           :secondary="true"
-          :disabled="!props.modifiable"
           @click.prevent="
             () => {
               emit('previous');
@@ -57,12 +56,7 @@
           "
           >Précédent</DsfrButton
         >
-        <DsfrButton
-          id="next-step"
-          :disabled="!props.modifiable"
-          @click.prevent="next"
-          >Suivant</DsfrButton
-        >
+        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
       </DsfrButtonGroup>
     </fieldset>
   </div>

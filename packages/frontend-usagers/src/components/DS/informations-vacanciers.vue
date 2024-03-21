@@ -9,7 +9,7 @@
             :label-visible="true"
             :model-value="effectifPrevisionnel"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             :is-valid="effectifPrevisionnelMeta.valid"
             :error-message="effectifPrevisionnelErrorMessage"
             placeholder="nombre de vacanciers"
@@ -25,7 +25,7 @@
             :label-visible="true"
             :model-value="effectifPrevisionnelHomme"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             :is-valid="effectifPrevisionnelHommeMeta.valid"
             :error-message="effectifPrevisionnelHommeErrorMessage"
             placeholder="nombre d'hommes prévus"
@@ -41,7 +41,7 @@
             :label-visible="true"
             :model-value="effectifPrevisionnelFemme"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             :is-valid="effectifPrevisionnelFemmeMeta.valid"
             :error-message="effectifPrevisionnelFemmeErrorMessage"
             placeholder="nombre de femmes prévues"
@@ -82,7 +82,6 @@
         <DsfrButton
           id="previous-step"
           :secondary="true"
-          :disabled="!props.modifiable"
           @click.prevent="
             () => {
               emit('previous');
@@ -90,12 +89,7 @@
           "
           >Précédent</DsfrButton
         >
-        <DsfrButton
-          id="next-step"
-          :disabled="!props.modifiable"
-          @click.prevent="next"
-          >Suivant</DsfrButton
-        >
+        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
       </DsfrButtonGroup>
     </fieldset>
   </div>

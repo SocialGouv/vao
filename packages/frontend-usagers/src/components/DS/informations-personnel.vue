@@ -9,7 +9,7 @@
             :label-visible="true"
             :model-value="nombreResponsable"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             :is-valid="nombreResponsableMeta.valid"
             :error-message="nombreResponsableErrorMessage"
             placeholder="nombre total de responsable"
@@ -43,7 +43,7 @@
             :label-visible="true"
             :model-value="nombreAccompagnant"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             :is-valid="nombreAccompagnantMeta.valid"
             :error-message="nombreAccompagnantErrorMessage"
             placeholder="nombre total d'accompagnant"
@@ -57,7 +57,6 @@
         <DsfrButton
           id="previous-step"
           :secondary="true"
-          :disabled="!props.modifiable"
           @click.prevent="
             () => {
               emit('previous');
@@ -65,12 +64,7 @@
           "
           >Précédent</DsfrButton
         >
-        <DsfrButton
-          id="next-step"
-          :disabled="!props.modifiable"
-          @click.prevent="next"
-          >Suivant</DsfrButton
-        >
+        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
       </DsfrButtonGroup>
     </fieldset>
   </div>
