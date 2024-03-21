@@ -23,6 +23,7 @@ const query = {
     protocoleTransport,
     protocoleSanitaire,
     organisme,
+    files,
   ) => [
     `
   INSERT INTO front.demande_sejour(
@@ -36,9 +37,10 @@ const query = {
     responsable_sejour,
     transport,
     sanitaires,
-    organisme
+    organisme,
+    files
   )
-  VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+  VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
   RETURNING
       id as "demandeId"
   ;`,
@@ -53,6 +55,7 @@ const query = {
       protocoleTransport,
       protocoleSanitaire,
       organisme,
+      files,
     ],
   ],
   finalize: (
@@ -331,6 +334,7 @@ module.exports.create = async (
   protocoleTransport,
   protocoleSanitaire,
   organisme,
+  files,
 ) => {
   log.i("create - IN");
   const response = await pool.query(
@@ -345,6 +349,7 @@ module.exports.create = async (
       protocoleTransport,
       protocoleSanitaire,
       organisme,
+      files,
     ),
   );
   log.d(response);
