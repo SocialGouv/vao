@@ -44,8 +44,7 @@ module.exports = async function post(req, res) {
         message: "Une erreur est survenue durant la transmission de la demande",
       });
     }
-    const departementSuivi =
-      hebergement?.caracteristiques?.coordonnees?.adresse?.departement;
+    const departementSuivi = hebergement?.coordonnees?.adresse?.departement;
     if (!departementSuivi) {
       log.w("error while getting departement");
       return res.status(400).json({

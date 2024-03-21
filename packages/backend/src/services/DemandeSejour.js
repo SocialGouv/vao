@@ -57,7 +57,8 @@ const query = {
   ],
   finalize: `
   UPDATE front.demande_sejour ds
-  SET id_fonctionnelle=$1,
+  SET 
+    id_fonctionnelle=$1,
     departement_suivi=$2,
     statut = 'TRANSMISE',
     edited_at = NOW()
@@ -125,7 +126,7 @@ const query = {
   SELECT *
   FROM FRONT.HEBERGEMENT
   WHERE
-   (${departement_codes.map((code) => `CARACTERISTIQUES -> 'coordonnees' -> 'adresse' ->> 'departement' = '${code}'`).join(" OR ")})
+   (${departement_codes.map((code) => `coordonnees -> 'adresse' ->> 'departement' = '${code}'`).join(" OR ")})
   `,
   getEmailCcList: `
   SELECT u.mail AS mail

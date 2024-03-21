@@ -73,8 +73,7 @@
             label="Nom du gestionnaire"
             :label-visible="true"
             :model-value="
-              hebergementStore.hebergementCourant.caracteristiques.coordonnees
-                .nomGestionnaire
+              hebergementStore.hebergementCourant.coordonnees.nomGestionnaire
             "
             readonly
           />
@@ -85,8 +84,7 @@
             label="Adresse du lieu d'hébergement"
             :label-visible="true"
             :model-value="
-              hebergementStore.hebergementCourant.caracteristiques.coordonnees
-                .adresse.label
+              hebergementStore.hebergementCourant.coordonnees.adresse.label
             "
             readonly
           />
@@ -111,8 +109,7 @@
             label="Numéro de téléphone 1"
             :label-visible="true"
             :model-value="
-              hebergementStore.hebergementCourant.caracteristiques.coordonnees
-                .numTelephone1
+              hebergementStore.hebergementCourant.coordonnees.numTelephone1
             "
             readonly
           />
@@ -123,8 +120,7 @@
             label="Numéro de téléphone 2"
             :label-visible="true"
             :model-value="
-              hebergementStore.hebergementCourant.caracteristiques.coordonnees
-                .numTelephone2
+              hebergementStore.hebergementCourant.coordonnees.numTelephone2
             "
             readonly
           />
@@ -134,10 +130,7 @@
             name="email"
             label="Courriel"
             :label-visible="true"
-            :model-value="
-              hebergementStore.hebergementCourant.caracteristiques.coordonnees
-                .email
-            "
+            :model-value="hebergementStore.hebergementCourant.coordonnees.email"
             readonly
           />
         </div>
@@ -160,19 +153,16 @@
           au maximum).
         </DsfrNotice>
 
-        <div class="fr-fieldset__element fr-col-12">
-          <DsfrFileUpload
-            id="justificatif-erp"
-            label="Téléchargement du document justificatif référent à l’établissement ERP"
-            hint="Taille maximale : 500 Mo. Formats supportés : jpg, png, pdf."
-            @change="changeFile"
-          />
-        </div>
+        <UtilsFileUpload
+          v-model="file"
+          label="Téléchargement du document justificatif référent à l’établissement ERP"
+          hint="Taille maximale : 500 Mo. Formats supportés : jpg, png, pdf."
+        />
 
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsLocaux.type"
+              name="informationsLocaux.type"
               legend="Type du lieu d'hébergement"
               :model-value="type"
               :disabled="!props.modifiable"
@@ -190,7 +180,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsLocaux.visiteLocaux"
+              name="informationsLocaux.visiteLocaux"
               legend="Une visite des locaux par l’organisateur a-t-elle été effectuée ?"
               :required="true"
               :disabled="!props.modifiable"
@@ -205,7 +195,7 @@
         </div>
         <div v-if="visiteLocaux" class="fr-fieldset__element fr-col-6">
           <DsfrInputGroup
-            name="caracteristiques.informationsLocaux.visiteLocauxAt"
+            name="informationsLocaux.visiteLocauxAt"
             type="date"
             label="Date de la dernière visite "
             :label-visible="true"
@@ -220,7 +210,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsLocaux.accessibilite"
+              name="informationsLocaux.accessibilite"
               legend="Accessibilité"
               :required="true"
               :disabled="!props.modifiable"
@@ -236,7 +226,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsLocaux.pension"
+              name="informationsLocaux.pension"
               legend="Type de pension"
               :required="true"
               :disabled="!props.modifiable"
@@ -251,7 +241,7 @@
         </div>
         <div class="fr-fieldset__element fr-col-12">
           <DsfrCheckboxSet
-            name="caracteristiques.informationsLocaux.prestationsHotelieres"
+            name="informationsLocaux.prestationsHotelieres"
             legend="Prestations hôtelières assurées par le lieu d’accueil"
             :value="prestationsHotelieres"
             :inline="true"
@@ -266,7 +256,7 @@
 
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.informationsLocaux.descriptionLieuHebergement"
+            name="informationsLocaux.descriptionLieuHebergement"
             :required="false"
             :disabled="!props.modifiable"
             label="Description du lieu d’hébergement (parties communes et notamment équipements sanitaires)"
@@ -282,7 +272,7 @@
 
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.informationsLocaux.nombreLits"
+            name="informationsLocaux.nombreLits"
             type="number"
             :required="true"
             :disabled="!props.modifiable"
@@ -298,7 +288,7 @@
 
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.informationsLocaux.nombreLitsSuperposes"
+            name="informationsLocaux.nombreLitsSuperposes"
             :required="true"
             :disabled="!props.modifiable"
             type="number"
@@ -318,7 +308,7 @@
         >
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsLocaux.litsDessus"
+              name="informationsLocaux.litsDessus"
               legend="Pour les lits superposés, les lits « du dessus » seront-ils occupés par des vacanciers  ?"
               :required="true"
               :disabled="!props.modifiable"
@@ -334,7 +324,7 @@
 
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.informationsLocaux.nombreMaxPersonnesCouchage"
+            name="informationsLocaux.nombreMaxPersonnesCouchage"
             label="Nombre maximum de personnes prévues par espace de couchage"
             type="number"
             :required="true"
@@ -350,7 +340,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsLocaux.couchageIndividuel"
+              name="informationsLocaux.couchageIndividuel"
               legend="Chaque vacancier bénéficie-t-il d’un couchage individuel ?"
               :required="true"
               :disabled="!props.modifiable"
@@ -367,7 +357,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsLocaux.rangementIndividuel"
+              name="informationsLocaux.rangementIndividuel"
               legend="Chaque vacancier bénéficie t-il d’un espace de rangement des affaires personnelles ?"
               :required="true"
               :disabled="!props.modifiable"
@@ -384,7 +374,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsLocaux.chambresUnisexes"
+              name="informationsLocaux.chambresUnisexes"
               legend="Les femmes et les hommes dorment-ils dans des lieux séparés ?"
               :required="true"
               :disabled="!props.modifiable"
@@ -401,7 +391,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsLocaux.chambresDoubles"
+              name="informationsLocaux.chambresDoubles"
               legend="Les couples de vacanciers bénéficient t-ils de chambres doubles ?"
               :required="true"
               :disabled="!props.modifiable"
@@ -418,7 +408,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsLocaux.amenagementsSpecifiques"
+              name="informationsLocaux.amenagementsSpecifiques"
               legend="Des aménagements spécifiques des locaux sont-ils prévus pour accueillir les vacanciers ?"
               :required="true"
               :disabled="!props.modifiable"
@@ -437,7 +427,7 @@
           class="fr-fieldset__element fr-col-12"
         >
           <DsfrInputGroup
-            name="caracteristiques.informationsLocaux.precisionAmenagementsSpecifiques"
+            name="informationsLocaux.precisionAmenagementsSpecifiques"
             label="Précisez"
             hint="Redimensionnez le champ pour saisir plus de ligne"
             :required="true"
@@ -456,7 +446,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
-              name="caracteristiques.informationsTransport.vehiculesAdaptes"
+              name="informationsTransport.vehiculesAdaptes"
               legend="Les véhicules utilisés sont-ils adaptés ?"
               :required="true"
               :disabled="!props.modifiable"
@@ -472,7 +462,7 @@
 
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.informationsTransport.deplacementProximite"
+            name="informationsTransport.deplacementProximite"
             :required="true"
             :disabled="!props.modifiable"
             label="Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité"
@@ -488,7 +478,7 @@
 
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.informationsTransport.excursion"
+            name="informationsTransport.excursion"
             :required="true"
             :disabled="!props.modifiable"
             label="Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions"
@@ -503,7 +493,7 @@
         </div>
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.informationsTransport.rejoindreEtape"
+            name="informationsTransport.rejoindreEtape"
             :required="true"
             :disabled="!props.modifiable"
             label="Précisez le mode de transport utilisé pour rejoindre cette étape"
@@ -520,7 +510,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrCheckbox
             v-model="attestationACertifie"
-            name="caracteristiques.attestation.aCertifie"
+            name="attestation.aCertifie"
             label="Je certifie sur l'honneur que les renseignements portés sur cette déclaration sont exacts."
             :small="true"
             :disabled="!props.modifiable"
@@ -530,7 +520,7 @@
 
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.attestation.nom"
+            name="attestation.nom"
             label="Nom"
             :required="true"
             :disabled="!props.modifiable"
@@ -545,7 +535,7 @@
 
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.attestation.prenom"
+            name="attestation.prenom"
             label="Prénom"
             :required="true"
             :disabled="!props.modifiable"
@@ -560,7 +550,7 @@
 
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.attestation.qualite"
+            name="attestation.qualite"
             label="Qualité"
             :required="true"
             :disabled="!props.modifiable"
@@ -575,7 +565,7 @@
 
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
-            name="caracteristiques.attestation.at"
+            name="attestation.at"
             label="Date"
             type="date"
             :required="true"
@@ -605,7 +595,7 @@
         <DsfrButton
           id="submit-add-hebergement"
           label="Valider l'étape"
-          :disabled="!meta.valid || !props.modifiable"
+          :disabled="!props.modifiable"
           @click.prevent="next"
         >
         </DsfrButton>
@@ -647,17 +637,13 @@ const hebergementStore = useHebergementStore();
 
 const zoom = 16;
 const markerLatLng = computed(() => {
-  if (
-    !hebergementStore.hebergementCourant?.caracteristiques?.coordonnees.adresse
-  ) {
+  if (!hebergementStore.hebergementCourant?.coordonnees.adresse) {
     return null;
   }
 
   return [
-    hebergementStore.hebergementCourant.caracteristiques.coordonnees.adresse
-      .coordinates[1],
-    hebergementStore.hebergementCourant.caracteristiques.coordonnees.adresse
-      .coordinates[0],
+    hebergementStore.hebergementCourant.coordonnees.adresse.coordinates[1],
+    hebergementStore.hebergementCourant.coordonnees.adresse.coordinates[0],
   ];
 });
 
@@ -667,52 +653,7 @@ const hebergementsFavoris = computed(() => {
   });
 });
 
-const justificatifERPFile = ref();
-function changeFile(fileList) {
-  justificatifERPFile.value = fileList.length === 1 ? fileList[0] : null;
-}
-
-const validationSchema = yup.object({
-  dateDebut: yup.date().required(),
-  dateFin: yup.date().required(),
-  hebergementId: yup
-    .string()
-    .required("le choix d'un hébergement dans la liste est obligatoire"),
-  caracteristiques: yup.object({
-    informationsLocaux: yup.object({
-      ...hebergementUtils.schema.caracteristiques.informationsLocaux,
-    }),
-    informationsTransport: yup.object({
-      ...hebergementUtils.schema.caracteristiques.informationsTransport,
-      rejoindreEtape: yup
-        .string()
-        .min(
-          1,
-          "Il est impératif de préciser le mode de transport utilisé pour rejoindre le lieu d'hébergement",
-        )
-        .required(),
-    }),
-    attestation: yup.object({
-      aCertifie: yup
-        .boolean()
-        .oneOf([true], "Vous devez certifier de ces informations")
-        .required(),
-      nom: yup
-        .string()
-        .min(1, "Il est impératif de préciser votre nom")
-        .required(),
-      prenom: yup
-        .string()
-        .min(1, "Il est impératif de préciser votre prénom")
-        .required(),
-      qualite: yup
-        .string()
-        .min(1, "Il est impératif de préciser votre qualité")
-        .required(),
-      at: yup.date().required(),
-    }),
-  }),
-});
+const validationSchema = yup.object(DeclarationSejour.hebergementDetailsSchema);
 
 if (props.hebergement.hebergementId) {
   await hebergementStore.fetchHebergement(props.hebergement.hebergementId);
@@ -728,15 +669,16 @@ const initialValues = {
     ? dayjs(props.hebergement.dateFin).format("YYYY-MM-DD")
     : dayjs(props.dateFinIni).format("YYYY-MM-DD"),
   hebergementId: props.hebergement.hebergementId,
-  caracteristiques: {
-    informationsLocaux: props.hebergement.caracteristiques
-      ?.informationsLocaux ?? {
+  coordonnees: { ...(props.hebergement.coordonnees ?? {}) },
+  informationsLocaux: {
+    ...(props.hebergement.informationsLocaux ?? {
       prestationsHotelieres: [],
-    },
-    informationsTransport:
-      props.hebergement.caracteristiques?.informationsTransport ?? {},
-    attestation: props.hebergement.caracteristiques?.attestation ?? {},
+    }),
   },
+  informationsTransport: {
+    ...(props.hebergement.informationsTransport ?? {}),
+  },
+  attestation: { ...(props.hebergement.attestation ?? {}) },
 };
 
 const { meta, values, resetForm } = useForm({
@@ -762,136 +704,135 @@ const {
   meta: hebergementIdMeta,
 } = useField("hebergementId");
 
-// caracteristiques.informationsLocaux
+// informationsLocaux
+const { value: file } = useField("informationsLocaux.file");
 const {
   value: type,
   errorMessage: typeErrorMessage,
   handleChange: onTypeChange,
   meta: typeMeta,
-} = useField("caracteristiques.informationsLocaux.type");
+} = useField("informationsLocaux.type");
 const {
   value: visiteLocaux,
   errorMessage: visiteLocauxErrorMessage,
   handleChange: onVisiteLocauxChange,
   meta: visiteLocauxMeta,
-} = useField("caracteristiques.informationsLocaux.visiteLocaux");
+} = useField("informationsLocaux.visiteLocaux");
 const {
   value: visiteLocauxAt,
   errorMessage: visiteLocauxAtErrorMessage,
   handleChange: onVisiteLocauxAtChange,
   meta: visiteLocauxAtMeta,
-} = useField("caracteristiques.informationsLocaux.visiteLocauxAt");
+} = useField("informationsLocaux.visiteLocauxAt");
 const {
   value: accessibilite,
   errorMessage: accessibiliteErrorMessage,
   handleChange: onAccessibiliteChange,
   meta: accessibiliteMeta,
-} = useField("caracteristiques.informationsLocaux.accessibilite");
+} = useField("informationsLocaux.accessibilite");
 const {
   value: pension,
   errorMessage: pensionErrorMessage,
   meta: pensionMeta,
   handleChange: onPensionChange,
-} = useField("caracteristiques.informationsLocaux.pension");
+} = useField("informationsLocaux.pension");
 const {
   value: prestationsHotelieres,
   handleChange: onPrestationsHotelieresChange,
   errorMessage: prestationsHotelieresErrorMessage,
-} = useField("caracteristiques.informationsLocaux.prestationsHotelieres");
+} = useField("informationsLocaux.prestationsHotelieres");
 const {
   value: descriptionLieuHebergement,
   errorMessage: descriptionLieuHebergementErrorMessage,
   handleChange: onDescriptionLieuHebergementChange,
   meta: descriptionLieuHebergementMeta,
-} = useField("caracteristiques.informationsLocaux.descriptionLieuHebergement");
+} = useField("informationsLocaux.descriptionLieuHebergement");
 const {
   value: nombreLits,
   errorMessage: nombreLitsErrorMessage,
   handleChange: onNombreLitsChange,
   meta: nombreLitsMeta,
-} = useField("caracteristiques.informationsLocaux.nombreLits");
+} = useField("informationsLocaux.nombreLits");
 const {
   value: nombreLitsSuperposes,
   errorMessage: nombreLitsSuperposesErrorMessage,
   handleChange: onNombreLitsSuperposesChange,
   meta: nombreLitsSuperposesMeta,
-} = useField("caracteristiques.informationsLocaux.nombreLitsSuperposes");
+} = useField("informationsLocaux.nombreLitsSuperposes");
 const {
   value: litsDessus,
   errorMessage: litsDessusErrorMessage,
   handleChange: onLitsDessusChange,
   meta: litsDessusMeta,
-} = useField("caracteristiques.informationsLocaux.litsDessus");
+} = useField("informationsLocaux.litsDessus");
 const {
   value: nombreMaxPersonnesCouchage,
   errorMessage: nombreMaxPersonnesCouchageErrorMessage,
   handleChange: onNombreMaxPersonnesCouchageChange,
   meta: nombreMaxPersonnesCouchageMeta,
-} = useField("caracteristiques.informationsLocaux.nombreMaxPersonnesCouchage");
+} = useField("informationsLocaux.nombreMaxPersonnesCouchage");
 const {
   value: couchageIndividuel,
   errorMessage: couchageIndividuelErrorMessage,
   handleChange: onCouchageIndividuelChange,
   meta: couchageIndividuelMeta,
-} = useField("caracteristiques.informationsLocaux.couchageIndividuel");
+} = useField("informationsLocaux.couchageIndividuel");
 const {
   value: rangementIndividuel,
   errorMessage: rangementIndividuelErrorMessage,
   handleChange: onRangementIndividuelChange,
   meta: rangementIndividuelMeta,
-} = useField("caracteristiques.informationsLocaux.rangementIndividuel");
+} = useField("informationsLocaux.rangementIndividuel");
 const {
   value: chambresUnisexes,
   errorMessage: chambresUnisexesErrorMessage,
   handleChange: onChambresUnisexesChange,
   meta: chambresUnisexesMeta,
-} = useField("caracteristiques.informationsLocaux.chambresUnisexes");
+} = useField("informationsLocaux.chambresUnisexes");
 const {
   value: chambresDoubles,
   errorMessage: chambresDoublesErrorMessage,
   handleChange: onChambresDoublesChange,
   meta: chambresDoublesMeta,
-} = useField("caracteristiques.informationsLocaux.chambresDoubles");
+} = useField("informationsLocaux.chambresDoubles");
 const {
   value: amenagementsSpecifiques,
   errorMessage: amenagementsSpecifiquesErrorMessage,
   handleChange: onAmenagementsSpecifiquesChange,
   meta: amenagementsSpecifiquesMeta,
-} = useField("caracteristiques.informationsLocaux.amenagementsSpecifiques");
+} = useField("informationsLocaux.amenagementsSpecifiques");
 const {
   value: precisionAmenagementsSpecifiques,
   errorMessage: precisionAmenagementsSpecifiquesErrorMessage,
   handleChange: onPrecisionAmenagementsSpecifiquesChange,
   meta: precisionAmenagementsSpecifiquesMeta,
-} = useField(
-  "caracteristiques.informationsLocaux.precisionAmenagementsSpecifiques",
-);
+} = useField("informationsLocaux.precisionAmenagementsSpecifiques");
 
-// caracteristiques.informationsTransport
+// informationsTransport
 const {
   value: vehiculesAdaptes,
   errorMessage: vehiculesAdaptesErrorMessage,
   handleChange: onVehiculesAdaptesChange,
   meta: vehiculesAdaptesMeta,
-} = useField("caracteristiques.informationsTransport.vehiculesAdaptes");
+} = useField("informationsTransport.vehiculesAdaptes");
 const {
   value: deplacementProximite,
   errorMessage: deplacementProximiteErrorMessage,
   handleChange: onDeplacementProximiteChange,
   meta: deplacementProximiteMeta,
-} = useField("caracteristiques.informationsTransport.deplacementProximite");
+} = useField("informationsTransport.deplacementProximite");
 const {
   value: excursion,
   errorMessage: excursionErrorMessage,
   handleChange: onExcursionChange,
   meta: excursionMeta,
-} = useField("caracteristiques.informationsTransport.excursion");
+} = useField("informationsTransport.excursion");
 const {
   value: rejoindreEtape,
   errorMessage: rejoindreEtapeErrorMessage,
   handleChange: onRejoindreEtapeChange,
   meta: rejoindreEtapeMeta,
-} = useField("caracteristiques.informationsTransport.rejoindreEtape");
+} = useField("informationsTransport.rejoindreEtape");
 
 // attestation
 const {
@@ -899,46 +840,45 @@ const {
   // errorMessage: attestationACertifieErrorMessage,
   handleChange: onAttestationACertifieChange,
   // meta: attestationACertifieMeta,
-} = useField("caracteristiques.attestation.aCertifie");
+} = useField("attestation.aCertifie");
 const {
   value: attestationNom,
   errorMessage: attestationNomErrorMessage,
   handleChange: onAttestationNomChange,
   meta: attestationNomMeta,
-} = useField("caracteristiques.attestation.nom");
+} = useField("attestation.nom");
 const {
   value: attestationPrenom,
   errorMessage: attestationPrenomErrorMessage,
   handleChange: onAttestationPrenomChange,
   meta: attestationPrenomMeta,
-} = useField("caracteristiques.attestation.prenom");
+} = useField("attestation.prenom");
 const {
   value: attestationQualite,
   errorMessage: attestationQualiteErrorMessage,
   handleChange: onAttestationQualiteChange,
   meta: attestationQualiteMeta,
-} = useField("caracteristiques.attestation.qualite");
+} = useField("attestation.qualite");
 const {
   value: attestationAt,
   errorMessage: attestationAtErrorMessage,
   handleChange: onAttestationAtChange,
   meta: attestationAtMeta,
-} = useField("caracteristiques.attestation.at");
+} = useField("attestation.at");
 
 async function handleHebergementIdChange(hebergementId) {
   if (hebergementId) {
     await hebergementStore.fetchHebergement(hebergementId);
     const newValues = {
       hebergementId,
-      caracteristiques: {
-        informationsLocaux: {
-          ...hebergementStore.hebergementCourant.caracteristiques
-            .informationsLocaux,
-        },
-        informationsTransport: {
-          ...hebergementStore.hebergementCourant.caracteristiques
-            .informationsTransport,
-        },
+      coordonnees: {
+        ...hebergementStore.hebergementCourant.coordonnees,
+      },
+      informationsLocaux: {
+        ...hebergementStore.hebergementCourant.informationsLocaux,
+      },
+      informationsTransport: {
+        ...hebergementStore.hebergementCourant.informationsTransport,
       },
     };
     resetForm({
@@ -949,9 +889,8 @@ async function handleHebergementIdChange(hebergementId) {
 }
 
 async function next() {
-  emit("update", {
-    ...values,
-  });
+  log.d("update", { ...values });
+  emit("update", { ...values });
 }
 
 async function cancel() {
@@ -981,7 +920,6 @@ async function addHebergement(hebergement) {
 }
 
 function openAddHebergement() {
-  log.d("openAddHebergement - IN");
   addHebergementOpened.value = true;
 }
 

@@ -127,7 +127,9 @@ create table front.hebergement (
    supprime                     BOOLEAN              NOT NULL DEFAULT false,
    user_id                      INTEGER              NOT NULL REFERENCES front.users(id),
    nom                          VARCHAR(80)          NOT NULL,
-   caracteristiques             JSONB                ,
+   coordonnees                  JSONB                ,
+   informations_locaux           JSONB                ,
+   informations_transport        JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_hebergement primary key (id)

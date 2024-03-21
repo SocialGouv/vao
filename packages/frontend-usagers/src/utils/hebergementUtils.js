@@ -161,11 +161,9 @@ const informationsTransportSchema = {
 
 const schema = {
   nom: yup.string().required(),
-  caracteristiques: yup.object({
-    coordonnees: yup.object(coordonneesSchema),
-    informationsLocaux: yup.object(informationsLocauxSchema),
-    informationsTransport: yup.object(informationsTransportSchema),
-  }),
+  coordonnees: yup.object(coordonneesSchema),
+  informationsLocaux: yup.object(informationsLocauxSchema),
+  informationsTransport: yup.object(informationsTransportSchema),
 };
 
 export default {

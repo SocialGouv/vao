@@ -85,41 +85,39 @@ const hebergementDetailsSchema = {
   hebergementId: yup
     .string()
     .required("le choix d'un hébergement dans la liste est obligatoire"),
-  caracteristiques: yup.object({
-    coordonnees: yup.object(hebergementUtils.coordonneesSchema),
-    informationsLocaux: yup.object({
-      ...hebergementUtils.informationsLocauxSchema,
-      file: yup.mixed().required(),
-    }),
-    informationsTransport: yup.object({
-      ...hebergementUtils.informationsTransportSchema,
-      rejoindreEtape: yup
-        .string()
-        .min(
-          1,
-          "Il est impératif de préciser le mode de transport utilisé pour rejoindre le lieu d'hébergement",
-        )
-        .required(),
-    }),
-    attestation: yup.object({
-      aCertifie: yup
-        .boolean()
-        .oneOf([true], "Vous devez certifier de ces informations")
-        .required(),
-      nom: yup
-        .string()
-        .min(1, "Il est impératif de préciser votre nom")
-        .required(),
-      prenom: yup
-        .string()
-        .min(1, "Il est impératif de préciser votre prénom")
-        .required(),
-      qualite: yup
-        .string()
-        .min(1, "Il est impératif de préciser votre qualité")
-        .required(),
-      at: yup.date().required(),
-    }),
+  coordonnees: yup.object(hebergementUtils.coordonneesSchema),
+  informationsLocaux: yup.object({
+    ...hebergementUtils.informationsLocauxSchema,
+    file: yup.mixed().required(),
+  }),
+  informationsTransport: yup.object({
+    ...hebergementUtils.informationsTransportSchema,
+    rejoindreEtape: yup
+      .string()
+      .min(
+        1,
+        "Il est impératif de préciser le mode de transport utilisé pour rejoindre le lieu d'hébergement",
+      )
+      .required(),
+  }),
+  attestation: yup.object({
+    aCertifie: yup
+      .boolean()
+      .oneOf([true], "Vous devez certifier de ces informations")
+      .required(),
+    nom: yup
+      .string()
+      .min(1, "Il est impératif de préciser votre nom")
+      .required(),
+    prenom: yup
+      .string()
+      .min(1, "Il est impératif de préciser votre prénom")
+      .required(),
+    qualite: yup
+      .string()
+      .min(1, "Il est impératif de préciser votre qualité")
+      .required(),
+    at: yup.date().required(),
   }),
 };
 

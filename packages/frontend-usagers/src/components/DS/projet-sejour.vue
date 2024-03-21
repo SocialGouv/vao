@@ -11,7 +11,6 @@
             :inline="true"
             :options="projetSejour.destinationOptions"
             :small="true"
-            :required="true"
           />
         </div>
       </div>
@@ -82,9 +81,7 @@ const emit = defineEmits(["previous", "next", "update"]);
 
 const log = logger("components/DS/projet-sejour");
 
-const validationSchema = yup.object({
-  ...projetSejour.schema,
-});
+const validationSchema = yup.object(projetSejour.schema);
 
 const initialValues = {
   destination: props.initData.destination ?? [],
