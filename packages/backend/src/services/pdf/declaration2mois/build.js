@@ -1774,52 +1774,51 @@ async function buildFicheAnnexe(hebergement) {
   return liste;
 }
 
-const build = (demande = {}, departementSuivi) => {
+const build = async (demande = {}, departementSuivi) => {
   log.i("build - IN");
-  return new Promise(async (resolve) => {
-    const docDefinition = {
-      content: [
-        buildHeader(),
-        buildTitre(demande, departementSuivi),
-        buildAgrement(demande.organisme.agrement),
-        buildInformationsGenerales(demande),
-        {
-          headlineLevel: 1,
-          stack: [buildHeader()],
-        },
-        buildInformationsVacanciers(demande.informationsVacanciers),
-        buildInformationsPersonnel(demande.informationsPersonnel),
-        buildProjetSejour(demande.informationsProjetSejour),
-        buildInformationsTransport(demande.informationsTransport),
-        {
-          headlineLevel: 1,
-          stack: [buildHeader()],
-        },
-        buildInformationsSanitaire(demande.informationsSanitaires),
-        {
-          headlineLevel: 1,
-          stack: [buildHeader()],
-        },
-        ...(await buildFicheAnnexe(demande.hebergement)),
-      ],
-      defaultStyle: {
-        font: "Marianne",
-        fontSize: 9,
+  const docDefinition = {
+    content: [
+      buildHeader(),
+      buildTitre(demande, departementSuivi),
+      buildAgrement(demande.organisme.agrement),
+      buildInformationsGenerales(demande),
+      {
+        headlineLevel: 1,
+        stack: [buildHeader()],
       },
-      footer: function (currentPage, pageCount) {
-        return [
-          {
-            text: `${currentPage.toString()}/${pageCount}`,
-            alignment: "right",
-            margin: [5, 5, 15, 5],
-          },
-        ];
+      buildInformationsVacanciers(demande.informationsVacanciers),
+      buildInformationsPersonnel(demande.informationsPersonnel),
+      buildProjetSejour(demande.informationsProjetSejour),
+      buildInformationsTransport(demande.informationsTransport),
+      {
+        headlineLevel: 1,
+        stack: [buildHeader()],
       },
-      pageBreakBefore: function (currentNode) {
-        return currentNode.headlineLevel === 1;
+      buildInformationsSanitaire(demande.informationsSanitaires),
+      {
+        headlineLevel: 1,
+        stack: [buildHeader()],
       },
-    };
-
+      ...(await buildFicheAnnexe(demande.hebergement)),
+    ],
+    defaultStyle: {
+      font: "Marianne",
+      fontSize: 9,
+    },
+    footer: function (currentPage, pageCount) {
+      return [
+        {
+          text: `${currentPage.toString()}/${pageCount}`,
+          alignment: "right",
+          margin: [5, 5, 15, 5],
+        },
+      ];
+    },
+    pageBreakBefore: function (currentNode) {
+      return currentNode.headlineLevel === 1;
+    },
+  };
+  return new Promise((resolve) => {
     const pdfDoc = printer.createPdfKitDocument(docDefinition);
     const chunks = [];
     let result;
