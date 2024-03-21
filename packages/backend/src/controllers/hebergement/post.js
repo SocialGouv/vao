@@ -8,17 +8,23 @@ module.exports = async function post(req, res) {
   log.i("IN");
   const { body, decoded } = req;
 
-  const { nom, caracteristiques } = body;
+  const { nom, coordonnees, informationsLocaux, informationsTransport } = body;
   const userId = decoded.id;
 
   log.d(userId);
-  if (!nom || !caracteristiques) {
+  if (!nom || !coordonnees || !informationsLocaux || !informationsTransport) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
   }
 
   try {
-    const id = await Hebergement.create(userId, nom, caracteristiques);
+    const id = await Hebergement.create(
+      userId,
+      nom,
+      coordonnees,
+      informationsLocaux,
+      informationsTransport,
+    );
     if (!id) {
       log.w("error while creating hebergement");
       return res.status(400).json({

@@ -9,7 +9,7 @@
             :label-visible="true"
             :model-value="nombreResponsable"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             :is-valid="nombreResponsableMeta.valid"
             :error-message="nombreResponsableErrorMessage"
             placeholder="nombre total de responsable"
@@ -43,7 +43,7 @@
             :label-visible="true"
             :model-value="nombreAccompagnant"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             :is-valid="nombreAccompagnantMeta.valid"
             :error-message="nombreAccompagnantErrorMessage"
             placeholder="nombre total d'accompagnant"
@@ -57,7 +57,6 @@
         <DsfrButton
           id="previous-step"
           :secondary="true"
-          :disabled="!props.modifiable"
           @click.prevent="
             () => {
               emit('previous');
@@ -65,12 +64,7 @@
           "
           >Précédent</DsfrButton
         >
-        <DsfrButton
-          id="next-step"
-          :disabled="!props.modifiable"
-          @click.prevent="next"
-          >Suivant</DsfrButton
-        >
+        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
       </DsfrButtonGroup>
     </fieldset>
   </div>
@@ -86,25 +80,9 @@ const props = defineProps({
 
 const emit = defineEmits(["previous", "next", "update"]);
 
-const schemaInfosPersonnel = {
-  nombreResponsable: yup
-    .number("Ce champ doit contenir un nombre entier")
-    .integer("Ce champ doit contenir un nombre entier")
-    .typeError("Ce champ doit contenir un nombre entier")
-    .required("Ce champ doit contenir un nombre entier"),
-  procedureRecrutementSupplementaire: yup
-    .bool("La saisie de ce champ est obligatoire")
-    .required("La saisie de ce champ est obligatoire"),
-  nombreAccompagnant: yup
-    .number("Ce champ doit contenir un nombre entier")
-    .integer("Ce champ doit contenir un nombre entier")
-    .typeError("Ce champ doit contenir un nombre entier")
-    .required("Ce champ doit contenir un nombre entier"),
-};
-
-const validationSchema = yup.object({
-  ...schemaInfosPersonnel,
-});
+const validationSchema = yup.object(
+  DeclarationSejour.informationsPersonnelSchema,
+);
 
 const initialValues = {
   nombreResponsable: props.initData.nombreResponsable ?? null,

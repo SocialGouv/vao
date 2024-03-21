@@ -107,6 +107,8 @@ fileignoreconfig:
   checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
 - filename: packages/frontend-bo/src/components/utils/TableFull.vue
   checksum: 4317693488a43b3e46c75ab31f0750aacb929c60d6e96af89cdc75bf9ad22afd
+- filename: packages/frontend-usagers/src/components/DS/synthese.vue
+  checksum: ac238a1a5bdf418d5cbeefecc2d4ed1616c9b28eb0384c21d30b5d752ce65fcb
 - filename: packages/frontend-usagers/src/components/PasswordInput.vue
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
 - filename: packages/frontend-usagers/src/components/customInput.vue
@@ -154,7 +156,7 @@ fileignoreconfig:
 - filename: pg/scripts/02/02-3-back-init.sql
   checksum: 96d98b024d36e64a1b03ff13dc56f5fee7f40abaf3555f76fe5abafc65ee14dd
 - filename: pg/scripts/02/02-4-front-init.sql
-  checksum: eb15cba42ed673b186ad9d0d67c3ba7c484e09fd45549b3ab09c66678bb5529e
+  checksum: 6e43c4f0a61a9fdde33c771c62f6e9b600b7e2c7ef2dbf80b9f2d24b166730f5
 - filename: pg/scripts/02/02-5-ref-init.sql
   checksum: c80c2eae776be18cf0c1e6cb4de92fc0e555cb2bbf73ac535d3931f408c7b249
 - filename: pg/scripts/03/03-1-geo-data.sql

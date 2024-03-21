@@ -44,7 +44,7 @@
           <DsfrInputGroup
             name="precisionModeOrganisation"
             :required="true"
-            :disabled="!props.modifiable"
+            :readonly="!props.modifiable"
             label="Précisez le mode d’organisation retenu (conditions d’accompagnement des vacanciers, gestion des correspondances, lieux de prise en charge, temps d’attente, etc.)"
             :label-visible="true"
             :is-textarea="true"
@@ -79,7 +79,6 @@
         <DsfrButton
           id="previous-step"
           :secondary="true"
-          :disabled="!props.modifiable"
           @click.prevent="
             () => {
               emit('previous');
@@ -87,12 +86,7 @@
           "
           >Précédent</DsfrButton
         >
-        <DsfrButton
-          id="next-step"
-          :disabled="!props.modifiable"
-          @click.prevent="next"
-          >Suivant</DsfrButton
-        >
+        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
       </DsfrButtonGroup>
     </DsfrFieldset>
   </div>
@@ -109,13 +103,7 @@ const props = defineProps({
 });
 const emit = defineEmits(["previous", "next", "update"]);
 
-const schemaInfosTransport = { ...protocoleTransport.schema };
-
-const validationSchema = computed(() =>
-  yup.object({
-    ...schemaInfosTransport,
-  }),
-);
+const validationSchema = yup.object(protocoleTransport.schema);
 
 const initialValues = {
   responsableTransportLieuSejour: props.initData.responsableTransportLieuSejour,

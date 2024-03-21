@@ -1,15 +1,15 @@
 <template>
   <div class="fr-fieldset__element">
-    <div class="fr-input-group" style="margin-bottom: 2rem">
-      <div v-if="rows.length > 0">
-        <DsfrTable :headers="headers" :rows="rows" />
-      </div>
-
+    <div v-if="rows.length > 0">
+      <DsfrTable :headers="headers" :rows="rows" />
+    </div>
+    <div class="fr-input-group">
       <DsfrFileUpload
         v-if="props.modifiable"
         v-bind="$attrs"
         @change="changeFiles"
       />
+      <span v-else>Aucune pièce versée</span>
     </div>
   </div>
 </template>

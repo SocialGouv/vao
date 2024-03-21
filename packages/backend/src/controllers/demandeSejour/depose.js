@@ -11,9 +11,15 @@ const log = logger(module.filename);
 module.exports = async function post(req, res) {
   const demandeSejourId = req.params.id;
   const { id: userId } = req.decoded;
+  const { attestation } = req.body;
   log.i("IN", { demandeSejourId });
 
   if (!demandeSejourId) {
+    log.w("missing parameter");
+    return res.status(400).json({ message: "paramètre manquant." });
+  }
+
+  if (!attestation) {
     log.w("missing parameter");
     return res.status(400).json({ message: "paramètre manquant." });
   }
@@ -44,8 +50,7 @@ module.exports = async function post(req, res) {
         message: "Une erreur est survenue durant la transmission de la demande",
       });
     }
-    const departementSuivi =
-      hebergement?.caracteristiques?.coordonnees?.adresse?.departement;
+    const departementSuivi = hebergement?.coordonnees?.adresse?.departement;
     if (!departementSuivi) {
       log.w("error while getting departement");
       return res.status(400).json({
@@ -66,6 +71,7 @@ module.exports = async function post(req, res) {
       "finalisation",
       demandeSejourId,
       {
+        attestation,
         departementSuivi,
         idFonctionnelle,
       },
