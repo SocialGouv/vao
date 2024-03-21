@@ -100,25 +100,23 @@ const hebergementDetailsSchema = {
       )
       .required(),
   }),
-  attestation: yup.object({
-    aCertifie: yup
-      .boolean()
-      .oneOf([true], "Vous devez certifier de ces informations")
-      .required(),
-    nom: yup
-      .string()
-      .min(1, "Il est impératif de préciser votre nom")
-      .required(),
-    prenom: yup
-      .string()
-      .min(1, "Il est impératif de préciser votre prénom")
-      .required(),
-    qualite: yup
-      .string()
-      .min(1, "Il est impératif de préciser votre qualité")
-      .required(),
-    at: yup.date().required(),
-  }),
+};
+
+const attestationSchema = {
+  aCertifie: yup
+    .boolean()
+    .oneOf([true], "Vous devez certifier de ces informations")
+    .required(),
+  nom: yup.string().min(1, "Il est impératif de préciser votre nom").required(),
+  prenom: yup
+    .string()
+    .min(1, "Il est impératif de préciser votre prénom")
+    .required(),
+  qualite: yup
+    .string()
+    .min(1, "Il est impératif de préciser votre qualité")
+    .required(),
+  at: yup.date().required(),
 };
 
 const hebergementSchema = (dateDebut, dateFin) => ({
@@ -147,6 +145,7 @@ const schema = (dateDebut, dateFin) => ({
   informationsSanitaires: yup.object(protocoleSanitaire.schema),
   informationsProjetSejour: yup.object(projetSejour.schema),
   hebergement: yup.object(hebergementSchema(dateDebut, dateFin)),
+  attestation: yup.object(attestationSchema),
 });
 
 export default {

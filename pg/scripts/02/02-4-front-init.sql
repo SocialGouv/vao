@@ -128,8 +128,9 @@ create table front.hebergement (
    user_id                      INTEGER              NOT NULL REFERENCES front.users(id),
    nom                          VARCHAR(80)          NOT NULL,
    coordonnees                  JSONB                ,
-   informations_locaux           JSONB                ,
-   informations_transport        JSONB                ,
+   informations_locaux          JSONB                ,
+   informations_transport       JSONB                ,
+   attestation                  JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_hebergement primary key (id)

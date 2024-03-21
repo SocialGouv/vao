@@ -324,20 +324,6 @@
         </div>
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Attestation sur l'honneur">
-      <div class="fr-col-12">
-        <span
-          v-if="props.hebergement.attestation.aCertifie"
-          class="read-only-value"
-        >
-          Je soussigné,
-          {{ props.hebergement.attestation.prenom }}
-          {{ props.hebergement.attestation.nom }}, en qualité de
-          {{ props.hebergement.attestation.qualite }}, certifie sur l'honneur
-          que les renseignements portés sur cette déclaration sont exacts.
-        </span>
-      </div>
-    </DsfrFieldset>
   </div>
 </template>
 

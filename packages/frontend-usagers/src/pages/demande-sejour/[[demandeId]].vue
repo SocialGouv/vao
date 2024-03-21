@@ -147,8 +147,10 @@ const hash = computed(() => {
 const sejourId = ref(route.params.demandeId);
 
 const canModify = computed(() => {
-  !demandeSejourStore.demandeCourante.statut ||
-    demandeSejourStore.demandeCourante.statut === "BROUILLON";
+  return (
+    !demandeSejourStore.demandeCourante.statut ||
+    demandeSejourStore.demandeCourante.statut === "BROUILLON"
+  );
 });
 
 async function updateOrCreate(data, type) {
@@ -234,14 +236,16 @@ async function updateOrCreate(data, type) {
   }
 }
 
-async function finalize() {
+async function finalize(attestation) {
   log.i("finalize -IN");
   try {
     const url = `/sejour/depose/${sejourId.value}`;
     await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
-      body: {},
+      body: {
+        attestation,
+      },
     });
 
     toaster.success(

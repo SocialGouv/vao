@@ -180,12 +180,76 @@
       </DsfrAccordionsGroup>
     </div>
     <form>
+      <DsfrFieldset legend="Attestation">
+        <div class="fr-fieldset__element fr-col-12">
+          <DsfrCheckbox
+            v-model="aCertifie"
+            name="attestation.aCertifie"
+            label="Je certifie sur l'honneur que les renseignements portés sur cette déclaration sont exacts."
+            :small="true"
+            :disabled="!props.modifiable"
+            required
+            @update:model-value="onACertifieChange"
+          />
+        </div>
+
+        <div class="fr-fieldset__element fr-col-12">
+          <DsfrInputGroup
+            name="attestation.nom"
+            label="Nom"
+            :required="true"
+            readonly
+            :label-visible="true"
+            placeholder=""
+            :model-value="nom"
+          />
+        </div>
+
+        <div class="fr-fieldset__element fr-col-12">
+          <DsfrInputGroup
+            name="attestation.prenom"
+            label="Prénom"
+            :required="true"
+            readonly
+            :label-visible="true"
+            placeholder=""
+            :model-value="prenom"
+          />
+        </div>
+
+        <div v-if="showAttestation" class="fr-fieldset__element fr-col-12">
+          <DsfrInputGroup
+            name="attestation.qualite"
+            label="Qualité"
+            :required="true"
+            :readonly="!props.modifiable"
+            :label-visible="true"
+            placeholder=""
+            :model-value="qualite"
+            :error-message="qualiteErrorMessage && qualiteMeta.touched"
+            :is-valid="qualiteMeta"
+            @update:model-value="onQualiteChange"
+          />
+        </div>
+
+        <div class="fr-fieldset__element fr-col-12">
+          <DsfrInputGroup
+            name="attestation.at"
+            label="Date"
+            type="date"
+            :required="true"
+            readonly
+            :label-visible="true"
+            placeholder=""
+            :model-value="at"
+          />
+        </div>
+      </DsfrFieldset>
       <fieldset class="fr-fieldset">
         <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
           <DsfrButton
             id="previous-step"
             :secondary="true"
-            :disabled="!props.modifiable"
             @click.prevent="
               () => {
                 emit('previous');
@@ -194,8 +258,9 @@
             >Précédent</DsfrButton
           >
           <DsfrButton
+            v-if="!props.modifiable"
             label="Transmettre ma déclaration de séjour à 2 mois"
-            :disabled="!meta.valid || !props.modifiable"
+            :disabled="!meta.valid"
             @click.prevent="finalizeDeclaration"
           />
         </DsfrButtonGroup>
@@ -206,7 +271,8 @@
 
 <script setup>
 import * as yup from "yup";
-import { useForm } from "vee-validate";
+import { useField, useForm } from "vee-validate";
+import dayjs from "dayjs";
 
 const props = defineProps({
   declarationCourante: { type: Object, default: null, required: true },
@@ -217,7 +283,17 @@ const emit = defineEmits(["previous", "finalize"]);
 const expandedId = ref(0);
 const subExpandedId = ref(0);
 
-const initialValues = { ...props.declarationCourante };
+const userStore = useUserStore();
+
+const initialValues = {
+  ...props.declarationCourante,
+  attestation: {
+    nom: userStore.user.nom,
+    prenom: userStore.user.prenom,
+    at: dayjs(new Date()).format("YYYY-MM-DD"),
+    ...(props.declarationCourante.attestation ?? {}),
+  },
+};
 const validationSchema = computed(() =>
   yup.object(
     DeclarationSejour.schema(
@@ -226,11 +302,24 @@ const validationSchema = computed(() =>
     ),
   ),
 );
-const { meta, errors } = useForm({
+const { meta, errors, values } = useForm({
   initialValues,
   validationSchema,
   validateOnMount: true,
 });
+
+const { value: aCertifie, handleChange: onACertifieChange } = useField(
+  "attestation.aCertifie",
+);
+const { value: nom } = useField("attestation.nom");
+const { value: prenom } = useField("attestation.prenom");
+const {
+  value: qualite,
+  handleChange: onQualiteChange,
+  meta: qualiteMeta,
+  errorMessage: qualiteErrorMessage,
+} = useField("attestation.qualite");
+const { value: at } = useField("attestation.at");
 
 const success = {
   label: "complet",
@@ -278,6 +367,10 @@ const hebergement = computed(() =>
     : failure,
 );
 
+const showAttestation = computed(
+  () => !Object.keys(errors.value).find((k) => !k.includes("attestation")),
+);
+
 function validateHebergement(index) {
   return !Object.keys(errors.value).find((k) =>
     k.includes("hebergement.hebergements[" + index + "]"),
@@ -287,7 +380,7 @@ function validateHebergement(index) {
 }
 
 function finalizeDeclaration() {
-  emit("finalize");
+  emit("finalize", values.attestation);
 }
 </script>
 

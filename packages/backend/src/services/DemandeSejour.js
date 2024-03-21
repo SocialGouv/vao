@@ -55,18 +55,27 @@ const query = {
       organisme,
     ],
   ],
-  finalize: `
+  finalize: (
+    demandeSejourId,
+    idFonctionnelle,
+    departementSuivi,
+    attestation,
+  ) => [
+    `
   UPDATE front.demande_sejour ds
   SET 
-    id_fonctionnelle=$1,
-    departement_suivi=$2,
+    id_fonctionnelle = $2,
+    departement_suivi = $3,
+    attestation = $4,
     statut = 'TRANSMISE',
     edited_at = NOW()
   WHERE
-    ds.id = $3
+    ds.id = $1
   RETURNING
     id as "demandeId"
   ;`,
+    [demandeSejourId, idFonctionnelle, departementSuivi, attestation],
+  ],
   get: `
   SELECT
     ds.id as "demandeSejourId",
@@ -163,6 +172,7 @@ const query = {
       ds.projet_sejour as "informationsProjetSejour",
       ds.transport as "informationsTransport",
       ds.sanitaires as "informationsSanitaires",
+      ds.attestation,
       ds.hebergement,
       ds.organisme,
       o.personne_morale->>'siret' as "siret"
@@ -190,7 +200,7 @@ const query = {
   RETURNING
     id as "eventId"
   `,
-  updateHebergements: `
+  updateHebergement: `
   UPDATE front.demande_sejour ds
   SET
     hebergement = $1,
@@ -505,7 +515,7 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
     }
     case "hebergements": {
       log.d("hebergements", demandeSejourId);
-      response = await pool.query(query.updateHebergements, [
+      response = await pool.query(query.updateHebergement, [
         parametre,
         demandeSejourId,
       ]);
@@ -514,11 +524,14 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
     case "finalisation": {
       log.d("finalisation", demandeSejourId);
       log.i(parametre);
-      response = await pool.query(query.finalize, [
-        parametre.idFonctionnelle,
-        parametre.departementSuivi,
-        demandeSejourId,
-      ]);
+      response = await pool.query(
+        ...query.finalize(
+          demandeSejourId,
+          parametre.idFonctionnelle,
+          parametre.departementSuivi,
+          parametre.attestation,
+        ),
+      );
       break;
     }
     default:

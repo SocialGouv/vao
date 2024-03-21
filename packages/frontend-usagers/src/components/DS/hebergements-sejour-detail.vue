@@ -506,79 +506,6 @@
           />
         </div>
       </DsfrFieldset>
-      <DsfrFieldset legend="Attestation">
-        <div class="fr-fieldset__element fr-col-12">
-          <DsfrCheckbox
-            v-model="attestationACertifie"
-            name="attestation.aCertifie"
-            label="Je certifie sur l'honneur que les renseignements portés sur cette déclaration sont exacts."
-            :small="true"
-            :disabled="!props.modifiable"
-            @update:model-value="onAttestationACertifieChange"
-          />
-        </div>
-
-        <div class="fr-fieldset__element fr-col-12">
-          <DsfrInputGroup
-            name="attestation.nom"
-            label="Nom"
-            :required="true"
-            :disabled="!props.modifiable"
-            :label-visible="true"
-            placeholder=""
-            :model-value="attestationNom"
-            :error-message="attestationNomErrorMessage"
-            :is-valid="attestationNomMeta"
-            @update:model-value="onAttestationNomChange"
-          />
-        </div>
-
-        <div class="fr-fieldset__element fr-col-12">
-          <DsfrInputGroup
-            name="attestation.prenom"
-            label="Prénom"
-            :required="true"
-            :disabled="!props.modifiable"
-            :label-visible="true"
-            placeholder=""
-            :model-value="attestationPrenom"
-            :error-message="attestationPrenomErrorMessage"
-            :is-valid="attestationPrenomMeta"
-            @update:model-value="onAttestationPrenomChange"
-          />
-        </div>
-
-        <div class="fr-fieldset__element fr-col-12">
-          <DsfrInputGroup
-            name="attestation.qualite"
-            label="Qualité"
-            :required="true"
-            :disabled="!props.modifiable"
-            :label-visible="true"
-            placeholder=""
-            :model-value="attestationQualite"
-            :error-message="attestationQualiteErrorMessage"
-            :is-valid="attestationQualiteMeta"
-            @update:model-value="onAttestationQualiteChange"
-          />
-        </div>
-
-        <div class="fr-fieldset__element fr-col-12">
-          <DsfrInputGroup
-            name="attestation.at"
-            label="Date"
-            type="date"
-            :required="true"
-            :disabled="!props.modifiable"
-            :label-visible="true"
-            placeholder=""
-            :model-value="attestationAt"
-            :error-message="attestationAtErrorMessage"
-            :is-valid="attestationAtMeta"
-            @update:model-value="onAttestationAtChange"
-          />
-        </div>
-      </DsfrFieldset>
     </template>
 
     <fieldset class="fr-fieldset">
@@ -678,10 +605,9 @@ const initialValues = {
   informationsTransport: {
     ...(props.hebergement.informationsTransport ?? {}),
   },
-  attestation: { ...(props.hebergement.attestation ?? {}) },
 };
 
-const { meta, values, resetForm } = useForm({
+const { values, resetForm } = useForm({
   initialValues,
   validationSchema,
 });
@@ -833,38 +759,6 @@ const {
   handleChange: onRejoindreEtapeChange,
   meta: rejoindreEtapeMeta,
 } = useField("informationsTransport.rejoindreEtape");
-
-// attestation
-const {
-  value: attestationACertifie,
-  // errorMessage: attestationACertifieErrorMessage,
-  handleChange: onAttestationACertifieChange,
-  // meta: attestationACertifieMeta,
-} = useField("attestation.aCertifie");
-const {
-  value: attestationNom,
-  errorMessage: attestationNomErrorMessage,
-  handleChange: onAttestationNomChange,
-  meta: attestationNomMeta,
-} = useField("attestation.nom");
-const {
-  value: attestationPrenom,
-  errorMessage: attestationPrenomErrorMessage,
-  handleChange: onAttestationPrenomChange,
-  meta: attestationPrenomMeta,
-} = useField("attestation.prenom");
-const {
-  value: attestationQualite,
-  errorMessage: attestationQualiteErrorMessage,
-  handleChange: onAttestationQualiteChange,
-  meta: attestationQualiteMeta,
-} = useField("attestation.qualite");
-const {
-  value: attestationAt,
-  errorMessage: attestationAtErrorMessage,
-  handleChange: onAttestationAtChange,
-  meta: attestationAtMeta,
-} = useField("attestation.at");
 
 async function handleHebergementIdChange(hebergementId) {
   if (hebergementId) {
