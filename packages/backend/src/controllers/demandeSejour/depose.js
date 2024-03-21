@@ -27,6 +27,7 @@ module.exports = async function post(req, res) {
     return res.status(400).json({ message: "paramètre manquant." });
   }
 
+  let demandeId, ARuuid, DSuuid, declaration, idFonctionnelle, departementSuivi;
   try {
     declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
     if (!declaration) {

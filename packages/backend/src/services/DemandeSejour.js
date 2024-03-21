@@ -58,6 +58,12 @@ const query = {
       files,
     ],
   ],
+  addFile: `
+    UPDATE front.demande_sejour
+    SET files =  $2
+    WHERE id = $1
+    RETURNING id as "declarationId"
+  `,
   finalize: (
     demandeSejourId,
     idFonctionnelle,
@@ -175,7 +181,7 @@ const query = {
       ds.id_fonctionnelle as "idFonctionnelle",
       ds.departement_suivi as "departementSuivi",
       ds.libelle as "libelle",
-      ds.periode as "saison",
+      ds.periode as "periode",
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
       ds.responsable_sejour as "responsableSejour",
