@@ -107,6 +107,8 @@ fileignoreconfig:
   checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
 - filename: packages/frontend-bo/src/components/utils/TableFull.vue
   checksum: 4317693488a43b3e46c75ab31f0750aacb929c60d6e96af89cdc75bf9ad22afd
+- filename: packages/frontend-usagers/src/components/DS/synthese.vue
+  checksum: 882d7cd299d852b20b35b75d86d1408fe047a884d94966a2e5159fd7563bb386
 - filename: packages/frontend-usagers/src/components/PasswordInput.vue
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
 - filename: packages/frontend-usagers/src/components/customInput.vue

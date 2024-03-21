@@ -1,9 +1,8 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset"></fieldset>
-    <div class="fr-fieldset__element">
-      <div class="fr-input-group fr-col-12">
-        <DsfrAccordionsGroup>
+    <div class="fr-grid-row fr-my-5v">
+      <DsfrAccordionsGroup>
+        <li>
           <DsfrAccordion
             :id="1"
             title="Informations générales"
@@ -18,10 +17,12 @@
                 :type="informationsGenerales.type"
               />
             </template>
-            <informationsGeneralesReadOnly
+            <DSInformationsGeneralesReadOnly
               :declaration-courante="props.declarationCourante"
-            ></informationsGeneralesReadOnly>
+            ></DSInformationsGeneralesReadOnly>
           </DsfrAccordion>
+        </li>
+        <li>
           <DsfrAccordion
             :id="2"
             title="Informations sur les vacanciers"
@@ -36,13 +37,15 @@
                 :type="informationsVacanciers.type"
               />
             </template>
-            <informationsVacanciersReadOnly
+            <DSInformationsVacanciersReadOnly
               :info-vacanciers="
                 props.declarationCourante.informationsVacanciers ?? {}
               "
             >
-            </informationsVacanciersReadOnly>
+            </DSInformationsVacanciersReadOnly>
           </DsfrAccordion>
+        </li>
+        <li>
           <DsfrAccordion
             :id="3"
             title="Informations sur le personnel"
@@ -57,12 +60,14 @@
                 :type="informationsPersonnel.type"
               />
             </template>
-            <informationsPersonnelReadOnly
+            <DSInformationsPersonnelReadOnly
               :info-personnel="
                 props.declarationCourante.informationsPersonnel ?? {}
               "
-            ></informationsPersonnelReadOnly>
+            ></DSInformationsPersonnelReadOnly>
           </DsfrAccordion>
+        </li>
+        <li>
           <DsfrAccordion
             :id="4"
             title="Projet de séjour"
@@ -77,10 +82,12 @@
                 :type="projetSejour.type"
               />
             </template>
-            <projetSejourReadOnly
+            <DSProjetSejourReadOnly
               :projet="props.declarationCourante.informationsProjetSejour ?? {}"
-            ></projetSejourReadOnly>
+            ></DSProjetSejourReadOnly>
           </DsfrAccordion>
+        </li>
+        <li>
           <DsfrAccordion
             :id="5"
             title="Informations sur le transport"
@@ -95,10 +102,12 @@
                 :type="informationsTransport.type"
               />
             </template>
-            <protocole-transport-read-only
+            <ProtocoleTransportReadOnly
               :init-data="props.declarationCourante.informationsTransport ?? {}"
-            ></protocole-transport-read-only>
+            ></ProtocoleTransportReadOnly>
           </DsfrAccordion>
+        </li>
+        <li>
           <DsfrAccordion
             :id="6"
             title="Informations sanitaires"
@@ -113,66 +122,91 @@
                 :type="informationsSanitaires.type"
               />
             </template>
-            <protocole-sanitaire-read-only
+            <ProtocoleSanitaireReadOnly
               :init-data="
                 props.declarationCourante.informationsSanitaires ?? {}
               "
-            ></protocole-sanitaire-read-only>
+            ></ProtocoleSanitaireReadOnly>
           </DsfrAccordion>
-          <div
-            v-for="(item, index) in props.declarationCourante.hebergement
-              ?.hebergements ?? []"
-            :key="index"
+        </li>
+        <li>
+          <DsfrAccordion
+            id="synthese-hebergement"
+            title="Hébergements"
+            :expanded-id="expandedId"
+            @expand="(id) => (expandedId = id)"
           >
-            <DsfrAccordion
-              :id="index + 7"
-              :title="`Fiche annexe n°${index + 1}`"
-              :expanded-id="expandedId"
-              @expand="(id) => (expandedId = id)"
+            <template #title>
+              <span>Hébergements &nbsp;</span>
+              <DsfrBadge
+                :label="hebergement.label"
+                :small="true"
+                :type="hebergement.type"
+              />
+            </template>
+            <DsfrAccordionsGroup
+              v-if="props.declarationCourante.hebergement?.hebergements"
             >
-              <template #title> </template>
-              <DSFicheAnnexe
-                :hebergement="item"
-                :date-debut="props.declarationCourante.dateDebut"
-                :date-fin="props.declarationCourante.dateFin"
-              ></DSFicheAnnexe>
-            </DsfrAccordion>
-          </div>
-        </DsfrAccordionsGroup>
-      </div>
+              <li
+                v-for="(item, index) in props.declarationCourante.hebergement
+                  .hebergements"
+                :key="index"
+              >
+                <DsfrAccordion
+                  :id="'synthese-hebergement-' + index"
+                  :title="`Fiche annexe n°${index + 1}`"
+                  :expanded-id="subExpandedId"
+                  @expand="(id) => (subExpandedId = id)"
+                >
+                  <template #title>
+                    <span>Fiche annexe n°{{ index + 1 }} &nbsp;</span>
+                    <DsfrBadge
+                      :label="validateHebergement(index).label"
+                      :small="true"
+                      :type="validateHebergement(index).type"
+                    />
+                  </template>
+                  <DSFicheAnnexe
+                    :hebergement="item"
+                    :date-debut="props.declarationCourante.dateDebut"
+                    :date-fin="props.declarationCourante.dateFin"
+                  ></DSFicheAnnexe>
+                </DsfrAccordion>
+              </li>
+            </DsfrAccordionsGroup>
+            <span v-else> Aucun hébergement renseigné </span>
+          </DsfrAccordion>
+        </li>
+      </DsfrAccordionsGroup>
     </div>
-
-    <fieldset class="fr-fieldset">
-      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
-        <DsfrButton
-          id="previous-step"
-          :secondary="true"
-          :disabled="!props.modifiable"
-          @click.prevent="
-            () => {
-              emit('previous');
-            }
-          "
-          >Précédent</DsfrButton
-        >
-
-        <DsfrButton
-          label="Transmettre ma déclaration de séjour à 2 mois"
-          :disabled="incompleteDeclaration || !props.modifiable"
-          @click.prevent="finalizeDeclaration"
-        />
-      </DsfrButtonGroup>
-    </fieldset>
+    <form>
+      <fieldset class="fr-fieldset">
+        <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+          <DsfrButton
+            id="previous-step"
+            :secondary="true"
+            :disabled="!props.modifiable"
+            @click.prevent="
+              () => {
+                emit('previous');
+              }
+            "
+            >Précédent</DsfrButton
+          >
+          <DsfrButton
+            label="Transmettre ma déclaration de séjour à 2 mois"
+            :disabled="!meta.valid || !props.modifiable"
+            @click.prevent="finalizeDeclaration"
+          />
+        </DsfrButtonGroup>
+      </fieldset>
+    </form>
   </div>
 </template>
 
 <script setup>
-import informationsGeneralesReadOnly from "./informations-generales-read-only.vue";
-import informationsPersonnelReadOnly from "./informations-personnel-read-only.vue";
-import informationsVacanciersReadOnly from "./informations-vacanciers-read-only.vue";
-import projetSejourReadOnly from "./projet-sejour-read-only.vue";
-
-const log = logger("components/organisme/synthese");
+import * as yup from "yup";
+import { useForm } from "vee-validate";
 
 const props = defineProps({
   declarationCourante: { type: Object, default: null, required: true },
@@ -181,94 +215,78 @@ const props = defineProps({
 
 const emit = defineEmits(["previous", "finalize"]);
 const expandedId = ref(0);
+const subExpandedId = ref(0);
 
-const informationsGenerales = {
+const initialValues = { ...props.declarationCourante };
+const validationSchema = computed(() =>
+  yup.object(
+    DeclarationSejour.schema(
+      props.declarationCourante.dateDebut,
+      props.declarationCourante.dateFin,
+    ),
+  ),
+);
+const { meta, errors } = useForm({
+  initialValues,
+  validationSchema,
+  validateOnMount: true,
+});
+
+const success = {
   label: "complet",
   type: "success",
 };
 
-const informationsVacanciers = computed(() => {
-  if (props.declarationCourante.informationsVacanciers?.meta) {
-    return {
-      label: "complet",
-      type: "success",
-    };
-  } else {
-    return {
-      label: "incomplet",
-      type: "warning",
-    };
-  }
-});
+const failure = {
+  label: "incomplet",
+  type: "warning",
+};
 
-const informationsPersonnel = computed(() => {
-  if (props.declarationCourante.informationsPersonnel?.meta) {
-    return {
-      label: "complet",
-      type: "success",
-    };
-  } else {
-    return {
-      label: "incomplet",
-      type: "warning",
-    };
-  }
-});
+const informationsGenerales = success;
 
-const projetSejour = computed(() => {
-  if (props.declarationCourante.informationsProjetSejour?.meta) {
-    return {
-      label: "complet",
-      type: "success",
-    };
-  } else {
-    return {
-      label: "incomplet",
-      type: "warning",
-    };
-  }
-});
+const informationsVacanciers = computed(() =>
+  !Object.keys(errors.value).find((k) => k.includes("informationsVacanciers"))
+    ? success
+    : failure,
+);
 
-const informationsTransport = computed(() => {
-  if (props.declarationCourante.informationsTransport?.meta) {
-    return {
-      label: "complet",
-      type: "success",
-    };
-  } else {
-    return {
-      label: "incomplet",
-      type: "warning",
-    };
-  }
-});
+const informationsPersonnel = computed(() =>
+  !Object.keys(errors.value).find((k) => k.includes("informationsPersonnel"))
+    ? success
+    : failure,
+);
 
-const informationsSanitaires = computed(() => {
-  if (props.declarationCourante.informationsSanitaires?.meta) {
-    return {
-      label: "complet",
-      type: "success",
-    };
-  } else {
-    return {
-      label: "incomplet",
-      type: "warning",
-    };
-  }
-});
+const informationsTransport = computed(() =>
+  !Object.keys(errors.value).find((k) => k.includes("informationsTransport"))
+    ? success
+    : failure,
+);
 
-const incompleteDeclaration = computed(() => {
-  return (
-    informationsPersonnel.value.type === "warning" ||
-    informationsVacanciers.value.type === "warning" ||
-    projetSejour.value.type === "warning" ||
-    informationsSanitaires.value.type === "warning" ||
-    informationsTransport.value.type === "warning"
-  );
-});
+const informationsSanitaires = computed(() =>
+  !Object.keys(errors.value).find((k) => k.includes("informationsSanitaires"))
+    ? success
+    : failure,
+);
+const projetSejour = computed(() =>
+  !Object.keys(errors.value).find((k) => k.includes("projetSejour"))
+    ? success
+    : failure,
+);
+const hebergement = computed(() =>
+  !Object.keys(errors.value).find((k) => k.includes("hebergement"))
+    ? success
+    : failure,
+);
+
+function validateHebergement(index) {
+  return !Object.keys(errors.value).find((k) =>
+    k.includes("hebergement.hebergements[" + index + "]"),
+  )
+    ? success
+    : failure;
+}
 
 function finalizeDeclaration() {
-  log.i("finalizeDeclaration - IN");
   emit("finalize");
 }
 </script>

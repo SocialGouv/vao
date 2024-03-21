@@ -580,8 +580,9 @@
         </div>
       </DsfrFieldset>
     </template>
+
     <fieldset class="fr-fieldset">
-      <div class="fr-fieldset__element fr-col-offset-1 fr-col-4">
+      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
           id="cancel-add-hebergement"
           label="Annuler l'ajout d'étape"
@@ -590,8 +591,6 @@
           @click.prevent="cancel"
         >
         </DsfrButton>
-      </div>
-      <div class="fr-fieldset__element fr-col-offset-1 fr-col-4">
         <DsfrButton
           id="submit-add-hebergement"
           label="Valider l'étape"
@@ -599,8 +598,9 @@
           @click.prevent="next"
         >
         </DsfrButton>
-      </div>
+      </DsfrButtonGroup>
     </fieldset>
+
     <DsfrModal
       ref="modal"
       name="add-hebergement"
@@ -868,6 +868,7 @@ const {
 
 async function handleHebergementIdChange(hebergementId) {
   if (hebergementId) {
+    log.d("handleHebergementIdChange - in", { hebergementId });
     await hebergementStore.fetchHebergement(hebergementId);
     const newValues = {
       hebergementId,
@@ -889,8 +890,8 @@ async function handleHebergementIdChange(hebergementId) {
 }
 
 async function next() {
-  log.d("update", { ...values });
-  emit("update", { ...values });
+  log.d("update", { ...toRaw(values) });
+  emit("update", { ...toRaw(values) });
 }
 
 async function cancel() {

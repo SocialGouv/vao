@@ -151,17 +151,17 @@ const canModify = computed(() => {
     demandeSejourStore.demandeCourante.statut === "BROUILLON";
 });
 
-async function updateOrCreate(sejourData, type) {
-  log.i("updateOrCreate - IN", { sejourData, type });
+async function updateOrCreate(data, type) {
+  log.i("updateOrCreate - IN", { data, type });
   let counter = 0;
 
-  if (sejourData.file) {
-    log.d("updateOrCreate - look at sejourData.file");
-    const file = unref(sejourData.file);
+  if (data.file) {
+    log.d("updateOrCreate - look at data.file");
+    const file = unref(data.file);
     if (!file.uuid) {
       try {
         const uuid = await UploadFile(type, file);
-        sejourData.file = {
+        data.file = {
           uuid,
           name: file.name,
           createdAt: new Date(),
@@ -175,11 +175,11 @@ async function updateOrCreate(sejourData, type) {
     }
   }
 
-  if (sejourData.files && sejourData.files.length) {
-    log.d("updateOrCreate - look at sejourData.files");
+  if (data.files && data.files.length) {
+    log.d("updateOrCreate - look at data.files");
     const files = [];
-    for (let i = 0; i < sejourData.files.length; i++) {
-      const file = unref(sejourData.files[i]);
+    for (let i = 0; i < data.files.length; i++) {
+      const file = unref(data.files[i]);
       if (!file.name) {
         continue;
       }
@@ -205,17 +205,17 @@ async function updateOrCreate(sejourData, type) {
     toaster.info(
       `${counter} document${counter > 1 ? "s" : ""} déposé${counter > 1 ? "s" : ""}`,
     );
-    sejourData.files = files;
+    data.files = files;
   }
 
   try {
     const url = sejourId.value ? `/sejour/${sejourId.value}` : "/sejour";
     log.d(url);
-    const data = await $fetchBackend(url, {
+    const response = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
       body: {
-        parametre: { ...sejourData },
+        parametre: { ...data },
         type: type,
       },
     });
@@ -224,7 +224,7 @@ async function updateOrCreate(sejourData, type) {
       `Demande de séjour ${sejourId.value ? "sauvegardée" : "créée"}`,
     );
     log.d(`demande de séjour ${sejourId.value} mis à jour`);
-    sejourId.value = data.id;
+    sejourId.value = response.id;
     return nextHash();
   } catch (error) {
     log.w("Creation/modification de declaration de sejour: ", { error });

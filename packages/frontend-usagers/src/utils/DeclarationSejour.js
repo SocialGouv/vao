@@ -10,8 +10,8 @@ import hebergementUtils from "./hebergementUtils";
 
 const log = logger("utils/DeclarationSejour");
 
-function testSejourComplet(hebergements, dateDebut, dateFin) {
-  log.d("testSejourComplet - IN", { hebergements, dateDebut, dateFin });
+function isSejourComplet(hebergements, dateDebut, dateFin) {
+  log.d("isSejourComplet - IN", { hebergements, dateDebut, dateFin });
   if (hebergements.length === 0) {
     return false;
   }
@@ -19,7 +19,7 @@ function testSejourComplet(hebergements, dateDebut, dateFin) {
   let memoDate = dateDebut;
 
   for (let i = 0; i < hebergements.length; i++) {
-    log.d("testSejourComplet", hebergements[i].dateDebut, memoDate);
+    log.d("isSejourComplet", hebergements[i].dateDebut, memoDate);
     const dateDebut = dayjs(hebergements[i].dateDebut).format("YYYY-MM-DD");
     if (dateDebut !== memoDate) {
       return false;
@@ -27,7 +27,7 @@ function testSejourComplet(hebergements, dateDebut, dateFin) {
     memoDate = dayjs(hebergements[i].dateFin).format("YYYY-MM-DD");
   }
 
-  log.d("testSejourComplet", memoDate, dateFin);
+  log.d("isSejourComplet", memoDate, dateFin);
   if (memoDate !== dateFin) {
     return false;
   }
@@ -134,7 +134,7 @@ const hebergementSchema = (dateDebut, dateFin) => ({
     .test(
       "sejourComplet",
       "La liste des hébergements n'est pas complète",
-      (hebergements) => testSejourComplet(hebergements, dateDebut, dateFin),
+      (hebergements) => isSejourComplet(hebergements, dateDebut, dateFin),
     )
     .required("le choix d'un hébergement dans la liste est obligatoire"),
 });
@@ -150,6 +150,7 @@ const schema = (dateDebut, dateFin) => ({
 });
 
 export default {
+  isSejourComplet,
   baseSchema,
   informationsPersonnelSchema,
   hebergementDetailsSchema,
