@@ -50,6 +50,9 @@ module.exports = async function register(req, res, next) {
       );
     } catch (error) {
       log.w(error.name, error.message);
+      return res.status(400).json({
+        code: "MailError",
+      });
     }
     log.i("DONE");
     return res.status(200).json({ code });

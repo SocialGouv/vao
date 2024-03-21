@@ -144,7 +144,7 @@ const links = [
     text: "Accueil",
   },
   {
-    text: "Liste des demandes",
+    text: "Liste des déclarations",
   },
 ];
 

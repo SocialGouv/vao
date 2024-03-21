@@ -178,10 +178,10 @@ module.exports = {
     
                 <p>Afin de modifier votre mot de passe, veuillez cliquer sur le lien suivant qui vous redirigera vers le portail :</p>
     
-                <p><a href="${frontUsagersDomain}/connexion/reset-mot-de-passe?token=${token}">Je renouvelle mon mot de passe</a></p>
+                <p><a href="${frontUsagersDomain}/connexion/reset-mot-de-passe?token=${token}">Je réinitialise mon mot de passe</a></p>
                 `,
           replyTo: senderEmail,
-          subject: `Portail VAO - Renouvellement du mot de passe`,
+          subject: `Portail VAO - Réinitialisation du mot de passe`,
           to: email,
         };
         log.d("sendForgottenPassword post email", { params });

@@ -3,15 +3,6 @@ export const navItems = [
     text: "Accueil",
     to: "/",
   },
-  // {
-  //   title: "Agrément",
-  //   links: [
-  //     {
-  //       text: "En cours de construction",
-  //       to: "#",
-  //     },
-  //   ],
-  // },
   {
     title: "Organisateur",
     links: [
@@ -42,8 +33,4 @@ export const navItems = [
     text: "Mes hébergements",
     to: "/hebergements",
   },
-  // {
-  //   text: "Messagerie",
-  //   to: "#",
-  // },
 ];
