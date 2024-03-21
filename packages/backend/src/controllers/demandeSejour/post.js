@@ -8,9 +8,24 @@ const log = logger(module.filename);
 module.exports = async function post(req, res) {
   log.i("IN");
   const { id: userId } = req.decoded;
-  const { libelle, dateDebut, dateFin, duree, periode, organisme } =
-    req.body.parametre;
-  log.d(libelle, dateDebut, dateFin, duree, periode, organisme);
+  const {
+    libelle,
+    dateDebut,
+    dateFin,
+    duree,
+    periode,
+    responsableSejour,
+    organisme,
+  } = req.body.parametre;
+  log.d({
+    dateDebut,
+    dateFin,
+    duree,
+    libelle,
+    organisme,
+    periode,
+    responsableSejour,
+  });
   if (!dateDebut || !dateFin || !duree) {
     log.w("missing parameter");
     return res.status(400).json({ message: "paramètre manquant." });
@@ -46,6 +61,7 @@ module.exports = async function post(req, res) {
       dateFin,
       duree,
       periode,
+      responsableSejour,
       organisme.protocoleTransport,
       organisme.protocoleSanitaire,
       organisme,

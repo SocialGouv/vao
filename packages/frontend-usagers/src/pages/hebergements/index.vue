@@ -63,7 +63,7 @@
         <form>
           <fieldset class="fr-fieldset">
             <DsfrButton>
-              <NuxtLink to="/hebergements/new">
+              <NuxtLink to="/hebergements/creation">
                 Déclarer un nouvel hébergement
               </NuxtLink>
             </DsfrButton>

@@ -32,6 +32,22 @@
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
                 <div class="fr-input-group">
+                  <label class="fr-label"> N° enregistrement </label>
+                  <Multiselect
+                    :model-value="search.idFonctionnelle"
+                    name="idFonctionnelle"
+                    mode="tags"
+                    :searchable="true"
+                    :close-on-select="false"
+                    :options="idFonctionnellesOptions"
+                    @update:model-value="onUpdateIdFonctionnelle"
+                  />
+                </div>
+              </div>
+              <div
+                class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+              >
+                <div class="fr-input-group">
                   <DsfrInputGroup
                     v-model="search.siret"
                     type="text"
@@ -138,6 +154,7 @@ const navigate = (item) => {
 
 const search = reactive({
   id: null,
+  idFonctionnelle: null,
   siret: null,
   statut: null,
   departementSuivi: null,
@@ -152,33 +169,41 @@ const idOptions = computed(() => {
     .filter((v, i, a) => a.indexOf(v) === i);
 });
 
+const idFonctionnellesOptions = computed(() => {
+  return demandeSejourStore.demandes
+    .filter((v) => v.idFonctionnelle)
+    .map((d) => d.idFonctionnelle)
+    .filter((v, i, a) => a.indexOf(v) === i);
+});
 const departementOptions = computed(() => {
   return departementStore.departements.map((d) => {
     return { label: d.text, value: d.value };
   });
 });
 
-const statutOptions = computed(() => {
-  return [
-    { label: "BROUILLON", value: "BROUILLON" },
-    { label: "TRANSMISE", value: "TRANSMISE" },
-    { label: "EN COURS", value: "EN COURS" },
-    { label: "A MODIFIER", value: "A MODIFIER" },
-    {
-      label: "EN ATTENTE VALIDATION HEBERGEMENT",
-      value: "EN ATTENTE VALIDATION HEBERGEMENT",
-    },
-    {
-      label: "EN ATTENTE DECLARATION 8 JOURS",
-      value: "EN ATTENTE DECLARATION 8 JOURS",
-    },
-    { label: "VALIDEE", value: "VALIDEE" },
-    { label: "REFUSEE", value: "REFUSEE" },
-  ];
-});
+const statutOptions = [
+  { label: "BROUILLON", value: "BROUILLON" },
+  { label: "TRANSMISE", value: "TRANSMISE" },
+  { label: "EN COURS", value: "EN COURS" },
+  { label: "A MODIFIER", value: "A MODIFIER" },
+  {
+    label: "EN ATTENTE VALIDATION HEBERGEMENT",
+    value: "EN ATTENTE VALIDATION HEBERGEMENT",
+  },
+  {
+    label: "EN ATTENTE DECLARATION 8 JOURS",
+    value: "EN ATTENTE DECLARATION 8 JOURS",
+  },
+  { label: "VALIDEE", value: "VALIDEE" },
+  { label: "REFUSEE", value: "REFUSEE" },
+];
 
 const onUpdateId = (id) => {
   search.id = id;
+};
+
+const onUpdateIdFonctionnelle = (id) => {
+  search.idFonctionnelle = id;
 };
 
 const onUpdateDepartement = (d) => {
@@ -194,6 +219,14 @@ const headers = [
     column: "demandeSejourId",
     sorter: "demandeSejourId",
     text: "Id",
+    headerAttrs: {
+      class: "suivi",
+    },
+  },
+  {
+    column: "idFonctionnelle",
+    sorter: "idFonctionnelle",
+    text: "N° enregistrement",
     headerAttrs: {
       class: "suivi",
     },
@@ -223,7 +256,7 @@ const headers = [
     },
   },
   {
-    column: "saison",
+    column: "periode",
     text: "Saison",
     sorter: "saison",
     headerAttrs: {

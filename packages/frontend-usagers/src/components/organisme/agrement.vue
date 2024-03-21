@@ -67,7 +67,6 @@
       <DsfrFieldset legend="Téléversement de l'attestation de l'agrément">
         <UtilsFileUpload
           v-model="file"
-          :init-file="initFile"
           :label="label"
           hint="Taille maximale : 500 Mo. Formats supportés : jpg, png, pdf."
         />
@@ -96,11 +95,9 @@
 </template>
 
 <script setup>
-import { DsfrFieldset } from "@gouvminint/vue-dsfr";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 
-const config = useRuntimeConfig();
 const log = logger("components/organisme/agrement");
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -153,16 +150,6 @@ const {
 } = useField("regionObtention");
 
 const { value: file } = useField("file");
-
-const initFile = computed(() => {
-  if (props.initAgrement.file) {
-    return {
-      lien: `${config.public.backendUrl}/documents/${props.initAgrement.file.uuid}`,
-      name: props.initAgrement.file.name,
-    };
-  }
-  return null;
-});
 
 async function next() {
   log.i("next - IN");

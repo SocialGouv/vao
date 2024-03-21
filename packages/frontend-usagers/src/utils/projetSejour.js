@@ -57,10 +57,9 @@ yup.setLocale({
 });
 
 const schema = {
-  destination: yup
-    .array()
-    .min(1, "Vous devez cocher au moins une case")
-    .required("La saisie de ce champ est obligatoire"),
+  destination: yup.array().required(),
+  activitesCulturelles: yup.array().required(),
+  activitesSportives: yup.array().required(),
 };
 
 export default {

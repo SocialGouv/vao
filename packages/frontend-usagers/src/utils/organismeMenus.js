@@ -11,12 +11,12 @@ export default [
   },
   {
     id: "protocole-transport",
-    text: "Protocole transport",
+    text: "Informations sur le transport",
     displayForEtabSecondaire: false,
   },
   {
     id: "protocole-sanitaire",
-    text: "Protocole sanitaire",
+    text: "Informations sanitaire",
     displayForEtabSecondaire: false,
   },
   {
