@@ -113,6 +113,7 @@ create table front.demande_sejour (
    transport                    JSONB                ,
    projet_sejour                JSONB                ,
    sanitaires                   JSONB                ,
+   files                        JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_demande_sejour primary key (id)

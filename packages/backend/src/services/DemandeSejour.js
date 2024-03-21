@@ -12,6 +12,12 @@ const getHebergementWhereQuery = (hebergementIds) =>
     .join(" OR ");
 
 const query = {
+  addFile: `
+    UPDATE front.demande_sejour
+    SET files =  $2
+    WHERE id = $1
+    RETURNING id as "declarationId"
+  `,
   create: `
     INSERT INTO front.demande_sejour(
       statut,
@@ -45,6 +51,7 @@ const query = {
     SELECT
       ds.id as "demandeSejourId",
       ds.statut as "statut",
+      ds.id_fonctionnelle as "idFonctionnelle",
       ds.departement_suivi as "departementSuivi",
       ds.organisme_id as "organismeId",
       ds.libelle as "libelle",
@@ -54,6 +61,12 @@ const query = {
       ds.created_at as "createdAt",
       ds.edited_at as "editedAt",
       ds.duree as "duree",
+      ds.vacanciers as "vacanciers",
+      ds.personnel as "personnel",
+      ds.transport as "transport",
+      ds.projet_sejour as "projet_sejour",
+      ds.sanitaires as "sanitaires",
+      ds.files as "files",
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
     JOIN front.organismes o ON o.id = ds.organisme_id
@@ -66,6 +79,8 @@ const query = {
       ds.id as "demandeSejourId",
       ds.statut as "statut",
       ds.organisme_id as "organismeId",
+      ds.id_fonctionnelle as "idFonctionnelle",
+      ds.departement_suivi as "departementSuivi",
       ds.libelle as "libelle",
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
@@ -78,6 +93,7 @@ const query = {
       ds.projet_sejour as "projet_sejour",
       ds.sanitaires as "sanitaires",
       ds.organisme as "organisme",
+      ds.files as "files",
       o.personne_morale as "personne_morale",
       o.personne_physique as "personne_physique",
       o.type_organisme as "typeOrganisme",
@@ -126,7 +142,9 @@ const query = {
       ds.statut as "statut",
       ds.organisme_id as "organismeId",
       ds.id_fonctionnelle as "idFonctionnelle",
+      ds.departement_suivi as "departementSuivi",
       ds.libelle as "libelle",
+      ds.periode as "saison",
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
       ds.duree as "duree",
@@ -137,7 +155,9 @@ const query = {
       ds.sanitaires as "informationsSanitaires",
       ds.hebergement as "hebergement",
       ds.organisme as "organisme",
-      o.personne_morale->>'siret' as "siret"
+      ds.files as "files",
+      o.personne_morale->>'siret' as "siret",
+      ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
     JOIN front.organismes o ON o.id = ds.organisme_id
     WHERE 1=1
@@ -515,4 +535,15 @@ module.exports.insertEvent = async (
   ]);
   log.d("insertEvent - DONE");
   return response[0].eventId ?? null;
+};
+
+module.exports.addFile = async (declarationId, file) => {
+  log.i("addFile - IN");
+  log.i(declarationId);
+  const { rows: response } = await pool.query(query.addFile, [
+    declarationId,
+    file,
+  ]);
+  log.d("addFile - DONE");
+  return response[0].declarationId ?? null;
 };

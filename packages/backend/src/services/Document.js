@@ -64,3 +64,22 @@ module.exports.upload = async (category, file) => {
     throw new AppError("uploadFile failed", { cause: err });
   }
 };
+
+module.exports.createFile = async (filename, category, typeMime, data) => {
+  log.i("createFile - In");
+  try {
+    log.i("createFile", { category, filename, typeMime });
+    log.i(category);
+    log.i(filename);
+    const {
+      rows: [{ uuid }],
+    } = await poolDoc.query(
+      ...query.create(category, filename, typeMime, data),
+    );
+    log.d("createFile - Done");
+    return uuid;
+  } catch (err) {
+    log.w(err);
+    throw new AppError("createFile failed", { cause: err });
+  }
+};

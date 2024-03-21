@@ -272,7 +272,7 @@ function next() {
   if (!meta.value.dirty) {
     return emit("next");
   }
-  const organismeData = organismeStore.organismeCourant.personneMorale;
+  const organismeData = organismeStore.organismeCourant;
   organismeData.responsableSejour = responsableSejour.value;
   emit(
     "update",
