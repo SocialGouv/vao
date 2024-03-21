@@ -180,7 +180,7 @@
       </DsfrAccordionsGroup>
     </div>
     <form>
-      <DsfrFieldset legend="Attestation">
+      <DsfrFieldset v-if="showAttestation" legend="Attestation">
         <div class="fr-fieldset__element fr-col-12">
           <DsfrCheckbox
             v-model="aCertifie"
@@ -217,7 +217,7 @@
           />
         </div>
 
-        <div v-if="showAttestation" class="fr-fieldset__element fr-col-12">
+        <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="attestation.qualite"
             label="Qualité"
@@ -258,7 +258,7 @@
             >Précédent</DsfrButton
           >
           <DsfrButton
-            v-if="!props.modifiable"
+            v-if="props.modifiable"
             label="Transmettre ma déclaration de séjour à 2 mois"
             :disabled="!meta.valid"
             @click.prevent="finalizeDeclaration"

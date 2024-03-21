@@ -42,8 +42,9 @@
             <DsfrTable :headers="headers" :rows="syntheseRows" />
           </div>
           <DsfrButton
+            v-if="props.modifiable"
             label="Ajouter une nuitée"
-            :disabled="isSejourComplet || !props.modifiable"
+            :disabled="isSejourComplet"
             @click.prevent="onOpenNuitee"
           />
         </div>
@@ -234,12 +235,12 @@ async function addNuitee(hebergement) {
   log.d("addNuitee - In", { hebergement });
   let newHebergements;
 
-  if (hebergement.informationsLocaux?.file) {
-    const file = hebergement.informationsLocaux.file;
+  if (hebergement.informationsLocaux?.justificatifERP) {
+    const file = hebergement.informationsLocaux.justificatifERP;
     if (!file.uuid) {
       try {
-        const uuid = await UploadFile("hebergement.informationsLocaux", file);
-        hebergement.informationsLocaux.file = {
+        const uuid = await UploadFile("justificatif_ERP", file);
+        hebergement.informationsLocaux.justificatifERP = {
           uuid,
           name: file.name,
           createdAt: new Date(),

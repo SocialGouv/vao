@@ -98,7 +98,6 @@
               @previous="previousHash"
             />
           </div>
-          <div id="synthese"></div>
         </div>
       </div>
     </div>

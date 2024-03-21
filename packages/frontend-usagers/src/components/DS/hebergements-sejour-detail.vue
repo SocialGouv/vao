@@ -639,7 +639,7 @@ const {
 } = useField("hebergementId");
 
 // informationsLocaux
-const { value: file } = useField("informationsLocaux.file");
+const { value: file } = useField("informationsLocaux.justificatifERP");
 const {
   value: type,
   errorMessage: typeErrorMessage,

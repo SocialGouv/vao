@@ -78,9 +78,10 @@ const log = logger("components/DS/projet-sejour");
 const validationSchema = yup.object(projetSejour.schema);
 
 const initialValues = {
-  destination: props.initData.destination ?? [],
-  activitesCulturelles: props.initData.activitesCulturelles ?? [],
-  activitesSportives: props.initData.activitesSportives ?? [],
+  destination: [],
+  activitesCulturelles: [],
+  activitesSportives: [],
+  ...props.initData,
 };
 const { meta, values } = useForm({
   validationSchema,
@@ -101,7 +102,7 @@ const { value: activitesSportives } = useField("activitesSportives");
 const { value: activitesCulturelles } = useField("activitesCulturelles");
 
 function next() {
-  if (!meta.value.dirty) {
+  if (!meta.value.dirty && Object.keys(props.initData).length !== 0) {
     return emit("next");
   }
   emit(

@@ -1,5 +1,6 @@
 <template>
   <DsfrSelect
+    v-if="props.modifiable"
     :options="optionsToDisplay"
     :model-value="null"
     :select-id="selectId"
@@ -15,6 +16,10 @@
       <DsfrTags :tags="formatedTags" />
     </template>
   </DsfrSelect>
+  <template v-else>
+    <label>{{ props.label }}</label>
+    <DsfrTags :tags="formatedTags" />
+  </template>
 </template>
 
 <script setup>
