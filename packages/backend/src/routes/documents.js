@@ -3,6 +3,7 @@ const multer = require("multer");
 const config = require("../config");
 const checkJWT = require("../middlewares/checkJWT");
 const scanFile = require("../middlewares/scan-file");
+const boCheckJWT = require("../middlewares/bo-check-JWT");
 
 const router = express.Router();
 
@@ -31,6 +32,7 @@ function uploadFile(req, res, next) {
 }
 
 router.get("/:uuid", checkJWT, documentsController.download);
+router.get("/admin/:uuid", boCheckJWT, documentsController.download);
 router.post("/", checkJWT, uploadFile, scanFile, documentsController.upload);
 
 module.exports = router;
