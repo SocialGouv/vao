@@ -3,15 +3,15 @@ export const navItems = [
     text: "Accueil",
     to: "/",
   },
-  {
-    title: "Agrément",
-    links: [
-      {
-        text: "En cours de construction",
-        to: "#",
-      },
-    ],
-  },
+  // {
+  //   title: "Agrément",
+  //   links: [
+  //     {
+  //       text: "En cours de construction",
+  //       to: "#",
+  //     },
+  //   ],
+  // },
   {
     title: "Organisateur",
     links: [
@@ -20,10 +20,6 @@ export const navItems = [
         to: "/organisme",
       },
     ],
-  },
-  {
-    text: "Mes hébergements",
-    to: "/hebergements",
   },
   {
     title: "Déclaration de séjour",
@@ -43,7 +39,11 @@ export const navItems = [
     ],
   },
   {
-    text: "Messagerie",
-    to: "#",
+    text: "Mes hébergements",
+    to: "/hebergements",
   },
+  // {
+  //   text: "Messagerie",
+  //   to: "#",
+  // },
 ];
