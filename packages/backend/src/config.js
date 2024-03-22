@@ -5,6 +5,8 @@ module.exports = {
     secret: process.env.ACCESS_TOKEN_SECRET,
   },
 
+  antivirusUrl: process.env.ANTIVIRUS_URL,
+
   apiEntreprise: {
     context: "vacances_adaptees_organisees",
     object: "operateur_sejour_vao",
@@ -18,9 +20,9 @@ module.exports = {
     CLIENT_SECRET: process.env.API_INSEE_CLIENT_SECRET,
     URL: "https://api.insee.fr",
   },
-
   domain: process.env.BACKEND_URL,
   frontBODomain: process.env.FRONTEND_BO_URL,
+
   frontUsagersDomain: process.env.FRONTEND_USAGERS_URL,
 
   postgres: {
@@ -40,7 +42,6 @@ module.exports = {
     expiresIn: 4 * 60 * 60 * 1000, // 4h
     secret: process.env.REFRESH_TOKEN_SECRET,
   },
-
   resetPasswordToken: {
     expiresIn: 30 * 60 * 1000, // 30 min
     secret: process.env.RESET_PASSWORD_TOKEN_SECRET,
@@ -57,6 +58,7 @@ module.exports = {
     secure: process.env.SMTP_IS_SECURE === "true",
   },
   tmpDirectory: process.env.TMP_DIRECTORY,
+
   validationToken: {
     expiresIn: 30 * 60 * 1000, // 30 min
     secret: process.env.VALIDATION_TOKEN_SECRET,

@@ -6,3 +6,4 @@ metadata:
 data:
   TMP_DIRECTORY: "/tmp"
   SENDER_EMAIL: "nepasrepondre@vao.social.gouv.fr"  
+  ANTIVIRUS_URL: "http://clamav-rest.clamav.svc/api/v1/scan"
