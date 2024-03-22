@@ -46,7 +46,12 @@
         </div>
       </div>
     </DsfrFieldset>
-    <DsfrFieldset legend="Organisme">
+    <DsfrFieldset
+      v-if="
+        props.declarationCourante.organisme.typeOrganisme === 'personne_morale'
+      "
+      legend="Organisme"
+    >
       <OrganismePersonneMoraleReadOnly
         :init-data="props.declarationCourante.organisme.personneMorale"
         :show-responsable-sejour="false"
@@ -54,10 +59,7 @@
     </DsfrFieldset>
     <DsfrFieldset legend="Responsable de l'organisation du séjour">
       <PersonneReadOnly
-        :personne="
-          props.declarationCourante.organisme.personneMorale
-            .responsableSejour ?? {}
-        "
+        :personne="props.declarationCourante.responsableSejour ?? {}"
       ></PersonneReadOnly>
     </DsfrFieldset>
   </div>
