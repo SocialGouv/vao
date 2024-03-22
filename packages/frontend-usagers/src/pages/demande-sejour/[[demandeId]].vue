@@ -147,8 +147,9 @@ const sejourId = ref(route.params.demandeId);
 
 const canModify = computed(() => {
   return (
-    !demandeSejourStore.demandeCourante.statut ||
-    demandeSejourStore.demandeCourante.statut === "BROUILLON"
+    !demandeCourante.value.statut ||
+    demandeCourante.value.statut === "BROUILLON" ||
+    demandeCourante.value.statut === "TRANSMISE"
   );
 });
 
@@ -239,7 +240,7 @@ async function finalize(attestation) {
   log.i("finalize -IN");
   try {
     const url = `/sejour/depose/${sejourId.value}`;
-    await $fetchBackend(url, {
+    const response = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
       body: {
@@ -247,9 +248,29 @@ async function finalize(attestation) {
       },
     });
 
-    toaster.success(
-      `Félicitations, votre déclaration de séjour n°${sejourId.value} a été transmise`,
-    );
+    if (response.demandeId) {
+      toaster.success(
+        `Félicitations, votre déclaration de séjour n°${sejourId.value} a été transmise`,
+      );
+    }
+    if (response.DSuuid) {
+      toaster.info(
+        `Le PDF déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
+      );
+    } else {
+      toaster.error(
+        "Une erreur est survenue durant la génération du PDF mais la déclaration a bien été transmise",
+      );
+    }
+    if (response.ARuuid) {
+      toaster.info(
+        `Le récépissé de la déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
+      );
+    } else {
+      toaster.error(
+        "Une erreur est survenue durant la génération du récépissé mais la déclaration a bien été transmise",
+      );
+    }
     log.d(`demande de séjour ${sejourId.value} transmise`);
     return navigateTo("/demande-sejour/liste");
   } catch (error) {

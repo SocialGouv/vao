@@ -12,6 +12,12 @@ const getHebergementWhereQuery = (hebergementIds) =>
     .join(" OR ");
 
 const query = {
+  addFile: `
+    UPDATE front.demande_sejour
+      SET files = $2
+    WHERE id = $1
+    RETURNING id as "declarationId"
+  `,
   create: (
     organismeId,
     libelle,
@@ -36,9 +42,10 @@ const query = {
     responsable_sejour,
     transport,
     sanitaires,
-    organisme
+    organisme,
+    files
   )
-  VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+  VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
   RETURNING
       id as "demandeId"
   ;`,
@@ -53,6 +60,7 @@ const query = {
       protocoleTransport,
       protocoleSanitaire,
       organisme,
+      [],
     ],
   ],
   finalize: (
@@ -77,26 +85,33 @@ const query = {
     [demandeSejourId, idFonctionnelle, departementSuivi, attestation],
   ],
   get: `
-  SELECT
-    ds.id as "demandeSejourId",
-    ds.statut as "statut",
-    ds.departement_suivi as "departementSuivi",
-    ds.organisme_id as "organismeId",
-    ds.libelle as "libelle",
-    ds.date_debut::text as "dateDebut",
-    ds.date_fin::text as "dateFin",
-    ds.periode,
-    ds.duree as "duree",
-    ds.responsable_sejour as "responsableSejour",
-    o.personne_morale->>'siret' as "siret",
-    ds.created_at as "createdAt",
-    ds.edited_at as "editedAt"
-  FROM front.demande_sejour ds
-  JOIN front.organismes o ON o.id = ds.organisme_id
-  JOIN front.user_organisme uo ON uo.org_id = o.id
-  WHERE
-    uo.use_id = $1
-  ;`,
+    SELECT
+      ds.id as "demandeSejourId",
+      ds.statut as "statut",
+      ds.id_fonctionnelle as "idFonctionnelle",
+      ds.departement_suivi as "departementSuivi",
+      ds.organisme_id as "organismeId",
+      ds.libelle as "libelle",
+      ds.periode as "periode",
+      ds.date_debut::text as "dateDebut",
+      ds.date_fin::text as "dateFin",
+      ds.created_at as "createdAt",
+      ds.edited_at as "editedAt",
+      ds.duree as "duree",
+      ds.vacanciers as "vacanciers",
+      ds.personnel as "personnel",
+      ds.transport as "transport",
+      ds.projet_sejour as "projetSejour",
+      ds.sanitaires as "sanitaires",
+      ds.files as "files",
+      ds.attestation as "attestation",
+      o.personne_morale->>'siret' as "siret"
+    FROM front.demande_sejour ds
+    JOIN front.organismes o ON o.id = ds.organisme_id
+    JOIN front.user_organisme uo ON uo.org_id = o.id
+    WHERE
+      uo.use_id = $1
+    `,
   getByAdminId: (search, hebergementIds) => `
     SELECT
       ds.id as "demandeSejourId",
@@ -180,7 +195,9 @@ const query = {
       ds.statut,
       ds.organisme_id as "organismeId",
       ds.id_fonctionnelle as "idFonctionnelle",
-      ds.libelle,
+      ds.departement_suivi as "departementSuivi",
+      ds.libelle as "libelle",
+      ds.periode as "periode",
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
       ds.responsable_sejour as "responsableSejour",
@@ -190,10 +207,12 @@ const query = {
       ds.projet_sejour as "informationsProjetSejour",
       ds.transport as "informationsTransport",
       ds.sanitaires as "informationsSanitaires",
-      ds.attestation,
-      ds.hebergement,
-      ds.organisme,
-      o.personne_morale->>'siret' as "siret"
+      ds.hebergement as "hebergement",
+      ds.organisme as "organisme",
+      ds.files as "files",
+      ds.attestation as "attestation",
+      o.personne_morale->>'siret' as "siret",
+      ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
     JOIN front.organismes o ON o.id = ds.organisme_id
     WHERE 1=1
@@ -622,4 +641,14 @@ module.exports.insertEvent = async (
   ]);
   log.d("insertEvent - DONE");
   return response[0].eventId ?? null;
+};
+
+module.exports.addFile = async (declarationId, file) => {
+  log.i("addFile - IN", { declarationId });
+  const { rows: response } = await pool.query(query.addFile, [
+    declarationId,
+    file,
+  ]);
+  log.d("addFile - DONE");
+  return response[0].declarationId;
 };
