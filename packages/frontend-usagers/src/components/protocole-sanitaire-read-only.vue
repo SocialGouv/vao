@@ -406,8 +406,6 @@ const props = defineProps({
   initData: { type: Object, default: null, required: true },
 });
 
-const log = logger("components/protocole-sanitaire-read-only");
-
 const constitutionEquipeOptions = [
   {
     label:

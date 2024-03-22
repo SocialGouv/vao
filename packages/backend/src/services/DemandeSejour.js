@@ -63,7 +63,7 @@ const query = {
   ) => [
     `
   UPDATE front.demande_sejour ds
-  SET 
+  SET
     id_fonctionnelle = $2,
     departement_suivi = $3,
     attestation = $4,
@@ -98,39 +98,57 @@ const query = {
     uo.use_id = $1
   ;`,
   getByAdminId: (search, hebergementIds) => `
-  SELECT
-    ds.id as "demandeSejourId",
-    ds.statut as "statut",
-    ds.organisme_id as "organismeId",
-    ds.libelle as "libelle",
-    ds.date_debut::text as "dateDebut",
-    ds.date_fin::text as "dateFin",
-    ds.duree as "duree",
-    ds.responsable_sejour as "responsableSejour",
-    ds.vacanciers as "vacanciers",
-    ds.personnel as "personnel",
-    ds.transport as "transport",
-    ds.projet_sejour as "projet_sejour",
-    ds.sanitaires as "sanitaires",
-    ds.organisme as "organisme",
-    o.personne_morale as "personne_morale",
-    o.personne_physique as "personne_physique",
-    o.type_organisme as "typeOrganisme",
-    (DS.HEBERGEMENT -> 'hebergements')[0] ->> 'hebergementId' IN ('${hebergementIds.join("','")}') as "a_instruire",
-    ds.created_at as "createdAt",
-    ds.edited_at as "editedAt"
-  FROM front.demande_sejour ds
-  JOIN front.organismes o ON o.id = ds.organisme_id
-  WHERE  (${getHebergementWhereQuery(hebergementIds)})
-      ${search.map((s) => ` AND ${s} `).join("")}
-  ;`,
+    SELECT
+      ds.id as "demandeSejourId",
+      ds.created_at as "createdAt",
+      ds.statut as "statut",
+      ds.organisme_id as "organismeId",
+      ds.libelle as "libelle",
+      ds.date_debut::text as "dateDebut",
+      ds.date_fin::text as "dateFin",
+      ds.organisme as "organisme",
+      o.personne_morale as "personneMorale",
+      o.personne_physique as "personnePhysique",
+      o.type_organisme as "typeOrganisme",
+      (DS.HEBERGEMENT -> 'hebergements')[0] ->> 'hebergementId' IN ('${hebergementIds.join("','")}') as "estInstructeurPrincipal"
+    FROM front.demande_sejour ds
+      JOIN front.organismes o ON o.id = ds.organisme_id
+    WHERE  (${getHebergementWhereQuery(hebergementIds)})
+       ${search.map((s) => ` AND ${s} `).join("")}
+    `,
   getByAdminIdTotal: (search, hebergementIds) => `
   SELECT COUNT(DISTINCT ds.id)
-  FROM front.demande_sejour ds
-  JOIN front.organismes o ON o.id = ds.organisme_id
-  WHERE (${getHebergementWhereQuery(hebergementIds)})
-      ${search.map((s) => ` AND ${s} `).join("")}
-  ;`,
+    FROM front.demande_sejour ds
+      JOIN front.organismes o ON o.id = ds.organisme_id
+    WHERE (${getHebergementWhereQuery(hebergementIds)})
+       ${search.map((s) => ` AND ${s} `).join("")}
+    `,
+  getById: (hebergementIds) => `
+    SELECT
+      ds.id as "demandeSejourId",
+      ds.statut as "statut",
+      ds.organisme_id as "organismeId",
+      ds.libelle as "libelle",
+      ds.date_debut::text as "dateDebut",
+      ds.date_fin::text as "dateFin",
+      ds.duree as "duree",
+      ds.vacanciers as "vacanciers",
+      ds.personnel as "personnel",
+      ds.transport as "transport",
+      ds.projet_sejour as "projetSejour",
+      ds.sanitaires as "sanitaires",
+      ds.attestation,
+      ds.organisme as "organismes",
+      ds.hebergement as "hebergement",
+      o.personne_morale as "personneMorale",
+      o.personne_physique as "personnePhysique",
+      o.type_organisme as "typeOrganisme",
+      ds.created_at as "createdAt",
+      ds.edited_at as "editedAt"
+    FROM front.demande_sejour ds
+      JOIN front.organismes o ON o.id = ds.organisme_id
+    where (${getHebergementWhereQuery(hebergementIds)}) AND ds.id = $1
+  `,
   getDepartementByDep: (departement_codes) => `
   SELECT *
   FROM FRONT.HEBERGEMENT
@@ -299,7 +317,7 @@ const query = {
   `,
   updateOrganisme: `
   UPDATE front.demande_sejour ds
-  SET 
+  SET
     organisme_id = $1,
     edited_at = NOW()
   WHERE
@@ -435,6 +453,29 @@ module.exports.getByAdminId = async (
     demandes_sejour: response.rows,
     total: total.rows.find((t) => t.count)?.count ?? 0,
   };
+};
+
+module.exports.getById = async (demandeId, departement_codes) => {
+  log.i("getById - IN", { demandeId });
+
+  const possibleHebergementsIds =
+    (await pool.query(query.getDepartementByDep(departement_codes)))?.rows?.map(
+      (h) => h.id,
+    ) ?? [];
+
+  if (possibleHebergementsIds.length === 0) {
+    return {
+      demandes_sejour: [],
+      total: 0,
+    };
+  }
+  const { rows: demande } = await pool.query(
+    query.getById(possibleHebergementsIds),
+    [demandeId],
+  );
+  log.d("getById - DONE");
+  log.d(demande);
+  return demande[0];
 };
 
 module.exports.update = async (type, demandeSejourId, parametre) => {

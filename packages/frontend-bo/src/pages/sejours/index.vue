@@ -1,8 +1,6 @@
 <template>
   <div class="fr-container">
-    <h1 class="header">
-      Liste des séjours déclarés ({{ sejourStore.demandes.length }})
-    </h1>
+    <h1 class="header">Liste des séjours déclarés ({{ sejourStore.total }})</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
@@ -100,7 +98,6 @@ definePageMeta({
 });
 
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
-import { formatDate } from "date-fns/format";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
 import { DsfrInputGroup, DsfrSelect } from "@gouvminint/vue-dsfr";
@@ -119,7 +116,11 @@ const searchState = reactive({
   statut: null,
 });
 
-sejourStore.fetchDemandes({ limit: defaultLimit, offset: defaultOffset });
+sejourStore.currentDemande = null;
+sejourStore.fetchDemandes({
+  limit: defaultLimit,
+  offset: defaultOffset,
+});
 
 watch(
   [sortState, limitState, currentPageState],
@@ -173,8 +174,7 @@ const headers = [
   {
     column: "dateDebut",
     text: "Dates (Début-fin)",
-    format: (value) =>
-      `${formatDate(value.dateDebut, "dd/MM/yyyy")} - ${formatDate(value.dateFin, "dd/MM/yyyy")}`,
+    format: (value) => demandesSejours.getDateDebutFin(value),
     sort: true,
   },
   {
@@ -204,13 +204,16 @@ const headers = [
     }),
   },
   {
-    column: "a_instruire",
+    column: "estInstructeurPrincipal",
     text: "Action",
-    format: (value) => (value.a_instruire ? "A instruire" : "Lecture seule"),
+    format: (value) =>
+      value.estInstructeurPrincipal ? "A instruire" : "Lecture seule",
     sort: true,
   },
 ];
-const navigate = (state) => navigateTo(`/sejours/${state.demandeSejourId}`);
+const navigate = (state) => {
+  navigateTo(`/sejours/${state.demandeSejourId}`);
+};
 
 const updateSort = ({ sortBy: sb, sortDirection: sd }) => {
   sortState.value = {
