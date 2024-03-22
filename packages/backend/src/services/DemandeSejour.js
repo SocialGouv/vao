@@ -12,6 +12,12 @@ const getHebergementWhereQuery = (hebergementIds) =>
     .join(" OR ");
 
 const query = {
+  addFile: `
+    UPDATE front.demande_sejour
+      SET files = $2
+    WHERE id = $1
+    RETURNING id as "declarationId"
+  `,
   create: (
     organismeId,
     libelle,
@@ -93,7 +99,7 @@ const query = {
       ds.departement_suivi as "departementSuivi",
       ds.organisme_id as "organismeId",
       ds.libelle as "libelle",
-      ds.periode as "saison",
+      ds.periode as "periode",
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
       ds.created_at as "createdAt",
@@ -105,6 +111,7 @@ const query = {
       ds.projet_sejour as "projet_sejour",
       ds.sanitaires as "sanitaires",
       ds.files as "files",
+      ds.attestation as "attestation",
       o.personne_morale->>'siret' as "siret"
     FROM front.demande_sejour ds
     JOIN front.organismes o ON o.id = ds.organisme_id
@@ -125,6 +132,7 @@ const query = {
       ds.created_at as "createdAt",
       ds.edited_at as "editedAt",
       ds.duree as "duree",
+      ds.periode as "periode",
       ds.vacanciers as "vacanciers",
       ds.personnel as "personnel",
       ds.transport as "transport",
@@ -132,6 +140,7 @@ const query = {
       ds.sanitaires as "sanitaires",
       ds.organisme as "organisme",
       ds.files as "files",
+      ds.attestation as "attestation",
       o.personne_morale as "personne_morale",
       o.personne_physique as "personne_physique",
       o.type_organisme as "typeOrganisme",
@@ -194,6 +203,7 @@ const query = {
       ds.hebergement as "hebergement",
       ds.organisme as "organisme",
       ds.files as "files",
+      ds.attestation as "attestation",
       o.personne_morale->>'siret' as "siret",
       ds.edited_at as "editedAt"
     FROM front.demande_sejour ds

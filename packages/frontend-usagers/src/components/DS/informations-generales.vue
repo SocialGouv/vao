@@ -250,6 +250,7 @@ function next() {
       duree: duree.value,
       periode: periode.value,
       organisme: organismeStore.organismeCourant,
+      files: { files: [] },
     },
     "informationsGenerales",
   );

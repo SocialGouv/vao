@@ -258,7 +258,7 @@ const headers = [
   {
     column: "periode",
     text: "Saison",
-    sorter: "saison",
+    sorter: "periode",
     headerAttrs: {
       class: "suivi",
     },

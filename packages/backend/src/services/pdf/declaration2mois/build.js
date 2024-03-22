@@ -156,7 +156,7 @@ function displayResponsableOrganisation(resp) {
   };
 }
 
-function displayOrganisme(organisme) {
+function displayOrganisme(responsableSejour, organisme) {
   if (organisme.typeOrganisme === "personne_morale") {
     return {
       columnGap: 10,
@@ -252,9 +252,7 @@ function displayOrganisme(organisme) {
           ],
         },
         displayRepresentantLegaux(organisme.personneMorale.representantsLegaux),
-        displayResponsableOrganisation(
-          organisme.personneMorale.responsableSejour,
-        ),
+        displayResponsableOrganisation(responsableSejour),
       ],
     };
   } else {
@@ -672,7 +670,7 @@ function buildHeader() {
   };
 }
 
-function buildTitre(demande, departementSuivi) {
+function buildTitre(declaration, departementSuivi) {
   return {
     stack: [
       {
@@ -730,7 +728,7 @@ function buildTitre(demande, departementSuivi) {
                   },
                   {
                     bold: true,
-                    text: `${demande.idFonctionnelle}`,
+                    text: `${declaration.idFonctionnelle}`,
                     width: 150,
                   },
                 ],
@@ -744,7 +742,7 @@ function buildTitre(demande, departementSuivi) {
                   },
                   {
                     bold: true,
-                    text: `${dayjs(demande.editedAt).format("DD/MM/YYYY HH:mm")}`,
+                    text: `${dayjs(declaration.editedAt).format("DD/MM/YYYY HH:mm")}`,
                     width: 150,
                   },
                 ],
@@ -849,7 +847,7 @@ function buildAgrement(agrement) {
   };
 }
 
-function buildInformationsGenerales(demande) {
+function buildInformationsGenerales(declaration) {
   return {
     stack: [
       {
@@ -891,7 +889,7 @@ function buildInformationsGenerales(demande) {
                   },
                   {
                     bold: true,
-                    text: `${demande.libelle}`,
+                    text: `${declaration.libelle}`,
                     width: "*",
                   },
                 ],
@@ -904,7 +902,7 @@ function buildInformationsGenerales(demande) {
                   },
                   {
                     bold: true,
-                    text: `${dayjs(demande.dateDebut).format("DD/MM/YYYY")}`,
+                    text: `${dayjs(declaration.dateDebut).format("DD/MM/YYYY")}`,
                     width: "*",
                   },
                 ],
@@ -917,7 +915,7 @@ function buildInformationsGenerales(demande) {
                   },
                   {
                     bold: true,
-                    text: `${dayjs(demande.dateFin).format("DD/MM/YYYY")}`,
+                    text: `${dayjs(declaration.dateFin).format("DD/MM/YYYY")}`,
                     width: "*",
                   },
                 ],
@@ -930,7 +928,7 @@ function buildInformationsGenerales(demande) {
                   },
                   {
                     bold: true,
-                    text: `${demande.saison}`,
+                    text: `${declaration.periode}`,
                     width: "*",
                   },
                 ],
@@ -943,12 +941,15 @@ function buildInformationsGenerales(demande) {
                   },
                   {
                     bold: true,
-                    text: `${demande.duree} jours`,
+                    text: `${declaration.duree} jours`,
                     width: "*",
                   },
                 ],
               },
-              displayOrganisme(demande?.organisme),
+              displayOrganisme(
+                declaration.responsableSejour,
+                declaration?.organisme,
+              ),
             ],
           },
         ],
@@ -1445,7 +1446,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.type}`,
+                        text: `${h.informationsLocaux.type}`,
                         width: "*",
                       },
                     ],
@@ -1471,7 +1472,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${details.caracteristiques.coordonnees.adresse.label}`,
+                        text: `${details.coordonnees.adresse.label}`,
                         width: "*",
                       },
                     ],
@@ -1484,7 +1485,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${details.caracteristiques.coordonnees.nomGestionnaire}`,
+                        text: `${details.coordonnees.nomGestionnaire}`,
                         width: "*",
                       },
                     ],
@@ -1497,7 +1498,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${details.caracteristiques.coordonnees.numTelephone1}`,
+                        text: `${details.coordonnees.numTelephone1}`,
                         width: "*",
                       },
                     ],
@@ -1510,7 +1511,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${details.caracteristiques.coordonnees.numTelephone2}`,
+                        text: `${details.coordonnees.numTelephone2 ?? ""}`,
                         width: "*",
                       },
                     ],
@@ -1523,7 +1524,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${details.caracteristiques.coordonnees.email}`,
+                        text: `${details.coordonnees.email}`,
                         width: "*",
                       },
                     ],
@@ -1536,7 +1537,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${dayjs(h.dateDebut).format("DD/MM/YYYY")}`,
+                        text: `${dayjs(h.coordonnees.dateDebut).format("DD/MM/YYYY")}`,
                         width: "*",
                       },
                     ],
@@ -1549,7 +1550,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${dayjs(h.dateFin).format("DD/MM/YYYY")}`,
+                        text: `${dayjs(h.coordonnees.dateFin).format("DD/MM/YYYY")}`,
                         width: "*",
                       },
                     ],
@@ -1578,7 +1579,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.accessibilite}`,
+                        text: `${h.informationsLocaux.accessibilite}`,
                         width: "*",
                       },
                     ],
@@ -1591,7 +1592,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.pension}`,
+                        text: `${h.informationsLocaux.pension}`,
                         width: "*",
                       },
                     ],
@@ -1604,7 +1605,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.prestationsHotelieres.join(", ")}`,
+                        text: `${h.informationsLocaux.prestationsHotelieres.join(", ")}`,
                         width: "*",
                       },
                     ],
@@ -1617,7 +1618,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.descriptionLieuHebergement}`,
+                        text: `${h.informationsLocaux.descriptionLieuHebergement}`,
                         width: "*",
                       },
                     ],
@@ -1630,7 +1631,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.nombreLits}`,
+                        text: `${h.informationsLocaux.nombreLits}`,
                         width: "*",
                       },
                     ],
@@ -1643,7 +1644,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.nombreLitsSuperposes}`,
+                        text: `${h.informationsLocaux.nombreLitsSuperposes}`,
                         width: "*",
                       },
                     ],
@@ -1656,7 +1657,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.litsDessus}`,
+                        text: `${h.informationsLocaux.litsDessus ? " Oui" : "Non"}`,
                         width: "*",
                       },
                     ],
@@ -1669,7 +1670,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.nombreMaxPersonnesCouchage}`,
+                        text: `${h.informationsLocaux.nombreMaxPersonnesCouchage}`,
                         width: "*",
                       },
                     ],
@@ -1682,7 +1683,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.couchageIndividuel ? "Oui" : "Non"}`,
+                        text: `${h.informationsLocaux.couchageIndividuel ? "Oui" : "Non"}`,
                         width: "*",
                       },
                     ],
@@ -1695,7 +1696,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.rangementIndividuel ? "Oui" : "Non"}`,
+                        text: `${h.informationsLocaux.rangementIndividuel ? "Oui" : "Non"}`,
                         width: "*",
                       },
                     ],
@@ -1708,7 +1709,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.chambresUnisexes ? "Non" : "Oui"}`,
+                        text: `${h.informationsLocaux.chambresUnisexes ? "Non" : "Oui"}`,
                         width: "*",
                       },
                     ],
@@ -1721,7 +1722,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.amenagementsSpecifiques ? "Oui" : "Non "}`,
+                        text: `${h.informationsLocaux.amenagementsSpecifiques ? "Oui" : "Non "}`,
                         width: "*",
                       },
                     ],
@@ -1734,31 +1735,7 @@ async function buildFicheAnnexe(hebergement) {
                       },
                       {
                         bold: true,
-                        text: `${h.caracteristiques.informationsLocaux.precisionAmenagementsSpecifiques}`,
-                        width: "*",
-                      },
-                    ],
-                  },
-                  {
-                    margin: [0, 20, 0, 0],
-                    stack: [
-                      {
-                        columns: [
-                          {
-                            bold: true,
-                            decoration: "underline",
-                            text: "Attestation",
-                            width: "100%",
-                          },
-                        ],
-                        margin: [0, 0, 0, 10],
-                      },
-                    ],
-                  },
-                  {
-                    columns: [
-                      {
-                        text: `Je, soussigné ${h.caracteristiques.attestation.nom} ${h.caracteristiques.attestation.prenom}, en qualité de ${h.caracteristiques.attestation.qualite}, certifie le ${daysjs(h.caracteristiques.attestation.at).format("DD/MM/YYYY")} sur l'honneur que les renseignements portés sur cette déclaration sont exacts.`,
+                        text: `${h.informationsLocaux.precisionAmenagementsSpecifiques ?? ""}`,
                         width: "*",
                       },
                     ],
@@ -1774,32 +1751,77 @@ async function buildFicheAnnexe(hebergement) {
   return liste;
 }
 
-const build = async (demande = {}, departementSuivi) => {
+function buildAttestation(attestation) {
+  return {
+    stack: [
+      {
+        margin: [0, 30, 0, 0],
+        table: {
+          body: [
+            [
+              {
+                alignment: "left",
+                fillColor: "#000091",
+                stack: [
+                  {
+                    bold: true,
+                    color: "#F5F5FE",
+                    fontSize: 10,
+                    text: "Attestation sur l'honneur",
+                    width: "300",
+                  },
+                ],
+              },
+            ],
+          ],
+          headerRows: 1,
+          layout: "noBorders",
+          widths: ["*"],
+        },
+      },
+      {
+        columns: [
+          {
+            text: `Je, soussigné ${attestation.nom} ${attestation.prenom}, en qualité de ${attestation.qualite}, certifie le ${daysjs(attestation.at).format("DD/MM/YYYY")} sur l'honneur que les renseignements portés sur cette déclaration sont exacts.`,
+            width: "*",
+          },
+        ],
+      },
+    ],
+  };
+}
+
+const build = async (declaration = {}, departementSuivi) => {
   log.i("build - IN");
   const docDefinition = {
     content: [
       buildHeader(),
-      buildTitre(demande, departementSuivi),
-      buildAgrement(demande.organisme.agrement),
-      buildInformationsGenerales(demande),
+      buildTitre(declaration, departementSuivi),
+      buildAgrement(declaration.organisme.agrement),
+      buildInformationsGenerales(declaration),
       {
         headlineLevel: 1,
         stack: [buildHeader()],
       },
-      buildInformationsVacanciers(demande.informationsVacanciers),
-      buildInformationsPersonnel(demande.informationsPersonnel),
-      buildProjetSejour(demande.informationsProjetSejour),
-      buildInformationsTransport(demande.informationsTransport),
+      buildInformationsVacanciers(declaration.informationsVacanciers),
+      buildInformationsPersonnel(declaration.informationsPersonnel),
+      buildProjetSejour(declaration.informationsProjetSejour),
+      buildInformationsTransport(declaration.informationsTransport),
       {
         headlineLevel: 1,
         stack: [buildHeader()],
       },
-      buildInformationsSanitaire(demande.informationsSanitaires),
+      buildInformationsSanitaire(declaration.informationsSanitaires),
       {
         headlineLevel: 1,
         stack: [buildHeader()],
       },
-      ...(await buildFicheAnnexe(demande.hebergement)),
+      buildAttestation(declaration.attestation),
+      {
+        headlineLevel: 1,
+        stack: [buildHeader()],
+      },
+      ...(await buildFicheAnnexe(declaration.hebergement)),
     ],
     defaultStyle: {
       font: "Marianne",
@@ -1808,9 +1830,9 @@ const build = async (demande = {}, departementSuivi) => {
     footer: function (currentPage, pageCount) {
       return [
         {
-          text: `${currentPage.toString()}/${pageCount}`,
           alignment: "right",
           margin: [5, 5, 15, 5],
+          text: `${currentPage.toString()}/${pageCount}`,
         },
       ];
     },

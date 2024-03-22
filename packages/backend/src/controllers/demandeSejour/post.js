@@ -16,11 +16,13 @@ module.exports = async function post(req, res) {
     periode,
     responsableSejour,
     organisme,
+    files,
   } = req.body.parametre;
   log.d({
     dateDebut,
     dateFin,
     duree,
+    files,
     libelle,
     organisme,
     periode,
@@ -65,6 +67,7 @@ module.exports = async function post(req, res) {
       organisme.protocoleTransport,
       organisme.protocoleSanitaire,
       organisme,
+      files,
     );
     if (!demandeId) {
       return res.status(400).json({
