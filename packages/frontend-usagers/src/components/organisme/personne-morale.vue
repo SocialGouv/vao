@@ -5,7 +5,7 @@
         <div class="fr-input-group fr-col-8">
           <DsfrInputGroup
             name="siret"
-            label="Numéro SIRET"
+            label="Numéro SIRET du titulaire de l’agrément VAO"
             :label-visible="true"
             :model-value="formatedSiret"
             :required="true"

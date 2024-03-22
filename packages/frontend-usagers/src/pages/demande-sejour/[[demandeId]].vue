@@ -120,7 +120,7 @@ const links = [
   },
   {
     to: "/demande-sejour/liste",
-    text: "Mes déclarations de séjour",
+    text: "Liste des déclarations de séjour",
   },
   {
     text: "Ma déclaration de séjour",

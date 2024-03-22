@@ -100,7 +100,7 @@ fileignoreconfig:
 - filename: packages/backend/src/utils/mail-service.js
   checksum: bf5f3c01e2edcf3a7ef6d8cbde306deb931a01df88ef90fe911c0c9ace41135c
 - filename: packages/backend/src/utils/mail.js
-  checksum: d3ff02d91bb5ee4540156f5f65766838e434cf9669f3de14549ad2d75b39d5b1
+  checksum: 0110e20273092996ed397f2530fe3e5b323f8fdb396abc4846e754bb00713089
 - filename: packages/backend/src/utils/pgpool.js
   checksum: 5e8464a6bf71468b80886e18e08a705b0c3a523bb907833dd63bfcdd67cd4641
 - filename: packages/backend/src/utils/pgpoolDoc.js
@@ -138,7 +138,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue
   checksum: 05743cc5c3dfd946e8ee41cb11571b1e505bbdb5260e9c59a53e4ca16cb11f08
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
-  checksum: f980ceabc77465522eb0c507226d4b658094d1724ad3095d99a455e3eaa9e2c6
+  checksum: bbc37d2e6dd9f365741299ce6acfa3ed56673b37f32848993ea9448ffde29695
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
   checksum: 57a4a594ddd2cc3b9ba308ce9207104f2807cce6898fb54815292d2975a7143c
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue

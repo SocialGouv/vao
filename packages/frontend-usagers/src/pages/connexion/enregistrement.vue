@@ -4,218 +4,203 @@
 
     <div>
       <div>
-        <div
-          v-if="formStatus === formStates.VALIDATED"
-          class="fr-grid-row fr-grid-row--center fr-my-5v fr-col-12"
-        >
-          <DsfrAlert
-            :title="displayInfos[displayType].title"
-            :description="displayInfos[displayType].description"
-            :type="displayInfos[displayType].type"
-            :closeable="false"
-          />
-        </div>
-        <div v-else>
-          <form>
-            <fieldset
-              class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v"
+        <form>
+          <fieldset
+            class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v"
+          >
+            <h1
+              class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
             >
-              <h1
-                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-              >
-                Créer mon compte
-              </h1>
-              <div
-                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-              >
-                <div class="fr-input-group">
-                  <DsfrInputGroup
-                    :error-message="emailField.errorMessage"
-                    :model-value="emailField.modelValue"
-                    type="text"
-                    label="Email"
-                    name="email"
-                    :required="true"
-                    :label-visible="true"
-                    placeholder="Veuillez saisir votre email"
-                    :is-valid="emailField.isValid"
-                    @update:model-value="checkValidEmail"
-                  />
-                </div>
+              Créer mon compte
+            </h1>
+            <div
+              class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+            >
+              <div class="fr-input-group">
+                <DsfrInputGroup
+                  :error-message="emailField.errorMessage"
+                  :model-value="emailField.modelValue"
+                  type="text"
+                  label="Email"
+                  name="email"
+                  :required="true"
+                  :label-visible="true"
+                  placeholder="Veuillez saisir votre email"
+                  :is-valid="emailField.isValid"
+                  @update:model-value="checkValidEmail"
+                />
+              </div>
+            </div>
+            <div
+              class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+            >
+              <div class="fr-input-group">
+                <DsfrInputGroup
+                  :error-message="passwordField.errorMessage"
+                  :model-value="passwordField.modelValue"
+                  type="password"
+                  name="new-password"
+                  autocomplete="off"
+                  label="Mot de passe"
+                  :required="true"
+                  :label-visible="true"
+                  placeholder=""
+                  hint="Veuillez saisir votre mot de passe"
+                  :is-valid="passwordField.isValid"
+                  @update:model-value="checkValidPassword"
+                />
               </div>
               <div
-                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+                v-if="!passwordField.isValid"
+                class="fr-messages-group"
+                aria-live="assertive"
               >
-                <div class="fr-input-group">
-                  <DsfrInputGroup
-                    :error-message="passwordField.errorMessage"
-                    :model-value="passwordField.modelValue"
-                    type="password"
-                    name="new-password"
-                    autocomplete="off"
-                    label="Mot de passe"
-                    :required="true"
-                    :label-visible="true"
-                    placeholder=""
-                    hint="Veuillez saisir votre mot de passe"
-                    :is-valid="passwordField.isValid"
-                    @update:model-value="checkValidPassword"
-                  />
-                </div>
-                <div
-                  v-if="!passwordField.isValid"
-                  class="fr-messages-group"
-                  aria-live="assertive"
-                >
-                  <p class="fr-message">Votre mot de passe doit contenir :</p>
-                  <div class="fr-grid-row">
-                    <p
-                      :class="[
-                        'fr-col-6 fr-message',
-                        isPwdLong ? 'fr-valid-text' : ' fr-error-text',
-                      ]"
-                    >
-                      12 caractères minimum
-                    </p>
-                    <p
-                      :class="[
-                        'fr-col-6 fr-message',
-                        isPwdMin ? 'fr-valid-text' : ' fr-error-text',
-                      ]"
-                    >
-                      1 lettre minuscule minimum
-                    </p>
-                    <p
-                      :class="[
-                        'fr-col-6 fr-message',
-                        isPwdMaj ? 'fr-valid-text' : ' fr-error-text',
-                      ]"
-                    >
-                      1 lettre majuscule minimum
-                    </p>
-                    <p
-                      :class="[
-                        'fr-col-6 fr-message',
-                        isPwdNumber ? 'fr-valid-text' : ' fr-error-text',
-                      ]"
-                    >
-                      1 chiffre minimum
-                    </p>
-                    <p
-                      :class="[
-                        'fr-col-6 fr-message',
-                        isPwdSpecial ? 'fr-valid-text' : ' fr-error-text',
-                      ]"
-                    >
-                      1 caractère spécial minimum
-                    </p>
-                  </div>
+                <p class="fr-message">Votre mot de passe doit contenir :</p>
+                <div class="fr-grid-row">
+                  <p
+                    :class="[
+                      'fr-col-6 fr-message',
+                      isPwdLong ? 'fr-valid-text' : ' fr-error-text',
+                    ]"
+                  >
+                    12 caractères minimum
+                  </p>
+                  <p
+                    :class="[
+                      'fr-col-6 fr-message',
+                      isPwdMin ? 'fr-valid-text' : ' fr-error-text',
+                    ]"
+                  >
+                    1 lettre minuscule minimum
+                  </p>
+                  <p
+                    :class="[
+                      'fr-col-6 fr-message',
+                      isPwdMaj ? 'fr-valid-text' : ' fr-error-text',
+                    ]"
+                  >
+                    1 lettre majuscule minimum
+                  </p>
+                  <p
+                    :class="[
+                      'fr-col-6 fr-message',
+                      isPwdNumber ? 'fr-valid-text' : ' fr-error-text',
+                    ]"
+                  >
+                    1 chiffre minimum
+                  </p>
+                  <p
+                    :class="[
+                      'fr-col-6 fr-message',
+                      isPwdSpecial ? 'fr-valid-text' : ' fr-error-text',
+                    ]"
+                  >
+                    1 caractère spécial minimum
+                  </p>
                 </div>
               </div>
-              <div
-                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-              >
-                <div class="fr-input-group">
-                  <DsfrInputGroup
-                    :error-message="confirmField.errorMessage"
-                    :model-value="confirmField.modelValue"
-                    type="password"
-                    name="repeat-password"
-                    autocomplete="off"
-                    :required="true"
-                    label="Confirmation mot de passe"
-                    :label-visible="true"
-                    placeholder=""
-                    hint="Veuillez répéter le mot de passe"
-                    :is-valid="confirmField.isValid"
-                    @update:model-value="
-                      (confirm) => (confirmField.modelValue = confirm)
-                    "
-                  />
-                </div>
+            </div>
+            <div
+              class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+            >
+              <div class="fr-input-group">
+                <DsfrInputGroup
+                  :error-message="confirmField.errorMessage"
+                  :model-value="confirmField.modelValue"
+                  type="password"
+                  name="repeat-password"
+                  autocomplete="off"
+                  :required="true"
+                  label="Confirmation mot de passe"
+                  :label-visible="true"
+                  placeholder=""
+                  hint="Veuillez répéter le mot de passe"
+                  :is-valid="confirmField.isValid"
+                  @update:model-value="
+                    (confirm) => (confirmField.modelValue = confirm)
+                  "
+                />
               </div>
+            </div>
 
-              <div
-                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-              >
-                <div class="fr-input-group">
-                  <DsfrInputGroup
-                    :error-message="nomField.errorMessage"
-                    :model-value="nomField.modelValue"
-                    type="text"
-                    label="Nom"
-                    name="nom"
-                    :required="true"
-                    :label-visible="true"
-                    placeholder=""
-                    hint="Veuillez saisir votre nom d'usage"
-                    :is-valid="nomField.isValid"
-                    @update:model-value="checkValidNom"
-                  />
-                </div>
+            <div
+              class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+            >
+              <div class="fr-input-group">
+                <DsfrInputGroup
+                  :error-message="nomField.errorMessage"
+                  :model-value="nomField.modelValue"
+                  type="text"
+                  label="Nom"
+                  name="nom"
+                  :required="true"
+                  :label-visible="true"
+                  placeholder=""
+                  hint="Veuillez saisir votre nom d'usage"
+                  :is-valid="nomField.isValid"
+                  @update:model-value="checkValidNom"
+                />
               </div>
+            </div>
 
-              <div
-                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-              >
-                <div class="fr-input-group">
-                  <DsfrInputGroup
-                    :error-message="prenomField.errorMessage"
-                    :model-value="prenomField.modelValue"
-                    type="text"
-                    label="Prénom"
-                    name="prenom"
-                    :required="true"
-                    :label-visible="true"
-                    hint="Veuillez saisir votre prénom"
-                    placeholder=""
-                    :is-valid="prenomField.isValid"
-                    @update:model-value="checkValidPrenom"
-                  />
-                </div>
+            <div
+              class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+            >
+              <div class="fr-input-group">
+                <DsfrInputGroup
+                  :error-message="prenomField.errorMessage"
+                  :model-value="prenomField.modelValue"
+                  type="text"
+                  label="Prénom"
+                  name="prenom"
+                  :required="true"
+                  :label-visible="true"
+                  hint="Veuillez saisir votre prénom"
+                  placeholder=""
+                  :is-valid="prenomField.isValid"
+                  @update:model-value="checkValidPrenom"
+                />
               </div>
+            </div>
 
-              <div
-                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-              >
-                <div class="fr-input-group">
-                  <DsfrInputGroup
-                    :error-message="telephoneField.errorMessage"
-                    :model-value="telephoneField.modelValue"
-                    type="text"
-                    label="Numéro de téléphone"
-                    name="telephone"
-                    :required="true"
-                    :label-visible="true"
-                    hint="Veuillez saisir votre numéro de téléphone"
-                    :is-valid="telephoneField.isValid"
-                    @update:model-value="checkValidTelephone"
-                  />
-                </div>
+            <div
+              class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+            >
+              <div class="fr-input-group">
+                <DsfrInputGroup
+                  :error-message="telephoneField.errorMessage"
+                  :model-value="telephoneField.modelValue"
+                  type="text"
+                  label="Numéro de téléphone"
+                  name="telephone"
+                  :required="true"
+                  :label-visible="true"
+                  hint="Veuillez saisir votre numéro de téléphone"
+                  :is-valid="telephoneField.isValid"
+                  @update:model-value="checkValidTelephone"
+                />
               </div>
+            </div>
 
-              <div
-                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-              >
-                <ul class="fr-btns-group fr-btns-group--right">
-                  <li>
-                    <p>
-                      <NuxtLink to="/">J'ai déjà un compte</NuxtLink>
-                    </p>
-                  </li>
-                  <li>
-                    <DsfrButton
-                      :disabled="!canRegister"
-                      @click.prevent="register"
-                      >Créer mon compte
-                    </DsfrButton>
-                  </li>
-                </ul>
-              </div>
-              <div class="fr-messages-group" aria-live="assertive"></div>
-            </fieldset>
-          </form>
-        </div>
+            <div
+              class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+            >
+              <ul class="fr-btns-group fr-btns-group--right">
+                <li>
+                  <p>
+                    <NuxtLink to="/">J'ai déjà un compte</NuxtLink>
+                  </p>
+                </li>
+                <li>
+                  <DsfrButton :disabled="!canRegister" @click.prevent="register"
+                    >Créer mon compte
+                  </DsfrButton>
+                </li>
+              </ul>
+            </div>
+            <div class="fr-messages-group" aria-live="assertive"></div>
+          </fieldset>
+        </form>
       </div>
     </div>
   </div>
@@ -225,7 +210,8 @@
 import { ref } from "vue";
 import "@vueform/multiselect/themes/default.css";
 const log = logger("pages/connexion/email/enregistrement");
-
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
 const config = useRuntimeConfig();
 
 const links = [
@@ -241,14 +227,6 @@ const links = [
     text: "Création de compte",
   },
 ];
-
-const formStates = {
-  CREATION: 1,
-  SUBMITTED: 2,
-  VALIDATED: 3,
-};
-
-const formStatus = ref(formStates.CREATION);
 
 const emailField = reactive({
   errorMessage: "",
@@ -291,22 +269,6 @@ const isPwdSpecial = ref(false);
 const isPwdNumber = ref(false);
 const isPwdMaj = ref(false);
 const isPwdMin = ref(false);
-
-const displayInfos = {
-  CreationDoneWithSucces: {
-    title: "Votre compte a été créé avec succès",
-    description:
-      "Veuillez consulter votre boite mail afin de procéder à la validation de votre compte organisateur VAO.",
-    type: "success",
-  },
-  DefaultError: {
-    title: "Une erreur est survenue",
-    description:
-      "Une erreur est survenue. Si vous pensez que cette adresse mail est déjà utilisée, cliquez sur “je souhaite me connecter avec mes identifiants“ puis “Mot de passe oublié”",
-    type: "error",
-  },
-};
-const displayType = ref("DefaultError");
 
 function checkValidEmail(email) {
   emailField.modelValue = email;
@@ -388,7 +350,6 @@ const canRegister = computed(() => {
 });
 
 async function register() {
-  formStatus.value = formStates.CREATION;
   const email = emailField.modelValue;
   const password = passwordField.modelValue;
   const nom = nomField.modelValue;
@@ -410,29 +371,35 @@ async function register() {
       }),
     })
       .then((response) => {
-        displayType.value = "CreationDoneWithSucces";
-        formStatus.value = formStates.VALIDATED;
         log.d("register", { response });
+        toaster.success(
+          "Félicitations, votre compte a bien été créé ! Veuillez le valider en cliquant sur le lien reçu par email",
+        );
       })
       .catch((error) => {
         const body = error.data;
         const codeError = body.code;
-
         log.w("register", { body, codeError });
-        switch (codeError) {
-          default:
-            displayType.value = "DefaultError";
-            formStatus.value = formStates.VALIDATED;
-            break;
+        if (codeError === "ValidationError") {
+          toaster.error(
+            "Une erreur technique est survenue, veuillez réessayer plus tard",
+          );
         }
-        formStatus.value = formStates.SUBMITTED;
+        if (codeError === "DefaultError") {
+          toaster.error(
+            "Une erreur est survenue, peut être un compte existe-t-il déjà avec cet email ...",
+          );
+        }
+
+        if (codeError === "MailError") {
+          toaster.error(
+            "Une erreur est survenue, le mail d'activation n'a pu vous être envoyé. Veuillez utiliser la fonction 'mot de passe oublié'",
+          );
+        }
       });
+    return navigateTo("/");
   } catch (error) {
     log.w("register", { error });
-    displayType.value = "DefaultError";
-    formStatus.value = formStates.SUBMITTED;
-  } finally {
-    log.i("register - DONE");
   }
 }
 </script>
