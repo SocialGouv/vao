@@ -94,9 +94,11 @@ module.exports = async function post(req, res) {
       log.w("update query returned null, declarationId expected");
       return res.status(400).json({
         message:
-          "une erreur est survenue durant la sauvegarde de la declaration",
+          "une erreur est survenue durant la sauvegarde de la déclaration",
       });
     }
+
+    declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
 
     const eventId = await DemandeSejour.insertEvent(
       "organisme",
@@ -129,7 +131,7 @@ module.exports = async function post(req, res) {
     log.w(error);
     return res.status(400).json({
       message:
-        "Une erreur est survenue durant la mise à jour de la declaration",
+        "Une erreur est survenue durant la mise à jour de la déclaration",
     });
   }
   try {
