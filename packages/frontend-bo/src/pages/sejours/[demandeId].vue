@@ -37,6 +37,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: ["is-connected"],
+});
+
 import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
 import Details from "~/components/demandes-sejour/Details.vue";
 import DisplayFormulaire from "~/components/demandes-sejour/DisplayFormulaire.vue";
