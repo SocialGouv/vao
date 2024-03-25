@@ -83,7 +83,7 @@ const hebergementDetailsSchema = {
   dateDebut: yup.date().required(),
   dateFin: yup.date().required(),
   hebergementId: yup
-    .string()
+    .number()
     .required("le choix d'un hébergement dans la liste est obligatoire"),
   coordonnees: yup.object(hebergementUtils.coordonneesSchema),
   informationsLocaux: yup.object({

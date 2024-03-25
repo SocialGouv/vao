@@ -529,6 +529,7 @@
         <DsfrButton
           v-if="props.modifiable"
           id="submit-add-hebergement"
+          :disabled="!hebergementId"
           label="Valider l'étape"
           @click.prevent="next"
         >
@@ -773,7 +774,7 @@ async function handleHebergementIdChange(hebergementId) {
     log.d("handleHebergementIdChange - in", { hebergementId });
     await hebergementStore.fetchHebergement(hebergementId);
     const newValues = {
-      hebergementId,
+      hebergementId: hebergementStore.hebergementCourant.id,
       coordonnees: {
         ...hebergementStore.hebergementCourant.coordonnees,
       },

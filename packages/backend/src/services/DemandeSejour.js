@@ -7,7 +7,7 @@ const log = logger(module.filename);
 const getHebergementWhereQuery = (hebergementIds) =>
   hebergementIds
     .map(
-      (h) => `DS.HEBERGEMENT -> 'hebergements' @> '[{"hebergementId":"${h}"}]'`,
+      (h) => `DS.HEBERGEMENT -> 'hebergements' @> '[{"hebergementId":${h}}]'`,
     )
     .join(" OR ");
 
