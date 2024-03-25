@@ -47,7 +47,7 @@ const links = [
     text: "Accueil",
   },
   {
-    text: "Mentions légales",
+    text: "Données personnelles",
   },
 ];
 </script>
