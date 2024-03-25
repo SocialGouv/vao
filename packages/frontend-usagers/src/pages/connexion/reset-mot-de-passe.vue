@@ -147,6 +147,15 @@ const links = [
     text: "Mot de passe oublié",
   },
 ];
+useHead({
+  title: "VAO - réinitialisation",
+  meta: [
+    {
+      name: "description",
+      content: "Page de réinitialisation de mot de passe.",
+    },
+  ],
+});
 
 const emailToken = route.query.token;
 

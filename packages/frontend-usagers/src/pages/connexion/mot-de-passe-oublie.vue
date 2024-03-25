@@ -60,6 +60,15 @@ const links = [
     text: "Mot de passe oublié",
   },
 ];
+useHead({
+  title: "VAO - mot de passe oublié",
+  meta: [
+    {
+      name: "description",
+      content: "Page de mot de passe oublié.",
+    },
+  ],
+});
 
 const email = ref("");
 

@@ -78,6 +78,15 @@
 const hebergementStore = useHebergementStore();
 hebergementStore.fetchHebergements();
 
+useHead({
+  title: "VAO - mes hébergements",
+  meta: [
+    {
+      name: "description",
+      content: "Page listant les hébergements.",
+    },
+  ],
+});
 const links = [
   {
     to: "/",

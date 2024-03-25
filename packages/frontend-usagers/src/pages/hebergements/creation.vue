@@ -23,7 +23,15 @@
 definePageMeta({
   middleware: ["is-connected"],
 });
-
+useHead({
+  title: "VAO - création hébergement",
+  meta: [
+    {
+      name: "description",
+      content: "Page de création d'un hébergement.",
+    },
+  ],
+});
 const links = [
   {
     to: "/",

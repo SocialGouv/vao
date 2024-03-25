@@ -81,6 +81,15 @@ const links = [
     text: "Identification",
   },
 ];
+useHead({
+  title: "VAO - connexion",
+  meta: [
+    {
+      name: "description",
+      content: "Page de connexion.",
+    },
+  ],
+});
 
 const formStates = {
   CREATION: 1,

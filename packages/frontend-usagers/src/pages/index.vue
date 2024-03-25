@@ -132,6 +132,11 @@ definePageMeta({
   middleware: ["is-connected"],
 });
 
+useHead({
+  title: "VAO - Vacances Adaptées Organisées",
+  meta: [{ name: "description", content: "Page d'accueil." }],
+});
+
 const userStore = useUserStore();
 const organismeStore = useOrganismeStore();
 

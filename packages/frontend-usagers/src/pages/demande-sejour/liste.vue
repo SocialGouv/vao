@@ -148,6 +148,15 @@ const links = [
   },
 ];
 
+useHead({
+  title: "VAO - mes déclarations de séjour",
+  meta: [
+    {
+      name: "description",
+      content: "Page listant les déclarations de séjour.",
+    },
+  ],
+});
 const navigate = (item) => {
   navigateTo(`/demande-sejour/${item.demandeSejourId}`);
 };
