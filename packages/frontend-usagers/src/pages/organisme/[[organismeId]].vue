@@ -85,6 +85,16 @@ const links = [
   },
 ];
 
+useHead({
+  title: "VAO - fiche organisateur",
+  meta: [
+    {
+      name: "description",
+      content: "Page de gestion de la fiche organisateur",
+    },
+  ],
+});
+
 const organismeStore = useOrganismeStore();
 
 const isSiege = computed(() => {

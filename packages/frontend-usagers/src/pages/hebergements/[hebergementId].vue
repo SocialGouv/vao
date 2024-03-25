@@ -36,6 +36,15 @@ const hebergementStore = useHebergementStore();
 
 const route = useRoute();
 
+useHead({
+  title: "VAO - hébergement",
+  meta: [
+    {
+      name: "description",
+      content: "Page détaillant un hébergement.",
+    },
+  ],
+});
 const links = [
   {
     to: "/",

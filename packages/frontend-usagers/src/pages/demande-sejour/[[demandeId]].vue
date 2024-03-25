@@ -112,7 +112,15 @@ const toaster = nuxtApp.vueApp.$toast;
 definePageMeta({
   middleware: ["is-connected", "check-demande-sejour-id-param"],
 });
-
+useHead({
+  title: "VAO - déclaration de séjour",
+  meta: [
+    {
+      name: "description",
+      content: "Page déclaration de séjour.",
+    },
+  ],
+});
 const links = [
   {
     to: "/",

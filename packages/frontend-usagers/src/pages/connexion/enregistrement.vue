@@ -227,7 +227,15 @@ const links = [
     text: "Création de compte",
   },
 ];
-
+useHead({
+  title: "VAO - création de compte",
+  meta: [
+    {
+      name: "description",
+      content: "Page de création de compte.",
+    },
+  ],
+});
 const emailField = reactive({
   errorMessage: "",
   modelValue: "",
