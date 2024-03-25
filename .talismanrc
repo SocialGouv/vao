@@ -162,7 +162,7 @@ fileignoreconfig:
 - filename: pg/scripts/02/02-1-geo-init.sql
   checksum: 55453be5fcf1c607a92537e9814e5724513f03b52ca0bdbc4f4177066af27d2a
 - filename: pg/scripts/02/02-2-doc-init.sql
-  checksum: d797566c2dcc2b9420e320de3a08ddb2349181f0ad9dead26cf4b169c381f2bb
+  checksum: d7f7d690751612f69ddf181b98ff0d81025a43ca6f089932c47ec756ce700e45
 - filename: pg/scripts/02/02-3-back-init.sql
   checksum: 96d98b024d36e64a1b03ff13dc56f5fee7f40abaf3555f76fe5abafc65ee14dd
 - filename: pg/scripts/02/02-4-front-init.sql

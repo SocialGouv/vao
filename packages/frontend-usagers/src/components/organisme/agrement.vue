@@ -68,7 +68,7 @@
         <UtilsFileUpload
           v-model="file"
           :label="label"
-          hint="Taille maximale : 500 Mo. Formats supportés : jpg, png, pdf."
+          hint="Taille maximale : 5 Mo."
         />
       </DsfrFieldset>
       <fieldset class="fr-fieldset">

@@ -156,7 +156,7 @@
         <UtilsFileUpload
           v-model="file"
           label="Téléchargement du document justificatif référent à l’établissement ERP"
-          hint="Taille maximale : 500 Mo. Formats supportés : jpg, png, pdf."
+          hint="Taille maximale : 5 Mo."
         />
 
         <div class="fr-fieldset__element fr-col-12">

@@ -170,6 +170,11 @@ async function updateOrCreate(data, type) {
         };
         toaster.info(`Document déposé`);
       } catch (error) {
+        if (error.response.status === 413) {
+          return toaster.error(
+            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          );
+        }
         return toaster.error(
           `Une erreur est survenue lors du dépôt du document ${file.name}`,
         );
@@ -199,6 +204,11 @@ async function updateOrCreate(data, type) {
         });
         counter++;
       } catch (error) {
+        if (error.response.status === 413) {
+          return toaster.error(
+            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          );
+        }
         return toaster.error(
           `Une erreur est survenue lors du dépôt du document ${file.name}`,
         );

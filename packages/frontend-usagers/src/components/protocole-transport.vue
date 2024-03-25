@@ -6,7 +6,7 @@
       <UtilsMultiFilesUpload
         v-model="files"
         label="Merci de joindre les documents requis pour les informations transport"
-        hint="Taille maximale : 500 Mo. Formats supportés : pdf. Plusieurs fichiers possibles."
+        hint="Taille maximale : 5 Mo."
         :modifiable="props.modifiable"
       />
     </DsfrFieldset>
