@@ -1,6 +1,6 @@
 <template>
   <div class="detail-container">
-    <h1>Demande : {{ demande.libelle }}</h1>
+    <h1>Déclaration : {{ demande.libelle }}</h1>
     <div class="fr-grid-row">
       <div class="fr-col-7">
         <div v-for="detail in demandeDetails" :key="detail.name">
