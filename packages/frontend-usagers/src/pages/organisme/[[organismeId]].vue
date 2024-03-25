@@ -215,7 +215,7 @@ async function updateOrCreate(organismeData, type) {
     });
 
     toaster.success(
-      `Fiche organisme ${organismeId.value ? "sauvegardée" : "créée"}`,
+      `Fiche organisateur ${organismeId.value ? "sauvegardée" : "créée"}`,
     );
     organismeId.value = data.organismeId;
     await organismeStore.setMyOrganisme();
@@ -288,11 +288,11 @@ async function finalizeOrganisme() {
       },
     });
     const organismeId = data.organismeId;
-    log.d(`organisme ${organismeId} finalisé`);
-    toaster.success("Fiche organisme finalisée");
+    log.d(`organisateur ${organismeId} finalisé`);
+    toaster.success("Fiche organisateur finalisée");
     return navigateTo("/");
   } catch (error) {
-    log.w("Creation/modification d'organisme : ", { error });
+    log.w("Creation/modification d'organisateur : ", { error });
   }
 }
 </script>
