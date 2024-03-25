@@ -254,7 +254,7 @@ const ISanitaire = {
     inputType: InputTypes.RADIO,
     label: "Individualisation des médicaments ?",
     options: {
-      aucune: "Aucune méthode",
+      aucune: "Sans objet",
       prepares_prealablement:
         "Piluliers préparés préalablement au séjour par le vacancier, sa famille, le représentant légal, l’établissement de résidence habituelle, le médecin",
       au_fur_et_a_mesure: "Piluliers préparés durant le séjour",
