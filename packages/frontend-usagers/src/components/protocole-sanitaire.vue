@@ -21,7 +21,6 @@
           <DsfrRadioButtonSet
             name="dispositionsSpecifiques"
             legend="Des dispositions d’ordre sanitaire spécifiques sont-elles prévues ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="dispositionsSpecifiques"
             :options="ouiNonOptions"
@@ -36,7 +35,6 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionDispositionsSpecifiques"
-            :required="true"
             :readonly="!props.modifiable"
             label="Quels sont les protocoles en vigueur pour assurer le suivi sanitaire et médical ?"
             hint="Redimensionnez le champ pour saisir plus de ligne"
@@ -58,7 +56,6 @@
             legend="L’équipe comprend-elle ?"
             :options="protocoleSanitaire.constitutionEquipeOptions"
             :small="true"
-            :required="true"
             :disabled="!props.modifiable"
           />
         </div>
@@ -67,7 +64,6 @@
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="precisionConstitutionEquipe"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
@@ -85,7 +81,6 @@
           <DsfrRadioButtonSet
             name="troussePharmacie"
             legend="Présence d’une trousse à pharmacie de premier secours ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="troussePharmacie"
             :options="ouiNonOptions"
@@ -114,7 +109,6 @@
               protocoleSanitaire.responsableAdministrationMedicamentOptions
             "
             :small="true"
-            :required="true"
             :disabled="!props.modifiable"
           />
         </div>
@@ -127,7 +121,6 @@
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="precisionResponsableAdministrationMedicament"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
@@ -154,7 +147,6 @@
           <DsfrRadioButtonSet
             name="stockageMedicamentSecurise"
             legend="Les médicaments sont-ils stockés dans un lieu sécurisé ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="stockageMedicamentSecurise"
             :options="ouiNonOptions"
@@ -169,7 +161,6 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionStockageMedicamentSecurise"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez le protocole en vigueur concernant le stockage sécurisé des médicaments."
             hint="Redimensionnez le champ pour saisir plus de ligne"
@@ -188,7 +179,6 @@
           <DsfrRadioButtonSet
             name="conservationMedicamentThermosensible"
             legend="Un dispositif est-il prévu pour la conservation des médicaments thermosensibles ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="conservationMedicamentThermosensible"
             :options="ouiNonOptions"
@@ -207,7 +197,6 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionConservationMedicament"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez le protocole en vigueur concernant le stockage garantissant la parfaite conservation des médicaments."
             hint="Redimensionnez le champ pour saisir plus de ligne"
@@ -227,7 +216,6 @@
             name="individualisationMedicaments"
             legend="Un dispositif est-il prévu pour individualiser les traitements de chaque vacancier ?"
             hint="Les traitements de chaque vacancier doivent être identifiés a minima par son nom et son prénom. Il est recommandé de compléter ces mentions de la date de naissance, de la photographie, voire du nom de jeune fille des résidentes en cas d’homonymie."
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="individualisationMedicaments"
             :options="ouiNonOptions"
@@ -242,7 +230,6 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionIndividualisationMedicaments"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez le protocole en vigueur concernant le stockage permettant l’individualisation des médicaments."
             hint="Redimensionnez le champ pour saisir plus de ligne"
@@ -261,7 +248,6 @@
           <DsfrRadioButtonSet
             name="preparationPilluliers"
             legend="Méthode retenue pour la préparation des piluliers"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="preparationPilluliers"
             :options="protocoleSanitaire.preparationPilluliersOptions"
@@ -283,7 +269,6 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionPreparationPilluliers"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
@@ -301,7 +286,6 @@
           <DsfrRadioButtonSet
             name="prescriptionMedicaleJointe"
             legend="Une prescription médicale est-elle jointe à chaque pilulier ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="prescriptionMedicaleJointe"
             :options="ouiNonOptions"
@@ -317,7 +301,6 @@
           <DsfrRadioButtonSet
             name="protocoleModificationTraitement"
             legend="Existe-t-il un protocole en cas de modification de traitement en cours de séjour ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="protocoleModificationTraitement"
             :options="ouiNonOptions"
@@ -332,7 +315,6 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionProtocoleModificationTraitement"
-            :required="true"
             :readonly="!props.modifiable"
             placeholder=""
             label="Précisez"
@@ -354,7 +336,6 @@
           <DsfrRadioButtonSet
             name="ficheSuiviMedicaments"
             legend="Existe-t-il une fiche de suivi de la distribution, de l’administration et de l’enregistrement des médicaments ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="ficheSuiviMedicaments"
             :options="ouiNonOptions"
@@ -375,7 +356,6 @@
           <DsfrRadioButtonSet
             name="protocoleEvacuation"
             legend="Existe-t-il un protocole d’évacuation et de rapatriement des vacanciers si nécessaire au cours du séjour ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="protocoleEvacuation"
             :options="ouiNonOptions"
@@ -390,7 +370,6 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionProtocoleEvacuation"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
@@ -408,7 +387,6 @@
           <DsfrRadioButtonSet
             name="protocoleAccident"
             legend="Existe-t-il un protocole en cas de chute, d’intoxication (alimentaire, médicamenteuse, etc.) ou autre accident ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="protocoleAccident"
             :options="ouiNonOptions"
@@ -423,7 +401,6 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionProtocoleAccident"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
@@ -441,7 +418,6 @@
           <DsfrRadioButtonSet
             name="protocoleReorientation"
             legend="Existe-t-il un protocole en cas de réorientation (inadaptation des conditions générales du séjour à la situation de la personne handicapée) des vacanciers ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="protocoleReorientation"
             :options="ouiNonOptions"
@@ -456,7 +432,6 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionProtocoleReorientation"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
@@ -474,7 +449,6 @@
           <DsfrRadioButtonSet
             name="protocoleCanicule"
             legend="Existe-t-il un protocole en cas d’alerte canicule (locaux, transports…) ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="protocoleCanicule"
             :options="ouiNonOptions"
@@ -489,7 +463,6 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionProtocoleCanicule"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez"
             :label-visible="true"
@@ -506,7 +479,6 @@
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="gestionBudgetPersonnel"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez les conditions prévues pour la gestion sur place du budget personnel des vacanciers (si les vacanciers en font la demande)"
             :label-visible="true"

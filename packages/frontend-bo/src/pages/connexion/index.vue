@@ -21,7 +21,6 @@
             <DsfrFieldset>
               <DsfrInputGroup
                 autocomplete="off"
-                :required="true"
                 :model-value="email"
                 type="text"
                 name="email"
@@ -33,7 +32,6 @@
               <PasswordInput
                 id="password"
                 autocomplete="off"
-                :required="true"
                 :model-value="password"
                 :type="showPassword ? 'text' : 'password'"
                 label="Mot de passe"

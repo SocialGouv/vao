@@ -6,7 +6,6 @@
           <DsfrRadioButtonSet
             name="typeOrganisme"
             legend="Type de personne qui organise des séjours"
-            :required="true"
             :model-value="typeOrganisme"
             :options="organisme.types"
             :is-valid="typeOrganismeMeta"
