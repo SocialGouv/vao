@@ -99,7 +99,7 @@
           >
 
           <DsfrButton
-            label="Finaliser la fiche organisme"
+            label="Finaliser la fiche organisateur"
             :disabled="!meta.valid"
             @click.prevent="finalizeOrganisme"
           />

@@ -37,7 +37,7 @@ module.exports = async function post(req, res) {
       log.w("organisme isn't fully filled");
       return res.status(400).json({
         message:
-          "Vous devez compléter la fiche Organisme avant de saisir une déclaration de séjour",
+          "Vous devez compléter la fiche organisateur avant de saisir une déclaration de séjour",
       });
     }
 
