@@ -243,7 +243,7 @@
           <DsfrCheckboxSet
             name="informationsLocaux.prestationsHotelieres"
             legend="Prestations hôtelières assurées par le lieu d’accueil"
-            :value="prestationsHotelieres"
+            :model-value="prestationsHotelieres"
             :inline="true"
             :options="hebergementUtils.prestationsHotelieresOptions"
             :small="true"
