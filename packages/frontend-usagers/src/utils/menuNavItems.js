@@ -16,11 +16,11 @@ export const navItems = [
     title: "Déclaration de séjour",
     links: [
       {
-        text: "Nouvelle demande",
+        text: "Nouvelle déclaration",
         to: "/demande-sejour",
       },
       {
-        text: "Mes demandes",
+        text: "Mes déclarations",
         to: "/demande-sejour/liste",
       },
       {

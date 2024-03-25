@@ -8,10 +8,10 @@ export const navItems = [
     to: "/comptes",
   },
   {
-    title: "Demande de séjour",
+    title: "Déclaration de séjour",
     links: [
       {
-        text: "Mes demandes",
+        text: "Mes déclarations",
         to: "/sejours",
       },
     ],

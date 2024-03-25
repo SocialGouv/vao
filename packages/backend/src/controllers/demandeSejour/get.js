@@ -18,7 +18,7 @@ module.exports = async function get(req, res) {
     log.w(error);
     return res.status(400).json({
       message:
-        "une erreur est survenue durant la récupération des demandes de séjour",
+        "une erreur est survenue durant la récupération des déclarations de séjour",
     });
   }
 };
