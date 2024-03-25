@@ -37,7 +37,7 @@
               :href="
                 organismeStore.organismeCourant
                   ? `/organisme/${organismeStore.organismeCourant.organismeId}`
-                  : '#'
+                  : '/organisme/'
               "
             >
               Ma fiche organisateur
