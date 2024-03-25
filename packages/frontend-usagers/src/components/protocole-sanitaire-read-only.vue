@@ -444,7 +444,7 @@ const responsableAdministrationMedicamentOptions = [
 ];
 
 const preparationPilluliersOptions = [
-  { label: "Aucune méthode", id: "aucune", value: "aucune" },
+  { label: "Sans objet", id: "aucune", value: "aucune" },
   {
     label:
       "Piluliers préparés préalablement au séjour par le vacancier, sa famille, le représentant légal, l’établissement de résidence habituelle, le médecin",
