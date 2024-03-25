@@ -8,7 +8,6 @@
             label="Effectif prévisionnel des vacanciers"
             :label-visible="true"
             :model-value="effectifPrevisionnel"
-            :required="true"
             :readonly="!props.modifiable"
             :is-valid="effectifPrevisionnelMeta.valid"
             :error-message="effectifPrevisionnelErrorMessage"
@@ -24,7 +23,6 @@
             label="Hommes"
             :label-visible="true"
             :model-value="effectifPrevisionnelHomme"
-            :required="true"
             :readonly="!props.modifiable"
             :is-valid="effectifPrevisionnelHommeMeta.valid"
             :error-message="effectifPrevisionnelHommeErrorMessage"
@@ -40,7 +38,6 @@
             label="Femmes"
             :label-visible="true"
             :model-value="effectifPrevisionnelFemme"
-            :required="true"
             :readonly="!props.modifiable"
             :is-valid="effectifPrevisionnelFemmeMeta.valid"
             :error-message="effectifPrevisionnelFemmeErrorMessage"
@@ -59,7 +56,6 @@
           legend="Tranches d'âge"
           :options="informationsVacanciers.trancheAgeOptions"
           :small="true"
-          :required="true"
           :disabled="!props.modifiable"
         />
       </div>
@@ -71,7 +67,6 @@
           legend="Type de déficiences"
           :options="informationsVacanciers.typeDeficiencesOptions"
           :small="true"
-          :required="true"
           :disabled="!props.modifiable"
         />
       </div>

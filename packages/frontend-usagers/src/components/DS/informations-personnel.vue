@@ -8,7 +8,6 @@
             label="Nombre total de personnes responsables du déroulement du séjour sur le(s) lieu(x) de séjour"
             :label-visible="true"
             :model-value="nombreResponsable"
-            :required="true"
             :readonly="!props.modifiable"
             :is-valid="nombreResponsableMeta.valid"
             :error-message="nombreResponsableErrorMessage"
@@ -24,7 +23,6 @@
           <DsfrRadioButtonSet
             name="procedureRecrutementSupplementaire"
             legend="Procédure en cas de recrutement de personnels supplémentaires durant le séjour"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="procedureRecrutementSupplementaire"
             :options="ouiNonOptions"
@@ -42,7 +40,6 @@
             label="Nombre total d'accompagnants sur le(s) lieu(x) de séjour"
             :label-visible="true"
             :model-value="nombreAccompagnant"
-            :required="true"
             :readonly="!props.modifiable"
             :is-valid="nombreAccompagnantMeta.valid"
             :error-message="nombreAccompagnantErrorMessage"

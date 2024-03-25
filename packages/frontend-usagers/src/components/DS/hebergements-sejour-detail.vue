@@ -10,7 +10,6 @@
           :max="props.dateFinIni"
           :label-visible="true"
           :model-value="dateDebut"
-          :required="true"
           :readonly="!props.modifiable"
           :is-valid="dateDebutMeta.valid"
           :error-message="dateDebutErrorMessage"
@@ -27,7 +26,6 @@
           :max="props.dateFinIni"
           :label-visible="true"
           :model-value="dateFin"
-          :required="true"
           :readonly="!props.modifiable"
           :is-valid="dateFinMeta.valid"
           :error-message="dateFinErrorMessage"
@@ -42,7 +40,6 @@
           :model-value="hebergementId"
           name="hebergementId"
           label="Hebergement"
-          :required="true"
           :disabled="!props.modifiable"
           :options="hebergementsFavoris"
           :is-valid="hebergementIdMeta.valid"
@@ -182,7 +179,6 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.visiteLocaux"
               legend="Une visite des locaux par l’organisateur a-t-elle été effectuée ?"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="visiteLocaux"
               :options="ouiNonOptions"
@@ -200,7 +196,6 @@
             label="Date de la dernière visite "
             :label-visible="true"
             :model-value="visiteLocauxAt"
-            :required="true"
             :readonly="!props.modifiable"
             :is-valid="visiteLocauxAtMeta.valid"
             :error-message="visiteLocauxAtErrorMessage"
@@ -212,7 +207,6 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.accessibilite"
               legend="Accessibilité"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="accessibilite"
               :options="hebergementUtils.accessibiliteOptions"
@@ -228,7 +222,6 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.pension"
               legend="Type de pension"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="pension"
               :options="hebergementUtils.pensionOptions"
@@ -247,7 +240,6 @@
             :inline="true"
             :options="hebergementUtils.prestationsHotelieresOptions"
             :small="true"
-            :required="true"
             :disabled="!props.modifiable"
             :error-message="prestationsHotelieresErrorMessage"
             @update:model-value="onPrestationsHotelieresChange"
@@ -257,7 +249,6 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="informationsLocaux.descriptionLieuHebergement"
-            :required="false"
             :readonly="!props.modifiable"
             label="Description du lieu d’hébergement (parties communes et notamment équipements sanitaires)"
             :label-visible="true"
@@ -274,7 +265,6 @@
           <DsfrInputGroup
             name="informationsLocaux.nombreLits"
             type="number"
-            :required="true"
             :readonly="!props.modifiable"
             label="Nombre de lits dans le lieu d'hébergement"
             :label-visible="true"
@@ -289,7 +279,6 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="informationsLocaux.nombreLitsSuperposes"
-            :required="true"
             :readonly="!props.modifiable"
             type="number"
             label="Nombre de lits superposés inclus"
@@ -310,7 +299,6 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.litsDessus"
               legend="Pour les lits superposés, les lits « du dessus » seront-ils occupés par des vacanciers  ?"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="litsDessus"
               :options="ouiNonOptions"
@@ -327,7 +315,6 @@
             name="informationsLocaux.nombreMaxPersonnesCouchage"
             label="Nombre maximum de personnes prévues par espace de couchage"
             type="number"
-            :required="true"
             :readonly="!props.modifiable"
             :label-visible="true"
             :model-value="nombreMaxPersonnesCouchage"
@@ -342,7 +329,6 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.couchageIndividuel"
               legend="Chaque vacancier bénéficie-t-il d’un couchage individuel ?"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="couchageIndividuel"
               :options="ouiNonOptions"
@@ -359,7 +345,6 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.rangementIndividuel"
               legend="Chaque vacancier bénéficie t-il d’un espace de rangement des affaires personnelles ?"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="rangementIndividuel"
               :options="ouiNonOptions"
@@ -376,7 +361,6 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.chambresUnisexes"
               legend="Les femmes et les hommes dorment-ils dans des lieux séparés ?"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="chambresUnisexes"
               :options="ouiNonOptions"
@@ -393,7 +377,6 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.chambresDoubles"
               legend="Les couples de vacanciers bénéficient t-ils de chambres doubles ?"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="chambresDoubles"
               :options="ouiNonOptions"
@@ -410,7 +393,6 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.amenagementsSpecifiques"
               legend="Des aménagements spécifiques des locaux sont-ils prévus pour accueillir les vacanciers ?"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="amenagementsSpecifiques"
               :options="ouiNonOptions"
@@ -430,7 +412,6 @@
             name="informationsLocaux.precisionAmenagementsSpecifiques"
             label="Précisez"
             hint="Redimensionnez le champ pour saisir plus de ligne"
-            :required="true"
             :readonly="!props.modifiable"
             :label-visible="true"
             :is-textarea="true"
@@ -448,7 +429,6 @@
             <DsfrRadioButtonSet
               name="informationsTransport.vehiculesAdaptes"
               legend="Les véhicules utilisés sont-ils adaptés ?"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="vehiculesAdaptes"
               :options="ouiNonOptions"
@@ -463,7 +443,6 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="informationsTransport.deplacementProximite"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité"
             :label-visible="true"
@@ -479,7 +458,6 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="informationsTransport.excursion"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions"
             :label-visible="true"
@@ -494,7 +472,6 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="informationsTransport.rejoindreEtape"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez le mode de transport utilisé pour rejoindre cette étape"
             :label-visible="true"

@@ -8,7 +8,6 @@
             label="Numéro SIRET du titulaire de l’agrément VAO"
             :label-visible="true"
             :model-value="formatedSiret"
-            :required="true"
             :is-valid="siretMeta.valid"
             :error-message="siretErrorMessage"
             placeholder=""
@@ -37,7 +36,6 @@
               label="Raison sociale"
               :label-visible="true"
               :model-value="raisonSociale"
-              :required="false"
               :readonly="true"
             />
           </div>
@@ -49,7 +47,6 @@
               label="Statut, forme juridique"
               :label-visible="true"
               :model-value="statut"
-              :required="false"
               :readonly="true"
             />
           </div>
@@ -61,7 +58,6 @@
               label="adresse"
               :label-visible="true"
               :model-value="adresse"
-              :required="false"
               :readonly="true"
             />
           </div>
@@ -73,7 +69,6 @@
               label="Pays"
               :label-visible="true"
               :model-value="pays"
-              :required="false"
               :readonly="true"
             />
           </div>
@@ -85,7 +80,6 @@
               label="Courriel"
               :label-visible="true"
               :model-value="email"
-              :required="true"
               :readonly="false"
               :is-valid="emailMeta.valid"
               :error-message="emailErrorMessage"
@@ -102,7 +96,6 @@
               label="Téléphone"
               :label-visible="true"
               :model-value="telephone"
-              :required="true"
               :readonly="false"
               :is-valid="telephoneMeta.valid"
               :valid-message="telephoneValidMessage"
