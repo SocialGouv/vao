@@ -113,6 +113,7 @@ create table front.demande_sejour (
    transport                    JSONB                ,
    projet_sejour                JSONB                ,
    sanitaires                   JSONB                ,
+   attestation                  JSONB                ,
    organisme                    JSONB                ,
    files                        JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
@@ -131,7 +132,6 @@ create table front.hebergement (
    coordonnees                  JSONB                ,
    informations_locaux          JSONB                ,
    informations_transport       JSONB                ,
-   attestation                  JSONB                ,
    created_at                   TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    edited_at                    TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_hebergement primary key (id)

@@ -228,7 +228,9 @@ function sortByDate(hebergements) {
 }
 
 function removeHebergement(index) {
-  onHebergementsChange(hebergements.value.splice(index));
+  log.i("removeHebergement", { index });
+  hebergements.value.splice(index);
+  onHebergementsChange(hebergements.value);
 }
 
 async function addNuitee(hebergement) {
