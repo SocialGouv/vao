@@ -140,7 +140,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
   checksum: bbc37d2e6dd9f365741299ce6acfa3ed56673b37f32848993ea9448ffde29695
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
-  checksum: 57a4a594ddd2cc3b9ba308ce9207104f2807cce6898fb54815292d2975a7143c
+  checksum: 27b69914a4f3615db69c2d7ca44f811bccfd566977cf424940952dab2631cb9a
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
   checksum: a30047520f10c9428ebb0865e8019baf9799801d99b0a6606eec58154a73c91b
 - filename: packages/frontend-usagers/src/pages/connexion/reset-mot-de-passe.vue
