@@ -24,14 +24,6 @@
       >
         <DisplayPj />
       </DsfrTabContent>
-      <DsfrTabContent
-        panel-id="tab-content-2"
-        tab-id="tab-2"
-        :selected="selectedTabIndex === 2"
-        :asc="asc"
-      >
-        <div>EN CONSTRUCTION : historique</div>
-      </DsfrTabContent>
     </DsfrTabs>
   </div>
 </template>
@@ -64,11 +56,7 @@ onMounted(async () => {
   }
 });
 
-const tabTitles = [
-  { title: " Formulaire" },
-  { title: "Documents joints" },
-  { title: "historique" },
-];
+const tabTitles = [{ title: " Formulaire" }, { title: "Documents joints" }];
 </script>
 
 <style scoped>
