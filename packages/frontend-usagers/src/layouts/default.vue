@@ -79,7 +79,13 @@ function acceptAll() {
       <slot />
     </main>
 
-    <DsfrFooter :desc-text="`Version ${config.public.appVersion}`" />
+    <DsfrFooter
+      legal-link="footer/mentions-legales"
+      personal-data-link="footer/donnees-personnelles"
+      cookies-link="/footer/gestion-cookies"
+      a11y-compliance-link="/footer/accessibilite"
+      :desc-text="`Version ${config.public.appVersion}`"
+    />
     <DsfrNotice
       v-if="!consentCookie"
       title="L'utilisation de cookies est nécessaire au bon fonctionnement de
