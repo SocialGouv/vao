@@ -1,10 +1,15 @@
 const express = require("express");
+const checkJWT = require("../middlewares/checkJWT");
 
 const router = express.Router();
 
 const authenticationController = require("../controllers/authentication");
 
 // Gère une connexion via mot de passe.
+router.get("/check-token", checkJWT, (req, res) => {
+  console.log("check token is OK! ");
+  res.send("OK");
+});
 router.post("/email/register", authenticationController.email.register);
 router.post("/email/login", authenticationController.email.login);
 router.post("/email/validate", authenticationController.email.validate);
