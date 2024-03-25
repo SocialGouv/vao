@@ -23,10 +23,6 @@ export const navItems = [
         text: "Mes déclarations",
         to: "/demande-sejour/liste",
       },
-      {
-        text: "Déclarer un incident",
-        to: "#",
-      },
     ],
   },
   {
