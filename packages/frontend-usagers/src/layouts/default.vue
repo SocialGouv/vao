@@ -80,8 +80,8 @@ function acceptAll() {
     </main>
 
     <DsfrFooter
-      legal-link="footer/mentions-legales"
-      personal-data-link="footer/donnees-personnelles"
+      legal-link="/footer/mentions-legales"
+      personal-data-link="/footer/donnees-personnelles"
       cookies-link="/footer/gestion-cookies"
       a11y-compliance-link="/footer/accessibilite"
       :desc-text="`Version ${config.public.appVersion}`"
