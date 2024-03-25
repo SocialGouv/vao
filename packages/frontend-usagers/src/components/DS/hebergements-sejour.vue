@@ -248,6 +248,11 @@ async function addNuitee(hebergement) {
           createdAt: new Date(),
         };
       } catch (error) {
+        if (error.response.status === 413) {
+          return toaster.error(
+            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          );
+        }
         log.w("addNuitee", error);
         return toaster.error(
           `Une erreur est survenue lors du dépôt du document ${file.name}`,

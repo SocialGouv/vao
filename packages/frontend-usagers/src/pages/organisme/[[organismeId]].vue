@@ -141,6 +141,11 @@ async function updateOrCreate(organismeData, type) {
         };
         toaster.info(`Document déposé`);
       } catch (error) {
+        if (error.response.status === 413) {
+          return toaster.error(
+            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          );
+        }
         return toaster.error(
           `Une erreur est survenue lors du dépôt du document ${file.name}`,
         );
@@ -170,6 +175,13 @@ async function updateOrCreate(organismeData, type) {
         });
         counter++;
       } catch (error) {
+        log.w(error.response);
+
+        if (error.response.status === 413) {
+          return toaster.error(
+            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          );
+        }
         return toaster.error(
           `Une erreur est survenue lors du dépôt du document ${file.name}`,
         );
@@ -220,6 +232,12 @@ async function updateOrCreateAgrement(agrementData, type) {
         };
         toaster.info(`Agrément téléversé`);
       } catch (error) {
+        if (error.response.status === 413) {
+          return toaster.error(
+            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          );
+        }
+        log.w(error);
         return toaster.error(
           `Une erreur est survenue lors du dépôt du document ${file.name}`,
         );

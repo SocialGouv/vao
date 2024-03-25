@@ -4,7 +4,9 @@ const config = require("../config");
 const checkJWT = require("../middlewares/checkJWT");
 const scanFile = require("../middlewares/scan-file");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
+const logger = require("../utils/logger");
 
+const log = logger(module.filename);
 const router = express.Router();
 
 const { documentsController } = require("../controllers");
@@ -15,6 +17,9 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({
+  limits: {
+    fileSize: 5000000,
+  },
   storage,
 });
 
@@ -24,8 +29,15 @@ function uploadFile(req, res, next) {
   // eslint-disable-next-line consistent-return
   uploadSingle(req, res, (err) => {
     if (err) {
-      console.error("uploadSingle", err);
-      return res.status(400).send({ message: "Erreur inattendue." });
+      if (err.code === "LIMIT_FILE_SIZE") {
+        log.w("uploadSingle", "file is too big");
+        return res.status(413).send({
+          message: "Le fichier téléversé dépasse la taille maximale autorisée.",
+        });
+      } else {
+        log.w("uploadSingle", err);
+        return res.status(400).send({ message: "Erreur inattendue." });
+      }
     }
     next();
   });
