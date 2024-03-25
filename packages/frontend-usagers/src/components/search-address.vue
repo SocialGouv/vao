@@ -18,7 +18,7 @@ const props = defineProps({
 
 const emits = defineEmits(["select"]);
 
-const NB_CAR_ADDRESSE_MIN = 6;
+const NB_CAR_ADDRESSE_MIN = 5;
 
 const options = ref([]);
 const isLoading = ref(false);
@@ -106,6 +106,7 @@ function select(_value, option) {
             :searchable="true"
             :internal-search="true"
             :loading="isLoading"
+            no-options-text="Rechercher une adresse"
             :options="options"
             autocomplete="off"
             :filter-results="false"
