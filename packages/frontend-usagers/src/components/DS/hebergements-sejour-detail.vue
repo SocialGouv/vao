@@ -133,22 +133,38 @@
         </div>
       </DsfrFieldset>
       <DsfrFieldset legend="Type de lieu de l'hébergement">
-        <DsfrNotice>
-          Informations ERP : Selon la circulaire du 6 octobre 2023, il sera
-          requis l’arrêté d’autorisation du maire et/ou la dernière attestation
-          du passage de la commission de sécurité datant de moins de 5 ans pour
-          séjours se déroulant en établissement recevant du public (ERP).A
-          défaut de transmission de ces justificatifs, la DDETS met en demeure
-          l'organisme de produire ces pièces et propose au Préfet de département
-          une annulation des séjours, si absence de tous les justificatifs.On
-          distingue 3 catégories d’hébergements :1 - Les établissements recevant
-          du public (ERP, tous les hôtels et les gros meubles de tourisme de
-          plus de 15 personnes de type gîtes de groupes,2 - Les Bâtiments
-          d’Habitation Collective (BHC, comme des résidences de tourisme),3 -
-          Les maisons individuelles (MI, comme des chambres d’hôtes et petits
-          meublés, qui ne peuvent dépasser 5 chambres et hébergent 15 personnes
-          au maximum).
-        </DsfrNotice>
+        <DsfrAlert>
+          <p>
+            Informations ERP : Selon la circulaire du 6 octobre 2023, il sera
+            requis l’arrêté d’autorisation du maire et/ou la dernière
+            attestation du passage de la commission de sécurité datant de moins
+            de 5 ans pour séjours se déroulant en établissement recevant du
+            public (ERP).
+          </p>
+          <p>
+            A défaut de transmission de ces justificatifs, la DDETS met en
+            demeure l'organisme de produire ces pièces et propose au Préfet de
+            département une annulation des séjours, si absence de tous les
+            justificatifs.
+          </p>
+          <p>On distingue 3 catégories d’hébergements :</p>
+          <ol>
+            <li>
+              Les établissements recevant du public (ERP, tous les hôtels et les
+              gros meubles de tourisme deplus de 15 personnes de type gîtes de
+              groupes
+            </li>
+            <li>
+              Les Bâtiments d’Habitation Collective (BHC, comme des résidences
+              de tourisme)
+            </li>
+            <li>
+              Les maisons individuelles (MI, comme des chambres d’hôtes et
+              petits meublés, qui ne peuvent dépasser 5 chambres et hébergent 15
+              personnes au maximum)
+            </li>
+          </ol>
+        </DsfrAlert>
 
         <UtilsFileUpload
           v-model="file"
