@@ -71,7 +71,10 @@ function acceptAll() {
       :logo-text="header.logoText"
     >
       <template #mainnav>
-        <DsfrNavigation :nav-items="navItems" />
+        <DsfrNavigation
+          :nav-items="navItems"
+          style="box-shadow: inset 0 1px 0 0 #ddd"
+        />
       </template>
     </DsfrHeader>
 
