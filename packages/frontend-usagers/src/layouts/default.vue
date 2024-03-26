@@ -110,6 +110,7 @@ function acceptAll() {
         </p>
       </template>
     </DsfrFooter>
+
     <DsfrNotice
       v-if="!consentCookie"
       title="L'utilisation de cookies est nécessaire au bon fonctionnement de
