@@ -186,6 +186,16 @@ const ITransport = {
     label: "Des déplacements sont-ils prévus durant le séjour ?",
     options: ouiNon,
   },
+  vehiculesAdaptes: {
+    inputType: InputTypes.RADIO,
+    label: "Les véhicules adaptés sont ils adaptés ?",
+    options: ouiNon,
+  },
+  precisionVehiculesAdaptes: {
+    inputType: InputTypes.TEXT,
+    label: "Spécificité des véhicules :",
+    options: ouiNon,
+  },
 };
 
 const ISanitaire = {

@@ -3,11 +3,13 @@ import * as yup from "yup";
 const responsableTransportLieuSejourOptions = [
   {
     label: "Les vacanciers viennent par leurs propres moyens",
-    value: "vacanciers",
+    id: "vacanciers",
+    name: "vacanciers",
   },
   {
     label: "Le transport vers le lieu de séjour est assuré par l'organisateur",
-    value: "organisateur",
+    id: "organisateur",
+    name: "organisateur",
   },
 ];
 
@@ -32,17 +34,50 @@ yup.setLocale({
 
 const schema = {
   files: yup.array(),
-  responsableTransportLieuSejour: yup.string().required(),
-  modeTransport: yup
+  responsableTransportLieuSejour: yup
     .array()
-    .min(1, "vous devez sélectionner au moins un mode de transport"),
+    .min(1, "vous devez sélectionner au moins une valeur")
+    .required(),
+  modeTransport: yup.array().when("responsableTransportLieuSejour", {
+    is: (val) => val?.includes("organisateur"),
+    then: (modeTransport) =>
+      modeTransport
+        .min(1, "Vous devez sélectionner au moins un des éléments")
+        .required(),
+    otherwise: (modeTransport) => modeTransport.nullable(),
+  }),
   precisionModeOrganisation: yup
     .string()
-    .required()
-    .min(5, "Les précisions sur le mode d'organisation sont obligatoires'"),
+    .when("responsableTransportLieuSejour", {
+      is: (responsableTransportLieuSejour) =>
+        responsableTransportLieuSejour?.includes("organisateur"),
+      then: (precision) =>
+        precision
+          .min(5, "Vous devez préciser le mode d'organisation")
+          .required(),
+      otherwise: (precision) => precision.nullable(),
+    }),
   deplacementDurantSejour: yup
     .string()
     .required("Le remplissage de ce champ est obligatoire"),
+  vehiculesAdaptes: yup
+    .boolean()
+    .when(["deplacementDurantSejour", "modeTransport"], {
+      is: (deplacement, mode) =>
+        deplacement ||
+        mode?.includes("Autobus, car") ||
+        mode?.includes("Automobile"),
+      then: (vehicules) => vehicules.required(),
+      otherwise: (vehicules) => vehicules.nullable(),
+    }),
+  precisionVehiculesAdaptes: yup.string().when("vehiculesAdaptes", {
+    is: (val) => val,
+    then: (precision) =>
+      precision
+        .min(5, "Vous devez préciser les spécificités des véhicules")
+        .required(),
+    otherwise: (precision) => precision.nullable(),
+  }),
 };
 
 export default {
