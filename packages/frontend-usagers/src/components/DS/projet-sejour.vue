@@ -1,27 +1,19 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset">
+    <DsfrFieldset>
       <div class="fr-fieldset__element fr-col-12">
-        <div class="fr-input-group">
-          <DsfrCheckboxSet
-            v-model="destination"
-            name="destination"
-            legend="Destination"
-            :disabled="!props.modifiable"
-            :inline="true"
-            :options="projetSejour.destinationOptions"
-            :small="true"
-          />
-        </div>
+        <DsfrCheckboxSet
+          v-model="destination"
+          name="destination"
+          legend="Destination"
+          :disabled="!props.modifiable"
+          :inline="true"
+          :options="projetSejour.destinationOptions"
+          :small="true"
+        />
       </div>
-    </fieldset>
-
-    <DsfrHighlight
-      text="Activités spécifiques proposées"
-      :small="false"
-      :large="true"
-    />
-    <fieldset class="fr-fieldset">
+    </DsfrFieldset>
+    <DsfrFieldset legend="Activités spécifiques proposées">
       <div class="fr-fieldset__element fr-col-12">
         <UtilsMultiSelect
           :options="projetSejour.sportOptions"
@@ -31,8 +23,6 @@
           @update="addActiviteSport"
         ></UtilsMultiSelect>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <UtilsMultiSelect
           :options="projetSejour.cultureOptions"
@@ -42,9 +32,8 @@
           @update="addActiviteCulture"
         ></UtilsMultiSelect>
       </div>
-    </fieldset>
-
-    <fieldset class="fr-fieldset">
+    </DsfrFieldset>
+    <DsfrFieldset>
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
           id="previous-step"
@@ -58,7 +47,7 @@
         >
         <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
       </DsfrButtonGroup>
-    </fieldset>
+    </DsfrFieldset>
   </div>
 </template>
 

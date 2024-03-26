@@ -39,9 +39,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (hasId) {
     log.d(`loading current demande`);
     await demandeStore.setDemandeCourante(to.params.demandeId);
+    log.i("DONE");
   }
 
   if (!hasId && demandeStore.demandeCourante) {
     demandeStore.resetDemandeCourante();
+    log.i("DONE");
   }
 });
