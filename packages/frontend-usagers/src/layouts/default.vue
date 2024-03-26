@@ -62,54 +62,70 @@ function acceptAll() {
 
 <template>
   <div>
-    <DsfrHeader
-      service-title="Vacances Adaptées Organisées (VAO)"
-      service-description="La plateforme de déclaration et de suivi des séjours agréés et organisés pour les personnes handicapées majeures"
-      :home-to="homeTo"
-      :quick-links="header.quickLinks"
-      :show-search="false"
-      :logo-text="header.logoText"
-    >
-      <template #mainnav>
-        <DsfrNavigation
-          :nav-items="navItems"
-          style="box-shadow: inset 0 1px 0 0 #ddd"
-        />
-      </template>
-    </DsfrHeader>
-
-    <main id="content" role="main">
-      <slot />
-    </main>
-
-    <DsfrFooter
-      legal-link="/footer/mentions-legales"
-      personal-data-link="/footer/donnees-personnelles"
-      cookies-link="/footer/gestion-cookies"
-      a11y-compliance-link="/footer/accessibilite"
-    >
-      <template #description>
-        <p class="fr-footer__content-desc">
-          Le site VAO vous permet d’obtenir un agrément et de déclarer un séjour
-          organisé pour les personnes handicapées majeures.
-        </p>
-        <p class="fr-footer__content-desc">
-          Il est édité par la
-          <NuxtLink
-            href="https://www.dila.premier-ministre.gouv.fr/"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+          <DsfrHeader
+            service-title="Vacances Adaptées Organisées (VAO)"
+            service-description="La plateforme de déclaration et de suivi des séjours agréés et organisés pour les personnes handicapées majeures"
+            :home-to="homeTo"
+            :quick-links="header.quickLinks"
+            :show-search="false"
+            :logo-text="header.logoText"
           >
-            Direction Générale de la Cohésion Sociale
-          </NuxtLink>
-          et réalisé en partenariat avec les administrations nationales et
-          locales.
-        </p>
-        <p class="fr-footer__content-desc">
-          Version : {{ config.public.appVersion }}
-        </p>
-      </template>
-    </DsfrFooter>
+            <template #mainnav>
+              <DsfrNavigation
+                :nav-items="navItems"
+                style="box-shadow: inset 0 1px 0 0 #ddd"
+              />
+            </template>
+          </DsfrHeader>
+        </div>
+      </div>
+    </div>
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+          <main id="content" role="main">
+            <slot />
+          </main>
+        </div>
+      </div>
+    </div>
+    <div class="fr-container">
+      <div class="fr-grid-row fr-grid-row--gutters">
+        <div class="fr-col-12">
+          <DsfrFooter
+            legal-link="/footer/mentions-legales"
+            personal-data-link="/footer/donnees-personnelles"
+            cookies-link="/footer/gestion-cookies"
+            a11y-compliance-link="/footer/accessibilite"
+          >
+            <template #description>
+              <p class="fr-footer__content-desc">
+                Le site VAO vous permet d’obtenir un agrément et de déclarer un
+                séjour organisé pour les personnes handicapées majeures.
+              </p>
+              <p class="fr-footer__content-desc">
+                Il est édité par la
+                <NuxtLink
+                  href="https://www.dila.premier-ministre.gouv.fr/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Direction Générale de la Cohésion Sociale
+                </NuxtLink>
+                et réalisé en partenariat avec les administrations nationales et
+                locales.
+              </p>
+              <p class="fr-footer__content-desc">
+                Version : {{ config.public.appVersion }}
+              </p>
+            </template>
+          </DsfrFooter>
+        </div>
+      </div>
+    </div>
     <DsfrNotice
       v-if="!consentCookie"
       title="L'utilisation de cookies est nécessaire au bon fonctionnement de

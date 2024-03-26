@@ -1,106 +1,133 @@
 <template>
-  <div class="fr-container">
-    <div class="fr-grid-row fr-px-3w">
-      <div class="fr-col-3">
-        <DSMenuDemandeSejour
-          :active-id="hash"
-          :demande="demandeCourante"
-        ></DSMenuDemandeSejour>
-      </div>
+  <div>
+    <DsfrBreadcrumb :links="links" />
+    <DsfrTabs
+      tab-list-name="display-formulaire"
+      :tab-titles="tabTitles"
+      :initial-selected-index="initialSelectedIndex"
+      @select-tab="selectTab"
+    >
+      <DsfrTabContent
+        panel-id="tab-content-0"
+        tab-id="tab-0"
+        :selected="selectedTabIndex === 0"
+        :asc="asc"
+      >
+        <div class="fr-container">
+          <div class="fr-grid-row fr-px-3w">
+            <div class="fr-col-3">
+              <DSMenuDemandeSejour
+                :active-id="hash"
+                :demande="demandeCourante"
+              ></DSMenuDemandeSejour>
+            </div>
 
-      <div class="fr-col-9 fr-py-3w">
-        <div class="fr-grid-row">
-          <div class="fr-col">
-            <DsfrBreadcrumb :links="links" />
+            <div class="fr-col-9 fr-py-3w">
+              <DSStepper :step="hash"></DSStepper>
+              <div>
+                <div id="info-generales">
+                  <DSInformationsGenerales
+                    v-if="hash === 'info-generales'"
+                    :init-data="demandeCourante ?? {}"
+                    :modifiable="canModify"
+                    @update="updateOrCreate"
+                    @next="nextHash"
+                  />
+                </div>
+                <div id="info-vacanciers">
+                  <DSInformationsVacanciers
+                    v-if="hash === 'info-vacanciers'"
+                    :init-data="demandeCourante.informationsVacanciers ?? {}"
+                    :modifiable="canModify"
+                    @update="updateOrCreate"
+                    @next="nextHash"
+                    @previous="previousHash"
+                  />
+                </div>
+                <div id="info-transport">
+                  <protocole-transport
+                    v-if="hash === 'info-transport'"
+                    :init-data="demandeCourante.informationsTransport ?? {}"
+                    :modifiable="canModify"
+                    @update="updateOrCreate"
+                    @next="nextHash"
+                    @previous="previousHash"
+                  ></protocole-transport>
+                </div>
+                <div id="info-sanitaires">
+                  <protocole-sanitaire
+                    v-if="hash === 'info-sanitaires'"
+                    :init-data="demandeCourante.informationsSanitaires ?? {}"
+                    :modifiable="canModify"
+                    @update="updateOrCreate"
+                    @next="nextHash"
+                    @previous="previousHash"
+                  ></protocole-sanitaire>
+                </div>
+                <div id="info-personnel">
+                  <DSInformationsPersonnel
+                    v-if="hash === 'info-personnel'"
+                    :modifiable="canModify"
+                    :init-data="demandeCourante.informationsPersonnel ?? {}"
+                    @update="updateOrCreate"
+                    @next="nextHash"
+                    @previous="previousHash"
+                  />
+                </div>
+                <div id="projet-sejour">
+                  <DSProjetSejour
+                    v-if="hash === 'projet-sejour'"
+                    :init-data="demandeCourante.informationsProjetSejour ?? {}"
+                    :modifiable="canModify"
+                    @update="updateOrCreate"
+                    @next="nextHash"
+                    @previous="previousHash"
+                  />
+                </div>
+                <div id="hebergements">
+                  <DSHebergementsSejour
+                    v-if="hash === 'hebergements'"
+                    :date-debut="demandeCourante.dateDebut"
+                    :date-fin="demandeCourante.dateFin"
+                    :hebergement="demandeCourante.hebergement ?? {}"
+                    :modifiable="canModify"
+                    @update="updateOrCreate"
+                    @next="nextHash"
+                    @previous="previousHash"
+                  />
+                </div>
+                <div id="synthese">
+                  <DSSynthese
+                    v-if="hash === 'synthese'"
+                    :declaration-courante="demandeCourante ?? {}"
+                    :modifiable="canModify"
+                    @finalize="finalize"
+                    @next="nextHash"
+                    @previous="previousHash"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+      </DsfrTabContent>
 
-        <DSStepper :step="hash"></DSStepper>
-        <div>
-          <div id="info-generales">
-            <DSInformationsGenerales
-              v-if="hash === 'info-generales'"
-              :init-data="demandeCourante ?? {}"
-              :modifiable="canModify"
-              @update="updateOrCreate"
-              @next="nextHash"
-            />
-          </div>
-          <div id="info-vacanciers">
-            <DSInformationsVacanciers
-              v-if="hash === 'info-vacanciers'"
-              :init-data="demandeCourante.informationsVacanciers ?? {}"
-              :modifiable="canModify"
-              @update="updateOrCreate"
-              @next="nextHash"
-              @previous="previousHash"
-            />
-          </div>
-          <div id="info-transport">
-            <protocole-transport
-              v-if="hash === 'info-transport'"
-              :init-data="demandeCourante.informationsTransport ?? {}"
-              :modifiable="canModify"
-              @update="updateOrCreate"
-              @next="nextHash"
-              @previous="previousHash"
-            ></protocole-transport>
-          </div>
-          <div id="info-sanitaires">
-            <protocole-sanitaire
-              v-if="hash === 'info-sanitaires'"
-              :init-data="demandeCourante.informationsSanitaires ?? {}"
-              :modifiable="canModify"
-              @update="updateOrCreate"
-              @next="nextHash"
-              @previous="previousHash"
-            ></protocole-sanitaire>
-          </div>
-          <div id="info-personnel">
-            <DSInformationsPersonnel
-              v-if="hash === 'info-personnel'"
-              :modifiable="canModify"
-              :init-data="demandeCourante.informationsPersonnel ?? {}"
-              @update="updateOrCreate"
-              @next="nextHash"
-              @previous="previousHash"
-            />
-          </div>
-          <div id="projet-sejour">
-            <DSProjetSejour
-              v-if="hash === 'projet-sejour'"
-              :init-data="demandeCourante.informationsProjetSejour ?? {}"
-              :modifiable="canModify"
-              @update="updateOrCreate"
-              @next="nextHash"
-              @previous="previousHash"
-            />
-          </div>
-          <div id="hebergements">
-            <DSHebergementsSejour
-              v-if="hash === 'hebergements'"
-              :date-debut="demandeCourante.dateDebut"
-              :date-fin="demandeCourante.dateFin"
-              :hebergement="demandeCourante.hebergement ?? {}"
-              :modifiable="canModify"
-              @update="updateOrCreate"
-              @next="nextHash"
-              @previous="previousHash"
-            />
-          </div>
-          <div id="synthese">
-            <DSSynthese
-              v-if="hash === 'synthese'"
-              :declaration-courante="demandeCourante ?? {}"
-              :modifiable="canModify"
-              @finalize="finalize"
-              @next="nextHash"
-              @previous="previousHash"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+      <DsfrTabContent
+        panel-id="tab-content-1"
+        tab-id="tab-1"
+        :selected="selectedTabIndex === 1"
+        :asc="asc"
+      >
+        <DSDisplayPj :declaration="demandeCourante"></DSDisplayPj>
+      </DsfrTabContent>
+      <DsfrTabContent
+        panel-id="tab-content-2"
+        tab-id="tab-2"
+        :selected="selectedTabIndex === 2"
+        :asc="asc"
+      >
+      </DsfrTabContent>
+    </DsfrTabs>
   </div>
 </template>
 
@@ -141,6 +168,21 @@ const demandeSejourStore = useDemandeSejourStore();
 const demandeCourante = computed(() => {
   return demandeSejourStore.demandeCourante;
 });
+
+const initialSelectedIndex = 0;
+
+const asc = ref(true);
+const selectedTabIndex = ref(initialSelectedIndex);
+
+const selectTab = (idx) => {
+  asc.value = selectedTabIndex.value < idx;
+  selectedTabIndex.value = idx;
+};
+const tabTitles = [
+  { title: " Formulaire" },
+  { title: "Documents joints" },
+  { title: "Historique de la déclaration" },
+];
 
 const sommaireOptions = demandeSejourMenus.map((m) => m.id);
 
