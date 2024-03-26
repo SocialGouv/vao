@@ -1,6 +1,5 @@
-const { object } = require("yup");
+const { object, string, array } = require("yup");
 
-const passwordSchema = require("./parts/password");
 const personneSchema = require("./parts/personne");
 
 const schema = () =>
@@ -9,7 +8,8 @@ const schema = () =>
       showEmail: true,
       showFonction: false,
     }),
-    password: passwordSchema(),
+    roles: array().min(1, "Au moins un rôle doit être renseigné").required(),
+    territoire: string().required("Le territoire est obligatoire"),
   });
 
 module.exports = schema;

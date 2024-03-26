@@ -5,47 +5,57 @@ const normalize = require("../utils/normalize");
 const config = require("../config");
 
 const AppError = require("../utils/error");
-const { status } = require("../helpers/users");
 
 const log = logger(module.filename);
 
 const query = {
   activate: `UPDATE back.users
-  SET verified = NOW(),
+  SET validated = true,
   edited_at = NOW()
   WHERE id = $1`,
-  create: `
-    INSERT INTO back.users (
+
+  bindRole: (user, role) => [
+    `INSERT INTO back.user_roles (
+      use_id,
+      rol_id
+    ) SELECT $1, id FROM back.roles WHERE label = $2
+    ;`,
+    [user, role],
+  ],
+  create: (email, nom, prenom, territoire) => [
+    `INSERT INTO back.users (
       mail,
       pwd,
-      blocked,
+      validated,
+      deleted,
       nom,
       prenom,
-      validated
+      ter_code,
+      created_at,
+      enddate
     )
     VALUES (
       $1,
-      crypt($2, gen_salt('bf')),
+      '',
+      false,
+      false,
+      $2,
       $3,
       $4,
-      $5,
-      $6
+      now(),
+      now()
     )
     RETURNING
-      id as id,
-      mail as email,
-      pwd is not null as "hasPwd",
-      nom,
-      prenom,
-      blocked as "isBlocked",
-      validated
-    ;
-    `,
+      id as id
+    ;`,
+    [email, nom, prenom, territoire],
+  ],
   editPassword: (email, password) => [
     `
       UPDATE back.users
       SET
         pwd = crypt($2, gen_salt('bf')),
+        validated = true,
         edited_at = NOW()
       WHERE
         mail = $1
@@ -178,30 +188,43 @@ module.exports.getList = async ({
   };
 };
 
-module.exports.registerByEmail = async ({ email, password, nom, prenom }) => {
+module.exports.registerByEmail = async ({
+  email,
+  nom,
+  prenom,
+  roles,
+  territoire,
+}) => {
   log.i("registerByEmail - IN", { email });
-  let response = await pool.query(...query.select({ mail: normalize(email) }));
+
+  // Test de l'existance d'un compte avec la même adresse mail
+  const response = await pool.query(
+    ...query.select({ mail: normalize(email) }),
+  );
+  log.i("response query.select({ mail:", response);
   if (response.rows.length !== 0) {
     log.i("registerByEmail - DONE - Utilisateur BO déjà existant");
     throw new AppError("Utilisateur déjà existant", {
       name: "UserAlreadyExistsWithFC",
     });
   }
-  log.d("registerByEmail", query.create, [
-    normalize(email),
-    password,
-    status.NEED_EMAIL_VALIDATION,
-  ]);
-  response = await pool.query(query.create, [
-    normalize(email),
-    password,
-    status.NEED_EMAIL_VALIDATION,
-    nom,
-    prenom,
-  ]);
-  log.i("registerByEmail - DONE", { response });
-  log.i({ response });
-  const [user] = response.rows;
+
+  // Création du compte en base de données
+  const userId = await pool.query(
+    ...query.create(email, nom, prenom, territoire),
+  );
+
+  log.i({ userId });
+  const [user] = userId.rows;
+
+  // Création des rôles en base de données
+  roles.forEach((element) => {
+    log.d("element : ", element);
+    pool.query(...query.bindRole(user.id, element));
+  });
+
+  log.i("registerByEmail - DONE", { userId });
+
   return { code: "CreationCompte", user };
 };
 
@@ -231,14 +254,12 @@ module.exports.activate = async (email) => {
   }
   let user = response.rows[0];
   log.d("activate", { user });
-  if (!user.sub && user.statusCode !== status.NEED_EMAIL_VALIDATION) {
+  if (user.valide) {
     throw new AppError("Utilisateur déjà actif", {
       name: "UserAlreadyVerified",
     });
   }
-  if (!user.sub) {
-    await pool.query(...query.editStatus(user.id, status.VALIDATED));
-  }
+  // Activation du compte
   await pool.query(query.activate, [user.id]);
 
   response = await pool.query(...query.select({ mail: normalize(email) }));
