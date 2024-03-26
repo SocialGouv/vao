@@ -13,7 +13,7 @@ router.get(
   "/admin",
   boCheckJWT,
   getDepartements,
-  demandeSejourController.getByAdminId,
+  demandeSejourController.getByDepartementCodes,
 );
 router.get(
   "/admin/:id",

@@ -4,17 +4,13 @@ const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 
-const getHebergementWhereQuery = (hebergementIds) =>
-  hebergementIds
-    .map(
-      (h) => `DS.HEBERGEMENT -> 'hebergements' @> '[{"hebergementId":${h}}]'`,
-    )
-    .join(" OR ");
+const getDepartementWhereQuery = (departementIds) =>
+  `jsonb_path_query_array(hebergement, '$.hebergements[*].coordonnees.adresse.departement') ?| array[${departementIds.map((d) => `'${d}'`).join(", ")}]`;
 
 const query = {
   addFile: `
     UPDATE front.demande_sejour
-      SET files = $2
+    SET files = $2
     WHERE id = $1
     RETURNING id as "declarationId"
   `,
@@ -81,7 +77,6 @@ const query = {
     id_fonctionnelle = $2,
     departement_suivi = $3,
     statut = 'TRANSMISE',
-    
     vacanciers = $4,
     personnel = $5,
     projet_sejour = $6,
@@ -137,7 +132,7 @@ const query = {
     WHERE
       uo.use_id = $1
     `,
-  getByAdminId: (search, hebergementIds) => `
+  getByDepartementCodes: (search, departementCodes) => `
     SELECT
       ds.id as "demandeSejourId",
       ds.created_at as "createdAt",
@@ -150,20 +145,24 @@ const query = {
       o.personne_morale as "personneMorale",
       o.personne_physique as "personnePhysique",
       o.type_organisme as "typeOrganisme",
-      (DS.HEBERGEMENT -> 'hebergements')[0] ->> 'hebergementId' IN ('${hebergementIds.join("','")}') as "estInstructeurPrincipal"
+      ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ('${departementCodes.join("','")}') as "estInstructeurPrincipal"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-    WHERE  (${getHebergementWhereQuery(hebergementIds)})
-       ${search.map((s) => ` AND ${s} `).join("")}
+    WHERE 
+      statut <> 'BROUILLON'
+        AND (${getDepartementWhereQuery(departementCodes)})
+        ${search.map((s) => ` AND ${s} `).join("")}
     `,
-  getByAdminIdTotal: (search, hebergementIds) => `
+  getByDepartementCodesTotal: (search, departementCodes) => `
   SELECT COUNT(DISTINCT ds.id)
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-    WHERE (${getHebergementWhereQuery(hebergementIds)})
+    WHERE 
+      statut <> 'BROUILLON'
+       AND (${getDepartementWhereQuery(departementCodes)})
        ${search.map((s) => ` AND ${s} `).join("")}
     `,
-  getById: (hebergementIds) => `
+  getById: (departementCodes) => `
     SELECT
       ds.id as "demandeSejourId",
       ds.statut as "statut",
@@ -187,13 +186,8 @@ const query = {
       ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-    where (${getHebergementWhereQuery(hebergementIds)}) AND ds.id = $1
-  `,
-  getDepartementByDep: (departement_codes) => `
-  SELECT *
-  FROM FRONT.HEBERGEMENT
-  WHERE
-   (${departement_codes.map((code) => `coordonnees -> 'adresse' ->> 'departement' = '${code}'`).join(" OR ")})
+    where (${getDepartementWhereQuery(departementCodes)}) 
+      AND ds.id = $1
   `,
   getEmailCcList: `
   SELECT u.mail AS mail
@@ -207,7 +201,8 @@ const query = {
   getEmailToList: `
   SELECT u.mail AS mail
   FROM front.users u
-  JOIN front.user_organisme uo ON u.id = uo.use_id
+  JOIN front.user_organisme uo 
+    ON u.id = uo.use_id
   WHERE uo.org_id = $1
   `,
   getNextIndex: `
@@ -425,18 +420,13 @@ module.exports.getOne = async (criterias = {}) => {
   return demandes[0];
 };
 
-module.exports.getByAdminId = async (
+module.exports.getByDepartementCodes = async (
   { limit, offset, sortBy, sortDirection = "ASC", search } = {},
-  departement_codes,
+  departementCodes,
 ) => {
   const searchQuery = [];
 
-  const possibleHebergementsIds =
-    (await pool.query(query.getDepartementByDep(departement_codes)))?.rows?.map(
-      (h) => h.id,
-    ) ?? [];
-
-  if (possibleHebergementsIds.length === 0) {
+  if (departementCodes && departementCodes.length === 0) {
     return {
       demandes_sejour: [],
       total: 0,
@@ -460,19 +450,19 @@ module.exports.getByAdminId = async (
 
   if (search?.estInstructeurPrincipal === true) {
     searchQuery.push(
-      `(DS.HEBERGEMENT -> 'hebergements')[0] ->> 'hebergementId' IN ('${possibleHebergementsIds.join("','")}')`,
+      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ('${departementCodes.join("','")}')`,
     );
   }
 
   if (search?.estInstructeurPrincipal === false) {
     searchQuery.push(
-      `(DS.HEBERGEMENT -> 'hebergements')[0] ->> 'hebergementId' NOT IN ('${possibleHebergementsIds.join("','")}')`,
+      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' NOT IN ('${departementCodes.join("','")}')`,
     );
   }
 
-  let queryWithPagination = query.getByAdminId(
+  let queryWithPagination = query.getByDepartementCodes(
     searchQuery,
-    possibleHebergementsIds,
+    departementCodes,
   );
 
   // Order management
@@ -493,8 +483,16 @@ module.exports.getByAdminId = async (
   }
 
   const response = await pool.query(queryWithPagination);
+
+  if (limit === null || response.rowCount < limit) {
+    return {
+      demandes_sejour: response.rows,
+      total: response.rowCount + (offset ?? 0),
+    };
+  }
+
   const total = await pool.query(
-    query.getByAdminIdTotal(searchQuery, possibleHebergementsIds),
+    query.getByDepartementCodesTotal(searchQuery, departementCodes),
   );
 
   log.d("getByAdminId - DONE");
@@ -504,24 +502,15 @@ module.exports.getByAdminId = async (
   };
 };
 
-module.exports.getById = async (demandeId, departement_codes) => {
+module.exports.getById = async (demandeId, departementCodes) => {
   log.i("getById - IN", { demandeId });
 
-  const possibleHebergementsIds =
-    (await pool.query(query.getDepartementByDep(departement_codes)))?.rows?.map(
-      (h) => h.id,
-    ) ?? [];
-
-  if (possibleHebergementsIds.length === 0) {
-    return {
-      demandes_sejour: [],
-      total: 0,
-    };
+  if (departementCodes && departementCodes.length === 0) {
+    return;
   }
-  const { rows: demande } = await pool.query(
-    query.getById(possibleHebergementsIds),
-    [demandeId],
-  );
+  const { rows: demande } = await pool.query(query.getById(departementCodes), [
+    demandeId,
+  ]);
   log.d("getById - DONE");
   log.d(demande);
   return demande[0];
