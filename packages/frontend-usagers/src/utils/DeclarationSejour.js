@@ -124,7 +124,7 @@ const hebergementSchema = (dateDebut, dateFin) => ({
   sejourEtranger: yup.boolean().when("sejourItinerant", {
     is: (sejourItinerant) => !!sejourItinerant,
     then: (sejourEtranger) => sejourEtranger.required(),
-    otherwise: (sejourEtranger) => sejourEtranger.nullable(),
+    otherwise: (sejourEtranger) => sejourEtranger.nullable().strip(),
   }),
   hebergements: yup
     .array()

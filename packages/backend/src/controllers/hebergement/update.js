@@ -1,6 +1,8 @@
-const Hebergement = require("../../services/Hebergement");
+const yup = require("yup");
 
+const Hebergement = require("../../services/Hebergement");
 const logger = require("../../utils/logger");
+const HebergementSchema = require("../../schemas/hebergement");
 
 const log = logger(module.filename);
 
@@ -26,14 +28,22 @@ module.exports = async function post(req, res) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
   }
-  try {
-    await Hebergement.update(
-      hebergementId,
-      nom,
+
+  const hebergement = await yup.object(HebergementSchema.schema).validate(
+    {
       coordonnees,
       informationsLocaux,
       informationsTransport,
-    );
+      nom,
+    },
+    {
+      stripped: true,
+    },
+  );
+
+  try {
+    await Hebergement.update(hebergementId, hebergement);
+    log.i("DONE");
     return res.sendStatus(200);
   } catch (error) {
     log.w(error);

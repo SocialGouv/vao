@@ -69,7 +69,7 @@ const schema = {
         precision
           .min(5, "Vous devez préciser votre réponse précédente")
           .required(),
-      otherwise: (precision) => precision.nullable(),
+      otherwise: (precision) => precision.nullable().strip(),
     }),
   constitutionEquipe: yup.array(),
   precisionConstitutionEquipe: yup.string().when("constitutionEquipe", {
@@ -78,7 +78,7 @@ const schema = {
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
-    otherwise: (precision) => precision.nullable(),
+    otherwise: (precision) => precision.nullable().strip(),
   }),
   troussePharmacie: yup.boolean().required(),
   responsableAdministrationMedicament: yup.array().required(),
@@ -90,7 +90,7 @@ const schema = {
         precision
           .min(5, "Vous devez préciser votre réponse précédente")
           .required(),
-      otherwise: (precision) => precision.nullable(),
+      otherwise: (precision) => precision.nullable().strip(),
     }),
   stockageMedicamentSecurise: yup.boolean().required(),
   precisionStockageMedicamentSecurise: yup
@@ -101,7 +101,7 @@ const schema = {
         precision
           .min(5, "Vous devez préciser votre réponse précédente")
           .required(),
-      otherwise: (precision) => precision.nullable(),
+      otherwise: (precision) => precision.nullable().strip(),
     }),
   conservationMedicamentThermosensible: yup.boolean().required(),
   precisionConservationMedicament: yup
@@ -112,7 +112,7 @@ const schema = {
         precision
           .min(5, "Vous devez préciser votre réponse précédente")
           .required(),
-      otherwise: (precision) => precision.nullable(),
+      otherwise: (precision) => precision.nullable().strip(),
     }),
   individualisationMedicaments: yup.boolean().required(),
   precisionIndividualisationMedicaments: yup
@@ -123,7 +123,7 @@ const schema = {
         precision
           .min(5, "Vous devez préciser votre réponse précédente")
           .required(),
-      otherwise: (precision) => precision.nullable(),
+      otherwise: (precision) => precision.nullable().strip(),
     }),
   preparationPilluliers: yup.string().required(),
   precisionPreparationPilluliers: yup.string().when("preparationPilluliers", {
@@ -135,7 +135,7 @@ const schema = {
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
-    otherwise: (precision) => precision.nullable(),
+    otherwise: (precision) => precision.nullable().strip(),
   }),
   prescriptionMedicaleJointe: yup.boolean().required(),
   protocoleModificationTraitement: yup.boolean().required(),
@@ -147,7 +147,7 @@ const schema = {
         precision
           .min(5, "Vous devez préciser votre réponse précédente")
           .required(),
-      otherwise: (precision) => precision.nullable(),
+      otherwise: (precision) => precision.nullable().strip(),
     }),
   ficheSuiviMedicaments: yup.string().required(),
   protocoleEvacuation: yup.boolean().required(),
@@ -157,7 +157,7 @@ const schema = {
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
-    otherwise: (precision) => precision.nullable(),
+    otherwise: (precision) => precision.nullable().strip(),
   }),
   protocoleAccident: yup.boolean().required(),
   precisionProtocoleAccident: yup.string().when("protocoleAccident", {
@@ -166,7 +166,7 @@ const schema = {
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
-    otherwise: (precision) => precision.nullable(),
+    otherwise: (precision) => precision.nullable().strip(),
   }),
   protocoleReorientation: yup.boolean().required(),
   precisionProtocoleReorientation: yup.string().when("protocoleReorientation", {
@@ -175,7 +175,7 @@ const schema = {
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
-    otherwise: (precision) => precision.nullable(),
+    otherwise: (precision) => precision.nullable().strip(),
   }),
   //
   protocoleCanicule: yup.boolean().required(),
@@ -185,7 +185,7 @@ const schema = {
       precision
         .min(5, "Vous devez préciser votre réponse précédente")
         .required(),
-    otherwise: (precision) => precision.nullable(),
+    otherwise: (precision) => precision.nullable().strip(),
   }),
   gestionBudgetPersonnel: yup.string().required(),
 };
