@@ -97,7 +97,12 @@ function onClickOnLogo() {
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
-          <DsfrFooter />
+          <DsfrFooter
+            legal-link="/footer/mentions-legales"
+            personal-data-link="/footer/donnees-personnelles"
+            cookies-link="/footer/gestion-cookies"
+            a11y-compliance-link="/footer/accessibilite"
+          />
           <DsfrNotice
             v-if="!consentCookie"
             title="L'utilisation de cookies est nécessaire au bon fonctionnement de
