@@ -9,8 +9,9 @@ const organismeController = require("../controllers/organisme");
 router.get("/", checkJWT, organismeController.getMine);
 router.get("/siret/:siret", checkJWT, organismeController.getBySiret);
 router.get("/siege/:siren", checkJWT, organismeController.getSiege);
-router.get("/:id", checkJWT, organismeController.getByOrganismeId);
-router.post("/:id", checkJWT, organismeController.update);
+router.get("/:organismeId", checkJWT, organismeController.getByOrganismeId);
+router.post("/:organismeId", checkJWT, organismeController.update);
+router.post("/:organismeId/finalize", checkJWT, organismeController.finalize);
 router.post("/", checkJWT, organismeController.post);
 
 module.exports = router;

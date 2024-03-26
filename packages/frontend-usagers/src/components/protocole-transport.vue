@@ -148,7 +148,6 @@ function next() {
     "update",
     {
       ...values,
-      meta: meta.value.valid,
     },
     "protocole_transport",
   );

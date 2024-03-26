@@ -68,6 +68,18 @@ const informationsLocauxSchema = {
   accessibilite: yup
     .string()
     .required("Le choix d'un niveau d'accessibilté est obligatoire"),
+  amenagementsSpecifiques: yup.boolean().required(),
+  chambresDoubles: yup
+    .boolean()
+    .required(
+      "Il est impératif de renseigner si les couples sont dans des chambres séparés",
+    ),
+  chambresUnisexes: yup
+    .boolean()
+    .required("Il est impératif de renseigner si les chambres sont unisexes"),
+  couchageIndividuel: yup
+    .boolean()
+    .required("Il est impératif de renseigner l'individualité des couchages'"),
   descriptionLieuHebergement: yup
     .string()
     .required("Une description du lieu d'hébergement est obligatoire"),
@@ -76,49 +88,20 @@ const informationsLocauxSchema = {
     .required(
       "Il est impératif de renseigner si les lits du dessus seront utilisés",
     ),
-  couchageIndividuel: yup
-    .boolean()
-    .required("Il est impératif de renseigner l'individualité des couchages'"),
   nombreLits: yup
     .number()
     .required("Il est impératif de renseigner le nombre de lits"),
-  chambresUnisexes: yup
-    .boolean()
-    .required("Il est impératif de renseigner si les chambres sont unisexes"),
-  pension: yup
-    .string()
-    .required("Le choix d'un type de pension est obligatoire"),
-  amenagementsSpecifiques: yup.boolean().required(),
-  type: yup
-    .string()
-    .required("Il est impératif de renseigner le type d'hébergement"),
-  chambresDoubles: yup
-    .boolean()
-    .required(
-      "Il est impératif de renseigner si les couples sont dans des chambres séparés",
-    ),
-  visiteLocaux: yup
-    .boolean()
-    .required("Il est impératif de renseigner si vous avez visité les locaux"),
   nombreLitsSuperposes: yup
     .number()
     .required("Il est impératif de renseigner le nombre de lits superposés"),
-  visiteLocauxAt: yup
-    .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
-    .typeError("date invalide")
-    .when("visiteLocaux", {
-      is: (visiteLocaux) => !!visiteLocaux,
-      then: (schema) =>
-        schema.required(
-          "Il est impératif de renseigner la date de votre dernière visite",
-        ),
-      otherwise: (schema) => schema.nullable().strip(),
-    }),
   nombreMaxPersonnesCouchage: yup
     .number()
     .required(
       "Il est impératif de renseigner le nombre de maximal de personnes par espace de couchage",
     ),
+  pension: yup
+    .string()
+    .required("Le choix d'un type de pension est obligatoire"),
   precisionAmenagementsSpecifiques: yup
     .string()
     .when("amenagementsSpecifiques", {
@@ -138,6 +121,23 @@ const informationsLocauxSchema = {
     .required(
       "Il est impératif de renseigner si des rangements individuels sont à disposition",
     ),
+  type: yup
+    .string()
+    .required("Il est impératif de renseigner le type d'hébergement"),
+  visiteLocaux: yup
+    .boolean()
+    .required("Il est impératif de renseigner si vous avez visité les locaux"),
+  visiteLocauxAt: yup
+    .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
+    .typeError("date invalide")
+    .when("visiteLocaux", {
+      is: (visiteLocaux) => !!visiteLocaux,
+      otherwise: (schema) => schema.nullable().strip(),
+      then: (schema) =>
+        schema.required(
+          "Il est impératif de renseigner la date de votre dernière visite",
+        ),
+    }),
 };
 const informationsTransportSchema = {
   deplacementProximite: yup

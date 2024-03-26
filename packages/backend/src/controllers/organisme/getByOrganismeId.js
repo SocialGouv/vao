@@ -6,7 +6,7 @@ const log = logger(module.filename);
 
 module.exports = async function get(req, res) {
   log.i("In");
-  const organismeId = req.params.id;
+  const organismeId = req.params.organismeId;
   const { decoded } = req;
   const { id: userId } = decoded;
   if (!organismeId) {

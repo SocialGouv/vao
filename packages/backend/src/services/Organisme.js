@@ -1,8 +1,19 @@
 /* eslint-disable no-param-reassign */
+const yup = require("yup");
+
+const Regions = require("./geo/Region");
+
+const AppError = require("../utils/error");
+const ValidationAppError = require("../utils/validation-error");
 const logger = require("../utils/logger");
+
 const pool = require("../utils/pgpool").getPool();
 
+const Organisme = require("../schemas/organisme");
+
 const log = logger(module.filename);
+
+let regions, organismeSchema;
 
 const query = {
   create: `
@@ -12,6 +23,36 @@ const query = {
       id as "organismeId"
     ;
 `,
+  finalize: ({
+    organismeId,
+    typeOrganisme,
+    personneMorale,
+    personnePhysique,
+    protocoleSanitaire,
+    protocoleTransport,
+  }) => [
+    `
+  UPDATE front.organismes 
+  SET       
+    type_organisme = $2,
+    personne_morale = $3, 
+    personne_physique = $4,
+    protocole_sanitaire = $5,
+    protocole_transport = $6,
+    complet = true,
+    edited_at = NOW()
+  WHERE 
+    id = $1
+`,
+    [
+      organismeId,
+      typeOrganisme,
+      personneMorale,
+      personnePhysique,
+      protocoleSanitaire,
+      protocoleTransport,
+    ],
+  ],
   get: (criterias) => [
     `
     SELECT
@@ -111,51 +152,31 @@ const query = {
       VALUES($1, $2)
     RETURNING use_id as "userLinked"
 `,
-  update: `
+  updatePersonne: `
     UPDATE front.organismes 
     SET 
       type_organisme = $2,
       personne_morale = $3, 
       personne_physique = $4,
-      complet = (CASE WHEN $5 = true THEN false ELSE complet END)
+      complet = false,
+      edited_at = NOW()
     WHERE id = $1
-    RETURNING
-      id as "updatedOrganismeId"
   `,
-  updateFinalisation: `
-    UPDATE front.organismes 
-    SET complet = true
-    WHERE id = $1
-    RETURNING
-      id as "updatedOrganismeId"
-`,
   updateSanitaire: `
     UPDATE front.organismes 
     SET 
       protocole_sanitaire = $2,
-      complet = (
-        CASE WHEN $3 = true 
-          THEN false 
-          ELSE complet 
-        END
-      )
+      complet = false,
+      edited_at = NOW()
     WHERE id = $1
-    RETURNING 
-      id as "updatedOrganismeId"
 `,
   updateTransport: `
     UPDATE front.organismes 
     SET 
       protocole_transport = $2,
-      complet = (
-        CASE WHEN $3 = true 
-          THEN false 
-          ELSE complet 
-        END
-      )
+      complet = false,
+      edited_at = NOW()
     WHERE id = $1
-    RETURNING
-      id as "updatedOrganismeId"
 `,
 };
 
@@ -180,26 +201,23 @@ module.exports.link = async (userId, organismeId) => {
 
 module.exports.update = async (type, parametre, organismeId) => {
   log.i("update - IN", { type });
-  const isComplete = parametre.meta === true;
   let response;
   switch (type) {
     case "personne_morale": {
-      response = await pool.query(query.update, [
+      response = await pool.query(query.updatePersonne, [
         organismeId,
         type,
         parametre,
         {},
-        isComplete,
       ]);
       break;
     }
     case "personne_physique": {
-      response = await pool.query(query.update, [
+      response = await pool.query(query.updatePersonne, [
         organismeId,
         type,
         {},
         parametre,
-        isComplete,
       ]);
       break;
     }
@@ -207,7 +225,6 @@ module.exports.update = async (type, parametre, organismeId) => {
       response = await pool.query(query.updateTransport, [
         organismeId,
         parametre,
-        isComplete,
       ]);
       break;
     }
@@ -215,45 +232,77 @@ module.exports.update = async (type, parametre, organismeId) => {
       response = await pool.query(query.updateSanitaire, [
         organismeId,
         parametre,
-        isComplete,
       ]);
-      break;
-    }
-    case "synthese": {
-      response = await pool.query(query.updateFinalisation, [organismeId]);
       break;
     }
     default:
       log.d("wrong type");
       return null;
   }
-  const { updatedOrganismeId } = response && response.rows[0];
-  log.d("update - DONE", { updatedOrganismeId });
-  return organismeId;
+  const { rowCount } = response;
+  if (rowCount === 0) {
+    throw new AppError("Organisme non trouvé", {
+      name: "NOT_FOUND",
+      statusCode: 404,
+    });
+  }
+  log.i("update - DONE");
+};
+
+module.exports.finalize = async function (organismeId) {
+  log.i("finalize - IN", { organismeId });
+  if (!regions) {
+    regions = await Regions.fetch();
+  }
+  if (!organismeSchema) {
+    organismeSchema = Organisme.schema(regions);
+  }
+  const criterias = {
+    "o.id": organismeId,
+  };
+  const { rows, rowCount } = await pool.query(...query.get(criterias));
+  if (rowCount !== 1) {
+    throw new AppError("Organisme non trouvé", {
+      name: "NOT_FOUND",
+      statusCode: 404,
+    });
+  }
+  let organisme = rows[0];
+  try {
+    organisme = await yup.object(organismeSchema).validate(organisme, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+    log.d("finalize", { organisme });
+  } catch (error) {
+    throw new ValidationAppError(error);
+  }
+  await pool.query(...query.finalize(organisme));
+  log.i("finalize - DONE");
 };
 
 module.exports.get = async (criterias = {}) => {
   log.i("get - IN", { criterias });
   const { rows: organismes } = await pool.query(...query.get(criterias));
-  log.d("get - DONE");
+  log.i("get - DONE");
   return !organismes || organismes.length === 0 ? [] : organismes[0];
 };
 
 module.exports.getBySiret = async (siret) => {
   log.i(`getBySiret - IN ${siret}`);
   const { rows: organismes } = await pool.query(query.getBySiret, [siret]);
-  log.d("getBySiret - DONE");
+  log.i("getBySiret - DONE");
   return !organismes || organismes.length === 0 ? null : organismes[0];
 };
 
 module.exports.getSiege = async (siret) => {
   log.i("getSiege - IN", { siret });
   const siren = siret.substr(0, 9);
-  log.d("SIREN", siren);
+  log.d("getSiege", { siren });
   const { rowCount, rows: organismes } = await pool.query(query.getSiege, [
     siren,
   ]);
+  log.d("getSiege", { organismes });
   log.i("getSiege - DONE");
-  log.d(organismes);
   return rowCount === 0 ? null : organismes[0];
 };
