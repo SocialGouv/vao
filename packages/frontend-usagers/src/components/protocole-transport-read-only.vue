@@ -9,28 +9,34 @@
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.responsableTransportLieuSejour
+            props.initData.responsableTransportLieuSejour.join(", ")
           }}</span>
         </div>
       </div>
-      <div class="fr-fieldset__element">
-        <div class="fr-col-12">
-          <span class="read-only-label">Modes de transport utilisés</span>
+      <div
+        v-if="
+          props.initData.responsableTransportLieuSejour.includes('organisateur')
+        "
+      >
+        <div class="fr-fieldset__element">
+          <div class="fr-col-12">
+            <span class="read-only-label">Modes de transport utilisés</span>
+          </div>
+          <div class="fr-col-12">
+            <span class="read-only-value">{{
+              props.initData.modeTransport?.join(", ")
+            }}</span>
+          </div>
         </div>
-        <div class="fr-col-12">
-          <span class="read-only-value">{{
-            props.initData.modeTransport?.join()
-          }}</span>
-        </div>
-      </div>
-      <div class="fr-fieldset__element">
-        <div class="fr-col-12">
-          <span class="read-only-label">Mode d’organisation retenu</span>
-        </div>
-        <div class="fr-col-12">
-          <span class="read-only-value">{{
-            props.initData.precisionModeOrganisation
-          }}</span>
+        <div class="fr-fieldset__element">
+          <div class="fr-col-12">
+            <span class="read-only-label">Mode d’organisation retenu</span>
+          </div>
+          <div class="fr-col-12">
+            <span class="read-only-value">{{
+              props.initData.precisionModeOrganisation
+            }}</span>
+          </div>
         </div>
       </div>
       <div class="fr-fieldset__element">
@@ -49,14 +55,44 @@
           }}</span>
         </div>
       </div>
-      <div class="fr-fieldset__element">
+      <div
+        v-if="
+          props.initData.deplacementDurantSejour ||
+          props.initData.modeTransport?.includes('Automobile') ||
+          props.initData.modeTransport?.includes('Autobus, car')
+        "
+        class="fr-fieldset__element"
+      >
         <div class="fr-col-12">
-          <span class="read-only-label">fichiers joints</span>
+          <span class="read-only-label">Véhicules adaptés</span>
         </div>
         <div class="fr-col-12">
           <span class="read-only-value">{{
-            props.initData.files.map((f) => f.name).join(", ")
+            props.initData.vehiculesAdaptes
+              ? "Oui"
+              : props.initData.vehiculesAdaptes === false
+                ? "Non"
+                : ""
           }}</span>
+        </div>
+      </div>
+      <div
+        v-if="
+          props.initData.vehiculesAdaptes &&
+          (props.initData.deplacementDurantSejour ||
+            props.initData.modeTransport?.includes('Automobile') ||
+            props.initData.modeTransport?.includes('Autobus, car'))
+        "
+      >
+        <div class="fr-fieldset__element">
+          <div class="fr-col-12">
+            <span class="read-only-label">Spécificités des véhicules</span>
+          </div>
+          <div class="fr-col-12">
+            <span class="read-only-value">{{
+              props.initData.precisionVehiculesAdaptes
+            }}</span>
+          </div>
         </div>
       </div>
     </fieldset>
