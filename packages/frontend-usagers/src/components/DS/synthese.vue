@@ -188,7 +188,6 @@
             label="Je certifie sur l'honneur que les renseignements portés sur cette déclaration sont exacts."
             :small="true"
             :disabled="!props.modifiable"
-            required
             @update:model-value="onACertifieChange"
           />
         </div>
@@ -197,7 +196,6 @@
           <DsfrInputGroup
             name="attestation.nom"
             label="Nom"
-            :required="true"
             readonly
             :label-visible="true"
             placeholder=""
@@ -209,7 +207,6 @@
           <DsfrInputGroup
             name="attestation.prenom"
             label="Prénom"
-            :required="true"
             readonly
             :label-visible="true"
             placeholder=""
@@ -221,7 +218,6 @@
           <DsfrInputGroup
             name="attestation.qualite"
             label="Qualité"
-            :required="true"
             :readonly="!props.modifiable"
             :label-visible="true"
             placeholder=""
@@ -237,7 +233,6 @@
             name="attestation.at"
             label="Date"
             type="date"
-            :required="true"
             readonly
             :label-visible="true"
             placeholder=""

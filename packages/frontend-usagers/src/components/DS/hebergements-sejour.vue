@@ -7,7 +7,6 @@
             <DsfrRadioButtonSet
               name="sejourItinerant"
               legend="Séjour itinerant"
-              :required="true"
               :disabled="!props.modifiable"
               :model-value="sejourItinerant"
               :options="ouiNonOptions"
@@ -23,7 +22,6 @@
             <DsfrRadioButtonSet
               name="sejourEtranger"
               legend="Séjour à l'étranger"
-              :required="true"
               :readonly="!props.modifiable"
               :model-value="sejourEtranger"
               :options="ouiNonOptions"

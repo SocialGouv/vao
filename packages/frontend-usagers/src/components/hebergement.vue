@@ -4,7 +4,6 @@
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="nom"
-          :required="true"
           label="Nom de l'hébergement"
           :label-visible="true"
           placeholder=""
@@ -17,7 +16,6 @@
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="coordonnees.nomGestionnaire"
-          :required="true"
           label="Nom du gestionnaire"
           :label-visible="true"
           placeholder=""
@@ -59,7 +57,6 @@
           label="Numéro de téléphone 1"
           :label-visible="true"
           :model-value="numTelephone1"
-          :required="true"
           :is-valid="numTelephone1Meta.valid"
           :error-message="numTelephone1ErrorMessage"
           hint="Le numéro de téléphone saisi doit être valide. Exemple : 0612345678"
@@ -73,7 +70,6 @@
           label="Numéro de téléphone 2"
           :label-visible="true"
           :model-value="numTelephone2"
-          :required="false"
           :is-valid="numTelephone2Meta.valid"
           :error-message="numTelephone2ErrorMessage"
           hint="Le numéro de téléphone saisi doit être valide. Exemple : 0612345678"
@@ -87,7 +83,6 @@
           label="Courriel"
           :label-visible="true"
           :model-value="email"
-          :required="false"
           :is-valid="emailMeta.valid"
           :error-message="emailErrorMessage"
           hint="Format attendu : nom@domaine.fr"
@@ -102,7 +97,6 @@
           <DsfrRadioButtonSet
             name="informationsLocaux.type"
             legend="Type du lieu d'hébergement"
-            :required="true"
             :model-value="type"
             :options="hebergementUtils.typeOptions"
             :is-valid="typeMeta"
@@ -119,7 +113,6 @@
           <DsfrRadioButtonSet
             name="informationsLocaux.visiteLocaux"
             legend="Une visite des locaux par l’organisateur a-t-elle été effectuée ?"
-            :required="true"
             :model-value="visiteLocaux"
             :options="ouiNonOptions"
             :is-valid="visiteLocauxMeta.valid"
@@ -136,7 +129,6 @@
           label="Date de la dernière visite "
           :label-visible="true"
           :model-value="visiteLocauxAt"
-          :required="true"
           :is-valid="visiteLocauxAtMeta.valid"
           :error-message="visiteLocauxAtErrorMessage"
           @update:model-value="onVisiteLocauxAtChange"
@@ -147,7 +139,6 @@
           <DsfrRadioButtonSet
             name="informationsLocaux.accessibilite"
             legend="Accessibilité"
-            :required="true"
             :model-value="accessibilite"
             :options="hebergementUtils.accessibiliteOptions"
             :is-valid="accessibiliteMeta.valid"
@@ -162,7 +153,6 @@
           <DsfrRadioButtonSet
             name="informationsLocaux.pension"
             legend="Type de pension"
-            :required="true"
             :model-value="pension"
             :options="hebergementUtils.pensionOptions"
             :is-valid="pensionMeta.valid"
@@ -180,7 +170,6 @@
           :inline="true"
           :options="hebergementUtils.prestationsHotelieresOptions"
           :small="true"
-          :required="true"
           :error-message="prestationsHotelieresErrorMessage"
           @update:model-value="onPrestationsHotelieresChange"
         />
@@ -189,7 +178,6 @@
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="informationsLocaux.descriptionLieuHebergement"
-          :required="false"
           label="Description du lieu d’hébergement (parties communes et notamment équipements sanitaires)"
           :label-visible="true"
           :is-textarea="true"
@@ -205,7 +193,6 @@
         <DsfrInputGroup
           name="informationsLocaux.nombreLits"
           type="number"
-          :required="true"
           label="Nombre de lits dans le lieu d'hébergement"
           :label-visible="true"
           placeholder=""
@@ -219,7 +206,6 @@
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="informationsLocaux.nombreLitsSuperposes"
-          :required="true"
           type="number"
           label="Nombre de lits superposés inclus"
           :label-visible="true"
@@ -239,7 +225,6 @@
           <DsfrRadioButtonSet
             name="informationsLocaux.litsDessus"
             legend="Pour les lits superposés, les lits « du dessus » seront-ils occupés par des vacanciers  ?"
-            :required="true"
             :model-value="litsDessus"
             :options="ouiNonOptions"
             :is-valid="litsDessusMeta.valid"
@@ -255,7 +240,6 @@
           name="informationsLocaux.nombreMaxPersonnesCouchage"
           label="Nombre maximum de personnes prévues par espace de couchage"
           type="number"
-          :required="true"
           :label-visible="true"
           :model-value="nombreMaxPersonnesCouchage"
           :error-message="nombreMaxPersonnesCouchageErrorMessage"
@@ -269,7 +253,6 @@
           <DsfrRadioButtonSet
             name="informationsLocaux.couchageIndividuel"
             legend="Chaque vacancier bénéficie-t-il d’un couchage individuel ?"
-            :required="true"
             :model-value="couchageIndividuel"
             :options="ouiNonOptions"
             :is-valid="couchageIndividuelMeta.valid"
@@ -285,7 +268,6 @@
           <DsfrRadioButtonSet
             name="informationsLocaux.rangementIndividuel"
             legend="Chaque vacancier bénéficie t-il d’un espace de rangement des affaires personnelles ?"
-            :required="true"
             :model-value="rangementIndividuel"
             :options="ouiNonOptions"
             :is-valid="rangementIndividuelMeta.valid"
@@ -301,7 +283,6 @@
           <DsfrRadioButtonSet
             name="informationsLocaux.chambresUnisexes"
             legend="Les femmes et les hommes dorment-ils dans des lieux séparés ?"
-            :required="true"
             :model-value="chambresUnisexes"
             :options="ouiNonOptions"
             :is-valid="chambresUnisexesMeta.valid"
@@ -317,7 +298,6 @@
           <DsfrRadioButtonSet
             name="informationsLocaux.chambresDoubles"
             legend="Les couples de vacanciers bénéficient t-ils de chambres doubles ?"
-            :required="true"
             :model-value="chambresDoubles"
             :options="ouiNonOptions"
             :is-valid="chambresDoublesMeta.valid"
@@ -333,7 +313,6 @@
           <DsfrRadioButtonSet
             name="informationsLocaux.amenagementsSpecifiques"
             legend="Des aménagements spécifiques des locaux sont-ils prévus pour accueillir les vacanciers ?"
-            :required="true"
             :model-value="amenagementsSpecifiques"
             :options="ouiNonOptions"
             :is-valid="amenagementsSpecifiquesMeta.valid"
@@ -352,7 +331,6 @@
           name="informationsLocaux.precisionAmenagementsSpecifiques"
           label="Précisez"
           hint="Redimensionnez le champ pour saisir plus de ligne"
-          :required="true"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""
@@ -370,7 +348,6 @@
           <DsfrRadioButtonSet
             name="informationsVisite.vehiculesAdaptes"
             legend="Les véhicules utilisés sont-ils adaptés ?"
-            :required="true"
             :model-value="vehiculesAdaptes"
             :options="ouiNonOptions"
             :is-valid="vehiculesAdaptesMeta.valid"
@@ -384,7 +361,6 @@
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="informationsVisite.deplacementProximite"
-          :required="true"
           label="Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité"
           :label-visible="true"
           :is-textarea="true"
@@ -399,7 +375,6 @@
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="informationsVisite.excursion"
-          :required="true"
           label="Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions"
           :label-visible="true"
           :is-textarea="true"

@@ -71,7 +71,10 @@ function acceptAll() {
       :logo-text="header.logoText"
     >
       <template #mainnav>
-        <DsfrNavigation :nav-items="navItems" />
+        <DsfrNavigation
+          :nav-items="navItems"
+          style="box-shadow: inset 0 1px 0 0 #ddd"
+        />
       </template>
     </DsfrHeader>
 
@@ -84,8 +87,29 @@ function acceptAll() {
       personal-data-link="/footer/donnees-personnelles"
       cookies-link="/footer/gestion-cookies"
       a11y-compliance-link="/footer/accessibilite"
-      :desc-text="`Version ${config.public.appVersion}`"
-    />
+    >
+      <template #description>
+        <p class="fr-footer__content-desc">
+          Le site VAO vous permet d’obtenir un agrément et de déclarer un séjour
+          organisé pour les personnes handicapées majeures.
+        </p>
+        <p class="fr-footer__content-desc">
+          Il est édité par la
+          <NuxtLink
+            href="https://www.dila.premier-ministre.gouv.fr/"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Direction Générale de la Cohésion Sociale
+          </NuxtLink>
+          et réalisé en partenariat avec les administrations nationales et
+          locales.
+        </p>
+        <p class="fr-footer__content-desc">
+          Version : {{ config.public.appVersion }}
+        </p>
+      </template>
+    </DsfrFooter>
     <DsfrNotice
       v-if="!consentCookie"
       title="L'utilisation de cookies est nécessaire au bon fonctionnement de

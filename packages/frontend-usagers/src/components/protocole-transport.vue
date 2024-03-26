@@ -16,7 +16,6 @@
           <DsfrRadioButtonSet
             name="responsableTransportLieuSejour"
             legend="Qui est responsable du transport jusqu'au lieu de séjour ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="responsableTransportLieuSejour"
             :options="protocoleTransport.responsableTransportLieuSejourOptions"
@@ -33,7 +32,6 @@
             :options="protocoleTransport.transportOptions"
             :values="modeTransport"
             label="Précisez le ou les modes de transport utilisés"
-            :required="true"
             :modifiable="props.modifiable"
             @update="updateModeTransport"
           ></UtilsMultiSelect>
@@ -43,7 +41,6 @@
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="precisionModeOrganisation"
-            :required="true"
             :readonly="!props.modifiable"
             label="Précisez le mode d’organisation retenu (conditions d’accompagnement des vacanciers, gestion des correspondances, lieux de prise en charge, temps d’attente, etc.)"
             :label-visible="true"
@@ -62,7 +59,6 @@
           <DsfrRadioButtonSet
             name="deplacementDurantSejour"
             legend="Des déplacements sont-ils prévus durant le séjour ?"
-            :required="true"
             :disabled="!props.modifiable"
             :model-value="deplacementDurantSejour"
             :options="ouiNonOptions"

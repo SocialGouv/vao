@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container fr-container--fluid fr-mb-md-14v">
-    <DsfrBreadcrumb :links="links" />
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
         <div
@@ -118,23 +117,12 @@
 </template>
 
 <script setup>
-import { useUserStore } from "@/stores/user";
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
 const config = useRuntimeConfig();
 
-const log = logger("pages/connexion/email");
-
-const links = [
-  {
-    to: "/",
-    text: "Accueil",
-  },
-  {
-    text: "Connexion",
-  },
-];
+const log = logger("pages/connexion");
 
 useHead({
   title: "VAO - connexion",
