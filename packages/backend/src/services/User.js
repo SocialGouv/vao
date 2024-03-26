@@ -10,36 +10,38 @@ const { status } = require("../helpers/users");
 const log = logger(module.filename);
 
 const query = {
-  activate: `UPDATE front.users 
-  SET verified = NOW(),
-  edited_at = NOW()
+  activate: `
+  UPDATE front.users 
+  SET 
+    verified = NOW(),
+    edited_at = NOW()
   WHERE id = $1`,
   create: `
-    INSERT INTO front.users (
-      mail, 
-      pwd, 
-      status_code, 
-      nom,
-      prenom,
-      telephone
-    ) 
-    VALUES (
-      $1,
-      crypt($2, gen_salt('bf')),
-      $3,
-      $4,
-      $5,
-      $6
-    )
-    RETURNING
-      id as id,
-      mail as email,
-      pwd is not null as "hasPwd",
-      nom,
-      prenom,
-      status_code as "statusCode"
-    ;
-    `,
+  INSERT INTO front.users (
+    mail, 
+    pwd, 
+    status_code, 
+    nom,
+    prenom,
+    telephone
+  ) 
+  VALUES (
+    $1,
+    crypt($2, gen_salt('bf')),
+    $3,
+    $4,
+    $5,
+    $6
+  )
+  RETURNING
+    id,
+    mail as email,
+    pwd is not null as "hasPwd",
+    nom,
+    prenom,
+    telephone,
+    status_code as "statusCode"
+  ;`,
   editPassword: (email, password) => [
     `
       UPDATE front.users
@@ -63,27 +65,30 @@ const query = {
     [userId, statusCode],
   ],
   login: `
-    SELECT 
-      id as id,
-      mail as email,
-      pwd is not null as "hasPwd",
-      status_code as "statusCode"
-    FROM front.users
-    WHERE 
-      mail = $1
-      AND pwd = crypt($2, pwd)
-      AND deleted is False
-    `,
+  SELECT 
+    id,
+    mail as email,
+    pwd is not null as "hasPwd",
+    nom,
+    prenom,
+    telephone,
+    status_code as "statusCode"
+  FROM front.users
+  WHERE 
+    mail = $1
+    AND pwd = crypt($2, pwd)
+    AND deleted is False
+  `,
   select: (criterias) => [
     `
       SELECT 
-        id as id,
+        id,
         mail as email,
         pwd is not null as "hasPwd",
-        status_code as "statusCode",
-        nom as "nom",
-        prenom as "prenom",
-        telephone as "telephone"
+        nom,
+        prenom,
+        telephone,
+        status_code as "statusCode"
       FROM front.users
       WHERE 1=1 
       ${Object.keys(criterias)

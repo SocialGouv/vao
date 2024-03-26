@@ -94,7 +94,7 @@ fileignoreconfig:
 - filename: packages/backend/src/services/BoUser.js
   checksum: 9d24a422579f39aaf319b76d3d93d94547e6842a72fdb0bc6cc68be229c24ba2
 - filename: packages/backend/src/services/User.js
-  checksum: e9ba85c65e139f1c094047e954a1932d65504b3d23a198c009af236fcbdd7907
+  checksum: 7dcdd52dde0f5a6035a7ebdfc8183700a1d762a5ce54c89160195ec8c68eec14
 - filename: packages/backend/src/services/geo/Commune.js
   checksum: 40213f6529d1282e73f0201199e28b66f9c99c76d16651d88aac0b59fb722ae2
 - filename: packages/backend/src/utils/mail-service.js

@@ -247,13 +247,13 @@ module.exports.getBySiret = async (siret) => {
 };
 
 module.exports.getSiege = async (siret) => {
-  log.i("getSiege - IN", siret);
+  log.i("getSiege - IN", { siret });
   const siren = siret.substr(0, 9);
-  log.w("SIREN", siren);
+  log.d("SIREN", siren);
   const { rowCount, rows: organismes } = await pool.query(query.getSiege, [
     siren,
   ]);
-  log.d("getSiege - DONE");
+  log.i("getSiege - DONE");
   log.d(organismes);
   return rowCount === 0 ? null : organismes[0];
 };
