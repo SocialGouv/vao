@@ -1,7 +1,7 @@
 export default [
   {
     id: "info-generales",
-    text: "Renseignements généraux",
+    text: "Renseignements généraux sur l’organisateur VAO",
     displayForEtabSecondaire: true,
   },
   {
