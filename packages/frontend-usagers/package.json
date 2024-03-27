@@ -20,7 +20,7 @@
     "@vueform/multiselect": "~2.6.6",
     "dayjs": "~1.11.7",
     "debug": "~4.3.4",
-    "nuxt": "~3.10.0",
+    "nuxt": "~3.11.0",
     "oh-vue-icons": "~1.0.0-rc3",
     "pinia": "~2.1.7",
     "vee-validate": "~4.12.5",
