@@ -93,7 +93,7 @@
         <div class="fr-input-group fr-col-8">
           <DsfrRadioButtonSet
             name="adresseIdentique"
-            legend="L'adresse du siège des activités de VAO est elle celle du domicile ?"
+            legend="L'adresse du lieu d’exercice des activités de VAO est-elle celle du domicile ?"
             :model-value="adresseIdentique"
             :options="ouiNonOptions"
             :is-valid="adresseIdentiqueMeta"
@@ -112,8 +112,8 @@
             :error-message="adresseSiegeErrorMessage"
             :label="
               props.initData.adresseSiege
-                ? 'Nouvelle adresse du siège'
-                : 'Adresse du siège'
+                ? 'Nouvelle adresse du lieu d’exercice des activités VAO'
+                : 'Adresse du lieu d’exercice des activités VAO'
             "
             :value="adresseSiege"
             @select="onAdressSiegeChange"

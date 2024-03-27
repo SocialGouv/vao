@@ -73,7 +73,7 @@ const IPersonnePhysique = {
   adresseIdentique: {
     inputType: InputTypes.RADIO,
     label:
-      "L'adresse du siège des activités de VAO est elle celle du domicile ?\n",
+      "L'adresse du lieu d’exercice des activités de VAO est-elle celle du domicile ?\n",
     options: ouiNon,
   },
 };
