@@ -19,7 +19,7 @@
     "@vee-validate/i18n": "~4.12.5",
     "@vee-validate/rules": "~4.12.5",
     "@vueform/multiselect": "~2.6.6",
-    "date-fns": "~3.3.1",
+    "date-fns": "~3.6.0",
     "debug": "~4.3.4",
     "nuxt": "~3.10.0",
     "oh-vue-icons": "~1.0.0-rc3",
