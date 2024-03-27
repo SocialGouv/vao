@@ -77,6 +77,35 @@
       <div class="fr-fieldset__element">
         <div class="fr-col-12">
           <span class="read-only-label"
+            >Accord cabinet médical de proximité</span
+          >
+        </div>
+        <div class="fr-col-12">
+          <span class="read-only-value">{{
+            props.initData.accordCabinetMedical
+              ? " Oui"
+              : props.initData.accordCabinetMedical === false
+                ? "Non"
+                : ""
+          }}</span>
+        </div>
+      </div>
+      <div
+        v-if="props.initData.accordCabinetMedical"
+        class="fr-fieldset__element"
+      >
+        <div class="fr-col-12">
+          <span class="read-only-label">Précision</span>
+        </div>
+        <div class="fr-col-12">
+          <span class="read-only-value">{{
+            props.initData.precisionAccordCabinetMedical
+          }}</span>
+        </div>
+      </div>
+      <div class="fr-fieldset__element">
+        <div class="fr-col-12">
+          <span class="read-only-label"
             >Personne en charge des médicaments
           </span>
         </div>

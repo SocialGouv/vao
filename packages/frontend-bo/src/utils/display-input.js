@@ -213,6 +213,16 @@ const ISanitaire = {
     label: "Présence d’une trousse à pharmacie de premier secours ?",
     options: ouiNon,
   },
+  accordCabinetMedical: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Un accord est-il passé avec un cabinet médical ou paramédical à proximité des lieux de séjour ?",
+    options: ouiNon,
+  },
+  precisionAccordCabinetMedical: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
   responsableAdministrationMedicament: {
     inputType: InputTypes.MULTISELECT,
     label:

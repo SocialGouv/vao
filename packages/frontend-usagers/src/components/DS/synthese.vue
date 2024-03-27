@@ -332,46 +332,46 @@ const failure = {
 const informationsGenerales = success;
 
 const informationsVacanciers = computed(() =>
-  !Object.keys(errors.value).find((k) => k.includes("informationsVacanciers"))
+  !Object.keys(errors.value).find((k) => k.startsWith("informationsVacanciers"))
     ? success
     : failure,
 );
 
 const informationsPersonnel = computed(() =>
-  !Object.keys(errors.value).find((k) => k.includes("informationsPersonnel"))
+  !Object.keys(errors.value).find((k) => k.startsWith("informationsPersonnel"))
     ? success
     : failure,
 );
 
 const informationsTransport = computed(() =>
-  !Object.keys(errors.value).find((k) => k.includes("informationsTransport"))
+  !Object.keys(errors.value).find((k) => k.startsWith("informationsTransport"))
     ? success
     : failure,
 );
 
 const informationsSanitaires = computed(() =>
-  !Object.keys(errors.value).find((k) => k.includes("informationsSanitaires"))
+  !Object.keys(errors.value).find((k) => k.startsWith("informationsSanitaires"))
     ? success
     : failure,
 );
 const projetSejour = computed(() =>
-  !Object.keys(errors.value).find((k) => k.includes("projetSejour"))
+  !Object.keys(errors.value).find((k) => k.startsWith("projetSejour"))
     ? success
     : failure,
 );
 const hebergement = computed(() =>
-  !Object.keys(errors.value).find((k) => k.includes("hebergement"))
+  !Object.keys(errors.value).find((k) => k.startsWith("hebergement"))
     ? success
     : failure,
 );
 
 const showAttestation = computed(
-  () => !Object.keys(errors.value).find((k) => !k.includes("attestation")),
+  () => !Object.keys(errors.value).find((k) => !k.startsWith("attestation")),
 );
 
 function validateHebergement(index) {
   return !Object.keys(errors.value).find((k) =>
-    k.includes("hebergement.hebergements[" + index + "]"),
+    k.startsWith("hebergement.hebergements[" + index + "]"),
   )
     ? success
     : failure;

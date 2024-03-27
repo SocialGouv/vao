@@ -1,13 +1,20 @@
 const yup = require("yup");
 
 const schema = {
+  accordCabinetMedical: yup.boolean().required(),
   conservationMedicamentThermosensible: yup.boolean().required(),
   constitutionEquipe: yup.array(),
   dispositionsSpecifiques: yup.boolean().required(),
-  ficheSuiviMedicaments: yup.string().required(),
+  ficheSuiviMedicaments: yup.boolean().required(),
   files: yup.array(),
   gestionBudgetPersonnel: yup.string().required(),
   individualisationMedicaments: yup.boolean().required(),
+  precisionAccordCabinetMedical: yup.string().when("accordCabinetMedical", {
+    is: (accordCabinetMedical) => !!accordCabinetMedical,
+    otherwise: (schema) => schema.nullable().strip(),
+    then: (schema) =>
+      schema.min(5, "Vous devez préciser votre réponse précédente").required(),
+  }),
   precisionConservationMedicament: yup
     .string()
     .when("conservationMedicamentThermosensible", {
