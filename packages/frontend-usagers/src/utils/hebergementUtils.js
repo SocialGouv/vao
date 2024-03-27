@@ -80,7 +80,7 @@ const informationsLocauxSchema = {
         schema.required(
           "Il est impératif de renseigner la date de votre dernière visite",
         ),
-      otherwise: (schema) => schema.nullable(),
+      otherwise: (schema) => schema.nullable().strip(),
     }),
   accessibilite: yup
     .string()
@@ -136,7 +136,7 @@ const informationsLocauxSchema = {
             "Il est impératif de préciser ce que les aménagements ont de spécifiques",
           )
           .required(),
-      otherwise: (schema) => schema.nullable(),
+      otherwise: (schema) => schema.nullable().strip(),
     }),
 };
 const informationsTransportSchema = {

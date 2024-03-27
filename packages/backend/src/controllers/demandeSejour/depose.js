@@ -1,12 +1,17 @@
 const dayjs = require("dayjs");
+const yup = require("yup");
+
 const DemandeSejour = require("../../services/DemandeSejour");
 const Hebergement = require("../../services/Hebergement");
 const Send = require("../../services/mail").mailService.send;
-const MailUtils = require("../../utils/mail");
 const PdfDeclaration2Mois = require("../../services/pdf/declaration2mois/generate");
 const PdfARDeclaration2Mois = require("../../services/pdf/ARdeclaration2mois/generate");
 
+const DeclarationSejourSchema = require("../../schemas/declaration-sejour");
+
+const MailUtils = require("../../utils/mail");
 const logger = require("../../utils/logger");
+const ValidationAppError = require("../../utils/validation-error");
 
 const log = logger(module.filename);
 
@@ -26,92 +31,95 @@ module.exports = async function post(req, res) {
     return res.status(400).json({ message: "paramètre manquant." });
   }
 
-  let declaration,
-    declarationId,
+  let declaration, declarationId, DSuuid, ARuuid;
+
+  declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
+
+  if (!declaration) {
+    log.w("error while getting current declaration");
+    return res.status(400).json({
+      message:
+        "Une erreur est survenue durant la transmission de la declaration",
+    });
+  }
+
+  const { dateDebut, dateFin } = declaration;
+  Object.assign(declaration, { attestation });
+
+  try {
+    log.d("finalize - before validation", { declaration });
+    declaration = await yup
+      .object(DeclarationSejourSchema(dateDebut, dateFin))
+      .validate(declaration, {
+        abortEarly: false,
+        stripUnknown: true,
+      });
+
+    log.d("finalize - after validation", { declaration });
+
+    declaration.attestation.at = dayjs(declaration.attestation.at).format(
+      "YYYY-MM-DD",
+    );
+    declaration.dateDebut = dayjs(declaration.dateDebut).format("YYYY-MM-DD");
+    declaration.dateFin = dayjs(declaration.dateFin).format("YYYY-MM-DD");
+  } catch (error) {
+    throw new ValidationAppError(error);
+  }
+
+  const firstHebergementId =
+    declaration.hebergement.hebergements[0].hebergementId;
+
+  const hebergement = await Hebergement.getOne({ id: firstHebergementId });
+  if (!hebergement) {
+    log.w("error while getting first hebergement");
+    return res.status(400).json({
+      message:
+        "Une erreur est survenue durant la transmission de la declaration",
+    });
+  }
+  const departementSuivi = hebergement.coordonnees.adresse.departement;
+
+  if (!departementSuivi) {
+    log.w("error while getting departement");
+    return res.status(400).json({
+      message:
+        "Une erreur est survenue durant la transmission de la declaration",
+    });
+  }
+  const numSeq = await DemandeSejour.getNextIndex();
+  if (!numSeq) {
+    log.w("error while getting next DS sequence value");
+    return res.status(400).json({
+      message:
+        "Une erreur est survenue durant la transmission de la declaration",
+    });
+  }
+
+  const currentYear = dayjs(declaration.dateDebut).format("YY");
+  const idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
+
+  await DemandeSejour.finalize(
+    demandeSejourId,
     departementSuivi,
     idFonctionnelle,
-    DSuuid,
-    ARuuid;
+    declaration,
+  );
+
+  declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
+
+  const eventId = await DemandeSejour.insertEvent(
+    "organisme",
+    demandeSejourId,
+    userId,
+    "declaration_sejour",
+    "depose à 2 mois",
+    declaration,
+  );
+  if (!eventId) {
+    log.w("error while inserting event");
+  }
+
   try {
-    declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
-    if (!declaration) {
-      log.w("error while getting current declaration");
-      return res.status(400).json({
-        message:
-          "Une erreur est survenue durant la transmission de la declaration",
-      });
-    }
-
-    // TODO verif schema DS
-
-    const firstHebergementId =
-      declaration.hebergement?.hebergements[0]?.hebergementId;
-    if (!firstHebergementId) {
-      log.w("error while getting first hebergementId");
-      return res.status(400).json({
-        message:
-          "Une erreur est survenue durant la transmission de la declaration",
-      });
-    }
-    const hebergement = await Hebergement.getOne({ id: firstHebergementId });
-    if (!hebergement) {
-      log.w("error while getting first hebergement");
-      return res.status(400).json({
-        message:
-          "Une erreur est survenue durant la transmission de la declaration",
-      });
-    }
-    departementSuivi = hebergement?.coordonnees?.adresse?.departement;
-    if (!departementSuivi) {
-      log.w("error while getting departement");
-      return res.status(400).json({
-        message:
-          "Une erreur est survenue durant la transmission de la declaration",
-      });
-    }
-    const numSeq = await DemandeSejour.getNextIndex();
-    if (!numSeq) {
-      log.w("error while getting next DS sequence value");
-      return res.status(400).json({
-        message:
-          "Une erreur est survenue durant la transmission de la declaration",
-      });
-    }
-    const currentYear = dayjs(declaration.dateDebut).format("YY");
-    idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
-
-    declarationId = await DemandeSejour.update(
-      "finalisation",
-      demandeSejourId,
-      {
-        attestation,
-        departementSuivi,
-        idFonctionnelle,
-      },
-    );
-
-    if (!declarationId) {
-      log.w("update query returned null, declarationId expected");
-      return res.status(400).json({
-        message:
-          "une erreur est survenue durant la sauvegarde de la déclaration",
-      });
-    }
-
-    declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
-
-    const eventId = await DemandeSejour.insertEvent(
-      "organisme",
-      declarationId,
-      userId,
-      "declaration_sejour",
-      "depose à 2 mois",
-      declaration,
-    );
-    if (!eventId) {
-      log.w("error while inserting event");
-    }
-
     const destinataires = await DemandeSejour.getEmailToList(
       declaration.organismeId,
     );
@@ -130,8 +138,7 @@ module.exports = async function post(req, res) {
   } catch (error) {
     log.w(error);
     return res.status(400).json({
-      message:
-        "Une erreur est survenue durant la mise à jour de la déclaration",
+      message: "Une erreur est survenue lors de l'envoi de mails",
     });
   }
   try {

@@ -223,7 +223,6 @@ function next() {
     "update",
     {
       ...values,
-      meta: meta.value.valid,
     },
     "personne_physique",
   );

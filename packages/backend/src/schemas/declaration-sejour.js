@@ -1,17 +1,18 @@
-import * as yup from "yup";
-import dayjs from "dayjs";
-import { logger } from "#imports";
+const yup = require("yup");
+const dayjs = require("dayjs");
 
-import informationsVacanciers from "./informationsVacanciers";
-import protocoleTransport from "./protocoleTransport";
-import protocoleSanitaire from "./protocoleSanitaire";
-import projetSejour from "./projetSejour";
-import hebergementUtils from "./hebergementUtils";
+const logger = require("../utils/logger");
 
-const log = logger("utils/DeclarationSejour");
+const informationsVacanciersSchema = require("./parts/informations-vacanciers");
+const projetSejourSchema = require("./parts/projet-sejour");
+const protocoleTransportSchema = require("./parts/protocoleTransport");
+const protocoleSanitaireSchema = require("./parts/protocoleSanitaire");
+const hebergementUtils = require("./hebergement");
+
+const log = logger(module.filename);
 
 function isSejourComplet(hebergements, dateDebut, dateFin) {
-  log.d("isSejourComplet - IN", { hebergements, dateDebut, dateFin });
+  log.d("isSejourComplet - IN", { dateDebut, dateFin, hebergements });
   if (hebergements.length === 0) {
     return false;
   }
@@ -35,7 +36,6 @@ function isSejourComplet(hebergements, dateDebut, dateFin) {
 }
 
 const baseSchema = {
-  libelle: yup.string().typeError("le libellé est requis").required(),
   dateDebut: yup
     .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
     .typeError("date invalide")
@@ -46,24 +46,30 @@ const baseSchema = {
     .typeError("date invalide")
     .when("dateDebut", (dateDebut, schema) => {
       return schema.test({
-        test: (dateFin) => !!dateDebut && dayjs(dateFin) > dayjs(dateDebut),
         message: "La date de fin doit être supérieure à la date de début",
+        test: (dateFin) => !!dateDebut && dayjs(dateFin) > dayjs(dateDebut),
       });
     })
     .required("La saisie de ce champ est obligatoire"),
+  libelle: yup.string().typeError("le libellé est requis").required(),
   responsableSejour: yup
     .object({
+      adresse: yup.object().required(),
+      email: yup.string().required(),
+      fonction: yup.string().required(),
       nom: yup.string().required(),
       prenom: yup.string().required(),
-      fonction: yup.string().required(),
-      adresse: yup.object().required(),
       telephone: yup.string().required(),
-      email: yup.string().required(),
     })
     .required(),
 };
 
 const informationsPersonnelSchema = {
+  nombreAccompagnant: yup
+    .number("Ce champ doit contenir un nombre entier")
+    .integer("Ce champ doit contenir un nombre entier")
+    .typeError("Ce champ doit contenir un nombre entier")
+    .required("Ce champ doit contenir un nombre entier"),
   nombreResponsable: yup
     .number("Ce champ doit contenir un nombre entier")
     .integer("Ce champ doit contenir un nombre entier")
@@ -72,20 +78,15 @@ const informationsPersonnelSchema = {
   procedureRecrutementSupplementaire: yup
     .bool("La saisie de ce champ est obligatoire")
     .required("La saisie de ce champ est obligatoire"),
-  nombreAccompagnant: yup
-    .number("Ce champ doit contenir un nombre entier")
-    .integer("Ce champ doit contenir un nombre entier")
-    .typeError("Ce champ doit contenir un nombre entier")
-    .required("Ce champ doit contenir un nombre entier"),
 };
 
 const hebergementDetailsSchema = {
+  coordonnees: yup.object(hebergementUtils.coordonneesSchema),
   dateDebut: yup.date().required(),
   dateFin: yup.date().required(),
   hebergementId: yup
     .number()
     .required("le choix d'un hébergement dans la liste est obligatoire"),
-  coordonnees: yup.object(hebergementUtils.coordonneesSchema),
   informationsLocaux: yup.object({
     ...hebergementUtils.informationsLocauxSchema,
     justificatifERP: yup.mixed().required(),
@@ -107,6 +108,7 @@ const attestationSchema = {
     .boolean()
     .oneOf([true], "Vous devez certifier de ces informations")
     .required(),
+  at: yup.date().required(),
   nom: yup.string().min(1, "Il est impératif de préciser votre nom").required(),
   prenom: yup
     .string()
@@ -116,16 +118,9 @@ const attestationSchema = {
     .string()
     .min(1, "Il est impératif de préciser votre qualité")
     .required(),
-  at: yup.date().required(),
 };
 
 const hebergementSchema = (dateDebut, dateFin) => ({
-  sejourItinerant: yup.boolean().required(),
-  sejourEtranger: yup.boolean().when("sejourItinerant", {
-    is: (sejourItinerant) => !!sejourItinerant,
-    then: (sejourEtranger) => sejourEtranger.required(),
-    otherwise: (sejourEtranger) => sejourEtranger.nullable().strip(),
-  }),
   hebergements: yup
     .array()
     .of(yup.object(hebergementDetailsSchema))
@@ -135,24 +130,23 @@ const hebergementSchema = (dateDebut, dateFin) => ({
       (hebergements) => isSejourComplet(hebergements, dateDebut, dateFin),
     )
     .required("le choix d'un hébergement dans la liste est obligatoire"),
+  sejourEtranger: yup.boolean().when("sejourItinerant", {
+    is: (sejourItinerant) => !!sejourItinerant,
+    otherwise: (sejourEtranger) => sejourEtranger.nullable().strip(),
+    then: (sejourEtranger) => sejourEtranger.required(),
+  }),
+  sejourItinerant: yup.boolean().required(),
 });
 
 const schema = (dateDebut, dateFin) => ({
   ...baseSchema,
-  informationsVacanciers: yup.object(informationsVacanciers.schema),
-  informationsPersonnel: yup.object(informationsPersonnelSchema),
-  informationsTransport: yup.object(protocoleTransport.schema),
-  informationsSanitaires: yup.object(protocoleSanitaire.schema),
-  informationsProjetSejour: yup.object(projetSejour.schema),
-  hebergement: yup.object(hebergementSchema(dateDebut, dateFin)),
   attestation: yup.object(attestationSchema),
+  hebergement: yup.object(hebergementSchema(dateDebut, dateFin)),
+  informationsPersonnel: yup.object(informationsPersonnelSchema),
+  informationsProjetSejour: yup.object(projetSejourSchema),
+  informationsSanitaires: yup.object(protocoleSanitaireSchema),
+  informationsTransport: yup.object(protocoleTransportSchema),
+  informationsVacanciers: yup.object(informationsVacanciersSchema),
 });
 
-export default {
-  isSejourComplet,
-  baseSchema,
-  informationsPersonnelSchema,
-  hebergementDetailsSchema,
-  hebergementSchema,
-  schema,
-};
+module.exports = schema;

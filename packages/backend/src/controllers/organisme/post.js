@@ -9,7 +9,6 @@ module.exports = async function post(req, res) {
   const { decoded, body } = req;
   const userId = decoded.id;
   const { type, parametre } = body;
-
   if (!type || !parametre) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
@@ -22,7 +21,7 @@ module.exports = async function post(req, res) {
       organismeId = organisme ? organisme.organismeId : null;
     }
     if (!organismeId) {
-      log.d("organisme inexistant, a créer");
+      log.d("organisme inexistant, à créer");
       organismeId = await Organisme.create(type, parametre);
     }
 
@@ -40,7 +39,7 @@ module.exports = async function post(req, res) {
   } catch (error) {
     log.w(error);
     return res.status(400).json({
-      messagee: "Une erreur est survenue durant l'ajout de l'organisme",
+      message: "Une erreur est survenue durant l'ajout de l'organisme",
     });
   }
 };

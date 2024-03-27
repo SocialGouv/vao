@@ -73,46 +73,38 @@ const query = {
 
 module.exports.create = async (
   userId,
-  nom,
-  coordonnees,
-  informationsLocaux,
-  informationsTransport,
+  { nom, coordonnees, informationsLocaux, informationsTransport },
 ) => {
   log.i("create - IN");
-  const response = await pool.query(query.create, [
+  const {
+    rows: [{ id }],
+  } = await pool.query(query.create, [
     userId,
     nom,
     coordonnees,
     informationsLocaux,
     informationsTransport,
   ]);
-  if (response) {
-    log.i(response);
-    const { id } = response.rows[0];
-    log.d("create - DONE", { id });
-    return id;
-  }
-  return false;
+  log.d("create - DONE", { id });
+  return id;
 };
 
 module.exports.update = async (
-  id,
-  nom,
-  coordonnees,
-  informationsLocaux,
-  informationsTransport,
+  hebergementId,
+  { nom, coordonnees, informationsLocaux, informationsTransport },
 ) => {
-  log.i("create - IN");
+  log.i("update - IN");
   const { rowCount } = await pool.query(query.update, [
-    id,
+    hebergementId,
     nom,
     coordonnees,
     informationsLocaux,
     informationsTransport,
   ]);
   if (rowCount === 0) {
-    throw new AppError("hebergement " + id + " not found");
+    throw new AppError("hebergement " + hebergementId + " not found");
   }
+  log.i("update - DONE");
 };
 
 module.exports.get = async (userId) => {

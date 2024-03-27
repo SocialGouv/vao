@@ -740,7 +740,7 @@ function valid() {
   if (!meta.value.dirty) {
     return emit("next");
   }
-  emit("update", { ...values, meta: meta.value.valid }, "protocole_sanitaire");
+  emit("update", { ...values }, "protocole_sanitaire");
 }
 </script>
 

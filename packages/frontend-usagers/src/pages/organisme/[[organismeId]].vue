@@ -223,6 +223,9 @@ async function updateOrCreate(organismeData, type) {
     return nextHash();
   } catch (error) {
     log.w("Creation/modification d'organisme : ", { error });
+    toaster.error(
+      "Une erreur est survenue lors de la sauvegarde de la fiche organisme",
+    );
   }
 }
 
@@ -278,21 +281,21 @@ async function updateOrCreateAgrement(agrementData, type) {
 async function finalizeOrganisme() {
   log.i("finalizeOrganisme - IN");
   try {
-    const url = `/organisme/${organismeStore.organismeCourant.organismeId}`;
-    const data = await $fetchBackend(url, {
+    const url = `/organisme/${organismeStore.organismeCourant.organismeId}/finalize`;
+    await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
-      body: {
-        parametre: {},
-        type: "synthese",
-      },
     });
-    const organismeId = data.organismeId;
-    log.d(`organisateur ${organismeId} finalisé`);
+    log.d(
+      `organisateur ${organismeStore.organismeCourant.organismeId} finalisé`,
+    );
     toaster.success("Fiche organisateur finalisée");
     return navigateTo("/");
   } catch (error) {
     log.w("Creation/modification d'organisateur : ", { error });
+    toaster.error(
+      "Une erreur est survenue lors de la finalisation de la fiche organisme",
+    );
   }
 }
 </script>

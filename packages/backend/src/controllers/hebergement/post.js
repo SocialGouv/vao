@@ -1,5 +1,6 @@
+const yup = require("yup");
 const Hebergement = require("../../services/Hebergement");
-
+const HebergementSchema = require("../../schemas/hebergement");
 const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
@@ -18,13 +19,19 @@ module.exports = async function post(req, res) {
   }
 
   try {
-    const id = await Hebergement.create(
-      userId,
-      nom,
-      coordonnees,
-      informationsLocaux,
-      informationsTransport,
+    const hebergement = await yup.object(HebergementSchema.schema).validate(
+      {
+        coordonnees,
+        informationsLocaux,
+        informationsTransport,
+        nom,
+      },
+      {
+        stripped: true,
+      },
     );
+
+    const id = await Hebergement.create(userId, hebergement);
     if (!id) {
       log.w("error while creating hebergement");
       return res.status(400).json({

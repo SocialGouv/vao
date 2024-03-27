@@ -67,6 +67,12 @@ const query = {
     demandeSejourId,
     idFonctionnelle,
     departementSuivi,
+    vacanciers,
+    personnel,
+    projetSejour,
+    transport,
+    sanitaires,
+    hebergement,
     attestation,
   ) => [
     `
@@ -74,15 +80,34 @@ const query = {
   SET
     id_fonctionnelle = $2,
     departement_suivi = $3,
-    attestation = $4,
     statut = 'TRANSMISE',
+    
+    vacanciers = $4,
+    personnel = $5,
+    projet_sejour = $6,
+    transport = $7,
+    sanitaires = $8,
+    hebergement = $9,
+    attestation = $10,
+
     edited_at = NOW()
   WHERE
     ds.id = $1
   RETURNING
     id as "demandeId"
   ;`,
-    [demandeSejourId, idFonctionnelle, departementSuivi, attestation],
+    [
+      demandeSejourId,
+      idFonctionnelle,
+      departementSuivi,
+      vacanciers,
+      personnel,
+      projetSejour,
+      transport,
+      sanitaires,
+      hebergement,
+      attestation,
+    ],
   ],
   get: `
     SELECT
@@ -389,10 +414,15 @@ module.exports.get = async (userId) => {
 
 module.exports.getOne = async (criterias = {}) => {
   log.i("getOne - IN", { criterias });
-  const { rows: demandes } = await pool.query(...query.getOne(criterias));
-  log.d("getOne - DONE");
-  log.d(demandes[0]);
-  return demandes[0] ?? [];
+  const { rows: demandes, rowCount } = await pool.query(
+    ...query.getOne(criterias),
+  );
+  if (rowCount === 0) {
+    log.i("getOne - DONE");
+    return null;
+  }
+  log.i("getOne - DONE");
+  return demandes[0];
 };
 
 module.exports.getByAdminId = async (
@@ -581,19 +611,6 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       ]);
       break;
     }
-    case "finalisation": {
-      log.d("finalisation", demandeSejourId);
-      log.i(parametre);
-      response = await pool.query(
-        ...query.finalize(
-          demandeSejourId,
-          parametre.idFonctionnelle,
-          parametre.departementSuivi,
-          parametre.attestation,
-        ),
-      );
-      break;
-    }
     default:
       log.d("wrong type");
       return null;
@@ -601,6 +618,52 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
   log.d("update - DONE");
   const demandeId = response.rows[0].demandeId ?? null;
   return demandeId;
+};
+
+module.exports.finalize = async (
+  demandeSejourId,
+  departementSuivi,
+  idFonctionnelle,
+  {
+    informationsVacanciers,
+    informationsPersonnel,
+    informationsProjetSejour,
+    informationsTransport,
+    informationsSanitaires,
+    hebergement,
+    attestation,
+  },
+) => {
+  log.i("finalize - IN", {
+    declaration: {
+      attestation,
+      hebergement,
+      informationsPersonnel,
+      informationsProjetSejour,
+      informationsSanitaires,
+      informationsTransport,
+      informationsVacanciers,
+    },
+    demandeSejourId,
+    departementSuivi,
+    idFonctionnelle,
+  });
+
+  await pool.query(
+    ...query.finalize(
+      demandeSejourId,
+      idFonctionnelle,
+      departementSuivi,
+      informationsVacanciers,
+      informationsPersonnel,
+      informationsProjetSejour,
+      informationsTransport,
+      informationsSanitaires,
+      hebergement,
+      attestation,
+    ),
+  );
+  log.i("finalize - DONE");
 };
 
 module.exports.getNextIndex = async () => {
