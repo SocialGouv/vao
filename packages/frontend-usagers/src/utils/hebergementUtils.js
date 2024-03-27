@@ -84,7 +84,15 @@ const informationsLocauxSchema = {
   accessibilite: yup
     .string()
     .required("Le choix d'un niveau d'accessibilté est obligatoire"),
-  accessibilitePrecision: yup.string().nullable(),
+  accessibilitePrecision: yup
+    .string()
+    .nullable()
+    .when("accessibilite", {
+      is: (accessibilite) => {
+        return accessibilite !== "commentaires";
+      },
+      then: (schema) => schema.strip(),
+    }),
   pension: yup
     .string()
     .required("Le choix d'un type de pension est obligatoire"),

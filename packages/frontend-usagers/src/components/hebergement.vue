@@ -150,7 +150,7 @@
       </div>
       <div
         v-if="accessibilite === 'commentaires'"
-        class="fr-fieldset__element fr-col-6"
+        class="fr-fieldset__element fr-col-12"
       >
         <DsfrInputGroup
           name="informationsLocaux.accessibilitePrecision"
