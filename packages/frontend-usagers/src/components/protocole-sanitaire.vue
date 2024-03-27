@@ -1,15 +1,5 @@
 <template>
   <div>
-    <DsfrFieldset
-      legend="Téléversement des pièces justificatives concernant les protocoles de santé"
-    >
-      <UtilsMultiFilesUpload
-        v-model="files"
-        label="Merci de joindre les documents requis pour les informations sanitaires"
-        hint="Taille maximale : 5 Mo."
-        :modifiable="props.modifiable"
-      />
-    </DsfrFieldset>
     <DsfrFieldset legend="Modalités d’ordre sanitaire ">
       <DsfrHighlight
         text="L’acte d’administration proprement dit consiste à faire prendre le bon médicament au bon patient, à la bonne posologie, au bon moment, par la bonne voie. Cet acte inclut le contrôle de la prise effective du traitement. Il est recommandé que la distribution des médicaments préalablement préparés, leur administration et son enregistrement soient réalisés par la même personne."
@@ -492,6 +482,16 @@
         </div>
       </div>
     </DsfrFieldset>
+    <DsfrFieldset
+      legend="Téléversement des pièces justificatives concernant les protocoles de santé"
+    >
+      <UtilsMultiFilesUpload
+        v-model="files"
+        label="Merci de joindre les documents requis pour les informations sanitaires"
+        hint="Taille maximale : 5 Mo."
+        :modifiable="props.modifiable"
+      />
+    </DsfrFieldset>
     <fieldset class="fr-fieldset">
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
@@ -502,8 +502,8 @@
               emit('previous');
             }
           "
-          >Précédent</DsfrButton
-        >
+          >Précédent
+        </DsfrButton>
         <DsfrButton id="next-step" @click.prevent="valid">Suivant</DsfrButton>
       </DsfrButtonGroup>
     </fieldset>
