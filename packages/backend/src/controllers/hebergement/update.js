@@ -2,11 +2,12 @@ const yup = require("yup");
 
 const Hebergement = require("../../services/Hebergement");
 const logger = require("../../utils/logger");
+const ValidationAppError = require("../../utils/validation-error");
 const HebergementSchema = require("../../schemas/hebergement");
 
 const log = logger(module.filename);
 
-module.exports = async function post(req, res) {
+module.exports = async function post(req, res, next) {
   const hebergementId = req.params.id;
   const { nom, coordonnees, informationsLocaux, informationsTransport } =
     req.body;
@@ -28,18 +29,23 @@ module.exports = async function post(req, res) {
     log.w("missing or invalid parameter");
     return res.status(400).json({ message: "paramètre manquant ou erroné." });
   }
-
-  const hebergement = await yup.object(HebergementSchema.schema).validate(
-    {
-      coordonnees,
-      informationsLocaux,
-      informationsTransport,
-      nom,
-    },
-    {
-      stripped: true,
-    },
-  );
+  let hebergement;
+  try {
+    hebergement = await yup.object(HebergementSchema.schema()).validate(
+      {
+        coordonnees,
+        informationsLocaux,
+        informationsTransport,
+        nom,
+      },
+      {
+        abortEarly: false,
+        stripped: true,
+      },
+    );
+  } catch (error) {
+    return next(new ValidationAppError(error));
+  }
 
   try {
     await Hebergement.update(hebergementId, hebergement);

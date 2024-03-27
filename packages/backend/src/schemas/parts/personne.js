@@ -1,10 +1,15 @@
 const yup = require("yup");
 const regex = require("../../utils/regex");
 const adresseSchema = require("./adresse");
+const emailSchema = require("./email");
+const telephoneSchema = require("./telephone");
 
-const schema = ({ showAdresse, showEmail, showTelephone } = {}) => {
+const schema = (
+  { showAdresse, showEmail, showTelephone, showFonction = true } = {
+    showFonction: true,
+  },
+) => {
   return {
-    fonction: yup.string().required(),
     nom: yup
       .string()
       .test("acceptedChars", "Caractères non acceptés détectés", (nom) =>
@@ -48,27 +53,16 @@ const schema = ({ showAdresse, showEmail, showTelephone } = {}) => {
       )
       .required(),
     ...(showTelephone && {
-      telephone: yup
-        .string()
-        .test(
-          "telephone",
-          "Format de numéro de téléphone invalide",
-          (telephone) => regex.numTelephoneRegex.test(telephone),
-        )
-        .required(),
+      telephone: telephoneSchema(),
     }),
     ...(showEmail && {
-      email: yup
-        .string()
-        .test("email", "l'email n'est pas au format attendu", (email) =>
-          regex.emailRegex.test(email),
-        )
-        .required(),
+      email: emailSchema(),
     }),
     ...(showAdresse && {
-      adresse: yup.object({
-        ...adresseSchema(),
-      }),
+      adresse: yup.object(adresseSchema()),
+    }),
+    ...(showFonction && {
+      fonction: yup.string().required(),
     }),
   };
 };

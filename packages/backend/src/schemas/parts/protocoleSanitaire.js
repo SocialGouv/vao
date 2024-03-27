@@ -1,6 +1,6 @@
 const yup = require("yup");
 
-const schema = {
+const schema = () => ({
   accordCabinetMedical: yup.boolean().required(),
   conservationMedicamentThermosensible: yup.boolean().required(),
   constitutionEquipe: yup.array(),
@@ -129,6 +129,6 @@ const schema = {
   responsableAdministrationMedicament: yup.array().required(),
   stockageMedicamentSecurise: yup.boolean().required(),
   troussePharmacie: yup.boolean().required(),
-};
+});
 
 module.exports = schema;

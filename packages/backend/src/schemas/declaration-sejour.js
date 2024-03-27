@@ -81,18 +81,18 @@ const informationsPersonnelSchema = {
 };
 
 const hebergementDetailsSchema = {
-  coordonnees: yup.object(hebergementUtils.coordonneesSchema),
+  coordonnees: yup.object(hebergementUtils.coordonneesSchema()),
   dateDebut: yup.date().required(),
   dateFin: yup.date().required(),
   hebergementId: yup
     .number()
     .required("le choix d'un hébergement dans la liste est obligatoire"),
   informationsLocaux: yup.object({
-    ...hebergementUtils.informationsLocauxSchema,
+    ...hebergementUtils.informationsLocauxSchema(),
     justificatifERP: yup.mixed().required(),
   }),
   informationsTransport: yup.object({
-    ...hebergementUtils.informationsTransportSchema,
+    ...hebergementUtils.informationsTransportSchema(),
     rejoindreEtape: yup
       .string()
       .min(
@@ -143,10 +143,10 @@ const schema = (dateDebut, dateFin) => ({
   attestation: yup.object(attestationSchema),
   hebergement: yup.object(hebergementSchema(dateDebut, dateFin)),
   informationsPersonnel: yup.object(informationsPersonnelSchema),
-  informationsProjetSejour: yup.object(projetSejourSchema),
-  informationsSanitaires: yup.object(protocoleSanitaireSchema),
-  informationsTransport: yup.object(protocoleTransportSchema),
-  informationsVacanciers: yup.object(informationsVacanciersSchema),
+  informationsProjetSejour: yup.object(projetSejourSchema()),
+  informationsSanitaires: yup.object(protocoleSanitaireSchema()),
+  informationsTransport: yup.object(protocoleTransportSchema()),
+  informationsVacanciers: yup.object(informationsVacanciersSchema()),
 });
 
 module.exports = schema;

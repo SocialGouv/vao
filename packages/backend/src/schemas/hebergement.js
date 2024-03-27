@@ -1,30 +1,15 @@
 const yup = require("yup");
 
-const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
+const telephoneSchema = require("./parts/telephone");
 
-const coordonneesSchema = {
+const coordonneesSchema = () => ({
   adresse: yup.object().required(),
   email: yup.string().email().nullable(),
   nomGestionnaire: yup.string().required(),
-  numTelephone1: yup
-    .string()
-    .test(
-      "telephone",
-      "Format de numéro de téléphone invalide",
-      (numTelephone1) => numTelephoneRegex.test(numTelephone1),
-    )
-    .required(),
-  numTelephone2: yup
-    .string()
-    .test(
-      "telephone",
-      "Format de numéro de téléphone invalide",
-      (numTelephone2) =>
-        numTelephone2 == null || numTelephoneRegex.test(numTelephone2),
-    )
-    .nullable(),
-};
-const informationsLocauxSchema = {
+  numTelephone1: telephoneSchema(),
+  numTelephone2: telephoneSchema().notRequired(),
+});
+const informationsLocauxSchema = () => ({
   accessibilite: yup
     .string()
     .required("Le choix d'un niveau d'accessibilté est obligatoire"),
@@ -98,8 +83,9 @@ const informationsLocauxSchema = {
           "Il est impératif de renseigner la date de votre dernière visite",
         ),
     }),
-};
-const informationsTransportSchema = {
+});
+
+const informationsTransportSchema = () => ({
   deplacementProximite: yup
     .string()
     .min(
@@ -117,14 +103,14 @@ const informationsTransportSchema = {
   vehiculesAdaptes: yup
     .boolean()
     .required("Il est impératif de renseigner si les véhicules sont adaptés"),
-};
+});
 
-const schema = {
-  coordonnees: yup.object(coordonneesSchema),
-  informationsLocaux: yup.object(informationsLocauxSchema),
-  informationsTransport: yup.object(informationsTransportSchema),
+const schema = () => ({
+  coordonnees: yup.object(coordonneesSchema()),
+  informationsLocaux: yup.object(informationsLocauxSchema()),
+  informationsTransport: yup.object(informationsTransportSchema()),
   nom: yup.string().required(),
-};
+});
 
 module.exports = {
   coordonneesSchema,

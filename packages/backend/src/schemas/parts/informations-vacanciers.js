@@ -6,7 +6,7 @@ yup.setLocale({
   },
 });
 
-const schema = {
+const schema = () => ({
   effectifPrevisionnel: yup
     .number()
     .typeError("L'effectif prévisionnel doit être un nombre entier")
@@ -27,6 +27,6 @@ const schema = {
     .array()
     .min(1, "vous devez cocher au moins une case")
     .required(),
-};
+});
 
 module.exports = schema;

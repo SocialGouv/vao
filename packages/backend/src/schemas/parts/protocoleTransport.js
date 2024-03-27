@@ -1,6 +1,6 @@
 const yup = require("yup");
 
-const schema = {
+const schema = () => ({
   deplacementDurantSejour: yup
     .string()
     .required("Le remplissage de ce champ est obligatoire"),
@@ -13,6 +13,6 @@ const schema = {
     .required()
     .min(5, "Les précisions sur le mode d'organisation sont obligatoires'"),
   responsableTransportLieuSejour: yup.string().required(),
-};
+});
 
 module.exports = schema;
