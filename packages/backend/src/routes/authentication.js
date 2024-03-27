@@ -1,5 +1,6 @@
 const express = require("express");
 const checkJWT = require("../middlewares/checkJWT");
+const BOcheckJWT = require("../middlewares/bo-check-JWT");
 
 const logger = require("../utils/logger");
 
@@ -11,6 +12,10 @@ const authenticationController = require("../controllers/authentication");
 
 // Gère une connexion via mot de passe.
 router.get("/check-token", checkJWT, (req, res) => {
+  log.d("check token is OK! ");
+  res.send("OK");
+});
+router.get("/bo/check-token", BOcheckJWT, (req, res) => {
   log.d("check token is OK! ");
   res.send("OK");
 });
