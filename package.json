@@ -14,8 +14,8 @@
     "lint:frontend-bo": "yarn --cwd ./packages/frontend-bo run lint"
   },
   "devDependencies": {
-    "@commitlint/cli": "^18.6.0",
-    "@commitlint/config-conventional": "^18.6.0",
+    "@commitlint/cli": "^19.0.0",
+    "@commitlint/config-conventional": "^19.0.0",
     "eslint": "^8.56.0",
     "husky": "^9.0.10",
     "is-ci": "^3.0.1",
