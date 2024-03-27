@@ -61,7 +61,7 @@
           </div>
         </div>
       </fieldset>
-      <DsfrFieldset legend="Téléversement de l'attestation de l'agrément">
+      <DsfrFieldset>
         <UtilsFileUpload
           v-model="file"
           :label="label"
@@ -79,11 +79,11 @@
                   emit('previous');
                 }
               "
-              >Précédent</DsfrButton
-            >
+              >Précédent
+            </DsfrButton>
             <DsfrButton id="next-step" @click.prevent="next"
-              >Suivant</DsfrButton
-            >
+              >Suivant
+            </DsfrButton>
           </DsfrButtonGroup>
         </div>
       </fieldset>
