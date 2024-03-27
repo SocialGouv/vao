@@ -1,45 +1,5 @@
 const yup = require("yup");
 
-const pensionOptions = [
-  { label: "Hébergement seul", value: "hebergement_seul" },
-  { label: "Petit déjeuner", value: "petit_dejeuner" },
-  {
-    label: "Demi-pension",
-    value: "demi_pension",
-  },
-  { label: "Pension complète", value: "pension_complete" },
-];
-
-const prestationsHotelieresOptions = [
-  { id: "blanchisseries", label: "Blanchisserie", name: "blanchisseries" },
-  {
-    id: "entretien_locaux",
-    label: "Entretien des locaux",
-    name: "entretien_locaux",
-  },
-];
-
-const typeOptions = [
-  { label: "Hôtel", value: "hotel" },
-  { label: "Meublé de tourisme", value: "meuble_tourisme" },
-  {
-    label: "Résidence de tourisme, chambre d'hôte",
-    value: "residence_tourisme",
-  },
-  {
-    label: "Camping, caravaning, mobile home",
-    value: "camping",
-  },
-  { label: "Autre", value: "autre" },
-];
-
-const accessibiliteOptions = [
-  { label: "Accessible", value: "accessible" },
-  { label: "Signalé comme non adapté", value: "non_adapte" },
-  { label: "Commentaires", value: "commentaires" },
-  { label: "Non renseigné", value: "non_renseigne" },
-];
-
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 
 const coordonneesSchema = {
@@ -167,12 +127,8 @@ const schema = {
 };
 
 module.exports = {
-  accessibiliteOptions,
   coordonneesSchema,
   informationsLocauxSchema,
   informationsTransportSchema,
-  pensionOptions,
-  prestationsHotelieresOptions,
   schema,
-  typeOptions,
 };

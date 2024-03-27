@@ -283,10 +283,13 @@ const userStore = useUserStore();
 const initialValues = {
   ...props.declarationCourante,
   attestation: {
-    nom: userStore.user.nom,
-    prenom: userStore.user.prenom,
-    at: dayjs(new Date()).format("YYYY-MM-DD"),
     ...(props.declarationCourante.attestation ?? {}),
+    ...(props.modifiable && {
+      nom: userStore.user.nom,
+      prenom: userStore.user.prenom,
+      aCertifie: false,
+      at: dayjs(new Date()).format("YYYY-MM-DD"),
+    }),
   },
 };
 const validationSchema = computed(() =>
