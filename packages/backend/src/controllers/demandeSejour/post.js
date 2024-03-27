@@ -71,6 +71,17 @@ module.exports = async function post(req, res) {
         message: "une erreur est survenue durant la création de la déclaration",
       });
     }
+    const eventId = await DemandeSejour.insertEvent(
+      "organisateur",
+      demandeId,
+      userId,
+      "declaration_sejour",
+      "creation",
+      {},
+    );
+    if (!eventId) {
+      log.w("error while inserting event");
+    }
     return res.status(200).json({ id: demandeId });
   } catch (error) {
     log.w(error);

@@ -5,3 +5,4 @@ module.exports.getByAdminId = require("./getByAdminId");
 module.exports.post = require("./post");
 module.exports.update = require("./update");
 module.exports.depose = require("./depose");
+module.exports.historique = require("./historique");

@@ -118,7 +118,7 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
-        <DSDisplayPj :declaration="demandeCourante"></DSDisplayPj>
+        <DSDocuments :declaration="demandeCourante ?? {}"></DSDocuments>
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="tab-content-2"
@@ -126,6 +126,14 @@
         :selected="selectedTabIndex === 2"
         :asc="asc"
       >
+        <DSHistorique
+          v-if="historique"
+          :historique="historique.historique ?? []"
+        ></DSHistorique>
+        <DsfrAlert v-else-if="error" type="error"
+          >Une erreur est survenur durant la récupération de l'historique de la
+          déclaration</DsfrAlert
+        >
       </DsfrTabContent>
     </DsfrTabs>
   </div>
@@ -174,9 +182,22 @@ const initialSelectedIndex = 0;
 const asc = ref(true);
 const selectedTabIndex = ref(initialSelectedIndex);
 
+const {
+  data: historique,
+  error,
+  execute,
+} = useFetchBackend(`/sejour/historique/${route.params.demandeId}`, {
+  immediate: false,
+  method: "GET",
+  credentials: "include",
+});
+
 const selectTab = (idx) => {
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
+  if (idx === 2 && !historique.value) {
+    execute();
+  }
 };
 const tabTitles = [
   { title: " Formulaire" },
@@ -198,8 +219,7 @@ const sejourId = ref(route.params.demandeId);
 const canModify = computed(() => {
   return (
     !demandeCourante.value.statut ||
-    demandeCourante.value.statut === "BROUILLON" ||
-    demandeCourante.value.statut === "TRANSMISE"
+    demandeCourante.value.statut === "BROUILLON"
   );
 });
 
