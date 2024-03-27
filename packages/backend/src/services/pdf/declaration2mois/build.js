@@ -756,8 +756,8 @@ function displayInfosTransport(info) {
     ],
   });
   if (
-    info.modeTransport.includes("Automobile") ||
-    info.modeTransport.includes("Autobus, car") ||
+    info.modeTransport?.includes("Automobile") ||
+    info.modeTransport?.includes("Autobus, car") ||
     info.deplacementDurantSejour
   ) {
     liste.push({
@@ -776,8 +776,8 @@ function displayInfosTransport(info) {
     });
   }
   if (
-    info.modeTransport.includes("Automobile") ||
-    info.modeTransport.includes("Autobus, car") ||
+    info.modeTransport?.includes("Automobile") ||
+    info.modeTransport?.includes("Autobus, car") ||
     info.deplacementDurantSejour
   ) {
     liste.push({

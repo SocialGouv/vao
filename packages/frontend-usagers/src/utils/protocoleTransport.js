@@ -58,7 +58,7 @@ const schema = {
       otherwise: (precision) => precision.nullable(),
     }),
   deplacementDurantSejour: yup
-    .string()
+    .boolean()
     .required("Le remplissage de ce champ est obligatoire"),
   vehiculesAdaptes: yup
     .boolean()
