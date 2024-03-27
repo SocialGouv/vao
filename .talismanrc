@@ -79,18 +79,22 @@ fileignoreconfig:
   checksum: 7ac4c97b5d6c36b5f944c339e0411947d59b12ed2f653497ea4017d9992e1058
 - filename: packages/backend/src/controllers/authentication/email/register.js
   checksum: 405b78b09927ec0c3feb4eec6aada0b4875e63f0065863962c446be5ce8ca5e7
+- filename: packages/backend/src/controllers/authentication/email/renew-password.js
+  checksum: 312c54faed74071e47e9769e90da65fc14b877260346423ec1b6751c0fd1a0d6
 - filename: packages/backend/src/controllers/authentication/email/renewPassword.js
   checksum: 71c7f6afdca8903cb4ad4120ac93e5296cc5bac40dac63391722bb4c2079b422
+- filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
+  checksum: ffdcbd72f51146bb4ea32b8c8f79528fd770428a83642f63bd6490a00e391c35
 - filename: packages/backend/src/pgpool.js
   checksum: 06f9f5367c53fbdf6bf5d2ee9758d3a5302339f9f4d0c42e2c0f0831733097d0
 - filename: packages/backend/src/pgpoolDoc.js
   checksum: 1c379109d80c35d0a4f2169ae9935ddc1f4c7ea635f8b920be772a39658a7230
 - filename: packages/backend/src/schemas/bo-register.js
-  checksum: 92ff3812408289e410d6fda20e1da5607908cfb4239481453dad6d15d2a0c14e
+  checksum: 1b8b84d517da28f5016aa37e7c716dbef6f28517dcad69553de06b353d9f436b
 - filename: packages/backend/src/schemas/parts/password.js
-  checksum: ae9405e5c5b394094e086173e2085cfaf45e6210f226aeb29e8ec1de89ee47b7
+  checksum: 51d98862750e30ab4f852aee33a8c65bfa9ff92986b498c1d2650be3aff3511c
 - filename: packages/backend/src/schemas/register.js
-  checksum: e8ac4a2937be739bf473857cbb64ef399358396479c6b0593e7d62c7e75aca0d
+  checksum: d56114de12eaab4e9121eaf17ca1760370673c3c1526218896bacaa7daf5cc82
 - filename: packages/backend/src/services/BoUser.js
   checksum: 9d24a422579f39aaf319b76d3d93d94547e6842a72fdb0bc6cc68be229c24ba2
 - filename: packages/backend/src/services/User.js

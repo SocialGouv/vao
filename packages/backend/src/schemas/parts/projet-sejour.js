@@ -6,10 +6,10 @@ yup.setLocale({
   },
 });
 
-const schema = {
+const schema = () => ({
   activitesCulturelles: yup.array().required(),
   activitesSportives: yup.array().required(),
   destination: yup.array().required(),
-};
+});
 
 module.exports = schema;

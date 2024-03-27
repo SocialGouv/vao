@@ -19,7 +19,7 @@ module.exports = async function register(req, res, next) {
 
   const part = { email, nom, password, prenom };
   try {
-    await registerSchema.validate(part);
+    await registerSchema().validate(part);
   } catch (error) {
     return next(new ValidationAppError(error));
   }

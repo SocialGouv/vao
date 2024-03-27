@@ -84,7 +84,7 @@ yup.setLocale({
   },
 });
 
-const personneMoraleSchema = {
+const personneMoraleSchema = () => ({
   adresse: yup.string().required(),
   email: yup
     .string()
@@ -135,8 +135,8 @@ const personneMoraleSchema = {
       regex.numTelephoneRegex.test(telephone),
     )
     .required("Le numéro de téléphone de l'établissement est obligatoire"),
-};
-const personnePhysiqueSchema = {
+});
+const personnePhysiqueSchema = () => ({
   adresseDomicile: yup.object({ ...adresseSchema(true) }).required(),
   adresseIdentique: yup.boolean().required(),
   adresseSiege: yup.object({ ...adresseSchema(true) }).required(),
@@ -192,7 +192,7 @@ const personnePhysiqueSchema = {
     .test("telephone", "Format de numéro de téléphone invalide", (tel) =>
       regex.numTelephoneRegex.test(tel),
     ),
-};
+});
 const agrementSchema = (regions) => ({
   dateObtention: yup
     .date()
@@ -231,14 +231,14 @@ const schema = (regions) => ({
     .required("Aucune information renseignée")
     .when("typeOrganisme", {
       is: (typeOrganisme) => typeOrganisme === "personne_morale",
-      then: (schema) => schema.shape(personneMoraleSchema),
+      then: (schema) => schema.shape(personneMoraleSchema()),
     }),
   personnePhysique: yup
     .object()
     .required("Aucune information renseignée")
     .when("typeOrganisme", {
       is: (typeOrganisme) => typeOrganisme === "personne_physique",
-      then: (schema) => schema.shape(personnePhysiqueSchema),
+      then: (schema) => schema.shape(personnePhysiqueSchema()),
     }),
   protocoleSanitaire: yup
     .object()
@@ -249,7 +249,7 @@ const schema = (regions) => ({
       otherwise: (schema) => schema.nullable(),
       then: (schema) =>
         schema
-          .shape(protocoleSanitaireSchema)
+          .shape(protocoleSanitaireSchema())
           .required("Aucune information renseignée"),
     }),
   protocoleTransport: yup
@@ -261,7 +261,7 @@ const schema = (regions) => ({
       otherwise: (schema) => schema.nullable(),
       then: (schema) =>
         schema
-          .shape(protocoleTransportSchema)
+          .shape(protocoleTransportSchema())
           .required("Aucune information renseignée"),
     }),
   typeOrganisme: yup

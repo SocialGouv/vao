@@ -19,7 +19,9 @@ module.exports = async function register(req, res, next) {
 
   const part = { email, nom, password, prenom, telephone };
   try {
-    await registerSchema.validate(part);
+    await registerSchema().validate(part, {
+      abortEarly: false,
+    });
   } catch (error) {
     return next(new ValidationAppError(error));
   }
