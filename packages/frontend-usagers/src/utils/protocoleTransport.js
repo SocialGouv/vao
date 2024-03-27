@@ -42,7 +42,9 @@ const schema = {
     .min(5, "Les précisions sur le mode d'organisation sont obligatoires'"),
   deplacementDurantSejour: yup
     .string()
-    .required("Le remplissage de ce champ est obligatoire"),
+    .required(
+      "Il est obligatoire de spécifier si des déplacements sont prévus ou non durant le séjour",
+    ),
 };
 
 export default {

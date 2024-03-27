@@ -81,6 +81,38 @@
           />
         </div>
       </div>
+      <div class="fr-fieldset__element">
+        <div class="fr-input-group fr-col-12">
+          <DsfrRadioButtonSet
+            name="accordCabinetMedical"
+            legend="Un accord est-il passé avec un cabinet médical ou paramédical à proximité des lieux de séjour ? "
+            :disabled="!props.modifiable"
+            :model-value="accordCabinetMedical"
+            :options="ouiNonOptions"
+            :is-valid="accordCabinetMedicalMeta"
+            :inline="true"
+            :error-message="accordCabinetMedicalErrorMessage"
+            @update:model-value="onAccordCabinetMedicalChange"
+          />
+        </div>
+      </div>
+      <div v-if="accordCabinetMedical" class="fr-fieldset__element">
+        <div class="fr-col-12">
+          <DsfrInputGroup
+            name="precisionAccordCabinetMedical"
+            :readonly="!props.modifiable"
+            label="Précisez avec quelle structure et quel type d'accord a été passé."
+            hint="Redimensionnez le champ pour saisir plus de ligne"
+            :label-visible="true"
+            :is-textarea="true"
+            placeholder=""
+            :model-value="precisionAccordCabinetMedical"
+            :error-message="precisionAccordCabinetMedicalErrorMessage"
+            :is-valid="precisionAccordCabinetMedicalMeta"
+            @update:model-value="onPrecisionAccordCabinetMedicalChange"
+          />
+        </div>
+      </div>
     </DsfrFieldset>
     <DsfrFieldset
       legend="Organisation prévue en matière de distribution et de stockage des médicaments"
@@ -533,6 +565,8 @@ const initialValues = {
   constitutionEquipe: props.initData.constitutionEquipe ?? [],
   precisionConstitutionEquipe: props.initData.precisionConstitutionEquipe,
   troussePharmacie: props.initData.troussePharmacie,
+  accordCabinetMedical: props.initData.accordCabinetMedical,
+  precisionAccordCabinetMedical: props.initData.precisionAccordCabinetMedical,
   responsableAdministrationMedicament:
     props.initData.responsableAdministrationMedicament ?? [],
   precisionResponsableAdministrationMedicament:
@@ -599,6 +633,18 @@ const {
   handleChange: onTroussePharmacieChange,
   meta: troussePharmacieMeta,
 } = useField("troussePharmacie");
+const {
+  value: accordCabinetMedical,
+  errorMessage: accordCabinetMedicalErrorMessage,
+  handleChange: onAccordCabinetMedicalChange,
+  meta: accordCabinetMedicalMeta,
+} = useField("accordCabinetMedical");
+const {
+  value: precisionAccordCabinetMedical,
+  errorMessage: precisionAccordCabinetMedicalErrorMessage,
+  handleChange: onPrecisionAccordCabinetMedicalChange,
+  meta: precisionAccordCabinetMedicalMeta,
+} = useField("precisionAccordCabinetMedical");
 const { value: responsableAdministrationMedicament } = useField(
   "responsableAdministrationMedicament",
 );

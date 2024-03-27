@@ -334,6 +334,34 @@ function displayInfosSanitaires(info) {
   liste.push({
     columns: [
       {
+        text: "Accord cabinet médical de proximite :",
+        width: 250,
+      },
+      {
+        bold: true,
+        text: `${info.accordCabinetMedical ? "Oui" : "Non"}`,
+        width: "*",
+      },
+    ],
+  });
+  if (info.accordCabinetMedical) {
+    liste.push({
+      columns: [
+        {
+          text: "Précision :",
+          width: 250,
+        },
+        {
+          bold: true,
+          text: `${info.precisionAccordCabinetMedical}`,
+          width: "*",
+        },
+      ],
+    });
+  }
+  liste.push({
+    columns: [
+      {
         text: "Personne en charge de la distribution, de l’administration et de l’enregistrement de l’administration des médicaments :",
         width: 250,
       },

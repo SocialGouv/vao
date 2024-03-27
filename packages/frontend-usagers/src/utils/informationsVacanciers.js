@@ -39,11 +39,11 @@ const schema = {
     .required(),
   trancheAge: yup
     .array()
-    .min(1, "vous devez cocher au moins une case")
+    .min(1, "vous devez cocher au moins une des tranches d'âge indiquées ")
     .required(),
   typeDeficiences: yup
     .array()
-    .min(1, "vous devez cocher au moins une case")
+    .min(1, "vous devez cocher au moins une des déficiences listées")
     .required(),
 };
 

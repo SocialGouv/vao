@@ -67,7 +67,10 @@ const schema = {
       is: (val) => !!val,
       then: (precision) =>
         precision
-          .min(5, "Vous devez préciser votre réponse précédente")
+          .min(
+            5,
+            "Vous devez préciser quelles dispositions spécifiques ont été mises en place",
+          )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
     }),
@@ -76,11 +79,23 @@ const schema = {
     is: (val) => val && val.length > 0,
     then: (precision) =>
       precision
-        .min(5, "Vous devez préciser votre réponse précédente")
+        .min(5, "Vous devez préciser la constitution de l'équipe")
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
   }),
   troussePharmacie: yup.boolean().required(),
+  accordCabinetMedical: yup.boolean().required(),
+  precisionAccordCabinetMedical: yup.string().when("accordCabinetMedical", {
+    is: (val) => !!val,
+    then: (precision) =>
+      precision
+        .min(
+          5,
+          "Vous devez préciser avec qui et quel type d'accord a été passé",
+        )
+        .required(),
+    otherwise: (precision) => precision.nullable().strip(),
+  }),
   responsableAdministrationMedicament: yup.array().required(),
   precisionResponsableAdministrationMedicament: yup
     .string()
@@ -88,7 +103,10 @@ const schema = {
       is: (val) => val && val.length > 0,
       then: (precision) =>
         precision
-          .min(5, "Vous devez préciser votre réponse précédente")
+          .min(
+            5,
+            "Vous devez préciser les responsabilités liées à l'administration des médicaments",
+          )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
     }),
@@ -99,7 +117,10 @@ const schema = {
       is: (val) => !!val,
       then: (precision) =>
         precision
-          .min(5, "Vous devez préciser votre réponse précédente")
+          .min(
+            5,
+            "Vous devez préciser la sécurisation apportée concernant le stockage des médicaments",
+          )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
     }),
@@ -110,7 +131,10 @@ const schema = {
       is: (val) => !!val,
       then: (precision) =>
         precision
-          .min(5, "Vous devez préciser votre réponse précédente")
+          .min(
+            5,
+            "Vous devez préciser le dispositif de conservation des médicaments thermosensibles",
+          )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
     }),
@@ -121,7 +145,10 @@ const schema = {
       is: (val) => !!val,
       then: (precision) =>
         precision
-          .min(5, "Vous devez préciser votre réponse précédente")
+          .min(
+            5,
+            "Vous devez préciser le protocole d'individualisation des médicaments",
+          )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
     }),
@@ -133,7 +160,10 @@ const schema = {
 
     then: (precision) =>
       precision
-        .min(5, "Vous devez préciser votre réponse précédente")
+        .min(
+          5,
+          "Vous devez préciser la mthéodologie de préparation des pilluliers",
+        )
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
   }),
@@ -145,17 +175,20 @@ const schema = {
       is: (val) => !!val,
       then: (precision) =>
         precision
-          .min(5, "Vous devez préciser votre réponse précédente")
+          .min(
+            5,
+            "Vous devez préciser le protocole relatif à la modification d'un traitement durant le séjour",
+          )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
     }),
-  ficheSuiviMedicaments: yup.string().required(),
+  ficheSuiviMedicaments: yup.boolean().required(),
   protocoleEvacuation: yup.boolean().required(),
   precisionProtocoleEvacuation: yup.string().when("protocoleEvacuation", {
     is: (val) => !!val,
     then: (precision) =>
       precision
-        .min(5, "Vous devez préciser votre réponse précédente")
+        .min(5, "Vous devez préciser le protocole d'évacuation")
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
   }),
@@ -164,7 +197,7 @@ const schema = {
     is: (val) => !!val,
     then: (precision) =>
       precision
-        .min(5, "Vous devez préciser votre réponse précédente")
+        .min(5, "Vous devez préciser le protocole en cas d'accident")
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
   }),
@@ -173,7 +206,7 @@ const schema = {
     is: (val) => !!val,
     then: (precision) =>
       precision
-        .min(5, "Vous devez préciser votre réponse précédente")
+        .min(5, "Vous devez préciser le protocole de réorientation")
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
   }),
@@ -183,7 +216,7 @@ const schema = {
     is: (val) => !!val,
     then: (precision) =>
       precision
-        .min(5, "Vous devez préciser votre réponse précédente")
+        .min(5, "Vous devez préciser le protcole en cas de canicule")
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
   }),
