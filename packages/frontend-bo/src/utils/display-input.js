@@ -411,8 +411,11 @@ const IHebergementInformationLocaux = {
       accessible: "Accessible",
       non_adapte: "Signalé comme non adapté",
       commentaires: "Commentaires",
-      non_renseigne: "Non renseigné",
     },
+  },
+  accessibilitePrecision: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez ",
   },
   pension: {
     inputType: InputTypes.RADIO,

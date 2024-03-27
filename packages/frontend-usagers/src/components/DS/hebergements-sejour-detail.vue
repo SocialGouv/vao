@@ -233,6 +233,22 @@
             />
           </div>
         </div>
+        <div
+          v-if="accessibilite === 'commentaires'"
+          class="fr-fieldset__element fr-col-6"
+        >
+          <DsfrInputGroup
+            name="informationsLocaux.accessibilitePrecision"
+            label="Précisez"
+            :label-visible="true"
+            :is-textarea="true"
+            placeholder=""
+            :model-value="accessibilitePrecision"
+            :error-message="accessibilitePrecisionErrorMessage"
+            :is-valid="accessibilitePrecisionMeta.valid"
+            @update:model-value="onAccessibilitePrecisionChange"
+          />
+        </div>
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
@@ -659,6 +675,12 @@ const {
   handleChange: onAccessibiliteChange,
   meta: accessibiliteMeta,
 } = useField("informationsLocaux.accessibilite");
+const {
+  value: accessibilitePrecision,
+  errorMessage: accessibilitePrecisionErrorMessage,
+  handleChange: onAccessibilitePrecisionChange,
+  meta: accessibilitePrecisionMeta,
+} = useField("informationsLocaux.accessibilitePrecision");
 const {
   value: pension,
   errorMessage: pensionErrorMessage,
