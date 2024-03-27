@@ -1,15 +1,5 @@
 <template>
   <div>
-    <DsfrFieldset
-      legend="Téléversement des pièces justificatives concernant les protocoles de transport"
-    >
-      <UtilsMultiFilesUpload
-        v-model="files"
-        label="Merci de joindre les documents requis pour les informations transport"
-        hint="Taille maximale : 5 Mo."
-        :modifiable="props.modifiable"
-      />
-    </DsfrFieldset>
     <DsfrFieldset legend="Transports vers le site de séjour">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
@@ -69,6 +59,16 @@
           />
         </div>
       </div>
+    </DsfrFieldset>
+    <DsfrFieldset
+      legend="Téléversement des pièces justificatives concernant les protocoles de transport"
+    >
+      <UtilsMultiFilesUpload
+        v-model="files"
+        label="Merci de joindre les documents requis pour les informations transport"
+        hint="Taille maximale : 5 Mo."
+        :modifiable="props.modifiable"
+      />
     </DsfrFieldset>
     <DsfrFieldset>
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">

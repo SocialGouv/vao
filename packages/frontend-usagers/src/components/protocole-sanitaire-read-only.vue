@@ -3,6 +3,16 @@
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-col-12">
+          <span class="read-only-label">fichiers joints</span>
+        </div>
+        <div class="fr-col-12">
+          <span class="read-only-value">{{
+            props.initData.files.map((f) => f.name).join(", ")
+          }}</span>
+        </div>
+      </div>
+      <div class="fr-fieldset__element">
+        <div class="fr-col-12">
           <span class="read-only-label"
             >Dispositions sanitaires spécifiques</span
           >
