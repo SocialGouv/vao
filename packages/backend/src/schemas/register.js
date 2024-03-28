@@ -1,32 +1,16 @@
-const { object, string } = require("yup");
-const password = require("./parts/password");
+const { object } = require("yup");
 
-const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-const nomRegex = /^[A-Za-z'-]+$/;
-const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
+const passwordSchema = require("./parts/password");
+const personneSchema = require("./parts/personne");
 
-const schema = object({
-  email: string()
-    .test("acceptedChars", "Caractères non acceptés détectés", (email) =>
-      emailRegex.test(email),
-    )
-    .required(),
-  nom: string()
-    .test("acceptedChars", "Caractères non acceptés détectés", (nom) =>
-      nomRegex.test(nom),
-    )
-    .required(),
-  password,
-  prenom: string()
-    .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
-      nomRegex.test(prenom),
-    )
-    .required(),
-  telephone: string()
-    .test("telephone", "Format de numéro de téléphone invalide", (telephone) =>
-      numTelephoneRegex.test(telephone),
-    )
-    .required(),
-});
+const schema = () =>
+  object({
+    ...personneSchema({
+      showEmail: true,
+      showFonction: false,
+      showTelephone: true,
+    }),
+    password: passwordSchema(),
+  });
 
 module.exports = schema;

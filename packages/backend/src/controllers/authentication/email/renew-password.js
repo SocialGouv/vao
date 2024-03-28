@@ -21,7 +21,7 @@ module.exports = async function register(req, res, next) {
   }
 
   try {
-    await passwordSchema.validate(password);
+    await passwordSchema().validate(password);
   } catch (error) {
     log.w("Done with error", { cause: error });
     return next(new ValidationAppError(error));

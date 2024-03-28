@@ -15,7 +15,7 @@ const ValidationAppError = require("../../utils/validation-error");
 
 const log = logger(module.filename);
 
-module.exports = async function post(req, res) {
+module.exports = async function post(req, res, next) {
   const demandeSejourId = req.params.id;
   const { id: userId } = req.decoded;
   const { attestation } = req.body;
@@ -63,7 +63,7 @@ module.exports = async function post(req, res) {
     declaration.dateDebut = dayjs(declaration.dateDebut).format("YYYY-MM-DD");
     declaration.dateFin = dayjs(declaration.dateFin).format("YYYY-MM-DD");
   } catch (error) {
-    throw new ValidationAppError(error);
+    return next(new ValidationAppError(error));
   }
 
   const firstHebergementId =

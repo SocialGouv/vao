@@ -2,7 +2,11 @@ import * as yup from "yup";
 import regex from "./regex";
 import adresse from "./adresse";
 
-const schema = ({ showAdresse, showEmail, showTelephone } = {}) => {
+const schema = (
+  { showAdresse, showEmail, showTelephone, showFonction = true } = {
+    showFonction: true,
+  },
+) => {
   return {
     nom: yup
       .string()
@@ -46,7 +50,6 @@ const schema = ({ showAdresse, showEmail, showTelephone } = {}) => {
         (prenom) => !regex.doubleDashRegex.test(prenom),
       )
       .required(),
-    fonction: yup.string().required(),
     ...(showTelephone && {
       telephone: yup
         .string()
@@ -69,6 +72,9 @@ const schema = ({ showAdresse, showEmail, showTelephone } = {}) => {
       adresse: yup.object({
         ...adresse.schema(),
       }),
+    }),
+    ...(showFonction && {
+      fonction: yup.string().required(),
     }),
   };
 };
