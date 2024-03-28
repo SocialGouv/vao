@@ -72,7 +72,7 @@ function acceptAll() {
     >
       <template #mainnav>
         <DsfrNavigation
-          :nav-items="navItems"
+          :nav-items="userStore.isConnected && navItems"
           style="box-shadow: inset 0 1px 0 0 #ddd"
         />
       </template>
