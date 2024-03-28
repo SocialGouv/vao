@@ -263,6 +263,7 @@ function displayOrganisme(responsableSejour, organisme) {
 function displayInfosSanitaires(info) {
   const liste = [];
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Dispositions d’ordre sanitaire spécifiques :",
@@ -277,6 +278,7 @@ function displayInfosSanitaires(info) {
   });
   if (info.dispositionsSpecifiques) {
     liste.push({
+      columnGap: 10,
       columns: [
         {
           text: "Précision :",
@@ -291,6 +293,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Composition de l'équipe :",
@@ -305,6 +308,7 @@ function displayInfosSanitaires(info) {
   });
   if (info.constitutionEquipe.length > 0) {
     liste.push({
+      columnGap: 10,
       columns: [
         {
           text: "Précision :",
@@ -319,6 +323,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Trousse à pharmacie :",
@@ -332,6 +337,7 @@ function displayInfosSanitaires(info) {
     ],
   });
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Accord cabinet médical de proximite :",
@@ -374,6 +380,7 @@ function displayInfosSanitaires(info) {
   });
   if (info.responsableAdministrationMedicament.length > 0) {
     liste.push({
+      columnGap: 10,
       columns: [
         {
           text: "Précision :",
@@ -388,6 +395,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Stockage sécurisé des médicaments :",
@@ -402,6 +410,7 @@ function displayInfosSanitaires(info) {
   });
   if (info.stockageMedicamentSecurise) {
     liste.push({
+      columnGap: 10,
       columns: [
         {
           text: "Précision sur le protocole en vigueur concernant le stockage sécurisé des médicaments :",
@@ -416,6 +425,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Dipositif de conservation des médicaments thermosensibles :",
@@ -430,6 +440,7 @@ function displayInfosSanitaires(info) {
   });
   if (info.conservationMedicamentThermosensible) {
     liste.push({
+      columnGap: 10,
       columns: [
         {
           text: "Précision sur le protocole en vigueur concernant le stockage garantissant la parfaite conservation des médicaments :",
@@ -444,6 +455,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Dipositif d'individualisation des traitements de chaque vacancier :",
@@ -458,6 +470,7 @@ function displayInfosSanitaires(info) {
   });
   if (info.individualisationMedicaments) {
     liste.push({
+      columnGap: 10,
       columns: [
         {
           text: "Précision sur le protocole en vigueur concernant le stockage permettant l’individualisation des médicaments :",
@@ -472,6 +485,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Méthode de préparation des piluliers :",
@@ -485,6 +499,7 @@ function displayInfosSanitaires(info) {
     ],
   });
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Prescription médicale jointe à chaque pilulier :",
@@ -498,6 +513,7 @@ function displayInfosSanitaires(info) {
     ],
   });
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Protocole de modification de traitement en cours de séjour :",
@@ -512,6 +528,7 @@ function displayInfosSanitaires(info) {
   });
   if (info.protocoleModificationTraitement) {
     liste.push({
+      columnGap: 10,
       columns: [
         {
           text: "Précision :",
@@ -526,6 +543,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Fiche de suivi de la distribution, de l’administration et de l’enregistrement des médicaments :",
@@ -539,6 +557,7 @@ function displayInfosSanitaires(info) {
     ],
   });
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Protocole d’évacuation et de rapatriement des vacanciers si nécessaire :",
@@ -553,6 +572,7 @@ function displayInfosSanitaires(info) {
   });
   if (info.protocoleEvacuation) {
     liste.push({
+      columnGap: 10,
       columns: [
         {
           text: "Précision :",
@@ -567,6 +587,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Protocole en cas de chute, d’intoxication ou autre accident :",
@@ -581,6 +602,7 @@ function displayInfosSanitaires(info) {
   });
   if (info.protocoleAccident) {
     liste.push({
+      columnGap: 10,
       columns: [
         {
           text: "Précision :",
@@ -595,6 +617,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Protocole de réorientation des vacanciers :",
@@ -609,6 +632,7 @@ function displayInfosSanitaires(info) {
   });
   if (info.protocoleReorientation) {
     liste.push({
+      columnGap: 10,
       columns: [
         {
           text: "Précision :",
@@ -623,6 +647,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Protocole en cas d’alerte canicule :",
@@ -651,6 +676,7 @@ function displayInfosSanitaires(info) {
     });
   }
   liste.push({
+    columnGap: 10,
     columns: [
       {
         text: "Précision sur les conditions prévues pour la gestion sur place du budget personnel des vacanciers :",
@@ -664,6 +690,111 @@ function displayInfosSanitaires(info) {
     ],
   });
 
+  return liste;
+}
+
+function displayInfosTransport(info) {
+  const liste = [];
+  liste.push({
+    columnGap: 10,
+    columns: [
+      {
+        text: "Transport jusqu'au lieu de séjour :",
+        width: 250,
+      },
+      {
+        bold: true,
+        text: `${info.responsableTransportLieuSejour.join(", ")}`,
+        width: "*",
+      },
+    ],
+  });
+  if (info.responsableTransportLieuSejour.includes("organisateur")) {
+    liste.push(
+      {
+        columnGap: 10,
+        columns: [
+          {
+            text: "Modes de transport utilisés :",
+            width: 250,
+          },
+          {
+            bold: true,
+            text: `${info.modeTransport.join(", ")}`,
+            width: "*",
+          },
+        ],
+      },
+      {
+        columnGap: 10,
+        columns: [
+          {
+            text: "Mode d’organisation retenu :",
+            width: 250,
+          },
+          {
+            bold: true,
+            text: `${info.precisionModeOrganisation}`,
+            width: "*",
+          },
+        ],
+      },
+    );
+  }
+  liste.push({
+    columnGap: 10,
+    columns: [
+      {
+        text: "Déplacement durant le séjour :",
+        width: 250,
+      },
+      {
+        bold: true,
+        text: `${info.deplacementDurantSejour ? "Oui" : "Non"}`,
+        width: "*",
+      },
+    ],
+  });
+  if (
+    info.modeTransport?.includes("Automobile") ||
+    info.modeTransport?.includes("Autobus, car") ||
+    info.deplacementDurantSejour
+  ) {
+    liste.push({
+      columnGap: 10,
+      columns: [
+        {
+          text: "Véhicules adaptés :",
+          width: 250,
+        },
+        {
+          bold: true,
+          text: `${info.vehiculesAdaptes ? "Oui" : "Non"}`,
+          width: "*",
+        },
+      ],
+    });
+  }
+  if (
+    info.modeTransport?.includes("Automobile") ||
+    info.modeTransport?.includes("Autobus, car") ||
+    info.deplacementDurantSejour
+  ) {
+    liste.push({
+      columnGap: 10,
+      columns: [
+        {
+          text: "Sépcificités des véhicules :",
+          width: 250,
+        },
+        {
+          bold: true,
+          text: `${info.precisionVehiculesAdaptes}`,
+          width: "*",
+        },
+      ],
+    });
+  }
   return liste;
 }
 
@@ -1271,10 +1402,13 @@ function buildInformationsTransport(info) {
           ],
           headerRows: 1,
           layout: "noBorders",
+
+          margin: [0, 20, 0, 0],
           widths: ["*"],
         },
       },
       {
+        columnGap: 10,
         columns: [
           {
             alignment: "left",
@@ -1293,63 +1427,11 @@ function buildInformationsTransport(info) {
                   },
                 ],
               },
-              {
-                columns: [
-                  {
-                    text: "Transport jusqu'au lieu de séjour :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.responsableTransportLieuSejour}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Modes de transport utilisés :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.modeTransport.join(", ")}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Mode d’organisation retenu :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.precisionModeOrganisation}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Déplacements prévus durant le séjour :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.deplacementDurantSejour ? "Oui" : "Non"}`,
-                    width: "*",
-                  },
-                ],
-              },
             ],
           },
         ],
-        margin: [0, 20, 0, 0],
       },
+      ...displayInfosTransport(info),
     ],
   };
 }
