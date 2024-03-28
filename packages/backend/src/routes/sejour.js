@@ -22,6 +22,7 @@ router.get(
   demandeSejourController.getByIdBo,
 );
 router.get("/:id", checkJWT, demandeSejourController.getById);
+router.get("/historique/:id", checkJWT, demandeSejourController.historique);
 router.get("/", checkJWT, demandeSejourController.get);
 router.post("/depose/:id", checkJWT, demandeSejourController.depose);
 router.post("/:id", checkJWT, demandeSejourController.update);

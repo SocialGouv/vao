@@ -242,6 +242,22 @@ const query = {
     `,
     Object.values(criterias),
   ],
+  historique: `
+    SELECT
+      h.id as "historiqueId",
+      h.source as "source",
+      h.demande_sejour_id as "declarationId",
+      u.mail as "userEmail",
+      h.bo_user_id as "userAdminId",
+      h.type as "type",
+      h.type_precision as "typePrecision",
+      h.metadata as "metaData",
+      h.created_at as "createdAt"
+    FROM front.demande_sejour_history h
+    JOIN front.users u ON u.id = h.usager_user_id
+    WHERE
+      h.demande_sejour_id = $1
+    `,
   insertEvent: `
   INSERT INTO front.demande_sejour_history(
     source,
@@ -703,4 +719,13 @@ module.exports.addFile = async (declarationId, file) => {
   ]);
   log.d("addFile - DONE");
   return response[0].declarationId;
+};
+
+module.exports.historique = async (declarationId) => {
+  log.i("historique - IN", { declarationId });
+  const { rows: response } = await pool.query(query.historique, [
+    declarationId,
+  ]);
+  log.d("historique - DONE");
+  return response;
 };
