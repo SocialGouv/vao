@@ -80,7 +80,7 @@ function onClickOnLogo() {
             @click="onClickOnLogo"
           >
             <template #mainnav>
-              <DsfrNavigation :nav-items="navItems" />
+              <DsfrNavigation :nav-items="userStore.isConnected && navItems" />
             </template>
           </DsfrHeader>
         </div>
