@@ -16,7 +16,7 @@
       :opened="modalPersonne.opened"
       :title="props.title"
       size="md"
-      @close.prevent="onClose"
+      @close="onClose"
     >
       <Personne
         :personne="personne"
