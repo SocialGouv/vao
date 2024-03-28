@@ -487,7 +487,7 @@ module.exports.getByDepartementCodes = async (
   if (limit === null || response.rowCount < limit) {
     return {
       demandes_sejour: response.rows,
-      total: response.rowCount + (offset ?? 0),
+      total: response.rowCount + parseInt(offset ?? 0),
     };
   }
 
