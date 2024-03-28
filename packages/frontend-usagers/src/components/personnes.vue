@@ -1,15 +1,19 @@
 <template>
-  <div>
+  <div class="container">
     <div v-if="props.personnes.length > 0">
-      <DsfrTable :headers="headersToDisplay" :rows="personnesToDisplay" />
+      <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
+          On cherche a rapprocher le bouton du tableau -->
+      <div class="table-container">
+        <DsfrTable :headers="headersToDisplay" :rows="personnesToDisplay" />
+      </div>
+      <DsfrButton
+        ref="modalOrigin"
+        label="Ajouter un représentant légal"
+        size="sm"
+        :secondary="true"
+        @click.prevent="addPersonne"
+      />
     </div>
-    <DsfrButton
-      ref="modalOrigin"
-      label="Ajouter un élément"
-      size="sm"
-      :secondary="true"
-      @click.prevent="addPersonne"
-    />
     <DsfrModal
       ref="modal"
       name="test"
@@ -125,4 +129,12 @@ function onClose() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  margin-bottom: 2.5rem;
+}
+
+.table-container {
+  margin-bottom: -1.5rem;
+}
+</style>
