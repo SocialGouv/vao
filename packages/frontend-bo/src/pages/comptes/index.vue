@@ -4,6 +4,9 @@
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
+          <DsfrButton @click.prevent="createUser"
+            >Créer un nouvel utilisateur
+          </DsfrButton>
           <fieldset class="fr-fieldset">
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
@@ -157,6 +160,10 @@ const fetchUsersDebounce = debounce((search) => {
 watch([searchState], ([searchValue]) => {
   fetchUsersDebounce(searchValue);
 });
+
+async function createUser() {
+  return navigateTo("/comptes/creation");
+}
 
 const headers = [
   {

@@ -197,7 +197,7 @@ const isPwdMin = ref(false);
 
 const displayInfos = {
   EditDoneWithSucces: {
-    title: "Votre mot de passe a bien été modifité",
+    title: "Votre mot de passe a bien été modifié",
     description:
       "Vous pouvez maintenant vous connecter en utilisant votre nouveau mot de passe.",
     type: "success",

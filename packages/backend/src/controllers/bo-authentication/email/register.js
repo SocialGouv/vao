@@ -15,11 +15,15 @@ const log = logger(module.filename);
 
 module.exports = async function register(req, res, next) {
   log.i("IN");
-  const { email, password, nom, prenom } = req.body;
+  const { email, nom, prenom, roles, territoire } = req.body;
 
-  const part = { email, nom, password, prenom };
+  const part = { email, nom, prenom, roles, territoire };
+
+  log.d({ part });
   try {
-    await registerSchema().validate(part);
+    await registerSchema().validate(part, {
+      abortEarly: false,
+    });
   } catch (error) {
     return next(new ValidationAppError(error));
   }
@@ -28,8 +32,9 @@ module.exports = async function register(req, res, next) {
     const { user, code } = await User.registerByEmail({
       email,
       nom,
-      password,
       prenom,
+      roles,
+      territoire,
     });
 
     log.d({ user });

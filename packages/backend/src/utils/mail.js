@@ -126,18 +126,31 @@ module.exports = {
           throw new AppError(message);
         }
 
+        const link = `${frontBODomain}/connexion/validation?token=${token}`;
         log.d("sendValidationMail - sending validation mail");
+
+        const html = sendTemplate.getBody(
+          "PORTAIL VAO ADMINISTRATION - CREATION DE COMPTE",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Vous recevez ce mail car vous vous avez été inscrit sur le portail VAO Administration.",
+                "Pour activer votre compte et créer votre mot de passe, veuillez cliquer sur lien ci dessous.",
+              ],
+              type: "p",
+            },
+            {
+              link,
+              text: "Activer mon compte",
+              type: "link",
+            },
+          ],
+          "L'équipe du SI VAO",
+        );
         const params = {
           from: senderEmail,
-          html: `
-                <p>Bonjour,</p>
-    
-                <p>Vous recevez ce mail car vous vous êtes inscrit sur le portail VAO Administration</p>
-    
-                <p>Afin de bénéficier de toutes les fonctionnalités, veuillez valider votre email en cliquant sur le lien suivant:</p>
-    
-                <p><a href="${frontBODomain}/connexion/validation?token=${token}">J'active mon compte.</a></p>
-                `,
+          html: html,
           replyTo: senderEmail,
           subject: `Portail VAO Administration - Validez votre email`,
           to: email,

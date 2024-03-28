@@ -11,7 +11,7 @@
       />
     </div>
     <div v-if="displayType !== 'EditDoneWithSucces'">
-      <h1>Renouvellement du mot de passe</h1>
+      <h1>Changement du mot de passe</h1>
       <div class="fr-grid-row fr-grid-row--center fr-my-5v">
         <div class="fr-col-12 fr-col-md-9 fr-col-lg-9">
           <div class="fr-container fr-mt-5v">
@@ -195,7 +195,7 @@ const isPwdMin = ref(false);
 
 const displayInfos = {
   EditDoneWithSucces: {
-    title: "Votre mot de passe a bien été modifité",
+    title: "Votre mot de passe a bien été modifié",
     description:
       "Vous pouvez maintenant vous connecter en utilisant votre nouveau mot de passe.",
     type: "success",
