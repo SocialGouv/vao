@@ -63,6 +63,8 @@ fileignoreconfig:
   checksum: ebaeaef58dff99ed0a70ace0cb1cfceb31c0656d921999e19ce183e2adc9431f
 - filename: .kontinuous/values.yaml
   checksum: 4206170833afbdf9aac36279e9eab12fb421cd595ef077fd6c9f48b3993e1af0
+- filename: README.md
+  checksum: 3627cd363d1cfc640df689ce74d5467e13707a2cc9c44b0bffaba14f217296e2
 - filename: _scripts/dev/local-node.dockerfile
   checksum: e18bef015dc55696295aefdd6610b20447e690cced1214ccf126842b7f1315db
 - filename: docker-compose.prod.yaml
