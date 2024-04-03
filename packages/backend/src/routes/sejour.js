@@ -32,6 +32,13 @@ router.get(
   boCheckRoleDS,
   demandeSejourController.historique,
 );
+router.post(
+  "/admin/:declarationId/prise-en-charge",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  demandeSejourController.prendEnCharge,
+);
 router.get("/:id", checkJWT, demandeSejourController.getById);
 router.get("/historique/:id", checkJWT, demandeSejourController.historique);
 

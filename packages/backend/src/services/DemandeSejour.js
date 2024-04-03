@@ -148,7 +148,7 @@ const query = {
       ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ('${departementCodes.join("','")}') as "estInstructeurPrincipal"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-    WHERE 
+    WHERE
       statut <> 'BROUILLON'
         AND (${getDepartementWhereQuery(departementCodes)})
         ${search.map((s) => ` AND ${s} `).join("")}
@@ -157,7 +157,7 @@ const query = {
   SELECT COUNT(DISTINCT ds.id)
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-    WHERE 
+    WHERE
       statut <> 'BROUILLON'
        AND (${getDepartementWhereQuery(departementCodes)})
        ${search.map((s) => ` AND ${s} `).join("")}
@@ -186,7 +186,7 @@ const query = {
       ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-    where (${getDepartementWhereQuery(departementCodes)}) 
+    where (${getDepartementWhereQuery(departementCodes)})
       AND ds.id = $1
   `,
   getEmailCcList: `
@@ -201,7 +201,7 @@ const query = {
   getEmailToList: `
   SELECT u.mail AS mail
   FROM front.users u
-  JOIN front.user_organisme uo 
+  JOIN front.user_organisme uo
     ON u.id = uo.use_id
   WHERE uo.org_id = $1
   `,
@@ -247,14 +247,15 @@ const query = {
       h.id as "historiqueId",
       h.source as "source",
       h.demande_sejour_id as "declarationId",
-      u.mail as "userEmail",
+      CASE WHEN u.id IS NOT null then u.mail ELSE bu.mail END as "userEmail",
       h.bo_user_id as "userAdminId",
       h.type as "type",
       h.type_precision as "typePrecision",
       h.metadata as "metaData",
       h.created_at as "createdAt"
     FROM front.demande_sejour_history h
-    JOIN front.users u ON u.id = h.usager_user_id
+    LEFT JOIN front.users u ON u.id = h.usager_user_id
+    LEFT JOIN back.users bu  on bu.id = h.bo_user_id
     WHERE
       h.demande_sejour_id = $1
     `,
@@ -263,13 +264,14 @@ const query = {
     source,
     demande_sejour_id,
     usager_user_id,
+    bo_user_id,
     type,
     type_precision,
     metadata,
     created_at,
     edited_at
   )
-  VALUES ($1,$2,$3,$4,$5,$6,NOW(),NOW())
+  VALUES ($1,$2,$3,$4,$5,$6,$7,NOW(),NOW())
   RETURNING
     id as "eventId"
   `,
@@ -374,6 +376,16 @@ const query = {
   UPDATE front.demande_sejour ds
   SET
     organisme_id = $1,
+    edited_at = NOW()
+  WHERE
+    ds.id = $2
+  RETURNING
+    id as "demandeId"
+  `,
+  updateStatut: `
+  UPDATE front.demande_sejour ds
+  SET
+    statut = $1,
     edited_at = NOW()
   WHERE
     ds.id = $2
@@ -694,6 +706,7 @@ module.exports.insertEvent = async (
   source,
   declarationId,
   userId,
+  boUserId,
   type,
   typePrecision,
   metaData,
@@ -703,6 +716,7 @@ module.exports.insertEvent = async (
     source,
     declarationId,
     userId,
+    boUserId,
     type,
     typePrecision,
     metaData,
@@ -728,4 +742,36 @@ module.exports.historique = async (declarationId) => {
   ]);
   log.d("historique - DONE");
   return response;
+};
+
+module.exports.updateStatut = async (demandeSejourId, statut, event = null) => {
+  log.i("update status - IN", { demandeSejourId, statut });
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+    const response = await client.query(query.updateStatut, [
+      statut,
+      demandeSejourId,
+    ]);
+    await client.query(query.insertEvent, [
+      event.source,
+      event.declarationId,
+      event.userId,
+      event.boUserId,
+      event.type,
+      event.typePrecision,
+      event.metaData,
+    ]);
+    await client.query("COMMIT");
+    const demandeId = response.rows[0].demandeId ?? null;
+    log.w("update status - OUT");
+
+    return demandeId;
+  } catch (e) {
+    await client.query("ROLLBACK");
+    throw e;
+  } finally {
+    client.release();
+  }
 };
