@@ -8,6 +8,7 @@ export const useUserStore = defineStore("user", {
     user: null,
     users: [],
     total: 0,
+    userSelected: null,
   }),
   getters: {
     isConnected: (state) => !!state.user,
@@ -29,7 +30,7 @@ export const useUserStore = defineStore("user", {
       }
     },
     async fetchUsers({ limit, offset, sortBy, sortDirection, search } = {}) {
-      log.i("fetchDemandes - IN");
+      log.i("fetchUsers - IN");
       try {
         // Appel du back pour la liste des utilisateurs
         const { usersWithPagination } = await $fetchBackend("/bo-user/list", {
@@ -46,15 +47,40 @@ export const useUserStore = defineStore("user", {
             search,
           },
         });
-        log.d("fetchDemandes - réponse", usersWithPagination);
+        log.d("fetchUsers - réponse", usersWithPagination);
         this.users = usersWithPagination.users;
         this.total = parseInt(usersWithPagination.total);
-        log.i("fetchDemandes - DONE");
+        log.i("fetchUsers - DONE");
       } catch (error) {
         // Retour vide en cas d'erreur
         this.users = [];
         this.total = 0;
-        log.w("fetchDemandes - Erreur", { error });
+        log.w("fetchUsers - Erreur", { error });
+      }
+    },
+    
+    async getUser({ search } = {}) {
+      console.log("getUser - IN");
+      console.log("getUser - IN",search);
+      try {
+        // Appel du back pour la liste des utilisateurs
+        const { user } = await $fetchBackend("/bo-user/user", {
+          credentials: "include",
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            search,
+          },
+        });
+        console.log("getUser - réponse", user);
+        this.userSelected = user.user[0];
+        log.i("getUser - DONE");
+      } catch (error) {
+        // Retour vide en cas d'erreur
+        this.user = null;
+        log.w("getUser - Erreur", { error });
       }
     },
   },

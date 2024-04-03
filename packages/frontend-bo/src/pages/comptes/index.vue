@@ -98,6 +98,7 @@
       :sort-by="sortState.sortBy"
       :sort-direction="sortState.sortDirection"
       :items-by-page="limitState"
+      :on-click-cell="navigate"
       @update-sort="updateSort"
       @update-items-by-page="updateItemsByPage"
       @update-current-page="updateCurrentPage"
@@ -160,6 +161,13 @@ const fetchUsersDebounce = debounce((search) => {
 watch([searchState], ([searchValue]) => {
   fetchUsersDebounce(searchValue);
 });
+
+
+const navigate = (state) => {
+  console.log("state: ",state)
+
+  navigateTo(`/comptes/creation?email=${state.email}`);
+};
 
 async function createUser() {
   return navigateTo("/comptes/creation");
