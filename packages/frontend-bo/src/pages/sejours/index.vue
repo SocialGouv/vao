@@ -102,6 +102,11 @@ import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
 import { DsfrInputGroup, DsfrSelect } from "@gouvminint/vue-dsfr";
 
+const log = logger("pages/sejours");
+
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
+
 const sejourStore = useDemandeSejourStore();
 
 const defaultLimit = 10;
@@ -211,8 +216,22 @@ const headers = [
     sort: true,
   },
 ];
-const navigate = (state) => {
-  navigateTo(`/sejours/${state.demandeSejourId}`);
+const navigate = async (state) => {
+  try {
+    if (state.statut === demandesSejours.statuts.TRANSMISE) {
+      await $fetchBackend(
+        `/sejour/admin/prendEnCharge/${state.demandeSejourId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+    }
+    navigateTo(`/sejours/${state.demandeSejourId}`);
+  } catch (error) {
+    log.w("prend en charge", error);
+    toaster.error("Erreur lors de la prise en charge de la demande");
+  }
 };
 
 const updateSort = ({ sortBy: sb, sortDirection: sd }) => {

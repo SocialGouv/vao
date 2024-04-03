@@ -26,6 +26,12 @@ router.get(
   boCheckJWT,
   demandeSejourController.historique,
 );
+router.get(
+  "/admin/prendEnCharge/:id",
+  boCheckJWT,
+  getDepartements,
+  demandeSejourController.prendEnCharge,
+);
 router.get("/:id", checkJWT, demandeSejourController.getById);
 router.get("/historique/:id", checkJWT, demandeSejourController.historique);
 
