@@ -105,7 +105,7 @@ const files = computed(() => {
       .map((h) => {
         return {
           name: h.informationsLocaux.justificatifERP.name,
-          type: `hebergement-${h.hebergementId}`,
+          type: `justificatif-${h.nom}`,
           createdAt: h.informationsLocaux.justificatifERP.createdAt,
           uuid: h.informationsLocaux.justificatifERP.uuid,
         };
