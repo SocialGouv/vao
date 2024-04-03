@@ -8,6 +8,7 @@ const projetSejourSchema = require("./parts/projet-sejour");
 const protocoleTransportSchema = require("./parts/protocoleTransport");
 const protocoleSanitaireSchema = require("./parts/protocoleSanitaire");
 const hebergementUtils = require("./hebergement");
+const adresseSchema = require("./parts/adresse.js");
 
 const log = logger(module.filename);
 
@@ -54,7 +55,9 @@ const baseSchema = {
   libelle: yup.string().typeError("le libellé est requis").required(),
   responsableSejour: yup
     .object({
-      adresse: yup.object().required(),
+      adresse: yup
+        .object(adresseSchema({ isFromAPIAdresse: false }))
+        .required(),
       email: yup.string().required(),
       fonction: yup.string().required(),
       nom: yup.string().required(),

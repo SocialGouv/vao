@@ -1,9 +1,10 @@
 const yup = require("yup");
 
 const telephoneSchema = require("./parts/telephone");
+const adresseSchema = require("./parts/adresse.js")({ isFromAPIAdresse: true });
 
 const coordonneesSchema = () => ({
-  adresse: yup.object().required(),
+  adresse: yup.object(adresseSchema).required(),
   email: yup.string().email().nullable(),
   nomGestionnaire: yup.string().required(),
   numTelephone1: telephoneSchema(),

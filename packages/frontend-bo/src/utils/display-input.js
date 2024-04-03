@@ -355,6 +355,11 @@ const IHebergement = {
     inputType: InputTypes.TEXT,
     label: "Nom",
   },
+  coordonnees: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Adresse",
+    formatter: (value) => value.adresse.label,
+  },
 };
 
 const IAttestation = {
