@@ -23,6 +23,7 @@
               :model-value="numero"
               :is-valid="numeroMeta.valid"
               :error-message="numeroErrorMessage"
+              hint="Numéro d’agrément figurant sur l’arrêté portant décision d’agrément"
               placeholder="Veuillez saisir le numéro d'agrément"
               @update:model-value="onNumeroChange"
             />

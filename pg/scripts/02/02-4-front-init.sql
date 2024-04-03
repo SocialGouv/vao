@@ -68,13 +68,13 @@ create table front.user_organisme (
 CREATE TABLE front.agrements (
    id                            SERIAL                  NOT NULL,
    organisme_id                  INTEGER                 NOT NULL REFERENCES front.organismes(id),
-	numero                        VARCHAR(10)             ,
+	numero                        VARCHAR(30)             ,
    region_obtention              VARCHAR(4)              ,
    date_obtention                DATE                    ,
    date_fin_validite             DATE                    ,
    file                          JSONB                   ,
    supprime                      BOOLEAN                 NOT NULL DEFAULT false,
-   created_at                   TIMESTAMP                DEFAULT current_timestamp NOT NULL,
+   created_at                    TIMESTAMP               DEFAULT current_timestamp NOT NULL,
    constraint pk_agrements primary key (id)
 );
 
