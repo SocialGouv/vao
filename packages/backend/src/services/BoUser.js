@@ -318,6 +318,51 @@ module.exports.registerByEmail = async ({
   return { code: "MajCompte", user };
 };
 
+  module.exports.updateUser = async ({
+    id,
+    nom,
+    prenom,
+    roles,
+    territoire
+  }) => {
+  log.i("updateUser - IN", { id });
+
+  // Test de l'existance d'un compte avec cet identifiant
+  const response = await pool.query(
+    ...query.select({ id: id }),
+  );
+  log.d("response query.select({ id:", response);
+  if (response.rows.length === 0) {
+    log.d("updateUser - DONE - Utilisateur BO inexistant");
+    throw new AppError("Utilisateur déjà inexistant", {
+      name: "UserNotExist",
+    });
+  }
+  
+  // Mise à jour du compte en base de données
+  const userId = await pool.query(
+    ...query.updateUser(id, nom, prenom, territoire),
+  );
+
+  const [user] = userId.rows;
+
+  // Suppression des roles de l'utilisateur
+  await pool.query(
+    ...query.deleteRole(id),
+  );
+
+
+  // Création des rôles en base de données
+  roles.forEach((element) => {
+    log.d("element : ", element);
+    pool.query(...query.bindRole(id, element));
+  });
+
+  log.i("updateUser - DONE", { userId });
+
+  return { code: "MajCompte", user };
+};
+
 
 module.exports.editPassword = async ({ email, password }) => {
   log.i("editPassword - IN", { email });

@@ -204,12 +204,7 @@ const searchState = reactive({
   email: null,
 });
 
-//const userId = ref(route.params.userId);
 const userId = ref(route.params.userId);
-
-// Récupération du paramètre email 
-//const email = route.query.email
-
 
 const links = [
   {
