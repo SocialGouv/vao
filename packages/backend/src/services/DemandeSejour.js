@@ -548,6 +548,14 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
   log.w("update - IN", { demandeSejourId, parametre, type });
   let response;
   switch (type) {
+    case "statut": {
+      const { statut } = parametre;
+      response = await pool.query(query.updateStatut, [
+        statut,
+        demandeSejourId,
+      ]);
+      break;
+    }
     case "organisme": {
       const { organismeId } = parametre;
       response = await pool.query(query.updateOrganisme, [
