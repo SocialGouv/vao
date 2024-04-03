@@ -5,11 +5,11 @@ const logger = require("../../utils/logger");
 const log = logger(module.filename);
 
 module.exports = async function post(req, res) {
-  const userId = req.params.id;
-  const { user } = req.body;
-  log.i("IN", { userId, user });
+  const demandeSejourId = req.params.id;
+  const { type, parametre } = req.body;
+  log.i("IN", { demandeSejourId, parametre, type });
 
-  if (!user || !userId ) {
+  if (!type || !demandeSejourId || !parametre) {
     log.w("missing parameter");
     return res.status(400).json({ message: "paramètre manquant." });
   }
