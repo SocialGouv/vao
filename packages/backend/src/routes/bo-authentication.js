@@ -1,9 +1,15 @@
 const express = require("express");
+const BOAuthenticationController = require("../controllers/bo-authentication");
+const BOcheckJWT = require("../middlewares/bo-check-JWT");
+const logger = require("../utils/logger");
 
 const router = express.Router();
+const log = logger(module.filename);
 
-const BOAuthenticationController = require("../controllers/bo-authentication");
-
+router.get("/check-token", BOcheckJWT, (req, res) => {
+  log.d("check token is OK! ");
+  res.send("OK");
+});
 // Gère une connexion via mot de passe.
 router.post("/email/register", BOAuthenticationController.email.register);
 router.post("/email/login", BOAuthenticationController.email.login);

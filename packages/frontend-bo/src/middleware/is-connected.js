@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware(async () => {
     log.i("not connected, redirect to login");
     return navigateTo("/connexion");
   } else {
-    const url = "/authentication/bo/check-token";
+    const url = "/bo-authentication/check-token";
     try {
       await $fetchBackend(url, {
         method: "GET",

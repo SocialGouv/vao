@@ -48,6 +48,8 @@ backend:
   env:
     - name: DEBUG
       value: "*info*"
+    - name: DEBUG_HIDE_DATE
+      value: "true"
     - name: TZ
       value: Europe/Paris
     - name: BACKEND_URL

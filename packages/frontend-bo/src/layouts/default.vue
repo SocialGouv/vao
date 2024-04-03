@@ -34,7 +34,7 @@ const homeTo = computed(() => {
 async function logout() {
   const sub = userStore.user.sub;
   log.i("logout - IN");
-  await $fetchBackend("/authentication/disconnect", {
+  await $fetchBackend("/bo-authentication/disconnect", {
     method: "POST",
     credentials: "include",
     headers: {
