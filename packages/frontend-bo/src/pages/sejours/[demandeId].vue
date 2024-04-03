@@ -24,6 +24,21 @@
       >
         <DisplayPj />
       </DsfrTabContent>
+      <DsfrTabContent
+        panel-id="tab-content-2"
+        tab-id="tab-2"
+        :selected="selectedTabIndex === 2"
+        :asc="asc"
+      >
+        <DemandesSejourHistorique
+          v-if="historique"
+          :historique="historique.historique ?? []"
+        />
+        <DsfrAlert v-else-if="error" type="error"
+          >Une erreur est survenur durant la récupération de l'historique de la
+          déclaration
+        </DsfrAlert>
+      </DsfrTabContent>
     </DsfrTabs>
   </div>
 </template>
@@ -48,9 +63,22 @@ const selectedTabIndex = ref(initialSelectedIndex);
 const selectTab = (idx) => {
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
+  if (idx === 2 && !historique.value) {
+    execute();
+  }
 };
 
 const demandeStore = useDemandeSejourStore();
+
+const {
+  data: historique,
+  error,
+  execute,
+} = useFetchBackend(`/sejour/admin/historique/${route.params.demandeId}`, {
+  immediate: false,
+  method: "GET",
+  credentials: "include",
+});
 
 onMounted(async () => {
   try {
@@ -60,7 +88,11 @@ onMounted(async () => {
   }
 });
 
-const tabTitles = [{ title: " Formulaire" }, { title: "Documents joints" }];
+const tabTitles = [
+  { title: " Formulaire" },
+  { title: "Documents joints" },
+  { title: "Historique de la déclaration" },
+];
 </script>
 
 <style scoped>
