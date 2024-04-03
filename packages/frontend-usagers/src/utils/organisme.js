@@ -204,7 +204,10 @@ const personnePhysiqueSchema = {
 };
 const agrementSchema = (regions) => ({
   file: yup.object().required(),
-  numero: yup.string().required(),
+  numero: yup
+    .string()
+    .max(30, "Le numéro d'agrément ne peut pas dépasser 30 caractères.")
+    .required(),
   regionObtention: yup
     .string()
     .test(
