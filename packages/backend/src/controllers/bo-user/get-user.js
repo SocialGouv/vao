@@ -5,7 +5,7 @@ const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async function getList(req, res) {
+module.exports = async function getUser(req, res) {
   log.i("In");
   const { decoded } = req;
   //  TODO : check what the jwt contains. Here i suppose that the id the the admin id
@@ -13,22 +13,19 @@ module.exports = async function getList(req, res) {
   log.d("userId", { adminId });
 
   try {
-    const { limit, offset, sortBy, sortDirection, search } = req.query;
-    log.i("search ::::",{search});
-    const usersWithPagination = await BoUser.getList({
-      limit,
-      offset,
+    const { search } = req.query;
+    log.i("search ::::",search.email);
+
+    const user = await BoUser.readUser({
       search: JSON.parse(search ?? "{}"),
-      sortBy,
-      sortDirection,
     });
-    log.d(usersWithPagination);
-    return res.status(200).json({ usersWithPagination });
+    log.d(user);
+    return res.status(200).json({ user });
   } catch (error) {
     log.w(error);
     return res.status(400).json({
       message:
-        "une erreur est survenue durant la récupération de la liste des utilisateurs BO",
+        "une erreur est survenue durant la récupération d'utilisateur' des utilisateurs BO",
     });
   }
 };

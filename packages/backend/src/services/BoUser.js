@@ -22,6 +22,10 @@ const query = {
     ;`,
     [user, role],
   ],
+  deleteRole: (id) => [
+    `DELETE FROM back.user_roles  WHERE use_id = $1;`,
+    [id],
+  ],
   create: (email, nom, prenom, territoire) => [
     `INSERT INTO back.users (
       mail,
@@ -100,6 +104,8 @@ const query = {
       id as id,
       mail as email,
       pwd is not null as "hasPwd",
+      nom as nom,
+      prenom as prenom,
       blocked as "isBlocked",
       ter_code as "territoireCode"
     FROM back.users
@@ -108,6 +114,33 @@ const query = {
       AND pwd = crypt($2, pwd)
       AND deleted is False
     `,
+  selectUser: (search) => `
+   SELECT 
+      us.id AS id,
+      us.mail AS email,
+      us.pwd IS NOT NULL AS hasPwd,
+      us.blocked AS isBlocked,
+      us.nom AS nom,
+      us.prenom AS prenom,
+      us.validated AS validated,
+      us.ter_code AS territoire,
+      ter.parent_code AS territoireParent,
+      jsonb_agg(
+          jsonb_build_object(
+              'roleid', ro.id,
+              'role', ro.label
+          )
+      ) AS roles
+    FROM 
+      back.users AS us
+      INNER JOIN back.user_roles ur ON ur.use_id = us.id
+      INNER JOIN back.roles ro ON ur.rol_id = ro.id
+      INNER JOIN geo.territoires ter on ter.code = us.ter_code
+      WHERE 1 = 1
+      ${search.map((s) => ` AND ${s} `).join("")}
+    GROUP BY 
+      us.id, us.mail, us.pwd, us.blocked, us.nom, us.prenom, us.validated, us.ter_code, ter.parent_code ;
+  `,
   select: (criterias) => [
     `
       SELECT
@@ -125,6 +158,18 @@ const query = {
         .join(" ")}
       `,
     Object.values(criterias),
+  ],
+  updateUser: (id, nom, prenom, territoire) => [
+    `
+      UPDATE back.users
+      SET
+        nom = $2,
+        prenom = $3,
+        ter_code = $4
+      WHERE
+        id = $1
+      `,
+      [id, nom, prenom, territoire],
   ],
 };
 
@@ -228,6 +273,52 @@ module.exports.registerByEmail = async ({
   return { code: "CreationCompte", user };
 };
 
+  module.exports.updateUser = async ({
+    id,
+    nom,
+    prenom,
+    roles,
+    territoire
+  }) => {
+  log.i("updateUser - IN", { id });
+
+  // Test de l'existance d'un compte avec cet identifiant
+  const response = await pool.query(
+    ...query.select({ id: id }),
+  );
+  log.d("response query.select({ id:", response);
+  if (response.rows.length === 0) {
+    log.d("updateUser - DONE - Utilisateur BO inexistant");
+    throw new AppError("Utilisateur déjà inexistant", {
+      name: "UserNotExist",
+    });
+  }
+  
+  // Mise à jour du compte en base de données
+  const userId = await pool.query(
+    ...query.updateUser(id, nom, prenom, territoire),
+  );
+
+  const [user] = userId.rows;
+
+  // Suppression des roles de l'utilisateur
+  await pool.query(
+    ...query.deleteRole(id),
+  );
+
+
+  // Création des rôles en base de données
+  roles.forEach((element) => {
+    log.d("element : ", element);
+    pool.query(...query.bindRole(id, element));
+  });
+
+  log.i("updateUser - DONE", { userId });
+
+  return { code: "MajCompte", user };
+};
+
+
 module.exports.editPassword = async ({ email, password }) => {
   log.i("editPassword - IN", { email });
   let response = await pool.query(...query.select({ mail: normalize(email) }));
@@ -270,19 +361,45 @@ module.exports.activate = async (email) => {
 
 module.exports.read = async (criterias = {}) => {
   log.i("read - IN");
+  
   const user = await pool.query(...query.select(criterias));
   log.i("read - DONE");
   return user.rows;
 };
 
+
+module.exports.readUser = async ({
+  search,
+} = {}) => {
+  log.i("read - IN");
+  log.d("read - search", search);
+  const searchQuery = [];
+  if (search?.id && search.id.length) {
+    searchQuery.push(`us.id = '${search.id}'`);
+  }
+  if (search?.email && search.email.length) {
+    searchQuery.push(`us.mail = '${search.email}'`);
+  }
+
+  let querySelect = query.selectUser(searchQuery);
+
+  log.d("getList", querySelect);
+  const response = await pool.query(querySelect);
+
+  log.i("getList - DONE");
+  return {
+    user: response.rows,
+  };
+};
+
 module.exports.login = async ({ email, password }) => {
-  log.i("read - IN", { email, password });
+  log.i("login - IN", { email, password });
   const user = await pool.query(query.login, [normalize(email), password]);
   log.d(user.rows);
   if (user.rows.length === 0) {
     return null;
   }
-  log.i("read - DONE", { user: user.rows[0] });
+  log.i("login - DONE");
   return user.rows[0];
 };
 
