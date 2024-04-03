@@ -101,6 +101,7 @@ const hebergementDetailsSchema = {
       )
       .required(),
   }),
+  nom: yup.string().required(),
 };
 
 const attestationSchema = {

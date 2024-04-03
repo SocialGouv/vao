@@ -607,6 +607,7 @@ const initialValues = {
   informationsTransport: {
     ...(props.hebergement.informationsTransport ?? {}),
   },
+  nom: props.hebergement.nom,
 };
 
 const { values, resetForm } = useForm({
@@ -777,6 +778,7 @@ async function handleHebergementIdChange(hebergementId) {
       informationsTransport: {
         ...hebergementStore.hebergementCourant.informationsTransport,
       },
+      nom: hebergementStore.hebergementCourant.nom,
     };
     resetForm({
       values: newValues,
