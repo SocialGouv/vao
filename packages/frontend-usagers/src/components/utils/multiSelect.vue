@@ -1,34 +1,30 @@
 <template>
   <DsfrSelect
-    v-if="props.modifiable"
     :options="optionsToDisplay"
     :model-value="null"
     :select-id="selectId"
     :disabled="!props.modifiable"
+    :error-message="props.errorMessage"
     v-bind="$attrs"
     @update:model-value="addItem"
   >
     <template #label>
-      <label
-        >{{ props.label }}
-        <span v-if="required" class="required">&nbsp;*</span></label
-      >
+      <label>
+        {{ props.label }}
+      </label>
       <DsfrTags :tags="formatedTags" />
     </template>
   </DsfrSelect>
-  <template v-else>
-    <label>{{ props.label }}</label>
-    <DsfrTags :tags="formatedTags" />
-  </template>
 </template>
 
 <script setup>
 const props = defineProps({
-  required: { type: Boolean, default: false },
   options: { type: Array, required: true },
   values: { type: Array, required: true },
   label: { type: String, required: true },
   modifiable: { type: Boolean, default: true },
+  isValid: { type: Boolean, default: true },
+  errorMessage: { type: String, default: null },
 });
 const emit = defineEmits(["update"]);
 

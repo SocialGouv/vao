@@ -83,13 +83,14 @@
       v-if="organismeStore.organismeCourant.typeOrganisme === 'personne_morale'"
     >
       <h6>Organisme</h6>
-      <OrganismePersonneMoraleReadOnly
+      <OrganismePersonneMorale
         :init-data="organismeStore.organismeCourant.personneMorale"
         :show-responsable-sejour="false"
-      ></OrganismePersonneMoraleReadOnly>
+        :modifiable="false"
+      ></OrganismePersonneMorale>
     </div>
 
-    <fieldset class="fr-fieldset">
+    <fieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton
         id="next-step"
         label="Suivant"
@@ -113,6 +114,8 @@ const props = defineProps({
     required: true,
   },
   modifiable: { type: Boolean, default: true },
+  validateOnMount: { type: Boolean, default: false },
+  showButtons: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["next", "update"]);
@@ -173,6 +176,7 @@ const initialValues = (() => {
 const { meta, values } = useForm({
   validationSchema,
   initialValues,
+  validateOnMount: props.validateOnMount,
 });
 
 const {

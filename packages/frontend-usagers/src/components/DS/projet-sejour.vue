@@ -1,39 +1,39 @@
 <template>
   <div>
     <DsfrFieldset>
-      <div class="fr-fieldset__element fr-col-12">
-        <DsfrCheckboxSet
-          v-model="destination"
-          name="destination"
-          legend="Destination"
-          :disabled="!props.modifiable"
-          :inline="true"
-          :options="projetSejour.destinationOptions"
-          :small="true"
-        />
-      </div>
+      <DsfrCheckboxSet
+        v-model="destination"
+        name="destination"
+        legend="Destination"
+        :disabled="!props.modifiable"
+        :inline="true"
+        :options="projetSejour.destinationOptions"
+        :error-message="destinationErrorMessage"
+        :small="true"
+      />
     </DsfrFieldset>
     <DsfrFieldset legend="Activités spécifiques proposées">
-      <div class="fr-fieldset__element fr-col-12">
-        <UtilsMultiSelect
-          :options="projetSejour.sportOptions"
-          :values="activitesSportives"
-          :modifiable="props.modifiable"
-          label="Sports et loisirs"
-          @update="addActiviteSport"
-        ></UtilsMultiSelect>
-      </div>
-      <div class="fr-fieldset__element fr-col-12">
-        <UtilsMultiSelect
-          :options="projetSejour.cultureOptions"
-          :values="activitesCulturelles"
-          :modifiable="props.modifiable"
-          label="Culture et découverte"
-          @update="addActiviteCulture"
-        ></UtilsMultiSelect>
-      </div>
+      <UtilsMultiSelect
+        label="Sports et loisirs"
+        :options="projetSejour.sportOptions"
+        :values="activitesSportives"
+        :modifiable="props.modifiable"
+        :is-valid="activitesSportivesMeta.valid"
+        :error-message="activitesSportivesErrorMessage"
+        @update="addActiviteSport"
+      ></UtilsMultiSelect>
+
+      <UtilsMultiSelect
+        label="Culture et découverte"
+        :options="projetSejour.cultureOptions"
+        :values="activitesCulturelles"
+        :modifiable="props.modifiable"
+        :is-valid="activitesCulturellesMeta.valid"
+        :error-message="activitesCulturellesErrorMessage"
+        @update="addActiviteCulture"
+      ></UtilsMultiSelect>
     </DsfrFieldset>
-    <DsfrFieldset>
+    <DsfrFieldset v-if="props.showButtons">
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
           id="previous-step"
@@ -58,6 +58,8 @@ import * as yup from "yup";
 const props = defineProps({
   initData: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
+  validateOnMount: { type: Boolean, default: false },
+  showButtons: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
@@ -75,6 +77,7 @@ const initialValues = {
 const { meta, values } = useForm({
   validationSchema,
   initialValues,
+  validateOnMount: props.validateOnMount,
 });
 
 function addActiviteSport(liste) {
@@ -86,9 +89,18 @@ function addActiviteCulture(liste) {
   activitesCulturelles.value = liste;
 }
 
-const { value: destination } = useField("destination");
-const { value: activitesSportives } = useField("activitesSportives");
-const { value: activitesCulturelles } = useField("activitesCulturelles");
+const { value: destination, errorMessage: destinationErrorMessage } =
+  useField("destination");
+const {
+  value: activitesSportives,
+  meta: activitesSportivesMeta,
+  errorMessage: activitesSportivesErrorMessage,
+} = useField("activitesSportives");
+const {
+  value: activitesCulturelles,
+  meta: activitesCulturellesMeta,
+  errorMessage: activitesCulturellesErrorMessage,
+} = useField("activitesCulturelles");
 
 function next() {
   if (!meta.value.dirty && Object.keys(props.initData).length !== 0) {

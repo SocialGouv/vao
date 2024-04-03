@@ -9,7 +9,6 @@
         v-bind="$attrs"
         @change="changeFiles"
       />
-      <span v-else>Aucune pièce versée</span>
     </div>
   </div>
 </template>

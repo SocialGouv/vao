@@ -4,6 +4,7 @@
       <DsfrTable :headers="headersToDisplay" :rows="personnesToDisplay" />
     </div>
     <DsfrButton
+      v-if="props.modifiable"
       ref="modalOrigin"
       label="Ajouter un élément"
       size="sm"
@@ -14,15 +15,18 @@
       ref="modal"
       name="test"
       :opened="modalPersonne.opened"
-      :title="props.title"
+      :title="props.titre"
       size="md"
       @close="onClose"
     >
       <Personne
+        :modifiable="props.modifiable"
         :personne="personne"
         :show-adresse="props.showAdresse"
         :show-telephone="props.showTelephone"
         :show-email="props.showEmail"
+        :show-button="props.modifiable"
+        :validate-on-mount="!props.modifiable"
         @valid="updatePersonne"
       ></Personne>
     </DsfrModal>
@@ -32,6 +36,7 @@
 <script setup>
 const props = defineProps({
   personnes: { type: Array, required: true },
+  modifiable: { type: Boolean, default: true },
   showAdresse: { type: Boolean, default: false, required: false },
   showTelephone: { type: Boolean, default: false, required: false },
   showEmail: { type: Boolean, default: false, required: false },
@@ -60,16 +65,18 @@ const personnesToDisplay = computed(() => {
     displayedFields.forEach((f) => {
       row.push(p[f]);
     });
-    row.push({
-      component: "DsfrButton",
-      class: "fr-icon-delete-fill",
-      tertiary: true,
-      noOutline: true,
-      onClick: (event) => {
-        event.stopPropagation();
-        deleteItem(index);
-      },
-    });
+    if (props.modifiable) {
+      row.push({
+        component: "DsfrButton",
+        class: "fr-icon-delete-fill",
+        tertiary: true,
+        noOutline: true,
+        onClick: (event) => {
+          event.stopPropagation();
+          deleteItem(index);
+        },
+      });
+    } else row.push({});
     return {
       rowData: row,
       rowAttrs: { class: "pointer", onClick: () => editItem(index) },

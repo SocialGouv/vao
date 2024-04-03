@@ -217,13 +217,13 @@ const agrementSchema = (regions) => ({
     )
     .required(),
   dateObtention: yup
-    .date()
+    .date("la date d'obtention est obligatoire")
     .max(new Date(), "La date doit être inférieure à la date du jour.")
     .min(
       dayjs().add(-5, "year"),
       "La date de validité de votre agrément a expiré",
     )
-    .required(),
+    .required("la date d'obtention est obligatoire"),
 });
 
 const schema = (regions) => ({

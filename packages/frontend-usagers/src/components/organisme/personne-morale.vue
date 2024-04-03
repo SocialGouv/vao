@@ -10,13 +10,14 @@
             :model-value="formatedSiret"
             :is-valid="siretMeta.valid"
             :error-message="siretErrorMessage"
+            :readonly="!props.modifiable"
             placeholder=""
             hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
             @update:model-value="trimSiret"
           />
         </div>
       </div>
-      <div class="fr-fieldset__element">
+      <div v-if="props.modifiable" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-4">
           <DsfrButton
             id="chercherSiret"
@@ -80,7 +81,7 @@
               label="Courriel"
               :label-visible="true"
               :model-value="email"
-              :readonly="false"
+              :readonly="!props.modifiable"
               :is-valid="emailMeta.valid"
               :error-message="emailErrorMessage"
               placeholder=""
@@ -96,7 +97,7 @@
               label="Téléphone"
               :label-visible="true"
               :model-value="telephone"
-              :readonly="false"
+              :readonly="!props.modifiable"
               :is-valid="telephoneMeta.valid"
               :valid-message="telephoneValidMessage"
               :error-message="telephoneErrorMessage"
@@ -136,6 +137,7 @@
           <div class="fr-input-group fr-col-12">
             <Personnes
               :personnes="representantsLegaux"
+              :modifiable="props.modifiable"
               :show-adresse="false"
               :show-telephone="false"
               :show-email="false"
@@ -153,10 +155,12 @@
           <Personne
             :key="randomId"
             :personne="responsableSejour"
+            :modifiable="props.modifiable"
             :show-adresse="true"
             :show-telephone="true"
             :show-email="true"
             :show-button="false"
+            :validate-on-mount="!props.modifiable"
             :model-value="responsableSejour"
             @update:personne="onResponsableSejourChange"
           ></Personne>
@@ -164,7 +168,7 @@
       </div>
     </div>
 
-    <fieldset class="fr-fieldset">
+    <fieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
     </fieldset>
   </div>
@@ -182,6 +186,9 @@ const emit = defineEmits(["previous", "next", "update"]);
 
 const props = defineProps({
   initData: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
+  showButtons: { type: Boolean, default: true },
+  validateOnMount: { type: Boolean, default: false },
 });
 
 const headers = [
@@ -221,6 +228,7 @@ const initialValues = {
 const { meta, values, setValues } = useForm({
   initialValues,
   validationSchema,
+  validateOnMount: props.validateOnMount,
 });
 
 const {
@@ -282,23 +290,28 @@ const formatedSiret = computed(() => {
 });
 
 const formatedEtablissements = computed(() => {
-  return etablissements.value.map((e, index) => {
-    const row = [
-      e.nic,
-      e.adresse,
-      e.codePostal,
-      e.commune,
-      {
-        component: "DsfrToggleSwitch",
-        modelValue: etablissements.value[index].enabled,
-        onChange: () => {
-          etablissements.value[index].enabled =
-            !etablissements.value[index].enabled;
+  return etablissements.value
+    .filter((e) => {
+      return !props.modifiable ? e.enabled : e;
+    })
+    .map((e, index) => {
+      const row = [
+        e.nic,
+        e.adresse,
+        e.codePostal,
+        e.commune,
+        {
+          component: "DsfrToggleSwitch",
+          modelValue: etablissements.value[index].enabled,
+          disabled: !props.modifiable,
+          onChange: () => {
+            etablissements.value[index].enabled =
+              !etablissements.value[index].enabled;
+          },
         },
-      },
-    ];
-    return row;
-  });
+      ];
+      return row;
+    });
 });
 
 function trimSiret(s) {

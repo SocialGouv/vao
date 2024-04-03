@@ -18,13 +18,14 @@
             <DsfrInputGroup
               name="numero"
               type="text"
-              :label-visible="true"
+              hint="Numéro d’agrément figurant sur l’arrêté portant décision d’agrément"
+              placeholder=""
               label="Numéro d'agrément “Vacances adaptées organisées”"
+              :label-visible="true"
+              :readonly="!props.modifiable"
               :model-value="numero"
               :is-valid="numeroMeta.valid"
               :error-message="numeroErrorMessage"
-              hint="Numéro d’agrément figurant sur l’arrêté portant décision d’agrément"
-              placeholder="Veuillez saisir le numéro d'agrément"
               @update:model-value="onNumeroChange"
             />
           </div>
@@ -37,11 +38,13 @@
               name="dateObtention"
               type="date"
               label="Date d'obtention de l'agrément"
+              hint="Date d'obtention de l'agrément"
+              placeholder=""
+              :readonly="!props.modifiable"
               :label-visible="true"
               :model-value="dateObtention"
               :is-valid="dateObtentionMeta.valid"
               :error-message="dateObtentionErrorMessage"
-              placeholder="Date d'obtention de l'agrément"
               @update:model-value="onDateObtentionChange"
             />
           </div>
@@ -55,7 +58,7 @@
               name="regionObtention"
               label="Région d’obtention de l’agrément"
               :options="regionStore.regions"
-              :is-valid="regionObtentionMeta.valid"
+              :disabled="!props.modifiable"
               :error-message="regionObtentionErrorMessage"
               @update:model-value="onRegionObtentionChange"
             />
@@ -82,7 +85,10 @@
               "
               >Précédent
             </DsfrButton>
-            <DsfrButton id="next-step" @click.prevent="next"
+            <DsfrButton
+              id="next-step"
+              :disabled="!meta.valid"
+              @click.prevent="next"
               >Suivant
             </DsfrButton>
           </DsfrButtonGroup>
@@ -99,6 +105,7 @@ import * as yup from "yup";
 const log = logger("components/organisme/agrement");
 const props = defineProps({
   initAgrement: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
@@ -144,7 +151,6 @@ const {
   value: regionObtention,
   errorMessage: regionObtentionErrorMessage,
   handleChange: onRegionObtentionChange,
-  meta: regionObtentionMeta,
 } = useField("regionObtention");
 
 const { value: file } = useField("file");

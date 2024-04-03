@@ -34,7 +34,7 @@
         />
       </div>
     </fieldset>
-    <fieldset class="fr-fieldset">
+    <fieldset v-if="props.modifiable" class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-6">
         <DsfrSelect
           :model-value="hebergementId"
@@ -133,7 +133,7 @@
         </div>
       </DsfrFieldset>
       <DsfrFieldset legend="Type de lieu de l'hébergement">
-        <DsfrAlert>
+        <DsfrAlert v-if="props.modifiable">
           <p>
             Informations ERP : Selon la circulaire du 6 octobre 2023, il sera
             requis l’arrêté d’autorisation du maire et/ou la dernière
@@ -170,6 +170,7 @@
           v-model="file"
           label="Téléchargement du document justificatif référent à l’établissement ERP"
           hint="Taille maximale : 5 Mo."
+          :modifiable="props.modifiable"
         />
 
         <div class="fr-fieldset__element fr-col-12">
@@ -265,11 +266,11 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="informationsLocaux.descriptionLieuHebergement"
-            :readonly="!props.modifiable"
             label="Description du lieu d’hébergement (parties communes et notamment équipements sanitaires)"
+            placeholder=""
+            :readonly="!props.modifiable"
             :label-visible="true"
             :is-textarea="true"
-            placeholder=""
             :model-value="descriptionLieuHebergement"
             :error-message="descriptionLieuHebergementErrorMessage"
             :is-valid="descriptionLieuHebergementMeta.valid"
@@ -281,10 +282,10 @@
           <DsfrInputGroup
             name="informationsLocaux.nombreLits"
             type="number"
-            :readonly="!props.modifiable"
             label="Nombre de lits dans le lieu d'hébergement"
-            :label-visible="true"
             placeholder=""
+            :label-visible="true"
+            :readonly="!props.modifiable"
             :model-value="nombreLits"
             :error-message="nombreLitsErrorMessage"
             :is-valid="nombreLitsMeta.valid"
@@ -314,7 +315,8 @@
           <div class="fr-input-group">
             <DsfrRadioButtonSet
               name="informationsLocaux.litsDessus"
-              legend="Pour les lits superposés, les lits « du dessus » seront-ils occupés par des vacanciers  ?"
+              legend="Pour les lits superposés, les lits « du dessus » seront-ils occupés
+            par des vacanciers ?"
               :disabled="!props.modifiable"
               :model-value="litsDessus"
               :options="ouiNonOptions"
@@ -360,7 +362,8 @@
           <div class="fr-input-group">
             <DsfrRadioButtonSet
               name="informationsLocaux.rangementIndividuel"
-              legend="Chaque vacancier bénéficie t-il d’un espace de rangement des affaires personnelles ?"
+              legend="Chaque vacancier bénéficie t-il d’un espace de rangement des
+            affaires personnelles ?"
               :disabled="!props.modifiable"
               :model-value="rangementIndividuel"
               :options="ouiNonOptions"
@@ -408,7 +411,8 @@
           <div class="fr-input-group">
             <DsfrRadioButtonSet
               name="informationsLocaux.amenagementsSpecifiques"
-              legend="Des aménagements spécifiques des locaux sont-ils prévus pour accueillir les vacanciers ?"
+              legend="Des aménagements spécifiques des locaux sont-ils prévus pour
+            accueillir les vacanciers ?"
               :disabled="!props.modifiable"
               :model-value="amenagementsSpecifiques"
               :options="ouiNonOptions"
@@ -501,7 +505,7 @@
       </DsfrFieldset>
     </template>
 
-    <fieldset class="fr-fieldset">
+    <fieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
           v-if="!props.modifiable"
@@ -556,6 +560,8 @@ const props = defineProps({
   dateDebutIni: { type: String, required: true },
   dateFinIni: { type: String, required: true },
   modifiable: { type: Boolean, default: true },
+  showButtons: { type: Boolean, default: true },
+  validateOnMount: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["cancel", "update"]);
@@ -613,6 +619,7 @@ const initialValues = {
 const { values, resetForm } = useForm({
   initialValues,
   validationSchema,
+  validateOnMount: props.validateOnMount,
 });
 
 const {
@@ -669,6 +676,7 @@ const {
   value: prestationsHotelieres,
   handleChange: onPrestationsHotelieresChange,
   errorMessage: prestationsHotelieresErrorMessage,
+  meta: prestationsHotelieresMeta,
 } = useField("informationsLocaux.prestationsHotelieres");
 const {
   value: descriptionLieuHebergement,
