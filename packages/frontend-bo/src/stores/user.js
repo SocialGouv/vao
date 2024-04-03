@@ -16,7 +16,7 @@ export const useUserStore = defineStore("user", {
     async refreshProfile() {
       log.i("refreshProfile - IN");
       try {
-        const { user } = await $fetchBackend("/users/me", {
+        const { user } = await $fetchBackend("/bo-user/me", {
           credentials: "include",
         });
         if (user) {
