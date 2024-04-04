@@ -1,26 +1,28 @@
 const BoUser = require("../../services/BoUser");
 
 const logger = require("../../utils/logger");
+const ValidationAppError = require("../../utils/validation-error");
+
+const BOUserSchema = require("../../schemas/bo-user");
 
 const log = logger(module.filename);
 
-module.exports = async function update(req, res) {
-  const { email, nom, prenom, roles, territoire } = req.body;
-  log.i("IN", { email, nom, prenom, roles, territoire });
+module.exports = async function update(req, res, next) {
+  log.i("IN", req.body);
+  let user;
 
-  if (!email || !nom || !prenom || !roles || !territoire) {
-    log.w("missing parameter");
-    return res.status(400).json({ message: "paramètre manquant." });
-  }
   try {
-    await BoUser.create({
-      email,
-      nom,
-      prenom,
-      roles,
-      territoire,
+    user = await BOUserSchema().validate(req.body, {
+      abortEarly: false,
+      stripUnknown: true,
     });
-    return res.status(200).json({ message: "Utilisateur mis à jour" });
+  } catch (error) {
+    return next(new ValidationAppError(error));
+  }
+
+  try {
+    await BoUser.create(user);
+    return res.status(200).json({ message: "Utilisateur créé" });
   } catch (error) {
     log.w(error);
     return res.status(400).json({
