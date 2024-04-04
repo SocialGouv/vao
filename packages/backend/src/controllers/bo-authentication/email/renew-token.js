@@ -14,7 +14,7 @@ const { buildEmailToken } = require("../../../utils/token");
 
 const log = logger(module.filename);
 
-module.exports = async function register(req, res, next) {
+module.exports = async function renewToken(req, res, next) {
   const { email } = req.body;
   log.i("IN", { email });
   try {
@@ -23,6 +23,7 @@ module.exports = async function register(req, res, next) {
         name: "MalformedQuery",
       });
     }
+    // TODO : bug smell
     const [user] = await User.read({ mail: normalize(email) });
     log.d({ user });
     if (!user) {

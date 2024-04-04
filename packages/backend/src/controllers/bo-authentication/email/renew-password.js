@@ -11,7 +11,7 @@ const logger = require("../../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async function register(req, res, next) {
+module.exports = async function renewPassword(req, res, next) {
   const { token: resetPasswordToken } = req.query;
   const { password } = req.body;
   log.i("In", { resetPasswordToken });
@@ -33,10 +33,9 @@ module.exports = async function register(req, res, next) {
       `${config.resetPasswordToken.secret}`,
     );
     log.d({ email });
-    const user = await User.editPassword({ email, password });
-    log.d({ user });
+    await User.editPassword(email, password);
     log.i("Done");
-    return res.status(200).json({ user });
+    return res.status(200).json({ message: "Mot de passe mis à jour" });
   } catch (err) {
     log.w(err);
     if (err instanceof jwt.TokenExpiredError) {
