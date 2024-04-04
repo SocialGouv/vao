@@ -203,7 +203,7 @@ const personnePhysiqueSchema = {
   adresseSiege: yup.object({ ...adresse.schema(true) }).required(),
 };
 const agrementSchema = (regions) => ({
-  file: yup.object().required(),
+  file: yup.mixed().required(),
   numero: yup
     .string()
     .max(30, "Le numéro d'agrément ne peut pas dépasser 30 caractères.")

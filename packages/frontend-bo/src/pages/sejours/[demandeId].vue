@@ -1,6 +1,6 @@
 <template>
   <div v-if="!!demandeStore.currentDemande" class="fr-container header">
-    <Details />
+    <DemandesSejourDetails />
     <DsfrTabs
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
@@ -13,7 +13,7 @@
         :selected="selectedTabIndex === 0"
         :asc="asc"
       >
-        <DisplayFormulaire />
+        <DemandesSejourDisplayFormulaire />
       </DsfrTabContent>
 
       <DsfrTabContent
@@ -22,7 +22,7 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
-        <DisplayPj />
+        <DemandesSejourDisplayPj />
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="tab-content-2"
