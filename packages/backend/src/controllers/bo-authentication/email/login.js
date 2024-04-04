@@ -7,7 +7,10 @@ const Session = require("../../../services/BoSession");
 const logger = require("../../../utils/logger");
 
 const { status } = require("../../../helpers/users");
-const { buildAccessToken, buildRefreshToken } = require("../../../utils/token");
+const {
+  buildAccessToken,
+  buildRefreshToken,
+} = require("../../../utils/bo-token");
 
 const log = logger(module.filename);
 

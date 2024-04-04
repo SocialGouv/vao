@@ -94,13 +94,12 @@
 
 <script setup>
 definePageMeta({
-  middleware: ["is-connected"],
+  middleware: ["is-connected", "check-role"],
+  role: "DemandeSejour",
 });
 
-import { useDemandeSejourStore } from "~/stores/demande-sejour";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
-import { DsfrInputGroup, DsfrSelect } from "@gouvminint/vue-dsfr";
 
 const sejourStore = useDemandeSejourStore();
 

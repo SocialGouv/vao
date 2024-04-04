@@ -1,6 +1,5 @@
 <script setup>
-import { useUserStore } from "@/stores/user";
-import { navItems } from "@/helpers/menuNavItem";
+const navItems = useMenuNavItems();
 
 const log = logger("layouts/default");
 const userStore = useUserStore();
@@ -52,7 +51,7 @@ async function logout() {
     });
 }
 
-const consentCookie = useCookie("PP_consent", {
+const consentCookie = useCookie("VAO_BO_consent", {
   default: () => false,
 });
 
@@ -61,7 +60,7 @@ function acceptAll() {
 }
 
 function onClickOnLogo() {
-  log.i("click !!");
+  navigateTo("/");
 }
 </script>
 

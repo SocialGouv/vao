@@ -100,10 +100,7 @@ const query = {
       SELECT 
         use_id,
         jsonb_agg(
-            jsonb_build_object(
-                'id', id,
-                'label', label
-            )
+          label
         ) AS roles
         FROM back.user_roles ur
         LEFT OUTER JOIN back.roles ro ON ur.rol_id = ro.id
@@ -124,14 +121,25 @@ const query = {
   `,
   login: `
     SELECT
-      id as id,
-      mail as email,
-      pwd is not null as "hasPwd",
-      nom as nom,
-      prenom as prenom,
-      blocked as "isBlocked",
-      ter_code as "territoireCode"
-    FROM back.users
+      us.id as id,
+      us.mail as email,
+      us.pwd is not null as "hasPwd",
+      us.nom as nom,
+      us.prenom as prenom,
+      us.blocked as "isBlocked",
+      us.ter_code as "territoireCode",
+      ur.roles
+    FROM back.users us
+    LEFT OUTER JOIN (
+      SELECT 
+        use_id,
+        jsonb_agg(
+          label
+        ) AS roles
+        FROM back.user_roles ur
+        LEFT OUTER JOIN back.roles ro ON ur.rol_id = ro.id
+        GROUP BY use_id
+    ) ur ON ur.use_id = us.id
     WHERE
       mail = $1
       AND pwd = crypt($2, pwd)
@@ -199,7 +207,7 @@ module.exports.update = async (id, { nom, prenom, roles, territoire }) => {
   if (rowCount === 0) {
     log.d("update - DONE - Utilisateur BO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
-      name: "UserNotExist",
+      name: "UserNotFound",
     });
   }
 
@@ -228,7 +236,7 @@ module.exports.editPassword = async (email, password) => {
   if (rowCount === 0) {
     log.d("editPassword - DONE - Utilisateur BO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
-      name: "UserNotExist",
+      name: "UserNotFound",
     });
   }
 
@@ -289,7 +297,7 @@ module.exports.read = async ({
     searchQuery.push(`us.prenom ilike '%${search.prenom}%'`);
   }
   if (search?.email && search.email.length) {
-    searchQuery.push(`us.mail ilike '%${search.email}%'`);
+    searchQuery.push(`us.mail ilike '%${normalize(search.email)}%'`);
   }
   if (search?.territoire && search.territoire.length) {
     searchQuery.push(`ter.label ilike '%${search.territoire}%'`);
@@ -344,7 +352,7 @@ module.exports.readOne = async (id) => {
   if (rowCount === 0) {
     log.d("readOne - DONE - Utilisateur BO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
-      name: "UserNotExist",
+      name: "UserNotFound",
     });
   }
 

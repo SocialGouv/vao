@@ -1,6 +1,5 @@
-import { useUserStore } from "~/stores/user";
 import { defineNuxtRouteMiddleware, navigateTo } from "#app";
-import { logger, $fetchBackend } from "#imports";
+import { logger, $fetchBackend, useUserStore } from "#imports";
 
 const log = logger("middlewares/is-connected");
 
