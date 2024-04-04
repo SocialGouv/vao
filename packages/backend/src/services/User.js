@@ -2,8 +2,6 @@ const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const normalize = require("../utils/normalize");
 
-const config = require("../config");
-
 const AppError = require("../utils/error");
 const { status } = require("../helpers/users");
 
@@ -183,7 +181,7 @@ module.exports.read = async (criterias = {}) => {
 };
 
 module.exports.login = async ({ email, password }) => {
-  log.i("read - IN", { email, password });
+  log.i("read - IN", { email });
   const user = await pool.query(query.login, [normalize(email), password]);
   log.d(user.rows);
   if (user.rows.length === 0) {
@@ -191,17 +189,4 @@ module.exports.login = async ({ email, password }) => {
   }
   log.i("read - DONE", { user: user.rows[0] });
   return user.rows[0];
-};
-
-module.exports.getProfile = async (userId) => {
-  log.i("read - IN", { userId });
-  const profiles = await pool.query(query.getProfile, [
-    userId,
-    config.postgres.secretKey,
-  ]);
-  if (profiles.rows.length === 0) {
-    return null;
-  }
-  log.i("read - DONE", { profile: profiles.rows[0] });
-  return profiles.rows[0];
 };
