@@ -5,9 +5,8 @@ const User = require("../../../services/BoUser");
 const Send = require("../../../services/mail").mailService.send;
 
 const logger = require("../../../utils/logger");
-const normalize = require("../../../utils/normalize");
 const MailUtils = require("../../../utils/mail");
-const { buildEmailToken } = require("../../../utils/token");
+const { buildEmailToken } = require("../../../utils/bo-token");
 
 const log = logger(module.filename);
 
@@ -19,7 +18,7 @@ module.exports = async function login(req, res) {
     return res.status(400).json({ message: "Paramète manquant" });
   }
 
-  const users = await User.read({ mail: normalize(email) });
+  const users = await User.read({ search: { mail: email } });
 
   if (users.length === 0) {
     log.w("Utilisateur inexistant");

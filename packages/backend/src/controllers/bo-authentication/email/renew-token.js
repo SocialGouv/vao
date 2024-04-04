@@ -9,8 +9,7 @@ const { status } = require("../../../helpers/users");
 const MailUtils = require("../../../utils/mail");
 const AppError = require("../../../utils/error");
 const logger = require("../../../utils/logger");
-const normalize = require("../../../utils/normalize");
-const { buildEmailToken } = require("../../../utils/token");
+const { buildEmailToken } = require("../../../utils/bo-token");
 
 const log = logger(module.filename);
 
@@ -23,8 +22,8 @@ module.exports = async function renewToken(req, res, next) {
         name: "MalformedQuery",
       });
     }
-    // TODO : bug smell
-    const [user] = await User.read({ mail: normalize(email) });
+
+    const [user] = await User.read({ search: { email } });
     log.d({ user });
     if (!user) {
       throw new AppError("Utilisateur non trouvé", {

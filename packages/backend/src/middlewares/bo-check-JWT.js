@@ -6,7 +6,7 @@ const Session = require("../services/BoSession");
 
 const AppError = require("../utils/error");
 const logger = require("../utils/logger");
-const { buildAccessToken, buildRefreshToken } = require("../utils/token");
+const { buildAccessToken, buildRefreshToken } = require("../utils/bo-token");
 
 const log = logger(module.filename);
 
@@ -91,15 +91,7 @@ async function checkJWT(req, res, next) {
       return next(error);
     }
 
-    const users = await User.read({ id: rtDecoded.userId });
-    if (!users.length === 0) {
-      log.w("Utilisateur non trouvé");
-      throw new AppError("Utilisateur non trouvé", {
-        code: "UserNotFound",
-        statusCode: 401,
-      });
-    }
-    const [user] = users;
+    const user = await User.readOne(rtDecoded.userId);
 
     const newAccessToken = jwt.sign(
       buildAccessToken(user),
