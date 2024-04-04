@@ -5,7 +5,7 @@ export const navItems = [
   },
   {
     text: "Comptes",
-    to: "/comptes",
+    to: "/comptes/liste",
   },
   {
     title: "Déclaration de séjour",

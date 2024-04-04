@@ -11,7 +11,6 @@ router.get("/check-token", BOcheckJWT, (req, res) => {
   res.send("OK");
 });
 // Gère une connexion via mot de passe.
-router.post("/email/register", BOAuthenticationController.email.register);
 router.post("/email/login", BOAuthenticationController.email.login);
 router.post("/email/validate", BOAuthenticationController.email.validate);
 router.post("/email/renew-token", BOAuthenticationController.email.renewToken);

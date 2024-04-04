@@ -8,22 +8,21 @@ const log = logger(module.filename);
 module.exports = async function getList(req, res) {
   log.i("In");
   const { decoded } = req;
-  //  TODO : check what the jwt contains. Here i suppose that the id the the admin id
   const { id: adminId } = decoded ?? {};
   log.d("userId", { adminId });
 
   try {
     const { limit, offset, sortBy, sortDirection, search } = req.query;
-
-    const usersWithPagination = await BoUser.getList({
+    log.d({ search });
+    const result = await BoUser.read({
       limit,
       offset,
       search: JSON.parse(search ?? "{}"),
       sortBy,
       sortDirection,
     });
-    log.d(usersWithPagination);
-    return res.status(200).json({ usersWithPagination });
+    log.d({ result });
+    return res.status(200).json(result);
   } catch (error) {
     log.w(error);
     return res.status(400).json({

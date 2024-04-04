@@ -13,6 +13,9 @@
 
 <script setup>
 const log = logger("component/utils/TableFullWithoutPagination");
+
+const emit = defineEmits("click-row");
+
 const props = defineProps({
   headers: { type: Object, required: true },
   data: { type: Object, required: true },
@@ -25,7 +28,6 @@ const props = defineProps({
       return {};
     },
   },
-  rowNavigate: { type: Function, required: false, default: () => {} },
 });
 const selectedColor = "#AACCEE";
 
@@ -63,7 +65,7 @@ const displayedData = computed(() => {
       return maj;
     });
     const rowAttrs = { class: "pointer" };
-    if (props.rowNavigate) rowAttrs.onClick = () => props.rowNavigate(item);
+    rowAttrs.onClick = () => emit("click-row", item);
     return {
       rowData: extendedData,
       rowAttrs,

@@ -1,7 +1,6 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
-
     <div>
       <div>
         <div
@@ -26,7 +25,10 @@
               <h1
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
-                Création d'un nouvel utilisateur
+                <div v-if="formStatus === formStates.CREATION">
+                  Création d'un nouvel utilisateur
+                </div>
+                <div v-else>Modification d'un utilisateur</div>
               </h1>
               <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
@@ -38,6 +40,7 @@
                     type="text"
                     label="Email"
                     name="email"
+                    :disabled="formStatus === formStates.EDITION"
                     :required="true"
                     :label-visible="true"
                     placeholder="Veuillez saisir votre email"
@@ -161,9 +164,16 @@
               <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
-                <DsfrButton :disabled="!canRegister" @click.prevent="register"
-                  >Créer le compte
-                </DsfrButton>
+                <div v-if="formStatus === formStates.CREATION">
+                  <DsfrButton :disabled="!canSubmit" @click.prevent="post"
+                    >Créer le compte
+                  </DsfrButton>
+                </div>
+                <div v-else>
+                  <DsfrButton :disabled="!canSubmit" @click.prevent="update"
+                    >Enregistrer les modifications
+                  </DsfrButton>
+                </div>
               </div>
               <div class="fr-messages-group" aria-live="assertive"></div>
             </fieldset>
@@ -175,9 +185,21 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import "@vueform/multiselect/themes/default.css";
-const log = logger("pages/comptes/creation");
+
+const route = useRoute();
+const log = logger("pages/comptes/[[userId]]");
+const usersStore = useUserStore();
+const searchState = reactive({
+  id: null,
+  nom: null,
+  prenom: null,
+  territoire: null,
+  valide: true,
+  email: null,
+});
+
+const userId = route.params.userId;
 
 const links = [
   {
@@ -185,7 +207,7 @@ const links = [
     text: "Accueil",
   },
   {
-    to: "/comptes",
+    to: "/comptes/liste",
     text: "Comptes",
   },
   {
@@ -210,11 +232,11 @@ const roleOptions = [
 
 const formStates = {
   CREATION: 1,
-  SUBMITTED: 2,
+  EDITION: 2,
   VALIDATED: 3,
 };
 
-const formStatus = ref(formStates.CREATION);
+let formStatus = ref(formStates.CREATION);
 
 const emailField = reactive({
   errorMessage: "",
@@ -259,10 +281,22 @@ const displayInfos = {
       "Un courriel a été envoyé à l'utilisarteur afin qu'il procède à la validation de son compte Administration VAO.",
     type: "success",
   },
+  UpdateDoneWithSucces: {
+    title: "Le compte a été mis à jour avec succès",
+    description:
+      "Le compte que vous venez de modifier a été enregistré avec succès.",
+    type: "success",
+  },
   UserAlreadyExistsWithFC: {
     title: "Une erreur est survenue",
     description:
       "Une erreur est survenue. L'utilisateur que vous tentez de crééer existre déjà",
+    type: "error",
+  },
+  UserNotExist: {
+    title: "Utilisateur inexistant",
+    description:
+      "Vous tentez de mettre à jour un utilisateur qui semble avoir été supprimé",
     type: "error",
   },
   DefaultError: {
@@ -308,7 +342,7 @@ function checkValidPrenom(p) {
 }
 
 function checkValidServiceCompetence(p) {
-  console.log("checkValidServiceCompetence : p = ", p);
+  log.d("checkValidServiceCompetence : p = ", p);
   serviceCompetenceField.modelValue = p;
   serviceCompetenceField.isValid = p !== null;
   if (serviceCompetenceField.isValid === true && p === "NAT")
@@ -343,12 +377,52 @@ function checkValidRoleUtilisateur(p) {
 }
 
 watch([() => serviceCompetenceField.modelValue], function () {
-  if (serviceCompetenceField.modelValue === "NAT") {
+  if (serviceCompetenceField.modelValue === "NAT")
     territoireField.modelValue = "FRA";
-  } else territoireField.modelValue = null;
+  //    else
+  //        territoireField.modelValue = null;
 });
 
-const canRegister = computed(() => {
+onMounted(async () => {
+  log.i("Mounted - IN");
+  // Mode Edition
+  if (userId) {
+    // Chargement des données utilisateur
+    formStatus = ref(formStates.EDITION);
+
+    searchState.id = userId;
+    // Chargement des données à partir du store
+    await usersStore.getUser(userId);
+    // Chargement des données
+    emailField.modelValue = usersStore.userSelected.email;
+    emailField.isValid = true;
+    nomField.modelValue = usersStore.userSelected.nom;
+    nomField.isValid = true;
+    prenomField.modelValue = usersStore.userSelected.prenom;
+    prenomField.isValid = true;
+    // Sélection du service de compétence
+    if (usersStore.userSelected.territoire === "FRA")
+      serviceCompetenceField.modelValue = "NAT";
+    else if (usersStore.userSelected.territoireparent === "FRA") {
+      serviceCompetenceField.modelValue = "REG";
+    } else {
+      serviceCompetenceField.modelValue = "DEP";
+    }
+    serviceCompetenceField.isValid = true;
+    territoireField.modelValue = usersStore.userSelected.territoire;
+    territoireField.isValid = true;
+    // Chargement des rôles
+    usersStore.userSelected.roles.forEach((role) => {
+      roleUtilisateurField.modelValue.push(role.label);
+    });
+    roleUtilisateurField.isValid = true;
+  } else {
+    // Ecran en mode création
+    formStatus = ref(formStates.CREATION);
+  }
+});
+
+const canSubmit = computed(() => {
   return (
     emailField.isValid &&
     nomField.isValid &&
@@ -359,38 +433,36 @@ const canRegister = computed(() => {
   );
 });
 
-async function register() {
+async function post() {
   formStatus.value = formStates.CREATION;
 
-  log.i("register - IN");
+  log.i("post - IN");
   try {
     displayType.value = null;
-    await $fetch(
-      config.public.backendUrl + "/bo-authentication/email/register",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: emailField.modelValue,
-          nom: nomField.modelValue,
-          prenom: prenomField.modelValue,
-          roles: roleUtilisateurField.modelValue,
-          territoire: territoireField.modelValue,
-        }),
+    await $fetch(config.public.backendUrl + "/bo-user", {
+      credentials: "include",
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    )
+      body: JSON.stringify({
+        email: emailField.modelValue,
+        nom: nomField.modelValue,
+        prenom: prenomField.modelValue,
+        roles: roleUtilisateurField.modelValue,
+        territoire: territoireField.modelValue,
+      }),
+    })
       .then((response) => {
         displayType.value = "CreationDoneWithSucces";
         formStatus.value = formStates.VALIDATED;
-        log.d("register", { response });
+        log.d("post", { response });
       })
       .catch((error) => {
         const body = error.data;
         const codeError = body.code;
 
-        log.w("register", { body, codeError });
+        log.w("post", { body, codeError });
         switch (codeError) {
           default:
             displayType.value = codeError;
@@ -400,11 +472,60 @@ async function register() {
         formStatus.value = formStates.SUBMITTED;
       });
   } catch (error) {
-    log.w("register", { error });
+    log.w("post", { error });
     displayType.value = "DefaultError";
     formStatus.value = formStates.SUBMITTED;
   } finally {
-    log.i("register - DONE");
+    log.i("post - DONE");
+  }
+}
+
+async function update() {
+  formStatus.value = formStates.CREATION;
+
+  log.i("update - IN");
+  try {
+    displayType.value = null;
+    await $fetch(
+      config.public.backendUrl + "/bo-user/" + usersStore.userSelected.id,
+      {
+        credentials: "include",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          nom: nomField.modelValue,
+          prenom: prenomField.modelValue,
+          roles: roleUtilisateurField.modelValue,
+          territoire: territoireField.modelValue,
+        }),
+      },
+    )
+      .then((response) => {
+        displayType.value = "UpdateDoneWithSucces";
+        formStatus.value = formStates.VALIDATED;
+        log.d("update", { response });
+      })
+      .catch((error) => {
+        const body = error.data;
+        const codeError = body.code;
+
+        log.w("update", { body, codeError });
+        switch (codeError) {
+          default:
+            displayType.value = codeError;
+            formStatus.value = formStates.VALIDATED;
+            break;
+        }
+        formStatus.value = formStates.SUBMITTED;
+      });
+  } catch (error) {
+    log.w("update", { error });
+    displayType.value = "DefaultError";
+    formStatus.value = formStates.SUBMITTED;
+  } finally {
+    log.i("update - DONE");
   }
 }
 </script>

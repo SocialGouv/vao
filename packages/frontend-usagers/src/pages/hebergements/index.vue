@@ -52,7 +52,7 @@
             :headers="headers"
             :data="hebergementStore.hebergements"
             :search="search"
-            :row-navigate="navigate"
+            @click-row="navigate"
           />
         </div>
       </div>
