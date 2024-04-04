@@ -183,7 +183,8 @@ const query = {
       o.personne_physique as "personnePhysique",
       o.type_organisme as "typeOrganisme",
       ds.created_at as "createdAt",
-      ds.edited_at as "editedAt"
+      ds.edited_at as "editedAt",
+      ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ('${departementCodes.join("','")}') as "estInstructeurPrincipal"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
     where (${getDepartementWhereQuery(departementCodes)})
@@ -752,7 +753,12 @@ module.exports.historique = async (declarationId) => {
   return response;
 };
 
-module.exports.updateStatut = async (demandeSejourId, statut, event = null) => {
+module.exports.updateStatut = async (
+  demandeSejourId,
+  statut,
+  event = null,
+  sendEmail = null,
+) => {
   log.i("update status - IN", { demandeSejourId, statut });
   const client = await pool.connect();
 
@@ -771,6 +777,10 @@ module.exports.updateStatut = async (demandeSejourId, statut, event = null) => {
       event.typePrecision,
       event.metaData,
     ]);
+    if (sendEmail) {
+      await sendEmail();
+    }
+
     await client.query("COMMIT");
     const demandeId = response.rows[0].demandeId ?? null;
     log.w("update status - OUT");

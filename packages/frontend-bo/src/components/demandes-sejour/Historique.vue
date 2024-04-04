@@ -7,6 +7,7 @@
 
 <script setup>
 import { formatDate } from "date-fns/format";
+import DisplayTypePrecision from "~/components/demandes-sejour/DisplayTypePrecision.vue";
 
 const props = defineProps({
   historique: { type: Array, required: true },
@@ -48,6 +49,11 @@ const headers = [
   {
     column: "typePrecision",
     sorter: "typePrecision",
+    component: ({ typePrecision, metaData }) => ({
+      component: DisplayTypePrecision,
+      typePrecision: typePrecision,
+      commentaire: metaData.commentaire ?? null,
+    }),
     text: "Détail",
     headerAttrs: {
       class: "suivi",

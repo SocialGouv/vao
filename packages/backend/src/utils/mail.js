@@ -12,6 +12,42 @@ const log = logger(module.filename);
 module.exports = {
   bo: {
     authentication: {
+      sendACompleterMail: ({ destinataires, comment, declaration }) => {
+        log.i("sendACompleterMail - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendACompleterMail - ${message}`);
+          throw new AppError(message);
+        }
+        if (!comment) {
+          const message = `Le paramètre comment manque à la requête`;
+          log.w(`sendACompleterMail - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p>
+
+                <p>Vous avez recu des demandes de complément pour votre déclaration ${declaration.idFonctionnelle} </p>
+                <p>Voici les commentaires qui vont ont été fait</p>
+
+                <pre>${comment}</pre>
+                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Demande de compléments sur la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendACompleterMail post email", {
+          params,
+        });
+
+        return params;
+      },
       sendForgottenPassword: ({ email, token }) => {
         log.i("sendForgottenPassword - In", {
           email,
@@ -138,11 +174,11 @@ module.exports = {
           from: senderEmail,
           html: `
                 <p>Bonjour,</p>
-    
+
                 <p>Vous recevez ce mail car vous ne trouvez plus votre mot de passe sur le portail VAO</p>
-    
+
                 <p>Afin de modifier votre mot de passe, veuillez cliquer sur le lien suivant qui vous redirigera vers le portail :</p>
-    
+
                 <p><a href="${frontUsagersDomain}/connexion/reset-mot-de-passe?token=${token}">Je réinitialise mon mot de passe</a></p>
                 `,
           replyTo: senderEmail,
@@ -174,13 +210,13 @@ module.exports = {
           from: senderEmail,
           html: `
                 <p>Bonjour,</p>
-    
+
                 <p>Pour finaliser la création de votre compte sur la plateforme VAO, confirmez votre adresse e-mail en
-                cliquant sur le lien ci dessous : </p> 
-    
+                cliquant sur le lien ci dessous : </p>
+
                 <p><a href="${frontUsagersDomain}/connexion/validation?token=${token}">Valider mon e-mail</a></p>
 
-                <p>Attention, ce lien ne sera valide que pendant ${config.validationToken.expiresIn / 60000} minutes </p>  
+                <p>Attention, ce lien ne sera valide que pendant ${config.validationToken.expiresIn / 60000} minutes </p>
                 `,
           replyTo: senderEmail,
           subject: `VAO - Validez votre email`,
