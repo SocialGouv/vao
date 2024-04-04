@@ -103,7 +103,7 @@
             :headers="headers"
             :data="demandeSejourStore.demandes"
             :search="search"
-            :row-navigate="navigate"
+            @click-row="navigate"
           ></UtilsTableFull>
         </div>
       </div>

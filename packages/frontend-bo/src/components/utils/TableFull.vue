@@ -31,6 +31,8 @@
 <script setup>
 const log = logger("components/TableFull");
 
+const emit = defineEmits("click-row");
+
 const itemByPageOptions = [10, 20, 50, 100];
 const itemByPage = ref(50);
 
@@ -50,7 +52,6 @@ const props = defineProps({
       return {};
     },
   },
-  rowNavigate: { required: false },
   currentPage: {
     type: Number,
     required: false,
@@ -186,7 +187,7 @@ const displayableData = computed(() => {
       return data ?? "";
     });
     const rowAttrs = { class: "pointer" };
-    if (props.rowNavigate) rowAttrs.onClick = () => props.rowNavigate(item);
+    rowAttrs.onClick = () => emit("click-row", item);
     return {
       rowData: rowdata,
       rowAttrs,
