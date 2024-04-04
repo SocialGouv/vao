@@ -7,6 +7,7 @@
             name="nomNaissance"
             label="Nom de naissance"
             :label-visible="true"
+            :readonly="!props.modifiable"
             :model-value="nomNaissance"
             :is-valid="nomNaissanceMeta.valid"
             :error-message="nomNaissanceErrorMessage"
@@ -21,6 +22,7 @@
             name="nomUsage"
             label="Nom d'usage"
             :label-visible="true"
+            :readonly="!props.modifiable"
             :model-value="nomUsage"
             :is-valid="nomUsageMeta.valid"
             :error-message="nomUsageErrorMessage"
@@ -35,6 +37,7 @@
             name="prenom"
             label="Prénom"
             :label-visible="true"
+            :readonly="!props.modifiable"
             :model-value="prenom"
             :is-valid="prenomMeta.valid"
             :error-message="prenomErrorMessage"
@@ -48,6 +51,7 @@
           <DsfrSelect
             :model-value="profession"
             name="profession"
+            :readonly="!props.modifiable"
             label="Profession"
             :options="organisme.professionOptions"
             :is-valid="professionMeta.valid"
@@ -61,6 +65,7 @@
           <DsfrInputGroup
             name="telephone"
             label="numéro de téléphone"
+            :readonly="!props.modifiable"
             :label-visible="true"
             :model-value="telephone"
             :is-valid="telephoneMeta.valid"
@@ -76,6 +81,7 @@
         <div class="fr-input-group fr-col-8">
           <SearchAddress
             :initial-adress="props.initData.adresseDomicile?.label"
+            :modifiable="props.modifiable"
             :error-message="adresseDomicileErrorMessage"
             :label="
               props.initData.adresseDomicile
@@ -93,11 +99,13 @@
         <div class="fr-input-group fr-col-8">
           <DsfrRadioButtonSet
             name="adresseIdentique"
-            legend="L'adresse du lieu d’exercice des activités de VAO est-elle celle du domicile ?"
+            legend="L'adresse du lieu d’exercice des activités de VAO est-elle celle du
+          domicile ?"
             :model-value="adresseIdentique"
             :options="ouiNonOptions"
-            :is-valid="adresseIdentiqueMeta"
-            :inline="false"
+            :disabled="!props.modifiable"
+            :is-valid="adresseIdentiqueMeta.valid"
+            :inline="true"
             :error-message="adresseIdentiqueErrorMessage"
             @update:model-value="setAdresseIdentique"
           />
@@ -109,6 +117,7 @@
         <div class="fr-input-group fr-col-8">
           <SearchAddress
             :initial-adress="props.initData.adresseSiege?.label"
+            :modifiable="props.modifiable"
             :error-message="adresseSiegeErrorMessage"
             :label="
               props.initData.adresseSiege
@@ -122,7 +131,7 @@
       </div>
     </fieldset>
 
-    <fieldset class="fr-fieldset">
+    <fieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
     </fieldset>
   </div>
@@ -135,6 +144,9 @@ const log = logger("components/organisme/personne-physique");
 
 const props = defineProps({
   initData: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
+  showButtons: { type: Boolean, default: true },
+  validateOnMount: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["update", "next"]);
@@ -156,6 +168,7 @@ const initialValues = {
 const { meta, values } = useForm({
   initialValues,
   validationSchema,
+  validateOnMount: props.validateOnMount,
 });
 
 const {

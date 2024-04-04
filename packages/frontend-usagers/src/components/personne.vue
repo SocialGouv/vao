@@ -125,6 +125,7 @@ const props = defineProps({
   showTelephone: { type: Boolean, default: false, required: false },
   showEmail: { type: Boolean, default: false, required: false },
   showButton: { type: Boolean, default: true, required: false },
+  validateOnMount: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["valid", "update:personne"]);
@@ -157,6 +158,7 @@ const initialValues = {
 const { meta, values } = useForm({
   validationSchema,
   initialValues,
+  validateOnMount: props.validateOnMount,
 });
 
 const {

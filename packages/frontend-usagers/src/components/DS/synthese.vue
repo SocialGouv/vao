@@ -17,9 +17,12 @@
                 :type="informationsGenerales.type"
               />
             </template>
-            <DSInformationsGeneralesReadOnly
-              :declaration-courante="props.declarationCourante"
-            ></DSInformationsGeneralesReadOnly>
+            <DSInformationsGenerales
+              :init-data="props.declarationCourante"
+              :validate-on-mount="true"
+              :modifiable="false"
+              :show-buttons="false"
+            ></DSInformationsGenerales>
           </DsfrAccordion>
         </li>
         <li>
@@ -37,12 +40,15 @@
                 :type="informationsVacanciers.type"
               />
             </template>
-            <DSInformationsVacanciersReadOnly
-              :info-vacanciers="
+            <DSInformationsVacanciers
+              :init-data="
                 props.declarationCourante.informationsVacanciers ?? {}
               "
+              :modifiable="false"
+              :validate-on-mount="true"
+              :show-buttons="false"
             >
-            </DSInformationsVacanciersReadOnly>
+            </DSInformationsVacanciers>
           </DsfrAccordion>
         </li>
         <li>
@@ -60,11 +66,12 @@
                 :type="informationsPersonnel.type"
               />
             </template>
-            <DSInformationsPersonnelReadOnly
-              :info-personnel="
-                props.declarationCourante.informationsPersonnel ?? {}
-              "
-            ></DSInformationsPersonnelReadOnly>
+            <DSInformationsPersonnel
+              :init-data="props.declarationCourante.informationsPersonnel ?? {}"
+              :modifiable="false"
+              :validate-on-mount="true"
+              :show-buttons="false"
+            ></DSInformationsPersonnel>
           </DsfrAccordion>
         </li>
         <li>
@@ -82,9 +89,14 @@
                 :type="projetSejour.type"
               />
             </template>
-            <DSProjetSejourReadOnly
-              :projet="props.declarationCourante.informationsProjetSejour ?? {}"
-            ></DSProjetSejourReadOnly>
+            <DSProjetSejour
+              :init-data="
+                props.declarationCourante.informationsProjetSejour ?? {}
+              "
+              :modifiable="false"
+              :validate-on-mount="true"
+              :show-buttons="false"
+            ></DSProjetSejour>
           </DsfrAccordion>
         </li>
         <li>
@@ -102,9 +114,12 @@
                 :type="informationsTransport.type"
               />
             </template>
-            <ProtocoleTransportReadOnly
+            <ProtocoleTransport
               :init-data="props.declarationCourante.informationsTransport ?? {}"
-            ></ProtocoleTransportReadOnly>
+              :modifiable="false"
+              :validate-on-mount="true"
+              :show-buttons="false"
+            ></ProtocoleTransport>
           </DsfrAccordion>
         </li>
         <li>
@@ -122,11 +137,14 @@
                 :type="informationsSanitaires.type"
               />
             </template>
-            <ProtocoleSanitaireReadOnly
+            <ProtocoleSanitaire
               :init-data="
                 props.declarationCourante.informationsSanitaires ?? {}
               "
-            ></ProtocoleSanitaireReadOnly>
+              :modifiable="false"
+              :validate-on-mount="true"
+              :show-buttons="false"
+            ></ProtocoleSanitaire>
           </DsfrAccordion>
         </li>
         <li>
@@ -166,11 +184,15 @@
                       :type="validateHebergement(index).type"
                     />
                   </template>
-                  <DSFicheAnnexe
+                  <DSHebergementsSejourDetail
+                    :modifiable="false"
                     :hebergement="item"
-                    :date-debut="props.declarationCourante.dateDebut"
-                    :date-fin="props.declarationCourante.dateFin"
-                  ></DSFicheAnnexe>
+                    :date-debut-ini="props.declarationCourante.dateDebut"
+                    :date-fin-ini="props.declarationCourante.dateFin"
+                    :show-buttons="false"
+                    :validate-on-mount="true"
+                  >
+                  </DSHebergementsSejourDetail>
                 </DsfrAccordion>
               </li>
             </DsfrAccordionsGroup>

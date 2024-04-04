@@ -2,62 +2,58 @@
   <div>
     <DsfrFieldset legend="Transports vers le site de séjour">
       <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
-          <DsfrRadioButtonSet
-            name="responsableTransportLieuSejour"
-            legend="Qui est responsable du transport jusqu'au lieu de séjour ?"
-            :disabled="!props.modifiable"
-            :model-value="responsableTransportLieuSejour"
-            :options="protocoleTransport.responsableTransportLieuSejourOptions"
-            :is-valid="responsableTransportLieuSejourMeta"
-            :inline="true"
-            :error-message="responsableTransportLieuSejourErrorMessage"
-            @update:model-value="onResponsableTransportLieuSejourChange"
-          />
-        </div>
+        <DsfrRadioButtonSet
+          name="responsableTransportLieuSejour"
+          legend="Qui est responsable du transport jusqu'au lieu de séjour ?"
+          :disabled="!props.modifiable"
+          :model-value="responsableTransportLieuSejour"
+          :options="protocoleTransport.responsableTransportLieuSejourOptions"
+          :is-valid="responsableTransportLieuSejourMeta.valid"
+          :inline="true"
+          :error-message="responsableTransportLieuSejourErrorMessage"
+          @update:model-value="onResponsableTransportLieuSejourChange"
+        />
       </div>
       <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+        <div class="fr-input-group">
           <UtilsMultiSelect
+            label="Précisez le ou les modes de transport utilisés"
             :options="protocoleTransport.transportOptions"
             :values="modeTransport"
-            label="Précisez le ou les modes de transport utilisés"
+            :is-valid="modeTransportMeta.valid"
+            :error-message="modeTransportErrorMessage"
             :modifiable="props.modifiable"
             @update="updateModeTransport"
           ></UtilsMultiSelect>
         </div>
       </div>
       <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
-          <DsfrInputGroup
-            name="precisionModeOrganisation"
-            :readonly="!props.modifiable"
-            label="Précisez le mode d’organisation retenu (conditions d’accompagnement des vacanciers, gestion des correspondances, lieux de prise en charge, temps d’attente, etc.)"
-            :label-visible="true"
-            :is-textarea="true"
-            :model-value="precisionModeOrganisation"
-            :error-message="precisionModeOrganisationErrorMessage"
-            :is-valid="precisionModeOrganisationMeta"
-            @update:model-value="onPrecisionModeOrganisationChange"
-          />
-        </div>
+        <DsfrInputGroup
+          name="precisionModeOrganisation"
+          :readonly="!props.modifiable"
+          label="Précisez le mode d’organisation retenu (conditions d’accompagnement des vacanciers, gestion des correspondances, lieux de prise en charge, temps d’attente, etc.)"
+          :label-visible="true"
+          :is-textarea="true"
+          :model-value="precisionModeOrganisation"
+          :error-message="precisionModeOrganisationErrorMessage"
+          :is-valid="precisionModeOrganisationMeta.valid"
+          @update:model-value="onPrecisionModeOrganisationChange"
+        />
       </div>
     </DsfrFieldset>
     <DsfrFieldset legend="Déplacements sur le séjour">
       <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
-          <DsfrRadioButtonSet
-            name="deplacementDurantSejour"
-            legend="Des déplacements sont-ils prévus durant le séjour ?"
-            :disabled="!props.modifiable"
-            :model-value="deplacementDurantSejour"
-            :options="ouiNonOptions"
-            :is-valid="deplacementDurantSejourMeta"
-            :inline="true"
-            :error-message="deplacementDurantSejourErrorMessage"
-            @update:model-value="onDeplacementDurantSejourChange"
-          />
-        </div>
+        <DsfrRadioButtonSet
+          legend="Des déplacements sont-ils prévus durant le séjour "
+          name="deplacementDurantSejour"
+          :disabled="!props.modifiable"
+          :model-value="deplacementDurantSejour"
+          :options="ouiNonOptions"
+          :is-valid="deplacementDurantSejourMeta.valid"
+          :inline="true"
+          :error-message="deplacementDurantSejourErrorMessage"
+          @update:model-value="onDeplacementDurantSejourChange"
+        />
       </div>
     </DsfrFieldset>
     <DsfrFieldset
@@ -70,7 +66,7 @@
         :modifiable="props.modifiable"
       />
     </DsfrFieldset>
-    <DsfrFieldset>
+    <DsfrFieldset v-if="props.showButtons">
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
           id="previous-step"
@@ -96,6 +92,8 @@ const log = logger("components/protocole-transport");
 const props = defineProps({
   initData: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
+  validateOnMount: { type: Boolean, default: false },
+  showButtons: { type: Boolean, default: true },
 });
 const emit = defineEmits(["previous", "next", "update"]);
 
@@ -111,6 +109,7 @@ const initialValues = {
 const { meta, values } = useForm({
   validationSchema,
   initialValues,
+  validateOnMount: props.validateOnMount,
 });
 
 const {
@@ -131,7 +130,11 @@ const {
   handleChange: onDeplacementDurantSejourChange,
   meta: deplacementDurantSejourMeta,
 } = useField("deplacementDurantSejour");
-const { value: modeTransport } = useField("modeTransport");
+const {
+  value: modeTransport,
+  meta: modeTransportMeta,
+  errorMessage: modeTransportErrorMessage,
+} = useField("modeTransport");
 const { value: files } = useField("files");
 
 function updateModeTransport(modes) {

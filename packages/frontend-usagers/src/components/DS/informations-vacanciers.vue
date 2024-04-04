@@ -1,70 +1,64 @@
 <template>
   <div>
     <fieldset class="fr-fieldset">
-      <div class="fr-fieldset__element fr-col-12">
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            name="effectifPrevisionnel"
-            label="Effectif prévisionnel des vacanciers"
-            :label-visible="true"
-            :model-value="effectifPrevisionnel"
-            :readonly="!props.modifiable"
-            :is-valid="effectifPrevisionnelMeta.valid"
-            :error-message="effectifPrevisionnelErrorMessage"
-            placeholder="nombre de vacanciers"
-            @update:model-value="onEffectifPrevisionnelChange"
-          />
-        </div>
+      <div class="fr-fieldset__element">
+        <DsfrInputGroup
+          name="effectifPrevisionnel"
+          label="Effectif prévisionnel des vacanciers"
+          :label-visible="true"
+          :model-value="effectifPrevisionnel"
+          :readonly="!props.modifiable"
+          :is-valid="effectifPrevisionnelMeta.valid"
+          :error-message="effectifPrevisionnelErrorMessage"
+          placeholder="nombre de vacanciers"
+          @update:model-value="onEffectifPrevisionnelChange"
+        />
       </div>
-      <div class="fr-fieldset__element fr-col-6">
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            name="effectifPrevisionnelHomme"
-            label="Hommes"
-            :label-visible="true"
-            :model-value="effectifPrevisionnelHomme"
-            :readonly="!props.modifiable"
-            :is-valid="effectifPrevisionnelHommeMeta.valid"
-            :error-message="effectifPrevisionnelHommeErrorMessage"
-            placeholder="nombre d'hommes prévus"
-            @update:model-value="onEffectifPrevisionnelHommeChange"
-          />
-        </div>
+      <div class="fr-fieldset__element">
+        <DsfrInputGroup
+          name="effectifPrevisionnelHomme"
+          label="Hommes"
+          :label-visible="true"
+          :model-value="effectifPrevisionnelHomme"
+          :readonly="!props.modifiable"
+          :is-valid="effectifPrevisionnelHommeMeta.valid"
+          :error-message="effectifPrevisionnelHommeErrorMessage"
+          placeholder="nombre d'hommes prévus"
+          @update:model-value="onEffectifPrevisionnelHommeChange"
+        />
       </div>
-      <div class="fr-fieldset__element fr-col-6">
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            name="effectifPrevisionnelFemme"
-            label="Femmes"
-            :label-visible="true"
-            :model-value="effectifPrevisionnelFemme"
-            :readonly="!props.modifiable"
-            :is-valid="effectifPrevisionnelFemmeMeta.valid"
-            :error-message="effectifPrevisionnelFemmeErrorMessage"
-            placeholder="nombre de femmes prévues"
-            @update:model-value="onEffectifPrevisionnelFemmeChange"
-          />
-        </div>
+      <div class="fr-fieldset__element">
+        <DsfrInputGroup
+          name="effectifPrevisionnelFemme"
+          label="Femmes"
+          :label-visible="true"
+          :model-value="effectifPrevisionnelFemme"
+          :readonly="!props.modifiable"
+          :is-valid="effectifPrevisionnelFemmeMeta.valid"
+          :error-message="effectifPrevisionnelFemmeErrorMessage"
+          placeholder="nombre de femmes prévues"
+          @update:model-value="onEffectifPrevisionnelFemmeChange"
+        />
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
-      <div class="fr-fieldset__element fr-col-12">
+      <div class="fr-fieldset__element">
         <DsfrCheckboxSet
           v-model="trancheAge"
-          :inline="true"
           name="trancheAge"
           legend="Tranches d'âge"
+          :inline="true"
+          :error-message="trancheAgeErrorMessage"
           :options="informationsVacanciers.trancheAgeOptions"
           :small="true"
           :disabled="!props.modifiable"
         />
       </div>
-      <div class="fr-fieldset__element fr-col-12">
+      <div class="fr-fieldset__element">
         <DsfrCheckboxSet
           v-model="typeDeficiences"
-          :inline="true"
           name="typeDeficiences"
           legend="Type de déficiences"
+          :inline="true"
+          :error-message="typeDeficiencesErrorMessage"
           :options="informationsVacanciers.typeDeficiencesOptions"
           :small="true"
           :disabled="!props.modifiable"
@@ -72,7 +66,7 @@
       </div>
     </fieldset>
 
-    <fieldset class="fr-fieldset">
+    <fieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
           id="previous-step"
@@ -96,6 +90,8 @@ import * as yup from "yup";
 const props = defineProps({
   initData: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
+  validateOnMount: { type: Boolean, default: false },
+  showButtons: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
@@ -113,6 +109,7 @@ const initialValues = {
 const { meta, values } = useForm({
   validationSchema,
   initialValues,
+  validateOnMount: props.validateOnMount,
 });
 
 const {
@@ -133,8 +130,16 @@ const {
   handleChange: onEffectifPrevisionnelFemmeChange,
   meta: effectifPrevisionnelFemmeMeta,
 } = useField("effectifPrevisionnelFemme");
-const { value: trancheAge } = useField("trancheAge");
-const { value: typeDeficiences } = useField("typeDeficiences");
+const {
+  value: trancheAge,
+  errorMessage: trancheAgeErrorMessage,
+  meta: trancheAgeMeta,
+} = useField("trancheAge");
+const {
+  value: typeDeficiences,
+  errorMessage: typeDeficiencesErrorMessage,
+  meta: typeDeficiencesMeta,
+} = useField("typeDeficiences");
 
 function next() {
   if (!meta.value.dirty) {

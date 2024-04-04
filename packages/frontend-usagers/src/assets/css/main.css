@@ -1,7 +1,7 @@
-.read-only-label {
-  color: grey;
+.fr-fieldset.fr-fieldset--error:disabled .fr-fieldset__legend {
+  color: var(--text-default-error);
 }
 
-.read-only-value {
-  color: black;
+.fr-fieldset:disabled .fr-fieldset__legend {
+  color: var(--text-label-grey);
 }

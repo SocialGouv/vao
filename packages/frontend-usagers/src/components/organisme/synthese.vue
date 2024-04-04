@@ -16,13 +16,19 @@
             />
           </template>
 
-          <OrganismePersonnePhysiqueReadOnly
+          <OrganismePersonnePhysique
             v-if="props.initOrganisme.typeOrganisme === 'personne_physique'"
             :init-data="props.initOrganisme.personnePhysique"
+            :modifiable="false"
+            :show-buttons="false"
+            :validate-on-mount="true"
           />
-          <OrganismePersonneMoraleReadOnly
+          <OrganismePersonneMorale
             v-if="props.initOrganisme.typeOrganisme === 'personne_morale'"
             :init-data="props.initOrganisme.personneMorale"
+            :modifiable="false"
+            :validate-on-mount="true"
+            :show-buttons="false"
           />
         </DsfrAccordion>
         <DsfrAccordion
@@ -39,8 +45,9 @@
               :type="agrement.type"
             />
           </template>
-          <OrganismeAgrementReadOnly
+          <OrganismeAgrement
             :init-agrement="props.initOrganisme.agrement ?? {}"
+            :modifiable="false"
           />
         </DsfrAccordion>
         <DsfrAccordion
@@ -51,16 +58,19 @@
           @expand="(id) => (expandedId = id)"
         >
           <template #title>
-            <span>Protocole de transport &nbsp;</span>
+            <span>Informations sur le transport &nbsp;</span>
             <DsfrBadge
               :label="protocoleTransport.label"
               :small="true"
               :type="protocoleTransport.type"
             />
           </template>
-          <protocole-transport-read-only
+          <ProtocoleTransport
             :init-data="props.initOrganisme.protocoleTransport ?? {}"
-          ></protocole-transport-read-only>
+            :modifiable="false"
+            :validate-on-mount="true"
+            :show-buttons="false"
+          ></ProtocoleTransport>
         </DsfrAccordion>
         <DsfrAccordion
           v-if="isSiege"
@@ -70,16 +80,19 @@
           @expand="(id) => (expandedId = id)"
         >
           <template #title>
-            <span>Protocole sanitaire &nbsp;</span>
+            <span>Informations sanitaires &nbsp;</span>
             <DsfrBadge
               :label="protocoleSanitaire.label"
               :small="true"
               :type="protocoleSanitaire.type"
             />
           </template>
-          <protocole-sanitaire-read-only
+          <ProtocoleSanitaire
             :init-data="props.initOrganisme.protocoleSanitaire ?? {}"
-          ></protocole-sanitaire-read-only>
+            :modifiable="false"
+            :validate-on-mount="true"
+            :show-buttons="false"
+          ></ProtocoleSanitaire>
         </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
