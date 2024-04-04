@@ -7,6 +7,8 @@
 
 <script setup>
 import dayjs from "dayjs";
+import DisplayTypePrecision from "~/components/DS/DisplayTypePrecision.vue";
+
 const props = defineProps({
   historique: { type: Array, required: true },
 });
@@ -47,6 +49,11 @@ const headers = [
   {
     column: "typePrecision",
     sorter: "typePrecision",
+    component: ({ typePrecision, metaData }) => ({
+      component: DisplayTypePrecision,
+      typePrecision: typePrecision,
+      commentaire: metaData.commentaire ?? null,
+    }),
     text: "Détail",
     headerAttrs: {
       class: "suivi",

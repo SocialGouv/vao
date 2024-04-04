@@ -1,6 +1,6 @@
 <template>
   <div class="detail-container">
-    <h1>Déclaration : {{ demande.libelle }}</h1>
+    <h1>Déclaration : {{ demandeStore.currentDemande.libelle }}</h1>
     <div class="fr-grid-row">
       <div class="fr-col-7">
         <div v-for="detail in demandeDetails" :key="detail.name">
@@ -8,7 +8,10 @@
         </div>
       </div>
       <div class="fr-col-5 badge">
-        <DemandeStatusBadge :statut="demande.statut" :small="false" />
+        <DemandeStatusBadge
+          :statut="demandeStore.currentDemande.statut"
+          :small="false"
+        />
       </div>
     </div>
   </div>
@@ -19,20 +22,24 @@ import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.
 
 const demandeStore = useDemandeSejourStore();
 
-const demande = demandeStore.currentDemande;
 const demandeDetails = computed(() => [
   {
     name: "Organisme",
-    value: demandesSejours.getOrganismeTitle(demande),
+    value: demandesSejours.getOrganismeTitle(demandeStore.currentDemande),
   },
   {
     name: "Date (début / fin)",
-    value: demandesSejours.getDateDebutFin(demande),
+    value: demandesSejours.getDateDebutFin(demandeStore.currentDemande),
   },
-  { name: "Saison", value: demandesSejours.getSaison(demande) },
+  {
+    name: "Saison",
+    value: demandesSejours.getSaison(demandeStore.currentDemande),
+  },
   {
     name: "Déclaration",
-    value: demandesSejours.isDeclaration8Jours(demande.statut)
+    value: demandesSejours.isDeclaration8Jours(
+      demandeStore.currentDemande.statut,
+    )
       ? "Demande à 8 jours"
       : "Demande a 2 mois",
   },

@@ -40,6 +40,32 @@
         </DsfrAlert>
       </DsfrTabContent>
     </DsfrTabs>
+    <div
+      v-if="
+        demandeStore.currentDemande.estInstructeurPrincipal &&
+        demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS
+      "
+      class="container"
+    >
+      <DsfrButton
+        ref="modalOrigin"
+        label="Demander des compléments à l'organisateur"
+        tertiary
+        @click.prevent="onOpenModal"
+      />
+      <DsfrModal
+        ref="modal"
+        name="modalComplement"
+        :opened="modalComplement.opened"
+        title="Demande de compléments"
+        size="xl"
+        @close="onCloseModal"
+      >
+        <DemandesSejourDemandeComplements @valid="onValidComplement" />
+      </DsfrModal>
+      <DsfrButton ref="modalOrigin" label="Refusé" secondary />
+      <DsfrButton ref="modalOrigin" label="Accepté" />
+    </div>
   </div>
 </template>
 
@@ -48,6 +74,13 @@ definePageMeta({
   middleware: ["is-connected", "check-role"],
   role: "DemandeSejour",
 });
+
+import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
+
+const log = logger("pages/sejours");
+
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
 
 const route = useRoute();
 
@@ -89,10 +122,50 @@ const tabTitles = [
   { title: "Documents joints" },
   { title: "Historique de la déclaration" },
 ];
+
+const modalComplement = reactive({
+  opened: false,
+});
+
+const onOpenModal = () => {
+  modalComplement.opened = true;
+};
+
+const onCloseModal = () => {
+  modalComplement.opened = false;
+};
+
+const onValidComplement = async (commentaires) => {
+  onCloseModal();
+
+  try {
+    await $fetchBackend(
+      `/sejour/admin/${route.params.demandeId}/demande-complements`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(commentaires),
+      },
+    );
+    await demandeStore.setCurrentDemande(route.params.demandeId);
+    execute();
+  } catch (error) {
+    log.w("prend en charge", error);
+    toaster.error("Erreur lors de la prise en charge de la demande");
+  }
+};
 </script>
 
 <style scoped>
 .header {
   padding: 1em 0em;
+}
+
+.container {
+  display: flex;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  justify-content: right;
+  gap: 1rem;
 }
 </style>
