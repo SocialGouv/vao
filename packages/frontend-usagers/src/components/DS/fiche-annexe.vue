@@ -108,6 +108,19 @@
           }}</span>
         </div>
       </div>
+      <div
+        v-if="props.hebergement?.informationsLocaux.accessibilitePrecision"
+        class="fr-fieldset__element"
+      >
+        <div class="fr-col-12">
+          <span class="read-only-label">Préciser</span>
+        </div>
+        <div class="fr-col-12">
+          <span class="read-only-value">{{
+            props.hebergement?.informationsLocaux.accessibilitePrecision
+          }}</span>
+        </div>
+      </div>
       <div class="fr-fieldset__element">
         <div class="fr-col-12">
           <span class="read-only-label">Type de pension</span>
@@ -307,6 +320,7 @@
 
 <script setup>
 import dayjs from "dayjs";
+
 const props = defineProps({
   hebergement: { type: Object, required: true },
   dateDebut: { type: String, required: true },

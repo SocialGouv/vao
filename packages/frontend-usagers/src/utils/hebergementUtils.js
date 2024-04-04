@@ -37,7 +37,6 @@ const accessibiliteOptions = [
   { label: "Accessible", value: "accessible" },
   { label: "Signalé comme non adapté", value: "non_adapte" },
   { label: "Commentaires", value: "commentaires" },
-  { label: "Non renseigné", value: "non_renseigne" },
 ];
 
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
@@ -85,6 +84,15 @@ const informationsLocauxSchema = {
   accessibilite: yup
     .string()
     .required("Le choix d'un niveau d'accessibilté est obligatoire"),
+  accessibilitePrecision: yup
+    .string()
+    .nullable()
+    .when("accessibilite", {
+      is: (accessibilite) => {
+        return accessibilite !== "commentaires";
+      },
+      then: (schema) => schema.strip(),
+    }),
   pension: yup
     .string()
     .required("Le choix d'un type de pension est obligatoire"),
