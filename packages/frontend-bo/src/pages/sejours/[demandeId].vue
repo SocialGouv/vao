@@ -45,13 +45,9 @@
 
 <script setup>
 definePageMeta({
-  middleware: ["is-connected"],
+  middleware: ["is-connected", "check-role"],
+  role: "DemandeSejour",
 });
-
-import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
-import Details from "~/components/demandes-sejour/Details.vue";
-import DisplayFormulaire from "~/components/demandes-sejour/DisplayFormulaire.vue";
-import DisplayPj from "~/components/demandes-sejour/DisplayPj.vue";
 
 const route = useRoute();
 

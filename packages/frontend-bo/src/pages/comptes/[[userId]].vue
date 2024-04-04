@@ -199,6 +199,11 @@ const searchState = reactive({
   email: null,
 });
 
+definePageMeta({
+  middleware: ["is-connected", "check-role"],
+  role: "Compte",
+});
+
 const userId = route.params.userId;
 
 const links = [
@@ -293,7 +298,7 @@ const displayInfos = {
       "Une erreur est survenue. L'utilisateur que vous tentez de crééer existre déjà",
     type: "error",
   },
-  UserNotExist: {
+  UserNotFound: {
     title: "Utilisateur inexistant",
     description:
       "Vous tentez de mettre à jour un utilisateur qui semble avoir été supprimé",
@@ -403,7 +408,7 @@ onMounted(async () => {
     // Sélection du service de compétence
     if (usersStore.userSelected.territoire === "FRA")
       serviceCompetenceField.modelValue = "NAT";
-    else if (usersStore.userSelected.territoireparent === "FRA") {
+    else if (usersStore.userSelected.territoireParent === "FRA") {
       serviceCompetenceField.modelValue = "REG";
     } else {
       serviceCompetenceField.modelValue = "DEP";
@@ -413,7 +418,7 @@ onMounted(async () => {
     territoireField.isValid = true;
     // Chargement des rôles
     usersStore.userSelected.roles.forEach((role) => {
-      roleUtilisateurField.modelValue.push(role.label);
+      roleUtilisateurField.modelValue.push(role);
     });
     roleUtilisateurField.isValid = true;
   } else {

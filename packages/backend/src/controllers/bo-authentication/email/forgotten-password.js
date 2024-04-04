@@ -18,7 +18,7 @@ module.exports = async function login(req, res) {
     return res.status(400).json({ message: "Paramète manquant" });
   }
 
-  const users = await User.read({ search: { mail: email } });
+  const users = await User.read({ search: { email } });
 
   if (users.length === 0) {
     log.w("Utilisateur inexistant");
