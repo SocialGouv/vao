@@ -22,7 +22,7 @@ module.exports = async function get(req, res) {
     const token = await getToken();
     const dateDuJour = dayjs().format("YYYY-MM-DD");
     const { data: reponse } = await axios.get(
-      `${apiInsee.URL}/entreprises/sirene/V3/siret/${siret}?date=${dateDuJour}`,
+      `${apiInsee.URL}${apiInsee.URI}/siret/${siret}?date=${dateDuJour}`,
       { headers: { Authorization: `Bearer ${token}` } },
     );
     const uniteLegale = reponse.etablissement;
@@ -35,7 +35,7 @@ module.exports = async function get(req, res) {
     let elements = [];
     if (uniteLegale.etablissementSiege) {
       const { data: liste } = await axios.get(
-        `${apiInsee.URL}/entreprises/sirene/V3/siret?q=siren:${siren}&nombre=70&champs=numeroVoieEtablissement,typeVoieEtablissement,libelleVoieEtablissement,codePostalEtablissement,libelleCommuneEtablissement,nic,etatAdministratifUniteLegale`,
+        `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=70&champs=numeroVoieEtablissement,typeVoieEtablissement,libelleVoieEtablissement,codePostalEtablissement,libelleCommuneEtablissement,nic,etatAdministratifUniteLegale`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       elements = liste.etablissements ?? [];
@@ -53,12 +53,15 @@ module.exports = async function get(req, res) {
       });
 
     let representantsLegaux = [];
+    let nomCommercial;
     try {
       const url = `${apiEntreprise.uri}/infogreffe/rcs/unites_legales/${siren}/extrait_kbis?context=${apiEntreprise.context}&object=${apiEntreprise.object}&recipient=${apiEntreprise.recipient}`;
       const { data: response } = await axios.get(url, {
         headers: { Authorization: `Bearer ${config.apiEntreprise.token}` },
       });
+      log.d(response);
       const mandatairesSociaux = response.data.mandataires_sociaux ?? [];
+      nomCommercial = response.data.nom_commercial ?? null;
       representantsLegaux = mandatairesSociaux.map((m) => {
         if (m.type === "personne_physique") {
           return { fonction: m.fonction, nom: m.nom, prenom: m.prenom };
@@ -73,9 +76,13 @@ module.exports = async function get(req, res) {
     log.d(representantsLegaux);
     log.d(etablissements);
     log.d(uniteLegale);
-    return res
-      .status(200)
-      .json({ etablissements, representantsLegaux, uniteLegale });
+    log.i("DONE");
+    return res.status(200).json({
+      etablissements,
+      nomCommercial,
+      representantsLegaux,
+      uniteLegale,
+    });
   } catch (err) {
     log.w(err);
     return res

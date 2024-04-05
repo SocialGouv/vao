@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 const logger = require("../../../utils/logger");
 const build = require("./build");
 const Document = require("../../Document");
@@ -22,7 +23,15 @@ const generate = async (declaration, idFonctionnelle, departementSuivi) => {
     log.d(`http://localhost:3010/documents/${uuid}`);
 
     // insert into demande_sejour table
-    const files = declaration.files?.files ?? [];
+    if (declaration.files === null || declaration.files === undefined) {
+      declaration.files = { files: [] };
+    } else if (
+      declaration.files.files === null ||
+      declaration.files?.files === undefined
+    ) {
+      declaration.files.files = [];
+    }
+    const files = declaration.files.files;
     const fileToAdd = {
       createdAt: dayjs().format(),
       name: `${idFonctionnelle}.pdf`,

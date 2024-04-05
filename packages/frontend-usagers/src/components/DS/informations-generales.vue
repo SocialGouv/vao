@@ -86,6 +86,7 @@
       <OrganismePersonneMorale
         :init-data="organismeStore.organismeCourant.personneMorale"
         :show-responsable-sejour="false"
+        :show-buttons="false"
         :modifiable="false"
       ></OrganismePersonneMorale>
     </div>

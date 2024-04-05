@@ -112,6 +112,7 @@ const personneMoraleSchema = {
     .required(),
   siegeSocial: yup.boolean().required(),
   raisonSociale: yup.string().required(),
+  nomCommercial: yup.string().nullable().default(null),
   statut: yup.string().required(),
   adresse: yup.string().required(),
   pays: yup.string().required(),
