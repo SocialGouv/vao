@@ -24,7 +24,7 @@ async function getDepartements(req, res, next) {
       log.i("DONE - Aucun territoire associé");
 
       throw new AppError("Utilisateur sans territoire", {
-        code: "UnsignedUser",
+        name: "UnsignedUser",
         statusCode: 401,
       });
     }

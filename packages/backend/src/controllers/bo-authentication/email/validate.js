@@ -1,12 +1,10 @@
 const jwt = require("jsonwebtoken");
 const config = require("../../../config");
 const User = require("../../../services/BoUser");
-const Send = require("../../../services/mail").mailService.send;
 
 const AppError = require("../../../utils/error");
 
 const logger = require("../../../utils/logger");
-const MailUtils = require("../../../utils/mail");
 
 const log = logger(module.filename);
 
@@ -25,11 +23,6 @@ module.exports = async (req, res) => {
     log.d({ email });
     const user = await User.activate(email);
     log.d({ user });
-    try {
-      await Send(MailUtils.bo.authentication.sendActivationMail({ email }));
-    } catch (error) {
-      log.w(error.name, error.message);
-    }
     log.i("Done");
     return res.status(200).json({ user });
   } catch (err) {

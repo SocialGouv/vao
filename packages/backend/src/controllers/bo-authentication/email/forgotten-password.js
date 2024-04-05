@@ -10,7 +10,7 @@ const { buildEmailToken } = require("../../../utils/bo-token");
 
 const log = logger(module.filename);
 
-module.exports = async function login(req, res) {
+module.exports = async function forgottenPassword(req, res, next) {
   const { email } = req.body;
   log.i("In", { email });
   if (!email) {
@@ -18,14 +18,17 @@ module.exports = async function login(req, res) {
     return res.status(400).json({ message: "Paramète manquant" });
   }
 
-  const users = await User.read({ search: { email } });
-
-  if (users.length === 0) {
-    log.w("Utilisateur inexistant");
-    return res.json({ message: "Mail envoyé" });
+  let user;
+  try {
+    user = await User.readOneByMail(email);
+  } catch (error) {
+    if (error.isOperational && error.name === "UserNotFound") {
+      log.w("DONE - UserNotFound");
+      return res.json({ message: "Mail envoyé" });
+    } else {
+      return next(error);
+    }
   }
-  const [user] = users;
-
   log.d({ user });
 
   try {

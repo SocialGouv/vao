@@ -4,7 +4,6 @@ const User = require("../../../services/BoUser");
 const Send = require("../../../services/mail").mailService.send;
 
 const config = require("../../../config");
-const { status } = require("../../../helpers/users");
 
 const MailUtils = require("../../../utils/mail");
 const AppError = require("../../../utils/error");
@@ -23,18 +22,8 @@ module.exports = async function renewToken(req, res, next) {
       });
     }
 
-    const [user] = await User.read({ search: { email } });
+    const user = await User.readOneByMail(email);
     log.d({ user });
-    if (!user) {
-      throw new AppError("Utilisateur non trouvé", {
-        name: "UserNotFound",
-      });
-    }
-    if (user.statusCode !== status.NEED_EMAIL_VALIDATION) {
-      throw new AppError("Utilisateur déjà actif", {
-        name: "UserAlreadyVerified",
-      });
-    }
     const token = jwt.sign(
       buildEmailToken(email),
       config.validationToken.secret,

@@ -21,7 +21,7 @@ module.exports = async function getList(req, res) {
       sortBy,
       sortDirection,
     });
-    log.d({ result });
+    log.d(result);
     return res.status(200).json(result);
   } catch (error) {
     log.w(error);

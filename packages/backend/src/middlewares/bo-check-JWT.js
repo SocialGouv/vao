@@ -18,7 +18,7 @@ async function checkJWT(req, res, next) {
       log.i("DONE - Aucun cookie présent");
 
       throw new AppError("Utilisateur non identifié", {
-        code: "UnsignedUser",
+        name: "UnsignedUser",
         statusCode: 401,
       });
     }
@@ -53,7 +53,7 @@ async function checkJWT(req, res, next) {
     if (!refreshToken) {
       log.d("refresh_token missing");
       throw new AppError("Utilisateur non identifié", {
-        code: "UnsignedUser",
+        name: "UnsignedUser",
         statusCode: 401,
       });
     }
@@ -62,7 +62,7 @@ async function checkJWT(req, res, next) {
     if (!session || session.length === 0) {
       log.d("token reuse");
       throw new AppError("réutilisation de token expiré", {
-        code: "TokenReuse",
+        name: "TokenReuse",
         statusCode: 409,
       });
     }
@@ -79,7 +79,7 @@ async function checkJWT(req, res, next) {
         return next(
           new AppError(error.message, {
             cause: error,
-            code: "TokenExpiredError",
+            name: "TokenExpiredError",
             statusCode: 401,
           }),
         );
@@ -120,7 +120,7 @@ async function checkJWT(req, res, next) {
     if (!newSession) {
       log.w("erreur sur la création de session");
       throw new AppError("erreur durant la rotation de session", {
-        code: "SessionRotation",
+        name: "SessionRotation",
         statusCode: 409,
       });
     }
@@ -144,7 +144,7 @@ async function checkJWT(req, res, next) {
     log.i("Done", "access_token & refresh_token renewed");
     return next(
       new AppError("token has been rotated", {
-        code: "SessionRotation",
+        name: "SessionRotation",
         statusCode: 409,
       }),
     );

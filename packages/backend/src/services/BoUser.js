@@ -302,9 +302,13 @@ module.exports.read = async ({
   if (search?.territoire && search.territoire.length) {
     searchQuery.push(`ter.label ilike '%${search.territoire}%'`);
   }
-  //if (search?.valide && search.valide.length) {
-  searchQuery.push(`us.validated = ${search.valide}`);
-  //}
+
+  if (search?.valide !== undefined) {
+    searchQuery.push(
+      `us.validated = ${search.valide === true || search.valide === "true"}`,
+    );
+  }
+
   let queryWithPagination = query.get(searchQuery);
 
   // Order management
@@ -324,7 +328,7 @@ module.exports.read = async ({
     `;
   }
 
-  log.d("read", queryWithPagination);
+  log.w("read", queryWithPagination);
   const response = await pool.query(queryWithPagination);
 
   const total = await pool.query(query.getTotal(searchQuery));
@@ -352,6 +356,30 @@ module.exports.readOne = async (id) => {
   if (rowCount === 0) {
     log.d("readOne - DONE - Utilisateur BO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
+      name: "UserNotFound",
+    });
+  }
+
+  log.i("readOne - DONE");
+  return users[0];
+};
+
+module.exports.readOneByMail = async (mail) => {
+  log.i("readOne - IN", { mail });
+
+  if (!mail) {
+    throw new AppError("Paramètre manquant", {
+      statusCode: 500,
+    });
+  }
+
+  const { rowCount, rows: users } = await pool.query(
+    query.get([`us.mail = '${mail}'`]),
+  );
+
+  if (rowCount === 0) {
+    log.d("readOne - DONE - Utilisateur BO inexistant");
+    throw new AppError("Utilisateur inexistant", {
       name: "UserNotFound",
     });
   }

@@ -1,4 +1,3 @@
-const jwt = require("jsonwebtoken");
 const dayjs = require("dayjs");
 const { senderEmail, frontUsagersDomain, frontBODomain } = require("../config");
 
@@ -6,7 +5,6 @@ const config = require("../config");
 const sendTemplate = require("../helpers/mail");
 
 const logger = require("./logger");
-const { buildValidationToken } = require("./token");
 const AppError = require("./error");
 
 const log = logger(module.filename);
@@ -14,52 +12,6 @@ const log = logger(module.filename);
 module.exports = {
   bo: {
     authentication: {
-      sendActivationMail: (dataMail) => {
-        log.i("sendActivation - In");
-        const expireIn = config.validationToken.expiresIn / 1000;
-        const token = jwt.sign(
-          buildValidationToken(dataMail.idUser, dataMail.datefinValidite),
-          `${config.validationToken.secret}`,
-          {
-            expiresIn: expireIn,
-          },
-        );
-
-        const link = `${frontBODomain}/connexion/validation/${token}?id=${dataMail.idUser}`;
-        const duree = expireIn / 3600;
-
-        const html = sendTemplate.getBody(
-          "PORTAIL VAO ADMINISTRATION - ACTIVATION DE COMPTE",
-          [
-            {
-              p: [
-                "Bonjour,",
-                "Vous recevez ce mail car votre compte vient d'être réactivé sur le Portail VAO Administration.",
-                `Pour activer votre compte, veuillez cliquer sur lien ci dessous. Attention, ce lien ne sera valable que ${duree} heures`,
-              ],
-              type: "p",
-            },
-            {
-              link,
-              text: "Activer votre compte",
-              type: "link",
-            },
-          ],
-          "L'équipe du SI VAO",
-        );
-
-        const params = {
-          from: senderEmail,
-          html,
-          replyTo: senderEmail,
-          subject: "Portail VAO Administration - Activation de compte",
-          to: dataMail.mail,
-        };
-
-        log.d("sendActivation - DONE", { params });
-
-        return params;
-      },
       sendForgottenPassword: ({ email, token }) => {
         log.i("sendForgottenPassword - In", {
           email,
