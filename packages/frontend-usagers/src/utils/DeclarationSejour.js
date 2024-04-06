@@ -1,12 +1,14 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { logger } from "#imports";
-
-import informationsVacanciers from "./informationsVacanciers";
-import protocoleTransport from "./protocoleTransport";
-import protocoleSanitaire from "./protocoleSanitaire";
-import projetSejour from "./projetSejour";
-import hebergementUtils from "./hebergementUtils";
+import {
+  logger,
+  informationsVacanciers,
+  protocoleTransport,
+  protocoleSanitaire,
+  projetSejour,
+  hebergementUtils,
+  personne,
+} from "#imports";
 
 const log = logger("utils/DeclarationSejour");
 
@@ -52,14 +54,13 @@ const baseSchema = {
     })
     .required("La saisie de ce champ est obligatoire"),
   responsableSejour: yup
-    .object({
-      nom: yup.string().required(),
-      prenom: yup.string().required(),
-      fonction: yup.string().required(),
-      adresse: yup.object().required(),
-      telephone: yup.string().required(),
-      email: yup.string().required(),
-    })
+    .object(
+      personne.schema({
+        showAdresse: true,
+        showTelephone: true,
+        showEmail: true,
+      }),
+    )
     .required(),
 };
 
