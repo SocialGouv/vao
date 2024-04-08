@@ -51,7 +51,7 @@
         ref="modalOrigin"
         label="Demander des compléments à l'organisateur"
         tertiary
-        @click.prevent="onOpenModal"
+        @click.prevent="onOpenModalDemandeComplements"
       />
       <DsfrModal
         ref="modal"
@@ -59,12 +59,27 @@
         :opened="modalComplement.opened"
         title="Demande de compléments"
         size="xl"
-        @close="onCloseModal"
+        @close="onCloseModalDemandeComplements"
       >
-        <DemandesSejourDemandeComplements @valid="onValidComplement" />
+        <DemandesSejourCommentaire @valid="onValidComplement" />
       </DsfrModal>
-      <DsfrButton ref="modalOrigin" label="Refusé" secondary />
-      <DsfrButton ref="modalOrigin" label="Accepté" />
+      <DsfrButton
+        ref="modalOrigin"
+        label="Refuser"
+        secondary
+        @click.prevent="onOpenModalRefus"
+      />
+      <DsfrModal
+        ref="modal"
+        name="modalRefus"
+        :opened="modalRefus.opened"
+        title="Refus de la déclaration"
+        size="xl"
+        @close="onCloseModalRefus"
+      >
+        <DemandesSejourCommentaire @valid="onValidRefus" />
+      </DsfrModal>
+      <DsfrButton ref="modalOrigin" label="Accepter" />
     </div>
   </div>
 </template>
@@ -127,16 +142,28 @@ const modalComplement = reactive({
   opened: false,
 });
 
-const onOpenModal = () => {
+const modalRefus = reactive({
+  opened: false,
+});
+
+const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
 };
 
-const onCloseModal = () => {
+const onCloseModalDemandeComplements = () => {
   modalComplement.opened = false;
 };
 
+const onOpenModalRefus = () => {
+  modalRefus.opened = true;
+};
+
+const onCloseModalRefus = () => {
+  modalRefus.opened = false;
+};
+
 const onValidComplement = async (commentaires) => {
-  onCloseModal();
+  onCloseModalDemandeComplements();
 
   try {
     await $fetchBackend(
@@ -147,6 +174,23 @@ const onValidComplement = async (commentaires) => {
         body: JSON.stringify(commentaires),
       },
     );
+    await demandeStore.setCurrentDemande(route.params.demandeId);
+    execute();
+  } catch (error) {
+    log.w("prend en charge", error);
+    toaster.error("Erreur lors de la prise en charge de la demande");
+  }
+};
+
+const onValidRefus = async (commentaires) => {
+  onCloseModalDemandeComplements();
+
+  try {
+    await $fetchBackend(`/sejour/admin/${route.params.demandeId}/refus`, {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(commentaires),
+    });
     await demandeStore.setCurrentDemande(route.params.demandeId);
     execute();
   } catch (error) {

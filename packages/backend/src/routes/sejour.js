@@ -42,8 +42,16 @@ router.post(
 router.post(
   "/admin/:declarationId/demande-complements",
   boCheckJWT,
+  boCheckRoleDS,
   getDepartements,
   demandeSejourController.demandeComplements,
+);
+router.post(
+  "/admin/:declarationId/refus",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  demandeSejourController.refus,
 );
 router.get("/:id", checkJWT, demandeSejourController.getById);
 router.get("/historique/:id", checkJWT, demandeSejourController.historique);
