@@ -43,11 +43,13 @@ const preparationPilluliersOptions = [
     label:
       "Piluliers préparés préalablement au séjour par le vacancier, sa famille, le représentant légal, l’établissement de résidence habituelle, le médecin",
     id: "prepares_prealablement",
+    hint: "Il est recommandé que les traitements soient préparés pour la totalité de la durée du séjour (soit, autant de semainiers que de semaines de vacances)",
     value: "prepares_prealablement",
   },
   {
     label: "Piluliers préparés durant le séjour",
     id: "au_fur_et_a_mesure",
+    hint: "La préparation des médicaments doit être effectuée soit par un pharmacien d’officine, titulaire ou adjoint, ou le préparateur en pharmacie sous la responsabilité de ces derniers",
     value: "au_fur_et_a_mesure",
   },
 ];
@@ -125,19 +127,6 @@ const schema = {
       otherwise: (precision) => precision.nullable().strip(),
     }),
   conservationMedicamentThermosensible: yup.boolean().required(),
-  precisionConservationMedicament: yup
-    .string()
-    .when("conservationMedicamentThermosensible", {
-      is: (val) => !!val,
-      then: (precision) =>
-        precision
-          .min(
-            5,
-            "Vous devez préciser le dispositif de conservation des médicaments thermosensibles",
-          )
-          .required(),
-      otherwise: (precision) => precision.nullable().strip(),
-    }),
   individualisationMedicaments: yup.boolean().required(),
   precisionIndividualisationMedicaments: yup
     .string()

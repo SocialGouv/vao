@@ -15,17 +15,6 @@ const schema = () => ({
     then: (schema) =>
       schema.min(5, "Vous devez préciser votre réponse précédente").required(),
   }),
-  precisionConservationMedicament: yup
-    .string()
-    .when("conservationMedicamentThermosensible", {
-      is: (conservationMedicamentThermosensible) =>
-        !!conservationMedicamentThermosensible,
-      otherwise: (schema) => schema.nullable().strip(),
-      then: (schema) =>
-        schema
-          .min(5, "Vous devez préciser votre réponse précédente")
-          .required(),
-    }),
   precisionConstitutionEquipe: yup.string().when("constitutionEquipe", {
     is: (constitutionEquipe) =>
       constitutionEquipe && constitutionEquipe.length > 0,

@@ -438,22 +438,6 @@ function displayInfosSanitaires(info) {
       },
     ],
   });
-  if (info.conservationMedicamentThermosensible) {
-    liste.push({
-      columnGap: 10,
-      columns: [
-        {
-          text: "Précision sur le protocole en vigueur concernant le stockage garantissant la parfaite conservation des médicaments :",
-          width: 250,
-        },
-        {
-          bold: true,
-          text: `${info.precisionConservationMedicament}`,
-          width: "*",
-        },
-      ],
-    });
-  }
   liste.push({
     columnGap: 10,
     columns: [

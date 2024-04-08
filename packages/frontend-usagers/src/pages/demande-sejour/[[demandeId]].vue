@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
     <DsfrTabs
       tab-list-name="display-formulaire"
