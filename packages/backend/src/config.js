@@ -48,6 +48,11 @@ module.exports = {
     secret: process.env.RESET_PASSWORD_TOKEN_SECRET,
   },
   senderEmail: process.env.SENDER_EMAIL,
+  sentry: {
+    dsn: process.env.SENTRY_DSN,
+    enabled: process.env.SENTRY_ENABLED === "true",
+    environment: process.env.SENTRY_ENVIRONMENT,
+  },
   smtp: {
     auth: {
       pass: process.env.SMTP_PASSWORD,

@@ -105,7 +105,13 @@ function acceptAll() {
           et réalisé en partenariat avec les administrations nationales et
           locales.
         </p>
-        <p class="fr-footer__content-desc">
+        <p
+          v-if="config.public.environment !== 'production'"
+          class="fr-footer__content-desc"
+        >
+          Environnement : {{ config.public.environment }}
+        </p>
+        <p v-if="config.public.appVersion" class="fr-footer__content-desc">
           Version : {{ config.public.appVersion }}
         </p>
       </template>

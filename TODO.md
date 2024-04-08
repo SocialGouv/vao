@@ -2,14 +2,14 @@
 
 - [x] Définir licenses
 - [x] Intégrer linters 
-- [] Intégrer renovate
+- [x] Intégrer renovate
 - [x] Conventionner commit
 - [x] Ajouter le cors pour le backend
 - [x] Conventionner versionning
 
 # Intégration Fabrique
 
-- [] Lier à sentry
+- [x] Lier à sentry
 - [] Lier à dashlord
 
 # Base de données
@@ -19,7 +19,7 @@
 
 # Kubernetes
 - [] Ajouter annotations Ingress pour la production
-- [] Ajouter route /healthz sur services backend
+- [x] Ajouter route /healthz sur services backend
 - [x] Sceller les secrets
 
 Pas besoin de /metrics

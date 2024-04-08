@@ -19,8 +19,9 @@ services:
       - ./.env
     environment:
       NUXT_PUBLIC_SENTRY_DSN: ${FRONTEND_USAGERS_SENTRY_DSN}
+      NUXT_PUBLIC_SENTRY_ENABLED: ${FRONTEND_USAGERS_SENTRY_ENABLED}
       NUXT_PUBLIC_BACKEND_URL: ${BACKEND_URL}
-      NUXT_PUBLIC_APP_VERSION: development
+      NUXT_PUBLIC_ENVIRONMENT: local
       TZ: Europe/Paris
       DEBUG: info:vao*, debug:vao*
     ports:
@@ -41,7 +42,9 @@ services:
       - ./.env
     environment:
       NUXT_PUBLIC_SENTRY_DSN: ${FRONTEND_BO_SENTRY_DSN}
+      NUXT_PUBLIC_SENTRY_ENABLED: ${FRONTEND_BO_SENTRY_ENABLED}
       NUXT_PUBLIC_BACKEND_URL: ${BACKEND_URL}
+      NUXT_PUBLIC_ENVIRONMENT: local
       TZ: Europe/Paris
       DEBUG: info:vao*
     ports:
@@ -63,9 +66,12 @@ services:
     env_file:
       - ./.env
     environment:
-      TZ: Europe/Paris
-      DEBUG: info:vao*
+      DEBUG: "*info*"
+      SENTRY_DSN: ${BACKEND_SENTRY_DSN}
+      SENTRY_ENVIRONMENT: local
+      SENTRY_ENABLED: ${BACKEND_SENTRY_ENABLED}
       TMP_DIRECTORY: ${BACKEND_TMP_DIRECTORY}
+      TZ: Europe/Paris
     ports:
       - 3010:3000
 

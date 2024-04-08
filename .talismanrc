@@ -21,6 +21,8 @@ fileignoreconfig:
   checksum: 0ee3b1eb016b7ef5313d38838050284eddae671c5d8299b5b5d64a7b7a68a3c4
 - filename: .kontinuous/env/dev/templates/api-insee.sealed.secret.yaml
   checksum: 1ad4f82701febd38af91d6e8a8e4a2e04ef641f29134305c09417b1e68033f64
+- filename: .kontinuous/env/dev/templates/backend.configmap.yaml
+  checksum: 1a87514b01d542124d0707c3508c903a3d55ebdc8159d6fc80c6876799de22e5
 - filename: .kontinuous/env/dev/templates/smtp.sealed.secret.yaml
   checksum: b43b48e350f4b1957598febc30e1c75517f69f34855dec00e621308ae9deb81e
 - filename: .kontinuous/env/dev/templates/smtp/deployment.yaml
@@ -33,6 +35,8 @@ fileignoreconfig:
   checksum: b316b242ceb79aa49aaa277ced74ea4dfd55054239c05c015836f1845942290e
 - filename: .kontinuous/env/preprod/templates/api-insee.sealed.secret.yaml
   checksum: 00b6f9f7ecb3b3cf523818f2723963a4bc20d11ed9a37e29c4405bbf72377da0
+- filename: .kontinuous/env/preprod/templates/backend.configmap.yaml
+  checksum: 6232da2596184f2a3d831f76e17f23f872e9ab7fb089a8e0b7cbac65862c34fe
 - filename: .kontinuous/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
 - filename: .kontinuous/env/preprod/templates/smtp/deployment.yaml
@@ -45,6 +49,8 @@ fileignoreconfig:
   checksum: 8f12e8e99423682058e93b2a2dfe9cd413a6c4a892407eaf911ac41aa1c7855e
 - filename: .kontinuous/env/prod/templates/api-insee.sealed.secret.yaml
   checksum: 46f910070db56d4af6b9c11e559a5087a47cc108a32ea354f50cc266f088a771
+- filename: .kontinuous/env/prod/templates/backend.configmap.yaml
+  checksum: 6a9d3414d970c2a78cbb351555a545d12307e0866852974532ef840e1b44a8ec
 - filename: .kontinuous/env/prod/templates/pg.sealed.secret.yaml
   checksum: fded223748506dc16896866d0bc86d5b89bc1c0003e3b2667a5e2913f7a61baf
 - filename: .kontinuous/env/prod/templates/smtp.sealed.secret.yaml

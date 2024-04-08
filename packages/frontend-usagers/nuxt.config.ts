@@ -16,8 +16,13 @@ export default defineNuxtConfig({
   modules: ["@pinia/nuxt", "nuxt3-leaflet"],
   runtimeConfig: {
     public: {
-      backendUrl: "",
-      appVersion: "",
+      appVersion: undefined,
+      backendUrl: undefined,
+      environment: undefined,
+      sentry: {
+        dsn: undefined,
+        enabled: undefined,
+      },
     },
   },
   srcDir: "src",

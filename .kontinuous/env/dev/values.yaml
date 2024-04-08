@@ -1,1 +1,14 @@
 maildev: {}
+
+jobs:
+  runs:
+    build-frontend-usagers:
+      with:
+        buildArgs:
+          NUXT_PUBLIC_ENVIRONMENT: "development"
+          NUXT_PUBLIC_SENTRY_ENABLED: "false"
+    build-frontend-bo:
+      with:
+        buildArgs:
+          NUXT_PUBLIC_ENVIRONMENT: "development"
+          NUXT_PUBLIC_SENTRY_ENABLED: "false"

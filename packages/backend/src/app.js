@@ -1,3 +1,8 @@
+const Sentry = require("@sentry/node");
+const {
+  contextLinesIntegration,
+  requestDataIntegration,
+} = require("@sentry/node");
 const express = require("express");
 
 const app = express();
@@ -14,6 +19,41 @@ const AppError = require("./utils/error");
 const ValidationAppError = require("./utils/validation-error");
 
 const log = logger(module.filename);
+
+if (config.sentry.enabled) {
+  Sentry.init({
+    dsn: config.sentry.dsn,
+    environment: config.sentry.environment,
+    integrations: function (integrations) {
+      return [
+        ...integrations
+          .filter((integration) => integration.name !== "Modules")
+          .map((integration) => {
+            if (integration.name === "ContextLines") {
+              return contextLinesIntegration({
+                frameContextLines: 5,
+              });
+            }
+            if (integration.name === "RequestData") {
+              return requestDataIntegration({
+                include: {
+                  cookies: false,
+                  user: false,
+                },
+              });
+            }
+            return integration;
+          }),
+        new Sentry.Integrations.Express({
+          app,
+        }),
+      ];
+    },
+  });
+}
+
+app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.tracingHandler());
 
 const whitelist = [
   config.frontUsagersDomain,
@@ -61,8 +101,21 @@ app.use(`/documents`, routes.documents);
 app.use(`/geo`, routes.geo);
 
 app.use((req, res, next) => {
-  next(new AppError(`Path "${req.url}" not found`, { statusCode: 404 }));
+  next(
+    new AppError(`Path "${req.url}" not found`, {
+      name: "PATH_NOT_FOUND",
+      statusCode: 404,
+    }),
+  );
 });
+
+app.use(
+  Sentry.Handlers.errorHandler({
+    shouldHandleError() {
+      return true;
+    },
+  }),
+);
 
 // eslint-disable-next-line no-unused-vars
 app.use(async (err, req, res, next) => {
@@ -74,13 +127,13 @@ app.use(async (err, req, res, next) => {
   }
 
   if (err instanceof ValidationAppError) {
-    return res.status(400).send({ code: err.name, errors: err.errors });
+    return res.status(400).send({ errors: err.errors, name: err.name });
   }
 
   res
     .status(err.statusCode)
     .send(
-      (err.name !== "Error" && { code: err.name }) || { message: err.message },
+      (err.name !== "Error" && { name: err.name }) || { message: err.message },
     );
 });
 

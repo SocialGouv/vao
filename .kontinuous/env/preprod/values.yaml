@@ -6,3 +6,11 @@ jobs:
       with:
         buildArgs:
           NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
+          NUXT_PUBLIC_ENVIRONMENT: "staging"
+          NUXT_PUBLIC_SENTRY_ENABLED: "true"
+    build-frontend-bo:
+      with:
+        buildArgs:
+          NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
+          NUXT_PUBLIC_ENVIRONMENT: "staging"
+          NUXT_PUBLIC_SENTRY_ENABLED: "true"
