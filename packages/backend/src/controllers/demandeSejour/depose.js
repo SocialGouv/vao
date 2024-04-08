@@ -111,6 +111,7 @@ module.exports = async function post(req, res, next) {
     "organisme",
     demandeSejourId,
     userId,
+    null,
     "declaration_sejour",
     "depose à 2 mois",
     declaration,

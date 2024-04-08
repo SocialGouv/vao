@@ -6,3 +6,4 @@ module.exports.post = require("./post");
 module.exports.update = require("./update");
 module.exports.depose = require("./depose");
 module.exports.historique = require("./historique");
+module.exports.prendEnCharge = require("./prendEnCharge");
