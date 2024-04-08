@@ -24,7 +24,7 @@
         <DsfrInputGroup
           name="precisionDispositionsSpecifiques"
           :readonly="!props.modifiable"
-          label="Quels sont les protocoles en vigueur pour assurer le suivi sanitaire et médical ?"
+          label="Précisez"
           hint="Redimensionnez le champ pour saisir plus de ligne"
           :label-visible="true"
           :is-textarea="true"
@@ -60,19 +60,7 @@
           @update:model-value="onPrecisionConstitutionEquipeChange"
         />
       </div>
-      <div class="fr-fieldset__element">
-        <DsfrRadioButtonSet
-          name="troussePharmacie"
-          legend="Présence d’une trousse à pharmacie de premier secours ?"
-          :disabled="!props.modifiable"
-          :model-value="troussePharmacie"
-          :options="ouiNonOptions"
-          :is-valid="troussePharmacieMeta.valid"
-          :inline="true"
-          :error-message="troussePharmacieErrorMessage"
-          @update:model-value="onTroussePharmacieChange"
-        />
-      </div>
+
       <div class="fr-fieldset__element">
         <DsfrRadioButtonSet
           name="accordCabinetMedical"
@@ -100,6 +88,19 @@
           :error-message="precisionAccordCabinetMedicalErrorMessage"
           :is-valid="precisionAccordCabinetMedicalMeta.valid"
           @update:model-value="onPrecisionAccordCabinetMedicalChange"
+        />
+      </div>
+      <div class="fr-fieldset__element">
+        <DsfrRadioButtonSet
+          name="troussePharmacie"
+          legend="Présence d’une trousse à pharmacie de premier secours ?"
+          :disabled="!props.modifiable"
+          :model-value="troussePharmacie"
+          :options="ouiNonOptions"
+          :is-valid="troussePharmacieMeta.valid"
+          :inline="true"
+          :error-message="troussePharmacieErrorMessage"
+          @update:model-value="onTroussePharmacieChange"
         />
       </div>
     </DsfrFieldset>
@@ -151,14 +152,14 @@
       </div>
       <DsfrHighlight
         v-if="props.modifiable"
-        text="Dispositif de rangement fermé à clé ou disposant d’un mode de fermeture assurant la même sécurité, dont les modalités d’accès sont maîtrisées et contrôlées.Il est souhaitable que les modalités de détention, de mise à disposition et de transmission des clés, codes d’accès, etc. des différents dispositifs de rangement des médicaments fassent l’objet d’une procédure écrite."
+        text="Il est souhaitable que les modalités de détention, de mise à disposition et de transmission des clés, codes d’accès, etc. des différents dispositifs de rangement des médicaments fassent l’objet d’une procédure écrite"
         :small="false"
         :large="true"
       />
       <div class="fr-fieldset__element">
         <DsfrRadioButtonSet
           name="stockageMedicamentSecurise"
-          legend="Les médicaments sont-ils stockés dans un lieu sécurisé ?"
+          legend="Stockage des médicaments dans un lieu sécurisé (dispositif de rangement fermé à clé ou disposant d’un mode de fermeture assurant la même sécurité, dont les modalités d’accès sont maîtrisées et contrôlées) et garantissant leur parfaite conservation"
           :disabled="!props.modifiable"
           :model-value="stockageMedicamentSecurise"
           :options="ouiNonOptions"
@@ -172,7 +173,7 @@
         <DsfrInputGroup
           name="precisionStockageMedicamentSecurise"
           :readonly="!props.modifiable"
-          label="Précisez le protocole en vigueur concernant le stockage sécurisé des médicaments."
+          label="Précisez"
           hint="Redimensionnez le champ pour saisir plus de ligne"
           :label-visible="true"
           :is-textarea="true"
@@ -197,30 +198,17 @@
           @update:model-value="onConservationMedicamentThermosensibleChange"
         />
       </div>
-      <div
-        v-if="conservationMedicamentThermosensible"
-        class="fr-fieldset__element"
-      >
-        <DsfrInputGroup
-          name="precisionConservationMedicament"
-          :readonly="!props.modifiable"
-          label="Précisez le protocole en vigueur concernant le stockage garantissant la parfaite conservation des médicaments."
-          hint="Redimensionnez le champ pour saisir plus de ligne"
-          :label-visible="true"
-          :is-textarea="true"
-          placeholder=""
-          :model-value="precisionConservationMedicament"
-          :error-message="precisionConservationMedicamentErrorMessage"
-          :is-valid="precisionConservationMedicamentMeta.valid"
-          @update:model-value="onPrecisionConservationMedicamentChange"
-        />
-      </div>
+      <DsfrHighlight
+        v-if="props.modifiable"
+        text="Les traitements de chaque vacancier doivent être identifiés a minima par son nom et son prénom. Il est recommandé de compléter ces mentions de la date de naissance, de la photographie, voire du nom de jeune fille des résidentes en cas d’homonymie."
+        :small="false"
+        :large="true"
+      />
       <div class="fr-fieldset__element">
         <DsfrRadioButtonSet
           name="individualisationMedicaments"
           legend="Un dispositif est-il prévu pour individualiser les traitements de
           chaque vacancier ?"
-          hint="Les traitements de chaque vacancier doivent être identifiés a minima par son nom et son prénom. Il est recommandé de compléter ces mentions de la date de naissance, de la photographie, voire du nom de jeune fille des résidentes en cas d’homonymie."
           :disabled="!props.modifiable"
           :model-value="individualisationMedicaments"
           :options="ouiNonOptions"
@@ -336,10 +324,6 @@
       </div>
     </DsfrFieldset>
     <DsfrFieldset legend="Autres protocoles">
-      <DsfrHighlight
-        v-if="props.modifiable"
-        text="Dispositif de rangement fermé à clé ou disposant d’un mode de fermeture assurant la même sécurité, dont les modalités d’accès sont maîtrisées et contrôlées.Il est souhaitable que les modalités de détention, de mise à disposition et de transmission des clés, codes d’accès, etc. des différents dispositifs de rangement des médicaments fassent l’objet d’une procédure écrite."
-      />
       <div class="fr-fieldset__element">
         <DsfrRadioButtonSet
           name="protocoleEvacuation"
@@ -530,8 +514,6 @@ const initialValues = {
     props.initData.precisionStockageMedicamentSecurise,
   conservationMedicamentThermosensible:
     props.initData.conservationMedicamentThermosensible,
-  precisionConservationMedicament:
-    props.initData.precisionConservationMedicament,
   individualisationMedicaments: props.initData.individualisationMedicaments,
   precisionIndividualisationMedicaments:
     props.initData.precisionIndividualisationMedicaments,
@@ -632,12 +614,6 @@ const {
   handleChange: onConservationMedicamentThermosensibleChange,
   meta: conservationMedicamentThermosensibleMeta,
 } = useField("conservationMedicamentThermosensible");
-const {
-  value: precisionConservationMedicament,
-  errorMessage: precisionConservationMedicamentErrorMessage,
-  handleChange: onPrecisionConservationMedicamentChange,
-  meta: precisionConservationMedicamentMeta,
-} = useField("precisionConservationMedicament");
 const {
   value: individualisationMedicaments,
   errorMessage: individualisationMedicamentsErrorMessage,
