@@ -9,3 +9,4 @@ module.exports.historique = require("./historique");
 module.exports.prendEnCharge = require("./prendEnCharge");
 module.exports.prendEnCharge = require("./prendEnCharge");
 module.exports.demandeComplements = require("./demandeComplements");
+module.exports.refus = require("./refus");

@@ -98,6 +98,42 @@ module.exports = {
 
         return params;
       },
+      sendRefusMail: ({ destinataires, comment, declaration }) => {
+        log.i("sendRefusMail - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendRefusMail - ${message}`);
+          throw new AppError(message);
+        }
+        if (!comment) {
+          const message = `Le paramètre comment manque à la requête`;
+          log.w(`sendRefusMail - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p>
+
+                <p>Votre déclaration ${declaration.idFonctionnelle} à été refusée </p>
+                <p>En voici les raisons</p>
+
+                <pre>${comment}</pre>
+                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Refus la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendRefusMail post email", {
+          params,
+        });
+
+        return params;
+      },
       sendValidationMail: ({ email, token }) => {
         log.i("sendValidationMail - In", {
           email,
