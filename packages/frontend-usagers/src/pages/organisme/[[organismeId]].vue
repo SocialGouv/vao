@@ -250,6 +250,11 @@ async function updateOrCreateAgrement(agrementData, type) {
             `Le fichier ${file.name} dépasse la taille maximale autorisée`,
           );
         }
+        if (error.response.status === 415) {
+          return toaster.error(
+            `Le fichier ${file.name} n'est pas au format PDF`,
+          );
+        }
         log.w(error);
         return toaster.error(
           `Une erreur est survenue lors du dépôt du document ${file.name}`,

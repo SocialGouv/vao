@@ -13,6 +13,10 @@ module.exports = async (req, res) => {
     return res.status(400).json({ msg: "paramètre d'appels incorrects" });
   }
 
+  if (category === "agrement" && file.mimetype !== "application/pdf") {
+    return res.status(415).json({ msg: "format d'agrément incorrect" });
+  }
+
   try {
     const uuid = await DocumentService.upload(category, file);
     log.d("Add document - DONE", uuid);
