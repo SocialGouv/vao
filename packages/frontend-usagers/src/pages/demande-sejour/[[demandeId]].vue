@@ -219,7 +219,8 @@ const sejourId = ref(route.params.demandeId);
 const canModify = computed(() => {
   return (
     !demandeCourante.value.statut ||
-    demandeCourante.value.statut === "BROUILLON"
+    demandeCourante.value.statut === "BROUILLON" ||
+    demandeCourante.value.statut === "A MODIFIER"
   );
 });
 

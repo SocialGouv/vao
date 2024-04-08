@@ -69,7 +69,7 @@
         <UtilsFileUpload
           v-model="file"
           :label="label"
-          hint="Taille maximale : 5 Mo."
+          hint="Format autorisé : PDF uniqument. Taille maximale : 5 Mo "
         />
       </DsfrFieldset>
       <fieldset class="fr-fieldset">
@@ -101,6 +101,8 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
 
 const log = logger("components/organisme/agrement");
 const props = defineProps({
@@ -157,14 +159,21 @@ const { value: file } = useField("file");
 
 async function next() {
   log.i("next - IN");
+  if (file.value.type !== "application/pdf") {
+    toaster.error("L'agrément doit obligatoirement être au format PDF");
+  } else {
+    if (!meta.value.dirty) {
+      return emit("next");
+    }
 
-  if (!meta.value.dirty) {
-    return emit("next");
+    emit(
+      "update",
+      {
+        ...values,
+      },
+      "agrement",
+    );
   }
-
-  emit("update", {
-    ...values,
-  });
 }
 </script>
 
