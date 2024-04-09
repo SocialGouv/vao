@@ -13,7 +13,7 @@ export default defineNuxtConfig({
     "@/assets/css/main.css",
   ],
   devtools: { enabled: false },
-  modules: ["@pinia/nuxt", "nuxt3-leaflet"],
+  modules: ["nuxt-security", "@pinia/nuxt", "nuxt3-leaflet"],
   runtimeConfig: {
     public: {
       appVersion: undefined,

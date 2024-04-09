@@ -13,7 +13,7 @@ export default defineNuxtConfig({
     "@gouvfr/dsfr/dist/utility/icons/icons.min.css",
     "@/assets/css/main.css",
   ],
-  modules: ["@pinia/nuxt"],
+  modules: ["nuxt-security", "@pinia/nuxt"],
   runtimeConfig: {
     public: {
       appVersion: undefined,
