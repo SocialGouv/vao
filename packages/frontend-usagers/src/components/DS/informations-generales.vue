@@ -95,7 +95,7 @@
       <DsfrButton
         id="next-step"
         label="Suivant"
-        :disabled="!meta.valid"
+        :disabled="!meta.valid && props.modifiable"
         @click.prevent="next"
       />
     </fieldset>
@@ -241,6 +241,10 @@ async function checkSiege() {
 }
 
 function next() {
+  if (!props.modifiable) {
+    return emit("next");
+  }
+
   if (!meta.value.dirty) {
     return emit("next");
   }
