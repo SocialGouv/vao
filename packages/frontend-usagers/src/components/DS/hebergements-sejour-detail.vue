@@ -701,7 +701,6 @@ const {
   value: prestationsHotelieres,
   handleChange: onPrestationsHotelieresChange,
   errorMessage: prestationsHotelieresErrorMessage,
-  meta: prestationsHotelieresMeta,
 } = useField("informationsLocaux.prestationsHotelieres");
 const {
   value: descriptionLieuHebergement,

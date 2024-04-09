@@ -40,6 +40,84 @@
         </DsfrAlert>
       </DsfrTabContent>
     </DsfrTabs>
+    <div
+      v-if="
+        demandeStore.currentDemande.estInstructeurPrincipal &&
+        demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS
+      "
+      class="container"
+    >
+      <DsfrButton
+        ref="modalOrigin"
+        label="Demander des compléments à l'organisateur"
+        tertiary
+        @click.prevent="onOpenModalDemandeComplements"
+      />
+      <DsfrModal
+        ref="modal"
+        name="modalComplement"
+        :opened="modalComplement.opened"
+        title="Demande de compléments"
+        size="xl"
+        @close="onCloseModalDemandeComplements"
+      >
+        <DemandesSejourCommentaire @valid="onValidComplement" />
+      </DsfrModal>
+      <DsfrButton
+        ref="modalOrigin"
+        label="Refuser"
+        secondary
+        @click.prevent="onOpenModalRefus"
+      />
+      <DsfrModal
+        ref="modal"
+        name="modalRefus"
+        :opened="modalRefus.opened"
+        title="Refus de la déclaration"
+        size="xl"
+        @close="onCloseModalRefus"
+      >
+        <DemandesSejourCommentaire @valid="onValidRefus" />
+      </DsfrModal>
+      <DsfrButton
+        ref="modalOrigin"
+        label="Accepter"
+        @click.prevent="onOpenModalEnregistrement2Mois"
+      />
+      <DsfrModal
+        ref="modal"
+        name="modalEnregistrement2MOis"
+        :opened="modalEnregistrement2Mois.opened"
+        title="Enregistrement de la déclaration à 2 mois"
+        @close="onCloseModalEnregistrement2Mois"
+      >
+        <article class="fr-mb-4v">
+          Vous vous appreter à nregistrer la déclaration du séjour : <br />
+          - {{ demandeStore.currentDemande.libelle }}
+        </article>
+        <fieldset class="fr-fieldset">
+          <div class="fr-col-4">
+            <div class="fr-input-group">
+              <DsfrButton
+                id="previous-step"
+                :secondary="true"
+                @click.prevent="onCloseModalEnregistrement2Mois"
+                >Retour
+              </DsfrButton>
+            </div>
+          </div>
+          <div class="fr-col-8">
+            <div class="fr-input-group">
+              <DsfrButton
+                id="next-step"
+                @click.prevent="onValidEnregistrement2Mois"
+                >Valider la prise en charge
+              </DsfrButton>
+            </div>
+          </div>
+        </fieldset>
+      </DsfrModal>
+    </div>
   </div>
 </template>
 
@@ -48,6 +126,13 @@ definePageMeta({
   middleware: ["is-connected", "check-role"],
   role: "DemandeSejour",
 });
+
+import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
+
+const log = logger("pages/sejours");
+
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
 
 const route = useRoute();
 
@@ -89,10 +174,109 @@ const tabTitles = [
   { title: "Documents joints" },
   { title: "Historique de la déclaration" },
 ];
+
+const modalComplement = reactive({
+  opened: false,
+});
+
+const modalRefus = reactive({
+  opened: false,
+});
+
+const modalEnregistrement2Mois = reactive({
+  opened: false,
+});
+
+const onOpenModalDemandeComplements = () => {
+  modalComplement.opened = true;
+};
+
+const onCloseModalDemandeComplements = () => {
+  modalComplement.opened = false;
+};
+
+const onOpenModalRefus = () => {
+  modalRefus.opened = true;
+};
+
+const onCloseModalRefus = () => {
+  modalRefus.opened = false;
+};
+
+const onOpenModalEnregistrement2Mois = () => {
+  modalEnregistrement2Mois.opened = true;
+};
+
+const onCloseModalEnregistrement2Mois = () => {
+  modalEnregistrement2Mois.opened = false;
+};
+
+const onValidComplement = async (commentaires) => {
+  onCloseModalDemandeComplements();
+
+  try {
+    await $fetchBackend(
+      `/sejour/admin/${route.params.demandeId}/demande-complements`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(commentaires),
+      },
+    );
+    await demandeStore.setCurrentDemande(route.params.demandeId);
+    execute();
+  } catch (error) {
+    log.w("prend en charge", error);
+    toaster.error("Erreur lors de la prise en charge de la demande");
+  }
+};
+
+const onValidRefus = async (commentaires) => {
+  onCloseModalDemandeComplements();
+
+  try {
+    await $fetchBackend(`/sejour/admin/${route.params.demandeId}/refus`, {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(commentaires),
+    });
+    await demandeStore.setCurrentDemande(route.params.demandeId);
+    execute();
+  } catch (error) {
+    log.w("prend en charge", error);
+    toaster.error("Erreur lors de la prise en charge de la demande");
+  }
+};
+
+const onValidEnregistrement2Mois = async () => {
+  onCloseModalEnregistrement2Mois();
+  try {
+    await $fetchBackend(
+      `/sejour/admin/${route.params.demandeId}/enregistrement-2-mois`,
+      {
+        method: "POST",
+        credentials: "include",
+      },
+    );
+    await demandeStore.setCurrentDemande(route.params.demandeId);
+    execute();
+  } catch (error) {
+    log.w("prend en charge", error);
+    toaster.error("Erreur lors de la prise en charge de la demande");
+  }
+};
 </script>
 
 <style scoped>
 .header {
   padding: 1em 0em;
+}
+
+.container {
+  display: flex;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  justify-content: right;
+  gap: 1rem;
 }
 </style>

@@ -39,6 +39,27 @@ router.post(
   getDepartements,
   demandeSejourController.prendEnCharge,
 );
+router.post(
+  "/admin/:declarationId/demande-complements",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  demandeSejourController.demandeComplements,
+);
+router.post(
+  "/admin/:declarationId/refus",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  demandeSejourController.refus,
+);
+router.post(
+  "/admin/:declarationId/enregistrement-2-mois",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  demandeSejourController.enregistrementDemande2Mois,
+);
 router.get("/:id", checkJWT, demandeSejourController.getById);
 router.get("/historique/:id", checkJWT, demandeSejourController.historique);
 
