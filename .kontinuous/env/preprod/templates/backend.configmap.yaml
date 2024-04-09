@@ -3,6 +3,8 @@ apiVersion: v1
 metadata:
   name: backend
 data:
-  TMP_DIRECTORY: "/tmp"
-  SENDER_EMAIL: "nepasrepondre@vao.social.gouv.fr"
+  API_INSEE_URL: "https://api.insee.fr"
+  API_INSEE_URI: "/entreprises/sirene/V3.11"
   ANTIVIRUS_URL: "http://clamav-rest.clamav.svc/api/v1/scan"
+  SENDER_EMAIL: "nepasrepondre@vao.social.gouv.fr"
+  TMP_DIRECTORY: "/tmp"

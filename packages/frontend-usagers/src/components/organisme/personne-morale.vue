@@ -2,20 +2,18 @@
   <div>
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-8">
-          <DsfrInputGroup
-            name="siret"
-            label="Numéro SIRET du titulaire de l’agrément VAO"
-            :label-visible="true"
-            :model-value="formatedSiret"
-            :is-valid="siretMeta.valid"
-            :error-message="siretErrorMessage"
-            :readonly="!props.modifiable"
-            placeholder=""
-            hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
-            @update:model-value="trimSiret"
-          />
-        </div>
+        <DsfrInputGroup
+          name="siret"
+          label="Numéro SIRET du titulaire de l’agrément VAO"
+          :label-visible="true"
+          :model-value="formatedSiret"
+          :is-valid="siretMeta.valid"
+          :error-message="siretErrorMessage"
+          :readonly="!props.modifiable"
+          placeholder=""
+          hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
+          @update:model-value="trimSiret"
+        />
       </div>
       <div v-if="props.modifiable" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-4">
@@ -31,81 +29,82 @@
     <div v-if="siren">
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-8">
-            <DsfrInputGroup
-              name="raisonSociale"
-              label="Raison sociale"
-              :label-visible="true"
-              :model-value="raisonSociale"
-              :readonly="true"
-            />
-          </div>
+          <DsfrInputGroup
+            name="raisonSociale"
+            label="Raison sociale"
+            :label-visible="true"
+            :model-value="raisonSociale"
+            :readonly="true"
+          />
         </div>
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-8">
-            <DsfrInputGroup
-              name="statut"
-              label="Statut, forme juridique"
-              :label-visible="true"
-              :model-value="statut"
-              :readonly="true"
-            />
-          </div>
+          <DsfrInputGroup
+            name="nomCommercial"
+            label="Nom commercial"
+            :label-visible="true"
+            :model-value="nomCommercial"
+            :is-valid="nomCommercialMeta.valid"
+            :error-message="nomCommercialErrorMessage"
+            :readonly="!props.modifiable"
+            placeholder=""
+            @update:model-value="onNomCommercialChange"
+          />
         </div>
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-8">
-            <DsfrInputGroup
-              name="adresse"
-              label="adresse"
-              :label-visible="true"
-              :model-value="adresse"
-              :readonly="true"
-            />
-          </div>
+          <DsfrInputGroup
+            name="statut"
+            label="Statut, forme juridique"
+            :label-visible="true"
+            :model-value="statut"
+            :readonly="true"
+          />
         </div>
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-8">
-            <DsfrInputGroup
-              name="pays"
-              label="Pays"
-              :label-visible="true"
-              :model-value="pays"
-              :readonly="true"
-            />
-          </div>
+          <DsfrInputGroup
+            name="adresse"
+            label="adresse"
+            :label-visible="true"
+            :model-value="adresse"
+            :readonly="true"
+          />
         </div>
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-8">
-            <DsfrInputGroup
-              name="email"
-              label="Courriel"
-              :label-visible="true"
-              :model-value="email"
-              :readonly="!props.modifiable"
-              :is-valid="emailMeta.valid"
-              :error-message="emailErrorMessage"
-              placeholder=""
-              hint="L'adresse mail doit être un email valide"
-              @update:model-value="onEmailChange"
-            />
-          </div>
+          <DsfrInputGroup
+            name="pays"
+            label="Pays"
+            :label-visible="true"
+            :model-value="pays"
+            :readonly="true"
+          />
         </div>
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-8">
-            <DsfrInputGroup
-              name="telephone"
-              label="Téléphone"
-              :label-visible="true"
-              :model-value="telephone"
-              :readonly="!props.modifiable"
-              :is-valid="telephoneMeta.valid"
-              :valid-message="telephoneValidMessage"
-              :error-message="telephoneErrorMessage"
-              placeholder=""
-              hint="Au format 0X, +33X ou 0033"
-              @update:model-value="onTelephoneChange"
-            />
-          </div>
+          <DsfrInputGroup
+            name="email"
+            label="Courriel"
+            :label-visible="true"
+            :model-value="email"
+            :readonly="!props.modifiable"
+            :is-valid="emailMeta.valid"
+            :error-message="emailErrorMessage"
+            placeholder=""
+            hint="L'adresse mail doit être un email valide"
+            @update:model-value="onEmailChange"
+          />
+        </div>
+        <div class="fr-fieldset__element">
+          <DsfrInputGroup
+            name="telephone"
+            label="Téléphone"
+            :label-visible="true"
+            :model-value="telephone"
+            :readonly="!props.modifiable"
+            :is-valid="telephoneMeta.valid"
+            :valid-message="telephoneValidMessage"
+            :error-message="telephoneErrorMessage"
+            placeholder=""
+            hint="Au format 0X, +33X ou 0033"
+            @update:model-value="onTelephoneChange"
+          />
         </div>
       </fieldset>
       <div v-if="siegeSocial">
@@ -149,7 +148,7 @@
           </div>
         </div>
       </div>
-      <div class="fr-fieldset__element">
+      <div v-if="props.showResponsableSejour" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
           <h6>Responsable de l'organisation du séjour</h6>
           <Personne
@@ -187,6 +186,7 @@ const emit = defineEmits(["previous", "next", "update"]);
 const props = defineProps({
   initData: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
+  showResponsableSejour: { type: Boolean, default: true },
   showButtons: { type: Boolean, default: true },
   validateOnMount: { type: Boolean, default: false },
 });
@@ -214,6 +214,7 @@ const initialValues = {
   siren: null,
   siegeSocial: null,
   raisonSociale: null,
+  nomCommercial: null,
   statut: null,
   adresse: null,
   pays: null,
@@ -256,6 +257,12 @@ const {
   handleChange: onTelephoneChange,
   meta: telephoneMeta,
 } = useField("telephone");
+const {
+  value: nomCommercial,
+  errorMessage: nomCommercialErrorMessage,
+  handleChange: onNomCommercialChange,
+  meta: nomCommercialMeta,
+} = useField("nomCommercial");
 const {
   value: representantsLegaux,
   handleChange: onRepresentantsLegauxChange,
@@ -322,7 +329,7 @@ async function searchApiInsee() {
   log.i("searchApiInsee - IN");
   const url = `/siret/${siret.value}`;
   try {
-    const { uniteLegale, etablissements, representantsLegaux } =
+    const { uniteLegale, etablissements, representantsLegaux, nomCommercial } =
       await $fetchBackend(url, {
         method: "GET",
         credentials: "include",
@@ -336,6 +343,7 @@ async function searchApiInsee() {
       siren: uniteLegale.siren,
       siegeSocial: uniteLegale.etablissementSiege,
       raisonSociale: uniteLegale.uniteLegale.denominationUniteLegale,
+      nomCommercial: nomCommercial ?? null,
       statut: uniteLegale.uniteLegale.categorieJuridiqueUniteLegale,
       adresse,
       pays:
@@ -353,6 +361,7 @@ async function searchApiInsee() {
       siren: null,
       siegeSocial: null,
       raisonSociale: null,
+      nomCommercial: null,
       statut: null,
       adresse: null,
       pays: null,

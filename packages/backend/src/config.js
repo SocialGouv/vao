@@ -18,7 +18,8 @@ module.exports = {
   apiInsee: {
     CLIENT_ID: process.env.API_INSEE_CLIENT_ID,
     CLIENT_SECRET: process.env.API_INSEE_CLIENT_SECRET,
-    URL: "https://api.insee.fr",
+    URI: process.env.API_INSEE_URI,
+    URL: process.env.API_INSEE_URL,
   },
   domain: process.env.BACKEND_URL,
   frontBODomain: process.env.FRONTEND_BO_URL,

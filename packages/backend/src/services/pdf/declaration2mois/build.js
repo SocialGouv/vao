@@ -202,6 +202,19 @@ function displayOrganisme(responsableSejour, organisme) {
         {
           columns: [
             {
+              text: "Nom commercial :",
+              width: 250,
+            },
+            {
+              bold: true,
+              text: `${organisme.personneMorale.nomCommercial ?? ""}`,
+              width: "*",
+            },
+          ],
+        },
+        {
+          columns: [
+            {
               text: "Adresse :",
               width: 250,
             },

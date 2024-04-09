@@ -31,7 +31,7 @@ module.exports = async function post(req, res, next) {
     return res.status(400).json({ message: "paramètre manquant." });
   }
 
-  let declaration, declarationId, DSuuid, ARuuid;
+  let declaration, DSuuid, ARuuid;
 
   declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
 
@@ -160,6 +160,5 @@ module.exports = async function post(req, res, next) {
   } catch (err) {
     log.w(err);
   }
-  log.i(declarationId, DSuuid, ARuuid);
-  return res.status(200).json({ ARuuid, DSuuid, declarationId });
+  return res.status(200).json({ ARuuid, DSuuid });
 };

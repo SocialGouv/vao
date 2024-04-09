@@ -329,11 +329,10 @@ async function finalize(attestation) {
       },
     });
 
-    if (response.demandeId) {
-      toaster.success(
-        `Félicitations, votre déclaration de séjour n°${sejourId.value} a été transmise`,
-      );
-    }
+    toaster.success(
+      `Félicitations, votre déclaration de séjour n°${sejourId.value} a été transmise`,
+    );
+
     if (response.DSuuid) {
       toaster.info(
         `Le PDF déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,

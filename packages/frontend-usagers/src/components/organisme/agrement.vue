@@ -69,6 +69,7 @@
         <UtilsFileUpload
           v-model="file"
           :label="label"
+          :modifiable="props.modifiable"
           hint="Format autorisé : PDF uniqument. Taille maximale : 5 Mo "
         />
       </DsfrFieldset>

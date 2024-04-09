@@ -98,6 +98,7 @@ const personneMoraleSchema = () => ({
       then: (schema) =>
         schema.min(1, "Vous devez sélectionner au moins un établissement"),
     }),
+  nomCommercial: yup.string().nullable().default(null),
   pays: yup.string().required(),
   raisonSociale: yup.string().required(),
   representantsLegaux: yup

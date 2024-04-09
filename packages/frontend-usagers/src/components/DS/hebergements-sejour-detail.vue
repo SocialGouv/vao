@@ -171,6 +171,7 @@
           label="Téléchargement du document justificatif référent à l’établissement ERP"
           hint="Taille maximale : 5 Mo."
           :modifiable="props.modifiable"
+          :error-message="fileErrorMessage"
         />
 
         <div class="fr-fieldset__element fr-col-12">
@@ -657,7 +658,9 @@ const {
 } = useField("hebergementId");
 
 // informationsLocaux
-const { value: file } = useField("informationsLocaux.justificatifERP");
+const { value: file, errorMessage: fileErrorMessage } = useField(
+  "informationsLocaux.justificatifERP",
+);
 const {
   value: type,
   errorMessage: typeErrorMessage,
