@@ -12,42 +12,6 @@ const log = logger(module.filename);
 module.exports = {
   bo: {
     authentication: {
-      sendACompleterMail: ({ destinataires, comment, declaration }) => {
-        log.i("sendACompleterMail - In", {
-          destinataires,
-        });
-        if (!destinataires) {
-          const message = `Le paramètre destinataires manque à la requête`;
-          log.w(`sendACompleterMail - ${message}`);
-          throw new AppError(message);
-        }
-        if (!comment) {
-          const message = `Le paramètre comment manque à la requête`;
-          log.w(`sendACompleterMail - ${message}`);
-          throw new AppError(message);
-        }
-
-        const params = {
-          from: senderEmail,
-          html: `
-                <p>Bonjour,</p>
-
-                <p>Vous avez recu des demandes de complément pour votre déclaration ${declaration.idFonctionnelle} </p>
-                <p>Voici les commentaires qui vont ont été fait</p>
-
-                <pre>${comment}</pre>
-                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
-                `,
-          replyTo: senderEmail,
-          subject: `Demande de compléments sur la déclaration ${declaration.idFonctionnelle}`,
-          to: destinataires,
-        };
-        log.d("sendACompleterMail post email", {
-          params,
-        });
-
-        return params;
-      },
       sendForgottenPassword: ({ email, token }) => {
         log.i("sendForgottenPassword - In", {
           email,
@@ -95,42 +59,6 @@ module.exports = {
           to: email,
         };
         log.d("sendForgottenPassword post email", { params });
-
-        return params;
-      },
-      sendRefusMail: ({ destinataires, comment, declaration }) => {
-        log.i("sendRefusMail - In", {
-          destinataires,
-        });
-        if (!destinataires) {
-          const message = `Le paramètre destinataires manque à la requête`;
-          log.w(`sendRefusMail - ${message}`);
-          throw new AppError(message);
-        }
-        if (!comment) {
-          const message = `Le paramètre comment manque à la requête`;
-          log.w(`sendRefusMail - ${message}`);
-          throw new AppError(message);
-        }
-
-        const params = {
-          from: senderEmail,
-          html: `
-                <p>Bonjour,</p>
-
-                <p>Votre déclaration ${declaration.idFonctionnelle} à été refusée </p>
-                <p>En voici les raisons</p>
-
-                <pre>${comment}</pre>
-                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
-                `,
-          replyTo: senderEmail,
-          subject: `Refus la déclaration ${declaration.idFonctionnelle}`,
-          to: destinataires,
-        };
-        log.d("sendRefusMail post email", {
-          params,
-        });
 
         return params;
       },
@@ -266,6 +194,42 @@ module.exports = {
       },
     },
     declarationSejour: {
+      sendACompleterMail: ({ destinataires, comment, declaration }) => {
+        log.i("sendACompleterMail - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendACompleterMail - ${message}`);
+          throw new AppError(message);
+        }
+        if (!comment) {
+          const message = `Le paramètre comment manque à la requête`;
+          log.w(`sendACompleterMail - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p>
+
+                <p>Vous avez recu des demandes de complément pour votre déclaration ${declaration.idFonctionnelle} </p>
+                <p>Voici les commentaires qui vont ont été fait</p>
+
+                <pre>${comment}</pre>
+                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Demande de compléments sur la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendACompleterMail post email", {
+          params,
+        });
+
+        return params;
+      },
       sendAR2mois: ({ dest, cc, declaration }) => {
         log.i("sendAR2mois - In", {
           cc,
@@ -292,6 +256,72 @@ module.exports = {
           to: dest,
         };
         log.d("sendAR2mois post email", { params });
+
+        return params;
+      },
+      sendEnregistrementA2MoisMail: ({ destinataires, declaration }) => {
+        log.i("sendEnregistrementA2MoisMail - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendEnregistrementA2MoisMail - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p>
+
+                <p>Votre déclaration ${declaration.idFonctionnelle} à été enregistrée </p>
+                <p>La date limite d'envoie de la declaration à 8 jours est fixée au ${dayjs(declaration.dateDebut).subtract(8, "days").format("DD/MM/YYYY")}</p>
+
+                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Enregistrement de la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendEnregistrementA2MoisMail post email", {
+          params,
+        });
+
+        return params;
+      },
+      sendRefusMail: ({ destinataires, comment, declaration }) => {
+        log.i("sendRefusMail - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendRefusMail - ${message}`);
+          throw new AppError(message);
+        }
+        if (!comment) {
+          const message = `Le paramètre comment manque à la requête`;
+          log.w(`sendRefusMail - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p>
+
+                <p>Votre déclaration ${declaration.idFonctionnelle} à été refusée </p>
+                <p>En voici les raisons</p>
+
+                <pre>${comment}</pre>
+                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Refus la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendRefusMail post email", {
+          params,
+        });
 
         return params;
       },

@@ -53,6 +53,13 @@ router.post(
   getDepartements,
   demandeSejourController.refus,
 );
+router.post(
+  "/admin/:declarationId/enregistrement-2-mois",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  demandeSejourController.enregistrementDemande2Mois,
+);
 router.get("/:id", checkJWT, demandeSejourController.getById);
 router.get("/historique/:id", checkJWT, demandeSejourController.historique);
 

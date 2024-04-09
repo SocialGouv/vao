@@ -749,7 +749,7 @@ module.exports.updateStatut = async (
   demandeSejourId,
   statut,
   event = null,
-  sendEmail = null,
+  cb = null,
 ) => {
   log.i("update status - IN", { demandeSejourId, statut });
   const client = await pool.connect();
@@ -769,8 +769,8 @@ module.exports.updateStatut = async (
       event.typePrecision,
       event.metaData,
     ]);
-    if (sendEmail) {
-      await sendEmail();
+    if (cb) {
+      await cb();
     }
 
     await client.query("COMMIT");

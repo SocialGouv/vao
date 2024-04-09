@@ -11,7 +11,6 @@ const log = logger(module.filename);
 module.exports = async function post(req, res) {
   const declarationId = req.params.declarationId;
   const { id: userId } = req.decoded;
-  const { commentaire } = req.body;
   log.i("IN", { declarationId }, req.body);
 
   if (!declarationId) {
@@ -52,20 +51,19 @@ module.exports = async function post(req, res) {
 
     await DemandeSejour.updateStatut(
       declarationId,
-      statuts.A_MODIFIER,
+      statuts.ATTENTE_8_JOUR,
       {
         boUserId: userId,
         declarationId,
-        metaData: { commentaire },
+        metaData: declaration,
         source: "DDETS",
         type: "declaration_sejour",
-        typePrecision: "Demande de complémements",
+        typePrecision: "Enregistrement de la déclaration à 2 mois",
         userId: null,
       },
       () =>
         Send(
-          MailUtils.usagers.declarationSejour.sendACompleterMail({
-            comment: commentaire,
+          MailUtils.usagers.declarationSejour.sendEnregistrementA2MoisMail({
             declaration,
             destinataires,
           }),

@@ -161,7 +161,6 @@ const { meta, values } = useForm({
 
 const {
   value: responsableTransportLieuSejour,
-  handleChange: onResponsableTransportLieuSejourChange,
   errorMessage: responsableTransportLieuSejourErrorMessage,
 } = useField("responsableTransportLieuSejour");
 const {

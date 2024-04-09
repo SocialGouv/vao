@@ -42,8 +42,8 @@ const validationSchema = computed(() =>
   yup.object({
     commentaire: yup
       .string()
-      .min(1, "Il est impératif de Fournir un commentaire")
-      .required(),
+      .min(1, "Il est impératif de fournir un commentaire")
+      .required("Il est impératif de fournir un commentaire"),
   }),
 );
 

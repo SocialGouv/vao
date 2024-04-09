@@ -559,7 +559,6 @@ const {
 } = useField("precisionDispositionsSpecifiques");
 const {
   value: constitutionEquipe,
-  meta: constitutionEquipeMeta,
   errorMessage: constitutionEquipeErrorMessage,
 } = useField("constitutionEquipe");
 const {

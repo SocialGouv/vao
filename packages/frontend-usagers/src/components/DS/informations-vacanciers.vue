@@ -130,16 +130,10 @@ const {
   handleChange: onEffectifPrevisionnelFemmeChange,
   meta: effectifPrevisionnelFemmeMeta,
 } = useField("effectifPrevisionnelFemme");
-const {
-  value: trancheAge,
-  errorMessage: trancheAgeErrorMessage,
-  meta: trancheAgeMeta,
-} = useField("trancheAge");
-const {
-  value: typeDeficiences,
-  errorMessage: typeDeficiencesErrorMessage,
-  meta: typeDeficiencesMeta,
-} = useField("typeDeficiences");
+const { value: trancheAge, errorMessage: trancheAgeErrorMessage } =
+  useField("trancheAge");
+const { value: typeDeficiences, errorMessage: typeDeficiencesErrorMessage } =
+  useField("typeDeficiences");
 
 function next() {
   if (!meta.value.dirty) {

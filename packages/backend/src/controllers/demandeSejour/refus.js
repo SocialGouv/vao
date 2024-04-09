@@ -64,7 +64,7 @@ module.exports = async function post(req, res) {
       },
       () =>
         Send(
-          MailUtils.bo.authentication.sendRefusMail({
+          MailUtils.usagers.declarationSejour.sendRefusMail({
             comment: commentaire,
             declaration,
             destinataires,
