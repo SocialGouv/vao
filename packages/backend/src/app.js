@@ -4,6 +4,7 @@ const {
   requestDataIntegration,
 } = require("@sentry/node");
 const express = require("express");
+const helmet = require("helmet");
 
 const app = express();
 
@@ -54,6 +55,8 @@ if (config.sentry.enabled) {
 
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
+
+app.use(helmet());
 
 const whitelist = [
   config.frontUsagersDomain,

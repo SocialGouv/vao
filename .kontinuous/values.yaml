@@ -68,7 +68,7 @@ backend:
         secretKeyRef:
           name: pg-app
           key: PGDATABASE
-
+        
 frontend-usagers:
   ~chart: app
   ~needs: [build-frontend-usagers]
