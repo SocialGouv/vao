@@ -206,7 +206,7 @@ async function login() {
     return navigateTo("/");
   } catch (error) {
     formStatus.value = formStates.SUBMITTED;
-    const codeError = error?.data?.code;
+    const codeError = error?.data?.name;
     log.w("login", { error: codeError ?? error?.data ?? error });
 
     switch (codeError) {

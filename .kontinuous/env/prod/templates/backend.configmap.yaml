@@ -7,5 +7,8 @@ data:
   ANTIVIRUS_URL: "http://clamav-rest.clamav.svc/api/v1/scan"
   API_INSEE_URL: "https://api.insee.fr"
   API_INSEE_URI: "/entreprises/sirene/V3.11"
-  SENDER_EMAIL: "nepasrepondre@vao.social.gouv.fr"  
+  SENDER_EMAIL: "nepasrepondre@vao.social.gouv.fr"
+  SENTRY_DSN: "https://1c2b442e895c454c847d24182f8b1e90@sentry.fabrique.social.gouv.fr/102"
+  SENTRY_ENABLED: "true"
+  SENTRY_ENVIRONMENT: production
   TMP_DIRECTORY: "/tmp"

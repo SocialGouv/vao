@@ -17,19 +17,14 @@ backend:
   livenessProbe:
     tcpSocket:
       port: 3000
-    initialDelaySeconds: 15
-    periodSeconds: 10
   startupProbe:
     httpGet:
       path: /
       port: 3000
-    initialDelaySeconds: 5
-    periodSeconds: 10
   readinessProbe:
     httpGet:
       path: /
       port: 3000
-    periodSeconds: 10
   envFrom:
     - configMapRef:
         name: backend
@@ -83,9 +78,7 @@ frontend-usagers:
   livenessProbe:
     tcpSocket:
       port: 8080
-    periodSeconds: 10
   readinessProbe:
-    initialDelaySeconds: 5
     httpGet:
       path: /
       port: 8080
@@ -99,9 +92,7 @@ frontend-bo:
   livenessProbe:
     tcpSocket:
       port: 8080
-    periodSeconds: 10
   readinessProbe:
-    initialDelaySeconds: 5
     httpGet:
       path: /
       port: 8080

@@ -51,7 +51,7 @@ watch(error, () => {
     return;
   }
   log.w({ error });
-  const codeError = error.value.data.code;
+  const codeError = error.value.data.name;
   classError.value = codeError;
 });
 

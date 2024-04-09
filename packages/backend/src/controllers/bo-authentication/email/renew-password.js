@@ -39,10 +39,10 @@ module.exports = async function renewPassword(req, res, next) {
   } catch (err) {
     log.w(err);
     if (err instanceof jwt.TokenExpiredError) {
-      return res.status(400).json({ code: "TokenExpiredError" });
+      return res.status(400).json({ name: "TokenExpiredError" });
     }
     if (err instanceof AppError) {
-      return res.status(400).json({ code: err.name });
+      return res.status(400).json({ name: err.name });
     }
     return res.status(400).json({ message: "Une erreur est survenue" });
   }

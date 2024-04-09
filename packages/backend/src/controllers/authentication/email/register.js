@@ -53,7 +53,7 @@ module.exports = async function register(req, res, next) {
     } catch (error) {
       log.w(error.name, error.message);
       return res.status(400).json({
-        code: "MailError",
+        name: "MailError",
       });
     }
     log.i("DONE");
@@ -61,7 +61,7 @@ module.exports = async function register(req, res, next) {
   } catch (error) {
     log.w(error);
     return res.status(400).json({
-      code: "DefaultError",
+      name: "DefaultError",
     });
   }
 };

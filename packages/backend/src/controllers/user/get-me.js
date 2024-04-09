@@ -12,7 +12,7 @@ module.exports = async function getMe(req, res) {
   const users = await User.read({ mail: normalize(decoded.email) });
   if (users.length === 0) {
     log.w("Utilisateur inexistant");
-    return res.status(404).json({ code: "UserNotFound" });
+    return res.status(404).json({ name: "UserNotFound" });
   }
 
   const [user] = users;

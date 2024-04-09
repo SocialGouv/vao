@@ -23,6 +23,6 @@ module.exports = async (req, res) => {
     return res.json({ uuid });
   } catch (err) {
     log.w(err);
-    return res.status(500).json({ code: "DefaultError" });
+    return res.status(500).json({ name: "DefaultError" });
   }
 };

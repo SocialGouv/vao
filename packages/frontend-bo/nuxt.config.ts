@@ -16,7 +16,13 @@ export default defineNuxtConfig({
   modules: ["@pinia/nuxt"],
   runtimeConfig: {
     public: {
-      backendUrl: "",
+      appVersion: undefined,
+      backendUrl: undefined,
+      environment: undefined,
+      sentry: {
+        dsn: undefined,
+        enabled: undefined,
+      },
     },
   },
   srcDir: "src",
