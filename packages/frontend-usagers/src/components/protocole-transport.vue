@@ -29,7 +29,7 @@
           ></UtilsMultiSelect>
         </div>
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-12">
+          <div class="fr-col-12">
             <DsfrInputGroup
               name="precisionModeOrganisation"
               label="Précisez le mode d’organisation retenu (conditions d’accompagnement des vacanciers, gestion des correspondances, lieux de prise en charge, temps d’attente, etc.)"
@@ -161,7 +161,6 @@ const { meta, values } = useForm({
 
 const {
   value: responsableTransportLieuSejour,
-  handleChange: onResponsableTransportLieuSejourChange,
   errorMessage: responsableTransportLieuSejourErrorMessage,
 } = useField("responsableTransportLieuSejour");
 const {
@@ -191,13 +190,6 @@ const {
 const { value: modeTransport, errorMessage: modeTransportErrorMessage } =
   useField("modeTransport");
 const { value: files } = useField("files");
-
-watch(responsableTransportLieuSejour, (resp) => {
-  if (resp.length === 1 && resp.includes("vacanciers")) {
-    modeTransport.value = [];
-    precisionModeOrganisation.value = null;
-  }
-});
 
 function updateModeTransport(modes) {
   modeTransport.value = modes;
