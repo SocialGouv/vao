@@ -51,6 +51,6 @@ module.exports = async function forgottenPassword(req, res, next) {
     return res.json({ message: "Mail envoyé" });
   } catch (error) {
     log.w(error);
-    return res.status(500).json({ code: "DefaultError" });
+    return res.status(500).json({ name: "DefaultError" });
   }
 };

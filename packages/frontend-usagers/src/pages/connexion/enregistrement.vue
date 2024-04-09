@@ -380,7 +380,7 @@ async function register() {
       })
       .catch((error) => {
         const body = error.data;
-        const codeError = body.code;
+        const codeError = body.name;
         log.w("register", { body, codeError });
         if (codeError === "ValidationError") {
           toaster.error(

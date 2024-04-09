@@ -26,7 +26,7 @@ module.exports = async function login(req, res) {
 
   if (!user) {
     log.w("Utilisateur BO inexistant");
-    return res.status(404).json({ code: "WrongCredentials" });
+    return res.status(404).json({ name: "WrongCredentials" });
   }
 
   log.d({ user });
@@ -75,6 +75,6 @@ module.exports = async function login(req, res) {
     return res.json({ user });
   } catch (error) {
     log.w(error);
-    return res.status(500).json({ code: "DefaultError" });
+    return res.status(500).json({ name: "DefaultError" });
   }
 };

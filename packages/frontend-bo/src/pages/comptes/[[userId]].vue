@@ -465,7 +465,7 @@ async function post() {
       })
       .catch((error) => {
         const body = error.data;
-        const codeError = body.code;
+        const codeError = body.name;
 
         log.w("post", { body, codeError });
         switch (codeError) {
@@ -514,7 +514,7 @@ async function update() {
       })
       .catch((error) => {
         const body = error.data;
-        const codeError = body.code;
+        const codeError = body.name;
 
         log.w("update", { body, codeError });
         switch (codeError) {
