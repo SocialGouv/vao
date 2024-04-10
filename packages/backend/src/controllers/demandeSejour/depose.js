@@ -12,8 +12,11 @@ const DeclarationSejourSchema = require("../../schemas/declaration-sejour");
 const MailUtils = require("../../utils/mail");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
+const { statuts } = require("../../helpers/ds-statuts");
 
 const log = logger(module.filename);
+
+const expectedStates = [statuts.BROUILLON, statuts.A_MODIFIER];
 
 module.exports = async function post(req, res, next) {
   const demandeSejourId = req.params.id;
@@ -43,7 +46,15 @@ module.exports = async function post(req, res, next) {
     });
   }
 
-  const { dateDebut, dateFin } = declaration;
+  const { dateDebut, dateFin, statut } = declaration;
+
+  if (!expectedStates.includes(statut)) {
+    log.w("Unexpected states", { expectedStates, statut });
+    return res.status(400).json({
+      message: "Statut non compatible",
+    });
+  }
+
   Object.assign(declaration, { attestation });
 
   try {
@@ -113,7 +124,7 @@ module.exports = async function post(req, res, next) {
     userId,
     null,
     "declaration_sejour",
-    "depose à 2 mois",
+    statut === statuts.BROUILLON ? "depose à 2 mois" : "Ajout de compléments",
     declaration,
   );
   if (!eventId) {
