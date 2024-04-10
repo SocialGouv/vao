@@ -97,6 +97,20 @@
       </div>
       <div class="fr-fieldset__element">
         <div class="fr-col-12">
+          <span class="read-only-label"
+            >Lieu d’hébergement soumis à la réglementation ERP (établissement recevant du public)</span
+          >
+        </div>
+        <div class="fr-col-12">
+          <span class="read-only-value">{{
+            props.hebergement?.informationsLocaux.reglementationErp
+              ? "Oui"
+              : "Non"
+          }}</span>
+        </div>
+      </div>      
+      <div class="fr-fieldset__element">
+        <div class="fr-col-12">
           <span class="read-only-label">Accessibilité</span>
         </div>
         <div class="fr-col-12">

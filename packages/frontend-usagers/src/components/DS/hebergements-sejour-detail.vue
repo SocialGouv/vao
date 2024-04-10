@@ -223,6 +223,43 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
+              name="informationsLocaux.reglementationErp"
+              legend="Le lieu d’hébergement est-il soumis à la réglementation ERP (établissement recevant du public) ?"
+              :disabled="!props.modifiable"
+              :model-value="reglementationErp"
+              :options="ouiNonOptions"
+              :is-valid="reglementationErpMeta.valid"
+              :inline="true"
+              :error-message="reglementationErpErrorMessage"
+              @update:model-value="onReglementationErpChange"
+            />
+          </div>
+        </div>     
+        <div v-if="reglementationErp === true">
+          <UtilsFileUpload
+              v-model="fileDerniereAttestationSecurite"
+              label="Téléchargement du document Dernière attestation de passage de la commission sécurité"
+              hint="Taille maximale : 5 Mo."
+              :modifiable="props.modifiable"
+            />
+          <UtilsFileUpload
+            v-model="fileDernierArreteAutorisationMaire"
+            label="Téléchargement du document Dernier arrêté d’autorisation du maire"
+            hint="Taille maximale : 5 Mo."
+            :modifiable="props.modifiable"
+          />
+        </div>
+        <div v-if="reglementationErp === false">
+          <UtilsFileUpload
+              v-model="fileReponseExploitantOuProprietaire"
+              label="Téléchargement du document Réponse du propriétaire ou exploitant indiquant les raisons pour lesquelles le lieu d’hébergement n’est pas soumis à la réglementation ERP"
+              hint="Taille maximale : 5 Mo."
+              :modifiable="props.modifiable"
+            />
+        </div>   
+        <div class="fr-fieldset__element fr-col-12">
+          <div class="fr-input-group">
+            <DsfrRadioButtonSet
               name="informationsLocaux.accessibilite"
               legend="Accessibilité"
               :disabled="!props.modifiable"
@@ -679,6 +716,15 @@ const {
   handleChange: onVisiteLocauxAtChange,
   meta: visiteLocauxAtMeta,
 } = useField("informationsLocaux.visiteLocauxAt");
+const {
+  value: reglementationErp,
+  errorMessage: reglementationErpErrorMessage,
+  handleChange: onReglementationErpChange,
+  meta: reglementationErpMeta,
+} = useField("informationsLocaux.reglementationErp");
+const { value: fileDerniereAttestationSecurite } = useField("informationsLocaux.fileDerniereAttestationSecurite");
+const { value: fileDernierArreteAutorisationMaire } = useField("informationsLocaux.fileDernierArreteAutorisationMaire");
+const { value: fileReponseExploitantOuProprietaire } = useField("informationsLocaux.fileReponseExploitantOuProprietaire");
 const {
   value: accessibilite,
   errorMessage: accessibiliteErrorMessage,

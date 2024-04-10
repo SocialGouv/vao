@@ -63,12 +63,101 @@ const hebergementId = route.params.hebergementId;
 
 async function editHebergement(hebergement) {
   log.d("editHebergement - IN");
+
+  // Recopie de la branche informationsLocaux (pour pouvoir modifier la partie file à l'enregistrement)
+  let updatedInformationsLocaux = { ...hebergement.informationsLocaux };
+
+  if (hebergement.informationsLocaux.reglementationErp === true) {
+    const fileDAS = hebergement.informationsLocaux.fileDerniereAttestationSecurite;
+    // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
+    if (!fileDAS.uuid) {
+      try {
+        const uuid = await UploadFile("attestation_securite", fileDAS);
+        //mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
+        updatedInformationsLocaux.fileDerniereAttestationSecurite = {
+          uuid,
+          name: fileDAS.name,
+          createdAt: new Date(),
+        };
+      } catch (error) {
+        if (error.response.status === 413) {
+          return toaster.error(
+            `Le fichier ${fileDAS.name} dépasse la taille maximale autorisée`,
+          );
+        }
+        log.w("fileDerniereAttestationSecurite", error);
+        return toaster.error(
+          `Une erreur est survenue lors du dépôt du document ${fileDAS.name}`,
+        );
+      }
+    }
+
+    const fileAAM = hebergement.informationsLocaux.fileDernierArreteAutorisationMaire;
+    // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
+    if (!fileAAM.uuid) {
+      try {
+        const uuid = await UploadFile("arrete_autorisation_maire", fileAAM);
+        //mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
+        updatedInformationsLocaux.fileDernierArreteAutorisationMaire = {
+          uuid,
+          name: fileAAM.name,
+          createdAt: new Date(),
+        };
+      } catch (error) {
+        if (error.response.status === 413) {
+          return toaster.error(
+            `Le fichier ${fileAAM.name} dépasse la taille maximale autorisée`,
+          );
+        }
+        log.w("fileDernierArreteAutorisationMaire", error);
+        return toaster.error(
+          `Une erreur est survenue lors du dépôt du document ${fileAAM.name}`,
+        );
+      }
+    }    
+  }
+  else
+  {
+    /*
+    updatedInformationsLocaux.fileReponseExploitantOuProprietaire = hebergementStore.addFile(hebergement,"reponse_explouprop")
+    console.log("editHebergement(hebergement) updatedInformationsLocaux.fileReponseExploitantOuProprietaire",updatedInformationsLocaux.fileReponseExploitantOuProprietaire)
+    */
+    
+    const fileREP = hebergement.informationsLocaux.fileReponseExploitantOuProprietaire;
+    // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
+    if (!fileREP.uuid) {
+      try {
+        const uuid = await UploadFile("reponse_explouprop", fileREP);
+        //mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
+        updatedInformationsLocaux.fileReponseExploitantOuProprietaire = {
+          uuid,
+          name: fileREP.name,
+          createdAt: new Date(),
+        };
+      } catch (error) {
+        if (error.response.status === 413) {
+          return toaster.error(
+            `Le fichier ${fileREP.name} dépasse la taille maximale autorisée`,
+          );
+        }
+        log.w("fileReponseExploitantOuProprietaire", error);
+        return toaster.error(
+          `Une erreur est survenue lors du dépôt du document ${fileREP.name}`,
+        );
+      }
+    }  
+  }
+
+
+  let majHerbergement = { ...hebergement, informationsLocaux: updatedInformationsLocaux };
+
+  // Sauvegarde de la mise à jour de l'hébergement
   try {
     const url = `/hebergement/${hebergementId}`;
     await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
-      body: hebergement,
+      body: majHerbergement,
     });
     log.d("hebergement sauvegardé");
     toaster.success("Hébergement sauvegardé");

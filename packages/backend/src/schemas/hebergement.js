@@ -93,6 +93,36 @@ const informationsLocauxSchema = () => ({
           "Il est impératif de renseigner la date de votre dernière visite",
         ),
     }),
+  reglementationErp: yup
+    .boolean()
+    .required("Il est impératif de renseigner si vous le local est soumis à la réglementation ERP (établissement recevant du public)"),
+  // Fichier Dernière attestation de commité de sécurité si réglementation Erp = Oui
+  fileDerniereAttestationSecurite: yup.mixed().when("reglementationErp", {
+    is: true,
+    otherwise: (schema) => schema.nullable().strip(),
+    then: (schema) =>
+      schema.required(
+        "Il est impératif de télécharger la dernière attestation de passage de la commission sécurité ",
+      ),
+  }),
+  // Fichier Dernier arrếté du Maire si réglementation Erp = Oui
+  fileDernierArreteAutorisationMaire: yup.mixed().when("reglementationErp", {
+    is: true,
+    otherwise: (schema) => schema.nullable().strip(),
+    then: (schema) =>
+      schema.required(
+        "Il est impératif de télécharger le dernièr arrêté d'autorisation du Maire",
+      ),
+  }),
+  // Fichier Réponse du l'exploitant ou propiétaire si réglementation Erp = Non
+  fileReponseExploitantOuProprietaire: yup.mixed().when("reglementationErp", {
+    is: false,
+    otherwise: (schema) => schema.nullable().strip(),
+    then: (schema) =>
+      schema.required(
+        "Il est impératif de télécharger la réponse de l'exploitant ou du propriétaire",
+      ),
+  })
 });
 
 const informationsTransportSchema = () => ({
