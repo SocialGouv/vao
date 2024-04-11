@@ -25,6 +25,14 @@ export default defineNuxtConfig({
       },
     },
   },
+  security: {
+    headers: {
+      crossOriginEmbedderPolicy: "unsafe-none",
+      contentSecurityPolicy: {
+        "img-src": ["'self'", "*.openstreetmap.org", "data:"],
+      },
+    },
+  },
   srcDir: "src",
   ssr: false,
 });
