@@ -133,6 +133,13 @@ const hebergementSchema = (dateDebut, dateFin) => ({
   hebergements: yup
     .array()
     .of(yup.object(hebergementDetailsSchema))
+    .when("sejourItinerant", {
+      is: true,
+      otherwise: (hebergements) =>
+        hebergements.length(1, "L'hébergement doit être unique"),
+      then: (hebergements) =>
+        hebergements.min(2, "Au moins deux hebergements sont attendus"),
+    })
     .test(
       "sejourComplet",
       "La liste des hébergements n'est pas complète",
@@ -140,7 +147,6 @@ const hebergementSchema = (dateDebut, dateFin) => ({
     )
     .required("le choix d'un hébergement dans la liste est obligatoire"),
 });
-
 const schema = (dateDebut, dateFin) => ({
   ...baseSchema,
   informationsVacanciers: yup.object(informationsVacanciers.schema),

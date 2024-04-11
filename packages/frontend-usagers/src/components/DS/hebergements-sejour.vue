@@ -37,6 +37,12 @@
         <div class="fr-fieldset__element fr-col-12">
           <div>
             <h4>Liste des hébergements sélectionnés</h4>
+            <DsfrHighlight
+              v-if="!!sejourItinerant"
+              text="Pour un séjour itinérant, ajouter autant de fiches que de lieu d’hébergement"
+              :small="false"
+              :large="true"
+            />
             <DsfrTable :headers="headers" :rows="syntheseRows" />
           </div>
           <DsfrButton
@@ -58,8 +64,8 @@
                 emit('previous');
               }
             "
-            >Précédent</DsfrButton
-          >
+            >Précédent
+          </DsfrButton>
           <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
         </DsfrButtonGroup>
       </fieldset>
