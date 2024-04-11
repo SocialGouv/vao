@@ -109,7 +109,7 @@ module.exports.registerByEmail = async ({
   if (response.rows.length !== 0) {
     log.i("registerByEmail - DONE - Utilisateur déjà existant");
     throw new AppError("Utilisateur déjà existant", {
-      name: "UserAlreadyExistsWithFC",
+      name: "UserAlreadyExists",
     });
   }
   log.d("registerByEmail", query.create, [
@@ -126,7 +126,6 @@ module.exports.registerByEmail = async ({
     telephone,
   ]);
   log.i("registerByEmail - DONE", { response });
-  log.i({ response });
   const [user] = response.rows;
   return { code: "CreationCompte", user };
 };

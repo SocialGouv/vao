@@ -83,24 +83,26 @@ const informationsLocauxSchema = {
     }),
   reglementationErp: yup
     .boolean()
-    .required("Il est impératif de renseigner si l'hébergement est soumis à la réglementation ERP"),
+    .required(
+      "Il est impératif de renseigner si l'hébergement est soumis à la réglementation ERP",
+    ),
 
   // Fichier Dernière attestation de commité de sécurité si réglementation Erp = Oui
   fileDerniereAttestationSecurite: yup.mixed().when("reglementationErp", {
-      is: true,
-      otherwise: (schema) => schema.nullable().strip(),
-      then: (schema) =>
-        schema.required(
-          "Il est impératif de télécharger la dernière attestation de passage de la commission sécurité ",
-        ),
-    }),
+    is: true,
+    otherwise: (schema) => schema.nullable().strip(),
+    then: (schema) =>
+      schema.required(
+        "Il est impératif de télécharger la dernière attestation de passage de la commission sécurité ",
+      ),
+  }),
   // Fichier Dernier arrếté du Maire si réglementation Erp = Oui
   fileDernierArreteAutorisationMaire: yup.mixed().when("reglementationErp", {
     is: true,
     otherwise: (schema) => schema.nullable().strip(),
     then: (schema) =>
       schema.required(
-        "Il est impératif de télécharger le dernièr arrêté d'autorisation du Maire",
+        "Il est impératif de télécharger le dernier arrêté d'autorisation du Maire",
       ),
   }),
   // Fichier Réponse du l'exploitant ou propiétaire si réglementation Erp = Non

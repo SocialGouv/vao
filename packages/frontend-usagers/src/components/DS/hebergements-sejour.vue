@@ -265,13 +265,9 @@ async function addNuitee(hebergement) {
     }
   }
 
-
-
-  // Recopie de la branche informationsLocaux (pour pouvoir modifier la partie file à l'enregistrement)
-  let updatedInformationsLocaux = { ...hebergement.informationsLocaux };
-
-  if (hebergement.informationsLocaux.reglementationErp === true) {
-    const fileDAS = hebergement.informationsLocaux.fileDerniereAttestationSecurite;
+  if (hebergement.informationsLocaux.reglementationErp) {
+    const fileDAS =
+      hebergement.informationsLocaux.fileDerniereAttestationSecurite;
     // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
     if (!fileDAS.uuid) {
       try {
@@ -295,7 +291,8 @@ async function addNuitee(hebergement) {
       }
     }
 
-    const fileAAM = hebergement.informationsLocaux.fileDernierArreteAutorisationMaire;
+    const fileAAM =
+      hebergement.informationsLocaux.fileDernierArreteAutorisationMaire;
     // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
     if (!fileAAM.uuid) {
       try {
@@ -317,11 +314,10 @@ async function addNuitee(hebergement) {
           `Une erreur est survenue lors du dépôt du document ${fileAAM.name}`,
         );
       }
-    }    
-  }
-  else
-  {
-    const fileREP = hebergement.informationsLocaux.fileReponseExploitantOuProprietaire;
+    }
+  } else {
+    const fileREP =
+      hebergement.informationsLocaux.fileReponseExploitantOuProprietaire;
     // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
     if (!fileREP.uuid) {
       try {
@@ -343,7 +339,7 @@ async function addNuitee(hebergement) {
           `Une erreur est survenue lors du dépôt du document ${fileREP.name}`,
         );
       }
-    }  
+    }
   }
 
   if (currentIndex.value === -1) {
@@ -380,7 +376,7 @@ async function next() {
   emit("update", data, "hebergements");
 }
 
-hebergementStore.fetchHebergements();
+hebergementStore.fetch();
 </script>
 
 <style lang="scss" scoped></style>

@@ -169,7 +169,7 @@ module.exports.create = async ({ email, nom, prenom, roles, territoire }) => {
   if (response.rows.length !== 0) {
     log.w("create - DONE - Utilisateur BO déjà existant");
     throw new AppError("Utilisateur déjà existant", {
-      name: "UserAlreadyExistsWithFC",
+      name: "UserAlreadyExists",
     });
   }
 

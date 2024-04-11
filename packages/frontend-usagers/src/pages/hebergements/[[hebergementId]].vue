@@ -8,16 +8,25 @@
 
     <div class="fr-grid-row">
       <div class="fr-col">
-        <h1>Hébergement {{ hebergementStore.hebergementCourant.nom }}</h1>
+        <h1 v-if="hebergementId">
+          Hébergement {{ hebergementStore.hebergementCourant.nom }}
+        </h1>
+        <h1 v-else>Création d'un nouveau lieu d'hébergement</h1>
       </div>
     </div>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <Hebergement
+          v-if="hebergementId"
           :init-hebergement="hebergementStore.hebergementCourant"
           label-next="Modifier hébergement"
           @cancel="back"
-          @submit="editHebergement"
+          @submit="updateOrCreate"
+        ></Hebergement>
+        <Hebergement
+          v-else
+          @cancel="back"
+          @submit="updateOrCreate"
         ></Hebergement>
       </div>
     </div>
@@ -31,50 +40,53 @@ definePageMeta({
 
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
-const log = logger("pages/hebermgents/[hebergementId]");
+const log = logger("pages/hebermgents/[[hebergementId]]");
+
 const hebergementStore = useHebergementStore();
 
 const route = useRoute();
+const hebergementId = ref(route.params.hebergementId);
 
 useHead({
   title: "VAO - hébergement",
   meta: [
     {
       name: "description",
-      content: "Page détaillant un hébergement.",
+      content: hebergementId.value
+        ? "Page détaillant un hébergement."
+        : "Page de création d'un hébergement.",
     },
   ],
 });
+
 const links = [
   {
     to: "/",
     text: "Accueil",
   },
   {
-    to: "/hebergements",
+    to: "/hebergements/liste",
     text: "Mes hébergements",
   },
   {
-    text: `Hébergement ${hebergementStore.hebergementCourant.nom}`,
+    text: hebergementId.value
+      ? `Hébergement ${hebergementStore.hebergementCourant.nom}`
+      : "Nouvel hébergement",
   },
 ];
 
-const hebergementId = route.params.hebergementId;
+async function updateOrCreate(hebergement) {
+  log.d("updateOrCreate - IN", { hebergement });
 
-async function editHebergement(hebergement) {
-  log.d("editHebergement - IN");
-
-  // Recopie de la branche informationsLocaux (pour pouvoir modifier la partie file à l'enregistrement)
-  let updatedInformationsLocaux = { ...hebergement.informationsLocaux };
-
-  if (hebergement.informationsLocaux.reglementationErp === true) {
-    const fileDAS = hebergement.informationsLocaux.fileDerniereAttestationSecurite;
+  if (hebergement.informationsLocaux.reglementationErp) {
+    const fileDAS =
+      hebergement.informationsLocaux.fileDerniereAttestationSecurite;
     // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
-    if (!fileDAS.uuid) {
+    if (fileDAS && !fileDAS.uuid) {
       try {
         const uuid = await UploadFile("attestation_securite", fileDAS);
-        //mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
-        updatedInformationsLocaux.fileDerniereAttestationSecurite = {
+        // mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
+        hebergement.informationsLocaux.fileDerniereAttestationSecurite = {
           uuid,
           name: fileDAS.name,
           createdAt: new Date(),
@@ -92,13 +104,14 @@ async function editHebergement(hebergement) {
       }
     }
 
-    const fileAAM = hebergement.informationsLocaux.fileDernierArreteAutorisationMaire;
+    const fileAAM =
+      hebergement.informationsLocaux.fileDernierArreteAutorisationMaire;
     // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
-    if (!fileAAM.uuid) {
+    if (fileAAM && !fileAAM.uuid) {
       try {
         const uuid = await UploadFile("arrete_autorisation_maire", fileAAM);
-        //mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
-        updatedInformationsLocaux.fileDernierArreteAutorisationMaire = {
+        // mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
+        hebergement.informationsLocaux.fileDernierArreteAutorisationMaire = {
           uuid,
           name: fileAAM.name,
           createdAt: new Date(),
@@ -114,22 +127,16 @@ async function editHebergement(hebergement) {
           `Une erreur est survenue lors du dépôt du document ${fileAAM.name}`,
         );
       }
-    }    
-  }
-  else
-  {
-    /*
-    updatedInformationsLocaux.fileReponseExploitantOuProprietaire = hebergementStore.addFile(hebergement,"reponse_explouprop")
-    console.log("editHebergement(hebergement) updatedInformationsLocaux.fileReponseExploitantOuProprietaire",updatedInformationsLocaux.fileReponseExploitantOuProprietaire)
-    */
-    
-    const fileREP = hebergement.informationsLocaux.fileReponseExploitantOuProprietaire;
+    }
+  } else {
+    const fileREP =
+      hebergement.informationsLocaux.fileReponseExploitantOuProprietaire;
     // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
-    if (!fileREP.uuid) {
+    if (fileREP && !fileREP.uuid) {
       try {
         const uuid = await UploadFile("reponse_explouprop", fileREP);
-        //mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
-        updatedInformationsLocaux.fileReponseExploitantOuProprietaire = {
+        // mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
+        hebergement.informationsLocaux.fileReponseExploitantOuProprietaire = {
           uuid,
           name: fileREP.name,
           createdAt: new Date(),
@@ -145,32 +152,31 @@ async function editHebergement(hebergement) {
           `Une erreur est survenue lors du dépôt du document ${fileREP.name}`,
         );
       }
-    }  
+    }
   }
 
-
-  let majHerbergement = { ...hebergement, informationsLocaux: updatedInformationsLocaux };
-
-  // Sauvegarde de la mise à jour de l'hébergement
+  // Sauvegarde de l'hébergement
   try {
-    const url = `/hebergement/${hebergementId}`;
-    await $fetchBackend(url, {
-      method: "POST",
-      credentials: "include",
-      body: majHerbergement,
-    });
+    const id = await hebergementStore.updateOrCreate(
+      hebergement,
+      hebergementId.value,
+    );
     log.d("hebergement sauvegardé");
     toaster.success("Hébergement sauvegardé");
+
+    if (!hebergementId.value && id) {
+      return navigateTo("/hebergements/" + id);
+    }
   } catch (error) {
     toaster.error(
       error.data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
     );
-    log.w("editHebergement - erreur", { error });
+    log.w("updateOrCreate - erreur", { error });
   }
 }
 
 function back() {
-  navigateTo("/hebergements");
+  navigateTo("/hebergements/liste");
 }
 </script>
 

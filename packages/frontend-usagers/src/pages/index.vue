@@ -65,7 +65,7 @@ const tiles = computed(() => [
   },
   {
     title: "Hébergements",
-    to: "/hebergements",
+    to: "/hebergements/liste",
     imgSrc: House,
     description:
       "Cette page permet de gérer les informations sur les lieux d'hébergement de vos séjours.",

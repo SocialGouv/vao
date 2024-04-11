@@ -416,7 +416,8 @@ const IHebergementInformationLocaux = {
   },
   reglementationErp: {
     inputType: InputTypes.RADIO,
-    label: "Le lieu d’hébergement est-il soumis à la réglementation ERP (établissement recevant du public) ? ",
+    label:
+      "Le lieu d’hébergement est-il soumis à la réglementation ERP (établissement recevant du public) ? ",
     options: ouiNon,
   },
   accessibilite: {

@@ -131,7 +131,7 @@
           :historique="historique.historique ?? []"
         ></DSHistorique>
         <DsfrAlert v-else-if="error" type="error"
-          >Une erreur est survenur durant la récupération de l'historique de la
+          >Une erreur est survenue durant la récupération de l'historique de la
           déclaration</DsfrAlert
         >
       </DsfrTabContent>
@@ -199,11 +199,14 @@ const selectTab = (idx) => {
     execute();
   }
 };
-const tabTitles = [
+
+const sejourId = ref(route.params.demandeId);
+
+const tabTitles = computed(() => [
   { title: "Formulaire" },
   { title: "Documents joints" },
-  { title: "Historique de la déclaration" },
-];
+  ...(sejourId.value ? [{ title: "Historique de la déclaration" }] : []),
+]);
 
 const sommaireOptions = demandeSejourMenus.map((m) => m.id);
 
@@ -213,8 +216,6 @@ const hash = computed(() => {
   }
   return sommaireOptions[0];
 });
-
-const sejourId = ref(route.params.demandeId);
 
 const canModify = computed(() => {
   return (
