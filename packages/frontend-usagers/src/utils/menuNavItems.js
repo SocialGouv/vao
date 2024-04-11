@@ -27,6 +27,6 @@ export const navItems = [
   },
   {
     text: "Mes hébergements",
-    to: "/hebergements",
+    to: "/hebergements/liste",
   },
 ];

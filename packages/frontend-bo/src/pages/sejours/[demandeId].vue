@@ -35,7 +35,7 @@
           :historique="historique.historique ?? []"
         />
         <DsfrAlert v-else-if="error" type="error"
-          >Une erreur est survenur durant la récupération de l'historique de la
+          >Une erreur est survenue durant la récupération de l'historique de la
           déclaration
         </DsfrAlert>
       </DsfrTabContent>

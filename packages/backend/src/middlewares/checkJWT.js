@@ -92,7 +92,7 @@ async function checkJWT(req, res, next) {
     }
 
     const users = await User.read({ id: rtDecoded.userId });
-    if (!users.length === 0) {
+    if (users.length === 0) {
       log.w("Utilisateur non trouvé");
       throw new AppError("Utilisateur non trouvé", {
         name: "UserNotFound",

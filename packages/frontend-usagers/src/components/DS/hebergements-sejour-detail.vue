@@ -223,6 +223,46 @@
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
+              name="informationsLocaux.reglementationErp"
+              legend="Le lieu d’hébergement est-il soumis à la réglementation ERP (établissement recevant du public) ?"
+              :disabled="!props.modifiable"
+              :model-value="reglementationErp"
+              :options="ouiNonOptions"
+              :is-valid="reglementationErpMeta.valid"
+              :inline="true"
+              :error-message="reglementationErpErrorMessage"
+              @update:model-value="onReglementationErpChange"
+            />
+          </div>
+        </div>
+        <div v-if="reglementationErp">
+          <UtilsFileUpload
+            v-model="fileDerniereAttestationSecurite"
+            label="Téléchargement du document Dernière attestation de passage de la commission sécurité"
+            hint="Taille maximale : 5 Mo."
+            :modifiable="props.modifiable"
+            :error-message="fileDerniereAttestationSecuriteErrorMessage"
+          />
+          <UtilsFileUpload
+            v-model="fileDernierArreteAutorisationMaire"
+            label="Téléchargement du document Dernier arrêté d’autorisation du maire"
+            hint="Taille maximale : 5 Mo."
+            :modifiable="props.modifiable"
+            :error-message="fileDernierArreteAutorisationMaireErrorMessage"
+          />
+        </div>
+        <div v-if="reglementationErp === false">
+          <UtilsFileUpload
+            v-model="fileReponseExploitantOuProprietaire"
+            label="Téléchargement du document Réponse du propriétaire ou exploitant indiquant les raisons pour lesquelles le lieu d’hébergement n’est pas soumis à la réglementation ERP"
+            hint="Taille maximale : 5 Mo."
+            :modifiable="props.modifiable"
+            :error-message="fileReponseExploitantOuProprietaireErrorMessage"
+          />
+        </div>
+        <div class="fr-fieldset__element fr-col-12">
+          <div class="fr-input-group">
+            <DsfrRadioButtonSet
               name="informationsLocaux.accessibilite"
               legend="Accessibilité"
               :disabled="!props.modifiable"
@@ -608,7 +648,7 @@ const hebergementsFavoris = computed(() => {
 const validationSchema = yup.object(DeclarationSejour.hebergementDetailsSchema);
 
 if (props.hebergement.hebergementId) {
-  await hebergementStore.fetchHebergement(props.hebergement.hebergementId);
+  await hebergementStore.fetchById(props.hebergement.hebergementId);
 } else {
   hebergementStore.hebergementCourant = null;
 }
@@ -679,6 +719,24 @@ const {
   handleChange: onVisiteLocauxAtChange,
   meta: visiteLocauxAtMeta,
 } = useField("informationsLocaux.visiteLocauxAt");
+const {
+  value: reglementationErp,
+  errorMessage: reglementationErpErrorMessage,
+  handleChange: onReglementationErpChange,
+  meta: reglementationErpMeta,
+} = useField("informationsLocaux.reglementationErp");
+const {
+  value: fileDerniereAttestationSecurite,
+  errorMessage: fileDerniereAttestationSecuriteErrorMessage,
+} = useField("informationsLocaux.fileDerniereAttestationSecurite");
+const {
+  value: fileDernierArreteAutorisationMaire,
+  errorMessage: fileDernierArreteAutorisationMaireErrorMessage,
+} = useField("informationsLocaux.fileDernierArreteAutorisationMaire");
+const {
+  value: fileReponseExploitantOuProprietaire,
+  errorMessage: fileReponseExploitantOuProprietaireErrorMessage,
+} = useField("informationsLocaux.fileReponseExploitantOuProprietaire");
 const {
   value: accessibilite,
   errorMessage: accessibiliteErrorMessage,
@@ -798,7 +856,7 @@ const {
 async function handleHebergementIdChange(hebergementId) {
   if (hebergementId) {
     log.d("handleHebergementIdChange - in", { hebergementId });
-    await hebergementStore.fetchHebergement(hebergementId);
+    await hebergementStore.fetchById(hebergementId);
     const newValues = {
       hebergementId: hebergementStore.hebergementCourant.id,
       coordonnees: {
@@ -831,10 +889,10 @@ async function cancel() {
 const addHebergementOpened = ref(false);
 
 async function addHebergement(hebergement) {
-  log.i("addHebergement - IN");
+  log.i("addHebergement - IN", { hebergement });
   let id;
   try {
-    id = await hebergementStore.addHebergement(hebergement);
+    id = await hebergementStore.updateOrCreate(hebergement);
   } catch (error) {
     log.w("addHebergement - DONE with error", error);
     toaster.error(
@@ -844,7 +902,7 @@ async function addHebergement(hebergement) {
   if (!id) {
     return;
   }
-  await hebergementStore.fetchHebergements();
+  await hebergementStore.fetch();
   handleHebergementIdChange(id);
   closeAddHebergement();
   log.i("addHebergement - DONE");

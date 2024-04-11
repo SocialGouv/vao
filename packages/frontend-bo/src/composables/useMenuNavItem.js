@@ -12,23 +12,27 @@ export const useMenuNavItems = () => {
         text: "Accueil",
         to: "/",
       },
-      ...[
-        roles.includes("Compte") && {
-          text: "Comptes",
-          to: "/comptes/liste",
-        },
-      ],
-      ...[
-        roles.includes("DemandeSejour") && {
-          title: "Déclaration de séjour",
-          links: [
+      ...(roles.includes("Compte")
+        ? [
             {
-              text: "Mes déclarations",
-              to: "/sejours",
+              text: "Comptes",
+              to: "/comptes/liste",
             },
-          ],
-        },
-      ],
+          ]
+        : []),
+      ...(roles.includes("DemandeSejour")
+        ? [
+            {
+              title: "Déclaration de séjour",
+              links: [
+                {
+                  text: "Mes déclarations",
+                  to: "/sejours",
+                },
+              ],
+            },
+          ]
+        : []),
     ];
   });
 

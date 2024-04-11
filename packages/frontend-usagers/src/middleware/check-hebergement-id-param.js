@@ -7,19 +7,24 @@ const log = logger("middlewares/check-hebergement-id-param");
 export default defineNuxtRouteMiddleware(async (to) => {
   log.i("IN", { to });
 
-  const hebergementId = to.params.hebergementId;
   const hebergementStore = useHebergementStore();
+  const hebergementId = to.params.hebergementId;
 
   if (isNaN(hebergementId)) {
     log.w("invalid param");
-    return navigateTo("/hebergements");
+    return navigateTo("/hebergements/liste");
   }
 
-  await hebergementStore.fetchHebergement(hebergementId);
+  if (!hebergementId) {
+    log.i("Done");
+    return;
+  }
+
+  await hebergementStore.fetchById(hebergementId);
 
   if (!hebergementStore.hebergementCourant) {
-    log.i("naviagteTo /hebergements");
-    return navigateTo("/hebergements");
+    log.w("hebergement not found, navigateTo /hebergements/liste");
+    return navigateTo("/hebergements/liste");
   }
-  log.d("Done");
+  log.i("Done");
 });

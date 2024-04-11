@@ -50,12 +50,8 @@ const query = {
 
 module.exports.read = async (criterias = {}) => {
   log.i("read - IN");
-  const user = await pool.query(...query.select(criterias));
-  if (!user && user.rows) {
-    log.w("error while reading session");
-    throw new Error("erreur sur la lecture de session");
-  }
-  return user.rows;
+  const { rows } = await pool.query(...query.select(criterias));
+  return rows;
 };
 
 module.exports.rotate = async (id, oldToken, token, errorObject = null) => {

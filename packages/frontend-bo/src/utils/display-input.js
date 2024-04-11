@@ -414,6 +414,12 @@ const IHebergementInformationLocaux = {
     label: "Une visite des locaux par l’organisateur a-t-elle été effectuée ? ",
     options: ouiNon,
   },
+  reglementationErp: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Le lieu d’hébergement est-il soumis à la réglementation ERP (établissement recevant du public) ? ",
+    options: ouiNon,
+  },
   accessibilite: {
     inputType: InputTypes.RADIO,
     label: "Accessibilité",

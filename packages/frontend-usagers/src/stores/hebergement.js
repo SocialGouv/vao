@@ -9,24 +9,24 @@ export const useHebergementStore = defineStore("hebergement", {
     hebergementCourant: null,
   }),
   actions: {
-    async fetchHebergements() {
+    async fetch() {
       try {
-        log.i("fetchHebergements - IN");
+        log.i("fetch - IN");
         const { hebergements } = await $fetchBackend("/hebergement", {
           credentials: "include",
         });
         if (hebergements) {
           this.hebergements = hebergements;
         }
-        log.d("fetchHebergements  - DONE");
+        log.d("fetch  - DONE");
       } catch (err) {
         this.hebergements = [];
-        log.i("fetchHebergements - DONE with error");
+        log.i("fetch - DONE with error");
       }
     },
-    async fetchHebergement(id) {
+    async fetchById(id) {
       try {
-        log.i("fetchHebergement - IN", { id });
+        log.i("fetchById - IN", { id });
 
         const { hebergement } = await $fetchBackend(`/hebergement/${id}`, {
           credentials: "include",
@@ -35,22 +35,26 @@ export const useHebergementStore = defineStore("hebergement", {
         if (hebergement) {
           this.hebergementCourant = hebergement;
         }
-        log.d("fetchHebergement - DONE");
+        log.d("fetchById - DONE");
       } catch (err) {
         this.hebergementCourant = null;
-        log.i("fetchHebergement - DONE with error");
+        log.i("fetchById - DONE with error");
       }
     },
-    async addHebergement(hebergement) {
-      log.i("addHebergement - IN", { hebergement });
-      const url = `/hebergement`;
+    async updateOrCreate(hebergement, hebergementId) {
+      log.i("updateOrCreate - IN", { hebergement });
+
+      const url = hebergementId
+        ? `/hebergement/${hebergementId}`
+        : `/hebergement`;
+
       const { id } = await $fetchBackend(url, {
         method: "POST",
         body: hebergement,
         credentials: "include",
       });
-      log.i("addHebergement - Done", { id });
-      return id;
+      log.i("updateOrCreate - Done", { id });
+      return id ?? hebergementId;
     },
   },
 });

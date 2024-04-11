@@ -63,7 +63,7 @@
         <form>
           <fieldset class="fr-fieldset">
             <DsfrButton>
-              <NuxtLink to="/hebergements/creation">
+              <NuxtLink to="/hebergements">
                 Déclarer un nouvel hébergement
               </NuxtLink>
             </DsfrButton>
@@ -76,7 +76,7 @@
 
 <script setup>
 const hebergementStore = useHebergementStore();
-hebergementStore.fetchHebergements();
+hebergementStore.fetch();
 
 useHead({
   title: "VAO - mes hébergements",

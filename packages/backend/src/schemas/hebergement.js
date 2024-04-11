@@ -10,6 +10,7 @@ const coordonneesSchema = () => ({
   numTelephone1: telephoneSchema(),
   numTelephone2: telephoneSchema().notRequired(),
 });
+
 const informationsLocauxSchema = () => ({
   accessibilite: yup
     .string()
@@ -38,6 +39,30 @@ const informationsLocauxSchema = () => ({
   descriptionLieuHebergement: yup
     .string()
     .required("Une description du lieu d'hébergement est obligatoire"),
+  fileDernierArreteAutorisationMaire: yup.mixed().when("reglementationErp", {
+    is: true,
+    otherwise: (schema) => schema.nullable().strip(),
+    then: (schema) =>
+      schema.required(
+        "Il est impératif de télécharger le dernier arrêté d'autorisation du Maire",
+      ),
+  }),
+  fileDerniereAttestationSecurite: yup.mixed().when("reglementationErp", {
+    is: true,
+    otherwise: (schema) => schema.nullable().strip(),
+    then: (schema) =>
+      schema.required(
+        "Il est impératif de télécharger la dernière attestation de passage de la commission sécurité ",
+      ),
+  }),
+  fileReponseExploitantOuProprietaire: yup.mixed().when("reglementationErp", {
+    is: false,
+    otherwise: (schema) => schema.nullable().strip(),
+    then: (schema) =>
+      schema.required(
+        "Il est impératif de télécharger la réponse de l'exploitant ou du propriétaire",
+      ),
+  }),
   litsDessus: yup
     .boolean()
     .required(
@@ -75,6 +100,12 @@ const informationsLocauxSchema = () => ({
     .boolean()
     .required(
       "Il est impératif de renseigner si des rangements individuels sont à disposition",
+    ),
+
+  reglementationErp: yup
+    .boolean()
+    .required(
+      "Il est impératif de renseigner si vous le local est soumis à la réglementation ERP (établissement recevant du public)",
     ),
   type: yup
     .string()

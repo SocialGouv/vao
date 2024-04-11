@@ -292,7 +292,7 @@ const displayInfos = {
       "Le compte que vous venez de modifier a été enregistré avec succès.",
     type: "success",
   },
-  UserAlreadyExistsWithFC: {
+  UserAlreadyExists: {
     title: "Une erreur est survenue",
     description:
       "Une erreur est survenue. L'utilisateur que vous tentez de crééer existre déjà",

@@ -1681,6 +1681,19 @@ async function buildFicheAnnexe(hebergement) {
                   {
                     columns: [
                       {
+                        text: "Lieu d’hébergement soumis à la réglementation ERP (établissement recevant du public) :",
+                        width: 250,
+                      },
+                      {
+                        bold: true,
+                        text: `${h.informationsLocaux.reglementationErp ? " Oui" : "Non"}`,
+                        width: "*",
+                      },
+                    ],
+                  },
+                  {
+                    columns: [
+                      {
                         text: "Accessibilité :",
                         width: 250,
                       },
