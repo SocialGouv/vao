@@ -16,7 +16,7 @@ export default [
   },
   {
     id: "protocole-sanitaire",
-    text: "Informations sanitaire",
+    text: "Informations sanitaires",
     displayForEtabSecondaire: false,
   },
   {
