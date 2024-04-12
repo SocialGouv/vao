@@ -79,7 +79,7 @@ const hebergementStore = useHebergementStore();
 hebergementStore.fetch();
 
 useHead({
-  title: "VAO - mes hébergements",
+  title: "Mes hébergements | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",

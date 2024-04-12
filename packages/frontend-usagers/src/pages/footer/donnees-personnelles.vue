@@ -221,6 +221,16 @@
 </template>
 
 <script setup>
+useHead({
+  title: "Données personnelles | Vacances Adaptées Organisées",
+  meta: [
+    {
+      name: "description",
+      content: "Page de description de l'utilisation des données personnelles.",
+    },
+  ],
+});
+
 const links = [
   {
     to: "/",

@@ -148,11 +148,11 @@ definePageMeta({
   middleware: ["is-connected", "check-demande-sejour-id-param"],
 });
 useHead({
-  title: "VAO - déclaration de séjour",
+  title: "Déclaration de séjour détaillée | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",
-      content: "Page déclaration de séjour.",
+      content: "Page de description d'une déclaration de séjour.",
     },
   ],
 });

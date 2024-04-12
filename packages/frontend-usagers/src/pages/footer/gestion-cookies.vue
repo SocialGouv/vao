@@ -35,6 +35,15 @@
 </template>
 
 <script setup>
+useHead({
+  title: "Cookies | Vacances Adaptées Organisées",
+  meta: [
+    {
+      name: "description",
+      content: "Page de description de l'utilisation des cookies.",
+    },
+  ],
+});
 const links = [
   {
     to: "/",

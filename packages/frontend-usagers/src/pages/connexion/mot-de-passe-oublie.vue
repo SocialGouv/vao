@@ -61,11 +61,11 @@ const links = [
   },
 ];
 useHead({
-  title: "VAO - mot de passe oublié",
+  title: "Mot de passe oublié | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",
-      content: "Page de mot de passe oublié.",
+      content: "Page de demande de réinitialisatoin de mot de passe.",
     },
   ],
 });

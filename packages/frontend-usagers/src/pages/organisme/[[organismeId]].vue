@@ -86,7 +86,7 @@ const links = [
 ];
 
 useHead({
-  title: "VAO - fiche organisateur",
+  title: "Fiche organisateur | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",

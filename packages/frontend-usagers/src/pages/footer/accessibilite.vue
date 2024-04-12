@@ -41,6 +41,15 @@
 </template>
 
 <script setup>
+useHead({
+  title: "Accessibilité | Vacances Adaptées Organisées",
+  meta: [
+    {
+      name: "description",
+      content: "Page de gestion de l'accessibilité .",
+    },
+  ],
+});
 const links = [
   {
     to: "/",

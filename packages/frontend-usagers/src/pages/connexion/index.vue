@@ -125,7 +125,7 @@ const config = useRuntimeConfig();
 const log = logger("pages/connexion");
 
 useHead({
-  title: "VAO - connexion",
+  title: "Connexion | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",

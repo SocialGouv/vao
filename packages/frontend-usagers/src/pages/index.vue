@@ -33,7 +33,7 @@ definePageMeta({
 });
 
 useHead({
-  title: "VAO - Vacances Adaptées Organisées",
+  title: "Accueil | Vacances Adaptées Organisées",
   meta: [{ name: "description", content: "Page d'accueil." }],
 });
 

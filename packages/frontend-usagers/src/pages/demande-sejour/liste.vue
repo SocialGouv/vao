@@ -149,7 +149,7 @@ const links = [
 ];
 
 useHead({
-  title: "VAO - mes déclarations de séjour",
+  title: "Mes déclarations de séjour | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",
