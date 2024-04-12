@@ -2,6 +2,11 @@
   <div>
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
+        <span class="fr-hint-text"
+          >Sauf mention contraire “(optionnel)” dans le label, tous les champs sont obligatoires</span
+        >
+      </div>          
+      <div class="fr-fieldset__element">
         <DsfrInputGroup
           name="nombreResponsable"
           label="Nombre total de personnes responsables du déroulement du séjour sur le(s) lieu(x) de séjour"

@@ -1,5 +1,10 @@
 <template>
   <div>
+    <div class="fr-fieldset__element">
+      <span class="fr-hint-text"
+        >Sauf mention contraire “(optionnel)” dans le label, tous les champs sont obligatoires</span
+      >
+    </div>
     <DsfrFieldset>
       <DsfrCheckboxSet
         v-model="destination"
@@ -14,7 +19,7 @@
     </DsfrFieldset>
     <DsfrFieldset legend="Activités spécifiques proposées">
       <UtilsMultiSelect
-        label="Sports et loisirs"
+        label="Sports et loisirs (optionnel)"
         :options="projetSejour.sportOptions"
         :values="activitesSportives"
         :modifiable="props.modifiable"
@@ -24,7 +29,7 @@
       ></UtilsMultiSelect>
 
       <UtilsMultiSelect
-        label="Culture et découverte"
+        label="Culture et découverte (optionnel)"
         :options="projetSejour.cultureOptions"
         :values="activitesCulturelles"
         :modifiable="props.modifiable"

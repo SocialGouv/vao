@@ -1,5 +1,10 @@
 <template>
   <div>
+    <div class="fr-fieldset__element">
+        <span class="fr-hint-text"
+          >Sauf mention contraire “(optionnel)” dans le label, tous les champs sont obligatoires</span
+        >
+    </div>          
     <DsfrFieldset legend="Modalités d’ordre sanitaire ">
       <DsfrHighlight
         v-if="props.modifiable"

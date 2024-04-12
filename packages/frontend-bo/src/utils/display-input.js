@@ -154,11 +154,11 @@ const IProjetSejour = {
   },
   activitesSportives: {
     inputType: InputTypes.MULTISELECT,
-    label: "Sports et loisirs",
+    label: "Sports et loisirs (optionnel)",
   },
   activitesCulturelles: {
     inputType: InputTypes.MULTISELECT,
-    label: "Culture et découverte",
+    label: "Culture et découverte (optionnel)",
   },
 };
 
