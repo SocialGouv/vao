@@ -35,13 +35,19 @@ module.exports = async function get(req, res) {
     let elements = [];
     if (uniteLegale.etablissementSiege) {
       const { data: liste } = await axios.get(
-        `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=70&champs=numeroVoieEtablissement,typeVoieEtablissement,libelleVoieEtablissement,codePostalEtablissement,libelleCommuneEtablissement,nic,etatAdministratifUniteLegale`,
+        `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=70`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       elements = liste.etablissements ?? [];
     }
+
     const etablissements = elements
       .filter((e) => e.uniteLegale.etatAdministratifUniteLegale === "A")
+      .filter(
+        (e) =>
+          e.periodesEtablissement[0].etatAdministratifEtablissement === "A",
+      )
+      .filter((e) => e.nic !== uniteLegale.nic)
       .map((e) => {
         return {
           adresse: `${e.adresseEtablissement.numeroVoieEtablissement ? e.adresseEtablissement.numeroVoieEtablissement : ""} ${e.adresseEtablissement.typeVoieEtablissement} ${e.adresseEtablissement.libelleVoieEtablissement}`,
@@ -59,7 +65,6 @@ module.exports = async function get(req, res) {
       const { data: response } = await axios.get(url, {
         headers: { Authorization: `Bearer ${config.apiEntreprise.token}` },
       });
-      log.d(response);
       const mandatairesSociaux = response.data.mandataires_sociaux ?? [];
       nomCommercial = response.data.nom_commercial ?? null;
       representantsLegaux = mandatairesSociaux.map((m) => {

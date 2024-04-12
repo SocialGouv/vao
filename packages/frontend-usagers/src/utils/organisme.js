@@ -130,14 +130,7 @@ const personneMoraleSchema = {
     .array()
     .min(1, "Au moins un représentant légal est requis")
     .required(),
-  etablissements: yup
-    .array()
-    .required()
-    .when("siegeSocial", {
-      is: true,
-      then: (schema) =>
-        schema.min(1, "Vous devez sélectionner au moins un établissement"),
-    }),
+  etablissements: yup.array().required(),
   responsableSejour: yup.object({
     ...personne.schema({
       showAdresse: true,
