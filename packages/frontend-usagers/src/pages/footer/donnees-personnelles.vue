@@ -7,6 +7,11 @@
     </div>
 
     <div class="fr-grid-row">
+      <div class="fr-col">
+        <h1>Données personnelles</h1>
+      </div>
+    </div>
+    <div class="fr-grid-row">
       <div class="fr-col-12">
         <h4>Responsable du traitement</h4>
         <p>

@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container">
-    <div class="fr-grid-row fr-px-3w">
-      <div class="fr-col-3">
+    <div class="fr-grid-row">
+      <div class="fr-col-3 fr-py-3w">
         <OrganismeMenuOrganisme
           :active-id="hash"
           :organisme="organismeStore.organismeCourant ?? {}"

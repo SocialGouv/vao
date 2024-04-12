@@ -194,9 +194,8 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import "@vueform/multiselect/themes/default.css";
-const log = logger("pages/connexion/email/enregistrement");
+const log = logger("pages/connexion/enregistrement");
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 const config = useRuntimeConfig();
@@ -214,6 +213,7 @@ const links = [
     text: "Création de compte",
   },
 ];
+
 useHead({
   title: "Création de compte | Vacances Adaptées Organisées",
   meta: [

@@ -1,3 +1,7 @@
+.fr-breadcrumb {
+  margin-bottom: 1rem; 
+}
+
 .fr-fieldset.fr-fieldset--error:disabled .fr-fieldset__legend {
   color: var(--text-default-error);
 }

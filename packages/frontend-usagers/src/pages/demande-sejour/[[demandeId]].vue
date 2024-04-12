@@ -1,6 +1,7 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
+    <h1>Déclaration de séjour</h1>
     <DsfrTabs
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"

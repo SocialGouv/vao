@@ -1,8 +1,8 @@
 <template>
   <nav class="fr-sidemenu fr-sidemenu--sticky">
-    <DsfrSideMenu heading-title="">
+    <DsfrSideMenu heading-title="Fiche organisme">
       <DsfrSideMenuList
-        id="menuLateral"
+        id="organisme-menu-list"
         :menu-items="sommaireOptionsToDisplay"
       />
     </DsfrSideMenu>
