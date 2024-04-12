@@ -191,7 +191,7 @@ const query = {
       AND ds.id = $1
   `,
   getEmailBack: `
-  SELECT u.mail AS mail
+  SELECT DISTINCT u.mail AS mail
   FROM back.users u
   WHERE u.ter_code = $1                     
   `,
@@ -202,14 +202,14 @@ const query = {
   FROM geo.territoires
   WHERE code = ANY($1)
   )
-  SELECT u.mail AS mail
+  SELECT DISTINCT u.mail AS mail
   FROM back.users u, regions
   WHERE u.ter_code = ANY($1)  
     OR u.ter_code = ANY(regions.parent_code)
     OR u.ter_code = 'FRA'
   `,
   getEmailCcList: `
-  SELECT u.mail AS mail
+  SELECT DISTINCT u.mail AS mail
   FROM front.users u
   JOIN front.user_organisme uo ON u.id = uo.use_id
   JOIN front.organismes o ON uo.org_id = o.id
@@ -218,7 +218,7 @@ const query = {
     o.personne_morale->>'siegeSocial' = 'true'
 `,
   getEmailToList: `
-  SELECT u.mail AS mail
+  SELECT DISTINCT u.mail AS mail
   FROM front.users u
   JOIN front.user_organisme uo
     ON u.id = uo.use_id
@@ -442,14 +442,14 @@ module.exports.create = async (
   );
   log.d(response);
   const { demandeId } = response.rows[0];
-  log.d("create - DONE", { demandeId });
+  log.i("create - DONE", { demandeId });
   return demandeId;
 };
 
 module.exports.get = async (userId) => {
   log.i("get - IN", { userId });
   const response = await pool.query(query.get, [userId]);
-  log.d("get - DONE");
+  log.i("get - DONE");
   const demandes = response.rows;
   return demandes;
 };
@@ -542,7 +542,7 @@ module.exports.getByDepartementCodes = async (
     query.getByDepartementCodesTotal(searchQuery, departementCodes),
   );
 
-  log.d("getByAdminId - DONE");
+  log.i("getByAdminId - DONE");
   return {
     demandes_sejour: response.rows,
     total: total.rows.find((t) => t.count)?.count ?? 0,
@@ -558,13 +558,13 @@ module.exports.getById = async (demandeId, departementCodes) => {
   const { rows: demande } = await pool.query(query.getById(departementCodes), [
     demandeId,
   ]);
-  log.d("getById - DONE");
+  log.i("getById - DONE");
   log.d(demande);
   return demande[0];
 };
 
 module.exports.update = async (type, demandeSejourId, parametre) => {
-  log.w("update - IN", { demandeSejourId, parametre, type });
+  log.i("update - IN", { demandeSejourId, parametre, type });
   let response;
   switch (type) {
     case "organisme": {
@@ -651,7 +651,7 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       log.d("wrong type");
       return null;
   }
-  log.d("update - DONE");
+  log.i("update - DONE");
   const demandeId = response.rows[0].demandeId ?? null;
   return demandeId;
 };
@@ -706,34 +706,33 @@ module.exports.getNextIndex = async () => {
   log.i("getNextIndex - IN");
   const { rows: data } = await pool.query(query.getNextIndex);
   log.d(data[0].index);
-  log.d("getNextIndex - DONE");
+  log.i("getNextIndex - DONE");
   return data[0].index ?? null;
 };
 module.exports.getEmailToList = async (organismeId) => {
   log.i("getEmailToList - IN", organismeId);
   const { rows: data } = await pool.query(query.getEmailToList, [organismeId]);
-  log.d("getEmailToList - DONE");
-  return data.map((m) => m.mail) ?? null;
+  log.i("getEmailToList - DONE");
+  return data.map((m) => m.mail);
 };
 
 module.exports.getEmailCcList = async (siren) => {
   log.i("getEmailCcList - IN", siren);
   const { rows: data } = await pool.query(query.getEmailCcList, [siren]);
-  log.d("getEmailCcList - DONE");
-  return data.map((m) => m.mail) ?? null;
+  log.i("getEmailCcList - DONE");
+  return data.map((m) => m.mail);
 };
 module.exports.getEmailBack = async (departement) => {
   log.i("getEmailBack - IN", departement);
   const { rows: data } = await pool.query(query.getEmailBack, [departement]);
-  log.d("getEmailBack - DONE");
-  return data.map((m) => m.mail) ?? null;
+  log.i("getEmailBack - DONE");
+  return data.map((m) => m.mail);
 };
 module.exports.getEmailBackCc = async (departements) => {
   log.i("getEmailBackCc - IN", departements);
-  log.i(departements);
   const { rows: data } = await pool.query(query.getEmailBackCc, [departements]);
   log.i("getEmailBackCc - DONE");
-  return data.map((m) => m.mail) ?? null;
+  return data.map((m) => m.mail);
 };
 module.exports.insertEvent = async (
   source,
@@ -754,7 +753,7 @@ module.exports.insertEvent = async (
     typePrecision,
     metaData,
   ]);
-  log.d("insertEvent - DONE");
+  log.i("insertEvent - DONE");
   return response[0].eventId ?? null;
 };
 
@@ -764,7 +763,7 @@ module.exports.addFile = async (declarationId, file) => {
     declarationId,
     file,
   ]);
-  log.d("addFile - DONE");
+  log.i("addFile - DONE");
   return response[0].declarationId;
 };
 
@@ -773,7 +772,7 @@ module.exports.historique = async (declarationId) => {
   const { rows: response } = await pool.query(query.historique, [
     declarationId,
   ]);
-  log.d("historique - DONE");
+  log.i("historique - DONE");
   return response;
 };
 
@@ -783,7 +782,7 @@ module.exports.updateStatut = async (
   event = null,
   cb = null,
 ) => {
-  log.i("update status - IN", { demandeSejourId, statut });
+  log.i("updateStatut - IN", { demandeSejourId, statut });
   const client = await pool.connect();
 
   try {
@@ -807,7 +806,7 @@ module.exports.updateStatut = async (
 
     await client.query("COMMIT");
     const demandeId = response.rows[0].demandeId ?? null;
-    log.w("update status - OUT");
+    log.i("updateStatut - DONE");
 
     return demandeId;
   } catch (e) {
