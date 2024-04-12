@@ -230,8 +230,8 @@ departementStore.fetch();
 
 const roleOptions = [
   { label: "Accès à la consultation et création de comptes", name: "Compte" },
-  { label: "Accès aux contrôles", name: "Controle" },
-  { label: "Accès aux agréments", name: "Agrement" },
+  //{ label: "Accès aux contrôles", name: "Controle" },
+  //{ label: "Accès aux agréments", name: "Agrement" },
   { label: "Accès aux demandes de séjour", name: "DemandeSejour" },
 ];
 
