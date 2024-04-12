@@ -138,10 +138,12 @@ module.exports = async function post(req, res, next) {
     const cc = await DemandeSejour.getEmailCcList(
       declaration.organisme.personneMorale.siren ?? "personnePhysique",
     );
+
+    const filteredCc = cc.filter((d) => !destinataires.includes(d));
     if (destinataires) {
       await Send(
         MailUtils.usagers.declarationSejour.sendAR2mois({
-          cc: cc,
+          cc: filteredCc,
           declaration,
           dest: destinataires,
         }),
@@ -153,6 +155,40 @@ module.exports = async function post(req, res, next) {
       message: "Une erreur est survenue lors de l'envoi de mails",
     });
   }
+  try {
+    const destinatairesBack =
+      await DemandeSejour.getEmailBack(departementSuivi);
+
+    if (destinatairesBack) {
+      const departements = declaration.hebergement.hebergements.map(
+        (h) => h.coordonnees.adresse.departement,
+      );
+      const destinatairesBackCc =
+        await DemandeSejour.getEmailBackCc(departements);
+
+      const filteredBackCc = destinatairesBackCc.filter(
+        (d) => !destinatairesBack.includes(d),
+      );
+      await Send(
+        MailUtils.bo.declarationSejour.sendDeclarationNotify({
+          cc: filteredBackCc,
+          departementSuivi,
+          departementsSecondaires: departements.filter(
+            (d) => d !== departementSuivi,
+          ),
+          destinataires: destinatairesBack,
+          id: declaration.idFonctionnelle,
+        }),
+      );
+    }
+  } catch (error) {
+    log.w(error);
+    return res.status(400).json({
+      message:
+        "Une erreur est survenue lors de l'envoi de mails aux usagers back office",
+    });
+  }
+
   try {
     DSuuid = await PdfDeclaration2Mois(
       declaration,

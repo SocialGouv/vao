@@ -190,6 +190,24 @@ const query = {
     where (${getDepartementWhereQuery(departementCodes)})
       AND ds.id = $1
   `,
+  getEmailBack: `
+  SELECT u.mail AS mail
+  FROM back.users u
+  WHERE u.ter_code = $1                     
+  `,
+  getEmailBackCc: `
+  WITH regions AS (
+    SELECT 
+      ARRAY_AGG(parent_code) as parent_code
+  FROM geo.territoires
+  WHERE code = ANY($1)
+  )
+  SELECT u.mail AS mail
+  FROM back.users u, regions
+  WHERE u.ter_code = ANY($1)  
+    OR u.ter_code = ANY(regions.parent_code)
+    OR u.ter_code = 'FRA'
+  `,
   getEmailCcList: `
   SELECT u.mail AS mail
   FROM front.users u
@@ -695,13 +713,27 @@ module.exports.getEmailToList = async (organismeId) => {
   log.i("getEmailToList - IN", organismeId);
   const { rows: data } = await pool.query(query.getEmailToList, [organismeId]);
   log.d("getEmailToList - DONE");
-  return data.map((m) => m.mail).join(",") ?? null;
+  return data.map((m) => m.mail) ?? null;
 };
+
 module.exports.getEmailCcList = async (siren) => {
   log.i("getEmailCcList - IN", siren);
   const { rows: data } = await pool.query(query.getEmailCcList, [siren]);
   log.d("getEmailCcList - DONE");
-  return data.map((m) => m.mail).join(",") ?? null;
+  return data.map((m) => m.mail) ?? null;
+};
+module.exports.getEmailBack = async (departement) => {
+  log.i("getEmailBack - IN", departement);
+  const { rows: data } = await pool.query(query.getEmailBack, [departement]);
+  log.d("getEmailBack - DONE");
+  return data.map((m) => m.mail) ?? null;
+};
+module.exports.getEmailBackCc = async (departements) => {
+  log.i("getEmailBackCc - IN", departements);
+  log.i(departements);
+  const { rows: data } = await pool.query(query.getEmailBackCc, [departements]);
+  log.i("getEmailBackCc - DONE");
+  return data.map((m) => m.mail) ?? null;
 };
 module.exports.insertEvent = async (
   source,

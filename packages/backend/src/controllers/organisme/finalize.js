@@ -5,16 +5,11 @@ const logger = require("../../utils/logger");
 const log = logger(module.filename);
 
 module.exports = async function finalize(req, res, next) {
-  const organismeId = req.params.organismeId;
-  log.i("IN", { organismeId });
-
-  if (!organismeId) {
-    log.w("missing or invalid parameter");
-    return res.status(400).json({ message: "paramètre manquant ou erroné." });
-  }
+  const { id: userId } = req.decoded;
+  log.i("IN", { userId });
 
   try {
-    await Organisme.finalize(organismeId);
+    await Organisme.finalize(userId);
     log.i("DONE");
     return res.status(200).json({
       message: "sauvegarde organisme OK",

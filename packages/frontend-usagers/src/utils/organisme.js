@@ -141,7 +141,7 @@ const personneMoraleSchema = {
   responsableSejour: yup.object({
     ...personne.schema({
       showAdresse: true,
-      showTelephone: false,
+      showTelephone: true,
       showEmail: true,
     }),
   }),

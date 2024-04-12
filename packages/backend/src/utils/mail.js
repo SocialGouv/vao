@@ -114,6 +114,48 @@ module.exports = {
         return params;
       },
     },
+    declarationSejour: {
+      sendDeclarationNotify: ({
+        id,
+        destinataires,
+        cc,
+        departementSuivi,
+        departementsSecondaires,
+      }) => {
+        log.i("sendDeclarationNotify - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendDeclarationNotify - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          cc,
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p>
+
+                <p>La déclaration de séjour ${id} vient d'être déposée sur le portail VAO</p>
+                <p>Le(s) département(s) ${departementSuivi} est(sont) en charge de l'instruction principale de cette déclaration.</p>
+                ${
+                  departementsSecondaires.length > 0
+                    ? `<p>Les départements ${departementsSecondaires.join(", ")} sont en charge du contrôle d'au moins un hébergement.</p>`
+                    : ""
+                }
+                `,
+          replyTo: senderEmail,
+          subject: `nouvelle déclaration : ${id}`,
+          to: destinataires,
+        };
+        log.d("sendDeclarationNotify post email", {
+          params,
+        });
+
+        return params;
+      },
+    },
   },
   usagers: {
     authentication: {

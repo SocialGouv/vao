@@ -35,4 +35,7 @@ export default defineNuxtConfig({
   },
   srcDir: "src",
   ssr: false,
+  security: {
+    enabled: process.env.NODE_ENV === "production",
+  },
 });
