@@ -3,6 +3,9 @@
 export default defineNuxtConfig({
   app: {
     head: {
+      htmlAttrs: {
+        lang: "fr",
+      },
       title: "VAO - Vacances Adaptées Organisées",
       link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
     },
