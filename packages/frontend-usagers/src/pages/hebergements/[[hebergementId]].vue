@@ -48,7 +48,7 @@ const route = useRoute();
 const hebergementId = ref(route.params.hebergementId);
 
 useHead({
-  title: "VAO - hébergement",
+  title: "Fiche hébergement | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",

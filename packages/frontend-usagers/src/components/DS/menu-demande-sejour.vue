@@ -2,7 +2,7 @@
   <nav class="fr-sidemenu fr-sidemenu--sticky">
     <DsfrSideMenu heading-title="">
       <DsfrSideMenuList
-        id="menuLateral"
+        id="declaraton-sejour-menu-list"
         :menu-items="sommaireOptionsToDisplay"
       />
     </DsfrSideMenu>

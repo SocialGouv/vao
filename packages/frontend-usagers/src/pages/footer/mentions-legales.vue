@@ -113,6 +113,16 @@
 </template>
 
 <script setup>
+useHead({
+  title: "Mentions légales | Vacances Adaptées Organisées",
+  meta: [
+    {
+      name: "description",
+      content: "Page décrivant les mentions légales.",
+    },
+  ],
+});
+
 const links = [
   {
     to: "/",

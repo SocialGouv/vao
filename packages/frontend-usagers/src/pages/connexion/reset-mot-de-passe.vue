@@ -148,7 +148,7 @@ const links = [
   },
 ];
 useHead({
-  title: "VAO - réinitialisation",
+  title: "Réinitialisation de mot de passe | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",

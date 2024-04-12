@@ -160,7 +160,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue
   checksum: 05743cc5c3dfd946e8ee41cb11571b1e505bbdb5260e9c59a53e4ca16cb11f08
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
-  checksum: bbc37d2e6dd9f365741299ce6acfa3ed56673b37f32848993ea9448ffde29695
+  checksum: ff1ceabb68d5c3bd637717235e78cbe7b82e626a5f1c8bbf233c58d5acaa2bc9
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
   checksum: 27b69914a4f3615db69c2d7ca44f811bccfd566977cf424940952dab2631cb9a
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue

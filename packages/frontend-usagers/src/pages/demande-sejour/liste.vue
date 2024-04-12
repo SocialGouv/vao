@@ -7,6 +7,12 @@
       </div>
     </div>
 
+    <div class="fr-grid-row">
+      <div class="fr-col">
+        <h1>Liste des déclarations de séjour</h1>
+      </div>
+    </div>
+
     <template v-if="demandeSejourStore.demandes.length">
       <div class="fr-grid-row">
         <div class="fr-col">
@@ -149,7 +155,7 @@ const links = [
 ];
 
 useHead({
-  title: "VAO - mes déclarations de séjour",
+  title: "Mes déclarations de séjour | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",

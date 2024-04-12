@@ -3,7 +3,7 @@
     <DsfrBreadcrumb :links="links" />
 
     <div>
-      <h1>Mot de passe oublié</h1>
+      <h1>Demande de réinitialisation de mot de passe</h1>
       <div v-if="displayType !== null">
         <DsfrAlert
           class="fr-my-3v"
@@ -61,11 +61,11 @@ const links = [
   },
 ];
 useHead({
-  title: "VAO - mot de passe oublié",
+  title: "Mot de passe oublié | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",
-      content: "Page de mot de passe oublié.",
+      content: "Page de demande de réinitialisatoin de mot de passe.",
     },
   ],
 });

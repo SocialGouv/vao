@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container">
-    <div class="fr-grid-row fr-px-3w">
-      <div class="fr-col-3">
+    <div class="fr-grid-row">
+      <div class="fr-col-3 fr-py-3w">
         <OrganismeMenuOrganisme
           :active-id="hash"
           :organisme="organismeStore.organismeCourant ?? {}"
@@ -86,7 +86,7 @@ const links = [
 ];
 
 useHead({
-  title: "VAO - fiche organisateur",
+  title: "Fiche organisateur | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",
