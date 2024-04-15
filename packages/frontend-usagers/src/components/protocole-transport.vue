@@ -26,7 +26,7 @@
         <div class="fr-input-group fr-col-12">
           <UtilsMultiSelect
             name="modeTransport"
-            label="Précisez le ou les modes de transport utilisés"
+            label="Précisez le ou les modes de transport utilisés par l'organisateur"
             :values="modeTransport"
             :options="protocoleTransport.transportOptions"
             :modifiable="props.modifiable"

@@ -199,7 +199,6 @@ const schema = {
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
   }),
-  //
   protocoleCanicule: yup.boolean().required(),
   precisionProtocoleCanicule: yup.string().when("protocoleCanicule", {
     is: (val) => !!val,
