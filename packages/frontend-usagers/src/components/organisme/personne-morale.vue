@@ -110,7 +110,10 @@
       <div v-if="siegeSocial">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-8">
-            <DsfrHighlight text="Liste des établissements" :large="true" />
+            <DsfrHighlight
+              text="Liste des établissements secondaires"
+              :large="true"
+            />
           </div>
         </div>
         <div class="fr-fieldset__element">

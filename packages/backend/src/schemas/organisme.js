@@ -90,14 +90,7 @@ const personneMoraleSchema = () => ({
     .string()
     .email("le format de l'email n'est pas valide")
     .required("L'email de contact est obligatoire"),
-  etablissements: yup
-    .array()
-    .required()
-    .when("siegeSocial", {
-      is: true,
-      then: (schema) =>
-        schema.min(1, "Vous devez sélectionner au moins un établissement"),
-    }),
+  etablissements: yup.array().required(),
   nomCommercial: yup.string().nullable().default(null),
   pays: yup.string().required(),
   raisonSociale: yup.string().required(),
