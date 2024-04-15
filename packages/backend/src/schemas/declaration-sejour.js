@@ -87,10 +87,7 @@ const hebergementDetailsSchema = {
   hebergementId: yup
     .number()
     .required("le choix d'un hébergement dans la liste est obligatoire"),
-  informationsLocaux: yup.object({
-    ...hebergementUtils.informationsLocauxSchema(),
-    justificatifERP: yup.mixed().required(),
-  }),
+  informationsLocaux: yup.object(hebergementUtils.informationsLocauxSchema()),
   informationsTransport: yup.object({
     ...hebergementUtils.informationsTransportSchema(),
     rejoindreEtape: yup

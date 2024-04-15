@@ -66,10 +66,10 @@ const coordonneesSchema = {
 const informationsLocauxSchema = {
   type: yup
     .string()
-    .required("Il est impératif de renseigner le type d'hébergement"),
+    .required("Il est nécessaire de renseigner le type d'hébergement"),
   visiteLocaux: yup
     .boolean()
-    .required("Il est impératif de renseigner si vous avez visité les locaux"),
+    .required("Il est nécessaire de renseigner si vous avez visité les locaux"),
   visiteLocauxAt: yup
     .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
     .typeError("date invalide")
@@ -77,14 +77,14 @@ const informationsLocauxSchema = {
       is: (visiteLocaux) => !!visiteLocaux,
       then: (schema) =>
         schema.required(
-          "Il est impératif de renseigner la date de votre dernière visite",
+          "Il est nécessaire de renseigner la date de votre dernière visite",
         ),
       otherwise: (schema) => schema.nullable().strip(),
     }),
   reglementationErp: yup
     .boolean()
     .required(
-      "Il est impératif de renseigner si l'hébergement est soumis à la réglementation ERP",
+      "Il est nécessaire de renseigner si l'hébergement est soumis à la réglementation ERP",
     ),
 
   // Fichier Dernière attestation de commité de sécurité si réglementation Erp = Oui
@@ -92,18 +92,30 @@ const informationsLocauxSchema = {
     is: true,
     otherwise: (schema) => schema.nullable().strip(),
     then: (schema) =>
-      schema.required(
-        "Il est impératif de télécharger la dernière attestation de passage de la commission sécurité ",
-      ),
+      schema.nullable().test({
+        test: (fileDerniereAttestationSecurite, context) => {
+          return (
+            !!fileDerniereAttestationSecurite ||
+            !!context.parent.fileDernierArreteAutorisationMaire
+          );
+        },
+        message: "Il est nécessaire de télécharger au moins une attestation ",
+      }),
   }),
   // Fichier Dernier arrếté du Maire si réglementation Erp = Oui
   fileDernierArreteAutorisationMaire: yup.mixed().when("reglementationErp", {
     is: true,
     otherwise: (schema) => schema.nullable().strip(),
     then: (schema) =>
-      schema.required(
-        "Il est impératif de télécharger le dernier arrêté d'autorisation du Maire",
-      ),
+      schema.nullable().test({
+        test: (fileDernierArreteAutorisationMaire, context) => {
+          return (
+            !!fileDernierArreteAutorisationMaire ||
+            !!context.parent.fileDerniereAttestationSecurite
+          );
+        },
+        message: "Il est nécessaire de télécharger au moins une attestation ",
+      }),
   }),
   // Fichier Réponse du l'exploitant ou propiétaire si réglementation Erp = Non
   fileReponseExploitantOuProprietaire: yup.mixed().when("reglementationErp", {
@@ -111,7 +123,7 @@ const informationsLocauxSchema = {
     otherwise: (schema) => schema.nullable().strip(),
     then: (schema) =>
       schema.required(
-        "Il est impératif de télécharger la réponse de l'exploitant ou du propriétaire",
+        "Il est nécessaire de télécharger la réponse de l'exploitant ou du propriétaire",
       ),
   }),
   accessibilite: yup
@@ -135,35 +147,35 @@ const informationsLocauxSchema = {
     .required("Une description du lieu d'hébergement est obligatoire"),
   nombreLits: yup
     .number()
-    .required("Il est impératif de renseigner le nombre de lits"),
+    .required("Il est nécessaire de renseigner le nombre de lits"),
   nombreLitsSuperposes: yup
     .number()
-    .required("Il est impératif de renseigner le nombre de lits superposés"),
+    .required("Il est nécessaire de renseigner le nombre de lits superposés"),
   litsDessus: yup
     .boolean()
     .required(
-      "Il est impératif de renseigner si les lits du dessus seront utilisés",
+      "Il est nécessaire de renseigner si les lits du dessus seront utilisés",
     ),
   nombreMaxPersonnesCouchage: yup
     .number()
     .required(
-      "Il est impératif de renseigner le nombre de maximal de personnes par espace de couchage",
+      "Il est nécessaire de renseigner le nombre de maximal de personnes par espace de couchage",
     ),
   couchageIndividuel: yup
     .boolean()
-    .required("Il est impératif de renseigner l'individualité des couchages'"),
+    .required("Il est nécessaire de renseigner l'individualité des couchages'"),
   rangementIndividuel: yup
     .boolean()
     .required(
-      "Il est impératif de renseigner si des rangements individuels sont à disposition",
+      "Il est nécessaire de renseigner si des rangements individuels sont à disposition",
     ),
   chambresUnisexes: yup
     .boolean()
-    .required("Il est impératif de renseigner si les chambres sont unisexes"),
+    .required("Il est nécessaire de renseigner si les chambres sont unisexes"),
   chambresDoubles: yup
     .boolean()
     .required(
-      "Il est impératif de renseigner si les couples sont dans des chambres séparés",
+      "Il est nécessaire de renseigner si les couples sont dans des chambres séparés",
     ),
   amenagementsSpecifiques: yup.boolean().required(),
   precisionAmenagementsSpecifiques: yup
@@ -174,7 +186,7 @@ const informationsLocauxSchema = {
         schema
           .min(
             1,
-            "Il est impératif de préciser ce que les aménagements ont de spécifiques",
+            "Il est nécessaire de préciser ce que les aménagements ont de spécifiques",
           )
           .required(),
       otherwise: (schema) => schema.nullable().strip(),
@@ -183,19 +195,19 @@ const informationsLocauxSchema = {
 const informationsTransportSchema = {
   vehiculesAdaptes: yup
     .boolean()
-    .required("Il est impératif de renseigner si les véhicules sont adaptés"),
+    .required("Il est nécessaire de renseigner si les véhicules sont adaptés"),
   deplacementProximite: yup
     .string()
     .min(
       1,
-      "Il est impératif de préciser le mode de transport utilisé pour les déplacements à proximité",
+      "Il est nécessaire de préciser le mode de transport utilisé pour les déplacements à proximité",
     )
     .required(),
   excursion: yup
     .string()
     .min(
       1,
-      "Il est impératif de préciser le mode de transport utilisé pour les excursions",
+      "Il est nécessaire de préciser le mode de transport utilisé pour les excursions",
     )
     .required(),
 };

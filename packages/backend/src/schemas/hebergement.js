@@ -43,17 +43,30 @@ const informationsLocauxSchema = () => ({
     is: true,
     otherwise: (schema) => schema.nullable().strip(),
     then: (schema) =>
-      schema.required(
-        "Il est impératif de télécharger le dernier arrêté d'autorisation du Maire",
-      ),
+      schema.nullable().test({
+        message: "Il est impératif de télécharger au moins une attestation ",
+        test: (fileDernierArreteAutorisationMaire, context) => {
+          return (
+            !!fileDernierArreteAutorisationMaire ||
+            !!context.parent.fileDerniereAttestationSecurite
+          );
+        },
+      }),
   }),
+  // Fichier Dernier arrếté du Maire si réglementation Erp = Oui
   fileDerniereAttestationSecurite: yup.mixed().when("reglementationErp", {
     is: true,
     otherwise: (schema) => schema.nullable().strip(),
     then: (schema) =>
-      schema.required(
-        "Il est impératif de télécharger la dernière attestation de passage de la commission sécurité ",
-      ),
+      schema.nullable().test({
+        message: "Il est impératif de télécharger au moins une attestation ",
+        test: (fileDerniereAttestationSecurite, context) => {
+          return (
+            !!fileDerniereAttestationSecurite ||
+            !!context.parent.fileDernierArreteAutorisationMaire
+          );
+        },
+      }),
   }),
   fileReponseExploitantOuProprietaire: yup.mixed().when("reglementationErp", {
     is: false,

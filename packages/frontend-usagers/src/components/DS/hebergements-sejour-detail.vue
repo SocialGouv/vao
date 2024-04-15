@@ -166,14 +166,6 @@
           </ol>
         </DsfrAlert>
 
-        <UtilsFileUpload
-          v-model="file"
-          label="Téléchargement du document justificatif référent à l’établissement ERP"
-          hint="Taille maximale : 5 Mo."
-          :modifiable="props.modifiable"
-          :error-message="fileErrorMessage"
-        />
-
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
@@ -698,9 +690,6 @@ const {
 } = useField("hebergementId");
 
 // informationsLocaux
-const { value: file, errorMessage: fileErrorMessage } = useField(
-  "informationsLocaux.justificatifERP",
-);
 const {
   value: type,
   errorMessage: typeErrorMessage,
@@ -891,6 +880,13 @@ const addHebergementOpened = ref(false);
 async function addHebergement(hebergement) {
   log.i("addHebergement - IN", { hebergement });
   let id;
+  try {
+    await hebergementStore.updaloadFiles(hebergement);
+  } catch (e) {
+    toaster.error(e.message ?? "Erreur lors de la sauvegarde de l'hébergement");
+    return;
+  }
+
   try {
     id = await hebergementStore.updateOrCreate(hebergement);
   } catch (error) {

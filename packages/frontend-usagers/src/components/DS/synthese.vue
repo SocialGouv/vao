@@ -272,8 +272,8 @@
                 emit('previous');
               }
             "
-            >Précédent</DsfrButton
-          >
+            >Précédent
+          </DsfrButton>
           <DsfrButton
             v-if="props.modifiable"
             label="Transmettre ma déclaration de séjour à 2 mois"

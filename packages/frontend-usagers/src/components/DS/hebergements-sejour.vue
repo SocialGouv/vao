@@ -1,10 +1,11 @@
 <template>
   <div>
     <div class="fr-fieldset__element">
-        <span class="fr-hint-text"
-          >Sauf mention contraire “(optionnel)” dans le label, tous les champs sont obligatoires</span
-        >
-    </div>          
+      <span class="fr-hint-text"
+        >Sauf mention contraire “(optionnel)” dans le label, tous les champs
+        sont obligatoires</span
+      >
+    </div>
     <div v-if="!nuiteeOpened">
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element fr-col-12">
@@ -246,105 +247,11 @@ async function addNuitee(hebergement) {
   log.d("addNuitee - In", { hebergement });
   let newHebergements;
 
-  if (hebergement.informationsLocaux?.justificatifERP) {
-    const file = hebergement.informationsLocaux.justificatifERP;
-    if (!file.uuid) {
-      try {
-        const uuid = await UploadFile("justificatif_ERP", file);
-        hebergement.informationsLocaux.justificatifERP = {
-          uuid,
-          name: file.name,
-          createdAt: new Date(),
-        };
-      } catch (error) {
-        if (error.response.status === 413) {
-          return toaster.error(
-            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
-          );
-        }
-        log.w("addNuitee", error);
-        return toaster.error(
-          `Une erreur est survenue lors du dépôt du document ${file.name}`,
-        );
-      }
-    }
-  }
-
-  if (hebergement.informationsLocaux.reglementationErp) {
-    const fileDAS =
-      hebergement.informationsLocaux.fileDerniereAttestationSecurite;
-    // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
-    if (!fileDAS.uuid) {
-      try {
-        const uuid = await UploadFile("attestation_securite", fileDAS);
-        //mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
-        hebergement.informationsLocaux.fileDerniereAttestationSecurite = {
-          uuid,
-          name: fileDAS.name,
-          createdAt: new Date(),
-        };
-      } catch (error) {
-        if (error.response.status === 413) {
-          return toaster.error(
-            `Le fichier ${fileDAS.name} dépasse la taille maximale autorisée`,
-          );
-        }
-        log.w("fileDerniereAttestationSecurite", error);
-        return toaster.error(
-          `Une erreur est survenue lors du dépôt du document ${fileDAS.name}`,
-        );
-      }
-    }
-
-    const fileAAM =
-      hebergement.informationsLocaux.fileDernierArreteAutorisationMaire;
-    // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
-    if (!fileAAM.uuid) {
-      try {
-        const uuid = await UploadFile("arrete_autorisation_maire", fileAAM);
-        //mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
-        hebergement.informationsLocaux.fileDernierArreteAutorisationMaire = {
-          uuid,
-          name: fileAAM.name,
-          createdAt: new Date(),
-        };
-      } catch (error) {
-        if (error.response.status === 413) {
-          return toaster.error(
-            `Le fichier ${fileAAM.name} dépasse la taille maximale autorisée`,
-          );
-        }
-        log.w("fileDernierArreteAutorisationMaire", error);
-        return toaster.error(
-          `Une erreur est survenue lors du dépôt du document ${fileAAM.name}`,
-        );
-      }
-    }
-  } else {
-    const fileREP =
-      hebergement.informationsLocaux.fileReponseExploitantOuProprietaire;
-    // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
-    if (!fileREP.uuid) {
-      try {
-        const uuid = await UploadFile("reponse_explouprop", fileREP);
-        //mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
-        hebergement.informationsLocaux.fileReponseExploitantOuProprietaire = {
-          uuid,
-          name: fileREP.name,
-          createdAt: new Date(),
-        };
-      } catch (error) {
-        if (error.response.status === 413) {
-          return toaster.error(
-            `Le fichier ${fileREP.name} dépasse la taille maximale autorisée`,
-          );
-        }
-        log.w("fileReponseExploitantOuProprietaire", error);
-        return toaster.error(
-          `Une erreur est survenue lors du dépôt du document ${fileREP.name}`,
-        );
-      }
-    }
+  try {
+    await hebergementStore.updaloadFiles(hebergement);
+  } catch (e) {
+    toaster.error(e.message ?? "Erreur lors de la sauvegarde de l'hébergement");
+    return;
   }
 
   if (currentIndex.value === -1) {
