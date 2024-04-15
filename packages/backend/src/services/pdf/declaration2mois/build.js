@@ -879,7 +879,7 @@ function buildTitre(declaration, departementSuivi) {
                 columns: [
                   {
                     decoration: "underline",
-                    text: "Numéro d'enregistrment :",
+                    text: "Numéro d'enregistrement :",
                     width: 150,
                   },
                   {
@@ -974,7 +974,7 @@ function buildAgrement(agrement) {
           {
             columns: [
               {
-                text: "Région d'obtention de l'agrément:",
+                text: "Région d'obtention de l'agrément :",
                 width: 250,
               },
               {
@@ -1053,7 +1053,7 @@ function buildInformationsGenerales(declaration) {
               {
                 columns: [
                   {
-                    text: "Date indicative de début du séjour:",
+                    text: "Date indicative de début du séjour :",
                     width: 250,
                   },
                   {
@@ -1066,7 +1066,7 @@ function buildInformationsGenerales(declaration) {
               {
                 columns: [
                   {
-                    text: "Date indicative de fin du séjour:",
+                    text: "Date indicative de fin du séjour :",
                     width: 250,
                   },
                   {
@@ -1092,7 +1092,7 @@ function buildInformationsGenerales(declaration) {
               {
                 columns: [
                   {
-                    text: "Durée du séjour:",
+                    text: "Durée du séjour :",
                     width: 250,
                   },
                   {
@@ -1561,7 +1561,7 @@ async function buildFicheAnnexe(hebergement) {
                   {
                     columns: [
                       {
-                        text: "Nom de l'hébergement:",
+                        text: "Nom de l'hébergement :",
                         width: 250,
                       },
                       {
@@ -1574,7 +1574,7 @@ async function buildFicheAnnexe(hebergement) {
                   {
                     columns: [
                       {
-                        text: "Adresse:",
+                        text: "Adresse :",
                         width: 250,
                       },
                       {
@@ -1587,7 +1587,7 @@ async function buildFicheAnnexe(hebergement) {
                   {
                     columns: [
                       {
-                        text: "Nom du gestionnaire:",
+                        text: "Nom du gestionnaire :",
                         width: 250,
                       },
                       {
@@ -1600,7 +1600,7 @@ async function buildFicheAnnexe(hebergement) {
                   {
                     columns: [
                       {
-                        text: "Numéro de téléphone 1:",
+                        text: "Numéro de téléphone 1 :",
                         width: 250,
                       },
                       {
@@ -1613,7 +1613,7 @@ async function buildFicheAnnexe(hebergement) {
                   {
                     columns: [
                       {
-                        text: "Numéro de téléphone 2:",
+                        text: "Numéro de téléphone 2 :",
                         width: 250,
                       },
                       {
@@ -1626,7 +1626,7 @@ async function buildFicheAnnexe(hebergement) {
                   {
                     columns: [
                       {
-                        text: "Email:",
+                        text: "Email :",
                         width: 250,
                       },
                       {
@@ -1639,7 +1639,7 @@ async function buildFicheAnnexe(hebergement) {
                   {
                     columns: [
                       {
-                        text: "Date de début de séjour dans le lieu:",
+                        text: "Date de début de séjour dans le lieu :",
                         width: 250,
                       },
                       {
@@ -1652,7 +1652,7 @@ async function buildFicheAnnexe(hebergement) {
                   {
                     columns: [
                       {
-                        text: "Date de fin de séjour dans le lieu:",
+                        text: "Date de fin de séjour dans le lieu :",
                         width: 250,
                       },
                       {
