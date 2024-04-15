@@ -112,7 +112,6 @@
           >
 
           <DsfrButton
-            v-if="props.initOrganisme.complet === false"
             label="Finaliser la fiche organisateur"
             :disabled="!meta.valid"
             @click.prevent="finalizeOrganisme"

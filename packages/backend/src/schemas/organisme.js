@@ -102,7 +102,7 @@ const personneMoraleSchema = () => ({
     ...personneSchema({
       showAdresse: true,
       showEmail: true,
-      showTelephone: false,
+      showTelephone: true,
     }),
   }),
   siegeSocial: yup.boolean().required(),

@@ -258,7 +258,6 @@
         "
         class="fr-fieldset__element"
       >
-        >
         <DsfrInputGroup
           name="precisionPreparationPilluliers"
           :readonly="!props.modifiable"

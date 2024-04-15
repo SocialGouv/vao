@@ -80,7 +80,7 @@ const query = {
         AND a.supprime = false
       ) AS agrement
     FROM front.organismes o
-    JOIN front.user_organisme uo ON o.id = org_id
+    JOIN front.user_organisme uo ON o.id = uo.org_id
     WHERE 1=1 
     ${Object.keys(criterias)
       .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
@@ -249,8 +249,8 @@ module.exports.update = async (type, parametre, organismeId) => {
   log.i("update - DONE");
 };
 
-module.exports.finalize = async function (organismeId) {
-  log.i("finalize - IN", { organismeId });
+module.exports.finalize = async function (userId) {
+  log.i("finalize - IN", { userId });
   if (!regions) {
     regions = await Regions.fetch();
   }
@@ -258,8 +258,9 @@ module.exports.finalize = async function (organismeId) {
     organismeSchema = Organisme.schema(regions);
   }
   const criterias = {
-    "o.id": organismeId,
+    "uo.use_id": userId,
   };
+  log.i(...query.get(criterias));
   const { rows, rowCount } = await pool.query(...query.get(criterias));
   if (rowCount !== 1) {
     throw new AppError("Organisme non trouvé", {
