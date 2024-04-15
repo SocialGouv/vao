@@ -100,7 +100,7 @@ function buildTitre(declaration, departementSuivi) {
                 columns: [
                   {
                     decoration: "underline",
-                    text: "Numéro d'enregistrment :",
+                    text: "Numéro d'enregistrement :",
                     width: 150,
                   },
                   {

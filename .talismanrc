@@ -113,6 +113,10 @@ fileignoreconfig:
   checksum: 7dcdd52dde0f5a6035a7ebdfc8183700a1d762a5ce54c89160195ec8c68eec14
 - filename: packages/backend/src/services/geo/Commune.js
   checksum: 40213f6529d1282e73f0201199e28b66f9c99c76d16651d88aac0b59fb722ae2
+- filename: packages/backend/src/services/geo/Departement.js
+  checksum: 224832f0b2175b2785a6d45d297e23e2018d068912682e73d411c390fd05a80a
+- filename: packages/backend/src/services/geo/Region.js
+  checksum: 5c4d9a0edd3496c3b18663a1f330797b5fa89b541b4c9470e060d60c278f3fd7
 - filename: packages/backend/src/utils/mail-service.js
   checksum: bf5f3c01e2edcf3a7ef6d8cbde306deb931a01df88ef90fe911c0c9ace41135c
 - filename: packages/backend/src/utils/mail.js

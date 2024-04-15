@@ -2,9 +2,10 @@
   <div>
     <div class="fr-fieldset__element">
       <span class="fr-hint-text"
-        >Sauf mention contraire “(optionnel)” dans le label, tous les champs sont obligatoires</span
+        >Sauf mention contraire “(optionnel)” dans le label, tous les champs
+        sont obligatoires</span
       >
-    </div>      
+    </div>
     <DsfrFieldset legend="Transports vers le lieu de séjour">
       <div class="fr-fieldset__element">
         <DsfrCheckboxSet
@@ -25,7 +26,7 @@
         <div class="fr-input-group fr-col-12">
           <UtilsMultiSelect
             name="modeTransport"
-            label="Précisez le ou les modes de transport utilisés"
+            label="Précisez le ou les modes de transport utilisés par l'organisateur"
             :values="modeTransport"
             :options="protocoleTransport.transportOptions"
             :modifiable="props.modifiable"

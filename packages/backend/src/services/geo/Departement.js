@@ -1,28 +1,50 @@
+const AppError = require("../../utils/error");
 const logger = require("../../utils/logger");
 const pool = require("../../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 
 const query = {
-  select: (criterias) => [
-    `
+  select: `
       SELECT 
         code as value,
-        label as text
+        label as text,
+        parent_code as region
       FROM geo.territoires
       WHERE parent_code <> 'FRA'
       AND code <> 'FRA'
-      ${Object.keys(criterias)
-        .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
-        .join(" ")}
       ORDER BY code asc`,
-    Object.values(criterias),
-  ],
 };
+
+let cache;
 
 module.exports.fetch = async (criterias = {}) => {
   log.i("fetch - IN");
-  const fetch = await pool.query(...query.select(criterias));
+  if (!cache) {
+    const { rows } = await pool.query(query.select);
+    cache = rows;
+  }
+  const filters = Object.entries(criterias);
+  const departements = cache.filter((departement) => {
+    return filters.every(([key, value]) => departement[key] == value);
+  });
+
   log.i("fetch - DONE");
-  return fetch.rows;
+  return departements;
+};
+
+module.exports.fetchOne = async (code) => {
+  log.i("fetchOne - IN");
+  if (!cache) {
+    const { rows } = await pool.query(query.select);
+    cache = rows;
+  }
+  const departement = cache.find((departement) => departement.value === code);
+
+  if (!departement) {
+    throw new AppError(`Département ${code} non trouvé`);
+  }
+
+  log.i("fetchOne - DONE");
+  return departement;
 };

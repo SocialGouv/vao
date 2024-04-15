@@ -10,10 +10,10 @@ async function getDepartementByTerritoireCode(territoireCode) {
   }
 
   if (/^[0-9]+$/.test(territoireCode)) {
-    return await Departement.fetch({ code: territoireCode });
+    return await Departement.fetch({ value: territoireCode });
   }
 
-  return await Departement.fetch({ parent_code: territoireCode });
+  return await Departement.fetch({ region: territoireCode });
 }
 
 async function getDepartements(req, res, next) {

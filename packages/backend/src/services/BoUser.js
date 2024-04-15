@@ -235,7 +235,7 @@ module.exports.editPassword = async (email, password) => {
   const { rowCount } = await pool.query(...query.editPassword(email, password));
   if (rowCount === 0) {
     log.d("editPassword - DONE - Utilisateur BO inexistant");
-    throw new AppError("Utilisateur déjà inexistant", {
+    throw new AppError("Utilisateur non trouvé", {
       name: "UserNotFound",
     });
   }
@@ -328,7 +328,7 @@ module.exports.read = async ({
     `;
   }
 
-  log.w("read", queryWithPagination);
+  log.d("read", queryWithPagination);
   const response = await pool.query(queryWithPagination);
 
   const total = await pool.query(query.getTotal(searchQuery));
