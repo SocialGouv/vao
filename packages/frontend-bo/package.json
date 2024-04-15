@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@gouvfr/dsfr": "~1.11.2",
-    "@gouvminint/vue-dsfr": "~5.10.3",
+    "@gouvminint/vue-dsfr": "~5.13.0",
     "@meforma/vue-toaster": "~1.3.0",
     "@pinia/nuxt": "~0.5.1",
     "@sentry/vue": "~7.109.0",
@@ -30,7 +30,7 @@
     "yup": "~1.4.0"
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "^0.2.0",
+    "@nuxt/eslint-config": "^0.3.6",
     "@socialgouv/eslint-config-recommended": "^1.131.0",
     "eslint": "^8.57.0",
     "eslint-plugin-prettier": "^5.1.3",
