@@ -22,7 +22,7 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
-        <DemandesSejourDisplayPj />
+        <DemandesSejourDocuments :declaration="demandeStore.currentDemande" />
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="tab-content-2"
