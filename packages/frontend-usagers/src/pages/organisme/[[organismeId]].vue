@@ -243,7 +243,6 @@ async function updateOrCreateAgrement(agrementData, type) {
           name: file.name,
           createdAt: new Date(),
         };
-        toaster.info(`Agrément téléversé`);
       } catch (error) {
         if (error.response.status === 413) {
           return toaster.error(
