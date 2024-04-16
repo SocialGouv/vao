@@ -184,6 +184,7 @@ const query = {
       o.type_organisme as "typeOrganisme",
       ds.created_at as "createdAt",
       ds.edited_at as "editedAt",
+      ds.files as "files",
       ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ('${departementCodes.join("','")}') as "estInstructeurPrincipal"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
@@ -193,18 +194,18 @@ const query = {
   getEmailBack: `
   SELECT DISTINCT u.mail AS mail
   FROM back.users u
-  WHERE u.ter_code = $1                     
+  WHERE u.ter_code = $1
   `,
   getEmailBackCc: `
   WITH regions AS (
-    SELECT 
+    SELECT
       ARRAY_AGG(parent_code) as parent_code
   FROM geo.territoires
   WHERE code = ANY($1)
   )
   SELECT DISTINCT u.mail AS mail
   FROM back.users u, regions
-  WHERE u.ter_code = ANY($1)  
+  WHERE u.ter_code = ANY($1)
     OR u.ter_code = ANY(regions.parent_code)
     OR u.ter_code = 'FRA'
   `,

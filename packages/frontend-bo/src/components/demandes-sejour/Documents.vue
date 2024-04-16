@@ -8,7 +8,8 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs";
+import { formatDate } from "date-fns/format";
+
 const config = useRuntimeConfig();
 const NuxtLink = resolveComponent("NuxtLink");
 const props = defineProps({
@@ -35,7 +36,7 @@ const headers = [
   {
     column: "createdAt",
     sorter: "createdAt",
-    format: (item) => dayjs(item.createdAt).format("DD/MM/YYYY HH:mm"),
+    format: (item) => formatDate(item.createdAt, "dd/MM/yyyy HH:mm"),
     text: "Date de dépose",
     headerAttrs: {
       class: "suivi",
@@ -65,38 +66,34 @@ const files = computed(() => {
       };
     });
   }
-  if (props.declaration?.organisme?.agrement?.file) {
+  if (props.declaration?.organismes?.agrement?.file) {
     files.push({
-      name: props.declaration.organisme.agrement.file.name,
+      name: props.declaration.organismes.agrement.file.name,
       type: "agrement",
-      createdAt: props.declaration.organisme.agrement.file.createdAt,
-      uuid: props.declaration.organisme.agrement.file.uuid,
+      createdAt: props.declaration.organismes.agrement.file.createdAt,
+      uuid: props.declaration.organismes.agrement.file.uuid,
     });
   }
-  if (props.declaration?.informationsSanitaires?.files) {
-    const filesSanitaires = props.declaration.informationsSanitaires.files.map(
-      (f) => {
-        return {
-          name: f.name,
-          type: "protocole sanitaire",
-          createdAt: f.createdAt,
-          uuid: f.uuid,
-        };
-      },
-    );
+  if (props.declaration?.sanitaires?.files) {
+    const filesSanitaires = props.declaration.sanitaires.files.map((f) => {
+      return {
+        name: f.name,
+        type: "protocole sanitaire",
+        createdAt: f.createdAt,
+        uuid: f.uuid,
+      };
+    });
     files = files.concat(filesSanitaires);
   }
-  if (props.declaration?.informationsTransport?.files) {
-    const filesTransport = props.declaration.informationsTransport.files.map(
-      (f) => {
-        return {
-          name: f.name,
-          type: "protocole transport",
-          createdAt: f.createdAt,
-          uuid: f.uuid,
-        };
-      },
-    );
+  if (props.declaration?.transport?.files) {
+    const filesTransport = props.declaration.transport.files.map((f) => {
+      return {
+        name: f.name,
+        type: "protocole transport",
+        createdAt: f.createdAt,
+        uuid: f.uuid,
+      };
+    });
     files = files.concat(filesTransport);
   }
   if (props.declaration?.hebergement?.hebergements?.length > 0) {
