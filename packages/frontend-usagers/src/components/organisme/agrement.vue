@@ -51,6 +51,7 @@
               :model-value="dateObtention"
               :is-valid="dateObtentionMeta.valid"
               :error-message="dateObtentionErrorMessage"
+              :max="dayjs().format('YYYY-MM-DD')"
               @update:model-value="onDateObtentionChange"
             />
           </div>
@@ -108,6 +109,7 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+import dayjs from "dayjs";
 
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
