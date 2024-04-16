@@ -76,9 +76,11 @@ const informationsLocauxSchema = {
     .when("visiteLocaux", {
       is: (visiteLocaux) => !!visiteLocaux,
       then: (schema) =>
-        schema.required(
-          "Il est nécessaire de renseigner la date de votre dernière visite",
-        ),
+        schema
+          .max(new Date(), "La date doit être inférieure à la date du jour.")
+          .required(
+            "Il est nécessaire de renseigner la date de votre dernière visite",
+          ),
       otherwise: (schema) => schema.nullable().strip(),
     }),
   reglementationErp: yup

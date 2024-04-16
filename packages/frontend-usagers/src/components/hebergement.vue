@@ -126,7 +126,8 @@
         <DsfrInputGroup
           name="informationsLocaux.visiteLocauxAt"
           type="date"
-          label="Date de la dernière visite "
+          label="Date de la dernière visite"
+          :max="dayjs().format('YYYY-MM-DD')"
           :label-visible="true"
           :model-value="visiteLocauxAt"
           :is-valid="visiteLocauxAtMeta.valid"
@@ -467,6 +468,7 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+import dayjs from "dayjs";
 
 const emit = defineEmits(["cancel", "submit"]);
 

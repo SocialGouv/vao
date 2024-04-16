@@ -133,9 +133,11 @@ const informationsLocauxSchema = () => ({
       is: (visiteLocaux) => !!visiteLocaux,
       otherwise: (schema) => schema.nullable().strip(),
       then: (schema) =>
-        schema.required(
-          "Il est impératif de renseigner la date de votre dernière visite",
-        ),
+        schema
+          .max(new Date(), "La date doit être inférieure à la date du jour.")
+          .required(
+            "Il est impératif de renseigner la date de votre dernière visite",
+          ),
     }),
 });
 
