@@ -24,13 +24,10 @@ module.exports = async function renewToken(req, res, next) {
 
     const user = await User.readOneByMail(email);
     log.d({ user });
-    const token = jwt.sign(
-      buildEmailToken(email),
-      config.validationToken.secret,
-      {
-        expiresIn: config.validationToken.expiresIn / 1000,
-      },
-    );
+    const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
+      algorithm: "ES512",
+      expiresIn: config.validationToken.expiresIn / 1000,
+    });
     try {
       await Send(
         MailUtils.bo.authentication.sendValidationMail({ email, token }),

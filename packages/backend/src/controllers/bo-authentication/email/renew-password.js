@@ -28,10 +28,9 @@ module.exports = async function renewPassword(req, res, next) {
   }
 
   try {
-    const { email } = await jwt.verify(
-      resetPasswordToken,
-      `${config.resetPasswordToken.secret}`,
-    );
+    const { email } = await jwt.verify(resetPasswordToken, config.tokenSecret, {
+      algorithm: "ES512",
+    });
     log.d({ email });
     await User.editPassword(email, password);
     log.i("Done");

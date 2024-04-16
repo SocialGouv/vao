@@ -36,7 +36,7 @@ CREATE TABLE back.users (
 create table back.sessions (
    id                   SERIAL               NOT NULL,
    cle                  VARCHAR(50)          NOT NULL,
-   refresh_token        VARCHAR(200)         NOT NULL,
+   refresh_token        VARCHAR(400)         NOT NULL,
    created_at           TIMESTAMP            DEFAULT current_timestamp NOT NULL,
    constraint pk_session primary key (refresh_token)
 );

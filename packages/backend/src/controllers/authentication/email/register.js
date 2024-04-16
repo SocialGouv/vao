@@ -36,13 +36,10 @@ module.exports = async function register(req, res, next) {
     });
 
     log.d({ user });
-    const token = jwt.sign(
-      buildEmailToken(email),
-      config.validationToken.secret,
-      {
-        expiresIn: config.validationToken.expiresIn / 1000,
-      },
-    );
+    const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
+      algorithm: "ES512",
+      expiresIn: config.validationToken.expiresIn / 1000,
+    });
     try {
       await Send(
         MailUtils.usagers.authentication.sendValidationMail({

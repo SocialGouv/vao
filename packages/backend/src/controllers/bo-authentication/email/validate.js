@@ -16,10 +16,9 @@ module.exports = async (req, res) => {
     return res.status(400).json({ message: "paramètres incorrects" });
   }
   try {
-    const { email } = await jwt.verify(
-      validationToken,
-      `${config.validationToken.secret}`,
-    );
+    const { email } = await jwt.verify(validationToken, config.tokenSecret, {
+      algorithm: "ES512",
+    });
     log.d({ email });
     const user = await User.activate(email);
     log.d({ user });

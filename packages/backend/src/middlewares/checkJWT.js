@@ -29,10 +29,9 @@ async function checkJWT(req, res, next) {
     if (accessToken) {
       log.d("accessToken found");
       try {
-        const decoded = await jwt.verify(
-          accessToken,
-          `${config.accessToken.secret}`,
-        );
+        const decoded = await jwt.verify(accessToken, config.tokenSecret, {
+          algorithm: "ES512",
+        });
         log.i("DONE - access_token decoded");
         Object.assign(req, { decoded });
         return next();
@@ -69,10 +68,9 @@ async function checkJWT(req, res, next) {
 
     let rtDecoded;
     try {
-      rtDecoded = await jwt.verify(
-        refreshToken,
-        `${config.refreshToken.secret}`,
-      );
+      rtDecoded = await jwt.verify(refreshToken, config.tokenSecret, {
+        algorithm: "ES512",
+      });
     } catch (error) {
       if (error instanceof jwt.TokenExpiredError) {
         log.i("refresh_token expired");
@@ -103,16 +101,18 @@ async function checkJWT(req, res, next) {
 
     const newAccessToken = jwt.sign(
       buildAccessToken(user),
-      config.accessToken.secret,
+      config.tokenSecret,
       {
+        algorithm: "ES512",
         expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde
       },
     );
 
     const newRefreshToken = jwt.sign(
       buildRefreshToken(user),
-      config.refreshToken.secret,
+      config.tokenSecret,
       {
+        algorithm: "ES512",
         expiresIn: config.refreshToken.expiresIn / 1000,
       },
     );
