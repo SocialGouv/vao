@@ -461,7 +461,7 @@
     >
       <UtilsMultiFilesUpload
         v-model="files"
-        label="Merci de joindre les documents requis pour les informations sanitaires"
+        label="Merci de joindre les documents requis pour les informations sanitaires (optionnel)"
         hint="Taille maximale : 5 Mo."
         :modifiable="props.modifiable"
       />

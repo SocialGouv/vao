@@ -20,7 +20,7 @@
         <div class="fr-input-group fr-col-8">
           <DsfrInputGroup
             name="nomUsage"
-            label="Nom d'usage"
+            label="Nom d'usage (optionnel)"
             :label-visible="true"
             :readonly="!props.modifiable"
             :model-value="nomUsage"
