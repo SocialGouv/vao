@@ -1,5 +1,11 @@
 <template>
   <div>
+    <div class="fr-fieldset__element">
+      <span class="fr-hint-text"
+        >Sauf mention contraire “(optionnel)” dans le label, tous les champs
+        sont obligatoires</span
+      >
+    </div>
     <form>
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element">
@@ -102,6 +108,7 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 

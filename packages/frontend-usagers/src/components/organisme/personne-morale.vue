@@ -40,7 +40,7 @@
         <div class="fr-fieldset__element">
           <DsfrInputGroup
             name="nomCommercial"
-            label="Nom commercial"
+            label="Nom commercial (optionnel)"
             :label-visible="true"
             :model-value="nomCommercial"
             :is-valid="nomCommercialMeta.valid"
