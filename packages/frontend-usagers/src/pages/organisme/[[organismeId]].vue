@@ -271,7 +271,7 @@ async function updateOrCreateAgrement(agrementData, type) {
       body: { ...agrementData, organismeId: organismeId.value },
     });
 
-    toaster.success(`Agrément sauvegardée`);
+    toaster.success(`Agrément sauvegardé`);
     log.d(`agrement mis à jour`);
 
     return nextHash();
