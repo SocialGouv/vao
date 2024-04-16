@@ -243,7 +243,6 @@ async function updateOrCreateAgrement(agrementData, type) {
           name: file.name,
           createdAt: new Date(),
         };
-        toaster.info(`Agrément téléversé`);
       } catch (error) {
         if (error.response.status === 413) {
           return toaster.error(
@@ -271,7 +270,7 @@ async function updateOrCreateAgrement(agrementData, type) {
       body: { ...agrementData, organismeId: organismeId.value },
     });
 
-    toaster.success(`Agrément sauvegardée`);
+    toaster.success(`Agrément sauvegardé`);
     log.d(`agrement mis à jour`);
 
     return nextHash();
