@@ -4,6 +4,8 @@ const navItems = useMenuNavItems();
 const log = logger("layouts/default");
 const userStore = useUserStore();
 
+const config = useRuntimeConfig();
+
 const header = reactive({
   dimension: { height: "80px" },
   logoText: ["Republique", "française"],
@@ -101,7 +103,22 @@ function onClickOnLogo() {
             personal-data-link="/footer/donnees-personnelles"
             cookies-link="/footer/gestion-cookies"
             a11y-compliance-link="/footer/accessibilite"
-          />
+          >
+            <template #description>
+              <p
+                v-if="config.public.environment !== 'production'"
+                class="fr-footer__content-desc"
+              >
+                Environnement : {{ config.public.environment }}
+              </p>
+              <p
+                v-if="config.public.appVersion"
+                class="fr-footer__content-desc"
+              >
+                Version : {{ config.public.appVersion }}
+              </p>
+            </template>
+          </DsfrFooter>
           <DsfrNotice
             v-if="!consentCookie"
             title="L'utilisation de cookies est nécessaire au bon fonctionnement de
