@@ -111,7 +111,7 @@
     <DsfrFieldset>
       <UtilsMultiFilesUpload
         v-model="files"
-        label="Merci de joindre les documents requis pour les informations transport (optionnel)"
+        label="Vous avez la possibilité de joindre des documents relatifs à l'organisation des transports (optionnel)"
         hint="Taille maximale : 5 Mo."
         :modifiable="props.modifiable"
       />
