@@ -124,7 +124,7 @@
                 'Adresse',
                 'Code postal',
                 'Commune',
-                'Autorisé à déclarer des séjours ?',
+                'Autorisé à organiser des séjours ?',
               ]"
               :rows="formatedEtablissements"
             />
