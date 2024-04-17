@@ -10,7 +10,7 @@ const log = logger(module.filename);
 
 module.exports = async function post(req, res) {
   const declarationId = req.params.declarationId;
-  const { id: userId } = req.decoded;
+  const { id: userId, territoireCode } = req.decoded;
   const { commentaire } = req.body;
   log.i("IN", { declarationId }, req.body);
 
@@ -57,7 +57,7 @@ module.exports = async function post(req, res) {
         boUserId: userId,
         declarationId,
         metaData: { commentaire },
-        source: "DDETS",
+        source: `DDETS ${territoireCode}`,
         type: "declaration_sejour",
         typePrecision: "Refus de la demande",
         userId: null,

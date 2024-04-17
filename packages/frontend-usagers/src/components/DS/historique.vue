@@ -25,23 +25,7 @@ const headers = [
   {
     column: "userEmail",
     sorter: "userEmail",
-    text: "email organisateur",
-    headerAttrs: {
-      class: "suivi",
-    },
-  },
-  {
-    column: "userAdminId",
-    sorter: "userAdminId",
-    text: "Id utilisateur administratif",
-    headerAttrs: {
-      class: "suivi",
-    },
-  },
-  {
-    column: "type",
-    sorter: "type",
-    text: "Type",
+    text: "Email",
     headerAttrs: {
       class: "suivi",
     },
@@ -63,17 +47,12 @@ const headers = [
     column: "createdAt",
     sorter: "createdAt",
     format: (item) => dayjs(item.createdAt).format("DD/MM/YYYY HH:mm"),
-    text: "Date de dépose",
+    text: "Date",
     headerAttrs: {
       class: "suivi",
     },
   },
 ];
-
-// const files = computed(() => {
-//   const detailsHistorique = props.historique.map((h) =>);
-//   return files ?? [];
-// });
 </script>
 
 <style scoped>

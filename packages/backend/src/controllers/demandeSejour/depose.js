@@ -119,12 +119,12 @@ module.exports = async function post(req, res, next) {
   declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
 
   const eventId = await DemandeSejour.insertEvent(
-    "organisme",
+    "Organisateur",
     demandeSejourId,
     userId,
     null,
     "declaration_sejour",
-    statut === statuts.BROUILLON ? "depose à 2 mois" : "Ajout de compléments",
+    statut === statuts.BROUILLON ? "Dépôt DS à 2 mois" : "Ajout de compléments",
     declaration,
   );
   if (!eventId) {

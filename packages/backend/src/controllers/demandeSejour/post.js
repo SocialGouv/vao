@@ -72,7 +72,7 @@ module.exports = async function post(req, res) {
       });
     }
     const eventId = await DemandeSejour.insertEvent(
-      "organisateur",
+      "Organisateur",
       demandeId,
       userId,
       null,
