@@ -85,7 +85,7 @@ module.exports.clean = async (id) => {
 };
 
 module.exports.create = async (id, token) => {
-  log.i("create - IN");
+  log.w("create - IN");
   const session = await pool.query(...query.create(id, token));
   if (!session) throw new AppError("erreur sur la création de session");
   log.i("create - DONE");

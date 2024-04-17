@@ -64,7 +64,7 @@ module.exports = {
     secure: process.env.SMTP_IS_SECURE === "true",
   },
   tmpDirectory: process.env.TMP_DIRECTORY,
-
+  tokenSecret: process.env.TOKEN_SECRET,
   validationToken: {
     expiresIn: 30 * 60 * 1000, // 30 min
     secret: process.env.VALIDATION_TOKEN_SECRET,

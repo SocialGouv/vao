@@ -31,13 +31,10 @@ module.exports = async function create(req, res, next) {
 
     try {
       const email = user.email;
-      const token = jwt.sign(
-        buildEmailToken(email),
-        config.validationToken.secret,
-        {
-          expiresIn: config.validationToken.expiresIn / 1000,
-        },
-      );
+      const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
+        algorithm: "ES512",
+        expiresIn: config.validationToken.expiresIn / 1000,
+      });
 
       await Send(
         MailUtils.bo.authentication.sendValidationMail({

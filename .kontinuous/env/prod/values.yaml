@@ -1,14 +1,40 @@
+backend:
+  host: api-vao.social.gouv.fr
+  redirectFrom:
+    - "api-{{ .Values.global.host }}"
+  env:
+    - name: BACKEND_URL
+      value: "https://api-vao.social.gouv.fr"
+    - name: FRONTEND_USAGERS_URL
+      value: "https://vao.social.gouv.fr"
+    - name: FRONTEND_BO_URL
+      value: "https://admin-vao.social.gouv.fr"
+
+frontend-usagers:
+  host: vao.social.gouv.fr
+  redirectFrom:
+    - "{{ .Values.global.host }}"
+
+frontend-bo:
+  host: admin-vao.social.gouv.fr
+  redirectFrom:
+    - "bo-{{ .Values.global.host }}"
+
+
+
 jobs:
   runs:
     build-frontend-usagers:
       with:
         buildArgs:
           NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
+          NUXT_PUBLIC_BACKEND_URL: "https://api-vao.social.gouv.fr"
           NUXT_PUBLIC_ENVIRONMENT: "production"
           NUXT_PUBLIC_SENTRY_ENABLED: "true"
     build-frontend-bo:
       with:
         buildArgs:
           NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
+          NUXT_PUBLIC_BACKEND_URL: "https://api-vao.social.gouv.fr"
           NUXT_PUBLIC_ENVIRONMENT: "production"
           NUXT_PUBLIC_SENTRY_ENABLED: "true"

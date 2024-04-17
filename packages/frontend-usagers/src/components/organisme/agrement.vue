@@ -80,7 +80,7 @@
           v-model="file"
           :label="label"
           :modifiable="props.modifiable"
-          hint="Format autorisé : PDF uniqument. Taille maximale : 5 Mo "
+          hint="Format autorisé : PDF uniquement. Taille maximale : 5 Mo "
         />
       </DsfrFieldset>
       <fieldset class="fr-fieldset">
