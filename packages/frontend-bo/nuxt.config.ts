@@ -6,7 +6,7 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: "fr",
       },
-      title: "VAO - Vacances Adaptées Organisées",
+      title: "VAO Instructeurs - Vacances Adaptées Organisées",
       link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
     },
   },
