@@ -45,6 +45,9 @@ const schema = {
     .array()
     .min(1, "vous devez cocher au moins une des déficiences listées")
     .required(),
+  precisionDeficiences: yup
+    .string()
+    .required("Vous devez préciser votre réponse précédente"),
 };
 
 export default {
