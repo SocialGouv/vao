@@ -53,7 +53,7 @@
           </div>
           <DsfrButton
             v-if="props.modifiable"
-            label="Ajouter une nuitée"
+            label="Ajouter une fiche hébergement"
             :disabled="isSejourComplet"
             @click.prevent="onOpenNuitee"
           />
