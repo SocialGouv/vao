@@ -1,10 +1,29 @@
 <template>
-  <div v-if="files.length > 0">
-    <UtilsTableFull :headers="headers" :data="files"></UtilsTableFull>
-  </div>
-  <div v-else>
-    <span>Aucun document joint à la demande</span>
-  </div>
+  <DsfrFieldset
+    legend="Documents générés par l'application : CERFA, Accusé de réception"
+    legend-id="docs_generes"
+  >
+    <div v-if="filesGeneres.length > 0">
+      <UtilsTableFull :headers="headers" :data="filesGeneres"></UtilsTableFull>
+    </div>
+    <div v-else>
+      <span>Aucun document joint à la demande</span>
+    </div>
+  </DsfrFieldset>
+  <DsfrFieldset
+    legend="Documents téléversés par l'organisateur"
+    legend-id="doc_televerses"
+  >
+    <div v-if="filesTeleverses.length > 0">
+      <UtilsTableFull
+        :headers="headers"
+        :data="filesTeleverses"
+      ></UtilsTableFull>
+    </div>
+    <div v-else>
+      <span>Aucun document joint à la demande</span>
+    </div>
+  </DsfrFieldset>
 </template>
 
 <script setup>
@@ -53,7 +72,7 @@ const headers = [
   },
 ];
 
-const files = computed(() => {
+const filesGeneres = computed(() => {
   let files = [];
   if (props.declaration?.files?.files?.length > 0) {
     files = props.declaration?.files?.files?.map((f) => {
@@ -65,14 +84,11 @@ const files = computed(() => {
       };
     });
   }
-  if (props.declaration?.organisme?.agrement?.file) {
-    files.push({
-      name: props.declaration.organisme.agrement.file.name,
-      type: "agrement",
-      createdAt: props.declaration.organisme.agrement.file.createdAt,
-      uuid: props.declaration.organisme.agrement.file.uuid,
-    });
-  }
+  return files;
+});
+
+const filesTeleverses = computed(() => {
+  let files = [];
   if (props.declaration?.informationsSanitaires?.files) {
     const filesSanitaires = props.declaration.informationsSanitaires.files.map(
       (f) => {
