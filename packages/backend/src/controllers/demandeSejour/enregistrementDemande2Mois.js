@@ -10,7 +10,7 @@ const log = logger(module.filename);
 
 module.exports = async function post(req, res) {
   const declarationId = req.params.declarationId;
-  const { id: userId } = req.decoded;
+  const { id: userId, territoireCode } = req.decoded;
   log.i("IN", { declarationId }, req.body);
 
   if (!declarationId) {
@@ -56,7 +56,7 @@ module.exports = async function post(req, res) {
         boUserId: userId,
         declarationId,
         metaData: declaration,
-        source: "DDETS",
+        source: `DDETS ${territoireCode}`,
         type: "declaration_sejour",
         typePrecision: "Enregistrement de la déclaration à 2 mois",
         userId: null,

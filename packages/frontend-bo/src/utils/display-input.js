@@ -127,6 +127,10 @@ const IVacancier = {
     inputType: InputTypes.MULTISELECT,
     label: "Type de déficiences",
   },
+  precisionDeficiences: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
 };
 
 const Ipersonnel = {

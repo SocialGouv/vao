@@ -7,7 +7,7 @@ const log = logger(module.filename);
 
 module.exports = async function post(req, res) {
   const declarationId = req.params.declarationId;
-  const { id: userId } = req.decoded;
+  const { id: userId, territoireCode } = req.decoded;
   log.i("IN", { declarationId });
 
   /** Ce controller gere le passage de la prise en charge d'une demande par un admin.
@@ -52,7 +52,7 @@ module.exports = async function post(req, res) {
       boUserId: userId,
       declarationId,
       metaData: declaration,
-      source: "DDETS",
+      source: `DDETS ${territoireCode}`,
       type: "declaration_sejour",
       typePrecision: "Prise en charge de la déclaration",
       userId: null,
