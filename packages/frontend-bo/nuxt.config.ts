@@ -22,6 +22,11 @@ export default defineNuxtConfig({
       appVersion: undefined,
       backendUrl: undefined,
       environment: undefined,
+      matomo: {
+        enabled: undefined,
+        host: undefined,
+        id: undefined,
+      },
       sentry: {
         dsn: undefined,
         enabled: undefined,
@@ -38,7 +43,4 @@ export default defineNuxtConfig({
   },
   srcDir: "src",
   ssr: false,
-  security: {
-    enabled: process.env.NODE_ENV === "production",
-  },
 });
