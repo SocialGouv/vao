@@ -107,20 +107,36 @@ jobs:
 
     build-frontend-usagers:
       use: build
+      envFrom:
+        - secretRef:
+            name: "{{ or $.with.registrySecretRefName $.Values.global.registrySecretRefName }}"      
+        - configMapRef:
+            name: matomo
       with:
         imagePackage: frontend-usagers
         context: packages/frontend-usagers
         buildArgs:
           NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
+          NUXT_PUBLIC_MATOMO_ENABLED: "${FRONTEND_USAGERS_MATOMO_ENABLED}"
+          NUXT_PUBLIC_MATOMO_HOST: "${FRONTEND_USAGERS_MATOMO_HOST}"
+          NUXT_PUBLIC_MATOMO_SITE_ID: "${FRONTEND_USAGERS_MATOMO_SITE_ID}"
           NUXT_PUBLIC_SENTRY_DSN: "https://38eaf4da504d4809a74ce3134b759c91@sentry.fabrique.social.gouv.fr/103"
 
     build-frontend-bo:
       use: build
+      envFrom:
+        - secretRef:
+            name: "{{ or $.with.registrySecretRefName $.Values.global.registrySecretRefName }}"      
+        - configMapRef:
+            name: matomo
       with:
         imagePackage: frontend-bo
         context: packages/frontend-bo
         buildArgs:
           NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
+          NUXT_PUBLIC_MATOMO_ENABLED: "${FRONTEND_BO_MATOMO_ENABLED}"
+          NUXT_PUBLIC_MATOMO_HOST: "${FRONTEND_BO_MATOMO_HOST}"
+          NUXT_PUBLIC_MATOMO_SITE_ID: "${FRONTEND_BO_MATOMO_SITE_ID}"
           NUXT_PUBLIC_SENTRY_DSN: "https://1c0cbefef75a451ca753a4392ebea5b4@sentry.fabrique.social.gouv.fr/104"
 
     seed-db:
