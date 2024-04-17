@@ -72,7 +72,10 @@
           </div>
         </div>
       </fieldset>
-      <DsfrFieldset>
+
+      <DsfrFieldset
+        legend="Téléversez l’arrêté portant la décision de l’agrément."
+      >
         <UtilsFileUpload
           v-model="file"
           :label="label"
