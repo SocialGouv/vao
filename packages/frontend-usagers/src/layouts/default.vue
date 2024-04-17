@@ -9,6 +9,14 @@ const header = reactive({
   logoText: ["Republique", "française"],
   quickLinks: [
     {
+      label: "Aide",
+      href: "https://vao-assistance.atlassian.net/servicedesk/customer/portals",
+      icon: "ri-question-line",
+      iconRight: false,
+      target: "_blank",
+      rel: "noopener noreferrer",
+    },
+    {
       label: "Mon compte",
       to: "/",
       icon: "ri-account-circle-line",

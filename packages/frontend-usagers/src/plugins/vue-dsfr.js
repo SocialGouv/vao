@@ -1,4 +1,5 @@
 import {
+  RiQuestionLine,
   RiEditBoxLine,
   RiLogoutBoxLine,
   RiEyeLine,
@@ -15,6 +16,7 @@ const icons = [
   RiEyeLine,
   RiEyeCloseLine,
   RiDeleteBin2Line,
+  RiQuestionLine,
 ];
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.use(VueDsfr, { icons });
