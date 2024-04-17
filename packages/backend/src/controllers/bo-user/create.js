@@ -48,10 +48,7 @@ module.exports = async function create(req, res, next) {
 
     return res.status(200).json({ message: "Utilisateur créé" });
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      message:
-        "une erreur est survenue durant la récupération d'utilisateur' des utilisateurs BO",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

@@ -80,7 +80,7 @@ fileignoreconfig:
 - filename: packages/backend/src/config.js
   checksum: c0baf7f4f878d3f3406030471f15c092ed9fc671b1e66276fe9b071ea025b58c
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
-  checksum: 1582d4c23c4ad9e7f7c3aed4b34f013025884623feb5f62483eac8bab3595f62
+  checksum: 8dde974d3051313b99c5abb76ec8b0e1f8480e6bb958474a4f95eb4240d90e2a
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
   checksum: d66401c29c51850346868ff2d7c097fbd572bbfd8cfae77c87ae5274a7cc8409
 - filename: packages/backend/src/controllers/authentication/email/index.js
@@ -90,13 +90,13 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/authentication/email/register.js
   checksum: 405b78b09927ec0c3feb4eec6aada0b4875e63f0065863962c446be5ce8ca5e7
 - filename: packages/backend/src/controllers/authentication/email/renew-password.js
-  checksum: 3204412be24db9c93567263ca0e26f32604a44384bfa3d5c17e8d2f74ca59a6f
+  checksum: 2540a276112e52b338b21a17f3362a80ebdf0e04dda8cb42ce69ead4b19f4b18
 - filename: packages/backend/src/controllers/authentication/email/renewPassword.js
   checksum: 71c7f6afdca8903cb4ad4120ac93e5296cc5bac40dac63391722bb4c2079b422
 - filename: packages/backend/src/controllers/bo-authentication/email/forgotten-password.js
-  checksum: d5f26bf182e98a952f15534b371e9eaa304a9c31bcd051e722f946aadcd3d487
+  checksum: bfeae9adde26b42e23b228d733bc5b1c21e982d98f730277ff68fb12d34123d7
 - filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
-  checksum: 2576942f7b1279ec0157383e7b3faef4df993169857707eca4a917bcf62520eb
+  checksum: bda4c09e0af6e4c0d6b0976413b29e386148965d5c3f3eaf39fe6d9cba08e3ad
 - filename: packages/backend/src/pgpool.js
   checksum: 06f9f5367c53fbdf6bf5d2ee9758d3a5302339f9f4d0c42e2c0f0831733097d0
 - filename: packages/backend/src/pgpoolDoc.js

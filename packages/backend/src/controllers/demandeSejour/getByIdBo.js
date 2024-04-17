@@ -4,8 +4,8 @@ const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async function getById(req, res) {
-  log.i("In");
+module.exports = async function getById(req, res, next) {
+  log.i("IN");
   const demandeId = req.params.id;
 
   try {
@@ -16,10 +16,7 @@ module.exports = async function getById(req, res) {
     log.d(demande);
     return res.status(200).json({ demande });
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      message:
-        "une erreur est survenue durant la récupération de la demande de séjour",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

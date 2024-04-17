@@ -5,7 +5,7 @@ const logger = require("../utils/logger");
 const log = logger(module.filename);
 
 module.exports.getToken = async function () {
-  log.i("In");
+  log.i("IN");
   const { apiInsee } = config;
   const cle = `${apiInsee.CLIENT_ID}:${apiInsee.CLIENT_SECRET}`;
   const authHeader = `Basic ${Buffer.from(cle).toString("base64")}`;

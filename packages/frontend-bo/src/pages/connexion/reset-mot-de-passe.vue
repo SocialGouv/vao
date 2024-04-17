@@ -200,7 +200,7 @@ const displayInfos = {
       "Vous pouvez maintenant vous connecter en utilisant votre nouveau mot de passe.",
     type: "success",
   },
-  DefaultError: {
+  UnexpectedError: {
     title: "Une erreur est survenue",
     description:
       "Le service ne semble pas répondre. Veuillez réessayer ultérieurement",
@@ -258,12 +258,12 @@ async function renewPassword() {
         log.i("renewPassword", { response });
       })
       .catch((error) => {
-        displayType.value = "DefaultError";
+        displayType.value = "UnexpectedError";
         log.w("renewPassword", { error });
       });
   } catch (error) {
     log.w("renewPassword", { error });
-    displayType.value = "DefaultError";
+    displayType.value = "UnexpectedError";
   }
 }
 </script>

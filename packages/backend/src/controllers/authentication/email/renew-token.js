@@ -49,7 +49,7 @@ module.exports = async function register(req, res, next) {
     log.i("DONE");
     return res.status(200).json({ message: "Email envoyé avec succès." });
   } catch (error) {
-    log.w("DONE with error", error.name, error.message);
+    log.w("DONE with error");
     return next(error);
   }
 };

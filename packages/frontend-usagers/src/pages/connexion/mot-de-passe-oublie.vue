@@ -85,7 +85,7 @@ const displayInfos = {
       "Si un compte est rattaché à cette adresse électronique, vous allez recevoir un courriel dans quelques instants. Il vous permettra de réinitialiser votre mot de passe en quelques clics",
     type: "success",
   },
-  DefaultError: {
+  UnexpectedError: {
     title: "Une erreur est survenue",
     description:
       "Le service ne semble pas répondre. Veuillez réessayer ultérieurement",
@@ -114,11 +114,11 @@ async function askNewPassword() {
       })
       .catch((error) => {
         log.w("askNewPassword", { error });
-        displayType.value = "DefaultError";
+        displayType.value = "UnexpectedError";
       });
   } catch (error) {
     log.w("login", { error });
-    displayType.value = "DefaultError";
+    displayType.value = "UnexpectedError";
   } finally {
     log.i("finally");
   }

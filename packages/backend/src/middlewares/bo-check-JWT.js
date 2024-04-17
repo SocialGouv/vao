@@ -17,10 +17,12 @@ async function checkJWT(req, res, next) {
     if (!cookies) {
       log.i("DONE - Aucun cookie présent");
 
-      throw new AppError("Utilisateur non identifié", {
-        name: "UnsignedUser",
-        statusCode: 401,
-      });
+      return next(
+        new AppError("Utilisateur non identifié", {
+          name: "UnsignedUser",
+          statusCode: 401,
+        }),
+      );
     }
 
     const accessToken = cookies.VAO_BO_access_token;
@@ -44,26 +46,36 @@ async function checkJWT(req, res, next) {
             httpOnly: true,
             secure: true,
           });
-          throw new Error(error);
+          return next(
+            new AppError("Token invalide", {
+              cause: error,
+              name: "InvalidToken",
+              statusCode: 401,
+            }),
+          );
         }
       }
     }
 
     if (!refreshToken) {
       log.d("refresh_token missing");
-      throw new AppError("Utilisateur non identifié", {
-        name: "UnsignedUser",
-        statusCode: 401,
-      });
+      return next(
+        new AppError("Utilisateur non identifié", {
+          name: "UnsignedUser",
+          statusCode: 401,
+        }),
+      );
     }
 
     const session = await Session.read({ refresh_token: refreshToken });
-    if (!session || session.length === 0) {
+    if (session.length === 0) {
       log.d("token reuse");
-      throw new AppError("réutilisation de token expiré", {
-        name: "TokenReuse",
-        statusCode: 409,
-      });
+      return next(
+        new AppError("réutilisation de token expiré", {
+          name: "TokenReuse",
+          statusCode: 409,
+        }),
+      );
     }
 
     let rtDecoded;
@@ -86,7 +98,13 @@ async function checkJWT(req, res, next) {
         httpOnly: true,
         secure: true,
       });
-      return next(error);
+      return next(
+        new AppError("Token invalide", {
+          cause: error,
+          name: "InvalidToken",
+          statusCode: 401,
+        }),
+      );
     }
 
     const user = await User.readOne(rtDecoded.userId);
@@ -119,10 +137,12 @@ async function checkJWT(req, res, next) {
 
     if (!newSession) {
       log.w("erreur sur la création de session");
-      throw new AppError("erreur durant la rotation de session", {
-        name: "SessionRotation",
-        statusCode: 409,
-      });
+      return next(
+        new AppError("erreur durant la rotation de session", {
+          name: "SessionRotation",
+          statusCode: 409,
+        }),
+      );
     }
 
     res.cookie("VAO_BO_access_token", newAccessToken, {
@@ -141,7 +161,7 @@ async function checkJWT(req, res, next) {
 
     Object.assign(req, { decoded: buildAccessToken(user) });
 
-    log.i("Done", "access_token & refresh_token renewed");
+    log.i("DONE", "access_token & refresh_token renewed");
     return next(
       new AppError("token has been rotated", {
         name: "SessionRotation",

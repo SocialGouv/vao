@@ -1,10 +1,11 @@
 const Organisme = require("../../services/Organisme");
+const AppError = require("../../utils/error");
 
 const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async function update(req, res) {
+module.exports = async function update(req, res, next) {
   log.i("IN", req.body);
   const { body } = req;
   const organismeId = req.params.organismeId;
@@ -12,7 +13,12 @@ module.exports = async function update(req, res) {
 
   if (!type || !parametre || !organismeId) {
     log.w("missing or invalid parameter");
-    return res.status(400).json({ message: "paramètre manquant ou erroné." });
+
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
   try {
     await Organisme.update(type, parametre, organismeId);
@@ -21,9 +27,7 @@ module.exports = async function update(req, res) {
       organismeId,
     });
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      messagee: "Une erreur est survenue durant l'ajout de l'organisme",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

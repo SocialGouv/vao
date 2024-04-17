@@ -1,17 +1,23 @@
 const Organisme = require("../../services/Organisme");
+const AppError = require("../../utils/error");
 
 const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async function post(req, res) {
+module.exports = async function post(req, res, next) {
   log.i("IN", req.body);
   const { decoded, body } = req;
   const userId = decoded.id;
   const { type, parametre } = body;
   if (!type || !parametre) {
     log.w("missing or invalid parameter");
-    return res.status(400).json({ message: "paramètre manquant ou erroné." });
+
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
 
   try {
@@ -25,21 +31,12 @@ module.exports = async function post(req, res) {
       organismeId = await Organisme.create(type, parametre);
     }
 
-    const userLinkedToOrganisme = await Organisme.link(userId, organismeId);
-    if (!userLinkedToOrganisme) {
-      log.w("error while linking user and organisme");
-      return res.status(400).json({
-        message:
-          "une erreur est survenue durant la création de liaison entre utilisateur et organisme",
-      });
-    }
+    await Organisme.link(userId, organismeId);
     return res
       .status(200)
       .json({ message: "sauvegarde organisme OK", organismeId });
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      message: "Une erreur est survenue durant l'ajout de l'organisme",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

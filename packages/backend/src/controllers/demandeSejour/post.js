@@ -1,11 +1,12 @@
 const DemandeSejour = require("../../services/DemandeSejour");
 const Organisme = require("../../services/Organisme");
+const AppError = require("../../utils/error");
 
 const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async function post(req, res) {
+module.exports = async function post(req, res, next) {
   log.i("IN");
   const { id: userId } = req.decoded;
   const {
@@ -28,17 +29,25 @@ module.exports = async function post(req, res) {
   });
   if (!dateDebut || !dateFin || !duree) {
     log.w("missing parameter");
-    return res.status(400).json({ message: "paramètre manquant." });
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
 
   try {
     const organisme = await Organisme.get({ "uo.use_id": userId });
     if (!organisme.complet) {
       log.w("organisme isn't fully filled");
-      return res.status(400).json({
-        message:
+      return next(
+        new AppError(
           "Vous devez compléter la fiche organisateur avant de saisir une déclaration de séjour",
-      });
+          {
+            statusCode: 400,
+          },
+        ),
+      );
     }
 
     if (
@@ -66,12 +75,8 @@ module.exports = async function post(req, res) {
       organisme.protocoleSanitaire,
       organisme,
     );
-    if (!demandeId) {
-      return res.status(400).json({
-        message: "une erreur est survenue durant la création de la déclaration",
-      });
-    }
-    const eventId = await DemandeSejour.insertEvent(
+
+    await DemandeSejour.insertEvent(
       "Organisateur",
       demandeId,
       userId,
@@ -80,14 +85,9 @@ module.exports = async function post(req, res) {
       "creation",
       {},
     );
-    if (!eventId) {
-      log.w("error while inserting event");
-    }
     return res.status(200).json({ id: demandeId });
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      messagee: "Une erreur est survenue durant la création de la déclaration",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

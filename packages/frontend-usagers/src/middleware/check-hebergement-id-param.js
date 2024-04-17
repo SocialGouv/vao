@@ -16,7 +16,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (!hebergementId) {
-    log.i("Done");
+    log.i("DONE");
     return;
   }
 
@@ -26,5 +26,5 @@ export default defineNuxtRouteMiddleware(async (to) => {
     log.w("hebergement not found, navigateTo /hebergements/liste");
     return navigateTo("/hebergements/liste");
   }
-  log.i("Done");
+  log.i("DONE");
 });

@@ -5,8 +5,8 @@ const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async function getList(req, res) {
-  log.i("In");
+module.exports = async function list(req, res, next) {
+  log.i("IN");
   const { decoded } = req;
   const { id: adminId } = decoded ?? {};
   log.d("userId", { adminId });
@@ -24,10 +24,7 @@ module.exports = async function getList(req, res) {
     log.d(result);
     return res.status(200).json(result);
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      message:
-        "une erreur est survenue durant la récupération de la liste des utilisateurs BO",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

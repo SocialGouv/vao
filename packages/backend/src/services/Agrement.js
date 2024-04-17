@@ -108,14 +108,14 @@ module.exports.create = async (
 };
 
 module.exports.getByOrganismeId = async (organismeId) => {
-  log.i("In");
+  log.i("IN");
   try {
     const response = await pool.query(...query.getByOrganismeId(organismeId));
     if (response.rows.length > 0) {
-      log.i("Done", response.rows[0]);
+      log.i("DONE", response.rows[0]);
       return response.rows[0];
     }
-    log.i("Done");
+    log.i("DONE");
     return null;
   } catch (err) {
     log.w(err);

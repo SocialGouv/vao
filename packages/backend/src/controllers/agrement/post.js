@@ -2,21 +2,30 @@ const dayjs = require("dayjs");
 const AgrementService = require("../../services/Agrement");
 
 const logger = require("../../utils/logger");
+const AppError = require("../../utils/error");
 
 const log = logger(module.filename);
 
-module.exports = async (req, res) => {
-  log.i("In");
+module.exports = async (req, res, next) => {
+  log.i("IN");
   if (!req.body) {
     log.w("missing parameter");
-    return res.status(400).json({ msg: "paramètre incorrects" });
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
   const { organismeId, numero, regionObtention, dateObtention, file } =
     req.body;
 
   if (!organismeId || !numero || !regionObtention || !dateObtention || !file) {
     log.w("options parameter is incorrect");
-    return res.status(400).json({ msg: "paramètre incorrect" });
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
   const dateFinValidite = dayjs(dateObtention)
     .add(5, "year")
@@ -48,9 +57,7 @@ module.exports = async (req, res) => {
       return res.json({ id: createdAgrementId });
     }
   } catch (err) {
-    log.w(err);
-    return res
-      .status(400)
-      .json({ msg: "Erreur lors de la dépose de l'agrément" });
+    log.w("DONE with error");
+    return next(err);
   }
 };

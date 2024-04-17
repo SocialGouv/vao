@@ -3,12 +3,13 @@ const DemandeSejour = require("../../services/DemandeSejour");
 const logger = require("../../utils/logger");
 const { statuts } = require("../../helpers/ds-statuts");
 const MailUtils = require("../../utils/mail");
+const AppError = require("../../utils/error");
 
 const Send = require("../../services/mail").mailService.send;
 
 const log = logger(module.filename);
 
-module.exports = async function post(req, res) {
+module.exports = async function post(req, res, next) {
   const declarationId = req.params.declarationId;
   const { id: userId, territoireCode } = req.decoded;
   const { commentaire } = req.body;
@@ -16,33 +17,45 @@ module.exports = async function post(req, res) {
 
   if (!declarationId) {
     log.w("missing parameter");
-    return res.status(400).json({ message: "paramètre manquant." });
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
 
   const declaration = await DemandeSejour.getOne({ "ds.id": declarationId });
 
   if (!declaration) {
     log.w("error while getting current declaration");
-    return res.status(400).json({
-      message:
-        "Une erreur est survenue durant la transmission de la declaration",
-    });
+    return next(
+      new AppError("Déclaration introuvable", {
+        statusCode: 404,
+      }),
+    );
   }
 
   if (
     !req.departements.map((d) => d.value).includes(declaration.departementSuivi)
   ) {
     log.w("Administrator is not principal instructor");
-    return res.status(403).json({
-      message: "L'administrateur n'est pas instructeur principal de la demande",
-    });
+    return next(
+      new AppError(
+        "L'administrateur n'est pas instructeur principal de la demande",
+        {
+          statusCode: 403,
+        },
+      ),
+    );
   }
 
   if (declaration.statut !== statuts.EN_COURS) {
     log.w("Delaration should be in statut EN COURS");
-    return res.status(400).json({
-      message: "Statut non compatible",
-    });
+    return next(
+      new AppError("Statut incompatible", {
+        statusCode: 400,
+      }),
+    );
   }
 
   try {
@@ -72,11 +85,10 @@ module.exports = async function post(req, res) {
         ),
     );
 
+    log.i("DONE");
     return res.status(200).end();
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      message: "Une erreur est survenue durant la mise à jour de la demande",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

@@ -14,10 +14,14 @@ const log = logger(module.filename);
 module.exports = async function renewPassword(req, res, next) {
   const { token: resetPasswordToken } = req.query;
   const { password } = req.body;
-  log.i("In", { resetPasswordToken });
+  log.i("IN", { resetPasswordToken });
   if (!resetPasswordToken) {
     log.w("missing parameter");
-    return res.status(400).json({ message: "paramètres incorrects" });
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
 
   try {
@@ -33,16 +37,13 @@ module.exports = async function renewPassword(req, res, next) {
     });
     log.d({ email });
     await User.editPassword(email, password);
-    log.i("Done");
+    log.i("DONE");
     return res.status(200).json({ message: "Mot de passe mis à jour" });
-  } catch (err) {
-    log.w(err);
-    if (err instanceof jwt.TokenExpiredError) {
+  } catch (error) {
+    log.w("DONE with error");
+    if (error instanceof jwt.TokenExpiredError) {
       return res.status(400).json({ name: "TokenExpiredError" });
     }
-    if (err instanceof AppError) {
-      return res.status(400).json({ name: err.name });
-    }
-    return res.status(400).json({ message: "Une erreur est survenue" });
+    return next(error);
   }
 };

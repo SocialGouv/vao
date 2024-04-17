@@ -6,7 +6,7 @@ const logger = require("../../utils/logger");
 const log = logger(module.filename);
 
 module.exports = async function getOne(req, res, next) {
-  log.i("In");
+  log.i("IN");
   const { decoded } = req;
   const { id: adminId } = decoded;
   log.d({ adminId });
@@ -17,17 +17,18 @@ module.exports = async function getOne(req, res, next) {
     log.d({ userId });
 
     if (!userId) {
-      return next(new AppError("Paramètre manquant"));
+      return next(
+        new AppError("Paramètre incorrect", {
+          statusCode: 400,
+        }),
+      );
     }
 
     const user = await BoUser.readOne(userId);
     log.d("Done");
     return res.status(200).json(user);
   } catch (error) {
-    log.w("Done with error", error);
-    return res.status(400).json({
-      message:
-        "une erreur est survenue durant la récupération d'utilisateur' des utilisateurs BO",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

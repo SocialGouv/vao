@@ -15,6 +15,7 @@ module.exports = async function finalize(req, res, next) {
       message: "sauvegarde organisme OK",
     });
   } catch (error) {
+    log.w("DONE with error");
     return next(error);
   }
 };

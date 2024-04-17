@@ -193,10 +193,17 @@ module.exports.create = async (type, parametre) => {
 
 module.exports.link = async (userId, organismeId) => {
   log.i("link - IN");
-  const response = await pool.query(query.link, [userId, organismeId]);
-  const { userLinked } = response && response.rows[0];
-  log.d("link - DONE", { userLinked });
-  return userLinked;
+  const { rowCount } = await pool.query(query.link, [userId, organismeId]);
+
+  if (rowCount === 0) {
+    throw new AppError(
+      "une erreur est survenue durant la création de liaison entre utilisateur et organisme",
+      {
+        name: "NOT_FOUND",
+        statusCode: 404,
+      },
+    );
+  }
 };
 
 module.exports.update = async (type, parametre, organismeId) => {

@@ -4,19 +4,25 @@ const config = require("../../config");
 const dayjs = require("dayjs");
 const { getToken } = require("../../services/Insee");
 const Referentiel = require("../../services/Referentiel");
+const AppError = require("../../utils/error");
 
 const log = logger(module.filename);
 
-module.exports = async function get(req, res) {
+module.exports = async function get(req, res, next) {
   const { apiInsee } = config;
   const { apiEntreprise } = config;
   const { siret } = req.params;
-  log.i("In", siret);
+  log.i("IN", siret);
 
   const siren = siret.length === 14 && siret.substring(0, 9);
   if (!siren) {
     log.w("siret isn't properly set");
-    return res.status(400).json({ message: "parametre d'appel incorrect" });
+
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
   try {
     const token = await getToken();
@@ -88,10 +94,8 @@ module.exports = async function get(req, res) {
       representantsLegaux,
       uniteLegale,
     });
-  } catch (err) {
-    log.w(err);
-    return res
-      .status(400)
-      .json({ message: "erreur sur l'appel de l'api INSEE" });
+  } catch (error) {
+    log.w("DONE with error");
+    return next(error);
   }
 };

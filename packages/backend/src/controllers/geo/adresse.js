@@ -6,7 +6,7 @@ const log = logger(module.filename);
 
 module.exports = {
   fetch: async function fetch(req, res) {
-    log.i("In", req.body);
+    log.i("IN", req.body);
 
     const queryString = encodeURI(req.body.queryString);
     log.d(queryString);
@@ -25,7 +25,7 @@ module.exports = {
             .json({ message: "erreur lors de l'appel à l'API adresse" });
         });
     } catch (error) {
-      // log.w(error);
+      log.w("DONE with error");
       return res
         .status(404)
         .json({ message: "erreur lors de l'appel à l'API adresse" });

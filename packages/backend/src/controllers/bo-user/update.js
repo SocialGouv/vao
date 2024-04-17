@@ -25,10 +25,7 @@ module.exports = async function update(req, res, next) {
     await BoUser.update(userId, user);
     return res.status(200).json({ message: "Utilisateur mis à jour" });
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      message:
-        "une erreur est survenue durant la récupération d'utilisateur' des utilisateurs BO",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

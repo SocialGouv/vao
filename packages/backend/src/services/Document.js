@@ -31,14 +31,14 @@ const query = {
 };
 
 module.exports.download = async (uuid) => {
-  log.i("In");
+  log.i("IN");
   try {
     const { rows, rowCount } = await poolDoc.query(...query.getByUuid(uuid));
     if (rowCount > 0) {
-      log.i("Done", rows[0]);
+      log.i("DONE", rows[0]);
       return rows[0];
     }
-    log.i("Done");
+    log.i("DONE");
     return null;
   } catch (err) {
     log.w(err);

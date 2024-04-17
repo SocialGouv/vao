@@ -13,6 +13,7 @@ const MailUtils = require("../../utils/mail");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
 const { statuts } = require("../../helpers/ds-statuts");
+const AppError = require("../../utils/error");
 
 const log = logger(module.filename);
 
@@ -26,12 +27,20 @@ module.exports = async function post(req, res, next) {
 
   if (!demandeSejourId) {
     log.w("missing parameter");
-    return res.status(400).json({ message: "paramètre manquant." });
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
 
   if (!attestation) {
-    log.w("missing parameter");
-    return res.status(400).json({ message: "paramètre manquant." });
+    log.w("DONE with error");
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
 
   let declaration, DSuuid, ARuuid;
@@ -39,20 +48,23 @@ module.exports = async function post(req, res, next) {
   declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
 
   if (!declaration) {
-    log.w("error while getting current declaration");
-    return res.status(400).json({
-      message:
-        "Une erreur est survenue durant la transmission de la declaration",
-    });
+    log.w("DONE with error");
+    return next(
+      new AppError("Déclaration non trouvée", {
+        statusCode: 404,
+      }),
+    );
   }
 
   const { dateDebut, dateFin, statut } = declaration;
 
   if (!expectedStates.includes(statut)) {
     log.w("Unexpected states", { expectedStates, statut });
-    return res.status(400).json({
-      message: "Statut non compatible",
-    });
+    return next(
+      new AppError("Statut incomptabile", {
+        statusCode: 400,
+      }),
+    );
   }
 
   Object.assign(declaration, { attestation });
@@ -82,29 +94,16 @@ module.exports = async function post(req, res, next) {
 
   const hebergement = await Hebergement.getOne({ id: firstHebergementId });
   if (!hebergement) {
-    log.w("error while getting first hebergement");
-    return res.status(400).json({
-      message:
-        "Une erreur est survenue durant la transmission de la declaration",
-    });
+    log.w("DONE with error");
+    return next(
+      new AppError("Hébergement non trouvé", {
+        statusCode: 404,
+      }),
+    );
   }
   const departementSuivi = hebergement.coordonnees.adresse.departement;
 
-  if (!departementSuivi) {
-    log.w("error while getting departement");
-    return res.status(400).json({
-      message:
-        "Une erreur est survenue durant la transmission de la declaration",
-    });
-  }
   const numSeq = await DemandeSejour.getNextIndex();
-  if (!numSeq) {
-    log.w("error while getting next DS sequence value");
-    return res.status(400).json({
-      message:
-        "Une erreur est survenue durant la transmission de la declaration",
-    });
-  }
 
   const currentYear = dayjs(declaration.dateDebut).format("YY");
   const idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
@@ -118,7 +117,7 @@ module.exports = async function post(req, res, next) {
 
   declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
 
-  const eventId = await DemandeSejour.insertEvent(
+  await DemandeSejour.insertEvent(
     "Organisateur",
     demandeSejourId,
     userId,
@@ -127,9 +126,6 @@ module.exports = async function post(req, res, next) {
     statut === statuts.BROUILLON ? "Dépôt DS à 2 mois" : "Ajout de compléments",
     declaration,
   );
-  if (!eventId) {
-    log.w("error while inserting event");
-  }
 
   try {
     const destinataires = await DemandeSejour.getEmailToList(
@@ -150,10 +146,12 @@ module.exports = async function post(req, res, next) {
       );
     }
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      message: "Une erreur est survenue lors de l'envoi de mails",
-    });
+    log.w("DONE with error");
+    return next(
+      new AppError("Une erreur est survenue lors de l'envoi de mails", {
+        statusCode: 500,
+      }),
+    );
   }
   try {
     const destinatairesBack =
@@ -183,10 +181,14 @@ module.exports = async function post(req, res, next) {
     }
   } catch (error) {
     log.w(error);
-    return res.status(400).json({
-      message:
+    return next(
+      new AppError(
         "Une erreur est survenue lors de l'envoi de mails aux usagers back office",
-    });
+        {
+          statusCode: 500,
+        },
+      ),
+    );
   }
 
   try {
@@ -207,5 +209,6 @@ module.exports = async function post(req, res, next) {
   } catch (err) {
     log.w(err);
   }
+  log.w("DONE");
   return res.status(200).json({ ARuuid, DSuuid });
 };

@@ -4,8 +4,8 @@ const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async function get(req, res) {
-  log.i("In");
+module.exports = async function get(req, res, next) {
+  log.i("IN");
   const { decoded } = req;
   const { id: userId } = decoded;
   log.d("userId", { userId });
@@ -15,10 +15,7 @@ module.exports = async function get(req, res) {
     log.d(demandes);
     return res.status(200).json({ demandes });
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      message:
-        "une erreur est survenue durant la récupération des déclarations de séjour",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

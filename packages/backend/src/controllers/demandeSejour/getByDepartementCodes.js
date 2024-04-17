@@ -4,8 +4,8 @@ const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async function getByDepartementCodes(req, res) {
-  log.i("In");
+module.exports = async function getByDepartementCodes(req, res, next) {
+  log.i("IN");
   const { decoded } = req;
   const { id: adminId } = decoded ?? {};
   log.d("userId", { adminId });
@@ -26,10 +26,6 @@ module.exports = async function getByDepartementCodes(req, res) {
     log.d(demandesWithPagination);
     return res.status(200).json({ demandesWithPagination });
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      message:
-        "une erreur est survenue durant la récupération des demandes de séjour",
-    });
+    return next(error);
   }
 };

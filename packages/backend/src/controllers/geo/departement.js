@@ -6,9 +6,9 @@ const log = logger(module.filename);
 
 module.exports = {
   fetch: async function fetch(req, res) {
-    log.i("In");
+    log.i("IN");
     const departements = await Departement.fetch();
-    log.i("Done");
+    log.i("DONE");
     return res.json({ departements });
   },
 };

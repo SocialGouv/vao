@@ -10,6 +10,7 @@ const logger = require("../../../utils/logger");
 const MailUtils = require("../../../utils/mail");
 const { buildEmailToken } = require("../../../utils/token");
 const ValidationAppError = require("../../../utils/validation-error");
+const AppError = require("../../../utils/error");
 
 const log = logger(module.filename);
 
@@ -49,16 +50,19 @@ module.exports = async function register(req, res, next) {
       );
     } catch (error) {
       log.w(error.name, error.message);
-      return res.status(400).json({
-        name: "MailError",
-      });
+
+      return next(
+        new AppError("Erreur lors de l'envoi du mail", {
+          cause: error,
+          name: "MailError",
+          statusCode: 500,
+        }),
+      );
     }
     log.i("DONE");
     return res.status(200).json({ code });
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      name: "DefaultError",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

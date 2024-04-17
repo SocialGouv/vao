@@ -17,9 +17,11 @@ module.exports = async function renewToken(req, res, next) {
   log.i("IN", { email });
   try {
     if (!email) {
-      throw new AppError("Paramètres manquants", {
-        name: "MalformedQuery",
-      });
+      return next(
+        new AppError("Paramètre incorrect", {
+          statusCode: 400,
+        }),
+      );
     }
 
     const user = await User.readOneByMail(email);
@@ -38,7 +40,7 @@ module.exports = async function renewToken(req, res, next) {
     log.i("DONE");
     return res.status(200).json({ message: "Email envoyé avec succès." });
   } catch (error) {
-    log.w("DONE with error", error.name, error.message);
+    log.w("DONE with error");
     return next(error);
   }
 };

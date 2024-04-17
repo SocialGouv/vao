@@ -380,7 +380,7 @@ async function register() {
             "Une erreur technique est survenue, veuillez réessayer plus tard",
           );
         }
-        if (codeError === "DefaultError") {
+        if (codeError === "UnexpectedError") {
           toaster.error(
             "Une erreur est survenue, peut être un compte existe-t-il déjà avec cet email ...",
           );

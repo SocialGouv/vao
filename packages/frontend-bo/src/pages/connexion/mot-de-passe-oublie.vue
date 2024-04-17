@@ -84,7 +84,7 @@ const displayInfos = {
       "Un email a été envoyé sur la boîte mail à l'adresse renseignée si un compte y est rattaché . Veuillez le consulter pour réinitialiser votre mot de passe",
     type: "success",
   },
-  DefaultError: {
+  UnexpectedError: {
     title: "Une erreur est survenue",
     description:
       "Le service ne semble pas répondre. Veuillez réessayer ultérieurement",
@@ -113,11 +113,11 @@ async function askNewPassword() {
       })
       .catch((error) => {
         log.w("askNewPassword", { error });
-        displayType.value = "DefaultError";
+        displayType.value = "UnexpectedError";
       });
   } catch (error) {
     log.w("login", { error });
-    displayType.value = "DefaultError";
+    displayType.value = "UnexpectedError";
   } finally {
     log.i("finally");
   }

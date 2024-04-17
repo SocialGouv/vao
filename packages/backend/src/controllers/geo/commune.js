@@ -7,17 +7,17 @@ const log = logger(module.filename);
 module.exports = {
   fetch: async function fetch(req, res) {
     const { departement, date = null } = req.query;
-    log.i("In");
+    log.i("IN");
     const communes = await Commune.fetch({ date, departement });
-    log.i("Done");
+    log.i("DONE");
     return res.json({ communes });
   },
   get: async function get(req, res) {
-    log.i("In");
+    log.i("IN");
     const { communeCode } = req.params;
     const { date = null } = req.query;
     const commune = await Commune.get({ code: communeCode, date });
-    log.i("Done");
+    log.i("DONE");
     return res.json(commune);
   },
 };

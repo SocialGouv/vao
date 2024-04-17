@@ -8,12 +8,17 @@ const logger = require("../../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async (req, res) => {
+module.exports = async (req, res, next) => {
   const { token: validationToken } = req.body;
-  log.i("In", { validationToken });
+  log.i("IN", { validationToken });
   if (!validationToken) {
     log.w("missing parameter");
-    return res.status(400).json({ message: "paramètres incorrects" });
+
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
   try {
     const { email } = await jwt.verify(validationToken, config.tokenSecret, {
@@ -22,16 +27,18 @@ module.exports = async (req, res) => {
     log.d({ email });
     const user = await User.activate(email);
     log.d({ user });
-    log.i("Done");
+    log.i("DONE");
     return res.status(200).json({ user });
-  } catch (err) {
-    log.w(err);
-    if (err instanceof jwt.TokenExpiredError) {
-      return res.status(400).json({ name: "TokenExpiredError" });
+  } catch (error) {
+    log.w("DONE with error");
+    if (error instanceof jwt.TokenExpiredError) {
+      return next(
+        new AppError("Token expiré", {
+          name: "TokenExpiredError",
+          statusCode: 401,
+        }),
+      );
     }
-    if (err instanceof AppError) {
-      return res.status(400).json({ name: err.name });
-    }
-    return res.status(400).json({ message: "Une erreur est survenue" });
+    return next(error);
   }
 };

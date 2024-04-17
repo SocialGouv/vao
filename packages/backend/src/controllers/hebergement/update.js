@@ -4,6 +4,7 @@ const Hebergement = require("../../services/Hebergement");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
 const HebergementSchema = require("../../schemas/hebergement");
+const AppError = require("../../utils/error");
 
 const log = logger(module.filename);
 
@@ -27,7 +28,12 @@ module.exports = async function post(req, res, next) {
     !hebergementId
   ) {
     log.w("missing or invalid parameter");
-    return res.status(400).json({ message: "paramètre manquant ou erroné." });
+
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
   let hebergement;
   try {
@@ -52,9 +58,7 @@ module.exports = async function post(req, res, next) {
     log.i("DONE");
     return res.sendStatus(200);
   } catch (error) {
-    log.w(error);
-    return res.status(400).json({
-      messagee: "Une erreur est survenue durant l'ajout de l'hébergement",
-    });
+    log.w("DONE with error");
+    return next(error);
   }
 };

@@ -164,7 +164,7 @@ const displayInfos = {
     description: "Votre email ou votre mot de passe sont incorrects.",
     type: "error",
   },
-  DefaultError: {
+  UnexpectedError: {
     title: "Une erreur est survenue",
     description:
       "Le service ne semble pas répondre. Veuillez réessayer ultérieurement",
@@ -217,7 +217,7 @@ async function login() {
         displayType.value = "NotValidatedAccount";
         break;
       default:
-        displayType.value = "DefaultError";
+        displayType.value = "UnexpectedError";
         break;
     }
   }

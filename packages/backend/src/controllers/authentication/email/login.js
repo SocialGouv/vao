@@ -8,30 +8,43 @@ const logger = require("../../../utils/logger");
 
 const { status } = require("../../../helpers/users");
 const { buildAccessToken, buildRefreshToken } = require("../../../utils/token");
+const AppError = require("../../../utils/error");
 
 const log = logger(module.filename);
 
-module.exports = async function login(req, res) {
+module.exports = async function login(req, res, next) {
   const { email, password } = req.body;
-  log.i("In", { email });
+  log.i("IN", { email });
   if (!email || !password) {
     log.w("Paramètes manquants");
-    return res.status(400).json({ message: "Paramètes manquants" });
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
 
   const user = await User.login({ email, password });
 
   if (!user) {
     log.w("Utilisateur inexistant");
-    return res.status(404).json({ name: "WrongCredentials" });
+    return next(
+      new AppError("Mauvais identifiants", {
+        name: "WrongCredentials",
+        statusCode: 404,
+      }),
+    );
   }
 
   log.d({ user });
   if (user.statusCode === status.NEED_EMAIL_VALIDATION) {
     log.w("Compte non validé");
-    return res.status(400).json({
-      name: "NotValidatedAccount",
-    });
+    return next(
+      new AppError("Compte inactif", {
+        name: "NotValidatedAccount",
+        statusCode: 400,
+      }),
+    );
   }
 
   try {
@@ -65,7 +78,7 @@ module.exports = async function login(req, res) {
 
     return res.json({ user });
   } catch (error) {
-    log.w(error);
-    return res.status(500).json({ name: "DefaultError" });
+    log.w("DONE with error");
+    return next(error);
   }
 };

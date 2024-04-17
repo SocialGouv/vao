@@ -7,15 +7,20 @@ const Send = require("../../../services/mail").mailService.send;
 const logger = require("../../../utils/logger");
 const MailUtils = require("../../../utils/mail");
 const { buildEmailToken } = require("../../../utils/bo-token");
+const AppError = require("../../../utils/error");
 
 const log = logger(module.filename);
 
 module.exports = async function forgottenPassword(req, res, next) {
   const { email } = req.body;
-  log.i("In", { email });
+  log.i("IN", { email });
   if (!email) {
     log.w("email manquant");
-    return res.status(400).json({ message: "Paramète manquant" });
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
   }
 
   let user;
@@ -47,7 +52,7 @@ module.exports = async function forgottenPassword(req, res, next) {
 
     return res.json({ message: "Mail envoyé" });
   } catch (error) {
-    log.w(error);
-    return res.status(500).json({ name: "DefaultError" });
+    log.w("DONE with error");
+    return next(error);
   }
 };

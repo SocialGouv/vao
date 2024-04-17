@@ -304,14 +304,14 @@ const displayInfos = {
       "Vous tentez de mettre à jour un utilisateur qui semble avoir été supprimé",
     type: "error",
   },
-  DefaultError: {
+  UnexpectedError: {
     title: "Une erreur est survenue",
     description:
       "Une erreur est survenue. Si vous pensez que cette adresse mail est déjà utilisée, indiquez à l'utilisateur d'utiliser la fonction “Mot de passe oublié”",
     type: "error",
   },
 };
-const displayType = ref("DefaultError");
+const displayType = ref("UnexpectedError");
 
 function checkValidEmail(email) {
   emailField.modelValue = email;
@@ -478,7 +478,7 @@ async function post() {
       });
   } catch (error) {
     log.w("post", { error });
-    displayType.value = "DefaultError";
+    displayType.value = "UnexpectedError";
     formStatus.value = formStates.SUBMITTED;
   } finally {
     log.i("post - DONE");
@@ -527,7 +527,7 @@ async function update() {
       });
   } catch (error) {
     log.w("update", { error });
-    displayType.value = "DefaultError";
+    displayType.value = "UnexpectedError";
     formStatus.value = formStates.SUBMITTED;
   } finally {
     log.i("update - DONE");

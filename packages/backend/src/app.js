@@ -125,7 +125,9 @@ app.use(async (err, req, res, next) => {
   log.w(err.name, err.message);
 
   if (!err.isOperational) {
-    res.status(500).send("Une erreur inattendue est survenue");
+    res.status(500).send({
+      name: "UnexpectedError",
+    });
     throw err;
   }
 
