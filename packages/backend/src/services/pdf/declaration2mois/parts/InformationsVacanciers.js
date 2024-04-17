@@ -89,6 +89,20 @@ module.exports = function buildInformationsVacanciers(info) {
                   },
                 ],
               },
+              {
+                columnGap: 10,
+                columns: [
+                  {
+                    text: "Précision :",
+                    width: 250,
+                  },
+                  {
+                    bold: true,
+                    text: `${info.precisionDeficiences}`,
+                    width: "*",
+                  },
+                ],
+              },
             ],
           },
         ],

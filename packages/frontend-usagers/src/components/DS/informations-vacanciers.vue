@@ -70,6 +70,21 @@
           :disabled="!props.modifiable"
         />
       </div>
+      <div class="fr-fieldset__element">
+        <div class="fr-col-12">
+          <DsfrInputGroup
+            name="precisionDeficiences"
+            label="Précisez"
+            :model-value="precisionDeficiences"
+            :label-visible="true"
+            :is-textarea="true"
+            :readonly="!props.modifiable"
+            :error-message="precisionDeficiencesErrorMessage"
+            :is-valid="precisionDeficiencesMeta.valid"
+            @update:model-value="onPrecisionDeficiencesChange"
+          />
+        </div>
+      </div>
     </fieldset>
 
     <fieldset v-if="props.showButtons" class="fr-fieldset">
@@ -140,6 +155,12 @@ const { value: trancheAge, errorMessage: trancheAgeErrorMessage } =
   useField("trancheAge");
 const { value: typeDeficiences, errorMessage: typeDeficiencesErrorMessage } =
   useField("typeDeficiences");
+const {
+  value: precisionDeficiences,
+  errorMessage: precisionDeficiencesErrorMessage,
+  handleChange: onPrecisionDeficiencesChange,
+  meta: precisionDeficiencesMeta,
+} = useField("precisionDeficiences");
 
 function next() {
   if (!meta.value.dirty) {

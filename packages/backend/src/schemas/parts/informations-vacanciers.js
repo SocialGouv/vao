@@ -19,6 +19,9 @@ const schema = () => ({
     .number()
     .typeError("Le nombre d'hommes doit un être un nombre entier")
     .required(),
+  precisionDeficiences: yup
+    .string()
+    .required("Vous devez préciser votre réponse précédente"),
   trancheAge: yup
     .array()
     .min(1, "vous devez cocher au moins une case")
