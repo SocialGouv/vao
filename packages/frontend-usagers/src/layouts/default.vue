@@ -87,6 +87,7 @@ function acceptAll() {
       personal-data-link="/footer/donnees-personnelles"
       cookies-link="/footer/gestion-cookies"
       a11y-compliance-link="/footer/accessibilite"
+      class="fr-mt-2w"
     >
       <template #description>
         <p
