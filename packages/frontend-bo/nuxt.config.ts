@@ -6,7 +6,7 @@ export default defineNuxtConfig({
       htmlAttrs: {
         lang: "fr",
       },
-      title: "VAO - Vacances Adaptées Organisées",
+      title: "VAO Instructeurs - Vacances Adaptées Organisées",
       link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
     },
   },
@@ -22,6 +22,12 @@ export default defineNuxtConfig({
       appVersion: undefined,
       backendUrl: undefined,
       environment: undefined,
+      matomo: {
+        enabled: undefined,
+        host: undefined,
+        siteId: undefined,
+      },
+      matomoSiteId: undefined,
       sentry: {
         dsn: undefined,
         enabled: undefined,
@@ -38,7 +44,4 @@ export default defineNuxtConfig({
   },
   srcDir: "src",
   ssr: false,
-  security: {
-    enabled: process.env.NODE_ENV === "production",
-  },
 });
