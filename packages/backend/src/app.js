@@ -50,6 +50,7 @@ if (config.sentry.enabled) {
         }),
       ];
     },
+    tracesSampleRate: 1.0,
   });
 }
 
@@ -114,8 +115,8 @@ app.use((req, res, next) => {
 
 app.use(
   Sentry.Handlers.errorHandler({
-    shouldHandleError() {
-      return true;
+    shouldHandleError(error) {
+      return !error.isOperational;
     },
   }),
 );

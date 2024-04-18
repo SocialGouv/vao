@@ -1,11 +1,10 @@
 import * as Sentry from "@sentry/vue";
 import { defineNuxtPlugin } from "#app";
-import { useRouter, useRuntimeConfig } from "#imports";
+import { useRuntimeConfig } from "#imports";
 
 export default defineNuxtPlugin((nuxtApp) => {
-  const router = useRouter();
   const {
-    public: { sentry, appVersion, environment },
+    public: { sentry, environment },
   } = useRuntimeConfig();
 
   if (sentry.enabled) {
@@ -13,14 +12,10 @@ export default defineNuxtPlugin((nuxtApp) => {
       app: nuxtApp.vueApp,
       dsn: sentry.dsn,
       environment: environment,
-      release: appVersion,
       integrations: [
-        Sentry.browserTracingIntegration({ router }),
-        Sentry.replayIntegration({
-          maskAllText: false,
-          blockAllMedia: false,
-        }),
+        Sentry.browserTracingIntegration({ router: nuxtApp.$router }),
       ],
+      tracesSampleRate: 1.0,
     });
   }
 });
