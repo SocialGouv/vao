@@ -3,7 +3,13 @@
     <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
         On cherche a rapprocher le bouton du tableau -->
     <div v-if="props.personnes.length > 0" class="fr-mb-n6v">
-      <DsfrTable :headers="headersToDisplay" :rows="personnesToDisplay" />
+      <DsfrTable
+        :headers="headersToDisplay"
+        :rows="personnesToDisplay"
+        :results-displayed="10"
+        :current-page="currentPage"
+        pagination
+      />
     </div>
     <DsfrButton
       v-if="props.modifiable"
@@ -44,6 +50,7 @@ const props = defineProps({
   showEmail: { type: Boolean, default: false, required: false },
   titre: { type: String, default: null, required: false },
   headers: { type: Array, required: true },
+  currentPage: { type: Number, default: 1 },
 });
 
 const emit = defineEmits(["valid"]);
@@ -52,7 +59,6 @@ const log = logger("pages/component/personnes");
 const modalPersonne = reactive({
   opened: false,
 });
-// const localPersonnes = ref();
 
 const headersToDisplay = computed(() => {
   const columns = props.headers.map((h) => h.label);
