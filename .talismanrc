@@ -117,6 +117,8 @@ fileignoreconfig:
   checksum: 224832f0b2175b2785a6d45d297e23e2018d068912682e73d411c390fd05a80a
 - filename: packages/backend/src/services/geo/Region.js
   checksum: 5c4d9a0edd3496c3b18663a1f330797b5fa89b541b4c9470e060d60c278f3fd7
+- filename: packages/backend/src/sonar-project.properties
+  checksum: 971c26e540505ee376587d3fbafb0efb226dbb3202ecf91b1f7820b279ecd28c
 - filename: packages/backend/src/utils/mail-service.js
   checksum: bf5f3c01e2edcf3a7ef6d8cbde306deb931a01df88ef90fe911c0c9ace41135c
 - filename: packages/backend/src/utils/mail.js
