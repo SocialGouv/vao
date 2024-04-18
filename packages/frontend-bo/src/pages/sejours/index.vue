@@ -37,9 +37,9 @@
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
-                <label class="fr-label"> Statut </label>
                 <DsfrSelect
                   :model-value="searchState.statut"
+                  label="Statut"
                   name="status"
                   mode="tags"
                   :searchable="true"
@@ -56,9 +56,9 @@
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
-                <label class="fr-label"> Action </label>
                 <DsfrSelect
                   :model-value="searchState.estInstructeurPrincipal"
+                  label="Action"
                   name="action"
                   mode="tags"
                   :searchable="true"
