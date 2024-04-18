@@ -122,9 +122,8 @@
         </ul>
         <em
           ><dl>
-            <dt>Direction du Numérique des ministères sociaux</dt>
-            <dt>Ministère des solidarités et de la santé</dt>
-            <dt>39-43 Quai André Citroën</dt>
+            <dt>Direction Générale de la Cohésion Sociale</dt>
+            <dt>78 rue Olivier de Serres</dt>
             <dt>75015 PARIS</dt>
           </dl>
         </em>
