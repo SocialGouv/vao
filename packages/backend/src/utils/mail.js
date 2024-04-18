@@ -257,7 +257,7 @@ module.exports = {
                 <p>Bonjour,</p>
 
                 <p>Vous avez recu des demandes de complément pour votre déclaration ${declaration.idFonctionnelle} </p>
-                <p>Voici les commentaires qui vont ont été fait</p>
+                <p>Voici les commentaires qui vous ont été faits</p>
 
                 <pre>${comment}</pre>
                 <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>

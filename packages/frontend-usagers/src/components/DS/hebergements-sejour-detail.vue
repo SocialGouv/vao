@@ -542,7 +542,7 @@
           <DsfrInputGroup
             name="informationsTransport.rejoindreEtape"
             :readonly="!props.modifiable"
-            label="Précisez le mode de transport utilisé pour rejoindre cette étape"
+            label="Précisez le mode de transport utilisé pour rejoindre cette étape (optionnel)"
             :label-visible="true"
             :is-textarea="true"
             :model-value="rejoindreEtape"
