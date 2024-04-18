@@ -25,6 +25,19 @@ module.exports = async (req, res, next) => {
         statusCode: 415,
       }),
     );
+  } else if (
+    !(
+      file.mimetype == "application/pdf" ||
+      file.mimetype == "image/png" ||
+      file.mimetype == "image/jpeg"
+    )
+  ) {
+    log.w("DONE with error filetype : ", file.mimetype);
+    return next(
+      new AppError("Format de fichier non supporté.", {
+        statusCode: 415,
+      }),
+    );
   }
 
   try {

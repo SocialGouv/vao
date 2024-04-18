@@ -185,14 +185,14 @@
         <UtilsFileUpload
           v-model="fileDerniereAttestationSecurite"
           label="Téléchargement du document Dernière attestation de passage de la commission sécurité"
-          hint="Taille maximale : 5 Mo."
+          hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
           :modifiable="props.modifiable"
           :error-message="fileDerniereAttestationSecuriteErrorMessage"
         />
         <UtilsFileUpload
           v-model="fileDernierArreteAutorisationMaire"
           label="Téléchargement du document Dernier arrêté d’autorisation du maire"
-          hint="Taille maximale : 5 Mo."
+          hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
           :modifiable="props.modifiable"
           :error-message="fileDernierArreteAutorisationMaireErrorMessage"
         />
@@ -201,7 +201,7 @@
         <UtilsFileUpload
           v-model="fileReponseExploitantOuProprietaire"
           label="Téléchargement du document Réponse du propriétaire ou exploitant indiquant les raisons pour lesquelles le lieu d’hébergement n’est pas soumis à la réglementation ERP"
-          hint="Taille maximale : 5 Mo."
+          hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
           :modifiable="props.modifiable"
           :error-message="fileReponseExploitantOuProprietaireErrorMessage"
         />
@@ -507,6 +507,8 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
 
 const emit = defineEmits(["cancel", "submit"]);
 
@@ -761,10 +763,37 @@ const markerLatLng = computed(() => {
 function back() {
   emit("cancel");
 }
+function verifFormatFile(file, toasterMessage) {
+  if (checkFormatFile(file.value)) return true;
+  else {
+    toaster.error(
+      toasterMessage + " doit obligatoirement être au format pdf, png ou jpg",
+    );
+    return false;
+  }
+}
 
-async function submit() {
-  log.i("submit", { ...toRaw(values) });
-  emit("submit", { ...toRaw(values) });
+function submit() {
+  // Vérification du format des fichiers avant enregistrement
+  if (
+    (reglementationErp.value === true &&
+      verifFormatFile(
+        fileDernierArreteAutorisationMaire,
+        "L'arrêté d'autorisation du Maire",
+      ) &&
+      verifFormatFile(
+        fileDerniereAttestationSecurite,
+        "La dernière attestation de passage de la commission de sécurité",
+      )) ||
+    (reglementationErp.value === false &&
+      verifFormatFile(
+        fileReponseExploitantOuProprietaire,
+        "La réponse de l'exploitant/propriétaire",
+      ))
+  ) {
+    log.i("submit", { ...toRaw(values) });
+    emit("submit", { ...toRaw(values) });
+  }
 }
 </script>
 

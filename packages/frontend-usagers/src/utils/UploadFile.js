@@ -17,3 +17,18 @@ export default async function UploadFile(category, file) {
   log.i("uploadFile - DONE");
   return uuid;
 }
+
+export function checkFormatFile(file) {
+  return (
+    !file ||
+    file.uuid ||
+    file.type == "application/pdf" ||
+    file.type == "image/png" ||
+    file.type == "image/jpeg"
+  );
+}
+
+export function checkFormatFiles(files) {
+  for (const file of files.value) if (!checkFormatFile(file)) return false;
+  return true;
+}

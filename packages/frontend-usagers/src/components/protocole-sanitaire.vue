@@ -462,7 +462,7 @@
       <UtilsMultiFilesUpload
         v-model="files"
         label="Merci de joindre les documents requis pour les informations sanitaires (optionnel)"
-        hint="Taille maximale : 5 Mo."
+        hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
         :modifiable="props.modifiable"
       />
     </DsfrFieldset>
@@ -487,6 +487,8 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
 
 const props = defineProps({
   initData: { type: Object, required: true },
@@ -726,7 +728,12 @@ function valid() {
   if (!meta.value.dirty) {
     return emit("next");
   }
-  emit("update", { ...values }, "protocole_sanitaire");
+  if (checkFormatFiles(files))
+    emit("update", { ...values }, "protocole_sanitaire");
+  else
+    toaster.error(
+      "Les documents requis pour les informations sanitaires doivent obligatoirement être au format pdf, png ou jpg",
+    );
 }
 </script>
 
