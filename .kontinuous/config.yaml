@@ -3,3 +3,11 @@ dependencies:
   fabrique:
     extends:
       - name: ovh
+    dependencies:
+      contrib:
+        patches:
+          certs:
+            options:
+              internalHosts:
+                - ".fabrique.social.gouv.fr"
+                - ".social.gouv.fr"
