@@ -6,41 +6,144 @@
       </div>
     </div>
 
-    <div class="fr-grid-row">
-      <div class="fr-col">
-        <h1>Accessibilité</h1>
-      </div>
-    </div>
-    <div class="fr-grid-row">
-      <div class="fr-col-12">
-        <h4>Pas vraiment tip top</h4>
-        <span>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-          et bibendum lorem, a efficitur ante. Vivamus sit amet fringilla neque.
-          Vestibulum in velit egestas, tempus lectus quis, luctus mauris. Aenean
-          sit amet lacus id mauris facilisis dictum sed faucibus nulla. Donec
-          orci ex, dignissim id egestas quis, aliquet ut nunc. Nam vestibulum
-          quis lacus pellentesque ultrices. Donec mollis diam eget est hendrerit
-          viverra. Morbi eu nisl nibh. Fusce in imperdiet eros, vitae interdum
-          neque. Nam auctor dictum dui, sed ullamcorper augue mollis suscipit.
-          Fusce euismod scelerisque blandit. Fusce pretium, dolor porttitor
-          mattis venenatis, ex velit placerat nunc, non pharetra justo turpis
-          non ex. Class aptent taciti sociosqu ad litora torquent per conubia
-          nostra, per inceptos himenaeos. Donec lacus lorem, tincidunt ut velit
-          et, porttitor iaculis erat. Phasellus posuere auctor velit non
-          dapibus. Sed a neque et dui pulvinar cursus. Donec vitae mi ac orci
-          ultrices molestie. Vivamus at urna et sapien feugiat dictum.
-          Vestibulum vehicula mi dui, ut egestas odio egestas et. Aenean viverra
-          scelerisque justo, at mattis ex eleifend a. Morbi ultrices mauris
-          erat. Vestibulum eu dapibus felis, ac lacinia sem. Sed non erat
-          laoreet, rhoncus tortor a, auctor metus.
-        </span>
-      </div>
-    </div>
+    <h1>Déclaration d’accessibilité</h1>
+
+    <p>
+      <strong>Le Ministère du travail, de la santé et des solidarités, </strong>
+      s’engage à rendre ses sites internet, intranet, extranet et ses progiciels
+      accessibles (et ses applications mobiles et mobilier urbain numérique)
+      conformément à l’article 47 de la loi n°2005-102 du 11 février 2005.
+    </p>
+
+    <p>
+      Cette déclaration d’accessibilité s’applique au service numérique
+      <strong>https://vao.social.gouv.fr/</strong>. L’accessibilité numérique
+      consiste à rendre les contenus et services numériques compréhensibles et
+      utilisables par les personnes en situation de handicap.
+    </p>
+
+    <h2>État de conformité</h2>
+
+    <p>
+      L'audit de conformité au référentiel général d’amélioration de
+      l’accessibilité (RGAA) est en cours de réalisation.
+    </p>
+    <p>Les résultats seront publiés prochainement.</p>
+
+    <h2>Résultats des tests</h2>
+
+    <p>En attente des résultats de l’audit accessibilité numérique</p>
+
+    <h2>Établissement de cette déclaration d’accessibilité</h2>
+
+    <p>Cette déclaration a été établie le <strong>15 avril 2024</strong>.</p>
+
+    <h3>Technologies utilisées pour la réalisation de l’audit</h3>
+
+    <ul>
+      <li>HTML ;</li>
+      <li>CSS ;</li>
+      <li>Javascript.</li>
+    </ul>
+
+    <h3>Environnement de test</h3>
+
+    <p>
+      Les vérifications de restitution de contenus ont été réalisées sur la base
+      de la combinaison fournie par la base de référence du RGAA, avec les
+      versions suivantes :
+    </p>
+
+    <ul>
+      <li>sur ordinateur Windows avec Firefox et NVDA ;</li>
+      <li>sur ordinateur Windows avec Firefox et JAWS ;</li>
+      <li>sur ordinateur MacOS avec Safari et VoiceOver ;</li>
+      <li>sur mobile iOS avec Safari et VoiceOver.</li>
+    </ul>
+
+    <h3>Outils pour évaluer l’accessibilité</h3>
+
+    <ul>
+      <li>Web Developer Toolbar ;</li>
+      <li>Colour Contrast Analyser ;</li>
+      <li>HeadingsMap ;</li>
+      <li>WCAG Contrast checker ;</li>
+      <li>Inspecteur de composants ;</li>
+      <li>Validateur HTML du W3C.</li>
+    </ul>
+
+    <h3>Pages du site ayant fait l’objet de la vérification de conformité</h3>
+
+    <ul>
+      <li>Création de compte ;</li>
+      <li>Mot de passe oublié ;</li>
+      <li>Authentification ;</li>
+      <li>Accueil ;</li>
+      <li>Accessibilité ;</li>
+      <li>Mentions légales ;</li>
+      <li>Données personnelles ;</li>
+      <li>Ma fiche organisateur (5 étapes) ;</li>
+      <li>Mes hébergements ;</li>
+      <li>Création d'un hébergement ;</li>
+      <li>Nouvelle déclaration de séjour ;</li>
+      <li>Mes séjours.</li>
+    </ul>
+
+    <h2>Retour d’information et contact</h2>
+
+    <p>
+      Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez
+      contacter le responsable de AGAPE'TH - Espace documentaire pour être
+      orienté vers une alternative accessible ou obtenir le contenu sous une
+      autre forme.
+    </p>
+
+    <ul>
+      <li>
+        Contacter le ou la référente accessibilité à
+        <strong> accessibilite@sante.gouv.fr</strong>
+      </li>
+    </ul>
+
+    <h2>Voies de recours</h2>
+
+    <p>
+      Si vous constatez un défaut d’accessibilité vous empêchant d’accéder à un
+      contenu ou une fonctionnalité du site, que vous nous le signalez et que
+      vous ne parvenez pas à obtenir une réponse de notre part, vous êtes en
+      droit de faire parvenir vos doléances ou une demande de saisine au
+      Défenseur des droits.
+    </p>
+
+    <p>Plusieurs moyens sont à votre disposition :</p>
+
+    <ul>
+      <li>écrire un message au Défenseur des droits ;</li>
+      <li>contacter le délégué du Défenseur des droits dans votre région ;</li>
+      <li>
+        envoyer un courrier par la poste (gratuit, ne pas mettre de timbre)
+        <em
+          ><dl>
+            <dt>Défenseur des droits</dt>
+            <dt>Libre réponse 71120</dt>
+            <dt>75342 Paris CEDEX 07</dt>
+          </dl>
+        </em>
+      </li>
+    </ul>
   </div>
 </template>
 
 <script setup>
+useHead({
+  title: "Accessibilité | Vacances Adaptées Organisées",
+  meta: [
+    {
+      name: "description",
+      content: "Page de gestion de l'accessibilité .",
+    },
+  ],
+});
 const links = [
   {
     to: "/",
