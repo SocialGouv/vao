@@ -47,12 +47,6 @@ backend:
       value: "true"
     - name: TZ
       value: Europe/Paris
-    - name: BACKEND_URL
-      value: "https://api-{{ .Values.global.host }}"
-    - name: FRONTEND_USAGERS_URL
-      value: "https://{{ .Values.global.host }}"
-    - name: FRONTEND_BO_URL
-      value: "https://bo-{{ .Values.global.host }}"
     - name: POSTGRES_HOST
       valueFrom:
         secretKeyRef:

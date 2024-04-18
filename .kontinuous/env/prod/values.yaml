@@ -2,13 +2,6 @@ backend:
   host: api-vao.social.gouv.fr
   redirectFrom:
     - "api-{{ .Values.global.host }}"
-  env:
-    - name: BACKEND_URL
-      value: "https://api-vao.social.gouv.fr"
-    - name: FRONTEND_USAGERS_URL
-      value: "https://vao.social.gouv.fr"
-    - name: FRONTEND_BO_URL
-      value: "https://admin-vao.social.gouv.fr"
 
 frontend-usagers:
   host: vao.social.gouv.fr
