@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 9f6e23fcd4eb9491e7f75ff7abe23b53513bbbcb3beb5abec3a117dd5e112f18
+  checksum: 5bf029251c498a0f3f3ca452e46961dc7f7abd993242f06acbfb486ec6c3ebaf
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -188,15 +188,15 @@ fileignoreconfig:
 - filename: pg/scripts/01-init.sql
   checksum: 20dd5b8d36b1b0517fe185d30003af7866ef5678eed4e7571a6d9797ec3b2a46
 - filename: pg/scripts/02/02-1-geo-init.sql
-  checksum: 55453be5fcf1c607a92537e9814e5724513f03b52ca0bdbc4f4177066af27d2a
+  checksum: 3d03be00c71cf0dc44ef9d7fb7856e49cdb1090f7077b143a36e67029b113381
 - filename: pg/scripts/02/02-2-doc-init.sql
   checksum: d7f7d690751612f69ddf181b98ff0d81025a43ca6f089932c47ec756ce700e45
 - filename: pg/scripts/02/02-3-back-init.sql
-  checksum: 42a2d0a443b509d11d09d360282afda20e887464e3b14f4cc367c516cf923e48
+  checksum: 35b8953e10879c5c02bca929e53b742c72266a45968cbe76c204d122a5379aca
 - filename: pg/scripts/02/02-4-front-init.sql
-  checksum: 258c2157b61ba18ec8e0a290ec483fa2cd1bc2283dd03b59143fcddb47353ba3
+  checksum: 29473c56a8b7cbb8e1da8038a5a5135619f65a020581ed45573b49e4cd0fa486
 - filename: pg/scripts/02/02-5-ref-init.sql
-  checksum: c80c2eae776be18cf0c1e6cb4de92fc0e555cb2bbf73ac535d3931f408c7b249
+  checksum: 62f3296591ae42eb87667ce1dbd7b20f130f7a7325338969fcffe86c3cc4d259
 - filename: pg/scripts/03/03-1-geo-data.sql
   checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
 - filename: pg/scripts/03/03-2-back-data.sql

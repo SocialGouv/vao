@@ -6,7 +6,7 @@
 DROP SCHEMA IF EXISTS referentiel CASCADE;          -- données géographiques communes aux 3 portails
 CREATE SCHEMA referentiel;
 
-GRANT USAGE ON SCHEMA referentiel TO vao;
+GRANT USAGE ON SCHEMA referentiel TO vao_u;
 
 
 /*==============================================================*/
@@ -20,5 +20,5 @@ create table referentiel.categorie_juridique (
 );
 
 
-GRANT ALL ON ALL TABLES IN SCHEMA referentiel TO vao;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA referentiel TO vao;
+GRANT ALL ON ALL TABLES IN SCHEMA referentiel TO vao_u;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA referentiel TO vao_u;
