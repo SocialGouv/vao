@@ -24,30 +24,29 @@ module.exports = async function login(req, res, next) {
     );
   }
 
-  const user = await User.login({ email, password });
-
-  if (!user) {
-    log.w("Utilisateur inexistant");
-    return next(
-      new AppError("Mauvais identifiants", {
-        name: "WrongCredentials",
-        statusCode: 404,
-      }),
-    );
-  }
-
-  log.d({ user });
-  if (user.statusCode === status.NEED_EMAIL_VALIDATION) {
-    log.w("Compte non validé");
-    return next(
-      new AppError("Compte inactif", {
-        name: "NotValidatedAccount",
-        statusCode: 400,
-      }),
-    );
-  }
-
   try {
+    const user = await User.login({ email, password });
+
+    if (!user) {
+      log.w("Utilisateur inexistant");
+      return next(
+        new AppError("Mauvais identifiants", {
+          name: "WrongCredentials",
+          statusCode: 404,
+        }),
+      );
+    }
+
+    log.d({ user });
+    if (user.statusCode === status.NEED_EMAIL_VALIDATION) {
+      log.w("Compte non validé");
+      return next(
+        new AppError("Compte inactif", {
+          name: "NotValidatedAccount",
+          statusCode: 400,
+        }),
+      );
+    }
     const accessToken = jwt.sign(buildAccessToken(user), config.tokenSecret, {
       algorithm: "ES512",
       expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde
