@@ -184,3 +184,5 @@ Hormis dans le cas d'un test à la volée, les changements de variables nécessi
 ### Backup
 
 Les backup de postgres sont gérés par la Fabrique via Kubernetes.
+
+## [Déploiement](./docs/deploiement) 

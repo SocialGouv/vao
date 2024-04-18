@@ -20,8 +20,6 @@ frontend-bo:
   redirectFrom:
     - "bo-{{ .Values.global.host }}"
 
-
-
 jobs:
   runs:
     build-frontend-usagers:
