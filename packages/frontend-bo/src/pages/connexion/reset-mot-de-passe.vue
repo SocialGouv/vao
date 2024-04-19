@@ -35,6 +35,7 @@
                         :error-message="passwordField.errorMessage"
                         :model-value="passwordField.modelValue"
                         type="password"
+                        autocomplete="new-password"
                         label="Mot de passe"
                         :label-visible="true"
                         placeholder="Veuillez saisir votre mot de passe"
@@ -96,6 +97,7 @@
                         :error-message="confirmField.errorMessage"
                         :model-value="confirmField.modelValue"
                         type="password"
+                        autocomplete="new-password"
                         label="Confirmation mot de passe"
                         :label-visible="true"
                         placeholder="Veuillez saisir le même mot de passe que précédemment"
@@ -112,8 +114,8 @@
                         <DsfrButton
                           :disabled="!canRenewPassword"
                           @click.prevent="renewPassword"
-                          >Changer mon mot de passe</DsfrButton
-                        >
+                          >Changer mon mot de passe
+                        </DsfrButton>
                       </li>
                     </ul>
                   </div>
