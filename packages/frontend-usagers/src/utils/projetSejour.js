@@ -35,12 +35,7 @@ const cultureOptions = [
   { text: "Chant", value: "Chant", id: "7" },
   { text: "Soirées dansantes", value: "Soirées dansantes", id: "8" },
   { text: "Ferme pédagogique", value: "Ferme pédagogique", id: "9" },
-  {
-    text: "Bien-être (thalasse, bien-être, ect...)",
-    value: "Bien-être (thalasse, bien-être, ect...)",
-    id: "10",
-  },
-  { text: "Autres", value: "Autres", id: "11" },
+  { text: "Autres", value: "Autres", id: "10" },
 ];
 
 const bienEtreOption = [

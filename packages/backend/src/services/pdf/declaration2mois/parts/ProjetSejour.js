@@ -75,6 +75,32 @@ module.exports = function buildProjetSejour(info) {
                   },
                 ],
               },
+              {
+                columns: [
+                  {
+                    text: "Bien être :",
+                    width: 250,
+                  },
+                  {
+                    bold: true,
+                    text: `${info.activitesBienEtre.join(", ")}`,
+                    width: "*",
+                  },
+                ],
+              },
+              {
+                columns: [
+                  {
+                    text: "Personnel ou organisme prévu le cas échéant pour encadrer les activités spécifiques :",
+                    width: 250,
+                  },
+                  {
+                    bold: true,
+                    text: `${info.activitesPersonnelPrevu ?? ""}`,
+                    width: "*",
+                  },
+                ],
+              },
             ],
           },
         ],
