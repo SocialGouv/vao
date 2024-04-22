@@ -1,20 +1,35 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset">
+    <DsfrFieldset>
       <div class="fr-fieldset__element">
-        <DsfrInputGroup
-          name="siret"
-          label="Numéro SIRET du titulaire de l’agrément VAO"
-          :label-visible="true"
-          :model-value="formatedSiret"
-          :is-valid="siretMeta.valid"
-          :error-message="siretErrorMessage"
-          :readonly="!props.modifiable"
-          placeholder=""
-          hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
-          @update:model-value="trimSiret"
+        <DsfrRadioButtonSet
+          name="porteurAgrement"
+          legend="Êtes-vous l’organisateur titulaire de l'agrément ?"
+          :model-value="porteurAgrement"
+          :options="ouiNonOptions"
+          :is-valid="porteurAgrementMeta"
+          :inline="false"
+          :error-message="porteurAgrementErrorMessage"
+          :disabled="!props.modifiable"
+          @update:model-value="onPorteurAgrementChange"
         />
       </div>
+      <DsfrInputGroup
+        name="siret"
+        :label="
+          porteurAgrement
+            ? 'Numéro SIRET du titulaire de l’agrément VAO'
+            : 'Numéro SIRET de l\'établissement secondaire ou de la délégation locale organisant le séjour'
+        "
+        :label-visible="true"
+        :model-value="formatedSiret"
+        :is-valid="siretMeta.valid"
+        :error-message="siretErrorMessage"
+        :readonly="!props.modifiable"
+        placeholder=""
+        hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
+        @update:model-value="trimSiret"
+      />
       <div v-if="props.modifiable" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-4">
           <DsfrButton
@@ -25,9 +40,9 @@
           </DsfrButton>
         </div>
       </div>
-    </fieldset>
+    </DsfrFieldset>
     <div v-if="siren">
-      <fieldset class="fr-fieldset">
+      <DsfrFieldset legend="Organisateur du séjour">
         <div class="fr-fieldset__element">
           <DsfrInputGroup
             name="raisonSociale"
@@ -106,36 +121,73 @@
             @update:model-value="onTelephoneChange"
           />
         </div>
-      </fieldset>
-      <div v-if="siegeSocial">
+      </DsfrFieldset>
+      <DsfrFieldset v-if="!porteurAgrement" legend="Organisateur agréé">
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-8">
-            <DsfrHighlight
-              text="Liste des établissements secondaires"
-              :large="true"
-            />
-          </div>
+          <DsfrInputGroup
+            name="agreeSiret"
+            label="SIRET agréé"
+            :label-visible="true"
+            :model-value="etablissementPrincipal.siret"
+            :readonly="true"
+          />
         </div>
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-12">
-            <DsfrTable
-              :headers="[
-                'code NIC',
-                'Adresse',
-                'Code postal',
-                'Commune',
-                'Autorisé à organiser des séjours ?',
-              ]"
-              :rows="formatedEtablissements"
-              pagination
-            />
-          </div>
+          <DsfrInputGroup
+            name="agreeRaisonSociale"
+            label="Raison sociale"
+            :label-visible="true"
+            :model-value="etablissementPrincipal.raisonSociale"
+            :readonly="true"
+          />
         </div>
         <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-8">
-            <DsfrHighlight text="Représentants légaux" :large="true" />
-          </div>
+          <DsfrInputGroup
+            name="agreeNomCommercial"
+            label="Nom commercial (optionnel)"
+            :label-visible="true"
+            :model-value="etablissementPrincipal.nomCommercial"
+            :readonly="true"
+          />
         </div>
+        <div class="fr-fieldset__element">
+          <DsfrInputGroup
+            name="adresse"
+            label="adresse"
+            :label-visible="true"
+            :model-value="etablissementPrincipal.adresse"
+            :readonly="true"
+          />
+        </div>
+        <div class="fr-fieldset__element">
+          <DsfrInputGroup
+            name="pays"
+            label="Pays"
+            :label-visible="true"
+            :model-value="etablissementPrincipal.pays"
+            :readonly="true"
+          />
+        </div>
+        <div class="fr-fieldset__element">
+          <DsfrInputGroup
+            name="agreeEmail"
+            label="Courriel"
+            :label-visible="true"
+            :model-value="etablissementPrincipal.email"
+            :readonly="true"
+          />
+        </div>
+        <div class="fr-fieldset__element">
+          <DsfrInputGroup
+            name="agreeTelephone"
+            label="Téléphone"
+            :label-visible="true"
+            :model-value="etablissementPrincipal.telephone"
+            :readonly="true"
+          />
+        </div>
+      </DsfrFieldset>
+      <DsfrFieldset legend="Représentants légaux">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
             <Personnes
@@ -153,29 +205,50 @@
             </Personnes>
           </div>
         </div>
-      </div>
-      <div v-if="props.showResponsableSejour" class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-8">
-          <h6>Responsable de l'organisation du séjour</h6>
-          <Personne
-            :key="randomId"
-            :personne="responsableSejour"
-            :modifiable="props.modifiable"
-            :show-adresse="true"
-            :show-telephone="true"
-            :show-email="true"
-            :show-button="false"
-            :validate-on-mount="!props.modifiable"
-            :model-value="responsableSejour"
-            @update:personne="onResponsableSejourChange"
-          ></Personne>
+      </DsfrFieldset>
+      <DsfrFieldset v-if="siegeSocial" legend="Etablissements secondaires">
+        <div class="fr-fieldset__element">
+          <div class="fr-input-group fr-col-12">
+            <DsfrTable
+              :headers="[
+                'code NIC',
+                'Adresse',
+                'Code postal',
+                'Commune',
+                'Autorisé à organiser des séjours ?',
+              ]"
+              :rows="formatedEtablissements"
+              pagination
+            />
+          </div>
         </div>
-      </div>
+      </DsfrFieldset>
+      <DsfrFieldset
+        v-if="props.showResponsableSejour"
+        legend="Responsable de l'organisation du séjour"
+      >
+        <div class="fr-fieldset__element">
+          <div class="fr-input-group fr-col-12">
+            <Personne
+              :key="randomId"
+              :personne="responsableSejour"
+              :modifiable="props.modifiable"
+              :show-adresse="true"
+              :show-telephone="true"
+              :show-email="true"
+              :show-button="false"
+              :validate-on-mount="!props.modifiable"
+              :model-value="responsableSejour"
+              @update:personne="onResponsableSejourChange"
+            ></Personne>
+          </div>
+        </div>
+      </DsfrFieldset>
     </div>
 
-    <fieldset v-if="props.showButtons" class="fr-fieldset">
+    <DsfrFieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
-    </fieldset>
+    </DsfrFieldset>
   </div>
 </template>
 
@@ -222,6 +295,7 @@ const initialValues = {
   siret: null,
   siren: null,
   siegeSocial: null,
+  porteurAgrement: null,
   raisonSociale: null,
   nomCommercial: null,
   statut: null,
@@ -232,6 +306,7 @@ const initialValues = {
   representantsLegaux: [],
   etablissements: [],
   responsableSejour: {},
+  etablissementPrincipal: {},
   ...props.initData,
 };
 
@@ -241,6 +316,12 @@ const { meta, values, setValues } = useForm({
   validateOnMount: props.validateOnMount,
 });
 
+const {
+  value: porteurAgrement,
+  errorMessage: porteurAgrementErrorMessage,
+  handleChange: onPorteurAgrementChange,
+  meta: porteurAgrementMeta,
+} = useField("porteurAgrement");
 const {
   value: siret,
   errorMessage: siretErrorMessage,
@@ -277,6 +358,7 @@ const {
   handleChange: onRepresentantsLegauxChange,
 } = useField("representantsLegaux");
 const { value: etablissements } = useField("etablissements");
+const { value: etablissementPrincipal } = useField("etablissementPrincipal");
 const { value: responsableSejour, handleChange: onResponsableSejourChange } =
   useField("responsableSejour");
 
@@ -338,13 +420,16 @@ async function searchApiInsee() {
   log.i("searchApiInsee - IN");
   const url = `/siret/${siret.value}`;
   try {
-    const { uniteLegale, etablissements, representantsLegaux, nomCommercial } =
-      await $fetchBackend(url, {
-        method: "GET",
-        credentials: "include",
-      });
-    toaster.success("Données récupérées");
-
+    const {
+      uniteLegale,
+      etablissements,
+      representantsLegaux,
+      nomCommercial,
+      etablissementPrincipal,
+    } = await $fetchBackend(url, {
+      method: "GET",
+      credentials: "include",
+    });
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
 
@@ -360,6 +445,25 @@ async function searchApiInsee() {
         "France",
       representantsLegaux: representantsLegaux ?? [],
       etablissements: etablissements ?? [],
+      etablissementPrincipal:
+        etablissementPrincipal &&
+        etablissementPrincipal.complet &&
+        etablissementPrincipal.personneMorale?.etablissements?.find((e) => {
+          log.i(siret.value, siret.value.slice(9));
+          return e.nic === siret.value.slice(9);
+        })
+          ? {
+              siret: etablissementPrincipal.personneMorale.siret ?? "",
+              raisonSociale:
+                etablissementPrincipal.personneMorale.raisonSociale ?? "",
+              nomCommercial:
+                etablissementPrincipal.personneMorale.nomCommercial ?? "",
+              adresse: etablissementPrincipal.personneMorale.adresse ?? "",
+              pays: etablissementPrincipal.personneMorale.pays ?? "",
+              telephone: etablissementPrincipal.personneMorale.telephone ?? "",
+              email: etablissementPrincipal.personneMorale.email ?? "",
+            }
+          : {},
     });
   } catch (error) {
     toaster.error(
@@ -376,6 +480,7 @@ async function searchApiInsee() {
       pays: null,
       representantsLegaux: [],
       etablissements: [],
+      etablissementPrincipal: {},
     });
   }
 }
@@ -392,9 +497,8 @@ async function searchOrganismeBySiret() {
     if (data.organisme && data.organisme.personneMorale) {
       setValues({
         ...data.organisme.personneMorale,
+        porteurAgrement: porteurAgrement.value,
       });
-      toaster.success("L'organisme est déjà présent en base");
-
       return data.organisme;
     }
   } catch (error) {
@@ -413,8 +517,47 @@ async function searchOrganisme() {
     log.d("appel API INSEE");
     await searchApiInsee();
   }
-  randomId.value = random.getRandomId();
-  keyRepresentantLegaux.value += 1;
+  if (siren.value) {
+    if (!porteurAgrement.value && siegeSocial.value) {
+      toaster.error(
+        "Un établissement principal est nécessairement titulaire d'un agrément",
+      );
+      setValues({
+        siren: null,
+        siegeSocial: null,
+        raisonSociale: null,
+        nomCommercial: null,
+        statut: null,
+        adresse: null,
+        pays: null,
+        representantsLegaux: [],
+        etablissements: [],
+        etablissementPrincipal: {},
+      });
+      return false;
+    }
+    if (!porteurAgrement.value && !etablissementPrincipal.value.siret) {
+      toaster.error(
+        "L'établissement principal ne s'est pas encore déclaré sur la plateforme. Veuillez réessayer plus tard.",
+      );
+      setValues({
+        siren: null,
+        siegeSocial: null,
+        raisonSociale: null,
+        nomCommercial: null,
+        statut: null,
+        adresse: null,
+        pays: null,
+        representantsLegaux: [],
+        etablissements: [],
+        etablissementPrincipal: {},
+      });
+      return false;
+    }
+    if (siren) toaster.success("Données récupérées");
+    randomId.value = random.getRandomId();
+    keyRepresentantLegaux.value += 1;
+  }
 }
 
 const onRepresentantsLegauxChangeWithKeyChange = (event) => {

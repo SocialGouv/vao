@@ -21,7 +21,18 @@ module.exports = async function post(req, res, next) {
   }
 
   try {
+    let organismeAgree;
     let organismeId;
+
+    if (type === "personne_morale" && !parametre.porteurAgrement) {
+      organismeAgree = await Organisme.getBySiret(
+        parametre.etablissementPrincipal.siret,
+      );
+      if (!organismeAgree) {
+        log.w("DONE with error");
+        throw new AppError("organisme agréé not found", { statusCode: 404 });
+      }
+    }
     if (type === "personne_morale") {
       const organisme = await Organisme.getBySiret(parametre.siret);
       organismeId = organisme ? organisme.organismeId : null;
@@ -29,9 +40,26 @@ module.exports = async function post(req, res, next) {
     if (!organismeId) {
       log.d("organisme inexistant, à créer");
       organismeId = await Organisme.create(type, parametre);
+      if (
+        organismeId &&
+        type === "personne_morale" &&
+        !parametre.porteurAgrement
+      ) {
+        await Organisme.update(
+          "protocole_transport",
+          organismeAgree.protocoleTransport,
+          organismeId,
+        );
+        await Organisme.update(
+          "protocole_sanitaire",
+          organismeAgree.protocoleSanitaire,
+          organismeId,
+        );
+      }
     }
 
     await Organisme.link(userId, organismeId);
+
     return res
       .status(200)
       .json({ message: "sauvegarde organisme OK", organismeId });

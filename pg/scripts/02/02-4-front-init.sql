@@ -156,7 +156,7 @@ create table front.demande_sejour_history (
 
 CREATE SEQUENCE front.seq_declaration_sejour INCREMENT 1 MINVALUE 1 MAXVALUE 9999 START 1 ;
 
-GRANT USAGE ON SCHEMA front TO vao_u;
+GRANT USAGE ON SCHEMA front TO vao;
 
-GRANT ALL ON ALL TABLES IN SCHEMA front TO vao_u;
-GRANT ALL ON ALL SEQUENCES IN SCHEMA front TO vao_u;
+GRANT ALL ON ALL TABLES IN SCHEMA front TO vao;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA front TO vao;

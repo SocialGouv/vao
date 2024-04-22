@@ -51,6 +51,20 @@ const query = {
   `,
     [organismeId],
   ],
+  getBySiret: `
+  SELECT 
+    json_build_object(
+      'numero', numero,
+      'regionObtention', region_obtention,
+      'dateObtention', date_obtention,
+      'file', file,
+      'createdAt', a.created_at
+    ) as "agrement"
+  FROM front.agrements a            
+  JOIN front.organismes o ON o.id = a.organisme_id 
+  WHERE o.personne_morale->>'siret' = $1
+  AND a.supprime = false
+  `,
   update: (
     organismeId,
     numero,
@@ -166,5 +180,17 @@ module.exports.deleteByOrganismeId = async (organismeId) => {
   } catch (err) {
     log.w(err);
     throw new AppError("deleteByOrganismeId failed", { cause: err });
+  }
+};
+
+module.exports.getBySiret = async (siret) => {
+  log.i("getFromAgree - In");
+  try {
+    const { rows: agrement } = await pool.query(query.getBySiret, [siret]);
+    log.i("getFromAgree - Done");
+    return agrement[0].agrement;
+  } catch (err) {
+    log.w(err);
+    throw new AppError("getFromAgree failed", { cause: err });
   }
 };

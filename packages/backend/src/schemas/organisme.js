@@ -80,8 +80,34 @@ const professionOptions = [
 
 yup.setLocale({
   mixed: {
-    required: "Le champs est obligatoire.",
+    required: "Le champ est obligatoire.",
   },
+});
+
+const etablissementPrincipalSchema = () => ({
+  adresse: yup.string().required(),
+  email: yup
+    .string()
+    .email("le format de l'email n'est pas valide")
+    .required("L'email de contact est obligatoire"),
+
+  nomCommercial: yup.string().nullable().default(null),
+  pays: yup.string().required(),
+  raisonSociale: yup.string().required(),
+  siret: yup
+    .string()
+    .test(
+      "siret",
+      "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
+      (siret) => regex.siretRegex.test(siret),
+    )
+    .required(),
+  telephone: yup
+    .string()
+    .test("telephone", "Format de numéro de téléphone invalide", (telephone) =>
+      regex.numTelephoneRegex.test(telephone),
+    )
+    .required("Le numéro de téléphone de l'établissement est obligatoire"),
 });
 
 const personneMoraleSchema = () => ({
@@ -90,9 +116,15 @@ const personneMoraleSchema = () => ({
     .string()
     .email("le format de l'email n'est pas valide")
     .required("L'email de contact est obligatoire"),
+  etablissementPrincipal: yup.object().when("porteurAgrement", {
+    is: (val) => !val,
+    otherwise: (val) => val.nullable(),
+    then: (schema) => schema.shape(etablissementPrincipalSchema()),
+  }),
   etablissements: yup.array().required(),
   nomCommercial: yup.string().nullable().default(null),
   pays: yup.string().required(),
+  porteurAgrement: yup.boolean().required(),
   raisonSociale: yup.string().required(),
   representantsLegaux: yup
     .array()
@@ -239,9 +271,11 @@ const schema = (regions) => ({
     }),
   protocoleSanitaire: yup
     .object()
-    .when(["typeOrganisme", "personneMorale.siegeSocial"], {
-      is: (typeOrganisme, siegeSocial) => {
-        return typeOrganisme === "personne_physique" || siegeSocial === true;
+    .when(["typeOrganisme", "personneMorale.porteurAgrement"], {
+      is: (typeOrganisme, porteurAgrement) => {
+        return (
+          typeOrganisme === "personne_physique" || porteurAgrement === true
+        );
       },
       otherwise: (schema) => schema.nullable(),
       then: (schema) =>
@@ -251,9 +285,11 @@ const schema = (regions) => ({
     }),
   protocoleTransport: yup
     .object()
-    .when(["typeOrganisme", "personneMorale.siegeSocial"], {
-      is: (typeOrganisme, siegeSocial) => {
-        return typeOrganisme === "personne_physique" || siegeSocial === true;
+    .when(["typeOrganisme", "personneMorale.porteurAgrement"], {
+      is: (typeOrganisme, porteurAgrement) => {
+        return (
+          typeOrganisme === "personne_physique" || porteurAgrement === true
+        );
       },
       otherwise: (schema) => schema.nullable(),
       then: (schema) =>

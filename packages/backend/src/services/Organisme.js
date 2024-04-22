@@ -1,6 +1,5 @@
 /* eslint-disable no-param-reassign */
 const yup = require("yup");
-
 const Regions = require("./geo/Region");
 
 const AppError = require("../utils/error");
@@ -88,6 +87,34 @@ const query = {
     `,
     Object.values(criterias),
   ],
+  getBySiren: `
+    SELECT
+      o.id as "organismeId",
+      o.supprime as "supprime",
+      o.complet as "complet",
+      o.type_organisme as "typeOrganisme",
+      o.personne_morale as "personneMorale",
+      o.personne_physique as "personnePhysique",
+      o.protocole_transport as "protocoleTransport",
+      o.protocole_sanitaire as "protocoleSanitaire",
+      o.created_at as "createdAt",
+      o.edited_at as "editedAt",
+      (
+        SELECT 
+          json_build_object(
+            'numero', numero,
+            'regionObtention', region_obtention,
+            'dateObtention', date_obtention,
+            'file', file,
+            'createdAt', a.created_at
+          )                  
+        FROM front.agrements a            
+        WHERE organisme_id = o.id
+        AND a.supprime = false
+      ) AS agrement
+    FROM front.organismes o
+    WHERE o.personne_morale->>'siren' = $1
+`,
   getBySiret: `
     SELECT
       o.id as "organismeId",
@@ -211,6 +238,7 @@ module.exports.update = async (type, parametre, organismeId) => {
   let response;
   switch (type) {
     case "personne_morale": {
+      log.i(parametre);
       response = await pool.query(query.updatePersonne, [
         organismeId,
         type,
@@ -267,7 +295,7 @@ module.exports.finalize = async function (userId) {
   const criterias = {
     "uo.use_id": userId,
   };
-  log.i(...query.get(criterias));
+  log.d(...query.get(criterias));
   const { rows, rowCount } = await pool.query(...query.get(criterias));
   if (rowCount !== 1) {
     throw new AppError("Organisme non trouvé", {
@@ -281,8 +309,9 @@ module.exports.finalize = async function (userId) {
       abortEarly: false,
       stripUnknown: true,
     });
-    log.d("finalize", { organisme });
+    log.i("finalize", { organisme });
   } catch (error) {
+    log.w(error);
     throw new ValidationAppError(error);
   }
   await pool.query(...query.finalize(organisme));
@@ -292,10 +321,16 @@ module.exports.finalize = async function (userId) {
 module.exports.get = async (criterias = {}) => {
   log.i("get - IN", { criterias });
   const { rows: organismes } = await pool.query(...query.get(criterias));
-  log.i("get - DONE");
+  log.i("get - DONE", organismes[0]);
   return !organismes || organismes.length === 0 ? [] : organismes[0];
 };
 
+module.exports.getBySiren = async (siren) => {
+  log.i(`getBySiren - IN ${siren}`);
+  const { rows: organismes } = await pool.query(query.getBySiren, [siren]);
+  log.i("getBySiren - DONE");
+  return organismes;
+};
 module.exports.getBySiret = async (siret) => {
   log.i(`getBySiret - IN ${siret}`);
   const { rows: organismes } = await pool.query(query.getBySiret, [siret]);

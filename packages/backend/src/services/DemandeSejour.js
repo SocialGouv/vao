@@ -104,7 +104,7 @@ const query = {
       attestation,
     ],
   ],
-  get: `
+  get: (listeOrganisme) => `
     SELECT
       ds.id as "demandeSejourId",
       ds.statut as "statut",
@@ -125,12 +125,12 @@ const query = {
       ds.sanitaires as "sanitaires",
       ds.files as "files",
       ds.attestation as "attestation",
-      o.personne_morale->>'siret' as "siret"
+      o.personne_morale->>'siret' as "siret",
+      o.personne_morale->'etablissementPrincipal' as "organismeAgree"
     FROM front.demande_sejour ds
     JOIN front.organismes o ON o.id = ds.organisme_id
-    JOIN front.user_organisme uo ON uo.org_id = o.id
     WHERE
-      uo.use_id = $1
+      o.id in ${listeOrganisme}
     `,
   getByDepartementCodes: (search, departementCodes) => `
     SELECT
@@ -447,9 +447,13 @@ module.exports.create = async (
   return demandeId;
 };
 
-module.exports.get = async (userId) => {
-  log.i("get - IN", { userId });
-  const response = await pool.query(query.get, [userId]);
+module.exports.get = async (listeOrganismeId) => {
+  log.i("get - IN", { listeOrganismeId });
+  const formatedListeOrganismeId = `(${listeOrganismeId.join(",")})`.replace(
+    ",)",
+    ")",
+  );
+  const response = await pool.query(query.get(formatedListeOrganismeId));
   log.i("get - DONE");
   const demandes = response.rows;
   return demandes;
