@@ -43,6 +43,24 @@ const cultureOptions = [
   { text: "Autres", value: "Autres", id: "11" },
 ];
 
+const bienEtreOption = [
+  {
+    text: "Thalassothérapie",
+    value: "Thalassothérapie",
+    id: "1",
+  },
+  {
+    text: "Balnothérapie",
+    value: "Balnothérapie",
+    id: "2",
+  },
+  {
+    text: "Autre",
+    value: "Autre",
+    id: "3",
+  },
+];
+
 const destinationOptions = [
   { label: "Mer", id: "mer", name: "mer" },
   { label: "Montagne", id: "montagne", name: "montagne" },
@@ -65,6 +83,8 @@ const schema = {
   destination: yup.array().required(),
   activitesCulturelles: yup.array().required(),
   activitesSportives: yup.array().required(),
+  activitesBienEtre: yup.array().required(),
+  activitesPersonnelPrevu: yup.string().nullable(),
 };
 
 export default {
@@ -72,4 +92,5 @@ export default {
   cultureOptions,
   sportOptions,
   schema,
+  bienEtreOption,
 };

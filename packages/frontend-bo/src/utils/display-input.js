@@ -164,6 +164,15 @@ const IProjetSejour = {
     inputType: InputTypes.MULTISELECT,
     label: "Culture et découverte (optionnel)",
   },
+  activitesBienEtre: {
+    inputType: InputTypes.MULTISELECT,
+    label:
+      "Personnel ou organisme prévu le cas échéant pour encadrer les activités spécifiques (optionnel)",
+  },
+  activitesPersonnelPrevu: {
+    inputType: InputTypes.TEXT,
+    label: "Bien être (optionnel)",
+  },
 };
 
 const ITransport = {
