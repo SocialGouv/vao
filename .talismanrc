@@ -56,7 +56,7 @@ fileignoreconfig:
 - filename: .kontinuous/env/prod/templates/smtp.sealed.secret.yaml
   checksum: 161db1ab1b716057d75b52c054e6ccdf8af90cd15b401dd5fe57dde64ef12297
 - filename: .kontinuous/env/prod/templates/token.sealed.secret.yaml
-  checksum: fdc939804202f43c691dcfa7481ac2088825500e4b1278318465c4744b4558f8
+  checksum: 930f9289c37f13b2424b8c6ee0e7895689e922539f1c6fba8b2dd4c0ad45ba1e
 - filename: .kontinuous/preprod/templates/apientreprise.sealed.secret.yaml
   checksum: 6e1a0def42dc791767f353c6676e385b21eb2c9c9637a2b3cae3e7a33505c76a
 - filename: .kontinuous/preprod/templates/pg.sealed.secret.yaml
