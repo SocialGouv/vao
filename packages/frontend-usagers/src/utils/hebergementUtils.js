@@ -61,7 +61,7 @@ const coordonneesSchema = {
         numTelephone2 == null || numTelephoneRegex.test(numTelephone2),
     )
     .nullable(),
-  email: yup.string().email().nullable(),
+  email: yup.string().email("Format de courriel invalide").nullable(),
 };
 const informationsLocauxSchema = {
   type: yup
