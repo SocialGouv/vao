@@ -89,8 +89,33 @@ const professionOptions = [
 
 yup.setLocale({
   mixed: {
-    required: "Le champs est obligatoire.",
+    required: "Le champ est obligatoire.",
   },
+});
+const etablissementPrincipalSchema = () => ({
+  adresse: yup.string().required(),
+  email: yup
+    .string()
+    .email("le format de l'email n'est pas valide")
+    .required("L'email de contact est obligatoire"),
+
+  nomCommercial: yup.string().nullable().default(null),
+  pays: yup.string().required(),
+  raisonSociale: yup.string().required(),
+  siret: yup
+    .string()
+    .test(
+      "siret",
+      "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
+      (siret) => regex.siretRegex.test(siret),
+    )
+    .required(),
+  telephone: yup
+    .string()
+    .test("telephone", "Format de numéro de téléphone invalide", (telephone) =>
+      regex.numTelephoneRegex.test(telephone),
+    )
+    .required("Le numéro de téléphone de l'établissement est obligatoire"),
 });
 
 const personneMoraleSchema = {
@@ -111,6 +136,11 @@ const personneMoraleSchema = {
     )
     .required(),
   siegeSocial: yup.boolean().required(),
+  porteurAgrement: yup
+    .boolean()
+    .required(
+      "vous devez préciser si vous êtes titualire d'un agrément VAO ou non",
+    ),
   raisonSociale: yup.string().required(),
   nomCommercial: yup.string().nullable().default(null),
   statut: yup.string().required(),
@@ -131,6 +161,11 @@ const personneMoraleSchema = {
     .min(1, "Au moins un représentant légal est requis")
     .required(),
   etablissements: yup.array().required(),
+  etablissementPrincipal: yup.object().when("porteurAgrement", {
+    is: (val) => !val,
+    otherwise: (val) => val.nullable(),
+    then: (schema) => schema.shape(etablissementPrincipalSchema()),
+  }),
   responsableSejour: yup.object({
     ...personne.schema({
       showAdresse: true,

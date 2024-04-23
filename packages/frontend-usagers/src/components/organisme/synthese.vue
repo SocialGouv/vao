@@ -32,7 +32,6 @@
           />
         </DsfrAccordion>
         <DsfrAccordion
-          v-if="isSiege"
           :id="2"
           :expanded-id="expandedId"
           @expand="(id) => (expandedId = id)"
@@ -48,10 +47,10 @@
           <OrganismeAgrement
             :init-agrement="props.initOrganisme.agrement ?? {}"
             :modifiable="false"
+            :show-buttons="false"
           />
         </DsfrAccordion>
         <DsfrAccordion
-          v-if="isSiege"
           :id="3"
           title="Protocole de transport"
           :expanded-id="expandedId"
@@ -73,7 +72,6 @@
           ></ProtocoleTransport>
         </DsfrAccordion>
         <DsfrAccordion
-          v-if="isSiege"
           :id="4"
           title="Protocole sanitaire"
           :expanded-id="expandedId"
@@ -98,7 +96,7 @@
     </div>
 
     <form>
-      <fieldset class="fr-fieldset">
+      <DsfrFieldset>
         <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
           <DsfrButton
             id="previous-step"
@@ -117,7 +115,7 @@
             @click.prevent="finalizeOrganisme"
           />
         </DsfrButtonGroup>
-      </fieldset>
+      </DsfrFieldset>
     </form>
   </div>
 </template>
@@ -144,14 +142,6 @@ const { meta, errors } = useForm({
   initialValues,
   validationSchema,
   validateOnMount: true,
-});
-
-const isSiege = computed(() => {
-  return (
-    !props.initOrganisme ||
-    props.initOrganisme.typeOrganisme === "personne_physique" ||
-    props.initOrganisme.personneMorale?.siegeSocial === true
-  );
 });
 
 const renseignementsGeneraux = computed(() =>

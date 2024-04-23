@@ -20,16 +20,17 @@
               @next="nextHash"
             />
           </div>
-          <div v-if="isSiege" id="agrement">
+          <div id="agrement">
             <OrganismeAgrement
               v-if="hash === 'agrement'"
               :init-agrement="organismeStore.organismeCourant.agrement ?? {}"
+              :modifiable="isPorteurAgrement"
               @previous="previousHash"
               @next="nextHash"
               @update="updateOrCreateAgrement"
             ></OrganismeAgrement>
           </div>
-          <div v-if="isSiege" id="protocole-transport">
+          <div id="protocole-transport">
             <ProtocoleTransport
               v-if="hash === 'protocole-transport'"
               :init-data="
@@ -40,7 +41,7 @@
               @next="nextHash"
             ></ProtocoleTransport>
           </div>
-          <div v-if="isSiege" id="protocole-sanitaire">
+          <div id="protocole-sanitaire">
             <ProtocoleSanitaire
               v-if="hash === 'protocole-sanitaire'"
               :init-data="
@@ -97,18 +98,14 @@ useHead({
 
 const organismeStore = useOrganismeStore();
 
-const isSiege = computed(() => {
+const isPorteurAgrement = computed(() => {
   return (
     organismeStore.organismeCourant?.typeOrganisme === "personne_physique" ||
-    organismeStore.organismeCourant?.personneMorale?.siegeSocial === true
+    organismeStore.organismeCourant?.personneMorale?.porteurAgrement === true
   );
 });
 
-const sommaireOptions = computed(() =>
-  organismeMenus
-    .filter((m) => isSiege.value || m.displayForEtabSecondaire)
-    .map((m) => m.id),
-);
+const sommaireOptions = computed(() => organismeMenus.map((m) => m.id));
 
 const hash = computed(() => {
   if (route.hash) {

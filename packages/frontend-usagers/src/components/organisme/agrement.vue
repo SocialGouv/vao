@@ -83,7 +83,7 @@
           hint="Format autorisé : PDF uniquement. Taille maximale : 5 Mo "
         />
       </DsfrFieldset>
-      <fieldset class="fr-fieldset">
+      <DsfrFieldset v-if="props.showButtons">
         <div class="fr-fieldset__element">
           <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
             <DsfrButton
@@ -104,7 +104,7 @@
             </DsfrButton>
           </DsfrButtonGroup>
         </div>
-      </fieldset>
+      </DsfrFieldset>
     </form>
   </div>
 </template>
@@ -121,6 +121,7 @@ const log = logger("components/organisme/agrement");
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
+  showButtons: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);

@@ -54,13 +54,15 @@
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
                 <div class="fr-input-group">
-                  <DsfrInputGroup
-                    v-model="search.siret"
-                    type="text"
+                  <label class="fr-label">SIRET déclarant</label>
+                  <Multiselect
+                    :model-value="search.siret"
                     name="siret"
-                    label="SIRET"
-                    placeholder="n° siret"
-                    :label-visible="true"
+                    mode="tags"
+                    :searchable="true"
+                    :close-on-select="false"
+                    :options="siretOptions"
+                    @update:model-value="onUpdateSiret"
                   />
                 </div>
               </div>
@@ -96,6 +98,23 @@
                     name="statut"
                     :options="statutOptions"
                     @update:model-value="onUpdateStatut"
+                  />
+                </div>
+              </div>
+              <div
+                class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+              >
+                <div class="fr-input-group">
+                  <label class="fr-label"> Saison</label>
+                  <Multiselect
+                    :model-value="search.saison"
+                    :hide-selected="true"
+                    :searchable="false"
+                    :close-on-select="false"
+                    mode="tags"
+                    name="saison"
+                    :options="saisonOptions"
+                    @update:model-value="onUpdateSaison"
                   />
                 </div>
               </div>
@@ -173,6 +192,7 @@ const search = reactive({
   siret: null,
   statut: null,
   departementSuivi: null,
+  periode: null,
 });
 
 const departementStore = useDepartementStore();
@@ -181,6 +201,12 @@ const demandeSejourStore = useDemandeSejourStore();
 const idOptions = computed(() => {
   return demandeSejourStore.demandes
     .map((d) => d.demandeSejourId)
+    .filter((v, i, a) => a.indexOf(v) === i);
+});
+
+const siretOptions = computed(() => {
+  return demandeSejourStore.demandes
+    .map((d) => d.siret)
     .filter((v, i, a) => a.indexOf(v) === i);
 });
 
@@ -194,6 +220,12 @@ const departementOptions = computed(() => {
   return departementStore.departements.map((d) => {
     return { label: d.text, value: d.value };
   });
+});
+
+const saisonOptions = computed(() => {
+  return demandeSejourStore.demandes
+    .map((d) => d.periode)
+    .filter((v, i, a) => a.indexOf(v) === i);
 });
 
 const statutOptions = [
@@ -217,6 +249,9 @@ const onUpdateId = (id) => {
   search.id = id;
 };
 
+const onUpdateSiret = (siret) => {
+  search.siret = siret;
+};
 const onUpdateIdFonctionnelle = (id) => {
   search.idFonctionnelle = id;
 };
@@ -229,15 +264,11 @@ const onUpdateStatut = (s) => {
   search.statut = s;
 };
 
+const onUpdateSaison = (s) => {
+  search.periode = s;
+};
+
 const headers = [
-  {
-    column: "demandeSejourId",
-    sorter: "demandeSejourId",
-    text: "Id",
-    headerAttrs: {
-      class: "suivi",
-    },
-  },
   {
     column: "idFonctionnelle",
     sorter: "idFonctionnelle",
@@ -256,7 +287,7 @@ const headers = [
   },
   {
     column: "siret",
-    text: "N° SIRET",
+    text: "SIRET déclarant",
     sorter: "siret",
     headerAttrs: {
       class: "suivi",

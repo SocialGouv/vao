@@ -160,7 +160,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/organisme/personne-morale-read-only.vue
   checksum: 2b3e374044b3d7142a81fd3a6720e197e7839c281d74b594755d0df9035c3576
 - filename: packages/frontend-usagers/src/components/organisme/personne-morale.vue
-  checksum: 97c11e032d13c43344b42b1fbc8ae4afc9ffbdf23c86906d4d88b179d04f55af
+  checksum: 09bb8f48bab74bdf812ba50fe7723a22c8c1facbba76a4f6b02ca3ad36f3920b
 - filename: packages/frontend-usagers/src/components/organisme/synthese.vue
   checksum: c9d27cea7175d829b78e524c08dd744b097f08a2fae2dffddab01f6703f3055c
 - filename: packages/frontend-usagers/src/components/personnes-read-only.vue
