@@ -182,13 +182,6 @@ const confirmField = reactive({
   isValid: false,
 });
 
-const pwdRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*)(<>,~;])(?=.{12,})/;
-const pwdRegexSpecial = /^(?=.*[!@#$%^&*)(<>,~;])/;
-const pwdRegexNumber = /^(?=.*[0-9])/;
-const pwdRegexMaj = /^(?=.*[A-Z])/;
-const pwdRegexMin = /^(?=.*[a-z])/;
-
 const isPwdLong = ref(false);
 const isPwdSpecial = ref(false);
 const isPwdNumber = ref(false);
@@ -213,13 +206,13 @@ const displayType = ref(null);
 
 function checkValidPassword(pwd) {
   passwordField.modelValue = pwd;
-  passwordField.isValid = !pwd || pwdRegex.test(pwd);
+  passwordField.isValid = !pwd || regex.pwdRegex.test(pwd);
 
   isPwdLong.value = pwd.length > 11;
-  isPwdSpecial.value = pwdRegexSpecial.test(pwd);
-  isPwdNumber.value = pwdRegexNumber.test(pwd);
-  isPwdMaj.value = pwdRegexMaj.test(pwd);
-  isPwdMin.value = pwdRegexMin.test(pwd);
+  isPwdSpecial.value = regex.pwdRegexSpecial.test(pwd);
+  isPwdNumber.value = regex.pwdRegexNumber.test(pwd);
+  isPwdMaj.value = regex.pwdRegexMaj.test(pwd);
+  isPwdMin.value = regex.pwdRegexMin.test(pwd);
 }
 
 watch(

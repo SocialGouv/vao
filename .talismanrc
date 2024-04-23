@@ -141,6 +141,8 @@ fileignoreconfig:
   checksum: 74a74e68299d204eac907efee98c2eb3d776ff4c206b304acbca02d058bfbc4e
 - filename: packages/frontend-bo/src/pages/connexion/index.vue
   checksum: 0c46018cbc6e2975274e8ad4ef249f7ada791ed73470205224f9266be2b6704b
+- filename: packages/frontend-bo/src/pages/connexion/reset-mot-de-passe.vue
+  checksum: f544299c6795c35ca29f1ddd0babb1c840f7c25c72435b3c6b0939e0ea55d120
 - filename: packages/frontend-bo/src/pages/sejours/[[idDemande]].vue
   checksum: e076b4e667aeda0b354d743dd92a8ae129c61a3fbdfc6bea4e39b603caa90791
 - filename: packages/frontend-bo/src/pages/sejours/[idDemande].vue
