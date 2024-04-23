@@ -375,6 +375,11 @@ async function register() {
         const body = error.data;
         const codeError = body.name;
         log.w("register", { body, codeError });
+        if (codeError === "UserAlreadyExists") {
+          toaster.error(
+            `Une erreur est survenue. Si vous pensez que cette adresse mail est déjà utilisée, cliquez sur “j'ai déjà un compte“ puis “Mot de passe oublié”`,
+          );
+        }
         if (codeError === "ValidationError") {
           toaster.error(
             "Une erreur technique est survenue, veuillez réessayer plus tard",
