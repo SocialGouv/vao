@@ -3,6 +3,7 @@ const logger = require("../../utils/logger");
 const config = require("../../config");
 const dayjs = require("dayjs");
 const { getToken } = require("../../services/Insee");
+const Organisme = require("../../services/Organisme");
 const Referentiel = require("../../services/Referentiel");
 const AppError = require("../../utils/error");
 
@@ -25,26 +26,48 @@ module.exports = async function get(req, res, next) {
     );
   }
   try {
-    const token = await getToken();
-    const dateDuJour = dayjs().format("YYYY-MM-DD");
-    const { data: reponse } = await axios.get(
-      `${apiInsee.URL}${apiInsee.URI}/siret/${siret}?date=${dateDuJour}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
-    const uniteLegale = reponse.etablissement;
+    let token;
+    let nomCommercial;
+    let elements = [];
+    let representantsLegaux = [];
+    let siege = {};
+    let uniteLegale;
+
+    try {
+      token = await getToken();
+      const dateDuJour = dayjs().format("YYYY-MM-DD");
+      const { data: reponse } = await axios.get(
+        `${apiInsee.URL}${apiInsee.URI}/siret/${siret}?date=${dateDuJour}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      uniteLegale = reponse.etablissement;
+    } catch (e) {
+      log.w("DONE with error");
+      return next(
+        new AppError("Ce numéro SIRET semble ne pas exister", {
+          cause: e,
+          name: "SIRET_NOT_FOUND",
+          statusCode: 404,
+        }),
+      );
+    }
     if (uniteLegale.uniteLegale.categorieJuridiqueUniteLegale) {
       uniteLegale.uniteLegale.categorieJuridiqueUniteLegale =
         (await Referentiel.getLibelle(
           uniteLegale.uniteLegale.categorieJuridiqueUniteLegale,
         )) ?? "statut indéterminé";
     }
-    let elements = [];
+    nomCommercial =
+      uniteLegale.uniteLegale.denominationUsuelle1UniteLegale ?? null;
+
     if (uniteLegale.etablissementSiege) {
       const { data: liste } = await axios.get(
-        `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=70`,
+        `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=100`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       elements = liste.etablissements ?? [];
+    } else {
+      siege = await Organisme.getSiege(siren);
     }
 
     const etablissements = elements
@@ -64,15 +87,13 @@ module.exports = async function get(req, res, next) {
         };
       });
 
-    let representantsLegaux = [];
-    let nomCommercial;
     try {
       const url = `${apiEntreprise.uri}/infogreffe/rcs/unites_legales/${siren}/extrait_kbis?context=${apiEntreprise.context}&object=${apiEntreprise.object}&recipient=${apiEntreprise.recipient}`;
       const { data: response } = await axios.get(url, {
         headers: { Authorization: `Bearer ${config.apiEntreprise.token}` },
       });
       const mandatairesSociaux = response.data.mandataires_sociaux ?? [];
-      nomCommercial = response.data.nom_commercial ?? null;
+      nomCommercial = response.data.nom_commercial ?? nomCommercial;
       representantsLegaux = mandatairesSociaux.map((m) => {
         if (m.type === "personne_physique") {
           return { fonction: m.fonction, nom: m.nom, prenom: m.prenom };
@@ -84,14 +105,19 @@ module.exports = async function get(req, res, next) {
       log.w("erreur sur l'appel à l'API entreprise");
       log.d(err);
     }
-    log.d(representantsLegaux);
-    log.d(etablissements);
-    log.d(uniteLegale);
-    log.i("DONE");
+    log.i("DONE", {
+      etablissements,
+      nomCommercial,
+      representantsLegaux,
+      siege,
+      uniteLegale,
+    });
+
     return res.status(200).json({
       etablissements,
       nomCommercial,
       representantsLegaux,
+      siege,
       uniteLegale,
     });
   } catch (error) {

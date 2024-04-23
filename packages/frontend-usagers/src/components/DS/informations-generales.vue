@@ -145,13 +145,6 @@ const periode = computed(() => {
   if (moisDebut < 12) return "automne";
 });
 
-if (
-  organismeStore.organismeCourant.typeOrganisme === "personne_morale" &&
-  !organismeStore.organismeCourant.personneMorale.siegeSocial
-) {
-  await checkSiege();
-}
-
 const validationSchema = yup.object(DeclarationSejour.baseSchema);
 
 const initialValues = (() => {
@@ -206,45 +199,6 @@ const {
 } = useField("dateFin");
 const { value: responsableSejour, handleChange: onResponsableSejourChange } =
   useField("responsableSejour");
-
-async function checkSiege() {
-  log.i("IN - checkSiege");
-  try {
-    const url = `/organisme/siege/${organismeStore.organismeCourant.personneMorale.siret.substring(0, 9)}`;
-    const data = await $fetchBackend(url, {
-      method: "GET",
-      credentials: "include",
-    });
-    const etablissementPrincipal = data.organisme;
-    const nic =
-      organismeStore.organismeCourant.personneMorale.siret.substring(9);
-    log.d(etablissementPrincipal);
-    if (!etablissementPrincipal) {
-      toaster.error(
-        "L'établissement principal n'a pas encore déclaré son agrément sur la plateforme VAO.",
-      );
-      return navigateTo("/");
-    }
-    const e = (
-      etablissementPrincipal.personneMorale?.etablissements ?? []
-    ).find((e) => e.nic === nic);
-    if (!e) {
-      toaster.error(
-        "Votre établissement n'est pas rattaché à l'établissement principal. Rapprochez-vous de l'établissement principal.",
-      );
-      return navigateTo("/");
-    }
-    if (!e.enabled) {
-      toaster.error(
-        "L'établissement principal n'a pas autorisé votre établissement à saisir des déclarations.",
-      );
-      return navigateTo("/");
-    }
-  } catch (error) {
-    log.w(error);
-    toaster.error("Une erreur est survenue. Veuillez réessayer ultérieurement");
-  }
-}
 
 function next() {
   if (!props.modifiable) {

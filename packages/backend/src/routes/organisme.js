@@ -8,7 +8,6 @@ const organismeController = require("../controllers/organisme");
 // Gère une connexion via mot de passe.
 router.get("/", checkJWT, organismeController.getMine);
 router.get("/siret/:siret", checkJWT, organismeController.getBySiret);
-router.get("/siege/:siren", checkJWT, organismeController.getSiege);
 router.get("/:organismeId", checkJWT, organismeController.getByOrganismeId);
 router.post("/:organismeId", checkJWT, organismeController.update);
 router.post("/:organismeId/finalize", checkJWT, organismeController.finalize);

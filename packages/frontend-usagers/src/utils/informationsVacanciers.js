@@ -20,7 +20,7 @@ const typeDeficiencesOptions = [
 
 yup.setLocale({
   mixed: {
-    required: "Le champs est obligatoire.",
+    required: "Le champ est obligatoire.",
   },
 });
 

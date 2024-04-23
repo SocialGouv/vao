@@ -38,6 +38,14 @@ export default defineNuxtConfig({
       crossOriginEmbedderPolicy: "unsafe-none",
       contentSecurityPolicy: {
         "img-src": ["'self'", "*.openstreetmap.org", "data:"],
+        "script-src": [
+          "'self'",
+          "https:",
+          "'unsafe-inline'",
+          "'strict-dynamic'",
+          "'unsafe-eval'",
+          "'nonce-{{nonce}}'",
+        ],
       },
     },
   },
