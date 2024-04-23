@@ -28,7 +28,6 @@
         :error-message="activitesSportivesErrorMessage"
         @update="addActiviteSport"
       ></UtilsMultiSelect>
-
       <UtilsMultiSelect
         label="Culture et découverte (optionnel)"
         :options="projetSejour.cultureOptions"
@@ -38,6 +37,29 @@
         :error-message="activitesCulturellesErrorMessage"
         @update="addActiviteCulture"
       ></UtilsMultiSelect>
+      <UtilsMultiSelect
+        label="Bien être (optionnel)"
+        :options="projetSejour.bienEtreOption"
+        :values="activitesBienEtre"
+        :modifiable="props.modifiable"
+        :is-valid="activitesBienEtreMeta.valid"
+        :error-message="activitesBienEtreErrorMessage"
+        @update="addActivitesBienEtre"
+      ></UtilsMultiSelect>
+      <div class="fr-fieldset__element">
+        <DsfrInputGroup
+          name="activitesPersonnelPrevu"
+          :readonly="!props.modifiable"
+          label="Personnel ou organisme prévu le cas échéant pour encadrer les activités spécifiques (optionnel)"
+          :label-visible="true"
+          :is-textarea="true"
+          placeholder=""
+          :model-value="activitesPersonnelPrevu"
+          :error-message="activitesPersonnelPrevuErrorMessage"
+          :is-valid="activitesPersonnelPrevuMeta.valid"
+          @update:model-value="onactivitesPersonnelPrevuChange"
+        />
+      </div>
     </DsfrFieldset>
     <DsfrFieldset v-if="props.showButtons">
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
@@ -49,8 +71,8 @@
               emit('previous');
             }
           "
-          >Précédent</DsfrButton
-        >
+          >Précédent
+        </DsfrButton>
         <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
       </DsfrButtonGroup>
     </DsfrFieldset>
@@ -78,6 +100,8 @@ const initialValues = {
   destination: [],
   activitesCulturelles: [],
   activitesSportives: [],
+  activitesBienEtre: [],
+  activitesPersonnelPrevu: null,
   ...props.initData,
 };
 const { meta, values } = useForm({
@@ -95,6 +119,10 @@ function addActiviteCulture(liste) {
   activitesCulturelles.value = liste;
 }
 
+function addActivitesBienEtre(liste) {
+  activitesBienEtre.value = liste;
+}
+
 const { value: destination, errorMessage: destinationErrorMessage } =
   useField("destination");
 const {
@@ -107,6 +135,17 @@ const {
   meta: activitesCulturellesMeta,
   errorMessage: activitesCulturellesErrorMessage,
 } = useField("activitesCulturelles");
+const {
+  value: activitesBienEtre,
+  meta: activitesBienEtreMeta,
+  errorMessage: activitesBienEtreErrorMessage,
+} = useField("activitesBienEtre");
+const {
+  value: activitesPersonnelPrevu,
+  meta: activitesPersonnelPrevuMeta,
+  errorMessage: activitesPersonnelPrevuErrorMessage,
+  handleChange: onactivitesPersonnelPrevuChange,
+} = useField("activitesPersonnelPrevu");
 
 function next() {
   if (!meta.value.dirty && Object.keys(props.initData).length !== 0) {

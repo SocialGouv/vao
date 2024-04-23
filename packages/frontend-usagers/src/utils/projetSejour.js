@@ -35,12 +35,25 @@ const cultureOptions = [
   { text: "Chant", value: "Chant", id: "7" },
   { text: "Soirées dansantes", value: "Soirées dansantes", id: "8" },
   { text: "Ferme pédagogique", value: "Ferme pédagogique", id: "9" },
+  { text: "Autres", value: "Autres", id: "10" },
+];
+
+const bienEtreOption = [
   {
-    text: "Bien-être (thalasse, bien-être, ect...)",
-    value: "Bien-être (thalasse, bien-être, ect...)",
-    id: "10",
+    text: "Thalassothérapie",
+    value: "Thalassothérapie",
+    id: "1",
   },
-  { text: "Autres", value: "Autres", id: "11" },
+  {
+    text: "Balnothérapie",
+    value: "Balnothérapie",
+    id: "2",
+  },
+  {
+    text: "Autre",
+    value: "Autre",
+    id: "3",
+  },
 ];
 
 const destinationOptions = [
@@ -65,6 +78,8 @@ const schema = {
   destination: yup.array().required(),
   activitesCulturelles: yup.array().required(),
   activitesSportives: yup.array().required(),
+  activitesBienEtre: yup.array().required(),
+  activitesPersonnelPrevu: yup.string().nullable(),
 };
 
 export default {
@@ -72,4 +87,5 @@ export default {
   cultureOptions,
   sportOptions,
   schema,
+  bienEtreOption,
 };

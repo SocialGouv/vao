@@ -7,7 +7,9 @@ yup.setLocale({
 });
 
 const schema = () => ({
+  activitesBienEtre: yup.array().required(),
   activitesCulturelles: yup.array().required(),
+  activitesPersonnelPrevu: yup.string().nullable(),
   activitesSportives: yup.array().required(),
   destination: yup.array().required(),
 });
