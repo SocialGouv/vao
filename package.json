@@ -11,12 +11,15 @@
     "lint:all:fix": "yarn run lint:backend --fix && yarn run lint:frontend-usagers --fix && yarn run lint:frontend-bo --fix",
     "lint:backend": "yarn --cwd ./packages/backend run lint",
     "lint:frontend-usagers": "yarn --cwd ./packages/frontend-usagers run lint",
-    "lint:frontend-bo": "yarn --cwd ./packages/frontend-bo run lint"
+    "lint:frontend-bo": "yarn --cwd ./packages/frontend-bo run lint",
+    "knex": "POSTGRES_HOST=localhost POSTGRES_PORT=5436 env-cmd --no-override knex --cwd ./packages/migrations/src"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
+    "env-cmd": "~10.1.0",
     "eslint": "^8.56.0",
+    "eslint-config-prettier": "~9.1.0",
     "husky": "^9.0.10",
     "is-ci": "^3.0.1",
     "lint-staged": "^15.2.1",

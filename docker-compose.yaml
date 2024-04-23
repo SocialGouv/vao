@@ -56,6 +56,26 @@ services:
     ports:
       - 3001:3000
 
+
+  migrations:
+    build:
+      context: packages/migrations
+      dockerfile: Dockerfile.local
+    working_dir: /app
+    command: /app/entrypoint.sh
+    volumes:
+      - $PWD/packages/migrations:/app:delegated
+      - $HOME/.ssh:/home/node/.ssh:ro
+      - $HOME/.gitconfig:/home/node/.gitconfig:ro
+      - $HOME/.npm:/home/node/.npm:delegated
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+    environment:
+      DEBUG: "*info*"
+      TZ: Europe/Paris
+
   backend:
     build:
       context: packages/backend
@@ -88,7 +108,8 @@ services:
       - PGTZ=Europe/Paris
       - TZ=Europe/Paris
       - NODE_ENV=development
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${PG_VAO_SUPERUSER}
+      - POSTGRES_PASSWORD=${PG_VAO_SUPERPASSWORD}
     env_file:
       - ./.env
     ports:
@@ -102,6 +123,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
 
   maildev:
     image: maildev/maildev:2.1.0
