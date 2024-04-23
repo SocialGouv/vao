@@ -18,7 +18,9 @@ module.exports = async function get(req, res, next) {
     );
   }
   try {
-    const organisme = await Organisme.getBySiret(siret);
+    const organisme = await Organisme.get({
+      "personne_morale->>'siret'": siret,
+    });
     log.d(organisme);
     return res.status(200).json({ organisme });
   } catch (error) {

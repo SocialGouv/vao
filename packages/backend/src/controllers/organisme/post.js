@@ -25,16 +25,18 @@ module.exports = async function post(req, res, next) {
     let organismeId;
 
     if (type === "personne_morale" && !parametre.porteurAgrement) {
-      organismeAgree = await Organisme.getBySiret(
-        parametre.etablissementPrincipal.siret,
-      );
+      organismeAgree = await Organisme.get({
+        "personne_morale->>'siret'": parametre.etablissementPrincipal.siret,
+      });
       if (!organismeAgree) {
         log.w("DONE with error");
         throw new AppError("organisme agréé not found", { statusCode: 404 });
       }
     }
     if (type === "personne_morale") {
-      const organisme = await Organisme.getBySiret(parametre.siret);
+      const organisme = await Organisme.get({
+        "personne_morale->>'siret'": parametre.siret,
+      });
       organismeId = organisme ? organisme.organismeId : null;
     }
     if (!organismeId) {
@@ -45,6 +47,8 @@ module.exports = async function post(req, res, next) {
         type === "personne_morale" &&
         !parametre.porteurAgrement
       ) {
+        log.i("grosse grosse copie des trnasports et sanitaires");
+        log.i(organismeAgree.protocoleTransport);
         await Organisme.update(
           "protocole_transport",
           organismeAgree.protocoleTransport,

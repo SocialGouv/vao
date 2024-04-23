@@ -54,7 +54,13 @@ module.exports = async function post(req, res, next) {
       organisme.typeOrganisme === "personne_morale" &&
       organisme.personneMorale?.siegeSocial === false
     ) {
-      const siege = await Organisme.getSiege(organisme.personneMorale.siret);
+      const siege = await Organisme.get({
+        "personne_morale->'siegeSocial'": true,
+        "personne_morale->>'siren'": organisme.personneMorale.siret.substr(
+          0,
+          9,
+        ),
+      });
       if (!siege)
         log.w("error while getting infos from etablissement principal");
       else {

@@ -67,7 +67,10 @@ module.exports = async function get(req, res, next) {
       );
       elements = liste.etablissements ?? [];
     } else {
-      etablissementPrincipal = await Organisme.getSiege(siren);
+      etablissementPrincipal = await Organisme.get({
+        "personne_morale->'siegeSocial'": true,
+        "personne_morale->>'siren'": siren,
+      });
     }
 
     const etablissements = elements

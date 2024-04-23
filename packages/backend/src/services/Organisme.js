@@ -61,25 +61,43 @@ const query = {
       o.type_organisme as "typeOrganisme",
       o.personne_morale as "personneMorale",
       o.personne_physique as "personnePhysique",
+      (o.personne_morale ->> 'porteurAgrement')::boolean as "porteurAgrement",
       o.protocole_transport as "protocoleTransport",
       o.protocole_sanitaire as "protocoleSanitaire",
       o.created_at as "createdAt",
       o.edited_at as "editedAt",
-      (
-        SELECT 
-          json_build_object(
-            'numero', numero,
-            'regionObtention', region_obtention,
-            'dateObtention', date_obtention,
-            'file', file,
-            'createdAt', a.created_at
-          )                  
-        FROM front.agrements a            
-        WHERE organisme_id = o.id
-        AND a.supprime = false
-      ) AS agrement
+      CASE 
+        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False 
+        THEN (
+          SELECT 
+            json_build_object(
+              'numero', numero,
+              'regionObtention', region_obtention,
+              'dateObtention', date_obtention,
+              'file', file,
+              'createdAt', a.created_at
+            )
+          FROM front.agrements a
+          JOIN front.organismes o2 ON o2.id = a.organisme_id 
+          WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
+          AND a.supprime = false
+        )
+        ELSE (
+          SELECT 
+            json_build_object(
+              'numero', numero,
+              'regionObtention', region_obtention,
+              'dateObtention', date_obtention,
+              'file', file,
+              'createdAt', a.created_at
+            )
+          FROM front.agrements a
+          WHERE organisme_id = o.id
+          AND a.supprime = false
+        ) 
+      END AS agrement
     FROM front.organismes o
-    JOIN front.user_organisme uo ON o.id = uo.org_id
+    JOIN front.user_organisme uo ON uo.org_id = o.id
     WHERE 1=1 
     ${Object.keys(criterias)
       .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
@@ -114,65 +132,6 @@ const query = {
       ) AS agrement
     FROM front.organismes o
     WHERE o.personne_morale->>'siren' = $1
-`,
-  getBySiret: `
-    SELECT
-      o.id as "organismeId",
-      o.supprime as "supprime",
-      o.complet as "complet",
-      o.type_organisme as "typeOrganisme",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
-      o.protocole_transport as "protocoleTransport",
-      o.protocole_sanitaire as "protocoleSanitaire",
-      o.created_at as "createdAt",
-      o.edited_at as "editedAt",
-      (
-        SELECT 
-          json_build_object(
-            'numero', numero,
-            'regionObtention', region_obtention,
-            'dateObtention', date_obtention,
-            'file', file,
-            'createdAt', a.created_at
-          )                  
-        FROM front.agrements a            
-        WHERE organisme_id = o.id
-        AND a.supprime = false
-      ) AS agrement
-    FROM front.organismes o
-    JOIN front.user_organisme uo ON o.id = org_id
-    WHERE o.personne_morale->>'siret' = $1
-`,
-  getSiege: `
-    SELECT
-      o.id as "organismeId",
-      o.supprime as "supprime",
-      o.complet as "complet",
-      o.type_organisme as "typeOrganisme",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
-      o.protocole_transport as "protocoleTransport",
-      o.protocole_sanitaire as "protocoleSanitaire",
-      (
-        SELECT 
-          json_build_object(
-            'numero', numero,
-            'regionObtention', region_obtention,
-            'dateObtention', date_obtention,
-            'file', file,
-            'createdAt', a.created_at
-          )                  
-        FROM front.agrements a            
-        WHERE organisme_id = o.id
-          AND a.supprime = false
-      ) AS agrement,
-      o.created_at as "createdAt",
-      o.edited_at as "editedAt"
-    FROM front.organismes o
-    JOIN front.user_organisme uo ON o.id = org_id
-    WHERE o.personne_morale->>'siren' = $1 
-      AND o.personne_morale->>'siegeSocial' = 'true'
 `,
   link: `
     INSERT INTO front.user_organisme (use_id, org_id)
@@ -330,22 +289,4 @@ module.exports.getBySiren = async (siren) => {
   const { rows: organismes } = await pool.query(query.getBySiren, [siren]);
   log.i("getBySiren - DONE");
   return organismes;
-};
-module.exports.getBySiret = async (siret) => {
-  log.i(`getBySiret - IN ${siret}`);
-  const { rows: organismes } = await pool.query(query.getBySiret, [siret]);
-  log.i("getBySiret - DONE");
-  return !organismes || organismes.length === 0 ? null : organismes[0];
-};
-
-module.exports.getSiege = async (siret) => {
-  log.i("getSiege - IN", { siret });
-  const siren = siret.substr(0, 9);
-  log.d("getSiege", { siren });
-  const { rowCount, rows: organismes } = await pool.query(query.getSiege, [
-    siren,
-  ]);
-  log.d("getSiege", { organismes });
-  log.i("getSiege - DONE");
-  return rowCount === 0 ? null : organismes[0];
 };
