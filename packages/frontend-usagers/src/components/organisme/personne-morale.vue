@@ -21,8 +21,8 @@
             id="chercherSiret"
             :disabled="!siretMeta.valid"
             @click.prevent="searchOrganisme"
-            >Récupérer informations</DsfrButton
-          >
+            >Récupérer informations
+          </DsfrButton>
         </div>
       </div>
     </fieldset>
@@ -127,6 +127,7 @@
                 'Autorisé à organiser des séjours ?',
               ]"
               :rows="formatedEtablissements"
+              pagination
             />
           </div>
         </div>
@@ -138,6 +139,7 @@
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
             <Personnes
+              :key="keyRepresentantLegaux"
               :personnes="representantsLegaux"
               :modifiable="props.modifiable"
               :show-adresse="false"
@@ -145,7 +147,8 @@
               :show-email="false"
               titre="Représentant légal"
               :headers="headers"
-              @valid="onRepresentantsLegauxChange"
+              :current-page="currentPersonnesPage"
+              @valid="onRepresentantsLegauxChangeWithKeyChange"
             >
             </Personnes>
           </div>
@@ -179,6 +182,7 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
@@ -207,6 +211,8 @@ const headers = [
 ];
 
 const randomId = ref(random.getRandomId());
+const keyRepresentantLegaux = ref(1);
+const currentPersonnesPage = ref(1);
 
 const validationSchema = computed(() =>
   yup.object(organisme.personneMoraleSchema),
@@ -408,7 +414,25 @@ async function searchOrganisme() {
     await searchApiInsee();
   }
   randomId.value = random.getRandomId();
+  keyRepresentantLegaux.value += 1;
 }
+
+const onRepresentantsLegauxChangeWithKeyChange = (event) => {
+  onRepresentantsLegauxChange(event);
+  /* Le fait de changer la clé rernder le composant. Il semble que
+  la cloture de la popup rentre en conflit avec ce rerender ce qui casse le scroll.
+
+  On met un petit setTimeout pour eviter ce conflit.
+
+  De plus, quand une ligne est ajoutée, il est possible qu'elle appartienne a la page suivante.
+  Dans ce cas, comme le tableau est rerender avec 10 colonnes par defaut (ce le composant DsfrTable de Personnes),
+  on peut choisir la page a affichée qui est celle du nouvel ajout via la formule suivante.*/
+  setTimeout(() => {
+    keyRepresentantLegaux.value += 1;
+    currentPersonnesPage.value =
+      Math.floor(((representantsLegaux.value ?? []).length - 1) / 10) + 1;
+  }, 10);
+};
 
 function next() {
   log.i("next - IN");
