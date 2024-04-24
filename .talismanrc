@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 7065f7b08ab45ad25bf1f479a9e9bae6df23c8883321bfc038c168c682ccee8e
+  checksum: e8a3f4d486b1884d88c711bad603456e3cb25e9b43e3d16bddb4ac351aa996f5
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -74,9 +74,9 @@ fileignoreconfig:
 - filename: _scripts/dev/local-node.dockerfile
   checksum: e18bef015dc55696295aefdd6610b20447e690cced1214ccf126842b7f1315db
 - filename: docker-compose.prod.yaml
-  checksum: 0ce7bc6d1cee2ea56cd94f0d7eac46b722d0f56380911ee6a98c2fd74a82f192
+  checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
-  checksum: fb82ad474ce0a5545132857d21067d9ac2b95e3624c2be2b3e83a6414a9f7e5c
+  checksum: a896940f1de39300b3c38343483ace310f1b4673c67e317f2877ab1ecccf2fc6
 - filename: packages/backend/src/config.js
   checksum: c0baf7f4f878d3f3406030471f15c092ed9fc671b1e66276fe9b071ea025b58c
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js

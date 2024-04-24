@@ -35,10 +35,27 @@ services:
     env_file:
       - ./.env
     environment:
-      TZ: Europe/Paris
       DEBUG: info:vao*
     ports:
       - 8081:8080
+
+
+  migrations-built:
+    build:
+      context: packages/migrations
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - $PWD/packages/migrations:/app:delegated
+      - $HOME/.ssh:/home/node/.ssh:ro
+      - $HOME/.gitconfig:/home/node/.gitconfig:ro
+      - $HOME/.npm:/home/node/.npm:delegated
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
+    environment:
+      DEBUG: "*info*"
 
   backend-built:
     build:
@@ -51,11 +68,13 @@ services:
       - $HOME/.gitconfig:/home/node/.gitconfig:ro
       - $HOME/.npm:/home/node/.npm:delegated
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
+      migrations-built:
+        condition: service_completed_successfully
     env_file:
       - ./.env
     environment:
-      TZ: Europe/Paris
       DEBUG: info:vao*
     ports:
       - 3010:3000
@@ -66,7 +85,6 @@ services:
     env_file:
       - ./.env
     environment:
-      - TZ="Europe/Paris"
       - NODE_ENV=development
       - POSTGRES_PASSWORD=postgres
     ports:

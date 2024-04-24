@@ -1,5 +1,3 @@
-version: '3.4'
-
 volumes:
   postgres-data:
 
@@ -26,7 +24,6 @@ services:
       NUXT_PUBLIC_MATOMO_SITE_ID: ${FRONTEND_USAGERS_MATOMO_SITE_ID}
       NUXT_PUBLIC_SENTRY_DSN: ${FRONTEND_USAGERS_SENTRY_DSN}
       NUXT_PUBLIC_SENTRY_ENABLED: ${FRONTEND_USAGERS_SENTRY_ENABLED}
-      TZ: Europe/Paris
     ports:
       - 3000:3000
 
@@ -51,30 +48,9 @@ services:
       NUXT_PUBLIC_SENTRY_ENABLED: ${FRONTEND_BO_SENTRY_ENABLED}
       NUXT_PUBLIC_BACKEND_URL: ${BACKEND_URL}
       NUXT_PUBLIC_ENVIRONMENT: local
-      TZ: Europe/Paris
       DEBUG: info:vao*
     ports:
       - 3001:3000
-
-
-  migrations:
-    build:
-      context: packages/migrations
-      dockerfile: Dockerfile.local
-    working_dir: /app
-    command: /app/entrypoint.sh
-    volumes:
-      - $PWD/packages/migrations:/app:delegated
-      - $HOME/.ssh:/home/node/.ssh:ro
-      - $HOME/.gitconfig:/home/node/.gitconfig:ro
-      - $HOME/.npm:/home/node/.npm:delegated
-    depends_on:
-      - postgres
-    env_file:
-      - ./.env
-    environment:
-      DEBUG: "*info*"
-      TZ: Europe/Paris
 
   backend:
     build:
@@ -88,7 +64,10 @@ services:
       - $HOME/.gitconfig:/home/node/.gitconfig:ro
       - $HOME/.npm:/home/node/.npm:delegated
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
+      migrations:
+        condition: service_completed_successfully
     env_file:
       - ./.env
     environment:
@@ -97,16 +76,29 @@ services:
       SENTRY_ENVIRONMENT: local
       SENTRY_ENABLED: ${BACKEND_SENTRY_ENABLED}
       TMP_DIRECTORY: ${BACKEND_TMP_DIRECTORY}
-      TZ: Europe/Paris
     ports:
       - 3010:3000
+
+  migrations:
+    build:
+      context: packages/migrations
+      dockerfile: Dockerfile.local
+    working_dir: /app
+    volumes:
+      - $PWD/packages/migrations:/app:delegated
+      - $HOME/.ssh:/home/node/.ssh:ro
+      - $HOME/.gitconfig:/home/node/.gitconfig:ro
+      - $HOME/.npm:/home/node/.npm:delegated
+    depends_on:
+      - postgres
+    env_file:
+      - ./.env
 
   postgres:
     image: postgres:15.1
     restart: always
     environment:
       - PGTZ=Europe/Paris
-      - TZ=Europe/Paris
       - NODE_ENV=development
       - POSTGRES_USER=${PG_VAO_SUPERUSER}
       - POSTGRES_PASSWORD=${PG_VAO_SUPERPASSWORD}
@@ -123,7 +115,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
 
   maildev:
     image: maildev/maildev:2.1.0

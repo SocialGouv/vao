@@ -13,4 +13,4 @@ RUN yarn install
 
 WORKDIR /app
 
-CMD ["yarn", "dev"]
+CMD ["/app/entrypoint.sh"]
