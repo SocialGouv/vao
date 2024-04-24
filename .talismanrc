@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 5bf029251c498a0f3f3ca452e46961dc7f7abd993242f06acbfb486ec6c3ebaf
+  checksum: e8a3f4d486b1884d88c711bad603456e3cb25e9b43e3d16bddb4ac351aa996f5
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -68,15 +68,15 @@ fileignoreconfig:
 - filename: .kontinuous/prod/templates/pg.sealed.secret.yaml
   checksum: ebaeaef58dff99ed0a70ace0cb1cfceb31c0656d921999e19ce183e2adc9431f
 - filename: .kontinuous/values.yaml
-  checksum: 4206170833afbdf9aac36279e9eab12fb421cd595ef077fd6c9f48b3993e1af0
+  checksum: fcdb09d92639f10b21b7893dfd2f9cbe19bbab0fb68dbf3973e5602de80ef071
 - filename: README.md
   checksum: 3627cd363d1cfc640df689ce74d5467e13707a2cc9c44b0bffaba14f217296e2
 - filename: _scripts/dev/local-node.dockerfile
   checksum: e18bef015dc55696295aefdd6610b20447e690cced1214ccf126842b7f1315db
 - filename: docker-compose.prod.yaml
-  checksum: 0ce7bc6d1cee2ea56cd94f0d7eac46b722d0f56380911ee6a98c2fd74a82f192
+  checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
-  checksum: f4fc98c9f7af1169a8c75e3f11586c36665fef55807326ec9af55037c7bc34d4
+  checksum: a896940f1de39300b3c38343483ace310f1b4673c67e317f2877ab1ecccf2fc6
 - filename: packages/backend/src/config.js
   checksum: c0baf7f4f878d3f3406030471f15c092ed9fc671b1e66276fe9b071ea025b58c
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
@@ -189,6 +189,8 @@ fileignoreconfig:
   checksum: fdd5fd3d1b645ad5e53f3ee8b6300c95c6ef3589e8e956aeefbc7ee37945c310
 - filename: packages/mail-server/src/config.js
   checksum: c792d383dfec26115dfab5a391e6427b5b9c4416da783388c7ef00d4f97585bb
+- filename: packages/migrations/src/knexfile.js
+  checksum: 1d3be5d2c46636eb90b74382447f23ffefc943ed963736ffab7556336d2df667
 - filename: pg/scripts/01-init.sql
   checksum: 20dd5b8d36b1b0517fe185d30003af7866ef5678eed4e7571a6d9797ec3b2a46
 - filename: pg/scripts/02/02-1-geo-init.sql
