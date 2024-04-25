@@ -25,13 +25,10 @@ module.exports = async function post(req, res, next) {
   const { attestation } = req.body;
   log.i("IN", { demandeSejourId });
 
-  if (!demandeSejourId) {
-    log.w("missing parameter");
-    return next(
-      new AppError("Paramètre incorrect", {
-        statusCode: 400,
-      }),
-    );
+  try {
+    await yup.number().required().validate(demandeSejourId);
+  } catch (error) {
+    return next(new ValidationAppError(error));
   }
 
   if (!attestation) {

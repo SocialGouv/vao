@@ -422,8 +422,6 @@ module.exports.create = async (
   duree,
   periode,
   responsableSejour,
-  protocoleTransport,
-  protocoleSanitaire,
   organisme,
 ) => {
   log.i("create - IN");
@@ -436,8 +434,8 @@ module.exports.create = async (
       duree,
       periode,
       responsableSejour,
-      protocoleTransport,
-      protocoleSanitaire,
+      organisme.protocoleTransport,
+      organisme.protocoleSanitaire,
       organisme,
     ),
   );

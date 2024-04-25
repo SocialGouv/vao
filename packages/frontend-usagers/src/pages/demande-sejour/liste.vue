@@ -12,7 +12,6 @@
         <h1>Liste des déclarations de séjour</h1>
       </div>
     </div>
-
     <template v-if="demandeSejourStore.demandes.length">
       <div class="fr-grid-row">
         <div class="fr-col">
@@ -207,7 +206,7 @@ const idOptions = computed(() => {
 const siretOptions = computed(() => {
   return demandeSejourStore.demandes
     .map((d) => d.siret)
-    .filter((v, i, a) => a.indexOf(v) === i);
+    .filter((v, i, a) => v !== null && a.indexOf(v) === i);
 });
 
 const idFonctionnellesOptions = computed(() => {

@@ -1,7 +1,10 @@
+const yup = require("yup");
+
 const DemandeSejour = require("../../services/DemandeSejour");
 const AppError = require("../../utils/error");
 
 const logger = require("../../utils/logger");
+const ValidationAppError = require("../../utils/validation-error");
 
 const log = logger(module.filename);
 
@@ -10,13 +13,19 @@ module.exports = async function post(req, res, next) {
   const { type, parametre } = req.body;
   log.i("IN", { demandeSejourId, parametre, type });
 
-  if (!type || !demandeSejourId || !parametre) {
+  if (!type || !parametre) {
     log.w("missing parameter");
     return next(
       new AppError("Paramètre incorrect", {
         statusCode: 400,
       }),
     );
+  }
+
+  try {
+    await yup.number().required().validate(demandeSejourId);
+  } catch (error) {
+    return next(new ValidationAppError(error));
   }
 
   try {

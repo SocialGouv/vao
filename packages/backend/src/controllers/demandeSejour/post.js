@@ -71,8 +71,6 @@ module.exports = async function post(req, res, next) {
       duree,
       periode,
       responsableSejour,
-      organisme.protocoleTransport,
-      organisme.protocoleSanitaire,
       organisme,
     );
 
