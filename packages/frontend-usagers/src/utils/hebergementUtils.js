@@ -72,15 +72,14 @@ const informationsLocauxSchema = {
     .required("Il est nécessaire de renseigner si vous avez visité les locaux"),
   visiteLocauxAt: yup
     .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
+    .nullable()
     .typeError("date invalide")
     .when("visiteLocaux", {
       is: (visiteLocaux) => !!visiteLocaux,
       then: (schema) =>
         schema
           .max(new Date(), "La date doit être inférieure à la date du jour.")
-          .required(
-            "Il est nécessaire de renseigner la date de votre dernière visite",
-          ),
+          .nullable(),
       otherwise: (schema) => schema.nullable().strip(),
     }),
   reglementationErp: yup
@@ -150,14 +149,15 @@ const informationsLocauxSchema = {
   nombreLits: yup
     .number()
     .required("Il est nécessaire de renseigner le nombre de lits"),
-  nombreLitsSuperposes: yup
-    .number()
-    .required("Il est nécessaire de renseigner le nombre de lits superposés"),
-  litsDessus: yup
-    .boolean()
-    .required(
-      "Il est nécessaire de renseigner si les lits du dessus seront utilisés",
-    ),
+  nombreLitsSuperposes: yup.number().nullable(),
+  litsDessus: yup.boolean().when("nombreLitsSuperposes", {
+    is: (nombreLitsSuperposes) => !!nombreLitsSuperposes,
+    then: (schema) =>
+      schema.required(
+        "Il est nécessaire de renseigner si les lits du dessus seront utilisés",
+      ),
+    otherwise: (schema) => schema.nullable().strip(),
+  }),
   nombreMaxPersonnesCouchage: yup
     .number()
     .required(
