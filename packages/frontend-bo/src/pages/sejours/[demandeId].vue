@@ -92,7 +92,8 @@
         @close="onCloseModalEnregistrement2Mois"
       >
         <article class="fr-mb-4v">
-          Vous vous appreter à nregistrer la déclaration du séjour : <br />
+          Vous vous apprêtez à enregistrer la déclaration de séjour par l’envoi
+          d’un accusé réception : <br />
           - {{ demandeStore.currentDemande.libelle }}
         </article>
         <fieldset class="fr-fieldset">
@@ -111,7 +112,7 @@
               <DsfrButton
                 id="next-step"
                 @click.prevent="onValidEnregistrement2Mois"
-                >Valider la prise en charge
+                >Enregistrer la déclaration
               </DsfrButton>
             </div>
           </div>

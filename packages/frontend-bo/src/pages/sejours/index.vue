@@ -97,7 +97,7 @@
       @close="closePrendEnChargeModal"
     >
       <article class="fr-mb-4v">
-        Vous vous appreter a prendre en charge la déclaration du séjour : <br />
+        Vous vous apprêtez a prendre en charge la déclaration du séjour : <br />
         - {{ declarationAPrendreEnCharge.libelle }}
       </article>
       <fieldset class="fr-fieldset">
