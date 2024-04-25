@@ -112,7 +112,7 @@
       <UtilsMultiFilesUpload
         v-model="files"
         label="Vous avez la possibilité de joindre des documents relatifs à l'organisation des transports (optionnel)"
-        hint="Taille maximale : 5 Mo."
+        hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
         :modifiable="props.modifiable"
       />
     </DsfrFieldset>
@@ -138,6 +138,8 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 const log = logger("components/protocole-transport");
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
 
 const props = defineProps({
   initData: { type: Object, required: true },
@@ -206,14 +208,18 @@ function next() {
   if (!meta.value.dirty) {
     return emit("next");
   }
-
-  emit(
-    "update",
-    {
-      ...values,
-    },
-    "protocole_transport",
-  );
+  if (checkFormatFiles(files))
+    emit(
+      "update",
+      {
+        ...values,
+      },
+      "protocole_transport",
+    );
+  else
+    toaster.error(
+      "Les documents requis relatifs à l'organisation des transports  doivent obligatoirement être au format pdf, png ou jpg",
+    );
 }
 </script>
 
