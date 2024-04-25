@@ -203,7 +203,8 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                 ],
               },
-              ...(hebergement.informationsLocaux.visiteLocaux
+              ...(hebergement.informationsLocaux.visiteLocaux &&
+              hebergement.informationsLocaux.visiteLocauxAt
                 ? [
                     {
                       columns: [
@@ -298,32 +299,36 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                 ],
               },
-              {
-                columns: [
-                  {
-                    text: "Nombre de lits superposés inclus :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${hebergement.informationsLocaux.nombreLitsSuperposes}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Lits superposés « du dessus » occupés par les vacanciers :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${hebergement.informationsLocaux.litsDessus ? " Oui" : "Non"}`,
-                    width: "*",
-                  },
-                ],
-              },
+              ...(hebergement.informationsLocaux.nombreLitsSuperposes
+                ? [
+                    {
+                      columns: [
+                        {
+                          text: "Nombre de lits superposés inclus :",
+                          width: 250,
+                        },
+                        {
+                          bold: true,
+                          text: `${hebergement.informationsLocaux.nombreLitsSuperposes}`,
+                          width: "*",
+                        },
+                      ],
+                    },
+                    {
+                      columns: [
+                        {
+                          text: "Lits superposés « du dessus » occupés par les vacanciers :",
+                          width: 250,
+                        },
+                        {
+                          bold: true,
+                          text: `${hebergement.informationsLocaux.litsDessus ? " Oui" : "Non"}`,
+                          width: "*",
+                        },
+                      ],
+                    },
+                  ]
+                : []),
               {
                 columns: [
                   {

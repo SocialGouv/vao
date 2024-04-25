@@ -210,7 +210,7 @@
               personnes au maximum)
             </li>
           </ol>
-        </DsfrAlert>        
+        </DsfrAlert>
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
@@ -541,7 +541,7 @@
           <DsfrInputGroup
             name="informationsTransport.rejoindreEtape"
             :readonly="!props.modifiable"
-            label="Précisez le mode de transport utilisé pour rejoindre cette étape"
+            label="Précisez le mode de transport utilisé pour rejoindre cette étape (optionnel)"
             :label-visible="true"
             :is-textarea="true"
             :model-value="rejoindreEtape"

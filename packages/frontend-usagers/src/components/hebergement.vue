@@ -126,47 +126,47 @@
         <DsfrInputGroup
           name="informationsLocaux.visiteLocauxAt"
           type="date"
-          label="Date de la dernière visite"
+          label="Date de la dernière visite (optionnel)"
           :max="dayjs().format('YYYY-MM-DD')"
           :label-visible="true"
           :model-value="visiteLocauxAt"
           :is-valid="visiteLocauxAtMeta.valid"
           :error-message="visiteLocauxAtErrorMessage"
-          @update:model-value="onVisiteLocauxAtChange"
+          @update:model-value="
+            onVisiteLocauxAtChange($event === '' ? null : $event)
+          "
         />
       </div>
       <DsfrAlert>
-          <p>
-            Informations ERP : Selon la circulaire du 6 octobre 2023, il sera
-            requis l’arrêté d’autorisation du maire et/ou la dernière
-            attestation du passage de la commission de sécurité datant de moins
-            de 5 ans pour séjours se déroulant en établissement recevant du
-            public (ERP).
-          </p>
-          <p>
-            A défaut de transmission de ces justificatifs, la DDETS met en
-            demeure l'organisme de produire ces pièces et propose au Préfet de
-            département une annulation des séjours, si absence de tous les
-            justificatifs.
-          </p>
-          <p>On distingue 3 catégories d’hébergements :</p>
-          <ol>
-            <li>
-              Les établissements recevant du public (ERP, tous les hôtels et les
-              gros meubles de tourisme deplus de 15 personnes de type gîtes de
-              groupes
-            </li>
-            <li>
-              Les Bâtiments d’Habitation Collective (BHC, comme des résidences
-              de tourisme)
-            </li>
-            <li>
-              Les maisons individuelles (MI, comme des chambres d’hôtes et
-              petits meublés, qui ne peuvent dépasser 5 chambres et hébergent 15
-              personnes au maximum)
-            </li>
-          </ol>
-        </DsfrAlert>      
+        <p>
+          Informations ERP : Selon la circulaire du 6 octobre 2023, il sera
+          requis l’arrêté d’autorisation du maire et/ou la dernière attestation
+          du passage de la commission de sécurité datant de moins de 5 ans pour
+          séjours se déroulant en établissement recevant du public (ERP).
+        </p>
+        <p>
+          A défaut de transmission de ces justificatifs, la DDETS met en demeure
+          l'organisme de produire ces pièces et propose au Préfet de département
+          une annulation des séjours, si absence de tous les justificatifs.
+        </p>
+        <p>On distingue 3 catégories d’hébergements :</p>
+        <ol>
+          <li>
+            Les établissements recevant du public (ERP, tous les hôtels et les
+            gros meubles de tourisme deplus de 15 personnes de type gîtes de
+            groupes
+          </li>
+          <li>
+            Les Bâtiments d’Habitation Collective (BHC, comme des résidences de
+            tourisme)
+          </li>
+          <li>
+            Les maisons individuelles (MI, comme des chambres d’hôtes et petits
+            meublés, qui ne peuvent dépasser 5 chambres et hébergent 15
+            personnes au maximum)
+          </li>
+        </ol>
+      </DsfrAlert>
       <div class="fr-fieldset__element fr-col-12">
         <div class="fr-input-group">
           <DsfrRadioButtonSet
@@ -287,7 +287,9 @@
           :model-value="nombreLits"
           :error-message="nombreLitsErrorMessage"
           :is-valid="nombreLitsMeta.valid"
-          @update:model-value="onNombreLitsChange"
+          @update:model-value="
+            onNombreLitsChange($event !== '' ? $event : null)
+          "
         />
       </div>
 
@@ -295,13 +297,15 @@
         <DsfrInputGroup
           name="informationsLocaux.nombreLitsSuperposes"
           type="number"
-          label="Nombre de lits superposés inclus"
+          label="Nombre de lits superposés inclus (optionnel)"
           :label-visible="true"
           placeholder=""
           :model-value="nombreLitsSuperposes"
           :error-message="nombreLitsSuperposesErrorMessage"
           :is-valid="nombreLitsSuperposesMeta.valid"
-          @update:model-value="onNombreLitsSuperposesChange"
+          @update:model-value="
+            onNombreLitsSuperposesChange($event !== '' ? $event : null)
+          "
         />
       </div>
 
@@ -332,7 +336,9 @@
           :model-value="nombreMaxPersonnesCouchage"
           :error-message="nombreMaxPersonnesCouchageErrorMessage"
           :is-valid="nombreMaxPersonnesCouchageMeta.valid"
-          @update:model-value="onNombreMaxPersonnesCouchageChange"
+          @update:model-value="
+            onNombreMaxPersonnesCouchageChange($event !== '' ? $event : null)
+          "
         />
       </div>
 
@@ -535,7 +541,6 @@ const initialValues = {
     pension: null,
     prestationsHotelieres: [],
     visiteLocaux: null,
-    visiteLocauxAt: null,
     reglementationErp: null,
     fileDerniereAttestationSecurite: null,
     fileDernierArreteAutorisationMaire: null,
@@ -552,6 +557,11 @@ const initialValues = {
     amenagementsSpecifiques: null,
     precisionAmenagementsSpecifiques: null,
     ...(props.initHebergement.informationsLocaux || {}),
+    visiteLocauxAt: props.initHebergement?.informationsLocaux?.visiteLocauxAt
+      ? dayjs(props.initHebergement.informationsLocaux.visiteLocauxAt).format(
+          "YYYY-MM-DD",
+        )
+      : null,
   },
   informationsTransport: {
     deplacementProximite: null,

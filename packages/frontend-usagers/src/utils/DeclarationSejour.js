@@ -90,13 +90,7 @@ const hebergementDetailsSchema = {
   informationsLocaux: yup.object(hebergementUtils.informationsLocauxSchema),
   informationsTransport: yup.object({
     ...hebergementUtils.informationsTransportSchema,
-    rejoindreEtape: yup
-      .string()
-      .min(
-        1,
-        "Il est impératif de préciser le mode de transport utilisé pour rejoindre le lieu d'hébergement",
-      )
-      .required(),
+    rejoindreEtape: yup.string().nullable(),
   }),
   nom: yup.string().required(),
 };

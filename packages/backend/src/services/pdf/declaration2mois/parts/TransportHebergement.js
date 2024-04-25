@@ -62,19 +62,23 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                 ],
               },
-              {
-                columns: [
-                  {
-                    text: "Mode de transport utilisé pour rejoindre cette étape :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${hebergement.informationsTransport.rejoindreEtape}`,
-                    width: "*",
-                  },
-                ],
-              },
+              ...(hebergement.informationsTransport.rejoindreEtape
+                ? [
+                    {
+                      columns: [
+                        {
+                          text: "Mode de transport utilisé pour rejoindre cette étape :",
+                          width: 250,
+                        },
+                        {
+                          bold: true,
+                          text: `${hebergement.informationsTransport.rejoindreEtape}`,
+                          width: "*",
+                        },
+                      ],
+                    },
+                  ]
+                : []),
             ],
           },
         ],

@@ -76,17 +76,18 @@ const informationsLocauxSchema = () => ({
         "Il est impératif de télécharger la réponse de l'exploitant ou du propriétaire",
       ),
   }),
-  litsDessus: yup
-    .boolean()
-    .required(
-      "Il est impératif de renseigner si les lits du dessus seront utilisés",
-    ),
+  litsDessus: yup.boolean().when("nombreLitsSuperposes", {
+    is: (nombreLitsSuperposes) => !!nombreLitsSuperposes,
+    otherwise: (schema) => schema.nullable().strip(),
+    then: (schema) =>
+      schema.required(
+        "Il est nécessaire de renseigner si les lits du dessus seront utilisés",
+      ),
+  }),
   nombreLits: yup
     .number()
     .required("Il est impératif de renseigner le nombre de lits"),
-  nombreLitsSuperposes: yup
-    .number()
-    .required("Il est impératif de renseigner le nombre de lits superposés"),
+  nombreLitsSuperposes: yup.number().nullable(),
   nombreMaxPersonnesCouchage: yup
     .number()
     .required(
@@ -135,9 +136,7 @@ const informationsLocauxSchema = () => ({
       then: (schema) =>
         schema
           .max(new Date(), "La date doit être inférieure à la date du jour.")
-          .required(
-            "Il est impératif de renseigner la date de votre dernière visite",
-          ),
+          .nullable(),
     }),
 });
 
