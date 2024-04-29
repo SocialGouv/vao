@@ -82,6 +82,7 @@ module.exports = async function post(req, res, next) {
             comment: commentaire,
             declaration,
             destinataires,
+            territoireCode,
           }),
         ),
     );
