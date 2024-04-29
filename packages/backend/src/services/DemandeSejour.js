@@ -14,6 +14,64 @@ const query = {
     WHERE id = $1
     RETURNING id as "declarationId"
   `,
+  copy: (
+    organismeId,
+    libelle,
+    dateDebut,
+    dateFin,
+    duree,
+    periode,
+    responsableSejour,
+    organisme,
+    hebergement,
+    vacanciers,
+    personnel,
+    transport,
+    projet_sejour,
+    sanitaires,
+    files,
+  ) => [
+    `
+  INSERT INTO front.demande_sejour(
+    statut,
+    organisme_id,
+    libelle,
+    date_debut,
+    date_fin,
+    duree,
+    periode,
+    responsable_sejour,
+    organisme,
+    hebergement,
+    vacanciers,
+    personnel,
+    transport,
+    projet_sejour,
+    sanitaires,
+    files
+  )
+  VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+  RETURNING
+      id as "demandeId"
+  ;`,
+    [
+      organismeId,
+      libelle,
+      dateDebut,
+      dateFin,
+      duree,
+      periode,
+      responsableSejour,
+      organisme,
+      hebergement,
+      vacanciers,
+      personnel,
+      transport,
+      projet_sejour,
+      sanitaires,
+      files,
+    ],
+  ],
   create: (
     organismeId,
     libelle,
@@ -58,6 +116,13 @@ const query = {
       organisme,
       [],
     ],
+  ],
+  delete: (declarationId) => [
+    `
+  DELETE FROM front.demande_sejour
+  WHERE id = $1
+  ;`,
+    [declarationId],
   ],
   finalize: (
     demandeSejourId,
@@ -478,6 +543,55 @@ module.exports.create = async (
   const { demandeId } = response.rows[0];
   log.i("create - DONE", { demandeId });
   return demandeId;
+};
+
+module.exports.copy = async (
+  organismeId,
+  libelle,
+  dateDebut,
+  dateFin,
+  duree,
+  periode,
+  responsableSejour,
+  organisme,
+  hebergement,
+  vacanciers,
+  personnel,
+  transport,
+  projet_sejour,
+  sanitaires,
+  files,
+) => {
+  log.i("copy - IN");
+  const response = await pool.query(
+    ...query.copy(
+      organismeId,
+      libelle,
+      dateDebut,
+      dateFin,
+      duree,
+      periode,
+      responsableSejour,
+      organisme,
+      hebergement,
+      vacanciers,
+      personnel,
+      transport,
+      projet_sejour,
+      sanitaires,
+      files,
+    ),
+  );
+  log.d(response);
+  const { demandeId } = response.rows[0];
+  log.i("copy - DONE", { demandeId });
+  return demandeId;
+};
+
+module.exports.delete = async (declarationId) => {
+  log.i("delete - IN");
+  const { rowCount } = await pool.query(...query.delete(declarationId));
+  return rowCount;
 };
 
 module.exports.get = async (organismesId) => {

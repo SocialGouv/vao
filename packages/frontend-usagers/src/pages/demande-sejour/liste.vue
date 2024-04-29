@@ -153,10 +153,15 @@ import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
 const NuxtLink = resolveComponent("NuxtLink");
 const DsfrBadge = resolveComponent("DsfrBadge");
+const DsfrButtonGroup = resolveComponent("DsfrButtonGroup");
 import "@vueform/multiselect/themes/default.css";
 
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
+
+const log = logger("pages/demande-sejour/liste");
+const nuxtApp = useNuxtApp();
+const toaster = nuxtApp.vueApp.$toast;
 
 definePageMeta({
   middleware: ["is-connected", "check-organisme-is-complet"],
@@ -330,10 +335,12 @@ const headers = [
     column: "statut",
     sorter: "statut",
     text: "Statut",
-    format: (value) => ({
+    component: (value) => ({
       component: DsfrBadge,
+      class: "pointer",
+      align: "center",
       label: value.statut,
-      noIcon: true,
+      noIcon: false,
       type: ["TRANSMISE", "EN COURS"].includes(value.statut)
         ? "success"
         : ["BROUILLON"].includes(value.statut)
@@ -354,7 +361,91 @@ const headers = [
       class: "suivi",
     },
   },
+  {
+    column: "actions",
+    component: (row) => {
+      return {
+        component: DsfrButtonGroup,
+        align: "center",
+        size: "md",
+        inline: true,
+        buttons: [
+          {
+            label: "Dupliquer",
+            iconOnly: true,
+            icon: "ri-file-copy-2-fill",
+            onClick: (event) => {
+              event.stopPropagation();
+              copyDS(row.demandeSejourId);
+            },
+          },
+          {
+            label: "Supprimer",
+            iconOnly: true,
+            icon: "ri-delete-bin-2-line",
+            onClick: (event) => {
+              event.stopPropagation();
+              deleteDS(row.demandeSejourId);
+            },
+            disabled: !(row.statut === "BROUILLON"),
+          },
+        ],
+      };
+    },
+    text: "Actions",
+    headerAttrs: {
+      class: "suivi",
+    },
+  },
 ];
+
+async function copyDS(dsId) {
+  console.log("copyDS -IN");
+  try {
+    const url = `/sejour/copy/${dsId}`;
+    log.i(url);
+    const response = await $fetchBackend(url, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (response.demandeId) {
+      toaster.success(`Déclaration dupliquée`);
+      demandeSejourStore.fetchDemandes();
+    }
+    log.d(`demande de séjour ${response.demandeId} dupliquée`);
+  } catch (error) {
+    log.w("Copie de la declaration de sejour : ", { error });
+    return toaster.error(
+      `Une erreur est survenue lors de la copie de la déclaration de séjour`,
+    );
+  }
+}
+
+async function deleteDS(dsId) {
+  console.log("deleteDS -IN");
+  try {
+    const url = `/sejour/${dsId}`;
+    const response = await $fetchBackend(url, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    if (response.deletedRows === 1) {
+      toaster.success(`Déclaration supprimée`);
+      demandeSejourStore.fetchDemandes();
+    } else {
+      log.w("suppression de la declaration de sejour : ", { error });
+      return toaster.error(
+        `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
+      );
+    }
+  } catch (error) {
+    log.w("suppression de la declaration de sejour : ", { error });
+    return toaster.error(
+      `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
+    );
+  }
+}
 
 departementStore.fetch();
 demandeSejourStore.fetchDemandes();

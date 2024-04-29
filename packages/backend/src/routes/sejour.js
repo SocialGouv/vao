@@ -67,8 +67,11 @@ router.get("/:id", checkJWT, demandeSejourController.getById);
 router.get("/historique/:id", checkJWT, demandeSejourController.historique);
 
 router.get("/", checkJWT, demandeSejourController.get);
+
+router.post("/copy/:id", checkJWT, demandeSejourController.copy);
 router.post("/depose/:id", checkJWT, demandeSejourController.depose);
 router.post("/:id", checkJWT, demandeSejourController.update);
 router.post("/", checkJWT, demandeSejourController.post);
+router.delete("/:id", checkJWT, demandeSejourController.delete);
 
 module.exports = router;
