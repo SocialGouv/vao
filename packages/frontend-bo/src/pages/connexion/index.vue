@@ -165,8 +165,7 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 const config = useRuntimeConfig();
 

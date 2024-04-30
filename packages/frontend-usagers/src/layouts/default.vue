@@ -72,6 +72,7 @@ const navItems = useMenuNavItems();
 
 <template>
   <div>
+    <DsfrToaster />
     <DsfrHeader
       service-title="Vacances Adaptées Organisées (VAO)"
       service-description="La plateforme de déclaration et suivi des séjours organisés pour les personnes handicapées majeures"

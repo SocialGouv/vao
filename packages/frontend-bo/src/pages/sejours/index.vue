@@ -134,8 +134,7 @@ import Declaration from "~/components/demandes-sejour/Declaration.vue";
 
 const log = logger("pages/sejours");
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 const sejourStore = useDemandeSejourStore();
 const userStore = useUserStore();

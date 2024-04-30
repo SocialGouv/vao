@@ -138,8 +138,8 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 const log = logger("components/protocole-transport");
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+
+const toaster = useToaster();
 
 const props = defineProps({
   initData: { type: Object, required: true },

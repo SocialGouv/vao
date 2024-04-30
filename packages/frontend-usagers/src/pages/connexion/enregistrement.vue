@@ -196,8 +196,8 @@
 <script setup>
 import "@vueform/multiselect/themes/default.css";
 const log = logger("pages/connexion/enregistrement");
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+
+const toaster = useToaster();
 const config = useRuntimeConfig();
 
 const links = [

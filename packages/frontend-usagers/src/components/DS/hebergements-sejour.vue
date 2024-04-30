@@ -93,8 +93,7 @@ import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
 import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 const props = defineProps({
   dateDebut: { type: String, required: true },

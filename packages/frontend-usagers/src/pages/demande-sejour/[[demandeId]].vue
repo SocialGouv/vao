@@ -142,8 +142,8 @@
 
 <script setup>
 const route = useRoute();
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+
+const toaster = useToaster();
 
 definePageMeta({
   middleware: [
