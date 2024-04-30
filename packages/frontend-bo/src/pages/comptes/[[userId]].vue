@@ -283,7 +283,7 @@ const displayInfos = {
   CreationDoneWithSucces: {
     title: "Le compte a été créé avec succès",
     description:
-      "Un courriel a été envoyé à l'utilisarteur afin qu'il procède à la validation de son compte Administration VAO.",
+      "Un courriel a été envoyé à l'utilisateur afin qu'il procède à la validation de son compte Administration VAO.",
     type: "success",
   },
   UpdateDoneWithSucces: {
@@ -295,7 +295,7 @@ const displayInfos = {
   UserAlreadyExists: {
     title: "Une erreur est survenue",
     description:
-      "Une erreur est survenue. L'utilisateur que vous tentez de crééer existre déjà",
+      "Une erreur est survenue. L'utilisateur que vous tentez de créer existe déjà",
     type: "error",
   },
   UserNotFound: {
