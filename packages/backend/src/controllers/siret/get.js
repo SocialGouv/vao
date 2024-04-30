@@ -79,7 +79,7 @@ module.exports = async function get(req, res, next) {
       .filter((e) => e.nic !== uniteLegale.nic)
       .map((e) => {
         return {
-          adresse: `${e.adresseEtablissement.numeroVoieEtablissement ? e.adresseEtablissement.numeroVoieEtablissement : ""} ${e.adresseEtablissement.typeVoieEtablissement} ${e.adresseEtablissement.libelleVoieEtablissement}`,
+          adresse: `${e.adresseEtablissement.numeroVoieEtablissement ? e.adresseEtablissement.numeroVoieEtablissement : ""} ${e.adresseEtablissement.typeVoieEtablissement ? e.adresseEtablissement.typeVoieEtablissement : ""} ${e.adresseEtablissement.libelleVoieEtablissement ? e.adresseEtablissement.libelleVoieEtablissement : ""}`,
           codePostal: e.adresseEtablissement.codePostalEtablissement,
           commune: e.adresseEtablissement.libelleCommuneEtablissement,
           enabled: false,
