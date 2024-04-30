@@ -221,7 +221,7 @@ async function updateOrCreate(organismeData, type) {
   } catch (error) {
     log.w("Creation/modification d'organisme : ", { error });
     toaster.error(
-      "Une erreur est survenue lors de la sauvegarde de la fiche organisme",
+      "Une erreur est survenue lors de la sauvegarde de la fiche organisateur",
     );
   }
 }
@@ -295,7 +295,7 @@ async function finalizeOrganisme() {
   } catch (error) {
     log.w("Creation/modification d'organisateur : ", { error });
     toaster.error(
-      "Une erreur est survenue lors de la finalisation de la fiche organisme",
+      "Une erreur est survenue lors de la finalisation de la fiche organisateur",
     );
   }
 }

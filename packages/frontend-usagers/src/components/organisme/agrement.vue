@@ -131,7 +131,7 @@ regionStore.fetch();
 
 const label = computed(() => {
   if (file.value) {
-    return "Si vous souhaitez remplacer le fichier, veuillez cliquer sur le bouton Parcourir ci dessous.";
+    return 'Si vous souhaitez remplacer le fichier, veuillez cliquer sur le bouton "Choisir un fichier" ci dessous.';
   } else {
     return "Ajouter une copie de votre agrément";
   }

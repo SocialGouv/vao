@@ -236,7 +236,12 @@ module.exports = {
       },
     },
     declarationSejour: {
-      sendACompleterMail: ({ destinataires, comment, declaration }) => {
+      sendACompleterMail: ({
+        destinataires,
+        comment,
+        declaration,
+        territoireCode,
+      }) => {
         log.i("sendACompleterMail - In", {
           destinataires,
         });
@@ -257,7 +262,7 @@ module.exports = {
                 <p>Bonjour,</p>
 
                 <p>Vous avez recu des demandes de complément pour votre déclaration ${declaration.idFonctionnelle} </p>
-                <p>Voici les commentaires qui vont ont été fait</p>
+                <p>Vous trouverez ci-joint le message de la DDETS ${territoireCode}</p>
 
                 <pre>${comment}</pre>
                 <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
