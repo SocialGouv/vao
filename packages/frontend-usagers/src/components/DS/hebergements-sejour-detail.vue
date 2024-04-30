@@ -90,7 +90,12 @@
           class="fr-fieldset__element fr-col-12"
           style="height: 50vh; width: 50vw"
         >
-          <LMap ref="map" :zoom="zoom" :center="markerLatLng">
+          <LMap
+            ref="map"
+            :zoom="zoom"
+            :center="markerLatLng"
+            style="z-index: 0"
+          >
             <LTileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'

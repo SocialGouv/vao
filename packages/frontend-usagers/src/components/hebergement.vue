@@ -40,7 +40,12 @@
 
       <div v-if="adresse" class="fr-fieldset__element fr-col-12">
         <div style="height: 50vh; width: 50vw">
-          <LMap ref="map" :zoom="zoom" :center="markerLatLng">
+          <LMap
+            ref="map"
+            :zoom="zoom"
+            :center="markerLatLng"
+            style="z-index: 0"
+          >
             <LTileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
@@ -507,6 +512,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
+
 const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
@@ -763,6 +769,7 @@ const markerLatLng = computed(() => {
 function back() {
   emit("cancel");
 }
+
 function verifFormatFile(file, toasterMessage) {
   if (checkFormatFile(file.value)) return true;
   else {
