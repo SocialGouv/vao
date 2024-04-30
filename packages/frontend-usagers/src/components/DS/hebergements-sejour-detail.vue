@@ -357,7 +357,9 @@
             :model-value="nombreLitsSuperposes"
             :error-message="nombreLitsSuperposesErrorMessage"
             :is-valid="nombreLitsSuperposesMeta.valid"
-            @update:model-value="onNombreLitsSuperposesChange"
+            @update:model-value="
+              onNombreLitsSuperposesChange($event !== '' ? $event : null)
+            "
           />
         </div>
 
