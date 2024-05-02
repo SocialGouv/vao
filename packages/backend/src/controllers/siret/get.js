@@ -80,8 +80,8 @@ module.exports = async function get(req, res, next) {
       .map((e) => {
         return {
           adresse: `${e.adresseEtablissement.numeroVoieEtablissement ? e.adresseEtablissement.numeroVoieEtablissement : ""} ${e.adresseEtablissement.typeVoieEtablissement ? e.adresseEtablissement.typeVoieEtablissement : ""} ${e.adresseEtablissement.libelleVoieEtablissement ? e.adresseEtablissement.libelleVoieEtablissement : ""}`,
-          codePostal: e.adresseEtablissement.codePostalEtablissement,
-          commune: e.adresseEtablissement.libelleCommuneEtablissement,
+          codePostal: e.adresseEtablissement.codePostalEtablissement ?? "",
+          commune: e.adresseEtablissement.libelleCommuneEtablissement ?? "",
           enabled: false,
           nic: e.nic,
         };
@@ -96,9 +96,17 @@ module.exports = async function get(req, res, next) {
       nomCommercial = response.data.nom_commercial ?? nomCommercial;
       representantsLegaux = mandatairesSociaux.map((m) => {
         if (m.type === "personne_physique") {
-          return { fonction: m.fonction, nom: m.nom, prenom: m.prenom };
+          return {
+            fonction: m.fonction ?? "",
+            nom: m.nom ?? "",
+            prenom: m.prenom,
+          };
         } else {
-          return { fonction: m.fonction, nom: m.raison_sociale, prenom: "" };
+          return {
+            fonction: m.fonction ?? "",
+            nom: m.raison_sociale ?? "",
+            prenom: "",
+          };
         }
       });
     } catch (err) {
