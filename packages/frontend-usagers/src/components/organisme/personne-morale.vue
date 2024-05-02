@@ -31,12 +31,12 @@
         @update:model-value="trimSiret"
       />
       <div v-if="props.modifiable" class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-4">
+        <div class="fr-input-group fr-col-8">
           <DsfrButton
             id="chercherSiret"
             :disabled="!siretMeta.valid"
             @click.prevent="searchOrganisme"
-            >Récupérer informations
+            >Récupérer les informations de la personne morale
           </DsfrButton>
         </div>
       </div>

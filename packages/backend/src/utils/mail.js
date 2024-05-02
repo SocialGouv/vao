@@ -55,7 +55,7 @@ module.exports = {
           from: senderEmail,
           html,
           replyTo: senderEmail,
-          subject: `Portail VAO Administration - Renouvellement du mot de passe`,
+          subject: `Portail VAO Administration - Réinitialisation du mot de passe`,
           to: email,
         };
         log.d("sendForgottenPassword post email", { params });
