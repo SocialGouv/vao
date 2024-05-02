@@ -326,7 +326,7 @@ async function updateOrCreate(data, type) {
 async function finalize(attestation) {
   log.i("finalize -IN");
   try {
-    const url = `/sejour/depose/${sejourId.value}`;
+    const url = `/sejour/${sejourId.value}/depose`;
     const response = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",

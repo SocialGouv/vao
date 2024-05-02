@@ -117,12 +117,17 @@ const query = {
       [],
     ],
   ],
-  delete: (declarationId) => [
+  delete: (declarationId, userId) => [
     `
-  DELETE FROM front.demande_sejour
-  WHERE id = $1
+  DELETE FROM front.demande_sejour d
+  USING front.organismes o, front.user_organisme uo
+  WHERE 
+  o.id = d.organisme_id 
+  AND uo.org_id = o.id
+  AND d.id = $1
+  AND uo.use_id = $2
   ;`,
-    [declarationId],
+    [declarationId, userId],
   ],
   finalize: (
     demandeSejourId,
@@ -588,9 +593,10 @@ module.exports.copy = async (
   return demandeId;
 };
 
-module.exports.delete = async (declarationId) => {
+module.exports.delete = async (declarationId, userId) => {
   log.i("delete - IN");
-  const { rowCount } = await pool.query(...query.delete(declarationId));
+  const { rowCount } = await pool.query(...query.delete(declarationId, userId));
+  log.i("delete - DONE");
   return rowCount;
 };
 

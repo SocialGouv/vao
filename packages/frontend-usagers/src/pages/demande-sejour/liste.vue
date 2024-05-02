@@ -402,8 +402,7 @@ const headers = [
 async function copyDS(dsId) {
   console.log("copyDS -IN");
   try {
-    const url = `/sejour/copy/${dsId}`;
-    log.i(url);
+    const url = `/sejour/${dsId}/copy`;
     const response = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",

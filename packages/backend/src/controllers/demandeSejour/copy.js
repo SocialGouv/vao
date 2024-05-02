@@ -1,4 +1,5 @@
 const DemandeSejour = require("../../services/DemandeSejour");
+const Organisme = require("../../services/Organisme");
 
 const logger = require("../../utils/logger");
 const AppError = require("../../utils/error");
@@ -12,8 +13,12 @@ module.exports = async function post(req, res, next) {
   log.i("IN", { demandeSejourId });
 
   try {
+    const organisme = await Organisme.get({
+      use_id: userId,
+    });
     const sourceDeclaration = await DemandeSejour.getOne({
       "ds.id": demandeSejourId,
+      "o.id": organisme.organismeId,
     });
 
     if (!sourceDeclaration) {

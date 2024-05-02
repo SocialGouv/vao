@@ -7,6 +7,7 @@ const log = logger(module.filename);
 
 module.exports = async function post(req, res, next) {
   const demandeSejourId = req.params.id;
+  const { id: userId } = req.decoded;
 
   log.i("IN", { demandeSejourId });
 
@@ -23,7 +24,7 @@ module.exports = async function post(req, res, next) {
         }),
       );
     }
-    const deletedRows = await DemandeSejour.delete(declaration.id);
+    const deletedRows = await DemandeSejour.delete(declaration.id, userId);
     if (deletedRows !== 1) {
       log.w(`DONE with error, ${deletedRows} rows were deleted, expected one `);
       return next(

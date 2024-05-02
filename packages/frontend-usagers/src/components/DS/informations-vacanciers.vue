@@ -125,6 +125,7 @@ const initialValues = {
   effectifPrevisionnelFemme: props.initData.effectifPrevisionnelFemme ?? null,
   trancheAge: props.initData.trancheAge ?? [],
   typeDeficiences: props.initData.typeDeficiences ?? [],
+  precisionDeficiences: props.initData.precisionDeficiences ?? null,
 };
 
 const { meta, values } = useForm({
