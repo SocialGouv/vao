@@ -126,7 +126,7 @@
 <script setup>
 definePageMeta({
   middleware: ["is-connected", "check-role"],
-  role: "DemandeSejour",
+  roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
 });
 
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
@@ -138,6 +138,7 @@ const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
 const sejourStore = useDemandeSejourStore();
+const userStore = useUserStore();
 
 const defaultLimit = 10;
 const defaultOffset = 0;
@@ -253,6 +254,8 @@ const closePrendEnChargeModal = () =>
   (declarationAPrendreEnCharge.value = null);
 const navigate = (state) => {
   if (
+    userStore.user?.roles &&
+    userStore.user?.roles.includes("DemandeSejour_Ecriture") &&
     state.statut === demandesSejours.statuts.TRANSMISE &&
     state.estInstructeurPrincipal
   ) {

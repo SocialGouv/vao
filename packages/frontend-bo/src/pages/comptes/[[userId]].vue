@@ -201,7 +201,7 @@ const searchState = reactive({
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],
-  role: "Compte",
+  roles: ["Compte"],
 });
 
 const userId = route.params.userId;
@@ -232,7 +232,14 @@ const roleOptions = [
   { label: "Accès à la consultation et création de comptes", name: "Compte" },
   //{ label: "Accès aux contrôles", name: "Controle" },
   //{ label: "Accès aux agréments", name: "Agrement" },
-  { label: "Accès aux déclarations de séjour", name: "DemandeSejour" },
+  {
+    label: "Accès en lecture aux demandes de séjour",
+    name: "DemandeSejour_Lecture",
+  },
+  {
+    label: "Accès en écriture aux demandes de séjour",
+    name: "DemandeSejour_Ecriture",
+  },
 ];
 
 const formStates = {

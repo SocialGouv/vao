@@ -9,7 +9,10 @@ const boCheckRole = require("../middlewares/bo-check-role");
 const demandeSejourController = require("../controllers/demandeSejour");
 const getDepartements = require("../middlewares/getDepartements");
 
-const boCheckRoleDS = boCheckRole("DemandeSejour");
+const boCheckRoleDS = boCheckRole([
+  "DemandeSejour_Lecture",
+  "DemandeSejour_Ecriture",
+]);
 
 // Gère une connexion via mot de passe.
 router.get(

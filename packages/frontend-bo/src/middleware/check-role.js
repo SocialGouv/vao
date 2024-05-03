@@ -6,10 +6,16 @@ const log = logger("middleware/check-role");
 export default defineNuxtRouteMiddleware(async (to) => {
   const userStore = useUserStore();
   const roles = userStore.user?.roles;
-  const role = to.meta?.role;
-  log.i("IN", { roles, role });
-  if (!role || !roles || !Array.isArray(roles) || !roles.includes(role)) {
-    log.w(`role ${role} manquant`);
+  const expectedRoles = typeof to.meta?.roles === "string";
+  log.i("IN", { roles, expectedRoles });
+
+  if (
+    !expectedRoles ||
+    !roles ||
+    !Array.isArray(roles) ||
+    !roles.some((role) => expectedRoles.includes(role))
+  ) {
+    log.w(`Au moins un role parmi ${expectedRoles} est attendu`);
     return navigateTo("/connexion");
   }
 

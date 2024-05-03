@@ -109,7 +109,7 @@
 <script setup>
 definePageMeta({
   middleware: ["is-connected", "check-role"],
-  role: "Compte",
+  roles: ["Compte"],
 });
 import { useUserStore } from "~/stores/user";
 
