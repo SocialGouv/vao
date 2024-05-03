@@ -37,7 +37,7 @@ module.exports = async function post(req, res, next) {
   }
 
   try {
-    const organisme = await Organisme.get({ "uo.use_id": userId });
+    const organisme = await Organisme.getOne({ "uo.use_id": userId });
     if (!organisme.complet) {
       log.w("organisme isn't fully filled");
       return next(

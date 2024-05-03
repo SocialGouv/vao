@@ -389,11 +389,19 @@ module.exports.finalize = async function (userId) {
   log.i("finalize - DONE");
 };
 
-module.exports.get = async (criterias = {}) => {
-  log.i("get - IN", { criterias });
-  const { rows: organismes } = await pool.query(...query.get(criterias));
-  log.i("get - DONE");
-  return !organismes || organismes.length === 0 ? [] : organismes[0];
+module.exports.getOne = async (criterias = {}) => {
+  log.i("getOne - IN", { criterias });
+  const { rowCount, rows: organismes } = await pool.query(
+    ...query.get(criterias),
+  );
+  if (rowCount !== 1) {
+    throw new AppError("Organisme non trouvé", {
+      name: "NOT_FOUND",
+      statusCode: 404,
+    });
+  }
+  log.i("getOne - DONE");
+  return organismes[0];
 };
 
 module.exports.getBySiren = async (siren) => {

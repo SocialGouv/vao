@@ -20,7 +20,7 @@ module.exports = async function get(req, res, next) {
     );
   }
   try {
-    const organisme = await Organisme.get({
+    const organisme = await Organisme.getOne({
       id: organismeId,
       use_id: userId,
     });
