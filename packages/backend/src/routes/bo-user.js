@@ -6,7 +6,7 @@ const BOcheckJWT = require("../middlewares/bo-check-JWT");
 const BOcheckRole = require("../middlewares/bo-check-role.js");
 const BOUserController = require("../controllers/bo-user");
 
-const BOcheckRoleCompte = BOcheckRole("Compte");
+const BOcheckRoleCompte = BOcheckRole(["Compte"]);
 
 // Renvoie la liste des utilisateurs du BO
 router.get("/", BOcheckJWT, BOcheckRoleCompte, BOUserController.list);

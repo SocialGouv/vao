@@ -3,13 +3,18 @@ const logger = require("../utils/logger");
 
 const log = logger(module.filename);
 
-function checkRole(role) {
+function checkRole(expectedRoles) {
   return (req, res, next) => {
     const { roles } = req.decoded;
-    log.i("IN", { role, roles });
-    if (!roles || !Array.isArray(roles) || !roles.includes(role)) {
+    log.i("IN", { expectedRoles, roles });
+    if (
+      !expectedRoles ||
+      !roles ||
+      !Array.isArray(roles) ||
+      !roles.some((role) => expectedRoles.includes(role))
+    ) {
       return next(
-        new AppError(`${role} est attendu`, {
+        new AppError(`Au moins un rôle parmi ${expectedRoles} est attendu`, {
           statusCode: 403,
         }),
       );

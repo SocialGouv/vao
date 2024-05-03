@@ -20,7 +20,8 @@ export const useMenuNavItems = () => {
             },
           ]
         : []),
-      ...(roles.includes("DemandeSejour")
+      ...(roles.includes("DemandeSejour_Lecture") ||
+      roles.includes("DemandeSejour_Ecriture")
         ? [
             {
               title: "Déclaration de séjour",

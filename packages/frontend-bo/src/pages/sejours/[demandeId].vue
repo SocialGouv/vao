@@ -42,6 +42,8 @@
     </DsfrTabs>
     <div
       v-if="
+        userStore.user?.roles &&
+        userStore.user?.roles.includes('DemandeSejour_Ecriture') &&
         demandeStore.currentDemande.estInstructeurPrincipal &&
         demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS
       "
@@ -125,7 +127,7 @@
 <script setup>
 definePageMeta({
   middleware: ["is-connected", "check-role"],
-  role: "DemandeSejour",
+  roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
 });
 
 import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
@@ -151,6 +153,7 @@ const selectTab = (idx) => {
 };
 
 const demandeStore = useDemandeSejourStore();
+const userStore = useUserStore();
 
 const {
   data: historique,
