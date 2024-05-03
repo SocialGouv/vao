@@ -146,7 +146,11 @@ const nuxtApp = useNuxtApp();
 const toaster = nuxtApp.vueApp.$toast;
 
 definePageMeta({
-  middleware: ["is-connected", "check-demande-sejour-id-param"],
+  middleware: [
+    "is-connected",
+    "check-organisme-is-complet",
+    "check-demande-sejour-id-param",
+  ],
 });
 useHead({
   title: "Déclaration de séjour détaillée | Vacances Adaptées Organisées",
