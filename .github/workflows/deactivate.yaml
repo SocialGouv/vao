@@ -8,6 +8,7 @@ on:
       - "!v*"
       - "!master"
       - "!main"
+      - "!preprod"
       - "!dev"
       - "!develop"
       - "!**/persist"
