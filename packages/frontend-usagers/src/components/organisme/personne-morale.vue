@@ -211,13 +211,17 @@
           <div class="fr-input-group fr-col-12">
             <DsfrTable
               :headers="[
-                'code NIC',
+                'SIRET',
+                'Dénomination',
                 'Adresse',
                 'Code postal',
                 'Commune',
+                'État',
                 'Autorisé à organiser des séjours ?',
               ]"
               :rows="formatedEtablissements"
+              :results-displayed="10"
+              :current-page="currentPage"
               pagination
             />
           </div>
@@ -394,17 +398,19 @@ const formatedEtablissements = computed(() => {
     })
     .map((e, index) => {
       const row = [
-        e.nic,
+        e.siret,
+        e.denomination,
         e.adresse,
         e.codePostal,
         e.commune,
+        e.etatAdministratif,
         {
           component: "DsfrToggleSwitch",
-          modelValue: etablissements.value[index].enabled,
-          disabled: !props.modifiable,
+          modelValue: e.enabled,
+          disabled: (!(props.modifiable) || (!e.enabled && !(e.etatAdministratif == "En activité"))),
           onChange: () => {
-            etablissements.value[index].enabled =
-              !etablissements.value[index].enabled;
+            e.enabled =
+              !e.enabled;
           },
         },
       ];

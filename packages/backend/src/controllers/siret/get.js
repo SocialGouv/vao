@@ -72,10 +72,6 @@ module.exports = async function get(req, res, next) {
 
     const etablissements = elements
       .filter((e) => e.uniteLegale.etatAdministratifUniteLegale === "A")
-      .filter(
-        (e) =>
-          e.periodesEtablissement[0].etatAdministratifEtablissement === "A",
-      )
       .filter((e) => e.nic !== uniteLegale.nic)
       .map((e) => {
         return {
@@ -84,6 +80,9 @@ module.exports = async function get(req, res, next) {
           commune: e.adresseEtablissement.libelleCommuneEtablissement ?? "",
           enabled: false,
           nic: e.nic,
+          siret: e.siret,
+          denomination: uniteLegale.uniteLegale.denominationUniteLegale,
+          etatAdministratif: e.periodesEtablissement[0].etatAdministratifEtablissement === "A" ? "En activité": e.periodesEtablissement[0].etatAdministratifEtablissement === "F" ? "Fermé" : "",
         };
       });
 
