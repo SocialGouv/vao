@@ -159,7 +159,7 @@ import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 
 definePageMeta({
-  middleware: ["is-connected"],
+  middleware: ["is-connected", "check-organisme-is-complet"],
 });
 
 const links = [
