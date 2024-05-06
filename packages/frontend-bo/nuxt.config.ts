@@ -16,7 +16,11 @@ export default defineNuxtConfig({
     "@gouvfr/dsfr/dist/utility/icons/icons.min.css",
     "@/assets/css/main.css",
   ],
-  modules: ["nuxt-security", "@pinia/nuxt"],
+  modules: [
+    "nuxt-security",
+    "@pinia/nuxt",
+    "@socialgouv/dsfr-toaster-nuxt-module",
+  ],
   runtimeConfig: {
     public: {
       appVersion: undefined,

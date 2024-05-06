@@ -23,8 +23,7 @@
 const props = defineProps({ token: { type: String, required: true } });
 const log = logger("components/connexion/email/validationToken");
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 const config = useRuntimeConfig();
 

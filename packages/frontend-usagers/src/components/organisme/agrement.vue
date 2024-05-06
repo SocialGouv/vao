@@ -114,8 +114,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 const log = logger("components/organisme/agrement");
 const props = defineProps({

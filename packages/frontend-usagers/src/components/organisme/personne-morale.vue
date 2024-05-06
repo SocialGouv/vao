@@ -259,8 +259,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 const log = logger("components/organisme/personne-morale");
 

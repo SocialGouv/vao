@@ -117,8 +117,7 @@
 </template>
 
 <script setup>
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 const config = useRuntimeConfig();
 
