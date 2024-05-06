@@ -1,4 +1,5 @@
 const DemandeSejour = require("../../services/DemandeSejour");
+const PdfARDeclaration2Mois = require("../../services/pdf/ARdeclaration2mois/generate");
 const { statuts } = require("../../helpers/ds-statuts");
 
 const logger = require("../../utils/logger");
@@ -71,9 +72,11 @@ module.exports = async function post(req, res, next) {
       userId: null,
     });
 
-    return res.status(200).end();
+    await PdfARDeclaration2Mois(declaration);
   } catch (error) {
     log.w("DONE with error");
     return next(error);
   }
+
+  return res.status(200).end();
 };
