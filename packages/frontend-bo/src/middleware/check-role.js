@@ -6,7 +6,7 @@ const log = logger("middleware/check-role");
 export default defineNuxtRouteMiddleware(async (to) => {
   const userStore = useUserStore();
   const roles = userStore.user?.roles;
-  const expectedRoles = typeof to.meta?.roles === "string";
+  const expectedRoles = to.meta?.roles;
   log.i("IN", { roles, expectedRoles });
 
   if (
