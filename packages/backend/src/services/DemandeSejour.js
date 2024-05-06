@@ -196,22 +196,50 @@ const query = {
       AND ds.id = $1
   `,
   getEmailBack: `
-  SELECT DISTINCT u.mail AS mail
-  FROM back.users u
-  WHERE u.ter_code = $1
+  WITH roles AS 
+  (
+    SELECT array_agg(id) as ids 
+    from back.roles
+    WHERE label IN ('DemandeSejour_Lecture', 'DemandeSejour_Ecriture')
+  ),
+     users AS 
+  (
+    SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
+    FROM back.users u
+    JOIN back.user_roles ur ON u.id = ur.use_id
+    WHERE u.ter_code = $1
+    GROUP BY mail
+  )
+  SELECT mail
+  FROM roles r, users u
+  WHERE u.ids && r.ids
   `,
   getEmailBackCc: `
-  WITH regions AS (
-    SELECT
-      ARRAY_AGG(parent_code) as parent_code
+  WITH roles AS 
+  (
+    SELECT array_agg(id) as ids 
+    from back.roles
+    WHERE label IN ('DemandeSejour_Lecture', 'DemandeSejour_Ecriture')
+  ),
+regions AS (
+  SELECT
+      ARRAY_AGG(distinct parent_code) as parent_code
   FROM geo.territoires
   WHERE code = ANY($1)
+  ),
+users AS 
+  (
+    SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
+    FROM regions r, back.users u
+    JOIN back.user_roles ur ON u.id = ur.use_id
+    WHERE u.ter_code = ANY($1)
+      OR u.ter_code = ANY(r.parent_code)
+      OR u.ter_code = 'FRA'
+    GROUP BY mail
   )
-  SELECT DISTINCT u.mail AS mail
-  FROM back.users u, regions
-  WHERE u.ter_code = ANY($1)
-    OR u.ter_code = ANY(regions.parent_code)
-    OR u.ter_code = 'FRA'
+  SELECT mail
+  FROM roles r, users u
+  WHERE u.ids && r.ids
   `,
   getEmailCcList: `
   SELECT DISTINCT u.mail AS mail
