@@ -66,6 +66,8 @@ const consentCookie = useCookie("VAO_consent", {
 function acceptAll() {
   consentCookie.value = true;
 }
+
+const navItems = useMenuNavItems();
 </script>
 
 <template>
@@ -80,7 +82,7 @@ function acceptAll() {
     >
       <template #mainnav>
         <DsfrNavigation
-          :nav-items="userStore.isConnected && navItems"
+          :nav-items="navItems"
           style="box-shadow: inset 0 1px 0 0 #ddd"
         />
       </template>
