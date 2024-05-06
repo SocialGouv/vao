@@ -51,7 +51,7 @@ const query = {
     RETURNING
       id as id
     ;`,
-    [email, nom, prenom, territoire],
+    [normalize(email), nom, prenom, territoire],
   ],
   deleteRole: (id) => [
     `
@@ -364,17 +364,17 @@ module.exports.readOne = async (id) => {
   return users[0];
 };
 
-module.exports.readOneByMail = async (mail) => {
-  log.i("readOne - IN", { mail });
+module.exports.readOneByMail = async (email) => {
+  log.i("readOne - IN", { email });
 
-  if (!mail) {
+  if (!email) {
     throw new AppError("Paramètre manquant", {
       statusCode: 500,
     });
   }
 
   const { rowCount, rows: users } = await pool.query(
-    query.get([`us.mail = '${mail}'`]),
+    query.get([`us.mail = '${normalize(email)}'`]),
   );
 
   if (rowCount === 0) {
