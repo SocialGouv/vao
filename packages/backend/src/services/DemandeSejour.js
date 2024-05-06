@@ -167,25 +167,29 @@ const query = {
       ds.id as "demandeSejourId",
       ds.statut as "statut",
       ds.organisme_id as "organismeId",
+      ds.id_fonctionnelle as "idFonctionnelle",
+      ds.departement_suivi as "departementSuivi",
       ds.libelle as "libelle",
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
       ds.duree as "duree",
-      ds.vacanciers as "vacanciers",
-      ds.personnel as "personnel",
-      ds.transport as "transport",
-      ds.projet_sejour as "projetSejour",
-      ds.sanitaires as "sanitaires",
+      ds.periode as "periode",
+      ds.responsable_sejour as "responsableSejour",
+      ds.vacanciers as "informationsVacanciers",
+      ds.personnel as "informationsPersonnel",
+      ds.transport as "informationsTransport",
+      ds.projet_sejour as "informationsProjetSejour",
+      ds.sanitaires as "informationsSanitaires",
       ds.attestation,
-      ds.organisme as "organismes",
       ds.hebergement as "hebergement",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
-      o.type_organisme as "typeOrganisme",
-      ds.created_at as "createdAt",
-      ds.edited_at as "editedAt",
+      ds.organisme as "organisme",
+        o.personne_morale as "personneMorale",
+        o.personne_physique as "personnePhysique",
+        o.type_organisme as "typeOrganisme",
       ds.files as "files",
-      ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ('${departementCodes.join("','")}') as "estInstructeurPrincipal"
+      ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ('${departementCodes.join("','")}') as "estInstructeurPrincipal",
+      ds.created_at as "createdAt",
+      ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
     where (${getDepartementWhereQuery(departementCodes)})
@@ -237,15 +241,15 @@ const query = {
       ds.id_fonctionnelle as "idFonctionnelle",
       ds.departement_suivi as "departementSuivi",
       ds.libelle as "libelle",
-      ds.periode as "periode",
       ds.date_debut::text as "dateDebut",
       ds.date_fin::text as "dateFin",
-      ds.responsable_sejour as "responsableSejour",
       ds.duree,
+      ds.periode as "periode",
+      ds.responsable_sejour as "responsableSejour",
       ds.vacanciers as "informationsVacanciers",
       ds.personnel as "informationsPersonnel",
-      ds.projet_sejour as "informationsProjetSejour",
       ds.transport as "informationsTransport",
+      ds.projet_sejour as "informationsProjetSejour",
       ds.sanitaires as "informationsSanitaires",
       ds.hebergement as "hebergement",
       ds.organisme as "organisme",
@@ -459,8 +463,8 @@ module.exports.getOne = async (criterias = {}) => {
   const { rows: demandes, rowCount } = await pool.query(
     ...query.getOne(criterias),
   );
-  if (rowCount === 0) {
-    log.i("getOne - DONE");
+  if (rowCount !== 1) {
+    log.w("getOne - DONE with unexpected result", { rowCount });
     return null;
   }
   log.i("getOne - DONE");
