@@ -133,8 +133,8 @@
         ></DSHistorique>
         <DsfrAlert v-else-if="error" type="error"
           >Une erreur est survenue durant la récupération de l'historique de la
-          déclaration</DsfrAlert
-        >
+          déclaration
+        </DsfrAlert>
       </DsfrTabContent>
     </DsfrTabs>
   </div>
