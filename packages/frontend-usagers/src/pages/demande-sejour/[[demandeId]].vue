@@ -348,15 +348,6 @@ async function finalize(attestation) {
         "Une erreur est survenue durant la génération du PDF mais la déclaration a bien été transmise",
       );
     }
-    if (response.ARuuid) {
-      toaster.info(
-        `Le récépissé de la déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
-      );
-    } else {
-      toaster.error(
-        "Une erreur est survenue durant la génération du récépissé mais la déclaration a bien été transmise",
-      );
-    }
     log.d(`demande de séjour ${sejourId.value} transmise`);
     return navigateTo("/demande-sejour/liste");
   } catch (error) {
