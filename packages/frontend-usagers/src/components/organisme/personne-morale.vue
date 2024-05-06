@@ -221,7 +221,6 @@
               ]"
               :rows="formatedEtablissements"
               :results-displayed="10"
-              :current-page="currentPage"
               pagination
             />
           </div>
@@ -396,7 +395,7 @@ const formatedEtablissements = computed(() => {
     .filter((e) => {
       return !props.modifiable ? e.enabled : e;
     })
-    .map((e, index) => {
+    .map((e) => {
       const row = [
         e.siret,
         e.denomination,
@@ -407,10 +406,11 @@ const formatedEtablissements = computed(() => {
         {
           component: "DsfrToggleSwitch",
           modelValue: e.enabled,
-          disabled: (!(props.modifiable) || (!e.enabled && !(e.etatAdministratif == "En activité"))),
+          disabled:
+            !props.modifiable ||
+            (!e.enabled && !(e.etatAdministratif == "En activité")),
           onChange: () => {
-            e.enabled =
-              !e.enabled;
+            e.enabled = !e.enabled;
           },
         },
       ];

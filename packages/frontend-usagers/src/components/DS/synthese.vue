@@ -18,6 +18,7 @@
               />
             </template>
             <DSInformationsGenerales
+              ref="sectionInformationsGenerales"
               :init-data="props.declarationCourante"
               :validate-on-mount="true"
               :modifiable="false"
@@ -351,7 +352,11 @@ const failure = {
   type: "warning",
 };
 
-const informationsGenerales = success;
+const sectionInformationsGenerales = ref(null);
+
+const informationsGenerales = computed(() =>
+  sectionInformationsGenerales.value?.meta.valid ? success : failure,
+);
 
 const informationsVacanciers = computed(() =>
   !Object.keys(errors.value).find((k) => k.startsWith("informationsVacanciers"))
