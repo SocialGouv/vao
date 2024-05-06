@@ -109,8 +109,9 @@ function buildTitre(declaration, departementSuivi) {
   };
 }
 
-const build = (declaration = {}, departementSuivi) => {
+const build = (declaration = {}) => {
   log.i("build - IN");
+  const departementSuivi = declaration.departementSuivi;
   return new Promise((resolve) => {
     const docDefinition = {
       content: [

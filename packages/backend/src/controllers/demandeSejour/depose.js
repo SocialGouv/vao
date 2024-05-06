@@ -5,7 +5,6 @@ const DemandeSejour = require("../../services/DemandeSejour");
 const Hebergement = require("../../services/Hebergement");
 const Send = require("../../services/mail").mailService.send;
 const PdfDeclaration2Mois = require("../../services/pdf/declaration2mois/generate");
-const PdfARDeclaration2Mois = require("../../services/pdf/ARdeclaration2mois/generate");
 
 const DeclarationSejourSchema = require("../../schemas/declaration-sejour");
 
@@ -197,15 +196,7 @@ module.exports = async function post(req, res, next) {
   } catch (error) {
     log.w(error);
   }
-  try {
-    ARuuid = await PdfARDeclaration2Mois(
-      declaration,
-      idFonctionnelle,
-      departementSuivi,
-    );
-  } catch (err) {
-    log.w(err);
-  }
-  log.w("DONE");
+
+  log.i("DONE");
   return res.status(200).json({ ARuuid, DSuuid });
 };
