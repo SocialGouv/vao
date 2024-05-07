@@ -88,7 +88,7 @@ module.exports = async function post(req, res, next) {
   const firstHebergementId =
     declaration.hebergement.hebergements[0].hebergementId;
 
-  const hebergement = await Hebergement.getOne({ id: firstHebergementId });
+  const hebergement = await Hebergement.getById(firstHebergementId);
   if (!hebergement) {
     log.w("DONE with error");
     return next(
