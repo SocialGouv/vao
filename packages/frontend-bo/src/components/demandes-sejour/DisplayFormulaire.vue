@@ -105,14 +105,14 @@
     </li>
     <li v-if="demandeStore.currentDemande?.informationsSanitaires">
       <DsfrAccordion
-        :title="`Information sanitaires`"
-        :expanded-id="informationsSanitaires"
+        :title="`Informations sanitaires`"
+        :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
         <DisplayInput
           v-for="entry in Object.keys(displayInput.ISanitaire)"
           :key="`transport-${entry}`"
-          :value="demandeStore.currentDemande.sanitaires[entry]"
+          :value="demandeStore.currentDemande.informationsSanitaires[entry]"
           :input="displayInput.ISanitaire[entry]"
         />
       </DsfrAccordion>
