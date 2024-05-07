@@ -13,7 +13,7 @@ module.exports = async function post(req, res, next) {
   log.i("IN", { demandeSejourId });
 
   try {
-    const organisme = await Organisme.get({
+    const organisme = await Organisme.getOne({
       use_id: userId,
     });
     const sourceDeclaration = await DemandeSejour.getOne({

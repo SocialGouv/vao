@@ -160,8 +160,7 @@ import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 
 const log = logger("pages/demande-sejour/liste");
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 definePageMeta({
   middleware: ["is-connected", "check-organisme-is-complet"],
