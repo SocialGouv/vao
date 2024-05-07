@@ -66,12 +66,12 @@ const files = computed(() => {
       };
     });
   }
-  if (props.declaration?.organismes?.agrement?.file) {
+  if (props.declaration?.organisme?.agrement?.file) {
     files.push({
-      name: props.declaration.organismes.agrement.file.name,
+      name: props.declaration.organisme.agrement.file.name,
       type: "agrement",
-      createdAt: props.declaration.organismes.agrement.file.createdAt,
-      uuid: props.declaration.organismes.agrement.file.uuid,
+      createdAt: props.declaration.organisme.agrement.file.createdAt,
+      uuid: props.declaration.organisme.agrement.file.uuid,
     });
   }
   if (props.declaration?.sanitaires?.files) {

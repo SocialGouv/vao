@@ -1,32 +1,30 @@
 <template>
   <DsfrAccordionsGroup>
-    <li v-if="demandeStore.currentDemande?.organismes">
+    <li v-if="demandeStore.currentDemande?.organisme">
       <DsfrAccordion
-        :title="`Organismes`"
+        :title="`Organisme`"
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
         <div
           v-if="
-            demandeStore.currentDemande?.organismes?.typeOrganisme ===
+            demandeStore.currentDemande?.organisme?.typeOrganisme ===
             'personne_morale'
           "
         >
           <h4>Organisme</h4>
           <DisplayInput
             v-for="entry in Object.keys(displayInput.IPersonneMorale)"
-            :key="`organismes-${entry}`"
-            :value="
-              demandeStore.currentDemande.organismes.personneMorale[entry]
-            "
+            :key="`organisme-${entry}`"
+            :value="demandeStore.currentDemande.organisme.personneMorale[entry]"
             :input="displayInput.IPersonneMorale[entry]"
           />
           <h4>Responsable du séjour</h4>
           <DisplayInput
             v-for="entry in Object.keys(displayInput.IResponsableSejour)"
-            :key="`organismes-responsableSejour-${entry}`"
+            :key="`organisme-responsableSejour-${entry}`"
             :value="
-              demandeStore.currentDemande.organismes.personneMorale
+              demandeStore.currentDemande.organisme.personneMorale
                 .responsableSejour[entry]
             "
             :input="displayInput.IResponsableSejour[entry]"
@@ -34,15 +32,15 @@
         </div>
         <div
           v-if="
-            demandeStore.currentDemande?.organismes?.typeOrganisme ===
+            demandeStore.currentDemande?.organisme?.typeOrganisme ===
             'personne_physique'
           "
         >
           <DisplayInput
             v-for="entry in Object.keys(displayInput.IPersonnePhysique)"
-            :key="`organismes-${entry}`"
+            :key="`organisme-${entry}`"
             :value="
-              demandeStore.currentDemande.organismes.personnePhysique[entry]
+              demandeStore.currentDemande.organisme.personnePhysique[entry]
             "
             :input="displayInput.IPersonnePhysique[entry]"
           />

@@ -177,7 +177,7 @@ const query = {
       ds.projet_sejour as "projetSejour",
       ds.sanitaires as "sanitaires",
       ds.attestation,
-      ds.organisme as "organismes",
+      ds.organisme as "organisme",
       ds.hebergement as "hebergement",
       o.personne_morale as "personneMorale",
       o.personne_physique as "personnePhysique",

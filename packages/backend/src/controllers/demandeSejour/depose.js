@@ -166,12 +166,12 @@ module.exports = async function post(req, res, next) {
       await Send(
         MailUtils.bo.declarationSejour.sendDeclarationNotify({
           cc: filteredBackCc,
+          declaration,
           departementSuivi,
           departementsSecondaires: departements.filter(
             (d) => d !== departementSuivi,
           ),
           destinataires: destinatairesBack,
-          id: declaration.idFonctionnelle,
         }),
       );
     }
