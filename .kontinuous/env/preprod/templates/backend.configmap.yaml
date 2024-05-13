@@ -5,7 +5,7 @@ metadata:
 data:
   API_INSEE_URL: "https://api.insee.fr"
   API_INSEE_URI: "/entreprises/sirene/V3.11"
-  ANTIVIRUS_URL: "http://clamav-rest.clamav.svc/api/v1/scan"
+  ANTIVIRUS_URL: "https://antivirus.fabrique.social.gouv.fr/vao/api/v1/scan"
   BACKEND_URL: "https://api-{{ .Values.global.host }}"
   FRONTEND_USAGERS_URL: "https://{{ .Values.global.host }}"
   FRONTEND_BO_URL: "https://bo-{{ .Values.global.host }}"

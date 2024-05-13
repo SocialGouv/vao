@@ -1,5 +1,7 @@
 const FormData = require("form-data");
-const fs = require("fs");
+const axios = require("axios");
+
+const { createReadStream } = require("node:fs");
 
 const config = require("../config");
 const AppError = require("../utils/error");
@@ -8,39 +10,35 @@ const logger = require("../utils/logger");
 const log = logger(module.filename);
 
 module.exports = async (req, res, next) => {
-  log.i("IN");
-  const file = req.file;
-
-  const formData = new FormData();
-  formData.append("FILES", fs.createReadStream(file.path), file.originalname);
+  const { path, originalname } = req.file;
+  log.i("IN", { originalname, path });
 
   try {
-    const response = await fetch(config.antivirusUrl, {
-      body: formData,
-      headers: formData.getHeaders(),
-      method: "POST",
+    const form = new FormData();
+
+    form.append("FILES", createReadStream(path));
+
+    const formHeaders = form.getHeaders();
+
+    const response = await axios.post(config.antivirusUrl, form, {
+      headers: { ...formHeaders },
     });
 
-    log.d({ response });
+    const data = await response.data;
 
-    if (response.ok) {
-      log.w("DONE - Service unavailable");
-      return next();
-    }
+    log.d({ data });
 
-    log.d({ data: response.data });
-
-    if (response.data.success) {
+    if (data.success) {
       log.i("DONE");
       return next();
     }
 
     log.w(
-      "DONE - Scan returns threat on file " + file.filename,
-      ...response.data.data.result[0].viruses,
+      "DONE - Scan returns threat on file " + originalname,
+      ...data.data.result[0].viruses,
     );
     return next(
-      new AppError("Scan returns threat on file " + file.filename, {
+      new AppError("Scan returns threat on file " + originalname, {
         name: "file.scan-antivirus",
       }),
     );
