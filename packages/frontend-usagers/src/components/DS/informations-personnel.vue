@@ -8,6 +8,14 @@
         >
       </div>
       <div class="fr-fieldset__element">
+        <DsfrHighlight
+          v-if="props.declarationStatut === 'EN ATTENTE DECLARATION 8 JOURS'"
+          text="Les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances ne doivent pas avoir fait l’objet d’une condamnation inscrite au bulletin n°3 du casier judiciaire (article R412-14 du code du tourisme)."
+          :small="false"
+          :large="true"
+        />
+      </div>
+      <div class="fr-fieldset__element">
         <DsfrInputGroup
           name="nombreResponsable"
           label="Nombre total de personnes responsables du déroulement du séjour sur le(s) lieu(x) de séjour"
@@ -75,6 +83,7 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
   validateOnMount: { type: Boolean, default: false },
   showButtons: { type: Boolean, default: true },
+  declarationStatut: { type: String, default: "BROUILLON" },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
@@ -84,10 +93,16 @@ const validationSchema = yup.object(
 );
 
 const initialValues = {
-  nombreResponsable: props.initData.nombreResponsable ?? null,
+  nombreResponsable:
+    props.declarationStatut === "EN ATTENTE DECLARATION 8 JOURS"
+      ? props.initData.responsables?.length ?? "0"
+      : props.initData.nombreResponsable ?? null,
   procedureRecrutementSupplementaire:
     props.initData.procedureRecrutementSupplementaire ?? null,
-  nombreAccompagnant: props.initData.nombreAccompagnant ?? null,
+  nombreAccompagnant:
+    props.declarationStatut === "EN ATTENTE DECLARATION 8 JOURS"
+      ? props.initData.accompagnants?.length ?? "0"
+      : props.initData.nombreAccompagnant ?? null,
 };
 
 const { meta, values } = useForm({

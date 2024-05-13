@@ -70,6 +70,7 @@
                     v-if="hash === 'info-personnel'"
                     :modifiable="canModify"
                     :init-data="demandeCourante.informationsPersonnel ?? {}"
+                    :declaration-statut="demandeCourante.statut"
                     @update="updateOrCreate"
                     @next="nextHash"
                     @previous="previousHash"
@@ -226,7 +227,8 @@ const canModify = computed(() => {
   return (
     !demandeCourante.value.statut ||
     demandeCourante.value.statut === "BROUILLON" ||
-    demandeCourante.value.statut === "A MODIFIER"
+    demandeCourante.value.statut === "A MODIFIER" ||
+    demandeCourante.value.statut === "EN ATTENTE DECLARATION 8 JOURS"
   );
 });
 

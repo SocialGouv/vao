@@ -338,7 +338,11 @@ const headers = [
         ? "success"
         : ["BROUILLON"].includes(value.statut)
           ? "info"
-          : "",
+          : ["A MODIFIER", "EN ATTENTE DECLARATION 8 JOURS"].includes(
+                value.statut,
+              )
+            ? "warning"
+            : "union",
     }),
     headerAttrs: {
       class: "suivi",

@@ -360,6 +360,12 @@ WHERE
   RETURNING
     id as "eventId"
   `,
+  saveDS2M: `
+  UPDATE front.demande_sejour
+  SET declaration_2m = $2
+  WHERE id = $1
+  RETURNING id as "declarationId"
+`,
   updateHebergement: `
   UPDATE front.demande_sejour ds
   SET
@@ -824,6 +830,12 @@ module.exports.insertEvent = async (
   ]);
   log.i("insertEvent - DONE");
   return response[0].eventId ?? null;
+};
+
+module.exports.saveDS2M = async (declarationId, declaration) => {
+  log.i("saveDS2M - IN");
+  await pool.query(query.saveDS2M, [declarationId, declaration]);
+  log.i("saveDS2M - DONE");
 };
 
 module.exports.addFile = async (declarationId, file) => {
