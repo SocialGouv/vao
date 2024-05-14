@@ -78,7 +78,7 @@
                 <div id="projet-sejour">
                   <DSProjetSejour
                     v-if="hash === 'projet-sejour'"
-                    :init-data="demandeCourante.informationsProjetSejour ?? {}"
+                    :init-data="demandeCourante.projetSejour ?? {}"
                     :modifiable="canModify"
                     @update="updateOrCreate"
                     @next="nextHash"

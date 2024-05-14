@@ -91,9 +91,7 @@
               />
             </template>
             <DSProjetSejour
-              :init-data="
-                props.declarationCourante.informationsProjetSejour ?? {}
-              "
+              :init-data="props.declarationCourante.projetSejour ?? {}"
               :modifiable="false"
               :validate-on-mount="true"
               :show-buttons="false"
@@ -164,7 +162,7 @@
               />
             </template>
             <DsfrAccordionsGroup
-              v-if="props.declarationCourante.hebergement?.hebergements"
+              v-if="props.declarationCourante.hebergement?.hebergements.length"
             >
               <li
                 v-for="(item, index) in props.declarationCourante.hebergement

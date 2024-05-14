@@ -202,7 +202,7 @@ SELECT
   ds.vacanciers as "vacanciers",
   ds.personnel as "personnel",
   ds.transport as "transport",
-  ds.projet_sejour as "projetSejour",
+  COALESCE(ds.projet_sejour, '{}'::jsonb) as "projetSejour",
   ds.sanitaires as "sanitaires",
   ds.files as "files",
   ds.attestation as "attestation",
@@ -267,7 +267,7 @@ WHERE
       ds.vacanciers as "informationsVacanciers",
       ds.personnel as "informationsPersonnel",
       ds.transport as "informationsTransport",
-      ds.projet_sejour as "informationsProjetSejour",
+      COALESCE(ds.projet_sejour, '{}'::jsonb) as "projetSejour",
       ds.sanitaires as "informationsSanitaires",
       ds.attestation,
       ds.hebergement as "hebergement",
@@ -374,7 +374,7 @@ SELECT
   ds.vacanciers as "informationsVacanciers",
   ds.personnel as "informationsPersonnel",
   ds.transport as "informationsTransport",
-  ds.projet_sejour as "informationsProjetSejour",
+  COALESCE(ds.projet_sejour, '{}'::jsonb) as "projetSejour",
   ds.sanitaires as "informationsSanitaires",
   ds.hebergement as "hebergement",
   ds.organisme as "organisme",
@@ -509,15 +509,35 @@ RETURNING
   id as "demandeId"
 `,
   updateInformationsVacanciers: `
-UPDATE front.demande_sejour ds
-SET
-  vacanciers = $1,
-  edited_at = NOW()
-WHERE
-  ds.id = $2
-RETURNING
-  id as "demandeId"
-`,
+  UPDATE front.demande_sejour ds
+  SET
+    vacanciers = $1,
+    edited_at = NOW()
+  WHERE
+    ds.id = $2
+  RETURNING
+    id as "demandeId"
+  `,
+  updateOrganisme: `
+  UPDATE front.demande_sejour ds
+  SET
+    organisme_id = $1,
+    edited_at = NOW()
+  WHERE
+    ds.id = $2
+  RETURNING
+    id as "demandeId"
+  `,
+  updateProjetSejour: `
+  UPDATE front.demande_sejour ds
+  SET
+    projet_sejour = $1,
+    edited_at = NOW()
+  WHERE
+    ds.id = $2
+  RETURNING
+    id as "demandeId"
+  `,
   updateStatut: `
 UPDATE front.demande_sejour ds
 SET
@@ -789,16 +809,16 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       break;
     }
     case "informationsPersonnel": {
-      log.d("informationsProjetSejour", demandeSejourId);
+      log.d("informationsPersonnel", demandeSejourId);
       response = await pool.query(query.updateInformationsPersonnel, [
         parametre,
         demandeSejourId,
       ]);
       break;
     }
-    case "informationsProjetSejour": {
-      log.d("informationsProjetSejour", demandeSejourId);
-      response = await pool.query(query.updateInformationsProjetSejour, [
+    case "projetSejour": {
+      log.d("projetSejour", demandeSejourId);
+      response = await pool.query(query.updateProjetSejour, [
         parametre,
         demandeSejourId,
       ]);
@@ -844,7 +864,7 @@ module.exports.finalize = async (
   {
     informationsVacanciers,
     informationsPersonnel,
-    informationsProjetSejour,
+    projetSejour,
     informationsTransport,
     informationsSanitaires,
     hebergement,
@@ -856,10 +876,10 @@ module.exports.finalize = async (
       attestation,
       hebergement,
       informationsPersonnel,
-      informationsProjetSejour,
       informationsSanitaires,
       informationsTransport,
       informationsVacanciers,
+      projetSejour,
     },
     demandeSejourId,
     departementSuivi,
@@ -873,7 +893,7 @@ module.exports.finalize = async (
       departementSuivi,
       informationsVacanciers,
       informationsPersonnel,
-      informationsProjetSejour,
+      projetSejour,
       informationsTransport,
       informationsSanitaires,
       hebergement,

@@ -75,10 +75,22 @@ yup.setLocale({
 });
 
 const schema = {
-  destination: yup.array().required(),
-  activitesCulturelles: yup.array().required(),
-  activitesSportives: yup.array().required(),
-  activitesBienEtre: yup.array().required(),
+  destination: yup
+    .array()
+    .required()
+    .default(() => []),
+  activitesCulturelles: yup
+    .array()
+    .required()
+    .default(() => []),
+  activitesSportives: yup
+    .array()
+    .required()
+    .default(() => []),
+  activitesBienEtre: yup
+    .array()
+    .required()
+    .default(() => []),
   activitesPersonnelPrevu: yup.string().nullable(),
 };
 

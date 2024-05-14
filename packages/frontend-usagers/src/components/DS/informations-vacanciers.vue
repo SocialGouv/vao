@@ -120,12 +120,9 @@ const emit = defineEmits(["previous", "next", "update"]);
 const validationSchema = yup.object(informationsVacanciers.schema);
 
 const initialValues = {
-  effectifPrevisionnel: props.initData.effectifPrevisionnel ?? null,
-  effectifPrevisionnelHomme: props.initData.effectifPrevisionnelHomme ?? null,
-  effectifPrevisionnelFemme: props.initData.effectifPrevisionnelFemme ?? null,
-  trancheAge: props.initData.trancheAge ?? [],
-  typeDeficiences: props.initData.typeDeficiences ?? [],
-  precisionDeficiences: props.initData.precisionDeficiences ?? null,
+  trancheAge: [],
+  typeDeficiences: [],
+  ...props.initData,
 };
 
 const { meta, values } = useForm({
