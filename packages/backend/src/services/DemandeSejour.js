@@ -196,13 +196,14 @@ const query = {
       AND ds.id = $1
   `,
   getEmailBack: `
-  WITH roles AS 
+WITH 
+  roles AS 
   (
     SELECT array_agg(id) as ids 
     from back.roles
-    WHERE label IN ('DemandeSejour_Lecture', 'DemandeSejour_Ecriture')
+    WHERE label IN ('DemandeSejour_Ecriture')
   ),
-     users AS 
+  users AS 
   (
     SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
     FROM back.users u
@@ -210,24 +211,26 @@ const query = {
     WHERE u.ter_code = $1
     GROUP BY mail
   )
-  SELECT mail
-  FROM roles r, users u
-  WHERE u.ids && r.ids
-  `,
+SELECT mail
+FROM roles r, users u
+WHERE u.ids && r.ids
+`,
   getEmailBackCc: `
-  WITH roles AS 
+WITH 
+  roles AS 
   (
     SELECT array_agg(id) as ids 
     from back.roles
-    WHERE label IN ('DemandeSejour_Lecture', 'DemandeSejour_Ecriture')
+    WHERE label IN ('DemandeSejour_Ecriture')
   ),
-regions AS (
-  SELECT
+  regions AS 
+  (
+    SELECT
       ARRAY_AGG(distinct parent_code) as parent_code
-  FROM geo.territoires
-  WHERE code = ANY($1)
+    FROM geo.territoires
+    WHERE code = ANY($1)
   ),
-users AS 
+  users AS 
   (
     SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
     FROM regions r, back.users u
@@ -237,10 +240,10 @@ users AS
       OR u.ter_code = 'FRA'
     GROUP BY mail
   )
-  SELECT mail
-  FROM roles r, users u
-  WHERE u.ids && r.ids
-  `,
+SELECT mail
+FROM roles r, users u
+WHERE u.ids && r.ids
+`,
   getEmailCcList: `
   SELECT DISTINCT u.mail AS mail
   FROM front.users u
