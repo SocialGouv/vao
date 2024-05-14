@@ -1,5 +1,4 @@
 const DemandeSejour = require("../../services/DemandeSejour");
-const PdfARDeclaration2Mois = require("../../services/pdf/ARdeclaration2mois/generate");
 const { statuts } = require("../../helpers/ds-statuts");
 
 const logger = require("../../utils/logger");
@@ -71,8 +70,6 @@ module.exports = async function post(req, res, next) {
       typePrecision: "Prise en charge de la déclaration",
       userId: null,
     });
-
-    await PdfARDeclaration2Mois(declaration);
   } catch (error) {
     log.w("DONE with error");
     return next(error);

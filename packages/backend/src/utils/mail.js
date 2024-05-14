@@ -116,7 +116,7 @@ module.exports = {
     },
     declarationSejour: {
       sendDeclarationNotify: ({
-        id,
+        declaration,
         destinataires,
         cc,
         departementSuivi,
@@ -137,8 +137,8 @@ module.exports = {
           html: `
                 <p>Bonjour,</p>
 
-                <p>La déclaration de séjour ${id} vient d'être déposée sur le portail VAO</p>
-                <p>Le(s) département(s) ${departementSuivi} est(sont) en charge de l'instruction principale de cette déclaration.</p>
+                <p>La déclaration de séjour ${declaration.idFonctionnelle} vient d'être déposée sur le portail VAO</p>
+                <p>La DDETS du département ${departementSuivi} est en charge de l'instruction de cette déclaration.</p>
                 ${
                   departementsSecondaires.length > 0
                     ? `<p>Les départements ${departementsSecondaires.join(", ")} sont en charge du contrôle d'au moins un hébergement.</p>`
@@ -146,7 +146,7 @@ module.exports = {
                 }
                 `,
           replyTo: senderEmail,
-          subject: `nouvelle déclaration : ${id}`,
+          subject: `Portail VAO - Nouvelle déclaration déposée : ${declaration.idFonctionnelle}`,
           to: destinataires,
         };
         log.d("sendDeclarationNotify post email", {
@@ -293,6 +293,7 @@ module.exports = {
           cc: cc,
           from: senderEmail,
           html: `
+                <p>Bonjour,</p>
                 <p>Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${declaration.organisme.agrement.dateObtention} et avez déposé en date du ${dayjs().format("DD/MM/YYYY")}, une déclaration pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.dateFin).format("DD/MM/YYYY")}.</p>
                 <p>Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.</p>
                 <p>Vous devrez, huit jours avant le déroulement de ce séjour, réaliser la déclaration complémentaire prévue à l’article R. 412-14 du code du tourisme.</p>
@@ -319,13 +320,20 @@ module.exports = {
         const params = {
           from: senderEmail,
           html: `
-                <p>Bonjour,</p>
-
-                <p>Votre déclaration ${declaration.idFonctionnelle} à été enregistrée </p>
-                <p>La date limite d'envoie de la declaration à 8 jours est fixée au ${dayjs(declaration.dateDebut).subtract(8, "days").format("DD/MM/YYYY")}</p>
-
-                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
-                `,
+          <p>Bonjour,</p>
+          <p>
+          Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du   
+          ${dayjs(declaration.attestation.at).format("DD/MM/YYYY")}, une déclaration pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.hebergement.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.hebergement.dateFin).format("DD/MM/YYYY")}.
+          Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.
+          </p>
+          <p>
+          Vous devrez, huit jours avant le déroulement de ce séjour, réaliser la déclaration complémentaire prévue à l’article R. 412-14
+          du code du tourisme.
+          </p>
+          <p>
+          Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.
+          </p>
+          `,
           replyTo: senderEmail,
           subject: `Enregistrement de la déclaration ${declaration.idFonctionnelle}`,
           to: destinataires,

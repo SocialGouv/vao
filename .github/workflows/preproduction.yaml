@@ -1,6 +1,9 @@
 name: 😎 PreProd
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - preprod
 
 concurrency:
   cancel-in-progress: true

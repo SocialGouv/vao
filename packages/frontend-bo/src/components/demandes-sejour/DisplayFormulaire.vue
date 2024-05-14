@@ -2,7 +2,7 @@
   <DsfrAccordionsGroup>
     <li v-if="demandeStore.currentDemande?.organisme">
       <DsfrAccordion
-        :title="`Organismes`"
+        :title="`Organisme`"
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >

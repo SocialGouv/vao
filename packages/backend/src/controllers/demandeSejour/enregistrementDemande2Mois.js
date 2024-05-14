@@ -1,4 +1,5 @@
 const DemandeSejour = require("../../services/DemandeSejour");
+const PdfARDeclaration2Mois = require("../../services/pdf/ARdeclaration2mois/generate");
 
 const logger = require("../../utils/logger");
 const { statuts } = require("../../helpers/ds-statuts");
@@ -56,6 +57,8 @@ module.exports = async function post(req, res, next) {
   }
 
   try {
+    await PdfARDeclaration2Mois(declaration);
+
     const destinataires = await DemandeSejour.getEmailToList(
       declaration.organismeId,
     );
