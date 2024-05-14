@@ -323,7 +323,7 @@ module.exports = {
           <p>Bonjour,</p>
           <p>
           Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du   
-          30/04/2024, une déclaration pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.hebergement.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.hebergement.dateFin).format("DD/MM/YYYY")}.
+          ${dayjs(declaration.attestation.at).format("DD/MM/YYYY")}, une déclaration pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.hebergement.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.hebergement.dateFin).format("DD/MM/YYYY")}.
           Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.
           </p>
           <p>
