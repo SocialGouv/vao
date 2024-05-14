@@ -119,7 +119,7 @@ const build = (declaration = {}) => {
         buildTitre(declaration, departementSuivi),
         {
           style: "header",
-          text: `Vous êtes titulaire de l’agrément « VACANCES ADAPTEES ORGANISEES » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé à ce titre, en date du ${dayjs().format("DD/MM/YYYY")}, une déclaration pour le séjour '${declaration.libelle}', enregistrée sous le numéro ${declaration.idFonctionnelle}, que vous organisez du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.dateFin).format("DD/MM/YYYY")}.\n\n`,
+          text: `Vous êtes titulaire de l’agrément « VACANCES ADAPTEES ORGANISEES » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé à ce titre, en date du ${dayjs(declaration.attestation.at).format("DD/MM/YYYY")}, une déclaration pour le séjour '${declaration.libelle}', enregistrée sous le numéro ${declaration.idFonctionnelle}, que vous organisez du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.dateFin).format("DD/MM/YYYY")}.\n\n`,
         },
         {
           style: "header",
