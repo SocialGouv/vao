@@ -1357,10 +1357,10 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/merge-streams/-/merge-streams-2.3.0.tgz#719df7fb41766bc143369eaa0dd56d8dc87c9958"
   integrity sha512-LtoMMhxAlorcGhmFYI+LhPgbPZCkgP6ra1YL604EeF6U98pLlQ3iWIGMdWSC+vWmPBWBNgmDBAhnAobLROJmwg==
 
-"@socialgouv/dsfr-toaster-nuxt-module@~1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@socialgouv/dsfr-toaster-nuxt-module/-/dsfr-toaster-nuxt-module-1.1.0.tgz#0b0d5e86296bf5871212d9de96072ed3c7d96bd7"
-  integrity sha512-ZZ3eLfCAaDxJaAdmdinC/iPTWVXraWT/ouDFxaNnz6Ogffc+gJ4jYNkbWHP7/QrMHpYk8VvTkZB/GvJ87eLfHw==
+"@socialgouv/dsfr-toaster-nuxt-module@~1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@socialgouv/dsfr-toaster-nuxt-module/-/dsfr-toaster-nuxt-module-1.2.1.tgz#a92fa7c3e3222f66b9111fbafa42454cd294702b"
+  integrity sha512-b4nn0C5WISNsjN9KrOQrBqNed23/Xm6Zfn3UcrQxYIzYemI2bwEd6mIrrsdnQgSuLcR3o1wDY6rUqlmbFyHxjQ==
   dependencies:
     "@gouvfr/dsfr" "~1.11.2"
     "@gouvminint/vue-dsfr" "~5.13.0"
