@@ -92,7 +92,7 @@ const query = {
       us.nom AS nom,
       us.prenom AS prenom,
       us.validated AS validated,
-      us.ter_code AS territoire,
+      us.ter_code AS "territoireCode",
       ter.parent_code AS "territoireParent",
       ur.roles
     FROM back.users AS us
@@ -124,9 +124,10 @@ const query = {
       us.id as id,
       us.mail as email,
       us.pwd is not null as "hasPwd",
+      us.blocked as "isBlocked",
       us.nom as nom,
       us.prenom as prenom,
-      us.blocked as "isBlocked",
+      us.validated AS validated,
       us.ter_code as "territoireCode",
       ur.roles
     FROM back.users us
