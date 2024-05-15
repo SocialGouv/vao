@@ -384,7 +384,6 @@ const headers = [
           {
             label: "Supprimer",
             iconOnly: true,
-            disabled: !["BROUILLON"].includes(row.statut),
             icon: "ri-delete-bin-2-line",
             onClick: (event) => {
               event.stopPropagation();
