@@ -24,6 +24,18 @@ module.exports = async function post(req, res, next) {
         }),
       );
     }
+    log.i(declaration.statut);
+    if (declaration.statut !== "BROUILLON") {
+      log.w("DONE with error");
+      return next(
+        new AppError(
+          "Impossible de supprimer une demande qui n'est pas au statut BROUILLON",
+          {
+            statusCode: 400,
+          },
+        ),
+      );
+    }
     const deletedRows = await DemandeSejour.delete(declaration.id, userId);
     if (deletedRows !== 1) {
       log.w(`DONE with error, ${deletedRows} rows were deleted, expected one `);

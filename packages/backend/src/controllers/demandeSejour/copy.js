@@ -30,6 +30,19 @@ module.exports = async function post(req, res, next) {
       );
     }
 
+    if (
+      sourceDeclaration.statut !== "BROUILLON" &&
+      sourceDeclaration.statut !== "TRANSMISE" &&
+      sourceDeclaration.statut !== "EN COURS"
+    ) {
+      log.w("DONE with error");
+      return next(
+        new AppError("Le statut de la déclaration ne permet pas sa copie", {
+          statusCode: 404,
+        }),
+      );
+    }
+
     sourceDeclaration.files = sourceDeclaration.files.files.filter(
       (f) =>
         f.type !== "declaration_2_mois" && f.type !== "AR_declaration_2_mois",

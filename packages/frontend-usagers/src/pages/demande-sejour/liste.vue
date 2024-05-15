@@ -373,6 +373,9 @@ const headers = [
             label: "Dupliquer",
             iconOnly: true,
             icon: "ri-file-copy-2-fill",
+            disabled: !["BROUILLON", "TRANSMISE", "EN COURS"].includes(
+              row.statut,
+            ),
             onClick: (event) => {
               event.stopPropagation();
               copyDS(row.demandeSejourId);
@@ -381,6 +384,7 @@ const headers = [
           {
             label: "Supprimer",
             iconOnly: true,
+            disabled: !["BROUILLON"].includes(row.statut),
             icon: "ri-delete-bin-2-line",
             onClick: (event) => {
               event.stopPropagation();
@@ -432,13 +436,13 @@ async function deleteDS(dsId) {
       toaster.success(`Déclaration supprimée`);
       demandeSejourStore.fetchDemandes();
     } else {
-      log.w("suppression de la declaration de sejour : ", { error });
+      log.w("Erreur durant la suppression de la declaration de sejour");
       return toaster.error(
         `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
       );
     }
   } catch (error) {
-    log.w("suppression de la declaration de sejour : ", { error });
+    log.w("Erreur durant la suppression de la declaration de sejour : ");
     return toaster.error(
       `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
     );
