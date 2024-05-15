@@ -41,7 +41,7 @@ const query = {
     FROM front.hebergement          
     WHERE id = $1 
     `,
-    id,
+    [id],
   ],
   getByUserId: `
     SELECT

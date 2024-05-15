@@ -35,6 +35,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       } catch (err) {
         log.w("fetchDemandes - DONE with error", err);
         this.demandes = [];
+        throw err;
       }
     },
     async setCurrentDemande(id) {
