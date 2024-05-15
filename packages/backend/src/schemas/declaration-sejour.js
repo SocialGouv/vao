@@ -148,4 +148,7 @@ const schema = (dateDebut, dateFin) => ({
   informationsVacanciers: yup.object(informationsVacanciersSchema()),
 });
 
-module.exports = schema;
+module.exports = {
+  baseSchema,
+  schema,
+};

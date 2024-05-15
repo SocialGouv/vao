@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const dayjs = require("dayjs");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 
@@ -84,7 +85,6 @@ const query = {
     sanitaires = $8,
     hebergement = $9,
     attestation = $10,
-
     edited_at = NOW()
   WHERE
     ds.id = $1
@@ -427,16 +427,6 @@ WHERE u.ids && r.ids
   RETURNING
     id as "demandeId"
   `,
-  updateOrganisme: `
-  UPDATE front.demande_sejour ds
-  SET
-    organisme_id = $1,
-    edited_at = NOW()
-  WHERE
-    ds.id = $2
-  RETURNING
-    id as "demandeId"
-  `,
   updateStatut: `
   UPDATE front.demande_sejour ds
   SET
@@ -449,17 +439,26 @@ WHERE u.ids && r.ids
   `,
 };
 
-module.exports.create = async (
-  organismeId,
+module.exports.create = async ({
   libelle,
   dateDebut,
   dateFin,
-  duree,
-  periode,
   responsableSejour,
   organisme,
-) => {
+}) => {
   log.i("create - IN");
+  const organismeId = organisme.organismeId;
+
+  const duree = dayjs(dateFin).diff(dateDebut, "day").toString();
+
+  const periode = (() => {
+    const moisDebut = dayjs(dateDebut).month();
+    if (moisDebut < 3) return "hiver";
+    if (moisDebut < 6) return "printemps";
+    if (moisDebut < 9) return "été";
+    if (moisDebut < 12) return "automne";
+  })();
+
   const response = await pool.query(
     ...query.create(
       organismeId,
@@ -506,8 +505,6 @@ module.exports.getByDepartementCodes = async (
   { limit, offset, sortBy, sortDirection = "ASC", search } = {},
   departementCodes,
 ) => {
-  const searchQuery = [];
-
   if (departementCodes && departementCodes.length === 0) {
     return {
       demandes_sejour: [],
@@ -515,31 +512,43 @@ module.exports.getByDepartementCodes = async (
     };
   }
 
+  const params = [];
+  const searchQuery = [];
+
   // Search management
   if (search?.libelle && search.libelle.length) {
-    searchQuery.push(`libelle ilike '%${search.libelle}%'`);
+    searchQuery.push(`libelle ilike $${params.length + 1}`);
+    params.push(`%${search.libelle}%`);
   }
   if (search?.organisme && search.organisme.length) {
     searchQuery.push(`(
-      personne_morale ->> 'raisonSociale' ilike '%${search.organisme}%'
-      OR personne_physique ->> 'prenom' ilike '%${search.organisme}%'
-      OR personne_physique ->> 'nomUsage' ilike '%${search.organisme}%'
+      personne_morale ->> 'raisonSociale' ilike $${params.length + 1}
+      OR personne_physique ->> 'prenom' ilike $${params.length + 2}
+      OR personne_physique ->> 'nomUsage' ilike $${params.length + 3}
       )`);
+    params.push(
+      `%${search.organisme}%`,
+      `%${search.organisme}%`,
+      `%${search.organisme}%`,
+    );
   }
   if (search?.statut && search.statut.length) {
-    searchQuery.push(`statut = '${search.statut}'`);
+    searchQuery.push(`statut = $${params.length + 1}`);
+    params.push(`${search.statut}`);
   }
 
   if (search?.estInstructeurPrincipal === true) {
     searchQuery.push(
-      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ('${departementCodes.join("','")}')`,
+      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ($${params.length + 1})`,
     );
+    params.push(`'${departementCodes.join("','")}'`);
   }
 
   if (search?.estInstructeurPrincipal === false) {
     searchQuery.push(
-      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' NOT IN ('${departementCodes.join("','")}')`,
+      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' NOT IN ($${params.length + 1})`,
     );
+    params.push(`'${departementCodes.join("','")}'`);
   }
 
   let queryWithPagination = query.getByDepartementCodes(
@@ -559,12 +568,13 @@ module.exports.getByDepartementCodes = async (
   // Pagination management
   if (limit != null && offset != null) {
     queryWithPagination += `
-    OFFSET ${offset}
-    LIMIT ${limit}
+    OFFSET $${params.length + 1}
+    LIMIT $${params.length + 2}
     `;
+    params.push(offset, limit);
   }
 
-  const response = await pool.query(queryWithPagination);
+  const response = await pool.query(queryWithPagination, params);
 
   if (limit === null || response.rowCount < limit) {
     return {
@@ -601,25 +611,21 @@ module.exports.getById = async (demandeId, departementCodes) => {
 module.exports.update = async (type, demandeSejourId, parametre) => {
   log.i("update - IN", { demandeSejourId, parametre, type });
   let response;
+
   switch (type) {
-    case "organisme": {
-      const { organismeId } = parametre;
-      response = await pool.query(query.updateOrganisme, [
-        organismeId,
-        demandeSejourId,
-      ]);
-      break;
-    }
     case "informationsGenerales": {
-      const {
-        libelle,
-        dateDebut,
-        dateFin,
-        duree,
-        periode,
-        responsableSejour,
-        organisme,
-      } = parametre;
+      const { libelle, dateDebut, dateFin, responsableSejour } = parametre;
+
+      const duree = dayjs(dateFin).diff(dateDebut, "day").toString();
+
+      const periode = (() => {
+        const moisDebut = dayjs(dateDebut).month();
+        if (moisDebut < 3) return "hiver";
+        if (moisDebut < 6) return "printemps";
+        if (moisDebut < 9) return "été";
+        if (moisDebut < 12) return "automne";
+      })();
+
       response = await pool.query(
         ...query.updateInformationsGenerales(
           libelle,
@@ -628,7 +634,6 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
           duree,
           periode,
           responsableSejour,
-          organisme,
           demandeSejourId,
         ),
       );

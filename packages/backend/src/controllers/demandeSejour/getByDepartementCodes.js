@@ -27,8 +27,22 @@ module.exports = async function getByDepartementCodes(req, res, next) {
         .object({
           limit: yup.number().nullable(),
           offset: yup.number().nullable(),
-          search: yup.object().json(),
-          sortBy: yup.string().nullable(),
+          search: yup.object().json().nullable(),
+          sortBy: yup
+            .string()
+            .oneOf([
+              "libelle",
+              "statut",
+              "typeOrganisme",
+              "personneMorale",
+              "personnePhysique",
+              "demandeSejourId",
+              "dateDebut",
+              "dateFin",
+              "organismeId",
+              "organisme",
+            ])
+            .nullable(),
           sortDirection: yup.string().oneOf(["ASC", "DESC"]).nullable(),
         })
         .validate(params, {

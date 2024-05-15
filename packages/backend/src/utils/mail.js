@@ -321,18 +321,11 @@ module.exports = {
           from: senderEmail,
           html: `
           <p>Bonjour,</p>
-          <p>
-          Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du   
+          <p>Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du   
           ${dayjs(declaration.attestation.at).format("DD/MM/YYYY")}, une déclaration pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.hebergement.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.hebergement.dateFin).format("DD/MM/YYYY")}.
-          Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.
-          </p>
-          <p>
-          Vous devrez, huit jours avant le déroulement de ce séjour, réaliser la déclaration complémentaire prévue à l’article R. 412-14
-          du code du tourisme.
-          </p>
-          <p>
-          Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.
-          </p>
+          Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.<.p>
+          <p>Vous devrez, huit jours avant le déroulement de ce séjour, réaliser la déclaration complémentaire prévue à l’article R. 412-14 du code du tourisme.</p>
+          <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
           `,
           replyTo: senderEmail,
           subject: `Enregistrement de la déclaration ${declaration.idFonctionnelle}`,

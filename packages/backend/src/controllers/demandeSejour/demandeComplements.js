@@ -1,27 +1,27 @@
+const { number } = require("yup");
+
 const DemandeSejour = require("../../services/DemandeSejour");
 
 const logger = require("../../utils/logger");
 const { statuts } = require("../../helpers/ds-statuts");
 const MailUtils = require("../../utils/mail");
 const AppError = require("../../utils/error");
+const ValidationAppError = require("../../utils/validation-error");
 
 const Send = require("../../services/mail").mailService.send;
 
 const log = logger(module.filename);
 
 module.exports = async function post(req, res, next) {
-  const declarationId = req.params.declarationId;
+  let declarationId = req.params.declarationId;
   const { id: userId, territoireCode } = req.decoded;
   const { commentaire } = req.body;
   log.i("IN", { declarationId }, req.body);
 
-  if (!declarationId) {
-    log.w("missing parameter");
-    return next(
-      new AppError("Paramètre incorrect", {
-        statusCode: 400,
-      }),
-    );
+  try {
+    declarationId = await number().required().validate(declarationId);
+  } catch (error) {
+    return next(new ValidationAppError(error));
   }
 
   const declaration = await DemandeSejour.getOne({ "ds.id": declarationId });

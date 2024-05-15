@@ -212,9 +212,6 @@ function next() {
     "update",
     {
       ...values,
-      duree: duree.value,
-      periode: periode.value,
-      organisme: organismeStore.organismeCourant,
     },
     "informationsGenerales",
   );

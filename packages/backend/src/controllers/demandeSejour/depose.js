@@ -6,7 +6,9 @@ const Hebergement = require("../../services/Hebergement");
 const Send = require("../../services/mail").mailService.send;
 const PdfDeclaration2Mois = require("../../services/pdf/declaration2mois/generate");
 
-const DeclarationSejourSchema = require("../../schemas/declaration-sejour");
+const {
+  schema: DeclarationSejourSchema,
+} = require("../../schemas/declaration-sejour");
 
 const MailUtils = require("../../utils/mail");
 const logger = require("../../utils/logger");
