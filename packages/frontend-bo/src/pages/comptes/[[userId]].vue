@@ -233,11 +233,11 @@ const roleOptions = [
   //{ label: "Accès aux contrôles", name: "Controle" },
   //{ label: "Accès aux agréments", name: "Agrement" },
   {
-    label: "Accès en lecture aux demandes de séjour",
+    label: "Accès en lecture aux déclarations de séjour",
     name: "DemandeSejour_Lecture",
   },
   {
-    label: "Accès en écriture aux demandes de séjour",
+    label: "Accès en lecture/écriture aux déclarations de séjour",
     name: "DemandeSejour_Ecriture",
   },
 ];
