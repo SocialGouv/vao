@@ -56,6 +56,7 @@ module.exports = async function getByDepartementCodes(req, res, next) {
     const demandesWithPagination = await DemandeSejour.getByDepartementCodes(
       params,
       req.departements.map((d) => d.value),
+      req.decoded.territoireCode
     );
     log.d(demandesWithPagination);
     return res.status(200).json({ demandesWithPagination });

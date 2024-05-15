@@ -12,6 +12,7 @@ module.exports = async function getById(req, res, next) {
     const demande = await DemandeSejour.getById(
       demandeId,
       req.departements.map((d) => d.value),
+      req.decoded.territoireCode,
     );
     log.d(demande);
     return res.status(200).json({ demande });
