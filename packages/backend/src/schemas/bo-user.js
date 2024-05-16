@@ -10,7 +10,7 @@ const schema = () =>
     nom: nomSchema(),
     prenom: prenomSchema(),
     roles: array().required(),
-    territoire: string().required(),
+    territoireCode: string().required(),
   });
 
 module.exports = schema;

@@ -1,39 +1,31 @@
+const yup = require("yup");
+
 const DemandeSejour = require("../../services/DemandeSejour");
 const Organisme = require("../../services/Organisme");
+
+const { baseSchema } = require("../../schemas/declaration-sejour");
+
 const AppError = require("../../utils/error");
 
 const logger = require("../../utils/logger");
+const ValidationAppError = require("../../utils/validation-error");
 
 const log = logger(module.filename);
 
 module.exports = async function post(req, res, next) {
-  log.i("IN");
   const { id: userId } = req.decoded;
-  const {
-    libelle,
-    dateDebut,
-    dateFin,
-    duree,
-    periode,
-    responsableSejour,
-    organisme,
-  } = req.body.parametre;
-  log.d({
-    dateDebut,
-    dateFin,
-    duree,
-    libelle,
-    organisme,
-    periode,
-    responsableSejour,
-  });
-  if (!dateDebut || !dateFin || !duree) {
-    log.w("missing parameter");
-    return next(
-      new AppError("Paramètre incorrect", {
-        statusCode: 400,
-      }),
-    );
+  log.i("IN", { body: req.body });
+  const { parametre } = req.body;
+
+  let demandeSejour;
+
+  try {
+    demandeSejour = await yup.object(baseSchema).validate(parametre, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+  } catch (error) {
+    return next(new ValidationAppError(error));
   }
 
   try {
@@ -63,16 +55,10 @@ module.exports = async function post(req, res, next) {
       }
     }
 
-    const demandeId = await DemandeSejour.create(
-      organisme.organismeId,
-      libelle,
-      dateDebut,
-      dateFin,
-      duree,
-      periode,
-      responsableSejour,
+    const demandeId = await DemandeSejour.create({
+      ...demandeSejour,
       organisme,
-    );
+    });
 
     await DemandeSejour.insertEvent(
       "Organisateur",

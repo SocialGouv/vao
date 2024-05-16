@@ -6,7 +6,9 @@ const Hebergement = require("../../services/Hebergement");
 const Send = require("../../services/mail").mailService.send;
 const PdfDeclaration2Mois = require("../../services/pdf/declaration2mois/generate");
 
-const DeclarationSejourSchema = require("../../schemas/declaration-sejour");
+const {
+  schema: DeclarationSejourSchema,
+} = require("../../schemas/declaration-sejour");
 
 const MailUtils = require("../../utils/mail");
 const logger = require("../../utils/logger");
@@ -88,7 +90,7 @@ module.exports = async function post(req, res, next) {
   const firstHebergementId =
     declaration.hebergement.hebergements[0].hebergementId;
 
-  const hebergement = await Hebergement.getOne({ id: firstHebergementId });
+  const hebergement = await Hebergement.getById(firstHebergementId);
   if (!hebergement) {
     log.w("DONE with error");
     return next(

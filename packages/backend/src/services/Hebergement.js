@@ -27,7 +27,23 @@ const query = {
     )
     RETURNING id
     `,
-  get: `
+  getById: (id) => [
+    `
+    SELECT
+      id,
+      supprime,
+      nom,
+      coordonnees,
+      informations_locaux as "informationsLocaux",
+      informations_transport as "informationsTransport",
+      created_at as "createdAt",
+      edited_at as "editedAt"
+    FROM front.hebergement          
+    WHERE id = $1 
+    `,
+    [id],
+  ],
+  getByUserId: `
     SELECT
       id,
       nom,
@@ -40,25 +56,6 @@ const query = {
     WHERE 
       user_id = $1
     `,
-  getOne: (criterias) => [
-    `
-    SELECT
-      id,
-      supprime,
-      nom,
-      coordonnees,
-      informations_locaux as "informationsLocaux",
-      informations_transport as "informationsTransport",
-      created_at as "createdAt",
-      edited_at as "editedAt"
-    FROM front.hebergement          
-    WHERE 1 = 1 
-    ${Object.keys(criterias)
-      .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
-      .join(" ")}
-    `,
-    Object.values(criterias),
-  ],
   update: `
     UPDATE front.hebergement
     SET 
@@ -107,19 +104,19 @@ module.exports.update = async (
   log.i("update - DONE");
 };
 
-module.exports.get = async (userId) => {
-  log.i("get - IN", { userId });
-  const response = await pool.query(query.get, [userId]);
-  log.d("get - DONE");
+module.exports.getByUserId = async (userId) => {
+  log.i("getByUserId - IN", { userId });
+  const response = await pool.query(query.getByUserId, [userId]);
+  log.d("getByUserId - DONE");
   const hebergements = response.rows;
   return hebergements;
 };
 
-module.exports.getOne = async (criterias = {}) => {
-  log.i("getOne - IN", { criterias });
+module.exports.getById = async (id) => {
+  log.i("getById - IN", { id });
   const { rows: hebergements, rowCount } = await pool.query(
-    ...query.getOne(criterias),
+    ...query.getById(id),
   );
-  log.d("getOne - DONE");
+  log.d("getById - DONE");
   return rowCount > 0 ? hebergements[0] : null;
 };
