@@ -98,7 +98,7 @@ const query = {
       o.edited_at as "editedAt"
     FROM front.organismes o
     JOIN front.user_organisme uo ON o.id = uo.org_id
-    WHERE 1=1 
+    WHERE 1 = 1 
     ${Object.keys(criterias)
       .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
       .join(" ")}

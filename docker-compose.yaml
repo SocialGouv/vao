@@ -121,3 +121,12 @@ services:
     ports:
       - "1080:1080"
       - "1025:1025"
+
+  pghero:
+    image: ankane/pghero
+    environment:
+      - DATABASE_URL=postgres://${PG_VAO_SUPERUSER}:${PG_VAO_SUPERPASSWORD}@postgres:5432/vao
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
