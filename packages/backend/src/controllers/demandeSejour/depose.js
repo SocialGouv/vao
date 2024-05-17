@@ -63,6 +63,8 @@ module.exports = async function post(req, res, next) {
     );
   }
 
+  const firstSubmit = statut === statuts.BROUILLON;
+
   Object.assign(declaration, { attestation });
 
   try {
@@ -134,11 +136,14 @@ module.exports = async function post(req, res, next) {
     const filteredCc = cc.filter((d) => !destinataires.includes(d));
     if (destinataires) {
       await Send(
-        MailUtils.usagers.declarationSejour.sendAR2mois({
-          cc: filteredCc,
-          declaration,
-          dest: destinataires,
-        }),
+        MailUtils.usagers.declarationSejour.sendAccuseTransmission2mois(
+          {
+            cc: filteredCc,
+            declaration,
+            dest: destinataires,
+          },
+          firstSubmit,
+        ),
       );
     }
   } catch (error) {

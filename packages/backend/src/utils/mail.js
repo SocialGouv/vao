@@ -180,12 +180,11 @@ module.exports = {
           from: senderEmail,
           html: `
                 <p>Bonjour,</p>
-
                 <p>Vous recevez ce mail car vous ne trouvez plus votre mot de passe sur le portail VAO</p>
-
                 <p>Afin de modifier votre mot de passe, veuillez cliquer sur le lien suivant qui vous redirigera vers le portail :</p>
-
                 <p><a href="${frontUsagersDomain}/connexion/reset-mot-de-passe?token=${token}">Je réinitialise mon mot de passe</a></p>
+                <p>Cordialement,</p>
+                <p>L'équipe VAO</p>
                 `,
           replyTo: senderEmail,
           subject: `Portail VAO - Réinitialisation du mot de passe`,
@@ -216,16 +215,15 @@ module.exports = {
           from: senderEmail,
           html: `
                 <p>Bonjour,</p>
-
                 <p>Pour finaliser la création de votre compte sur la plateforme VAO, confirmez votre adresse e-mail en
                 cliquant sur le lien ci dessous : </p>
-
                 <p><a href="${frontUsagersDomain}/connexion/validation?token=${token}">Valider mon e-mail</a></p>
-
                 <p>Attention, ce lien ne sera valide que pendant ${config.validationToken.expiresIn / 60000} minutes </p>
+                <p>Cordialement,</p>
+                <p>L'équipe VAO</p>
                 `,
           replyTo: senderEmail,
-          subject: `VAO - Validez votre email`,
+          subject: `Portail VAO - Validez votre email`,
           to: email,
         };
         log.d("sendValidationMail post email", {
@@ -260,15 +258,14 @@ module.exports = {
           from: senderEmail,
           html: `
                 <p>Bonjour,</p>
-
-                <p>Vous avez recu des demandes de complément pour votre déclaration ${declaration.idFonctionnelle} </p>
+                <p>Vous avez reçu des demandes de complément pour votre déclaration ${declaration.idFonctionnelle} </p>
                 <p>Vous trouverez ci-joint le message de la DDETS ${territoireCode}</p>
-
                 <pre>${comment}</pre>
-                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
+                <p>Cordialement,</p>
+                <p>L'équipe VAO</p>
                 `,
           replyTo: senderEmail,
-          subject: `Demande de compléments sur la déclaration ${declaration.idFonctionnelle}`,
+          subject: `Portail VAO - Demande de compléments sur la déclaration ${declaration.idFonctionnelle}`,
           to: destinataires,
         };
         log.d("sendACompleterMail post email", {
@@ -277,37 +274,7 @@ module.exports = {
 
         return params;
       },
-      sendAR2mois: ({ dest, cc, declaration }) => {
-        log.i("sendAR2mois - In", {
-          cc,
-          dest,
-        });
-        if (!dest || !declaration) {
-          const message = `paramètre manquant à la requête`;
-          log.w(`sendForgottenPassword - ${message}`);
-          throw new AppError(message);
-        }
-
-        log.d("sendAR2mois - sending AR2mois mail");
-        const params = {
-          cc: cc,
-          from: senderEmail,
-          html: `
-                <p>Bonjour,</p>
-                <p>Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${declaration.organisme.agrement.dateObtention} et avez déposé en date du ${dayjs().format("DD/MM/YYYY")}, une déclaration pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.dateFin).format("DD/MM/YYYY")}.</p>
-                <p>Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.</p>
-                <p>Vous devrez, huit jours avant le déroulement de ce séjour, réaliser la déclaration complémentaire prévue à l’article R. 412-14 du code du tourisme.</p>
-                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
-                `,
-          replyTo: senderEmail,
-          subject: `Portail VAO - la déclaration ${declaration.idFonctionnelle} a bien été transmise`,
-          to: dest,
-        };
-        log.d("sendAR2mois post email", { params });
-
-        return params;
-      },
-      sendEnregistrementA2MoisMail: ({ destinataires, declaration }) => {
+      sendAccuseReception2MoisMail: ({ destinataires, declaration }) => {
         log.i("sendEnregistrementA2MoisMail - In", {
           destinataires,
         });
@@ -324,23 +291,49 @@ module.exports = {
           <p>
           Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du   
           ${dayjs(declaration.attestation.at).format("DD/MM/YYYY")}, une déclaration pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.hebergement.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.hebergement.dateFin).format("DD/MM/YYYY")}.
-          Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.
-          </p>
-          <p>
-          Vous devrez, huit jours avant le déroulement de ce séjour, réaliser la déclaration complémentaire prévue à l’article R. 412-14
-          du code du tourisme.
-          </p>
-          <p>
-          Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.
-          </p>
+          Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.<.p>
+          <p>Vous devrez, huit jours avant le déroulement de ce séjour, réaliser la déclaration complémentaire prévue à l’article R. 412-14 du code du tourisme.</p>
+          <p>Cordialement,</p>
+          <p>L'équipe VAO</p>
           `,
           replyTo: senderEmail,
-          subject: `Enregistrement de la déclaration ${declaration.idFonctionnelle}`,
+          subject: `Portail VAO - Enregistrement de la déclaration ${declaration.idFonctionnelle}`,
           to: destinataires,
         };
         log.d("sendEnregistrementA2MoisMail post email", {
           params,
         });
+
+        return params;
+      },
+      sendAccuseTransmission2mois: ({ dest, cc, declaration }, firstSubmit) => {
+        log.i("sendAccuseTransmission2mois - In", {
+          cc,
+          dest,
+        });
+        if (!dest || !declaration) {
+          const message = `paramètre manquant à la requête`;
+          log.w(`sendForgottenPassword - ${message}`);
+          throw new AppError(message);
+        }
+
+        log.d(
+          "sendAccuseTransmission2mois - sending sendAccuseTransmission2mois mail",
+        );
+        const params = {
+          cc: cc,
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p>
+                <p>Votre déclaration de séjour n°${declaration.idFonctionnelle} a bien été transmise au(x) service(s) instructeur(s) le ${dayjs().format("DD/MM/YYYY")}.</p>
+                <p>Cordialement,</p>
+                <p>L'équipe VAO</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Portail VAO - ${firstSubmit ? "Transmission de la déclaration de séjour" : "Transmission de complément sur la déclaration de séjour"} VAO n°${declaration.idFonctionnelle}`,
+          to: dest,
+        };
+        log.d("sendAccuseTransmission2mois post email", { params });
 
         return params;
       },
@@ -363,12 +356,11 @@ module.exports = {
           from: senderEmail,
           html: `
                 <p>Bonjour,</p>
-
-                <p>Votre déclaration ${declaration.idFonctionnelle} à été refusée </p>
-                <p>En voici les raisons</p>
-
+                <p>Votre déclaration ${declaration.idFonctionnelle} a été refusée.</p>
+                <p>En voici les raisons : </p>
                 <pre>${comment}</pre>
-                <p>Veuillez agréer, madame/monsieur, l’assurance de notre considération distinguée.</p>
+                <p>Cordialement,</p>
+                <p>L'équipe VAO</p>
                 `,
           replyTo: senderEmail,
           subject: `Refus la déclaration ${declaration.idFonctionnelle}`,
