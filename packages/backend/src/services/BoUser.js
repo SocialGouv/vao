@@ -51,7 +51,7 @@ const query = {
     RETURNING
       id as id
     ;`,
-    [normalize(email), nom, prenom, territoireCode],
+    [email, nom, prenom, territoireCode],
   ],
   deleteRole: (id) => [
     `
