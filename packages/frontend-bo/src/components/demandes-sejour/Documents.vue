@@ -66,7 +66,7 @@ const headers = [
     component: (file) => {
       return {
         component: NuxtLink,
-        to: `${config.public.backendUrl}/documents/${file.uuid}`,
+        to: `${config.public.backendUrl}/documents/admin/${file.uuid}`,
         class: "fr-icon-file-download-fill",
       };
     },
