@@ -25,7 +25,7 @@ const query = {
     ;`,
     [user, role],
   ],
-  create: (email, nom, prenom, territoire) => [
+  create: (email, nom, prenom, territoireCode) => [
     `INSERT INTO back.users (
       mail,
       pwd,
@@ -51,7 +51,7 @@ const query = {
     RETURNING
       id as id
     ;`,
-    [email, nom, prenom, territoire],
+    [email, nom, prenom, territoireCode],
   ],
   deleteRole: (id) => [
     `
@@ -92,6 +92,7 @@ const query = {
       us.nom AS nom,
       us.prenom AS prenom,
       us.validated AS validated,
+      ter.label AS "territoire",
       us.ter_code AS "territoireCode",
       ter.parent_code AS "territoireParent",
       ur.roles
@@ -146,7 +147,7 @@ const query = {
       AND pwd = crypt($2, pwd)
       AND deleted is False
     `,
-  update: (id, nom, prenom, territoire) => [
+  update: (id, nom, prenom, territoireCode) => [
     `
       UPDATE back.users
       SET
@@ -156,11 +157,17 @@ const query = {
       WHERE
         id = $1
       `,
-    [id, nom, prenom, territoire],
+    [id, nom, prenom, territoireCode],
   ],
 };
 
-module.exports.create = async ({ email, nom, prenom, roles, territoire }) => {
+module.exports.create = async ({
+  email,
+  nom,
+  prenom,
+  roles,
+  territoireCode,
+}) => {
   log.i("create - IN", { email });
 
   // Test de l'existance d'un compte avec la même adresse mail
@@ -176,7 +183,7 @@ module.exports.create = async ({ email, nom, prenom, roles, territoire }) => {
 
   // Création du compte en base de données
   const userId = await pool.query(
-    ...query.create(email, nom, prenom, territoire),
+    ...query.create(email, nom, prenom, territoireCode),
   );
 
   const [user] = userId.rows;
@@ -191,7 +198,7 @@ module.exports.create = async ({ email, nom, prenom, roles, territoire }) => {
   return { code: "CreationCompte", user };
 };
 
-module.exports.update = async (id, { nom, prenom, roles, territoire }) => {
+module.exports.update = async (id, { nom, prenom, roles, territoireCode }) => {
   log.i("update - IN", { id });
 
   if (!id) {
@@ -202,7 +209,7 @@ module.exports.update = async (id, { nom, prenom, roles, territoire }) => {
 
   // Mise à jour du compte en base de données
   const { rowCount } = await pool.query(
-    ...query.update(id, nom, prenom, territoire),
+    ...query.update(id, nom, prenom, territoireCode),
   );
 
   if (rowCount === 0) {

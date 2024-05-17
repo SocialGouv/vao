@@ -194,7 +194,7 @@ const searchState = reactive({
   id: null,
   nom: null,
   prenom: null,
-  territoire: null,
+  territoireCode: null,
   valide: true,
   email: null,
 });
@@ -413,7 +413,7 @@ onMounted(async () => {
     prenomField.modelValue = usersStore.userSelected.prenom;
     prenomField.isValid = true;
     // Sélection du service de compétence
-    if (usersStore.userSelected.territoire === "FRA")
+    if (usersStore.userSelected.territoireCode === "FRA")
       serviceCompetenceField.modelValue = "NAT";
     else if (usersStore.userSelected.territoireParent === "FRA") {
       serviceCompetenceField.modelValue = "REG";
@@ -421,7 +421,7 @@ onMounted(async () => {
       serviceCompetenceField.modelValue = "DEP";
     }
     serviceCompetenceField.isValid = true;
-    territoireField.modelValue = usersStore.userSelected.territoire;
+    territoireField.modelValue = usersStore.userSelected.territoireCode;
     territoireField.isValid = true;
     // Chargement des rôles
     usersStore.userSelected.roles.forEach((role) => {
@@ -462,7 +462,7 @@ async function post() {
         nom: nomField.modelValue,
         prenom: prenomField.modelValue,
         roles: roleUtilisateurField.modelValue,
-        territoire: territoireField.modelValue,
+        territoireCode: territoireField.modelValue,
       }),
     })
       .then((response) => {
@@ -510,7 +510,7 @@ async function update() {
           nom: nomField.modelValue,
           prenom: prenomField.modelValue,
           roles: roleUtilisateurField.modelValue,
-          territoire: territoireField.modelValue,
+          territoireCode: territoireField.modelValue,
         }),
       },
     )
