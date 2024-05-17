@@ -12,7 +12,6 @@ SET files = jsonb_set(
     SELECT jsonb_agg(elem)
     FROM jsonb_array_elements(files->'files') AS elem
     WHERE elem->>'type' IS DISTINCT FROM 'AR_declaration_2_mois'
-    AND 
     )
 )
 WHERE files->'files' IS NOT NULL
