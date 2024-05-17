@@ -368,7 +368,6 @@ WHERE
     duree,
     periode,
     responsableSejour,
-    organisme,
     demandeSejourId,
   ) => [
     `
@@ -380,10 +379,9 @@ SET
   duree = $4,
   periode = $5,
   responsable_sejour = $6,
-  organisme = $7,
   edited_at = NOW()
 WHERE
-  ds.id = $8
+  ds.id = $7
 RETURNING
   id as "demandeId"
 `,
@@ -394,7 +392,6 @@ RETURNING
       duree,
       periode,
       responsableSejour,
-      organisme,
       demandeSejourId,
     ],
   ],
