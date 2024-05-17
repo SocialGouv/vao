@@ -225,7 +225,7 @@ const agrementSchema = (regions) => ({
     .max(new Date(), "La date doit être inférieure à la date du jour.")
     .min(
       dayjs().add(-5, "year"),
-      "La date de validité de votre agrément a expiré",
+      "L'agrément ne peut pas avoir été délivré il y a plus de 5 ans",
     )
     .required(),
   file: yup.object().required(),
