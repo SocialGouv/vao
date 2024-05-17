@@ -77,7 +77,7 @@ module.exports = async function post(req, res, next) {
       },
       () =>
         Send(
-          MailUtils.usagers.declarationSejour.sendEnregistrementA2MoisMail({
+          MailUtils.usagers.declarationSejour.sendAccuseReception2MoisMail({
             declaration,
             destinataires,
           }),
