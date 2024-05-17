@@ -26,22 +26,27 @@ module.exports = async (req, res, next) => {
 
     const data = await response.data;
 
-    log.d({ data });
+    log.d(JSON.stringify(data));
 
-    if (data.success) {
-      log.i("DONE");
+    if (!data.success) {
+      log.w("DONE - Service unavailable");
       return next();
     }
 
-    log.w(
-      "DONE - Scan returns threat on file " + originalname,
-      ...data.data.result[0].viruses,
-    );
-    return next(
-      new AppError("Scan returns threat on file " + originalname, {
-        name: "file.scan-antivirus",
-      }),
-    );
+    if (data.data.result[0].viruses.length) {
+      log.w(
+        "DONE - Scan returns threat on file " + originalname,
+        ...data.data.result[0].viruses,
+      );
+      return next(
+        new AppError("Scan returns threat on file " + originalname, {
+          name: "file.scan-antivirus",
+        }),
+      );
+    }
+
+    log.i("DONE");
+    return next();
   } catch (error) {
     log.w("DONE - Service unavailable", error);
     return next();
