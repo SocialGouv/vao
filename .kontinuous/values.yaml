@@ -157,7 +157,7 @@ jobs:
       ~needs: [build-migrations, init-db]
       retry: 3
       checkout: true
-      image: "{{ .Values.global.registry }}/{{ .Values.global.imageRepository }}/{{ .Values.global.projectName }}/migrations:{{ .Values.global.imageTag }}"
+      image: "{{ .Values.global.registry }}/{{ .Values.global.projectName }}/{{ .Values.global.imageRepository }}/migrations:{{ .Values.global.imageTag }}"
       env:
         - name: PG_VAO_SUPERUSER
           valueFrom:
