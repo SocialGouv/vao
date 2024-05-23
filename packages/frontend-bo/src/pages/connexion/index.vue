@@ -211,6 +211,12 @@ const displayInfos = {
     description: "Votre email ou votre mot de passe sont incorrects.",
     type: "error",
   },
+  UnknownError: {
+    title: "Une erreur est survenue",
+    description:
+      "Une erreur inconnue est survenue. Veuillez contacter votre administrateur",
+    type: "error",
+  },
   UnexpectedError: {
     title: "Une erreur est survenue",
     description:
@@ -262,6 +268,9 @@ async function login() {
         break;
       case "NotValidatedAccount":
         displayType.value = "NotValidatedAccount";
+        break;
+      case "UnknownError":
+        displayType.value = "UnknownError";
         break;
       default:
         displayType.value = "UnexpectedError";
