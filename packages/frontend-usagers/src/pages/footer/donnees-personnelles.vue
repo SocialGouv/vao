@@ -26,7 +26,7 @@
         <h2>Base légale du traitement</h2>
         <p>
           Ce traitement de données est mis en œuvre pour l'exécution d'une
-          mission d'intérêt public, conformément au e du 1 de l'article 6 du
+          <b>mission d'intérêt public</b>, conformément au e du 1 de l'article 6 du
           règlement (UE) du 27 avril 2016 susvisé, et pour les motifs d'intérêt
           public mentionnés au i du 2 de l'article 9 du même règlement.
         </p>
@@ -37,22 +37,22 @@
 
         <ol>
           <li>
-            le dépôt et l’instruction des demandes d’agrément « vacances
+            Le dépôt et l’instruction des demandes d’agrément « vacances
             adaptées organisées », tel que prévu aux articles L. 412-2 et R.
             412-9 et suivants du code du tourisme ;
           </li>
           <li>
-            le dépôt et l’instruction des déclarations de séjours « vacances
+            Le dépôt et l’instruction des déclarations de séjours « vacances
             adaptées organisées », tel que prévu à l’article R. 412-14 du même
             code ;
           </li>
           <li>
-            le recueil et le suivi des signalements des évènements indésirables
+            Le recueil et le suivi des signalements des évènements indésirables
             graves déclarés en application de l’article R. 412-14-1 du même code
             ;
           </li>
           <li>
-            le suivi et l’évaluation du dispositif « vacances adaptées
+            Le suivi et l’évaluation du dispositif « vacances adaptées
             organisées » au niveau national et local.
           </li>
         </ol>
@@ -65,23 +65,23 @@
         </p>
         <ol>
           <li>
-            les personnes physiques ou morales demandant un agrément “vacances
+            Les personnes physiques ou morales demandant un agrément “vacances
             adaptées organisées“, déclarant un séjour « vacances adaptées
             organisées » ou signalant un évènement indésirable grave, pour les
             seules données qu’ils enregistrent ;
           </li>
           <li>
-            les agents des services déconcentrés du ministère chargé des
+            Les agents des services déconcentrés du ministère chargé des
             affaires sociales spécialement habilités par leur directeur ;
           </li>
           <li>
-            les agents de la direction générale de la cohésion sociale
+            Les agents de la direction générale de la cohésion sociale
             spécialement habilités par le directeur général de la cohésion
             sociale, pour le suivi et l’évaluation du dispositif « vacances
             adaptées organisées » au niveau national et local ;
           </li>
           <li>
-            le cas échéant, les sous-traitants auxquels les responsables de
+            Le cas échéant, les sous-traitants auxquels les responsables de
             traitement ont recours, dans le respect des conditions fixées par
             l'article 28 du règlement (UE) 2016/679 du 27 avril 2016 susvisé.
           </li>
@@ -108,24 +108,33 @@
           traitement de vos données.
         </p>
         <p>
-          Pour exercer ces droits ou pour toute question sur le traitement de
-          vos données dans ce dispositif, vous pouvez contacter le délégué à la
-          protection des données (DPD) en précisant dans l’objet de votre
-          message “VAO” :
+          Pour exercer ces droits ou pour toute question sur le traitement
+          de vos données dans ce dispositif, vous pouvez contacter en
+          précisant dans l’objet de votre message “VAO” : 
         </p>
-        <ul>
-          <li>
-            <strong>par courriel</strong> à l'adresse suivante:
-            dpd-minsociaux@sg.social.gouv.fr ;
-          </li>
-          <li><strong>par voie postale</strong> à l'adresse ci dessous.</li>
-        </ul>
-        <em
-          ><dl>
-            <dt>Direction Générale de la Cohésion Sociale</dt>
-            <dt>78 rue Olivier de Serres</dt>
-            <dt>75015 PARIS</dt>
-          </dl>
+        <p>
+            <strong>Par courriel</strong> DGCS-RGPD@social.gouv.fr 
+        </p>
+        <p>
+          <strong>Par voie postale</strong> 
+          <em
+            ><dl>
+              <dt>Direction Générale de la Cohésion Sociale</dt>
+              <dt>78 rue Olivier de Serres</dt>
+              <dt>75015 PARIS</dt>
+            </dl>
+          </em>
+        </p>
+        <em>
+        <p>Consultez le site de la 
+          <a
+          title="Site internet de la CNIL"
+          href="https://cnil.fr/"
+          target="_blank"
+          rel="noopener external"
+          >CNIL</a
+        >
+         pour plus d’informations sur vos droits.</p>
         </em>
         <a
           title="formulaire de plainte de la CNIL"
