@@ -69,7 +69,6 @@
                   />
                 </div>
               </div>
-
               <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
@@ -88,24 +87,6 @@
                     @update:model-value="checkValidPrenom"
                   />
                 </div>
-              </div>
-
-              <div
-                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-              >
-                <DsfrCheckboxSet
-                  name="roleUtilisateurField"
-                  legend="Rôle(s) associé(s) à l'utilisateur ?"
-                  :required="true"
-                  :model-value="roleUtilisateurField.modelValue"
-                  :options="roleOptions"
-                  :is-valid="roleUtilisateurField.isValid"
-                  :inline="true"
-                  :error-message="
-                    roleUtilisateurField.roleUtilisateurErrorMessage
-                  "
-                  @update:model-value="checkValidRoleUtilisateur"
-                />
               </div>
               <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
@@ -160,7 +141,23 @@
                   </div>
                 </fieldset>
               </div>
-
+              <div
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+              >
+                <DsfrCheckboxSet
+                  name="roleUtilisateurField"
+                  legend="Rôle(s) associé(s) à l'utilisateur ?"
+                  :required="true"
+                  :model-value="roleUtilisateurField.modelValue"
+                  :options="roleOptions"
+                  :is-valid="roleUtilisateurField.isValid"
+                  :inline="true"
+                  :error-message="
+                    roleUtilisateurField.roleUtilisateurErrorMessage
+                  "
+                  @update:model-value="checkValidRoleUtilisateur"
+                />
+              </div>
               <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
@@ -249,6 +246,7 @@ const formStates = {
 };
 
 let formStatus = ref(formStates.CREATION);
+let serviceCompetenceOptions = [];
 
 const emailField = reactive({
   errorMessage: "",
@@ -357,7 +355,7 @@ function checkValidServiceCompetence(p) {
   log.d("checkValidServiceCompetence : p = ", p);
   serviceCompetenceField.modelValue = p;
   serviceCompetenceField.isValid = p !== null;
-  if (serviceCompetenceField.isValid === true && p === "NAT")
+  if (serviceCompetenceField.isValid === true && p === competence.NATIONALE)
     territoireField.isValid = true;
   else territoireField.isValid = false;
   serviceCompetenceField.errorMessage =
@@ -370,11 +368,11 @@ function checkValidTerritoire(p) {
   territoireField.modelValue = p;
   territoireField.isValid = p !== null;
   territoireField.errorMessage =
-    !p || serviceCompetenceField.modelValue === "NAT"
+    !p || serviceCompetenceField.modelValue === competence.NATIONALE
       ? ""
-      : serviceCompetenceField.modelValue === "DEP"
+      : serviceCompetenceField.modelValue === competence.DEPARTEMENTALE
         ? "Le département du service doit obligatoirement être renseigné"
-        : serviceCompetenceField.modelValue === "REG"
+        : serviceCompetenceField.modelValue === competence.REGIONALE
           ? "La région du service doit obligatoirement être renseignée"
           : "";
 }
@@ -389,7 +387,7 @@ function checkValidRoleUtilisateur(p) {
 }
 
 watch([() => serviceCompetenceField.modelValue], function () {
-  if (serviceCompetenceField.modelValue === "NAT")
+  if (serviceCompetenceField.modelValue === competence.NATIONALE)
     territoireField.modelValue = "FRA";
   //    else
   //        territoireField.modelValue = null;
@@ -397,6 +395,13 @@ watch([() => serviceCompetenceField.modelValue], function () {
 
 onMounted(async () => {
   log.i("Mounted - IN");
+  serviceCompetenceOptions = [];
+  if (usersStore.user.serviceCompetent === competence.NATIONALE ) 
+    serviceCompetenceOptions.push(serviceCompetenceNAT);
+  if (usersStore.user.serviceCompetent === competence.NATIONALE || usersStore.user.serviceCompetent === competence.REGIONALE) 
+    serviceCompetenceOptions.push(serviceCompetenceREG);
+  serviceCompetenceOptions.push(serviceCompetenceDEP);
+
   // Mode Edition
   if (userId) {
     // Chargement des données utilisateur
@@ -414,11 +419,11 @@ onMounted(async () => {
     prenomField.isValid = true;
     // Sélection du service de compétence
     if (usersStore.userSelected.territoireCode === "FRA")
-      serviceCompetenceField.modelValue = "NAT";
+      serviceCompetenceField.modelValue = competence.NATIONALE;
     else if (usersStore.userSelected.territoireParent === "FRA") {
-      serviceCompetenceField.modelValue = "REG";
+      serviceCompetenceField.modelValue = competence.REGIONALE;
     } else {
-      serviceCompetenceField.modelValue = "DEP";
+      serviceCompetenceField.modelValue = competence.DEPARTEMENTALE;
     }
     serviceCompetenceField.isValid = true;
     territoireField.modelValue = usersStore.userSelected.territoireCode;
