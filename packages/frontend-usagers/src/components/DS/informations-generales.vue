@@ -129,7 +129,7 @@ const organismeStore = useOrganismeStore();
 const userStore = useUserStore();
 
 const duree = computed(() => {
-  const nbjours = dayjs(dateFin.value).diff(dateDebut.value, "day");
+  const nbjours = dayjs(dateFin.value).diff(dateDebut.value, "day") + 1;
   return nbjours.toString();
 });
 

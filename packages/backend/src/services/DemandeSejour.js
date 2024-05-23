@@ -10,6 +10,15 @@ const getDepartementWhereQuery = (departementIds, params) => {
   return `jsonb_path_query_array(hebergement, '$.hebergements[*].coordonnees.adresse.departement') ?| ($${params.length})::text[]`;
 };
 
+/* see: https://day.js.org/docs/en/display/difference
+     if dateDebut = 2021-12-01 and dateFin = 2012-12-03, dayjs(dateFin).diff(dateDebut, "day") will return 2
+     because it does a diff between 2021-12-01 00:00:00 and 2021-12-03 00:00:00. It would be the same with
+     2021-12-01 00:00:00 and 2021-12-03 23:59:59 because it truncate to zero decimal places.
+     So we must add 1 to have the good result
+   */
+const getDuree = (dateDebut, dateFin) =>
+  (dayjs(dateFin).diff(dateDebut, "day") + 1).toString();
+
 const query = {
   addFile: `
     UPDATE front.demande_sejour
@@ -215,14 +224,14 @@ WHERE
     ];
   },
   getEmailBack: `
-WITH 
-  roles AS 
+WITH
+  roles AS
   (
-    SELECT array_agg(id) as ids 
+    SELECT array_agg(id) as ids
     from back.roles
     WHERE label IN ('DemandeSejour_Ecriture')
   ),
-  users AS 
+  users AS
   (
     SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
     FROM back.users u
@@ -231,27 +240,27 @@ WITH
     GROUP BY mail
   )
 SELECT mail
-FROM 
-  roles r, 
+FROM
+  roles r,
   users u
 WHERE u.ids && r.ids
 `,
   getEmailBackCc: `
-WITH 
-  roles AS 
+WITH
+  roles AS
   (
-    SELECT array_agg(id) as ids 
+    SELECT array_agg(id) as ids
     from back.roles
     WHERE label IN ('DemandeSejour_Ecriture')
   ),
-  regions AS 
+  regions AS
   (
     SELECT
       ARRAY_AGG(distinct parent_code) as parent_code
     FROM geo.territoires
     WHERE code = ANY($1)
   ),
-  users AS 
+  users AS
   (
     SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
     FROM regions r, back.users u
@@ -467,7 +476,7 @@ module.exports.create = async ({
   log.i("create - IN");
   const organismeId = organisme.organismeId;
 
-  const duree = dayjs(dateFin).diff(dateDebut, "day").toString();
+  const duree = getDuree(dateDebut, dateFin);
 
   const periode = (() => {
     const moisDebut = dayjs(dateDebut).month();
@@ -636,7 +645,7 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
     case "informationsGenerales": {
       const { libelle, dateDebut, dateFin, responsableSejour } = parametre;
 
-      const duree = dayjs(dateFin).diff(dateDebut, "day").toString();
+      const duree = getDuree(dateDebut, dateFin);
 
       const periode = (() => {
         const moisDebut = dayjs(dateDebut).month();
