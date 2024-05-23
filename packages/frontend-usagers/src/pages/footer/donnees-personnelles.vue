@@ -128,7 +128,7 @@
         <em>
         <p>Consultez le site de la 
           <a
-          title="site internet de la CNIL"
+          title="Site internet de la CNIL"
           href="https://cnil.fr/"
           target="_blank"
           rel="noopener external"
