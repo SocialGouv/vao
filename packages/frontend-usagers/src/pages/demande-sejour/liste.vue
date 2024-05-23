@@ -340,9 +340,12 @@ const headers = [
       align: "center",
       label: value.statut,
       noIcon: false,
-      type: ["TRANSMISE", "EN COURS"].includes(value.statut)
+      type: [
+        DeclarationSejour.statuts.BROUILLON,
+        DeclarationSejour.statuts.EN_COURS,
+      ].includes(value.statut)
         ? "success"
-        : ["BROUILLON"].includes(value.statut)
+        : [DeclarationSejour.statuts.BROUILLON].includes(value.statut)
           ? "info"
           : "",
     }),
@@ -373,9 +376,11 @@ const headers = [
             label: "Dupliquer",
             iconOnly: true,
             icon: "ri-file-copy-2-fill",
-            disabled: !["BROUILLON", "TRANSMISE", "EN COURS"].includes(
-              row.statut,
-            ),
+            disabled: ![
+              DeclarationSejour.statuts.BROUILLON,
+              DeclarationSejour.statuts.TRANSMISE,
+              DeclarationSejour.statuts.EN_COURS,
+            ].includes(row.statut),
             onClick: (event) => {
               event.stopPropagation();
               copyDS(row.demandeSejourId);
@@ -389,7 +394,7 @@ const headers = [
               event.stopPropagation();
               deleteDS(row.demandeSejourId);
             },
-            disabled: !(row.statut === "BROUILLON"),
+            disabled: !(row.statut === DeclarationSejour.statuts.BROUILLON),
           },
         ],
       };
@@ -402,7 +407,7 @@ const headers = [
 ];
 
 async function copyDS(dsId) {
-  console.log("copyDS -IN");
+  log.i("copyDS -IN");
   try {
     const url = `/sejour/${dsId}/copy`;
     const response = await $fetchBackend(url, {
@@ -424,7 +429,7 @@ async function copyDS(dsId) {
 }
 
 async function deleteDS(dsId) {
-  console.log("deleteDS -IN");
+  log.i("deleteDS -IN");
   try {
     const url = `/sejour/${dsId}`;
     const response = await $fetchBackend(url, {

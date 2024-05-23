@@ -1,5 +1,6 @@
 const DemandeSejour = require("../../services/DemandeSejour");
 const Organisme = require("../../services/Organisme");
+const { statuts } = require("../../helpers/ds-statuts");
 
 const logger = require("../../utils/logger");
 const AppError = require("../../utils/error");
@@ -31,9 +32,9 @@ module.exports = async function post(req, res, next) {
     }
 
     if (
-      sourceDeclaration.statut !== "BROUILLON" &&
-      sourceDeclaration.statut !== "TRANSMISE" &&
-      sourceDeclaration.statut !== "EN COURS"
+      sourceDeclaration.statut !== statuts.BROUILLON &&
+      sourceDeclaration.statut !== statuts.TRANSMISE &&
+      sourceDeclaration.statut !== statuts.EN_COURS
     ) {
       log.w("DONE with error");
       return next(
@@ -43,28 +44,12 @@ module.exports = async function post(req, res, next) {
       );
     }
 
-    sourceDeclaration.files = sourceDeclaration.files.files.filter(
+    sourceDeclaration.files = sourceDeclaration.files?.files?.filter(
       (f) =>
         f.type !== "declaration_2_mois" && f.type !== "AR_declaration_2_mois",
     );
 
-    const demandeId = await DemandeSejour.copy(
-      sourceDeclaration.organismeId,
-      `COPIE - ${sourceDeclaration.libelle}`,
-      sourceDeclaration.dateDebut,
-      sourceDeclaration.dateFin,
-      sourceDeclaration.duree,
-      sourceDeclaration.periode,
-      sourceDeclaration.responsableSejour,
-      sourceDeclaration.organisme,
-      sourceDeclaration.hebergement,
-      sourceDeclaration.informationsVacanciers,
-      sourceDeclaration.informationsPersonnel,
-      sourceDeclaration.informationsTransport,
-      sourceDeclaration.informationsProjetSejour,
-      sourceDeclaration.informationsSanitaires,
-      sourceDeclaration.files,
-    );
+    const demandeId = await DemandeSejour.copy(sourceDeclaration);
     if (!demandeId) {
       log.w("DONE with error");
       return next(

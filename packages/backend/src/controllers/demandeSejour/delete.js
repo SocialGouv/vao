@@ -1,3 +1,4 @@
+const { statuts } = require("../../helpers/ds-statuts");
 const DemandeSejour = require("../../services/DemandeSejour");
 
 const logger = require("../../utils/logger");
@@ -25,7 +26,7 @@ module.exports = async function post(req, res, next) {
       );
     }
     log.i(declaration.statut);
-    if (declaration.statut !== "BROUILLON") {
+    if (declaration.statut !== statuts.BROUILLON) {
       log.w("DONE with error");
       return next(
         new AppError(

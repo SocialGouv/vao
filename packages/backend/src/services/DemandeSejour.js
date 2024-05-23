@@ -550,41 +550,25 @@ module.exports.create = async (
   return demandeId;
 };
 
-module.exports.copy = async (
-  organismeId,
-  libelle,
-  dateDebut,
-  dateFin,
-  duree,
-  periode,
-  responsableSejour,
-  organisme,
-  hebergement,
-  vacanciers,
-  personnel,
-  transport,
-  projet_sejour,
-  sanitaires,
-  files,
-) => {
+module.exports.copy = async (declaration) => {
   log.i("copy - IN");
   const response = await pool.query(
     ...query.copy(
-      organismeId,
-      libelle,
-      dateDebut,
-      dateFin,
-      duree,
-      periode,
-      responsableSejour,
-      organisme,
-      hebergement,
-      vacanciers,
-      personnel,
-      transport,
-      projet_sejour,
-      sanitaires,
-      files,
+      declaration.organismeId,
+      `COPIE - ${declaration.libelle}`,
+      declaration.dateDebut,
+      declaration.dateFin,
+      declaration.duree,
+      declaration.periode,
+      declaration.responsableSejour,
+      declaration.organisme,
+      declaration.hebergement,
+      declaration.vacanciers,
+      declaration.personnel,
+      declaration.transport,
+      declaration.projet_sejour,
+      declaration.sanitaires,
+      declaration.files,
     ),
   );
   log.d(response);
