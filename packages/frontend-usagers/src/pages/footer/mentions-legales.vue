@@ -15,8 +15,8 @@
       <div class="fr-col-12">
         <h4>Editeur</h4>
         <p>Le suivi éditorial, graphique et technique est assuré par :</p>
-        <em
-          ><dl>
+        <em>
+          <dl>
             <dt>Direction Générale de la Cohésion Sociale</dt>
             <dt>Ministère des solidarités et de la santé</dt>
             <dt>78-84 rue Olivier de Serres</dt>
@@ -36,19 +36,12 @@
         <h4>Prestataires</h4>
         <strong>Hébergement</strong>
         <p></p>
-        <em
-          ><dl>
-            <dt>
-              <a
-                title="Site Internet CEGEDIM"
-                href="https://www.cegedim.fr"
-                target="_blank"
-                rel="noopener external"
-                >CEGEDIM</a
-              >
-            </dt>
-            <dt>137 rue d'Aguesseau</dt>
-            <dt>92100 Boulogne-Billancourt</dt>
+        <em>
+          <dl>
+            <dt>OVH SAS</dt>
+            <dt>2 rue Kellermann</dt>
+            <dt>59100 Roubaix</dt>
+            <dt>France</dt>
           </dl>
         </em>
         <p></p>
