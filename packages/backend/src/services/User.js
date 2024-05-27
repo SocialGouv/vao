@@ -74,7 +74,14 @@ const query = {
   FROM front.users
   WHERE 
     mail = $1
-    AND pwd = crypt($2, pwd)
+    AND pwd = crypt($2, CASE 
+      WHEN pwd = '' 
+      THEN 
+        gen_salt('bf') 
+      ELSE 
+        pwd 
+      END 
+    )
     AND deleted is False
   `,
   select: (criterias) => [

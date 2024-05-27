@@ -144,7 +144,14 @@ const query = {
     ) ur ON ur.use_id = us.id
     WHERE
       mail = $1
-      AND pwd = crypt($2, pwd)
+      AND pwd = crypt($2, CASE 
+        WHEN pwd = '' 
+        THEN 
+          gen_salt('bf') 
+        ELSE 
+          pwd 
+        END 
+      )
       AND deleted is False
     `,
   update: (id, nom, prenom, territoireCode) => [

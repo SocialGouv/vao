@@ -27,7 +27,12 @@ module.exports = async function login(req, res, next) {
     );
   }
 
-  const user = await User.login({ email, password });
+  let user;
+  try {
+    user = await User.login({ email, password });
+  } catch (error) {
+    return next(error);
+  }
 
   if (!user) {
     log.w("Utilisateur BO inexistant");
