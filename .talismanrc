@@ -213,14 +213,6 @@ fileignoreconfig:
     checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
   - filename: pg/seeds/BO-1-back-user.sql
     checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
-  - filename: pod-backend-66df4cdf46-82vfh.yaml
-    checksum: 6505514978ef8de3b512962a9e93eb5f6bece8b86fcbf32d2d55a780e06592a7
-  - filename: pg/scripts/03/03-3-ref-data.sql
-    checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
-  - filename: pg/seeds/BO-1-back-user.sql
-    checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
-  - filename: pod-backend-66df4cdf46-82vfh.yaml
-    checksum: 6505514978ef8de3b512962a9e93eb5f6bece8b86fcbf32d2d55a780e06592a7
 scopeconfig:
   - scope: node
 version: "1.0"
