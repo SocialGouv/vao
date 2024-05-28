@@ -5,8 +5,7 @@ const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 
-const getDepartementWhereQuery = (departementIds, params) => {
-  params.push(departementIds);
+const getDepartementWhereQuery = (departementCodes, params) => {
   return `jsonb_path_query_array(hebergement, '$.hebergements[*].coordonnees.adresse.departement') ?| ($${params.length})::text[]`;
 };
 
@@ -216,9 +215,7 @@ WHERE
 `,
     [organismeIds],
   ],
-  getByDepartementCodes: (search, departementCodes, params) => {
-    const departementQuery = getDepartementWhereQuery(departementCodes, params);
-    params.push(departementCodes);
+  getByDepartementCodes: (search, departementQuery, params) => {
     return `
 SELECT
   ds.id as "demandeSejourId",
@@ -241,8 +238,7 @@ WHERE
   ${search.map((s) => ` AND ${s} `).join("")}
 `;
   },
-  getByDepartementCodesTotal: (search, departementCodes, params) => {
-    const departementQuery = getDepartementWhereQuery(departementCodes, params);
+  getByDepartementCodesTotal: (search, departementQuery) => {
     return `
 SELECT COUNT(DISTINCT ds.id)
 FROM front.demande_sejour ds
@@ -253,9 +249,7 @@ WHERE
   ${search.map((s) => ` AND ${s} `).join("")}
 `;
   },
-  getById: (departementCodes, params) => {
-    const departementQuery = getDepartementWhereQuery(departementCodes, params);
-    params.push(departementCodes);
+  getById: (departementQuery, params) => {
     return [
       `
     SELECT
@@ -282,7 +276,7 @@ WHERE
       o.personne_physique as "personnePhysique",
       o.type_organisme as "typeOrganisme",
       ds.files as "files",
-      ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ($${params.length}) as "estInstructeurPrincipal",
+      ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length}) as "estInstructeurPrincipal",
       ds.created_at as "createdAt",
       ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
@@ -671,21 +665,28 @@ module.exports.getByDepartementCodes = async (
 
   if (search?.estInstructeurPrincipal === true) {
     searchQuery.push(
-      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' IN ($${params.length + 1})`,
+      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length + 1})`,
     );
-    params.push(`'${departementCodes.join("','")}'`);
+    params.push(`{${departementCodes.join(",")}}`);
   }
 
   if (search?.estInstructeurPrincipal === false) {
     searchQuery.push(
-      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' NOT IN ($${params.length + 1})`,
+      `NOT (ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length + 1}))`,
     );
-    params.push(`'${departementCodes.join("','")}'`);
+    params.push(`{${departementCodes.join(",")}}`);
   }
+
+  /*
+   * Cette Partie du code soit toujours etre appelé juste avant la fonction query.getByDepartementCodes
+   * pour maintenir la coherence de l'ordre des paramètres dans les requetes
+   * */
+  params.push(departementCodes);
+  const departementQuery = getDepartementWhereQuery(departementCodes, params);
 
   let queryWithPagination = query.getByDepartementCodes(
     searchQuery,
-    departementCodes,
+    departementQuery,
     params,
   );
 
@@ -696,18 +697,19 @@ module.exports.getByDepartementCodes = async (
     queryWithPagination += 'ORDER BY "createdAt" DESC';
   }
 
+  const paramsWithPagination = [...params];
   // Pagination management
   if (limit != null && offset != null) {
     queryWithPagination += `
     OFFSET $${params.length + 1}
     LIMIT $${params.length + 2}
     `;
-    params.push(offset, limit);
+    paramsWithPagination.push(offset, limit);
   }
 
-  log.d({ params, queryWithPagination });
+  log.d({ paramsWithPagination, queryWithPagination });
 
-  const response = await pool.query(queryWithPagination, params);
+  const response = await pool.query(queryWithPagination, paramsWithPagination);
 
   if (limit === null || response.rowCount < limit) {
     return {
@@ -717,7 +719,8 @@ module.exports.getByDepartementCodes = async (
   }
 
   const total = await pool.query(
-    query.getByDepartementCodesTotal(searchQuery, departementCodes, params),
+    query.getByDepartementCodesTotal(searchQuery, departementQuery),
+    params,
   );
 
   log.i("getByDepartementCodes - DONE");
@@ -733,9 +736,14 @@ module.exports.getById = async (demandeId, departementCodes) => {
   if (departementCodes && departementCodes.length === 0) {
     return;
   }
+
+  const params = [demandeId, departementCodes];
+  const departementQuery = getDepartementWhereQuery(departementCodes, params);
+
   const { rows: demande } = await pool.query(
-    ...query.getById(departementCodes, [demandeId]),
+    ...query.getById(departementQuery, params),
   );
+
   log.i("getById - DONE");
   log.d(demande);
   return demande[0];
