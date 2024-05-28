@@ -22,28 +22,16 @@ const build = async (declaration = {}, departementSuivi) => {
     content: [
       parts.Header(),
       parts.Titre(declaration, departementSuivi),
-      await parts.Agrement(declaration.organisme.agrement),
       parts.InformationsGenerales(declaration),
       {
         headlineLevel: 1,
         stack: [parts.Header()],
       },
-      parts.InformationsVacanciers(declaration.informationsVacanciers),
-      parts.InformationsPersonnel(declaration.informationsPersonnel),
-      parts.ProjetSejour(declaration.informationsProjetSejour),
-      parts.InformationsTransport(
-        declaration.informationsTransport,
-        declaration.hebergement,
+      parts.InformationsVacanciers(
+        declaration.informationsVacanciers,
+        "8jours",
       ),
-      {
-        headlineLevel: 1,
-        stack: [parts.Header()],
-      },
-      parts.InformationsSanitaires(declaration.informationsSanitaires),
-      {
-        headlineLevel: 1,
-        stack: [parts.Header()],
-      },
+      parts.InformationsPersonnel8jours(declaration.informationsPersonnel),
       ...(await parts.FicheAnnexe(declaration.hebergement)),
       {
         headlineLevel: 1,

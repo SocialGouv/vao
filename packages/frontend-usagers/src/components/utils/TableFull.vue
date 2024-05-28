@@ -34,7 +34,7 @@ const log = logger("components/TableFull");
 const itemByPageOptions = [10, 20, 50, 100];
 const itemByPage = ref(50);
 
-const emit = defineEmits("click-row");
+const emit = defineEmits(["click-row"]);
 
 const props = defineProps({
   headers: { type: Object, required: true },
@@ -80,7 +80,6 @@ const sorter = (col) => () => {
 };
 
 const filteredData = computed(() => {
-  log.d(props.search);
   const criterias = Object.entries(props.search).filter((criteria) => {
     const [key, value] = criteria;
     if (
@@ -168,18 +167,18 @@ const filteredData = computed(() => {
 });
 
 const displayableData = computed(() => {
-  return filteredData.value.map((item) => {
+  return filteredData.value.map((item, index) => {
     const rowdata = h.value.map((header) => {
       if (header.component) {
-        return header.component(item);
+        return header.component(item, index);
       }
       if (header.format) {
-        return header.format(item) ?? "";
+        return header.format(item, index) ?? "";
       }
       if (Array.isArray(item[header.column])) {
         return item[header.column]
           .map((val) => {
-            return val[header.objectLabel];
+            return val[header.objectLabel] ?? val;
           })
           .join(", ");
       }
@@ -187,7 +186,7 @@ const displayableData = computed(() => {
       return data ?? "";
     });
     const rowAttrs = { class: "pointer" };
-    rowAttrs.onClick = () => emit("click-row", item);
+    rowAttrs.onClick = () => emit("click-row", item, index);
     return {
       rowData: rowdata,
       rowAttrs,

@@ -115,6 +115,29 @@ RETURNING
       attestation,
     ],
   ],
+  finalize8jours: (
+    demandeSejourId,
+    vacanciers,
+    personnel,
+    hebergement,
+    attestation,
+  ) => [
+    `
+UPDATE front.demande_sejour ds
+SET
+  statut = 'TRANSMISE 8J',
+  vacanciers = $2,
+  personnel = $3,
+  hebergement = $4,
+  attestation = $5,
+  edited_at = NOW()
+WHERE
+  ds.id = $1
+RETURNING
+  id as "demandeId"
+;`,
+    [demandeSejourId, vacanciers, personnel, hebergement, attestation],
+  ],
   get: (organismeIds) => [
     `
 SELECT
@@ -729,6 +752,32 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
   log.i("update - DONE");
   const demandeId = response.rows[0].demandeId ?? null;
   return demandeId;
+};
+
+module.exports.finalize8jours = async (
+  demandeSejourId,
+  { informationsVacanciers, informationsPersonnel, hebergement, attestation },
+) => {
+  log.i("finalize - IN", {
+    declaration: {
+      attestation,
+      hebergement,
+      informationsPersonnel,
+      informationsVacanciers,
+    },
+    demandeSejourId,
+  });
+
+  await pool.query(
+    ...query.finalize8jours(
+      demandeSejourId,
+      informationsVacanciers,
+      informationsPersonnel,
+      hebergement,
+      attestation,
+    ),
+  );
+  log.i("finalize - DONE");
 };
 
 module.exports.finalize = async (

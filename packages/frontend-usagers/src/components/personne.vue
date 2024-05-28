@@ -33,7 +33,42 @@
           />
         </div>
       </div>
-      <div class="fr-fieldset__element">
+      <div v-if="showDateNaissance" class="fr-col-12">
+        <div class="fr-fieldset__element">
+          <div class="fr-input-group fr-col-12">
+            <DsfrInputGroup
+              name="dateNaissance"
+              type="date"
+              label="Date de naissance"
+              :label-visible="true"
+              :model-value="dateNaissance"
+              :readonly="!props.modifiable"
+              :is-valid="dateNaissanceMeta.valid"
+              :error-message="dateNaissanceErrorMessage"
+              hint=""
+              @update:model-value="onDateNaissanceChange"
+            />
+          </div>
+        </div>
+      </div>
+      <div v-if="props.showCompetence" class="fr-fieldset__element">
+        <div class="fr-input-group fr-col-12">
+          <DsfrInputGroup
+            name="competence"
+            label="Compétences"
+            :label-visible="true"
+            :model-value="competence"
+            :readonly="!props.modifiable"
+            :is-textarea="true"
+            :is-valid="competenceMeta.valid"
+            :error-message="competenceErrorMessage"
+            placeholder=""
+            hint=""
+            @update:model-value="onCompetenceChange"
+          />
+        </div>
+      </div>
+      <div v-if="props.showFonction" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
             name="fonction"
@@ -47,6 +82,19 @@
             hint="Fonction du représentant légal au sein de l'organisation"
             @update:model-value="onFonctionChange"
           />
+        </div>
+      </div>
+      <div v-if="props.showListeFonction" class="fr-fieldset__element">
+        <div class="fr-input-group fr-col-12">
+          <UtilsMultiSelect
+            label="Fonction"
+            :options="informationsPersonnelListe.fonctionOptions"
+            :values="listeFonction ?? []"
+            :modifiable="props.modifiable"
+            :is-valid="listeFonctionMeta.valid"
+            :error-message="listeFonctionErrorMessage"
+            @update="addListeFonction"
+          ></UtilsMultiSelect>
         </div>
       </div>
       <div v-if="props.showAdresse" class="fr-col-12">
@@ -99,6 +147,20 @@
           </div>
         </div>
       </div>
+      <div v-if="showAttestation" class="fr-col-12">
+        <div class="fr-fieldset__element">
+          <div class="fr-input-group fr-col-12">
+            <DsfrCheckbox
+              v-model="attestation"
+              name="attestation"
+              label="Je certifie sur l'honneur avoir vérifié les antécédents judiciaire de la personne ci dessus."
+              :small="true"
+              :disabled="!props.modifiable"
+              @update:model-value="onAttestationChange"
+            />
+          </div>
+        </div>
+      </div>
     </fieldset>
     <fieldset v-if="showButton" class="fr-fieldset">
       <div class="fr-input-group">
@@ -122,8 +184,13 @@ const props = defineProps({
   personne: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
   showAdresse: { type: Boolean, default: false, required: false },
-  showTelephone: { type: Boolean, default: false, required: false },
+  showAttestation: { type: Boolean, default: false, required: false },
+  showCompetence: { type: Boolean, default: false, required: false },
+  showDateNaissance: { type: Boolean, default: false, required: false },
   showEmail: { type: Boolean, default: false, required: false },
+  showFonction: { type: Boolean, default: false, required: false },
+  showListeFonction: { type: Boolean, default: false, required: false },
+  showTelephone: { type: Boolean, default: false, required: false },
   showButton: { type: Boolean, default: true, required: false },
   validateOnMount: { type: Boolean, default: false },
 });
@@ -134,8 +201,13 @@ const validationSchema = computed(() =>
   yup.object({
     ...personne.schema({
       showAdresse: props.showAdresse,
-      showTelephone: props.showTelephone,
+      showAttestation: props.showAttestation,
+      showCompetence: props.showCompetence,
+      showDateNaissance: props.showDateNaissance,
       showEmail: props.showEmail,
+      showFonction: props.showFonction,
+      showListeFonction: props.showListeFonction,
+      showTelephone: props.showTelephone,
     }),
   }),
 );
@@ -143,15 +215,29 @@ const validationSchema = computed(() =>
 const initialValues = {
   nom: props.personne.nom,
   prenom: props.personne.prenom,
-  fonction: props.personne.fonction,
-  ...(props.showTelephone && {
-    telephone: props.personne.telephone,
+  ...(props.showAdresse && {
+    adresse: props.personne.adresse,
+  }),
+  ...(props.showAttestation && {
+    attestation: props.personne.attestation,
+  }),
+  ...(props.showCompetence && {
+    competence: props.personne.competence,
+  }),
+  ...(props.showDateNaissance && {
+    dateNaissance: props.personne.dateNaissance,
   }),
   ...(props.showEmail && {
     email: props.personne.email,
   }),
-  ...(props.showAdresse && {
-    adresse: props.personne.adresse,
+  ...(props.showFonction && {
+    fonction: props.personne.fonction,
+  }),
+  ...(props.showListeFonction && {
+    listeFonction: props.personne.listeFonction,
+  }),
+  ...(props.showTelephone && {
+    telephone: props.personne.telephone,
   }),
 };
 
@@ -174,37 +260,55 @@ const {
   meta: prenomMeta,
 } = useField("prenom");
 const {
-  value: fonction,
-  errorMessage: fonctionErrorMessage,
-  handleChange: onFonctionChange,
-  meta: fonctionMeta,
-} = useField("fonction");
+  value: adresse,
+  errorMessage: adresseErrorMessage,
+  handleChange: onAddressChange,
+} = useField("adresse");
+const { value: attestation, handleChange: onAttestationChange } =
+  useField("attestation");
 const {
-  value: telephone,
-  errorMessage: telephoneErrorMessage,
-  handleChange: onTelephoneChange,
-  meta: telephoneMeta,
-} = useField("telephone");
+  value: competence,
+  errorMessage: competenceErrorMessage,
+  handleChange: onCompetenceChange,
+  meta: competenceMeta,
+} = useField("competence");
+const {
+  value: dateNaissance,
+  errorMessage: dateNaissanceErrorMessage,
+  handleChange: onDateNaissanceChange,
+  meta: dateNaissanceMeta,
+} = useField("dateNaissance");
 const {
   value: email,
   errorMessage: emailErrorMessage,
   handleChange: onEmailChange,
   meta: emailMeta,
 } = useField("email");
-
 const {
-  value: adresse,
-  errorMessage: adresseErrorMessage,
-  handleChange: onAddressChange,
-} = useField("adresse");
+  value: fonction,
+  errorMessage: fonctionErrorMessage,
+  handleChange: onFonctionChange,
+  meta: fonctionMeta,
+} = useField("fonction");
+const {
+  value: listeFonction,
+  errorMessage: listeFonctionErrorMessage,
+  meta: listeFonctionMeta,
+} = useField("listeFonction");
+const {
+  value: telephone,
+  errorMessage: telephoneErrorMessage,
+  handleChange: onTelephoneChange,
+  meta: telephoneMeta,
+} = useField("telephone");
+
+function addListeFonction(liste) {
+  listeFonction.value = liste;
+}
 
 function validatePersonne() {
   emit("valid", { ...values });
 }
-
-watch(meta, () => {
-  emit("update:personne", { ...values }, meta);
-});
 </script>
 
 <style scoped></style>

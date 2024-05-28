@@ -214,7 +214,13 @@ const tabTitles = computed(() => [
   ...(sejourId.value ? [{ title: "Historique de la déclaration" }] : []),
 ]);
 
-const sommaireOptions = demandeSejourMenus.map((m) => m.id);
+const sommaireOptions = demandeSejourMenus
+  .filter(
+    (menu) =>
+      !menu.statutsMasques ||
+      !menu.statutsMasques.includes(demandeCourante.value.statut),
+  )
+  .map((m) => m.id);
 
 const hash = computed(() => {
   if (route.hash) {
@@ -226,9 +232,9 @@ const hash = computed(() => {
 const canModify = computed(() => {
   return (
     !demandeCourante.value.statut ||
-    demandeCourante.value.statut === "BROUILLON" ||
-    demandeCourante.value.statut === "A MODIFIER" ||
-    demandeCourante.value.statut === "EN ATTENTE DECLARATION 8 JOURS"
+    demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
+    demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER ||
+    demandeCourante.value.statut === DeclarationSejour.statuts.ATTENTE_8_JOUR
   );
 });
 

@@ -10,7 +10,7 @@
       <div class="fr-fieldset__element">
         <DsfrInputGroup
           name="effectifPrevisionnel"
-          label="Effectif prévisionnel des vacanciers"
+          :label="`${declarationStatut === DeclarationSejour.statuts.ATTENTE_8_JOUR ? 'Effectif des vacanciers' : 'Effectif prévisionnel des vacanciers'}`"
           :label-visible="true"
           :model-value="effectifPrevisionnel"
           :readonly="!props.modifiable"
@@ -117,6 +117,11 @@ const props = defineProps({
 
 const emit = defineEmits(["previous", "next", "update"]);
 
+const demandeSejourStore = useDemandeSejourStore();
+const declarationStatut = computed(() => {
+  return demandeSejourStore.demandeCourante.statut;
+});
+
 const validationSchema = yup.object(informationsVacanciers.schema);
 
 const initialValues = {
@@ -125,6 +130,7 @@ const initialValues = {
   effectifPrevisionnelFemme: props.initData.effectifPrevisionnelFemme ?? null,
   trancheAge: props.initData.trancheAge ?? [],
   typeDeficiences: props.initData.typeDeficiences ?? [],
+  precisionDeficiences: props.initData.precisionDeficiences,
 };
 
 const { meta, values } = useForm({

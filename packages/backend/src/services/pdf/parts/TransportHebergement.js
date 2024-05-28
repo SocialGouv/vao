@@ -1,5 +1,5 @@
 module.exports = function buildFicheAnnexe(hebergement) {
-  return hebergement.hebergements.map((hebergement) => ({
+  return hebergement.hebergements.map((h) => ({
     stack: [
       {
         columns: [
@@ -15,7 +15,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                       {
                         bold: true,
                         decoration: "underline",
-                        text: `Caractéristiques relative à l'hébergement ${hebergement.nom}`,
+                        text: `Caractéristiques relative à l'hébergement ${h.nom}`,
                         width: "100%",
                       },
                     ],
@@ -31,7 +31,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsTransport.vehiculesAdaptes ? "Oui" : "Non"}`,
+                    text: `${h.informationsTransport.vehiculesAdaptes ? "Oui" : "Non"}`,
                     width: "*",
                   },
                 ],
@@ -44,7 +44,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsTransport.deplacementProximite}`,
+                    text: `${h.informationsTransport.deplacementProximite}`,
                     width: "*",
                   },
                 ],
@@ -57,12 +57,12 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsTransport.excursion}`,
+                    text: `${h.informationsTransport.excursion}`,
                     width: "*",
                   },
                 ],
               },
-              ...(hebergement.informationsTransport.rejoindreEtape
+              ...(h.informationsTransport.rejoindreEtape
                 ? [
                     {
                       columns: [
@@ -72,7 +72,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                         },
                         {
                           bold: true,
-                          text: `${hebergement.informationsTransport.rejoindreEtape}`,
+                          text: `${h.informationsTransport.rejoindreEtape}`,
                           width: "*",
                         },
                       ],
