@@ -24,19 +24,14 @@ const schema = () => ({
           .min(5, "Vous devez préciser le mode d'organisation")
           .required(),
     }),
-  precisionVehiculesAdaptes: yup
-    .string()
-    .when(["deplacementDurantSejour", "modeTransport"], {
-      is: (deplacement, mode) =>
-        deplacement ||
-        mode?.includes("Autobus, car") ||
-        mode?.includes("Automobile"),
-      otherwise: (precision) => precision.nullable().strip(),
-      then: (precision) =>
-        precision
-          .min(5, "Vous devez préciser les spécificités des véhicules")
-          .required(),
-    }),
+  precisionVehiculesAdaptes: yup.string().when("vehiculesAdaptes", {
+    is: (val) => val,
+    otherwise: (precision) => precision.nullable().strip(),
+    then: (precision) =>
+      precision
+        .min(5, "Vous devez préciser les spécificités des véhicules")
+        .required(),
+  }),
   responsableTransportLieuSejour: yup
     .array()
     .min(1, "Au moins une des deux options doit être sélectionnée")
