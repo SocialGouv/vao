@@ -18,5 +18,7 @@ router.get("/:userId", BOcheckJWT, BOcheckRoleCompte, BOUserController.getOne);
 router.post("/", BOcheckJWT, BOcheckRoleCompte, BOUserController.create);
 // Mise à jour d'un utilisateur
 router.post("/:userId", BOcheckJWT, BOcheckRoleCompte, BOUserController.update);
+// Fonctione transverse de recherche du service compétent
+router.get("/:territoireCode", BOcheckJWT, BOcheckRoleCompte, BOUserController.serviceCompetence);
 
 module.exports = router;
