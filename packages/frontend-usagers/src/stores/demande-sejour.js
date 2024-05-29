@@ -7,7 +7,7 @@ const resetDemandeCourante = () => ({
   informationsOrganisme: {},
   informationsVacanciers: {},
   informationsPersonnel: {},
-  informationsProjetSejour: {},
+  projetSejour: {},
   informationsTransport: {},
   informationsSanitaires: {},
   hebergement: {},

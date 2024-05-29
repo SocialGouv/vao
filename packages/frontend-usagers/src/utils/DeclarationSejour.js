@@ -142,7 +142,7 @@ const schema = (dateDebut, dateFin) => ({
   informationsPersonnel: yup.object(informationsPersonnelSchema),
   informationsTransport: yup.object(protocoleTransport.schema),
   informationsSanitaires: yup.object(protocoleSanitaire.schema),
-  informationsProjetSejour: yup.object(projetSejour.schema),
+  projetSejour: yup.object(projetSejour.schema),
   hebergement: yup.object(hebergementSchema(dateDebut, dateFin)),
   attestation: yup.object(attestationSchema),
 });

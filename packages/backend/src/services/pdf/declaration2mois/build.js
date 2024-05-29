@@ -30,7 +30,7 @@ const build = async (declaration = {}, departementSuivi) => {
       },
       parts.InformationsVacanciers(declaration.informationsVacanciers),
       parts.InformationsPersonnel(declaration.informationsPersonnel),
-      parts.ProjetSejour(declaration.informationsProjetSejour),
+      parts.ProjetSejour(declaration.projetSejour),
       parts.InformationsTransport(
         declaration.informationsTransport,
         declaration.hebergement,
