@@ -151,6 +151,7 @@
 <script setup>
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
+
 const NuxtLink = resolveComponent("NuxtLink");
 const DsfrBadge = resolveComponent("DsfrBadge");
 const DsfrButtonGroup = resolveComponent("DsfrButtonGroup");
@@ -236,10 +237,6 @@ const statutOptions = [
   { label: "TRANSMISE", value: "TRANSMISE" },
   { label: "EN COURS", value: "EN COURS" },
   { label: "A MODIFIER", value: "A MODIFIER" },
-  {
-    label: "EN ATTENTE VALIDATION HEBERGEMENT",
-    value: "EN ATTENTE VALIDATION HEBERGEMENT",
-  },
   {
     label: "EN ATTENTE DECLARATION 8 JOURS",
     value: "EN ATTENTE DECLARATION 8 JOURS",

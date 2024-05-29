@@ -29,7 +29,6 @@ const type = computed(() => {
       return "new";
     case demandesSejours.statuts.VALIDEE:
       return "success";
-    case demandesSejours.statuts.ATTENTE_HEBERGEMENT:
     case demandesSejours.statuts.A_MODIFIER:
       return "warning";
     case demandesSejours.statuts.REFUSEE:
