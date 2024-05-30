@@ -1,12 +1,19 @@
 import * as yup from "yup";
+import dayjs from "dayjs";
 import regex from "./regex";
 import adresse from "./adresse";
+import { informationsPersonnelListe } from "#imports";
 
-const schema = (
-  { showAdresse, showEmail, showTelephone, showFonction = true } = {
-    showFonction: true,
-  },
-) => {
+const schema = ({
+  showAdresse,
+  showAttestation,
+  showCompetence,
+  showDateNaissance,
+  showEmail,
+  showFonction,
+  showListeFonction,
+  showTelephone,
+}) => {
   return {
     nom: yup
       .string()
@@ -50,13 +57,28 @@ const schema = (
         (prenom) => !regex.doubleDashRegex.test(prenom),
       )
       .required(),
-    ...(showTelephone && {
-      telephone: yup
-        .string()
-        .test(
-          "telephone",
-          "Format de numéro de téléphone invalide",
-          (telephone) => regex.numTelephoneRegex.test(telephone),
+
+    ...(showAdresse && {
+      adresse: yup.object({
+        ...adresse.schema(),
+      }),
+    }),
+    ...(showAttestation && {
+      attestation: yup
+        .boolean()
+        .oneOf([true], "Vous devez certifier de ces informations")
+        .required(),
+    }),
+    ...(showCompetence && {
+      competence: yup.string().required(),
+    }),
+    ...(showDateNaissance && {
+      dateNaissance: yup
+        .date()
+        .typeError("La date n'est pas au format attendu")
+        .max(
+          dayjs(),
+          "La date de naissance ne peut être supérieure à la date du jour",
         )
         .required(),
     }),
@@ -68,13 +90,29 @@ const schema = (
         )
         .required(),
     }),
-    ...(showAdresse && {
-      adresse: yup.object({
-        ...adresse.schema(),
-      }),
-    }),
     ...(showFonction && {
       fonction: yup.string().required(),
+    }),
+    ...(showListeFonction && {
+      listeFonction: yup
+        .array()
+        .of(
+          yup.string().oneOf(
+            informationsPersonnelListe.fonctionOptions.map((o) => o.value),
+            "la valeur insérée ne fait pas partie de la liste des possibles",
+          ),
+        )
+        .required(),
+    }),
+    ...(showTelephone && {
+      telephone: yup
+        .string()
+        .test(
+          "telephone",
+          "Format de numéro de téléphone invalide",
+          (telephone) => regex.numTelephoneRegex.test(telephone),
+        )
+        .required(),
     }),
   };
 };
