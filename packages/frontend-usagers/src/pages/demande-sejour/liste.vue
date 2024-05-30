@@ -151,6 +151,7 @@
 <script setup>
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
+
 const NuxtLink = resolveComponent("NuxtLink");
 const DsfrBadge = resolveComponent("DsfrBadge");
 const DsfrButtonGroup = resolveComponent("DsfrButtonGroup");
@@ -158,7 +159,6 @@ import "@vueform/multiselect/themes/default.css";
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 import { DeclarationSejour } from "#imports";
-
 
 const log = logger("pages/demande-sejour/liste");
 const toaster = useToaster();

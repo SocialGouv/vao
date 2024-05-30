@@ -349,14 +349,16 @@ async function finalize(attestation) {
     );
 
     if (response.DSuuid) {
-      if (demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
-        demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER)
+      if (
+        demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
+        demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER
+      )
         toaster.info(
           `Le PDF déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
         );
       else
         toaster.info(
-        `Le PDF déclaration_8_jours a été ajouté aux documents de la déclaration de séjour`,
+          `Le PDF déclaration_8_jours a été ajouté aux documents de la déclaration de séjour`,
         );
     } else {
       toaster.error(

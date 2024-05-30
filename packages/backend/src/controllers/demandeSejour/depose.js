@@ -215,7 +215,6 @@ module.exports = async function post(req, res, next) {
   } else {
     log.d("Déclaration à 2 mois");
 
-
     await DemandeSejour.finalize(
       demandeSejourId,
       departementSuivi,

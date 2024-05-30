@@ -39,10 +39,7 @@ const isPost8Jour = (statut) =>
   ].includes(statut);
 
 const isUpdate8Jour = (statut) =>
-  [
-    statuts.ATTENTE_8_JOUR,
-    statuts.A_MODIFIER_8J,
-  ].includes(statut);
+  [statuts.ATTENTE_8_JOUR, statuts.A_MODIFIER_8J].includes(statut);
 
 function isSejourComplet(hebergements, dateDebut, dateFin) {
   log.d("isSejourComplet - IN", { hebergements, dateDebut, dateFin });

@@ -18,7 +18,8 @@
           :label-visible="true"
           :model-value="nombreResponsable"
           :readonly="
-            !props.modifiable || DeclarationSejour.isUpdate8Jour(declarationStatut)
+            !props.modifiable ||
+            DeclarationSejour.isUpdate8Jour(declarationStatut)
           "
           :is-valid="nombreResponsableMeta.valid"
           :error-message="nombreResponsableErrorMessage"

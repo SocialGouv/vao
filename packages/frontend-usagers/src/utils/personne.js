@@ -57,7 +57,6 @@ const schema = ({
         (prenom) => !regex.doubleDashRegex.test(prenom),
       )
       .required(),
-
     ...(showAdresse && {
       adresse: yup.object({
         ...adresse.schema(),
