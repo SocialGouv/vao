@@ -215,7 +215,7 @@ WHERE
 `,
     [organismeIds],
   ],
-  getByDepartementCodes: (search, departementQuery, params) => {
+  getByDepartementCodes: (search, territoireCode, departementQuery, params) => {
     return `
 SELECT
   ds.id as "demandeSejourId",
@@ -232,24 +232,28 @@ SELECT
   ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length}) as "estInstructeurPrincipal"
 FROM front.demande_sejour ds
   JOIN front.organismes o ON o.id = ds.organisme_id
+  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id 
 WHERE
   statut <> 'BROUILLON'
-  AND (${departementQuery})
+  AND ((${departementQuery})
+  OR a.region_obtention = '${territoireCode}')
   ${search.map((s) => ` AND ${s} `).join("")}
 `;
   },
-  getByDepartementCodesTotal: (search, departementQuery) => {
+  getByDepartementCodesTotal: (search, territoireCode, departementQuery) => {
     return `
 SELECT COUNT(DISTINCT ds.id)
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
+LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id 
 WHERE
   statut <> 'BROUILLON'
-  AND (${departementQuery})
+  AND ((${departementQuery})
+  OR a.region_obtention = '${territoireCode}')
   ${search.map((s) => ` AND ${s} `).join("")}
 `;
   },
-  getById: (departementQuery, params) => {
+  getById: (territoireCode, departementQuery, params) => {
     return [
       `
     SELECT
@@ -281,7 +285,9 @@ WHERE
       ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-    where (${departementQuery})
+      LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id 
+    where ((${departementQuery})
+      OR a.region_obtention = '${territoireCode}')
       AND ds.id = $1
 `,
       params,
@@ -647,6 +653,7 @@ module.exports.getOne = async (criterias = {}) => {
 
 module.exports.getByDepartementCodes = async (
   { limit, offset, sortBy, sortDirection = "ASC", search } = {},
+  territoireCode,
   departementCodes,
 ) => {
   if (departementCodes && departementCodes.length === 0) {
@@ -706,6 +713,7 @@ module.exports.getByDepartementCodes = async (
 
   let queryWithPagination = query.getByDepartementCodes(
     searchQuery,
+    territoireCode,
     departementQuery,
     params,
   );
@@ -739,7 +747,7 @@ module.exports.getByDepartementCodes = async (
   }
 
   const total = await pool.query(
-    query.getByDepartementCodesTotal(searchQuery, departementQuery),
+    query.getByDepartementCodesTotal(searchQuery, territoireCode,departementQuery),
     params,
   );
 
@@ -750,7 +758,7 @@ module.exports.getByDepartementCodes = async (
   };
 };
 
-module.exports.getById = async (demandeId, departementCodes) => {
+module.exports.getById = async (demandeId, territoireCode, departementCodes) => {
   log.i("getById - IN", { demandeId });
 
   if (departementCodes && departementCodes.length === 0) {
@@ -761,7 +769,7 @@ module.exports.getById = async (demandeId, departementCodes) => {
   const departementQuery = getDepartementWhereQuery(departementCodes, params);
 
   const { rows: demande } = await pool.query(
-    ...query.getById(departementQuery, params),
+    ...query.getById(territoireCode, departementQuery, params),
   );
 
   log.i("getById - DONE");
