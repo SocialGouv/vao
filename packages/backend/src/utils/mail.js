@@ -115,6 +115,46 @@ module.exports = {
       },
     },
     declarationSejour: {
+      sendDeclarationA8joursNotify: ({
+        declaration,
+        destinataires,
+        cc,
+        departementSuivi,
+        departementsSecondaires,
+      }) => {
+        log.i("sendDeclarationA8joursNotify - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendDeclarationA8joursNotify - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          cc,
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p>
+
+                <p>La déclaration de séjour ${declaration.idFonctionnelle} à 8 jours vient d'être déposée sur le portail VAO</p>
+                <p>La DDETS du département ${departementSuivi} est en charge de l'instruction de cette déclaration.</p>
+                ${
+                  departementsSecondaires.length > 0
+                    ? `<p>Les départements ${departementsSecondaires.join(", ")} sont en charge du contrôle d'au moins un hébergement.</p>`
+                    : ""
+                }
+                `,
+          replyTo: senderEmail,
+          subject: `Portail VAO - déclaration à 8 jours déposée : ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendDeclarationA8joursNotify post email", {
+          params,
+        });
+
+        return params;
+      },
       sendDeclarationNotify: ({
         declaration,
         destinataires,
@@ -333,6 +373,37 @@ module.exports = {
           to: dest,
         };
         log.d("sendAccuseTransmission2mois post email", { params });
+
+        return params;
+      },
+      sendAccuseTransmission8jours: ({ cc, declaration, dest }) => {
+        log.i("sendAccuseTransmission8jours - In", {
+          cc,
+          dest,
+        });
+        if (!dest || !declaration) {
+          const message = `paramètre manquant à la requête`;
+          log.w(`sendForgottenPassword - ${message}`);
+          throw new AppError(message);
+        }
+
+        log.d(
+          "sendAccuseTransmission8jours - sending sendAccuseTransmission8jours mail",
+        );
+        const params = {
+          cc: cc,
+          from: senderEmail,
+          html: `
+              <p>Bonjour,</p>
+              <p>Votre déclaration à 8 jours n°${declaration.idFonctionnelle} a bien été transmise au(x) service(s) instructeur(s) le ${dayjs().format("DD/MM/YYYY")}.</p>
+              <p>Cordialement,</p>
+              <p>L'équipe VAO</p>
+              `,
+          replyTo: senderEmail,
+          subject: `Portail VAO - "Transmission de la déclaration de séjour à 8 jours n°${declaration.idFonctionnelle}`,
+          to: dest,
+        };
+        log.d("sendAccuseTransmission8jours post email", { params });
 
         return params;
       },

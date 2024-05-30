@@ -133,7 +133,12 @@ const personneMoraleSchema = () => ({
   responsableSejour: yup.object({
     ...personneSchema({
       showAdresse: true,
+      showAttestation: false,
+      showCompetence: false,
+      showDateNaissance: false,
       showEmail: true,
+      showFonction: true,
+      showListeFonction: false,
       showTelephone: true,
     }),
   }),

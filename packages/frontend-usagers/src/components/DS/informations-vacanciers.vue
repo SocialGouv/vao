@@ -10,7 +10,7 @@
       <div class="fr-fieldset__element">
         <DsfrInputGroup
           name="effectifPrevisionnel"
-          label="Effectif prévisionnel des vacanciers"
+          :label="`${DeclarationSejour.isPost8Jour(declarationStatut) ? 'Effectif des vacanciers' : 'Effectif prévisionnel des vacanciers'}`"
           :label-visible="true"
           :model-value="effectifPrevisionnel"
           :readonly="!props.modifiable"
@@ -97,8 +97,8 @@
               emit('previous');
             }
           "
-          >Précédent</DsfrButton
-        >
+          >Précédent
+        </DsfrButton>
         <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
       </DsfrButtonGroup>
     </fieldset>
@@ -108,6 +108,7 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+
 const props = defineProps({
   initData: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
@@ -117,11 +118,20 @@ const props = defineProps({
 
 const emit = defineEmits(["previous", "next", "update"]);
 
+const demandeSejourStore = useDemandeSejourStore();
+const declarationStatut = computed(() => {
+  return demandeSejourStore.demandeCourante.statut;
+});
+
 const validationSchema = yup.object(informationsVacanciers.schema);
 
 const initialValues = {
-  trancheAge: [],
-  typeDeficiences: [],
+  effectifPrevisionnel: props.initData.effectifPrevisionnel ?? null,
+  effectifPrevisionnelHomme: props.initData.effectifPrevisionnelHomme ?? null,
+  effectifPrevisionnelFemme: props.initData.effectifPrevisionnelFemme ?? null,
+  trancheAge: props.initData.trancheAge ?? [],
+  typeDeficiences: props.initData.typeDeficiences ?? [],
+  precisionDeficiences: props.initData.precisionDeficiences,
   ...props.initData,
 };
 

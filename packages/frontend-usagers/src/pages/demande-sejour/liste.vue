@@ -159,6 +159,7 @@ import "@vueform/multiselect/themes/default.css";
 
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
+import { DeclarationSejour } from "#imports";
 
 const log = logger("pages/demande-sejour/liste");
 const toaster = useToaster();
@@ -336,15 +337,20 @@ const headers = [
       class: "pointer",
       align: "center",
       label: value.statut,
-      noIcon: false,
+      noIcon: true,
       type: [
-        DeclarationSejour.statuts.BROUILLON,
+        DeclarationSejour.statuts.TRANSMISE,
         DeclarationSejour.statuts.EN_COURS,
       ].includes(value.statut)
         ? "success"
         : [DeclarationSejour.statuts.BROUILLON].includes(value.statut)
           ? "info"
-          : "",
+          : [
+                DeclarationSejour.statuts.A_MODIFIER,
+                DeclarationSejour.statuts.ATTENTE_8_JOUR,
+              ].includes(value.statut)
+            ? "warning"
+            : "union",
     }),
     headerAttrs: {
       class: "suivi",

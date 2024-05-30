@@ -84,6 +84,8 @@ module.exports = async function post(req, res, next) {
         ),
     );
 
+    await DemandeSejour.saveDS2M(declarationId, declaration);
+
     return res.status(200).end();
   } catch (error) {
     log.w("DONE with error");

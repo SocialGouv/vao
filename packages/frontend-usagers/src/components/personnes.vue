@@ -8,13 +8,14 @@
         :rows="personnesToDisplay"
         :results-displayed="10"
         :current-page="currentPage"
-        pagination
+        :pagination="true"
+        @update:current-page="updateCurrentPage"
       />
     </div>
     <DsfrButton
       v-if="props.modifiable"
       ref="modalOrigin"
-      label="Ajouter un représentant légal"
+      :label="props.labelBoutonAjouter"
       size="sm"
       :secondary="true"
       @click.prevent="addPersonne"
@@ -31,8 +32,13 @@
         :modifiable="props.modifiable"
         :personne="personne"
         :show-adresse="props.showAdresse"
-        :show-telephone="props.showTelephone"
+        :show-attestation="props.showAttestation"
+        :show-competence="props.showCompetence"
+        :show-date-naissance="props.showDateNaissance"
         :show-email="props.showEmail"
+        :show-fonction="props.showFonction"
+        :show-liste-fonction="props.showListeFonction"
+        :show-telephone="props.showTelephone"
         :show-button="props.modifiable"
         :validate-on-mount="!props.modifiable"
         @valid="updatePersonne"
@@ -46,11 +52,17 @@ const props = defineProps({
   personnes: { type: Array, required: true },
   modifiable: { type: Boolean, default: true },
   showAdresse: { type: Boolean, default: false, required: false },
+  showAttestation: { type: Boolean, default: false, required: false },
+  showCompetence: { type: Boolean, default: false, required: false },
+  showDateNaissance: { type: Boolean, default: false, required: false },
+  showFonction: { type: Boolean, default: false, required: false },
+  showListeFonction: { type: Boolean, default: false, required: false },
   showTelephone: { type: Boolean, default: false, required: false },
   showEmail: { type: Boolean, default: false, required: false },
   titre: { type: String, default: null, required: false },
   headers: { type: Array, required: true },
   currentPage: { type: Number, default: 1 },
+  labelBoutonAjouter: { type: String, required: true },
 });
 
 const emit = defineEmits(["valid"]);
@@ -71,7 +83,7 @@ const personnesToDisplay = computed(() => {
   return props.personnes.map((p, index) => {
     const row = [];
     displayedFields.forEach((f) => {
-      row.push(p[f]);
+      row.push(Array.isArray(p[f]) ? p[f].join(",") : p[f]);
     });
     if (props.modifiable) {
       row.push({
@@ -138,4 +150,8 @@ function updatePersonne(data) {
 function onClose() {
   modalPersonne.opened = false;
 }
+
+const updateCurrentPage = (val) => {
+  currentPageState.value = val++;
+};
 </script>
