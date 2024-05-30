@@ -10,6 +10,7 @@ module.exports = async function getByDepartementCodes(req, res, next) {
   log.i("IN");
   const { decoded } = req;
   const { id: adminId } = decoded ?? {};
+  const territoireCode = req.decoded.territoireCode;
   log.d("userId", { adminId });
 
   try {
@@ -52,9 +53,9 @@ module.exports = async function getByDepartementCodes(req, res, next) {
     } catch (error) {
       return next(new ValidationAppError(error));
     }
-
     const demandesWithPagination = await DemandeSejour.getByDepartementCodes(
-      params,
+      params, 
+      territoireCode,
       req.departements.map((d) => d.value),
     );
     log.d(demandesWithPagination);
