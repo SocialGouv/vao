@@ -1,9 +1,9 @@
 const {
   trancheAges,
   typeDeficiences,
-} = require("../../../../helpers/declaration/informations-vacanciers");
+} = require("../../../helpers/declaration/informations-vacanciers");
 
-module.exports = function buildInformationsVacanciers(info) {
+module.exports = function buildInformationsVacanciers(info, type) {
   return {
     stack: [
       {
@@ -40,7 +40,7 @@ module.exports = function buildInformationsVacanciers(info) {
               {
                 columns: [
                   {
-                    text: "Effectif prévisionnel des vacanciers :",
+                    text: `${type === "8jours" ? "Effectif des vacanciers :" : "Effectif prévisionnel des vacanciers :"}`,
                     width: 250,
                   },
                   {

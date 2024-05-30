@@ -151,12 +151,14 @@
 <script setup>
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
+
 const NuxtLink = resolveComponent("NuxtLink");
 const DsfrBadge = resolveComponent("DsfrBadge");
 import "@vueform/multiselect/themes/default.css";
 
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
+import { DeclarationSejour } from "#imports";
 
 definePageMeta({
   middleware: ["is-connected", "check-organisme-is-complet"],
@@ -334,11 +336,19 @@ const headers = [
       component: DsfrBadge,
       label: value.statut,
       noIcon: true,
-      type: ["TRANSMISE", "EN COURS"].includes(value.statut)
+      type: [
+        DeclarationSejour.statuts.TRANSMISE,
+        DeclarationSejour.statuts.EN_COURS,
+      ].includes(value.statut)
         ? "success"
-        : ["BROUILLON"].includes(value.statut)
+        : [DeclarationSejour.statuts.BROUILLON].includes(value.statut)
           ? "info"
-          : "",
+          : [
+                DeclarationSejour.statuts.A_MODIFIER,
+                DeclarationSejour.statuts.ATTENTE_8_JOUR,
+              ].includes(value.statut)
+            ? "warning"
+            : "union",
     }),
     headerAttrs: {
       class: "suivi",
