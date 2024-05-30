@@ -5,6 +5,8 @@ const DemandeSejour = require("../../services/DemandeSejour");
 const Hebergement = require("../../services/Hebergement");
 const Send = require("../../services/mail").mailService.send;
 const PdfDeclaration2Mois = require("../../services/pdf/declaration2mois/generate");
+const PdfDeclaration8jours = require("../../services/pdf/declaration8jours/generate");
+const ARDeclaration8jours = require("../../services/pdf/ARdeclaration8jours/generate");
 
 const {
   schema: DeclarationSejourSchema,
@@ -18,7 +20,11 @@ const AppError = require("../../utils/error");
 
 const log = logger(module.filename);
 
-const expectedStates = [statuts.BROUILLON, statuts.A_MODIFIER];
+const expectedStates = [
+  statuts.BROUILLON,
+  statuts.A_MODIFIER,
+  statuts.ATTENTE_8_JOUR,
+];
 
 module.exports = async function post(req, res, next) {
   const demandeSejourId = req.params.id;
@@ -53,7 +59,6 @@ module.exports = async function post(req, res, next) {
       }),
     );
   }
-
   const { dateDebut, dateFin, statut } = declaration;
 
   if (!expectedStates.includes(statut)) {
@@ -70,22 +75,24 @@ module.exports = async function post(req, res, next) {
   Object.assign(declaration, { attestation });
 
   try {
-    log.d("finalize - before validation", { declaration });
+    log.i("finalize - before validation", { declaration });
+    log.i(declaration.informationsPersonnel);
     declaration = await yup
-      .object(DeclarationSejourSchema(dateDebut, dateFin))
+      .object(DeclarationSejourSchema(dateDebut, dateFin, statut))
       .validate(declaration, {
         abortEarly: false,
         stripUnknown: true,
       });
 
-    log.d("finalize - after validation", { declaration });
-
+    log.i("finalize - after validation", { declaration });
+    log.i(declaration.informationsPersonnel);
     declaration.attestation.at = dayjs(declaration.attestation.at).format(
       "YYYY-MM-DD",
     );
     declaration.dateDebut = dayjs(declaration.dateDebut).format("YYYY-MM-DD");
     declaration.dateFin = dayjs(declaration.dateFin).format("YYYY-MM-DD");
   } catch (error) {
+    log.i(error);
     return next(new ValidationAppError(error));
   }
 
@@ -101,109 +108,213 @@ module.exports = async function post(req, res, next) {
       }),
     );
   }
-  const departementSuivi = hebergement.coordonnees.adresse.departement;
 
-  const numSeq = await DemandeSejour.getNextIndex();
-
-  const currentYear = dayjs(declaration.dateDebut).format("YY");
-  const idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
-
-  await DemandeSejour.finalize(
-    demandeSejourId,
-    departementSuivi,
-    idFonctionnelle,
-    declaration,
-  );
-
-  declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
-
-  await DemandeSejour.insertEvent(
-    "Organisateur",
-    demandeSejourId,
-    userId,
-    null,
-    "declaration_sejour",
-    statut === statuts.BROUILLON ? "Dépôt DS à 2 mois" : "Ajout de compléments",
-    declaration,
-  );
-
-  try {
-    const destinataires = await DemandeSejour.getEmailToList(
-      declaration.organismeId,
+  if (statut == statuts.ATTENTE_8_JOUR) {
+    log.d("Déclaration à 8 jours");
+    await DemandeSejour.finalize8jours(demandeSejourId, declaration);
+    declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
+    await DemandeSejour.insertEvent(
+      "Organisateur",
+      demandeSejourId,
+      userId,
+      null,
+      "declaration_sejour",
+      "Dépôt DS Copmlémentaire à 8 jours",
+      declaration,
     );
-    const cc = await DemandeSejour.getEmailCcList(
-      declaration.organisme.personneMorale.siren ?? "personnePhysique",
-    );
-
-    const filteredCc = cc.filter((d) => !destinataires.includes(d));
-    if (destinataires) {
-      await Send(
-        MailUtils.usagers.declarationSejour.sendAccuseTransmission2mois(
-          {
+    try {
+      const destinataires = await DemandeSejour.getEmailToList(
+        declaration.organismeId,
+      );
+      let filteredCc = [];
+      if (declaration.organisme.personneMorale.siren) {
+        const cc = await DemandeSejour.getEmailCcList(
+          declaration.organisme.personneMorale.siren,
+        );
+        filteredCc = cc.filter((d) => !destinataires.includes(d));
+      }
+      if (destinataires) {
+        await Send(
+          MailUtils.usagers.declarationSejour.sendAccuseTransmission8jours({
             cc: filteredCc,
             declaration,
             dest: destinataires,
-          },
-          firstSubmit,
-        ),
-      );
-    }
-  } catch (error) {
-    log.w("DONE with error");
-    return next(
-      new AppError("Une erreur est survenue lors de l'envoi de mails", {
-        statusCode: 500,
-      }),
-    );
-  }
-  try {
-    const destinatairesBack =
-      await DemandeSejour.getEmailBack(departementSuivi);
-
-    if (destinatairesBack) {
-      const departements = declaration.hebergement.hebergements.map(
-        (h) => h.coordonnees.adresse.departement,
-      );
-      const destinatairesBackCc =
-        await DemandeSejour.getEmailBackCc(departements);
-
-      const filteredBackCc = destinatairesBackCc.filter(
-        (d) => !destinatairesBack.includes(d),
-      );
-      await Send(
-        MailUtils.bo.declarationSejour.sendDeclarationNotify({
-          cc: filteredBackCc,
-          declaration,
-          departementSuivi,
-          departementsSecondaires: departements.filter(
-            (d) => d !== departementSuivi,
-          ),
-          destinataires: destinatairesBack,
+          }),
+        );
+      }
+    } catch (error) {
+      log.w("DONE with error");
+      return next(
+        new AppError("Une erreur est survenue lors de l'envoi de mails", {
+          statusCode: 500,
         }),
       );
     }
-  } catch (error) {
-    log.w(error);
-    return next(
-      new AppError(
-        "Une erreur est survenue lors de l'envoi de mails aux usagers back office",
-        {
-          statusCode: 500,
-        },
-      ),
-    );
-  }
+    try {
+      const destinatairesBack = await DemandeSejour.getEmailBack(
+        declaration.departementSuivi,
+      );
 
-  try {
-    DSuuid = await PdfDeclaration2Mois(
-      declaration,
-      idFonctionnelle,
+      if (destinatairesBack) {
+        const departements = declaration.hebergement.hebergements.map(
+          (h) => h.coordonnees.adresse.departement,
+        );
+        const destinatairesBackCc =
+          await DemandeSejour.getEmailBackCc(departements);
+
+        const filteredBackCc = destinatairesBackCc.filter(
+          (d) => !destinatairesBack.includes(d),
+        );
+        await Send(
+          MailUtils.bo.declarationSejour.sendDeclarationA8joursNotify({
+            cc: filteredBackCc,
+            declaration,
+            departementSuivi: declaration.departementSuivi,
+            departementsSecondaires: departements.filter(
+              (d) => d !== declaration.departementSuivi,
+            ),
+            destinataires: destinatairesBack,
+          }),
+        );
+      }
+    } catch (error) {
+      log.w(error);
+      return next(
+        new AppError(
+          "Une erreur est survenue lors de l'envoi de mails aux usagers back office",
+          {
+            statusCode: 500,
+          },
+        ),
+      );
+    }
+
+    try {
+      DSuuid = await PdfDeclaration8jours(
+        declaration,
+        declaration.idFonctionnelle,
+        declaration.departementSuivi,
+      );
+
+      ARuuid = await ARDeclaration8jours(
+        declaration,
+        declaration.idFonctionnelle,
+        declaration.departementSuivi,
+      );
+    } catch (error) {
+      log.w(error);
+    }
+
+    log.i("DONE");
+    return res.status(200).json({ ARuuid, DSuuid });
+  } else {
+    log.d("Déclaration à 2 mois");
+    const departementSuivi = hebergement.coordonnees.adresse.departement;
+
+    const numSeq = await DemandeSejour.getNextIndex();
+
+    const currentYear = dayjs(declaration.dateDebut).format("YY");
+    const idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
+
+    await DemandeSejour.finalize(
+      demandeSejourId,
       departementSuivi,
+      idFonctionnelle,
+      declaration,
     );
-  } catch (error) {
-    log.w(error);
-  }
 
-  log.i("DONE");
-  return res.status(200).json({ ARuuid, DSuuid });
+    declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
+
+    await DemandeSejour.insertEvent(
+      "Organisateur",
+      demandeSejourId,
+      userId,
+      null,
+      "declaration_sejour",
+      statut === statuts.BROUILLON
+        ? "Dépôt DS à 2 mois"
+        : "Ajout de compléments",
+      declaration,
+    );
+
+    try {
+      const destinataires = await DemandeSejour.getEmailToList(
+        declaration.organismeId,
+      );
+      const cc = await DemandeSejour.getEmailCcList(
+        declaration.organisme.personneMorale.siren ?? "personnePhysique",
+      );
+
+      const filteredCc = cc.filter((d) => !destinataires.includes(d));
+      if (destinataires) {
+        await Send(
+          MailUtils.usagers.declarationSejour.sendAccuseTransmission2mois(
+            {
+              cc: filteredCc,
+              declaration,
+              dest: destinataires,
+            },
+            firstSubmit,
+          ),
+        );
+      }
+    } catch (error) {
+      log.w("DONE with error");
+      return next(
+        new AppError("Une erreur est survenue lors de l'envoi de mails", {
+          statusCode: 500,
+        }),
+      );
+    }
+    try {
+      const destinatairesBack =
+        await DemandeSejour.getEmailBack(departementSuivi);
+
+      if (destinatairesBack) {
+        const departements = declaration.hebergement.hebergements.map(
+          (h) => h.coordonnees.adresse.departement,
+        );
+        const destinatairesBackCc =
+          await DemandeSejour.getEmailBackCc(departements);
+
+        const filteredBackCc = destinatairesBackCc.filter(
+          (d) => !destinatairesBack.includes(d),
+        );
+        await Send(
+          MailUtils.bo.declarationSejour.sendDeclarationNotify({
+            cc: filteredBackCc,
+            declaration,
+            departementSuivi,
+            departementsSecondaires: departements.filter(
+              (d) => d !== departementSuivi,
+            ),
+            destinataires: destinatairesBack,
+          }),
+        );
+      }
+    } catch (error) {
+      log.w(error);
+      return next(
+        new AppError(
+          "Une erreur est survenue lors de l'envoi de mails aux usagers back office",
+          {
+            statusCode: 500,
+          },
+        ),
+      );
+    }
+
+    try {
+      DSuuid = await PdfDeclaration2Mois(
+        declaration,
+        idFonctionnelle,
+        departementSuivi,
+      );
+    } catch (error) {
+      log.w(error);
+    }
+
+    log.i("DONE");
+    return res.status(200).json({ ARuuid, DSuuid });
+  }
 };

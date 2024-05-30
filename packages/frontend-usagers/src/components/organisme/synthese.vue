@@ -106,8 +106,8 @@
                 emit('previous');
               }
             "
-            >Précédent</DsfrButton
-          >
+            >Précédent
+          </DsfrButton>
 
           <DsfrButton
             label="Finaliser la fiche organisateur"
@@ -138,14 +138,9 @@ const initialValues = { ...props.initOrganisme };
 const validationSchema = computed(() =>
   yup.object(organisme.schema(regionStore.regions)),
 );
-const { meta, errors } = useForm({
-  initialValues,
-  validationSchema,
-  validateOnMount: true,
-});
-
-const renseignementsGeneraux = computed(() =>
-  !Object.keys(errors.value).find(
+const renseignementsGeneraux = computed(() => {
+  console.log(errors.value);
+  return !Object.keys(errors.value).find(
     (k) => k.includes("personneMorale") || k.includes("personnePhysique"),
   )
     ? {
@@ -155,8 +150,14 @@ const renseignementsGeneraux = computed(() =>
     : {
         label: "incomplet",
         type: "warning",
-      },
-);
+      };
+});
+
+const { meta, errors } = useForm({
+  initialValues,
+  validationSchema,
+  validateOnMount: true,
+});
 
 const agrement = computed(() =>
   !Object.keys(errors.value).find((k) => k.includes("agrement"))
