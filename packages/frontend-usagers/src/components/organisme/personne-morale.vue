@@ -211,13 +211,16 @@
           <div class="fr-input-group fr-col-12">
             <DsfrTable
               :headers="[
-                'code NIC',
+                'SIRET',
+                'Dénomination',
                 'Adresse',
                 'Code postal',
                 'Commune',
+                'État',
                 'Autorisé à organiser des séjours ?',
               ]"
               :rows="formatedEtablissements"
+              :results-displayed="10"
               pagination
             />
           </div>
@@ -256,8 +259,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 const log = logger("components/organisme/personne-morale");
 
@@ -392,19 +394,22 @@ const formatedEtablissements = computed(() => {
     .filter((e) => {
       return !props.modifiable ? e.enabled : e;
     })
-    .map((e, index) => {
+    .map((e) => {
       const row = [
-        e.nic,
+        e.siret,
+        e.denomination,
         e.adresse,
         e.codePostal,
         e.commune,
+        e.etatAdministratif,
         {
           component: "DsfrToggleSwitch",
-          modelValue: etablissements.value[index].enabled,
-          disabled: !props.modifiable,
+          modelValue: e.enabled,
+          disabled:
+            !props.modifiable ||
+            (!e.enabled && !(e.etatAdministratif == "En activité")),
           onChange: () => {
-            etablissements.value[index].enabled =
-              !etablissements.value[index].enabled;
+            e.enabled = !e.enabled;
           },
         },
       ];

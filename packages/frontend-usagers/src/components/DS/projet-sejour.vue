@@ -101,7 +101,6 @@ const initialValues = {
   activitesCulturelles: [],
   activitesSportives: [],
   activitesBienEtre: [],
-  activitesPersonnelPrevu: null,
   ...props.initData,
 };
 const { meta, values } = useForm({
@@ -151,11 +150,7 @@ function next() {
   if (!meta.value.dirty && Object.keys(props.initData).length !== 0) {
     return emit("next");
   }
-  emit(
-    "update",
-    { ...values, meta: meta.value.valid },
-    "informationsProjetSejour",
-  );
+  emit("update", { ...values }, "projetSejour");
 }
 </script>
 

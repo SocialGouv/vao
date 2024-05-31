@@ -68,8 +68,7 @@
 
 <script setup>
 const route = useRoute();
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 const log = logger("pages/organisme/[[organismeId]]");
 
 definePageMeta({
@@ -194,7 +193,10 @@ async function updateOrCreate(organismeData, type) {
         );
       }
     }
-    toaster.info(`${counter} documents déposés`);
+    toaster.info({
+      duration: 5000,
+      description: `${counter} ${counter === 1 ? "document déposé" : "documents déposés"}`,
+    });
     organismeData.files = files;
   }
 

@@ -1,10 +1,29 @@
 <template>
-  <div v-if="files.length > 0">
-    <UtilsTableFull :headers="headers" :data="files"></UtilsTableFull>
-  </div>
-  <div v-else>
-    <span>Aucun document joint à la demande</span>
-  </div>
+  <DsfrFieldset
+    legend="Documents générés par l'application : CERFA, Accusé de réception"
+    legend-id="docs_generes"
+  >
+    <div v-if="filesGeneres.length > 0">
+      <UtilsTableFull :headers="headers" :data="filesGeneres"></UtilsTableFull>
+    </div>
+    <div v-else>
+      <span>Aucun document joint à la demande</span>
+    </div>
+  </DsfrFieldset>
+  <DsfrFieldset
+    legend="Documents téléversés par l'organisateur"
+    legend-id="doc_televerses"
+  >
+    <div v-if="filesTeleverses.length > 0">
+      <UtilsTableFull
+        :headers="headers"
+        :data="filesTeleverses"
+      ></UtilsTableFull>
+    </div>
+    <div v-else>
+      <span>Aucun document joint à la demande</span>
+    </div>
+  </DsfrFieldset>
 </template>
 
 <script setup>
@@ -54,7 +73,7 @@ const headers = [
   },
 ];
 
-const files = computed(() => {
+const filesGeneres = computed(() => {
   let files = [];
   if (props.declaration?.files?.files?.length > 0) {
     files = props.declaration?.files?.files?.map((f) => {
@@ -66,7 +85,13 @@ const files = computed(() => {
       };
     });
   }
-  if (props.declaration?.organisme?.agrement?.file) {
+  return files;
+});
+
+const filesTeleverses = computed(() => {
+  let files = [];
+
+  if (props.declaration.organisme?.agrement?.file) {
     files.push({
       name: props.declaration.organisme.agrement.file.name,
       type: "agrement",
@@ -74,37 +99,40 @@ const files = computed(() => {
       uuid: props.declaration.organisme.agrement.file.uuid,
     });
   }
-  if (props.declaration?.sanitaires?.files) {
-    const filesSanitaires = props.declaration.sanitaires.files.map((f) => {
-      return {
-        name: f.name,
-        type: "protocole sanitaire",
-        createdAt: f.createdAt,
-        uuid: f.uuid,
-      };
-    });
+  if (props.declaration.informationsSanitaires?.files) {
+    const filesSanitaires = props.declaration.informationsSanitaires.files.map(
+      (f) => {
+        return {
+          name: f.name,
+          type: "protocole sanitaire",
+          createdAt: f.createdAt,
+          uuid: f.uuid,
+        };
+      },
+    );
     files = files.concat(filesSanitaires);
   }
-  if (props.declaration?.transport?.files) {
-    const filesTransport = props.declaration.transport.files.map((f) => {
-      return {
-        name: f.name,
-        type: "protocole transport",
-        createdAt: f.createdAt,
-        uuid: f.uuid,
-      };
-    });
+  if (props.declaration.informationsTransport?.files) {
+    const filesTransport = props.declaration.informationsTransport.files.map(
+      (f) => {
+        return {
+          name: f.name,
+          type: "protocole transport",
+          createdAt: f.createdAt,
+          uuid: f.uuid,
+        };
+      },
+    );
     files = files.concat(filesTransport);
   }
-  if (props.declaration?.hebergement?.hebergements?.length > 0) {
+  if (props.declaration.hebergement?.hebergements?.length > 0) {
     const hebergementFileNames = [
       "fileDernierArreteAutorisationMaire",
       "fileDerniereAttestationSecurite",
       "fileReponseExploitantOuProprietaire",
     ];
 
-    for (const hebergement of props.declaration.hebergement?.hebergements ??
-      []) {
+    for (const hebergement of props.declaration.hebergement.hebergements) {
       for (const fileName of hebergementFileNames) {
         if (hebergement.informationsLocaux?.[fileName]?.uuid) {
           files.push({

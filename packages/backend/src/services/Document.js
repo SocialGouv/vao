@@ -9,22 +9,22 @@ const log = logger(module.filename);
 const query = {
   create: (category, filename, mime_type, file) => [
     `
-    INSERT INTO doc.documents 
-      (category, filename, mime_type, file) 
-    VALUES 
-      ( $1, $2, $3, $4) 
+    INSERT INTO doc.documents
+      (category, filename, mime_type, file)
+    VALUES
+      ( $1, $2, $3, $4)
     RETURNING uuid`,
     [category, filename, mime_type, file],
   ],
   getByUuid: (uuid) => [
     `
-    SELECT 
+    SELECT
       uuid,
       category,
       filename,
       mime_type as mimeType,
       file
-    FROM doc.documents 
+    FROM doc.documents
     WHERE uuid = $1;`,
     [uuid],
   ],
@@ -80,4 +80,9 @@ module.exports.createFile = async (filename, category, typeMime, data) => {
     log.w(err);
     throw new AppError("createFile failed", { cause: err });
   }
+};
+
+module.exports.getStatic = async (name) => {
+  log.i("getOrganisateurAvecUnRetrait - In");
+  return `${__dirname}/static/${name}`;
 };

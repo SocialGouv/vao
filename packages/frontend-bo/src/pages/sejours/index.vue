@@ -134,8 +134,7 @@ import Declaration from "~/components/demandes-sejour/Declaration.vue";
 
 const log = logger("pages/sejours");
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 const sejourStore = useDemandeSejourStore();
 const userStore = useUserStore();
@@ -153,32 +152,48 @@ const searchState = reactive({
 });
 
 sejourStore.currentDemande = null;
-sejourStore.fetchDemandes({
-  limit: defaultLimit,
-  offset: defaultOffset,
-});
+try {
+  await sejourStore.fetchDemandes({
+    limit: defaultLimit,
+    offset: defaultOffset,
+  });
+} catch (error) {
+  toaster.error("Une erreur est survenue lors de la récupération des demandes");
+}
 
 watch(
   [sortState, limitState, currentPageState],
-  ([sortValue, limitValue, currentPageValue]) => {
-    sejourStore.fetchDemandes({
-      sortBy: sortValue.sortBy,
-      sortDirection: sortValue.sortDirection,
-      limit: limitValue,
-      offset: currentPageValue * limitValue,
-      search: searchState,
-    });
+  async ([sortValue, limitValue, currentPageValue]) => {
+    try {
+      await sejourStore.fetchDemandes({
+        sortBy: sortValue.sortBy,
+        sortDirection: sortValue.sortDirection,
+        limit: limitValue,
+        offset: currentPageValue * limitValue,
+        search: searchState,
+      });
+    } catch (error) {
+      toaster.error(
+        "Une erreur est survenue lors de la récupération de la demande",
+      );
+    }
   },
 );
 
-const fetchDemandesDebounce = debounce((search) => {
-  sejourStore.fetchDemandes({
-    sortBy: sortState.value.sortBy,
-    sortDirection: sortState.value.sortDirection,
-    limit: limitState.value,
-    offset: currentPageState.value * limitState.value,
-    search,
-  });
+const fetchDemandesDebounce = debounce(async (search) => {
+  try {
+    await sejourStore.fetchDemandes({
+      sortBy: sortState.value.sortBy,
+      sortDirection: sortState.value.sortDirection,
+      limit: limitState.value,
+      offset: currentPageState.value * limitState.value,
+      search,
+    });
+  } catch (error) {
+    toaster.error(
+      "Une erreur est survenue lors de la récupération de la demande",
+    );
+  }
 });
 
 watch([searchState], ([searchValue]) => {

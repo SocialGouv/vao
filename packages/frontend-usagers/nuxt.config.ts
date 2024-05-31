@@ -16,7 +16,12 @@ export default defineNuxtConfig({
     "@/assets/css/main.css",
   ],
   devtools: { enabled: false },
-  modules: ["nuxt-security", "@pinia/nuxt", "nuxt3-leaflet"],
+  modules: [
+    "nuxt-security",
+    "@pinia/nuxt",
+    "nuxt3-leaflet",
+    "@socialgouv/dsfr-toaster-nuxt-module",
+  ],
   runtimeConfig: {
     public: {
       appVersion: undefined,

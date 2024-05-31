@@ -10,7 +10,7 @@ module.exports = async function get(req, res) {
   const { id: userId } = decoded;
 
   try {
-    const hebergements = await Hebergement.get(userId);
+    const hebergements = await Hebergement.getByUserId(userId);
     log.d(hebergements);
     return res.status(200).json({ hebergements });
   } catch (error) {

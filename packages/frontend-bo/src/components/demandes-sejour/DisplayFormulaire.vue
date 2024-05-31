@@ -47,7 +47,7 @@
         </div>
       </DsfrAccordion>
     </li>
-    <li v-if="demandeStore.currentDemande?.vacanciers">
+    <li v-if="demandeStore.currentDemande?.informationsVacanciers">
       <DsfrAccordion
         :title="`Vacanciers`"
         :expanded-id="expandedId"
@@ -56,12 +56,12 @@
         <DisplayInput
           v-for="entry in Object.keys(displayInput.IVacancier)"
           :key="`personnel-${entry}`"
-          :value="demandeStore.currentDemande.vacanciers[entry]"
+          :value="demandeStore.currentDemande.informationsVacanciers[entry]"
           :input="displayInput.IVacancier[entry]"
         />
       </DsfrAccordion>
     </li>
-    <li v-if="demandeStore.currentDemande?.personnel">
+    <li v-if="demandeStore.currentDemande?.informationsPersonnel">
       <DsfrAccordion
         :title="`Personnel`"
         :expanded-id="expandedId"
@@ -70,12 +70,12 @@
         <DisplayInput
           v-for="entry in Object.keys(displayInput.Ipersonnel)"
           :key="`personnel-${entry}`"
-          :value="demandeStore.currentDemande.personnel[entry]"
+          :value="demandeStore.currentDemande.informationsPersonnel[entry]"
           :input="displayInput.Ipersonnel[entry]"
         />
       </DsfrAccordion>
     </li>
-    <li v-if="demandeStore.currentDemande?.projetSejour">
+    <li v-if="demandeStore.currentDemande?.informationsProjetSejour">
       <DsfrAccordion
         :title="`Projet de séjour`"
         :expanded-id="expandedId"
@@ -84,12 +84,12 @@
         <DisplayInput
           v-for="entry in Object.keys(displayInput.IProjetSejour)"
           :key="`projet-sejour-${entry}`"
-          :value="demandeStore.currentDemande.projetSejour[entry]"
+          :value="demandeStore.currentDemande.informationsProjetSejour[entry]"
           :input="displayInput.IProjetSejour[entry]"
         />
       </DsfrAccordion>
     </li>
-    <li v-if="demandeStore.currentDemande?.transport">
+    <li v-if="demandeStore.currentDemande?.informationsTransport">
       <DsfrAccordion
         :title="`Information sur le transport`"
         :expanded-id="expandedId"
@@ -98,21 +98,21 @@
         <DisplayInput
           v-for="entry in Object.keys(displayInput.ITransport)"
           :key="`transport-${entry}`"
-          :value="demandeStore.currentDemande.transport[entry]"
+          :value="demandeStore.currentDemande.informationsTransport[entry]"
           :input="displayInput.ITransport[entry]"
         />
       </DsfrAccordion>
     </li>
-    <li v-if="demandeStore.currentDemande?.sanitaires">
+    <li v-if="demandeStore.currentDemande?.informationsSanitaires">
       <DsfrAccordion
-        :title="`Information sanitaires`"
+        :title="`Informations sanitaires`"
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
         <DisplayInput
           v-for="entry in Object.keys(displayInput.ISanitaire)"
           :key="`transport-${entry}`"
-          :value="demandeStore.currentDemande.sanitaires[entry]"
+          :value="demandeStore.currentDemande.informationsSanitaires[entry]"
           :input="displayInput.ISanitaire[entry]"
         />
       </DsfrAccordion>

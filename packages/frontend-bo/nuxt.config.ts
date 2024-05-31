@@ -16,7 +16,11 @@ export default defineNuxtConfig({
     "@gouvfr/dsfr/dist/utility/icons/icons.min.css",
     "@/assets/css/main.css",
   ],
-  modules: ["nuxt-security", "@pinia/nuxt"],
+  modules: [
+    "nuxt-security",
+    "@pinia/nuxt",
+    "@socialgouv/dsfr-toaster-nuxt-module",
+  ],
   runtimeConfig: {
     public: {
       appVersion: undefined,
@@ -39,6 +43,14 @@ export default defineNuxtConfig({
       crossOriginEmbedderPolicy: "unsafe-none",
       contentSecurityPolicy: {
         "img-src": ["'self'", "*.openstreetmap.org", "data:"],
+        "script-src": [
+          "'self'",
+          "https:",
+          "'unsafe-inline'",
+          "'strict-dynamic'",
+          "'unsafe-eval'",
+          "'nonce-{{nonce}}'",
+        ],
       },
     },
   },

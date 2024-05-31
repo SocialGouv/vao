@@ -113,9 +113,6 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
-
 const props = defineProps({
   initData: {
     type: Object,
@@ -128,13 +125,11 @@ const props = defineProps({
 
 const emit = defineEmits(["next", "update"]);
 
-const log = logger("components/DS/informations-generales");
-
 const organismeStore = useOrganismeStore();
 const userStore = useUserStore();
 
 const duree = computed(() => {
-  const nbjours = dayjs(dateFin.value).diff(dateDebut.value, "day");
+  const nbjours = dayjs(dateFin.value).diff(dateDebut.value, "day") + 1;
   return nbjours.toString();
 });
 
@@ -201,6 +196,10 @@ const {
 const { value: responsableSejour, handleChange: onResponsableSejourChange } =
   useField("responsableSejour");
 
+defineExpose({
+  meta,
+});
+
 function next() {
   if (!props.modifiable) {
     return emit("next");
@@ -213,9 +212,6 @@ function next() {
     "update",
     {
       ...values,
-      duree: duree.value,
-      periode: periode.value,
-      organisme: organismeStore.organismeCourant,
     },
     "informationsGenerales",
   );

@@ -18,7 +18,7 @@ module.exports = async function get(req, res, next) {
     );
   }
   try {
-    const hebergement = await Hebergement.getOne({ id: hebergementId });
+    const hebergement = await Hebergement.getById(hebergementId);
     log.d(hebergement);
     return res.status(200).json({ hebergement });
   } catch (error) {

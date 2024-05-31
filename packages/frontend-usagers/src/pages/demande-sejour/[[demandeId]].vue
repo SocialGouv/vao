@@ -78,7 +78,7 @@
                 <div id="projet-sejour">
                   <DSProjetSejour
                     v-if="hash === 'projet-sejour'"
-                    :init-data="demandeCourante.informationsProjetSejour ?? {}"
+                    :init-data="demandeCourante.projetSejour ?? {}"
                     :modifiable="canModify"
                     @update="updateOrCreate"
                     @next="nextHash"
@@ -133,8 +133,8 @@
         ></DSHistorique>
         <DsfrAlert v-else-if="error" type="error"
           >Une erreur est survenue durant la récupération de l'historique de la
-          déclaration</DsfrAlert
-        >
+          déclaration
+        </DsfrAlert>
       </DsfrTabContent>
     </DsfrTabs>
   </div>
@@ -142,8 +142,8 @@
 
 <script setup>
 const route = useRoute();
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+
+const toaster = useToaster();
 
 definePageMeta({
   middleware: [

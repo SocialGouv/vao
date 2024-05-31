@@ -156,7 +156,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${dayjs(hebergement.coordonnees.dateDebut).format("DD/MM/YYYY")}`,
+                    text: `${dayjs(hebergement.dateDebut).format("DD/MM/YYYY")}`,
                     width: "*",
                   },
                 ],
@@ -169,7 +169,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${dayjs(hebergement.coordonnees.dateFin).format("DD/MM/YYYY")}`,
+                    text: `${dayjs(hebergement.dateFin).format("DD/MM/YYYY")}`,
                     width: "*",
                   },
                 ],

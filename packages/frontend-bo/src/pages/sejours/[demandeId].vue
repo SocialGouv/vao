@@ -134,8 +134,7 @@ import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
 
 const log = logger("pages/sejours");
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 
 const route = useRoute();
 

@@ -34,6 +34,15 @@ export const useMenuNavItems = () => {
             },
           ]
         : []),
+      ...(roles.includes("DemandeSejour_Lecture") ||
+      roles.includes("DemandeSejour_Ecriture")
+        ? [
+            {
+              text: "Informations",
+              to: "/informations",
+            },
+          ]
+        : []),
     ];
   });
 

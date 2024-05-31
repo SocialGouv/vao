@@ -44,8 +44,7 @@ definePageMeta({
   middleware: ["is-connected", "check-hebergement-id-param"],
 });
 
-const nuxtApp = useNuxtApp();
-const toaster = nuxtApp.vueApp.$toast;
+const toaster = useToaster();
 const log = logger("pages/hebermgents/[[hebergementId]]");
 
 const hebergementStore = useHebergementStore();

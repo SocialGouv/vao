@@ -18,6 +18,7 @@
               />
             </template>
             <DSInformationsGenerales
+              ref="sectionInformationsGenerales"
               :init-data="props.declarationCourante"
               :validate-on-mount="true"
               :modifiable="false"
@@ -90,9 +91,7 @@
               />
             </template>
             <DSProjetSejour
-              :init-data="
-                props.declarationCourante.informationsProjetSejour ?? {}
-              "
+              :init-data="props.declarationCourante.projetSejour ?? {}"
               :modifiable="false"
               :validate-on-mount="true"
               :show-buttons="false"
@@ -163,7 +162,7 @@
               />
             </template>
             <DsfrAccordionsGroup
-              v-if="props.declarationCourante.hebergement?.hebergements"
+              v-if="props.declarationCourante.hebergement?.hebergements.length"
             >
               <li
                 v-for="(item, index) in props.declarationCourante.hebergement
@@ -351,7 +350,11 @@ const failure = {
   type: "warning",
 };
 
-const informationsGenerales = success;
+const sectionInformationsGenerales = ref(null);
+
+const informationsGenerales = computed(() =>
+  sectionInformationsGenerales.value?.meta.valid ? success : failure,
+);
 
 const informationsVacanciers = computed(() =>
   !Object.keys(errors.value).find((k) => k.startsWith("informationsVacanciers"))

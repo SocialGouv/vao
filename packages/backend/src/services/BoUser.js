@@ -51,7 +51,7 @@ const query = {
     RETURNING
       id as id
     ;`,
-    [email, nom, prenom, territoireCode],
+    [normalize(email), nom, prenom, territoireCode],
   ],
   deleteRole: (id) => [
     `
@@ -82,12 +82,12 @@ const query = {
       `,
     [userId, isBlocked],
   ],
-  get: (criterias) =>
+  get: (criterias = {}, additionalParamsQuery = "", additionalParams = []) => [
     `
     SELECT
       us.id AS id,
       us.mail AS email,
-      us.pwd IS NOT NULL AS hasPwd,
+      us.pwd IS NOT NULL AS "hasPwd",
       us.blocked AS "isBlocked",
       us.nom AS nom,
       us.prenom AS prenom,
@@ -109,17 +109,28 @@ const query = {
     ) ur ON ur.use_id = us.id
     LEFT OUTER JOIN geo.territoires ter on ter.code = us.ter_code
     WHERE 1 = 1
-      ${criterias.map((c) => `AND (${c})`).join("\n      ")}
+${Object.keys(criterias)
+  .map(
+    (criteria, i) =>
+      `    AND ${criteria} = $${additionalParams.length + i + 1}`,
+  )
+  .join("")}
+    ${additionalParamsQuery}
   `,
-  getTotal: (criterias) => `
-  SELECT 
-    COUNT(*)
-  FROM back.users AS us
-  LEFT JOIN geo.territoires ter 
-    on ter.code = us.ter_code
-  WHERE 1 = 1
-    ${criterias.map((c) => `AND (${c})`).join("\n    ")}
-  `,
+    [...additionalParams, ...Object.values(criterias)],
+  ],
+  getTotal: (additionalParamsQuery, additionalParams) => [
+    `
+SELECT 
+  COUNT(*)
+FROM back.users AS us
+LEFT JOIN geo.territoires ter 
+  on ter.code = us.ter_code
+WHERE 1 = 1
+${additionalParamsQuery}
+`,
+    additionalParams,
+  ],
   login: `
     SELECT
       us.id as id,
@@ -179,7 +190,7 @@ module.exports.create = async ({
 
   // Test de l'existance d'un compte avec la même adresse mail
   const response = await pool.query(
-    query.get([`us.mail ilike '%${normalize(email)}%'`]),
+    ...query.get({ "us.mail": normalize(email) }),
   );
   if (response.rows.length !== 0) {
     log.w("create - DONE - Utilisateur BO déjà existant");
@@ -267,7 +278,7 @@ module.exports.editStatus = async (userId, isBlocked) => {
 module.exports.activate = async (email) => {
   log.i("active - IN", { email });
   let response = await pool.query(
-    query.get([`us.mail ilike '%${normalize(email)}%'`]),
+    ...query.get({ "us.mail": normalize(email) }),
   );
   if (response.rowCount === 0) {
     throw new AppError("Utilisateur non trouvé", { name: "UserNotFound" });
@@ -283,9 +294,7 @@ module.exports.activate = async (email) => {
   await pool.query(query.activate, [user.id]);
 
   // TODO: remove
-  response = await pool.query(
-    query.get([`us.mail ilike '%${normalize(email)}%'`]),
-  );
+  response = await pool.query(...query.get({ "us.mail": normalize(email) }));
   [user] = response.rows;
   log.i("active - DONE", { user });
   return user;
@@ -301,52 +310,65 @@ module.exports.read = async ({
   //  TODO : create the logic (here or in the service) to get the department of the admin.
   //  For me, the list of demandes that are goven to the admin are the list of all demands of the department
 
-  log.i("read - IN", { search });
-  const searchQuery = [];
+  log.w("read - IN", { search });
+  let searchQuery = "";
+  const searchParams = [];
 
   // Search management
   if (search?.nom && search.nom.length) {
-    searchQuery.push(`us.nom ilike '%${search.nom}%'`);
+    searchQuery += `   AND us.nom ilike $${searchParams.length + 1}\n`;
+    searchParams.push(`%${search.nom}%`);
   }
   if (search?.prenom && search.prenom.length) {
-    searchQuery.push(`us.prenom ilike '%${search.prenom}%'`);
+    searchQuery += `   AND us.prenom ilike $${searchParams.length + 1}\n`;
+    searchParams.push(`%${search.prenom}%`);
   }
   if (search?.email && search.email.length) {
-    searchQuery.push(`us.mail ilike '%${normalize(search.email)}%'`);
+    searchQuery += `   AND us.mail ilike $${searchParams.length + 1}\n`;
+    searchParams.push(`%${normalize(search.email)}%`);
   }
   if (search?.territoire && search.territoire.length) {
-    searchQuery.push(`ter.label ilike '%${search.territoire}%'`);
+    searchQuery += `   AND ter.label ilike $${searchParams.length + 1}\n`;
+    searchParams.push(`%${search.territoire}%`);
   }
 
   if (search?.valide !== undefined) {
-    searchQuery.push(
-      `us.validated = ${search.valide === true || search.valide === "true"}`,
-    );
+    searchQuery += `   AND us.validated = $${searchParams.length + 1}\n`;
+    searchParams.push(`${search.valide === true || search.valide === "true"}`);
   }
 
-  let queryWithPagination = query.get(searchQuery);
+  let additionalQueryParts = "";
+  const additionalParams = [];
 
   // Order management
   if (sortBy && sortDirection) {
-    queryWithPagination += `
+    additionalQueryParts += `
     ORDER BY "${sortBy}" ${sortDirection}
     `;
   } else {
-    queryWithPagination += "\n ORDER BY nom, prenom";
+    additionalQueryParts += "\n ORDER BY nom, prenom";
   }
 
   // Pagination management
   if (limit != null && offset != null) {
-    queryWithPagination += `
-    OFFSET ${offset}
-    LIMIT ${limit}
+    additionalQueryParts += `
+    OFFSET $${searchParams.length + additionalParams.length + 1}
+    LIMIT $${searchParams.length + additionalParams.length + 2}
     `;
+    additionalParams.push(offset, limit);
   }
 
-  log.d("read", queryWithPagination);
-  const response = await pool.query(queryWithPagination);
+  log.d("read", searchQuery + "\n   " + additionalQueryParts);
+  log.d("read", [...searchParams, ...additionalParams]);
 
-  const total = await pool.query(query.getTotal(searchQuery));
+  const response = await pool.query(
+    ...query.get(undefined, searchQuery + "\n   " + additionalQueryParts, [
+      ...searchParams,
+      ...additionalParams,
+    ]),
+  );
+
+  const total = await pool.query(...query.getTotal(searchQuery, searchParams));
 
   log.i("read - DONE");
   return {
@@ -365,7 +387,7 @@ module.exports.readOne = async (id) => {
   }
 
   const { rowCount, rows: users } = await pool.query(
-    query.get([`us.id = ${id}`]),
+    ...query.get({ "us.id": id }),
   );
 
   if (rowCount === 0) {
@@ -379,17 +401,17 @@ module.exports.readOne = async (id) => {
   return users[0];
 };
 
-module.exports.readOneByMail = async (mail) => {
-  log.i("readOne - IN", { mail });
+module.exports.readOneByMail = async (email) => {
+  log.i("readOne - IN", { email });
 
-  if (!mail) {
+  if (!email) {
     throw new AppError("Paramètre manquant", {
       statusCode: 500,
     });
   }
 
   const { rowCount, rows: users } = await pool.query(
-    query.get([`us.mail = '${mail}'`]),
+    ...query.get({ "us.mail": normalize(email) }),
   );
 
   if (rowCount === 0) {
