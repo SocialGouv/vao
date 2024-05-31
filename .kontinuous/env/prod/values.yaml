@@ -1,14 +1,20 @@
 backend:
+  autoscale:
+    enabled: true
   host: api-vao.social.gouv.fr
   redirectFrom:
     - "api-{{ .Values.global.host }}"
 
 frontend-usagers:
+  autoscale:
+    enabled: true
   host: vao.social.gouv.fr
   redirectFrom:
     - "{{ .Values.global.host }}"
 
 frontend-bo:
+  autoscale:
+    enabled: true
   host: admin-vao.social.gouv.fr
   redirectFrom:
     - "bo-{{ .Values.global.host }}"
