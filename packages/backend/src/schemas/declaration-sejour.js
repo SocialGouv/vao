@@ -8,7 +8,9 @@ const informationsVacanciersSchema = require("./parts/informations-vacanciers");
 const projetSejourSchema = require("./parts/projet-sejour");
 const protocoleTransportSchema = require("./parts/protocoleTransport");
 const protocoleSanitaireSchema = require("./parts/protocoleSanitaire");
-const personneSchema = require("./parts/personne.js");
+const personne = require("./parts/personne.js");
+const prestataire = require("./parts/prestataire.js");
+const { statuts } = require("../helpers/ds-statuts.js");
 
 const log = logger(module.filename);
 
@@ -55,29 +57,128 @@ const baseSchema = {
   libelle: yup.string().typeError("le libellé est requis").required(),
   responsableSejour: yup
     .object(
-      personneSchema({
+      personne({
         showAdresse: true,
+        showAttestation: false,
+        showCompetence: false,
+        showDateNaissance: false,
         showEmail: true,
+        showFonction: true,
+        showListeFonction: false,
         showTelephone: true,
       }),
     )
     .required(),
 };
 
-const informationsPersonnelSchema = {
-  nombreAccompagnant: yup
-    .number("Ce champ doit contenir un nombre entier")
-    .integer("Ce champ doit contenir un nombre entier")
-    .typeError("Ce champ doit contenir un nombre entier")
-    .required("Ce champ doit contenir un nombre entier"),
-  nombreResponsable: yup
-    .number("Ce champ doit contenir un nombre entier")
-    .integer("Ce champ doit contenir un nombre entier")
-    .typeError("Ce champ doit contenir un nombre entier")
-    .required("Ce champ doit contenir un nombre entier"),
-  procedureRecrutementSupplementaire: yup
-    .bool("La saisie de ce champ est obligatoire")
-    .required("La saisie de ce champ est obligatoire"),
+const informationsPersonnelSchema = (statut) => {
+  return {
+    nombreAccompagnant: yup
+      .number("Ce champ doit contenir un nombre entier")
+      .integer("Ce champ doit contenir un nombre entier")
+      .typeError("Ce champ doit contenir un nombre entier")
+      .min(
+        `${statut === statuts.ATTENTE_8_JOUR ? 1 : 0}`,
+        "Vousdevez saisir au moins 1 accompagnant",
+      )
+      .required("Ce champ doit contenir un nombre entier"),
+    nombreResponsable: yup
+      .number("Ce champ doit contenir un nombre entier")
+      .integer("Ce champ doit contenir un nombre entier")
+      .typeError("Ce champ doit contenir un nombre entier")
+      .min(
+        `${statut === statuts.ATTENTE_8_JOUR ? 1 : 0}`,
+        "Vousdevez saisir au moins 1 responsable d'encadrement",
+      )
+      .required("Ce champ doit contenir un nombre entier"),
+    procedureRecrutementSupplementaire: yup
+      .bool("La saisie de ce champ est obligatoire")
+      .required("La saisie de ce champ est obligatoire"),
+    ...(statut === statuts.ATTENTE_8_JOUR && {
+      accompagnants: yup
+        .array()
+        .of(
+          yup.object(
+            personne({
+              showAdresse: false,
+              showAttestation: true,
+              showCompetence: true,
+              showDateNaissance: true,
+              showEmail: false,
+              showFonction: false,
+              showListeFonction: true,
+              showTelephone: true,
+            }),
+          ),
+        )
+        .min(1, "Vous devez saisir au moins un accompagnant")
+        .required(),
+    }),
+    ...(statut === statuts.ATTENTE_8_JOUR && {
+      encadrants: yup
+        .array()
+        .of(
+          yup.object(
+            personne({
+              showAdresse: false,
+              showAttestation: true,
+              showCompetence: true,
+              showDateNaissance: true,
+              showEmail: false,
+              showFonction: false,
+              showListeFonction: true,
+              showTelephone: true,
+            }),
+          ),
+        )
+        .min(1, "Vous devez saisir au moins 1 encadrant")
+        .required(),
+    }),
+    ...(statut === statuts.ATTENTE_8_JOUR && {
+      formation: yup
+        .string()
+        .min(5, "Ce champ est obligatoire")
+        .required()
+        .nullable(),
+    }),
+    ...(statut === statuts.ATTENTE_8_JOUR && {
+      formation: yup
+        .string()
+        .min(5, "Ce champ est obligatoire")
+        .required()
+        .nullable(),
+    }),
+    ...(statut === statuts.ATTENTE_8_JOUR && {
+      prestatairesActivites: yup
+        .array()
+        .of(yup.object(prestataire.schema))
+        .nullable(),
+    }),
+    ...(statut === statuts.ATTENTE_8_JOUR && {
+      prestatairesEntretien: yup
+        .array()
+        .of(yup.object(prestataire.schema))
+        .nullable(),
+    }),
+    ...(statut === statuts.ATTENTE_8_JOUR && {
+      prestatairesMedicaments: yup
+        .array()
+        .of(yup.object(prestataire.schema))
+        .nullable(),
+    }),
+    ...(statut === statuts.ATTENTE_8_JOUR && {
+      prestatairesRestauration: yup
+        .array()
+        .of(yup.object(prestataire.schema))
+        .nullable(),
+    }),
+    ...(statut === statuts.ATTENTE_8_JOUR && {
+      prestatairesTransport: yup
+        .array()
+        .of(yup.object(prestataire.schema))
+        .nullable(),
+    }),
+  };
 };
 
 const hebergementDetailsSchema = {
@@ -137,16 +238,18 @@ const hebergementSchema = (dateDebut, dateFin) => ({
   sejourItinerant: yup.boolean().required(),
 });
 
-const schema = (dateDebut, dateFin) => ({
-  ...baseSchema,
-  attestation: yup.object(attestationSchema),
-  hebergement: yup.object(hebergementSchema(dateDebut, dateFin)),
-  informationsPersonnel: yup.object(informationsPersonnelSchema),
-  informationsSanitaires: yup.object(protocoleSanitaireSchema()),
-  informationsTransport: yup.object(protocoleTransportSchema()),
-  informationsVacanciers: yup.object(informationsVacanciersSchema()),
-  projetSejour: yup.object(projetSejourSchema()),
-});
+const schema = (dateDebut, dateFin, statut) => {
+  return {
+    ...baseSchema,
+    attestation: yup.object(attestationSchema),
+    hebergement: yup.object(hebergementSchema(dateDebut, dateFin)),
+    informationsPersonnel: yup.object(informationsPersonnelSchema(statut)),
+    informationsSanitaires: yup.object(protocoleSanitaireSchema()),
+    informationsTransport: yup.object(protocoleTransportSchema()),
+    informationsVacanciers: yup.object(informationsVacanciersSchema()),
+    projetSejour: yup.object(projetSejourSchema()),
+  };
+};
 
 module.exports = {
   baseSchema,

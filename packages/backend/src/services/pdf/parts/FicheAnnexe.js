@@ -4,10 +4,10 @@ const {
   prestationsHotelieres,
   accessibilites,
   types,
-} = require("../../../../helpers/declaration/hebergement");
+} = require("../../../helpers/declaration/hebergement");
 
 module.exports = function buildFicheAnnexe(hebergement) {
-  return hebergement.hebergements.map((hebergement) => ({
+  return hebergement.hebergements.map((h) => ({
     stack: [
       {
         margin: [0, 30, 0, 0],
@@ -65,7 +65,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${types[hebergement.informationsLocaux.type] ?? hebergement.informationsLocaux.type}`,
+                    text: `${types[h.informationsLocaux.type] ?? h.informationsLocaux.type}`,
                     width: "*",
                   },
                 ],
@@ -78,7 +78,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.nom}`,
+                    text: `${h.nom}`,
                     width: "*",
                   },
                 ],
@@ -91,7 +91,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.coordonnees.adresse.label}`,
+                    text: `${h.coordonnees.adresse.label}`,
                     width: "*",
                   },
                 ],
@@ -104,7 +104,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.coordonnees.nomGestionnaire}`,
+                    text: `${h.coordonnees.nomGestionnaire}`,
                     width: "*",
                   },
                 ],
@@ -117,7 +117,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.coordonnees.numTelephone1}`,
+                    text: `${h.coordonnees.numTelephone1}`,
                     width: "*",
                   },
                 ],
@@ -130,7 +130,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.coordonnees.numTelephone2 ?? ""}`,
+                    text: `${h.coordonnees.numTelephone2 ?? ""}`,
                     width: "*",
                   },
                 ],
@@ -143,7 +143,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.coordonnees.email}`,
+                    text: `${h.coordonnees.email}`,
                     width: "*",
                   },
                 ],
@@ -156,7 +156,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${dayjs(hebergement.dateDebut).format("DD/MM/YYYY")}`,
+                    text: `${dayjs(h.dateDebut).format("DD/MM/YYYY")}`,
                     width: "*",
                   },
                 ],
@@ -169,7 +169,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${dayjs(hebergement.dateFin).format("DD/MM/YYYY")}`,
+                    text: `${dayjs(h.dateFin).format("DD/MM/YYYY")}`,
                     width: "*",
                   },
                 ],
@@ -198,13 +198,13 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.visiteLocaux ? " Oui" : "Non"}`,
+                    text: `${h.informationsLocaux.visiteLocaux ? " Oui" : "Non"}`,
                     width: "*",
                   },
                 ],
               },
-              ...(hebergement.informationsLocaux.visiteLocaux &&
-              hebergement.informationsLocaux.visiteLocauxAt
+              ...(h.informationsLocaux.visiteLocaux &&
+              h.informationsLocaux.visiteLocauxAt
                 ? [
                     {
                       columns: [
@@ -214,7 +214,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                         },
                         {
                           bold: true,
-                          text: `${dayjs(hebergement.informationsLocaux.visiteLocauxAt).format("DD/MM/YYYY")}`,
+                          text: `${dayjs(h.informationsLocaux.visiteLocauxAt).format("DD/MM/YYYY")}`,
                           width: "*",
                         },
                       ],
@@ -229,7 +229,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.reglementationErp ? " Oui" : "Non"}`,
+                    text: `${h.informationsLocaux.reglementationErp ? " Oui" : "Non"}`,
                     width: "*",
                   },
                 ],
@@ -242,7 +242,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${accessibilites[hebergement.informationsLocaux.accessibilite] ?? hebergement.informationsLocaux.accessibilite}`,
+                    text: `${accessibilites[h.informationsLocaux.accessibilite] ?? h.informationsLocaux.accessibilite}`,
                     width: "*",
                   },
                 ],
@@ -255,7 +255,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${pensions[hebergement.informationsLocaux.pension] ?? hebergement.informationsLocaux.pension}`,
+                    text: `${pensions[h.informationsLocaux.pension] ?? h.informationsLocaux.pension}`,
                     width: "*",
                   },
                 ],
@@ -268,7 +268,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.prestationsHotelieres.map((p) => prestationsHotelieres[p] ?? p).join(", ")}`,
+                    text: `${h.informationsLocaux.prestationsHotelieres.map((p) => prestationsHotelieres[p] ?? p).join(", ")}`,
                     width: "*",
                   },
                 ],
@@ -281,7 +281,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.descriptionLieuHebergement}`,
+                    text: `${h.informationsLocaux.descriptionLieuHebergement}`,
                     width: "*",
                   },
                 ],
@@ -294,12 +294,12 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.nombreLits}`,
+                    text: `${h.informationsLocaux.nombreLits}`,
                     width: "*",
                   },
                 ],
               },
-              ...(hebergement.informationsLocaux.nombreLitsSuperposes
+              ...(h.informationsLocaux.nombreLitsSuperposes
                 ? [
                     {
                       columns: [
@@ -309,7 +309,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                         },
                         {
                           bold: true,
-                          text: `${hebergement.informationsLocaux.nombreLitsSuperposes}`,
+                          text: `${h.informationsLocaux.nombreLitsSuperposes}`,
                           width: "*",
                         },
                       ],
@@ -322,7 +322,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                         },
                         {
                           bold: true,
-                          text: `${hebergement.informationsLocaux.litsDessus ? " Oui" : "Non"}`,
+                          text: `${h.informationsLocaux.litsDessus ? " Oui" : "Non"}`,
                           width: "*",
                         },
                       ],
@@ -337,7 +337,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.nombreMaxPersonnesCouchage}`,
+                    text: `${h.informationsLocaux.nombreMaxPersonnesCouchage}`,
                     width: "*",
                   },
                 ],
@@ -350,7 +350,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.couchageIndividuel ? "Oui" : "Non"}`,
+                    text: `${h.informationsLocaux.couchageIndividuel ? "Oui" : "Non"}`,
                     width: "*",
                   },
                 ],
@@ -363,7 +363,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.rangementIndividuel ? "Oui" : "Non"}`,
+                    text: `${h.informationsLocaux.rangementIndividuel ? "Oui" : "Non"}`,
                     width: "*",
                   },
                 ],
@@ -376,7 +376,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.chambresUnisexes ? "Non" : "Oui"}`,
+                    text: `${h.informationsLocaux.chambresUnisexes ? "Non" : "Oui"}`,
                     width: "*",
                   },
                 ],
@@ -389,7 +389,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.amenagementsSpecifiques ? "Oui" : "Non "}`,
+                    text: `${h.informationsLocaux.amenagementsSpecifiques ? "Oui" : "Non "}`,
                     width: "*",
                   },
                 ],
@@ -402,17 +402,16 @@ module.exports = function buildFicheAnnexe(hebergement) {
                   },
                   {
                     bold: true,
-                    text: `${hebergement.informationsLocaux.precisionAmenagementsSpecifiques ?? ""}`,
+                    text: `${h.informationsLocaux.precisionAmenagementsSpecifiques ?? ""}`,
                     width: "*",
                   },
                 ],
 
                 margin: [0, 0, 0, 10],
               },
-              ...(hebergement.informationsLocaux.reglementationErp
+              ...(h.informationsLocaux.reglementationErp
                 ? [
-                    hebergement.informationsLocaux
-                      .fileDerniereAttestationSecurite && {
+                    h.informationsLocaux.fileDerniereAttestationSecurite && {
                       columns: [
                         {
                           text: "Attestation de passage de la comission sécurité :",
@@ -420,7 +419,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                         },
                         {
                           bold: true,
-                          text: `${hebergement.informationsLocaux.fileDerniereAttestationSecurite.name}`,
+                          text: `${h.informationsLocaux.fileDerniereAttestationSecurite.name}`,
                           width: "*",
                         },
                       ],
@@ -434,7 +433,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                         },
                         {
                           bold: true,
-                          text: `${hebergement.informationsLocaux.fileDernierArreteAutorisationMaire.name}`,
+                          text: `${h.informationsLocaux.fileDernierArreteAutorisationMaire.name}`,
                           width: "*",
                         },
                       ],
@@ -449,7 +448,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                         },
                         {
                           bold: true,
-                          text: `${hebergement.informationsLocaux.fileReponseExploitantOuProprietaire.name}`,
+                          text: `${h.informationsLocaux.fileReponseExploitantOuProprietaire.name}`,
                           width: "*",
                         },
                       ],

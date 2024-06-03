@@ -74,13 +74,19 @@
           :readonly="true"
         />
       </div>
+
       <h6>Responsable de l'organisation du séjour</h6>
       <Personne
         :modifiable="props.modifiable"
         :personne="responsableSejour"
         :show-adresse="true"
-        :show-telephone="true"
+        :show-attestation="false"
+        :show-competence="false"
+        :show-date-naissance="false"
         :show-email="true"
+        :show-fonction="true"
+        :show-liste-fonction="false"
+        :show-telephone="true"
         :show-button="false"
         @update:personne="onResponsableSejourChange"
       ></Personne>

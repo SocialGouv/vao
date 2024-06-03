@@ -114,6 +114,29 @@ RETURNING
       attestation,
     ],
   ],
+  finalize8jours: (
+    demandeSejourId,
+    vacanciers,
+    personnel,
+    hebergement,
+    attestation,
+  ) => [
+    `
+UPDATE front.demande_sejour ds
+SET
+  statut = 'TRANSMISE 8J',
+  vacanciers = $2,
+  personnel = $3,
+  hebergement = $4,
+  attestation = $5,
+  edited_at = NOW()
+WHERE
+  ds.id = $1
+RETURNING
+  id as "demandeId"
+;`,
+    [demandeSejourId, vacanciers, personnel, hebergement, attestation],
+  ],
   get: (organismeIds) => [
     `
 SELECT
@@ -360,6 +383,12 @@ WHERE
   RETURNING
     id as "eventId"
   `,
+  saveDS2M: `
+  UPDATE front.demande_sejour
+  SET declaration_2m = $2
+  WHERE id = $1
+  RETURNING id as "declarationId"
+`,
   updateHebergement: `
   UPDATE front.demande_sejour ds
   SET
@@ -761,6 +790,32 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
   return demandeId;
 };
 
+module.exports.finalize8jours = async (
+  demandeSejourId,
+  { informationsVacanciers, informationsPersonnel, hebergement, attestation },
+) => {
+  log.i("finalize - IN", {
+    declaration: {
+      attestation,
+      hebergement,
+      informationsPersonnel,
+      informationsVacanciers,
+    },
+    demandeSejourId,
+  });
+
+  await pool.query(
+    ...query.finalize8jours(
+      demandeSejourId,
+      informationsVacanciers,
+      informationsPersonnel,
+      hebergement,
+      attestation,
+    ),
+  );
+  log.i("finalize - DONE");
+};
+
 module.exports.finalize = async (
   demandeSejourId,
   departementSuivi,
@@ -860,6 +915,12 @@ module.exports.insertEvent = async (
   ]);
   log.i("insertEvent - DONE");
   return response[0].eventId ?? null;
+};
+
+module.exports.saveDS2M = async (declarationId, declaration) => {
+  log.i("saveDS2M - IN");
+  await pool.query(query.saveDS2M, [declarationId, declaration]);
+  log.i("saveDS2M - DONE");
 };
 
 module.exports.addFile = async (declarationId, file) => {
