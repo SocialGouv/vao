@@ -424,7 +424,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                         },
                       ],
                     },
-                    hebergement.informationsLocaux
+                    h.informationsLocaux
                       .fileDernierArreteAutorisationMaire && {
                       columns: [
                         {
