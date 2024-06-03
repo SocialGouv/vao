@@ -153,6 +153,50 @@ const Ipersonnel = {
   },
 };
 
+const IPersonnelEncardementAccompagnement = {
+  dateNaissance: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de naissance",
+    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+  },
+  telephone: {
+    inputType: InputTypes.TEXT,
+    label: "Téléphone",
+  },
+  competence: {
+    inputType: InputTypes.TEXT,
+    label: "Compétence",
+  },
+  listeFonction: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Fonctions",
+  },
+};
+
+const IPersonnelPrestataire = {
+  typePrestataire: {
+    inputType: InputTypes.RADIO,
+    label: "Type de prestataire",
+    options: {
+      personne_physique: "Personne physique",
+      personne_morale: "Personne morale",
+    },
+  },
+  telephone: {
+    inputType: InputTypes.TEXT,
+    label: "Téléphone",
+  },
+  adresse: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Adresse",
+    formatter: (value) => value?.label,
+  },
+  competence: {
+    inputType: InputTypes.TEXT,
+    label: "Compétence",
+  },
+};
+
 const IProjetSejour = {
   destination: {
     inputType: InputTypes.MULTISELECT,
@@ -556,4 +600,6 @@ export default {
   IHebergementInformationLocaux,
   IHebergementInformationsTransport,
   IAttestation,
+  IPersonnelEncardementAccompagnement,
+  IPersonnelPrestataire,
 };
