@@ -67,12 +67,195 @@
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
+        <h4
+          v-if="
+            !!demandeStore.currentDemande.statut &&
+            demandesSejours.isPost8Jour(demandeStore.currentDemande.statut)
+          "
+        >
+          Généralité
+        </h4>
+
         <DisplayInput
           v-for="entry in Object.keys(displayInput.Ipersonnel)"
           :key="`personnel-${entry}`"
           :value="demandeStore.currentDemande.informationsPersonnel[entry]"
           :input="displayInput.Ipersonnel[entry]"
         />
+        <div
+          v-if="
+            !!demandeStore.currentDemande.statut &&
+            demandesSejours.isPost8Jour(demandeStore.currentDemande.statut)
+          "
+        >
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel?.encadrants
+                ?.length > 0
+            "
+          >
+            Personnel d'encadrement
+          </h4>
+          <div
+            v-for="(personnel, index) in demandeStore.currentDemande
+              ?.informationsPersonnel?.encadrants ?? []"
+            :key="`personnelEncardement-${index}`"
+          >
+            <h6>Encadrant : {{ personnel.nom }} {{ personnel.prenom }}</h6>
+            <DisplayInput
+              v-for="entry in Object.keys(
+                displayInput.IPersonnelEncardementAccompagnement,
+              )"
+              :key="`personnelEncardement-${index}-${entry}`"
+              :value="personnel[entry]"
+              :input="displayInput.IPersonnelEncardementAccompagnement[entry]"
+            />
+          </div>
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel?.accompagnants
+                ?.length > 0
+            "
+          >
+            Personnel d'accompagnement
+          </h4>
+          <div
+            v-for="(personnel, index) in demandeStore.currentDemande
+              ?.informationsPersonnel?.accompagnants ?? []"
+            :key="`personnelAccompagnant-${index}`"
+          >
+            <h6>Accompagnant : {{ personnel.nom }} {{ personnel.prenom }}</h6>
+            <DisplayInput
+              v-for="entry in Object.keys(
+                displayInput.IPersonnelEncardementAccompagnement,
+              )"
+              :key="`personnelAccompagnant-${index}-${entry}`"
+              :value="personnel[entry]"
+              :input="displayInput.IPersonnelEncardementAccompagnement[entry]"
+            />
+          </div>
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesMedicaments?.length > 0
+            "
+          >
+            Prestataire en charge des médicaments
+          </h4>
+          <div
+            v-for="(personnel, index) in demandeStore.currentDemande
+              ?.informationsPersonnel?.prestatairesMedicaments ?? []"
+            :key="`personnelPrestataireMedicament-${index}`"
+          >
+            <h6>
+              Prestataire en charge des médicaments: {{ personnel.nom }}
+              {{ personnel.prenom }}
+            </h6>
+            <DisplayInput
+              v-for="entry in Object.keys(displayInput.IPersonnelPrestataire)"
+              :key="`personnelPrestataireMedicament-${index}-${entry}`"
+              :value="personnel[entry]"
+              :input="displayInput.IPersonnelPrestataire[entry]"
+            />
+          </div>
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesTransport?.length > 0
+            "
+          >
+            Prestataire en charge du transport des vacanciers
+          </h4>
+          <div
+            v-for="(personnel, index) in demandeStore.currentDemande
+              ?.informationsPersonnel?.prestatairesTransport ?? []"
+            :key="`personnelPrestataireTransport-${index}`"
+          >
+            <h6>
+              Prestataire en charge du transport: {{ personnel.nom }}
+              {{ personnel.prenom }}
+            </h6>
+            <DisplayInput
+              v-for="entry in Object.keys(displayInput.IPersonnelPrestataire)"
+              :key="`personnelPrestataireTransport-${index}-${entry}`"
+              :value="personnel[entry]"
+              :input="displayInput.IPersonnelPrestataire[entry]"
+            />
+          </div>
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesRestauration?.length > 0
+            "
+          >
+            Prestataire en charge de la restauration
+          </h4>
+          <div
+            v-for="(personnel, index) in demandeStore.currentDemande
+              ?.informationsPersonnel?.prestatairesRestauration ?? []"
+            :key="`personnelPrestataireRestauration-${index}`"
+          >
+            <h6>
+              Prestataire en charge de la restauration: {{ personnel.nom }}
+              {{ personnel.prenom }}
+            </h6>
+            <DisplayInput
+              v-for="entry in Object.keys(displayInput.IPersonnelPrestataire)"
+              :key="`personnelPrestataireRestauration-${index}-${entry}`"
+              :value="personnel[entry]"
+              :input="displayInput.IPersonnelPrestataire[entry]"
+            />
+          </div>
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesEntretien?.length > 0
+            "
+          >
+            Prestataire en charge de l’entretien et du ménage
+          </h4>
+          <div
+            v-for="(personnel, index) in demandeStore.currentDemande
+              ?.informationsPersonnel?.prestatairesEntretien ?? []"
+            :key="`personnelPrestataireEntretien-${index}`"
+          >
+            <h6>
+              Prestataire en charge de l’entretien: {{ personnel.nom }}
+              {{ personnel.prenom }}
+            </h6>
+            <DisplayInput
+              v-for="entry in Object.keys(displayInput.IPersonnelPrestataire)"
+              :key="`personnelPrestataireEntretien-${index}-${entry}`"
+              :value="personnel[entry]"
+              :input="displayInput.IPersonnelPrestataire[entry]"
+            />
+          </div>
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesActivites?.length > 0
+            "
+          >
+            Prestataire en charge d'encadrer les activités spécifiques
+          </h4>
+          <div
+            v-for="(personnel, index) in demandeStore.currentDemande
+              ?.informationsPersonnel?.prestatairesActivites ?? []"
+            :key="`personnelPrestataireActivites-${index}`"
+          >
+            <h6>
+              Prestataire en charge d'encadrer les activités spécifiques:
+              {{ personnel.nom }}
+              {{ personnel.prenom }}
+            </h6>
+            <DisplayInput
+              v-for="entry in Object.keys(displayInput.IPersonnelPrestataire)"
+              :key="`personnelPrestataireActivites-${index}-${entry}`"
+              :value="personnel[entry]"
+              :input="displayInput.IPersonnelPrestataire[entry]"
+            />
+          </div>
+        </div>
       </DsfrAccordion>
     </li>
     <li v-if="demandeStore.currentDemande?.informationsProjetSejour">
