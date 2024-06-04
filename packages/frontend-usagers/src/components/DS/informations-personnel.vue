@@ -18,8 +18,7 @@
           :label-visible="true"
           :model-value="nombreResponsable"
           :readonly="
-            !props.modifiable ||
-            declarationStatut === DeclarationSejour.statuts.ATTENTE_8_JOUR
+            !props.modifiable || DeclarationSejour.isUpdate8Jour(declarationStatut)
           "
           :is-valid="nombreResponsableMeta.valid"
           :error-message="nombreResponsableErrorMessage"
@@ -35,7 +34,8 @@
           :model-value="nombreAccompagnant"
           :readonly="
             !props.modifiable ||
-            declarationStatut === DeclarationSejour.statuts.ATTENTE_8_JOUR
+            declarationStatut === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
+            declarationStatut === DeclarationSejour.statuts.A_MODIFIER_8J
           "
           :is-valid="nombreAccompagnantMeta.valid"
           :error-message="nombreAccompagnantErrorMessage"
@@ -267,7 +267,8 @@ const validationSchema = yup.object(
 
 const initialValues = {
   nombreResponsable:
-    declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR
+    declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
+    declarationStatut === DeclarationSejour.statuts.A_MODIFIER_8J
       ? props.initData.encadrants?.length ?? "0"
       : props.initData.nombreResponsable ?? null,
   encadrants: props.initData.encadrants ?? [],
@@ -281,7 +282,8 @@ const initialValues = {
   procedureRecrutementSupplementaire:
     props.initData.procedureRecrutementSupplementaire ?? null,
   nombreAccompagnant:
-    declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR
+    declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
+    declarationStatut.value === DeclarationSejour.statuts.A_MODIFIER_8J
       ? props.initData.accompagnants?.length ?? "0"
       : props.initData.nombreAccompagnant ?? null,
 };

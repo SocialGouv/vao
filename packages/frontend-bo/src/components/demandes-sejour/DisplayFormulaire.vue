@@ -69,8 +69,7 @@
       >
         <h4
           v-if="
-            !!demandeStore.currentDemande.statut &&
-            demandesSejours.isPost8Jour(demandeStore.currentDemande.statut)
+            !!demandeStore.currentDemande.statut && isDisplay8Jours
           "
         >
           Généralité
@@ -84,8 +83,7 @@
         />
         <div
           v-if="
-            !!demandeStore.currentDemande.statut &&
-            demandesSejours.isPost8Jour(demandeStore.currentDemande.statut)
+            !!demandeStore.currentDemande.statut && isDisplay8Jours
           "
         >
           <h4
@@ -362,6 +360,10 @@ import { DsfrAccordion, DsfrAccordionsGroup } from "@gouvminint/vue-dsfr";
 import DisplayInput from "~/components/demandes-sejour/DisplayInput.vue";
 
 const demandeStore = useDemandeSejourStore();
+
+const isDisplay8Jours = computed(() => {
+  return demandesSejours.isDeclaration8Jours(demandeStore.currentDemande.statut);
+});
 
 const expandedId = ref("");
 </script>

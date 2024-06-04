@@ -6,12 +6,15 @@ il ne fait donc pas parti de la liste des status possibles*/
 const statuts = {
   TRANSMISE: "TRANSMISE",
   EN_COURS: "EN COURS",
+  EN_COURS_8J: "EN COURS 8J",
   A_MODIFIER: "A MODIFIER",
+  A_MODIFIER_8J: "A MODIFIER 8J",
+  ATTENTE_HEBERGEMENT: "EN ATTENTE VALIDATION HEBERGEMENT",
   ATTENTE_8_JOUR: "EN ATTENTE DECLARATION 8 JOURS",
   TRANSMISE_8J: "TRANSMISE 8J",
-  VALIDEE: "VALIDEE",
+  VALIDEE_8J: "VALIDEE 8J",
   REFUSEE: "REFUSEE",
-  MAJ_POST_8J: "MAJ POST 8J",
+  REFUSEE_8J: "REFUSEE 8J",
 };
 
 const getSaison = (demande) => {
@@ -26,10 +29,11 @@ const getSaison = (demande) => {
 
 const isDeclaration8Jours = (statut) =>
   [
-    statuts.ATTENTE_8_JOUR,
     statuts.TRANSMISE_8J,
-    statuts.VALIDEE,
-    statuts.REFUSEE,
+    statuts.VALIDEE_8J,
+    statuts.REFUSEE_8J,
+    statuts.A_MODIFIER_8J,
+    statuts.EN_COURS_8J,
   ].includes(statut);
 
 const getOrganismeTitle = (demande) => {
@@ -45,14 +49,10 @@ const getOrganismeTitle = (demande) => {
 const getDateDebutFin = (demande) =>
   `${formatDate(demande.dateDebut, "dd/MM/yyyy")} - ${formatDate(demande.dateFin, "dd/MM/yyyy")}`;
 
-const isPost8Jour = (statut) =>
-  [statuts.TRANSMISE_8J, statuts.VALIDEE, statuts.MAJ_POST_8J].includes(statut);
-
 export default {
   statuts,
   getSaison,
   getOrganismeTitle,
   getDateDebutFin,
   isDeclaration8Jours,
-  isPost8Jour,
 };

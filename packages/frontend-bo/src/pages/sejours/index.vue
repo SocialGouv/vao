@@ -271,7 +271,7 @@ const navigate = (state) => {
   if (
     userStore.user?.roles &&
     userStore.user?.roles.includes("DemandeSejour_Ecriture") &&
-    state.statut === demandesSejours.statuts.TRANSMISE &&
+    (state.statut === demandesSejours.statuts.TRANSMISE || state.statut === demandesSejours.statuts.TRANSMISE_8J) &&
     state.estInstructeurPrincipal
   ) {
     declarationAPrendreEnCharge.value = state;

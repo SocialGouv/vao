@@ -18,6 +18,7 @@ const printer = new PdfPrinter(fonts);
 
 const build = async (declaration = {}, departementSuivi) => {
   log.i("build - IN");
+  log.d("declaration.informationsPersonnel",declaration.informationsPersonnel)
   const docDefinition = {
     content: [
       parts.Header(),
