@@ -212,6 +212,7 @@
           :modifiable="props.modifiable"
           :prestataires="prestatairesActivites"
           titre="Prestaire en charge des activités'"
+          ivi,
           @update-prestataire="updatePrestatairesActivites"
         >
         </DSPrestataires>

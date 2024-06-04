@@ -49,14 +49,10 @@ const getOrganismeTitle = (demande) => {
 const getDateDebutFin = (demande) =>
   `${formatDate(demande.dateDebut, "dd/MM/yyyy")} - ${formatDate(demande.dateFin, "dd/MM/yyyy")}`;
 
-const isPost8Jour = (statut) =>
-  [statuts.TRANSMISE_8J, statuts.VALIDEE, statuts.MAJ_POST_8J].includes(statut);
-
 export default {
   statuts,
   getSaison,
   getOrganismeTitle,
   getDateDebutFin,
   isDeclaration8Jours,
-  isPost8Jour,
 };

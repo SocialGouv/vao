@@ -6,7 +6,6 @@ const Hebergement = require("../../services/Hebergement");
 const Send = require("../../services/mail").mailService.send;
 const PdfDeclaration2Mois = require("../../services/pdf/declaration2mois/generate");
 const PdfDeclaration8jours = require("../../services/pdf/declaration8jours/generate");
-const ARDeclaration8jours = require("../../services/pdf/ARdeclaration8jours/generate");
 
 const {
   schema: DeclarationSejourSchema,
