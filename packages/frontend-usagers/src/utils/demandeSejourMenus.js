@@ -20,8 +20,8 @@ export default [
     text: "Projet de séjour",
     statutsMasques: [
       DeclarationSejour.statuts.ATTENTE_8_JOUR,
-      DeclarationSejour.statuts.MAJ_POST_8J,
       DeclarationSejour.statuts.TRANSMISE_8J,
+      DeclarationSejour.statuts.A_MODIFIER_8J,
     ],
   },
   {
@@ -29,8 +29,8 @@ export default [
     text: "Informations sur le transport",
     statutsMasques: [
       DeclarationSejour.statuts.ATTENTE_8_JOUR,
-      DeclarationSejour.statuts.MAJ_POST_8J,
       DeclarationSejour.statuts.TRANSMISE_8J,
+      DeclarationSejour.statuts.A_MODIFIER_8J,
     ],
   },
   {
@@ -38,8 +38,8 @@ export default [
     text: "Informations sanitaires",
     statutsMasques: [
       DeclarationSejour.statuts.ATTENTE_8_JOUR,
-      DeclarationSejour.statuts.MAJ_POST_8J,
       DeclarationSejour.statuts.TRANSMISE_8J,
+      DeclarationSejour.statuts.A_MODIFIER_8J,
     ],
   },
   {

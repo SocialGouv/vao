@@ -24,6 +24,7 @@ const expectedStates = [
   statuts.BROUILLON,
   statuts.A_MODIFIER,
   statuts.ATTENTE_8_JOUR,
+  statuts.A_MODIFIER_8J,
 ];
 
 module.exports = async function post(req, res, next) {
@@ -109,7 +110,7 @@ module.exports = async function post(req, res, next) {
     );
   }
 
-  if (statut == statuts.ATTENTE_8_JOUR) {
+  if (statut == statuts.ATTENTE_8_JOUR || statut == statuts.A_MODIFIER_8J) {
     log.d("Déclaration à 8 jours");
     await DemandeSejour.finalize8jours(demandeSejourId, declaration);
     declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
@@ -119,7 +120,7 @@ module.exports = async function post(req, res, next) {
       userId,
       null,
       "declaration_sejour",
-      "Dépôt DS Copmlémentaire à 8 jours",
+      "Dépôt DS Complémentaire à 8 jours",
       declaration,
     );
     try {

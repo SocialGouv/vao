@@ -232,14 +232,18 @@ const saisonOptions = computed(() => {
 const statutOptions = [
   { label: "BROUILLON", value: "BROUILLON" },
   { label: "TRANSMISE", value: "TRANSMISE" },
+  { label: "TRANSMISE 8J", value: "TRANSMISE 8 JOURS" },
   { label: "EN COURS", value: "EN COURS" },
+  { label: "EN COURS 8J", value: "EN COURS 8 JOURS" },
   { label: "A MODIFIER", value: "A MODIFIER" },
+  { label: "A MODIFIER 8J", value: "A MODIFIER 8 JOURS" },
   {
     label: "EN ATTENTE DECLARATION 8 JOURS",
     value: "EN ATTENTE DECLARATION 8 JOURS",
   },
-  { label: "VALIDEE", value: "VALIDEE" },
+  { label: "VALIDEE 8J", value: "VALIDEE 8 JOURS" },
   { label: "REFUSEE", value: "REFUSEE" },
+  { label: "REFUSEE 8J", value: "REFUSEE 8 JOURS" },
 ];
 
 const onUpdateId = (id) => {
@@ -334,13 +338,17 @@ const headers = [
       noIcon: true,
       type: [
         DeclarationSejour.statuts.TRANSMISE,
+        DeclarationSejour.statuts.TRANSMISE_8J,
         DeclarationSejour.statuts.EN_COURS,
+        DeclarationSejour.statuts.EN_COURS_8J,
+        DeclarationSejour.statuts.VALIDEE_8J,
       ].includes(value.statut)
         ? "success"
         : [DeclarationSejour.statuts.BROUILLON].includes(value.statut)
           ? "info"
           : [
                 DeclarationSejour.statuts.A_MODIFIER,
+                DeclarationSejour.statuts.A_MODIFIER_8J,
                 DeclarationSejour.statuts.ATTENTE_8_JOUR,
               ].includes(value.statut)
             ? "warning"

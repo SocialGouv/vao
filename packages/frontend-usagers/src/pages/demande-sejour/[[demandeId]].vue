@@ -234,7 +234,8 @@ const canModify = computed(() => {
     !demandeCourante.value.statut ||
     demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
     demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER ||
-    demandeCourante.value.statut === DeclarationSejour.statuts.ATTENTE_8_JOUR
+    demandeCourante.value.statut === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
+    demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER_8J
   );
 });
 
@@ -348,9 +349,15 @@ async function finalize(attestation) {
     );
 
     if (response.DSuuid) {
-      toaster.info(
-        `Le PDF déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
-      );
+      if (demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
+        demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER)
+        toaster.info(
+          `Le PDF déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
+        );
+      else
+        toaster.info(
+        `Le PDF déclaration_8_jours a été ajouté aux documents de la déclaration de séjour`,
+        );
     } else {
       toaster.error(
         "Une erreur est survenue durant la génération du PDF mais la déclaration a bien été transmise",
