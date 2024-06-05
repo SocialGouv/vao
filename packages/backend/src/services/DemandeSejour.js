@@ -185,7 +185,7 @@ SELECT
   ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length}) as "estInstructeurPrincipal"
 FROM front.demande_sejour ds
   JOIN front.organismes o ON o.id = ds.organisme_id
-  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id 
+  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 WHERE
   statut <> 'BROUILLON'
   AND ((${departementQuery})
@@ -198,7 +198,7 @@ WHERE
 SELECT COUNT(DISTINCT ds.id)
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
-LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id 
+LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 WHERE
   statut <> 'BROUILLON'
   AND ((${departementQuery})
@@ -238,7 +238,7 @@ WHERE
       ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-      LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id 
+      LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
     where ((${departementQuery})
       OR a.region_obtention = '${territoireCode}')
       AND ds.id = $1
@@ -672,7 +672,11 @@ module.exports.getByDepartementCodes = async (
   }
 
   const total = await pool.query(
-    query.getByDepartementCodesTotal(searchQuery, territoireCode,departementQuery),
+    query.getByDepartementCodesTotal(
+      searchQuery,
+      territoireCode,
+      departementQuery,
+    ),
     params,
   );
 
@@ -683,7 +687,11 @@ module.exports.getByDepartementCodes = async (
   };
 };
 
-module.exports.getById = async (demandeId, territoireCode, departementCodes) => {
+module.exports.getById = async (
+  demandeId,
+  territoireCode,
+  departementCodes,
+) => {
   log.i("getById - IN", { demandeId });
 
   if (departementCodes && departementCodes.length === 0) {

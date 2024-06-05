@@ -1,3 +1,5 @@
+import { formatDate } from "date-fns/format";
+
 const InputTypes = {
   TEXT: "text",
   RADIO: "radio",
@@ -148,6 +150,50 @@ const Ipersonnel = {
   nombreAccompagnant: {
     inputType: InputTypes.NUMBER,
     label: "Nombre total d'accompagnants sur le(s) lieu(x) de séjour",
+  },
+};
+
+const IPersonnelEncardementAccompagnement = {
+  dateNaissance: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de naissance",
+    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+  },
+  telephone: {
+    inputType: InputTypes.TEXT,
+    label: "Téléphone",
+  },
+  competence: {
+    inputType: InputTypes.TEXT,
+    label: "Compétence",
+  },
+  listeFonction: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Fonctions",
+  },
+};
+
+const IPersonnelPrestataire = {
+  typePrestataire: {
+    inputType: InputTypes.RADIO,
+    label: "Type de prestataire",
+    options: {
+      personne_physique: "Personne physique",
+      personne_morale: "Personne morale",
+    },
+  },
+  telephone: {
+    inputType: InputTypes.TEXT,
+    label: "Téléphone",
+  },
+  adresse: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Adresse",
+    formatter: (value) => value?.label,
+  },
+  competence: {
+    inputType: InputTypes.TEXT,
+    label: "Compétence",
   },
 };
 
@@ -367,12 +413,14 @@ const ISanitaire = {
 
 const IHebergement = {
   dateDebut: {
-    inputType: InputTypes.TEXT,
+    inputType: InputTypes.TO_FORMAT,
     label: "Du",
+    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
   },
   dateFin: {
-    inputType: InputTypes.TEXT,
+    inputType: InputTypes.TO_FORMAT,
     label: "Au",
+    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
   },
   nom: {
     inputType: InputTypes.TEXT,
@@ -552,4 +600,6 @@ export default {
   IHebergementInformationLocaux,
   IHebergementInformationsTransport,
   IAttestation,
+  IPersonnelEncardementAccompagnement,
+  IPersonnelPrestataire,
 };
