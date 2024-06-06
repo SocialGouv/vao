@@ -410,7 +410,10 @@ const showAttestation = computed(
 );
 
 const libelleBoutonTransmission = computed(() => {
-  if (declarationStatut.value === DeclarationSejour.statuts.BROUILLON) {
+  if (
+    declarationStatut.value === DeclarationSejour.statuts.BROUILLON ||
+    declarationStatut.value === DeclarationSejour.statuts.A_MODIFIER
+  ) {
     return "Transmettre ma déclaration de séjour à 2 mois";
   }
   if (
