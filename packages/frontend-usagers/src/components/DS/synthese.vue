@@ -208,6 +208,10 @@
     </div>
     <form>
       <DsfrFieldset v-if="showAttestation" legend="Attestation">
+        <div v-if="props.modifiable" class="fr-fieldset__element fr-col-12">
+          Vous allez finaliser votre déclaration complémentaire de façon
+          définitive. Vous ne pourrez pas revenir dessus et la modifier
+        </div>
         <div class="fr-fieldset__element fr-col-12">
           <DsfrCheckbox
             v-model="aCertifie"
@@ -409,7 +413,10 @@ const libelleBoutonTransmission = computed(() => {
   if (declarationStatut.value === DeclarationSejour.statuts.BROUILLON) {
     return "Transmettre ma déclaration de séjour à 2 mois";
   }
-  if (declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR || declarationStatut.value === DeclarationSejour.statuts.A_MODIFIER_8J) {
+  if (
+    declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
+    declarationStatut.value === DeclarationSejour.statuts.A_MODIFIER_8J
+  ) {
     return "Transmettre ma déclaration de séjour à 8 jours";
   }
 });
