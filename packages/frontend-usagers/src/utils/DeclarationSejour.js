@@ -16,12 +16,14 @@ const statuts = {
   TRANSMISE: "TRANSMISE",
   EN_COURS: "EN COURS",
   A_MODIFIER: "A MODIFIER",
+  REFUSEE: "REFUSEE",
   ATTENTE_HEBERGEMENT: "EN ATTENTE VALIDATION HEBERGEMENT",
   ATTENTE_8_JOUR: "EN ATTENTE DECLARATION 8 JOURS",
   TRANSMISE_8J: "TRANSMISE 8J",
-  VALIDEE: "VALIDEE",
-  REFUSEE: "REFUSEE",
-  MAJ_POST_8J: "MAJ POST 8J",
+  EN_COURS_8J: "EN COURS 8J",
+  A_MODIFIER_8J: "A MODIFIER 8J",
+  VALIDEE_8J: "VALIDEE 8J",
+  REFUSEE_8J: "REFUSEE 8J",
 };
 
 const log = logger("utils/DeclarationSejour");
@@ -30,8 +32,16 @@ const isPost8Jour = (statut) =>
   [
     statuts.ATTENTE_8_JOUR,
     statuts.TRANSMISE_8J,
-    statuts.VALIDEE,
-    statuts.MAJ_POST_8J,
+    statuts.A_MODIFIER_8J,
+    statuts.EN_COURS_8J,
+    statuts.REFUSEE_8J,
+    statuts.VALIDEE_8J,
+  ].includes(statut);
+
+const isUpdate8Jour = (statut) =>
+  [
+    statuts.ATTENTE_8_JOUR,
+    statuts.A_MODIFIER_8J,
   ].includes(statut);
 
 function isSejourComplet(hebergements, dateDebut, dateFin) {
@@ -166,4 +176,5 @@ export default {
   schema,
   statuts,
   isPost8Jour,
+  isUpdate8Jour,
 };

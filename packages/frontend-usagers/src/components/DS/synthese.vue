@@ -409,7 +409,7 @@ const libelleBoutonTransmission = computed(() => {
   if (declarationStatut.value === DeclarationSejour.statuts.BROUILLON) {
     return "Transmettre ma déclaration de séjour à 2 mois";
   }
-  if (declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR) {
+  if (declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR || declarationStatut.value === DeclarationSejour.statuts.A_MODIFIER_8J) {
     return "Transmettre ma déclaration de séjour à 8 jours";
   }
 });

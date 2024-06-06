@@ -52,13 +52,15 @@ module.exports = async function post(req, res, next) {
     );
   }
 
-  if (declaration.statut !== statuts.EN_COURS) {
+  if (declaration.statut !== statuts.EN_COURS && declaration.statut !== statuts.EN_COURS_8J) {
     log.w("Delaration should be in statut EN COURS");
     return res.status(400).json({
       message: "Statut non compatible",
     });
   }
 
+  const AModifierType = declaration.statut === statuts.EN_COURS ? statuts.A_MODIFIER : statuts.A_MODIFIER_8J
+  const textTypePrecision = "Demande de compléments " + (declaration.statut === statuts.EN_COURS ? " 2 mois" : " 8 jours");
   try {
     const destinataires = await DemandeSejour.getEmailToList(
       declaration.organismeId,
@@ -66,14 +68,14 @@ module.exports = async function post(req, res, next) {
 
     await DemandeSejour.updateStatut(
       declarationId,
-      statuts.A_MODIFIER,
+      AModifierType,
       {
         boUserId: userId,
         declarationId,
         metaData: { commentaire },
         source: `DDETS ${territoireCode}`,
         type: "declaration_sejour",
-        typePrecision: "Demande de complémements",
+        typePrecision: textTypePrecision,
         userId: null,
       },
       () =>

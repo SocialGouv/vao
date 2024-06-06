@@ -48,16 +48,20 @@ module.exports = async function post(req, res, next) {
     );
   }
 
-  if (declaration.statut !== statuts.EN_COURS) {
+  if (declaration.statut !== statuts.EN_COURS && declaration.statut !== statuts.EN_COURS_8J) {
     return next(
       new AppError("Statut incompatible", {
         statusCode: 400,
       }),
     );
   }
+  const enCoursTypeStatut = declaration.statut === statuts.EN_COURS ? statuts.ATTENTE_8_JOUR : statuts.VALIDEE_8J;
+  const textTypePrecision = "Enregistrement de la déclaration à " + (declaration.statut === statuts.EN_COURS ? " 2 mois" : " 8 jours");
+
 
   try {
-    await PdfARDeclaration2Mois(declaration);
+    if (declaration.statut !== statuts.EN_COURS)
+      await PdfARDeclaration2Mois(declaration);
 
     const destinataires = await DemandeSejour.getEmailToList(
       declaration.organismeId,
@@ -65,14 +69,14 @@ module.exports = async function post(req, res, next) {
 
     await DemandeSejour.updateStatut(
       declarationId,
-      statuts.ATTENTE_8_JOUR,
+      enCoursTypeStatut,
       {
         boUserId: userId,
         declarationId,
         metaData: declaration,
         source: `DDETS ${territoireCode}`,
         type: "declaration_sejour",
-        typePrecision: "Enregistrement de la déclaration à 2 mois",
+        typePrecision: textTypePrecision,
         userId: null,
       },
       () =>
@@ -84,7 +88,8 @@ module.exports = async function post(req, res, next) {
         ),
     );
 
-    await DemandeSejour.saveDS2M(declarationId, declaration);
+    if (declaration.statut !== statuts.EN_COURS)
+      await DemandeSejour.saveDS2M(declarationId, declaration);
 
     return res.status(200).end();
   } catch (error) {

@@ -38,6 +38,10 @@ function isSejourComplet(hebergements, dateDebut, dateFin) {
   return true;
 }
 
+function isUpdateFUsager8Jour(statut) {
+  return (statut === statuts.ATTENTE_8_JOUR || statut === statuts.A_MODIFIER_8J)
+}
+
 const baseSchema = {
   dateDebut: yup
     .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
@@ -78,7 +82,7 @@ const informationsPersonnelSchema = (statut) => {
       .integer("Ce champ doit contenir un nombre entier")
       .typeError("Ce champ doit contenir un nombre entier")
       .min(
-        `${statut === statuts.ATTENTE_8_JOUR ? 1 : 0}`,
+        `${isUpdateFUsager8Jour(statut) ? 1 : 0}`,
         "Vousdevez saisir au moins 1 accompagnant",
       )
       .required("Ce champ doit contenir un nombre entier"),
@@ -87,14 +91,14 @@ const informationsPersonnelSchema = (statut) => {
       .integer("Ce champ doit contenir un nombre entier")
       .typeError("Ce champ doit contenir un nombre entier")
       .min(
-        `${statut === statuts.ATTENTE_8_JOUR ? 1 : 0}`,
+        `${isUpdateFUsager8Jour(statut) ? 1 : 0}`,
         "Vousdevez saisir au moins 1 responsable d'encadrement",
       )
       .required("Ce champ doit contenir un nombre entier"),
     procedureRecrutementSupplementaire: yup
       .bool("La saisie de ce champ est obligatoire")
       .required("La saisie de ce champ est obligatoire"),
-    ...(statut === statuts.ATTENTE_8_JOUR && {
+    ...(isUpdateFUsager8Jour(statut) && {
       accompagnants: yup
         .array()
         .of(
@@ -114,7 +118,7 @@ const informationsPersonnelSchema = (statut) => {
         .min(1, "Vous devez saisir au moins un accompagnant")
         .required(),
     }),
-    ...(statut === statuts.ATTENTE_8_JOUR && {
+    ...(isUpdateFUsager8Jour(statut) && {
       encadrants: yup
         .array()
         .of(
@@ -134,45 +138,45 @@ const informationsPersonnelSchema = (statut) => {
         .min(1, "Vous devez saisir au moins 1 encadrant")
         .required(),
     }),
-    ...(statut === statuts.ATTENTE_8_JOUR && {
+    ...(isUpdateFUsager8Jour(statut) && {
       formation: yup
         .string()
         .min(5, "Ce champ est obligatoire")
         .required()
         .nullable(),
     }),
-    ...(statut === statuts.ATTENTE_8_JOUR && {
+    ...(isUpdateFUsager8Jour(statut) && {
       formation: yup
         .string()
         .min(5, "Ce champ est obligatoire")
         .required()
         .nullable(),
     }),
-    ...(statut === statuts.ATTENTE_8_JOUR && {
+    ...(isUpdateFUsager8Jour(statut) && {
       prestatairesActivites: yup
         .array()
         .of(yup.object(prestataire.schema))
         .nullable(),
     }),
-    ...(statut === statuts.ATTENTE_8_JOUR && {
+    ...(isUpdateFUsager8Jour(statut) && {
       prestatairesEntretien: yup
         .array()
         .of(yup.object(prestataire.schema))
         .nullable(),
     }),
-    ...(statut === statuts.ATTENTE_8_JOUR && {
+    ...(isUpdateFUsager8Jour(statut) && {
       prestatairesMedicaments: yup
         .array()
         .of(yup.object(prestataire.schema))
         .nullable(),
     }),
-    ...(statut === statuts.ATTENTE_8_JOUR && {
+    ...(isUpdateFUsager8Jour(statut) && {
       prestatairesRestauration: yup
         .array()
         .of(yup.object(prestataire.schema))
         .nullable(),
     }),
-    ...(statut === statuts.ATTENTE_8_JOUR && {
+    ...(isUpdateFUsager8Jour(statut) && {
       prestatairesTransport: yup
         .array()
         .of(yup.object(prestataire.schema))
