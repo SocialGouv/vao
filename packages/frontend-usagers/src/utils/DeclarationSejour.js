@@ -37,7 +37,11 @@ function isSejourComplet(hebergements, dateDebut, dateFin) {
 }
 
 const baseSchema = {
-  libelle: yup.string().typeError("le libellé est requis").required(),
+  libelle: yup
+    .string()
+    .max(50, "Le libellé ne doit pas dépasser 50 caractères ")
+    .typeError("le libellé est requis")
+    .required(),
   dateDebut: yup
     .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
     .typeError("date invalide")
