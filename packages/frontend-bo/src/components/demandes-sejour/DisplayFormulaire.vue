@@ -67,11 +67,7 @@
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
-        <h4
-          v-if="
-            !!demandeStore.currentDemande.statut && isDisplay8Jours
-          "
-        >
+        <h4 v-if="!!demandeStore.currentDemande.statut && isDisplay8Jours">
           Généralité
         </h4>
 
@@ -81,11 +77,7 @@
           :value="demandeStore.currentDemande.informationsPersonnel[entry]"
           :input="displayInput.Ipersonnel[entry]"
         />
-        <div
-          v-if="
-            !!demandeStore.currentDemande.statut && isDisplay8Jours
-          "
-        >
+        <div v-if="!!demandeStore.currentDemande.statut && isDisplay8Jours">
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel?.encadrants
@@ -94,21 +86,13 @@
           >
             Personnel d'encadrement
           </h4>
-          <div
-            v-for="(personnel, index) in demandeStore.currentDemande
-              ?.informationsPersonnel?.encadrants ?? []"
-            :key="`personnelEncardement-${index}`"
-          >
-            <h6>Encadrant : {{ personnel.nom }} {{ personnel.prenom }}</h6>
-            <DisplayInput
-              v-for="entry in Object.keys(
-                displayInput.IPersonnelEncardementAccompagnement,
-              )"
-              :key="`personnelEncardement-${index}-${entry}`"
-              :value="personnel[entry]"
-              :input="displayInput.IPersonnelEncardementAccompagnement[entry]"
-            />
-          </div>
+          <DisplayEncadrementAccompagnement
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel?.encadrants ??
+              []
+            "
+          />
+
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel?.accompagnants
@@ -117,21 +101,12 @@
           >
             Personnel d'accompagnement
           </h4>
-          <div
-            v-for="(personnel, index) in demandeStore.currentDemande
-              ?.informationsPersonnel?.accompagnants ?? []"
-            :key="`personnelAccompagnant-${index}`"
-          >
-            <h6>Accompagnant : {{ personnel.nom }} {{ personnel.prenom }}</h6>
-            <DisplayInput
-              v-for="entry in Object.keys(
-                displayInput.IPersonnelEncardementAccompagnement,
-              )"
-              :key="`personnelAccompagnant-${index}-${entry}`"
-              :value="personnel[entry]"
-              :input="displayInput.IPersonnelEncardementAccompagnement[entry]"
-            />
-          </div>
+          <DisplayEncadrementAccompagnement
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.accompagnants ?? []
+            "
+          />
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel
@@ -140,22 +115,12 @@
           >
             Prestataire en charge des médicaments
           </h4>
-          <div
-            v-for="(personnel, index) in demandeStore.currentDemande
-              ?.informationsPersonnel?.prestatairesMedicaments ?? []"
-            :key="`personnelPrestataireMedicament-${index}`"
-          >
-            <h6>
-              Prestataire en charge des médicaments: {{ personnel.nom }}
-              {{ personnel.prenom }}
-            </h6>
-            <DisplayInput
-              v-for="entry in Object.keys(displayInput.IPersonnelPrestataire)"
-              :key="`personnelPrestataireMedicament-${index}-${entry}`"
-              :value="personnel[entry]"
-              :input="displayInput.IPersonnelPrestataire[entry]"
-            />
-          </div>
+          <DisplayPrestataire
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesMedicaments ?? []
+            "
+          />
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel
@@ -164,22 +129,13 @@
           >
             Prestataire en charge du transport des vacanciers
           </h4>
-          <div
-            v-for="(personnel, index) in demandeStore.currentDemande
-              ?.informationsPersonnel?.prestatairesTransport ?? []"
-            :key="`personnelPrestataireTransport-${index}`"
-          >
-            <h6>
-              Prestataire en charge du transport: {{ personnel.nom }}
-              {{ personnel.prenom }}
-            </h6>
-            <DisplayInput
-              v-for="entry in Object.keys(displayInput.IPersonnelPrestataire)"
-              :key="`personnelPrestataireTransport-${index}-${entry}`"
-              :value="personnel[entry]"
-              :input="displayInput.IPersonnelPrestataire[entry]"
-            />
-          </div>
+          <DisplayPrestataire
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesTransport ?? []
+            "
+          />
+
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel
@@ -188,22 +144,13 @@
           >
             Prestataire en charge de la restauration
           </h4>
-          <div
-            v-for="(personnel, index) in demandeStore.currentDemande
-              ?.informationsPersonnel?.prestatairesRestauration ?? []"
-            :key="`personnelPrestataireRestauration-${index}`"
-          >
-            <h6>
-              Prestataire en charge de la restauration: {{ personnel.nom }}
-              {{ personnel.prenom }}
-            </h6>
-            <DisplayInput
-              v-for="entry in Object.keys(displayInput.IPersonnelPrestataire)"
-              :key="`personnelPrestataireRestauration-${index}-${entry}`"
-              :value="personnel[entry]"
-              :input="displayInput.IPersonnelPrestataire[entry]"
-            />
-          </div>
+          <DisplayPrestataire
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesRestauration ?? []
+            "
+          />
+
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel
@@ -212,22 +159,12 @@
           >
             Prestataire en charge de l’entretien et du ménage
           </h4>
-          <div
-            v-for="(personnel, index) in demandeStore.currentDemande
-              ?.informationsPersonnel?.prestatairesEntretien ?? []"
-            :key="`personnelPrestataireEntretien-${index}`"
-          >
-            <h6>
-              Prestataire en charge de l’entretien: {{ personnel.nom }}
-              {{ personnel.prenom }}
-            </h6>
-            <DisplayInput
-              v-for="entry in Object.keys(displayInput.IPersonnelPrestataire)"
-              :key="`personnelPrestataireEntretien-${index}-${entry}`"
-              :value="personnel[entry]"
-              :input="displayInput.IPersonnelPrestataire[entry]"
-            />
-          </div>
+          <DisplayPrestataire
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesEntretien ?? []
+            "
+          />
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel
@@ -236,23 +173,12 @@
           >
             Prestataire en charge d'encadrer les activités spécifiques
           </h4>
-          <div
-            v-for="(personnel, index) in demandeStore.currentDemande
-              ?.informationsPersonnel?.prestatairesActivites ?? []"
-            :key="`personnelPrestataireActivites-${index}`"
-          >
-            <h6>
-              Prestataire en charge d'encadrer les activités spécifiques:
-              {{ personnel.nom }}
-              {{ personnel.prenom }}
-            </h6>
-            <DisplayInput
-              v-for="entry in Object.keys(displayInput.IPersonnelPrestataire)"
-              :key="`personnelPrestataireActivites-${index}-${entry}`"
-              :value="personnel[entry]"
-              :input="displayInput.IPersonnelPrestataire[entry]"
-            />
-          </div>
+          <DisplayPrestataire
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesActivites ?? []
+            "
+          />
         </div>
       </DsfrAccordion>
     </li>
@@ -358,11 +284,15 @@
 <script setup>
 import { DsfrAccordion, DsfrAccordionsGroup } from "@gouvminint/vue-dsfr";
 import DisplayInput from "~/components/demandes-sejour/DisplayInput.vue";
+import DisplayEncadrementAccompagnement from "~/components/demandes-sejour/DisplayEncadrementAccompagnement.vue";
+import DisplayPrestataire from "~/components/demandes-sejour/DisplayPrestataire.vue";
 
 const demandeStore = useDemandeSejourStore();
 
 const isDisplay8Jours = computed(() => {
-  return demandesSejours.isDeclaration8Jours(demandeStore.currentDemande.statut);
+  return demandesSejours.isDeclaration8Jours(
+    demandeStore.currentDemande.statut,
+  );
 });
 
 const expandedId = ref("");
