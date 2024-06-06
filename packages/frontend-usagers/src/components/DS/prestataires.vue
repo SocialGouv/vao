@@ -90,7 +90,12 @@ const headers = [
   {
     column: "dateNaissance",
     sorter: "dateNaissance",
-    format: (value) => dayjs(value.dateNaissance).format("DD/MM/YYYY"),
+    format: (value) => {
+      if (value.typePrestataire === "personne_morale") {
+        return null;
+      }
+      return dayjs(value.dateNaissance).format("DD/MM/YYYY");
+    },
     text: "Date de naissance",
 
     headerAttrs: {

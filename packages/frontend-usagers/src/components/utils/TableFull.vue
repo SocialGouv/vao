@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 1em">
+  <div style="margin-bottom: 2em; overflow-x: auto">
     <div v-if="displayedData.length">
       <DsfrTable
         style="display: table"
