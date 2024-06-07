@@ -12,9 +12,9 @@
     <div class="fr-grid-row fr-p-3v">
       <dsfr-file-download
         :href="file"
-        download="organisateurs_avec_un_agrement_non_valide"
-        format="pdf"
-        size="550 ko"
+        download="organisateurs_avec_un_retrait"
+        format="xlsx"
+        size="17.9 ko"
         title="Récupérer la liste des organisateurs dont l’agrément VAO n’est plus valide"
       />
     </div>
@@ -29,7 +29,7 @@ const file = ref(null);
 const loadXlsx = async () => {
   try {
     const blob = await $fetchBackend(
-      `/documents/admin/static/agrements_VAO_non_actifs_05_06_2024.pdf`,
+      `/documents/admin/static/agrements_non_actifs.xlsx`,
       {
         method: "GET",
         credentials: "include",
