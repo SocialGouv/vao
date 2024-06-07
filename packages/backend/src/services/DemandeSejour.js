@@ -249,6 +249,7 @@ SELECT
   ds.date_debut::text as "dateDebut",
   ds.date_fin::text as "dateFin",
   ds.organisme as "organisme",
+  ds.id_fonctionnelle as "idFonctionnelle",
   o.personne_morale as "personneMorale",
   o.personne_physique as "personnePhysique",
   o.type_organisme as "typeOrganisme",
@@ -698,6 +699,10 @@ module.exports.getByDepartementCodes = async (
   const searchQuery = [];
 
   // Search management
+  if (search?.idFonctionnelle && search.idFonctionnelle.length) {
+    searchQuery.push(`id_fonctionnelle ilike $${params.length + 1}`);
+    params.push(`%${search.idFonctionnelle}%`);
+  }
   if (search?.libelle && search.libelle.length) {
     searchQuery.push(`libelle ilike $${params.length + 1}`);
     params.push(`%${search.libelle}%`);

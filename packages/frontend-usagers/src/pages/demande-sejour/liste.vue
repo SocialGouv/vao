@@ -21,7 +21,7 @@
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
                 <div class="fr-input-group">
-                  <label class="fr-label"> ID </label>
+                  <label class="fr-label">ID</label>
                   <Multiselect
                     :model-value="search.id"
                     name="id"
@@ -91,7 +91,7 @@
                   <Multiselect
                     :model-value="search.statut"
                     :hide-selected="true"
-                    :searchable="false"
+                    :searchable="true"
                     :close-on-select="false"
                     mode="tags"
                     name="statut"
@@ -236,22 +236,22 @@ const saisonOptions = computed(() => {
 const statutOptions = [
   { label: "BROUILLON", value: "BROUILLON" },
   { label: "TRANSMISE", value: "TRANSMISE" },
-  { label: "TRANSMISE 8J", value: "TRANSMISE 8 JOURS" },
+  { label: "TRANSMISE 8 JOURS", value: "TRANSMISE 8J" },
   { label: "EN COURS", value: "EN COURS" },
-  { label: "EN COURS 8J", value: "EN COURS 8 JOURS" },
+  { label: "EN COURS 8 JOURS", value: "EN COURS 8J" },
   { label: "A MODIFIER", value: "A MODIFIER" },
-  { label: "A MODIFIER 8J", value: "A MODIFIER 8 JOURS" },
+  { label: "A MODIFIER 8 JOURS", value: "A MODIFIER 8J" },
   {
     label: "EN ATTENTE DECLARATION 8 JOURS",
     value: "EN ATTENTE DECLARATION 8 JOURS",
   },
-  { label: "VALIDEE 8J", value: "VALIDEE 8 JOURS" },
+  { label: "VALIDEE 8 JOURS", value: "VALIDEE 8J" },
   { label: "REFUSEE", value: "REFUSEE" },
-  { label: "REFUSEE 8J", value: "REFUSEE 8 JOURS" },
+  { label: "REFUSEE 8 JOURS", value: "REFUSEE 8J" },
 ];
 
 const onUpdateId = (id) => {
-  search.id = id;
+  search.demandeSejourId = id;
 };
 
 const onUpdateSiret = (siret) => {
