@@ -51,6 +51,7 @@ module.exports = async function post(req, res, next) {
   let declaration, DSuuid, ARuuid;
 
   declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
+  let idFonctionnelle = declaration.idFonctionnelle;
 
   if (!declaration) {
     log.w("DONE with error");
@@ -108,6 +109,13 @@ module.exports = async function post(req, res, next) {
         statusCode: 404,
       }),
     );
+  }
+
+  const departementSuivi = hebergement.coordonnees.adresse.departement;
+  const currentYear = dayjs(declaration.dateDebut).format("YY");
+  if (statut == statuts.BROUILLON) {
+    const numSeq = await DemandeSejour.getNextIndex();
+    idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
   }
 
   if (statut == statuts.ATTENTE_8_JOUR || statut == statuts.A_MODIFIER_8J) {
@@ -211,12 +219,7 @@ module.exports = async function post(req, res, next) {
     return res.status(200).json({ ARuuid, DSuuid });
   } else {
     log.d("Déclaration à 2 mois");
-    const departementSuivi = hebergement.coordonnees.adresse.departement;
 
-    const numSeq = await DemandeSejour.getNextIndex();
-
-    const currentYear = dayjs(declaration.dateDebut).format("YY");
-    const idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
 
     await DemandeSejour.finalize(
       demandeSejourId,
