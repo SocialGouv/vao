@@ -141,7 +141,6 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import { DsfrFieldset } from "@gouvminint/vue-dsfr";
 
 dayjs.extend(customParseFormat);
 
@@ -233,9 +232,25 @@ const headers = [
     },
   },
   {
-    column: "telephone",
-    sorter: "telephone",
-    text: "Téléphone",
+    column: "competence",
+    sorter: "competence",
+    text: "Compétences",
+    headerAttrs: {
+      class: "suivi",
+    },
+  },
+  {
+    column: "erreurs",
+    sorter: "erreurs",
+    text: "Statut personne",
+    format: (value) => {
+      return {
+        component: DsfrBadge,
+        label: value.erreurs?.length > 0 ? "Incomplet" : "Complet",
+        noIcon: true,
+        type: value.erreurs?.length > 0 ? "warning" : "success",
+      };
+    },
     headerAttrs: {
       class: "suivi",
     },
