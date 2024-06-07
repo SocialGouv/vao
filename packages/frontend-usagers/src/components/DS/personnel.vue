@@ -65,6 +65,7 @@
 <script setup>
 import * as yup from "yup";
 import dayjs from "dayjs";
+
 const DsfrBadge = resolveComponent("DsfrBadge");
 
 const props = defineProps({
@@ -129,6 +130,14 @@ const headers = [
     sorter: "listeFonction",
     objectLabel: "listeFonction",
     text: "Fonctions",
+    headerAttrs: {
+      class: "suivi",
+    },
+  },
+  {
+    column: "competence",
+    sorter: "competence",
+    text: "Compétences",
     headerAttrs: {
       class: "suivi",
     },
