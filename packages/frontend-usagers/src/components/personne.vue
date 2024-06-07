@@ -153,7 +153,7 @@
             <DsfrCheckbox
               v-model="attestation"
               name="attestation"
-              label="Je certifie sur l'honneur avoir vérifié les antécédents judiciaire de la personne ci dessus."
+              label="Je certifie sur l'honneur avoir vérifié que la personne ci dessus n’a pas fait l’objet d’une condamnation inscrite au bulletin n°3 du casier judiciaire"
               :small="true"
               :disabled="!props.modifiable"
               @update:model-value="onAttestationChange"
