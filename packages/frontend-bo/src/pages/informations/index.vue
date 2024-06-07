@@ -1,12 +1,13 @@
 <template>
   <div class="fr-container">
-    <h1 class="fr-py-3v">Organisateurs ayant fait l'objet d'un retrait</h1>
+    <h1 class="fr-py-3v">
+      Liste des organisateurs dont l’agrément VAO n’est plus valide
+    </h1>
 
     <dsfr-highlight
       >Cliquer sur le bouton ci-dessous pour récuperer un fichier regroupant la
       liste des organisateurs VAO ayant fait l’objet d’un retrait, d’une
-      suspension ou d’un non renouvellement de leur agrément au cours des six
-      derniers mois
+      suspension ou d’un non renouvellement de leur agrément
     </dsfr-highlight>
     <div class="fr-grid-row fr-p-3v">
       <dsfr-file-download
@@ -14,8 +15,7 @@
         download="organisateurs_avec_un_retrait"
         format="xlsx"
         size="17.9 ko"
-        title="Récupérer la liste des organisateurs VAO ayant fait l'objet d'un
-        retrait"
+        title="Récupérer la liste des organisateurs dont l’agrément VAO n’est plus valide"
       />
     </div>
   </div>
