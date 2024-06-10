@@ -1,5 +1,9 @@
 maildev: {}
 
+pg:
+  backup:
+    name: "202406101543" # backup on a new folder
+
 jobs:
   runs:
     build-frontend-usagers:
