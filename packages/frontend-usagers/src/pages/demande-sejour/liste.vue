@@ -151,7 +151,6 @@
 <script setup>
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
-
 const NuxtLink = resolveComponent("NuxtLink");
 const DsfrBadge = resolveComponent("DsfrBadge");
 const DsfrButtonGroup = resolveComponent("DsfrButtonGroup");
