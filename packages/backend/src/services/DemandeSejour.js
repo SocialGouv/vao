@@ -628,6 +628,7 @@ module.exports.create = async ({
 
 module.exports.copy = async (declaration) => {
   log.i("copy - IN");
+  log.i(declaration);
   const response = await pool.query(
     ...query.copy(
       declaration.organismeId,
@@ -639,11 +640,11 @@ module.exports.copy = async (declaration) => {
       declaration.responsableSejour,
       declaration.organisme,
       declaration.hebergement,
-      declaration.vacanciers,
-      declaration.personnel,
-      declaration.transport,
-      declaration.projet_sejour,
-      declaration.sanitaires,
+      declaration.informationsVacanciers,
+      declaration.informationsPersonnel,
+      declaration.informationsTransport,
+      declaration.projetSejour,
+      declaration.informationsSanitaires,
       declaration.files,
     ),
   );
