@@ -68,7 +68,7 @@
           <div class="fr-input-group fr-col-12">
             <DsfrInputGroup
               name="competence"
-              label="Compétences"
+              label="Compétence / Expérience"
               :label-visible="true"
               :model-value="competence"
               :readonly="!props.modifiable"

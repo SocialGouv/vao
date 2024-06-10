@@ -105,7 +105,7 @@ const headers = [
   {
     column: "competence",
     sorter: "competence",
-    text: "Compétence",
+    text: "Compétence / Expérience",
     headerAttrs: {
       class: "suivi",
     },
