@@ -137,7 +137,7 @@ module.exports = {
           html: `
                 <p>Bonjour,</p>
 
-                <p>La déclaration de séjour ${declaration.idFonctionnelle} à 8 jours vient d'être déposée sur le portail VAO</p>
+                <p>La déclaration de séjour à 8 jours ${declaration.idFonctionnelle} vient d'être déposée sur le portail VAO</p>
                 <p>La DDETS du département ${departementSuivi} est en charge de l'instruction de cette déclaration.</p>
                 ${
                   departementsSecondaires.length > 0
