@@ -52,7 +52,11 @@ const baseSchema = {
       });
     })
     .required("La saisie de ce champ est obligatoire"),
-  libelle: yup.string().typeError("le libellé est requis").required(),
+  libelle: yup
+    .string()
+    .max(50, "Le libellé ne doit pas dépasser 50 caractères ")
+    .typeError("le libellé est requis")
+    .required(),
   responsableSejour: yup
     .object(
       personneSchema({
