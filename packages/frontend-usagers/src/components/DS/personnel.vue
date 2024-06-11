@@ -240,7 +240,7 @@ async function handlePaste(lignesCollees) {
     const fields = lignes[index].split(/\t|\n|;/);
     const nom = fields[0]?.toUpperCase().trim() ?? "";
     const prenom = fields[1]?.toUpperCase().trim() ?? "";
-    const dateNaissance = fields[2]?.trim() ?? "";
+    const dateNaissance = dayjs(fields[2]?.trim()).format("YYYY-MM-DD") ?? "";
     const competence = fields[3]?.trim() ?? "";
     const fonctions = fields[4]?.toLowerCase().trim() ?? "";
     const listeFonction = fonctions

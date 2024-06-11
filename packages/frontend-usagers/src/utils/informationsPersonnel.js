@@ -50,7 +50,7 @@ const schema = (statut) => {
         .min(1, "Vous devez saisir au moins un accompagnant")
         .required(),
     }),
-    ...((statut === DeclarationSejour.statuts.ATTENTE_8_JOUR === DeclarationSejour.statuts.A_MODIFIER_8J) && {
+    ...((statut === DeclarationSejour.statuts.ATTENTE_8_JOUR || statut === DeclarationSejour.statuts.A_MODIFIER_8J) && {
       encadrants: yup
         .array()
         .of(
