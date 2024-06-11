@@ -1,64 +1,66 @@
 <template>
-  <DsfrFieldset
-    hint="Vous pouvez saisir les informations de chaque personne individuellement ou coller les données depuis un tableur.
+  <div>
+    <DsfrFieldset
+      hint="Vous pouvez saisir les informations de chaque personne individuellement ou coller les données depuis un tableur.
           Les données importées peuvent être ensuite modifiées manuellement, notamment pour joindre des documents."
-  >
-    <div v-if="props.modifiable" class="fr-fieldset__element">
-      <DsfrInputGroup
-        name="pasteFrom"
-        :model-value="pasteFrom"
-        label="Collez des données depuis un tableur"
-        hint="copier les cellules depuis votre tableur en respectant bien l'ordre des colonnes suivants : nom ; prénom ; date de naissance ; compétences ; fonctions ; numéro téléphone"
-        :label-visible="true"
-        :is-textarea="true"
-        placeholder="nom, prénom, date de naissance, compétences, fonctions (séparées par des virgules s'il y en a plusieurs), numéro téléphone"
-        @update:model-value="handlePaste"
-      />
-    </div>
-  </DsfrFieldset>
-  <div class="fr-mb-5w">
-    <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
-          On cherche a rapprocher le bouton du tableau -->
-    <div class="fr-mb-n6v">
-      <UtilsTableFull
-        :headers="headers"
-        :data="props.personnes"
-        @click-row="editItem"
-      />
-    </div>
-    <DsfrButton
-      v-if="props.modifiable"
-      ref="modalOrigin"
-      :label="props.labelBoutonAjouter"
-      size="sm"
-      :secondary="true"
-      @click.prevent="addPersonne"
-    />
-
-    <DsfrModal
-      ref="modal"
-      name="test"
-      :opened="modalPersonne.opened"
-      :title="props.titre"
-      size="md"
-      @close="onClose"
     >
-      <Personne
-        :modifiable="props.modifiable"
-        :personne="personnel"
-        :show-adresse="props.showAdresse"
-        :show-attestation="props.showAttestation"
-        :show-competence="props.showCompetence"
-        :show-date-naissance="props.showDateNaissance"
-        :show-email="props.showEmail"
-        :show-fonction="props.showFonction"
-        :show-liste-fonction="props.showListeFonction"
-        :show-telephone="props.showTelephone"
-        :show-button="props.modifiable"
-        :validate-on-mount="true"
-        @valid="updatePersonne"
-      ></Personne>
-    </DsfrModal>
+      <div v-if="props.modifiable" class="fr-fieldset__element">
+        <DsfrInputGroup
+          name="pasteFrom"
+          :model-value="pasteFrom"
+          label="Collez des données depuis un tableur"
+          hint="copier les cellules depuis votre tableur en respectant bien l'ordre des colonnes suivants : nom ; prénom ; date de naissance ; compétences ; fonctions ; numéro téléphone"
+          :label-visible="true"
+          :is-textarea="true"
+          placeholder="nom;prénom;date de naissance;compétences;fonctions (séparées par des virgules s'il y en a plusieurs);numéro téléphone"
+          @update:model-value="handlePaste"
+        />
+      </div>
+    </DsfrFieldset>
+    <div class="fr-mb-5w">
+      <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
+          On cherche a rapprocher le bouton du tableau -->
+      <div class="fr-mb-n6v">
+        <UtilsTableFull
+          :headers="headers"
+          :data="props.personnes"
+          @click-row="editItem"
+        />
+      </div>
+      <DsfrButton
+        v-if="props.modifiable"
+        ref="modalOrigin"
+        :label="props.labelBoutonAjouter"
+        size="sm"
+        :secondary="true"
+        @click.prevent="addPersonne"
+      />
+
+      <DsfrModal
+        ref="modal"
+        name="test"
+        :opened="modalPersonne.opened"
+        :title="props.titre"
+        size="md"
+        @close="onClose"
+      >
+        <Personne
+          :modifiable="props.modifiable"
+          :personne="personnel"
+          :show-adresse="props.showAdresse"
+          :show-attestation="props.showAttestation"
+          :show-competence="props.showCompetence"
+          :show-date-naissance="props.showDateNaissance"
+          :show-email="props.showEmail"
+          :show-fonction="props.showFonction"
+          :show-liste-fonction="props.showListeFonction"
+          :show-telephone="props.showTelephone"
+          :show-button="props.modifiable"
+          :validate-on-mount="true"
+          @valid="updatePersonne"
+        ></Personne>
+      </DsfrModal>
+    </div>
   </div>
 </template>
 
@@ -112,15 +114,14 @@ const headers = [
     sorter: "dateNaissance",
     format: (value) => dayjs(value.dateNaissance).format("DD/MM/YYYY"),
     text: "Date de naissance",
-
     headerAttrs: {
       class: "suivi",
     },
   },
   {
-    column: "telephone",
-    sorter: "telephone",
-    text: "Téléphone",
+    column: "competence",
+    sorter: "competence",
+    text: "Compétences",
     headerAttrs: {
       class: "suivi",
     },
@@ -135,9 +136,9 @@ const headers = [
     },
   },
   {
-    column: "competence",
-    sorter: "competence",
-    text: "Compétences",
+    column: "telephone",
+    sorter: "telephone",
+    text: "Téléphone",
     headerAttrs: {
       class: "suivi",
     },
