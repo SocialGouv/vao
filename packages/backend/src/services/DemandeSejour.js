@@ -25,6 +25,64 @@ const query = {
     WHERE id = $1
     RETURNING id as "declarationId"
   `,
+  copy: (
+    organismeId,
+    libelle,
+    dateDebut,
+    dateFin,
+    duree,
+    periode,
+    responsableSejour,
+    organisme,
+    hebergement,
+    vacanciers,
+    personnel,
+    transport,
+    projet_sejour,
+    sanitaires,
+    files,
+  ) => [
+    `
+    INSERT INTO front.demande_sejour(
+      statut,
+      organisme_id,
+      libelle,
+      date_debut,
+      date_fin,
+      duree,
+      periode,
+      responsable_sejour,
+      organisme,
+      hebergement,
+      vacanciers,
+      personnel,
+      transport,
+      projet_sejour,
+      sanitaires,
+      files
+    )
+    VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+    RETURNING
+        id as "demandeId"
+    ;`,
+    [
+      organismeId,
+      libelle,
+      dateDebut,
+      dateFin,
+      duree,
+      periode,
+      responsableSejour,
+      organisme,
+      hebergement,
+      vacanciers,
+      personnel,
+      transport,
+      projet_sejour,
+      sanitaires,
+      files,
+    ],
+  ],
   create: (
     organismeId,
     libelle,
@@ -69,6 +127,18 @@ const query = {
       organisme,
       [],
     ],
+  ],
+  delete: (declarationId, userId) => [
+    `
+    DELETE FROM front.demande_sejour d
+    USING front.organismes o, front.user_organisme uo
+    WHERE 
+      o.id = d.organisme_id 
+      AND uo.org_id = o.id
+      AND d.id = $1
+      AND uo.use_id = $2
+    ;`,
+    [declarationId, userId],
   ],
   finalize: (
     demandeSejourId,
@@ -556,6 +626,39 @@ module.exports.create = async ({
   return demandeId;
 };
 
+module.exports.copy = async (declaration) => {
+  log.i("copy - IN");
+  const response = await pool.query(
+    ...query.copy(
+      declaration.organismeId,
+      `COPIE - ${declaration.libelle}`,
+      declaration.dateDebut,
+      declaration.dateFin,
+      declaration.duree,
+      declaration.periode,
+      declaration.responsableSejour,
+      declaration.organisme,
+      declaration.hebergement,
+      declaration.informationsVacanciers,
+      declaration.informationsPersonnel,
+      declaration.informationsTransport,
+      declaration.projetSejour,
+      declaration.informationsSanitaires,
+      declaration.files,
+    ),
+  );
+  log.d(response);
+  const { demandeId } = response.rows[0];
+  log.i("copy - DONE", { demandeId });
+  return demandeId;
+};
+
+module.exports.delete = async (declarationId, userId) => {
+  log.i("delete - IN");
+  const { rowCount } = await pool.query(...query.delete(declarationId, userId));
+  log.i("delete - DONE");
+  return rowCount;
+};
 module.exports.get = async (organismesId) => {
   log.i("get - IN", { organismesId });
   const response = await pool.query(...query.get(organismesId));

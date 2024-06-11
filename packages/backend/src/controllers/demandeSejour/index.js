@@ -11,3 +11,5 @@ module.exports.prendEnCharge = require("./prendEnCharge");
 module.exports.demandeComplements = require("./demandeComplements");
 module.exports.refus = require("./refus");
 module.exports.enregistrementDemande2Mois = require("./enregistrementDemande2Mois");
+module.exports.copy = require("./copy");
+module.exports.delete = require("./delete");
