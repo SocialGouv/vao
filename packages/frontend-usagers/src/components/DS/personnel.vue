@@ -5,68 +5,89 @@
           Les données importées peuvent être ensuite modifiées manuellement, notamment pour joindre des documents."
     >
       <div v-if="props.modifiable" class="fr-fieldset__element">
+        <span class="fr-label">1. Ajouter le personnel manuellement</span>
+        <span class="fr-hint-text"
+          >Cliquer sur le bouton et renseigner les champs un par un. Faire ceci
+          autant de fois que nécessaire</span
+        >
+      </div>
+      <div v-if="props.modifiable" class="fr-fieldset__element">
+        <DsfrButton
+          ref="modalOrigin"
+          :label="props.labelBoutonAjouter"
+          size="sm"
+          :secondary="true"
+          @click.prevent="addPersonne"
+        />
+      </div>
+      <div v-if="props.modifiable" class="fr-fieldset__element">
         <DsfrInputGroup
           name="pasteFrom"
           :model-value="pasteFrom"
-          label="Collez des données depuis un tableur"
-          hint="copier les cellules depuis votre tableur en respectant bien l'ordre des colonnes suivants : nom ; prénom ; date de naissance ; compétences ; fonctions ; numéro téléphone"
+          label="2. Coller des données depuis un tableur"
+          hint="Coller les cellules copiées directement depuis votre tableur (Excel, LibreOfficeCalc ...) en respectant bien l'ordre des colonnes suivants : nom ; prénom ; date de naissance ; compétences ; fonctions ; numéro téléphone"
           :label-visible="true"
           :is-textarea="true"
           placeholder="nom;prénom;date de naissance;compétences;fonctions (séparées par des virgules s'il y en a plusieurs);numéro téléphone"
           @update:model-value="handlePaste"
         />
       </div>
+      <div class="fr-fieldset__element">
+        <span class="fr-label">3. Liste personnel ajouté</span>
+      </div>
     </DsfrFieldset>
-    <div class="fr-mb-5w">
-      <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
+    <DsfrFieldset>
+        <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
           On cherche a rapprocher le bouton du tableau -->
-      <div class="fr-mb-n6v">
-        <UtilsTableFull
+      <div class="fr-fieldset__element">
+          <UtilsTableFull
           :headers="headers"
           :data="props.personnes"
           @click-row="editItem"
         />
       </div>
-      <DsfrButton
-        v-if="props.modifiable"
-        ref="modalOrigin"
-        :label="props.labelBoutonAjouter"
-        size="sm"
-        :secondary="true"
-        @click.prevent="addPersonne"
-      />
+      <div class="fr-fieldset__element">
+        <DsfrButton
+          ref="modalOrigin"
+          label="Export CSV"
+          size="sm"
+          :secondary="true"
+          @click.prevent="exportCSV"
+        />
+      </div>
+    </DsfrFieldset>
 
-      <DsfrModal
-        ref="modal"
-        name="test"
-        :opened="modalPersonne.opened"
-        :title="props.titre"
-        size="md"
-        @close="onClose"
-      >
-        <Personne
-          :modifiable="props.modifiable"
-          :personne="personnel"
-          :show-adresse="props.showAdresse"
-          :show-attestation="props.showAttestation"
-          :show-competence="props.showCompetence"
-          :show-date-naissance="props.showDateNaissance"
-          :show-email="props.showEmail"
-          :show-fonction="props.showFonction"
-          :show-liste-fonction="props.showListeFonction"
-          :show-telephone="props.showTelephone"
-          :show-button="props.modifiable"
-          :validate-on-mount="true"
-          @valid="updatePersonne"
-        ></Personne>
-      </DsfrModal>
-    </div>
+    <DsfrModal
+      ref="modal"
+      name="test"
+      :opened="modalPersonne.opened"
+      :title="props.titre"
+      size="md"
+      @close="onClose"
+    >
+      <Personne
+        :modifiable="props.modifiable"
+        :personne="personnel"
+        :show-adresse="props.showAdresse"
+        :show-attestation="props.showAttestation"
+        :show-competence="props.showCompetence"
+        :show-date-naissance="props.showDateNaissance"
+        :show-email="props.showEmail"
+        :show-fonction="props.showFonction"
+        :show-liste-fonction="props.showListeFonction"
+        :show-telephone="props.showTelephone"
+        :show-button="props.modifiable"
+        :validate-on-mount="true"
+        @valid="updatePersonne"
+      ></Personne>
+    </DsfrModal>
   </div>
 </template>
 
 <script setup>
 import * as yup from "yup";
 import dayjs from "dayjs";
+import { DsfrFieldset } from "@gouvminint/vue-dsfr";
 
 const DsfrBadge = resolveComponent("DsfrBadge");
 
@@ -93,6 +114,22 @@ const modalPersonne = reactive({
 });
 
 const headers = [
+  {
+    column: "erreurs",
+    sorter: "erreurs",
+    text: "Statut",
+    format: (value) => {
+      return {
+        component: DsfrBadge,
+        label: value.erreurs?.length > 0 ? "Incomplet" : "Complet",
+        noIcon: true,
+        type: value.erreurs?.length > 0 ? "warning" : "success",
+      };
+    },
+    headerAttrs: {
+      class: "suivi",
+    },
+  },
   {
     column: "nom",
     sorter: "nom",
@@ -139,22 +176,6 @@ const headers = [
     column: "telephone",
     sorter: "telephone",
     text: "Téléphone",
-    headerAttrs: {
-      class: "suivi",
-    },
-  },
-  {
-    column: "erreurs",
-    sorter: "erreurs",
-    text: "Statut personne",
-    format: (value) => {
-      return {
-        component: DsfrBadge,
-        label: value.erreurs?.length > 0 ? "Incomplet" : "Complet",
-        noIcon: true,
-        type: value.erreurs?.length > 0 ? "warning" : "success",
-      };
-    },
     headerAttrs: {
       class: "suivi",
     },
@@ -294,5 +315,22 @@ async function handlePaste(lignesCollees) {
   }
   emit("updatePersonne", encadrantsFromCsv);
   pasteFrom.value = null;
+}
+
+function exportCSV() {
+  const rows = [
+    "Nom;Prenom;Date de Naissance;Compétences;Fonctions;Téléphone\n",
+  ];
+  props.personnes.forEach((p) => {
+    rows.push(
+      `${p.nom};${p.prenom};${dayjs(p.dateNaissance).format("DD/MM/YYYY")};${p.competence};${p.listeFonction.join(",")};${p.telephone}\n`,
+    );
+  });
+  const blob = new Blob(rows, { type: "text/csv;charset-utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", "personnel.csv");
+  link.click();
 }
 </script>
