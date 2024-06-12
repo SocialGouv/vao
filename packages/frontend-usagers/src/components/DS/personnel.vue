@@ -146,21 +146,21 @@
           @update:model-value="handlePaste"
         />
       </div>
-      <div class="fr-fieldset__element">
-        <span class="fr-label">3. Liste personnel ajouté</span>
+      <div v-if="props.modifiable" class="fr-fieldset__element">
+        <span class="fr-label">3. Liste du personnel ajouté</span>
       </div>
     </DsfrFieldset>
     <DsfrFieldset>
-        <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
+      <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
           On cherche a rapprocher le bouton du tableau -->
       <div class="fr-fieldset__element">
-          <UtilsTableFull
+        <UtilsTableFull
           :headers="headers"
           :data="props.personnes"
           @click-row="editItem"
         />
       </div>
-      <div class="fr-fieldset__element">
+      <div v-if="props.modifiable" class="fr-fieldset__element">
         <DsfrButton
           ref="modalOrigin"
           label="Export CSV"
