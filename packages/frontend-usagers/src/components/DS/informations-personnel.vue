@@ -84,7 +84,7 @@
         @expand="(id) => (expandedId = id)"
       >
         <template #title>
-          <span :style="accompagnantsMeta.valid ?? 'color: #b34000'"
+          <span :style="encadrantsMeta.valid ?? 'color: #b34000'"
             >Personnel d'encadrement&nbsp;</span
           >
           <DsfrBadge
