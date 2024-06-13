@@ -138,11 +138,9 @@
         <DsfrInputGroup
           name="pasteFrom"
           :model-value="pasteFrom"
-          label="2. Coller des données depuis un tableur"
-          hint="Coller les cellules copiées directement depuis votre tableur (Excel, LibreOfficeCalc ...) en respectant bien l'ordre des colonnes suivants : nom ; prénom ; date de naissance ; compétences ; fonctions ; numéro téléphone"
           :label-visible="true"
           :is-textarea="true"
-          placeholder="nom;prénom;date de naissance (format JJ/MM/AAAA);compétences;fonctions (séparées par des virgules s'il y en a plusieurs);numéro téléphone"
+          placeholder="Coller ici les colonnes copiées depuis votre tableur"
           @update:model-value="handlePaste"
         />
       </div>
