@@ -407,12 +407,12 @@ const formatedEtablissements = computed(() => {
     })
     .map((e) => {
       const row = [
-        e.siret,
-        e.denomination,
-        e.adresse,
-        e.codePostal,
-        e.commune,
-        e.etatAdministratif,
+        e.siret ?? "",
+        e.denomination ?? "",
+        e.adresse ?? "",
+        e.codePostal ?? "",
+        e.commune ?? "",
+        e.etatAdministratif ?? "",
         {
           component: "DsfrToggleSwitch",
           modelValue: e.enabled,
