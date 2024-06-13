@@ -41,16 +41,16 @@
         <span class="fr-label">3. Liste du personnel ajouté</span>
       </div>
     </DsfrFieldset>
-    <DsfrFieldset>
-      <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
+    <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
           On cherche a rapprocher le bouton du tableau -->
-      <div class="fr-fieldset__element">
-        <UtilsTableFull
-          :headers="headers"
-          :data="props.personnes"
-          @click-row="editItem"
-        />
-      </div>
+    <div class="fr-fieldset__element">
+      <UtilsTableFull
+        :headers="headers"
+        :data="props.personnes"
+        @click-row="editItem"
+      />
+    </div>
+    <DsfrFieldset>
       <div v-if="props.modifiable" class="fr-fieldset__element">
         <DsfrButton
           ref="modalOrigin"
@@ -92,6 +92,8 @@
 <script setup>
 import * as yup from "yup";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+dayjs.extend(customParseFormat);
 import { DsfrFieldset } from "@gouvminint/vue-dsfr";
 
 const DsfrBadge = resolveComponent("DsfrBadge");
@@ -267,7 +269,8 @@ async function handlePaste(lignesCollees) {
     const fields = lignes[index].split(/\t|\n|;/);
     const nom = fields[0]?.toUpperCase().trim() ?? "";
     const prenom = fields[1]?.toUpperCase().trim() ?? "";
-    const dateNaissance = dayjs(fields[2]?.trim()).format("YYYY-MM-DD") ?? "";
+    const dateNaissance =
+      dayjs(fields[2]?.trim(), ["DD/MM/YY", "DD/MM/YYYY"]) ?? "";
     const competence = fields[3]?.trim() ?? "";
     const fonctions = fields[4]?.toLowerCase().trim() ?? "";
     const listeFonction = fonctions
