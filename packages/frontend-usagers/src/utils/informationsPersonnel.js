@@ -43,7 +43,7 @@ const schema = (statut) => {
               showDateNaissance: true,
               showEmail: false,
               showListeFonction: true,
-              showTelephone: false,
+              showTelephone: true,
             }),
           ),
         )
@@ -63,7 +63,7 @@ const schema = (statut) => {
               showDateNaissance: true,
               showEmail: false,
               showListeFonction: true,
-              showTelephone: false,
+              showTelephone: true,
             }),
           ),
         )
