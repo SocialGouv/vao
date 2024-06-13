@@ -2,15 +2,47 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import {
   logger,
+  personne,
+  informationsPersonnel,
   informationsVacanciers,
   protocoleTransport,
   protocoleSanitaire,
   projetSejour,
   hebergementUtils,
-  personne,
 } from "#imports";
 
+const statuts = {
+  BROUILLON: "BROUILLON",
+  TRANSMISE: "TRANSMISE",
+  EN_COURS: "EN COURS",
+  A_MODIFIER: "A MODIFIER",
+  REFUSEE: "REFUSEE",
+  ATTENTE_HEBERGEMENT: "EN ATTENTE VALIDATION HEBERGEMENT",
+  ATTENTE_8_JOUR: "EN ATTENTE DECLARATION 8 JOURS",
+  TRANSMISE_8J: "TRANSMISE 8J",
+  EN_COURS_8J: "EN COURS 8J",
+  A_MODIFIER_8J: "A MODIFIER 8J",
+  VALIDEE_8J: "VALIDEE 8J",
+  REFUSEE_8J: "REFUSEE 8J",
+};
+
 const log = logger("utils/DeclarationSejour");
+
+const isPost8Jour = (statut) =>
+  [
+    statuts.ATTENTE_8_JOUR,
+    statuts.TRANSMISE_8J,
+    statuts.A_MODIFIER_8J,
+    statuts.EN_COURS_8J,
+    statuts.REFUSEE_8J,
+    statuts.VALIDEE_8J,
+  ].includes(statut);
+
+const isUpdate8Jour = (statut) =>
+  [
+    statuts.ATTENTE_8_JOUR,
+    statuts.A_MODIFIER_8J,
+  ].includes(statut);
 
 function isSejourComplet(hebergements, dateDebut, dateFin) {
   log.d("isSejourComplet - IN", { hebergements, dateDebut, dateFin });
@@ -61,27 +93,16 @@ const baseSchema = {
     .object(
       personne.schema({
         showAdresse: true,
-        showTelephone: true,
+        showAttestation: false,
+        showFonction: true,
+        showCompetence: false,
+        showDateNaissance: false,
         showEmail: true,
+        showListeFonction: false,
+        showTelephone: true,
       }),
     )
     .required(),
-};
-
-const informationsPersonnelSchema = {
-  nombreResponsable: yup
-    .number("Ce champ doit contenir un nombre entier")
-    .integer("Ce champ doit contenir un nombre entier")
-    .typeError("Ce champ doit contenir un nombre entier")
-    .required("Ce champ doit contenir un nombre entier"),
-  procedureRecrutementSupplementaire: yup
-    .bool("La saisie de ce champ est obligatoire")
-    .required("La saisie de ce champ est obligatoire"),
-  nombreAccompagnant: yup
-    .number("Ce champ doit contenir un nombre entier")
-    .integer("Ce champ doit contenir un nombre entier")
-    .typeError("Ce champ doit contenir un nombre entier")
-    .required("Ce champ doit contenir un nombre entier"),
 };
 
 const hebergementDetailsSchema = {
@@ -140,10 +161,10 @@ const hebergementSchema = (dateDebut, dateFin) => ({
     )
     .required("le choix d'un hébergement dans la liste est obligatoire"),
 });
-const schema = (dateDebut, dateFin) => ({
+const schema = (dateDebut, dateFin, statut) => ({
   ...baseSchema,
   informationsVacanciers: yup.object(informationsVacanciers.schema),
-  informationsPersonnel: yup.object(informationsPersonnelSchema),
+  informationsPersonnel: yup.object(informationsPersonnel.schema(statut)),
   informationsTransport: yup.object(protocoleTransport.schema),
   informationsSanitaires: yup.object(protocoleSanitaire.schema),
   projetSejour: yup.object(projetSejour.schema),
@@ -154,8 +175,10 @@ const schema = (dateDebut, dateFin) => ({
 export default {
   isSejourComplet,
   baseSchema,
-  informationsPersonnelSchema,
   hebergementDetailsSchema,
   hebergementSchema,
   schema,
+  statuts,
+  isPost8Jour,
+  isUpdate8Jour,
 };
