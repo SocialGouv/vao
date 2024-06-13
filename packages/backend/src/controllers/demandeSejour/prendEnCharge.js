@@ -14,6 +14,7 @@ module.exports = async function post(req, res, next) {
   /** Ce controller gere le passage de la prise en charge d'une demande par un admin.
    * il ne peut etre appelé que :
    *  - pour un passage d'une demande TRANSMISE => EN COURS
+   *  - pour un passage d'une demande TRANSMISE 8J => EN COURS 8J
    *  - par un instructeur principal de la demande (le premier hebergement est dans le département de l'admin)
    */
 
@@ -51,7 +52,7 @@ module.exports = async function post(req, res, next) {
     );
   }
 
-  if (declaration.statut !== statuts.TRANSMISE) {
+  if (declaration.statut !== statuts.TRANSMISE && declaration.statut !== statuts.TRANSMISE_8J) {
     log.w("Delaration is already at least in progress");
     return next(
       new AppError("Statut incompatible", {
@@ -59,15 +60,17 @@ module.exports = async function post(req, res, next) {
       }),
     );
   }
-
+  const enCoursTypeStatut = declaration.statut === statuts.TRANSMISE ? statuts.EN_COURS : statuts.EN_COURS_8J;
+  const  textTypePrecision = "Prise en charge de la déclaration " + (declaration.statut === statuts.TRANSMISE ? " 2 mois" : " 8 jours");
+  
   try {
-    await DemandeSejour.updateStatut(declarationId, statuts.EN_COURS, {
+    await DemandeSejour.updateStatut(declarationId, enCoursTypeStatut, {
       boUserId: userId,
       declarationId,
       metaData: declaration,
       source: `DDETS ${territoireCode}`,
       type: "declaration_sejour",
-      typePrecision: "Prise en charge de la déclaration",
+      typePrecision: textTypePrecision,
       userId: null,
     });
   } catch (error) {

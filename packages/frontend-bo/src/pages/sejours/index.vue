@@ -10,6 +10,20 @@
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
+                  v-model="searchState.idFonctionnelle"
+                  type="text"
+                  name="libelle"
+                  label="Numéro de déclaration"
+                  placeholder="Numéro de déclaration"
+                  :label-visible="true"
+                />
+              </div>
+            </div>
+            <div
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+            >
+              <div class="fr-input-group">
+                <DsfrInputGroup
                   v-model="searchState.libelle"
                   type="text"
                   name="libelle"
@@ -218,6 +232,11 @@ const onActionSelect = (value) => {
 
 const headers = [
   {
+    column: "idFonctionnelle",
+    text: "Numéro de déclaration",
+    sort: true,
+  },
+  {
     column: "libelle",
     text: "Libelle",
     sort: true,
@@ -271,7 +290,8 @@ const navigate = (state) => {
   if (
     userStore.user?.roles &&
     userStore.user?.roles.includes("DemandeSejour_Ecriture") &&
-    state.statut === demandesSejours.statuts.TRANSMISE &&
+    (state.statut === demandesSejours.statuts.TRANSMISE ||
+      state.statut === demandesSejours.statuts.TRANSMISE_8J) &&
     state.estInstructeurPrincipal
   ) {
     declarationAPrendreEnCharge.value = state;

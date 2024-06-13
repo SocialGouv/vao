@@ -45,7 +45,8 @@
         userStore.user?.roles &&
         userStore.user?.roles.includes('DemandeSejour_Ecriture') &&
         demandeStore.currentDemande.estInstructeurPrincipal &&
-        demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS
+        (demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS
+        || demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS_8J)
       "
       class="container"
     >
@@ -90,7 +91,7 @@
         ref="modal"
         name="modalEnregistrement2MOis"
         :opened="modalEnregistrement2Mois.opened"
-        title="Enregistrement de la déclaration à 2 mois"
+        :title="(demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS ? 'Enregistrement de la demande à 2 mois' : 'Enregistrement de la demande à 8 jours')"
         @close="onCloseModalEnregistrement2Mois"
       >
         <article class="fr-mb-4v">

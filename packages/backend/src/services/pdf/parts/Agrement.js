@@ -1,5 +1,5 @@
 const dayjs = require("dayjs");
-const Regions = require("../../../geo/Region");
+const Regions = require("../../geo/Region");
 
 module.exports = async function buildAgrement(agrement) {
   return {

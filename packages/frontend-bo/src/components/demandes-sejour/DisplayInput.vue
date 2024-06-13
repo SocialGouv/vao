@@ -47,6 +47,7 @@ const props = defineProps({
 
       if (
         props.input.inputType === displayInput.InputTypes.MULTISELECT &&
+        !!props.value &&
         Array.isArray(props.value) === false
       ) {
         return false;

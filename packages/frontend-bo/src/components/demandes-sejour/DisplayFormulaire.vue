@@ -67,12 +67,119 @@
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
+        <h4 v-if="!!demandeStore.currentDemande.statut && isDisplay8Jours">
+          Généralité
+        </h4>
+
         <DisplayInput
           v-for="entry in Object.keys(displayInput.Ipersonnel)"
           :key="`personnel-${entry}`"
           :value="demandeStore.currentDemande.informationsPersonnel[entry]"
           :input="displayInput.Ipersonnel[entry]"
         />
+        <div v-if="!!demandeStore.currentDemande.statut && isDisplay8Jours">
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel?.encadrants
+                ?.length > 0
+            "
+          >
+            Personnel d'encadrement
+          </h4>
+          <DisplayEncadrementAccompagnement
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel?.encadrants ??
+              []
+            "
+          />
+
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel?.accompagnants
+                ?.length > 0
+            "
+          >
+            Personnel d'accompagnement
+          </h4>
+          <DisplayEncadrementAccompagnement
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.accompagnants ?? []
+            "
+          />
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesMedicaments?.length > 0
+            "
+          >
+            Prestataire en charge des médicaments
+          </h4>
+          <DisplayPrestataire
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesMedicaments ?? []
+            "
+          />
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesTransport?.length > 0
+            "
+          >
+            Prestataire en charge du transport des vacanciers
+          </h4>
+          <DisplayPrestataire
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesTransport ?? []
+            "
+          />
+
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesRestauration?.length > 0
+            "
+          >
+            Prestataire en charge de la restauration
+          </h4>
+          <DisplayPrestataire
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesRestauration ?? []
+            "
+          />
+
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesEntretien?.length > 0
+            "
+          >
+            Prestataire en charge de l’entretien et du ménage
+          </h4>
+          <DisplayPrestataire
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesEntretien ?? []
+            "
+          />
+          <h4
+            v-if="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesActivites?.length > 0
+            "
+          >
+            Prestataire en charge d'encadrer les activités spécifiques
+          </h4>
+          <DisplayPrestataire
+            :personnel="
+              demandeStore.currentDemande?.informationsPersonnel
+                ?.prestatairesActivites ?? []
+            "
+          />
+        </div>
       </DsfrAccordion>
     </li>
     <li v-if="demandeStore.currentDemande?.informationsProjetSejour">
@@ -177,8 +284,16 @@
 <script setup>
 import { DsfrAccordion, DsfrAccordionsGroup } from "@gouvminint/vue-dsfr";
 import DisplayInput from "~/components/demandes-sejour/DisplayInput.vue";
+import DisplayEncadrementAccompagnement from "~/components/demandes-sejour/DisplayEncadrementAccompagnement.vue";
+import DisplayPrestataire from "~/components/demandes-sejour/DisplayPrestataire.vue";
 
 const demandeStore = useDemandeSejourStore();
+
+const isDisplay8Jours = computed(() => {
+  return demandesSejours.isDeclaration8Jours(
+    demandeStore.currentDemande.statut,
+  );
+});
 
 const expandedId = ref("");
 </script>

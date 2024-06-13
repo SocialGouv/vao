@@ -15,12 +15,19 @@ const props = defineProps({
   demande: { type: Object, default: () => ({}) },
 });
 
-const menus = demandeSejourMenus.map((menu) => {
-  return {
-    ...menu,
-    to: { hash: "#" + menu.id },
-  };
+const demandeSejourStore = useDemandeSejourStore();
+const declarationStatut = computed(() => {
+  return demandeSejourStore.demandeCourante.statut;
 });
+
+const menus = demandeSejourMenus
+  .filter((menu) => !menu.statutsMasques.includes(declarationStatut.value))
+  .map((menu) => {
+    return {
+      ...menu,
+      to: { hash: "#" + menu.id },
+    };
+  });
 
 const sommaireOptionsToDisplay = computed(() => {
   if (!props.demande.id) {

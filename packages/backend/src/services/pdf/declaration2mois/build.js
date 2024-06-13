@@ -2,7 +2,7 @@ const PdfPrinter = require("pdfmake");
 
 const path = require("path");
 const logger = require("../../../utils/logger");
-const parts = require("./parts");
+const parts = require("../parts");
 
 const log = logger(module.filename);
 

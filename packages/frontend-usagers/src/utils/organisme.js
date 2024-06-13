@@ -171,6 +171,7 @@ const personneMoraleSchema = {
       showAdresse: true,
       showTelephone: true,
       showEmail: true,
+      showFonction: true,
     }),
   }),
 };

@@ -1,6 +1,4 @@
-const {
-  destinations,
-} = require("../../../../helpers/declaration/projet-sejour");
+const { destinations } = require("../../../helpers/declaration/projet-sejour");
 
 module.exports = function buildProjetSejour(info) {
   return {

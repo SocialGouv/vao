@@ -2,7 +2,7 @@ const {
   constitutionEquipes,
   preparationPillulierss,
   responsableAdministrationMedicaments,
-} = require("../../../../helpers/declaration/protocole-sanitaire");
+} = require("../../../helpers/declaration/protocole-sanitaire");
 
 module.exports = function displayInfosSanitaires(info) {
   const liste = [];

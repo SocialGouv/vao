@@ -25,6 +25,64 @@ const query = {
     WHERE id = $1
     RETURNING id as "declarationId"
   `,
+  copy: (
+    organismeId,
+    libelle,
+    dateDebut,
+    dateFin,
+    duree,
+    periode,
+    responsableSejour,
+    organisme,
+    hebergement,
+    vacanciers,
+    personnel,
+    transport,
+    projet_sejour,
+    sanitaires,
+    files,
+  ) => [
+    `
+    INSERT INTO front.demande_sejour(
+      statut,
+      organisme_id,
+      libelle,
+      date_debut,
+      date_fin,
+      duree,
+      periode,
+      responsable_sejour,
+      organisme,
+      hebergement,
+      vacanciers,
+      personnel,
+      transport,
+      projet_sejour,
+      sanitaires,
+      files
+    )
+    VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+    RETURNING
+        id as "demandeId"
+    ;`,
+    [
+      organismeId,
+      libelle,
+      dateDebut,
+      dateFin,
+      duree,
+      periode,
+      responsableSejour,
+      organisme,
+      hebergement,
+      vacanciers,
+      personnel,
+      transport,
+      projet_sejour,
+      sanitaires,
+      files,
+    ],
+  ],
   create: (
     organismeId,
     libelle,
@@ -70,6 +128,18 @@ const query = {
       [],
     ],
   ],
+  delete: (declarationId, userId) => [
+    `
+    DELETE FROM front.demande_sejour d
+    USING front.organismes o, front.user_organisme uo
+    WHERE 
+      o.id = d.organisme_id 
+      AND uo.org_id = o.id
+      AND d.id = $1
+      AND uo.use_id = $2
+    ;`,
+    [declarationId, userId],
+  ],
   finalize: (
     demandeSejourId,
     idFonctionnelle,
@@ -114,6 +184,29 @@ RETURNING
       attestation,
     ],
   ],
+  finalize8jours: (
+    demandeSejourId,
+    vacanciers,
+    personnel,
+    hebergement,
+    attestation,
+  ) => [
+    `
+UPDATE front.demande_sejour ds
+SET
+  statut = 'TRANSMISE 8J',
+  vacanciers = $2,
+  personnel = $3,
+  hebergement = $4,
+  attestation = $5,
+  edited_at = NOW()
+WHERE
+  ds.id = $1
+RETURNING
+  id as "demandeId"
+;`,
+    [demandeSejourId, vacanciers, personnel, hebergement, attestation],
+  ],
   get: (organismeIds) => [
     `
 SELECT
@@ -156,13 +249,14 @@ SELECT
   ds.date_debut::text as "dateDebut",
   ds.date_fin::text as "dateFin",
   ds.organisme as "organisme",
+  ds.id_fonctionnelle as "idFonctionnelle",
   o.personne_morale as "personneMorale",
   o.personne_physique as "personnePhysique",
   o.type_organisme as "typeOrganisme",
   ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length}) as "estInstructeurPrincipal"
 FROM front.demande_sejour ds
   JOIN front.organismes o ON o.id = ds.organisme_id
-  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id 
+  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 WHERE
   statut <> 'BROUILLON'
   AND ((${departementQuery})
@@ -175,7 +269,7 @@ WHERE
 SELECT COUNT(DISTINCT ds.id)
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
-LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id 
+LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 WHERE
   statut <> 'BROUILLON'
   AND ((${departementQuery})
@@ -215,7 +309,7 @@ WHERE
       ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-      LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id 
+      LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
     where ((${departementQuery})
       OR a.region_obtention = '${territoireCode}')
       AND ds.id = $1
@@ -360,6 +454,12 @@ WHERE
   RETURNING
     id as "eventId"
   `,
+  saveDS2M: `
+  UPDATE front.demande_sejour
+  SET declaration_2m = $2
+  WHERE id = $1
+  RETURNING id as "declarationId"
+`,
   updateHebergement: `
   UPDATE front.demande_sejour ds
   SET
@@ -526,6 +626,39 @@ module.exports.create = async ({
   return demandeId;
 };
 
+module.exports.copy = async (declaration) => {
+  log.i("copy - IN");
+  const response = await pool.query(
+    ...query.copy(
+      declaration.organismeId,
+      `COPIE - ${declaration.libelle}`,
+      declaration.dateDebut,
+      declaration.dateFin,
+      declaration.duree,
+      declaration.periode,
+      declaration.responsableSejour,
+      declaration.organisme,
+      declaration.hebergement,
+      declaration.informationsVacanciers,
+      declaration.informationsPersonnel,
+      declaration.informationsTransport,
+      declaration.projetSejour,
+      declaration.informationsSanitaires,
+      declaration.files,
+    ),
+  );
+  log.d(response);
+  const { demandeId } = response.rows[0];
+  log.i("copy - DONE", { demandeId });
+  return demandeId;
+};
+
+module.exports.delete = async (declarationId, userId) => {
+  log.i("delete - IN");
+  const { rowCount } = await pool.query(...query.delete(declarationId, userId));
+  log.i("delete - DONE");
+  return rowCount;
+};
 module.exports.get = async (organismesId) => {
   log.i("get - IN", { organismesId });
   const response = await pool.query(...query.get(organismesId));
@@ -565,6 +698,10 @@ module.exports.getByDepartementCodes = async (
   const searchQuery = [];
 
   // Search management
+  if (search?.idFonctionnelle && search.idFonctionnelle.length) {
+    searchQuery.push(`id_fonctionnelle ilike $${params.length + 1}`);
+    params.push(`%${search.idFonctionnelle}%`);
+  }
   if (search?.libelle && search.libelle.length) {
     searchQuery.push(`libelle ilike $${params.length + 1}`);
     params.push(`%${search.libelle}%`);
@@ -643,7 +780,11 @@ module.exports.getByDepartementCodes = async (
   }
 
   const total = await pool.query(
-    query.getByDepartementCodesTotal(searchQuery, territoireCode,departementQuery),
+    query.getByDepartementCodesTotal(
+      searchQuery,
+      territoireCode,
+      departementQuery,
+    ),
     params,
   );
 
@@ -654,7 +795,11 @@ module.exports.getByDepartementCodes = async (
   };
 };
 
-module.exports.getById = async (demandeId, territoireCode, departementCodes) => {
+module.exports.getById = async (
+  demandeId,
+  territoireCode,
+  departementCodes,
+) => {
   log.i("getById - IN", { demandeId });
 
   if (departementCodes && departementCodes.length === 0) {
@@ -761,6 +906,32 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
   return demandeId;
 };
 
+module.exports.finalize8jours = async (
+  demandeSejourId,
+  { informationsVacanciers, informationsPersonnel, hebergement, attestation },
+) => {
+  log.i("finalize - IN", {
+    declaration: {
+      attestation,
+      hebergement,
+      informationsPersonnel,
+      informationsVacanciers,
+    },
+    demandeSejourId,
+  });
+
+  await pool.query(
+    ...query.finalize8jours(
+      demandeSejourId,
+      informationsVacanciers,
+      informationsPersonnel,
+      hebergement,
+      attestation,
+    ),
+  );
+  log.i("finalize - DONE");
+};
+
 module.exports.finalize = async (
   demandeSejourId,
   departementSuivi,
@@ -860,6 +1031,12 @@ module.exports.insertEvent = async (
   ]);
   log.i("insertEvent - DONE");
   return response[0].eventId ?? null;
+};
+
+module.exports.saveDS2M = async (declarationId, declaration) => {
+  log.i("saveDS2M - IN");
+  await pool.query(query.saveDS2M, [declarationId, declaration]);
+  log.i("saveDS2M - DONE");
 };
 
 module.exports.addFile = async (declarationId, file) => {

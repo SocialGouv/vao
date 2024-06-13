@@ -1,4 +1,4 @@
-const Transport = require("./Transport");
+const Transport = require("./Transport.js");
 const TransportHebergement = require("./TransportHebergement.js");
 
 module.exports = function buildInformationsTransport(info, hebergement) {

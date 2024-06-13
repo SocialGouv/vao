@@ -70,6 +70,7 @@
                     v-if="hash === 'info-personnel'"
                     :modifiable="canModify"
                     :init-data="demandeCourante.informationsPersonnel ?? {}"
+                    :declaration-statut="demandeCourante.statut"
                     @update="updateOrCreate"
                     @next="nextHash"
                     @previous="previousHash"
@@ -213,7 +214,13 @@ const tabTitles = computed(() => [
   ...(sejourId.value ? [{ title: "Historique de la déclaration" }] : []),
 ]);
 
-const sommaireOptions = demandeSejourMenus.map((m) => m.id);
+const sommaireOptions = demandeSejourMenus
+  .filter(
+    (menu) =>
+      !menu.statutsMasques ||
+      !menu.statutsMasques.includes(demandeCourante.value.statut),
+  )
+  .map((m) => m.id);
 
 const hash = computed(() => {
   if (route.hash) {
@@ -225,8 +232,10 @@ const hash = computed(() => {
 const canModify = computed(() => {
   return (
     !demandeCourante.value.statut ||
-    demandeCourante.value.statut === "BROUILLON" ||
-    demandeCourante.value.statut === "A MODIFIER"
+    demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
+    demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER ||
+    demandeCourante.value.statut === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
+    demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER_8J
   );
 });
 
@@ -340,9 +349,15 @@ async function finalize(attestation) {
     );
 
     if (response.DSuuid) {
-      toaster.info(
-        `Le PDF déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
-      );
+      if (demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
+        demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER)
+        toaster.info(
+          `Le PDF déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
+        );
+      else
+        toaster.info(
+        `Le PDF déclaration_8_jours a été ajouté aux documents de la déclaration de séjour`,
+        );
     } else {
       toaster.error(
         "Une erreur est survenue durant la génération du PDF mais la déclaration a bien été transmise",

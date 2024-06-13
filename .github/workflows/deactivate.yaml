@@ -1,7 +1,5 @@
 name: ♻️ Deactivate
 on:
-  pull_request:
-    types: [closed]
   delete:
     branches:
       - "**"
