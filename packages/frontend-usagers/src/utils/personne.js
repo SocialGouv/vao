@@ -80,6 +80,10 @@ const schema = ({
           dayjs(),
           "La date de naissance ne peut être supérieure à la date du jour",
         )
+        .min(
+          dayjs("1920-01-01"),
+          "La date de naissance ne peut être inférieure au 01/01/1920",
+        )
         .required(),
     }),
     ...(showEmail && {

@@ -26,14 +26,62 @@
         />
       </div>
       <div v-if="props.modifiable" class="fr-fieldset__element">
+        <span class="fr-label"> 2. Coller des données depuis un tableur </span>
+        <span class="fr-hint-text">
+          Coller les cellules copiées directement depuis votre tableur (Excel,
+          LibreOfficeCalc ...) en respectant bien l'ordre des colonnes
+          suivants:</span
+        >
+        <span class="fr-hint-text"
+          >nom ; prénom ; date de naissance ; compétences ; fonctions ; numéro
+          téléphone
+        </span>
+        <span class="fr-hint-text">
+          Attention, la ou les fonctions doivent être choisies parmi les
+          propositions suivantes. S'il y en a plusieurs, les séparer par une
+          virgule.
+        </span>
+        <ul>
+          <ol>
+            <span class="fr-hint-text">- Distribution des médicaments</span>
+          </ol>
+          <ol>
+            <span class="fr-hint-text">- Transport des vacanciers</span>
+          </ol>
+          <ol>
+            <span class="fr-hint-text">- Restauration</span>
+          </ol>
+          <ol>
+            <span class="fr-hint-text">- Entretien des locaux</span>
+          </ol>
+          <ol>
+            <span class="fr-hint-text">- Activités spécifiques</span>
+          </ol>
+          <ol>
+            <span class="fr-hint-text">- Autre</span>
+          </ol>
+        </ul>
+        <span class="fr-hint-text">
+          <i><u>Exemple</u></i>
+        </span>
+        <span class="fr-hint-text"
+          ><i
+            >DURAnd;philippe;25/01/1977;infirmier;Distribution des
+            médicaments,autre;0610203040</i
+          ></span
+        >
+        <span class="fr-hint-text"
+          ><i
+            >dupont;nathalie;15/07/1985;Cuisinière;Restauration;+336123456789</i
+          >
+        </span>
+        <br />
         <DsfrInputGroup
           name="pasteFrom"
           :model-value="pasteFrom"
-          label="2. Coller des données depuis un tableur"
-          hint="Coller les cellules copiées directement depuis votre tableur (Excel, LibreOfficeCalc ...) en respectant bien l'ordre des colonnes suivants : nom ; prénom ; date de naissance ; compétences ; fonctions ; numéro téléphone"
           :label-visible="true"
           :is-textarea="true"
-          placeholder="nom;prénom;date de naissance (format JJ/MM/AAAA);compétences;fonctions (séparées par des virgules s'il y en a plusieurs);numéro téléphone"
+          placeholder="Coller ici les colonnes copiées depuis votre tableur"
           @update:model-value="handlePaste"
         />
       </div>
@@ -267,10 +315,14 @@ async function handlePaste(lignesCollees) {
     const erreurs = [];
     if (lignes[index] === "") continue;
     const fields = lignes[index].split(/\t|\n|;/);
-    const nom = fields[0]?.toUpperCase().trim() ?? "";
-    const prenom = fields[1]?.toUpperCase().trim() ?? "";
+    const nom = fields[0]?.toLowerCase().trim() ?? "";
+    const prenom = fields[1]?.toLowerCase().trim() ?? "";
     const dateNaissance =
-      dayjs(fields[2]?.trim(), ["DD/MM/YY", "DD/MM/YYYY"]) ?? "";
+      fields[2]?.trim().length === 10
+        ? dayjs(fields[2]?.trim(), "DD/MM/YYYY")
+        : fields[2]?.trim().length === 8
+          ? dayjs(fields[2]?.trim(), "DD/MM/YY")
+          : "format de date incorrecte";
     const competence = fields[3]?.trim() ?? "";
     const fonctions = fields[4]?.toLowerCase().trim() ?? "";
     const listeFonction = fonctions
