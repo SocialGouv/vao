@@ -54,9 +54,6 @@ if (config.sentry.enabled) {
   });
 }
 
-app.use(Sentry.Handlers.requestHandler());
-app.use(Sentry.Handlers.tracingHandler());
-
 app.use(helmet());
 
 const whitelist = [
@@ -112,14 +109,6 @@ app.use((req, res, next) => {
     }),
   );
 });
-
-app.use(
-  Sentry.Handlers.errorHandler({
-    shouldHandleError(error) {
-      return !error.isOperational;
-    },
-  }),
-);
 
 // eslint-disable-next-line no-unused-vars
 app.use(async (err, req, res, next) => {
