@@ -71,7 +71,7 @@ const personnesToDisplay = computed(() => {
   return props.personnes.map((p, index) => {
     const row = [];
     displayedFields.forEach((f) => {
-      row.push(p[f]);
+      row.push(p[f] ?? "");
     });
     if (props.modifiable) {
       row.push({

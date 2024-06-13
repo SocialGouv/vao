@@ -171,13 +171,19 @@ const syntheseRows = computed(() => {
 
         const rows = [
           `${index + 1}`,
-          dayjs(hebergement.dateFin)
-            .diff(dayjs(hebergement.dateDebut), "day")
-            .toString(),
-          dayjs(hebergement.dateDebut).format("DD/MM/YYYY"),
-          dayjs(hebergement.dateFin).format("DD/MM/YYYY"),
-          currentHebergement.nom,
-          currentHebergement.adresse,
+          hebergement.dateFin && hebergement.dateDebut
+            ? dayjs(hebergement.dateFin)
+                .diff(dayjs(hebergement.dateDebut), "day")
+                .toString()
+            : "",
+          hebergement.dateDebut
+            ? dayjs(hebergement.dateDebut).format("DD/MM/YYYY")
+            : "",
+          hebergement.dateFin
+            ? dayjs(hebergement.dateFin).format("DD/MM/YYYY")
+            : "",
+          currentHebergement.nom ?? "",
+          currentHebergement.adresse ?? "",
           {
             component: DsfrButtonGroup,
             buttons: buttons,
