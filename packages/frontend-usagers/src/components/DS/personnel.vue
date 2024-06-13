@@ -150,16 +150,16 @@
         <span class="fr-label">3. Liste du personnel ajouté</span>
       </div>
     </DsfrFieldset>
-    <DsfrFieldset>
-      <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
+    <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
           On cherche a rapprocher le bouton du tableau -->
-      <div class="fr-fieldset__element">
-        <UtilsTableFull
-          :headers="headers"
-          :data="props.personnes"
-          @click-row="editItem"
-        />
-      </div>
+    <div class="fr-fieldset__element">
+      <UtilsTableFull
+        :headers="headers"
+        :data="props.personnes"
+        @click-row="editItem"
+      />
+    </div>
+    <DsfrFieldset>
       <div v-if="props.modifiable" class="fr-fieldset__element">
         <DsfrButton
           ref="modalOrigin"
