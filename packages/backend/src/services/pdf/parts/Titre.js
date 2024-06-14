@@ -1,6 +1,71 @@
 const dayjs = require("dayjs");
 
-module.exports = function buildTitre(declaration, departementSuivi) {
+module.exports = function buildTitre(
+  declaration,
+  departementSuivi,
+  type,
+  dateDeposeA2mois,
+) {
+  const infoPrecises = [
+    {
+      columns: [
+        {
+          decoration: "underline",
+          text: "Département instructeur :",
+          width: 150,
+        },
+        {
+          bold: true,
+          text: `DDETS ${departementSuivi}`,
+          width: 150,
+        },
+      ],
+    },
+    {
+      columns: [
+        {
+          decoration: "underline",
+          text: "Numéro d'enregistrement :",
+          width: 150,
+        },
+        {
+          bold: true,
+          text: `${declaration.idFonctionnelle}`,
+          width: 150,
+        },
+      ],
+    },
+    {
+      columns: [
+        {
+          decoration: "underline",
+          text: "Date de dépôt :",
+          width: 150,
+        },
+        {
+          bold: true,
+          text: `${dayjs(declaration.editedAt).format("DD/MM/YYYY HH:mm")}`,
+          width: 150,
+        },
+      ],
+    },
+  ];
+  if (type === "8jours") {
+    infoPrecises.push({
+      columns: [
+        {
+          decoration: "underline",
+          text: "Date de dépôt de la déclaration initiale :",
+          width: 150,
+        },
+        {
+          bold: true,
+          text: `${dayjs(dateDeposeA2mois).format("DD/MM/YYYY") ?? ""}`,
+          width: 150,
+        },
+      ],
+    });
+  }
   return {
     stack: [
       {
@@ -14,7 +79,10 @@ module.exports = function buildTitre(declaration, departementSuivi) {
                   {
                     bold: true,
                     fontSize: 12,
-                    text: "DECLARATION PREALABLE D'UN SEJOUR « VACANCES ADAPTEES ORGANISEES » destiné à des personnes handicapées",
+                    text:
+                      type === "8jours"
+                        ? "FICHE COMPLEMENTAIRE A LA DECLARATION D'UN SEJOUR « VACANCES ADAPTEES ORGANISEES » destiné à des personnes handicapées"
+                        : "DECLARATION PREALABLE D'UN SEJOUR « VACANCES ADAPTEES ORGANISEES » destiné à des personnes handicapées",
                   },
                   {
                     italics: true,
@@ -34,50 +102,7 @@ module.exports = function buildTitre(declaration, departementSuivi) {
         columns: [
           {
             alignment: "left",
-            stack: [
-              {
-                columns: [
-                  {
-                    decoration: "underline",
-                    text: "Département instructeur :",
-                    width: 150,
-                  },
-                  {
-                    bold: true,
-                    text: `DDETS ${departementSuivi}`,
-                    width: 150,
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    decoration: "underline",
-                    text: "Numéro d'enregistrement :",
-                    width: 150,
-                  },
-                  {
-                    bold: true,
-                    text: `${declaration.idFonctionnelle}`,
-                    width: 150,
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    decoration: "underline",
-                    text: "Date de dépôt :",
-                    width: 150,
-                  },
-                  {
-                    bold: true,
-                    text: `${dayjs(declaration.editedAt).format("DD/MM/YYYY HH:mm")}`,
-                    width: 150,
-                  },
-                ],
-              },
-            ],
+            stack: infoPrecises,
             width: "100%",
           },
         ],

@@ -99,7 +99,7 @@ module.exports = function buildInformationsPersonnel(info) {
           columnGap: 10,
           columns: [
             {
-              text: "Organisation, contenu et durée d’une session de formation :",
+              text: "Organisation, contenu et durée d’une session de formation en amont de l'arrivée des vacanciers en vue de la coordination des équipes :",
               width: 250,
             },
             {
@@ -112,23 +112,23 @@ module.exports = function buildInformationsPersonnel(info) {
         },
         ...Prestataire(
           info.prestatairesMedicaments,
-          "Prestataires en charges des médicaments",
+          "Prestataires extérieur en charges des médicaments",
         ),
         ...Prestataire(
           info.prestatairesTransport,
-          "Prestataires en charge du transport des vacanciers",
+          "Prestataires extérieur en charge du transport des vacanciers",
         ),
         ...Prestataire(
           info.prestatairesRestauration,
-          "Prestataires en charge de la restauration",
+          "Prestataires extérieur en charge de la restauration",
         ),
         ...Prestataire(
           info.prestatairesEntretien,
-          "Prestataires en charge de l'entretien et du ménage",
+          "Prestataires extérieur en charge de l'entretien et du ménage",
         ),
         ...Prestataire(
           info.prestatairesActivites,
-          "Prestataires en charge d'encadrer les activités spécifiques",
+          "Prestataires extérieur en charge d'encadrer les activités spécifiques",
         ),
       ],
     },

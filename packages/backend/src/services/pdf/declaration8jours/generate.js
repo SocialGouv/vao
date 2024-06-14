@@ -7,16 +7,25 @@ const dayjs = require("dayjs");
 
 const log = logger(module.filename);
 
-const generate = async (declaration, idFonctionnelle, departementSuivi) => {
+const generate = async (
+  declaration,
+  idFonctionnelle,
+  departementSuivi,
+  dateDeposeA2mois,
+) => {
   log.i("IN");
   try {
     // générer document
-    const buffer = await build(declaration ?? {}, departementSuivi);
+    const buffer = await build(
+      declaration ?? {},
+      departementSuivi,
+      dateDeposeA2mois,
+    );
 
     // insert into documents table
     const uuid = await Document.createFile(
-      `${idFonctionnelle}.pdf`,
-      "declaration_8_jours",
+      `${idFonctionnelle}_8jours.pdf`,
+      "declaration_8jours",
       "application/pdf",
       buffer,
     );
@@ -34,8 +43,8 @@ const generate = async (declaration, idFonctionnelle, departementSuivi) => {
     const files = declaration.files.files;
     const fileToAdd = {
       createdAt: dayjs().format(),
-      name: `${idFonctionnelle}.pdf`,
-      type: "declaration_8_jours",
+      name: `${idFonctionnelle}_8jours.pdf`,
+      type: "declaration_8jours",
       uuid,
     };
     files.push(fileToAdd);
