@@ -199,6 +199,8 @@ module.exports = async function post(req, res, next) {
     }
 
     try {
+      log.i("dateDeposeA2mois");
+      log.i(dateDeposeA2mois);
       DSuuid = await PdfDeclaration8jours(
         declaration,
         declaration.idFonctionnelle,

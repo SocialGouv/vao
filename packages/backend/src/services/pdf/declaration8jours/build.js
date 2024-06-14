@@ -57,6 +57,7 @@ const build = async (declaration = {}, departementSuivi, dateDeposeA2mois) => {
     pageBreakBefore: function (currentNode) {
       return currentNode.headlineLevel === 1;
     },
+  version "2.0.3"
   };
   return new Promise((resolve) => {
     const pdfDoc = printer.createPdfKitDocument(docDefinition);
