@@ -15,7 +15,7 @@ const generate = async (declaration) => {
 
     // insert into documents table
     const uuid = await Document.createFile(
-      `AR_${declaration.idFonctionnelle}.pdf`,
+      `AR_${declaration.idFonctionnelle}_8J.pdf`,
       "AR_declaration_8_jours",
       "application/pdf",
       buffer,
@@ -34,7 +34,7 @@ const generate = async (declaration) => {
     const files = declaration.files.files;
     const fileToAdd = {
       createdAt: dayjs().format(),
-      name: `AR_${declaration.idFonctionnelle}.pdf`,
+      name: `AR_${declaration.idFonctionnelle}_8J.pdf`,
       type: "AR_declaration_8_jours",
       uuid,
     };

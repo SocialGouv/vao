@@ -205,12 +205,6 @@ module.exports = async function post(req, res, next) {
         declaration.idFonctionnelle,
         declaration.departementSuivi,
       );
-
-      ARuuid = await ARDeclaration8jours(
-        declaration,
-        declaration.idFonctionnelle,
-        declaration.departementSuivi,
-      );
     } catch (error) {
       log.w(error);
     }
