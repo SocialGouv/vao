@@ -97,7 +97,7 @@ module.exports = async function post(req, res, next) {
         ),
     );
 
-    if (declaration.statut !== statuts.EN_COURS)
+    if (declaration.statut === statuts.EN_COURS)
       await DemandeSejour.saveDS2M(declarationId, declaration);
 
     return res.status(200).end();

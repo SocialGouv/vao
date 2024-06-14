@@ -8,22 +8,31 @@ module.exports = function buildPersonnelEncadrant(personnes) {
       },
     },
     style: {
+      fontSize: 9,
       margin: [0, 5, 0, 0],
     },
     table: {
       body: [
-        ["Nom", "Prénom", "Date de naissance", "Téléphone", "Fonctions"],
+        [
+          "Nom",
+          "Prénom",
+          "Date de naissance",
+          "Competence",
+          "Fonctions",
+          "Téléphone",
+        ],
         ...personnes.map((personne) => [
-          personne.nom,
-          personne.prenom,
+          personne.nom ?? "",
+          personne.prenom ?? "",
           personne?.dateNaissance
             ? dayjs(personne?.dateNaissance).format("DD/MM/YYYY")
             : "",
-          personne.telephone,
+          personne.competence ?? "",
           personne.listeFonction?.join(", "),
+          personne.telephone ?? "",
         ]),
       ],
-      widths: [80, 80, 80, 80, 150],
+      widths: [80, 80, 60, 90, 90, 60],
     },
   };
 };

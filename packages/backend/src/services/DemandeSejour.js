@@ -410,6 +410,7 @@ SELECT
   ds.organisme as "organisme",
   ds.files as "files",
   ds.attestation as "attestation",
+  ds.declaration_2m as "declaration2mois",
   o.personne_morale->>'siret' as "siret",
   ds.edited_at as "editedAt"
 FROM front.demande_sejour ds

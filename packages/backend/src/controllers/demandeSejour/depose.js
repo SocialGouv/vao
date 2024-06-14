@@ -72,13 +72,14 @@ module.exports = async function post(req, res, next) {
     );
   }
 
+  console.log(declaration);
+  const dateDeposeA2mois = declaration.declaration2mois?.attestation?.at ?? "";
   const firstSubmit = statut === statuts.BROUILLON;
 
   Object.assign(declaration, { attestation });
 
   try {
     log.i("finalize - before validation", { declaration });
-    log.i(declaration.informationsPersonnel);
     declaration = await yup
       .object(DeclarationSejourSchema(dateDebut, dateFin, statut))
       .validate(declaration, {
@@ -87,7 +88,7 @@ module.exports = async function post(req, res, next) {
       });
 
     log.i("finalize - after validation", { declaration });
-    log.i(declaration.informationsPersonnel);
+    log.d(declaration.informationsPersonnel);
     declaration.attestation.at = dayjs(declaration.attestation.at).format(
       "YYYY-MM-DD",
     );
@@ -200,10 +201,13 @@ module.exports = async function post(req, res, next) {
     }
 
     try {
+      log.i("dateDeposeA2mois")
+      log.i(dateDeposeA2mois)
       DSuuid = await PdfDeclaration8jours(
         declaration,
         declaration.idFonctionnelle,
         declaration.departementSuivi,
+        dateDeposeA2mois,
       );
     } catch (error) {
       log.w(error);

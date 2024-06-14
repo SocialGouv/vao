@@ -16,13 +16,14 @@ const fonts = {
 
 const printer = new PdfPrinter(fonts);
 
-const build = async (declaration = {}, departementSuivi) => {
+const build = async (declaration = {}, departementSuivi, dateDeposeA2mois) => {
   log.i("build - IN");
-  log.d("declaration.informationsPersonnel",declaration.informationsPersonnel)
+  log.d("declaration.informationsPersonnel", declaration.informationsPersonnel);
+
   const docDefinition = {
     content: [
       parts.Header(),
-      parts.Titre(declaration, departementSuivi),
+      parts.Titre(declaration, departementSuivi, "8jours", dateDeposeA2mois),
       parts.InformationsGenerales(declaration),
       {
         headlineLevel: 1,
