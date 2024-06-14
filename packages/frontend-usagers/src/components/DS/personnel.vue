@@ -461,21 +461,4 @@ function exportCSV() {
   link.setAttribute("download", "personnel.csv");
   link.click();
 }
-
-function exportCSV() {
-  const rows = [
-    "Nom;Prenom;Date de Naissance;Compétences;Fonctions;Téléphone\n",
-  ];
-  props.personnes.forEach((p) => {
-    rows.push(
-      `${p.nom};${p.prenom};${dayjs(p.dateNaissance).format("DD/MM/YYYY")};${p.competence};${p.listeFonction.join(",")};${p.telephone}\n`,
-    );
-  });
-  const blob = new Blob(rows, { type: "text/csv;charset-utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", "personnel.csv");
-  link.click();
-}
 </script>
