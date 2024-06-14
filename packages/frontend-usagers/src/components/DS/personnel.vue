@@ -66,13 +66,13 @@
         </span>
         <span class="fr-hint-text"
           ><i
-            >DURAnd;philippe;25/01/1977;infirmier;Distribution des
+            >Durand;philippe;25/01/1977;infirmier;Distribution des
             médicaments,autre;0610203040</i
           ></span
         >
         <span class="fr-hint-text"
           ><i
-            >dupont;nathalie;15/07/1985;Cuisinière;Restauration;+336123456789</i
+            >dupont;Nathalie;15/07/1985;Cuisinière;Restauration;+33612345678</i
           >
         </span>
         <br />
@@ -319,9 +319,9 @@ async function handlePaste(lignesCollees) {
     const prenom = fields[1]?.toLowerCase().trim() ?? "";
     const dateNaissance =
       fields[2]?.trim().length === 10
-        ? dayjs(fields[2]?.trim(), "DD/MM/YYYY")
+        ? dayjs(fields[2]?.trim(), "DD/MM/YYYY").format("YYYY-MM-DD")
         : fields[2]?.trim().length === 8
-          ? dayjs(fields[2]?.trim(), "DD/MM/YY")
+          ? dayjs(fields[2]?.trim(), "DD/MM/YY").format("YYYY-MM-DD")
           : "format de date incorrecte";
     const competence = fields[3]?.trim() ?? "";
     const fonctions = fields[4]?.toLowerCase().trim() ?? "";
@@ -374,7 +374,6 @@ async function handlePaste(lignesCollees) {
     });
   }
   emit("updatePersonne", encadrantsFromCsv);
-  pasteFrom.value = null;
 }
 
 function exportCSV() {
