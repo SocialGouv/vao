@@ -1,5 +1,6 @@
 const DemandeSejour = require("../../services/DemandeSejour");
 const PdfARDeclaration2Mois = require("../../services/pdf/ARdeclaration2mois/generate");
+const PdfARDeclaration8Jours = require("../../services/pdf/ARdeclaration8jours/generate");
 
 const logger = require("../../utils/logger");
 const { statuts } = require("../../helpers/ds-statuts");
@@ -48,20 +49,28 @@ module.exports = async function post(req, res, next) {
     );
   }
 
-  if (declaration.statut !== statuts.EN_COURS && declaration.statut !== statuts.EN_COURS_8J) {
+  if (
+    declaration.statut !== statuts.EN_COURS &&
+    declaration.statut !== statuts.EN_COURS_8J
+  ) {
     return next(
       new AppError("Statut incompatible", {
         statusCode: 400,
       }),
     );
   }
-  const enCoursTypeStatut = declaration.statut === statuts.EN_COURS ? statuts.ATTENTE_8_JOUR : statuts.VALIDEE_8J;
-  const textTypePrecision = "Enregistrement de la déclaration à " + (declaration.statut === statuts.EN_COURS ? " 2 mois" : " 8 jours");
-
+  const enCoursTypeStatut =
+    declaration.statut === statuts.EN_COURS
+      ? statuts.ATTENTE_8_JOUR
+      : statuts.VALIDEE_8J;
+  const textTypePrecision =
+    "Enregistrement de la déclaration à " +
+    (declaration.statut === statuts.EN_COURS ? " 2 mois" : " 8 jours");
 
   try {
-    if (declaration.statut !== statuts.EN_COURS)
+    if (declaration.statut === statuts.EN_COURS)
       await PdfARDeclaration2Mois(declaration);
+    else await PdfARDeclaration8Jours(declaration);
 
     const destinataires = await DemandeSejour.getEmailToList(
       declaration.organismeId,
