@@ -94,7 +94,7 @@
     <div class="fr-fieldset__element">
       <UtilsTableFull
         :headers="headers"
-        :data="props.personnes"
+        :data="personnesWithId"
         @click-row="editItem"
       />
     </div>
@@ -141,8 +141,9 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-dayjs.extend(customParseFormat);
 import { DsfrFieldset } from "@gouvminint/vue-dsfr";
+
+dayjs.extend(customParseFormat);
 
 const DsfrBadge = resolveComponent("DsfrBadge");
 
@@ -160,6 +161,10 @@ const props = defineProps({
   titre: { type: String, default: null, required: false },
   labelBoutonAjouter: { type: String, required: true },
 });
+
+const personnesWithId = computed(() =>
+  [...(props.personnes ?? [])].map((p, index) => ({ ...p, id: index })),
+);
 
 const emit = defineEmits(["updatePersonne"]);
 const log = logger("pages/component/personnel");
@@ -293,12 +298,18 @@ function updatePersonne(data) {
   if (indexCourant.value === -1) {
     personnes = [...props.personnes, data];
   } else {
-    personnes = [
-      ...props.personnes.slice(0, indexCourant.value),
-      data,
-      ...props.personnes.slice(indexCourant.value + 1),
-    ];
+    personnes = [...personnesWithId.value].reduce((acc, curr) => {
+      if (curr.id === indexCourant.value) {
+        acc.push(data);
+      } else {
+        const tmp = { ...curr };
+        delete tmp.id;
+        acc.push(tmp);
+      }
+      return acc;
+    }, []);
   }
+
   emit("updatePersonne", personnes);
   indexCourant.value = null;
   modalPersonne.opened = false;
