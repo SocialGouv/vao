@@ -130,6 +130,19 @@ module.exports = function buildInformationsGenerales(declaration) {
                     },
                   ]
                 : []),
+              {
+                columns: [
+                  {
+                    text: "Liste des départements de séjour :",
+                    width: 250,
+                  },
+                  {
+                    bold: true,
+                    text: `${declaration.hebergement.hebergements.map((h) => h.coordonnees.adresse.departement).join(", ")}`,
+                    width: "*",
+                  },
+                ],
+              },
               Organisme(declaration.responsableSejour, declaration?.organisme),
             ],
           },

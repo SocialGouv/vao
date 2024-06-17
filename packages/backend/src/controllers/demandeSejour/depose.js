@@ -72,7 +72,6 @@ module.exports = async function post(req, res, next) {
     );
   }
 
-  console.log(declaration);
   const dateDeposeA2mois = declaration.declaration2mois?.attestation?.at ?? "";
   const firstSubmit = statut === statuts.BROUILLON;
 
@@ -201,8 +200,6 @@ module.exports = async function post(req, res, next) {
     }
 
     try {
-      log.i("dateDeposeA2mois")
-      log.i(dateDeposeA2mois)
       DSuuid = await PdfDeclaration8jours(
         declaration,
         declaration.idFonctionnelle,
