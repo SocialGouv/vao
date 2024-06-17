@@ -96,7 +96,7 @@ const filteredData = computed(() => {
   // On filtre chaque ligne qu'on récupère si les critères sont respecter
   const rows =
     criterias.length === 0
-      ? props.data
+      ? [...props.data]
       : props.data.filter((item) => {
           // On va essayer de trouvé un critère qui n'est pas valide
           const firstUnmatchedCriteria = criterias.find(([key, values]) => {
