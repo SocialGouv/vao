@@ -50,7 +50,7 @@ module.exports = function buildTitre(
       ],
     },
   ];
-  if (type === "8jours") {
+  if (type === "8jours" && dateDeposeA2mois) {
     infoPrecises.push({
       columns: [
         {
