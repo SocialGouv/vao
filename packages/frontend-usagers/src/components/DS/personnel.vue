@@ -118,65 +118,6 @@
       size="md"
       @close="onClose"
     >
-      <div v-if="props.modifiable" class="fr-fieldset__element">
-        <span class="fr-label">1. Ajouter le personnel manuellement</span>
-        <span class="fr-hint-text"
-          >Cliquer sur le bouton et renseigner les champs un par un. Faire ceci
-          autant de fois que nécessaire</span
-        >
-      </div>
-      <div v-if="props.modifiable" class="fr-fieldset__element">
-        <DsfrButton
-          ref="modalOrigin"
-          :label="props.labelBoutonAjouter"
-          size="sm"
-          :secondary="true"
-          @click.prevent="addPersonne"
-        />
-      </div>
-      <div v-if="props.modifiable" class="fr-fieldset__element">
-        <DsfrInputGroup
-          name="pasteFrom"
-          :model-value="pasteFrom"
-          :label-visible="true"
-          :is-textarea="true"
-          placeholder="Coller ici les colonnes copiées depuis votre tableur"
-          @update:model-value="handlePaste"
-        />
-      </div>
-      <div v-if="props.modifiable" class="fr-fieldset__element">
-        <span class="fr-label">3. Liste du personnel ajouté</span>
-      </div>
-    </DsfrFieldset>
-    <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
-          On cherche a rapprocher le bouton du tableau -->
-    <div class="fr-fieldset__element">
-      <UtilsTableFull
-        :headers="headers"
-        :data="props.personnes"
-        @click-row="editItem"
-      />
-    </div>
-    <DsfrFieldset>
-      <div v-if="props.modifiable" class="fr-fieldset__element">
-        <DsfrButton
-          ref="modalOrigin"
-          label="Export CSV"
-          size="sm"
-          :secondary="true"
-          @click.prevent="exportCSV"
-        />
-      </div>
-    </DsfrFieldset>
-
-    <DsfrModal
-      ref="modal"
-      name="test"
-      :opened="modalPersonne.opened"
-      :title="props.titre"
-      size="md"
-      @close="onClose"
-    >
       <Personne
         :modifiable="props.modifiable"
         :personne="personnel"
