@@ -1,7 +1,7 @@
 const dayjs = require("dayjs");
 const Organisme = require("./Organisme");
 
-module.exports = function buildInformationsGenerales(declaration) {
+module.exports = function buildInformationsGenerales(declaration, type) {
   return {
     stack: [
       {
@@ -51,7 +51,10 @@ module.exports = function buildInformationsGenerales(declaration) {
               {
                 columns: [
                   {
-                    text: "Date indicative de début du séjour :",
+                    text:
+                      type === "8jours"
+                        ? "Date de début du séjour :"
+                        : "Date indicative de début du séjour :",
                     width: 250,
                   },
                   {
@@ -64,7 +67,10 @@ module.exports = function buildInformationsGenerales(declaration) {
               {
                 columns: [
                   {
-                    text: "Date indicative de fin du séjour :",
+                    text:
+                      type === "8jours"
+                        ? "Date de fin du séjour :"
+                        : "Date indicative de fin du séjour :",
                     width: 250,
                   },
                   {

@@ -81,8 +81,8 @@ module.exports = function buildTitre(
                     fontSize: 12,
                     text:
                       type === "8jours"
-                        ? "FICHE COMPLEMENTAIRE A LA DECLARATION D'UN SEJOUR « VACANCES ADAPTEES ORGANISEES » destiné à des personnes handicapées"
-                        : "DECLARATION PREALABLE D'UN SEJOUR « VACANCES ADAPTEES ORGANISEES » destiné à des personnes handicapées",
+                        ? "FICHE COMPLEMENTAIRE A LA DECLARATION D'UN SEJOUR « VACANCES ADAPTEES ORGANISEES » destiné à des personnes handicapées majeures"
+                        : "DECLARATION PREALABLE D'UN SEJOUR « VACANCES ADAPTEES ORGANISEES » destiné à des personnes handicapées majeures",
                   },
                   {
                     italics: true,
