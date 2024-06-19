@@ -19,7 +19,7 @@ module.exports = function buildInformationsVacanciers(info, type) {
                     bold: true,
                     color: "#F5F5FE",
                     fontSize: 10,
-                    text: `${type === "8jours" ? "Informations sur les vacanciers":"Informations prévisionnelles sur les vacanciers"}`,
+                    text: `${type === "8jours" ? "Informations sur les vacanciers" : "Informations prévisionnelles sur les vacanciers"}`,
                     width: "300",
                   },
                 ],

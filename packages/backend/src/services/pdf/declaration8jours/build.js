@@ -24,7 +24,7 @@ const build = async (declaration = {}, departementSuivi, dateDeposeA2mois) => {
     content: [
       parts.Header(),
       parts.Titre(declaration, departementSuivi, "8jours", dateDeposeA2mois),
-      parts.InformationsGenerales(declaration),
+      parts.InformationsGenerales(declaration, "8jours"),
       {
         headlineLevel: 1,
         stack: [parts.Header()],
