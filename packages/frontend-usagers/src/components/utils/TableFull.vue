@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 1em">
+  <div style="margin-bottom: 2em; overflow-x: auto">
     <div v-if="displayedData.length">
       <DsfrTable
         style="display: table"
@@ -34,7 +34,7 @@ const log = logger("components/TableFull");
 const itemByPageOptions = [10, 20, 50, 100];
 const itemByPage = ref(50);
 
-const emit = defineEmits("click-row");
+const emit = defineEmits(["click-row"]);
 
 const props = defineProps({
   headers: { type: Object, required: true },
@@ -80,7 +80,6 @@ const sorter = (col) => () => {
 };
 
 const filteredData = computed(() => {
-  log.d(props.search);
   const criterias = Object.entries(props.search).filter((criteria) => {
     const [key, value] = criteria;
     if (
@@ -95,56 +94,63 @@ const filteredData = computed(() => {
 
   // Permet la récupération des lignes user correspondant au critères
   // On filtre chaque ligne qu'on récupère si les critères sont respecter
-  const rows = props.data.filter((item) => {
-    // On va essayer de trouvé un critère qui n'est pas valide
-    const firstUnmatchedCriteria = criterias.find(([key, values]) => {
-      const rule = props.dict[key];
-      if (typeof rule === "function") {
-        return !rule(item, values);
-      }
+  const rows =
+    criterias.length === 0
+      ? [...props.data]
+      : props.data.filter((item) => {
+          // On va essayer de trouvé un critère qui n'est pas valide
+          const firstUnmatchedCriteria = criterias.find(([key, values]) => {
+            const rule = props.dict[key];
+            if (typeof rule === "function") {
+              return !rule(item, values);
+            }
 
-      let target;
+            let target;
 
-      if (!rule) {
-        target = item[key];
-      } else if (typeof rule === "object") {
-        target = Array.isArray(item[rule.obj])
-          ? item[rule.obj].map((el) => el[rule.val])
-          : item[rule.obj][rule.val];
-      } else {
-        target = item[rule];
-      }
-
-      if (typeof values === "string") {
-        const noMatch = Array.isArray(target)
-          ? target.findIndex((item) =>
-              values.toLowerCase().includes(item.toString().toLowerCase()),
-            ) === -1
-          : !target.toString().toLowerCase().includes(values.toLowerCase());
-        return noMatch;
-      } else if (typeof values === "boolean") {
-        const noMatch = Array.isArray(target)
-          ? target.findIndex((item) => values !== item) === -1
-          : values !== target;
-        return noMatch;
-      } else if (Array.isArray(values)) {
-        const noMatch = Array.isArray(target)
-          ? target.findIndex((item) => values.includes(item)) === -1
-          : !values.includes(target);
-        return noMatch;
-      } else {
-        log.i("Comportement anormal");
-        const noMatch = !target
-          .toString()
-          .toLowerCase()
-          .includes(values.toLowerCase());
-        return noMatch;
-      }
-    });
-    // Si tous les critères sont ok alors on conserve la ligne
-    const isMatchedAllCriterias = firstUnmatchedCriteria === undefined;
-    return isMatchedAllCriterias;
-  });
+            if (!rule) {
+              target = item[key];
+            } else if (typeof rule === "object") {
+              target = Array.isArray(item[rule.obj])
+                ? item[rule.obj].map((el) => el[rule.val])
+                : item[rule.obj][rule.val];
+            } else {
+              target = item[rule];
+            }
+            if (typeof values === "string") {
+              const noMatch = Array.isArray(target)
+                ? target.findIndex((item) =>
+                    values
+                      .toLowerCase()
+                      .includes(item.toString().toLowerCase()),
+                  ) === -1
+                : !target
+                    .toString()
+                    .toLowerCase()
+                    .includes(values.toLowerCase());
+              return noMatch;
+            } else if (typeof values === "boolean") {
+              const noMatch = Array.isArray(target)
+                ? target.findIndex((item) => values !== item) === -1
+                : values !== target;
+              return noMatch;
+            } else if (Array.isArray(values)) {
+              const noMatch = Array.isArray(target)
+                ? target.findIndex((item) => values.includes(item)) === -1
+                : !values.includes(target);
+              return noMatch;
+            } else {
+              log.i("Comportement anormal");
+              const noMatch = !target
+                .toString()
+                .toLowerCase()
+                .includes(values.toLowerCase());
+              return noMatch;
+            }
+          });
+          // Si tous les critères sont ok alors on conserve la ligne
+          const isMatchedAllCriterias = firstUnmatchedCriteria === undefined;
+          return isMatchedAllCriterias;
+        });
 
   rows.sort((a, b) => {
     const type = typeof a[sortBy.value];
@@ -168,18 +174,18 @@ const filteredData = computed(() => {
 });
 
 const displayableData = computed(() => {
-  return filteredData.value.map((item) => {
+  return filteredData.value.map((item, index) => {
     const rowdata = h.value.map((header) => {
       if (header.component) {
-        return header.component(item);
+        return header.component(item, index);
       }
       if (header.format) {
-        return header.format(item) ?? "";
+        return header.format(item, index) ?? "";
       }
       if (Array.isArray(item[header.column])) {
         return item[header.column]
           .map((val) => {
-            return val[header.objectLabel];
+            return val[header.objectLabel] ?? val;
           })
           .join(", ");
       }
@@ -187,7 +193,7 @@ const displayableData = computed(() => {
       return data ?? "";
     });
     const rowAttrs = { class: "pointer" };
-    rowAttrs.onClick = () => emit("click-row", item);
+    rowAttrs.onClick = () => emit("click-row", item, index);
     return {
       rowData: rowdata,
       rowAttrs,

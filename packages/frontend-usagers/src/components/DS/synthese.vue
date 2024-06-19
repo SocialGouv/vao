@@ -2,206 +2,216 @@
   <div>
     <div class="fr-grid-row fr-my-5v">
       <DsfrAccordionsGroup>
-        <li>
-          <DsfrAccordion
-            :id="1"
-            title="Informations générales"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Informations générales&nbsp;</span>
-              <DsfrBadge
-                :label="informationsGenerales.label"
-                :small="true"
-                :type="informationsGenerales.type"
-              />
-            </template>
-            <DSInformationsGenerales
-              ref="sectionInformationsGenerales"
-              :init-data="props.declarationCourante"
-              :validate-on-mount="true"
-              :modifiable="false"
-              :show-buttons="false"
-            ></DSInformationsGenerales>
-          </DsfrAccordion>
-        </li>
-        <li>
-          <DsfrAccordion
-            :id="2"
-            title="Informations sur les vacanciers"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Informations sur les vacanciers&nbsp;</span>
-              <DsfrBadge
-                :label="informationsVacanciers.label"
-                :small="true"
-                :type="informationsVacanciers.type"
-              />
-            </template>
-            <DSInformationsVacanciers
-              :init-data="
-                props.declarationCourante.informationsVacanciers ?? {}
-              "
-              :modifiable="false"
-              :validate-on-mount="true"
-              :show-buttons="false"
+        <ul>
+          <li v-if="stepToDisplay('info-generales')">
+            <DsfrAccordion
+              :id="1"
+              title="Informations générales"
+              :expanded-id="expandedId"
+              @expand="(id) => (expandedId = id)"
             >
-            </DSInformationsVacanciers>
-          </DsfrAccordion>
-        </li>
-        <li>
-          <DsfrAccordion
-            :id="3"
-            title="Informations sur le personnel"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Informations sur le personnel&nbsp;</span>
-              <DsfrBadge
-                :label="informationsPersonnel.label"
-                :small="true"
-                :type="informationsPersonnel.type"
-              />
-            </template>
-            <DSInformationsPersonnel
-              :init-data="props.declarationCourante.informationsPersonnel ?? {}"
-              :modifiable="false"
-              :validate-on-mount="true"
-              :show-buttons="false"
-            ></DSInformationsPersonnel>
-          </DsfrAccordion>
-        </li>
-        <li>
-          <DsfrAccordion
-            :id="4"
-            title="Projet de séjour"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Projet de séjour &nbsp;</span>
-              <DsfrBadge
-                :label="projetSejour.label"
-                :small="true"
-                :type="projetSejour.type"
-              />
-            </template>
-            <DSProjetSejour
-              :init-data="props.declarationCourante.projetSejour ?? {}"
-              :modifiable="false"
-              :validate-on-mount="true"
-              :show-buttons="false"
-            ></DSProjetSejour>
-          </DsfrAccordion>
-        </li>
-        <li>
-          <DsfrAccordion
-            :id="5"
-            title="Informations sur le transport"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Informations sur le transport &nbsp;</span>
-              <DsfrBadge
-                :label="informationsTransport.label"
-                :small="true"
-                :type="informationsTransport.type"
-              />
-            </template>
-            <ProtocoleTransport
-              :init-data="props.declarationCourante.informationsTransport ?? {}"
-              :modifiable="false"
-              :validate-on-mount="true"
-              :show-buttons="false"
-            ></ProtocoleTransport>
-          </DsfrAccordion>
-        </li>
-        <li>
-          <DsfrAccordion
-            :id="6"
-            title="Informations sanitaires"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Informations sanitaires &nbsp;</span>
-              <DsfrBadge
-                :label="informationsSanitaires.label"
-                :small="true"
-                :type="informationsSanitaires.type"
-              />
-            </template>
-            <ProtocoleSanitaire
-              :init-data="
-                props.declarationCourante.informationsSanitaires ?? {}
-              "
-              :modifiable="false"
-              :validate-on-mount="true"
-              :show-buttons="false"
-            ></ProtocoleSanitaire>
-          </DsfrAccordion>
-        </li>
-        <li>
-          <DsfrAccordion
-            id="synthese-hebergement"
-            title="Hébergements"
-            :expanded-id="expandedId"
-            @expand="(id) => (expandedId = id)"
-          >
-            <template #title>
-              <span>Hébergements &nbsp;</span>
-              <DsfrBadge
-                :label="hebergement.label"
-                :small="true"
-                :type="hebergement.type"
-              />
-            </template>
-            <DsfrAccordionsGroup
-              v-if="props.declarationCourante.hebergement?.hebergements.length"
+              <template #title>
+                <span>Informations générales&nbsp;</span>
+                <DsfrBadge
+                  :label="informationsGenerales.label"
+                  :small="true"
+                  :type="informationsGenerales.type"
+                />
+              </template>
+              <DSInformationsGenerales
+                ref="sectionInformationsGenerales"
+                :init-data="props.declarationCourante"
+                :validate-on-mount="true"
+                :modifiable="false"
+                :show-buttons="false"
+              ></DSInformationsGenerales>
+            </DsfrAccordion>
+          </li>
+          <li v-if="stepToDisplay('info-vacanciers')">
+            <DsfrAccordion
+              :id="2"
+              title="Informations sur les vacanciers"
+              :expanded-id="expandedId"
+              @expand="(id) => (expandedId = id)"
             >
-              <li
-                v-for="(item, index) in props.declarationCourante.hebergement
-                  .hebergements"
-                :key="index"
+              <template #title>
+                <span>Informations sur les vacanciers&nbsp;</span>
+                <DsfrBadge
+                  :label="informationsVacanciers.label"
+                  :small="true"
+                  :type="informationsVacanciers.type"
+                />
+              </template>
+              <DSInformationsVacanciers
+                :init-data="
+                  props.declarationCourante.informationsVacanciers ?? {}
+                "
+                :modifiable="false"
+                :validate-on-mount="true"
+                :show-buttons="false"
               >
-                <DsfrAccordion
-                  :id="'synthese-hebergement-' + index"
-                  :title="`Fiche annexe n°${index + 1}`"
-                  :expanded-id="subExpandedId"
-                  @expand="(id) => (subExpandedId = id)"
+              </DSInformationsVacanciers>
+            </DsfrAccordion>
+          </li>
+          <li v-if="stepToDisplay('info-personnel')">
+            <DsfrAccordion
+              :id="3"
+              title="Informations sur le personnel"
+              :expanded-id="expandedId"
+              @expand="(id) => (expandedId = id)"
+            >
+              <template #title>
+                <span>Informations sur le personnel&nbsp;</span>
+                <DsfrBadge
+                  :label="informationsPersonnel.label"
+                  :small="true"
+                  :type="informationsPersonnel.type"
+                />
+              </template>
+              <DSInformationsPersonnel
+                :init-data="
+                  props.declarationCourante.informationsPersonnel ?? {}
+                "
+                :modifiable="false"
+                :validate-on-mount="true"
+                :show-buttons="false"
+              ></DSInformationsPersonnel>
+            </DsfrAccordion>
+          </li>
+          <li v-if="stepToDisplay('projet-sejour')">
+            <DsfrAccordion
+              :id="4"
+              title="Projet de séjour"
+              :expanded-id="expandedId"
+              @expand="(id) => (expandedId = id)"
+            >
+              <template #title>
+                <span>Projet de séjour &nbsp;</span>
+                <DsfrBadge
+                  :label="projetSejour.label"
+                  :small="true"
+                  :type="projetSejour.type"
+                />
+              </template>
+              <DSProjetSejour
+                :init-data="props.declarationCourante.projetSejour ?? {}"
+                :modifiable="false"
+                :validate-on-mount="true"
+                :show-buttons="false"
+              ></DSProjetSejour>
+            </DsfrAccordion>
+          </li>
+          <li v-if="stepToDisplay('info-transport')">
+            <DsfrAccordion
+              :id="5"
+              title="Informations sur le transport"
+              :expanded-id="expandedId"
+              @expand="(id) => (expandedId = id)"
+            >
+              <template #title>
+                <span>Informations sur le transport &nbsp;</span>
+                <DsfrBadge
+                  :label="informationsTransport.label"
+                  :small="true"
+                  :type="informationsTransport.type"
+                />
+              </template>
+              <ProtocoleTransport
+                :init-data="
+                  props.declarationCourante.informationsTransport ?? {}
+                "
+                :modifiable="false"
+                :validate-on-mount="true"
+                :show-buttons="false"
+              ></ProtocoleTransport>
+            </DsfrAccordion>
+          </li>
+          <li v-if="stepToDisplay('info-sanitaires')">
+            <DsfrAccordion
+              :id="6"
+              title="Informations sanitaires"
+              :expanded-id="expandedId"
+              @expand="(id) => (expandedId = id)"
+            >
+              <template #title>
+                <span>Informations sanitaires &nbsp;</span>
+                <DsfrBadge
+                  :label="informationsSanitaires.label"
+                  :small="true"
+                  :type="informationsSanitaires.type"
+                />
+              </template>
+              <ProtocoleSanitaire
+                :init-data="
+                  props.declarationCourante.informationsSanitaires ?? {}
+                "
+                :modifiable="false"
+                :validate-on-mount="true"
+                :show-buttons="false"
+              ></ProtocoleSanitaire>
+            </DsfrAccordion>
+          </li>
+          <li v-if="stepToDisplay('hebergements')">
+            <DsfrAccordion
+              id="synthese-hebergement"
+              title="Hébergements"
+              :expanded-id="expandedId"
+              @expand="(id) => (expandedId = id)"
+            >
+              <template #title>
+                <span>Hébergements &nbsp;</span>
+                <DsfrBadge
+                  :label="hebergement.label"
+                  :small="true"
+                  :type="hebergement.type"
+                />
+              </template>
+              <DsfrAccordionsGroup
+                v-if="props.declarationCourante.hebergement?.hebergements"
+              >
+                <li
+                  v-for="(item, index) in props.declarationCourante.hebergement
+                    .hebergements"
+                  :key="index"
                 >
-                  <template #title>
-                    <span>Fiche annexe n°{{ index + 1 }} &nbsp;</span>
-                    <DsfrBadge
-                      :label="validateHebergement(index).label"
-                      :small="true"
-                      :type="validateHebergement(index).type"
-                    />
-                  </template>
-                  <DSHebergementsSejourDetail
-                    :modifiable="false"
-                    :hebergement="item"
-                    :date-debut-ini="props.declarationCourante.dateDebut"
-                    :date-fin-ini="props.declarationCourante.dateFin"
-                    :show-buttons="false"
-                    :validate-on-mount="true"
+                  <DsfrAccordion
+                    :id="'synthese-hebergement-' + index"
+                    :title="`Fiche annexe n°${index + 1}`"
+                    :expanded-id="subExpandedId"
+                    @expand="(id) => (subExpandedId = id)"
                   >
-                  </DSHebergementsSejourDetail>
-                </DsfrAccordion>
-              </li>
-            </DsfrAccordionsGroup>
-            <span v-else> Aucun hébergement renseigné </span>
-          </DsfrAccordion>
-        </li>
+                    <template #title>
+                      <span>Fiche annexe n°{{ index + 1 }} &nbsp;</span>
+                      <DsfrBadge
+                        :label="validateHebergement(index).label"
+                        :small="true"
+                        :type="validateHebergement(index).type"
+                      />
+                    </template>
+                    <DSHebergementsSejourDetail
+                      :modifiable="false"
+                      :hebergement="item"
+                      :date-debut-ini="props.declarationCourante.dateDebut"
+                      :date-fin-ini="props.declarationCourante.dateFin"
+                      :show-buttons="false"
+                      :validate-on-mount="true"
+                    >
+                    </DSHebergementsSejourDetail>
+                  </DsfrAccordion>
+                </li>
+              </DsfrAccordionsGroup>
+              <span v-else> Aucun hébergement renseigné </span>
+            </DsfrAccordion>
+          </li>
+        </ul>
       </DsfrAccordionsGroup>
     </div>
     <form>
       <DsfrFieldset v-if="showAttestation" legend="Attestation">
+        <div v-if="props.modifiable" class="fr-fieldset__element fr-col-12">
+          Vous allez finaliser votre déclaration complémentaire de façon
+          définitive. Vous ne pourrez pas revenir dessus et la modifier
+        </div>
         <div class="fr-fieldset__element fr-col-12">
           <DsfrCheckbox
             v-model="aCertifie"
@@ -275,7 +285,7 @@
           </DsfrButton>
           <DsfrButton
             v-if="props.modifiable"
-            label="Transmettre ma déclaration de séjour à 2 mois"
+            :label="libelleBoutonTransmission"
             :disabled="!meta.valid"
             @click.prevent="finalizeDeclaration"
           />
@@ -300,6 +310,10 @@ const expandedId = ref(0);
 const subExpandedId = ref(0);
 
 const userStore = useUserStore();
+const demandeSejourStore = useDemandeSejourStore();
+const declarationStatut = computed(() => {
+  return demandeSejourStore.demandeCourante.statut;
+});
 
 const initialValues = {
   ...props.declarationCourante,
@@ -318,12 +332,13 @@ const validationSchema = computed(() =>
     DeclarationSejour.schema(
       props.declarationCourante.dateDebut,
       props.declarationCourante.dateFin,
+      props.declarationCourante.statut,
     ),
   ),
 );
 const { meta, errors, values } = useForm({
   initialValues,
-  validationSchema,
+  validationSchema: validationSchema.value,
   validateOnMount: true,
 });
 
@@ -394,12 +409,34 @@ const showAttestation = computed(
   () => !Object.keys(errors.value).find((k) => !k.startsWith("attestation")),
 );
 
+const libelleBoutonTransmission = computed(() => {
+  if (
+    declarationStatut.value === DeclarationSejour.statuts.BROUILLON ||
+    declarationStatut.value === DeclarationSejour.statuts.A_MODIFIER
+  ) {
+    return "Transmettre ma déclaration de séjour à 2 mois";
+  }
+  if (
+    declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
+    declarationStatut.value === DeclarationSejour.statuts.A_MODIFIER_8J
+  ) {
+    return "Transmettre ma déclaration de séjour à 8 jours";
+  }
+});
+
 function validateHebergement(index) {
   return !Object.keys(errors.value).find((k) =>
     k.startsWith("hebergement.hebergements[" + index + "]"),
   )
     ? success
     : failure;
+}
+
+function stepToDisplay(step) {
+  const statutsMasques = demandeSejourMenus.find(
+    (menu) => menu.id === step,
+  )?.statutsMasques;
+  return !(statutsMasques && statutsMasques.includes(declarationStatut.value));
 }
 
 function finalizeDeclaration() {

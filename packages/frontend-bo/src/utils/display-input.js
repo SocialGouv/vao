@@ -1,3 +1,5 @@
+import { formatDate } from "date-fns/format";
+
 const InputTypes = {
   TEXT: "text",
   RADIO: "radio",
@@ -367,12 +369,14 @@ const ISanitaire = {
 
 const IHebergement = {
   dateDebut: {
-    inputType: InputTypes.TEXT,
+    inputType: InputTypes.TO_FORMAT,
     label: "Du",
+    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
   },
   dateFin: {
-    inputType: InputTypes.TEXT,
+    inputType: InputTypes.TO_FORMAT,
     label: "Au",
+    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
   },
   nom: {
     inputType: InputTypes.TEXT,

@@ -42,6 +42,7 @@ module.exports = async function getByDepartementCodes(req, res, next) {
               "dateFin",
               "organismeId",
               "organisme",
+              "idFonctionnelle",
             ])
             .nullable(),
           sortDirection: yup.string().oneOf(["ASC", "DESC"]).nullable(),
@@ -54,7 +55,7 @@ module.exports = async function getByDepartementCodes(req, res, next) {
       return next(new ValidationAppError(error));
     }
     const demandesWithPagination = await DemandeSejour.getByDepartementCodes(
-      params, 
+      params,
       territoireCode,
       req.departements.map((d) => d.value),
     );
