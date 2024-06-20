@@ -261,7 +261,12 @@
     </div>
 
     <DsfrFieldset v-if="props.showButtons" class="fr-fieldset">
-      <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
+      <DsfrButton
+        id="next-step"
+        :disabled="!siren || !siret"
+        @click.prevent="next"
+        >Suivant</DsfrButton
+      >
     </DsfrFieldset>
   </div>
 </template>
@@ -528,7 +533,7 @@ async function searchOrganismeBySiret() {
 async function searchOrganisme() {
   log.i("searchOrganisme - In");
   const organismeFound = await searchOrganismeBySiret();
-  if (!organismeFound) {
+  if (!organismeFound || !organismeFound?.personneMorale?.siren) {
     log.d("appel API INSEE");
     await searchApiInsee();
   }

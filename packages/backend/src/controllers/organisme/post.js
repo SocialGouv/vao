@@ -56,6 +56,10 @@ module.exports = async function post(req, res, next) {
           organismeId,
         );
       }
+    } else {
+      if (type === "personne_morale") {
+        await Organisme.update(type, parametre, organismeId);
+      }
     }
 
     await Organisme.link(userId, organismeId);
