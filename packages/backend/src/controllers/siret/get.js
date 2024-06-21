@@ -9,6 +9,8 @@ const AppError = require("../../utils/error");
 
 const log = logger(module.filename);
 
+const NB_ELEMENTS_TO_GET = 1000;
+
 module.exports = async function get(req, res, next) {
   const { apiInsee } = config;
   const { apiEntreprise } = config;
@@ -28,7 +30,7 @@ module.exports = async function get(req, res, next) {
   try {
     let token;
     let nomCommercial;
-    let elements = [];
+    const elements = [];
     let representantsLegaux = [];
     let siege = {};
     let uniteLegale;
@@ -62,10 +64,25 @@ module.exports = async function get(req, res, next) {
 
     if (uniteLegale.etablissementSiege) {
       const { data: liste } = await axios.get(
-        `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=100`,
+        `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=${NB_ELEMENTS_TO_GET}&tri=siret`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      elements = liste.etablissements ?? [];
+      elements.push(...(liste.etablissements ?? []));
+
+      const total = liste?.header?.total;
+      if (total) {
+        for (
+          let k = NB_ELEMENTS_TO_GET;
+          k < total;
+          k = k + NB_ELEMENTS_TO_GET
+        ) {
+          const { data: liste } = await axios.get(
+            `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=${NB_ELEMENTS_TO_GET}&debut=${k}&tri=siret`,
+            { headers: { Authorization: `Bearer ${token}` } },
+          );
+          elements.push(...(liste.etablissements ?? []));
+        }
+      }
     } else {
       siege = await Organisme.getSiege(siren);
     }
@@ -78,11 +95,17 @@ module.exports = async function get(req, res, next) {
           adresse: `${e.adresseEtablissement.numeroVoieEtablissement ? e.adresseEtablissement.numeroVoieEtablissement : ""} ${e.adresseEtablissement.typeVoieEtablissement ? e.adresseEtablissement.typeVoieEtablissement : ""} ${e.adresseEtablissement.libelleVoieEtablissement ? e.adresseEtablissement.libelleVoieEtablissement : ""}`,
           codePostal: e.adresseEtablissement.codePostalEtablissement ?? "",
           commune: e.adresseEtablissement.libelleCommuneEtablissement ?? "",
+          denomination: uniteLegale.uniteLegale.denominationUniteLegale,
           enabled: false,
+          etatAdministratif:
+            e.periodesEtablissement[0].etatAdministratifEtablissement === "A"
+              ? "En activité"
+              : e.periodesEtablissement[0].etatAdministratifEtablissement ===
+                  "F"
+                ? "Fermé"
+                : "",
           nic: e.nic,
           siret: e.siret,
-          denomination: uniteLegale.uniteLegale.denominationUniteLegale,
-          etatAdministratif: e.periodesEtablissement[0].etatAdministratifEtablissement === "A" ? "En activité": e.periodesEtablissement[0].etatAdministratifEtablissement === "F" ? "Fermé" : "",
         };
       });
 
