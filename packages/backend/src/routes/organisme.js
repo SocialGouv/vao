@@ -3,9 +3,16 @@ const express = require("express");
 const router = express.Router();
 
 const checkJWT = require("../middlewares/checkJWT");
+const BOcheckJWT = require("../middlewares/bo-check-JWT");
 const organismeController = require("../controllers/organisme");
 
 // Gère une connexion via mot de passe.
+router.get("/bo/liste", BOcheckJWT, organismeController.getAll);
+router.get(
+  "/bo/:organismeId",
+  BOcheckJWT,
+  organismeController.getByOrganismeId,
+);
 router.get("/", checkJWT, organismeController.getMine);
 router.get("/siret/:siret", checkJWT, organismeController.getBySiret);
 router.get("/:organismeId", checkJWT, organismeController.getByOrganismeId);
