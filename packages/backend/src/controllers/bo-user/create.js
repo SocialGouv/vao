@@ -27,10 +27,18 @@ module.exports = async function create(req, res, next) {
   } catch (error) {
     return next(new ValidationAppError(error));
   }
-  const serviceCompetentUserConnected = await serviceCompetence(req.decoded.territoireCode);
-  const serviceCompetentUtilisateurCreate = await serviceCompetence(user.territoireCode);
-  if (verifyCompetence(serviceCompetentUserConnected,serviceCompetentUtilisateurCreate))
-  {
+  const serviceCompetentUserConnected = await serviceCompetence(
+    req.decoded.territoireCode,
+  );
+  const serviceCompetentUtilisateurCreate = await serviceCompetence(
+    user.territoireCode,
+  );
+  if (
+    verifyCompetence(
+      serviceCompetentUserConnected,
+      serviceCompetentUtilisateurCreate,
+    )
+  ) {
     try {
       await BoUser.create(user);
 
@@ -56,7 +64,8 @@ module.exports = async function create(req, res, next) {
       log.w("DONE with error");
       return next(error);
     }
-  }
-  else
-    return res.status(403).json({ message: "Permission refusée. Privilèges insuffisants" });
+  } else
+    return res
+      .status(403)
+      .json({ message: "Permission refusée. Privilèges insuffisants" });
 };
