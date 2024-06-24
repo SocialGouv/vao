@@ -93,6 +93,7 @@ app.get("", (req, res) => {
 });
 
 app.use(`/bo-authentication`, routes.BOAuthentication);
+app.use(`/fo-user`, routes.FOUser);
 app.use(`/bo-user`, routes.BOUser);
 app.use(`/authentication`, routes.authentication);
 app.use(`/users`, routes.user);

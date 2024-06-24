@@ -1,3 +1,4 @@
+module.exports.getAll = require("./getAll");
 module.exports.getByOrganismeId = require("./getByOrganismeId");
 module.exports.getBySiret = require("./getBySiret");
 module.exports.getMine = require("./getMine");

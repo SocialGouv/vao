@@ -3,13 +3,22 @@
     v-if="displayValue !== undefined && displayValue !== null"
     class="container"
   >
-    <div class="display-info-bloc">
+    <div
+      v-if="props.input.inputType !== displayInput.InputTypes.TABLE"
+      class="display-info-bloc"
+    >
       <div class="fr-col-10">
         <span class="read-only-label">{{ input.label }}</span>
       </div>
       <div class="fr-col-10">
         <span class="read-only-value">{{ displayValue }}</span>
       </div>
+    </div>
+    <div v-else>
+      <div class="fr-col-10">
+        <span class="read-only-label">{{ input.label }}</span>
+      </div>
+      <UtilsTableFull :headers="header" :data="rows"></UtilsTableFull>
     </div>
   </div>
 </template>
@@ -53,9 +62,41 @@ const props = defineProps({
         return false;
       }
 
+      if (
+        props.input.inputType === displayInput.InputTypes.TABLE &&
+        !!props.value &&
+        Array.isArray(props.value) === false
+      ) {
+        return false;
+      }
       return true;
     },
   },
+});
+
+const rows = computed(() => {
+  return props.value.map((d) => {
+    for (const [key] of Object.entries(d)) {
+      const headerType = props.input.fields.find((h) => h.value === key);
+      if (headerType && headerType?.display !== "text") {
+        d[key] = headerType.format(d);
+      }
+    }
+    return d;
+  });
+});
+
+const header = computed(() => {
+  return props.input.fields.map((f) => {
+    return {
+      column: f.value,
+      sorter: f.value,
+      text: f.label,
+      headerAttrs: {
+        class: "suivi",
+      },
+    };
+  });
 });
 
 const displayValue = computed(() => {
@@ -74,6 +115,8 @@ const displayValue = computed(() => {
       return Array.isArray(props.value) ? props.value.join(" / ") : null;
     case displayInput.InputTypes.TO_FORMAT:
       return props.input.formatter(props.value);
+    case displayInput.InputTypes.TABLE:
+      return Array.isArray(props.value) ? props.value : null;
     default:
       return "error";
   }
