@@ -6,7 +6,6 @@ const Hebergement = require("../../services/Hebergement");
 const Send = require("../../services/mail").mailService.send;
 const PdfDeclaration2Mois = require("../../services/pdf/declaration2mois/generate");
 const PdfDeclaration8jours = require("../../services/pdf/declaration8jours/generate");
-const ARDeclaration8jours = require("../../services/pdf/ARdeclaration8jours/generate");
 
 const {
   schema: DeclarationSejourSchema,
@@ -144,6 +143,7 @@ module.exports = async function post(req, res, next) {
         : [];
 
       if (destinataires) {
+        app.use(`/fo-user`, routes.FOUser);
         await Send(
           MailUtils.usagers.declarationSejour.sendAccuseTransmission8jours({
             cc: filteredCc,
@@ -214,7 +214,6 @@ module.exports = async function post(req, res, next) {
     return res.status(200).json({ ARuuid, DSuuid });
   } else {
     log.d("Déclaration à 2 mois");
-
 
     await DemandeSejour.finalize(
       demandeSejourId,

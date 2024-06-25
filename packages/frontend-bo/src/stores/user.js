@@ -6,8 +6,11 @@ const log = logger("stores/user");
 export const useUserStore = defineStore("user", {
   state: () => ({
     user: null,
+    userFO: null,
     users: [],
+    usersFO: [],
     total: 0,
+    totalUsersFO: 0,
     userSelected: null,
   }),
   getters: {
@@ -56,6 +59,42 @@ export const useUserStore = defineStore("user", {
         this.users = [];
         this.total = 0;
         log.w("fetchUsers - Erreur", { error });
+      }
+    },
+
+    async fetchUsersOrganisme({
+      limit,
+      offset,
+      sortBy,
+      sortDirection,
+      search,
+    } = {}) {
+      log.i("fetchUsersOrganisme - IN");
+      try {
+        // Appel du back pour la liste des utilisateurs
+        const { users, total } = await $fetchBackend("/fo-user", {
+          credentials: "include",
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            limit,
+            offset,
+            sortBy,
+            sortDirection,
+            search,
+          },
+        });
+        log.d("fetchUsersOrganisme - réponse", { users, total });
+        this.usersFO = users;
+        this.totalUsersFO = parseInt(total);
+        log.i("fetchUsersOrganisme - DONE");
+      } catch (error) {
+        // Retour vide en cas d'erreur
+        this.usersFO = [];
+        this.totalUsersFO = 0;
+        log.w("fetchUsersOrganisme - Erreur", { error });
       }
     },
 

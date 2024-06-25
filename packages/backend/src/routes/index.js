@@ -3,6 +3,7 @@ module.exports.user = require("./user");
 
 module.exports.BOAuthentication = require("./bo-authentication");
 module.exports.BOUser = require("./bo-user");
+module.exports.FOUser = require("./fo-user");
 
 module.exports.organisme = require("./organisme");
 module.exports.siret = require("./siret");

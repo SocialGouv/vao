@@ -94,6 +94,7 @@ app.get("", (req, res) => {
 
 app.use(`/bo-authentication`, routes.BOAuthentication);
 app.use(`/bo-user`, routes.BOUser);
+app.use(`/fo-user`, routes.FOUser);
 app.use(`/authentication`, routes.authentication);
 app.use(`/users`, routes.user);
 app.use(`/agrements`, routes.agrement);
