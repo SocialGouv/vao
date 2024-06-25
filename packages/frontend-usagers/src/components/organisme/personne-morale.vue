@@ -212,7 +212,54 @@
           </div>
         </div>
       </DsfrFieldset>
-      <DsfrFieldset v-if="siegeSocial" legend="Etablissements secondaires">
+      <DsfrFieldset
+        v-if="siegeSocial"
+        :legend="`Etablissements secondaires (${etablissements.length})`"
+      >
+        <fieldset class="fr-fieldset">
+          <div
+            class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
+          >
+            <div class="fr-input-group">
+              <DsfrInputGroup
+                v-model="etablissementFilter.siret"
+                type="text"
+                name="siret"
+                label="SIRET"
+                placeholder="SIRET"
+                :label-visible="true"
+              />
+            </div>
+          </div>
+          <div
+            class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
+          >
+            <div class="fr-input-group">
+              <DsfrInputGroup
+                v-model="etablissementFilter.denomination"
+                type="text"
+                name="denomination"
+                label="Dénomination"
+                placeholder="Dénomination"
+                :label-visible="true"
+              />
+            </div>
+          </div>
+          <div
+            class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
+          >
+            <div class="fr-input-group">
+              <DsfrInputGroup
+                v-model="etablissementFilter.commune"
+                type="text"
+                name="commune"
+                label="Commune"
+                placeholder="Commune"
+                :label-visible="true"
+              />
+            </div>
+          </div>
+        </fieldset>
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
             <DsfrTable
@@ -230,6 +277,13 @@
               pagination
             />
           </div>
+          <DsfrButton
+            id="refresh-etablissement-sec"
+            size="sm"
+            :secondary="true"
+            @click.prevent="refreshEtablissmentsSecondaires"
+            >Rafraichir la liste des établissements secondaires
+          </DsfrButton>
         </div>
       </DsfrFieldset>
       <DsfrFieldset
@@ -265,8 +319,8 @@
         id="next-step"
         :disabled="!siren || !siret"
         @click.prevent="next"
-        >Suivant</DsfrButton
-      >
+        >Suivant
+      </DsfrButton>
     </DsfrFieldset>
   </div>
 </template>
@@ -308,6 +362,12 @@ const currentPersonnesPage = ref(1);
 const validationSchema = computed(() =>
   yup.object(organisme.personneMoraleSchema),
 );
+
+const etablissementFilter = ref({
+  siret: "",
+  denomination: "",
+  commune: "",
+});
 
 const initialValues = {
   siret: null,
@@ -410,6 +470,14 @@ const formatedEtablissements = computed(() => {
     .filter((e) => {
       return !props.modifiable ? e.enabled : e;
     })
+    .filter(
+      (e) =>
+        new RegExp(etablissementFilter.value.siret, "i").test(e.siret) &&
+        new RegExp(etablissementFilter.value.denomination, "i").test(
+          e.denomination,
+        ) &&
+        new RegExp(etablissementFilter.value.commune, "i").test(e.commune),
+    )
     .map((e) => {
       const row = [
         e.siret ?? "",
@@ -577,6 +645,34 @@ async function searchOrganisme() {
     if (siren) toaster.success("Données récupérées");
     randomId.value = random.getRandomId();
     keyRepresentantLegaux.value += 1;
+  }
+}
+
+async function refreshEtablissmentsSecondaires() {
+  log.i("searchOrganismeBySiret - IN");
+  const url = `/siret/${siret.value}`;
+  try {
+    const data = await $fetchBackend(url, {
+      method: "GET",
+      credentials: "include",
+    });
+    const newList = [];
+    for (const etablissement of data.etablissements) {
+      newList.push({
+        ...etablissement,
+        enabled:
+          etablissements.value?.find((e) => e.siret === etablissement.siret)
+            ?.enabled ?? false,
+      });
+    }
+
+    etablissements.value = newList;
+  } catch (error) {
+    toaster.error(
+      "erreur lors du rafraichissment des établissements secondaires",
+    );
+    log.w("searchOrganismeBySiret - erreur:", { error });
+    return null;
   }
 }
 
