@@ -42,17 +42,16 @@ const { data, error, pending } = useFetchBackend(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ token: props.token }),
+
+    onResponseError({ response }) {
+      if (response._data?.name) {
+        const codeError = response._data.name;
+        log.w({ codeError });
+        classError.value = codeError;
+      }
+    },
   },
 );
-
-watch(error, () => {
-  if (error.value == null) {
-    return;
-  }
-  log.w({ error });
-  const codeError = error.value.data.name;
-  classError.value = codeError;
-});
 
 watch(data, () => {
   if (data.value == null) {

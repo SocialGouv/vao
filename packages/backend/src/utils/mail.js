@@ -89,6 +89,7 @@ module.exports = {
                 "Bonjour,",
                 "Vous recevez ce mail car vous vous avez été inscrit sur le portail VAO Administration.",
                 "Pour activer votre compte et créer votre mot de passe, veuillez cliquer sur lien ci dessous.",
+                "Attention, ce lien n’est valable qu’une heure. Si celui-ci est expiré, vous pouvez en générer un nouveau en suivant le lien d’activation",
               ],
               type: "p",
             },
@@ -329,7 +330,7 @@ module.exports = {
           from: senderEmail,
           html: `
           <p>Bonjour,</p>
-          <p>Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du   
+          <p>Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du
           ${dayjs(declaration.attestation.at).format("DD/MM/YYYY")}, une déclaration pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.dateFin).format("DD/MM/YYYY")}.</p>
           <p>Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.</p>
           <p>Vous devrez, huit jours avant le déroulement de ce séjour, réaliser la déclaration complémentaire prévue à l’article R. 412-14 du code du tourisme.</p>
