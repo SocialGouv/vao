@@ -432,7 +432,6 @@ module.exports.finalize = async function (userId) {
 
 module.exports.getOne = async (criterias = {}) => {
   log.i("getOne - IN", { criterias });
-  log.i(query.get(criterias));
   const { rowCount, rows: organismes } = await pool.query(
     ...query.get(criterias),
   );
@@ -475,6 +474,5 @@ module.exports.get = async () => {
   log.i("get - IN");
   const { rows: organismes } = await pool.query(query.getListe, []);
   log.i("get - DONE");
-  log.i(organismes);
   return organismes ?? [];
 };

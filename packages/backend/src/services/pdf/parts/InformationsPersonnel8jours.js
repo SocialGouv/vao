@@ -40,7 +40,6 @@ module.exports = function buildInformationsPersonnel(info) {
                 {
                   columns: [
                     {
-                      ivi,
                       text: "Nombre de personnes responsables présentes :",
                       width: 250,
                     },
