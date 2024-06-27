@@ -5,7 +5,6 @@ const run = require("../run");
 const logger = require("../../utils/logger");
 const pool = require("../../utils/pgpool").getPool();
 const { statuts } = require("../../helpers/ds-statuts");
-//const { sendMail } = require("../../utils/mail-service");
 const Send = require("../../services/mail").mailService.send;
 const sendTemplate = require("../../helpers/mail");
 
