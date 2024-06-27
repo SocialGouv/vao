@@ -1,7 +1,32 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
-    <h1>Déclaration de séjour</h1>
+    <h1>
+      Déclaration
+      {{
+        demandeCourante.statut === "TRANSMISE"
+          ? `:  ${demandeCourante.libelle}`
+          : " de séjour"
+      }}
+    </h1>
+    <div
+      v-if="demandeCourante.statut === 'TRANSMISE'"
+      class="fr-grid-row fr-mb-5w fr-px-2w"
+    >
+      <div class="fr-col-7">
+        <div v-for="detail in demandeDetails" :key="detail.label">
+          <strong>{{ detail.label }} : </strong>{{ detail.value }}
+        </div>
+      </div>
+      <div class="fr-col-5 badge">
+        <DsfrBadge
+          :small="false"
+          type="new"
+          label="TRANSMISE"
+          class="pointer"
+        />
+      </div>
+    </div>
     <DsfrTabs
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
@@ -142,6 +167,8 @@
 </template>
 
 <script setup>
+import dayjs from "dayjs";
+
 const route = useRoute();
 
 const toaster = useToaster();
@@ -237,6 +264,33 @@ const canModify = computed(() => {
     demandeCourante.value.statut === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
     demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER_8J
   );
+});
+
+const demandeDetails = computed(() => {
+  const { organisme } = demandeCourante.value;
+  return [
+    {
+      label: "Organisme",
+      value:
+        organisme.typeOrganisme === "personne_morale"
+          ? organisme.personneMorale.raisonSociale
+          : `${organisme.personnePhysique.prenom} ${organisme.personnePhysique.nomUsage ?? organisme.personnePhysique.nomNaissance}`,
+    },
+    {
+      label: "Date (début / fin)",
+      value: `${dayjs(demandeCourante.dateDebut).format("DD/MM/YYYY")} - ${dayjs(demandeCourante.dategFin).format("DD/MM/YYYY")}`,
+    },
+    {
+      label: "Saison",
+      value: ["Hiver", "Printemps", "Eté", "Automne"].flatMap((season) =>
+        Array(4).fill(season),
+      )[new Date(demandeCourante.value.dateDebut).getMonth()],
+    },
+    {
+      label: "Déclaration",
+      value: demandeCourante.value.statut,
+    },
+  ];
 });
 
 async function updateOrCreate(data, type) {
@@ -387,4 +441,10 @@ function nextHash() {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.badge {
+  display: flex;
+  justify-content: end;
+  align-items: start;
+}
+</style>
