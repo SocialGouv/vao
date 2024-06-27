@@ -24,8 +24,7 @@ module.exports = {
   crons: {
     request: {
       notify: {
-        cron:
-          process.env.BACKEND_CRON_REQUEST_DS8J15J_NOTIFY_CRON || "0 22 * * *",
+        cron: process.env.BACKEND_CRON_REQUEST_DS8J15J_NOTIFY_CRON,
         name: "REQUEST_DS8J15J",
       },
     },
