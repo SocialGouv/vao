@@ -171,7 +171,7 @@ const {
 } = useField("precisionDeficiences");
 
 function next() {
-  if (!meta.value.dirty) {
+  if (!meta.value.dirty || !props.modifiable) {
     return emit("next");
   }
   emit(

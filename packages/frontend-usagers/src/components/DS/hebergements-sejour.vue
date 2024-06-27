@@ -162,6 +162,7 @@ const syntheseRows = computed(() => {
             iconOnly: true,
             tertiary: true,
             noOutline: true,
+            disabled: !props.modifiable,
             onClick: (event) => {
               event.stopPropagation();
               removeHebergement(index);
@@ -283,7 +284,7 @@ const isSejourComplet = computed(() =>
 );
 
 async function next() {
-  if (!meta.value.dirty) {
+  if (!meta.value.dirty || !props.modifiable) {
     return emit("next");
   }
   const data = {
