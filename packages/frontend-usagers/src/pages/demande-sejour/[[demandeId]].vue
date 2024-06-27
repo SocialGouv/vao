@@ -4,13 +4,13 @@
     <h1>
       Déclaration
       {{
-        demandeCourante.statut === "TRANSMISE"
+        demandeCourante.statut !== "BROUILLON"
           ? `:  ${demandeCourante.libelle}`
           : " de séjour"
       }}
     </h1>
     <div
-      v-if="demandeCourante.statut === 'TRANSMISE'"
+      v-if="demandeCourante.statut !== 'BROUILLON'"
       class="fr-grid-row fr-mb-5w fr-px-2w"
     >
       <div class="fr-col-7">
@@ -21,9 +21,8 @@
       <div class="fr-col-5 badge">
         <DsfrBadge
           :small="false"
-          type="new"
-          label="TRANSMISE"
-          class="pointer"
+          :type="statusStates[demandeCourante.statut] ?? 'union'"
+          :label="demandeCourante.statut"
         />
       </div>
     </div>
@@ -265,6 +264,19 @@ const canModify = computed(() => {
     demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER_8J
   );
 });
+
+const statusStates = {
+  [DeclarationSejour.statuts.EN_COURS]: "new",
+  [DeclarationSejour.statuts.EN_COURS_8J]: "new",
+  [DeclarationSejour.statuts.TRANSMISE]: "new",
+  [DeclarationSejour.statuts.ATTENTE_8_JOUR]: "new",
+  [DeclarationSejour.statuts.TRANSMISE_8J]: "new",
+  [DeclarationSejour.statuts.VALIDEE_8J]: "success",
+  [DeclarationSejour.statuts.A_MODIFIER]: "warning",
+  [DeclarationSejour.statuts.A_MODIFIER_8J]: "warning",
+  [DeclarationSejour.statuts.REFUSEE]: "error",
+  [DeclarationSejour.statuts.REFUSEE_8J]: "error",
+};
 
 const demandeDetails = computed(() => {
   const { organisme } = demandeCourante.value;
