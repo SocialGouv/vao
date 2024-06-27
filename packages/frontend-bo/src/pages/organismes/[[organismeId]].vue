@@ -1,8 +1,10 @@
 <template>
-  <div>
+  <div class="fr-container">
+    <DsfrBreadcrumb :links="links" />
+
     <div v-if="organismeStore.organisme?.typeOrganisme === 'personne_morale'">
       <h4>Organisme</h4>
-      <DemandesSejourDisplayInput
+      <UtilsDisplayInput
         v-for="entry in Object.keys(displayInput.IPersonneMorale)"
         :key="`organisme-${entry}`"
         :value="organismeStore.organisme.personneMorale[entry]"
@@ -10,7 +12,7 @@
       />
 
       <h4>Responsable du séjour</h4>
-      <DemandesSejourDisplayInput
+      <UtilsDisplayInput
         v-for="entry in Object.keys(displayInput.IResponsableSejour)"
         :key="`organisme-responsableSejour-${entry}`"
         :value="
@@ -20,7 +22,7 @@
       />
     </div>
     <div v-if="organismeStore.organisme?.typeOrganisme === 'personne_physique'">
-      <DemandesSejourDisplayInput
+      <UtilsDisplayInput
         v-for="entry in Object.keys(displayInput.IPersonnePhysique)"
         :key="`organisme-${entry}`"
         :value="organismeStore.organisme.personnePhysique[entry]"
@@ -36,6 +38,20 @@ import { useOrganismeStore } from "~/stores/organisme";
 const organismeStore = useOrganismeStore();
 const route = useRoute();
 
+const links = [
+  {
+    to: "/",
+    text: "Accueil",
+  },
+  {
+    to: "/organismes/liste",
+    text: "Organismes",
+  },
+  {
+    text: route.params.organismeId,
+  },
+];
+
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["Compte"],
@@ -44,8 +60,11 @@ definePageMeta({
 onMounted(async () => {
   try {
     await organismeStore.getOrganisme(route.params.organismeId);
+    // if (!organismeStore.organisme) {
+    //   navigateTo("/organismes/liste ");
+    // }
   } catch (e) {
-    navigateTo("/organismes");
+    navigateTo("/organismes/liste ");
   }
 });
 </script>

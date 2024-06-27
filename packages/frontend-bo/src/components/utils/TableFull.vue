@@ -125,7 +125,7 @@ const filteredData = computed(() => {
       } else if (typeof rule === "object") {
         target = Array.isArray(item[rule.obj])
           ? item[rule.obj].map((el) => el[rule.val])
-          : item[rule.obj][rule.val];
+          : item[rule.obj]?.[rule.val];
       } else if (typeof values === "boolean") {
         const noMatch = Array.isArray(target)
           ? target.findIndex((item) => values !== item) === -1
@@ -175,7 +175,7 @@ const displayableData = computed(() => {
   return filteredData.value.map((item) => {
     const rowdata = h.value.map((header) => {
       if (header.component) {
-        return header.component(item);
+        return header.component(item) ?? "";
       }
       if (header.format) {
         return header.format(item) ?? "";
@@ -186,7 +186,7 @@ const displayableData = computed(() => {
       if (Array.isArray(item[header.column])) {
         return item[header.column]
           .map((val) => {
-            return val[header.objectLabel];
+            return val[header.objectLabel] ?? "";
           })
           .join(", ");
       }

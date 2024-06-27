@@ -8,7 +8,7 @@ const log = logger(module.filename);
 module.exports = async function get(req, res, next) {
   log.i("IN");
 
-  const organismeId = req.params.organismeId;
+  const { organismeId, origin } = req.params;
   const { decoded } = req;
   const { id: userId } = decoded;
   if (!organismeId) {
@@ -20,14 +20,15 @@ module.exports = async function get(req, res, next) {
       }),
     );
   }
-  const criteria = req.path.includes("/bo/")
-    ? {
-        id: organismeId,
-      }
-    : {
-        id: organismeId,
-        use_id: userId,
-      };
+  const criteria =
+    origin === "back"
+      ? {
+          id: organismeId,
+        }
+      : {
+          id: organismeId,
+          use_id: userId,
+        };
   try {
     const organisme = await Organisme.getOne(criteria);
     log.d(organisme);

@@ -24,8 +24,6 @@
 </template>
 
 <script setup>
-import displayInput from "~/utils/display-input";
-
 defineEmits(["emitComment"]);
 
 const props = defineProps({
