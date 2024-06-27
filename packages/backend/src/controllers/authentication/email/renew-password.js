@@ -8,6 +8,7 @@ const passwordSchema = require("../../../schemas/parts/password");
 const AppError = require("../../../utils/error");
 const ValidationAppError = require("../../../utils/validation-error");
 const logger = require("../../../utils/logger");
+const { status } = require("../../../helpers/users");
 
 const log = logger(module.filename);
 
@@ -37,7 +38,10 @@ module.exports = async function register(req, res, next) {
       algorithm: "ES512",
     });
     log.d({ email });
-    const user = await User.editPassword({ email, password });
+    let user = await User.editPassword({ email, password });
+    if (user.statusCode !== status.VALIDATED) {
+      user = await User.activate(email);
+    }
     log.d({ user });
     log.i("DONE");
     return res.status(200).json({ user });

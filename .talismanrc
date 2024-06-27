@@ -90,7 +90,7 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/authentication/email/register.js
   checksum: 405b78b09927ec0c3feb4eec6aada0b4875e63f0065863962c446be5ce8ca5e7
 - filename: packages/backend/src/controllers/authentication/email/renew-password.js
-  checksum: 2540a276112e52b338b21a17f3362a80ebdf0e04dda8cb42ce69ead4b19f4b18
+  checksum: c0f7fb6010a8914d2b0c3270021d5f36a7ead1c99cde7ad09c94733f5172ba34
 - filename: packages/backend/src/controllers/authentication/email/renewPassword.js
   checksum: 71c7f6afdca8903cb4ad4120ac93e5296cc5bac40dac63391722bb4c2079b422
 - filename: packages/backend/src/controllers/bo-authentication/email/forgotten-password.js
