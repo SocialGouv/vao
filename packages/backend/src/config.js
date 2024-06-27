@@ -21,6 +21,14 @@ module.exports = {
     URI: process.env.API_INSEE_URI,
     URL: process.env.API_INSEE_URL,
   },
+  crons: {
+    request: {
+      notify: {
+        cron: process.env.CRON_REQUEST_DS8J15J_NOTIFY_CRON || "0 22 * * *",
+        name: "REQUEST_DS8J15J",
+      },
+    },
+  },
   domain: process.env.BACKEND_URL,
   frontBODomain: process.env.FRONTEND_BO_URL,
 
