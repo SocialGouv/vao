@@ -143,7 +143,6 @@ module.exports = async function post(req, res, next) {
         : [];
 
       if (destinataires) {
-        app.use(`/fo-user`, routes.FOUser);
         await Send(
           MailUtils.usagers.declarationSejour.sendAccuseTransmission8jours({
             cc: filteredCc,

@@ -2,14 +2,14 @@
   <div>
     <div v-if="organismeStore.organisme?.typeOrganisme === 'personne_morale'">
       <h4>Organisme</h4>
-      <DemandesSejourDisplayInput
+      <UtilsDisplayInput
         v-for="entry in Object.keys(displayInput.IPersonneMorale)"
         :key="`organisme-${entry}`"
         :value="organismeStore.organisme.personneMorale[entry]"
         :input="displayInput.IPersonneMorale[entry]"
       />
       <h4>Responsable du séjour</h4>
-      <DemandesSejourDisplayInput
+      <UtilsDisplayInput
         v-for="entry in Object.keys(displayInput.IResponsableSejour)"
         :key="`organisme-responsableSejour-${entry}`"
         :value="
@@ -19,7 +19,7 @@
       />
     </div>
     <div v-if="organismeStore.organisme?.typeOrganisme === 'personne_physique'">
-      <DemandesSejourDisplayInput
+      <UtilsDisplayInput
         v-for="entry in Object.keys(displayInput.IPersonnePhysique)"
         :key="`organisme-${entry}`"
         :value="organismeStore.organisme.personnePhysique[entry]"

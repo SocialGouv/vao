@@ -7,7 +7,6 @@ export const useOrganismeStore = defineStore("organisme", {
   state: () => ({
     organisme: null,
     organismes: [],
-    total: 0,
   }),
   getters: {
     isConnected: (state) => !!state.user,
@@ -17,27 +16,22 @@ export const useOrganismeStore = defineStore("organisme", {
       log.i("fetchOrganismes - IN");
       try {
         // Appel du back pour la liste des utilisateurs
-        const { organismes, total } = await $fetchBackend(
-          "/organisme/bo/liste",
-          {
-            credentials: "include",
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            params: {
-              search,
-            },
+        const { organismes } = await $fetchBackend("/organisme/bo/liste", {
+          credentials: "include",
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
-        log.d("fetchOrganismes - réponse", { organismes, total });
+          params: {
+            search,
+          },
+        });
+        log.d("fetchOrganismes - réponse", { organismes });
         this.organismes = organismes;
-        this.total = parseInt(total);
         log.i("fetchOrganismes - DONE");
       } catch (error) {
         // Retour vide en cas d'erreur
         this.organismes = [];
-        this.total = 0;
         log.w("fetchOrganismes - Erreur", { error });
       }
     },

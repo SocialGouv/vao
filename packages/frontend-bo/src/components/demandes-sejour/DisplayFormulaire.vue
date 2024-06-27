@@ -13,14 +13,15 @@
           "
         >
           <h4>Organisme</h4>
-          <DisplayInput
+          <UtilsDisplayInput
             v-for="entry in Object.keys(displayInput.IPersonneMorale)"
             :key="`organisme-${entry}`"
             :value="demandeStore.currentDemande.organisme.personneMorale[entry]"
             :input="displayInput.IPersonneMorale[entry]"
-          />
+          ></UtilsDisplayInput>
+
           <h4>Responsable du séjour</h4>
-          <DisplayInput
+          <UtilsDisplayInput
             v-for="entry in Object.keys(displayInput.IResponsableSejour)"
             :key="`organisme-responsableSejour-${entry}`"
             :value="
@@ -28,7 +29,8 @@
                 .responsableSejour[entry]
             "
             :input="displayInput.IResponsableSejour[entry]"
-          />
+          >
+          </UtilsDisplayInput>
         </div>
         <div
           v-if="
@@ -36,14 +38,15 @@
             'personne_physique'
           "
         >
-          <DisplayInput
+          <UtilsDisplayInput
             v-for="entry in Object.keys(displayInput.IPersonnePhysique)"
             :key="`organisme-${entry}`"
             :value="
               demandeStore.currentDemande.organisme.personnePhysique[entry]
             "
             :input="displayInput.IPersonnePhysique[entry]"
-          />
+          >
+          </UtilsDisplayInput>
         </div>
       </DsfrAccordion>
     </li>
@@ -53,12 +56,13 @@
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
-        <DisplayInput
+        <UtilsDisplayInput
           v-for="entry in Object.keys(displayInput.IVacancier)"
           :key="`personnel-${entry}`"
           :value="demandeStore.currentDemande.informationsVacanciers[entry]"
           :input="displayInput.IVacancier[entry]"
-        />
+        >
+        </UtilsDisplayInput>
       </DsfrAccordion>
     </li>
     <li v-if="demandeStore.currentDemande?.informationsPersonnel">
@@ -70,13 +74,13 @@
         <h4 v-if="!!demandeStore.currentDemande.statut && isDisplay8Jours">
           Généralité
         </h4>
-
-        <DisplayInput
+        <UtilsDisplayInput
           v-for="entry in Object.keys(displayInput.Ipersonnel)"
           :key="`personnel-${entry}`"
           :value="demandeStore.currentDemande.informationsPersonnel[entry]"
           :input="displayInput.Ipersonnel[entry]"
-        />
+        >
+        </UtilsDisplayInput>
         <div v-if="!!demandeStore.currentDemande.statut && isDisplay8Jours">
           <h4
             v-if="
@@ -86,12 +90,13 @@
           >
             Personnel d'encadrement
           </h4>
-          <DisplayEncadrementAccompagnement
+          <DemandesSejourDisplayEncadrementAccompagnement
             :personnel="
               demandeStore.currentDemande?.informationsPersonnel?.encadrants ??
               []
             "
-          />
+          >
+          </DemandesSejourDisplayEncadrementAccompagnement>
 
           <h4
             v-if="
@@ -101,12 +106,12 @@
           >
             Personnel d'accompagnement
           </h4>
-          <DisplayEncadrementAccompagnement
+          <DemandesSejourDisplayEncadrementAccompagnement
             :personnel="
               demandeStore.currentDemande?.informationsPersonnel
                 ?.accompagnants ?? []
             "
-          />
+          ></DemandesSejourDisplayEncadrementAccompagnement>
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel
@@ -115,12 +120,13 @@
           >
             Prestataire en charge des médicaments
           </h4>
-          <DisplayPrestataire
+          <DemandesSejourDisplayPrestataire
             :personnel="
               demandeStore.currentDemande?.informationsPersonnel
                 ?.prestatairesMedicaments ?? []
             "
-          />
+          >
+          </DemandesSejourDisplayPrestataire>
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel
@@ -129,12 +135,12 @@
           >
             Prestataire en charge du transport des vacanciers
           </h4>
-          <DisplayPrestataire
+          <DemandesSejourDisplayPrestataire
             :personnel="
               demandeStore.currentDemande?.informationsPersonnel
                 ?.prestatairesTransport ?? []
             "
-          />
+          ></DemandesSejourDisplayPrestataire>
 
           <h4
             v-if="
@@ -144,12 +150,12 @@
           >
             Prestataire en charge de la restauration
           </h4>
-          <DisplayPrestataire
+          <DemandesSejourDisplayPrestataire
             :personnel="
               demandeStore.currentDemande?.informationsPersonnel
                 ?.prestatairesRestauration ?? []
             "
-          />
+          ></DemandesSejourDisplayPrestataire>
 
           <h4
             v-if="
@@ -159,12 +165,13 @@
           >
             Prestataire en charge de l’entretien et du ménage
           </h4>
-          <DisplayPrestataire
+          <DemandesSejourDisplayPrestataire
             :personnel="
               demandeStore.currentDemande?.informationsPersonnel
                 ?.prestatairesEntretien ?? []
             "
-          />
+          ></DemandesSejourDisplayPrestataire>
+
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel
@@ -173,12 +180,12 @@
           >
             Prestataire en charge d'encadrer les activités spécifiques
           </h4>
-          <DisplayPrestataire
+          <DemandesSejourDisplayPrestataire
             :personnel="
               demandeStore.currentDemande?.informationsPersonnel
                 ?.prestatairesActivites ?? []
             "
-          />
+          ></DemandesSejourDisplayPrestataire>
         </div>
       </DsfrAccordion>
     </li>
@@ -188,7 +195,7 @@
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
-        <DisplayInput
+        <UtilsDisplayInput
           v-for="entry in Object.keys(displayInput.IProjetSejour)"
           :key="`projet-sejour-${entry}`"
           :value="demandeStore.currentDemande.informationsProjetSejour[entry]"
@@ -202,7 +209,7 @@
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
-        <DisplayInput
+        <UtilsDisplayInput
           v-for="entry in Object.keys(displayInput.ITransport)"
           :key="`transport-${entry}`"
           :value="demandeStore.currentDemande.informationsTransport[entry]"
@@ -216,12 +223,12 @@
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
-        <DisplayInput
+        <UtilsDisplayInput
           v-for="entry in Object.keys(displayInput.ISanitaire)"
           :key="`transport-${entry}`"
           :value="demandeStore.currentDemande.informationsSanitaires[entry]"
           :input="displayInput.ISanitaire[entry]"
-        />
+        />DisplayInput
       </DsfrAccordion>
     </li>
     <li v-if="demandeStore.currentDemande?.hebergement">
@@ -237,14 +244,14 @@
         >
           <h3>Hebergement : {{ hebergement.nom }}</h3>
           <h5>Informations sur le lieu de l'hébergement</h5>
-          <DisplayInput
+          <UtilsDisplayInput
             v-for="entry in Object.keys(displayInput.IHebergement)"
             :key="`hebergement-${hebergement.hebergementId}-${entry}`"
             :value="hebergement[entry]"
             :input="displayInput.IHebergement[entry]"
           />
           <h5>Informations sur les locaux</h5>
-          <DisplayInput
+          <UtilsDisplayInput
             v-for="entry in Object.keys(
               displayInput.IHebergementInformationLocaux,
             )"
@@ -253,7 +260,7 @@
             :input="displayInput.IHebergementInformationLocaux[entry]"
           />
           <h5>Informations sur les transports</h5>
-          <DisplayInput
+          <UtilsDisplayInput
             v-for="entry in Object.keys(
               displayInput.IHebergementInformationsTransport,
             )"
@@ -270,7 +277,7 @@
         :expanded-id="expandedId"
         @expand="expandedId = $event"
       >
-        <DisplayInput
+        <UtilsDisplayInput
           v-for="entry in Object.keys(displayInput.IAttestation)"
           :key="`attestation-${entry}`"
           :value="demandeStore.currentDemande.attestation[entry]"
@@ -282,11 +289,6 @@
 </template>
 
 <script setup>
-import { DsfrAccordion, DsfrAccordionsGroup } from "@gouvminint/vue-dsfr";
-import DisplayInput from "~/components/demandes-sejour/DisplayInput.vue";
-import DisplayEncadrementAccompagnement from "~/components/demandes-sejour/DisplayEncadrementAccompagnement.vue";
-import DisplayPrestataire from "~/components/demandes-sejour/DisplayPrestataire.vue";
-
 const demandeStore = useDemandeSejourStore();
 
 const isDisplay8Jours = computed(() => {
