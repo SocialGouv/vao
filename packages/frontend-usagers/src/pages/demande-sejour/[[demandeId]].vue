@@ -60,6 +60,8 @@
                     v-if="hash === 'info-generales'"
                     :init-data="demandeCourante ?? {}"
                     :modifiable="canModify"
+                    :is-downloading="apiStatus.isDownloading"
+                    :message="apiStatus.message"
                     @update="updateOrCreate"
                     @next="nextHash"
                   />
@@ -69,6 +71,8 @@
                     v-if="hash === 'info-vacanciers'"
                     :init-data="demandeCourante.informationsVacanciers ?? {}"
                     :modifiable="canModify"
+                    :is-downloading="apiStatus.isDownloading"
+                    :message="apiStatus.message"
                     @update="updateOrCreate"
                     @next="nextHash"
                     @previous="previousHash"
@@ -79,6 +83,8 @@
                     v-if="hash === 'info-transport'"
                     :init-data="demandeCourante.informationsTransport ?? {}"
                     :modifiable="canModify"
+                    :is-downloading="apiStatus.isDownloading"
+                    :message="apiStatus.message"
                     @update="updateOrCreate"
                     @next="nextHash"
                     @previous="previousHash"
@@ -89,6 +95,8 @@
                     v-if="hash === 'info-sanitaires'"
                     :init-data="demandeCourante.informationsSanitaires ?? {}"
                     :modifiable="canModify"
+                    :is-downloading="apiStatus.isDownloading"
+                    :message="apiStatus.message"
                     @update="updateOrCreate"
                     @next="nextHash"
                     @previous="previousHash"
@@ -100,6 +108,8 @@
                     :modifiable="canModify"
                     :init-data="demandeCourante.informationsPersonnel ?? {}"
                     :declaration-statut="demandeCourante.statut"
+                    :is-downloading="apiStatus.isDownloading"
+                    :message="apiStatus.message"
                     @update="updateOrCreate"
                     @next="nextHash"
                     @previous="previousHash"
@@ -110,6 +120,8 @@
                     v-if="hash === 'projet-sejour'"
                     :init-data="demandeCourante.projetSejour ?? {}"
                     :modifiable="canModify"
+                    :is-downloading="apiStatus.isDownloading"
+                    :message="apiStatus.message"
                     @update="updateOrCreate"
                     @next="nextHash"
                     @previous="previousHash"
@@ -122,6 +134,8 @@
                     :date-fin="demandeCourante.dateFin"
                     :hebergement="demandeCourante.hebergement ?? {}"
                     :modifiable="canModify"
+                    :is-downloading="apiStatus.isDownloading"
+                    :message="apiStatus.message"
                     @update="updateOrCreate"
                     @next="nextHash"
                     @previous="previousHash"
@@ -132,6 +146,8 @@
                     v-if="hash === 'synthese'"
                     :declaration-courante="demandeCourante ?? {}"
                     :modifiable="canModify"
+                    :is-downloading="apiStatus.isDownloading"
+                    :message="apiStatus.message"
                     @finalize="finalize"
                     @next="nextHash"
                     @previous="previousHash"
@@ -176,6 +192,8 @@ import dayjs from "dayjs";
 const route = useRoute();
 
 const toaster = useToaster();
+
+const { apiStatus, setApiStatut, resetApiStatut } = useIsDownloading();
 
 definePageMeta({
   middleware: [
@@ -293,6 +311,9 @@ const demandeDetails = computed(() => {
 
 async function updateOrCreate(data, type) {
   log.i("updateOrCreate - IN", { data, type });
+  setApiStatut(
+    `${sejourId.value ? "Sauvegarde" : "Création"} de la demande de séjour en cours`,
+  );
   let counter = 0;
 
   if (data.file) {
@@ -375,17 +396,20 @@ async function updateOrCreate(data, type) {
     );
     log.d(`demande de séjour ${sejourId.value} mis à jour`);
     sejourId.value = response.id;
-    return nextHash();
+    return await nextHash();
   } catch (error) {
     log.w("Creation/modification de declaration de sejour: ", { error });
     return toaster.error(
       `Une erreur est survenue lors de la mise à jour de la déclaration de séjour`,
     );
+  } finally {
+    resetApiStatut();
   }
 }
 
 async function finalize(attestation) {
   log.i("finalize -IN");
+  setApiStatut("Transmition de la déclaration en cours");
   try {
     const url = `/sejour/depose/${sejourId.value}`;
     const response = await $fetchBackend(url, {
@@ -418,12 +442,14 @@ async function finalize(attestation) {
       );
     }
     log.d(`demande de séjour ${sejourId.value} transmise`);
-    return navigateTo("/demande-sejour/liste");
+    return await navigateTo("/demande-sejour/liste");
   } catch (error) {
     log.w("Finalisation de la declaration de sejour : ", { error });
     return toaster.error(
       `Une erreur est survenue lors de la transmission de la déclaration de séjour`,
     );
+  } finally {
+    resetApiStatut();
   }
 }
 

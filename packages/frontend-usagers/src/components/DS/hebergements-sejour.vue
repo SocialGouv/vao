@@ -60,21 +60,13 @@
         </div>
       </fieldset>
 
-      <fieldset class="fr-fieldset">
-        <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
-          <DsfrButton
-            id="previous-step"
-            :secondary="true"
-            @click.prevent="
-              () => {
-                emit('previous');
-              }
-            "
-            >Précédent
-          </DsfrButton>
-          <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
-        </DsfrButtonGroup>
-      </fieldset>
+      <UtilsNavigationButtons
+        :show-buttons="props.showButtons"
+        :is-downloading="props.isDownloading"
+        :message="props.message"
+        @next="next"
+        @previous="emit('previous')"
+      />
     </div>
     <DSHebergementsSejourDetail
       v-else
@@ -100,6 +92,8 @@ const props = defineProps({
   dateFin: { type: String, required: true },
   hebergement: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
