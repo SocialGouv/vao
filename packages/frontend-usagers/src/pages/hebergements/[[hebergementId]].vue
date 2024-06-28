@@ -26,11 +26,15 @@
           v-if="hebergementId"
           :init-hebergement="hebergementStore.hebergementCourant"
           label-next="Modifier hébergement"
+          :is-downloading="apiStatus.isDownloading"
+          :message="apiStatus.message"
           @cancel="back"
           @submit="updateOrCreate"
         ></Hebergement>
         <Hebergement
           v-else
+          :is-downloading="apiStatus.isDownloading"
+          :message="apiStatus.message"
           @cancel="back"
           @submit="updateOrCreate"
         ></Hebergement>
@@ -51,6 +55,8 @@ const hebergementStore = useHebergementStore();
 
 const route = useRoute();
 const hebergementId = ref(route.params.hebergementId);
+
+const { apiStatus, setApiStatut, resetApiStatut } = useIsDownloading();
 
 useHead({
   title: "Fiche hébergement | Vacances Adaptées Organisées",
@@ -82,11 +88,15 @@ const links = [
 
 async function updateOrCreate(hebergement) {
   log.d("updateOrCreate - IN", { hebergement });
+  setApiStatut(
+    `${hebergementId.value ? "Modification" : "création"} de l'hébergement en cours`,
+  );
 
   try {
     await hebergementStore.updaloadFiles(hebergement);
   } catch (e) {
     toaster.error(e.message ?? "Erreur lors de la sauvegarde de l'hébergement");
+    resetApiStatut();
     return;
   }
 
@@ -100,13 +110,15 @@ async function updateOrCreate(hebergement) {
     toaster.success("Hébergement sauvegardé");
 
     if (!hebergementId.value && id) {
-      return navigateTo("/hebergements/" + id);
+      return await navigateTo("/hebergements/liste");
     }
   } catch (error) {
     toaster.error(
       error.data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
     );
     log.w("updateOrCreate - erreur", { error });
+  } finally {
+    resetApiStatut();
   }
 }
 

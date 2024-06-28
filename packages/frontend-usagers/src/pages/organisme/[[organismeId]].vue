@@ -16,6 +16,8 @@
             <OrganismeInformationsGenerales
               v-if="hash === 'info-generales'"
               :init-data="organismeStore.organismeCourant ?? {}"
+              :is-downloading="apiStatus.isDownloading"
+              :message="apiStatus.message"
               @update="updateOrCreate"
               @next="nextHash"
             />
@@ -25,6 +27,8 @@
               v-if="hash === 'agrement'"
               :init-agrement="organismeStore.organismeCourant.agrement ?? {}"
               :modifiable="isPorteurAgrement"
+              :is-downloading="apiStatus.isDownloading"
+              :message="apiStatus.message"
               @previous="previousHash"
               @next="nextHash"
               @update="updateOrCreateAgrement"
@@ -36,6 +40,8 @@
               :init-data="
                 organismeStore.organismeCourant.protocoleTransport ?? {}
               "
+              :is-downloading="apiStatus.isDownloading"
+              :message="apiStatus.message"
               @update="updateOrCreate"
               @previous="previousHash"
               @next="nextHash"
@@ -47,6 +53,8 @@
               :init-data="
                 organismeStore.organismeCourant.protocoleSanitaire ?? {}
               "
+              :is-downloading="apiStatus.isDownloading"
+              :message="apiStatus.message"
               @update="updateOrCreate"
               @previous="previousHash"
               @next="nextHash"
@@ -56,6 +64,8 @@
             <OrganismeSynthese
               v-if="hash === 'synthese'"
               :init-organisme="organismeStore.organismeCourant ?? {}"
+              :is-downloading="apiStatus.isDownloading"
+              :message="apiStatus.message"
               @finalize="finalizeOrganisme"
               @previous="previousHash"
             ></OrganismeSynthese>
@@ -70,6 +80,8 @@
 const route = useRoute();
 const toaster = useToaster();
 const log = logger("pages/organisme/[[organismeId]]");
+
+const { apiStatus, setApiStatut, resetApiStatut } = useIsDownloading();
 
 definePageMeta({
   middleware: ["is-connected", "check-organisme-id-param"],
@@ -132,6 +144,9 @@ function nextHash() {
 
 async function updateOrCreate(organismeData, type) {
   log.i("updateOrCreate - IN", { organismeData, type });
+  setApiStatut(
+    ` ${organismeId.value ? "Sauvegarde" : "Création"} de la fiche organisateur en cours`,
+  );
   let counter = 0;
 
   if (organismeData.file) {
@@ -147,6 +162,7 @@ async function updateOrCreate(organismeData, type) {
         };
         toaster.info(`Document déposé`);
       } catch (error) {
+        resetApiStatut();
         if (error.response.status === 413) {
           return toaster.error(
             `Le fichier ${file.name} dépasse la taille maximale autorisée`,
@@ -182,7 +198,7 @@ async function updateOrCreate(organismeData, type) {
         counter++;
       } catch (error) {
         log.w(error.response);
-
+        resetApiStatut();
         if (error.response.status === 413) {
           return toaster.error(
             `Le fichier ${file.name} dépasse la taille maximale autorisée`,
@@ -219,18 +235,20 @@ async function updateOrCreate(organismeData, type) {
     organismeId.value = data.organismeId;
     await organismeStore.setMyOrganisme();
     log.d(`organisme ${organismeId.value} mis à jour`);
-    return nextHash();
+    return await nextHash();
   } catch (error) {
     log.w("Creation/modification d'organisme : ", { error });
     toaster.error(
       "Une erreur est survenue lors de la sauvegarde de la fiche organisateur",
     );
+  } finally {
+    resetApiStatut();
   }
 }
 
 async function updateOrCreateAgrement(agrementData, type) {
   log.i("updateOrCreateAgrement - IN", { agrementData, type });
-
+  setApiStatut("Creation de l'agrément en cours");
   if (agrementData.file) {
     log.d("updateOrCreateAgrement - look at agrementData.file");
     const file = unref(agrementData.file);
@@ -244,6 +262,7 @@ async function updateOrCreateAgrement(agrementData, type) {
         };
       } catch (error) {
         if (error.response.status === 413) {
+          resetApiStatut();
           return toaster.error(
             `Le fichier ${file.name} dépasse la taille maximale autorisée`,
           );
@@ -272,17 +291,20 @@ async function updateOrCreateAgrement(agrementData, type) {
     toaster.success(`Agrément sauvegardé`);
     log.d(`agrement mis à jour`);
 
-    return nextHash();
+    return await nextHash();
   } catch (error) {
     log.w("Creation/modification d'agrement : ", { error });
     return toaster.error(
       `Une erreur est survenue lors de la mise à jour des informations de l'agrément`,
     );
+  } finally {
+    resetApiStatut();
   }
 }
 
 async function finalizeOrganisme() {
   log.i("finalizeOrganisme - IN");
+  setApiStatut("Finalisation de la fiche organisateur");
   try {
     const url = `/organisme/${organismeStore.organismeCourant.organismeId}/finalize`;
     await $fetchBackend(url, {
@@ -293,12 +315,14 @@ async function finalizeOrganisme() {
       `organisateur ${organismeStore.organismeCourant.organismeId} finalisé`,
     );
     toaster.success("Fiche organisateur finalisée");
-    return navigateTo("/");
+    return await navigateTo("/");
   } catch (error) {
     log.w("Creation/modification d'organisateur : ", { error });
     toaster.error(
       "Une erreur est survenue lors de la finalisation de la fiche organisateur",
     );
+  } finally {
+    resetApiStatut();
   }
 }
 </script>

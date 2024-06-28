@@ -597,7 +597,12 @@
       size="xl"
       @close="closeAddHebergement"
     >
-      <Hebergement @cancel="closeAddHebergement" @submit="addHebergement" />
+      <Hebergement
+        :is-downloading="apiStatus.isDownloading"
+        :message="apiStatus.message"
+        @cancel="closeAddHebergement"
+        @submit="addHebergement"
+      />
     </DsfrModal>
   </div>
 </template>
@@ -608,6 +613,7 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 
 const toaster = useToaster();
+const { apiStatus, setApiStatut, resetApiStatut } = useIsDownloading();
 
 const props = defineProps({
   hebergement: { type: Object, required: true },
@@ -911,11 +917,13 @@ const addHebergementOpened = ref(false);
 
 async function addHebergement(hebergement) {
   log.i("addHebergement - IN", { hebergement });
+  setApiStatut("Ajout de l'hébergement en cours");
   let id;
   try {
     await hebergementStore.updaloadFiles(hebergement);
   } catch (e) {
     toaster.error(e.message ?? "Erreur lors de la sauvegarde de l'hébergement");
+    resetApiStatut();
     return;
   }
 
@@ -932,6 +940,7 @@ async function addHebergement(hebergement) {
   }
   await hebergementStore.fetch();
   handleHebergementIdChange(id);
+  resetApiStatut();
   closeAddHebergement();
   log.i("addHebergement - DONE");
 }

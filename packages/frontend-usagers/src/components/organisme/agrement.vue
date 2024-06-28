@@ -85,24 +85,14 @@
       </DsfrFieldset>
       <DsfrFieldset v-if="props.showButtons">
         <div class="fr-fieldset__element">
-          <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
-            <DsfrButton
-              id="previous-step"
-              :secondary="true"
-              @click.prevent="
-                () => {
-                  emit('previous');
-                }
-              "
-              >Précédent
-            </DsfrButton>
-            <DsfrButton
-              id="next-step"
-              :disabled="!meta.valid"
-              @click.prevent="next"
-              >Suivant
-            </DsfrButton>
-          </DsfrButtonGroup>
+          <UtilsNavigationButtons
+            :show-buttons="props.showButtons"
+            :is-downloading="props.isDownloading"
+            :message="props.message"
+            :disabled="!meta.valid"
+            @next="next"
+            @previous="emit('previous')"
+          />
         </div>
       </DsfrFieldset>
     </form>
@@ -121,6 +111,8 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
   showButtons: { type: Boolean, default: true },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
