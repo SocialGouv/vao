@@ -40,6 +40,7 @@
                         :label-visible="true"
                         placeholder="Veuillez saisir votre mot de passe"
                         :is-valid="passwordField.isValid"
+                        required
                         @update:model-value="checkValidPassword"
                       />
                     </div>
@@ -55,6 +56,9 @@
                           ]"
                         >
                           12 caractères minimum
+                          <span v-if="isPwdLong" class="fr-sr-only">
+                            La règle est respectèe.
+                          </span>
                         </p>
                         <p
                           :class="[
@@ -63,6 +67,9 @@
                           ]"
                         >
                           1 lettre minuscule minimum
+                          <span v-if="isPwdMin" class="fr-sr-only">
+                            La règle est respectèe.
+                          </span>
                         </p>
                         <p
                           :class="[
@@ -71,6 +78,9 @@
                           ]"
                         >
                           1 lettre majuscule minimum
+                          <span v-if="isPwdMaj" class="fr-sr-only">
+                            La règle est respectèe.
+                          </span>
                         </p>
                         <p
                           :class="[
@@ -79,6 +89,9 @@
                           ]"
                         >
                           1 chiffre minimum
+                          <span v-if="isPwdNumber" class="fr-sr-only">
+                            La règle est respectèe.
+                          </span>
                         </p>
                         <p
                           :class="[
@@ -87,6 +100,9 @@
                           ]"
                         >
                           1 caractère spécial minimum
+                          <span v-if="isPwdSpecial" class="fr-sr-only">
+                            La règle est respectèe.
+                          </span>
                         </p>
                       </div>
                     </div>
