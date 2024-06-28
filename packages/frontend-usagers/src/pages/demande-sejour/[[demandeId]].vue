@@ -4,13 +4,13 @@
     <h1>
       Déclaration
       {{
-        demandeCourante.statut !== "BROUILLON"
+        demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON
           ? `:  ${demandeCourante.libelle}`
           : " de séjour"
       }}
     </h1>
     <div
-      v-if="demandeCourante.statut !== 'BROUILLON'"
+      v-if="demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON"
       class="fr-grid-row fr-mb-5w fr-px-2w"
     >
       <div class="fr-col-7">
@@ -21,7 +21,9 @@
       <div class="fr-col-5 badge">
         <DsfrBadge
           :small="false"
-          :type="statusStates[demandeCourante.statut] ?? 'union'"
+          :type="
+            DeclarationSejour.statusTagStates[demandeCourante.statut] ?? 'union'
+          "
           :label="demandeCourante.statut"
         />
       </div>
@@ -265,28 +267,11 @@ const canModify = computed(() => {
   );
 });
 
-const statusStates = {
-  [DeclarationSejour.statuts.EN_COURS]: "new",
-  [DeclarationSejour.statuts.EN_COURS_8J]: "new",
-  [DeclarationSejour.statuts.TRANSMISE]: "new",
-  [DeclarationSejour.statuts.ATTENTE_8_JOUR]: "new",
-  [DeclarationSejour.statuts.TRANSMISE_8J]: "new",
-  [DeclarationSejour.statuts.VALIDEE_8J]: "success",
-  [DeclarationSejour.statuts.A_MODIFIER]: "warning",
-  [DeclarationSejour.statuts.A_MODIFIER_8J]: "warning",
-  [DeclarationSejour.statuts.REFUSEE]: "error",
-  [DeclarationSejour.statuts.REFUSEE_8J]: "error",
-};
-
 const demandeDetails = computed(() => {
-  const { organisme } = demandeCourante.value;
   return [
     {
       label: "Organisme",
-      value:
-        organisme.typeOrganisme === "personne_morale"
-          ? organisme.personneMorale.raisonSociale
-          : `${organisme.personnePhysique.prenom} ${organisme.personnePhysique.nomUsage ?? organisme.personnePhysique.nomNaissance}`,
+      value: DeclarationSejour.getOrganismeName(demandeCourante.value),
     },
     {
       label: "Date (début / fin)",
@@ -294,9 +279,7 @@ const demandeDetails = computed(() => {
     },
     {
       label: "Saison",
-      value: ["Hiver", "Printemps", "Eté", "Automne"].flatMap((season) =>
-        Array(4).fill(season),
-      )[new Date(demandeCourante.value.dateDebut).getMonth()],
+      value: DeclarationSejour.getSaison(demandeCourante.value.dateDebut),
     },
     {
       label: "Déclaration",
