@@ -105,7 +105,7 @@ module.exports = function displayInfosSanitaires(info) {
       },
       {
         bold: true,
-        text: `${info.troussePharamcie ? "Oui" : "Non"}`,
+        text: `${info.troussePharmacie ? "Oui" : "Non"}`,
         width: "*",
       },
     ],
