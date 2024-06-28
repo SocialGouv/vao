@@ -345,7 +345,7 @@ async function finalize(attestation) {
     });
 
     toaster.success(
-      `Félicitations, votre déclaration de séjour n°${sejourId.value} a été transmise`,
+      `Félicitations, votre déclaration de séjour "${demandeCourante.value.libelle}" a été transmise`,
     );
 
     if (response.DSuuid) {
