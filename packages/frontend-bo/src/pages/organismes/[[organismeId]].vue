@@ -32,14 +32,17 @@
 import { useOrganismeStore } from "~/stores/organisme";
 const organismeStore = useOrganismeStore();
 const route = useRoute();
+const log = logger("pages/organismes/[[organismeId]]");
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["Compte"],
 });
+
 onMounted(async () => {
   try {
     await organismeStore.getOrganisme(route.params.organismeId);
   } catch (e) {
+    log.w("not authorized for this user", e);
     navigateTo("/organismes");
   }
 });

@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container">
-    <h1 class="header">Liste des comptes ({{ usersStore.totalUsersFO }})</h1>
+    <h1 class="fr-py-2w">Liste des comptes ({{ usersStore.totalUsersFO }})</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
@@ -153,16 +153,13 @@ const headers = [
     column: "statut",
     text: "Statut",
     format: (u) => {
-      switch (u.statut) {
-        case "VALIDATED":
-          return "Validé";
-        case "NEED_EMAIL_VALIDATION":
-          return "En attente activation";
-        case "BLOCKED":
-          return "Bloqué";
-        default:
-          return "Statut inattendu";
-      }
+      return (
+        {
+          VALIDATED: "Validé",
+          NEED_EMAIL_VALIDATION: "En attente activation",
+          BLOCKED: "Bloqué",
+        }[u.statut] || "Statut inattendu"
+      );
     },
     sort: true,
   },
@@ -205,10 +202,10 @@ const headers = [
     sort: true,
   },
 ];
-const updateSort = ({ sortBy: sb, sortDirection: sd }) => {
+const updateSort = ({ sortBy, sortDirection }) => {
   sortState.value = {
-    sortBy: sb,
-    sortDirection: sd,
+    sortBy,
+    sortDirection,
   };
 };
 const navigate = (organisme) => {
@@ -221,8 +218,3 @@ const updateCurrentPage = (val) => {
   currentPageState.value = val;
 };
 </script>
-<style scoped>
-.header {
-  padding: 1em 0em;
-}
-</style>

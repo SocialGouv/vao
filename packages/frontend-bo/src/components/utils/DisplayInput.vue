@@ -62,27 +62,23 @@ const props = defineProps({
         return false;
       }
 
-      if (
+      return !(
         props.input.inputType === displayInput.InputTypes.TABLE &&
         !!props.value &&
-        Array.isArray(props.value) === false
-      ) {
-        return false;
-      }
-
-      return true;
+        !Array.isArray(props.value)
+      );
     },
   },
 });
 
 const rows = computed(() => {
   return props.value.map((d) => {
-    for (const [key] of Object.entries(d)) {
+    Object.keys(d).forEach((key) => {
       const headerType = props.input.fields.find((h) => h.value === key);
       if (headerType && headerType?.display !== "text") {
         d[key] = headerType.format(d);
       }
-    }
+    });
     return d;
   });
 });

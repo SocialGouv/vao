@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container">
-    <h1 class="header">Liste des Organismes</h1>
+    <h1 class="fr-py-2w">Liste des Organismes</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
@@ -51,7 +51,7 @@
             >
               <div class="fr-input-group">
                 <DsfrSelect
-                  :model-value="search.regionObtention"
+                  v-model="search.regionObtention"
                   name="regionObtention"
                   label="Région d’obtention de l’agrément"
                   :options="regions"
@@ -83,26 +83,32 @@ import { useOrganismeStore } from "~/stores/organisme";
 import { useRegionStore } from "~/stores/referentiels";
 const organismeStore = useOrganismeStore();
 const regionStore = useRegionStore();
+
 regionStore.fetch();
+
 const regions = computed(() =>
   [{ text: "Toutes", value: "" }].concat(regionStore.regions),
 );
+
 const search = reactive({
   nomPersonnePhysique: null,
   siret: null,
   raisonSociale: null,
   regionObtention: null,
 });
+
 // Appel du store à l'ouverture
 organismeStore.fetchOrganismes({
   search,
 });
+
 const dict = {
   regionObtention: {
     obj: "agrement",
     val: "regionObtention",
   },
 };
+
 const headers = [
   {
     column: "organismeId",
@@ -154,15 +160,12 @@ const headers = [
     sort: true,
   },
 ];
+
 const onRegionObtentionChange = (region) => {
   search.regionObtention = region;
 };
+
 const navigate = (organisme) => {
   navigateTo(`/organismes/${organisme.organismeId}`);
 };
 </script>
-<style scoped>
-.header {
-  padding: 1em 0em;
-}
-</style>
