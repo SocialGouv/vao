@@ -10,7 +10,7 @@ const sendTemplate = require("../../helpers/mail");
 
 const { senderEmail } = require("../../config");
 
-const { name, cron } = require("../../config").crons.request.notify;
+const { name, cron, deadlineRemind } = require("../../config").crons.request.notify;
 
 const log = logger(module.filename);
 
@@ -21,12 +21,12 @@ const query = {
   fetchRappelDeclarationSejour8j15j: `
     select ds.id, ds.date_debut,ds.statut, 
     ds.libelle as titre,
-    to_char((ds.date_debut - (23 * interval '1 day'))::date, 'DD/MM/YYYY') as date_debut_alerte,
+    to_char((ds.date_debut - (('${deadlineRemind}'+8) * interval '1 day'))::date, 'DD/MM/YYYY') as date_debut_alerte,
     use.mail
       from front.demande_sejour ds
       inner join front.user_organisme uso on uso.org_id = ds.organisme_id
       inner join front.users use on use.id = uso.use_id
-    where (ds.date_debut - (23 * interval '1 day'))::date<= now()::date
+    where (ds.date_debut - (('${deadlineRemind}'+8) * interval '1 day'))::date<= now()::date
     and now()::date<=(ds.date_debut - (8 * interval '1 day'))::date  
       and ds.statut = '${statuts.ATTENTE_8_JOUR}'
       and ds.rappel_ds_compl = false;    
@@ -76,7 +76,7 @@ async function sendNotificationMail({ date_debut_alerte, email, titre }) {
         p: [
           `
         <p>Bonjour,</p>
-        <p>Il vous reste 15 jours à compter du ${date_debut_alerte} pour réaliser la déclaration de séjour à 8 jours pour le séjour «${titre}».<br>
+        <p>Il vous reste ${deadlineRemind} jours à compter du ${date_debut_alerte} pour réaliser la déclaration de séjour à 8 jours pour le séjour «${titre}».<br>
         Passé ce délai, il ne vous sera plus possible de constituer le dossier pour votre séjour.</p>
         `,
         ],
@@ -89,7 +89,7 @@ async function sendNotificationMail({ date_debut_alerte, email, titre }) {
     from: senderEmail,
     html: html,
     replyTo: senderEmail,
-    subject: `Il vous reste 15 jours pour réaliser la déclaration de séjour à 8 jours pour le séjour «${titre}»`,
+    subject: `Il vous reste ${deadlineRemind} jours pour réaliser la déclaration de séjour à 8 jours pour le séjour «${titre}»`,
     to: email,
   };
   log.d("sendNotificationMail post email", {
