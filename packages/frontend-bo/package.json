@@ -40,7 +40,7 @@
     "prettier": "^3.2.5",
     "sass": "~1.77.0",
     "sass-loader": "~14.2.0",
-    "typescript": "~5.4.3"
+    "typescript": "~5.5.0"
   },
   "lint-staged": {
     "src/**/*.{js,vue,ts}": "npx eslint --cache --fix"
