@@ -97,7 +97,11 @@
 
     <form>
       <DsfrFieldset>
-        <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+        <DsfrButtonGroup
+          v-if="!props.isDownloading"
+          :inline-layout-when="true"
+          :reverse="true"
+        >
           <DsfrButton
             id="previous-step"
             :secondary="true"
@@ -115,6 +119,10 @@
             @click.prevent="finalizeOrganisme"
           />
         </DsfrButtonGroup>
+        <is-downloading
+          :message="props.message"
+          :is-downloading="props.isDownloading"
+        />
       </DsfrFieldset>
     </form>
   </div>
@@ -123,9 +131,12 @@
 <script setup>
 import * as yup from "yup";
 import { useForm } from "vee-validate";
+import IsDownloading from "~/components/utils/IsDownloading.vue";
 
 const props = defineProps({
   initOrganisme: { type: Object, default: null, required: true },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const regionStore = useRegionStore();

@@ -130,16 +130,26 @@
         </div>
       </div>
     </fieldset>
-
-    <fieldset v-if="props.showButtons" class="fr-fieldset">
-      <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
-    </fieldset>
+    <DsfrFieldset v-if="props.showButtons" class="fr-fieldset">
+      <DsfrButton
+        v-if="!props.isDownloading"
+        id="next-step"
+        @click.prevent="next"
+        >Suivant
+      </DsfrButton>
+      <IsDownloading
+        :is-downloading="props.isDownloading"
+        :message="props.message"
+      />
+    </DsfrFieldset>
   </div>
 </template>
 
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+import IsDownloading from "~/components/utils/IsDownloading.vue";
+
 const log = logger("components/organisme/personne-physique");
 
 const props = defineProps({
@@ -147,6 +157,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
   showButtons: { type: Boolean, default: true },
   validateOnMount: { type: Boolean, default: false },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const emit = defineEmits(["update", "next"]);

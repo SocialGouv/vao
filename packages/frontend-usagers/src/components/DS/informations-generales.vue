@@ -105,10 +105,15 @@
 
     <fieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton
+        v-if="!props.isDownloading"
         id="next-step"
         label="Suivant"
         :disabled="!meta.valid && props.modifiable"
         @click.prevent="next"
+      />
+      <is-downloading
+        :message="props.message"
+        :is-downloading="props.isDownloading"
       />
     </fieldset>
   </div>
@@ -118,6 +123,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
+import IsDownloading from "~/components/utils/IsDownloading.vue";
 
 const props = defineProps({
   initData: {
@@ -127,6 +133,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
   validateOnMount: { type: Boolean, default: false },
   showButtons: { type: Boolean, default: true },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const emit = defineEmits(["next", "update"]);
