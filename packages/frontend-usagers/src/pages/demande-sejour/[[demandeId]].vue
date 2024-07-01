@@ -1,7 +1,33 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
-    <h1>Déclaration de séjour</h1>
+    <h1>
+      Déclaration
+      {{
+        demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON
+          ? `:  ${demandeCourante.libelle}`
+          : " de séjour"
+      }}
+    </h1>
+    <div
+      v-if="demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON"
+      class="fr-grid-row fr-mb-5w fr-px-2w"
+    >
+      <div class="fr-col-7">
+        <div v-for="detail in demandeDetails" :key="detail.label">
+          <strong>{{ detail.label }} : </strong>{{ detail.value }}
+        </div>
+      </div>
+      <div class="fr-col-5 badge">
+        <DsfrBadge
+          :small="false"
+          :type="
+            DeclarationSejour.statusTagStates[demandeCourante.statut] ?? 'union'
+          "
+          :label="demandeCourante.statut"
+        />
+      </div>
+    </div>
     <DsfrTabs
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
@@ -142,6 +168,8 @@
 </template>
 
 <script setup>
+import dayjs from "dayjs";
+
 const route = useRoute();
 
 const toaster = useToaster();
@@ -237,6 +265,27 @@ const canModify = computed(() => {
     demandeCourante.value.statut === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
     demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER_8J
   );
+});
+
+const demandeDetails = computed(() => {
+  return [
+    {
+      label: "Organisme",
+      value: DeclarationSejour.getOrganismeName(demandeCourante.value),
+    },
+    {
+      label: "Date (début / fin)",
+      value: `${dayjs(demandeCourante.dateDebut).format("DD/MM/YYYY")} - ${dayjs(demandeCourante.dateFin).format("DD/MM/YYYY")}`,
+    },
+    {
+      label: "Saison",
+      value: DeclarationSejour.getSaison(demandeCourante.value.dateDebut),
+    },
+    {
+      label: "Déclaration",
+      value: demandeCourante.value.statut,
+    },
+  ];
 });
 
 async function updateOrCreate(data, type) {
@@ -349,14 +398,16 @@ async function finalize(attestation) {
     );
 
     if (response.DSuuid) {
-      if (demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
-        demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER)
+      if (
+        demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
+        demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER
+      )
         toaster.info(
           `Le PDF déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
         );
       else
         toaster.info(
-        `Le PDF déclaration_8_jours a été ajouté aux documents de la déclaration de séjour`,
+          `Le PDF déclaration_8_jours a été ajouté aux documents de la déclaration de séjour`,
         );
     } else {
       toaster.error(
@@ -387,4 +438,10 @@ function nextHash() {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped>
+.badge {
+  display: flex;
+  justify-content: end;
+  align-items: start;
+}
+</style>
