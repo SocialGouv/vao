@@ -18,7 +18,7 @@
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
     "env-cmd": "~10.1.0",
-    "eslint": "^8.56.0",
+    "eslint": "^9.0.0",
     "eslint-config-prettier": "~9.1.0",
     "husky": "^9.0.10",
     "is-ci": "^3.0.1",
