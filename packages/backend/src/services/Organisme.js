@@ -239,6 +239,18 @@ const query = {
     FROM front.organismes o
     WHERE o.supprime = false
 `,
+  getNonAgrees: `
+SELECT
+  ona.id AS "organismeId",
+  ona.siret AS "siret",
+  ona.nom AS "nom",
+  ona.region_delivrance AS "regionDelivrance",
+  ona.nature_decision AS "natureDecision",
+  ona.date_decision AS "dateDecision",
+  ona.created_at AS "createdAt",
+  ona.edited_at AS "editedAt"
+FROM back.organisme_non_agree ona
+`,
   getSiege: `
     SELECT
       o.id as "organismeId",
@@ -474,5 +486,12 @@ module.exports.get = async () => {
   log.i("get - IN");
   const { rows: organismes } = await pool.query(query.getListe, []);
   log.i("get - DONE");
+  return organismes ?? [];
+};
+
+module.exports.getNonAgrees = async () => {
+  log.i("getNonAgrees - IN");
+  const { rows: organismes } = await pool.query(query.getNonAgrees, []);
+  log.i("getNonAgrees - DONE");
   return organismes ?? [];
 };

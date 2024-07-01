@@ -1,6 +1,15 @@
 <template>
   <div v-if="!!demandeStore.currentDemande" class="fr-container header">
     <DemandesSejourDetails />
+    <div class="fr-col-12 fr-mb-3w badge">
+      <DsfrAlert
+        v-if="isOrganismeNonAgree"
+        title="Organisme non agréé"
+        :description="libelleWarning"
+        type="error"
+      >
+      </DsfrAlert>
+    </div>
     <DsfrTabs
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
@@ -96,7 +105,7 @@
         :title="
           demandeStore.currentDemande.statut ===
           demandesSejours.statuts.EN_COURS
-            ? 'Enregistrement de la délcaration à 2 mois'
+            ? 'Enregistrement de la déclaration à 2 mois'
             : 'Enregistrement de la déclaration à 8 jours'
         "
         @close="onCloseModalEnregistrement2Mois"
@@ -133,12 +142,11 @@
 </template>
 
 <script setup>
+import dayjs from "dayjs";
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
 });
-
-import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
 
 const log = logger("pages/sejours");
 
@@ -160,7 +168,9 @@ const selectTab = (idx) => {
 };
 
 const demandeStore = useDemandeSejourStore();
+const organismeStore = useOrganismeStore();
 const userStore = useUserStore();
+const libelleWarning = ref();
 
 const {
   data: historique,
@@ -170,6 +180,19 @@ const {
   immediate: false,
   method: "GET",
   credentials: "include",
+});
+
+organismeStore.fetchOrganismesNonAgrees({});
+
+const isOrganismeNonAgree = computed(() => {
+  const organisme = organismeStore.organismesNonAgrees.find(
+    (o) =>
+      o.siret === demandeStore.currentDemande.organisme?.personneMorale?.siret,
+  );
+  if (organisme) {
+    libelleWarning.value = `L'organisme ${organisme.nom} n'est plus agréé depuis le ${dayjs(organisme.dateDecision).format("DD/MM/YYYY")} pour la raison suivante : ${organisme.natureDecision}`;
+  }
+  return organisme;
 });
 
 onMounted(async () => {
