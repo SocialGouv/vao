@@ -110,7 +110,7 @@ const filteredData = computed(() => {
       } else if (typeof rule === "object") {
         target = Array.isArray(item[rule.obj])
           ? item[rule.obj].map((el) => el[rule.val])
-          : item[rule.obj][rule.val];
+          : item[rule.obj]?.[rule.val];
       } else {
         target = item[rule];
       }
@@ -120,8 +120,12 @@ const filteredData = computed(() => {
           ? target.findIndex((item) =>
               values.toLowerCase().includes(item.toString().toLowerCase()),
             ) === -1
-          : !target.toString().toLowerCase().includes(values.toLowerCase());
+          : !target?.toString().toLowerCase().includes(values.toLowerCase());
         return noMatch;
+      } else if (typeof rule === "object") {
+        target = Array.isArray(item[rule.obj])
+          ? item[rule.obj].map((el) => el[rule.val])
+          : item[rule.obj]?.[rule.val];
       } else if (typeof values === "boolean") {
         const noMatch = Array.isArray(target)
           ? target.findIndex((item) => values !== item) === -1
@@ -171,15 +175,18 @@ const displayableData = computed(() => {
   return filteredData.value.map((item) => {
     const rowdata = h.value.map((header) => {
       if (header.component) {
-        return header.component(item);
+        return header.component(item) ?? "";
       }
       if (header.format) {
         return header.format(item) ?? "";
       }
+      if (header.objectLabel) {
+        return item[header.column]?.[header.objectLabel] ?? "";
+      }
       if (Array.isArray(item[header.column])) {
         return item[header.column]
           .map((val) => {
-            return val[header.objectLabel];
+            return val[header.objectLabel] ?? "";
           })
           .join(", ");
       }
@@ -187,7 +194,9 @@ const displayableData = computed(() => {
       return data ?? "";
     });
     const rowAttrs = { class: "pointer" };
-    rowAttrs.onClick = () => emit("click-row", item);
+    rowAttrs.onClick = () => {
+      emit("click-row", item);
+    };
     return {
       rowData: rowdata,
       rowAttrs,
