@@ -12,7 +12,8 @@
             :is-valid="nomMeta.valid"
             :error-message="nomErrorMessage"
             placeholder=""
-            hint="nom d'usage"
+            required
+            hint="Veuillez saisir votre nom d'usage. Exemple: Dupont"
             @update:model-value="onNomChange"
           />
         </div>
@@ -28,7 +29,8 @@
             :is-valid="prenomMeta.valid"
             :error-message="prenomErrorMessage"
             placeholder=""
-            hint="Saisissez le premier prénom"
+            required
+            hint="Veuillez saisir votre prénom. Exemple: Margin"
             @update:model-value="onPrenomChange"
           />
         </div>
@@ -46,6 +48,7 @@
               :is-valid="dateNaissanceMeta.valid"
               :error-message="dateNaissanceErrorMessage"
               hint=""
+              required
               @update:model-value="onDateNaissanceChange"
             />
           </div>
@@ -64,6 +67,7 @@
             :error-message="competenceErrorMessage"
             placeholder=""
             hint=""
+            required
             @update:model-value="onCompetenceChange"
           />
         </div>
@@ -80,6 +84,7 @@
             :error-message="fonctionErrorMessage"
             placeholder=""
             hint="Fonction du représentant légal au sein de l'organisation"
+            required
             @update:model-value="onFonctionChange"
           />
         </div>
@@ -123,7 +128,9 @@
               :is-valid="telephoneMeta.valid"
               :error-message="telephoneErrorMessage"
               placeholder=""
-              hint="Au format 0X, +33X ou 0033"
+              hint="Au format 0X, +33X ou 0033. Exemple: 0612345678"
+              required
+              autocomplete="tel"
               @update:model-value="onTelephoneChange"
             />
           </div>
@@ -141,7 +148,9 @@
               :is-valid="emailMeta.valid"
               :error-message="emailErrorMessage"
               placeholder=""
-              hint="courriel de la personne"
+              required
+              autocomplete="Email"
+              hint="courriel de la personne. Exemple: nom@example.com"
               @update:model-value="onEmailChange"
             />
           </div>

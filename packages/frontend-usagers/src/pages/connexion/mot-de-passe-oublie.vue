@@ -24,6 +24,9 @@
                   label="Email"
                   :label-visible="true"
                   placeholder="Veuillez saisir votre email"
+                  hint="Exemple: nom@example.com"
+                  required
+                  autocomplete="Email"
                   @update:model-value="editMail"
                 />
               </div>

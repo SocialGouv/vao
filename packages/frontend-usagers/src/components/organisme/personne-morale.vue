@@ -27,7 +27,7 @@
         :error-message="siretErrorMessage"
         :readonly="!props.modifiable"
         placeholder=""
-        hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
+        hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 10000001700010"
         @update:model-value="trimSiret"
       />
       <div v-if="props.modifiable" class="fr-fieldset__element">
@@ -102,7 +102,8 @@
             :is-valid="emailMeta.valid"
             :error-message="emailErrorMessage"
             placeholder=""
-            hint="L'adresse mail doit être un email valide"
+            autocomplete="Email"
+            hint="Exemple: nom@example.com"
             @update:model-value="onEmailChange"
           />
         </div>
@@ -117,7 +118,8 @@
             :valid-message="telephoneValidMessage"
             :error-message="telephoneErrorMessage"
             placeholder=""
-            hint="Au format 0X, +33X ou 0033"
+            hint="Au format 0X, +33X ou 0033. Exemple: 0612345678"
+            autocomplete="tel"
             @update:model-value="onTelephoneChange"
           />
         </div>

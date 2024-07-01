@@ -80,6 +80,8 @@ function select(_value, option) {
           :label-visible="true"
           :model-value="initialAdress"
           :read-only="true"
+          autocomplete="Address"
+          aria=""
           :disabled="!props.modifiable"
         />
       </div>
@@ -93,10 +95,12 @@ function select(_value, option) {
             'fr-input-group--valid': validMessage,
           }"
         >
-          <label class="fr-label">
+          <label class="fr-label" for="address-selector">
             {{ label }}
           </label>
           <Multiselect
+            id="address-selector"
+            title="Addresse"
             :value="props.value?.label"
             value-prop="label"
             track-by="label"

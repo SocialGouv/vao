@@ -21,7 +21,10 @@ const schema = () => ({
       otherwise: (precision) => precision.nullable().strip(),
       then: (precision) =>
         precision
-          .min(5, "Vous devez préciser le mode d'organisation")
+          .min(
+            5,
+            "Vous devez préciser le mode d'organisation (au moins 5 characters).",
+          )
           .required(),
     }),
   precisionVehiculesAdaptes: yup.string().when("vehiculesAdaptes", {

@@ -47,7 +47,7 @@
                         <div class="fr-fieldset__element">
                           <div class="fr-input-group">
                             <DsfrInput
-                              autocomplete="off"
+                              autocomplete="Email"
                               :model-value="email"
                               type="text"
                               name="email"

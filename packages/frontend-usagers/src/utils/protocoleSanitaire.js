@@ -71,7 +71,7 @@ const schema = {
         precision
           .min(
             5,
-            "Vous devez préciser quelles dispositions spécifiques ont été mises en place",
+            "Vous devez préciser quelles dispositions spécifiques ont été mises en place (minimum 5 charactères)",
           )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
@@ -93,7 +93,7 @@ const schema = {
       precision
         .min(
           5,
-          "Vous devez préciser avec qui et quel type d'accord a été passé",
+          "Vous devez préciser avec qui et quel type d'accord a été passé (minimum 5 charactères)",
         )
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
@@ -107,7 +107,7 @@ const schema = {
         precision
           .min(
             5,
-            "Vous devez préciser les responsabilités liées à l'administration des médicaments",
+            "Vous devez préciser les responsabilités liées à l'administration des médicaments (minimum 5 charactères)",
           )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
@@ -121,7 +121,7 @@ const schema = {
         precision
           .min(
             5,
-            "Vous devez préciser la sécurisation apportée concernant le stockage des médicaments",
+            "Vous devez préciser la sécurisation apportée concernant le stockage des médicaments (minimum 5 charactères)",
           )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
@@ -136,7 +136,7 @@ const schema = {
         precision
           .min(
             5,
-            "Vous devez préciser le protocole d'individualisation des médicaments",
+            "Vous devez préciser le protocole d'individualisation des médicaments (minimum 5 charactères)",
           )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
@@ -151,7 +151,7 @@ const schema = {
       precision
         .min(
           5,
-          "Vous devez préciser la mthéodologie de préparation des pilluliers",
+          "Vous devez préciser la mthéodologie de préparation des pilluliers (minimum 5 charactères)",
         )
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
@@ -166,7 +166,7 @@ const schema = {
         precision
           .min(
             5,
-            "Vous devez préciser le protocole relatif à la modification d'un traitement durant le séjour",
+            "Vous devez préciser le protocole relatif à la modification d'un traitement durant le séjour (minimum 5 charactères)",
           )
           .required(),
       otherwise: (precision) => precision.nullable().strip(),
@@ -186,7 +186,10 @@ const schema = {
     is: (val) => !!val,
     then: (precision) =>
       precision
-        .min(5, "Vous devez préciser le protocole en cas d'accident")
+        .min(
+          5,
+          "Vous devez préciser le protocole en cas d'accident (minimum 5 charactères)",
+        )
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
   }),
@@ -195,7 +198,10 @@ const schema = {
     is: (val) => !!val,
     then: (precision) =>
       precision
-        .min(5, "Vous devez préciser le protocole de réorientation")
+        .min(
+          5,
+          "Vous devez préciser le protocole de réorientation (minimum 5 charactères)",
+        )
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
   }),
@@ -204,7 +210,10 @@ const schema = {
     is: (val) => !!val,
     then: (precision) =>
       precision
-        .min(5, "Vous devez préciser le protcole en cas de canicule")
+        .min(
+          5,
+          "Vous devez préciser le protcole en cas de canicule (minimum 5 charactères)",
+        )
         .required(),
     otherwise: (precision) => precision.nullable().strip(),
   }),

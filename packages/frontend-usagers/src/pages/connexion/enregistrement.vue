@@ -20,7 +20,10 @@
               name="email"
               :label-visible="true"
               placeholder="Veuillez saisir votre email"
+              hint="Exemple: nom@example.com"
               :is-valid="emailField.isValid"
+              required
+              autocomplete="Email"
               @update:model-value="checkValidEmail"
             />
           </div>
@@ -38,8 +41,8 @@
               label="Mot de passe"
               :label-visible="true"
               placeholder=""
-              hint="Veuillez saisir votre mot de passe"
               :is-valid="passwordField.isValid"
+              required
               @update:model-value="checkValidPassword"
             />
           </div>
@@ -108,6 +111,7 @@
               placeholder=""
               hint="Veuillez répéter le mot de passe"
               :is-valid="confirmField.isValid"
+              required
               @update:model-value="
                 (confirm) => (confirmField.modelValue = confirm)
               "
@@ -127,8 +131,9 @@
               name="nom"
               :label-visible="true"
               placeholder=""
-              hint="Veuillez saisir votre nom d'usage"
+              hint="Veuillez saisir votre nom d'usage. Exemple: Dupont"
               :is-valid="nomField.isValid"
+              required
               @update:model-value="checkValidNom"
             />
           </div>
@@ -145,9 +150,10 @@
               label="Prénom"
               name="prenom"
               :label-visible="true"
-              hint="Veuillez saisir votre prénom"
+              hint="Veuillez saisir votre prénom. Exemple: Margin"
               placeholder=""
               :is-valid="prenomField.isValid"
+              required
               @update:model-value="checkValidPrenom"
             />
           </div>
@@ -164,8 +170,9 @@
               label="Numéro de téléphone"
               name="telephone"
               :label-visible="true"
-              hint="Veuillez saisir votre numéro de téléphone"
+              hint="Veuillez saisir votre numéro de téléphone. Exemple: 0612345678"
               :is-valid="telephoneField.isValid"
+              required
               @update:model-value="checkValidTelephone"
             />
           </div>

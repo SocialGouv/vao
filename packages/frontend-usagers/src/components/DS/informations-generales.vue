@@ -16,7 +16,7 @@
           :readonly="!props.modifiable"
           :is-valid="libelleMeta.valid"
           :error-message="libelleErrorMessage"
-          hint="Nom de votre demande de séjour"
+          hint="Nom de votre demande de séjour. Exemple: voyage 1"
           @update:model-value="onLibelleChange"
         />
       </div>
@@ -33,7 +33,7 @@
           :readonly="!props.modifiable"
           :is-valid="dateDebutMeta.valid"
           :error-message="dateDebutErrorMessage"
-          hint="Date du premier jour du séjour"
+          hint="Date du premier jour du séjour XX/XX/XXXX"
           @update:model-value="onDateDebutChange"
         />
       </div>
@@ -47,7 +47,7 @@
           :readonly="!props.modifiable"
           :is-valid="dateFinMeta.valid"
           :error-message="dateFinErrorMessage"
-          hint="Date de fin du séjour"
+          hint="Date de fin du séjour XX/XX/XXXX"
           @update:model-value="onDateFinChange"
         />
       </div>
