@@ -38,7 +38,10 @@
         @select="onAdresseChange"
       ></SearchAddress>
 
-      <div v-if="adresse" class="fr-fieldset__element fr-col-12">
+      <div
+        v-if="adresse && !isCssdisabled"
+        class="fr-fieldset__element fr-col-12"
+      >
         <div style="height: 50vh; width: 50vw">
           <LMap
             ref="map"
@@ -576,6 +579,8 @@ const initialValues = {
     ...(props.initHebergement.informationsTransport || {}),
   },
 };
+
+const isCssdisabled = cssHelper.isCssdisabled();
 
 const { meta, values } = useForm({
   validationSchema,
