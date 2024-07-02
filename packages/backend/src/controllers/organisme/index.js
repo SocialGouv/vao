@@ -1,4 +1,5 @@
 module.exports.getAll = require("./getAll");
+module.exports.getNonAgrees = require("./getNonAgrees");
 module.exports.getByOrganismeId = require("./getByOrganismeId");
 module.exports.getBySiret = require("./getBySiret");
 module.exports.getMine = require("./getMine");
