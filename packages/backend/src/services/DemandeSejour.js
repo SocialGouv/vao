@@ -132,8 +132,8 @@ const query = {
     `
     DELETE FROM front.demande_sejour d
     USING front.organismes o, front.user_organisme uo
-    WHERE 
-      o.id = d.organisme_id 
+    WHERE
+      o.id = d.organisme_id
       AND uo.org_id = o.id
       AND d.id = $1
       AND uo.use_id = $2
@@ -422,6 +422,14 @@ ${Object.keys(criterias)
 `,
     Object.values(criterias),
   ],
+  getStatut: `
+  SELECT
+    STATUT as "statut"
+  FROM
+    FRONT.DEMANDE_SEJOUR
+  WHERE
+    ID = $1
+  `,
   historique: `
 SELECT
   h.id as "historiqueId",
@@ -817,6 +825,14 @@ module.exports.getById = async (
   log.i("getById - DONE");
   log.d(demande);
   return demande[0];
+};
+
+module.exports.getStatut = async (declarationId) => {
+  log.i("getStatut - IN");
+  const { rows: data } = await pool.query(query.getStatut, [declarationId]);
+  log.d(data);
+  log.i("getStatut - DONE");
+  return data[0].statut ?? null;
 };
 
 module.exports.update = async (type, demandeSejourId, parametre) => {

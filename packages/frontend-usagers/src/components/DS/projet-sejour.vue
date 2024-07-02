@@ -147,7 +147,10 @@ const {
 } = useField("activitesPersonnelPrevu");
 
 function next() {
-  if (!meta.value.dirty && Object.keys(props.initData).length !== 0) {
+  if (
+    (!meta.value.dirty && Object.keys(props.initData).length !== 0) ||
+    !props.modifiable
+  ) {
     return emit("next");
   }
   emit("update", { ...values }, "projetSejour");
