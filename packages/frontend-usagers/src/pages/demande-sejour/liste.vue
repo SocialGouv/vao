@@ -30,7 +30,16 @@
                     :close-on-select="false"
                     :options="idOptions"
                     @update:model-value="onUpdateId"
-                  />
+                  >
+                    <template #option="{ option, isPointed }">
+                      <button type="button" class="blank-button">
+                        {{ option.label }}
+                      </button>
+                      <span v-if="isPointed(option)" class="fr-sr-only">
+                        Option focus
+                      </span>
+                    </template>
+                  </Multiselect>
                 </div>
               </div>
               <div
@@ -46,7 +55,16 @@
                     :close-on-select="false"
                     :options="idFonctionnellesOptions"
                     @update:model-value="onUpdateIdFonctionnelle"
-                  />
+                  >
+                    <template #option="{ option, isPointed }">
+                      <button type="button" class="blank-button">
+                        {{ option.label }}
+                      </button>
+                      <span v-if="isPointed(option)" class="fr-sr-only">
+                        Option focus
+                      </span>
+                    </template>
+                  </Multiselect>
                 </div>
               </div>
               <div
@@ -62,7 +80,16 @@
                     :close-on-select="false"
                     :options="siretOptions"
                     @update:model-value="onUpdateSiret"
-                  />
+                  >
+                    <template #option="{ option, isPointed }">
+                      <button type="button" class="blank-button">
+                        {{ option.label }}
+                      </button>
+                      <span v-if="isPointed(option)" class="fr-sr-only">
+                        Option focus
+                      </span>
+                    </template>
+                  </Multiselect>
                 </div>
               </div>
 
@@ -80,7 +107,16 @@
                     mode="tags"
                     :options="departementOptions"
                     @update:model-value="onUpdateDepartement"
-                  />
+                  >
+                    <template #option="{ option, isPointed }">
+                      <button type="button" class="blank-button">
+                        {{ option.label }}
+                      </button>
+                      <span v-if="isPointed(option)" class="fr-sr-only">
+                        Option focus
+                      </span>
+                    </template>
+                  </Multiselect>
                 </div>
               </div>
               <div
@@ -97,7 +133,16 @@
                     name="statut"
                     :options="statutOptions"
                     @update:model-value="onUpdateStatut"
-                  />
+                  >
+                    <template #option="{ option, isPointed }">
+                      <button type="button" class="blank-button">
+                        {{ option.label }}
+                      </button>
+                      <span v-if="isPointed(option)" class="fr-sr-only">
+                        Option focus
+                      </span>
+                    </template>
+                  </Multiselect>
                 </div>
               </div>
               <div
@@ -114,7 +159,16 @@
                     name="saison"
                     :options="saisonOptions"
                     @update:model-value="onUpdateSaison"
-                  />
+                  >
+                    <template #option="{ option, isPointed }">
+                      <button type="button" class="blank-button">
+                        {{ option.label }}
+                      </button>
+                      <span v-if="isPointed(option)" class="fr-sr-only">
+                        Option focus
+                      </span>
+                    </template>
+                  </Multiselect>
                 </div>
               </div>
             </fieldset>
@@ -158,7 +212,6 @@ import "@vueform/multiselect/themes/default.css";
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 import { DeclarationSejour } from "#imports";
-
 
 const log = logger("pages/demande-sejour/liste");
 const toaster = useToaster();
