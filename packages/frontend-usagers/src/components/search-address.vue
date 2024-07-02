@@ -111,7 +111,16 @@ function select(_value, option) {
             :filter-results="false"
             @search-change="searchAddress"
             @select="select"
-          />
+          >
+            <template #option="{ option, isPointed }">
+              <button type="button" class="blank-button">
+                {{ option.label }}
+              </button>
+              <span v-if="isPointed(option)" class="fr-sr-only">
+                Option focus
+              </span>
+            </template>
+          </Multiselect>
           <div v-if="message" class="fr-messages-group">
             <p :class="messageClass">
               <span>{{ message }}</span>
