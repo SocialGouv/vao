@@ -72,4 +72,5 @@ router.post("/:id/copy", checkJWT, demandeSejourController.copy);
 router.post("/:id", checkJWT, demandeSejourController.update);
 router.post("/", checkJWT, demandeSejourController.post);
 router.delete("/:id", checkJWT, demandeSejourController.delete);
+router.post("/cancel/:id", checkJWT, demandeSejourController.cancel);
 module.exports = router;
