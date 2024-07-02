@@ -15,6 +15,7 @@ const statuts = {
   VALIDEE_8J: "VALIDEE 8J",
   REFUSEE: "REFUSEE",
   REFUSEE_8J: "REFUSEE 8J",
+  ANNULEE: "ANNULEE",
 };
 
 const getSaison = (demande) => {
