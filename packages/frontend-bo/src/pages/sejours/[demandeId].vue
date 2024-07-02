@@ -5,7 +5,7 @@
       <DsfrAlert
         v-if="isOrganismeNonAgree"
         title="Organisme non agréé"
-        :description="libelleWarning"
+        :description="isOrganismeNonAgree"
         type="error"
       >
       </DsfrAlert>
@@ -170,7 +170,6 @@ const selectTab = (idx) => {
 const demandeStore = useDemandeSejourStore();
 const organismeStore = useOrganismeStore();
 const userStore = useUserStore();
-const libelleWarning = ref();
 
 const {
   data: historique,
@@ -189,10 +188,9 @@ const isOrganismeNonAgree = computed(() => {
     (o) =>
       o.siret === demandeStore.currentDemande.organisme?.personneMorale?.siret,
   );
-  if (organisme) {
-    libelleWarning.value = `L'organisme ${organisme.nom} n'est plus agréé depuis le ${dayjs(organisme.dateDecision).format("DD/MM/YYYY")} pour la raison suivante : ${organisme.natureDecision}`;
-  }
-  return organisme;
+  return organisme
+    ? `L'organisme ${organisme.nom} n'est plus agréé depuis le ${dayjs(organisme.dateDecision).format("DD/MM/YYYY")} pour la raison suivante : ${organisme.natureDecision}`
+    : "";
 });
 
 onMounted(async () => {
