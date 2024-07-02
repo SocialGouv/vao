@@ -45,8 +45,10 @@
         userStore.user?.roles &&
         userStore.user?.roles.includes('DemandeSejour_Ecriture') &&
         demandeStore.currentDemande.estInstructeurPrincipal &&
-        (demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS
-        || demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS_8J)
+        (demandeStore.currentDemande.statut ===
+          demandesSejours.statuts.EN_COURS ||
+          demandeStore.currentDemande.statut ===
+            demandesSejours.statuts.EN_COURS_8J)
       "
       class="container"
     >
@@ -91,7 +93,12 @@
         ref="modal"
         name="modalEnregistrement2MOis"
         :opened="modalEnregistrement2Mois.opened"
-        :title="(demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS ? 'Enregistrement de la demande à 2 mois' : 'Enregistrement de la demande à 8 jours')"
+        :title="
+          demandeStore.currentDemande.statut ===
+          demandesSejours.statuts.EN_COURS
+            ? 'Enregistrement de la délcaration à 2 mois'
+            : 'Enregistrement de la déclaration à 8 jours'
+        "
         @close="onCloseModalEnregistrement2Mois"
       >
         <article class="fr-mb-4v">
@@ -190,7 +197,7 @@ const modalRefus = reactive({
 const modalEnregistrement2Mois = reactive({
   opened: false,
 });
-
+0;
 const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
 };
