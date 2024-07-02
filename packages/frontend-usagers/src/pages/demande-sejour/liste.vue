@@ -289,6 +289,7 @@ const statutOptions = [
   { label: "VALIDEE 8 JOURS", value: "VALIDEE 8J" },
   { label: "REFUSEE", value: "REFUSEE" },
   { label: "REFUSEE 8 JOURS", value: "REFUSEE 8J" },
+  { label: "ANNULEE", value: "ANNULEE" },
 ];
 
 const onUpdateId = (id) => {
@@ -313,6 +314,16 @@ const onUpdateStatut = (s) => {
 const onUpdateSaison = (s) => {
   search.periode = s;
 };
+
+const listeStatutAutoriseBoutonDeleteCancel = [
+  DeclarationSejour.statuts.BROUILLON,
+  DeclarationSejour.statuts.TRANSMISE,
+  DeclarationSejour.statuts.EN_COURS,
+  DeclarationSejour.statuts.A_MODIFIER,
+  DeclarationSejour.statuts.ATTENTE_8_JOUR,
+  DeclarationSejour.statuts.TRANSMISE_8J,
+  DeclarationSejour.statuts.EN_COURS_8J,
+  DeclarationSejour.statuts.A_MODIFIER_8J];
 
 const headers = [
   {
@@ -430,6 +441,7 @@ const headers = [
               DeclarationSejour.statuts.BROUILLON,
               DeclarationSejour.statuts.TRANSMISE,
               DeclarationSejour.statuts.EN_COURS,
+              DeclarationSejour.statuts.ANNULEE,
             ].includes(row.statut),
             onClick: (event) => {
               event.stopPropagation();
@@ -437,14 +449,14 @@ const headers = [
             },
           },
           {
-            label: "Supprimer",
+            label: row.statut === DeclarationSejour.statuts.BROUILLON ? "Supprimer" : "Annuler",
             iconOnly: true,
-            icon: "ri-delete-bin-2-line",
+            icon: row.statut === DeclarationSejour.statuts.BROUILLON ? "ri-delete-bin-2-line" : "ri-close-line",
             onClick: (event) => {
               event.stopPropagation();
-              deleteDS(row.demandeSejourId);
+              deleteOrCancelDS(row.demandeSejourId,row.statut);
             },
-            disabled: !(row.statut === DeclarationSejour.statuts.BROUILLON),
+            disabled: !(listeStatutAutoriseBoutonDeleteCancel.includes(row.statut)),
           },
         ],
       };
@@ -475,6 +487,12 @@ async function copyDS(dsId) {
     );
   }
 }
+async function deleteOrCancelDS(dsId, statut) {
+  if (statut === DeclarationSejour.statuts.BROUILLON)
+    deleteDS(dsId);
+  else
+    cancelDS(dsId);
+}
 async function deleteDS(dsId) {
   log.i("deleteDS -IN");
   try {
@@ -496,6 +514,30 @@ async function deleteDS(dsId) {
     log.w("Erreur durant la suppression de la declaration de sejour : ");
     return toaster.error(
       `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
+    );
+  }
+}
+async function cancelDS(dsId) {
+  log.i("cancelDS -IN");
+  try {
+    const url = `/sejour/cancel/${dsId}`;
+    const response = await $fetchBackend(url, {
+      method: "POST",
+      credentials: "include",
+    });
+    if (response.canceletedRows === 1) {
+      toaster.success(`Déclaration annulée`);
+      demandeSejourStore.fetchDemandes();
+    } else {
+      log.w("Erreur durant l'annulation de la declaration de sejour");
+      return toaster.error(
+        `Une erreur est survenue lors de l'annulation' de la déclaration de séjour`,
+      );
+    }
+  } catch (error) {
+    log.w("Erreur durant l'annulation de la declaration de sejour : ");
+    return toaster.error(
+      `Une erreur est survenue lors de l'annulation de la déclaration de séjour`,
     );
   }
 }

@@ -140,6 +140,19 @@ const query = {
     ;`,
     [declarationId, userId],
   ],
+  cancel: (declarationId, userId) => [
+    `
+    UPDATE front.demande_sejour d
+    SET statut = 'ANNULEE' 
+    FROM front.organismes o, front.user_organisme uo
+    WHERE 
+      o.id = d.organisme_id 
+      AND uo.org_id = o.id
+      AND d.id = $1
+      AND uo.use_id = $2;
+    ;`,
+    [declarationId, userId],
+  ],
   finalize: (
     demandeSejourId,
     idFonctionnelle,
@@ -666,6 +679,12 @@ module.exports.delete = async (declarationId, userId) => {
   log.i("delete - IN");
   const { rowCount } = await pool.query(...query.delete(declarationId, userId));
   log.i("delete - DONE");
+  return rowCount;
+};
+module.exports.cancel = async (declarationId, userId) => {
+  log.i("cancel - IN");
+  const { rowCount } = await pool.query(...query.cancel(declarationId, userId));
+  log.i("cancel - DONE");
   return rowCount;
 };
 module.exports.get = async (organismesId) => {

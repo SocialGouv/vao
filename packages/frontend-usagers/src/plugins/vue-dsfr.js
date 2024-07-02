@@ -6,6 +6,7 @@ import {
   RiEyeCloseLine,
   RiDeleteBin2Line,
   RiFileCopy2Fill,
+  RiCloseLine,
 } from "oh-vue-icons/icons";
 
 import VueDsfr from "@gouvminint/vue-dsfr";
@@ -19,6 +20,7 @@ const icons = [
   RiDeleteBin2Line,
   RiQuestionLine,
   RiFileCopy2Fill,
+  RiCloseLine,
 ];
 export default defineNuxtPlugin((nuxtApp) => {
   nuxtApp.vueApp.use(VueDsfr, { icons });
