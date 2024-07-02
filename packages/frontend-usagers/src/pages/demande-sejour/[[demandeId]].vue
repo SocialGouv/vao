@@ -4,13 +4,16 @@
     <h1>
       Déclaration
       {{
-        demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON
+        demandeCourante.statut && demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON
           ? `:  ${demandeCourante.libelle}`
           : " de séjour"
       }}
     </h1>
     <div
-      v-if="demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON"
+      v-if="
+        demandeCourante.statut &&
+        demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON
+      "
       class="fr-grid-row fr-mb-5w fr-px-2w"
     >
       <div class="fr-col-7">
