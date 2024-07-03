@@ -9,7 +9,8 @@ const log = logger(module.filename);
 module.exports = async function list(req, res, next) {
   log.i("IN");
   const { decoded } = req;
-  const { id: adminId } = decoded ?? {};
+  const { id: adminId, territoireCode } = decoded ?? {};
+
   log.d("userId", { adminId });
 
   let params;
@@ -48,7 +49,7 @@ module.exports = async function list(req, res, next) {
 
   try {
     log.d(params);
-    const result = await BoUser.read(params);
+    const result = await BoUser.read(params, territoireCode);
     log.d(result);
     return res.status(200).json(result);
   } catch (error) {

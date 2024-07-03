@@ -5,6 +5,8 @@ const router = express.Router();
 const BOcheckJWT = require("../middlewares/bo-check-JWT");
 const BOcheckRole = require("../middlewares/bo-check-role.js");
 const BOUserController = require("../controllers/bo-user");
+const checkTerrForAccountCreation = require("../middlewares/bo-check-terr-for-account-creation");
+const getDepartements = require("../middlewares/getDepartements");
 
 const BOcheckRoleCompte = BOcheckRole(["Compte"]);
 
@@ -15,10 +17,29 @@ router.get("/me", BOcheckJWT, BOUserController.getMe);
 // Renvoie les informations liées à l'utilisateur
 router.get("/:userId", BOcheckJWT, BOcheckRoleCompte, BOUserController.getOne);
 // Création d'un utilisateur
-router.post("/", BOcheckJWT, BOcheckRoleCompte, BOUserController.create);
+router.post(
+  "/",
+  BOcheckJWT,
+  BOcheckRoleCompte,
+  getDepartements,
+  checkTerrForAccountCreation,
+  BOUserController.create,
+);
 // Mise à jour d'un utilisateur
-router.post("/:userId", BOcheckJWT, BOcheckRoleCompte, BOUserController.update);
+router.post(
+  "/:userId",
+  BOcheckJWT,
+  BOcheckRoleCompte,
+  getDepartements,
+  checkTerrForAccountCreation,
+  BOUserController.update,
+);
 // Fonctione transverse de recherche du service compétent
-router.get("/:territoireCode", BOcheckJWT, BOcheckRoleCompte, BOUserController.serviceCompetence);
+router.get(
+  "/:territoireCode",
+  BOcheckJWT,
+  BOcheckRoleCompte,
+  BOUserController.serviceCompetence,
+);
 
 module.exports = router;

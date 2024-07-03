@@ -122,7 +122,7 @@
                         name="departementTerritoire"
                         label="Département du service"
                         :required="true"
-                        :options="departementStore.departements"
+                        :options="userDepartements"
                         :is-valid="territoireField.valid"
                         @update:model-value="checkValidTerritoire"
                       />
@@ -133,7 +133,7 @@
                         name="regionTerritoire"
                         label="Région du service"
                         :required="true"
-                        :options="regionStore.regions"
+                        :options="userRegions"
                         :is-valid="territoireField.valid"
                         @update:model-value="checkValidTerritoire"
                       />
@@ -187,6 +187,7 @@ import "@vueform/multiselect/themes/default.css";
 const route = useRoute();
 const log = logger("pages/comptes/[[userId]]");
 const usersStore = useUserStore();
+const currentUser = usersStore.user;
 const searchState = reactive({
   id: null,
   nom: null,
@@ -224,6 +225,33 @@ regionStore.fetch();
 
 const departementStore = useDepartementStore();
 departementStore.fetch();
+
+const userDepartements = computed(() => {
+  if (currentUser.territoireCode === "FRA") {
+    return departementStore.departements;
+  }
+  const departementsByRegion = departementStore.departements.filter(
+    (d) => d.region === currentUser.territoireCode,
+  );
+  if (departementsByRegion?.length) {
+    return departementsByRegion;
+  }
+  return (
+    departementStore.departements.filter(
+      (d) => d.value === currentUser.territoireCode,
+    ) ?? []
+  );
+});
+
+const userRegions = computed(() => {
+  if (currentUser.territoireCode === "FRA") {
+    return regionStore.regions;
+  }
+  return (
+    regionStore.regions.filter((r) => r.value === currentUser.territoireCode) ??
+    []
+  );
+});
 
 const roleOptions = [
   { label: "Accès à la consultation et création de comptes", name: "Compte" },
@@ -396,9 +424,12 @@ watch([() => serviceCompetenceField.modelValue], function () {
 onMounted(async () => {
   log.i("Mounted - IN");
   serviceCompetenceOptions = [];
-  if (usersStore.user.serviceCompetent === competence.NATIONALE ) 
+  if (usersStore.user.serviceCompetent === competence.NATIONALE)
     serviceCompetenceOptions.push(serviceCompetenceNAT);
-  if (usersStore.user.serviceCompetent === competence.NATIONALE || usersStore.user.serviceCompetent === competence.REGIONALE) 
+  if (
+    usersStore.user.serviceCompetent === competence.NATIONALE ||
+    usersStore.user.serviceCompetent === competence.REGIONALE
+  )
     serviceCompetenceOptions.push(serviceCompetenceREG);
   serviceCompetenceOptions.push(serviceCompetenceDEP);
 
