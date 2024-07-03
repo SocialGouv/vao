@@ -89,11 +89,17 @@ module.exports = async function post(req, res, next) {
         userId: null,
       },
       () =>
-        Send(
-          MailUtils.usagers.declarationSejour.sendAccuseReception2MoisMail({
-            declaration,
-            destinataires,
-          }),
+        (declaration.statut === statuts.EN_COURS ? 
+          Send(
+            MailUtils.usagers.declarationSejour.sendAccuseReception2MoisMail({
+              declaration,
+              destinataires,
+          })) : 
+          Send(
+            MailUtils.usagers.declarationSejour.sendAccuseReception8JoursMail({
+              declaration,
+              destinataires,
+          }))
         ),
     );
 

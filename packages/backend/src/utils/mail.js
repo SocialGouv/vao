@@ -347,6 +347,37 @@ module.exports = {
 
         return params;
       },
+      sendAccuseReception8JoursMail: ({ destinataires, declaration }) => {
+        log.i("sendAccuseReception8JoursMail - In", {
+          destinataires,
+        });
+
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendAccuseReception8JoursMail - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+          <p>Bonjour,</p>
+          <p>Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du
+          ${dayjs(declaration.attestation.at).format("DD/MM/YYYY")}, une déclaration complémentaire pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.dateFin).format("DD/MM/YYYY")}.</p>
+          <p>Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.</p>
+          <p>Cordialement,</p>
+          <p>L'équipe VAO</p>
+          `,
+          replyTo: senderEmail,
+          subject: `Portail VAO - Enregistrement de la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendAccuseReception8JoursMail post email", {
+          params,
+        });
+
+        return params;
+      },
       sendAccuseTransmission2mois: ({ dest, cc, declaration }, firstSubmit) => {
         log.i("sendAccuseTransmission2mois - In", {
           cc,
