@@ -32,12 +32,10 @@
                     @update:model-value="onUpdateId"
                   >
                     <template #option="{ option, isPointed }">
-                      <button type="button" class="blank-button">
-                        {{ option.label }}
-                      </button>
-                      <span v-if="isPointed(option)" class="fr-sr-only">
-                        Option focus
-                      </span>
+                      <MultiSelectOption
+                        :label="option.label"
+                        :is-pointed="isPointed(option)"
+                      />
                     </template>
                   </Multiselect>
                 </div>
@@ -57,12 +55,10 @@
                     @update:model-value="onUpdateIdFonctionnelle"
                   >
                     <template #option="{ option, isPointed }">
-                      <button type="button" class="blank-button">
-                        {{ option.label }}
-                      </button>
-                      <span v-if="isPointed(option)" class="fr-sr-only">
-                        Option focus
-                      </span>
+                      <MultiSelectOption
+                        :label="option.label"
+                        :is-pointed="isPointed(option)"
+                      />
                     </template>
                   </Multiselect>
                 </div>
@@ -82,12 +78,10 @@
                     @update:model-value="onUpdateSiret"
                   >
                     <template #option="{ option, isPointed }">
-                      <button type="button" class="blank-button">
-                        {{ option.label }}
-                      </button>
-                      <span v-if="isPointed(option)" class="fr-sr-only">
-                        Option focus
-                      </span>
+                      <MultiSelectOption
+                        :label="option.label"
+                        :is-pointed="isPointed(option)"
+                      />
                     </template>
                   </Multiselect>
                 </div>
@@ -109,12 +103,10 @@
                     @update:model-value="onUpdateDepartement"
                   >
                     <template #option="{ option, isPointed }">
-                      <button type="button" class="blank-button">
-                        {{ option.label }}
-                      </button>
-                      <span v-if="isPointed(option)" class="fr-sr-only">
-                        Option focus
-                      </span>
+                      <MultiSelectOption
+                        :label="option.label"
+                        :is-pointed="isPointed(option)"
+                      />
                     </template>
                   </Multiselect>
                 </div>
@@ -135,12 +127,10 @@
                     @update:model-value="onUpdateStatut"
                   >
                     <template #option="{ option, isPointed }">
-                      <button type="button" class="blank-button">
-                        {{ option.label }}
-                      </button>
-                      <span v-if="isPointed(option)" class="fr-sr-only">
-                        Option focus
-                      </span>
+                      <MultiSelectOption
+                        :label="option.label"
+                        :is-pointed="isPointed(option)"
+                      />
                     </template>
                   </Multiselect>
                 </div>
@@ -161,12 +151,10 @@
                     @update:model-value="onUpdateSaison"
                   >
                     <template #option="{ option, isPointed }">
-                      <button type="button" class="blank-button">
-                        {{ option.label }}
-                      </button>
-                      <span v-if="isPointed(option)" class="fr-sr-only">
-                        Option focus
-                      </span>
+                      <MultiSelectOption
+                        :label="option.label"
+                        :is-pointed="isPointed(option)"
+                      />
                     </template>
                   </Multiselect>
                 </div>
@@ -212,6 +200,7 @@ import "@vueform/multiselect/themes/default.css";
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 import { DeclarationSejour } from "#imports";
+import MultiSelectOption from "~/components/utils/MultiSelectOption.vue";
 
 const log = logger("pages/demande-sejour/liste");
 const toaster = useToaster();

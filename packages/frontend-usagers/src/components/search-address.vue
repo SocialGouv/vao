@@ -1,6 +1,7 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
+import MultiSelectOption from "~/components/utils/MultiSelectOption.vue";
 
 const toaster = useToaster();
 
@@ -113,12 +114,10 @@ function select(_value, option) {
             @select="select"
           >
             <template #option="{ option, isPointed }">
-              <button type="button" class="blank-button">
-                {{ option.label }}
-              </button>
-              <span v-if="isPointed(option)" class="fr-sr-only">
-                Option focus
-              </span>
+              <MultiSelectOption
+                :label="option.label"
+                :is-pointed="isPointed(option)"
+              />
             </template>
           </Multiselect>
           <div v-if="message" class="fr-messages-group">
