@@ -205,7 +205,7 @@ function updateModeTransport(modes) {
 
 function next() {
   log.d("next - IN", meta.value.dirty);
-  if (!meta.value.dirty) {
+  if (!meta.value.dirty || !props.modifiable) {
     return emit("next");
   }
   if (checkFormatFiles(files))

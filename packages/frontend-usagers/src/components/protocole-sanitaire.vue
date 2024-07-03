@@ -725,7 +725,7 @@ const {
 
 function valid() {
   log.d("valid - IN");
-  if (!meta.value.dirty) {
+  if (!meta.value.dirty || !props.modifiable) {
     return emit("next");
   }
   if (checkFormatFiles(files))
