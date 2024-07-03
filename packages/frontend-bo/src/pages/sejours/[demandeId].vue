@@ -51,6 +51,7 @@
     </DsfrTabs>
     <div
       v-if="
+        !apiStatus.isDownloading &&
         userStore.user?.roles &&
         userStore.user?.roles.includes('DemandeSejour_Ecriture') &&
         demandeStore.currentDemande.estInstructeurPrincipal &&
@@ -65,6 +66,7 @@
         ref="modalOrigin"
         label="Demander des compléments à l'organisateur"
         tertiary
+        :disabled="apiStatus.isDownloading"
         @click.prevent="onOpenModalDemandeComplements"
       />
       <DsfrModal
@@ -81,6 +83,7 @@
         ref="modalOrigin"
         label="Refuser"
         secondary
+        :disabled="apiStatus.isDownloading"
         @click.prevent="onOpenModalRefus"
       />
       <DsfrModal
@@ -96,6 +99,7 @@
       <DsfrButton
         ref="modalOrigin"
         label="Accepter"
+        :disabled="apiStatus.isDownloading"
         @click.prevent="onOpenModalEnregistrement2Mois"
       />
       <DsfrModal
@@ -138,11 +142,18 @@
         </fieldset>
       </DsfrModal>
     </div>
+    <UtilsIsDownloading
+      :is-downloading="apiStatus.isDownloading"
+      :message="apiStatus.message"
+    />
   </div>
 </template>
 
 <script setup>
 import dayjs from "dayjs";
+import { useIsDownloading } from "~/composables/useIsDownloading";
+import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
+
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
@@ -151,7 +162,7 @@ definePageMeta({
 const log = logger("pages/sejours");
 
 const toaster = useToaster();
-
+const { apiStatus, resetApiStatut, setApiStatut } = useIsDownloading();
 const route = useRoute();
 
 const initialSelectedIndex = 0;
@@ -218,7 +229,7 @@ const modalRefus = reactive({
 const modalEnregistrement2Mois = reactive({
   opened: false,
 });
-0;
+
 const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
 };
@@ -244,6 +255,7 @@ const onCloseModalEnregistrement2Mois = () => {
 };
 
 const onValidComplement = async (commentaires) => {
+  setApiStatut("Demande de complément en cours");
   onCloseModalDemandeComplements();
 
   try {
@@ -260,10 +272,13 @@ const onValidComplement = async (commentaires) => {
   } catch (error) {
     log.w("prend en charge", error);
     toaster.error("Erreur lors de la prise en charge de la demande");
+  } finally {
+    resetApiStatut();
   }
 };
 
 const onValidRefus = async (commentaires) => {
+  setApiStatut("Prise en charge du refus en cours");
   onCloseModalDemandeComplements();
 
   try {
@@ -277,10 +292,14 @@ const onValidRefus = async (commentaires) => {
   } catch (error) {
     log.w("prend en charge", error);
     toaster.error("Erreur lors de la prise en charge de la demande");
+  } finally {
+    resetApiStatut();
   }
 };
 
 const onValidEnregistrement2Mois = async () => {
+  setApiStatut("Enregistrement  de la demande en cours");
+
   onCloseModalEnregistrement2Mois();
   try {
     await $fetchBackend(
@@ -295,6 +314,8 @@ const onValidEnregistrement2Mois = async () => {
   } catch (error) {
     log.w("prend en charge", error);
     toaster.error("Erreur lors de la prise en charge de la demande");
+  } finally {
+    resetApiStatut();
   }
 };
 </script>
@@ -309,6 +330,7 @@ const onValidEnregistrement2Mois = async () => {
   margin-top: 1rem;
   margin-bottom: 1rem;
   justify-content: right;
+  align-items: center;
   gap: 1rem;
 }
 </style>

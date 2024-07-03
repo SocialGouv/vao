@@ -316,11 +316,16 @@
 
     <DsfrFieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton
+        v-if="!props.isDownloading"
         id="next-step"
         :disabled="!siren || !siret"
         @click.prevent="next"
         >Suivant
       </DsfrButton>
+      <IsDownloading
+        :is-downloading="props.isDownloading"
+        :message="props.message"
+      />
     </DsfrFieldset>
   </div>
 </template>
@@ -328,6 +333,7 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+import IsDownloading from "~/components/utils/IsDownloading.vue";
 
 const toaster = useToaster();
 
@@ -341,6 +347,8 @@ const props = defineProps({
   showResponsableSejour: { type: Boolean, default: true },
   showButtons: { type: Boolean, default: true },
   validateOnMount: { type: Boolean, default: false },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const headers = [

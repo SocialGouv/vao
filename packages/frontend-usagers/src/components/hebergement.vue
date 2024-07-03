@@ -487,7 +487,7 @@
     </DsfrFieldset>
 
     <fieldset class="fr-fieldset">
-      <div class="fr-col-4">
+      <div v-if="!props.isDownloading" class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton id="previous-step" :secondary="true" @click.prevent="back"
             >Retour
@@ -497,11 +497,16 @@
       <div class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton
+            v-if="!props.isDownloading"
             id="next-step"
             :disabled="!meta.valid"
             @click.prevent="submit"
             >{{ labelNext }}
           </DsfrButton>
+          <is-downloading
+            :is-downloading="props.isDownloading"
+            :message="props.message"
+          />
         </div>
       </div>
     </fieldset>
@@ -512,6 +517,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
+import IsDownloading from "~/components/utils/IsDownloading.vue";
 
 const toaster = useToaster();
 
@@ -523,6 +529,8 @@ const props = defineProps({
     default: () => ({}),
   },
   labelNext: { type: String, default: "Ajouter hébergement" },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const log = logger("components/hebergement");

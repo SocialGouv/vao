@@ -272,7 +272,11 @@
         </div>
       </DsfrFieldset>
       <fieldset class="fr-fieldset">
-        <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
+        <DsfrButtonGroup
+          v-if="!props.isDownloading"
+          :inline-layout-when="true"
+          :reverse="true"
+        >
           <DsfrButton
             id="previous-step"
             :secondary="true"
@@ -290,6 +294,10 @@
             @click.prevent="finalizeDeclaration"
           />
         </DsfrButtonGroup>
+        <is-downloading
+          :message="props.message"
+          :is-downloading="props.isDownloading"
+        />
       </fieldset>
     </form>
   </div>
@@ -299,10 +307,13 @@
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
+import IsDownloading from "~/components/utils/IsDownloading.vue";
 
 const props = defineProps({
   declarationCourante: { type: Object, default: null, required: true },
   modifiable: { type: Boolean, default: true },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const emit = defineEmits(["previous", "finalize"]);
