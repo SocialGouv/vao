@@ -39,7 +39,7 @@
       ></SearchAddress>
 
       <div
-        v-if="adresse && !isCssdisabled"
+        v-if="adresse && !isCssDisabled"
         class="fr-fieldset__element fr-col-12"
       >
         <div style="height: 50vh; width: 50vw">
@@ -580,7 +580,7 @@ const initialValues = {
   },
 };
 
-const isCssdisabled = cssHelper.isCssdisabled();
+const isCssDisabled = cssHelper.isCssDisabled();
 
 const { meta, values } = useForm({
   validationSchema,

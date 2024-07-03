@@ -1,5 +1,5 @@
-const isCssdisabled = () => document.styleSheets.length;
+const isCssDisabled = () => document.styleSheets.length;
 
 export default {
-  isCssdisabled,
+  isCssDisabled,
 };
