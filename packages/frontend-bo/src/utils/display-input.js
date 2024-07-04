@@ -1,4 +1,5 @@
 import { formatDate } from "date-fns/format";
+import { organisme } from "#imports";
 
 const InputTypes = {
   TEXT: "text",
@@ -105,7 +106,11 @@ const IPersonneMorale = {
         display: "function",
       },
     ],
-    filter: (tab) => tab.filter((e) => e.etatAdministratif !== "Fermé"),
+    filter: (tab) =>
+      tab.filter(
+        (e) =>
+          e.etatAdministratif !== organisme.statuEtablissementSecondaire.FERME,
+      ),
   },
 };
 

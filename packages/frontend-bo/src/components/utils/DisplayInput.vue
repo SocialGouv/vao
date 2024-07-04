@@ -72,9 +72,8 @@ const props = defineProps({
 });
 
 const rows = computed(() => {
-  const data = props.input.filter
-    ? props.input.filter(props.value)
-    : props.value;
+  const data =
+    (props.input.filter && props.input.filter(props.value)) ?? props.value;
   return data.map((d) => {
     Object.keys(d).forEach((key) => {
       const headerType = props.input.fields.find((h) => h.value === key);
