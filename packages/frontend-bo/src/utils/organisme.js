@@ -3,6 +3,12 @@ const type = {
   PERSONNE_PHYSIQUE: "personne_physique",
 };
 
+const statuEtablissementSecondaire = {
+  FERME: "Fermé",
+  OUVERT: "En activité",
+};
+
 export default {
   type,
+  statuEtablissementSecondaire,
 };
