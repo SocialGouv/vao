@@ -36,8 +36,6 @@
 </template>
 
 <script setup>
-import { DemandesSejourListe } from "#build/components";
-
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
