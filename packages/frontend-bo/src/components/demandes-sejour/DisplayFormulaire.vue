@@ -9,7 +9,7 @@
         <div
           v-if="
             demandeStore.currentDemande?.organisme?.typeOrganisme ===
-            'personne_morale'
+            organisme.type.PERSONNE_MORALE
           "
         >
           <h4>Organisme</h4>
