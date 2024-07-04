@@ -1,0 +1,137 @@
+log:
+  level: debug
+  format: text
+
+storage:
+  type: "directory"
+  directory:
+    path: "{{tmp}}"
+
+cmd_default_params: &cmd_default_params
+  driver:
+    name: "json"
+  validate: true
+  timeout: 3600s
+  expected_exit_code: -1
+  executable: "node"
+
+dump:
+  transformation:
+    - schema: doc 
+      name: documents
+      transformers: 
+        - name: SetNull
+          params:
+            column: "file"
+
+    - schema: back
+      name: users
+      transformers:
+        - name: "Cmd"
+          # --- historique
+          params:
+            <<: *cmd_default_params
+            args:
+              - "./dist/back--users.js"
+            columns:
+              - name: "mail"
+              - name: "prenom"
+              - name: "nom"
+              - name: "pwd"
+        # - name: RandomFirstName
+        #   params:
+        #     column: prenom
+        # - name: Json
+        #   params:
+        #     column: telephone
+        #     operations:
+        #       - operation: set
+        #         path: countryCode
+        #         value: fr
+        #       - operation: set
+        #         path: numero
+        #         value: ""
+        # - name: SetNull
+        #   params:
+        #     column: pinnedNote
+        # - name: RandomLastName
+        #   params:
+        #     column: nom
+        # - name: RandomLastName
+        #   params:
+        #     column: surnom
+        #     keep_null: true
+        # - name: RealAddress
+        #   params:
+        #     columns:
+        #       - name: villeNaissance
+        #         template: "{{.City}}"
+        # - name: Json
+        #   params:
+        #     column: decision
+        #     operations:
+        #       - operation: set
+        #         path: motifDetails
+        #         value: null
+        #       - operation: set
+        #         path: orientationDetails
+        #         value: null
+        #       - operation: set
+        #         path: userName
+        #         value_template: "{{ quote fakerName }}"
+        #       - operation: set
+        #         path: userId
+        #         value_template: "{{ randomInt 0 1000000000}}"
+        #       - operation: set
+        #         path: uuid
+        #         value_template: "{{ quote fakerUUID }}"
+        # - name: "Cmd"
+        #   # --- historique
+        #   params:
+        #     <<: *cmd_default_params
+        #     args:
+        #       - "./dist/usager--historique.js"
+        #     columns:
+        #       - name: "historique"
+        #         skip_on_null_input: true
+        # - name: "Cmd"
+        #   # --- ayantsDroits
+        #   params:
+        #     <<: *cmd_default_params
+        #     args:
+        #       - "./dist/usager--ayants-droits.js"
+        #     columns:
+        #       - name: "ayantsDroits"
+        #         skip_on_null_input: true
+        # - name: "Cmd"
+        #   # --- import
+        #   params:
+        #     <<: *cmd_default_params
+        #     args:
+        #       - "./dist/usager--import.js"
+        #     columns:
+        #       - name: "import"
+        #         skip_on_null_input: true
+        # - name: "Cmd"
+        #   # --- rdv
+        #   params:
+        #     <<: *cmd_default_params
+        #     args:
+        #       - "./dist/usager--rdv.js"
+        #     columns:
+        #       - name: "rdv"
+        #         skip_on_null_input: true
+        # - name: Replace
+        #   params:
+        #     column: migrated
+        #     value: true
+        #     keep_null: false
+        # - name: "Cmd"
+        #   # --- options
+        #   params:
+        #     <<: *cmd_default_params
+        #     args:
+        #       - "./dist/usager--options.js"
+        #     columns:
+        #       - name: "options"
+        #         skip_on_null_input: true

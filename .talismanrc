@@ -1,4 +1,8 @@
 fileignoreconfig:
+- filename: .anonymizer/.env.example
+  checksum: 988ad1fe0f452d58b0a6ab91922409691a5039e2996bcd40a3fe4939e976671e
+- filename: .anonymizer/ts-transformers/back--users.ts
+  checksum: 21824c0928861881b0a9ad45c6bf8784ff3a68eb80674034b1312c851f966171
 - filename: .env.dev.example.env
   checksum: dfd9f0258a5e81735c0b4aee57b7a9637ca6a9167b537e1bce8ee1fbe61f9e3a
 - filename: .github/workflows/deactivate.yaml
