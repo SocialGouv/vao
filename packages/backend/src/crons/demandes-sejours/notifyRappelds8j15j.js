@@ -19,22 +19,22 @@ const log = logger(module.filename);
 // (ds.date_debut - (8 * interval '1 day'))::date  as datelimite,rappel_ds_compl
 const query = {
   fetchRappelDeclarationSejour8j15j: `
-    select ds.id, ds.date_debut,ds.statut, 
+    SELECT ds.id, ds.date_debut,ds.statut, 
     ds.libelle as titre,
-    to_char((ds.date_debut - (('${deadlineRemind}'+8) * interval '1 day'))::date, 'DD/MM/YYYY') as date_debut_alerte,
+    TO_CHAR((ds.date_debut - (('${deadlineRemind}'+8) * INTERVAL '1 day'))::date, 'DD/MM/YYYY') as date_debut_alerte,
     use.mail
-      from front.demande_sejour ds
-      inner join front.user_organisme uso on uso.org_id = ds.organisme_id
-      inner join front.users use on use.id = uso.use_id
-    where (ds.date_debut - (('${deadlineRemind}'+8) * interval '1 day'))::date<= now()::date
-    and now()::date<=(ds.date_debut - (8 * interval '1 day'))::date  
-      and ds.statut = '${statuts.ATTENTE_8_JOUR}'
-      and ds.rappel_ds_compl = false;    
+      FROM front.demande_sejour ds
+      INNER JOIN front.user_organisme uso on uso.org_id = ds.organisme_id
+      INNER JOIN front.users use on use.id = uso.use_id
+    WHERE (ds.date_debut - (('${deadlineRemind}'+8) * INTERVAL '1 day'))::date<= now()::date
+    AND now()::date<=(ds.date_debut - (8 * INTERVAL '1 day'))::date  
+    AND ds.statut = '${statuts.ATTENTE_8_JOUR}'
+    AND ds.rappel_ds_compl = false;    
     `,
   fetchUpdateRappel: `
-    update front.demande_sejour 
-      set rappel_ds_compl = true 
-      where id = $1;    
+    UPDATE front.demande_sejour 
+      SET rappel_ds_compl = true 
+      WHERE id = $1;    
     `,
 };
 
