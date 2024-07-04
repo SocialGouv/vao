@@ -91,17 +91,18 @@ module.exports = async function cancel(req, res, next) {
       const departements = declaration.hebergement.hebergements.map(
         (h) => h.coordonnees.adresse.departement,
       );
-
-      await Send(
-        MailUtils.bo.declarationSejour.sendDeclarationCanceled({
-          declaration,
-          departementSuivi: declaration.departementSuivi,
-          departementsSecondaires: departements.filter(
-            (d) => d !== declaration.departementSuivi,
-          ),
-          destinataires: destinatairesBack,
-        }),
-      );
+      if (destinatairesBack.length>0) {
+        await Send(
+          MailUtils.bo.declarationSejour.sendDeclarationCanceled({
+            declaration,
+            departementSuivi: declaration.departementSuivi,
+            departementsSecondaires: departements.filter(
+              (d) => d !== declaration.departementSuivi,
+            ),
+            destinataires: destinatairesBack,
+          }),
+        );
+      }
 
     }
   } catch (error) {

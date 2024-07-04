@@ -454,7 +454,7 @@ const headers = [
             icon: row.statut === DeclarationSejour.statuts.BROUILLON ? "ri-delete-bin-2-line" : "ri-close-line",
             onClick: (event) => {
               event.stopPropagation();
-              deleteOrCancelDS(row.demandeSejourId,row.statut);
+              row.statut === DeclarationSejour.statuts.BROUILLON ? deleteDS(row.demandeSejourId) : cancelDS(row.demandeSejourId);
             },
             disabled: !(listeStatutAutoriseBoutonDeleteCancel.includes(row.statut)),
           },
@@ -486,12 +486,6 @@ async function copyDS(dsId) {
       `Une erreur est survenue lors de la copie de la déclaration de séjour`,
     );
   }
-}
-async function deleteOrCancelDS(dsId, statut) {
-  if (statut === DeclarationSejour.statuts.BROUILLON)
-    deleteDS(dsId);
-  else
-    cancelDS(dsId);
 }
 async function deleteDS(dsId) {
   log.i("deleteDS -IN");
