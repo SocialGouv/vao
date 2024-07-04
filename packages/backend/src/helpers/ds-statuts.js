@@ -10,4 +10,5 @@ module.exports.statuts = {
   TRANSMISE: "TRANSMISE",
   TRANSMISE_8J: "TRANSMISE 8J",
   VALIDEE_8J: "VALIDEE 8J",
+  ANNULEE: "ANNULEE",
 };

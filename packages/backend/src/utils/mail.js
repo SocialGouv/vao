@@ -116,6 +116,38 @@ module.exports = {
       },
     },
     declarationSejour: {
+      sendDeclarationCanceled: ({
+        declaration,
+        destinataires,
+      }) => {
+        log.i("sendDeclarationCanceled - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendDeclarationCanceled - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p><br>
+                <p>La déclaration ${declaration.idFonctionnelle}, «${declaration.libelle}», vient d'être annulée par l'organisateur sur le portail VAO</p>
+                <p>Il n'y a plus aucune action à effectuer dessus.</p><br>
+                <p>Cordialement,</p><br>
+                <p>L'équipe du SI VAO</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Portail VAO - Déclaration annulée : ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendDeclarationCanceled post email", {
+          params,
+        });
+
+        return params;
+      },            
       sendDeclarationA8joursNotify: ({
         declaration,
         destinataires,
@@ -470,6 +502,35 @@ module.exports = {
           to: destinataires,
         };
         log.d("sendRefusMail post email", {
+          params,
+        });
+
+        return params;
+      },
+      sendCanceledMail: ({ destinataires, declaration }) => {
+        log.i("sendCanceledMail - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendCanceledMail - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p><br>
+                <p>Votre déclaration ${declaration.idFonctionnelle} a bien été annulée à votre demande.</p>
+                <p>Les services compétents ont été avisés de cette annulation.</p><br>
+                <p>Cordialement,</p><br>
+                <p>L'équipe VAO</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Portail VAO - Déclaration annulée : ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendCanceledMail post email", {
           params,
         });
 
