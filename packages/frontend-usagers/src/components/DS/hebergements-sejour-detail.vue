@@ -87,6 +87,7 @@
           />
         </div>
         <div
+          v-if="!isCssDisabled"
           class="fr-fieldset__element fr-col-12"
           style="height: 50vh; width: 50vw"
         >
@@ -655,6 +656,8 @@ if (props.hebergement.hebergementId) {
 } else {
   hebergementStore.hebergementCourant = null;
 }
+
+const isCssDisabled = cssHelper.isCssDisabled();
 
 const initialValues = {
   dateDebut: props.hebergement.dateDebut

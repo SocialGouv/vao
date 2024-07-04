@@ -55,6 +55,7 @@
                               label="Identifiant"
                               :label-visible="true"
                               hint="Format attendu : nom@domaine.fr"
+                              required
                               @update:model-value="editMail"
                             />
                           </div>
@@ -70,6 +71,7 @@
                                 label="Mot de passe"
                                 name="password"
                                 hint="Veuillez saisir votre mot de passe"
+                                required
                                 @update:model-value="editPwd"
                               ></PasswordInput>
                             </div>
