@@ -105,6 +105,7 @@ const IPersonneMorale = {
         display: "function",
       },
     ],
+    filter: (tab) => tab.filter((e) => e.etatAdministratif !== "Fermé"),
   },
 };
 
