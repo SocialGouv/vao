@@ -15,7 +15,10 @@
         :asc="asc"
       >
         <div
-          v-if="organismeStore.organisme?.typeOrganisme === 'personne_morale'"
+          v-if="
+            organismeStore.organisme?.typeOrganisme ===
+            organisme.type.PERSONNE_MORALE
+          "
         >
           <UtilsDisplayInput
             v-for="entry in Object.keys(displayInput.IPersonneMorale)"
@@ -34,7 +37,10 @@
           />
         </div>
         <div
-          v-if="organismeStore.organisme?.typeOrganisme === 'personne_physique'"
+          v-if="
+            organismeStore.organisme?.typeOrganisme ===
+            organisme.type.PERSONNE_PHYSIQUE
+          "
         >
           <UtilsDisplayInput
             v-for="entry in Object.keys(displayInput.IPersonnePhysique)"
@@ -86,7 +92,8 @@ const tabTitles = [
 
 const organismeName = computed(() => {
   if (organismeStore.organisme) {
-    return organismeStore.organisme.typeOrganisme === "personne_morale"
+    return organismeStore.organisme.typeOrganisme ===
+      organisme.type.PERSONNE_MORALE
       ? organismeStore.organisme.personneMorale.raisonSociale ?? ""
       : organismeStore.organisme.personnePhysique.nomUsage ?? "";
   }

@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container">
-    <DemandesSejourListe></DemandesSejourListe>
+    <DemandesSejourListe />
     <DsfrModal
       ref="modal"
       name="prend-en-charge"
@@ -36,6 +36,8 @@
 </template>
 
 <script setup>
+import { DemandesSejourListe } from "#build/components";
+
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],

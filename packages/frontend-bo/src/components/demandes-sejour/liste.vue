@@ -60,7 +60,7 @@
                   :searchable="true"
                   :close-on-select="false"
                   :options="[
-                    'Tous les statuts',
+                    allStatus,
                     ...Object.values(demandesSejours.statuts),
                   ]"
                   @update:model-value="onStatutSelect"
@@ -79,11 +79,7 @@
                   mode="tags"
                   :searchable="true"
                   :close-on-select="false"
-                  :options="[
-                    'Tous les statuts',
-                    'A instruire',
-                    'Lecture seule',
-                  ]"
+                  :options="[allStatus, 'A instruire', 'Lecture seule']"
                   @update:model-value="onActionSelect"
                 />
               </div>
@@ -162,6 +158,7 @@ const userStore = useUserStore();
 const defaultLimit = 10;
 const defaultOffset = 0;
 
+const allStatus = "Tous les statuts";
 const sortState = ref({});
 const currentPageState = ref(defaultOffset);
 const limitState = ref(defaultLimit);
@@ -222,7 +219,7 @@ watch([searchState], ([searchValue]) => {
 });
 
 const onStatutSelect = (value) => {
-  if (value === "Tous les statuts") {
+  if (value === allStatus) {
     searchState.statut = null;
   } else {
     searchState.statut = value;
@@ -230,7 +227,7 @@ const onStatutSelect = (value) => {
 };
 
 const onActionSelect = (value) => {
-  if (value === "Tous les statuts") {
+  if (value === allStatus) {
     searchState.estInstructeurPrincipal = null;
   } else {
     searchState.estInstructeurPrincipal = value === "A instruire";
