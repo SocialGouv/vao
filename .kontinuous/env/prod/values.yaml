@@ -2,8 +2,13 @@ global:
   s3SecretName: vao-prod-app-access-key
 
 backend:
-  autoscale:
-    enabled: true
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits: # exports need a lot of CPU/RAM ATM
+      cpu: 500m
+      memory: 768Mi
   host: api-vao.social.gouv.fr
   redirectFrom:
     - "api-{{ .Values.global.host }}"
@@ -12,18 +17,37 @@ backend:
 
 
 frontend-usagers:
-  autoscale:
-    enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits: # exports need a lot of CPU/RAM ATM
+      cpu: 200m
+      memory: 256Mi
   host: vao.social.gouv.fr
   redirectFrom:
     - "{{ .Values.global.host }}"
 
 frontend-bo:
-  autoscale:
-    enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits: # exports need a lot of CPU/RAM ATM
+      cpu: 200m
+      memory: 256Mi
   host: admin-vao.social.gouv.fr
   redirectFrom:
     - "bo-{{ .Values.global.host }}"
+
+pg:
+  cnpg-cluster:
+    resources:
+      requests:
+        memory: 1Gi
+      limits:
+        cpu: "1"
+        memory: 1Gi
 
 jobs:
   runs:
