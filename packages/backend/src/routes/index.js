@@ -10,6 +10,7 @@ module.exports.siret = require("./siret");
 module.exports.sejour = require("./sejour");
 module.exports.hebergement = require("./hebergement");
 module.exports.agrement = require("./agrement");
+module.exports.message = require("./message");
 
 module.exports.documents = require("./documents");
 

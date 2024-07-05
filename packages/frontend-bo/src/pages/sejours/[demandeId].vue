@@ -48,6 +48,14 @@
           déclaration
         </DsfrAlert>
       </DsfrTabContent>
+      <DsfrTabContent
+        panel-id="tab-content-3"
+        tab-id="tab-3"
+        :selected="selectedTabIndex === 3"
+        :asc="asc"
+      >
+        <DemandesSejourMessage :messages="demandeStore.messages" />
+      </DsfrTabContent>
     </DsfrTabs>
     <div
       v-if="
@@ -152,7 +160,6 @@
 <script setup>
 import dayjs from "dayjs";
 import { useIsDownloading } from "~/composables/useIsDownloading";
-import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],
@@ -207,6 +214,7 @@ const isOrganismeNonAgree = computed(() => {
 onMounted(async () => {
   try {
     await demandeStore.setCurrentDemande(route.params.demandeId);
+    await demandeStore.fetchMessages(route.params.demandeId);
   } catch (e) {
     navigateTo("/sejours");
   }
@@ -216,6 +224,7 @@ const tabTitles = [
   { title: " Formulaire" },
   { title: "Documents joints" },
   { title: "Historique de la déclaration" },
+  { title: "Messages" },
 ];
 
 const modalComplement = reactive({

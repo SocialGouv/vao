@@ -8,3 +8,4 @@ module.exports.agrementController = require("./agrement");
 module.exports.documentsController = require("./documents");
 module.exports.demandeSejourController = require("./demandeSejour");
 module.exports.hebergementController = require("./hebergement");
+module.exports.messageController = require("./message");
