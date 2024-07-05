@@ -1,14 +1,14 @@
 <template>
   <div class="fr-container">
     <div class="fr-grid-row">
-      <div class="fr-col-3 fr-py-3w">
+      <div class="fr-py-3w fr-col-xs-12 fr-col-md-3">
         <OrganismeMenuOrganisme
           :active-id="hash"
           :organisme="organismeStore.organismeCourant ?? {}"
         ></OrganismeMenuOrganisme>
       </div>
 
-      <div class="fr-col-9 fr-py-3w">
+      <div class="fr-col-xs-12 fr-col-md-9 fr-py-3w">
         <DsfrBreadcrumb :links="links" />
         <OrganismeStepper :step="hash"></OrganismeStepper>
         <div>
