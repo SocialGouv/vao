@@ -96,6 +96,7 @@
             :zoom="zoom"
             :center="markerLatLng"
             style="z-index: 0"
+            :use-global-leaflet="false"
           >
             <LTileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

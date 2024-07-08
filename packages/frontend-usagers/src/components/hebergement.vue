@@ -47,6 +47,7 @@
             ref="map"
             :zoom="zoom"
             :center="markerLatLng"
+            :use-global-leaflet="false"
             style="z-index: 0"
           >
             <LTileLayer
