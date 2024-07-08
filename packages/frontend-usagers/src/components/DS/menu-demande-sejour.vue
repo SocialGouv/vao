@@ -1,12 +1,10 @@
 <template>
-  <nav class="fr-sidemenu fr-sidemenu--sticky">
-    <DsfrSideMenu heading-title="">
-      <DsfrSideMenuList
-        id="declaraton-sejour-menu-list"
-        :menu-items="sommaireOptionsToDisplay"
-      />
-    </DsfrSideMenu>
-  </nav>
+  <DsfrSideMenu heading-title="">
+    <DsfrSideMenuList
+      id="declaraton-sejour-menu-list"
+      :menu-items="sommaireOptionsToDisplay"
+    />
+  </DsfrSideMenu>
 </template>
 
 <script setup>
