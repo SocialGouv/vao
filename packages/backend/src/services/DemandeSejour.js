@@ -754,7 +754,7 @@ module.exports.getByDepartementCodes = async (
 
   if (search?.action) {
     searchQuery.push(
-      `statut in (${dsStatus.statuts.EN_COURS}, ${dsStatus.statuts.EN_COURS_8J}, ${dsStatus.statuts.TRANSMISE}, ${dsStatus.statuts.TRANSMISE_8J})`,
+      `statut in ('${dsStatus.statuts.EN_COURS}', '${dsStatus.statuts.EN_COURS_8J}', '${dsStatus.statuts.TRANSMISE}', '${dsStatus.statuts.TRANSMISE_8J}')`,
     );
   }
 
