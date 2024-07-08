@@ -2,6 +2,7 @@
 const dayjs = require("dayjs");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
+const dsStatus = require("../helpers/ds-statuts");
 
 const log = logger(module.filename);
 
@@ -751,18 +752,10 @@ module.exports.getByDepartementCodes = async (
     params.push(`${search.statut}`);
   }
 
-  if (search?.estInstructeurPrincipal === true) {
+  if (search?.action) {
     searchQuery.push(
-      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length + 1})`,
+      `statut in ('${dsStatus.statuts.EN_COURS}', '${dsStatus.statuts.EN_COURS_8J}', '${dsStatus.statuts.TRANSMISE}', '${dsStatus.statuts.TRANSMISE_8J}')`,
     );
-    params.push(`{${departementCodes.join(",")}}`);
-  }
-
-  if (search?.estInstructeurPrincipal === false) {
-    searchQuery.push(
-      `NOT (ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length + 1}))`,
-    );
-    params.push(`{${departementCodes.join(",")}}`);
   }
 
   /*
