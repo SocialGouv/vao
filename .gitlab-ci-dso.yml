@@ -32,4 +32,4 @@ build-backend:
     IMAGE_NAME: backend
   stage: build-images
   extends:
-    - .kaniko:simple-build-push
+    - .kaniko:build-push
