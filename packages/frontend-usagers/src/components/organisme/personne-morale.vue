@@ -269,7 +269,6 @@
                 'Adresse',
                 'Code postal',
                 'Commune',
-                'État',
                 'Autorisé à organiser des séjours ?',
               ]"
               :rows="formatedEtablissements"
@@ -484,7 +483,8 @@ const formatedEtablissements = computed(() => {
         new RegExp(etablissementFilter.value.denomination, "i").test(
           e.denomination,
         ) &&
-        new RegExp(etablissementFilter.value.commune, "i").test(e.commune),
+        new RegExp(etablissementFilter.value.commune, "i").test(e.commune) &&
+        e.etatAdministratif === "En activité",
     )
     .map((e) => {
       const row = [
@@ -493,7 +493,6 @@ const formatedEtablissements = computed(() => {
         e.adresse ?? "",
         e.codePostal ?? "",
         e.commune ?? "",
-        e.etatAdministratif ?? "",
         {
           component: "DsfrToggleSwitch",
           modelValue: e.enabled,
