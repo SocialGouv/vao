@@ -751,18 +751,8 @@ module.exports.getByDepartementCodes = async (
     params.push(`${search.statut}`);
   }
 
-  if (search?.estInstructeurPrincipal === true) {
-    searchQuery.push(
-      `ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length + 1})`,
-    );
-    params.push(`{${departementCodes.join(",")}}`);
-  }
-
-  if (search?.estInstructeurPrincipal === false) {
-    searchQuery.push(
-      `NOT (ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length + 1}))`,
-    );
-    params.push(`{${departementCodes.join(",")}}`);
+  if (search?.action) {
+    searchQuery.push("statut in ('EN COURS', 'TRANSMISE', 'TRANSMISE 8J')");
   }
 
   /*

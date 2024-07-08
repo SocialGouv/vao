@@ -73,14 +73,11 @@
             >
               <div class="fr-input-group">
                 <DsfrSelect
-                  :model-value="searchState.estInstructeurPrincipal"
-                  label="Action"
+                  v-model="needAction"
+                  label="Filtrer sur les séjours nécessitant une action"
                   name="action"
                   mode="tags"
-                  :searchable="true"
-                  :close-on-select="false"
-                  :options="[allStatus, 'A instruire', 'Lecture seule']"
-                  @update:model-value="onActionSelect"
+                  :options="['Oui', 'Non']"
                 />
               </div>
             </div>
@@ -166,6 +163,7 @@ const searchState = reactive({
   libelle: null,
   organisme: props.organisme,
   statut: null,
+  action: null,
 });
 
 sejourStore.currentDemande = null;
@@ -178,6 +176,15 @@ try {
 } catch (error) {
   toaster.error("Une erreur est survenue lors de la récupération des demandes");
 }
+
+const needAction = computed({
+  get() {
+    return searchState.action ? "Oui" : "Non";
+  },
+  set(value) {
+    searchState.action = value === "Oui" ? true : false;
+  },
+});
 
 watch(
   [sortState, limitState, currentPageState],
@@ -223,14 +230,6 @@ const onStatutSelect = (value) => {
     searchState.statut = null;
   } else {
     searchState.statut = value;
-  }
-};
-
-const onActionSelect = (value) => {
-  if (value === allStatus) {
-    searchState.estInstructeurPrincipal = null;
-  } else {
-    searchState.estInstructeurPrincipal = value === "A instruire";
   }
 };
 
