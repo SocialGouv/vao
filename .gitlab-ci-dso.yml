@@ -31,7 +31,7 @@ build-backend:
     IMAGE_NAME: backend
   stage: build-images
   extends:
-    - .kaniko:build-push
+    - .kaniko:simple-build-push
 
 
 .kaniko:simple-build-push:
