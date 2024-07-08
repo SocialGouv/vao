@@ -22,13 +22,7 @@ router.post(
   messageController.postByBO,
 );
 
-router.post(
-  "/:declarationId",
-  boCheckJWT,
-  boCheckRoleDS,
-  getDepartements,
-  messageController.postByFO,
-);
+router.post("/:declarationId", checkJWT, messageController.postByFO);
 
 router.get("/admin/:declarationId", boCheckJWT, messageController.get);
 router.get("/:declarationId", checkJWT, messageController.get);

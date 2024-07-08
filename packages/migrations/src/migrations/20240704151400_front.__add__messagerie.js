@@ -10,6 +10,7 @@ exports.up = function (knex) {
       front_user_id      INTEGER              NULL,
       back_user_id       INTEGER              NULL,
       message            VARCHAR(1000)        NOT NULL,
+      file               JSONB                NULL,
       created_at         TIMESTAMP            DEFAULT current_timestamp NOT NULL,
       CONSTRAINT pk_front_demande_sejour_message PRIMARY KEY (id)
     );

@@ -2,9 +2,9 @@
   <div>
     <div v-for="m in props.messages" :key="m.id">
       <div class="chat-box">
-        <div :class="m.backUserId ? 'chat-l' : 'chat-r'">
-          <div :class="m.backUserId ? 'mess-l' : 'mess-r'">
-            <div :class="m.backUserId ? 'check-l' : 'check-r'">
+        <div :class="m.frontUserId ? 'chat-l' : 'chat-r'">
+          <div :class="m.frontUserId ? 'mess-l' : 'mess-r'">
+            <div :class="m.frontUserId ? 'check-l' : 'check-r'">
               <span>{{
                 m.backUserId
                   ? m.backUserPrenom +
@@ -110,7 +110,7 @@ async function sendMessage() {
     }
   }
   try {
-    const url = `/message/admin/${declarationId}`;
+    const url = `/message/${declarationId}`;
     const response = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",

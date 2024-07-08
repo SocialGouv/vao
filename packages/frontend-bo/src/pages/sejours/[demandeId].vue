@@ -31,7 +31,10 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
-        <DemandesSejourDocuments :declaration="demandeStore.currentDemande" />
+        <DemandesSejourDocuments
+          :declaration="demandeStore.currentDemande"
+          :messages="demandeStore.messages ?? []"
+        />
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="tab-content-2"
@@ -54,7 +57,10 @@
         :selected="selectedTabIndex === 3"
         :asc="asc"
       >
-        <DemandesSejourMessage :messages="demandeStore.messages" />
+        <DemandesSejourMessage
+          :messages="demandeStore.messages"
+          @send="fetchMessages"
+        />
       </DsfrTabContent>
     </DsfrTabs>
     <div
@@ -214,7 +220,7 @@ const isOrganismeNonAgree = computed(() => {
 onMounted(async () => {
   try {
     await demandeStore.setCurrentDemande(route.params.demandeId);
-    await demandeStore.fetchMessages(route.params.demandeId);
+    fetchMessages();
   } catch (e) {
     navigateTo("/sejours");
   }
@@ -239,6 +245,9 @@ const modalEnregistrement2Mois = reactive({
   opened: false,
 });
 
+const fetchMessages = () => {
+  demandeStore.fetchMessages(route.params.demandeId);
+};
 const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
 };

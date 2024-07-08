@@ -7,11 +7,11 @@ const log = logger(module.filename);
 module.exports = async function post(req, res, next) {
   log.i("IN");
   const { body, decoded } = req;
-  const { message } = body;
+  const { message, file } = body;
   const declarationId = req.params.declarationId;
   const userId = decoded.id;
 
-  if (!declarationId || !message || message.length === 0) {
+  if (!declarationId || (!message && !file)) {
     log.w("missing or invalid parameter");
     return next(
       new AppError("Paramètre incorrect", {
@@ -21,7 +21,7 @@ module.exports = async function post(req, res, next) {
   }
 
   try {
-    const id = await Message.post(declarationId, userId, message, "back");
+    const id = await Message.post(declarationId, userId, message, file, "back");
     return res.status(200).json({
       id,
       message: "message envoyé",

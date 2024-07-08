@@ -166,7 +166,10 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
-        <DSDocuments :declaration="demandeCourante ?? {}"></DSDocuments>
+        <DSDocuments
+          :declaration="demandeCourante ?? {}"
+          :messages="demandeSejourStore.messages ?? []"
+        ></DSDocuments>
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="declaration-sejour-content-2"
@@ -182,6 +185,18 @@
           >Une erreur est survenue durant la récupération de l'historique de la
           déclaration
         </DsfrAlert>
+      </DsfrTabContent>
+      <DsfrTabContent
+        panel-id="declaration-sejour-content-3"
+        tab-id="declaration-sejour-3"
+        :selected="selectedTabIndex === 3"
+        :asc="asc"
+      >
+        <DSMessage
+          :messages="demandeSejourStore.messages"
+          @send="fetchMessages"
+        >
+        </DSMessage>
       </DsfrTabContent>
     </DsfrTabs>
   </div>
@@ -203,6 +218,7 @@ definePageMeta({
     "check-demande-sejour-id-param",
   ],
 });
+
 useHead({
   title: "Déclaration de séjour détaillée | Vacances Adaptées Organisées",
   meta: [
@@ -238,6 +254,8 @@ const initialSelectedIndex = 0;
 const asc = ref(true);
 const selectedTabIndex = ref(initialSelectedIndex);
 
+demandeSejourStore.fetchMessages(route.params.demandeId);
+
 const {
   data: historique,
   error,
@@ -262,6 +280,7 @@ const tabTitles = computed(() => [
   { title: "Formulaire" },
   { title: "Documents joints" },
   ...(sejourId.value ? [{ title: "Historique de la déclaration" }] : []),
+  { title: "Messagerie" },
 ]);
 
 const sommaireOptions = demandeSejourMenus
@@ -309,6 +328,10 @@ const demandeDetails = computed(() => {
     },
   ];
 });
+
+const fetchMessages = () => {
+  demandeSejourStore.fetchMessages(route.params.demandeId);
+};
 
 async function updateOrCreate(data, type) {
   log.i("updateOrCreate - IN", { data, type });

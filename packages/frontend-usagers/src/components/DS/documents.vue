@@ -32,6 +32,7 @@ const config = useRuntimeConfig();
 const NuxtLink = resolveComponent("NuxtLink");
 const props = defineProps({
   declaration: { type: Object, required: true },
+  messages: { type: Array, required: false, default: null },
 });
 
 const headers = [
@@ -46,6 +47,8 @@ const headers = [
   {
     column: "type",
     sorter: "type",
+    messages: { type: Array, required: false, default: null },
+
     text: "Type de fichier",
     headerAttrs: {
       class: "suivi",
@@ -135,6 +138,18 @@ const filesTeleverses = computed(() => {
         }
       }
     }
+  }
+  if (props.messages) {
+    props.messages.map((m) => {
+      if (m.file && m.file.uuid) {
+        files.push({
+          name: m.file.name ?? "fichier",
+          type: "fichiers de messagerie ",
+          createdAt: m.file.createdAt,
+          uuid: m.file.uuid,
+        });
+      }
+    });
   }
   return files;
 });
