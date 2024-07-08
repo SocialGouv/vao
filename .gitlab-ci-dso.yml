@@ -1,0 +1,35 @@
+include:
+  - project: $CATALOG_PATH
+    file:
+      - vault-ci.yml
+      - kaniko-ci.yml
+    ref: main
+
+# default:
+#  tags:
+#    - ADD_CUSTOM_TAG_HERE
+
+cache:
+  paths:
+    - node_modules
+
+variables:
+  TAG: "${CI_COMMIT_REF_SLUG}"
+  REGISTRY_URL: "${IMAGE_REPOSITORY}"
+
+stages:
+  - read-secret
+  - build-images
+
+read_secret:
+  stage: read-secret
+  extends:
+    - .vault:read_secret
+
+build-backend:
+  variables:
+    WORKING_DIR: "packages/backend"
+    IMAGE_NAME: backend
+  stage: build-images
+  extends:
+    - .kaniko:simple-build-push
