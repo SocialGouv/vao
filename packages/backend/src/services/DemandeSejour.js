@@ -2,6 +2,7 @@
 const dayjs = require("dayjs");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
+const dsStatus = require("../helpers/ds-statuts");
 
 const log = logger(module.filename);
 
@@ -752,7 +753,9 @@ module.exports.getByDepartementCodes = async (
   }
 
   if (search?.action) {
-    searchQuery.push("statut in ('EN COURS', 'TRANSMISE', 'TRANSMISE 8J')");
+    searchQuery.push(
+      `statut in (${dsStatus.statuts.EN_COURS}, ${dsStatus.statuts.EN_COURS_8J}, ${dsStatus.statuts.TRANSMISE}, ${dsStatus.statuts.TRANSMISE_8J})`,
+    );
   }
 
   /*
