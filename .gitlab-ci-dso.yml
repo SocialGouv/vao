@@ -48,5 +48,8 @@ build-backend:
     - mkdir -p /kaniko/.docker
     - echo "$DOCKER_AUTH" > /kaniko/.docker/config.json
     - /kaniko/executor --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy=$no_proxy 
-      --context="$CI_PROJECT_DIR/$WORKING_DIR" --dockerfile="$CI_PROJECT_DIR/$WORKING_DIR/$DOCKERFILE" --registry-mirror=nexus-docker-proxy.apps.c6.numerique-interieur.com --destination $REGISTRY_URL/$IMAGE_NAME:$TAG
+      --context="$CI_PROJECT_DIR/$WORKING_DIR"
+      --dockerfile="$CI_PROJECT_DIR/$WORKING_DIR/$DOCKERFILE"
+      --registry-mirror=nexus-docker-proxy.apps.c6.numerique-interieur.com 
+      --destination $REGISTRY_URL/$IMAGE_NAME:$TAG
 
