@@ -13,7 +13,7 @@ cache:
     - node_modules
 
 variables:
-  TAG: "${CI_COMMIT_REF_SLUG}"
+  TAG: "${CI_COMMIT_REF_SLUG}-${CI_COMMIT_SHORT_SHA}"
   REGISTRY_URL: "${IMAGE_REPOSITORY}"
 
 stages:
@@ -33,12 +33,20 @@ build-backend:
   extends:
     - .kaniko:simple-build-push
 
+build-frontend-usagers:
+  variables:
+    WORKING_DIR: "packages/frontend-usagers"
+    IMAGE_NAME: frontend-usagers
+  stage: build-images
+  extends:
+    - .kaniko:simple-build-push
+
 
 .kaniko:simple-build-push:
   variables:
     DOCKERFILE: Dockerfile
     WORKING_DIR: .
-    IMAGE_NAME: $IMAGE_NAMES
+    IMAGE_NAME: ""
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
