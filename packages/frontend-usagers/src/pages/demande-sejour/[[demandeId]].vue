@@ -192,11 +192,20 @@
         :selected="selectedTabIndex === 3"
         :asc="asc"
       >
-        <DSMessage
-          :messages="demandeSejourStore.messages"
-          @send="fetchMessages"
-        >
-        </DSMessage>
+        <div v-if="demandeCourante.statut !== 'BROUILLON'">
+          {{ demandeCourante.statut }}
+          <DSMessage
+            :messages="demandeSejourStore.messages"
+            @send="fetchMessages"
+          >
+          </DSMessage>
+        </div>
+        <div v-else>
+          <DsfrAlert type="info"
+            >La messagerie n'est pas accessible pour les demandes à l'état
+            BROUILLON
+          </DsfrAlert>
+        </div>
       </DsfrTabContent>
     </DsfrTabs>
   </div>

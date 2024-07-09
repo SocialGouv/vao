@@ -275,6 +275,36 @@ module.exports = {
 
         return params;
       },
+      sendMessageNotify: ({ declaration, destinataires }) => {
+        log.i("sendMessageNotify - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendMessageNotify - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p>
+
+                <p>Un message vous a été adressé sur la déclaration <a href="${frontBODomain}/sejours/${declaration.id}">${declaration.idFonctionnelle}</a>, onglet Messagerie.</p>
+                
+                <p>Cordialement,</p>
+                <p>L'équipe VAO</p>
+                `,
+          replyTo: senderEmail,
+          subject: `nouveau message sur la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendMessageNotify post email", {
+          params,
+        });
+
+        return params;
+      },
     },
   },
   usagers: {

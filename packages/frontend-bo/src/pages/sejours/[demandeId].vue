@@ -230,7 +230,7 @@ const tabTitles = [
   { title: " Formulaire" },
   { title: "Documents joints" },
   { title: "Historique de la déclaration" },
-  { title: "Messages" },
+  { title: "Messagerie" },
 ];
 
 const modalComplement = reactive({
