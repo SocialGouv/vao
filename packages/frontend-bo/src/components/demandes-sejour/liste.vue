@@ -1,7 +1,27 @@
 <template>
   <div class="fr-container">
-    <h1 class="header">Liste des séjours déclarés ({{ sejourStore.total }})</h1>
+    <h1 class="header">
+      Liste des séjours déclarés ({{ sejourStore.countGlobal }})
+    </h1>
     <div class="fr-grid-row">
+      <div class="fr-col-12">
+        <cards-number
+          :values="[
+            {
+              title: 'Déclarations transmises à traiter',
+              value: sejourStore.countTransmis,
+            },
+            {
+              title: 'Déclaration en cours de traitement',
+              value: sejourStore.countEncCours,
+            },
+            {
+              title: 'Déclaration 8 jours a traiter',
+              value: sejourStore.countTransmis8j,
+            },
+          ]"
+        />
+      </div>
       <div class="fr-col-12">
         <form>
           <fieldset class="fr-fieldset">
@@ -144,6 +164,7 @@ const props = defineProps({
 
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
+import CardsNumber from "~/components/utils/CardsNumber.vue";
 
 const log = logger("pages/sejours");
 

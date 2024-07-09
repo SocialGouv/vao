@@ -8,6 +8,10 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     demandes: [],
     currentDemande: null,
     total: 0,
+    countGlobal: 0,
+    countTransmis: 0,
+    countEncCours: 0,
+    countTransmis8j: 0,
   }),
   actions: {
     async fetchDemandes({ limit, offset, sortBy, sortDirection, search } = {}) {
@@ -30,7 +34,11 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         if (demandesWithPagination) {
           log.i("fetchDemandes - DONE");
           this.demandes = demandesWithPagination.demandes_sejour;
-          this.total = parseInt(demandesWithPagination.total);
+          this.total = demandesWithPagination.total;
+          this.countGlobal = demandesWithPagination.count_global;
+          this.countTransmis = demandesWithPagination.count_transmis;
+          this.countEncCours = demandesWithPagination.count_en_cours;
+          this.countTransmis8j = demandesWithPagination.count_transmis_8j;
         }
       } catch (err) {
         log.w("fetchDemandes - DONE with error", err);
