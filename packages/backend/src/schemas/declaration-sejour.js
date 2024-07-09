@@ -39,7 +39,7 @@ function isSejourComplet(hebergements, dateDebut, dateFin) {
 }
 
 function isUpdateFUsager8Jour(statut) {
-  return (statut === statuts.ATTENTE_8_JOUR || statut === statuts.A_MODIFIER_8J)
+  return statut === statuts.ATTENTE_8_JOUR || statut === statuts.A_MODIFIER_8J;
 }
 
 const baseSchema = {

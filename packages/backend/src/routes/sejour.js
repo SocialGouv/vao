@@ -8,6 +8,7 @@ const boCheckRole = require("../middlewares/bo-check-role");
 
 const demandeSejourController = require("../controllers/demandeSejour");
 const getDepartements = require("../middlewares/getDepartements");
+const canUpdateDs = require("../middlewares/can-update-ds");
 
 const boCheckRoleDS = boCheckRole([
   "DemandeSejour_Lecture",
@@ -69,7 +70,8 @@ router.get("/historique/:id", checkJWT, demandeSejourController.historique);
 router.get("/", checkJWT, demandeSejourController.get);
 router.post("/depose/:id", checkJWT, demandeSejourController.depose);
 router.post("/:id/copy", checkJWT, demandeSejourController.copy);
-router.post("/:id", checkJWT, demandeSejourController.update);
+router.post("/:id", checkJWT, canUpdateDs, demandeSejourController.update);
 router.post("/", checkJWT, demandeSejourController.post);
 router.delete("/:id", checkJWT, demandeSejourController.delete);
+router.post("/cancel/:id", checkJWT, demandeSejourController.cancel);
 module.exports = router;

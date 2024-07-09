@@ -1,6 +1,15 @@
 <template>
   <div v-if="!!demandeStore.currentDemande" class="fr-container header">
     <DemandesSejourDetails />
+    <div class="fr-col-12 fr-mb-3w badge">
+      <DsfrAlert
+        v-if="isOrganismeNonAgree"
+        title="Organisme non agréé"
+        :description="isOrganismeNonAgree"
+        type="error"
+      >
+      </DsfrAlert>
+    </div>
     <DsfrTabs
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
@@ -42,11 +51,14 @@
     </DsfrTabs>
     <div
       v-if="
+        !apiStatus.isDownloading &&
         userStore.user?.roles &&
         userStore.user?.roles.includes('DemandeSejour_Ecriture') &&
         demandeStore.currentDemande.estInstructeurPrincipal &&
-        (demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS
-        || demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS_8J)
+        (demandeStore.currentDemande.statut ===
+          demandesSejours.statuts.EN_COURS ||
+          demandeStore.currentDemande.statut ===
+            demandesSejours.statuts.EN_COURS_8J)
       "
       class="container"
     >
@@ -54,6 +66,7 @@
         ref="modalOrigin"
         label="Demander des compléments à l'organisateur"
         tertiary
+        :disabled="apiStatus.isDownloading"
         @click.prevent="onOpenModalDemandeComplements"
       />
       <DsfrModal
@@ -70,6 +83,7 @@
         ref="modalOrigin"
         label="Refuser"
         secondary
+        :disabled="apiStatus.isDownloading"
         @click.prevent="onOpenModalRefus"
       />
       <DsfrModal
@@ -85,13 +99,19 @@
       <DsfrButton
         ref="modalOrigin"
         label="Accepter"
+        :disabled="apiStatus.isDownloading"
         @click.prevent="onOpenModalEnregistrement2Mois"
       />
       <DsfrModal
         ref="modal"
         name="modalEnregistrement2MOis"
         :opened="modalEnregistrement2Mois.opened"
-        :title="(demandeStore.currentDemande.statut === demandesSejours.statuts.EN_COURS ? 'Enregistrement de la demande à 2 mois' : 'Enregistrement de la demande à 8 jours')"
+        :title="
+          demandeStore.currentDemande.statut ===
+          demandesSejours.statuts.EN_COURS
+            ? 'Enregistrement de la déclaration à 2 mois'
+            : 'Enregistrement de la déclaration à 8 jours'
+        "
         @close="onCloseModalEnregistrement2Mois"
       >
         <article class="fr-mb-4v">
@@ -122,21 +142,27 @@
         </fieldset>
       </DsfrModal>
     </div>
+    <UtilsIsDownloading
+      :is-downloading="apiStatus.isDownloading"
+      :message="apiStatus.message"
+    />
   </div>
 </template>
 
 <script setup>
+import dayjs from "dayjs";
+import { useIsDownloading } from "~/composables/useIsDownloading";
+import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
+
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
 });
 
-import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
-
 const log = logger("pages/sejours");
 
 const toaster = useToaster();
-
+const { apiStatus, resetApiStatut, setApiStatut } = useIsDownloading();
 const route = useRoute();
 
 const initialSelectedIndex = 0;
@@ -153,6 +179,7 @@ const selectTab = (idx) => {
 };
 
 const demandeStore = useDemandeSejourStore();
+const organismeStore = useOrganismeStore();
 const userStore = useUserStore();
 
 const {
@@ -163,6 +190,18 @@ const {
   immediate: false,
   method: "GET",
   credentials: "include",
+});
+
+organismeStore.fetchOrganismesNonAgrees({});
+
+const isOrganismeNonAgree = computed(() => {
+  const organisme = organismeStore.organismesNonAgrees.find(
+    (o) =>
+      o.siret === demandeStore.currentDemande.organisme?.personneMorale?.siret,
+  );
+  return organisme
+    ? `L'organisme ${organisme.nom} n'est plus agréé depuis le ${dayjs(organisme.dateDecision).format("DD/MM/YYYY")} pour la raison suivante : ${organisme.natureDecision}`
+    : "";
 });
 
 onMounted(async () => {
@@ -216,6 +255,7 @@ const onCloseModalEnregistrement2Mois = () => {
 };
 
 const onValidComplement = async (commentaires) => {
+  setApiStatut("Demande de complément en cours");
   onCloseModalDemandeComplements();
 
   try {
@@ -232,10 +272,13 @@ const onValidComplement = async (commentaires) => {
   } catch (error) {
     log.w("prend en charge", error);
     toaster.error("Erreur lors de la prise en charge de la demande");
+  } finally {
+    resetApiStatut();
   }
 };
 
 const onValidRefus = async (commentaires) => {
+  setApiStatut("Prise en charge du refus en cours");
   onCloseModalDemandeComplements();
 
   try {
@@ -249,10 +292,14 @@ const onValidRefus = async (commentaires) => {
   } catch (error) {
     log.w("prend en charge", error);
     toaster.error("Erreur lors de la prise en charge de la demande");
+  } finally {
+    resetApiStatut();
   }
 };
 
 const onValidEnregistrement2Mois = async () => {
+  setApiStatut("Enregistrement  de la demande en cours");
+
   onCloseModalEnregistrement2Mois();
   try {
     await $fetchBackend(
@@ -267,6 +314,8 @@ const onValidEnregistrement2Mois = async () => {
   } catch (error) {
     log.w("prend en charge", error);
     toaster.error("Erreur lors de la prise en charge de la demande");
+  } finally {
+    resetApiStatut();
   }
 };
 </script>
@@ -281,6 +330,7 @@ const onValidEnregistrement2Mois = async () => {
   margin-top: 1rem;
   margin-bottom: 1rem;
   justify-content: right;
+  align-items: center;
   gap: 1rem;
 }
 </style>

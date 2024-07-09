@@ -64,13 +64,9 @@ const professionOptions = [
     value: "Autres activités de services",
   },
   {
-    text: "Activités des ménages en tant qu’employeur ; activités indifférenciées des ménages en tant que",
+    text: "Activités des ménages en tant qu’employeur ; activités indifférenciées des ménages en tant que producteur de biens et services pour usage propre",
     value:
-      "Activités des ménages en tant qu’employeur ; activités indifférenciées des ménages en tant que",
-  },
-  {
-    text: "producteur de biens et services pour usage propre",
-    value: "producteur de biens et services pour usage propre",
+      "Activités des ménages en tant qu’employeur ; activités indifférenciées des ménages en tant que producteur de biens et services pour usage propre",
   },
   {
     text: "Activités extraterritoriales. ",

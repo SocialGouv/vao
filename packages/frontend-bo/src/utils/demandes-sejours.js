@@ -1,5 +1,6 @@
 import { getMonth } from "date-fns/getMonth";
 import { formatDate } from "date-fns/format";
+import { organisme } from "#imports";
 
 /*  Sur l'espace admin, le status BROUILLON ne sera jamais vu,
 il ne fait donc pas parti de la liste des status possibles*/
@@ -15,6 +16,7 @@ const statuts = {
   VALIDEE_8J: "VALIDEE 8J",
   REFUSEE: "REFUSEE",
   REFUSEE_8J: "REFUSEE 8J",
+  ANNULEE: "ANNULEE",
 };
 
 const getSaison = (demande) => {
@@ -37,11 +39,11 @@ const isDeclaration8Jours = (statut) =>
   ].includes(statut);
 
 const getOrganismeTitle = (demande) => {
-  if (demande.typeOrganisme === "personne_physique") {
+  if (demande.typeOrganisme === organisme.type.PERSONNE_PHYSIQUE) {
     return `${demande.personnePhysique.prenom} ${demande.personnePhysique.nomUsage ?? demande.personnePhysique.nomNaissance}`;
   }
 
-  if (demande.typeOrganisme === "personne_morale") {
+  if (demande.typeOrganisme === organisme.type.PERSONNE_MORALE) {
     return demande.personneMorale.raisonSociale;
   }
 };

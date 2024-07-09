@@ -25,6 +25,8 @@
     <div v-if="typeOrganisme === 'personne_morale'">
       <OrganismePersonneMorale
         :init-data="initData.personneMorale ?? {}"
+        :is-downloading="props.isDownloading"
+        :message="props.message"
         @next="next"
         @update="update"
       ></OrganismePersonneMorale>
@@ -32,6 +34,8 @@
     <div v-if="typeOrganisme === 'personne_physique'">
       <OrganismePersonnePhysique
         :init-data="initData.personnePhysique ?? {}"
+        :is-downloading="props.isDownloading"
+        :message="props.message"
         @next="next"
         @update="update"
       ></OrganismePersonnePhysique>
@@ -45,6 +49,10 @@ import { useField } from "vee-validate";
 const emit = defineEmits(["next", "update"]);
 const props = defineProps({
   initData: { type: Object, required: true },
+  showButtons: { type: Boolean, default: true },
+  validateOnMount: { type: Boolean, default: false },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const {
@@ -59,6 +67,7 @@ const {
 function update(data, type) {
   emit("update", data, type);
 }
+
 function next() {
   emit("next");
 }

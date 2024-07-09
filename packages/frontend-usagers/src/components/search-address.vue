@@ -1,6 +1,7 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
+import MultiSelectOption from "~/components/utils/MultiSelectOption.vue";
 
 const toaster = useToaster();
 
@@ -111,7 +112,14 @@ function select(_value, option) {
             :filter-results="false"
             @search-change="searchAddress"
             @select="select"
-          />
+          >
+            <template #option="{ option, isPointed }">
+              <MultiSelectOption
+                :label="option.label"
+                :is-pointed="isPointed(option)"
+              />
+            </template>
+          </Multiselect>
           <div v-if="message" class="fr-messages-group">
             <p :class="messageClass">
               <span>{{ message }}</span>

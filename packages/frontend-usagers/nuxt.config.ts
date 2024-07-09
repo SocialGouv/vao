@@ -19,7 +19,7 @@ export default defineNuxtConfig({
   modules: [
     "nuxt-security",
     "@pinia/nuxt",
-    "nuxt3-leaflet",
+    "@nuxtjs/leaflet",
     "@socialgouv/dsfr-toaster-nuxt-module",
   ],
   runtimeConfig: {

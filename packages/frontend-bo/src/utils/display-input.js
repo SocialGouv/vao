@@ -1,4 +1,5 @@
 import { formatDate } from "date-fns/format";
+import { organisme } from "#imports";
 
 const InputTypes = {
   TEXT: "text",
@@ -7,6 +8,7 @@ const InputTypes = {
   MULTISELECT: "multiselect",
   NUMBER: "number",
   TO_FORMAT: "to_format",
+  TABLE: "table",
 };
 
 const ouiNon = {
@@ -18,6 +20,10 @@ const IPersonneMorale = {
   raisonSociale: {
     inputType: InputTypes.TEXT,
     label: "Raison sociale",
+  },
+  nomCommercial: {
+    inputType: InputTypes.TEXT,
+    label: "Nom commercial",
   },
   siren: {
     inputType: InputTypes.TEXT,
@@ -38,6 +44,73 @@ const IPersonneMorale = {
   adresseShort: {
     inputType: InputTypes.TEXT,
     label: "Adresse",
+  },
+  email: {
+    inputType: InputTypes.TEXT,
+    label: "Courriel",
+  },
+  representantsLegaux: {
+    inputType: InputTypes.TABLE,
+    label: "Représentants légaux",
+    fields: [
+      {
+        label: "Nom",
+        value: "nom",
+        display: "text",
+      },
+      {
+        label: "Prénom",
+        value: "prenom",
+        display: "text",
+      },
+      {
+        label: "Fonction",
+        value: "fonction",
+        display: "text",
+      },
+    ],
+  },
+  etablissements: {
+    inputType: InputTypes.TABLE,
+    label: "Etablissements secondaires",
+    fields: [
+      {
+        label: "Code NIC",
+        value: "nic",
+        display: "text",
+      },
+      {
+        label: "Nom",
+        value: "denomination",
+        display: "text",
+      },
+      {
+        label: "Etat adminsitratif",
+        value: "etatAdministratif",
+        display: "text",
+      },
+      {
+        label: "Adresse",
+        value: "adresse",
+        format: function (element) {
+          return `${element["adresse"]} ${element["codePostal"]} ${element["commune"]}`;
+        },
+        display: "function",
+      },
+      {
+        label: "Autorisé à la déclaration",
+        value: "enabled",
+        format: function (element) {
+          return element.enabled ? "Oui" : "Non";
+        },
+        display: "function",
+      },
+    ],
+    filter: (tab) =>
+      tab.filter(
+        (e) =>
+          e.etatAdministratif !== organisme.statuEtablissementSecondaire.FERME,
+      ),
   },
 };
 

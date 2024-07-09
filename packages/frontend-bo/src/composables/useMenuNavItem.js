@@ -7,19 +7,39 @@ export const useMenuNavItems = () => {
       return [];
     }
     const roles = userStore.user.roles ?? [];
+    const comptes = roles.includes("Compte")
+      ? [
+          {
+            title: "Comptes",
+            links: [
+              {
+                text: "back office",
+                to: "/comptes/liste",
+              },
+              {
+                text: "organismes",
+                to: "/comptes/liste-organisme",
+              },
+            ],
+          },
+        ]
+      : [
+          {
+            title: "Comptes",
+            links: [
+              {
+                text: "organismes",
+                to: "/comptes/liste-organisme",
+              },
+            ],
+          },
+        ];
     return [
       {
         text: "Accueil",
         to: "/",
       },
-      ...(roles.includes("Compte")
-        ? [
-            {
-              text: "Comptes",
-              to: "/comptes/liste",
-            },
-          ]
-        : []),
+      ...comptes,
       ...(roles.includes("DemandeSejour_Lecture") ||
       roles.includes("DemandeSejour_Ecriture")
         ? [
@@ -34,6 +54,10 @@ export const useMenuNavItems = () => {
             },
           ]
         : []),
+      {
+        text: "Organismes",
+        to: "/organismes/liste",
+      },
       ...(roles.includes("DemandeSejour_Lecture") ||
       roles.includes("DemandeSejour_Ecriture")
         ? [

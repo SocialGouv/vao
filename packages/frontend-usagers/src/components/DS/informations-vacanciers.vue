@@ -86,22 +86,13 @@
         </div>
       </div>
     </fieldset>
-
-    <fieldset v-if="props.showButtons" class="fr-fieldset">
-      <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
-        <DsfrButton
-          id="previous-step"
-          :secondary="true"
-          @click.prevent="
-            () => {
-              emit('previous');
-            }
-          "
-          >Précédent
-        </DsfrButton>
-        <DsfrButton id="next-step" @click.prevent="next">Suivant</DsfrButton>
-      </DsfrButtonGroup>
-    </fieldset>
+    <UtilsNavigationButtons
+      :show-buttons="props.showButtons"
+      :is-downloading="props.isDownloading"
+      :message="props.message"
+      @next="next"
+      @previous="emit('previous')"
+    />
   </div>
 </template>
 
@@ -114,6 +105,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
   validateOnMount: { type: Boolean, default: false },
   showButtons: { type: Boolean, default: true },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const emit = defineEmits(["previous", "next", "update"]);
@@ -171,7 +164,7 @@ const {
 } = useField("precisionDeficiences");
 
 function next() {
-  if (!meta.value.dirty) {
+  if (!meta.value.dirty || !props.modifiable) {
     return emit("next");
   }
   emit(

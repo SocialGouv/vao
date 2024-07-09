@@ -1,12 +1,10 @@
 <template>
-  <nav class="fr-sidemenu fr-sidemenu--sticky">
-    <DsfrSideMenu heading-title="Fiche organisateur">
-      <DsfrSideMenuList
-        id="organisme-menu-list"
-        :menu-items="sommaireOptionsToDisplay"
-      />
-    </DsfrSideMenu>
-  </nav>
+  <DsfrSideMenu heading-title="Fiche organisateur">
+    <DsfrSideMenuList
+      id="organisme-menu-list"
+      :menu-items="sommaireOptionsToDisplay"
+    />
+  </DsfrSideMenu>
 </template>
 
 <script setup>

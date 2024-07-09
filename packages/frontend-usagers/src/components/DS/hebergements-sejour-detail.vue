@@ -87,6 +87,7 @@
           />
         </div>
         <div
+          v-if="!isCssDisabled"
           class="fr-fieldset__element fr-col-12"
           style="height: 50vh; width: 50vw"
         >
@@ -95,6 +96,7 @@
             :zoom="zoom"
             :center="markerLatLng"
             style="z-index: 0"
+            :use-global-leaflet="false"
           >
             <LTileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -597,7 +599,12 @@
       size="xl"
       @close="closeAddHebergement"
     >
-      <Hebergement @cancel="closeAddHebergement" @submit="addHebergement" />
+      <Hebergement
+        :is-downloading="apiStatus.isDownloading"
+        :message="apiStatus.message"
+        @cancel="closeAddHebergement"
+        @submit="addHebergement"
+      />
     </DsfrModal>
   </div>
 </template>
@@ -608,6 +615,7 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 
 const toaster = useToaster();
+const { apiStatus, setApiStatut, resetApiStatut } = useIsDownloading();
 
 const props = defineProps({
   hebergement: { type: Object, required: true },
@@ -649,6 +657,8 @@ if (props.hebergement.hebergementId) {
 } else {
   hebergementStore.hebergementCourant = null;
 }
+
+const isCssDisabled = cssHelper.isCssDisabled();
 
 const initialValues = {
   dateDebut: props.hebergement.dateDebut
@@ -911,11 +921,13 @@ const addHebergementOpened = ref(false);
 
 async function addHebergement(hebergement) {
   log.i("addHebergement - IN", { hebergement });
+  setApiStatut("Ajout de l'hébergement en cours");
   let id;
   try {
     await hebergementStore.updaloadFiles(hebergement);
   } catch (e) {
     toaster.error(e.message ?? "Erreur lors de la sauvegarde de l'hébergement");
+    resetApiStatut();
     return;
   }
 
@@ -932,6 +944,7 @@ async function addHebergement(hebergement) {
   }
   await hebergementStore.fetch();
   handleHebergementIdChange(id);
+  resetApiStatut();
   closeAddHebergement();
   log.i("addHebergement - DONE");
 }

@@ -38,12 +38,16 @@
         @select="onAdresseChange"
       ></SearchAddress>
 
-      <div v-if="adresse" class="fr-fieldset__element fr-col-12">
+      <div
+        v-if="adresse && !isCssDisabled"
+        class="fr-fieldset__element fr-col-12"
+      >
         <div style="height: 50vh; width: 50vw">
           <LMap
             ref="map"
             :zoom="zoom"
             :center="markerLatLng"
+            :use-global-leaflet="false"
             style="z-index: 0"
           >
             <LTileLayer
@@ -487,7 +491,7 @@
     </DsfrFieldset>
 
     <fieldset class="fr-fieldset">
-      <div class="fr-col-4">
+      <div v-if="!props.isDownloading" class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton id="previous-step" :secondary="true" @click.prevent="back"
             >Retour
@@ -497,11 +501,16 @@
       <div class="fr-col-4">
         <div class="fr-input-group">
           <DsfrButton
+            v-if="!props.isDownloading"
             id="next-step"
             :disabled="!meta.valid"
             @click.prevent="submit"
             >{{ labelNext }}
           </DsfrButton>
+          <is-downloading
+            :is-downloading="props.isDownloading"
+            :message="props.message"
+          />
         </div>
       </div>
     </fieldset>
@@ -512,6 +521,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
+import IsDownloading from "~/components/utils/IsDownloading.vue";
 
 const toaster = useToaster();
 
@@ -523,6 +533,8 @@ const props = defineProps({
     default: () => ({}),
   },
   labelNext: { type: String, default: "Ajouter hébergement" },
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
 });
 
 const log = logger("components/hebergement");
@@ -576,6 +588,8 @@ const initialValues = {
     ...(props.initHebergement.informationsTransport || {}),
   },
 };
+
+const isCssDisabled = cssHelper.isCssDisabled();
 
 const { meta, values } = useForm({
   validationSchema,

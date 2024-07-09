@@ -13,6 +13,7 @@ export const useDepartementStore = defineStore("departement", {
           this.departements = departements.map((departement) => ({
             text: `${departement.value} - ${departement.text}`,
             value: departement.value,
+            region: departement.region,
           }));
         }
       } catch (err) {

@@ -24,6 +24,7 @@ const statuts = {
   A_MODIFIER_8J: "A MODIFIER 8J",
   VALIDEE_8J: "VALIDEE 8J",
   REFUSEE_8J: "REFUSEE 8J",
+  ANNULEE: "ANNULEE",
 };
 
 const log = logger("utils/DeclarationSejour");
@@ -172,6 +173,30 @@ const schema = (dateDebut, dateFin, statut) => ({
   attestation: yup.object(attestationSchema),
 });
 
+
+const statusTagStates = {
+  [statuts.EN_COURS]: "new",
+  [statuts.EN_COURS_8J]: "new",
+  [statuts.TRANSMISE]: "new",
+  [statuts.ATTENTE_8_JOUR]: "new",
+  [statuts.TRANSMISE_8J]: "new",
+  [statuts.VALIDEE_8J]: "success",
+  [statuts.A_MODIFIER]: "warning",
+  [statuts.A_MODIFIER_8J]: "warning",
+  [statuts.REFUSEE]: "error",
+  [statuts.REFUSEE_8J]: "error",
+};
+
+const getSaison = (date) =>
+  ["Hiver", "Printemps", "Eté", "Automne"].flatMap((season) =>
+    Array(4).fill(season),
+  )[new Date(date).getMonth()];
+
+const getOrganismeName = (demande) =>
+  demande.organisme.typeOrganisme === "personne_morale"
+    ? demande.organisme.personneMorale.raisonSociale
+    : `${demande.organisme.personnePhysique.prenom} ${demande.organisme.personnePhysique.nomUsage ?? demande.organisme.personnePhysique.nomNaissance}`;
+
 export default {
   isSejourComplet,
   baseSchema,
@@ -179,6 +204,9 @@ export default {
   hebergementSchema,
   schema,
   statuts,
+  statusTagStates,
+  getSaison,
+  getOrganismeName,
   isPost8Jour,
   isUpdate8Jour,
 };

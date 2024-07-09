@@ -89,6 +89,7 @@ module.exports = {
                 "Bonjour,",
                 "Vous recevez ce mail car vous vous avez été inscrit sur le portail VAO Administration.",
                 "Pour activer votre compte et créer votre mot de passe, veuillez cliquer sur lien ci dessous.",
+                "Attention, ce lien n’est valable qu’une heure. Si celui-ci est expiré, vous pouvez en générer un nouveau en suivant le lien d’activation",
               ],
               type: "p",
             },
@@ -115,6 +116,38 @@ module.exports = {
       },
     },
     declarationSejour: {
+      sendDeclarationCanceled: ({
+        declaration,
+        destinataires,
+      }) => {
+        log.i("sendDeclarationCanceled - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendDeclarationCanceled - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p><br>
+                <p>La déclaration ${declaration.idFonctionnelle}, «${declaration.libelle}», vient d'être annulée par l'organisateur sur le portail VAO</p>
+                <p>Il n'y a plus aucune action à effectuer dessus.</p><br>
+                <p>Cordialement,</p><br>
+                <p>L'équipe du SI VAO</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Portail VAO - Déclaration annulée : ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendDeclarationCanceled post email", {
+          params,
+        });
+
+        return params;
+      },            
       sendDeclarationA8joursNotify: ({
         declaration,
         destinataires,
@@ -329,7 +362,7 @@ module.exports = {
           from: senderEmail,
           html: `
           <p>Bonjour,</p>
-          <p>Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du   
+          <p>Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du
           ${dayjs(declaration.attestation.at).format("DD/MM/YYYY")}, une déclaration pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.dateFin).format("DD/MM/YYYY")}.</p>
           <p>Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.</p>
           <p>Vous devrez, huit jours avant le déroulement de ce séjour, réaliser la déclaration complémentaire prévue à l’article R. 412-14 du code du tourisme.</p>
@@ -341,6 +374,37 @@ module.exports = {
           to: destinataires,
         };
         log.d("sendEnregistrementA2MoisMail post email", {
+          params,
+        });
+
+        return params;
+      },
+      sendAccuseReception8JoursMail: ({ destinataires, declaration }) => {
+        log.i("sendAccuseReception8JoursMail - In", {
+          destinataires,
+        });
+
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendAccuseReception8JoursMail - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+          <p>Bonjour,</p>
+          <p>Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le ${dayjs(declaration.organisme.agrement.dateObtention).format("DD/MM/YYYY")} et avez déposé en date du
+          ${dayjs(declaration.attestation.at).format("DD/MM/YYYY")}, une déclaration complémentaire pour le séjour « ${declaration.libelle} » que vous organisez du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declaration.dateFin).format("DD/MM/YYYY")}.</p>
+          <p>Nous accusons ce jour, le ${dayjs().format("DD/MM/YYYY")}, réception de votre déclaration ${declaration.idFonctionnelle}.</p>
+          <p>Cordialement,</p>
+          <p>L'équipe VAO</p>
+          `,
+          replyTo: senderEmail,
+          subject: `Portail VAO - Enregistrement de la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendAccuseReception8JoursMail post email", {
           params,
         });
 
@@ -438,6 +502,35 @@ module.exports = {
           to: destinataires,
         };
         log.d("sendRefusMail post email", {
+          params,
+        });
+
+        return params;
+      },
+      sendCanceledMail: ({ destinataires, declaration }) => {
+        log.i("sendCanceledMail - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendCanceledMail - ${message}`);
+          throw new AppError(message);
+        }
+
+        const params = {
+          from: senderEmail,
+          html: `
+                <p>Bonjour,</p><br>
+                <p>Votre déclaration ${declaration.idFonctionnelle} a bien été annulée à votre demande.</p>
+                <p>Les services compétents ont été avisés de cette annulation.</p><br>
+                <p>Cordialement,</p><br>
+                <p>L'équipe VAO</p>
+                `,
+          replyTo: senderEmail,
+          subject: `Portail VAO - Déclaration annulée : ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendCanceledMail post email", {
           params,
         });
 

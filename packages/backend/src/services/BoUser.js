@@ -9,18 +9,18 @@ const log = logger(module.filename);
 const query = {
   activate: `
   UPDATE back.users
-  SET 
+  SET
     validated = true,
     edited_at = NOW()
-  WHERE 
+  WHERE
     id = $1
   `,
   bindRole: (user, role) => [
     `INSERT INTO back.user_roles (
       use_id,
       rol_id
-    ) SELECT $1, id 
-    FROM back.roles 
+    ) SELECT $1, id
+    FROM back.roles
     WHERE label = $2
     ;`,
     [user, role],
@@ -98,7 +98,7 @@ const query = {
       ur.roles
     FROM back.users AS us
     LEFT OUTER JOIN (
-      SELECT 
+      SELECT
         use_id,
         jsonb_agg(
           label
@@ -121,10 +121,10 @@ ${Object.keys(criterias)
   ],
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
-SELECT 
+SELECT
   COUNT(*)
 FROM back.users AS us
-LEFT JOIN geo.territoires ter 
+LEFT JOIN geo.territoires ter
   on ter.code = us.ter_code
 WHERE 1 = 1
 ${additionalParamsQuery}
@@ -144,7 +144,7 @@ ${additionalParamsQuery}
       ur.roles
     FROM back.users us
     LEFT OUTER JOIN (
-      SELECT 
+      SELECT
         use_id,
         jsonb_agg(
           label
@@ -155,13 +155,13 @@ ${additionalParamsQuery}
     ) ur ON ur.use_id = us.id
     WHERE
       mail = $1
-      AND pwd = crypt($2, CASE 
-        WHEN pwd = '' 
-        THEN 
-          gen_salt('bf') 
-        ELSE 
-          pwd 
-        END 
+      AND pwd = crypt($2, CASE
+        WHEN pwd = ''
+        THEN
+          gen_salt('bf')
+        ELSE
+          pwd
+        END
       )
       AND deleted is False
     `,
@@ -300,19 +300,22 @@ module.exports.activate = async (email) => {
   return user;
 };
 
-module.exports.read = async ({
-  limit,
-  offset,
-  sortBy,
-  sortDirection = "ASC",
-  search,
-} = {}) => {
+module.exports.read = async (
+  { limit, offset, sortBy, sortDirection = "ASC", search } = {},
+  territoireCode,
+) => {
   //  TODO : create the logic (here or in the service) to get the department of the admin.
   //  For me, the list of demandes that are goven to the admin are the list of all demands of the department
 
   log.w("read - IN", { search });
   let searchQuery = "";
   const searchParams = [];
+
+  if (territoireCode && territoireCode !== "FRA") {
+    const paramNumber = searchParams.length + 1;
+    searchQuery += `AND (TER.CODE = $${paramNumber} OR TER.PARENT_CODE = $${paramNumber})`;
+    searchParams.push(territoireCode);
+  }
 
   // Search management
   if (search?.nom && search.nom.length) {

@@ -13,3 +13,4 @@ module.exports.refus = require("./refus");
 module.exports.enregistrementDemande2Mois = require("./enregistrementDemande2Mois");
 module.exports.copy = require("./copy");
 module.exports.delete = require("./delete");
+module.exports.cancel = require("./cancel");

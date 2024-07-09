@@ -21,6 +21,15 @@ module.exports = {
     URI: process.env.API_INSEE_URI,
     URL: process.env.API_INSEE_URL,
   },
+  crons: {
+    request: {
+      notify: {
+        cron: process.env.BACKEND_CRON_REQUEST_DS8J15J_NOTIFY_CRON,
+        deadlineRemind: process.env.BACKEND_CRON_REQUEST_DS8J15J_DEADLINE_REMIND,
+        name: "REQUEST_DS8J15J",
+      },
+    },
+  },
   domain: process.env.BACKEND_URL,
   frontBODomain: process.env.FRONTEND_BO_URL,
 
@@ -66,7 +75,7 @@ module.exports = {
   tmpDirectory: process.env.TMP_DIRECTORY,
   tokenSecret: process.env.TOKEN_SECRET,
   validationToken: {
-    expiresIn: 30 * 60 * 1000, // 30 min
+    expiresIn: 60 * 60 * 1000, // 30 min
     secret: process.env.VALIDATION_TOKEN_SECRET,
   },
 };

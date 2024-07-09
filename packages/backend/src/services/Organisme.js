@@ -198,6 +198,59 @@ const query = {
     JOIN front.user_organisme uo ON o.id = org_id
     WHERE o.personne_morale->>'siret' = $1
 `,
+  getListe: `
+    SELECT
+      o.id AS "organismeId",
+      o.type_organisme AS "typeOrganisme",
+      o.personne_morale->>'siren' AS "siren",
+      o.personne_morale->>'siret' AS "siret",
+      o.personne_morale->>'raisonSociale' AS "raisonSociale",
+      o.personne_physique->>'nomNaissance' AS "nomPersonnePhysique",
+      CASE 
+        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False 
+        THEN 
+        (
+            SELECT 
+              json_build_object(
+                'numero', numero,
+                'regionObtention', region_obtention,
+                'dateObtention', date_obtention,
+                'file', file
+              ) AS "agrement"
+            FROM front.agrements a            
+            JOIN front.organismes o2 ON o2.id = a.organisme_id 
+            WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
+            AND a.supprime = false
+        )
+        ELSE (
+          SELECT 
+              json_build_object(
+                'numero', numero,
+                'regionObtention', region_obtention,
+                'dateObtention', date_obtention,
+                'file', file
+              ) AS "agrement"               
+          FROM front.agrements a            
+          WHERE organisme_id = o.id
+          AND a.supprime = false
+        ) 
+      END AS agrement,
+      o.edited_at AS "editedAt"
+    FROM front.organismes o
+    WHERE o.supprime = false
+`,
+  getNonAgrees: `
+SELECT
+  ona.id AS "organismeId",
+  ona.siret AS "siret",
+  ona.nom AS "nom",
+  ona.region_delivrance AS "regionDelivrance",
+  ona.nature_decision AS "natureDecision",
+  ona.date_decision AS "dateDecision",
+  ona.created_at AS "createdAt",
+  ona.edited_at AS "editedAt"
+FROM back.organisme_non_agree ona
+`,
   getSiege: `
     SELECT
       o.id as "organismeId",
@@ -394,7 +447,7 @@ module.exports.getOne = async (criterias = {}) => {
   const { rowCount, rows: organismes } = await pool.query(
     ...query.get(criterias),
   );
-  if (rowCount !== 1) {
+  if (rowCount === 0) {
     throw new AppError("Organisme non trouvé", {
       name: "NOT_FOUND",
       statusCode: 404,
@@ -427,4 +480,18 @@ module.exports.getSiege = async (siret) => {
   log.d("getSiege", { organismes });
   log.i("getSiege - DONE");
   return rowCount === 0 ? null : organismes[0];
+};
+
+module.exports.get = async () => {
+  log.i("get - IN");
+  const { rows: organismes } = await pool.query(query.getListe, []);
+  log.i("get - DONE");
+  return organismes ?? [];
+};
+
+module.exports.getNonAgrees = async () => {
+  log.i("getNonAgrees - IN");
+  const { rows: organismes } = await pool.query(query.getNonAgrees, []);
+  log.i("getNonAgrees - DONE");
+  return organismes ?? [];
 };

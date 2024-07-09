@@ -9,7 +9,11 @@ async function getDepartementByTerritoireCode(territoireCode) {
     return await Departement.fetch();
   }
 
-  if (/^[0-9]+$/.test(territoireCode)) {
+  if (
+    /^[0-9]+$/.test(territoireCode) ||
+    territoireCode === "2A" ||
+    territoireCode === "2B"
+  ) {
     return await Departement.fetch({ value: territoireCode });
   }
 
