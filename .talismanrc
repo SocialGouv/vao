@@ -205,6 +205,8 @@ fileignoreconfig:
   checksum: c792d383dfec26115dfab5a391e6427b5b9c4416da783388c7ef00d4f97585bb
 - filename: packages/migrations/src/knexfile.js
   checksum: 1d3be5d2c46636eb90b74382447f23ffefc943ed963736ffab7556336d2df667
+- filename: packages/migrations/src/migrations/20240710125537_eig.js
+  checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: pg/scripts/01-init.sql
