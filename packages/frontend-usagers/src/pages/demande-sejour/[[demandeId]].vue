@@ -4,8 +4,9 @@
     <h1>
       Déclaration
       {{
-        demandeCourante.statut && demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON
-          ? `:  ${demandeCourante.libelle}`
+        demandeCourante.statut &&
+        demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON
+          ? `: ${demandeCourante.libelle}`
           : " de séjour"
       }}
     </h1>
@@ -409,7 +410,7 @@ async function updateOrCreate(data, type) {
 
 async function finalize(attestation) {
   log.i("finalize -IN");
-  setApiStatut("Transmition de la déclaration en cours");
+  setApiStatut("Transmission de la déclaration en cours");
   try {
     const url = `/sejour/depose/${sejourId.value}`;
     const response = await $fetchBackend(url, {
