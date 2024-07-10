@@ -1,4 +1,3 @@
-
 export const competence = {
   NATIONALE: "NAT",
   REGIONALE: "REG",
@@ -13,9 +12,9 @@ export const serviceCompetenceNAT = {
 export const serviceCompetenceREG = {
   label: "Régionale",
   value: competence.REGIONALE,
-}
+};
 
 export const serviceCompetenceDEP = {
   label: "Départementale",
   value: competence.DEPARTEMENTALE,
-}
+};

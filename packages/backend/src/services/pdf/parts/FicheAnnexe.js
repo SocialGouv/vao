@@ -424,8 +424,7 @@ module.exports = function buildFicheAnnexe(hebergement) {
                         },
                       ],
                     },
-                    h.informationsLocaux
-                      .fileDernierArreteAutorisationMaire && {
+                    h.informationsLocaux.fileDernierArreteAutorisationMaire && {
                       columns: [
                         {
                           text: "Arrêté d'autorisation du maire :",

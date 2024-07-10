@@ -25,7 +25,8 @@ module.exports = {
     request: {
       notify: {
         cron: process.env.BACKEND_CRON_REQUEST_DS8J15J_NOTIFY_CRON,
-        deadlineRemind: process.env.BACKEND_CRON_REQUEST_DS8J15J_DEADLINE_REMIND,
+        deadlineRemind:
+          process.env.BACKEND_CRON_REQUEST_DS8J15J_DEADLINE_REMIND,
         name: "REQUEST_DS8J15J",
       },
       update: {

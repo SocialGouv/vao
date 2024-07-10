@@ -10,12 +10,13 @@ const sendTemplate = require("../../helpers/mail");
 
 const { senderEmail } = require("../../config");
 
-const { name, cron, deadlineRemind } = require("../../config").crons.request.notify;
+const { name, cron, deadlineRemind } =
+  require("../../config").crons.request.notify;
 
 const log = logger(module.filename);
 
 // Interval 8 Jours avant le début du séjour + 15 jours avant l'échéance de déclaration soit 23 jours avant le début
-// date_debut, (date_debut - (23 * interval '1 day'))::date, now()::date>=(date_debut - (23 * interval '1 day'))::date  
+// date_debut, (date_debut - (23 * interval '1 day'))::date, now()::date>=(date_debut - (23 * interval '1 day'))::date
 // (ds.date_debut - (8 * interval '1 day'))::date  as datelimite,rappel_ds_compl
 const query = {
   fetchRappelDeclarationSejour8j15j: `

@@ -1,6 +1,5 @@
 module.exports.competence = {
-    NATIONALE: "NAT",
-    REGIONALE: "REG",
-    DEPARTEMENTALE: "DEP",
-  };
-  
+  DEPARTEMENTALE: "DEP",
+  NATIONALE: "NAT",
+  REGIONALE: "REG",
+};

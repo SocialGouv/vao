@@ -49,7 +49,10 @@ module.exports = async function post(req, res, next) {
     );
   }
 
-  if (declaration.statut !== statuts.EN_COURS && declaration.statut !== statuts.EN_COURS_8J) {
+  if (
+    declaration.statut !== statuts.EN_COURS &&
+    declaration.statut !== statuts.EN_COURS_8J
+  ) {
     log.w("Delaration should be in statut EN COURS");
     return next(
       new AppError("Statut incompatible", {
@@ -58,8 +61,13 @@ module.exports = async function post(req, res, next) {
     );
   }
 
-  const RefuseType = declaration.statut === statuts.EN_COURS ? statuts.REFUSEE : statuts.REFUSEE_8J;
-  const  textTypePrecision = "Refus de la demande " + (declaration.statut === statuts.EN_COURS ? " 2 mois" : " 8 jours");
+  const RefuseType =
+    declaration.statut === statuts.EN_COURS
+      ? statuts.REFUSEE
+      : statuts.REFUSEE_8J;
+  const textTypePrecision =
+    "Refus de la demande " +
+    (declaration.statut === statuts.EN_COURS ? " 2 mois" : " 8 jours");
   try {
     const destinataires = await DemandeSejour.getEmailToList(
       declaration.organismeId,
