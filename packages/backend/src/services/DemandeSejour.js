@@ -331,6 +331,17 @@ WHERE
       params,
     ];
   },
+  getCount: (departementQuery, territoireCode) => `
+  SELECT
+    COUNT(CASE WHEN statut = 'EN COURS' THEN 1 END) AS count_en_cours,
+    COUNT(CASE WHEN statut = 'TRANSMISE' THEN 1 END) AS count_transmis,
+    COUNT(CASE WHEN statut = 'TRANSMISE 8J' THEN 1 END) AS count_transmis_8j,
+    COUNT(CASE WHEN statut <> 'BROUILLON' THEN 1 END) AS count_global
+  FROM front.demande_sejour ds
+      JOIN front.organismes o ON o.id = ds.organisme_id
+      LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+  where ((${departementQuery})
+      OR a.region_obtention = '${territoireCode}')`,
   getEmailBack: `
 WITH
   roles AS
@@ -716,6 +727,10 @@ module.exports.getByDepartementCodes = async (
 ) => {
   if (departementCodes && departementCodes.length === 0) {
     return {
+      count_en_cours: 0,
+      count_global: 0,
+      count_transmis: 0,
+      count_transmis_8j: 0,
       demandes_sejour: [],
       total: 0,
     };
@@ -772,6 +787,11 @@ module.exports.getByDepartementCodes = async (
     params,
   );
 
+  const stats = await pool.query(
+    query.getCount(departementQuery, territoireCode),
+    [departementCodes],
+  );
+
   // Order management
   if (sortBy && sortDirection) {
     queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, "createdAt" DESC`;
@@ -797,6 +817,10 @@ module.exports.getByDepartementCodes = async (
     return {
       demandes_sejour: response.rows,
       total: response.rowCount + parseInt(offset ?? 0),
+      ...Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
+        acc[key] = Number(value);
+        return acc;
+      }, {}),
     };
   }
 
@@ -813,6 +837,10 @@ module.exports.getByDepartementCodes = async (
   return {
     demandes_sejour: response.rows,
     total: total.rows.find((t) => t.count)?.count ?? 0,
+    ...Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
+      acc[key] = Number(value);
+      return acc;
+    }, {}),
   };
 };
 
