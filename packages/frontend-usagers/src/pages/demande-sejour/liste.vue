@@ -290,6 +290,9 @@ const statutOptions = [
   { label: "REFUSEE", value: "REFUSEE" },
   { label: "REFUSEE 8 JOURS", value: "REFUSEE 8J" },
   { label: "ANNULEE", value: "ANNULEE" },
+  { label: "ABANDONNEE", value: "ABANDONNEE" },
+  { label: "SEJOUR EN COURS", value: "SEJOUR EN COURS" },
+  { label: "TERMINEE", value: "TERMINEE" },
 ];
 
 const onUpdateId = (id) => {
@@ -398,6 +401,7 @@ const headers = [
         DeclarationSejour.statuts.EN_COURS,
         DeclarationSejour.statuts.EN_COURS_8J,
         DeclarationSejour.statuts.VALIDEE_8J,
+        DeclarationSejour.statuts.SEJOUR_EN_COURS,
       ].includes(value.statut)
         ? "success"
         : [DeclarationSejour.statuts.BROUILLON].includes(value.statut)
@@ -442,6 +446,7 @@ const headers = [
               DeclarationSejour.statuts.TRANSMISE,
               DeclarationSejour.statuts.EN_COURS,
               DeclarationSejour.statuts.ANNULEE,
+              DeclarationSejour.statuts.ABANDONNEE,
             ].includes(row.statut),
             onClick: (event) => {
               event.stopPropagation();

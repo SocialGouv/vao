@@ -25,6 +25,9 @@ const statuts = {
   VALIDEE_8J: "VALIDEE 8J",
   REFUSEE_8J: "REFUSEE 8J",
   ANNULEE: "ANNULEE",
+  ABANDONNEE: "ABANDONNEE",
+  SEJOUR_EN_COURS: "SEJOUR EN COURS",
+  TERMINEE: "TERMINEE",
 };
 
 const log = logger("utils/DeclarationSejour");
@@ -185,6 +188,7 @@ const statusTagStates = {
   [statuts.A_MODIFIER_8J]: "warning",
   [statuts.REFUSEE]: "error",
   [statuts.REFUSEE_8J]: "error",
+  [statuts.SEJOUR_EN_COURS]: "success",
 };
 
 const getSaison = (date) =>

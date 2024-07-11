@@ -28,6 +28,11 @@ module.exports = {
         deadlineRemind: process.env.BACKEND_CRON_REQUEST_DS8J15J_DEADLINE_REMIND,
         name: "REQUEST_DS8J15J",
       },
+      update: {
+        cron: process.env.BACKEND_CRON_UPDATE_STATUT_DS_CRON,
+        name: "UPDATE_STATUT_DS",
+      },
+
     },
   },
   domain: process.env.BACKEND_URL,
