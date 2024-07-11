@@ -5,6 +5,7 @@
       Déclaration
       {{
         demandeCourante.statut &&
+        demandeCourante.statut &&
         demandeCourante.statut !== DeclarationSejour.statuts.BROUILLON
           ? `: ${demandeCourante.libelle}`
           : " de séjour"

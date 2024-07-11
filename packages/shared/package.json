@@ -13,8 +13,9 @@
   "dependencies": {
     "@gouvfr/dsfr": "^1.12.1",
     "@gouvminint/vue-dsfr": "^5.18.1",
-    "dayjs": "^1.11.11",
-    "vue": "^3.4.31"
+    "dayjs": "^1.11.12",
+    "vue": "^3.4.31",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.3.13",
