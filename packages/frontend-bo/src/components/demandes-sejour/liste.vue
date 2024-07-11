@@ -117,7 +117,7 @@
         </form>
       </div>
     </div>
-    <UtilsTable
+    <TableWithPagination
       :headers="headers"
       :data="sejourStore.demandes"
       :total-items="sejourStore.total"
@@ -129,7 +129,7 @@
       @update-sort="updateSort"
       @update-items-by-page="updateItemsByPage"
       @update-current-page="updateCurrentPage"
-    ></UtilsTable>
+    />
     <DsfrModal
       ref="modal"
       name="prend-en-charge"
@@ -165,6 +165,11 @@
 </template>
 
 <script setup>
+import { TableWithPagination } from "@vao/shared";
+import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
+import Declaration from "~/components/demandes-sejour/Declaration.vue";
+import CardsNumber from "~/components/utils/CardsNumber.vue";
+
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
@@ -173,10 +178,6 @@ definePageMeta({
 const props = defineProps({
   organisme: { type: String, required: false, default: null },
 });
-
-import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
-import Declaration from "~/components/demandes-sejour/Declaration.vue";
-import CardsNumber from "~/components/utils/CardsNumber.vue";
 
 const log = logger("pages/sejours");
 

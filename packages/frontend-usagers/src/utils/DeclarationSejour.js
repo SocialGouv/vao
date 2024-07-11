@@ -1,14 +1,14 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
 import {
-  logger,
-  personne,
+  hebergementUtils,
   informationsPersonnel,
   informationsVacanciers,
-  protocoleTransport,
-  protocoleSanitaire,
+  logger,
+  personne,
   projetSejour,
-  hebergementUtils,
+  protocoleSanitaire,
+  protocoleTransport,
 } from "#imports";
 
 const statuts = {
