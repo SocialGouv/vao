@@ -112,7 +112,7 @@
         </form>
       </div>
     </div>
-    <UtilsTable
+    <TableWithPagination
       :headers="headers"
       :data="usersStore.users"
       :total-items="usersStore.total"
@@ -124,7 +124,7 @@
       @update-sort="updateSort"
       @update-items-by-page="updateItemsByPage"
       @update-current-page="updateCurrentPage"
-    ></UtilsTable>
+    />
   </div>
 </template>
 
@@ -134,6 +134,7 @@ definePageMeta({
   roles: ["Compte"],
 });
 import { useUserStore } from "~/stores/user";
+import { TableWithPagination } from "@vao/shared";
 
 const usersStore = useUserStore();
 
