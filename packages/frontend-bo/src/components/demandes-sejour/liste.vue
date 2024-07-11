@@ -6,7 +6,7 @@
     </h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
-        <cardsNumber
+        <CardsNumber
           v-if="!props.organisme"
           :values="[
             {
@@ -125,7 +125,7 @@
         </form>
       </div>
     </div>
-    <UtilsTable
+    <TableWithPagination
       :headers="headers"
       :data="sejourStore.demandes"
       :total-items="sejourStore.total"
@@ -137,7 +137,7 @@
       @update-sort="updateSort"
       @update-items-by-page="updateItemsByPage"
       @update-current-page="updateCurrentPage"
-    ></UtilsTable>
+    />
     <DsfrModal
       ref="modal"
       name="prend-en-charge"
@@ -173,6 +173,10 @@
 </template>
 
 <script setup>
+import { CardsNumber, TableWithPagination } from "@vao/shared";
+import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
+import Declaration from "~/components/demandes-sejour/Declaration.vue";
+
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
@@ -184,9 +188,6 @@ const props = defineProps({
 
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
-import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
-import Declaration from "~/components/demandes-sejour/Declaration.vue";
-import { CardsNumber, MultiSelectOption } from "@vao/shared";
 
 const log = logger("pages/sejours");
 
