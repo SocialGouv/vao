@@ -9,11 +9,13 @@ async function checkPermissionDeclarationSejour(req, res, next) {
   const { id: declarationId } = req.params;
 
   if (!declarationId) {
-    throw new AppError(
-      "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
-      {
-        statusCode: 403,
-      },
+    return next(
+      new AppError(
+        "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
+        {
+          statusCode: 403,
+        },
+      ),
     );
   }
   log.i("IN", { declarationId, userId });
@@ -29,9 +31,14 @@ async function checkPermissionDeclarationSejour(req, res, next) {
     `;
   const { rows } = await pool.query(query, [declarationId, userId]);
   if (!rows || rows.length !== 1) {
-    return res
-      .status(403)
-      .json({ message: "Utilisateur non autorisé à accéder à la déclaration" });
+    return next(
+      new AppError(
+        "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
+        {
+          statusCode: 403,
+        },
+      ),
+    );
   }
   log.i("DONE");
   next();

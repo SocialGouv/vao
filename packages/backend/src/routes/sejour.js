@@ -92,6 +92,12 @@ router.post(
   demandeSejourController.copy,
 );
 router.post(
+  "/cancel/:id",
+  checkJWT,
+  checkPermissionDeclarationSejour,
+  demandeSejourController.cancel,
+);
+router.post(
   "/:id",
   checkJWT,
   checkPermissionDeclarationSejour,
@@ -105,10 +111,5 @@ router.delete(
   checkPermissionDeclarationSejour,
   demandeSejourController.delete,
 );
-router.post(
-  "/cancel/:id",
-  checkJWT,
-  checkPermissionDeclarationSejour,
-  demandeSejourController.cancel,
-);
+
 module.exports = router;
