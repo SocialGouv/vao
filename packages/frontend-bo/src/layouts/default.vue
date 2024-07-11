@@ -68,10 +68,6 @@ const consentCookie = useCookie("VAO_BO_consent", {
 function acceptAll() {
   consentCookie.value = true;
 }
-
-function onClickOnLogo() {
-  navigateTo("/");
-}
 </script>
 
 <template>
@@ -87,10 +83,9 @@ function onClickOnLogo() {
             :quick-links="header.quickLinks"
             :show-search="false"
             :logo-text="header.logoText"
-            @click="onClickOnLogo"
           >
             <template #mainnav>
-              <DsfrNavigation :nav-items="userStore.isConnected && navItems" />
+              <DsfrNavigation :nav-items="navItems" />
             </template>
           </DsfrHeader>
         </div>
