@@ -68,7 +68,7 @@
         </form>
       </div>
     </div>
-    <UtilsTable
+    <TableWithPagination
       :headers="headers"
       :data="usersStore.usersFO"
       :total-items="usersStore.totalUsersFO"
@@ -80,16 +80,19 @@
       @update-sort="updateSort"
       @update-items-by-page="updateItemsByPage"
       @update-current-page="updateCurrentPage"
-    ></UtilsTable>
+    />
   </div>
 </template>
 
 <script setup>
 import dayjs from "dayjs";
+import { TableWithPagination } from "@vao/shared";
+import { useUserStore } from "~/stores/user";
+
 definePageMeta({
   middleware: ["is-connected"],
 });
-import { useUserStore } from "~/stores/user";
+
 const usersStore = useUserStore();
 const defaultLimit = 10;
 const defaultOffset = 0;

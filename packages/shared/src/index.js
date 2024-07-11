@@ -1,4 +1,3 @@
-import FileUpload from "./components/FileUpload.vue";
-import Chat from "./components/Chat.vue";
-
-export { FileUpload, Chat };
+export * from "./components/";
+export * as eigModel from "./models";
+export * as eigSchema from "./schema";

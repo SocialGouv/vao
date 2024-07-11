@@ -52,7 +52,7 @@ const whitelist = [
 const corsOptions = {
   allowedHeaders: "Content-Type,Authorization,X-Requested-With,Accept",
   credentials: true,
-  methods: "GET,HEAD,POST,PATCH,DELETE,OPTIONS",
+  methods: "GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS",
   origin(origin, callback) {
     log.d("cors", { origin, whitelist });
     if (!origin || whitelist.indexOf(origin) !== -1) {
@@ -89,6 +89,7 @@ app.use(`/hebergement`, routes.hebergement);
 app.use(`/siret`, routes.siret);
 app.use(`/documents`, routes.documents);
 app.use(`/geo`, routes.geo);
+app.use(`/eig`, routes.eig);
 app.use(`/message`, routes.message);
 
 if (config.sentry.environment !== "production") {
