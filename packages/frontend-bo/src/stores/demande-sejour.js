@@ -69,5 +69,19 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
+    async exportSejours() {
+      log.i("exportSejours - IN");
+      try {
+        const response = await $fetchBackend(`/sejour/admin/extract`, {
+          method: "GET",
+          credentials: "include",
+        });
+        log.i("exportSejours - DONE");
+        return response;
+      } catch (err) {
+        log.w("exportSejours - DONE with error", err);
+        throw err;
+      }
+    },
   },
 });
