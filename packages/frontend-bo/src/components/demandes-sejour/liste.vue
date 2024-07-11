@@ -59,10 +59,7 @@
                   mode="tags"
                   :searchable="true"
                   :close-on-select="false"
-                  :options="[
-                    allStatus,
-                    ...Object.values(demandesSejours.statuts),
-                  ]"
+                  :options="status"
                   @update:model-value="onStatutSelect"
                 />
               </div>
@@ -165,6 +162,20 @@ const searchState = reactive({
   statut: null,
   action: null,
 });
+
+const status = computed(() => [
+  allStatus,
+  demandesSejours.statuts.TRANSMISE,
+  demandesSejours.statuts.EN_COURS,
+  demandesSejours.statuts.A_MODIFIER,
+  demandesSejours.statuts.REFUSEE,
+  demandesSejours.statuts.ATTENTE_8_JOUR,
+  demandesSejours.statuts.TRANSMISE_8J,
+  demandesSejours.statuts.EN_COURS_8J,
+  demandesSejours.statuts.A_MODIFIER_8J,
+  demandesSejours.statuts.REFUSEE_8J,
+  demandesSejours.statuts.VALIDEE_8J,
+]);
 
 sejourStore.currentDemande = null;
 try {
