@@ -29,6 +29,7 @@ const type = computed(() => {
     case demandesSejours.statuts.TRANSMISE_8J:
       return "new";
     case demandesSejours.statuts.VALIDEE_8J:
+    case demandesSejours.statuts.SEJOUR_EN_COURS:
       return "success";
     case demandesSejours.statuts.A_MODIFIER:
     case demandesSejours.statuts.A_MODIFIER_8J:

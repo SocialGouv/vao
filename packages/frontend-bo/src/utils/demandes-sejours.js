@@ -17,6 +17,9 @@ const statuts = {
   REFUSEE: "REFUSEE",
   REFUSEE_8J: "REFUSEE 8J",
   ANNULEE: "ANNULEE",
+  ABANDONNEE: "ABANDONNEE",
+  SEJOUR_EN_COURS: "SEJOUR EN COURS",
+  TERMINEE: "TERMINEE",
 };
 
 const getSaison = (demande) => {

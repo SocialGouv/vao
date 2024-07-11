@@ -58,6 +58,7 @@ const action = async () => {
       }
     });
   }
+  log.i(`notifyRappelds8j15j - DONE`);
 };
 
 async function sendNotificationMail({ date_debut_alerte, email, titre }) {
