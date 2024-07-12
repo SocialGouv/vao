@@ -15,7 +15,7 @@ const escapeCsvField = (field) => {
     return `${field}`;
   }
 
-  if (field.includes('"') || field.includes(",") || field.includes("\n")) {
+  if (field.includes('"') || field.includes(";") || field.includes("\n")) {
     const fieldEscaped = field.replace(/"/g, '""');
     return `"${fieldEscaped}"`;
   }
@@ -48,10 +48,8 @@ module.exports = async function get(req, res, next) {
       "created_at",
     ];
 
-    console.log(...titles.join(","));
-
     const csv = [
-      titles.join(","),
+      titles.join(";"),
       ...data.map((item) => {
         const newItem = { ...item };
         newItem.organisme =
@@ -64,7 +62,7 @@ module.exports = async function get(req, res, next) {
         newItem.saison = getSaison(item.date_debut);
         return [
           ...titles.map((title) => escapeCsvField(newItem[title] ?? "")),
-        ].join(",");
+        ].join(";");
       }),
     ].join("\n");
 

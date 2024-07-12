@@ -156,7 +156,6 @@ const props = defineProps({
 
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
-import { exportCsv } from "~/utils/csv.js";
 
 const log = logger("pages/sejours");
 
