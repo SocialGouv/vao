@@ -3,6 +3,7 @@ node_modules
 .vscode
 .prettierrc
 .eslintcache
+.local
 
 yarn-error.log
 .yarn
