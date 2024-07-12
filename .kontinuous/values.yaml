@@ -1,5 +1,8 @@
 pg:
   ~chart: pg
+  cnpg-cluster:
+    persistence:
+      size: "30Gi"
 
 backend:
   ~chart: app
