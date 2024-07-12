@@ -2,7 +2,7 @@ pg:
   ~chart: pg
   cnpg-cluster:
     persistence:
-      size: "50Gi"
+      size: "30Gi"
 
 backend:
   ~chart: app
