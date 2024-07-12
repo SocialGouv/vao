@@ -4,7 +4,6 @@ import { logger } from "#imports";
 const log = logger("utils/UploadFile");
 
 export default async function UploadFile(category, file) {
-  log.i("uploadFile - IN");
   log.i("uploadFile - IN", { category, name: file.name });
   const body = new FormData();
   body.append("category", category);
