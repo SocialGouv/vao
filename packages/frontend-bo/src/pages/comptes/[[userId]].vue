@@ -60,6 +60,7 @@
                     type="text"
                     label="Nom"
                     name="nom"
+                    :disabled="!actifField.modelValue"
                     :required="true"
                     :label-visible="true"
                     placeholder=""
@@ -79,6 +80,7 @@
                     type="text"
                     label="Prénom"
                     name="prenom"
+                    :disabled="!actifField.modelValue"
                     :required="true"
                     :label-visible="true"
                     hint="Veuillez saisir votre prénom"
@@ -95,6 +97,7 @@
                   <div class="fr-input-group fr-col-12">
                     <DsfrRadioButtonSet
                       name="competence"
+                      :disabled="!actifField.modelValue"
                       legend="Type de compétence du service"
                       :required="true"
                       :model-value="serviceCompetenceField.modelValue"
@@ -120,6 +123,7 @@
                         v-if="serviceCompetenceField.modelValue === 'DEP'"
                         :model-value="territoireField.modelValue"
                         name="departementTerritoire"
+                        :disabled="!actifField.modelValue"
                         label="Département du service"
                         :required="true"
                         :options="userDepartements"
@@ -131,6 +135,7 @@
                         v-if="serviceCompetenceField.modelValue === 'REG'"
                         :model-value="territoireField.modelValue"
                         name="regionTerritoire"
+                        :disabled="!actifField.modelValue"
                         label="Région du service"
                         :required="true"
                         :options="userRegions"
@@ -146,12 +151,13 @@
               >
                 <DsfrCheckboxSet
                   name="roleUtilisateurField"
+                  :disabled="!actifField.modelValue"
                   legend="Rôle(s) associé(s) à l'utilisateur ?"
                   :required="true"
                   :model-value="roleUtilisateurField.modelValue"
                   :options="roleOptions"
                   :is-valid="roleUtilisateurField.isValid"
-                  :inline="true"
+                  :inline="false"
                   :error-message="
                     roleUtilisateurField.roleUtilisateurErrorMessage
                   "
@@ -167,6 +173,27 @@
                   </DsfrButton>
                 </div>
                 <div v-else>
+                  <div class="fr-toggle">
+                    <input
+                      id="toggle-valide"
+                      v-model="actifField.modelValue"
+                      type="checkbox"
+                      class="fr-toggle__input"
+                      :disabled="!(usersStore.user.roles.includes('Desactivation'))"
+                      aria-describedby="toggle-valide"
+                      @update:model-value="checkValidDeleted"
+                    />
+                    <label
+                      class="fr-toggle__label"
+                      for="toggle-valide"
+                      data-fr-checked-label="Activé"
+                      data-fr-unchecked-label="Désactivé"
+                      >Compte actif</label
+                    ><div v-if="!actifField.modelValue"><br>Désactivé le {{ formatDate(usersStore.userSelected.deleted_date, "dd/MM/yyyy") }}</div>
+                    <p id="toggle-valide" class="fr-hint-text" v-if="usersStore.user.roles.includes('Desactivation')">
+                      <br>Désactivation du compte
+                    </p>
+                  </div>
                   <DsfrButton :disabled="!canSubmit" @click.prevent="update"
                     >Enregistrer les modifications
                   </DsfrButton>
@@ -183,6 +210,7 @@
 
 <script setup>
 import "@vueform/multiselect/themes/default.css";
+import { formatDate } from "date-fns/format";
 
 const route = useRoute();
 const log = logger("pages/comptes/[[userId]]");
@@ -195,6 +223,7 @@ const searchState = reactive({
   territoireCode: null,
   valide: true,
   email: null,
+  deleted: false
 });
 
 definePageMeta({
@@ -265,6 +294,10 @@ const roleOptions = [
     label: "Accès en lecture/écriture aux déclarations de séjour",
     name: "DemandeSejour_Ecriture",
   },
+  {
+    label: "Autorisé à désactiver les comptes",
+    name: "Desactivation"
+  },  
 ];
 
 const formStates = {
@@ -310,6 +343,12 @@ const roleUtilisateurField = reactive({
   errorMessage: "",
   modelValue: [],
   isValid: false,
+});
+
+const actifField = reactive({
+  errorMessage: "",
+  modelValue: true,
+  isValid: true,
 });
 
 const displayInfos = {
@@ -414,6 +453,15 @@ function checkValidRoleUtilisateur(p) {
       : "Au moins un rôle doit être affecté à l'utilisateur";
 }
 
+function checkValidDeleted(p) {
+  actifField.modelValue = p;
+  actifField.isValid = true;
+  actifField.errorMessage =
+    !p || actifField.isValid
+      ? ""
+      : "L'activation  doit obligatoirement avoir une valeur";
+}
+
 watch([() => serviceCompetenceField.modelValue], function () {
   if (serviceCompetenceField.modelValue === competence.NATIONALE)
     territoireField.modelValue = "FRA";
@@ -442,6 +490,8 @@ onMounted(async () => {
     // Chargement des données à partir du store
     await usersStore.getUser(userId);
     // Chargement des données
+    actifField.modelValue = !usersStore.userSelected.deleted;
+    actifField.isValid = true;
     emailField.modelValue = usersStore.userSelected.email;
     emailField.isValid = true;
     nomField.modelValue = usersStore.userSelected.nom;
@@ -463,10 +513,16 @@ onMounted(async () => {
     usersStore.userSelected.roles.forEach((role) => {
       roleUtilisateurField.modelValue.push(role);
     });
+    // Suppression du rôle "Autorisé à désactiver les comptes" si l'a pas le droit lui même de le faire
+    if (!usersStore.user.roles.includes('Desactivation')) {
+      console.log("Suppression du role de désactivation des roles")
+      roleOptions.pop();
+    }
     roleUtilisateurField.isValid = true;
   } else {
     // Ecran en mode création
     formStatus = ref(formStates.CREATION);
+    actifField.modelValue = true;
   }
 });
 
@@ -477,7 +533,8 @@ const canSubmit = computed(() => {
     prenomField.isValid &&
     roleUtilisateurField.isValid &&
     serviceCompetenceField.isValid &&
-    territoireField.isValid
+    territoireField.isValid &&
+    actifField.isValid
   );
 });
 
@@ -499,6 +556,7 @@ async function post() {
         prenom: prenomField.modelValue,
         roles: roleUtilisateurField.modelValue,
         territoireCode: territoireField.modelValue,
+        deleted: actifField.modelValue,
       }),
     })
       .then((response) => {
@@ -547,6 +605,7 @@ async function update() {
           prenom: prenomField.modelValue,
           roles: roleUtilisateurField.modelValue,
           territoireCode: territoireField.modelValue,
+          deleted: !actifField.modelValue,
         }),
       },
     )
