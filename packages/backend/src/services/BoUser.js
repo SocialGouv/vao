@@ -365,10 +365,13 @@ module.exports.read = async (
     searchQuery += `   AND ter.label ilike $${searchParams.length + 1}\n`;
     searchParams.push(`%${search.territoire}%`);
   }
-
   if (search?.valide !== undefined) {
     searchQuery += `   AND us.validated = $${searchParams.length + 1}\n`;
     searchParams.push(`${search.valide === true || search.valide === "true"}`);
+  }
+  if (search?.actif !== undefined) {
+    searchQuery += `   AND us.deleted = not $${searchParams.length + 1}\n`;
+    searchParams.push(`${search.actif === true || search.actif === "true"}`);
   }
 
   let additionalQueryParts = "";

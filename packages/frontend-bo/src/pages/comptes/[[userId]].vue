@@ -191,7 +191,7 @@
                       >Compte actif</label
                     ><div v-if="!actifField.modelValue"><br>Désactivé le {{ formatDate(usersStore.userSelected.deleted_date, "dd/MM/yyyy") }}</div>
                     <p id="toggle-valide" class="fr-hint-text" v-if="usersStore.user.roles.includes('Desactivation')">
-                      <br>Désactivation du compte
+                      <br>Compte actif
                     </p>
                   </div>
                   <DsfrButton :disabled="!canSubmit" @click.prevent="update"

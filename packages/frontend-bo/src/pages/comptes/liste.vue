@@ -64,6 +64,8 @@
                 />
               </div>
             </div>
+          </fieldset>
+          <fieldset class="fr-fieldset">
             <div class="fr-toggle">
               <input
                 id="toggle-valide"
@@ -82,7 +84,27 @@
               <p id="toggle-valide" class="fr-hint-text">
                 Compte validé par courriel
               </p>
+            </div>            
+            <div class="fr-toggle">
+              <input
+                id="toggle-actif"
+                v-model="searchState.actif"
+                type="checkbox"
+                class="fr-toggle__input"
+                aria-describedby="toggle-actif"
+              />
+              <label
+                class="fr-toggle__label"
+                for="toggle-actif"
+                data-fr-checked-label="Activé"
+                data-fr-unchecked-label="Désactivé"
+                >Compte actif</label
+              >
+              <p id="toggle-actif" class="fr-hint-text">
+                Compte actif
+              </p>
             </div>
+
           </fieldset>
           <!--<DsfrButton @click.prevent="test">Test</DsfrButton
             >
@@ -127,6 +149,7 @@ const searchState = reactive({
   territoire: null,
   valide: true,
   email: null,
+  actif: true,
 });
 
 // Appel du store à l'ouverture
