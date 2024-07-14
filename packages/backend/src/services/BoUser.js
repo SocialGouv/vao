@@ -244,8 +244,6 @@ module.exports.create = async ({
 
 module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted },deleted_use_id) => {
   log.i("update - IN", { id });
-  console.log("roles",roles);
-  console.log("id",id);
   if (!id) {
     throw new AppError("Paramètre manquant", {
       statusCode: 500,
@@ -262,7 +260,6 @@ module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted
       name: "UserNotFound",
     });
   }
-console.log("userAction",deleted_use_id);
   // Suppression logique du compte
   if (deleted) 
     await pool.query(...query.delete(id, deleted_use_id));
@@ -272,7 +269,6 @@ console.log("userAction",deleted_use_id);
 
   // Création des rôles en base de données
   for (const role of roles) {
-    console.log ("role: ", role)
     await pool.query(...query.bindRole(id, role));
   }
 

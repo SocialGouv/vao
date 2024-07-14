@@ -515,7 +515,6 @@ onMounted(async () => {
     });
     // Suppression du rôle "Autorisé à désactiver les comptes" si l'a pas le droit lui même de le faire
     if (!usersStore.user.roles.includes('Desactivation')) {
-      console.log("Suppression du role de désactivation des roles")
       roleOptions.pop();
     }
     roleUtilisateurField.isValid = true;
