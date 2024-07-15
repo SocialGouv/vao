@@ -10,6 +10,7 @@
       <div class="fr-col">
         <h1>Lieux d'hébergements déclarés</h1>
       </div>
+      <button @click="throwError">Sentry Debug</button>
     </div>
     <template v-if="hebergementStore.hebergements.length">
       <div class="fr-grid-row">
@@ -122,6 +123,10 @@ const headers = [
   },
 ];
 const navigate = (hebergement) => navigateTo(`/hebergements/${hebergement.id}`);
+
+const throwError = () => {
+  throw new Error("Sentry error before update");
+};
 </script>
 
 <style scoped>
