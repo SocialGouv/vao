@@ -409,6 +409,23 @@ JOIN front.user_organisme uo
   ON u.id = uo.use_id
 WHERE uo.org_id = $1
 `,
+  getExtract: (departementQuery, territoireCode) => `
+SELECT
+  ds.id as id,
+  ds.libelle as libelle,
+  ds.date_debut::text as date_debut,
+  ds.date_fin::text as date_fin,
+  ds.organisme as organisme,
+  ds.responsable_sejour->>'email' as responsable_sejour_email,
+  ds.responsable_sejour->>'telephone' as responsable_sejour_telephone,
+  ds.statut as statut,
+  ds.created_at as created_at
+FROM front.demande_sejour ds
+JOIN front.organismes o ON o.id = ds.organisme_id
+LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+WHERE ((${departementQuery})
+  AND statut <> 'BROUILLON'
+  OR a.region_obtention = '${territoireCode}')`,
   getNextIndex: `
 SELECT nextval('front.seq_declaration_sejour') AS index
 `,
@@ -1067,6 +1084,22 @@ module.exports.getEmailBackCc = async (departements) => {
   log.i("getEmailBackCc - DONE");
   return data.map((m) => m.mail);
 };
+
+module.exports.getExtract = async (territoireCode, departementCodes) => {
+  log.i("getExtract - IN");
+
+  const departementQuery = getDepartementWhereQuery(departementCodes, [
+    departementCodes,
+  ]);
+
+  const { rows: data } = await pool.query(
+    query.getExtract(departementQuery, territoireCode),
+    [departementCodes],
+  );
+  log.i("getExtract - DONE");
+  return data;
+};
+
 module.exports.insertEvent = async (
   source,
   declarationId,

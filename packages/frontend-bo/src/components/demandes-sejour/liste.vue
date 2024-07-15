@@ -98,6 +98,18 @@
                 />
               </div>
             </div>
+            <div
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+            >
+              <div class="fr-input-group">
+                <DsfrButton
+                  type="button"
+                  label="Extraire en CSV"
+                  primary
+                  @click="getCsv"
+                />
+              </div>
+            </div>
           </fieldset>
         </form>
       </div>
@@ -168,6 +180,7 @@ const log = logger("pages/sejours");
 const toaster = useToaster();
 
 const sejourStore = useDemandeSejourStore();
+const demandeSejour = useDemandeSejourStore();
 const userStore = useUserStore();
 
 const defaultLimit = 10;
@@ -360,6 +373,11 @@ const updateItemsByPage = (val) => {
 };
 const updateCurrentPage = (val) => {
   currentPageState.value = val;
+};
+
+const getCsv = async () => {
+  const response = await demandeSejour.exportSejours();
+  exportCsv(response);
 };
 </script>
 
