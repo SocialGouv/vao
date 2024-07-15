@@ -31,7 +31,10 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
-        <DemandesSejourDocuments :declaration="demandeStore.currentDemande" />
+        <DemandesSejourDocuments
+          :declaration="demandeStore.currentDemande"
+          :messages="demandeStore.messages ?? []"
+        />
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="tab-content-2"
@@ -47,6 +50,17 @@
           >Une erreur est survenue durant la récupération de l'historique de la
           déclaration
         </DsfrAlert>
+      </DsfrTabContent>
+      <DsfrTabContent
+        panel-id="tab-content-3"
+        tab-id="tab-3"
+        :selected="selectedTabIndex === 3"
+        :asc="asc"
+      >
+        <DemandesSejourMessage
+          :messages="demandeStore.messages"
+          @send="fetchMessages"
+        />
       </DsfrTabContent>
     </DsfrTabs>
     <div
@@ -152,7 +166,6 @@
 <script setup>
 import dayjs from "dayjs";
 import { useIsDownloading } from "~/composables/useIsDownloading";
-import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],
@@ -207,6 +220,7 @@ const isOrganismeNonAgree = computed(() => {
 onMounted(async () => {
   try {
     await demandeStore.setCurrentDemande(route.params.demandeId);
+    fetchMessages();
   } catch (e) {
     navigateTo("/sejours");
   }
@@ -216,6 +230,7 @@ const tabTitles = [
   { title: " Formulaire" },
   { title: "Documents joints" },
   { title: "Historique de la déclaration" },
+  { title: "Messagerie" },
 ];
 
 const modalComplement = reactive({
@@ -230,6 +245,9 @@ const modalEnregistrement2Mois = reactive({
   opened: false,
 });
 
+const fetchMessages = () => {
+  demandeStore.fetchMessages(route.params.demandeId);
+};
 const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
 };

@@ -104,6 +104,7 @@ app.use(`/hebergement`, routes.hebergement);
 app.use(`/siret`, routes.siret);
 app.use(`/documents`, routes.documents);
 app.use(`/geo`, routes.geo);
+app.use(`/message`, routes.message);
 
 app.use((req, res, next) => {
   next(

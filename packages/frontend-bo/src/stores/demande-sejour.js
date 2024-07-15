@@ -6,6 +6,7 @@ const log = logger("stores/demande-sejour");
 export const useDemandeSejourStore = defineStore("demandeSejour", {
   state: () => ({
     demandes: [],
+    messages: [],
     currentDemande: null,
     total: 0,
     countGlobal: 0,
@@ -88,6 +89,29 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         return response;
       } catch (err) {
         log.w("exportSejours - DONE with error", err);
+        throw err;
+      }
+    },
+
+    async fetchMessages(declarationId) {
+      try {
+        const messages = await $fetchBackend(
+          `/message/admin/${declarationId}`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+
+        if (messages) {
+          log.i("fetchMessages - DONE");
+          this.messages = messages;
+        } else {
+          throw new Error("erreur sur la récupération des messages");
+        }
+      } catch (err) {
+        log.w("fetchMessages - DONE with error", err);
+        this.messages = null;
         throw err;
       }
     },
