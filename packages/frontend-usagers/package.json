@@ -13,7 +13,7 @@
   "dependencies": {
     "@gouvfr/dsfr": "~1.11.2",
     "@gouvminint/vue-dsfr": "~5.17.0",
-    "@nuxtjs/leaflet": "^1.0.14", 
+    "@nuxtjs/leaflet": "^1.0.14",
     "@pinia/nuxt": "~0.5.1",
     "@sentry/vue": "~7.117.0",
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.2.1",
@@ -25,6 +25,7 @@
     "nuxt": "~3.12.0",
     "oh-vue-icons": "~1.0.0-rc3",
     "pinia": "~2.1.7",
+    "vao-shared": "https://github.com/SocialGouv/vao-shared.git#1.0.0",
     "vee-validate": "~4.13.0",
     "vue-matomo": "~4.2.0",
     "yup": "~1.4.0"
