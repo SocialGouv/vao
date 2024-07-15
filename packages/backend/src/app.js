@@ -105,6 +105,10 @@ app.use(`/siret`, routes.siret);
 app.use(`/documents`, routes.documents);
 app.use(`/geo`, routes.geo);
 
+if (config.sentry.environment !== "production") {
+  app.use("/", routes.debugSentry);
+}
+
 app.use((req, res, next) => {
   next(
     new AppError(`Path "${req.url}" not found`, {
