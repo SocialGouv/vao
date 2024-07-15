@@ -4,8 +4,10 @@ import { useRuntimeConfig } from "#imports";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const {
-    public: { sentry, environment },
+    public: { sentry, environment, backendUrl },
   } = useRuntimeConfig();
+
+  console.log("sentry:::::", sentry);
 
   if (sentry.enabled) {
     Sentry.init({
@@ -14,8 +16,16 @@ export default defineNuxtPlugin((nuxtApp) => {
       environment: environment,
       integrations: [
         Sentry.browserTracingIntegration({ router: nuxtApp.$router }),
+        Sentry.replayIntegration({
+          maskAllText: false,
+          blockAllMedia: false,
+        }),
       ],
+
       tracesSampleRate: 1.0,
+      tracePropagationTargets: ["localhost", backendUrl],
+      replaysSessionSampleRate: 0.1,
+      replaysOnErrorSampleRate: 1.0,
     });
   }
 });

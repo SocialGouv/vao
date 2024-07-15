@@ -11,6 +11,8 @@
         <h1>Lieux d'hébergements déclarés</h1>
       </div>
     </div>
+    <button @click="throwError">Throw error</button>
+
     <template v-if="hebergementStore.hebergements.length">
       <div class="fr-grid-row">
         <div class="fr-col">
@@ -78,6 +80,8 @@
 const hebergementStore = useHebergementStore();
 hebergementStore.fetch();
 
+// throw new Error("sentry after update");
+
 useHead({
   title: "Mes hébergements | Vacances Adaptées Organisées",
   meta: [
@@ -122,6 +126,10 @@ const headers = [
   },
 ];
 const navigate = (hebergement) => navigateTo(`/hebergements/${hebergement.id}`);
+
+const throwError = () => {
+  throw new Error("Sentry after update");
+};
 </script>
 
 <style scoped>

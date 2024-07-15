@@ -13,9 +13,9 @@
   "dependencies": {
     "@gouvfr/dsfr": "~1.11.2",
     "@gouvminint/vue-dsfr": "~5.17.0",
-    "@nuxtjs/leaflet": "^1.0.14", 
+    "@nuxtjs/leaflet": "^1.0.14",
     "@pinia/nuxt": "~0.5.1",
-    "@sentry/vue": "~7.117.0",
+    "@sentry/vue": "~8.17.0",
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.2.1",
     "@vee-validate/i18n": "~4.13.0",
     "@vee-validate/rules": "~4.13.0",
