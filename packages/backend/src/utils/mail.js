@@ -48,7 +48,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontBODomain}>${frontBODomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
         );
 
         const params = {
@@ -99,7 +99,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontBODomain}>${frontBODomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
         );
         const params = {
           from: senderEmail,
@@ -156,7 +156,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontBODomain}>${frontBODomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
         );
 
         const params = {
@@ -202,7 +202,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontBODomain}>${frontBODomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
         );
 
         const params = {
@@ -314,7 +314,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
 
         const params = {
@@ -369,7 +369,7 @@ module.exports = {
               type: "p",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
 
         log.d("sendValidationMail - sending validation mail");
@@ -431,7 +431,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
 
         const params = {
@@ -478,7 +478,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
 
         const params = {
@@ -525,7 +525,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
         const params = {
           from: senderEmail,
@@ -573,7 +573,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
         const params = {
           cc: cc,
@@ -616,7 +616,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
 
         log.d(
@@ -663,7 +663,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
 
         const params = {
@@ -716,7 +716,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
 
         const params = {
