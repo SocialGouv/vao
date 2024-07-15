@@ -1,8 +1,26 @@
 const Sentry = require("@sentry/node");
-const {
-  contextLinesIntegration,
-  requestDataIntegration,
-} = require("@sentry/node");
+const config = require("./config");
+
+if (config.sentry.enabled) {
+  Sentry.init({
+    dsn: config.sentry.dsn,
+    environment: config.sentry.environment,
+    includeLocalVariables: true,
+    integrations: [
+      Sentry.requestDataIntegration({
+        include: {
+          cookies: false,
+          user: {
+            email: false,
+          },
+        },
+      }),
+    ],
+
+    tracesSampleRate: 1.0,
+  });
+}
+
 const express = require("express");
 const helmet = require("helmet");
 
@@ -12,7 +30,6 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
-const config = require("./config");
 const routes = require("./routes");
 
 const logger = require("./utils/logger");
@@ -20,42 +37,6 @@ const AppError = require("./utils/error");
 const ValidationAppError = require("./utils/validation-error");
 
 const log = logger(module.filename);
-
-if (config.sentry.enabled) {
-  Sentry.init({
-    dsn: config.sentry.dsn,
-    environment: config.sentry.environment,
-    integrations: function (integrations) {
-      return [
-        ...integrations
-          .filter((integration) => integration.name !== "Modules")
-          .map((integration) => {
-            if (integration.name === "ContextLines") {
-              return contextLinesIntegration({
-                frameContextLines: 5,
-              });
-            }
-            if (integration.name === "RequestData") {
-              return requestDataIntegration({
-                include: {
-                  cookies: false,
-                  user: false,
-                },
-              });
-            }
-            return integration;
-          }),
-        new Sentry.Integrations.Express({
-          app,
-        }),
-      ];
-    },
-    tracesSampleRate: 1.0,
-  });
-}
-
-app.use(Sentry.Handlers.requestHandler());
-app.use(Sentry.Handlers.tracingHandler());
 
 app.use(helmet());
 
@@ -114,23 +95,23 @@ app.use((req, res, next) => {
   );
 });
 
-app.use(
-  Sentry.Handlers.errorHandler({
-    shouldHandleError(error) {
-      return !error.isOperational;
-    },
-  }),
-);
+if (config.sentry.enabled) {
+  Sentry.setupExpressErrorHandler(app);
+}
 
 // eslint-disable-next-line no-unused-vars
-app.use(async (err, req, res, next) => {
+app.use(async function errorHandler(err, req, res, next) {
   log.w(err.name, err.message);
+
+  if (res.headersSent) {
+    return next(err);
+  }
 
   if (!err.isOperational) {
     res.status(500).send({
       name: "UnexpectedError",
     });
-    throw err;
+    return;
   }
 
   if (err instanceof ValidationAppError) {
