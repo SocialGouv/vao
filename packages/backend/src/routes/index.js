@@ -14,3 +14,4 @@ module.exports.agrement = require("./agrement");
 module.exports.documents = require("./documents");
 
 module.exports.geo = require("./geo");
+module.exports.debugSentry = require("./debug-sentry");
