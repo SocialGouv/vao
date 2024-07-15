@@ -28,6 +28,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (hasId) {
     log.d(`loading current demande`);
     await demandeStore.setDemandeCourante(to.params.demandeId);
+    if (!demandeStore.demandeCourante.id) {
+      return navigateTo("/");
+    }
     log.i("DONE");
   }
 

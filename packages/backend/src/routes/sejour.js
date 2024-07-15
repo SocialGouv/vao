@@ -5,6 +5,7 @@ const router = express.Router();
 const checkJWT = require("../middlewares/checkJWT");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 const boCheckRole = require("../middlewares/bo-check-role");
+const checkPermissionDeclarationSejour = require("../middlewares/checkPermissionDeclarationSejour");
 
 const demandeSejourController = require("../controllers/demandeSejour");
 const getDepartements = require("../middlewares/getDepartements");
@@ -64,14 +65,50 @@ router.post(
   getDepartements,
   demandeSejourController.enregistrementDemande2Mois,
 );
-router.get("/:id", checkJWT, demandeSejourController.getById);
-router.get("/historique/:id", checkJWT, demandeSejourController.historique);
+router.get(
+  "/:id",
+  checkJWT,
+  checkPermissionDeclarationSejour,
+  demandeSejourController.getById,
+);
+router.get(
+  "/historique/:id",
+  checkJWT,
+  checkPermissionDeclarationSejour,
+  demandeSejourController.historique,
+);
 
 router.get("/", checkJWT, demandeSejourController.get);
-router.post("/depose/:id", checkJWT, demandeSejourController.depose);
-router.post("/:id/copy", checkJWT, demandeSejourController.copy);
-router.post("/:id", checkJWT, canUpdateDs, demandeSejourController.update);
+router.post(
+  "/depose/:id",
+  checkJWT,
+  checkPermissionDeclarationSejour,
+  demandeSejourController.depose,
+);
+router.post(
+  "/:id/copy",
+  checkJWT,
+  checkPermissionDeclarationSejour,
+  demandeSejourController.copy,
+);
+router.post(
+  "/:id",
+  checkJWT,
+  checkPermissionDeclarationSejour,
+  canUpdateDs,
+  demandeSejourController.update,
+);
 router.post("/", checkJWT, demandeSejourController.post);
-router.delete("/:id", checkJWT, demandeSejourController.delete);
-router.post("/cancel/:id", checkJWT, demandeSejourController.cancel);
+router.delete(
+  "/:id",
+  checkJWT,
+  checkPermissionDeclarationSejour,
+  demandeSejourController.delete,
+);
+router.post(
+  "/cancel/:id",
+  checkJWT,
+  checkPermissionDeclarationSejour,
+  demandeSejourController.cancel,
+);
 module.exports = router;
