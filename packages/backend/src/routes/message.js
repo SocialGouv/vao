@@ -15,28 +15,22 @@ const boCheckRoleDS = boCheckRole([
 ]);
 
 router.post(
-  "/admin/:declarationId",
+  "/admin/:id",
   boCheckJWT,
-
   boCheckRoleDS,
   getDepartements,
   messageController.postByBO,
 );
 
 router.post(
-  "/:declarationId",
+  "/:id",
   checkJWT,
   checkPermissionDeclarationSejour,
   messageController.postByFO,
 );
+router.get("/admin/:id", boCheckJWT, messageController.get);
 router.get(
-  "/admin/:declarationId",
-  boCheckJWT,
-  checkPermissionDeclarationSejour,
-  messageController.get,
-);
-router.get(
-  "/:declarationId",
+  "/:id",
   checkJWT,
   checkPermissionDeclarationSejour,
   messageController.get,

@@ -11,7 +11,7 @@ module.exports = async function post(req, res, next) {
   log.i("IN");
   const { body, decoded } = req;
   const { message, file } = body;
-  const declarationId = req.params.declarationId;
+  const declarationId = req.params.id;
   const userId = decoded.id;
 
   if (!declarationId || (!message && !file)) {

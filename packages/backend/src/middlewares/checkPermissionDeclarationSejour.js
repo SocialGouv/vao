@@ -7,6 +7,7 @@ const log = logger(module.filename);
 async function checkPermissionDeclarationSejour(req, res, next) {
   const { id: userId } = req.decoded;
   const { id: declarationId } = req.params;
+  log.i("IN");
 
   if (!declarationId) {
     return next(
@@ -18,7 +19,6 @@ async function checkPermissionDeclarationSejour(req, res, next) {
       ),
     );
   }
-  log.i("IN", { declarationId, userId });
 
   const query = `
       SELECT ds.id 
