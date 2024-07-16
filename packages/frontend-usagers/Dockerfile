@@ -29,7 +29,12 @@ ENV NUXT_PUBLIC_SENTRY_ENABLED=$NUXT_PUBLIC_SENTRY_ENABLED
 
 # replace environment variables
 
-RUN yarn generate
+RUN RUN --mount=type=secret,id=sentry_auth_token \
+    --mount=type=secret,id=elasticsearch_token_api \
+    --mount=type=secret,id=elasticsearch_url \
+    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \ 
+    && yarn generate \
+    && sentry-cli sourcemaps upload .
 
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.3
 
