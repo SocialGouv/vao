@@ -3,10 +3,14 @@ FROM node:${NODE_VERSION} AS builder
 
 WORKDIR /app
 
-COPY ./package.json ./yarn.lock ./
-RUN yarn --frozen-lockfile
+COPY package*.json yarn.lock ./
+COPY packages/shared packages/shared/ 
+COPY packages/frontend-usagers/package*.json packages/frontend-usagers/yarn.lock packages/frontend-usagers/
+# RUN yarn workspace @vao/frontend-usagers install --frozen-lockfile
 
-COPY . .
+RUN yarn install
+
+COPY packages/frontend-usagers .
 
 # these variables are needed at build time because we produce a *static* app
 ARG NUXT_PUBLIC_APP_VERSION=development
@@ -29,6 +33,7 @@ ENV NUXT_PUBLIC_SENTRY_ENABLED=$NUXT_PUBLIC_SENTRY_ENABLED
 
 # replace environment variables
 
+# RUN yarn workspace @vao/frontend-usagers generate
 RUN yarn generate
 
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.3
