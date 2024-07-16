@@ -804,8 +804,11 @@ module.exports.getByDepartementCodes = async (
     params,
   );
 
+  const countQueryDepartement = getDepartementWhereQuery(departementCodes, [
+    departementCodes,
+  ]);
   const stats = await pool.query(
-    query.getCount(departementQuery, territoireCode),
+    query.getCount(countQueryDepartement, territoireCode),
     [departementCodes],
   );
 
