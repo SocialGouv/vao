@@ -70,8 +70,7 @@ const organismeStore = useOrganismeStore();
 const route = useRoute();
 const log = logger("pages/organismes/[[organismeId]]");
 definePageMeta({
-  middleware: ["is-connected", "check-role"],
-  roles: ["Compte"],
+  middleware: ["is-connected"],
 });
 
 const asc = ref(true);

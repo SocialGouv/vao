@@ -135,7 +135,7 @@
       @close="closePrendEnChargeModal"
     >
       <article class="fr-mb-4v">
-        Vous vous apprêtez a prendre en charge la déclaration du séjour : <br />
+        Vous vous apprêtez à prendre en charge la déclaration du séjour : <br />
         - {{ declarationAPrendreEnCharge.libelle }}
       </article>
       <fieldset class="fr-fieldset">
@@ -326,7 +326,7 @@ const headers = [
     text: "Action",
     format: (value) =>
       value.estInstructeurPrincipal ? "A instruire" : "Lecture seule",
-    sort: true,
+    sort: false,
   },
 ];
 
