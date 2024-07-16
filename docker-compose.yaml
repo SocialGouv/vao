@@ -4,12 +4,12 @@ volumes:
 services:
   frontend-usagers:
     build:
-      context: packages/frontend-usagers
-      dockerfile: Dockerfile.local
+      context: .
+      dockerfile: packages/frontend-usagers/Dockerfile.local
     working_dir: /app
-    command: /app/entrypoint.sh
+    command: /app/packages/frontend-usagers/entrypoint.sh
     volumes:
-      - $PWD/packages/frontend-usagers:/app:delegated
+      - $PWD:/app:delegated
       - $HOME/.ssh:/home/node/.ssh:ro
       - $HOME/.gitconfig:/home/node/.gitconfig:ro
       - $HOME/.npm:/home/node/.npm:delegated

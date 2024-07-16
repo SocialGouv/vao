@@ -3,7 +3,7 @@ FROM local-node:latest as builder
 USER root
 
 WORKDIR /usr/cache
-COPY ./packages/frontend-bo/package.json ./packages/frontend-bo/yarn.lock ./packages/frontend-bo/
+COPY ./packages/frontend-bo/package*.json ./packages/frontend-bo/yarn.lock ./packages/frontend-bo/
 
 RUN chown -R node /usr/cache
 
