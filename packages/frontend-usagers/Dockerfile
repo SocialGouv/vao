@@ -1,16 +1,12 @@
-ARG NODE_VERSION=20-bullseye-slim
+ARG NODE_VERSION=20.15.1-bullseye-slim
 FROM node:${NODE_VERSION} AS builder
 
 WORKDIR /app
 
-COPY package*.json yarn.lock ./
-COPY packages/shared packages/shared/ 
-COPY packages/frontend-usagers/package*.json packages/frontend-usagers/yarn.lock packages/frontend-usagers/
-# RUN yarn workspace @vao/frontend-usagers install --frozen-lockfile
-
-RUN yarn install
-
-COPY packages/frontend-usagers .
+COPY package.json yarn.lock ./
+COPY packages/shared/package.json packages/shared/ 
+COPY packages/frontend-usagers/package.json packages/frontend-usagers/yarn.lock packages/frontend-usagers/
+RUN yarn workspace @vao/frontend-usagers install --frozen-lockfile
 
 # these variables are needed at build time because we produce a *static* app
 ARG NUXT_PUBLIC_APP_VERSION=development
@@ -31,10 +27,10 @@ ENV NUXT_PUBLIC_MATOMO_SITE_ID=$NUXT_PUBLIC_MATOMO_SITE_ID
 ENV NUXT_PUBLIC_SENTRY_DSN=$NUXT_PUBLIC_SENTRY_DSN
 ENV NUXT_PUBLIC_SENTRY_ENABLED=$NUXT_PUBLIC_SENTRY_ENABLED
 
-# replace environment variables
+COPY packages/shared packages/shared
+COPY packages/frontend-usagers packages/frontend-usagers
+RUN yarn workspace @vao/frontend-usagers generate
 
-# RUN yarn workspace @vao/frontend-usagers generate
-RUN yarn generate
 
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.3
 
