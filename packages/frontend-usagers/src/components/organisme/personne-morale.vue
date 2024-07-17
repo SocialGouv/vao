@@ -214,7 +214,7 @@
       </DsfrFieldset>
       <DsfrFieldset
         v-if="siegeSocial"
-        :legend="`Etablissements secondaires (${etablissements.length})`"
+        :legend="`Etablissements secondaires (${etablissements.length}) dont ${formatedEtablissements.length} actifs`"
       >
         <fieldset class="fr-fieldset">
           <div
