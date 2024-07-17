@@ -34,17 +34,19 @@
           v-model="message"
           class="fr-input answer__form__textare"
           name="textarea"
-          @keyup.enter.exact="sendMessage"
+          @keydown.enter.exact="sendMessage"
         ></textarea>
         <DsfrButton
           label="Envoyer message"
           title="Envoyer message"
-          icon="fr-icon-send-plane-fill"
+          :icon="isLoading ? 'fr-icon-refresh-line' : 'fr-icon-send-plane-fill'"
           icon-only
           tertiary1
           no-outline
           type="button"
           class="answer__form__send"
+          :disabled="isLoading"
+          :class="{ 'answer__form__send--is-loading': isLoading }"
           @click="sendMessage"
         />
       </div>
@@ -72,28 +74,36 @@
     size="md"
     @close="isModalOpen = false"
   >
-    <FileUpload v-model="file" />
-    <DsfrButton type="button" @click="isModalOpen = true">Valider</DsfrButton>
+    <FileUpload v-model="file" :url="backendUrl" />
+    <DsfrButton type="button" @click="isModalOpen = false">Valider</DsfrButton>
   </DsfrModal>
 </template>
 
 <script setup>
 import { DsfrButton, DsfrModal } from "@gouvminint/vue-dsfr";
 import { ref } from "vue";
+
 import Message from "./Message.vue";
 import FileUpload from "./FileUpload.vue";
+
 const props = defineProps({
   messages: { type: Array, required: true },
   backendUrl: { type: String, required: true },
+  isLoading: { type: Boolean, default: true },
 });
+
 const emit = defineEmits(["send"]);
+
 const message = ref("");
 const file = ref(null);
 const isModalOpen = ref(false);
-function sendMessage() {
-  if (!message.value && !file.value) return;
+
+const sendMessage = (event) => {
+  event.preventDefault();
+  if ((!message.value && !file.value) || props.isLoading) return;
   emit("send", { file: file.value, message: message.value });
-}
+};
+
 defineExpose({
   resetForm() {
     message.value = "";
@@ -135,6 +145,12 @@ defineExpose({
     }
     &__send {
       margin: auto 0.5rem;
+
+      &--is-loading {
+        &::before {
+          animation: spin 2s linear infinite;
+        }
+      }
     }
     &__file {
       &__remove-file {
@@ -143,6 +159,12 @@ defineExpose({
         min-height: auto;
       }
     }
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

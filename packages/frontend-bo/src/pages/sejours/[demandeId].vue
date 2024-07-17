@@ -61,6 +61,7 @@
           ref="chatRef"
           :messages="demandeStore.messages"
           :backend-url="`${config.public.backendUrl}/documents/`"
+          :is-loading="isSendingMessage"
           @send="sendMessage"
         />
       </DsfrTabContent>
@@ -232,8 +233,11 @@ onMounted(async () => {
   }
 });
 
+const isSendingMessage = ref(false);
+
 const sendMessage = async ({ message, file }) => {
   let newFile;
+  isSendingMessage.value = true;
   if (file) {
     try {
       const uuid = await UploadFile("message", file);
@@ -260,7 +264,9 @@ const sendMessage = async ({ message, file }) => {
     if (response.id) {
       chatRef.value.resetForm();
     }
+    isSendingMessage.value = false;
   } catch (error) {
+    isSendingMessage.value = false;
     log.w("envoi de message : ", { error });
     return toaster.error(
       `Une erreur est survenue lors de l'envoi de votre message`,
