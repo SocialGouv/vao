@@ -12,7 +12,7 @@ RUN chown -R node /usr/cache
 
 USER node
 
-RUN yarn workspace @vao/frontend-bo install
+RUN yarn workspace @vao/frontend-bo install --frozen-lockfile
 
 WORKDIR /app
 
