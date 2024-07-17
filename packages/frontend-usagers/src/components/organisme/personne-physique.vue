@@ -12,6 +12,7 @@
             :is-valid="nomNaissanceMeta.valid"
             :error-message="nomNaissanceErrorMessage"
             placeholder=""
+            hint="Veuillez saisir votre nom de naissance. Exemple: Martin"
             @update:model-value="onNomNaissanceChange"
           />
         </div>
@@ -27,6 +28,7 @@
             :is-valid="nomUsageMeta.valid"
             :error-message="nomUsageErrorMessage"
             placeholder=""
+            hint="Veuillez saisir votre nom d'usage. Exemple: Dupont"
             @update:model-value="onNomUsageChange"
           />
         </div>
@@ -42,6 +44,7 @@
             :is-valid="prenomMeta.valid"
             :error-message="prenomErrorMessage"
             placeholder=""
+            hint="Veuillez saisir votre prénom. Exemple: Jean"
             @update:model-value="onPrenomChange"
           />
         </div>
@@ -71,6 +74,7 @@
             :is-valid="telephoneMeta.valid"
             :error-message="telephoneErrorMessage"
             placeholder=""
+            hint="Veuillez saisir votre numéro de téléphone. Exemple: 0612345678"
             @update:model-value="onTelephoneChange"
           />
         </div>
