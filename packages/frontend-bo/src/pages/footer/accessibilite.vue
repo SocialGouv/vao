@@ -41,9 +41,9 @@
     <h3>Technologies utilisées pour la réalisation de l’audit</h3>
 
     <ul>
-      <li>HTML ;</li>
-      <li>CSS ;</li>
-      <li>Javascript.</li>
+      <li>HTML</li>
+      <li>CSS</li>
+      <li>Javascript</li>
     </ul>
 
     <h3>Environnement de test</h3>
@@ -55,38 +55,38 @@
     </p>
 
     <ul>
-      <li>sur ordinateur Windows avec Firefox et NVDA ;</li>
-      <li>sur ordinateur Windows avec Firefox et JAWS ;</li>
-      <li>sur ordinateur MacOS avec Safari et VoiceOver ;</li>
-      <li>sur mobile iOS avec Safari et VoiceOver.</li>
+      <li>Sur ordinateur Windows avec Firefox et NVDA</li>
+      <li>Sur ordinateur Windows avec Firefox et JAWS</li>
+      <li>Sur ordinateur MacOS avec Safari et VoiceOver</li>
+      <li>Sur mobile iOS avec Safari et VoiceOver</li>
     </ul>
 
     <h3>Outils pour évaluer l’accessibilité</h3>
 
     <ul>
-      <li>Web Developer Toolbar ;</li>
-      <li>Colour Contrast Analyser ;</li>
-      <li>HeadingsMap ;</li>
-      <li>WCAG Contrast checker ;</li>
-      <li>Inspecteur de composants ;</li>
-      <li>Validateur HTML du W3C.</li>
+      <li>Web Developer Toolbar</li>
+      <li>Colour Contrast Analyser</li>
+      <li>HeadingsMap</li>
+      <li>WCAG Contrast checker</li>
+      <li>Inspecteur de composants</li>
+      <li>Validateur HTML du W3C</li>
     </ul>
 
     <h3>Pages du site ayant fait l’objet de la vérification de conformité</h3>
 
     <ul>
-      <li>Création de compte ;</li>
-      <li>Mot de passe oublié ;</li>
-      <li>Authentification ;</li>
-      <li>Accueil ;</li>
-      <li>Accessibilité ;</li>
-      <li>Mentions légales ;</li>
-      <li>Données personnelles ;</li>
-      <li>Ma fiche organisateur (5 étapes) ;</li>
-      <li>Mes hébergements ;</li>
-      <li>Création d'un hébergement ;</li>
-      <li>Nouvelle déclaration de séjour ;</li>
-      <li>Mes séjours.</li>
+      <li>Création de compte</li>
+      <li>Mot de passe oublié</li>
+      <li>Authentification</li>
+      <li>Accueil</li>
+      <li>Accessibilité</li>
+      <li>Mentions légales</li>
+      <li>Données personnelles</li>
+      <li>Ma fiche organisateur (5 étapes)</li>
+      <li>Mes hébergements</li>
+      <li>Création d'un hébergement</li>
+      <li>Nouvelle déclaration de séjour</li>
+      <li>Mes séjours</li>
     </ul>
 
     <h2>Retour d’information et contact</h2>
@@ -118,19 +118,14 @@
     <p>Plusieurs moyens sont à votre disposition :</p>
 
     <ul>
-      <li>écrire un message au Défenseur des droits ;</li>
-      <li>contacter le délégué du Défenseur des droits dans votre région ;</li>
-      <li>
-        envoyer un courrier par la poste (gratuit, ne pas mettre de timbre)
-        <em
-          ><dl>
-            <dt>Défenseur des droits</dt>
-            <dt>Libre réponse 71120</dt>
-            <dt>75342 Paris CEDEX 07</dt>
-          </dl>
-        </em>
-      </li>
+      <li>Écrire un message au Défenseur des droits</li>
+      <li>Contacter le délégué du Défenseur des droits dans votre région</li>
     </ul>
+
+    <p>
+      Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre)
+      Défenseur des droits Libre réponse 71120 75342 Paris CEDEX 07
+    </p>
   </div>
 </template>
 
