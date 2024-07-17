@@ -259,6 +259,18 @@
               />
             </div>
           </div>
+          <div
+            class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
+          >
+            <div class="fr-input-group">
+              <DsfrSelect
+                v-model="etablissementFilter.autorisation"
+                label="Autorisation"
+                name="Autorisation"
+                :options="['Tous', 'En activité', 'Fermé']"
+              />
+            </div>
+          </div>
         </fieldset>
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
@@ -374,6 +386,7 @@ const etablissementFilter = ref({
   siret: "",
   denomination: "",
   commune: "",
+  autorisation: "Tous",
 });
 
 const initialValues = {
@@ -484,7 +497,9 @@ const formatedEtablissements = computed(() => {
           e.denomination,
         ) &&
         new RegExp(etablissementFilter.value.commune, "i").test(e.commune) &&
-        e.etatAdministratif === "En activité",
+        (etablissementFilter.value.autorisation === "Tous"
+          ? "true"
+          : etablissementFilter.value.autorisation === e.etatAdministratif),
     )
     .map((e) => {
       const row = [
