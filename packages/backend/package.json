@@ -2,6 +2,7 @@
   "name": "@vao/backend",
   "version": "0.1.0",
   "description": "Backend du projet VAO",
+  "license": "Apache-2.0",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint ./src",
