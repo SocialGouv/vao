@@ -2,7 +2,7 @@ maildev: {}
 
 pg:
   backup:
-    name: "202407121416" # backup on a new folder
+    name: "202407181635" # backup on a new folder
 
 jobs:
   runs:
