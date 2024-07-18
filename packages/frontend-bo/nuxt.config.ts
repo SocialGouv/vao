@@ -15,6 +15,7 @@ export default defineNuxtConfig({
     "@gouvminint/vue-dsfr/styles",
     "@gouvfr/dsfr/dist/utility/icons/icons.min.css",
     "@/assets/css/main.css",
+    "@nuxt/test-utils/module",
   ],
   modules: [
     "nuxt-security",
