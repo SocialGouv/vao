@@ -3,14 +3,17 @@ FROM local-node:latest as builder
 USER root
 
 WORKDIR /usr/cache
+
 COPY package*.json yarn.lock ./
+COPY packages/shared packages/shared/ 
+COPY packages/frontend-bo/package*.json packages/frontend-bo/yarn.lock packages/frontend-bo/
 
 RUN chown -R node /usr/cache
 
 USER node
 
-RUN yarn install
+RUN yarn workspace @vao/frontend-bo install --frozen-lockfile
 
 WORKDIR /app
 
-CMD ["yarn", "dev"]
+CMD ["yarn" "workspace", "@vao/frontend-bo", "dev"]

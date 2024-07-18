@@ -194,11 +194,13 @@
       >
         <div v-if="demandeCourante.statut !== 'BROUILLON'">
           {{ demandeCourante.statut }}
-          <DSMessage
+          <Chat
+            ref="chatRef"
             :messages="demandeSejourStore.messages"
-            @send="fetchMessages"
-          >
-          </DSMessage>
+            :backend-url="`${config.public.backendUrl}/documents/`"
+            :is-loading="isSendingMessage"
+            @send="sendMessage"
+          />
         </div>
         <div v-else>
           <DsfrAlert type="info"
@@ -213,6 +215,7 @@
 
 <script setup>
 import dayjs from "dayjs";
+import { Chat } from "@vao/shared";
 
 const route = useRoute();
 
@@ -253,6 +256,7 @@ const links = [
 
 const log = logger("pages/demande-sejour/[[demandeId]]");
 
+const config = useRuntimeConfig();
 const demandeSejourStore = useDemandeSejourStore();
 const demandeCourante = computed(() => {
   return demandeSejourStore.demandeCourante;
@@ -260,11 +264,13 @@ const demandeCourante = computed(() => {
 
 const initialSelectedIndex = 0;
 
+const chatRef = ref(null);
 const asc = ref(true);
 const selectedTabIndex = ref(initialSelectedIndex);
 
-if (route.params.demandeId)
+if (route.params.demandeId) {
   demandeSejourStore.fetchMessages(route.params.demandeId);
+}
 
 const {
   data: historique,
@@ -290,7 +296,7 @@ const tabTitles = computed(() => [
   { title: "Formulaire" },
   { title: "Documents joints" },
   ...(sejourId.value ? [{ title: "Historique de la déclaration" }] : []),
-  { title: "Messagerie" },
+  ...(sejourId.value ? [{ title: "Messagerie" }] : []),
 ]);
 
 const sommaireOptions = demandeSejourMenus
@@ -339,8 +345,46 @@ const demandeDetails = computed(() => {
   ];
 });
 
-const fetchMessages = () => {
-  demandeSejourStore.fetchMessages(route.params.demandeId);
+const isSendingMessage = ref(false);
+
+const sendMessage = async ({ message, file }) => {
+  let newFile;
+  isSendingMessage.value = true;
+  if (file) {
+    try {
+      const uuid = await UploadFile("message", file);
+      newFile = {
+        uuid,
+        name: file.name ?? "document_messagerie",
+        createdAt: new Date(),
+      };
+      toaster.info(`Document déposé`);
+    } catch (error) {
+      log.w(error);
+      return toaster.error(
+        `Une erreur est survenue lors du dépôt du document ${file.name}`,
+      );
+    }
+  }
+  try {
+    const url = `/message/${sejourId.value}`;
+    const response = await $fetchBackend(url, {
+      method: "POST",
+      credentials: "include",
+      body: { message: message ?? "", file: newFile },
+    });
+    if (response.id) {
+      chatRef.value.resetForm();
+    }
+    isSendingMessage.value = false;
+  } catch (error) {
+    isSendingMessage.value = false;
+    log.w("envoi de message : ", { error });
+    return toaster.error(
+      `Une erreur est survenue lors de l'envoi de votre message`,
+    );
+  }
+  demandeSejourStore.fetchMessages(sejourId.value);
 };
 
 async function updateOrCreate(data, type) {

@@ -30,7 +30,13 @@ router.post(
 );
 router.get("/admin/:id", boCheckJWT, messageController.get);
 router.get(
-  "/:id",
+  "/admin/:declarationId",
+  boCheckJWT,
+  checkPermissionDeclarationSejour,
+  messageController.get,
+);
+router.get(
+  "/:declarationId",
   checkJWT,
   checkPermissionDeclarationSejour,
   messageController.get,
