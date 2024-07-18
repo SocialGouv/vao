@@ -10,6 +10,7 @@
           :model-value="nom"
           :error-message="nomErrorMessage"
           :is-valid="nomMeta"
+          required
           @update:model-value="onNomChange"
         />
       </div>
@@ -22,6 +23,7 @@
           :model-value="nomGestionnaire"
           :error-message="nomGestionnaireErrorMessage"
           :is-valid="nomGestionnaireMeta"
+          required
           @update:model-value="onNomGestionnaireChange"
         />
       </div>
@@ -30,8 +32,8 @@
         :value="adresse"
         :label="
           props.initHebergement.coordonnees?.adresse
-            ? 'Nouvelle adresse de l\'hébergement'
-            : 'Adresse de l\'hébergement'
+            ? 'Nouvelle adresse de l\'hébergement *'
+            : 'Adresse de l\'hébergement *'
         "
         :initial-adress="props.initHebergement.coordonnees?.adresse?.label"
         :error-message="adresseErrorMessage"
@@ -96,6 +98,7 @@
           :error-message="emailErrorMessage"
           hint="Format attendu : nom@domaine.fr"
           placeholder=""
+          required
           @update:model-value="onEmailChange"
         />
       </div>
@@ -110,6 +113,7 @@
             :options="hebergementUtils.typeOptions"
             :is-valid="typeMeta"
             :inline="false"
+            required
             :error-message="typeErrorMessage"
             @update:model-value="onTypeChange"
           />
@@ -126,6 +130,7 @@
             :options="ouiNonOptions"
             :is-valid="visiteLocauxMeta.valid"
             :inline="true"
+            required
             :error-message="visiteLocauxErrorMessage"
             @update:model-value="onVisiteLocauxChange"
           />
@@ -186,6 +191,7 @@
             :is-valid="reglementationErpMeta.valid"
             :inline="true"
             :error-message="reglementationErpErrorMessage"
+            required
             @update:model-value="onReglementationErpChange"
           />
         </div>
@@ -209,7 +215,7 @@
       <div v-if="reglementationErp === false">
         <UtilsFileUpload
           v-model="fileReponseExploitantOuProprietaire"
-          label="Téléchargement du document Réponse du propriétaire ou exploitant indiquant les raisons pour lesquelles le lieu d’hébergement n’est pas soumis à la réglementation ERP"
+          label="Téléchargement du document Réponse du propriétaire ou exploitant indiquant les raisons pour lesquelles le lieu d’hébergement n’est pas soumis à la réglementation ERP *"
           hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
           :modifiable="props.modifiable"
           :error-message="fileReponseExploitantOuProprietaireErrorMessage"
@@ -225,6 +231,7 @@
             :is-valid="accessibiliteMeta.valid"
             :inline="false"
             :error-message="accessibiliteErrorMessage"
+            required
             @update:model-value="onAccessibiliteChange"
           />
         </div>
@@ -235,7 +242,7 @@
       >
         <DsfrInputGroup
           name="informationsLocaux.accessibilitePrecision"
-          label="Précisez"
+          label="Précisions (optionnel)"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""
@@ -282,6 +289,7 @@
           :model-value="descriptionLieuHebergement"
           :error-message="descriptionLieuHebergementErrorMessage"
           :is-valid="descriptionLieuHebergementMeta.valid"
+          required
           @update:model-value="onDescriptionLieuHebergementChange"
         />
       </div>
@@ -296,6 +304,7 @@
           :model-value="nombreLits"
           :error-message="nombreLitsErrorMessage"
           :is-valid="nombreLitsMeta.valid"
+          required
           @update:model-value="
             onNombreLitsChange($event !== '' ? $event : null)
           "
@@ -331,6 +340,7 @@
             :is-valid="litsDessusMeta.valid"
             :inline="true"
             :error-message="litsDessusErrorMessage"
+            required
             @update:model-value="onLitsDessusChange"
           />
         </div>
@@ -345,6 +355,7 @@
           :model-value="nombreMaxPersonnesCouchage"
           :error-message="nombreMaxPersonnesCouchageErrorMessage"
           :is-valid="nombreMaxPersonnesCouchageMeta.valid"
+          required
           @update:model-value="
             onNombreMaxPersonnesCouchageChange($event !== '' ? $event : null)
           "
@@ -360,6 +371,7 @@
             :options="ouiNonOptions"
             :is-valid="couchageIndividuelMeta.valid"
             :inline="true"
+            required
             :error-message="couchageIndividuelErrorMessage"
             @update:model-value="onCouchageIndividuelChange"
           />
@@ -375,6 +387,7 @@
             :options="ouiNonOptions"
             :is-valid="rangementIndividuelMeta.valid"
             :inline="true"
+            required
             :error-message="rangementIndividuelErrorMessage"
             @update:model-value="onRangementIndividuelChange"
           />
@@ -405,6 +418,7 @@
             :options="ouiNonOptions"
             :is-valid="chambresDoublesMeta.valid"
             :inline="true"
+            required
             :error-message="chambresDoublesErrorMessage"
             @update:model-value="onChambresDoublesChange"
           />
@@ -420,6 +434,7 @@
             :options="ouiNonOptions"
             :is-valid="amenagementsSpecifiquesMeta.valid"
             :inline="true"
+            required
             :error-message="amenagementsSpecifiquesErrorMessage"
             @update:model-value="onAmenagementsSpecifiquesChange"
           />
@@ -433,13 +448,14 @@
         <DsfrInputGroup
           name="informationsLocaux.precisionAmenagementsSpecifiques"
           label="Précisez"
-          hint="Redimensionnez le champ pour saisir plus de ligne"
+          hint="Redimensionnez le champ pour saisir plus de ligne. Minumum 5 caractères"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""
           :model-value="precisionAmenagementsSpecifiques"
           :error-message="precisionAmenagementsSpecifiquesErrorMessage"
           :is-valid="precisionAmenagementsSpecifiquesMeta.valid"
+          hitn="Minumum 5 caractères"
           @update:model-value="onPrecisionAmenagementsSpecifiquesChange"
         />
       </div>
@@ -455,6 +471,7 @@
             :options="ouiNonOptions"
             :is-valid="vehiculesAdaptesMeta.valid"
             :inline="true"
+            required
             :error-message="vehiculesAdaptesErrorMessage"
             @update:model-value="onVehiculesAdaptesChange"
           />
@@ -471,6 +488,7 @@
           :model-value="deplacementProximite"
           :error-message="deplacementProximiteErrorMessage"
           :is-valid="deplacementProximiteMeta.valid"
+          required
           @update:model-value="onDeplacementProximiteChange"
         />
       </div>
@@ -485,6 +503,7 @@
           :model-value="excursion"
           :error-message="excursionErrorMessage"
           :is-valid="excursionMeta.valid"
+          required
           @update:model-value="onExcursionChange"
         />
       </div>

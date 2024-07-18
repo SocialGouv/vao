@@ -11,7 +11,7 @@
             :model-value="commentaire"
             :is-valid="commentaireMeta.valid"
             :error-message="commentaireErrorMessage"
-            hint="Redimensionnez le champ pour saisir plus de ligne"
+            hint="Redimensionnez le champ pour saisir plus de ligne. Minumum 5 caractères"
             placeholder=""
             @update:model-value="onCommentaireChange"
           />
