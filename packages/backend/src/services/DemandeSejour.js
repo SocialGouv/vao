@@ -26,6 +26,19 @@ const query = {
     WHERE id = $1
     RETURNING id as "declarationId"
   `,
+  cancel: (declarationId, userId) => [
+    `
+    UPDATE front.demande_sejour d
+    SET statut = 'ANNULEE' 
+    FROM front.organismes o, front.user_organisme uo
+    WHERE 
+      o.id = d.organisme_id 
+      AND uo.org_id = o.id
+      AND d.id = $1
+      AND uo.use_id = $2;
+    ;`,
+    [declarationId, userId],
+  ],
   copy: (
     organismeId,
     libelle,
@@ -138,19 +151,6 @@ const query = {
       AND uo.org_id = o.id
       AND d.id = $1
       AND uo.use_id = $2
-    ;`,
-    [declarationId, userId],
-  ],
-  cancel: (declarationId, userId) => [
-    `
-    UPDATE front.demande_sejour d
-    SET statut = 'ANNULEE' 
-    FROM front.organismes o, front.user_organisme uo
-    WHERE 
-      o.id = d.organisme_id 
-      AND uo.org_id = o.id
-      AND d.id = $1
-      AND uo.use_id = $2;
     ;`,
     [declarationId, userId],
   ],

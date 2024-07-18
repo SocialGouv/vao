@@ -26,9 +26,10 @@
         <h2>Base légale du traitement</h2>
         <p>
           Ce traitement de données est mis en œuvre pour l'exécution d'une
-          <b>mission d'intérêt public</b>, conformément au e du 1 de l'article 6 du
-          règlement (UE) du 27 avril 2016 susvisé, et pour les motifs d'intérêt
-          public mentionnés au i du 2 de l'article 9 du même règlement.
+          <b>mission d'intérêt public</b>, conformément au e du 1 de l'article 6
+          du règlement (UE) du 27 avril 2016 susvisé, et pour les motifs
+          d'intérêt public mentionnés au i du 2 de l'article 9 du même
+          règlement.
         </p>
       </div>
       <div class="fr-col-12">
@@ -108,15 +109,13 @@
           traitement de vos données.
         </p>
         <p>
-          Pour exercer ces droits ou pour toute question sur le traitement
-          de vos données dans ce dispositif, vous pouvez contacter en
-          précisant dans l’objet de votre message “VAO” : 
+          Pour exercer ces droits ou pour toute question sur le traitement de
+          vos données dans ce dispositif, vous pouvez contacter en précisant
+          dans l’objet de votre message “VAO” :
         </p>
+        <p><strong>Par courriel</strong> DGCS-RGPD@social.gouv.fr</p>
         <p>
-            <strong>Par courriel</strong> DGCS-RGPD@social.gouv.fr 
-        </p>
-        <p>
-          <strong>Par voie postale</strong> 
+          <strong>Par voie postale</strong>
           <em
             ><dl>
               <dt>Direction Générale de la Cohésion Sociale</dt>
@@ -126,15 +125,17 @@
           </em>
         </p>
         <em>
-        <p>Consultez le site de la 
-          <a
-          title="Site internet de la CNIL"
-          href="https://cnil.fr/"
-          target="_blank"
-          rel="noopener external"
-          >CNIL</a
-        >
-         pour plus d’informations sur vos droits.</p>
+          <p>
+            Consultez le site de la
+            <a
+              title="Site internet de la CNIL"
+              href="https://cnil.fr/"
+              target="_blank"
+              rel="noopener external"
+              >CNIL</a
+            >
+            pour plus d’informations sur vos droits.
+          </p>
         </em>
         <a
           title="formulaire de plainte de la CNIL"

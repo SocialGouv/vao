@@ -8,7 +8,6 @@ yup.setLocale({
 });
 
 const schema = (statut) => {
-
   const statutsConditions = [
     DeclarationSejour.statuts.ATTENTE_8_JOUR,
     DeclarationSejour.statuts.A_MODIFIER_8J,
@@ -20,7 +19,7 @@ const schema = (statut) => {
       .integer("Ce champ doit contenir un nombre entier")
       .typeError("Ce champ doit contenir un nombre entier")
       .min(
-        `${( statutsConditions.includes(statut) ) ? 1 : 0}`,
+        `${statutsConditions.includes(statut) ? 1 : 0}`,
         "Vous devez saisir au moins 1 responsable d'encadrement",
       )
       .required("Ce champ doit contenir un nombre entier"),
@@ -32,11 +31,11 @@ const schema = (statut) => {
       .integer("Ce champ doit contenir un nombre entier")
       .typeError("Ce champ doit contenir un nombre entier")
       .min(
-        `${( statutsConditions.includes(statut) )? 1 : 0}`,
+        `${statutsConditions.includes(statut) ? 1 : 0}`,
         "Vous devez saisir au moins 1 accompagnant",
       )
       .required("Ce champ doit contenir un nombre entier"),
-    ...(( statutsConditions.includes(statut) ) && {
+    ...(statutsConditions.includes(statut) && {
       accompagnants: yup
         .array()
         .of(
@@ -56,7 +55,7 @@ const schema = (statut) => {
         .min(1, "Vous devez saisir au moins un accompagnant")
         .required(),
     }),
-    ...(( statutsConditions.includes(statut) ) && {
+    ...(statutsConditions.includes(statut) && {
       encadrants: yup
         .array()
         .of(
@@ -76,26 +75,26 @@ const schema = (statut) => {
         .min(1, "Vous devez saisir au moins 1 encadrant")
         .required(),
     }),
-    ...(( statutsConditions.includes(statut) ) && {
+    ...(statutsConditions.includes(statut) && {
       formation: yup.string().min(5, "Ce champ est obligatoire").required(),
     }),
-    ...(( statutsConditions.includes(statut) ) && {
+    ...(statutsConditions.includes(statut) && {
       prestataireActivites: yup.array().of(yup.object(prestataireUtils.schema)),
     }),
-    ...(( statutsConditions.includes(statut) ) && {
+    ...(statutsConditions.includes(statut) && {
       prestataireEntretien: yup.array().of(yup.object(prestataireUtils.schema)),
     }),
-    ...(( statutsConditions.includes(statut) ) && {
+    ...(statutsConditions.includes(statut) && {
       prestataireMedicaments: yup
         .array()
         .of(yup.object(prestataireUtils.schema)),
     }),
-    ...(( statutsConditions.includes(statut) ) && {
+    ...(statutsConditions.includes(statut) && {
       prestataireRestauration: yup
         .array()
         .of(yup.object(prestataireUtils.schema)),
     }),
-    ...(( statutsConditions.includes(statut) ) && {
+    ...(statutsConditions.includes(statut) && {
       prestataireTransport: yup.array().of(yup.object(prestataireUtils.schema)),
     }),
   };

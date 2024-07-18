@@ -52,7 +52,10 @@ module.exports = async function post(req, res, next) {
     );
   }
 
-  if (declaration.statut !== statuts.TRANSMISE && declaration.statut !== statuts.TRANSMISE_8J) {
+  if (
+    declaration.statut !== statuts.TRANSMISE &&
+    declaration.statut !== statuts.TRANSMISE_8J
+  ) {
     log.w("Delaration is already at least in progress");
     return next(
       new AppError("Statut incompatible", {
@@ -60,9 +63,14 @@ module.exports = async function post(req, res, next) {
       }),
     );
   }
-  const enCoursTypeStatut = declaration.statut === statuts.TRANSMISE ? statuts.EN_COURS : statuts.EN_COURS_8J;
-  const  textTypePrecision = "Prise en charge de la déclaration " + (declaration.statut === statuts.TRANSMISE ? " 2 mois" : " 8 jours");
-  
+  const enCoursTypeStatut =
+    declaration.statut === statuts.TRANSMISE
+      ? statuts.EN_COURS
+      : statuts.EN_COURS_8J;
+  const textTypePrecision =
+    "Prise en charge de la déclaration " +
+    (declaration.statut === statuts.TRANSMISE ? " 2 mois" : " 8 jours");
+
   try {
     await DemandeSejour.updateStatut(declarationId, enCoursTypeStatut, {
       boUserId: userId,

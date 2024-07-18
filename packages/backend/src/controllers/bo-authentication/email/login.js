@@ -55,7 +55,12 @@ module.exports = async function login(req, res, next) {
     );
   }
 
-  user.serviceCompetent = (user.territoireCode === "FRA") ? 'NAT' : (/^[0-9]+$/.test(user.territoireCode)) ? 'DEP' : 'REG';
+  user.serviceCompetent =
+    user.territoireCode === "FRA"
+      ? "NAT"
+      : /^[0-9]+$/.test(user.territoireCode)
+        ? "DEP"
+        : "REG";
 
   try {
     const accessToken = jwt.sign(buildAccessToken(user), config.tokenSecret, {
