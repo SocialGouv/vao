@@ -6,6 +6,7 @@
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <cards-number
+          v-if="!props.organisme"
           :values="[
             {
               title: 'Déclarations transmises à traiter',
@@ -103,6 +104,7 @@
             >
               <div class="fr-input-group">
                 <DsfrButton
+                  v-if="!props.organisme"
                   type="button"
                   label="Extraire en CSV"
                   primary
