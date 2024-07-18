@@ -12,11 +12,11 @@
     "lint": "eslint ./src"
   },
   "dependencies": {
-    "@gouvfr/dsfr": "~1.11.2",
-    "@gouvminint/vue-dsfr": "~5.17.0",
+    "@gouvfr/dsfr": "~1.12.0",
+    "@gouvminint/vue-dsfr": "~5.18.0",
     "@nuxtjs/leaflet": "^1.0.14",
     "@pinia/nuxt": "~0.5.1",
-    "@sentry/vue": "~7.117.0",
+    "@sentry/vue": "~7.118.0",
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.2.1",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@vao/shared": "^1.0.0",
