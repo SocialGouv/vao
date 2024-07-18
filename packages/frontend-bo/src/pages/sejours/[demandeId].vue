@@ -57,9 +57,11 @@
         :selected="selectedTabIndex === 3"
         :asc="asc"
       >
-        <DemandesSejourMessage
+        <Chat
+          ref="chatRef"
           :messages="demandeStore.messages"
-          @send="fetchMessages"
+          :backend-url="`${config.public.backendUrl}/documents/`"
+          @send="sendMessage"
         />
       </DsfrTabContent>
     </DsfrTabs>
@@ -165,6 +167,7 @@
 
 <script setup>
 import dayjs from "dayjs";
+import { Chat } from "@vao/shared";
 import { useIsDownloading } from "~/composables/useIsDownloading";
 
 definePageMeta({
@@ -180,8 +183,11 @@ const route = useRoute();
 
 const initialSelectedIndex = 0;
 
+const chatRef = ref(null);
 const asc = ref(true);
 const selectedTabIndex = ref(initialSelectedIndex);
+
+const config = useRuntimeConfig();
 
 const selectTab = (idx) => {
   asc.value = selectedTabIndex.value < idx;
@@ -225,6 +231,43 @@ onMounted(async () => {
     navigateTo("/sejours");
   }
 });
+
+const sendMessage = async ({ message, file }) => {
+  let newFile;
+  if (file) {
+    try {
+      const uuid = await UploadFile("message", file);
+      newFile = {
+        uuid,
+        name: file.name ?? "document_messagerie",
+        createdAt: new Date(),
+      };
+      toaster.info(`Document déposé`);
+    } catch (error) {
+      log.w(error);
+      return toaster.error(
+        `Une erreur est survenue lors du dépôt du document ${file.name}`,
+      );
+    }
+  }
+  try {
+    const url = `/message/admin/${route.params.demandeId}`;
+    const response = await $fetchBackend(url, {
+      method: "POST",
+      credentials: "include",
+      body: { message: message ?? "", file: newFile },
+    });
+    if (response.id) {
+      chatRef.value.resetForm();
+    }
+  } catch (error) {
+    log.w("envoi de message : ", { error });
+    return toaster.error(
+      `Une erreur est survenue lors de l'envoi de votre message`,
+    );
+  }
+  fetchMessages();
+};
 
 const tabTitles = [
   { title: " Formulaire" },

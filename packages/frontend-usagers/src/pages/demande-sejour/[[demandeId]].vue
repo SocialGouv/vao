@@ -263,8 +263,9 @@ const initialSelectedIndex = 0;
 const asc = ref(true);
 const selectedTabIndex = ref(initialSelectedIndex);
 
-if (route.params.demandeId)
+if (route.params.demandeId) {
   demandeSejourStore.fetchMessages(route.params.demandeId);
+}
 
 const {
   data: historique,

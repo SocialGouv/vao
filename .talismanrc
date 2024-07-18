@@ -76,7 +76,7 @@ fileignoreconfig:
 - filename: docker-compose.prod.yaml
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
-  checksum: 66bb0acb17d53ce520538dbc71ef82379a6bc0eb73d9e48711b2d540f9519bb0
+  checksum: 0ff2172322a8f8f571f6d1940da58b12283710b00973dc40591750530cb11eab
 - filename: packages/backend/src/config.js
   checksum: c0baf7f4f878d3f3406030471f15c092ed9fc671b1e66276fe9b071ea025b58c
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
@@ -195,6 +195,8 @@ fileignoreconfig:
   checksum: c792d383dfec26115dfab5a391e6427b5b9c4416da783388c7ef00d4f97585bb
 - filename: packages/migrations/src/knexfile.js
   checksum: 1d3be5d2c46636eb90b74382447f23ffefc943ed963736ffab7556336d2df667
+- filename: packages/shared/src/components/Chat.vue
+  checksum: 55c9a2dfc4406090fe1b531b68a2ed35391d6c16669477a901eda221a8d34432
 - filename: pg/scripts/01-init.sql
   checksum: 20dd5b8d36b1b0517fe185d30003af7866ef5678eed4e7571a6d9797ec3b2a46
 - filename: pg/scripts/02/02-1-geo-init.sql

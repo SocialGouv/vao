@@ -29,12 +29,12 @@ services:
 
   frontend-bo:
     build:
-      context: packages/frontend-bo
-      dockerfile: Dockerfile.local
+      context: .
+      dockerfile: packages/frontend-bo/Dockerfile.local
     working_dir: /app
-    command: /app/entrypoint.sh
+    command: /app/packages/frontend-bo/entrypoint.sh
     volumes:
-      - $PWD/packages/frontend-bo:/app:delegated
+      - $PWD:/app:delegated
       - $HOME/.ssh:/home/node/.ssh:ro
       - $HOME/.gitconfig:/home/node/.gitconfig:ro
       - $HOME/.npm:/home/node/.npm:delegated
