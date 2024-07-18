@@ -24,34 +24,34 @@ dump:
           params:
             column: file
 
-    - schema: back
-      name: users
-      transformers:
-        - name: Cmd
-          params:
-            <<: *cmd_default_params
-            args:
-              - "./dist/back--users.js"
-            columns:
-              - name: mail
-              - name: prenom
-              - name: nom
-              - name: pwd
+    # - schema: back
+    #   name: users
+    #   transformers:
+    #     - name: Cmd
+    #       params:
+    #         <<: *cmd_default_params
+    #         args:
+    #           - "./dist/back--users.js"
+    #         columns:
+    #           - name: mail
+    #           - name: prenom
+    #           - name: nom
+    #           - name: pwd
 
-    - schema: front
-      name: users
-      transformers:
-        - name: Cmd
-          params:
-            <<: *cmd_default_params
-            args:
-              - "./dist/front--users.js"
-            columns:
-              - name: mail
-              - name: prenom
-              - name: nom
-              - name: pwd
-              - name: telephone
+    # - schema: front
+    #   name: users
+    #   transformers:
+    #     - name: Cmd
+    #       params:
+    #         <<: *cmd_default_params
+    #         args:
+    #           - "./dist/front--users.js"
+    #         columns:
+    #           - name: mail
+    #           - name: prenom
+    #           - name: nom
+    #           - name: pwd
+    #           - name: telephone
 
     - schema: front
       name: demande_sejour
@@ -64,3 +64,10 @@ dump:
             columns:
               - name: libelle
               - name: responsable_sejour
+              - name: hebergement
+              # - name: vacanciers
+              # - name: personnel
+              # - name: transport
+              # - name: projet_sejour
+              # - name: attestation
+              # - name: organisme

@@ -1,4 +1,4 @@
-export function main<T extends { d: any }>(
+export function main<T extends { d: any; n: boolean }>(
   anonymize: (columns: Record<string, T[]>) => void
 ) {
   const stdin = process.stdin
@@ -15,10 +15,12 @@ export function main<T extends { d: any }>(
     try {
       const line: Record<string, T> = JSON.parse(lineBuffer.toString())
       const columns = Object.fromEntries(
-        Object.entries(line).map(([columnName, columnValue]) => [
-          columnName,
-          columnValue.d,
-        ])
+        Object.entries(line).map(([columnName, columnValue]) => {
+          if (columnValue.n) {
+            return [columnName, null]
+          }
+          return [columnName, columnValue.d]
+        })
       )
       anonymize(columns)
       const anonymizedLine = Object.fromEntries(
@@ -28,7 +30,6 @@ export function main<T extends { d: any }>(
         ])
       )
       stdout.write(JSON.stringify(anonymizedLine) + "\n")
-
     } catch (error: unknown) {
       if (error instanceof Error) {
         stderr.write(`Error: ${error.message}\n`)
