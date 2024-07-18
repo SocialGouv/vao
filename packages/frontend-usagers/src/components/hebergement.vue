@@ -151,7 +151,7 @@
           "
         />
       </div>
-      <DsfrAlert>
+      <DsfrAlert role="status">
         <p>
           Informations ERP : Selon la circulaire du 6 octobre 2023, il sera
           requis l’arrêté d’autorisation du maire et/ou la dernière attestation

@@ -142,7 +142,7 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/components/utils/TableFull.vue
   checksum: 74a74e68299d204eac907efee98c2eb3d776ff4c206b304acbca02d058bfbc4e
 - filename: packages/frontend-bo/src/pages/connexion/index.vue
-  checksum: 0c46018cbc6e2975274e8ad4ef249f7ada791ed73470205224f9266be2b6704b
+  checksum: 804991141c657357577a88be19580a02b64d7868cb69f034cc74e9be7ae8617f
 - filename: packages/frontend-bo/src/pages/connexion/reset-mot-de-passe.vue
   checksum: f544299c6795c35ca29f1ddd0babb1c840f7c25c72435b3c6b0939e0ea55d120
 - filename: packages/frontend-bo/src/pages/sejours/[[idDemande]].vue
@@ -176,7 +176,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
   checksum: ff1ceabb68d5c3bd637717235e78cbe7b82e626a5f1c8bbf233c58d5acaa2bc9
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
-  checksum: 27b69914a4f3615db69c2d7ca44f811bccfd566977cf424940952dab2631cb9a
+  checksum: e8dab7814ed9effec5c8630f2e1cd061416d254a131ebc88dbae61f99327436e
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
   checksum: a30047520f10c9428ebb0865e8019baf9799801d99b0a6606eec58154a73c91b
 - filename: packages/frontend-usagers/src/pages/connexion/reset-mot-de-passe.vue

@@ -7,6 +7,7 @@
       <div v-if="displayType !== null">
         <DsfrAlert
           class="fr-my-3v"
+          :role="displayType === 'Success' ? 'status' : 'alert'"
           :title="displayInfos[displayType].title"
           :description="displayInfos[displayType].description"
           :type="displayInfos[displayType].type"
@@ -105,7 +106,7 @@ async function askNewPassword() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: email.value }),
+        body: { email: email.value },
       },
     )
       .then(() => {

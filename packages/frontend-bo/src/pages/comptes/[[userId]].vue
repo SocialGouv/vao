@@ -11,6 +11,9 @@
           class="fr-grid-row fr-grid-row--center fr-my-5v fr-col-12"
         >
           <DsfrAlert
+            :role="
+              displayType === 'CreationDoneWithSucces' ? 'status' : 'alert'
+            "
             :title="displayInfos[displayType].title"
             :description="displayInfos[displayType].description"
             :type="displayInfos[displayType].type"
