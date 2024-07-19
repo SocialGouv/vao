@@ -12,7 +12,8 @@ RUN chown -R node /usr/cache
 
 USER node
 
-RUN yarn workspace @vao/frontend-usagers install
+WORKDIR /usr/cache/packages/frontend-usagers
+RUN yarn install
 
 WORKDIR /app
 

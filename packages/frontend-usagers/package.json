@@ -28,6 +28,7 @@
     "nuxt": "~3.12.0",
     "oh-vue-icons": "~1.0.0-rc3",
     "pinia": "~2.1.7",
+    "ufo": "^1.5.4",
     "vee-validate": "~4.13.0",
     "vue-matomo": "~4.2.0",
     "yup": "~1.4.0"

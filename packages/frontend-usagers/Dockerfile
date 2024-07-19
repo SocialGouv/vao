@@ -4,7 +4,7 @@ FROM node:${NODE_VERSION} AS builder
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-COPY packages/shared/package.json packages/shared/ 
+COPY packages/shared/package.json packages/shared/
 COPY packages/frontend-usagers/package.json packages/frontend-usagers/yarn.lock packages/frontend-usagers/
 RUN yarn workspace @vao/frontend-usagers install --frozen-lockfile
 
