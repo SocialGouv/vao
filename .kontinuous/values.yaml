@@ -120,7 +120,7 @@ jobs:
       use: build
       with:
         imagePackage: backend
-        context: .
+        context: ./
         dockerfile: packages/backend/Dockerfile
 
     build-frontend-usagers:
@@ -132,7 +132,7 @@ jobs:
             name: matomo
       with:
         imagePackage: frontend-usagers
-        context: . 
+        context: ./ 
         dockerfile: packages/frontend-usagers/Dockerfile
         buildArgs:
           NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
@@ -150,7 +150,7 @@ jobs:
             name: matomo
       with:
         imagePackage: frontend-bo
-        context: .
+        context: ./
         dockerfile: packages/frontend-bo/Dockerfile
         buildArgs:
           NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
