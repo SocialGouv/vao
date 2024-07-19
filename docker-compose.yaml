@@ -10,7 +10,7 @@ services:
       - $PWD:/app:delegated
       - $HOME/.ssh:/home/node/.ssh:ro
       - $HOME/.gitconfig:/home/node/.gitconfig:ro
-      - $HOME/.npm:/home/node/.npm:delegated
+      - $HOME/.cache/yarn:/home/node/.cache/yarn:delegated
     env_file:
       - ./.env
     environment:
@@ -33,7 +33,7 @@ services:
       - $PWD:/app:delegated
       - $HOME/.ssh:/home/node/.ssh:ro
       - $HOME/.gitconfig:/home/node/.gitconfig:ro
-      - $HOME/.npm:/home/node/.npm:delegated
+      - $HOME/.cache/yarn:/home/node/.cache/yarn:delegated
     env_file:
       - ./.env
     environment:
@@ -56,7 +56,7 @@ services:
       - $PWD:/app:delegated
       - $HOME/.ssh:/home/node/.ssh:ro
       - $HOME/.gitconfig:/home/node/.gitconfig:ro
-      - $HOME/.npm:/home/node/.npm:delegated
+      - $HOME/.cache/yarn:/home/node/.cache/yarn:delegated
     depends_on:
       postgres:
         condition: service_started
