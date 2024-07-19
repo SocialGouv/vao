@@ -3,11 +3,9 @@ volumes:
 
 services:
   frontend-usagers:
-    build:
-      context: .
-      dockerfile: packages/frontend-usagers/Dockerfile.local
+    image: "node:20.15.1-bullseye-slim"
     working_dir: /app
-    command: /app/packages/frontend-usagers/entrypoint.sh
+    command: bash -c "/app/packages/frontend-usagers/start.sh"
     volumes:
       - $PWD:/app:delegated
       - $HOME/.ssh:/home/node/.ssh:ro
@@ -28,11 +26,9 @@ services:
       - 3000:3000
 
   frontend-bo:
-    build:
-      context: .
-      dockerfile: packages/frontend-bo/Dockerfile.local
+    image: "node:20.15.1-bullseye-slim"
     working_dir: /app
-    command: /app/packages/frontend-bo/entrypoint.sh
+    command: bash -c "/app/packages/frontend-bo/start.sh"
     volumes:
       - $PWD:/app:delegated
       - $HOME/.ssh:/home/node/.ssh:ro
@@ -53,11 +49,9 @@ services:
       - 3001:3000
 
   backend:
-    build:
-      context: .
-      dockerfile: packages/backend/Dockerfile.local
+    image: "node:20.15.1-bullseye-slim"
     working_dir: /app
-    command: /app/packages/backend/entrypoint.sh
+    command: bash -c "/app/packages/backend/start.sh"
     volumes:
       - $PWD:/app:delegated
       - $HOME/.ssh:/home/node/.ssh:ro
