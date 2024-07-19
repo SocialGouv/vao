@@ -23,6 +23,6 @@ COPY --from=build /app/packages/backend/node_modules packages/backend/node_modul
 COPY packages/backend/src packages/backend/src
 
 # Note: Don't use "yarn start" as it doesn't handle linux signals (graceful shutdown for instance)
-CMD ["node", "src/index.js"]
+CMD ["node", "packages/backend/src/index.js"]
 
 
