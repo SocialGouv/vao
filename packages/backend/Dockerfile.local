@@ -15,5 +15,3 @@ USER node
 RUN yarn workspace @vao/backend install
 
 WORKDIR /app
-
-CMD ["yarn", "workspace", "@vao/frontend-backend", "dev"]

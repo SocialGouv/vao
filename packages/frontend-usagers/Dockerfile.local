@@ -6,7 +6,7 @@ WORKDIR /usr/cache
 
 COPY package.json yarn.lock ./
 COPY packages/shared packages/shared/
-COPY packages/frontend-usagers/package*json packages/frontend-usagers/yarn.lock packages/frontend-usagers/
+COPY packages/frontend-usagers/package.json packages/frontend-usagers/yarn.lock packages/frontend-usagers/
 
 RUN chown -R node /usr/cache
 
@@ -15,5 +15,3 @@ USER node
 RUN yarn workspace @vao/frontend-usagers install
 
 WORKDIR /app
-
-CMD ["yarn", "workspace", "@vao/frontend-usagers", "dev"]

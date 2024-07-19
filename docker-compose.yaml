@@ -57,7 +57,7 @@ services:
       context: .
       dockerfile: packages/backend/Dockerfile.local
     working_dir: /app
-    command: /app/entrypoint.sh
+    command: /app/packages/backend/entrypoint.sh
     volumes:
       - $PWD:/app:delegated
       - $HOME/.ssh:/home/node/.ssh:ro

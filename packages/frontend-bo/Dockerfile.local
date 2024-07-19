@@ -15,5 +15,3 @@ USER node
 RUN yarn workspace @vao/frontend-bo install --frozen-lockfile
 
 WORKDIR /app
-
-CMD ["yarn" "workspace", "@vao/frontend-bo", "dev"]
