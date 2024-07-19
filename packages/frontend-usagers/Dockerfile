@@ -34,4 +34,4 @@ RUN yarn workspace @vao/frontend-usagers generate
 
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.3
 
-COPY --from=builder --chown=101:101 /app/.output/public /usr/share/nginx/html
+COPY --from=builder --chown=101:101 /app/packages/frontend-usagers/.output/public /usr/share/nginx/html
