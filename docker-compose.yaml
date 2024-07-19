@@ -54,8 +54,8 @@ services:
 
   backend:
     build:
-      context: packages/backend
-      dockerfile: Dockerfile.local
+      context: .
+      dockerfile: packages/backend/Dockerfile.local
     working_dir: /app
     command: /app/entrypoint.sh
     volumes:

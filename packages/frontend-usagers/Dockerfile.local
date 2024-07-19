@@ -16,4 +16,4 @@ RUN yarn workspace @vao/frontend-usagers install
 
 WORKDIR /app
 
-CMD ["yarn" "workspace", "@vao/frontend-usagers", "dev"]
+CMD ["yarn", "workspace", "@vao/frontend-usagers", "dev"]
