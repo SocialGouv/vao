@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="chat">
-      <p v-if="!props.messages.length" class="chat__empty">
+      <p v-if="!props.messages || !props.messages.length" class="chat__empty">
         Pas encore de messages
       </p>
       <Message

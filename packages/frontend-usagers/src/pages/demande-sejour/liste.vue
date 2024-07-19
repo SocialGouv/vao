@@ -179,7 +179,7 @@
       <div class="fr-col">
         <form>
           <fieldset class="fr-fieldset">
-            <DsfrButton>
+            <DsfrButton type="button">
               <NuxtLink to="/demande-sejour">
                 Déclarer un nouveau séjour
               </NuxtLink>
