@@ -36,13 +36,13 @@ const schema = {
   files: yup.array(),
   responsableTransportLieuSejour: yup
     .array()
-    .min(5, "vous devez sélectionner au moins une valeur")
+    .min(1, "vous devez sélectionner au moins une valeur")
     .required(),
   modeTransport: yup.array().when("responsableTransportLieuSejour", {
     is: (val) => val?.includes("organisateur"),
     then: (modeTransport) =>
       modeTransport
-        .min(5, "Vous devez sélectionner au moins un des éléments")
+        .min(1, "Vous devez sélectionner au moins un des éléments")
         .required(),
     otherwise: (modeTransport) => modeTransport.nullable(),
   }),
