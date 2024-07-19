@@ -59,7 +59,7 @@ services:
     working_dir: /app
     command: /app/entrypoint.sh
     volumes:
-      - $PWD/packages/backend:/app:delegated
+      - $PWD:/app:delegated
       - $HOME/.ssh:/home/node/.ssh:ro
       - $HOME/.gitconfig:/home/node/.gitconfig:ro
       - $HOME/.npm:/home/node/.npm:delegated
