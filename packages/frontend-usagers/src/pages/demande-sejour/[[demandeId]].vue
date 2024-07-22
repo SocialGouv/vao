@@ -203,7 +203,7 @@
           />
         </div>
         <div v-else>
-          <DsfrAlert type="info"
+          <DsfrAlert type="info" role="status"
             >La messagerie n'est pas accessible pour les demandes à l'état
             BROUILLON
           </DsfrAlert>

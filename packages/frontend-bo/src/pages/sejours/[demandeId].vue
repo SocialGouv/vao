@@ -4,6 +4,7 @@
     <div class="fr-col-12 fr-mb-3w badge">
       <DsfrAlert
         v-if="isOrganismeNonAgree"
+        role="alert"
         title="Organisme non agréé"
         :description="isOrganismeNonAgree"
         type="error"
@@ -46,7 +47,7 @@
           v-if="historique"
           :historique="historique.historique ?? []"
         />
-        <DsfrAlert v-else-if="error" type="error"
+        <DsfrAlert v-else-if="error" type="error" role="error"
           >Une erreur est survenue durant la récupération de l'historique de la
           déclaration
         </DsfrAlert>
