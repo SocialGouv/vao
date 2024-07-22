@@ -5,7 +5,12 @@
 **/packages/frontend-bo/dist
 **/packages/frontend-usagers/dist
 **/Dockerfile
-.dockerignore
+**/.nuxt
+**/.output
 Dockerfile
+docker-compose.yml
+.dockerignore
 .github
 .kontinuous
+.env
+.husky

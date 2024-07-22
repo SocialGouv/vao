@@ -5,7 +5,7 @@ const log = logger(module.filename);
 
 module.exports = async function serviceCompetence(territoireCode) {
   try {
-    log.i("IN"), territoireCode;
+    log.i("IN", territoireCode);
     log.i("DONE");
     return territoireCode === "FRA"
       ? "NAT"
