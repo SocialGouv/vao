@@ -31,6 +31,10 @@ fileignoreconfig:
   checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
 - filename: .kontinuous/env/dev/templates/token.sealed.secret.yaml
   checksum: 04da46d9d1620a4f28009a7f9cc148919424044c5417f6db03efa29ac1ee261a
+- filename: .kontinuous/env/dev/templates/www-secret.sealed-secret.yaml
+  checksum: 37195a30d1ce573ef302859dab7f512e48f0df384e7ec5a72cf834ee8321908c
+- filename: .kontinuous/env/dev/values.yaml
+  checksum: dba8f891ae5f985e1f32c0f6aabfaee0fda4a63976fd8356fc5fcfe96f084143
 - filename: .kontinuous/env/preprod/templates/api-entreprise.sealed.secret.yaml
   checksum: b316b242ceb79aa49aaa277ced74ea4dfd55054239c05c015836f1845942290e
 - filename: .kontinuous/env/preprod/templates/api-insee.sealed.secret.yaml
@@ -149,6 +153,8 @@ fileignoreconfig:
   checksum: e076b4e667aeda0b354d743dd92a8ae129c61a3fbdfc6bea4e39b603caa90791
 - filename: packages/frontend-bo/src/pages/sejours/[idDemande].vue
   checksum: 5e065bcbafcfbefc24c9cab2ba0026b2b7926bb8c9391434a7469c763c0b3c89
+- filename: packages/frontend-usagers/Dockerfile
+  checksum: 8016caec96fd18371c86bf3ca2b4f51804351290a9d77aab24ef0266316df827
 - filename: packages/frontend-usagers/src/assets/Download.svg
   checksum: a5c2caf47b1b715b2cf8240e9af9090061faae6261b21bc62173689f1666536e
 - filename: packages/frontend-usagers/src/components/DS/synthese.vue

@@ -6,9 +6,9 @@ jobs:
       with:
         buildArgs:
           NUXT_PUBLIC_ENVIRONMENT: "development"
-          NUXT_PUBLIC_SENTRY_ENABLED: "false"
+          NUXT_PUBLIC_SENTRY_ENABLED: "true"
     build-frontend-bo:
       with:
         buildArgs:
           NUXT_PUBLIC_ENVIRONMENT: "development"
-          NUXT_PUBLIC_SENTRY_ENABLED: "false"
+          NUXT_PUBLIC_SENTRY_ENABLED: "true"
