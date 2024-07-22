@@ -1,11 +1,8 @@
 const { CronJob } = require("cron");
-const AppError = require("../../utils/error");
-
 const run = require("../run");
 const logger = require("../../utils/logger");
 const pool = require("../../utils/pgpool").getPool();
 const { statuts } = require("../../helpers/ds-statuts");
-
 
 const { name, cron } = require("../../config").crons.request.update;
 
@@ -43,8 +40,6 @@ const action = async () => {
   }
   log.i(`updateStatutDS - DONE`);
 };
-
-
 
 const job = new CronJob(cron, run(name, action));
 

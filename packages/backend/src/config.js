@@ -33,7 +33,6 @@ module.exports = {
         cron: process.env.BACKEND_CRON_UPDATE_STATUT_DS_CRON,
         name: "UPDATE_STATUT_DS",
       },
-
     },
   },
   domain: process.env.BACKEND_URL,
