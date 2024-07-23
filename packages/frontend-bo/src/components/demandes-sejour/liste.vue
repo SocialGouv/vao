@@ -211,6 +211,9 @@ const status = computed(() => [
   demandesSejours.statuts.A_MODIFIER_8J,
   demandesSejours.statuts.REFUSEE_8J,
   demandesSejours.statuts.VALIDEE_8J,
+  demandesSejours.statuts.SEJOUR_EN_COURS,
+  demandesSejours.statuts.TERMINEE,
+  demandesSejours.statuts.ABANDONNEE,
 ]);
 
 sejourStore.currentDemande = null;
