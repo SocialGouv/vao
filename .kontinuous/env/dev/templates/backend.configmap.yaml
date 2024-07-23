@@ -11,7 +11,7 @@ data:
   FRONTEND_BO_URL: "https://bo-{{ .Values.global.host }}"
   SENDER_EMAIL: "nepasrepondre@vao.social.gouv.fr"
   SENTRY_DSN: "https://1c2b442e895c454c847d24182f8b1e90@sentry.fabrique.social.gouv.fr/102"
-  SENTRY_ENABLED: "false"
+  SENTRY_ENABLED: "true"
   SENTRY_ENVIRONMENT: development
   TMP_DIRECTORY: "/tmp"
   BACKEND_CRON_REQUEST_DS8J15J_NOTIFY_CRON: "*/15 * * * *"
