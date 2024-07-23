@@ -16,7 +16,7 @@ if (config.sentry.enabled) {
         },
       }),
     ],
-
+    release: config.sentry.release,
     tracesSampleRate: 1.0,
   });
 }

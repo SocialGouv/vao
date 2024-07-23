@@ -66,6 +66,7 @@ module.exports = {
     dsn: process.env.SENTRY_DSN,
     enabled: process.env.SENTRY_ENABLED === "true",
     environment: process.env.SENTRY_ENVIRONMENT,
+    release: process.env.SENTRY_RELEASE,
   },
   smtp: {
     auth: {
