@@ -6,7 +6,7 @@ exports.up = function (knex) {
   return knex.raw(`
     ALTER TABLE front.hebergement add organisme_id INTEGER;
     UPDATE front.hebergement h SET organisme_id = (
-      SELECT org_id 
+      SELECT DISTINCT org_id 
       FROM front.user_organisme uo 
       JOIN front.users u ON u.id = uo.use_id
       WHERE u.id = h.user_id
