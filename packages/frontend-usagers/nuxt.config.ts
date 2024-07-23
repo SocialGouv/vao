@@ -1,4 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+
 export default defineNuxtConfig({
   app: {
     head: {
@@ -56,4 +59,14 @@ export default defineNuxtConfig({
   },
   srcDir: "src",
   ssr: false,
+  vite: {
+    plugins: [
+      sentryVitePlugin({
+        authToken: process.env.SENTRY_AUTH_TOKEN,
+        org: process.env.SENTRY_ORG,
+        project: process.env.SENTRY_PROJECT,
+        url: process.env.SENTRY_URL,
+      }),
+    ],
+  },
 });

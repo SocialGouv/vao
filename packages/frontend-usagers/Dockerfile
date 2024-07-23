@@ -1,6 +1,10 @@
 ARG NODE_VERSION=20.15.1-bullseye-slim
 FROM node:${NODE_VERSION} AS builder
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && apt-get clean
+
 WORKDIR /app
 
 COPY package.json yarn.lock ./
@@ -17,6 +21,10 @@ ARG NUXT_PUBLIC_MATOMO_HOST
 ARG NUXT_PUBLIC_MATOMO_SITE_ID
 ARG NUXT_PUBLIC_SENTRY_DSN
 ARG NUXT_PUBLIC_SENTRY_ENABLED
+ARG SENTRY_RELEASE
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
+ARG SENTRY_URL
 
 ENV NUXT_PUBLIC_APP_VERSION=$NUXT_PUBLIC_APP_VERSION
 ENV NUXT_PUBLIC_BACKEND_URL=$NUXT_PUBLIC_BACKEND_URL
@@ -26,10 +34,18 @@ ENV NUXT_PUBLIC_MATOMO_HOST=$NUXT_PUBLIC_MATOMO_HOST
 ENV NUXT_PUBLIC_MATOMO_SITE_ID=$NUXT_PUBLIC_MATOMO_SITE_ID
 ENV NUXT_PUBLIC_SENTRY_DSN=$NUXT_PUBLIC_SENTRY_DSN
 ENV NUXT_PUBLIC_SENTRY_ENABLED=$NUXT_PUBLIC_SENTRY_ENABLED
+ENV NUXT_PUBLIC_SENTRY_RELEASE=$SENTRY_RELEASE
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
+ENV SENTRY_ORG=$SENTRY_ORG
+ENV SENTRY_PROJECT=$SENTRY_PROJECT
+ENV SENTRY_URL=$SENTRY_URL
 
 COPY packages/shared packages/shared
 COPY packages/frontend-usagers packages/frontend-usagers
-RUN yarn workspace @vao/frontend-usagers generate
+
+RUN --mount=type=secret,id=sentry_auth_token \
+    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \ 
+    && yarn workspace @vao/frontend-usagers generate
 
 
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.3
