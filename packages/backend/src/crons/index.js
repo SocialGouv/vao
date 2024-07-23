@@ -16,7 +16,7 @@ module.exports.stop = function stop() {
 
 module.exports.start = function start() {
   log.i("Starting crons...");
-  
+
   UsagerNotify.start();
   UpdateStatut.start();
 
