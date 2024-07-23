@@ -8,7 +8,7 @@ const log = logger(module.filename);
 const query = {
   create: `
     INSERT INTO front.hebergement(
-      user_id, 
+      organisme_id, 
       nom,  
       coordonnees,
       informations_locaux,
@@ -17,7 +17,7 @@ const query = {
       edited_at
     )
     VALUES (
-      $1, 
+      (SELECT org_id FROM front.user_organisme WHERE use_id = $1), 
       $2, 
       $3, 
       $4, 
@@ -52,9 +52,9 @@ const query = {
       supprime,
       created_at as "createdAt",
       edited_at as "editedAt"
-    FROM front.hebergement 
-    WHERE 
-      user_id = $1
+    FROM front.hebergement h
+    JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
+    WHERE uo.use_id = $1
     `,
   update: `
     UPDATE front.hebergement
