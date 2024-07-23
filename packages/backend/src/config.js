@@ -33,7 +33,6 @@ module.exports = {
         cron: process.env.BACKEND_CRON_UPDATE_STATUT_DS_CRON,
         name: "UPDATE_STATUT_DS",
       },
-
     },
   },
   domain: process.env.BACKEND_URL,
@@ -67,6 +66,7 @@ module.exports = {
     dsn: process.env.SENTRY_DSN,
     enabled: process.env.SENTRY_ENABLED === "true",
     environment: process.env.SENTRY_ENVIRONMENT,
+    release: process.env.SENTRY_RELEASE,
   },
   smtp: {
     auth: {

@@ -65,6 +65,8 @@ backend:
         secretKeyRef:
           name: pg-app
           key: PGDATABASE
+    - name: SENTRY_RELEASE
+      value: "{{.Values.global.branchSlug32}}"
 
 frontend-usagers:
   ~chart: app
