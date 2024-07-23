@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div>{{ props.typePrecision }}</div>
-    <pre v-if="props.commentaire">{{ props.commentaire }}</pre>
+    <span v-if="props.commentaire">{{ props.commentaire }}</span>
   </div>
 </template>
 
@@ -19,5 +19,6 @@ const props = defineProps({
   align-items: start;
   justify-content: center;
   height: 100%;
+  white-space: pre-line;
 }
 </style>

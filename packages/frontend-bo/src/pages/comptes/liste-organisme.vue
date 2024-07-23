@@ -87,8 +87,7 @@
 <script setup>
 import dayjs from "dayjs";
 definePageMeta({
-  middleware: ["is-connected", "check-role"],
-  roles: ["Compte"],
+  middleware: ["is-connected"],
 });
 import { useUserStore } from "~/stores/user";
 const usersStore = useUserStore();
