@@ -1,7 +1,8 @@
 <template>
   <div class="fr-container">
     <h1 class="header">
-      Liste des séjours déclarés ({{ sejourStore.countGlobal }})
+      Liste des séjours déclarés
+      {{ props.organisme ? "" : `(${sejourStore.countGlobal})` }}
     </h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
