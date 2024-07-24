@@ -13,6 +13,9 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     countTransmis: 0,
     countEncCours: 0,
     countTransmis8j: 0,
+    hebergements: [],
+    hebergementsCount: 0,
+    isGetHebergementsLoading: false,
   }),
   actions: {
     async fetchDemandes({ limit, offset, sortBy, sortDirection, search } = {}) {
@@ -113,6 +116,31 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         log.w("fetchMessages - DONE with error", err);
         this.messages = null;
         throw err;
+      }
+    },
+
+    async getHebergements(params = {}) {
+      log.i("getHebergements - IN");
+      this.isGetHebergementsLoading = true;
+      try {
+        const { hebergements, count } = await $fetchBackend(
+          "/sejour/admin/hebergements",
+          {
+            method: "GET",
+            credentials: "include",
+            params,
+          },
+        );
+        log.i("getHebergements - DONE");
+        this.hebergements = hebergements;
+        this.hebergementsCount = count;
+      } catch (err) {
+        log.w("getHebergements - DONE with error", err);
+        this.hebergements = [];
+        this.hebergementsCount = 0;
+        throw err;
+      } finally {
+        this.isGetHebergementsLoading = false;
       }
     },
   },
