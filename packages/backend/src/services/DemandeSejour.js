@@ -941,17 +941,11 @@ module.exports.getHebergementsByDepartementCodes = async (
   params,
 ) => {
   log.i("getHebergementsByDepartementCodes - IN");
-  console.log(params);
-  try {
-    const { rows } = await pool.query(
-      ...query.getHebergementsByDepartementCodes(departementsCodes, params),
-    );
-    log.d("getHebergementsByDepartementCodes - DONE");
-    return rows[0];
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const { rows } = await pool.query(
+    ...query.getHebergementsByDepartementCodes(departementsCodes, params),
+  );
+  log.d("getHebergementsByDepartementCodes - DONE");
+  return rows[0];
 };
 
 module.exports.getStatut = async (declarationId) => {

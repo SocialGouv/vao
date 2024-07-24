@@ -22,7 +22,6 @@ router.get("/debug-sentry", async function mainHandler(req, res, next) {
 
     // Add db calls in trace. Show traces and n+1 SQL problem
     const organismes = await Organisme.get();
-    console.log(organismes.length);
 
     const demandesPromises = organismes.map((organisme) => {
       return DemandeSejour.get([organisme.organismeId]);
