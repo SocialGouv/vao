@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
 import { sentryVitePlugin } from "@sentry/vite-plugin";
+import commonjs from "vite-plugin-commonjs";
 
 export default defineNuxtConfig({
   app: {
@@ -67,6 +68,7 @@ export default defineNuxtConfig({
         project: process.env.SENTRY_PROJECT,
         url: process.env.SENTRY_URL,
       }),
+      commonjs(),
     ],
   },
 });

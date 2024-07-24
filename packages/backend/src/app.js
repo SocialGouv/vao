@@ -35,6 +35,7 @@ const routes = require("./routes");
 const logger = require("./utils/logger");
 const AppError = require("./utils/error");
 const ValidationAppError = require("./utils/validation-error");
+const { hello } = require("@vao/common");
 
 const log = logger(module.filename);
 
@@ -70,7 +71,7 @@ app.use(
 app.use(cookieParser());
 
 app.get("", (req, res) => {
-  res.send("Bienvenue sur le server du portail Front");
+  res.send("Bienvenue sur le server du portail Front: " + hello());
 });
 
 app.use(`/bo-authentication`, routes.BOAuthentication);
