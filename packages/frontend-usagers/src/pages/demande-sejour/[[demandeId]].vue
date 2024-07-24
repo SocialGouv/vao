@@ -182,7 +182,7 @@
           v-if="historique"
           :historique="historique.historique ?? []"
         ></DSHistorique>
-        <DsfrAlert v-else-if="error" type="error"
+        <DsfrAlert v-else-if="errorHistorique" type="error"
           >Une erreur est survenue durant la récupération de l'historique de la
           déclaration
         </DsfrAlert>
@@ -196,7 +196,7 @@
         <div v-if="demandeCourante.statut !== 'BROUILLON'">
           <Chat
             ref="chatRef"
-            :messages="demandeSejourStore.messages"
+            :messages="demandeSejourStore.messages ?? []"
             :backend-url="`${config.public.backendUrl}/documents/`"
             :is-loading="isSendingMessage"
             @send="sendMessage"
@@ -208,6 +208,17 @@
             BROUILLON
           </DsfrAlert>
         </div>
+      </DsfrTabContent>
+      <DsfrTabContent
+        panel-id="declaration-sejour-content-4"
+        tab-id="declaration-sejour-4"
+        :selected="selectedTabIndex === 4"
+        :asc="asc"
+      >
+        <DSEigs v-if="eigs" :eigs="eigs.eigs" :ds="demandeCourante" />
+        <DsfrAlert v-else-if="errorEigs" type="error"
+          >Une erreur est survenue durant la récupération des eig
+        </DsfrAlert>
       </DsfrTabContent>
     </DsfrTabs>
   </div>
@@ -274,9 +285,19 @@ if (route.params.demandeId) {
 
 const {
   data: historique,
-  error,
-  execute,
+  error: errorHistorique,
+  execute: executeHistorique,
 } = useFetchBackend(`/sejour/historique/${route.params.demandeId}`, {
+  immediate: false,
+  method: "GET",
+  credentials: "include",
+});
+
+const {
+  data: eigs,
+  error: errorEigs,
+  execute: executeEig,
+} = useFetchBackend(`/eig/ds/${route.params.demandeId}`, {
   immediate: false,
   method: "GET",
   credentials: "include",
@@ -286,7 +307,10 @@ const selectTab = (idx) => {
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
   if (idx === 2 && !historique.value) {
-    execute();
+    executeHistorique();
+  }
+  if (idx === 4 && !eigs.value) {
+    executeEig();
   }
 };
 
@@ -297,6 +321,7 @@ const tabTitles = computed(() => [
   { title: "Documents joints" },
   ...(sejourId.value ? [{ title: "Historique de la déclaration" }] : []),
   ...(sejourId.value ? [{ title: "Messagerie" }] : []),
+  ...(sejourId.value ? [{ title: "EIG" }] : []),
 ]);
 
 const sommaireOptions = demandeSejourMenus
