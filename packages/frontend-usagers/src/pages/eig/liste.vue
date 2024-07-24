@@ -84,7 +84,7 @@
     />
     <fieldset class="fr-fieldset">
       <DsfrButton>
-        <NuxtLink to="/eig"> Déclarer un nouveau séjour</NuxtLink>
+        <NuxtLink to="/eig"> Déclarer un EIG</NuxtLink>
       </DsfrButton>
     </fieldset>
   </div>
