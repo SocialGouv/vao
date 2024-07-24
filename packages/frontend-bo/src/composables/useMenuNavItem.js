@@ -65,6 +65,10 @@ export const useMenuNavItems = () => {
               text: "Informations",
               to: "/informations",
             },
+            {
+              text: "Hébergements",
+              to: "/hebergements",
+            },
           ]
         : []),
     ];
