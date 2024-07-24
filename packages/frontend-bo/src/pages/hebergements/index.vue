@@ -87,6 +87,7 @@ const headers = [
     column: "reglementation_erp",
     text: "Réglementation erp",
     sort: true,
+    format: (row) => (row.reglementation_erp ? 'Oui' : 'Non'),
   },
 ];
 
