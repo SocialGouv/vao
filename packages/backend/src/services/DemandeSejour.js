@@ -423,6 +423,55 @@ LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 WHERE ((${departementQuery})
   AND statut <> 'BROUILLON'
   OR a.region_obtention = '${territoireCode}')`,
+  getHebergementsByDepartementCodes: (
+    departementCodes,
+    { search, limit, offset, order, sort },
+  ) => [
+    `
+  WITH filtered_hebergements AS (
+    SELECT
+      ds.id AS demande_sejour_id,
+      ds.date_debut as date_sejour,
+      ds.departement_suivi as departement,
+      h.hebergement ->> 'nom' AS nom,
+      h.hebergement ->> 'dateFin' AS date_fin,
+      h.hebergement ->> 'dateDebut' AS date_debut,
+      h.hebergement -> 'coordonnees' ->> 'email' AS email,
+      h.hebergement -> 'coordonnees' ->> 'numTelephone1' AS telephone,
+      h.hebergement -> 'coordonnees' ->> 'nomGestionnaire' AS nom_gestionnaire,
+      h.hebergement -> 'coordonnees' -> 'adresse'  AS adresse,
+      h.hebergement -> 'informationsLocaux' ->> 'type' AS type_hebergement,
+      h.hebergement -> 'informationsLocaux' ->> 'visiteLocauxAt' AS date_visite,
+      h.hebergement -> 'informationsLocaux' ->> 'reglementationErp' AS reglementation_erp
+    FROM 
+      front.demande_sejour ds,
+      jsonb_array_elements(ds.hebergement -> 'hebergements') AS h(hebergement)
+    WHERE 
+      ds.statut <> 'BROUILLON'
+      AND h.hebergement -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($1)
+      AND (
+        h.hebergement ->> 'nom' ILIKE '%' || $2 || '%' OR
+        h.hebergement -> 'coordonnees' ->> 'email' ILIKE '%' || $2 || '%' OR
+        h.hebergement -> 'coordonnees' -> 'adresse' ->> 'label' ILIKE '%' || $2 || '%'
+      )
+    ORDER BY ${sort} ${order}
+  ),
+  total_count AS (
+    SELECT COUNT(*) AS count FROM filtered_hebergements
+  ),
+  paged_hebergements AS (
+    SELECT * FROM filtered_hebergements
+    LIMIT $3 OFFSET $4
+  )
+  SELECT 
+    jsonb_build_object(
+        'total_count', (SELECT count FROM total_count),
+        'hebergements', jsonb_agg(ph.*)
+    ) AS data
+  FROM paged_hebergements AS ph;
+  `,
+    [departementCodes, search, limit, offset],
+  ],
   getNextIndex: `
 SELECT nextval('front.seq_declaration_sejour') AS index
 `,
@@ -871,6 +920,24 @@ module.exports.getById = async (declarationId, departements) => {
 
   log.i("getById - DONE");
   return declarations[0];
+};
+
+module.exports.getHebergementsByDepartementCodes = async (
+  departementsCodes,
+  params,
+) => {
+  log.i("getHebergementsByDepartementCodes - IN");
+  console.log(params);
+  try {
+    const { rows } = await pool.query(
+      ...query.getHebergementsByDepartementCodes(departementsCodes, params),
+    );
+    log.d("getHebergementsByDepartementCodes - DONE");
+    return rows[0];
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };
 
 module.exports.getStatut = async (declarationId) => {
