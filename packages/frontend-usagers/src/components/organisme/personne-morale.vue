@@ -499,7 +499,9 @@ const formatedEtablissements = computed(() => {
         new RegExp(etablissementFilter.value.commune, "i").test(e.commune) &&
         (etablissementFilter.value.autorisation === "Tous"
           ? "true"
-          : etablissementFilter.value.autorisation === e.etatAdministratif),
+          : (etablissementFilter.value.autorisation === "En activité" &&
+              e.enabled) ||
+            (etablissementFilter.value.autorisation === "Fermé" && !e.enabled)),
     )
     .map((e) => {
       const row = [
