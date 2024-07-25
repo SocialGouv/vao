@@ -193,7 +193,6 @@
         :asc="asc"
       >
         <div v-if="demandeCourante.statut !== 'BROUILLON'">
-          {{ demandeCourante.statut }}
           <Chat
             ref="chatRef"
             :messages="demandeSejourStore.messages"
