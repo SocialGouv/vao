@@ -1,0 +1,21 @@
+{
+  "name": "@vao/common",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "lint": "eslint --fix ./src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "sourceType": "module",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.3.3"
+  }
+}

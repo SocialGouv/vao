@@ -19,6 +19,7 @@
     "@sentry/vue": "~8.17.0",
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.2.1",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
+    "@vao/common": "^1.0.0",
     "@vao/shared": "^1.0.0",
     "@vee-validate/i18n": "~4.13.0",
     "@vee-validate/rules": "~4.13.0",
@@ -46,7 +47,8 @@
     "prettier": "^3.2.5",
     "sass": "~1.77.0",
     "sass-loader": "~14.2.0",
-    "typescript": "~5.4.3"
+    "typescript": "~5.4.3",
+    "vite-plugin-commonjs": "^0.10.1"
   },
   "lint-staged": {
     "src/**/*.{js,vue,ts}": "npx eslint --cache --fix"

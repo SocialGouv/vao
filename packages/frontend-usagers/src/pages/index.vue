@@ -1,7 +1,10 @@
 <template>
   <div class="fr-container">
     <div class="fr-grid-row fr-py-5w">
-      <h3>Bienvenue {{ userStore.user.prenom }} {{ userStore.user.nom }}</h3>
+      <h3>
+        Bienvenue {{ userStore.user.prenom }} {{ userStore.user.nom }}
+        {{ hello() }}
+      </h3>
     </div>
     <div
       v-if="!organismeCourant || !organismeCourant.complet"
@@ -36,6 +39,8 @@ useHead({
   title: "Accueil | Vacances Adaptées Organisées",
   meta: [{ name: "description", content: "Page d'accueil." }],
 });
+
+const { hello } = require("@vao/common");
 
 const userStore = useUserStore();
 const organismeStore = useOrganismeStore();
