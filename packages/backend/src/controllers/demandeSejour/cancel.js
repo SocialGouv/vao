@@ -12,8 +12,8 @@ module.exports = async function cancel(req, res, next) {
   const { id: userId } = req.decoded;
 
   log.i("IN", { demandeSejourId });
-  let declaration
-  let canceletedRows
+  let declaration;
+  let canceletedRows;
   try {
     declaration = await DemandeSejour.getOne({
       "ds.id": demandeSejourId,
@@ -35,45 +35,44 @@ module.exports = async function cancel(req, res, next) {
       statuts.ATTENTE_8_JOUR,
       statuts.TRANSMISE_8J,
       statuts.EN_COURS_8J,
-      statuts.A_MODIFIER_8J
+      statuts.A_MODIFIER_8J,
     ];
-    
-    if (!statutsCancellable.includes(declaration.statut)) { 
-        log.w("DONE with error");
-        return next(
-          new AppError(
-            "Impossible d'annuler une demande qui n'est pas au bon statut",
-            {
-              statusCode: 400,
-            },
-          ),
-        );
-      }
-      canceletedRows = await DemandeSejour.cancel(declaration.id, userId);
-      if (canceletedRows !== 1) {
-        log.w(`DONE with error, ${canceletedRows} rows were updated, expected one `);
-        return next(
-          new AppError(
-            "Erreur de l'annulation, trop de lignes mises à jour ou pas assez",
-            {
-              statusCode: 400,
-            },
-          ),
-        );
-      }
-      else
-      {
-        await DemandeSejour.insertEvent(
-          "Organisateur",
-          declaration.id,
-          userId,
-          null,
-          "declaration_sejour",
-          "Annulation de la déclaration",
-          declaration,
-        );
-      }
 
+    if (!statutsCancellable.includes(declaration.statut)) {
+      log.w("DONE with error");
+      return next(
+        new AppError(
+          "Impossible d'annuler une demande qui n'est pas au bon statut",
+          {
+            statusCode: 400,
+          },
+        ),
+      );
+    }
+    canceletedRows = await DemandeSejour.cancel(declaration.id, userId);
+    if (canceletedRows !== 1) {
+      log.w(
+        `DONE with error, ${canceletedRows} rows were updated, expected one `,
+      );
+      return next(
+        new AppError(
+          "Erreur de l'annulation, trop de lignes mises à jour ou pas assez",
+          {
+            statusCode: 400,
+          },
+        ),
+      );
+    } else {
+      await DemandeSejour.insertEvent(
+        "Organisateur",
+        declaration.id,
+        userId,
+        null,
+        "declaration_sejour",
+        "Annulation de la déclaration",
+        declaration,
+      );
+    }
   } catch (err) {
     log.w(err);
     return next(
@@ -91,7 +90,7 @@ module.exports = async function cancel(req, res, next) {
       const departements = declaration.hebergement.hebergements.map(
         (h) => h.coordonnees.adresse.departement,
       );
-      if (destinatairesBack.length>0) {
+      if (destinatairesBack.length > 0) {
         await Send(
           MailUtils.bo.declarationSejour.sendDeclarationCanceled({
             declaration,
@@ -103,7 +102,6 @@ module.exports = async function cancel(req, res, next) {
           }),
         );
       }
-
     }
   } catch (error) {
     log.w(error);
@@ -134,5 +132,5 @@ module.exports = async function cancel(req, res, next) {
   } catch (error) {
     log.w("DONE with error");
     return next(error);
-  }  
+  }
 };

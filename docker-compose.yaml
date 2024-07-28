@@ -3,16 +3,14 @@ volumes:
 
 services:
   frontend-usagers:
-    build:
-      context: packages/frontend-usagers
-      dockerfile: Dockerfile.local
+    image: "node:20.15.1-bullseye-slim"
     working_dir: /app
-    command: /app/entrypoint.sh
+    command: bash -c "/app/packages/frontend-usagers/start.sh"
     volumes:
-      - $PWD/packages/frontend-usagers:/app:delegated
-      - $HOME/.ssh:/home/node/.ssh:ro
-      - $HOME/.gitconfig:/home/node/.gitconfig:ro
-      - $HOME/.npm:/home/node/.npm:delegated
+      - $PWD:/app:delegated
+    depends_on:
+      backend:
+        condition: service_started
     env_file:
       - ./.env
     environment:
@@ -26,18 +24,17 @@ services:
       NUXT_PUBLIC_SENTRY_ENABLED: ${FRONTEND_USAGERS_SENTRY_ENABLED}
     ports:
       - 3000:3000
+    user: 1000:1000
 
   frontend-bo:
-    build:
-      context: packages/frontend-bo
-      dockerfile: Dockerfile.local
+    image: "node:20.15.1-bullseye-slim"
     working_dir: /app
-    command: /app/entrypoint.sh
+    command: bash -c "/app/packages/frontend-bo/start.sh"
     volumes:
-      - $PWD/packages/frontend-bo:/app:delegated
-      - $HOME/.ssh:/home/node/.ssh:ro
-      - $HOME/.gitconfig:/home/node/.gitconfig:ro
-      - $HOME/.npm:/home/node/.npm:delegated
+      - $PWD:/app:delegated
+    depends_on:
+      backend:
+        condition: service_started
     env_file:
       - ./.env
     environment:
@@ -51,18 +48,14 @@ services:
       DEBUG: info:vao*
     ports:
       - 3001:3000
+    user: 1000:1000
 
   backend:
-    build:
-      context: packages/backend
-      dockerfile: Dockerfile.local
+    image: "node:20.15.1-bullseye-slim"
     working_dir: /app
-    command: /app/entrypoint.sh
+    command: bash -c "/app/packages/backend/start.sh"
     volumes:
-      - $PWD/packages/backend:/app:delegated
-      - $HOME/.ssh:/home/node/.ssh:ro
-      - $HOME/.gitconfig:/home/node/.gitconfig:ro
-      - $HOME/.npm:/home/node/.npm:delegated
+      - $PWD:/app:delegated
     depends_on:
       postgres:
         condition: service_started
@@ -78,21 +71,19 @@ services:
       TMP_DIRECTORY: ${BACKEND_TMP_DIRECTORY}
     ports:
       - 3010:3000
+    user: 1000:1000
 
   migrations:
-    build:
-      context: packages/migrations
-      dockerfile: Dockerfile.local
+    image: "node:20.15.1-bullseye-slim"
     working_dir: /app
+    command: bash -c "/app/packages/migrations/start.sh"
     volumes:
-      - $PWD/packages/migrations:/app:delegated
-      - $HOME/.ssh:/home/node/.ssh:ro
-      - $HOME/.gitconfig:/home/node/.gitconfig:ro
-      - $HOME/.npm:/home/node/.npm:delegated
+      - $PWD:/app:delegated
     depends_on:
       - postgres
     env_file:
       - ./.env
+    user: 1000:1000
 
   postgres:
     image: postgres:15.1

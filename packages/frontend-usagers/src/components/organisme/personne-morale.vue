@@ -214,7 +214,7 @@
       </DsfrFieldset>
       <DsfrFieldset
         v-if="siegeSocial"
-        :legend="`Etablissements secondaires (${etablissements.length})`"
+        :legend="`Etablissements secondaires (${etablissements.length}) dont ${formatedEtablissements.length} actifs`"
       >
         <fieldset class="fr-fieldset">
           <div
@@ -259,6 +259,18 @@
               />
             </div>
           </div>
+          <div
+            class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
+          >
+            <div class="fr-input-group">
+              <DsfrSelect
+                v-model="etablissementFilter.autorisation"
+                label="Autorisation"
+                name="Autorisation"
+                :options="['Tous', 'En activité', 'Fermé']"
+              />
+            </div>
+          </div>
         </fieldset>
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
@@ -269,7 +281,6 @@
                 'Adresse',
                 'Code postal',
                 'Commune',
-                'État',
                 'Autorisé à organiser des séjours ?',
               ]"
               :rows="formatedEtablissements"
@@ -375,6 +386,7 @@ const etablissementFilter = ref({
   siret: "",
   denomination: "",
   commune: "",
+  autorisation: "Tous",
 });
 
 const initialValues = {
@@ -484,7 +496,12 @@ const formatedEtablissements = computed(() => {
         new RegExp(etablissementFilter.value.denomination, "i").test(
           e.denomination,
         ) &&
-        new RegExp(etablissementFilter.value.commune, "i").test(e.commune),
+        new RegExp(etablissementFilter.value.commune, "i").test(e.commune) &&
+        (etablissementFilter.value.autorisation === "Tous"
+          ? "true"
+          : (etablissementFilter.value.autorisation === "En activité" &&
+              e.enabled) ||
+            (etablissementFilter.value.autorisation === "Fermé" && !e.enabled)),
     )
     .map((e) => {
       const row = [
@@ -493,7 +510,6 @@ const formatedEtablissements = computed(() => {
         e.adresse ?? "",
         e.codePostal ?? "",
         e.commune ?? "",
-        e.etatAdministratif ?? "",
         {
           component: "DsfrToggleSwitch",
           modelValue: e.enabled,

@@ -1,5 +1,26 @@
 maildev: {}
 
+pgweb:
+  ~chart: pgweb
+  pgweb:
+    env:
+      - name: PGWEB_DATABASE_URL
+        valueFrom:
+          secretKeyRef:
+            name: pg-app
+            key: DATABASE_URL
+    ingress:
+      enabled: false
+    oauth2-proxy:
+      enabled: true
+      host: pgweb-{{ .Values.global.host }}
+      config:
+        OAUTH2_PROXY_GITHUB_ORG: "SocialGouv"
+        OAUTH2_PROXY_GITHUB_TEAM: "admins-vao,sre"
+      envFrom:
+        - secretRef:
+            name: oauth2-proxy
+
 pg:
   backup:
     name: "202407181635" # backup on a new folder

@@ -125,10 +125,7 @@ const displayable = computed(() => {
           return header.component(item);
         }
         const data = header.format ? header.format(item) : item[header.column];
-        return {
-          text: data?.toString() ?? "",
-          ...(props.onClickCell && {}),
-        };
+        return data?.toString() ?? "";
       }),
     };
   });

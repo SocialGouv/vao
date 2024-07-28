@@ -4,6 +4,7 @@
     <div class="fr-col-12 fr-mb-3w badge">
       <DsfrAlert
         v-if="isOrganismeNonAgree"
+        role="alert"
         title="Organisme non agréé"
         :description="isOrganismeNonAgree"
         type="error"
@@ -31,7 +32,10 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
-        <DemandesSejourDocuments :declaration="demandeStore.currentDemande" />
+        <DemandesSejourDocuments
+          :declaration="demandeStore.currentDemande"
+          :messages="demandeStore.messages ?? []"
+        />
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="tab-content-2"
@@ -43,10 +47,24 @@
           v-if="historique"
           :historique="historique.historique ?? []"
         />
-        <DsfrAlert v-else-if="error" type="error"
+        <DsfrAlert v-else-if="error" type="error" role="error"
           >Une erreur est survenue durant la récupération de l'historique de la
           déclaration
         </DsfrAlert>
+      </DsfrTabContent>
+      <DsfrTabContent
+        panel-id="tab-content-3"
+        tab-id="tab-3"
+        :selected="selectedTabIndex === 3"
+        :asc="asc"
+      >
+        <Chat
+          ref="chatRef"
+          :messages="demandeStore.messages"
+          :backend-url="`${config.public.backendUrl}/documents/`"
+          :is-loading="isSendingMessage"
+          @send="sendMessage"
+        />
       </DsfrTabContent>
     </DsfrTabs>
     <div
@@ -151,8 +169,8 @@
 
 <script setup>
 import dayjs from "dayjs";
+import { Chat } from "@vao/shared";
 import { useIsDownloading } from "~/composables/useIsDownloading";
-import { DsfrTabContent, DsfrTabs } from "@gouvminint/vue-dsfr";
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],
@@ -167,8 +185,11 @@ const route = useRoute();
 
 const initialSelectedIndex = 0;
 
+const chatRef = ref(null);
 const asc = ref(true);
 const selectedTabIndex = ref(initialSelectedIndex);
+
+const config = useRuntimeConfig();
 
 const selectTab = (idx) => {
   asc.value = selectedTabIndex.value < idx;
@@ -207,15 +228,59 @@ const isOrganismeNonAgree = computed(() => {
 onMounted(async () => {
   try {
     await demandeStore.setCurrentDemande(route.params.demandeId);
+    fetchMessages();
   } catch (e) {
     navigateTo("/sejours");
   }
 });
 
+const isSendingMessage = ref(false);
+
+const sendMessage = async ({ message, file }) => {
+  let newFile;
+  isSendingMessage.value = true;
+  if (file) {
+    try {
+      const uuid = await UploadFile("message", file);
+      newFile = {
+        uuid,
+        name: file.name ?? "document_messagerie",
+        createdAt: new Date(),
+      };
+      toaster.info(`Document déposé`);
+    } catch (error) {
+      log.w(error);
+      return toaster.error(
+        `Une erreur est survenue lors du dépôt du document ${file.name}`,
+      );
+    }
+  }
+  try {
+    const url = `/message/admin/${route.params.demandeId}`;
+    const response = await $fetchBackend(url, {
+      method: "POST",
+      credentials: "include",
+      body: { message: message ?? "", file: newFile },
+    });
+    if (response.id) {
+      chatRef.value.resetForm();
+    }
+    isSendingMessage.value = false;
+  } catch (error) {
+    isSendingMessage.value = false;
+    log.w("envoi de message : ", { error });
+    return toaster.error(
+      `Une erreur est survenue lors de l'envoi de votre message`,
+    );
+  }
+  fetchMessages();
+};
+
 const tabTitles = [
   { title: " Formulaire" },
   { title: "Documents joints" },
   { title: "Historique de la déclaration" },
+  { title: "Messagerie" },
 ];
 
 const modalComplement = reactive({
@@ -230,6 +295,9 @@ const modalEnregistrement2Mois = reactive({
   opened: false,
 });
 
+const fetchMessages = () => {
+  demandeStore.fetchMessages(route.params.demandeId);
+};
 const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
 };

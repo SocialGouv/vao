@@ -10,10 +10,7 @@
       <span>Aucun document joint à la demande</span>
     </div>
   </DsfrFieldset>
-  <DsfrFieldset
-    legend="Documents téléversés par l'organisateur"
-    legend-id="doc_televerses"
-  >
+  <DsfrFieldset legend="Documents téléversés" legend-id="doc_televerses">
     <div v-if="filesTeleverses.length > 0">
       <UtilsTableFull
         :headers="headers"
@@ -33,6 +30,7 @@ const config = useRuntimeConfig();
 const NuxtLink = resolveComponent("NuxtLink");
 const props = defineProps({
   declaration: { type: Object, required: true },
+  messages: { type: Array, required: false, default: null },
 });
 
 const headers = [
@@ -144,6 +142,18 @@ const filesTeleverses = computed(() => {
         }
       }
     }
+  }
+  if (props.messages) {
+    props.messages.map((m) => {
+      if (m.file && m.file.uuid) {
+        files.push({
+          name: m.file.name ?? "fichier",
+          type: "fichiers de messagerie ",
+          createdAt: m.file.createdAt,
+          uuid: m.file.uuid,
+        });
+      }
+    });
   }
   return files;
 });

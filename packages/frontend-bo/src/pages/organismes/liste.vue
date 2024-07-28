@@ -76,8 +76,7 @@
 <script setup>
 import dayjs from "dayjs";
 definePageMeta({
-  middleware: ["is-connected", "check-role"],
-  roles: ["Compte"],
+  middleware: ["is-connected"],
 });
 import { useOrganismeStore } from "~/stores/organisme";
 import { useRegionStore } from "~/stores/referentiels";

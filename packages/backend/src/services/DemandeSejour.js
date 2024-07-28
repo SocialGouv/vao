@@ -26,6 +26,19 @@ const query = {
     WHERE id = $1
     RETURNING id as "declarationId"
   `,
+  cancel: (declarationId, userId) => [
+    `
+    UPDATE front.demande_sejour d
+    SET statut = 'ANNULEE' 
+    FROM front.organismes o, front.user_organisme uo
+    WHERE 
+      o.id = d.organisme_id 
+      AND uo.org_id = o.id
+      AND d.id = $1
+      AND uo.use_id = $2;
+    ;`,
+    [declarationId, userId],
+  ],
   copy: (
     organismeId,
     libelle,
@@ -138,19 +151,6 @@ const query = {
       AND uo.org_id = o.id
       AND d.id = $1
       AND uo.use_id = $2
-    ;`,
-    [declarationId, userId],
-  ],
-  cancel: (declarationId, userId) => [
-    `
-    UPDATE front.demande_sejour d
-    SET statut = 'ANNULEE' 
-    FROM front.organismes o, front.user_organisme uo
-    WHERE 
-      o.id = d.organisme_id 
-      AND uo.org_id = o.id
-      AND d.id = $1
-      AND uo.use_id = $2;
     ;`,
     [declarationId, userId],
   ],
@@ -331,6 +331,17 @@ WHERE
       params,
     ];
   },
+  getCount: (departementQuery, territoireCode) => `
+  SELECT
+    COUNT(CASE WHEN statut = 'EN COURS' THEN 1 END) AS count_en_cours,
+    COUNT(CASE WHEN statut = 'TRANSMISE' THEN 1 END) AS count_transmis,
+    COUNT(CASE WHEN statut = 'TRANSMISE 8J' THEN 1 END) AS count_transmis_8j,
+    COUNT(CASE WHEN statut <> 'BROUILLON' THEN 1 END) AS count_global
+  FROM front.demande_sejour ds
+      JOIN front.organismes o ON o.id = ds.organisme_id
+      LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+  where ((${departementQuery})
+      OR a.region_obtention = '${territoireCode}')`,
   getEmailBack: `
 WITH
   roles AS
@@ -398,6 +409,23 @@ JOIN front.user_organisme uo
   ON u.id = uo.use_id
 WHERE uo.org_id = $1
 `,
+  getExtract: (departementQuery, territoireCode) => `
+SELECT
+  ds.id as id,
+  ds.libelle as libelle,
+  ds.date_debut::text as date_debut,
+  ds.date_fin::text as date_fin,
+  ds.organisme as organisme,
+  ds.responsable_sejour->>'email' as responsable_sejour_email,
+  ds.responsable_sejour->>'telephone' as responsable_sejour_telephone,
+  ds.statut as statut,
+  ds.created_at as created_at
+FROM front.demande_sejour ds
+JOIN front.organismes o ON o.id = ds.organisme_id
+LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+WHERE ((${departementQuery})
+  AND statut <> 'BROUILLON'
+  OR a.region_obtention = '${territoireCode}')`,
   getNextIndex: `
 SELECT nextval('front.seq_declaration_sejour') AS index
 `,
@@ -716,6 +744,10 @@ module.exports.getByDepartementCodes = async (
 ) => {
   if (departementCodes && departementCodes.length === 0) {
     return {
+      count_en_cours: 0,
+      count_global: 0,
+      count_transmis: 0,
+      count_transmis_8j: 0,
       demandes_sejour: [],
       total: 0,
     };
@@ -772,6 +804,14 @@ module.exports.getByDepartementCodes = async (
     params,
   );
 
+  const countQueryDepartement = getDepartementWhereQuery(departementCodes, [
+    departementCodes,
+  ]);
+  const stats = await pool.query(
+    query.getCount(countQueryDepartement, territoireCode),
+    [departementCodes],
+  );
+
   // Order management
   if (sortBy && sortDirection) {
     queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, "createdAt" DESC`;
@@ -797,6 +837,10 @@ module.exports.getByDepartementCodes = async (
     return {
       demandes_sejour: response.rows,
       total: response.rowCount + parseInt(offset ?? 0),
+      ...Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
+        acc[key] = Number(value);
+        return acc;
+      }, {}),
     };
   }
 
@@ -813,6 +857,10 @@ module.exports.getByDepartementCodes = async (
   return {
     demandes_sejour: response.rows,
     total: total.rows.find((t) => t.count)?.count ?? 0,
+    ...Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
+      acc[key] = Number(value);
+      return acc;
+    }, {}),
   };
 };
 
@@ -1039,6 +1087,22 @@ module.exports.getEmailBackCc = async (departements) => {
   log.i("getEmailBackCc - DONE");
   return data.map((m) => m.mail);
 };
+
+module.exports.getExtract = async (territoireCode, departementCodes) => {
+  log.i("getExtract - IN");
+
+  const departementQuery = getDepartementWhereQuery(departementCodes, [
+    departementCodes,
+  ]);
+
+  const { rows: data } = await pool.query(
+    query.getExtract(departementQuery, territoireCode),
+    [departementCodes],
+  );
+  log.i("getExtract - DONE");
+  return data;
+};
+
 module.exports.insertEvent = async (
   source,
   declarationId,

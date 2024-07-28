@@ -20,6 +20,7 @@
               name="email"
               :label-visible="true"
               placeholder="Veuillez saisir votre email"
+              hint="Format attendu : nom@domaine.fr"
               :is-valid="emailField.isValid"
               @update:model-value="checkValidEmail"
             />
@@ -142,7 +143,7 @@
               name="nom"
               :label-visible="true"
               placeholder=""
-              hint="Veuillez saisir votre nom d'usage"
+              hint="Veuillez saisir votre nom d'usage. Exemple: Martin"
               :is-valid="nomField.isValid"
               @update:model-value="checkValidNom"
             />
@@ -160,7 +161,7 @@
               label="Prénom"
               name="prenom"
               :label-visible="true"
-              hint="Veuillez saisir votre prénom"
+              hint="Veuillez saisir votre prénom. Exemple: Jean"
               placeholder=""
               :is-valid="prenomField.isValid"
               @update:model-value="checkValidPrenom"
@@ -179,7 +180,7 @@
               label="Numéro de téléphone"
               name="telephone"
               :label-visible="true"
-              hint="Veuillez saisir votre numéro de téléphone"
+              hint="Veuillez saisir votre numéro de téléphone. Exemple: 0612345678"
               :is-valid="telephoneField.isValid"
               @update:model-value="checkValidTelephone"
             />

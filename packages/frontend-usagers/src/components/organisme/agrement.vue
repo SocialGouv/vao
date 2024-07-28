@@ -24,13 +24,14 @@
             <DsfrInputGroup
               name="numero"
               type="text"
-              hint="Numéro d’agrément figurant sur l’arrêté portant décision d’agrément"
+              hint="Numéro d’agrément figurant sur l’arrêté portant décision d’agrément. Exemple: AGR.001-2024-001"
               placeholder=""
               label="Numéro d'agrément “Vacances adaptées organisées”"
               :label-visible="true"
               :readonly="!props.modifiable"
               :model-value="numero"
               :is-valid="numeroMeta.valid"
+              required
               :error-message="numeroErrorMessage"
               @update:model-value="onNumeroChange"
             />
@@ -44,7 +45,7 @@
               name="dateObtention"
               type="date"
               label="Date d'obtention de l'agrément"
-              hint="Date d'obtention de l'agrément"
+              hint="Date d'obtention de l’agrément exemple: 08/20/2023"
               placeholder=""
               :readonly="!props.modifiable"
               :label-visible="true"
@@ -52,6 +53,7 @@
               :is-valid="dateObtentionMeta.valid"
               :error-message="dateObtentionErrorMessage"
               :max="dayjs().format('YYYY-MM-DD')"
+              required
               @update:model-value="onDateObtentionChange"
             />
           </div>
@@ -66,6 +68,7 @@
               label="Région d’obtention de l’agrément"
               :options="regionStore.regions"
               :disabled="!props.modifiable"
+              required
               :error-message="regionObtentionErrorMessage"
               @update:model-value="onRegionObtentionChange"
             />

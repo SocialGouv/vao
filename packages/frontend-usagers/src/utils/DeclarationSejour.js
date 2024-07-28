@@ -17,7 +17,6 @@ const statuts = {
   EN_COURS: "EN COURS",
   A_MODIFIER: "A MODIFIER",
   REFUSEE: "REFUSEE",
-  ATTENTE_HEBERGEMENT: "EN ATTENTE VALIDATION HEBERGEMENT",
   ATTENTE_8_JOUR: "EN ATTENTE DECLARATION 8 JOURS",
   TRANSMISE_8J: "TRANSMISE 8J",
   EN_COURS_8J: "EN COURS 8J",
@@ -25,6 +24,9 @@ const statuts = {
   VALIDEE_8J: "VALIDEE 8J",
   REFUSEE_8J: "REFUSEE 8J",
   ANNULEE: "ANNULEE",
+  ABANDONNEE: "ABANDONNEE",
+  SEJOUR_EN_COURS: "SEJOUR EN COURS",
+  TERMINEE: "TERMINEE",
 };
 
 const log = logger("utils/DeclarationSejour");
@@ -40,10 +42,7 @@ const isPost8Jour = (statut) =>
   ].includes(statut);
 
 const isUpdate8Jour = (statut) =>
-  [
-    statuts.ATTENTE_8_JOUR,
-    statuts.A_MODIFIER_8J,
-  ].includes(statut);
+  [statuts.ATTENTE_8_JOUR, statuts.A_MODIFIER_8J].includes(statut);
 
 function isSejourComplet(hebergements, dateDebut, dateFin) {
   log.d("isSejourComplet - IN", { hebergements, dateDebut, dateFin });
@@ -173,7 +172,6 @@ const schema = (dateDebut, dateFin, statut) => ({
   attestation: yup.object(attestationSchema),
 });
 
-
 const statusTagStates = {
   [statuts.EN_COURS]: "new",
   [statuts.EN_COURS_8J]: "new",
@@ -185,6 +183,7 @@ const statusTagStates = {
   [statuts.A_MODIFIER_8J]: "warning",
   [statuts.REFUSEE]: "error",
   [statuts.REFUSEE_8J]: "error",
+  [statuts.SEJOUR_EN_COURS]: "success",
 };
 
 const getSaison = (date) =>

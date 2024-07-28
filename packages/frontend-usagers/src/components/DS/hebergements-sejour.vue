@@ -9,21 +9,36 @@
     <div v-if="!nuiteeOpened">
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element fr-col-12">
+          <div>
+            <h4>Liste des hébergements sélectionnés</h4>
+            <DsfrTable :headers="headers" :rows="syntheseRows" />
+          </div>
+          <DsfrButton
+            v-if="props.modifiable"
+            label="Ajouter une fiche hébergement"
+            :disabled="isSejourComplet"
+            @click.prevent="onOpenNuitee"
+          />
+        </div>
+      </fieldset>
+
+      <fieldset class="fr-fieldset">
+        <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
               name="sejourItinerant"
               legend="Séjour itinerant"
-              :disabled="!props.modifiable"
-              :model-value="sejourItinerant"
+              disabled
+              :model-value="hebergements.length > 1"
               :options="ouiNonOptions"
-              :is-valid="sejourItinerantMeta"
               :inline="true"
-              :error-message="sejourItinerantErrorMessage"
-              @update:model-value="onSejourItinerantChange"
             />
           </div>
         </div>
-        <div v-if="sejourItinerant" class="fr-fieldset__element fr-col-12">
+        <div
+          v-if="hebergements.length > 1"
+          class="fr-fieldset__element fr-col-12"
+        >
           <div class="fr-input-group">
             <DsfrRadioButtonSet
               name="sejourEtranger"
@@ -37,26 +52,6 @@
               @update:model-value="onSejourEtrangerChange"
             />
           </div>
-        </div>
-      </fieldset>
-      <fieldset class="fr-fieldset">
-        <div class="fr-fieldset__element fr-col-12">
-          <div>
-            <h4>Liste des hébergements sélectionnés</h4>
-            <DsfrHighlight
-              v-if="!!sejourItinerant"
-              text="Pour un séjour itinérant, ajouter autant de fiches que de lieu d’hébergement"
-              :small="false"
-              :large="true"
-            />
-            <DsfrTable :headers="headers" :rows="syntheseRows" />
-          </div>
-          <DsfrButton
-            v-if="props.modifiable"
-            label="Ajouter une fiche hébergement"
-            :disabled="isSejourComplet"
-            @click.prevent="onOpenNuitee"
-          />
         </div>
       </fieldset>
 
@@ -118,7 +113,6 @@ const validationSchema = computed(() => {
 });
 
 const initialValues = {
-  sejourItinerant: props.hebergement.sejourItinerant ?? false,
   sejourEtranger: props.hebergement.sejourEtranger ?? false,
   hebergements: props.hebergement.hebergements ?? [],
 };
@@ -128,12 +122,6 @@ const { meta, values } = useForm({
   validationSchema,
 });
 
-const {
-  value: sejourItinerant,
-  errorMessage: sejourItinerantErrorMessage,
-  handleChange: onSejourItinerantChange,
-  meta: sejourItinerantMeta,
-} = useField("sejourItinerant");
 const {
   value: sejourEtranger,
   errorMessage: sejourEtrangerErrorMessage,
@@ -283,6 +271,7 @@ async function next() {
   }
   const data = {
     ...toRaw(values),
+    sejourItinerant: hebergements.value.length > 1,
     nombreHebergements: hebergements.value.length,
   };
   emit("update", data, "hebergements");

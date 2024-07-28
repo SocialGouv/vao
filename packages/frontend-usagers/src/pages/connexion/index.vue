@@ -26,6 +26,7 @@
                     <div v-if="displayType" class="fr-grid-row">
                       <DsfrAlert
                         class="fr-my-3v"
+                        :role="displayType === 'Success' ? 'status' : 'alert'"
                         :title="displayInfos[displayType].title"
                         :description="displayInfos[displayType].description"
                         :type="displayInfos[displayType].type"
@@ -197,7 +198,7 @@ async function login() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: email.value, password: password.value }),
+        body: { email: email.value, password: password.value },
       },
     );
     formStatus.value = formStates.SUBMITTED;

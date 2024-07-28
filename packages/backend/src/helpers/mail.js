@@ -59,12 +59,20 @@ module.exports.getBody = (titre, content, signature) => {
 
   function formatLink({ link, text }) {
     return `
-  <tr>
+    <tr>
+      <td style="border-radius:0;text-align:center" valign="top">
+        <a href="${link}" target="_blank" style="margin-left: 20%; margin-right: 20%;padding: 14px 14px !important; font-size: 16px !important;background-color:#000091;border-radius:0;border:2px solid #000091;color:#ffffff;display:block;font-family:'Helvetica Neue', Helvetica, Arial, Verdana, sans-serif;font-size:16px;font-weight:normal;font-style:normal;text-decoration:none;min-width:30px;text-align:center;direction:ltr;letter-spacing:0px">
+          ${text}
+        </a>
+    </td></tr>
+  <!--<tr>
     <td align="center" style="width="25%";padding:0;Margin:0;padding-top:15px">
-      <a href=${link} style="border: 0;
+      <BR>
+      <a href=${link} style="
+        border: 0;
         text-decoration: none;
         line-height: 2.5;
-        padding: 10px  20px;
+        padding: 16px 28px;
         text-align: center;
         color: #fff;
         font: 14px/16px sans-serif;
@@ -76,7 +84,7 @@ module.exports.getBody = (titre, content, signature) => {
       <BR>
       <BR>
     </td>
-  </tr>
+  </tr>-->
     `;
   }
 

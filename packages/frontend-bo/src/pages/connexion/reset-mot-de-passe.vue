@@ -4,6 +4,7 @@
     <div v-if="displayType !== null">
       <DsfrAlert
         class="fr-my-3v"
+        :role="displayType === 'EditDoneWithSucces' ? 'status' : 'alert'"
         :title="displayInfos[displayType].title"
         :description="displayInfos[displayType].description"
         :type="displayInfos[displayType].type"

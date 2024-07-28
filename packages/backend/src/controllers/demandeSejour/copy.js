@@ -34,8 +34,9 @@ module.exports = async function post(req, res, next) {
     if (
       sourceDeclaration.statut !== statuts.BROUILLON &&
       sourceDeclaration.statut !== statuts.TRANSMISE &&
-      sourceDeclaration.statut !== statuts.EN_COURS && 
-      sourceDeclaration.statut !== statuts.ANNULEE
+      sourceDeclaration.statut !== statuts.EN_COURS &&
+      sourceDeclaration.statut !== statuts.ANNULEE &&
+      sourceDeclaration.statut !== statuts.ABANDONNEE
     ) {
       log.w("DONE with error");
       return next(

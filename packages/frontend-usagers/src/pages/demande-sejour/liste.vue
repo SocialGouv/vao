@@ -179,7 +179,7 @@
       <div class="fr-col">
         <form>
           <fieldset class="fr-fieldset">
-            <DsfrButton>
+            <DsfrButton type="button">
               <NuxtLink to="/demande-sejour">
                 Déclarer un nouveau séjour
               </NuxtLink>
@@ -290,6 +290,9 @@ const statutOptions = [
   { label: "REFUSEE", value: "REFUSEE" },
   { label: "REFUSEE 8 JOURS", value: "REFUSEE 8J" },
   { label: "ANNULEE", value: "ANNULEE" },
+  { label: "ABANDONNEE", value: "ABANDONNEE" },
+  { label: "SEJOUR EN COURS", value: "SEJOUR EN COURS" },
+  { label: "TERMINEE", value: "TERMINEE" },
 ];
 
 const onUpdateId = (id) => {
@@ -323,7 +326,8 @@ const listeStatutAutoriseBoutonDeleteCancel = [
   DeclarationSejour.statuts.ATTENTE_8_JOUR,
   DeclarationSejour.statuts.TRANSMISE_8J,
   DeclarationSejour.statuts.EN_COURS_8J,
-  DeclarationSejour.statuts.A_MODIFIER_8J];
+  DeclarationSejour.statuts.A_MODIFIER_8J,
+];
 
 const headers = [
   {
@@ -398,6 +402,7 @@ const headers = [
         DeclarationSejour.statuts.EN_COURS,
         DeclarationSejour.statuts.EN_COURS_8J,
         DeclarationSejour.statuts.VALIDEE_8J,
+        DeclarationSejour.statuts.SEJOUR_EN_COURS,
       ].includes(value.statut)
         ? "success"
         : [DeclarationSejour.statuts.BROUILLON].includes(value.statut)
@@ -442,6 +447,7 @@ const headers = [
               DeclarationSejour.statuts.TRANSMISE,
               DeclarationSejour.statuts.EN_COURS,
               DeclarationSejour.statuts.ANNULEE,
+              DeclarationSejour.statuts.ABANDONNEE,
             ].includes(row.statut),
             onClick: (event) => {
               event.stopPropagation();
@@ -449,14 +455,24 @@ const headers = [
             },
           },
           {
-            label: row.statut === DeclarationSejour.statuts.BROUILLON ? "Supprimer" : "Annuler",
+            label:
+              row.statut === DeclarationSejour.statuts.BROUILLON
+                ? "Supprimer"
+                : "Annuler",
             iconOnly: true,
-            icon: row.statut === DeclarationSejour.statuts.BROUILLON ? "ri-delete-bin-2-line" : "ri-close-line",
+            icon:
+              row.statut === DeclarationSejour.statuts.BROUILLON
+                ? "ri-delete-bin-2-line"
+                : "ri-close-line",
             onClick: (event) => {
               event.stopPropagation();
-              row.statut === DeclarationSejour.statuts.BROUILLON ? deleteDS(row.demandeSejourId) : cancelDS(row.demandeSejourId);
+              row.statut === DeclarationSejour.statuts.BROUILLON
+                ? deleteDS(row.demandeSejourId)
+                : cancelDS(row.demandeSejourId);
             },
-            disabled: !(listeStatutAutoriseBoutonDeleteCancel.includes(row.statut)),
+            disabled: !listeStatutAutoriseBoutonDeleteCancel.includes(
+              row.statut,
+            ),
           },
         ],
       };

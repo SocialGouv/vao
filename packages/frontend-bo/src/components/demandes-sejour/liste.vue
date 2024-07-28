@@ -1,7 +1,29 @@
 <template>
   <div class="fr-container">
-    <h1 class="header">Liste des séjours déclarés ({{ sejourStore.total }})</h1>
+    <h1 class="header">
+      Liste des séjours déclarés
+      {{ props.organisme ? "" : `(${sejourStore.countGlobal})` }}
+    </h1>
     <div class="fr-grid-row">
+      <div class="fr-col-12">
+        <cards-number
+          v-if="!props.organisme"
+          :values="[
+            {
+              title: 'Déclarations transmises à traiter',
+              value: sejourStore.countTransmis,
+            },
+            {
+              title: 'Déclaration en cours de traitement',
+              value: sejourStore.countEncCours,
+            },
+            {
+              title: 'Déclaration 8 jours a traiter',
+              value: sejourStore.countTransmis8j,
+            },
+          ]"
+        />
+      </div>
       <div class="fr-col-12">
         <form>
           <fieldset class="fr-fieldset">
@@ -59,10 +81,7 @@
                   mode="tags"
                   :searchable="true"
                   :close-on-select="false"
-                  :options="[
-                    allStatus,
-                    ...Object.values(demandesSejours.statuts),
-                  ]"
+                  :options="status"
                   @update:model-value="onStatutSelect"
                 />
               </div>
@@ -78,6 +97,19 @@
                   name="action"
                   mode="tags"
                   :options="['Oui', 'Non']"
+                />
+              </div>
+            </div>
+            <div
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+            >
+              <div class="fr-input-group">
+                <DsfrButton
+                  v-if="!props.organisme"
+                  type="button"
+                  label="Extraire en CSV"
+                  primary
+                  @click="getCsv"
                 />
               </div>
             </div>
@@ -106,7 +138,7 @@
       @close="closePrendEnChargeModal"
     >
       <article class="fr-mb-4v">
-        Vous vous apprêtez a prendre en charge la déclaration du séjour : <br />
+        Vous vous apprêtez à prendre en charge la déclaration du séjour : <br />
         - {{ declarationAPrendreEnCharge.libelle }}
       </article>
       <fieldset class="fr-fieldset">
@@ -144,12 +176,14 @@ const props = defineProps({
 
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
+import CardsNumber from "~/components/utils/CardsNumber.vue";
 
 const log = logger("pages/sejours");
 
 const toaster = useToaster();
 
 const sejourStore = useDemandeSejourStore();
+const demandeSejour = useDemandeSejourStore();
 const userStore = useUserStore();
 
 const defaultLimit = 10;
@@ -165,6 +199,23 @@ const searchState = reactive({
   statut: null,
   action: null,
 });
+
+const status = computed(() => [
+  allStatus,
+  demandesSejours.statuts.TRANSMISE,
+  demandesSejours.statuts.EN_COURS,
+  demandesSejours.statuts.A_MODIFIER,
+  demandesSejours.statuts.REFUSEE,
+  demandesSejours.statuts.ATTENTE_8_JOUR,
+  demandesSejours.statuts.TRANSMISE_8J,
+  demandesSejours.statuts.EN_COURS_8J,
+  demandesSejours.statuts.A_MODIFIER_8J,
+  demandesSejours.statuts.REFUSEE_8J,
+  demandesSejours.statuts.VALIDEE_8J,
+  demandesSejours.statuts.SEJOUR_EN_COURS,
+  demandesSejours.statuts.TERMINEE,
+  demandesSejours.statuts.ABANDONNEE,
+]);
 
 sejourStore.currentDemande = null;
 try {
@@ -281,7 +332,7 @@ const headers = [
     text: "Action",
     format: (value) =>
       value.estInstructeurPrincipal ? "A instruire" : "Lecture seule",
-    sort: true,
+    sort: false,
   },
 ];
 
@@ -328,6 +379,11 @@ const updateItemsByPage = (val) => {
 };
 const updateCurrentPage = (val) => {
   currentPageState.value = val;
+};
+
+const getCsv = async () => {
+  const response = await demandeSejour.exportSejours();
+  exportCsv(response);
 };
 </script>
 

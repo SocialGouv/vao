@@ -5,19 +5,21 @@ Ce SI a pour vocation à dématérialiser l'ensemble des procédures liées à l
 Il se compose d'un portail réservé aux organismes (ceux qui souhaitent organiser un séjour adapté) et d'un back office réservé à l'administration (DR, DD, AC) permettant l'instruction des demandes faites par les organismes.
 
 Les démarches proposées aux organismes sont :
+
 - la demande d'agrément
 - la déclaration de séjour
 
 Côté Back Office, il y a 4 modules :
+
 - instruction des demandes d'agrément,
 - instruction des demandes de séjour,
 - contrôle : inspection des séjours organisées,
 - statistiques
 
-L'application fait appel aux apis extérieures suivante : 
+L'application fait appel aux apis extérieures suivante :
+
 - [api-adresse](https://api-adresse.data.gouv.fr)
-- [api-entreprise](https://entreprise.api.gouv.fr/v3
-)
+- [api-entreprise](https://entreprise.api.gouv.fr/v3)
 - [api-insee](https://api.insee.fr)
 - [openstreetmap](https://www.openstreetmap.fr/)
 
@@ -43,20 +45,22 @@ backend --> api-adresse
 
 # Technologies
 
-Pour le frontend : 
-* NuxtJs
-* VueJs
-* Pinia
-* Vee-validate
-* yup
+Pour le frontend :
+
+- NuxtJs
+- VueJs
+- Pinia
+- Vee-validate
+- yup
 
 Utilisation de vue-dsfr dans les templates.
 
-Pour le backend : 
-* NodeJs
-* express
-* yup
-* pg
+Pour le backend :
+
+- NodeJs
+- express
+- yup
+- pg
 
 Pour la persistance des données, le SGBD Postgres est utilisé.
 
@@ -74,14 +78,9 @@ Le gestionnaire de paquets utilisé est [yarn](https://classic.yarnpkg.com/lang/
 
 ### Avant le premier lancement
 
-Chaque service s'appuie sur sur une image Docker unique basé sur un layer issu d'un [Dockerfile](./_scripts/dev/local-node.dockerfile).
-Afin de builder le layer, lancer la commande suivante : 
-
-`docker build -t local-node:latest -f  _scripts/dev/local-node.dockerfile .`
-
 La stack s'appuie sur le fichier [docker-compose.yaml](./docker-compose.yaml) à la base du projet.
 
-Les différents services s'appuient sur des variables d'environnements. 
+Les différents services s'appuient sur des variables d'environnements.
 Celles-ci sont renseignées par défaut dans le fichier .env et peuvent être surchargées dans le fichier [docker-compose.yaml](./docker-compose.yaml).
 
 > Le fichier .env contenant des variables sensibles, un fichier contenant toutes les variables nécessaires au fonctionement en local a été construit, laissant uniquement les secrets sans valeurs. Ces dernièrs doivent être renseignés manuellement.
@@ -94,25 +93,27 @@ Pour initialiser le fichier .env, copier le fichier d'exemple [.env.dev.example.
 
 Lancer la stack via docker compose :
 
-`docker compose up --build -d`
+`docker compose up -d`
+
+Attention : le premier lancement est long et peut prendre jusqu'à plusieurs minutes. Il faut regarder les logs via `docker compose logs -f` et attendre que les builds nuxt aient bien fini.
 
 ### Logs
 
-Afin de suivre toutes les logs de la stack simultanément : 
+Afin de suivre toutes les logs de la stack simultanément :
 
 `docker compose logs -f`
 
-Pour suivre les logs d'un seul container : 
+Pour suivre les logs d'un seul container :
 
 `docker compose logs -f <service> --no-log-prefix`
 
 ### Base de données
 
-#### Initialisation 
+#### Initialisation
 
 Le script [lancement.sh](./pg/lancement.sh) est lancé lors de la création du container postgres.
 
-Ce dernier lance les scripts de création de schémas, de rôles et de tables ainsi que l'insertion des données de référentiel, tous issus du répertoire [scripts](./pg/scripts/). 
+Ce dernier lance les scripts de création de schémas, de rôles et de tables ainsi que l'insertion des données de référentiel, tous issus du répertoire [scripts](./pg/scripts/).
 
 Des données de tests sont également renseignées dans le dossier [seeds](./pg/seeds/). Ces derniers ne sont lancés que localement, contrairement aux environnements kubernetes.
 
@@ -122,7 +123,7 @@ La base de données n'est persistée que le temps de la durée de vie du contain
 
 La persistence de la base de données ne dure qu'autant que la durée de vie du container. Il est donc possible de stopper le container postgres et de le redémarrer en conservant les données, cependant supprimer le container supprimera les données. A la recréation, le script [lancement.sh](./pg/lancement.sh) sera relancé.
 
-Afin de conserver les données dans le cas d'une mise à jour du schéma de la base de données, il sera donc nécessaire de faire évoluer manuellement celui-ci. Pour cela, il est possible de se connecter directement au container : 
+Afin de conserver les données dans le cas d'une mise à jour du schéma de la base de données, il sera donc nécessaire de faire évoluer manuellement celui-ci. Pour cela, il est possible de se connecter directement au container :
 
 `docker compose exec -ti postgres psql -U <PG_VAO_USER>`
 
@@ -132,7 +133,7 @@ Afin de conserver les données dans le cas d'une mise à jour du schéma de la b
 
 Chaque PR créée sur github déclenche le déploiement d'un nouvel environnement de test temporaire (une semaine par défaut).
 Une fois la PR fusionné sur main, l'environnement persistant main est mis à jour.
-Un environnement de recette persistant est déployé et peut être mis à jour *manuellement* via une github action.
+Un environnement de recette persistant est déployé et peut être mis à jour _manuellement_ via une github action.
 Enfin, un dernier environnement persistant de production a été créé.
 
 Chaque environnement est déployé sur une instance Kubernetes et est isolé des autres. Autrement dit, ils ne partagent aucune information et sont accessibles séparément via des URLs différentes.
@@ -157,7 +158,7 @@ Il est recommandé de filtrer sur le namespace souhaité avant de continuer dans
 
 Afin de suivre les logs d'un container, se rendre dans la sections Workloads > Pods puis cliquer sur le boutton 'View Logs'
 
-![Visualisation des logs](<./docs/rancher-show-logs.png>)
+![Visualisation des logs](./docs/rancher-show-logs.png)
 
 Le niveau de logs du backend est décrit par la variable d'environnement DEBUG.
 
@@ -174,6 +175,7 @@ Concernant les variables d'environnement des frontend, celles-ci sont renseigné
 Concernant les variables d'environnement du backend, celles-ci sont renseignées au lancement de l'image, à savoir dans la section backend > envFrom > ...
 
 Les variables d'environnement du backend se divisent en deux types :
+
 - les variables publiques stockées dans les configmap ([exemple](./.kontinuous/env/prod/templates/backend.configmap.yaml))
 - les variables privées stockées dans les secrets ([exemple](./.kontinuous/env/prod/templates/api-entreprise.sealed.secret.yaml)). Cellesci sont encodées en amont via l'outil [WebSeal](https://socialgouv.github.io/sre-tools/?cluster=dev)
 
@@ -185,4 +187,4 @@ Hormis dans le cas d'un test à la volée, les changements de variables nécessi
 
 Les backup de postgres sont gérés par la Fabrique via Kubernetes.
 
-## [Déploiement](./docs/deploiement) 
+## [Déploiement](./docs/deploiement)

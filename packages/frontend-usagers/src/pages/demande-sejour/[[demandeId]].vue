@@ -166,7 +166,10 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
-        <DSDocuments :declaration="demandeCourante ?? {}"></DSDocuments>
+        <DSDocuments
+          :declaration="demandeCourante ?? {}"
+          :messages="demandeSejourStore.messages ?? []"
+        ></DSDocuments>
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="declaration-sejour-content-2"
@@ -183,12 +186,35 @@
           déclaration
         </DsfrAlert>
       </DsfrTabContent>
+      <DsfrTabContent
+        panel-id="declaration-sejour-content-3"
+        tab-id="declaration-sejour-3"
+        :selected="selectedTabIndex === 3"
+        :asc="asc"
+      >
+        <div v-if="demandeCourante.statut !== 'BROUILLON'">
+          <Chat
+            ref="chatRef"
+            :messages="demandeSejourStore.messages"
+            :backend-url="`${config.public.backendUrl}/documents/`"
+            :is-loading="isSendingMessage"
+            @send="sendMessage"
+          />
+        </div>
+        <div v-else>
+          <DsfrAlert type="info" role="status"
+            >La messagerie n'est pas accessible pour les demandes à l'état
+            BROUILLON
+          </DsfrAlert>
+        </div>
+      </DsfrTabContent>
     </DsfrTabs>
   </div>
 </template>
 
 <script setup>
 import dayjs from "dayjs";
+import { Chat } from "@vao/shared";
 
 const route = useRoute();
 
@@ -203,6 +229,7 @@ definePageMeta({
     "check-demande-sejour-id-param",
   ],
 });
+
 useHead({
   title: "Déclaration de séjour détaillée | Vacances Adaptées Organisées",
   meta: [
@@ -228,6 +255,7 @@ const links = [
 
 const log = logger("pages/demande-sejour/[[demandeId]]");
 
+const config = useRuntimeConfig();
 const demandeSejourStore = useDemandeSejourStore();
 const demandeCourante = computed(() => {
   return demandeSejourStore.demandeCourante;
@@ -235,8 +263,13 @@ const demandeCourante = computed(() => {
 
 const initialSelectedIndex = 0;
 
+const chatRef = ref(null);
 const asc = ref(true);
 const selectedTabIndex = ref(initialSelectedIndex);
+
+if (route.params.demandeId) {
+  demandeSejourStore.fetchMessages(route.params.demandeId);
+}
 
 const {
   data: historique,
@@ -262,6 +295,7 @@ const tabTitles = computed(() => [
   { title: "Formulaire" },
   { title: "Documents joints" },
   ...(sejourId.value ? [{ title: "Historique de la déclaration" }] : []),
+  ...(sejourId.value ? [{ title: "Messagerie" }] : []),
 ]);
 
 const sommaireOptions = demandeSejourMenus
@@ -309,6 +343,48 @@ const demandeDetails = computed(() => {
     },
   ];
 });
+
+const isSendingMessage = ref(false);
+
+const sendMessage = async ({ message, file }) => {
+  let newFile;
+  isSendingMessage.value = true;
+  if (file) {
+    try {
+      const uuid = await UploadFile("message", file);
+      newFile = {
+        uuid,
+        name: file.name ?? "document_messagerie",
+        createdAt: new Date(),
+      };
+      toaster.info(`Document déposé`);
+    } catch (error) {
+      log.w(error);
+      return toaster.error(
+        `Une erreur est survenue lors du dépôt du document ${file.name}`,
+      );
+    }
+  }
+  try {
+    const url = `/message/${sejourId.value}`;
+    const response = await $fetchBackend(url, {
+      method: "POST",
+      credentials: "include",
+      body: { message: message ?? "", file: newFile },
+    });
+    if (response.id) {
+      chatRef.value.resetForm();
+    }
+    isSendingMessage.value = false;
+  } catch (error) {
+    isSendingMessage.value = false;
+    log.w("envoi de message : ", { error });
+    return toaster.error(
+      `Une erreur est survenue lors de l'envoi de votre message`,
+    );
+  }
+  demandeSejourStore.fetchMessages(sejourId.value);
+};
 
 async function updateOrCreate(data, type) {
   log.i("updateOrCreate - IN", { data, type });

@@ -3,6 +3,7 @@
     <p v-if="pending">Validation en cours. Veuillez patienter.</p>
     <div v-else-if="error">
       <DsfrAlert
+        role="alert"
         class="fr-grid-row fr-my-3v"
         title="Erreur lors de la validation du compte"
         :description="helpers[classError]"
@@ -41,7 +42,7 @@ const { data, error, pending } = useFetchBackend(
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ token: props.token }),
+    body: { token: props.token },
 
     onResponseError({ response }) {
       if (response._data?.name) {
