@@ -43,6 +43,8 @@ fileignoreconfig:
   checksum: 00b6f9f7ecb3b3cf523818f2723963a4bc20d11ed9a37e29c4405bbf72377da0
 - filename: .kontinuous/env/preprod/templates/backend.configmap.yaml
   checksum: 6232da2596184f2a3d831f76e17f23f872e9ab7fb089a8e0b7cbac65862c34fe
+- filename: .kontinuous/env/preprod/templates/frontend.sealed-secret.yaml
+  checksum: 94e33fcebb95e88ae169194c9c0331f9f4370739cfdd19c09f27ff3f0f6cdc1c
 - filename: .kontinuous/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
 - filename: .kontinuous/env/preprod/templates/smtp/deployment.yaml
