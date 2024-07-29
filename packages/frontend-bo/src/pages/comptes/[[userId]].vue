@@ -192,7 +192,7 @@
                       data-fr-checked-label="Activé"
                       data-fr-unchecked-label="Désactivé"
                       >Compte actif</label
-                    ><div v-if="!actifField.modelValue"><br>Désactivé le {{ formatDate(usersStore.userSelected.deleted_date, "dd/MM/yyyy") }}</div>
+                    ><div v-if="!actifField.modelValue && usersStore.userSelected.deleted_date"><br>Désactivé le {{ formatDate(usersStore.userSelected.deleted_date, "dd/MM/yyyy") }}</div>
                     <p id="toggle-valide" class="fr-hint-text" v-if="usersStore.user.roles.includes('Desactivation')">
                       <br>Compte actif
                     </p>
