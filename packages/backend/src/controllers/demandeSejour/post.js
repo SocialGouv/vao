@@ -55,21 +55,21 @@ module.exports = async function post(req, res, next) {
       }
     }
 
-    const demandeId = await DemandeSejour.create({
+    const declarationId = await DemandeSejour.create({
       ...demandeSejour,
       organisme,
     });
 
     await DemandeSejour.insertEvent(
       "Organisateur",
-      demandeId,
+      declarationId,
       userId,
       null,
       "declaration_sejour",
       "creation",
       {},
     );
-    return res.status(200).json({ id: demandeId });
+    return res.status(200).json({ id: declarationId });
   } catch (error) {
     log.w("DONE with error");
     return next(error);

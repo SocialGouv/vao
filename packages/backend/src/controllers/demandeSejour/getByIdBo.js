@@ -6,12 +6,10 @@ const log = logger(module.filename);
 
 module.exports = async function getById(req, res, next) {
   log.i("IN");
-  const demandeId = req.params.id;
-  const territoireCode = req.decoded.territoireCode;
+  const { declarationId } = req.params;
   try {
     const demande = await DemandeSejour.getById(
-      demandeId,
-      territoireCode,
+      declarationId,
       req.departements.map((d) => d.value),
     );
     log.d(demande);

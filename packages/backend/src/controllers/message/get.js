@@ -7,7 +7,7 @@ const log = logger(module.filename);
 
 module.exports = async function get(req, res, next) {
   log.i("IN");
-  const declarationId = req.params.id;
+  const { declarationId } = req.params;
 
   if (!declarationId) {
     log.w("missing or invalid parameter");

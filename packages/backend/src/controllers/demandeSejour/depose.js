@@ -27,13 +27,13 @@ const expectedStates = [
 ];
 
 module.exports = async function post(req, res, next) {
-  const demandeSejourId = req.params.id;
+  const { declarationId } = req.params;
   const { id: userId } = req.decoded;
   const { attestation } = req.body;
-  log.i("IN", { demandeSejourId });
+  log.i("IN", { declarationId });
 
   try {
-    await yup.number().required().validate(demandeSejourId);
+    await yup.number().required().validate(declarationId);
   } catch (error) {
     return next(new ValidationAppError(error));
   }
@@ -49,7 +49,7 @@ module.exports = async function post(req, res, next) {
 
   let declaration, DSuuid, ARuuid;
 
-  declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
+  declaration = await DemandeSejour.getOne({ "ds.id": declarationId });
   let idFonctionnelle = declaration.idFonctionnelle;
 
   if (!declaration) {
@@ -119,11 +119,11 @@ module.exports = async function post(req, res, next) {
 
   if (statut == statuts.ATTENTE_8_JOUR || statut == statuts.A_MODIFIER_8J) {
     log.d("Déclaration à 8 jours");
-    await DemandeSejour.finalize8jours(demandeSejourId, declaration);
-    declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
+    await DemandeSejour.finalize8jours(declarationId, declaration);
+    declaration = await DemandeSejour.getOne({ "ds.id": declarationId });
     await DemandeSejour.insertEvent(
       "Organisateur",
-      demandeSejourId,
+      declarationId,
       userId,
       null,
       "declaration_sejour",
@@ -215,17 +215,17 @@ module.exports = async function post(req, res, next) {
     log.d("Déclaration à 2 mois");
 
     await DemandeSejour.finalize(
-      demandeSejourId,
+      declarationId,
       departementSuivi,
       idFonctionnelle,
       declaration,
     );
 
-    declaration = await DemandeSejour.getOne({ "ds.id": demandeSejourId });
+    declaration = await DemandeSejour.getOne({ "ds.id": declarationId });
 
     await DemandeSejour.insertEvent(
       "Organisateur",
-      demandeSejourId,
+      declarationId,
       userId,
       null,
       "declaration_sejour",
