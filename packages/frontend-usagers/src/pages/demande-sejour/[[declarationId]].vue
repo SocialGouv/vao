@@ -254,7 +254,7 @@ const links = [
   },
 ];
 
-const log = logger("pages/demande-sejour/[[demandeId]]");
+const log = logger("pages/demande-sejour/[[declarationId]]");
 
 const config = useRuntimeConfig();
 const demandeSejourStore = useDemandeSejourStore();
@@ -268,15 +268,15 @@ const chatRef = ref(null);
 const asc = ref(true);
 const selectedTabIndex = ref(initialSelectedIndex);
 
-if (route.params.demandeId) {
-  demandeSejourStore.fetchMessages(route.params.demandeId);
+if (route.params.declarationId) {
+  demandeSejourStore.fetchMessages(route.params.declarationId);
 }
 
 const {
   data: historique,
   error,
   execute,
-} = useFetchBackend(`/sejour/historique/${route.params.demandeId}`, {
+} = useFetchBackend(`/sejour/historique/${route.params.declarationId}`, {
   immediate: false,
   method: "GET",
   credentials: "include",
@@ -290,7 +290,7 @@ const selectTab = (idx) => {
   }
 };
 
-const sejourId = ref(route.params.demandeId);
+const sejourId = ref(route.params.declarationId);
 
 const tabTitles = computed(() => [
   { title: "Formulaire" },

@@ -5,16 +5,16 @@ const { statuts } = require("../helpers/ds-statuts");
 const AppError = require("../utils/error");
 
 async function canUpdateDs(req, _res, next) {
-  let demandeSejourId = req.params.id;
+  let { declarationId } = req.params;
 
   try {
-    demandeSejourId = await number().required().validate(demandeSejourId);
+    declarationId = await number().required().validate(declarationId);
   } catch (error) {
     return next(new ValidationAppError(error));
   }
 
   try {
-    const statut = await DemandeSejour.getStatut(demandeSejourId);
+    const statut = await DemandeSejour.getStatut(declarationId);
     if (
       [
         statuts.BROUILLON,

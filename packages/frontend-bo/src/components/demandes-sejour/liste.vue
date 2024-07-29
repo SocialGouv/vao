@@ -350,18 +350,18 @@ const navigate = (state) => {
   ) {
     declarationAPrendreEnCharge.value = state;
   } else {
-    navigateTo(`/sejours/${state.demandeSejourId}`);
+    navigateTo(`/sejours/${state.declarationId}`);
   }
 };
 const validatePriseEnCharge = async () => {
-  const demandeId = declarationAPrendreEnCharge.value.demandeSejourId;
+  const declarationId = declarationAPrendreEnCharge.value.declarationId;
   try {
-    await $fetchBackend(`/sejour/admin/${demandeId}/prise-en-charge`, {
+    await $fetchBackend(`/sejour/admin/${declarationId}/prise-en-charge`, {
       method: "POST",
       credentials: "include",
     });
     declarationAPrendreEnCharge.value = null;
-    navigateTo(`/sejours/${demandeId}`);
+    navigateTo(`/sejours/${declarationId}`);
   } catch (error) {
     log.w("prend en charge", error);
     toaster.error("Erreur lors de la prise en charge de la demande");

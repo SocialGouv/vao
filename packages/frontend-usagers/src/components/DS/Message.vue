@@ -71,7 +71,7 @@ const toaster = useToaster();
 const log = logger("components/demande-sejours/Message");
 
 const route = useRoute();
-const declarationId = route.params.demandeId;
+const declarationId = route.params.declarationId;
 const message = ref();
 const file = ref();
 const modalPJ = reactive({

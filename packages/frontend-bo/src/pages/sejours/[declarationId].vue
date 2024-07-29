@@ -207,7 +207,7 @@ const {
   data: historique,
   error,
   execute,
-} = useFetchBackend(`/sejour/admin/historique/${route.params.demandeId}`, {
+} = useFetchBackend(`/sejour/admin/historique/${route.params.declarationId}`, {
   immediate: false,
   method: "GET",
   credentials: "include",
@@ -227,7 +227,7 @@ const isOrganismeNonAgree = computed(() => {
 
 onMounted(async () => {
   try {
-    await demandeStore.setCurrentDemande(route.params.demandeId);
+    await demandeStore.setCurrentDemande(route.params.declarationId);
     fetchMessages();
   } catch (e) {
     navigateTo("/sejours");
@@ -256,7 +256,7 @@ const sendMessage = async ({ message, file }) => {
     }
   }
   try {
-    const url = `/message/admin/${route.params.demandeId}`;
+    const url = `/message/admin/${route.params.declarationId}`;
     const response = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
@@ -296,7 +296,7 @@ const modalEnregistrement2Mois = reactive({
 });
 
 const fetchMessages = () => {
-  demandeStore.fetchMessages(route.params.demandeId);
+  demandeStore.fetchMessages(route.params.declarationId);
 };
 const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
@@ -328,14 +328,14 @@ const onValidComplement = async (commentaires) => {
 
   try {
     await $fetchBackend(
-      `/sejour/admin/${route.params.demandeId}/demande-complements`,
+      `/sejour/admin/${route.params.declarationId}/demande-complements`,
       {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(commentaires),
       },
     );
-    await demandeStore.setCurrentDemande(route.params.demandeId);
+    await demandeStore.setCurrentDemande(route.params.declarationId);
     execute();
   } catch (error) {
     log.w("prend en charge", error);
@@ -350,12 +350,12 @@ const onValidRefus = async (commentaires) => {
   onCloseModalDemandeComplements();
 
   try {
-    await $fetchBackend(`/sejour/admin/${route.params.demandeId}/refus`, {
+    await $fetchBackend(`/sejour/admin/${route.params.declarationId}/refus`, {
       method: "POST",
       credentials: "include",
       body: JSON.stringify(commentaires),
     });
-    await demandeStore.setCurrentDemande(route.params.demandeId);
+    await demandeStore.setCurrentDemande(route.params.declarationId);
     execute();
   } catch (error) {
     log.w("prend en charge", error);
@@ -371,13 +371,13 @@ const onValidEnregistrement2Mois = async () => {
   onCloseModalEnregistrement2Mois();
   try {
     await $fetchBackend(
-      `/sejour/admin/${route.params.demandeId}/enregistrement-2-mois`,
+      `/sejour/admin/${route.params.declarationId}/enregistrement-2-mois`,
       {
         method: "POST",
         credentials: "include",
       },
     );
-    await demandeStore.setCurrentDemande(route.params.demandeId);
+    await demandeStore.setCurrentDemande(route.params.declarationId);
     execute();
   } catch (error) {
     log.w("prend en charge", error);

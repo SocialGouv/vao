@@ -8,16 +8,16 @@ const log = logger(module.filename);
 
 module.exports = async function get(req, res, next) {
   log.i("IN");
-  let demandeId = req.params.id;
+  let { declarationId } = req.params;
 
   try {
-    demandeId = await number().required().validate(demandeId);
+    declarationId = await number().required().validate(declarationId);
   } catch (error) {
     return next(new ValidationAppError(error));
   }
 
   try {
-    const demande = await DemandeSejour.getOne({ "ds.id": demandeId });
+    const demande = await DemandeSejour.getOne({ "ds.id": declarationId });
     log.d(demande);
     return res.status(200).json({ demande });
   } catch (error) {

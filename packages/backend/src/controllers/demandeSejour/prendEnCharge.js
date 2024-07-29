@@ -7,7 +7,7 @@ const AppError = require("../../utils/error");
 const log = logger(module.filename);
 
 module.exports = async function post(req, res, next) {
-  const declarationId = req.params.declarationId;
+  const { declarationId } = req.params;
   const { id: userId, territoireCode } = req.decoded;
   log.i("IN", { declarationId });
 
@@ -39,24 +39,10 @@ module.exports = async function post(req, res, next) {
   }
 
   if (
-    !req.departements.map((d) => d.value).includes(declaration.departementSuivi)
-  ) {
-    log.w("Administrator is not principal instructor");
-    return next(
-      new AppError(
-        "L'administrateur n'est pas instructeur principal de la demande",
-        {
-          statusCode: 403,
-        },
-      ),
-    );
-  }
-
-  if (
     declaration.statut !== statuts.TRANSMISE &&
     declaration.statut !== statuts.TRANSMISE_8J
   ) {
-    log.w("Delaration is already at least in progress");
+    log.w("Declaration is already at least in progress");
     return next(
       new AppError("Statut incompatible", {
         statusCode: 400,

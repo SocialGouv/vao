@@ -8,17 +8,17 @@ const AppError = require("../../utils/error");
 const log = logger(module.filename);
 
 module.exports = async function post(req, res, next) {
-  const demandeSejourId = req.params.id;
+  const { declarationId } = req.params;
   const { id: userId } = req.decoded;
 
-  log.i("IN", { demandeSejourId });
+  log.i("IN", { declarationId });
 
   try {
     const organisme = await Organisme.getOne({
       use_id: userId,
     });
     const sourceDeclaration = await DemandeSejour.getOne({
-      "ds.id": demandeSejourId,
+      "ds.id": declarationId,
       "o.id": organisme.organismeId,
     });
 
@@ -51,8 +51,8 @@ module.exports = async function post(req, res, next) {
         f.type !== "declaration_2_mois" && f.type !== "AR_declaration_2_mois",
     );
 
-    const demandeId = await DemandeSejour.copy(sourceDeclaration);
-    if (!demandeId) {
+    const newDeclarationId = await DemandeSejour.copy(sourceDeclaration);
+    if (!newDeclarationId) {
       log.w("DONE with error");
       return next(
         new AppError("Erreur de copie", {
@@ -62,7 +62,7 @@ module.exports = async function post(req, res, next) {
     }
     await DemandeSejour.insertEvent(
       "Organisateur",
-      demandeId,
+      newDeclarationId,
       userId,
       null,
       "declaration_sejour",
@@ -71,7 +71,7 @@ module.exports = async function post(req, res, next) {
     );
     log.i("DONE");
 
-    return res.status(200).json({ demandeId });
+    return res.status(200).json({ declarationId: newDeclarationId });
   } catch (err) {
     log.w(err);
   }

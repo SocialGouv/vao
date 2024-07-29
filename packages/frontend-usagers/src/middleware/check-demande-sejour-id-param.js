@@ -5,29 +5,29 @@ import { navigateTo, defineNuxtRouteMiddleware } from "#app";
 const log = logger("middlewares/check-demande-sejour-id-param");
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  log.i("IN", to.params.demandeId);
-  const hasId = !!to.params.demandeId;
+  log.i("IN", to.params.declarationId);
+  const hasId = !!to.params.declarationId;
   const demandeStore = useDemandeSejourStore();
 
-  if (isNaN(to.params.demandeId)) {
-    log.w(`incorrect demandeId : ${to.params.demandeId}`);
+  if (isNaN(to.params.declarationId)) {
+    log.w(`incorrect declarationId : ${to.params.declarationId}`);
     return navigateTo("/");
   }
 
   await demandeStore.fetchDemandes();
 
   const isIdViewable = !!demandeStore.demandes.find(
-    (i) => i.demandeSejourId.toString() === to.params.demandeId,
+    (i) => i.declarationId.toString() === to.params.declarationId,
   );
 
   if (hasId && !isIdViewable) {
-    log.w(`demande ${to.params.demandeId} is not linked with current user`);
+    log.w(`demande ${to.params.declarationId} is not linked with current user`);
     return navigateTo("/");
   }
 
   if (hasId) {
     log.d(`loading current demande`);
-    await demandeStore.setDemandeCourante(to.params.demandeId);
+    await demandeStore.setDemandeCourante(to.params.declarationId);
     if (!demandeStore.demandeCourante.id) {
       return navigateTo("/");
     }
