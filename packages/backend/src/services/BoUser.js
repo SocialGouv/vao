@@ -68,6 +68,7 @@ const query = {
         edited_at = NOW()
       WHERE
         mail = $1
+        and deleted = false
       `,
     [normalize(email), password],
   ],
@@ -92,6 +93,8 @@ const query = {
       us.nom AS nom,
       us.prenom AS prenom,
       us.validated AS validated,
+      us.deleted AS deleted,
+      us.deleted_date as deleted_date,
       ter.label AS "territoire",
       us.ter_code AS "territoireCode",
       ter.parent_code AS "territoireParent",
@@ -171,11 +174,34 @@ ${additionalParamsQuery}
       SET
         nom = $2,
         prenom = $3,
-        ter_code = $4
+        ter_code = $4,
+        deleted = false
       WHERE
         id = $1
       `,
     [id, nom, prenom, territoireCode],
+  ],
+  delete: (id,deleted_use_id)=> [
+    `
+      UPDATE back.users
+      SET
+        deleted = true,
+        deleted_use_id = $2,
+        deleted_date = now()
+      WHERE
+        id = $1
+      `,
+    [id, deleted_use_id],
+  ],
+  undelete: (id)=> [
+    `
+      UPDATE back.users
+      SET
+        deleted = false
+      WHERE
+        id = $1
+      `,
+    [id],
   ],
 };
 
@@ -188,7 +214,7 @@ module.exports.create = async ({
 }) => {
   log.i("create - IN", { email });
 
-  // Test de l'existance d'un compte avec la même adresse mail
+  // Test de l'existance d'un compte avec la même adresse mail non désactivé
   const response = await pool.query(
     ...query.get({ "us.mail": normalize(email) }),
   );
@@ -216,26 +242,27 @@ module.exports.create = async ({
   return { code: "CreationCompte", user };
 };
 
-module.exports.update = async (id, { nom, prenom, roles, territoireCode }) => {
+module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted },deleted_use_id) => {
   log.i("update - IN", { id });
-
   if (!id) {
     throw new AppError("Paramètre manquant", {
       statusCode: 500,
     });
   }
-
   // Mise à jour du compte en base de données
   const { rowCount } = await pool.query(
     ...query.update(id, nom, prenom, territoireCode),
   );
-
+  
   if (rowCount === 0) {
     log.d("update - DONE - Utilisateur BO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
       name: "UserNotFound",
     });
   }
+  // Suppression logique du compte
+  if (deleted) 
+    await pool.query(...query.delete(id, deleted_use_id));
 
   // Suppression des roles de l'utilisateur
   await pool.query(...query.deleteRole(id));
@@ -334,10 +361,13 @@ module.exports.read = async (
     searchQuery += `   AND ter.label ilike $${searchParams.length + 1}\n`;
     searchParams.push(`%${search.territoire}%`);
   }
-
   if (search?.valide !== undefined) {
     searchQuery += `   AND us.validated = $${searchParams.length + 1}\n`;
     searchParams.push(`${search.valide === true || search.valide === "true"}`);
+  }
+  if (search?.actif !== undefined) {
+    searchQuery += `   AND us.deleted = not $${searchParams.length + 1}\n`;
+    searchParams.push(`${search.actif === true || search.actif === "true"}`);
   }
 
   let additionalQueryParts = "";

@@ -37,17 +37,18 @@ module.exports = async function forgottenPassword(req, res, next) {
   log.d({ user });
 
   try {
-    const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
-      algorithm: "ES512",
-      expiresIn: config.resetPasswordToken.expiresIn / 1000,
-    });
-    await Send(
-      MailUtils.bo.authentication.sendForgottenPassword({
-        email,
-        token,
-      }),
-    );
-
+    if (!user.deleted) {
+      const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
+        algorithm: "ES512",
+        expiresIn: config.resetPasswordToken.expiresIn / 1000,
+      });
+      await Send(
+        MailUtils.bo.authentication.sendForgottenPassword({
+          email,
+          token,
+        }),
+      );
+    }
     log.i("DONE");
 
     return res.json({ message: "Mail envoyé" });

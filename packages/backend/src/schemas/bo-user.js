@@ -1,4 +1,4 @@
-const { string, object, array } = require("yup");
+const { string, object, array, boolean } = require("yup");
 
 const emailSchema = require("./parts/email");
 const nomSchema = require("./parts/nom");
@@ -11,6 +11,7 @@ const schema = () =>
     prenom: prenomSchema(),
     roles: array().required(),
     territoireCode: string().required(),
+    deleted: boolean().required(),
   });
 
 module.exports = schema;

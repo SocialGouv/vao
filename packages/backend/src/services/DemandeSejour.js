@@ -477,7 +477,7 @@ SELECT
   h.id as "historiqueId",
   h.source as "source",
   h.demande_sejour_id as "declarationId",
-  CASE WHEN u.id IS NOT null then u.mail ELSE bu.mail END as "userEmail",
+  CASE WHEN u.id IS NOT null then u.mail ELSE bu.mail || replace(replace(bu.deleted::text,'true',' (inactif)'),'false','') END as "userEmail",
   h.bo_user_id as "userAdminId",
   h.type as "type",
   h.type_precision as "typePrecision",
