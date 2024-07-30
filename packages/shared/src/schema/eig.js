@@ -9,6 +9,7 @@ const selectionSejourSchema = {
     .number()
     .integer("Ce champ doit contenir un nombre entier")
     .required(),
+  departement: yup.string().required("ce champ est obligatoire"),
 };
 
 const eigTypeBase = yup
@@ -148,6 +149,13 @@ const syntheseSchema = {
   ...selectionSejourSchema,
   ...eigTypesDepose,
   ...informationsGeneralesSchema,
+  emailAutresDestinataires: yup
+    .array()
+    .of(yup.string().email("Format de courriel invalide").nullable()),
+  isAtteste: yup
+    .boolean()
+    .oneOf([true], "Vous devez certifier de ces informations")
+    .required(),
 };
 
 export {

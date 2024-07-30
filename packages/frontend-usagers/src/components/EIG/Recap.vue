@@ -63,25 +63,134 @@
     :message="` Erreur dans la description des dispositions prises pour l’information : ${errors.dispositionInformations}`"
   ></EIGError>
   <article>{{ eigStore.currentEig.dispositionInformations }}</article>
+  <hr />
+  <article>
+    La déclaration de cet EIG sera envoyé à :
+    <h6 class="fr-mb-0">DDETS</h6>
+    <ul class="fr-mt-0 fr-mb-4w">
+      <li v-for="email in eigStore.currentEig.emailsDDETS" :key="email">
+        {{ email }}
+      </li>
+    </ul>
+    <h6 class="fr-mb-0">DREETS</h6>
+    <ul class="fr-mt-0 fr-mb-4w">
+      <li v-for="email in eigStore.currentEig.emailsDREETS" :key="email">
+        {{ email }}
+      </li>
+    </ul>
+    <h6 class="fr-mb-0">L'organisme</h6>
+    <ul class="fr-mt-0 fr-mb-4w">
+      <li v-for="email in eigStore.currentEig.emailsOrganisateur" :key="email">
+        {{ email }}
+      </li>
+    </ul>
+  </article>
+  <div class="fr-fieldset__element">
+    <div class="fr-input-group">
+      <DsfrInputGroup
+        autocomplete="off"
+        type="text"
+        name="email-autres-destinataires"
+        label="Envoyer la déclaration à d'autres destinataires (optionnel)"
+        :label-visible="true"
+        hint="Renseigner les adresses mail séparées par des virgules"
+        required
+        :is-valid="emailAutresDestinatairesMeta.valid"
+        :error-message="emailAutresDestinatairesMessage"
+        :disabled="!eigStore.canModify"
+        :model-value="displayEmailAutresDestinataires"
+        @update:model-value="setEmailAutresDestinataires"
+      />
+    </div>
+  </div>
+  <hr />
+  <div class="fr-fieldset__element fr-col-12">
+    <DsfrCheckbox
+      v-model="isAtteste"
+      name="attestation.aCertifie"
+      :label="`Je soussigné ${userStore.user.nom} ${userStore.user.prenom}, certifie sur l'honneur que les renseignements portés sur cette déclaration sont exacts`"
+      :small="true"
+      :disabled="!eigStore.canModify"
+      @update:model-value="onIsAttesteChange"
+    />
+  </div>
+  <fieldset class="fr-fieldset">
+    <DsfrButtonGroup
+      v-if="!props.isDownloading"
+      :inline-layout-when="true"
+      :reverse="true"
+    >
+      <DsfrButton
+        id="previous-step"
+        :secondary="true"
+        @click.prevent="
+          () => {
+            emit('previous');
+          }
+        "
+        >Précédent
+      </DsfrButton>
+      <DsfrButton
+        v-if="eigStore.canModify"
+        label="Valider"
+        :disabled="!meta.valid"
+        @click.prevent="finalizeDeclaration"
+      />
+    </DsfrButtonGroup>
+    <is-downloading
+      :message="props.message"
+      :is-downloading="props.isDownloading"
+    />
+  </fieldset>
 </template>
 
 <script setup>
 import * as yup from "yup";
-import { useForm } from "vee-validate";
+import { useField, useForm } from "vee-validate";
 import { eigSchema } from "@vao/shared";
+import IsDownloading from "~/components/utils/IsDownloading.vue";
+
+const emit = defineEmits(["finalize", "previous"]);
+
+const props = defineProps({
+  isDownloading: { type: Boolean, required: false, default: false },
+  message: { type: String, required: false, default: null },
+});
 
 const eigStore = useEigStore();
+const userStore = useUserStore();
 
 const validationSchema = yup.object(eigSchema.syntheseSchema);
 const initialValues = {
   ...eigStore.currentEig,
 };
 
-const { errors } = useForm({
+const { meta, errors } = useForm({
   initialValues,
   validationSchema: validationSchema,
   validateOnMount: true,
 });
+
+const { value: isAtteste, handleChange: onIsAttesteChange } =
+  useField("isAtteste");
+const {
+  value: emailAutresDestinataires,
+  handleChange: onEmailAutresDestinatairesChange,
+  errorMessage: emailAutresDestinatairesMessage,
+  meta: emailAutresDestinatairesMeta,
+} = useField("emailAutresDestinataires");
+
+const displayEmailAutresDestinataires = computed(() =>
+  (emailAutresDestinataires.value ?? []).join(","),
+);
+const setEmailAutresDestinataires = (emailsInString) => {
+  onEmailAutresDestinatairesChange(
+    emailsInString
+      .split(",")
+      .map((email) => email.trim())
+      .filter((e) => e.length > 0),
+  );
+};
 
 const headers = [
   {
@@ -90,10 +199,25 @@ const headers = [
   },
   { label: "Prénom", value: "prenom" },
 ];
+
+function finalizeDeclaration() {
+  emit("finalize", {
+    emailAutresDestinataires: emailAutresDestinataires.value,
+  });
+}
 </script>
 
 <style scoped lang="scss">
 h5 {
   margin-top: 1.5rem;
+}
+
+hr {
+  border-top: 1px solid black;
+  margin: 2rem 0;
+}
+
+li {
+  list-style: inside;
 }
 </style>
