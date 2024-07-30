@@ -52,7 +52,7 @@ const headers = [
     sort: true,
   },
   {
-    column: "date_sejour",
+    column: "dateSejour",
     text: "Date du séjour",
     sort: true,
   },
@@ -77,17 +77,17 @@ const headers = [
     sort: true,
   },
   {
-    column: "date_visite",
+    column: "dateVisite",
     text: "Date dernière visite",
     sort: true,
     format: (row) =>
-      row.date_visite ? formatDate(row.date_visite, "dd/MM/yyyy") : "",
+      row.dateVisite ? formatDate(row.dateVisite, "dd/MM/yyyy") : "",
   },
   {
-    column: "reglementation_erp",
+    column: "reglementatioEerp",
     text: "Réglementation erp",
     sort: true,
-    format: (row) => (row.reglementation_erp ? 'Oui' : 'Non'),
+    format: (row) => (row.reglementationrp ? "Oui" : "Non"),
   },
 ];
 
@@ -96,9 +96,7 @@ const search = ref(route.query.search ?? "");
 const sortBy = ref(route.query.sort?.replace("-", "") ?? "nom");
 const sortDirection = ref(route.query.sort?.includes("-") ? "DESC" : "ASC");
 const limit = ref(parseInt(route.query.limit, 10) || 10);
-const page = ref(
-  Math.floor(route.query.offset / limit.value) || 0,
-);
+const page = ref(Math.floor(route.query.offset / limit.value) || 0);
 
 const sort = computed(
   () => `${sortDirection.value === "ASC" ? "" : "-"}${sortBy.value}`,
