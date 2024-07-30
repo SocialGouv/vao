@@ -136,6 +136,11 @@ WHERE
   ID = $1
 RETURNING id
   `,
+  DELETE: `
+DELETE FROM FRONT.EIG
+WHERE
+    ID = $1
+`,
 };
 
 module.exports.create = async ({ userId, demandeSejourId }) => {
@@ -358,4 +363,25 @@ module.exports.getByUserId = async (
     eigs: response.rows ?? [],
     total: total ? parseInt(total) : 0,
   };
+};
+
+module.exports.delete = async ({ eigId }) => {
+  log.i("delete EIG - IN");
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+    await client.query(query.DELETE_EIG_TO_EIG_TYPE, [eigId]);
+    await client.query(query.DELETE, [eigId]);
+    await client.query("COMMIT");
+  } catch (e) {
+    await client.query("ROLLBACK");
+    throw e;
+  } finally {
+    client.release();
+  }
+
+  log.i("delete EIG - OUT");
+
+  return eigId;
 };

@@ -58,8 +58,10 @@ const isDeclarationligibleToEig = (d) =>
     DeclarationSejour.statuts.ANNULEE,
   ].includes(d.statut);
 
+const canDelete = (statut) => eigModel.Statuts.BROUILLON === statut;
 export default {
   getTagSejourLibelle,
   isDeclarationligibleToEig,
   mapEigToLabel,
+  canDelete,
 };

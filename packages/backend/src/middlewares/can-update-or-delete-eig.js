@@ -4,7 +4,7 @@ const AppError = require("../utils/error");
 const eigService = require("../services/eig");
 const { statuts } = require("../helpers/eig");
 
-async function canUpdateEig(req, _res, next) {
+async function canUpdateOrDeleteEig(req, _res, next) {
   let eigId = req.params.id;
 
   try {
@@ -30,4 +30,4 @@ async function canUpdateEig(req, _res, next) {
   }
 }
 
-module.exports = canUpdateEig;
+module.exports = canUpdateOrDeleteEig;
