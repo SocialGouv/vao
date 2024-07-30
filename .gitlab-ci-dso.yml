@@ -27,7 +27,8 @@ read_secret:
 
 build-backend:
   variables:
-    WORKING_DIR: "packages/backend"
+    WORKING_DIR: "."
+    DOCKERFILE: packages/backend/Dockerfile
     IMAGE_NAME: backend
   stage: build-images
   extends:
@@ -35,7 +36,8 @@ build-backend:
 
 build-frontend-usagers:
   variables:
-    WORKING_DIR: "packages/frontend-usagers"
+    WORKING_DIR: "."
+    DOCKERFILE: packages/frontend-usagers/Dockerfile
     IMAGE_NAME: frontend-usagers
   stage: build-images
   extends:
