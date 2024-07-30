@@ -50,6 +50,7 @@ module.exports = async (req, res, next) => {
       case UpdateTypes.DECLARATION_SEJOUR:
         updatedEigId = await eigService.updateDS(eigId, {
           demandeSejourId: eig.demandeSejourId,
+          departement: eig.departement,
         });
         break;
       case UpdateTypes.TYPE_EVENEMENT:
@@ -57,6 +58,12 @@ module.exports = async (req, res, next) => {
         break;
       case UpdateTypes.RENSEIGNEMENT_GENERAUX:
         updatedEigId = await eigService.updateRenseignementsGeneraux(
+          eigId,
+          eig,
+        );
+        break;
+      case UpdateTypes.EMAIL_AUTRES_DESTINATAIRES:
+        updatedEigId = await eigService.updateEmailAutresDestinataires(
           eigId,
           eig,
         );

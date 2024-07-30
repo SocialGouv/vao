@@ -31,6 +31,13 @@ router.put(
   canUpdateEig,
   eigController.update,
 );
+router.post(
+  "/depose/:id",
+  checkJWT,
+  checkPermissionEIG,
+  canUpdateEig,
+  eigController.depose,
+);
 
 router.delete(
   "/:id",

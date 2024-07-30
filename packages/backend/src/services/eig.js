@@ -31,31 +31,33 @@ GROUP BY
   `;
 
 const query = {
-  CREATE: `
+  create: `
   INSERT INTO
-    FRONT.EIG (USER_ID, STATUT_ID, DEMANDE_SEJOUR_ID, IS_ATTESTE)
+    FRONT.EIG (USER_ID, STATUT_ID, DEMANDE_SEJOUR_ID, DEPARTEMENT, IS_ATTESTE)
   VALUES
     (
         $1,
         (SELECT ID FROM FRONT.EIG_STATUT WHERE STATUT = '${statuts.BROUILLON}'),
         $2,
+        $3,
         FALSE
        )
    RETURNING id
   `,
-  DELETE_EIG_TO_EIG_TYPE: `
+  deleteEigToEigType: `
 DELETE FROM FRONT.EIG_TO_EIG_TYPE
 WHERE
 EIG_ID = $1`,
-  GET_BY_DS_ID: getEigListQuery("DS.ID = $1"),
-  GET_BY_ID: `
+  getByDsId: getEigListQuery("DS.ID = $1"),
+  getById: `
 SELECT
 EIG.ID,
   EIG.USER_ID AS "userId",
   S.STATUT AS "statut",
+  EIG.DEPARTEMENT AS "departement",
   DS.ID AS "demandeSejourId",
   DS.ID_FONCTIONNELLE AS "idFonctionnelle",
-  DS.LIBELLE,
+  DS.LIBELLE as "libelle",
   DS.DATE_DEBUT AS "dateDebut",
   DS.DATE_FIN AS "dateFin",
   DS.ORGANISME -> 'personneMorale' ->> 'raisonSociale' AS "raisonSociale",
@@ -71,8 +73,9 @@ EIG.ID,
   EIG.DISPOSITION_REMEDIATION as "dispositionRemediation",
   EIG.DISPOSITION_VICTIMES as "dispositionVictimes",
   EIG.DISPOSITION_INFORMATIONS as "dispositionInformations",
-  EIG.IS_ATTESTE,
-  EIG.PERSONNEL
+  EIG.IS_ATTESTE as "isAtteste",
+  EIG.PERSONNEL as "personnel",
+  EIG.EMAIL_AUTRES_DESTINATAIRES as "emailAutresDestinataires"
 FROM FRONT.EIG EIG
     LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
     LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
@@ -86,19 +89,19 @@ GROUP BY
   S.ID,
   DS.ID;
   `,
-  GET_BY_USER_ID: (search) =>
+  getByUserId: (search) =>
     getEigListQuery(
       `
     UO.ORG_ID IN ( SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)
     ${search.map((s) => ` AND ${s} `).join("")}`,
     ),
-  GET_STATUT: `
+  getStatut: `
   SELECT S.STATUT as statut
   FROM FRONT.EIG
   LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
   WHERE EIG.ID = $1
   `,
-  GET_TOTAL: (search) => `
+  getTotal: (search) => `
 SELECT COUNT(DISTINCT EIG.ID)
 FROM
   FRONT.EIG EIG
@@ -109,21 +112,31 @@ WHERE
   UO.ORG_ID IN ( SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)
   ${search.map((s) => ` AND ${s} `).join("")}
   `,
-  INSERT_EIG_TO_EIG_TYPE: (values) => `
+  insertIntoEigToEigType: (values) => `
     INSERT INTO FRONT.EIG_TO_EIG_TYPE (EIG_ID, EIG_TYPE_ID, PRECISIONS)
     VALUES
     ${values.join(",")}
   `,
-  UPDATE_DS: `
+  updateDs: `
 UPDATE FRONT.EIG
 SET
   DEMANDE_SEJOUR_ID = $1,
+  DEPARTEMENT=$2,
+  EDITED_AT = NOW()
+WHERE
+  ID = $3
+RETURNING id
+  `,
+  updateEmailAutresDestinataires: `
+UPDATE FRONT.EIG
+SET
+  EMAIL_AUTRES_DESTINATAIRES = $1,
   EDITED_AT = NOW()
 WHERE
   ID = $2
 RETURNING id
   `,
-  UPDATE_RENSEIGNEMENT_GENERAUX: `
+  updateRenseignementGeneraux: `
 UPDATE FRONT.EIG
 SET
   PERSONNEL = $2,
@@ -136,17 +149,57 @@ WHERE
   ID = $1
 RETURNING id
   `,
-  DELETE: `
+  delete: `
 DELETE FROM FRONT.EIG
 WHERE
     ID = $1
 `,
+  getEmailByTerCode: `
+WITH
+  roles AS
+  (
+    SELECT array_agg(id) as ids
+    from back.roles
+    WHERE label IN ('eig')
+  ),
+  users AS
+  (
+    SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
+    FROM back.users u
+    JOIN back.user_roles ur ON u.id = ur.use_id
+    WHERE u.ter_code = $1
+    GROUP BY mail
+  )
+SELECT mail
+FROM
+  roles r,
+  users u
+WHERE u.ids && r.ids`,
+  depose: `
+UPDATE FRONT.EIG
+SET
+    STATUT_ID = (
+        SELECT
+        ID
+    FROM
+        FRONT.EIG_STATUT
+    WHERE
+        STATUT = 'ENVOYE'
+    ),
+    IS_ATTESTE = TRUE
+WHERE
+    ID = $1
+  `,
 };
 
-module.exports.create = async ({ userId, demandeSejourId }) => {
+module.exports.create = async ({ userId, demandeSejourId, departement }) => {
   log.i("create - IN");
 
-  const response = await pool.query(query.CREATE, [userId, demandeSejourId]);
+  const response = await pool.query(query.create, [
+    userId,
+    demandeSejourId,
+    departement,
+  ]);
   log.d(response);
   const { id } = response.rows[0];
   log.i("create - DONE", { eigId: id });
@@ -156,7 +209,7 @@ module.exports.create = async ({ userId, demandeSejourId }) => {
 module.exports.getById = async ({ eigId }) => {
   log.i("create - IN");
 
-  const response = await pool.query(query.GET_BY_ID, [eigId]);
+  const response = await pool.query(query.getById, [eigId]);
   if (response.rows.length === 0) {
     throw new AppError("EIG non trouvé");
   }
@@ -176,7 +229,7 @@ module.exports.getById = async ({ eigId }) => {
 module.exports.getByDsId = async ({ dsId }) => {
   log.i("create - IN");
 
-  const response = await pool.query(query.GET_BY_DS_ID, [dsId]);
+  const response = await pool.query(query.getByDsId, [dsId]);
 
   log.d(response);
   log.i("create - DONE");
@@ -186,19 +239,39 @@ module.exports.getByDsId = async ({ dsId }) => {
 module.exports.getStatut = async (eigId) => {
   log.i("getStatut - IN");
 
-  const response = await pool.query(query.GET_STATUT, [eigId]);
+  const response = await pool.query(query.getStatut, [eigId]);
   log.d(response);
   log.i("getStatut - DONE");
   return response.rows?.[0]?.statut ?? null;
 };
 
-module.exports.updateDS = async (eigId, { demandeSejourId }) => {
+module.exports.updateDS = async (eigId, { demandeSejourId, departement }) => {
   log.i("updateDS - IN");
 
-  const response = await pool.query(query.UPDATE_DS, [demandeSejourId, eigId]);
+  const response = await pool.query(query.updateDs, [
+    demandeSejourId,
+    departement,
+    eigId,
+  ]);
   log.d(response);
   const { id } = response.rows[0];
   log.i("updateDS - DONE", { eigId: id });
+  return id;
+};
+
+module.exports.updateEmailAutresDestinataires = async (
+  eigId,
+  { emailAutresDestinataires },
+) => {
+  log.i("updateEmailAutresDestinataires - IN");
+
+  const response = await pool.query(query.updateEmailAutresDestinataires, [
+    emailAutresDestinataires,
+    eigId,
+  ]);
+  log.d(response);
+  const { id } = response.rows[0];
+  log.i("updateEmailAutresDestinataires - DONE", { eigId: id });
   return id;
 };
 
@@ -247,8 +320,8 @@ module.exports.updateType = async (
 
   try {
     await client.query("BEGIN");
-    await client.query(query.DELETE_EIG_TO_EIG_TYPE, [eigId]);
-    await client.query(query.INSERT_EIG_TO_EIG_TYPE(values), params);
+    await client.query(query.deleteEigToEigType, [eigId]);
+    await client.query(query.insertIntoEigToEigType(values), params);
     await client.query("COMMIT");
   } catch (e) {
     await client.query("ROLLBACK");
@@ -272,7 +345,7 @@ module.exports.updateRenseignementsGeneraux = async (
 ) => {
   log.i("updateRenseignementsGeneraux - IN");
 
-  const response = await pool.query(query.UPDATE_RENSEIGNEMENT_GENERAUX, [
+  const response = await pool.query(query.updateRenseignementGeneraux, [
     eigId,
     personnel,
     deroulement,
@@ -324,7 +397,7 @@ module.exports.getByUserId = async (
     params.push(`%${search.libelle}%`);
   }
 
-  let queryWithPagination = query.GET_BY_USER_ID(searchQuery);
+  let queryWithPagination = query.getByUserId(searchQuery);
 
   if (sortBy && sortDirection) {
     queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, EIG.CREATED_AT DESC`;
@@ -354,7 +427,7 @@ module.exports.getByUserId = async (
   }
 
   const total = (
-    await pool.query(query.GET_TOTAL(searchQuery, params), params)
+    await pool.query(query.getTotal(searchQuery, params), params)
   ).rows.find((t) => t.count)?.count;
 
   log.d(response);
@@ -365,14 +438,29 @@ module.exports.getByUserId = async (
   };
 };
 
+module.exports.getEmailByTerCode = async (terCode) => {
+  log.i("getEmailByTerCode - IN", terCode);
+  const { rows: data } = await pool.query(query.getEmailByTerCode, [terCode]);
+  log.i("getEmailByTerCode - DONE");
+  return data.map((m) => m.mail);
+};
+
+module.exports.depose = async (eigId) => {
+  log.i("depose - IN", eigId);
+
+  await pool.query(query.depose, [eigId]);
+  log.i("getEmailByTerCode - DONE");
+  return eigId;
+};
+
 module.exports.delete = async ({ eigId }) => {
   log.i("delete EIG - IN");
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
-    await client.query(query.DELETE_EIG_TO_EIG_TYPE, [eigId]);
-    await client.query(query.DELETE, [eigId]);
+    await client.query(query.deleteEigToEigType, [eigId]);
+    await client.query(query.delete, [eigId]);
     await client.query("COMMIT");
   } catch (e) {
     await client.query("ROLLBACK");

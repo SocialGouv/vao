@@ -239,6 +239,7 @@ SELECT
   ds.vacanciers as "vacanciers",
   ds.personnel as "personnel",
   ds.transport as "transport",
+  ds.hebergement as "hebergements",
   COALESCE(ds.projet_sejour, '{}'::jsonb) as "projetSejour",
   ds.sanitaires as "sanitaires",
   ds.files as "files",
