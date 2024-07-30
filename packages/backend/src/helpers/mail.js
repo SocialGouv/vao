@@ -1,4 +1,5 @@
 /* eslint-disable no-nested-ternary */
+/* eslint-disable no-nested-ternary */
 module.exports.getBody = (titre, content, signature) => {
   const baliseParagraphe = `<p style="Margin:0;mso-line-height-rule:exactly;font: 12px/14px sans-serif;">`;
 
@@ -51,9 +52,9 @@ module.exports.getBody = (titre, content, signature) => {
       <BR>
   `,
     )
-    .join("")} 
+    .join("")}
     </td>
-  </tr>  
+  </tr>
     `;
   }
 
@@ -90,7 +91,7 @@ module.exports.getBody = (titre, content, signature) => {
 
   function formatCode({ code }) {
     return `
-  <tr>                                
+  <tr>
     <td align="center" style="width="25%";padding:0;Margin:0;padding-top:15px">
       <p style="border: 0;line-height: 2.5;padding: 0 20px;font: 20px/22px sans-serif;text-align: center;color: #fff;background-color: #000091;">
         ${code}
@@ -115,7 +116,7 @@ module.exports.getBody = (titre, content, signature) => {
             </th>
         `,
           )
-          .join("")}       
+          .join("")}
       </tr>
       ${lines
         .map(
@@ -126,9 +127,9 @@ module.exports.getBody = (titre, content, signature) => {
             </tr>
       `,
         )
-        .join("")} 
-  </table>     
-  <BR> 
+        .join("")}
+  </table>
+  <BR>
       `;
   }
 
@@ -187,7 +188,7 @@ module.exports.getBody = (titre, content, signature) => {
         </table>
       </div>
     </body>
-  </html> 
+  </html>
   `;
   return corpsMail;
 };

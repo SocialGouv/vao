@@ -4,11 +4,11 @@
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <DsfrTag
-          v-if="selectedDemande"
+          v-if="selectedDemandeLabel"
           tag-name="button"
           icon="fr-icon-delete-line"
           class="fr-mb-4v"
-          :label="selectedDemande"
+          :label="selectedDemandeLabel"
           :disabled="!eigStore.canModify"
           @click="() => onDemandeSejourIdChange(null)"
         />
@@ -30,12 +30,27 @@
             @click="
               () => {
                 onDemandeSejourIdChange(demande.demandeSejourId);
+                search = '';
               }
             "
           >
             {{ eig.getTagSejourLibelle(demande) }}
           </DsfrTag>
         </div>
+      </div>
+      <div class="fr-fieldset__element">
+        <DsfrSelect
+          v-if="!!selectedDemande"
+          label="Selection du département ou a eu lieu l'EIG"
+          name="departements"
+          :close-on-select="true"
+          :options="departementsOptions"
+          :is-valid="departementMeta.valid"
+          :disabled="!eigStore.canModify"
+          :error-message="departementErrorMessage"
+          :model-value="departement"
+          @update:model-value="onDepartementChange"
+        />
       </div>
     </fieldset>
     <fieldset v-if="props.showButtons" class="fr-fieldset">
@@ -87,20 +102,33 @@ const filteredDemandes = computed(() =>
     .slice(0, 10),
 );
 const selectedDemande = computed(() => {
-  const demande = demandeSejourStore.demandes?.find(
-    (d) => d.demandeSejourId === demandeSejourId.value,
+  return (
+    demandeSejourStore.demandes?.find(
+      (d) => d.demandeSejourId === demandeSejourId.value,
+    ) ?? null
   );
-  if (!demande) {
+});
+
+const selectedDemandeLabel = computed(() => {
+  if (!selectedDemande.value) {
     return null;
   }
-  return eig.getTagSejourLibelle(demande);
+  return eig.getTagSejourLibelle(selectedDemande.value);
 });
+
+const departementsOptions = computed(
+  () =>
+    selectedDemande.value?.hebergements?.hebergements
+      ?.map((h) => h?.coordonnees?.adresse?.departement)
+      .filter((d) => !!d) ?? [],
+);
 
 const validationSchema = yup.object(eigSchema.selectionSejourSchema);
 const initialValues = {
   demandeSejourId:
     eigStore.currentEig?.demandeSejourId ??
     (!isNaN(route.query.dsId) ? parseInt(route.query.dsId) : null),
+  departement: eigStore.currentEig?.departement ?? null,
 };
 
 const { meta, values } = useForm({
@@ -111,6 +139,12 @@ const { meta, values } = useForm({
 
 const { value: demandeSejourId, handleChange: onDemandeSejourIdChange } =
   useField("demandeSejourId");
+const {
+  value: departement,
+  handleChange: onDepartementChange,
+  errorMessage: departementErrorMessage,
+  meta: departementMeta,
+} = useField("departement");
 
 const next = () => {
   if (!eigStore.canModify) {

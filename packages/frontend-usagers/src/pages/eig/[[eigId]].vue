@@ -31,7 +31,13 @@
             @next="nextHash"
             @previous="previousHash"
           />
-          <EIGRecap v-if="hash === 'eig-recap'" />
+          <EIGRecap
+            v-if="hash === 'eig-recap'"
+            :is-downloading="apiStatus.isDownloading"
+            :message="apiStatus.message"
+            @finalize="finalize"
+            @previous="previousHash"
+          />
         </div>
         <DsfrAlert>
           <p>
@@ -50,6 +56,8 @@
 </template>
 
 <script setup>
+import { eigModel } from "@vao/shared";
+
 definePageMeta({
   middleware: ["is-connected", "check-eig-id-param"],
 });
@@ -113,6 +121,7 @@ const updateOrCreate = async (data, type) => {
     );
   } finally {
     resetApiStatut();
+    data;
   }
 };
 
@@ -128,4 +137,27 @@ const nextHash = () => {
     hash: "#" + eigMenu[index + 1].id,
   });
 };
+
+async function finalize(body) {
+  log.i("finalize eig -IN");
+  setApiStatut("Transmission de l'eig en cours");
+  try {
+    await eigStore.updateEig(
+      eigId.value,
+      eigModel.UpdateTypes.EMAIL_AUTRES_DESTINATAIRES,
+      body,
+    );
+    await eigStore.depose(eigId.value, body);
+    toaster.success(`L'EIG a été déposé`);
+    log.d(`EIG ${eigId.value} deposé`);
+    return await navigateTo("/eig/liste");
+  } catch (error) {
+    log.w("Finalisation de la declaration de sejour : ", { error });
+    return toaster.error(
+      `Une erreur est survenue lors de la transmission de la déclaration de séjour`,
+    );
+  } finally {
+    resetApiStatut();
+  }
+}
 </script>

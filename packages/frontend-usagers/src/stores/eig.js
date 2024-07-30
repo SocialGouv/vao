@@ -99,6 +99,18 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
+    async depose(eigId, body) {
+      try {
+        return await $fetchBackend(`/eig/depose/${eigId}`, {
+          method: "POST",
+          credentials: "include",
+          body,
+        });
+      } catch (err) {
+        log.w("depose for one id - DONE with error", err);
+        throw err;
+      }
+    },
     async delete(eigId) {
       try {
         await $fetchBackend(`/eig/${eigId}`, {
