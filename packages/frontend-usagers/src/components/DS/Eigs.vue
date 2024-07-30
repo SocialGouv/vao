@@ -11,12 +11,27 @@
         </NuxtLink>
       </DsfrButton>
     </fieldset>
+    <ValidationModal
+      modal-ref="modal-eig-list"
+      name="delete-eig"
+      :opened="eigToDelete != null"
+      title="Suppression d'un EIG ?"
+      :on-close="closeEigModal"
+      :on-validate="deleteEig"
+      >Vous vous apprêtez à supprimer l'EIG : <br />
+      - {{ eigToDelete }}
+    </ValidationModal>
   </div>
 </template>
 
 <script setup>
 import dayjs from "dayjs";
 import EigStatusBadge from "~/components/EIG/EigStatusBadge.vue";
+import { ValidationModal } from "@vao/shared";
+
+const DsfrButton = resolveComponent("DsfrButton");
+
+const eigStore = useEigStore();
 
 const props = defineProps({
   eigs: { type: Array, default: () => [] },
@@ -24,6 +39,7 @@ const props = defineProps({
     type: Object,
     default: () => {},
   },
+  fetchEig: { type: Function, required: true },
 });
 
 const headers = [
@@ -65,10 +81,38 @@ const headers = [
     }),
     sort: true,
   },
+  {
+    text: "Actions",
+    component: ({ statut, id }) => ({
+      component: DsfrButton,
+      disabled: !eig.canDelete(statut),
+      onClick: (event) => {
+        event.stopPropagation();
+        eigToDelete.value = id;
+      },
+      label: "Suppression",
+      iconOnly: true,
+      icon: "ri-delete-bin-2-line",
+    }),
+  },
 ];
 
 const navigate = (item) => {
   navigateTo(`/eig/${item.id}`);
+};
+
+const eigToDelete = ref(null);
+
+const closeEigModal = () => (eigToDelete.value = null);
+const deleteEig = async () => {
+  try {
+    await eigStore.delete(eigToDelete.value);
+    await props.fetchEig();
+  } catch (e) {
+    toaster.error("Une erreur est survenue de la suppression de l'EIG");
+  } finally {
+    closeEigModal();
+  }
 };
 </script>
 

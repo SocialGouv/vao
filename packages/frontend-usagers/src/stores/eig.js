@@ -99,5 +99,16 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
+    async delete(eigId) {
+      try {
+        await $fetchBackend(`/eig/${eigId}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+      } catch (err) {
+        log.w("update for one id - DONE with error", err);
+        throw err;
+      }
+    },
   },
 });
