@@ -1,9 +1,9 @@
 import { $fetchBackend } from "./fetchBackend";
 import { logger } from "#imports";
 
-const log = logger("utils/UploadFile");
 
 export default async function UploadFile(category, file) {
+  const log = logger("utils/UploadFile");
   log.d("uploadFile - IN", { category, name: file.name });
   const body = new FormData();
   body.append("category", category);
