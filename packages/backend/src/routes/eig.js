@@ -1,6 +1,6 @@
 const express = require("express");
 const checkJWT = require("../middlewares/checkJWT");
-const canUpdateEig = require("../middlewares/can-update-eig");
+const canUpdateEig = require("../middlewares/can-update-or-delete-eig");
 const checkPermissionDeclarationSejourForEig = require("../middlewares/checkPermissionDeclarationSejourEig");
 const checkPermissionDeclarationSejour = require("../middlewares/checkPermissionDeclarationSejour");
 const checkPermissionEIG = require("../middlewares/checkPermissionEIG");
@@ -30,6 +30,14 @@ router.put(
   checkPermissionDeclarationSejourForEig,
   canUpdateEig,
   eigController.update,
+);
+
+router.delete(
+  "/:id",
+  checkJWT,
+  checkPermissionEIG,
+  canUpdateEig,
+  eigController.delete,
 );
 
 module.exports = router;

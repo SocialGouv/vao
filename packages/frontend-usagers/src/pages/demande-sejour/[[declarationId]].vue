@@ -215,7 +215,12 @@
         :selected="selectedTabIndex === 4"
         :asc="asc"
       >
-        <DSEigs v-if="eigs" :eigs="eigs.eigs" :ds="demandeCourante" />
+        <DSEigs
+          v-if="eigs"
+          :eigs="eigs.eigs"
+          :ds="demandeCourante"
+          :fetch-eig="executeEig"
+        />
         <DsfrAlert v-else-if="errorEigs" type="error"
           >Une erreur est survenue durant la récupération des eig
         </DsfrAlert>
