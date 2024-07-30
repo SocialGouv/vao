@@ -33,7 +33,7 @@
                   >
                     <template #option="{ option, isPointed }">
                       <MultiSelectOption
-                        :label="option.label"
+                        :label="`${option.label}`"
                         :is-pointed="isPointed(option)"
                       />
                     </template>
@@ -56,7 +56,7 @@
                   >
                     <template #option="{ option, isPointed }">
                       <MultiSelectOption
-                        :label="option.label"
+                        :label="`${option.label}`"
                         :is-pointed="isPointed(option)"
                       />
                     </template>
@@ -79,7 +79,7 @@
                   >
                     <template #option="{ option, isPointed }">
                       <MultiSelectOption
-                        :label="option.label"
+                        :label="`${option.label}`"
                         :is-pointed="isPointed(option)"
                       />
                     </template>
@@ -128,7 +128,7 @@
                   >
                     <template #option="{ option, isPointed }">
                       <MultiSelectOption
-                        :label="option.label"
+                        :label="`${option.label}`"
                         :is-pointed="isPointed(option)"
                       />
                     </template>
@@ -152,7 +152,7 @@
                   >
                     <template #option="{ option, isPointed }">
                       <MultiSelectOption
-                        :label="option.label"
+                        :label="`${option.label}`"
                         :is-pointed="isPointed(option)"
                       />
                     </template>
@@ -205,6 +205,7 @@ import MultiSelectOption from "~/components/utils/MultiSelectOption.vue";
 const log = logger("pages/demande-sejour/liste");
 const toaster = useToaster();
 
+
 definePageMeta({
   middleware: ["is-connected", "check-organisme-is-complet"],
 });
@@ -228,6 +229,7 @@ useHead({
     },
   ],
 });
+
 const navigate = (item) => {
   navigateTo(`/demande-sejour/${item.demandeSejourId}`);
 };
