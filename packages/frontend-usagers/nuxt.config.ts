@@ -59,6 +59,9 @@ export default defineNuxtConfig({
   },
   srcDir: "src",
   ssr: false,
+  sourcemap: {
+    client: true,
+  },
   vite: {
     plugins: [
       sentryVitePlugin({
