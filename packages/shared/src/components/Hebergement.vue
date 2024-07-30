@@ -566,7 +566,7 @@ import {
   DsfrCheckboxSet,
 } from "@gouvminint/vue-dsfr";
 import IsDownloading from "./IsDownloading.vue";
-import hebergementUtils from "../utils/hebergement";
+import { hebergement as hebergementUtils } from "@vao/shared";
 import FileUpload from "./FileUpload.vue";
 
 const toaster = useToaster();
@@ -597,8 +597,6 @@ const props = defineProps({
   defaultBackRoute: { type: String, required: true },
   cdnUrl: { type: String, required: true },
 });
-
-console.log(props.initHebergement);
 
 const log = logger("components/hebergement");
 
