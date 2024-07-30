@@ -426,6 +426,23 @@ LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 WHERE ((${departementQuery})
   AND statut <> 'BROUILLON'
   OR a.region_obtention = '${territoireCode}')`,
+  getHebergement: (demandeSejourId, departementCodes, hebergementIndex) => [
+    `
+SELECT
+  ds.id AS demande_sejour_id,
+  ds.date_debut AS date_sejour,
+  ds.departement_suivi AS departement,
+  h.hebergement AS hebergement
+FROM
+  front.demande_sejour ds,
+  jsonb_array_elements(ds.hebergement -> 'hebergements') WITH ORDINALITY AS h(hebergement, ordinality)
+WHERE
+  ds.id = $1
+  AND h.hebergement -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($2)
+  AND ordinality = $3
+    `,
+    [demandeSejourId, departementCodes, hebergementIndex],
+  ],
   getHebergementsByDepartementCodes: (
     departementCodes,
     { search, limit, offset, order, sort },
@@ -939,6 +956,24 @@ module.exports.getById = async (
   log.i("getById - DONE");
   log.d(demande);
   return demande[0];
+};
+
+module.exports.getHebergement = async (
+  demandeSejourId,
+  departementCodes,
+  hebergementId,
+) => {
+  log.i("getHebergement - IN");
+  try {
+    const { rows } = await pool.query(
+      ...query.getHebergement(demandeSejourId, departementCodes, hebergementId),
+    );
+    log.d("getHebergement - DONE");
+    return rows;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };
 
 module.exports.getHebergementsByDepartementCodes = async (

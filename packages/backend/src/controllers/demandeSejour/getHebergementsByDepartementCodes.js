@@ -13,16 +13,16 @@ module.exports = async function get(req, res) {
   const titleWithoutOrdering = sort.includes("-") ? sort.substring(1) : sort;
 
   const titles = [
-    "date_sejour",
+    "dateSejour",
     "departement",
     "nom",
-    "date_fin",
-    "date_debut",
+    "dateFin",
+    "dateDebut",
     "email",
     "telephone",
-    "nom_gestionnaire",
-    "date_visite",
-    "reglementation_erp",
+    "nomGestionnaire",
+    "dateVisite",
+    "reglementationErp",
   ];
 
   const titleSorted = titles.find((t) => t === titleWithoutOrdering)
