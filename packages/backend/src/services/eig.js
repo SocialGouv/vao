@@ -5,6 +5,31 @@ const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 
+const getEigListQuery = (where) => `
+SELECT
+  EIG.ID,
+  EIG.created_at as "createdAt",
+  S.STATUT AS "statut",
+  DS.ID_FONCTIONNELLE AS "idFonctionnelle",
+  DS.LIBELLE,
+  DS.DATE_DEBUT AS "dateDebut",
+  DS.DATE_FIN AS "dateFin",
+  ARRAY_AGG(ET.TYPE) as "types"
+FROM
+  FRONT.EIG EIG
+  INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+  LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
+  LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
+  LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
+  LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
+WHERE
+ ${where}
+GROUP BY
+  EIG.ID,
+  S.ID,
+  DS.ID
+  `;
+
 const query = {
   CREATE: `
   INSERT INTO
@@ -22,6 +47,7 @@ const query = {
 DELETE FROM FRONT.EIG_TO_EIG_TYPE
 WHERE
 EIG_ID = $1`,
+  GET_BY_DS_ID: getEigListQuery("DS.ID = $1"),
   GET_BY_ID: `
 SELECT
 EIG.ID,
@@ -37,6 +63,7 @@ EIG.ID,
   DS.ORGANISME -> 'personnePhysique' ->> 'nomUsage' AS "nom",
   DS.PERSONNEL -> 'encadrants' as "encadrants",
   DS.PERSONNEL -> 'accompagnants' as "accompagnants",
+  DS.STATUT as "dsStatut",
   JSONB_PATH_QUERY_ARRAY(DS.HEBERGEMENT,'$.hebergements.coordonnees.adresse.label') as "adresses",
   DS.PERIODE as "saison",
   ARRAY_AGG(JSON_BUILD_OBJECT('type',ET.TYPE,'categorie',EC.CATEGORIE,'precision',E2ET.PRECISIONS)) as "types",
@@ -59,31 +86,12 @@ GROUP BY
   S.ID,
   DS.ID;
   `,
-  GET_BY_USER_ID: (search) => `
-SELECT
-  EIG.ID,
-  EIG.created_at as "createdAt",
-  S.STATUT AS "statut",
-  DS.ID_FONCTIONNELLE AS "idFonctionnelle",
-  DS.LIBELLE,
-  DS.DATE_DEBUT AS "dateDebut",
-  DS.DATE_FIN AS "dateFin",
-  ARRAY_AGG(ET.TYPE) as "types"
-FROM
-  FRONT.EIG EIG
-  INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
-  LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
-  LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
-  LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
-  LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
-WHERE
-  UO.ORG_ID IN ( SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)
-  ${search.map((s) => ` AND ${s} `).join("")}
-GROUP BY
-  EIG.ID,
-  S.ID,
-  DS.ID
-  `,
+  GET_BY_USER_ID: (search) =>
+    getEigListQuery(
+      `
+    UO.ORG_ID IN ( SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)
+    ${search.map((s) => ` AND ${s} `).join("")}`,
+    ),
   GET_STATUT: `
   SELECT S.STATUT as statut
   FROM FRONT.EIG
@@ -128,6 +136,11 @@ WHERE
   ID = $1
 RETURNING id
   `,
+  DELETE: `
+DELETE FROM FRONT.EIG
+WHERE
+    ID = $1
+`,
 };
 
 module.exports.create = async ({ userId, demandeSejourId }) => {
@@ -158,6 +171,16 @@ module.exports.getById = async ({ eigId }) => {
     ...rawResult,
     types: (rawResult?.types ?? []).filter((t) => !!t.type),
   };
+};
+
+module.exports.getByDsId = async ({ dsId }) => {
+  log.i("create - IN");
+
+  const response = await pool.query(query.GET_BY_DS_ID, [dsId]);
+
+  log.d(response);
+  log.i("create - DONE");
+  return response.rows ?? [];
 };
 
 module.exports.getStatut = async (eigId) => {
@@ -340,4 +363,25 @@ module.exports.getByUserId = async (
     eigs: response.rows ?? [],
     total: total ? parseInt(total) : 0,
   };
+};
+
+module.exports.delete = async ({ eigId }) => {
+  log.i("delete EIG - IN");
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+    await client.query(query.DELETE_EIG_TO_EIG_TYPE, [eigId]);
+    await client.query(query.DELETE, [eigId]);
+    await client.query("COMMIT");
+  } catch (e) {
+    await client.query("ROLLBACK");
+    throw e;
+  } finally {
+    client.release();
+  }
+
+  log.i("delete EIG - OUT");
+
+  return eigId;
 };

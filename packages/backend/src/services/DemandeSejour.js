@@ -29,10 +29,10 @@ const query = {
   cancel: (declarationId, userId) => [
     `
     UPDATE front.demande_sejour d
-    SET statut = 'ANNULEE' 
+    SET statut = 'ANNULEE'
     FROM front.organismes o, front.user_organisme uo
-    WHERE 
-      o.id = d.organisme_id 
+    WHERE
+      o.id = d.organisme_id
       AND uo.org_id = o.id
       AND d.id = $1
       AND uo.use_id = $2;

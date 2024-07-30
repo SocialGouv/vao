@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { $fetchBackend, logger } from "#imports";
+import { $fetchBackend, eig, logger } from "#imports";
 import { eigModel } from "@vao/shared";
 
 const log = logger("stores/hebergement");
@@ -14,7 +14,12 @@ export const useEigStore = defineStore("eig", {
     canModify() {
       return (
         !this.currentEig ||
-        this.currentEig?.statut === eigModel.Statuts.BROUILLON
+        (this.currentEig?.statut === eigModel.Statuts.BROUILLON &&
+          eig.isDeclarationligibleToEig({
+            dateDebut: this.currentEig.dateDebut,
+            dateFIn: this.currentEig.dateFIn,
+            statut: this.currentEig.dsStatut,
+          }))
       );
     },
   },
@@ -88,6 +93,17 @@ export const useEigStore = defineStore("eig", {
           body: {
             parametre: data,
           },
+        });
+      } catch (err) {
+        log.w("update for one id - DONE with error", err);
+        throw err;
+      }
+    },
+    async delete(eigId) {
+      try {
+        await $fetchBackend(`/eig/${eigId}`, {
+          method: "DELETE",
+          credentials: "include",
         });
       } catch (err) {
         log.w("update for one id - DONE with error", err);
