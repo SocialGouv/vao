@@ -3,3 +3,4 @@ module.exports.getByDsId = require("./get-by-ds-id");
 module.exports.getById = require("./get-by-id");
 module.exports.create = require("./create");
 module.exports.update = require("./update");
+module.exports.delete = require("./delete");
