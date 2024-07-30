@@ -614,6 +614,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
+import { Hebergement } from "@vao/shared";
 
 const toaster = useToaster();
 const { apiStatus, setApiStatut, resetApiStatut } = useIsDownloading();

@@ -28,6 +28,7 @@
       :sort-by="sortBy"
       :sort-direction="sortDirection"
       :items-by-page="limit"
+      :on-click-cell="redirectOnHebergement"
       @update-sort="handleHupdateSort"
       @update-items-by-page="handleUpdateItemsByPage"
       @update-current-page="handleUpdateCurrentPage"
@@ -149,6 +150,10 @@ const handleUpdateItemsByPage = (val) => {
 const handleUpdateCurrentPage = (val) => {
   page.value = val;
   updateUrl();
+};
+
+const redirectOnHebergement = (row) => {
+  router.push(`hebergements/${row.declarationId}/${row.sejourIndex}`);
 };
 
 refreshTable();

@@ -562,6 +562,8 @@ const zoom = 16;
 
 const validationSchema = yup.object(hebergementUtils.schema);
 
+console.log(props.initHebergement);
+
 const initialValues = {
   nom: props.initHebergement.nom ?? null,
   coordonnees: {
