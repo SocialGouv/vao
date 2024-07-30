@@ -16,7 +16,7 @@ let regions, organismeSchema;
 
 const query = {
   create: `
-    INSERT INTO front.organismes (type_organisme, personne_morale, personne_physique) 
+    INSERT INTO front.organismes (type_organisme, personne_morale, personne_physique)
     VALUES ($1, $2, $3)
     RETURNING
       id as "organismeId"
@@ -31,16 +31,16 @@ const query = {
     protocoleTransport,
   }) => [
     `
-  UPDATE front.organismes 
-  SET       
+  UPDATE front.organismes
+  SET
     type_organisme = $2,
-    personne_morale = $3, 
+    personne_morale = $3,
     personne_physique = $4,
     protocole_sanitaire = $5,
     protocole_transport = $6,
     complet = true,
     edited_at = NOW()
-  WHERE 
+  WHERE
     id = $1
 `,
     [
@@ -63,11 +63,11 @@ const query = {
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
       o.protocole_sanitaire as "protocoleSanitaire",
-      CASE 
-        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False 
-        THEN 
+      CASE
+        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
+        THEN
         (
-            SELECT 
+            SELECT
               json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
@@ -75,30 +75,30 @@ const query = {
                 'file', file,
                 'createdAt', a.created_at
               ) as "agrement"
-            FROM front.agrements a            
-            JOIN front.organismes o2 ON o2.id = a.organisme_id 
+            FROM front.agrements a
+            JOIN front.organismes o2 ON o2.id = a.organisme_id
             WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
             AND a.supprime = false
         )
         ELSE (
-          SELECT 
+          SELECT
               json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'file', file,
                 'createdAt', a.created_at
-              ) as "agrement"               
-          FROM front.agrements a            
+              ) as "agrement"
+          FROM front.agrements a
           WHERE organisme_id = o.id
           AND a.supprime = false
-        ) 
+        )
       END AS agrement,
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
     JOIN front.user_organisme uo ON o.id = uo.org_id
-    WHERE 1 = 1 
+    WHERE 1 = 1
     ${Object.keys(criterias)
       .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
       .join(" ")}
@@ -115,11 +115,11 @@ const query = {
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
       o.protocole_sanitaire as "protocoleSanitaire",
-      CASE 
-        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False 
-        THEN 
+      CASE
+        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
+        THEN
         (
-            SELECT 
+            SELECT
               json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
@@ -127,24 +127,24 @@ const query = {
                 'file', file,
                 'createdAt', a.created_at
               ) as "agrement"
-            FROM front.agrements a            
-            JOIN front.organismes o2 ON o2.id = a.organisme_id 
+            FROM front.agrements a
+            JOIN front.organismes o2 ON o2.id = a.organisme_id
             WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
             AND a.supprime = false
         )
         ELSE (
-          SELECT 
+          SELECT
               json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'file', file,
                 'createdAt', a.created_at
-              ) as "agrement"               
-          FROM front.agrements a            
+              ) as "agrement"
+          FROM front.agrements a
           WHERE organisme_id = o.id
           AND a.supprime = false
-        ) 
+        )
       END AS agrement,
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
@@ -161,11 +161,11 @@ const query = {
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
       o.protocole_sanitaire as "protocoleSanitaire",
-      CASE 
-        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False 
-        THEN 
+      CASE
+        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
+        THEN
         (
-            SELECT 
+            SELECT
               json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
@@ -173,24 +173,24 @@ const query = {
                 'file', file,
                 'createdAt', a.created_at
               ) as "agrement"
-            FROM front.agrements a            
-            JOIN front.organismes o2 ON o2.id = a.organisme_id 
+            FROM front.agrements a
+            JOIN front.organismes o2 ON o2.id = a.organisme_id
             WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
             AND a.supprime = false
         )
         ELSE (
-          SELECT 
+          SELECT
               json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'file', file,
                 'createdAt', a.created_at
-              ) as "agrement"               
-          FROM front.agrements a            
+              ) as "agrement"
+          FROM front.agrements a
           WHERE organisme_id = o.id
           AND a.supprime = false
-        ) 
+        )
       END AS agrement,
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
@@ -206,34 +206,34 @@ const query = {
       o.personne_morale->>'siret' AS "siret",
       o.personne_morale->>'raisonSociale' AS "raisonSociale",
       o.personne_physique->>'nomNaissance' AS "nomPersonnePhysique",
-      CASE 
-        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False 
-        THEN 
+      CASE
+        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
+        THEN
         (
-            SELECT 
+            SELECT
               json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'file', file
               ) AS "agrement"
-            FROM front.agrements a            
-            JOIN front.organismes o2 ON o2.id = a.organisme_id 
+            FROM front.agrements a
+            JOIN front.organismes o2 ON o2.id = a.organisme_id
             WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
             AND a.supprime = false
         )
         ELSE (
-          SELECT 
+          SELECT
               json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'file', file
-              ) AS "agrement"               
-          FROM front.agrements a            
+              ) AS "agrement"
+          FROM front.agrements a
           WHERE organisme_id = o.id
           AND a.supprime = false
-        ) 
+        )
       END AS agrement,
       o.edited_at AS "editedAt"
     FROM front.organismes o
@@ -261,11 +261,11 @@ FROM back.organisme_non_agree ona
       o.personne_physique as "personnePhysique",
       o.protocole_transport as "protocoleTransport",
       o.protocole_sanitaire as "protocoleSanitaire",
-      CASE 
-        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False 
-        THEN 
+      CASE
+        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
+        THEN
         (
-            SELECT 
+            SELECT
               json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
@@ -273,30 +273,30 @@ FROM back.organisme_non_agree ona
                 'file', file,
                 'createdAt', a.created_at
               ) as "agrement"
-            FROM front.agrements a            
-            JOIN front.organismes o2 ON o2.id = a.organisme_id 
+            FROM front.agrements a
+            JOIN front.organismes o2 ON o2.id = a.organisme_id
             WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
             AND a.supprime = false
         )
         ELSE (
-          SELECT 
+          SELECT
               json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'file', file,
                 'createdAt', a.created_at
-              ) as "agrement"               
-          FROM front.agrements a            
+              ) as "agrement"
+          FROM front.agrements a
           WHERE organisme_id = o.id
           AND a.supprime = false
-        ) 
+        )
       END AS agrement,
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
     JOIN front.user_organisme uo ON o.id = org_id
-    WHERE o.personne_morale->>'siren' = $1 
+    WHERE o.personne_morale->>'siren' = $1
       AND o.personne_morale->>'siegeSocial' = 'true'
 `,
   link: `
@@ -305,26 +305,26 @@ FROM back.organisme_non_agree ona
     RETURNING use_id as "userLinked"
 `,
   updatePersonne: `
-    UPDATE front.organismes 
-    SET 
+    UPDATE front.organismes
+    SET
       type_organisme = $2,
-      personne_morale = $3, 
+      personne_morale = $3,
       personne_physique = $4,
       complet = complet AND $5,
       edited_at = NOW()
     WHERE id = $1
   `,
   updateSanitaire: `
-    UPDATE front.organismes 
-    SET 
+    UPDATE front.organismes
+    SET
       protocole_sanitaire = $2,
       complet = complet AND $3,
       edited_at = NOW()
     WHERE id = $1
 `,
   updateTransport: `
-    UPDATE front.organismes 
-    SET 
+    UPDATE front.organismes
+    SET
       protocole_transport = $2,
       complet = complet AND $3,
       edited_at = NOW()

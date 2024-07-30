@@ -38,6 +38,7 @@ module.exports = async (req, res, next) => {
   try {
     const eigId = await eigService.create({
       demandeSejourId: eig.demandeSejourId,
+      departement: eig.departement,
       userId,
     });
     return res.status(200).json({ id: eigId, userId });

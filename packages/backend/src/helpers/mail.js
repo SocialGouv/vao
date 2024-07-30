@@ -51,9 +51,9 @@ module.exports.getBody = (titre, content, signature) => {
       <BR>
   `,
     )
-    .join("")} 
+    .join("")}
     </td>
-  </tr>  
+  </tr>
     `;
   }
 
@@ -73,7 +73,7 @@ module.exports.getBody = (titre, content, signature) => {
     )
     .join("")}
     </td>
-  </tr>  
+  </tr>
     `;
   }
 
@@ -135,7 +135,7 @@ module.exports.getBody = (titre, content, signature) => {
             </th>
         `,
           )
-          .join("")}       
+          .join("")}
       </tr>
       ${lines
         .map(
@@ -146,9 +146,9 @@ module.exports.getBody = (titre, content, signature) => {
             </tr>
       `,
         )
-        .join("")} 
-  </table>     
-  <BR> 
+        .join("")}
+  </table>
+  <BR>
       `;
   }
 
@@ -207,7 +207,7 @@ module.exports.getBody = (titre, content, signature) => {
         </table>
       </div>
     </body>
-  </html> 
+  </html>
   `;
   return corpsMail;
 };
