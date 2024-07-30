@@ -423,6 +423,23 @@ LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 WHERE ((${departementQuery})
   AND statut <> 'BROUILLON'
   OR a.region_obtention = '${territoireCode}')`,
+  getHebergement: (demandeSejourId, departementCodes, hebergementIndex) => [
+    `
+SELECT
+  ds.id AS demande_sejour_id,
+  ds.date_debut AS date_sejour,
+  ds.departement_suivi AS departement,
+  h.hebergement AS hebergement
+FROM
+  front.demande_sejour ds,
+  jsonb_array_elements(ds.hebergement -> 'hebergements') WITH ORDINALITY AS h(hebergement, ordinality)
+WHERE
+  ds.id = $1
+  AND h.hebergement -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($2)
+  AND ordinality = $3
+    `,
+    [demandeSejourId, departementCodes, hebergementIndex],
+  ],
   getHebergementsByDepartementCodes: (
     departementCodes,
     { search, limit, offset, order, sort },
@@ -430,22 +447,27 @@ WHERE ((${departementQuery})
     `
   WITH filtered_hebergements AS (
     SELECT
-      ds.id AS demande_sejour_id,
-      ds.date_debut as date_sejour,
+      ds.id AS "declarationId",
+      ds.date_debut as "datesejour",
       ds.departement_suivi as departement,
       h.hebergement ->> 'nom' AS nom,
-      h.hebergement ->> 'dateFin' AS date_fin,
-      h.hebergement ->> 'dateDebut' AS date_debut,
+      h.hebergement ->> 'dateFin' AS "dateFin",
+      h.hebergement ->> 'dateDebut' AS "dateDebut",
       h.hebergement -> 'coordonnees' ->> 'email' AS email,
       h.hebergement -> 'coordonnees' ->> 'numTelephone1' AS telephone,
-      h.hebergement -> 'coordonnees' ->> 'nomGestionnaire' AS nom_gestionnaire,
+      h.hebergement -> 'coordonnees' ->> 'nomGestionnaire' AS "nomGestionnaire",
       h.hebergement -> 'coordonnees' -> 'adresse'  AS adresse,
-      h.hebergement -> 'informationsLocaux' ->> 'type' AS type_hebergement,
-      h.hebergement -> 'informationsLocaux' ->> 'visiteLocauxAt' AS date_visite,
-      h.hebergement -> 'informationsLocaux' ->> 'reglementationErp' AS reglementation_erp
+      h.hebergement -> 'informationsLocaux' ->> 'type' AS "typeHebergement",
+      h.hebergement -> 'informationsLocaux' ->> 'visiteLocauxAt' AS "dateVisite",
+      CASE
+        WHEN h.hebergement -> 'informationsLocaux' ->> 'reglementationErp' = 'true' THEN TRUE
+        WHEN h.hebergement -> 'informationsLocaux' ->> 'reglementationErp' = 'false' THEN FALSE
+        ELSE NULL
+      END AS "reglementationErp",
+      ordinality AS "sejourIndex"
     FROM 
       front.demande_sejour ds,
-      jsonb_array_elements(ds.hebergement -> 'hebergements') AS h(hebergement)
+      jsonb_array_elements(ds.hebergement -> 'hebergements') WITH ORDINALITY AS h(hebergement, ordinality)
     WHERE 
       ds.statut <> 'BROUILLON'
       AND h.hebergement -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($1)
@@ -454,7 +476,7 @@ WHERE ((${departementQuery})
         h.hebergement -> 'coordonnees' ->> 'email' ILIKE '%' || $2 || '%' OR
         h.hebergement -> 'coordonnees' -> 'adresse' ->> 'label' ILIKE '%' || $2 || '%'
       )
-    ORDER BY ${sort} ${order}
+    ORDER BY "${sort}" ${order}
   ),
   total_count AS (
     SELECT COUNT(*) AS count FROM filtered_hebergements
@@ -920,6 +942,24 @@ module.exports.getById = async (declarationId, departements) => {
 
   log.i("getById - DONE");
   return declarations[0];
+};
+
+module.exports.getHebergement = async (
+  demandeSejourId,
+  departementCodes,
+  hebergementId,
+) => {
+  log.i("getHebergement - IN");
+  try {
+    const { rows } = await pool.query(
+      ...query.getHebergement(demandeSejourId, departementCodes, hebergementId),
+    );
+    log.d("getHebergement - DONE");
+    return rows;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
 };
 
 module.exports.getHebergementsByDepartementCodes = async (

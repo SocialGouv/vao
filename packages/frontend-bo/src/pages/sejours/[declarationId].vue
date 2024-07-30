@@ -61,7 +61,7 @@
         <Chat
           ref="chatRef"
           :messages="demandeStore.messages"
-          :backend-url="`${config.public.backendUrl}/documents/`"
+          :cdn="`${config.public.backendUrl}/documents/`"
           :is-loading="isSendingMessage"
           @send="sendMessage"
         />

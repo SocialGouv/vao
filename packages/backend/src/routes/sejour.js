@@ -49,6 +49,13 @@ router.get(
   demandeSejourController.getHebergementsByDepartementCodes,
 );
 router.get(
+  "/admin/hebergement/:sejourId/:hebergementId",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  demandeSejourController.getHebergement,
+);
+router.get(
   "/admin/historique/:declarationId",
   boCheckJWT,
   boCheckRoleDS,
