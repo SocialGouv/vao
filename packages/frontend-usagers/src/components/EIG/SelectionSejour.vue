@@ -55,7 +55,6 @@
 </template>
 
 <script setup>
-import dayjs from "dayjs";
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
 import { eigModel, eigSchema } from "@vao/shared";
@@ -74,14 +73,13 @@ demandeSejourStore.fetchDemandes();
 
 const search = ref("");
 
+const route = useRoute();
+
 const filteredDemandes = computed(() =>
   demandeSejourStore.demandes
     .filter(
       (d) =>
-        d.dateDebut <= dayjs().format("YYYY-MM-DD") &&
-        dayjs(d.dateFin).add(1, "week").format("YYYY-MM-DD") >=
-          dayjs().format("YYYY-MM-DD") &&
-        d.statut !== DeclarationSejour.statuts.BROUILLON &&
+        eig.isDeclarationligibleToEig(d) &&
         (new RegExp(search.value, "i").test(d.idFonctionnelle) ||
           new RegExp(search.value, "i").test(d.libelle)) &&
         d.demandeSejourId !== demandeSejourId.value,
@@ -100,7 +98,9 @@ const selectedDemande = computed(() => {
 
 const validationSchema = yup.object(eigSchema.selectionSejourSchema);
 const initialValues = {
-  demandeSejourId: eigStore.currentEig?.demandeSejourId ?? null,
+  demandeSejourId:
+    eigStore.currentEig?.demandeSejourId ??
+    (!isNaN(route.query.dsId) ? parseInt(route.query.dsId) : null),
 };
 
 const { meta, values } = useForm({
@@ -117,7 +117,7 @@ const next = () => {
     return emit("next");
   }
 
-  if (!meta.value.dirty) {
+  if (!route.query.dsId && !meta.value.dirty) {
     return emit("next");
   }
 

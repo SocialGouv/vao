@@ -66,4 +66,8 @@ module.exports.idDeclarationeligibleToEig = (d) =>
   d.dateDebut <= dayjs().format("YYYY-MM-DD") &&
   dayjs(d.dateFin).add(1, "week").format("YYYY-MM-DD") >=
     dayjs().format("YYYY-MM-DD") &&
-  d.statut !== dsStatuts.statuts.BROUILLON;
+  ![
+    dsStatuts.statuts.BROUILLON,
+    dsStatuts.statuts.ABANDONNEE,
+    dsStatuts.statuts.ANNULEE,
+  ].includes(d.statut);
