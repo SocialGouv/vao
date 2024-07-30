@@ -1,4 +1,6 @@
 const Sentry = require("@sentry/node");
+const { nodeProfilingIntegration } = require("@sentry/profiling-node");
+
 const config = require("./config");
 
 if (config.sentry.enabled) {
@@ -15,7 +17,9 @@ if (config.sentry.enabled) {
           },
         },
       }),
+      nodeProfilingIntegration(),
     ],
+    profilesSampleRate: 1.0,
     release: config.sentry.release,
     tracesSampleRate: 1.0,
   });
