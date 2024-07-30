@@ -48,6 +48,16 @@ RUN --mount=type=secret,id=sentry_auth_token \
     && yarn workspace @vao/frontend-usagers generate
 
 
-FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.3
+FROM nginxinc/nginx-unprivileged:1.27-alpine
+
+COPY packages/frontend-usagers/nginx.conf /etc/nginx/
+
+USER 0
+RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 755 /usr/share/nginx/html \
+    && chown -R nginx:nginx /etc/nginx
+
+USER 101
+
+CMD ["nginx", "-g", "daemon off;"]
 
 COPY --from=builder --chown=101:101 /app/packages/frontend-usagers/.output/public /usr/share/nginx/html
