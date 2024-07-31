@@ -3,6 +3,8 @@ pg:
   cnpg-cluster:
     persistence:
       size: "50Gi"
+    annotations:
+      oblik.socialgouv.io/enabled: "false"
 
 backend:
   ~chart: app
