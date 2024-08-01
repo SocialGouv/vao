@@ -6,6 +6,8 @@ const checkJWT = require("../middlewares/checkJWT");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 const boCheckRole = require("../middlewares/bo-check-role");
 const checkPermissionDeclarationSejour = require("../middlewares/checkPermissionDeclarationSejour");
+const checkPermissionBODeclarationSejour = require("../middlewares/checkPermissionBODeclarationSejour");
+const checkPermissionBODeclarationSejourUpdate = require("../middlewares/checkPermissionBODeclarationSejourUpdate");
 
 const demandeSejourController = require("../controllers/demandeSejour");
 const getDepartements = require("../middlewares/getDepartements");
@@ -32,16 +34,19 @@ router.get(
   demandeSejourController.getExtract,
 );
 router.get(
-  "/admin/:id",
+  "/admin/:declarationId",
   boCheckJWT,
   boCheckRoleDS,
   getDepartements,
+  checkPermissionBODeclarationSejour,
   demandeSejourController.getByIdBo,
 );
 router.get(
-  "/admin/historique/:id",
+  "/admin/historique/:declarationId",
   boCheckJWT,
   boCheckRoleDS,
+  getDepartements,
+  checkPermissionBODeclarationSejour,
   demandeSejourController.historique,
 );
 router.post(
@@ -49,6 +54,7 @@ router.post(
   boCheckJWT,
   boCheckRoleDS,
   getDepartements,
+  checkPermissionBODeclarationSejourUpdate,
   demandeSejourController.prendEnCharge,
 );
 router.post(
@@ -56,6 +62,7 @@ router.post(
   boCheckJWT,
   boCheckRoleDS,
   getDepartements,
+  checkPermissionBODeclarationSejourUpdate,
   demandeSejourController.demandeComplements,
 );
 router.post(
@@ -63,6 +70,7 @@ router.post(
   boCheckJWT,
   boCheckRoleDS,
   getDepartements,
+  checkPermissionBODeclarationSejourUpdate,
   demandeSejourController.refus,
 );
 router.post(
@@ -70,16 +78,17 @@ router.post(
   boCheckJWT,
   boCheckRoleDS,
   getDepartements,
+  checkPermissionBODeclarationSejourUpdate,
   demandeSejourController.enregistrementDemande2Mois,
 );
 router.get(
-  "/:id",
+  "/:declarationId",
   checkJWT,
   checkPermissionDeclarationSejour,
   demandeSejourController.getById,
 );
 router.get(
-  "/historique/:id",
+  "/historique/:declarationId",
   checkJWT,
   checkPermissionDeclarationSejour,
   demandeSejourController.historique,
@@ -87,19 +96,19 @@ router.get(
 
 router.get("/", checkJWT, demandeSejourController.get);
 router.post(
-  "/depose/:id",
+  "/depose/:declarationId",
   checkJWT,
   checkPermissionDeclarationSejour,
   demandeSejourController.depose,
 );
 router.post(
-  "/:id/copy",
+  "/:declarationId/copy",
   checkJWT,
   checkPermissionDeclarationSejour,
   demandeSejourController.copy,
 );
 router.post(
-  "/:id",
+  "/:declarationId",
   checkJWT,
   checkPermissionDeclarationSejour,
   canUpdateDs,
@@ -107,13 +116,13 @@ router.post(
 );
 router.post("/", checkJWT, demandeSejourController.post);
 router.delete(
-  "/:id",
+  "/:declarationId",
   checkJWT,
   checkPermissionDeclarationSejour,
   demandeSejourController.delete,
 );
 router.post(
-  "/cancel/:id",
+  "/cancel/:declarationId",
   checkJWT,
   checkPermissionDeclarationSejour,
   demandeSejourController.cancel,

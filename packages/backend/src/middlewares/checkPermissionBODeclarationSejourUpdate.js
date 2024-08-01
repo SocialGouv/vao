@@ -5,14 +5,14 @@ const pool = require("../utils/pgpool").getPool();
 const log = logger(module.filename);
 
 async function checkPermissionDeclarationSejour(req, res, next) {
-  const { id: userId } = req.decoded;
   const { declarationId } = req.params;
+  const { departements } = req;
   log.i("IN");
 
-  if (!declarationId) {
+  if (!declarationId || !departements) {
     return next(
       new AppError(
-        "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
+        "Vous n'êtes pas autorisé à modifier à cette déclaration de séjour",
         {
           statusCode: 403,
         },
@@ -21,19 +21,21 @@ async function checkPermissionDeclarationSejour(req, res, next) {
   }
 
   const query = `
-      SELECT ds.id 
+      SELECT 
+         ds.id
       FROM 
       front.demande_sejour ds
-      JOIN front.user_organisme uo ON uo.org_id = ds.organisme_id
-      JOIN front.users u ON uo.use_id = u.id
       WHERE ds.id = $1
-      AND u.id = $2
+      AND ds.departement_suivi = ANY($2)
     `;
-  const { rows } = await pool.query(query, [declarationId, userId]);
+  const { rows } = await pool.query(query, [
+    declarationId,
+    departements.map((d) => d.value),
+  ]);
   if (!rows || rows.length !== 1) {
     return next(
       new AppError(
-        "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
+        "Vous n'êtes pas autorisé à modifier à cette déclaration de séjour",
         {
           statusCode: 403,
         },
