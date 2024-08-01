@@ -44,8 +44,6 @@ definePageMeta({
   middleware: ["is-connected"],
 });
 
-console.log("simple");
-
 const route = useRoute();
 const router = useRouter();
 const hebergementStore = useHebergementStore();
@@ -64,14 +62,14 @@ const toaster = useToaster();
 const hebergementId = parseInt(route.params.hebergementId, 10);
 if (isNaN(hebergementId)) {
   toaster.error("Cet hébergement n'existe pas");
-  router.push("/hebergements/simple");
+  navigateTo("/hebergements/simple");
 }
 try {
   await hebergementStore.getHebergement(route.params.hebergementId);
 } catch (error) {
   if (error?.response?.status === 404) {
     toaster.error("Cet hébergement n'existe pas");
-    router.push("/hebergements/simple");
+    navigateTo("/hebergements/simple");
   }
   throw error;
 }

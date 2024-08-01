@@ -42,7 +42,6 @@ module.exports = async function get(req, res) {
       offset,
     });
   } catch (error) {
-    console.log(error);
     log.w("DONE with error");
     return res.status(400).json({
       message:

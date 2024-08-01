@@ -196,7 +196,7 @@
           <Chat
             ref="chatRef"
             :messages="demandeSejourStore.messages"
-            :cdn="`${config.public.backendUrl}/documents/`"
+            :cdn-url="`${config.public.backendUrl}/documents/`"
             :is-loading="isSendingMessage"
             @send="sendMessage"
           />

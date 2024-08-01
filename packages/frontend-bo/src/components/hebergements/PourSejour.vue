@@ -61,11 +61,8 @@ const headers = [
   },
 ];
 
-const router = useRouter();
-
 const redirectOnHebergement = (row) => {
-  console.log(row);
-  router.push(
+  navigateTo(
     `/hebergements/pour-sejour/${row.declarationId}/${row.hebergementIndex}`,
   );
 };

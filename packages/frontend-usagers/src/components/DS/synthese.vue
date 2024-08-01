@@ -307,7 +307,7 @@
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
-import IsDownloading from "~/components/utils/IsDownloading.vue";
+import { IsDownloading } from "@vao/shared";
 
 const props = defineProps({
   declarationCourante: { type: Object, default: null, required: true },

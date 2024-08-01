@@ -21,7 +21,6 @@
 
 <script lang="ts" setup>
 import dayjs from "dayjs";
-import { defineProps } from "vue";
 defineProps<{
   message: string;
   name: string;

@@ -950,16 +950,11 @@ module.exports.getHebergement = async (
   hebergementId,
 ) => {
   log.i("getHebergement - IN");
-  try {
-    const { rows } = await pool.query(
-      ...query.getHebergement(demandeSejourId, departementCodes, hebergementId),
-    );
-    log.d("getHebergement - DONE");
-    return rows;
-  } catch (error) {
-    console.log(error);
-    throw error;
-  }
+  const { rows } = await pool.query(
+    ...query.getHebergement(demandeSejourId, departementCodes, hebergementId),
+  );
+  log.d("getHebergement - DONE");
+  return rows;
 };
 
 module.exports.getHebergementsByDepartementCodes = async (

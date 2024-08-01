@@ -27,7 +27,7 @@
 
 <script setup>
 import { DsfrButtonGroup, DsfrFileUpload } from "@gouvminint/vue-dsfr";
-import { defineProps, defineModel, computed } from "vue";
+import { computed } from "vue";
 import dayjs from "dayjs";
 const props = defineProps({
   modifiable: { type: Boolean, default: true },

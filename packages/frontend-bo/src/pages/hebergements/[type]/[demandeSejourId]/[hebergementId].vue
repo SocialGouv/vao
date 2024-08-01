@@ -44,8 +44,6 @@ definePageMeta({
   middleware: ["is-connected"],
 });
 
-console.log("sejour");
-
 const route = useRoute();
 const router = useRouter();
 const demandeSejourStore = useDemandeSejourStore();
@@ -65,7 +63,7 @@ const demandeSejourId = parseInt(route.params.demandeSejourId, 10);
 const hebergementId = parseInt(route.params.hebergementId, 10);
 if (isNaN(demandeSejourId) || isNaN(hebergementId)) {
   toaster.error("Cet hébergement n'existe pas");
-  router.push("/hebergements/pour-sejours");
+  navigateTo("/hebergements/pour-sejours");
 }
 try {
   await demandeSejourStore.getHebergement(
@@ -75,7 +73,7 @@ try {
 } catch (error) {
   if (error?.response?.status === 404) {
     toaster.error("Cet hébergement n'existe pas");
-    router.push("/hebergements/pour-sejours");
+    navigateTo("/hebergements/pour-sejours");
   }
   throw error;
 }

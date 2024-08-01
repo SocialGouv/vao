@@ -56,12 +56,11 @@ const headers = [
   },
 ];
 
-const router = useRouter();
-const table = ref(null);
-
 const redirectOnHebergement = (row) => {
-  router.push(`/hebergements/simple/${row.id}`);
+  navigateTo(`/hebergements/simple/${row.id}`);
 };
+
+const table = ref(null);
 
 defineExpose({
   refreshTable() {
