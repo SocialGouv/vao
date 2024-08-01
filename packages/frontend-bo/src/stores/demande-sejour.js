@@ -166,5 +166,25 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         this.isGetHebergementLoading = false;
       }
     },
+    async readMessages(declarationId) {
+      try {
+        const { readMessages } = await $fetchBackend(
+          `/message/admin/read/${declarationId}`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+
+        if (readMessages) {
+          log.i("readMessages - DONE");
+        } else {
+          throw new Error("erreur sur la lecture des messages");
+        }
+      } catch (err) {
+        log.w("readMessages - DONE with error", err);
+        throw err;
+      }
+    },
   },
 });

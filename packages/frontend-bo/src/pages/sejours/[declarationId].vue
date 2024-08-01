@@ -191,11 +191,15 @@ const selectedTabIndex = ref(initialSelectedIndex);
 
 const config = useRuntimeConfig();
 
-const selectTab = (idx) => {
+const selectTab = async (idx) => {
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
   if (idx === 2 && !historique.value) {
     execute();
+  }
+  if (idx === 3) {
+    await demandeStore.readMessages(route.params.declarationId);
+    demandeStore.fetchMessages(route.params.declarationId);
   }
 };
 
@@ -228,7 +232,7 @@ const isOrganismeNonAgree = computed(() => {
 onMounted(async () => {
   try {
     await demandeStore.setCurrentDemande(route.params.declarationId);
-    fetchMessages();
+    demandeStore.fetchMessages(route.params.declarationId);
   } catch (e) {
     navigateTo("/sejours");
   }
@@ -273,15 +277,25 @@ const sendMessage = async ({ message, file }) => {
       `Une erreur est survenue lors de l'envoi de votre message`,
     );
   }
-  fetchMessages();
+  demandeStore.fetchMessages(route.params.declarationId);
 };
 
-const tabTitles = [
-  { title: " Formulaire" },
+const unreadMessages = computed(() => {
+  const nb = demandeStore.messages.filter(
+    (m) => !m.readAt && m.frontUserId,
+  ).length;
+  return nb && nb > 0 ? `(${nb})` : "";
+});
+
+const tabTitles = computed(() => [
+  { title: "Formulaire" },
   { title: "Documents joints" },
   { title: "Historique de la déclaration" },
-  { title: "Messagerie" },
-];
+  {
+    title: `Messagerie ${unreadMessages.value}`,
+    icon: `${unreadMessages.value ? "ri-feedback-line" : ""}`,
+  },
+]);
 
 const modalComplement = reactive({
   opened: false,
@@ -295,9 +309,6 @@ const modalEnregistrement2Mois = reactive({
   opened: false,
 });
 
-const fetchMessages = () => {
-  demandeStore.fetchMessages(route.params.declarationId);
-};
 const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
 };

@@ -47,6 +47,7 @@ module.exports = async function post(req, res, next) {
       declaration.departementSuivi,
     );
 
+    log.i(destinataires);
     if (destinataires && destinataires.length > 0) {
       await Send(
         MailUtils.bo.declarationSejour.sendMessageNotify({
@@ -56,7 +57,7 @@ module.exports = async function post(req, res, next) {
       );
     }
   } catch (error) {
-    log.w("erreur sur l'envoi de mail a l'organisme :", error);
+    log.w("erreur sur l'envoi de mail au service déconcentré :", error);
   }
   return res.status(200).json({
     id,

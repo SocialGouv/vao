@@ -48,9 +48,10 @@ module.exports = async function post(req, res, next) {
 
     if (destinataires) {
       await Send(
-        MailUtils.usagers.declarationSejour.sendMessageMail({
+        MailUtils.usagers.declarationSejour.sendMessageNotify({
           declaration,
           destinataires,
+          message,
         }),
       );
     }

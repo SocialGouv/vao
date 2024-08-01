@@ -709,6 +709,53 @@ module.exports = {
 
         return params;
       },
+      sendMessageNotify: ({ declaration, destinataires, message }) => {
+        log.i("sendMessageNotify - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const message = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendMessageNotify - ${message}`);
+          throw new AppError(message);
+        }
+
+        log.i(message);
+        const link = `${frontUsagersDomain}/sejours/${declaration.id}`;
+        const html = sendTemplate.getBody(
+          "Portail VAO - Nouveau message",
+          [
+            {
+              p: [
+                "Bonjour,",
+                `Le message ci dessous vous a été adressé sur la déclaration ${declaration.idFonctionnelle}. Il est consultable dans l'onglet Messagerie.`,
+              ],
+              type: "p",
+            },
+            {
+              p: [`${message}`],
+              type: "quote",
+            },
+            {
+              link,
+              text: "Accéder à ma déclaration",
+              type: "link",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: `nouveau message sur la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendMessageNotify post email", {
+          params,
+        });
+
+        return params;
+      },
       sendRefusMail: ({ destinataires, comment, declaration }) => {
         log.i("sendRefusMail - In", {
           destinataires,
