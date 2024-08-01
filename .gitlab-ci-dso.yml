@@ -34,11 +34,29 @@ build-backend:
   extends:
     - .kaniko:simple-build-push
 
+build-migrations:
+  variables:
+    WORKING_DIR: packages/migrations
+    DOCKERFILE: Dockerfile
+    IMAGE_NAME: migrations
+  stage: build-images
+  extends:
+    - .kaniko:simple-build-push
+
 build-frontend-usagers:
   variables:
     WORKING_DIR: "."
     DOCKERFILE: packages/frontend-usagers/Dockerfile
     IMAGE_NAME: frontend-usagers
+  stage: build-images
+  extends:
+    - .kaniko:simple-build-push
+
+build-frontend-bo:
+  variables:
+    WORKING_DIR: "."
+    DOCKERFILE: packages/frontend-bo/Dockerfile
+    IMAGE_NAME: frontend-bo
   stage: build-images
   extends:
     - .kaniko:simple-build-push
