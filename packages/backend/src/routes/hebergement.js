@@ -5,8 +5,15 @@ const router = express.Router();
 const checkJWT = require("../middlewares/checkJWT");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 const checkPermissionHebergement = require("../middlewares/checkPermissionHebergement");
+const getDepartements = require("../middlewares/getDepartements");
 const hebergementController = require("../controllers/hebergement");
 
+router.get(
+  "/admin/",
+  boCheckJWT,
+  getDepartements,
+  hebergementController.getByDepartements,
+);
 // Gère une connexion via mot de passe.
 router.get(
   "/:id",

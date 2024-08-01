@@ -448,7 +448,7 @@ WHERE
   WITH filtered_hebergements AS (
     SELECT
       ds.id AS "declarationId",
-      ds.date_debut as "datesejour",
+      ds.date_debut as "dateSejour",
       ds.departement_suivi as departement,
       h.hebergement ->> 'nom' AS nom,
       h.hebergement ->> 'dateFin' AS "dateFin",
@@ -464,7 +464,7 @@ WHERE
         WHEN h.hebergement -> 'informationsLocaux' ->> 'reglementationErp' = 'false' THEN FALSE
         ELSE NULL
       END AS "reglementationErp",
-      ordinality AS "sejourIndex"
+      ordinality AS "hebergementIndex"
     FROM 
       front.demande_sejour ds,
       jsonb_array_elements(ds.hebergement -> 'hebergements') WITH ORDINALITY AS h(hebergement, ordinality)
@@ -487,8 +487,8 @@ WHERE
   )
   SELECT 
     jsonb_build_object(
-        'total_count', (SELECT count FROM total_count),
-        'hebergements', jsonb_agg(ph.*)
+      'total_count', (SELECT count FROM total_count),
+      'hebergements', jsonb_agg(ph.*)
     ) AS data
   FROM paged_hebergements AS ph;
   `,
