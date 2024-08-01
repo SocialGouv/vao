@@ -43,6 +43,8 @@ fileignoreconfig:
   checksum: 00b6f9f7ecb3b3cf523818f2723963a4bc20d11ed9a37e29c4405bbf72377da0
 - filename: .kontinuous/env/preprod/templates/backend.configmap.yaml
   checksum: 6232da2596184f2a3d831f76e17f23f872e9ab7fb089a8e0b7cbac65862c34fe
+- filename: .kontinuous/env/preprod/templates/frontend.sealed-secret.yaml
+  checksum: 94e33fcebb95e88ae169194c9c0331f9f4370739cfdd19c09f27ff3f0f6cdc1c
 - filename: .kontinuous/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
 - filename: .kontinuous/env/preprod/templates/smtp/deployment.yaml
@@ -57,6 +59,8 @@ fileignoreconfig:
   checksum: b36249b2ef3f95e2bb1e6e10b82cd010d2e7526d72351ec1cb4a5cec2784248d
 - filename: .kontinuous/env/prod/templates/backend.configmap.yaml
   checksum: 6a9d3414d970c2a78cbb351555a545d12307e0866852974532ef840e1b44a8ec
+- filename: .kontinuous/env/prod/templates/frontend.sealed-secret.yaml
+  checksum: e46feacf6bdbb41587493679c984016be434c536058ebfacdeaeb08531dd3fde
 - filename: .kontinuous/env/prod/templates/pg.sealed.secret.yaml
   checksum: aadafea073f994efeeec231e671697fc5060a51003d2e6253853031dc44005a0
 - filename: .kontinuous/env/prod/templates/smtp.sealed.secret.yaml
