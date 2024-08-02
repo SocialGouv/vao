@@ -44,7 +44,8 @@ RUN yarn workspace @vao/frontend-usagers generate
 
 FROM nginxinc/nginx-unprivileged:1.27-alpine
 
-COPY packages/frontend-usagers/nginx.conf /etc/nginx/
+COPY packages/frontend-usagers/nginx.conf /etc/nginx/templates/default.conf.template
+
 
 USER 0
 RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 755 /usr/share/nginx/html \
