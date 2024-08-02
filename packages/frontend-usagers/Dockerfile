@@ -53,6 +53,6 @@ RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 755 /usr/share/nginx/
 
 USER 101
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["nginx", "-T", "-g", "daemon off;"]
 
 COPY --from=builder --chown=101:101 /app/packages/frontend-usagers/.output/public /usr/share/nginx/html
