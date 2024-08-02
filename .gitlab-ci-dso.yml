@@ -79,15 +79,14 @@ build-frontend-bo:
     - mkdir -p /kaniko/.docker
     - echo "$DOCKER_AUTH" > /kaniko/.docker/config.json
     - echo "$SENTRY_AUTH_TOKEN" > /kaniko/sentry_auth_token
-    - /kaniko/executor \
-      --build-arg http_proxy=$http_proxy \
-      --build-arg https_proxy=$https_proxy \
-      --build-arg no_proxy=$no_proxy \
-      --build-arg SENTRY_URL="https://sentry.fabrique.social.gouv.fr" \
-      --build-arg SENTRY_ORG="incubateur" \
-      --build-arg SENTRY_PROJECT="$SENTRY_PROJECT" \
-      --build-arg SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
-      --build-arg SENTRY_RELEASE="$TAG" \
+    - /kaniko/executor --build-arg http_proxy=$http_proxy
+      --build-arg https_proxy=$https_proxy
+      --build-arg no_proxy=$no_proxy
+      --build-arg SENTRY_URL="https://sentry.fabrique.social.gouv.fr"
+      --build-arg SENTRY_ORG="incubateur"
+      --build-arg SENTRY_PROJECT="$SENTRY_PROJECT"
+      --build-arg SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN"
+      --build-arg SENTRY_RELEASE="$TAG"
       --context="$CI_PROJECT_DIR/$WORKING_DIR"
       --dockerfile="$CI_PROJECT_DIR/$WORKING_DIR/$DOCKERFILE"
       --registry-mirror=nexus-docker-proxy.apps.c6.numerique-interieur.com 
