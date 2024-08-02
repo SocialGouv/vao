@@ -16,23 +16,25 @@
           disabled
         />
       </template>
-      <template #map="scope">
-        <LMap
-          ref="map"
-          :zoom="zoom"
-          :center="scope.markers"
-          :use-global-leaflet="false"
-          style="z-index: 0"
-        >
-          <LTileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-            layer-type="base"
-            name="OpenStreetMap"
-          />
-          <LMarker :lat-lng="scope.markers"></LMarker>
-        </LMap>
-      </template>
+      <!-- <template #map="scope">
+        <div style="height: 50vh">
+          <LMap
+            ref="map"
+            :zoom="zoom"
+            :center="scope.markers"
+            :use-global-leaflet="false"
+            style="z-index: 0"
+          >
+            <LTileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+              layer-type="base"
+              name="OpenStreetMap"
+            />
+            <LMarker :lat-lng="scope.markers"></LMarker>
+          </LMap>
+        </div>
+      </template> -->
     </Hebergement>
   </div>
 </template>
@@ -50,7 +52,7 @@ const hebergementStore = useHebergementStore();
 
 const config = useRuntimeConfig();
 
-const zoom = 16;
+// const zoom = 16;
 
 if (route.params.type !== "simple") {
   router.replace({ params: { ...route.params, type: "simple" } });

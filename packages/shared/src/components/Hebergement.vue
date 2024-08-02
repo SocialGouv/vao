@@ -47,9 +47,7 @@
         v-if="adresse && !isCssDisabled"
         class="fr-fieldset__element fr-col-12"
       >
-        <div style="height: 50vh">
-          <slot name="map" :markers="markers" />
-        </div>
+        <slot name="map" :markers="markers" />
       </div>
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
