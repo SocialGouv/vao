@@ -4,14 +4,13 @@ jobs:
   curl:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: call webhook
-      env:
-        GIT_MIRROR_TOKEN: ${{ secrets.GIT_MIRROR_TOKEN }}
-      run: |
-        curl -X POST --fail \
-        -F token=$GIT_MIRROR_TOKEN \
-        -F ref=main \
-        -F variables[GIT_BRANCH_DEPLOY]=cloud-pi-demo \
-        -F variables[PROJECT_NAME]=vao \
-        "https://gitlab.apps.dso.numerique-interieur.com/api/v4/projects/225/trigger/pipeline"
+      - name: call webhook
+        env:
+          GIT_MIRROR_TOKEN: ${{ secrets.GIT_MIRROR_TOKEN }}
+        run: |
+          curl -X POST --fail \
+          -F token=$GIT_MIRROR_TOKEN \
+          -F ref=cloud-pi-demo \
+          -F variables[GIT_BRANCH_DEPLOY]=cloud-pi-demo \
+          -F variables[PROJECT_NAME]=vao \
+          "https://gitlab.apps.dso.numerique-interieur.com/api/v4/projects/225/trigger/pipeline"
