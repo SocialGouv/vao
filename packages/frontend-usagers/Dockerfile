@@ -25,6 +25,7 @@ ARG NUXT_PUBLIC_SENTRY_ENABLED
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 ARG SENTRY_URL
+ARG SENTRY_AUTH_TOKEN
 
 ENV NUXT_PUBLIC_APP_VERSION=$NUXT_PUBLIC_APP_VERSION
 ENV NUXT_PUBLIC_BACKEND_URL=$NUXT_PUBLIC_BACKEND_URL
@@ -43,9 +44,7 @@ ENV SENTRY_URL=$SENTRY_URL
 COPY packages/shared packages/shared
 COPY packages/frontend-usagers packages/frontend-usagers
 
-RUN --mount=type=secret,id=sentry_auth_token \
-    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \ 
-    && yarn workspace @vao/frontend-usagers generate
+RUN yarn workspace @vao/frontend-usagers generate
 
 
 FROM nginxinc/nginx-unprivileged:1.27-alpine

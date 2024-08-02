@@ -48,6 +48,7 @@ build-frontend-usagers:
     WORKING_DIR: "."
     DOCKERFILE: packages/frontend-usagers/Dockerfile
     IMAGE_NAME: frontend-usagers
+    SENTRY_PROJECT: "vao-usagers"
   stage: build-images
   extends:
     - .kaniko:simple-build-push
@@ -57,6 +58,7 @@ build-frontend-bo:
     WORKING_DIR: "."
     DOCKERFILE: packages/frontend-bo/Dockerfile
     IMAGE_NAME: frontend-bo
+    SENTRY_PROJECT: "vao-admin"
   stage: build-images
   extends:
     - .kaniko:simple-build-push
@@ -67,6 +69,7 @@ build-frontend-bo:
     DOCKERFILE: Dockerfile
     WORKING_DIR: .
     IMAGE_NAME: ""
+    SENTRY_PROJECT: ""
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
@@ -75,7 +78,16 @@ build-frontend-bo:
     - if [ ! -z $CA_BUNDLE ]; then cat $CA_BUNDLE >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt; fi
     - mkdir -p /kaniko/.docker
     - echo "$DOCKER_AUTH" > /kaniko/.docker/config.json
-    - /kaniko/executor --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_proxy --build-arg no_proxy=$no_proxy 
+    - echo "$SENTRY_AUTH_TOKEN" > /kaniko/sentry_auth_token
+    - /kaniko/executor \
+      --build-arg http_proxy=$http_proxy \
+      --build-arg https_proxy=$https_proxy \
+      --build-arg no_proxy=$no_proxy \
+      --build-arg SENTRY_URL="https://sentry.fabrique.social.gouv.fr" \
+      --build-arg SENTRY_ORG="incubateur" \
+      --build-arg SENTRY_PROJECT="$SENTRY_PROJECT" \
+      --build-arg SENTRY_AUTH_TOKEN="$SENTRY_AUTH_TOKEN" \
+      --build-arg SENTRY_RELEASE="$TAG" \
       --context="$CI_PROJECT_DIR/$WORKING_DIR"
       --dockerfile="$CI_PROJECT_DIR/$WORKING_DIR/$DOCKERFILE"
       --registry-mirror=nexus-docker-proxy.apps.c6.numerique-interieur.com 
