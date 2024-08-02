@@ -37,6 +37,7 @@ export default defineNuxtConfig({
       },
       sentry: {
         dsn: undefined,
+        release: undefined,
         enabled: undefined,
       },
     },
@@ -69,6 +70,7 @@ export default defineNuxtConfig({
         org: process.env.SENTRY_ORG,
         project: process.env.SENTRY_PROJECT,
         url: process.env.SENTRY_URL,
+        release: { name: process.env.SENTRY_RELEASE },
       }),
     ],
   },

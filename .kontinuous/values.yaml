@@ -144,7 +144,7 @@ jobs:
           NUXT_PUBLIC_MATOMO_HOST: "${FRONTEND_USAGERS_MATOMO_HOST}"
           NUXT_PUBLIC_MATOMO_SITE_ID: "${FRONTEND_USAGERS_MATOMO_SITE_ID}"
           NUXT_PUBLIC_SENTRY_DSN: "https://38eaf4da504d4809a74ce3134b759c91@sentry.fabrique.social.gouv.fr/103"
-          SENTRY_RELEASE: "{{.Values.global.branchSlug32}}"
+          NUXT_PUBLIC_SENTRY_RELEASE: "{{.Values.global.branchSlug32}}"
           SENTRY_URL: "https://sentry.fabrique.social.gouv.fr"
           SENTRY_ORG: incubateur
           SENTRY_PROJECT: vao-usagers
@@ -170,7 +170,7 @@ jobs:
           NUXT_PUBLIC_MATOMO_HOST: "${FRONTEND_BO_MATOMO_HOST}"
           NUXT_PUBLIC_MATOMO_SITE_ID: "${FRONTEND_BO_MATOMO_SITE_ID}"
           NUXT_PUBLIC_SENTRY_DSN: "https://1c0cbefef75a451ca753a4392ebea5b4@sentry.fabrique.social.gouv.fr/104"
-          SENTRY_RELEASE: "{{.Values.global.branchSlug32}}"
+          NUXT_PUBLIC_SENTRY_RELEASE: "{{.Values.global.branchSlug32}}"
           SENTRY_URL: "https://sentry.fabrique.social.gouv.fr"
           SENTRY_ORG: incubateur
           SENTRY_PROJECT: vao-admin
