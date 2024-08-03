@@ -20,14 +20,14 @@ ARG SENTRY_URL
 ARG SENTRY_AUTH_TOKEN
 
 # Runtime env variables set by Nginx injection
-ENV NUXT_PUBLIC_APP_VERSION=ENV_NUXT_PUBLIC_APP_VERSION
-ENV NUXT_PUBLIC_BACKEND_URL=ENV_NUXT_PUBLIC_BACKEND_URL
-ENV NUXT_PUBLIC_ENVIRONMENT=ENV_NUXT_PUBLIC_ENVIRONMENT
-ENV NUXT_PUBLIC_MATOMO_ENABLED=ENV_NUXT_PUBLIC_MATOMO_ENABLED
-ENV NUXT_PUBLIC_MATOMO_HOST=ENV_NUXT_PUBLIC_MATOMO_HOST
-ENV NUXT_PUBLIC_MATOMO_SITE_ID=ENV_NUXT_PUBLIC_MATOMO_SITE_ID
-ENV NUXT_PUBLIC_SENTRY_DSN=ENV_NUXT_PUBLIC_SENTRY_DSN
-ENV NUXT_PUBLIC_SENTRY_ENABLED=ENV_NUXT_PUBLIC_SENTRY_ENABLED
+ENV NUXT_PUBLIC_APP_VERSION=\$ENV_NUXT_PUBLIC_APP_VERSION
+ENV NUXT_PUBLIC_BACKEND_URL=\$ENV_NUXT_PUBLIC_BACKEND_URL
+ENV NUXT_PUBLIC_ENVIRONMENT=\$ENV_NUXT_PUBLIC_ENVIRONMENT
+ENV NUXT_PUBLIC_MATOMO_ENABLED=\$ENV_NUXT_PUBLIC_MATOMO_ENABLED
+ENV NUXT_PUBLIC_MATOMO_HOST=\$ENV_NUXT_PUBLIC_MATOMO_HOST
+ENV NUXT_PUBLIC_MATOMO_SITE_ID=\$ENV_NUXT_PUBLIC_MATOMO_SITE_ID
+ENV NUXT_PUBLIC_SENTRY_DSN=\$ENV_NUXT_PUBLIC_SENTRY_DSN
+ENV NUXT_PUBLIC_SENTRY_ENABLED=\$ENV_NUXT_PUBLIC_SENTRY_ENABLED
 
 # Cannot be changed at runtime
 ENV NUXT_PUBLIC_SENTRY_RELEASE=$SENTRY_RELEASE
@@ -45,14 +45,18 @@ RUN yarn workspace @vao/frontend-usagers generate
 FROM nginxinc/nginx-unprivileged:1.27-alpine
 
 COPY packages/frontend-usagers/nginx.conf /etc/nginx/nginx.conf
-COPY packages/frontend-usagers/nginx.conf.template /etc/nginx/templates/default.conf.template
 
 USER 0
-RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 755 /usr/share/nginx/html \
-    && chown -R nginx:nginx /etc/nginx
+# RUN chown -R nginx:nginx /usr/share/nginx/html && chmod -R 755 /usr/share/nginx/html \
+#     && chown -R nginx:nginx /etc/nginx
+
+RUN chown -R 101:101 /usr/share/nginx/html
 
 USER 101
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/app/start_nginx.sh"]
+# CMD ["nginx", "-g", "daemon off;"] 
+#, "-T"]
 
-COPY --from=builder --chown=101:101 /app/packages/frontend-usagers/.output/public /usr/share/nginx/html
+COPY --from=builder --chown=101:101 /app/packages/frontend-usagers/.output/public /app
+COPY --from=builder --chown=101:101 /app/packages/frontend-usagers/start_nginx.sh /app
