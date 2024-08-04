@@ -47,12 +47,12 @@ module.exports = async function post(req, res, next) {
       declaration.departementSuivi,
     );
 
-    log.i(destinataires);
     if (destinataires && destinataires.length > 0) {
       await Send(
         MailUtils.bo.declarationSejour.sendMessageNotify({
           declaration,
           destinataires,
+          message,
         }),
       );
     }

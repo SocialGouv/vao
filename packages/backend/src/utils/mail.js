@@ -275,7 +275,7 @@ module.exports = {
 
         return params;
       },
-      sendMessageNotify: ({ declaration, destinataires }) => {
+      sendMessageNotify: ({ declaration, destinataires, message }) => {
         log.i("sendMessageNotify - In", {
           destinataires,
         });
@@ -284,17 +284,32 @@ module.exports = {
           log.w(`sendMessageNotify - ${message}`);
           throw new AppError(message);
         }
-
+        const link = `${frontBODomain}/sejour/${declaration.id}`;
+        const html = sendTemplate.getBody(
+          "Portail VAO - Nouveau message",
+          [
+            {
+              p: [
+                "Bonjour,",
+                `Le message ci dessous vous a été adressé relativement à la déclaration ${declaration.idFonctionnelle}. Il est consultable dans l'onglet Messagerie.`,
+              ],
+              type: "p",
+            },
+            {
+              p: [`${message}`],
+              type: "quote",
+            },
+            {
+              link,
+              text: "Accéder à ma déclaration",
+              type: "link",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+        );
         const params = {
           from: senderEmail,
-          html: `
-                <p>Bonjour,</p>
-
-                <p>Un message vous a été adressé sur la déclaration <a href="${frontBODomain}/sejours/${declaration.id}">${declaration.idFonctionnelle}</a>, onglet Messagerie.</p>
-                
-                <p>Cordialement,</p>
-                <p>L'équipe VAO</p>
-                `,
+          html,
           replyTo: senderEmail,
           subject: `nouveau message sur la déclaration ${declaration.idFonctionnelle}`,
           to: destinataires,
@@ -719,15 +734,14 @@ module.exports = {
           throw new AppError(message);
         }
 
-        log.i(message);
-        const link = `${frontUsagersDomain}/sejours/${declaration.id}`;
+        const link = `${frontUsagersDomain}/demande-sejour/${declaration.id}`;
         const html = sendTemplate.getBody(
           "Portail VAO - Nouveau message",
           [
             {
               p: [
                 "Bonjour,",
-                `Le message ci dessous vous a été adressé sur la déclaration ${declaration.idFonctionnelle}. Il est consultable dans l'onglet Messagerie.`,
+                `Le message ci dessous vous a été adressé relativement à la déclaration ${declaration.idFonctionnelle}. Il est consultable dans l'onglet Messagerie.`,
               ],
               type: "p",
             },
@@ -772,7 +786,6 @@ module.exports = {
         }
 
         const link = `${frontUsagersDomain}/demande-sejour/liste`;
-
         const html = sendTemplate.getBody(
           "Portail VAO - Déclaration annulée",
           [
