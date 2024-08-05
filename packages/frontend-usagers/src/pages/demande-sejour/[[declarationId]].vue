@@ -295,7 +295,7 @@ const selectTab = async (idx) => {
 
 const unreadMessages = computed(() => {
   const nb = demandeSejourStore.messages.filter(
-    (m) => !m.readAt && m.backUserId,
+    (m) => !m.readAt && m.backUserId != null,
   ).length;
   return nb && nb > 0 ? `(${nb})` : "";
 });

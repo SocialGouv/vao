@@ -282,7 +282,7 @@ const sendMessage = async ({ message, file }) => {
 
 const unreadMessages = computed(() => {
   const nb = demandeStore.messages.filter(
-    (m) => !m.readAt && m.frontUserId,
+    (m) => !m.readAt && m.frontUserId != null,
   ).length;
   return nb && nb > 0 ? `(${nb})` : "";
 });
