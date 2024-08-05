@@ -3,7 +3,7 @@ const { UpdateTypes, Types, Categorie } = require("../helpers/eig");
 const personne = require("./parts/personne.js");
 
 const selectionSejourSchema = {
-  demandeSejourId: yup
+  declarationId: yup
     .number()
     .integer("Ce champ doit contenir un nombre entier")
     .required(),

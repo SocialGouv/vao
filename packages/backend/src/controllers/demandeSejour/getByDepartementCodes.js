@@ -38,6 +38,7 @@ module.exports = async function getByDepartementCodes(req, res, next) {
               "personneMorale",
               "personnePhysique",
               "demandeSejourId",
+              "declarationId",
               "dateDebut",
               "dateFin",
               "organismeId",

@@ -4,12 +4,12 @@ const {
 
 async function checkPermissionDeclarationSejourForEig(req, res, next) {
   const { id: userId } = req.decoded;
-  const demandeSejourId = req.body.parametre.demandeSejourId;
+  const declarationId = req.body.parametre.declarationId;
 
-  if (!demandeSejourId) {
+  if (!declarationId) {
     return next();
   }
-  return checkPermissionDeclarationSejourUtils(userId, demandeSejourId, next);
+  return checkPermissionDeclarationSejourUtils(userId, declarationId, next);
 }
 
 module.exports = checkPermissionDeclarationSejourForEig;

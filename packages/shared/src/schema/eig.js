@@ -5,7 +5,7 @@ import { personneSchema } from "./personne";
 const { Types, Categorie } = eigModel;
 
 const selectionSejourSchema = {
-  demandeSejourId: yup
+  declarationId: yup
     .number()
     .integer("Ce champ doit contenir un nombre entier")
     .required(),
