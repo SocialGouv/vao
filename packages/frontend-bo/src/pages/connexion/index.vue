@@ -167,6 +167,7 @@
 -->
 <script setup>
 import { useUserStore } from "@/stores/user";
+import { PasswordInput } from "@vao/shared";
 
 const toaster = useToaster();
 
