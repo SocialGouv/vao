@@ -12,7 +12,7 @@
         class="fr-icon--sm fr-icon-attachment-line"
         aria-hidden="true"
       ></span>
-      <a class="attachement" :href="`${htmlPrefix}${file.uuid}`"
+      <a class="attachement" :href="`${cdnUrl}${file.uuid}`"
         >{{ file.name }}
       </a>
     </div>
@@ -21,14 +21,13 @@
 
 <script lang="ts" setup>
 import dayjs from "dayjs";
-import { defineProps } from "vue";
 defineProps<{
   message: string;
   name: string;
   isAnswer: boolean;
   createdAt: string;
   file: { name: string; uuid: string; createdAt: string } | null;
-  htmlPrefix: string;
+  cdnUrl: string;
 }>();
 </script>
 

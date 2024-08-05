@@ -123,7 +123,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import IsDownloading from "~/components/utils/IsDownloading.vue";
+import { IsDownloading } from "@vao/shared";
 
 const props = defineProps({
   initData: {

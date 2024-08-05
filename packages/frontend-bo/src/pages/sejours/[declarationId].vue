@@ -61,7 +61,7 @@
         <Chat
           ref="chatRef"
           :messages="demandeStore.messages"
-          :backend-url="`${config.public.backendUrl}/documents/`"
+          :cdn-url="`${config.public.backendUrl}/documents/`"
           :is-loading="isSendingMessage"
           @send="sendMessage"
         />
@@ -160,7 +160,7 @@
         </fieldset>
       </DsfrModal>
     </div>
-    <UtilsIsDownloading
+    <isDownloading
       :is-downloading="apiStatus.isDownloading"
       :message="apiStatus.message"
     />
@@ -169,7 +169,7 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { Chat } from "@vao/shared";
+import { Chat, IsDownloading } from "@vao/shared";
 import { useIsDownloading } from "~/composables/useIsDownloading";
 
 definePageMeta({

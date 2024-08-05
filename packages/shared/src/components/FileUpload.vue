@@ -1,39 +1,39 @@
 <template>
-  <div class="fr-fieldset__element">
-    <div class="fr-input-group" style="margin-bottom: 2rem">
-      <div v-if="!props.modifiable">
-        <label>{{ $attrs.label }}</label>
-      </div>
-      <div v-if="rows.length > 0">
-        <DsfrTable :headers="headers" :rows="rows" />
-      </div>
+  <div class="fr-input-group" style="margin-bottom: 2rem">
+    <div v-if="!props.modifiable">
+      <label>{{ $attrs.label }}</label>
+    </div>
+    <div v-if="rows.length > 0">
+      <DsfrTable :headers="headers" :rows="rows" />
+    </div>
 
-      <DsfrFileUpload
-        v-if="props.modifiable"
-        v-bind="$attrs"
-        :error="props.errorMessage"
-        @change="changeFile"
-      />
-      <div
-        v-else-if="props.errorMessage"
-        class="fr-input-group fr-input-group--error"
-      >
-        <label class="fr-label">
-          {{ props.errorMessage }}
-        </label>
-      </div>
+    <DsfrFileUpload
+      v-if="props.modifiable"
+      v-bind="$attrs"
+      :error="props.errorMessage"
+      :disabled="isDisabled"
+      @change="changeFile"
+    />
+    <div
+      v-else-if="props.errorMessage"
+      class="fr-input-group fr-input-group--error"
+    >
+      <label class="fr-label">
+        {{ props.errorMessage }}
+      </label>
     </div>
   </div>
 </template>
 
 <script setup>
 import { DsfrButtonGroup, DsfrFileUpload } from "@gouvminint/vue-dsfr";
-import { defineProps, defineModel, computed } from "vue";
+import { computed } from "vue";
 import dayjs from "dayjs";
 const props = defineProps({
   modifiable: { type: Boolean, default: true },
   errorMessage: { type: String, default: null },
-  url: { type: String, required: true },
+  cdnUrl: { type: String, required: true },
+  isDisabled: { type: Boolean, default: false },
 });
 const headers = ["Fichier", "Date de création", "Actions"];
 const file = defineModel({ type: Object });
@@ -43,7 +43,7 @@ const rows = computed(() => {
       ? {
           component: "a",
           text: file.value.name,
-          href: `${props.url}/${file.value.uuid}`,
+          href: `${props.cdnUrl}/${file.value.uuid}`,
           download: true,
         }
       : file.value.name;

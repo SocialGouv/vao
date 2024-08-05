@@ -27,6 +27,54 @@ const query = {
     )
     RETURNING id
     `,
+  getByDepartementCodes: (
+    departementCodes,
+    { search, limit, offset, order, sort },
+  ) => [
+    `
+    WITH filtered_hebergements AS (
+      SELECT
+        h.id AS "id",
+        h.nom AS "nom",
+        h.coordonnees -> 'adresse' ->> 'departement' AS "departement",
+        h.coordonnees ->> 'email' AS email,
+        h.coordonnees ->> 'numTelephone1' AS telephone,
+        h.coordonnees ->> 'nomGestionnaire' AS "nomGestionnaire",
+        h.coordonnees -> 'adresse'  AS adresse,
+        h.informations_locaux ->> 'type' AS "typeHebergement",
+        h.informations_locaux ->> 'visiteLocauxAt' AS "dateVisite",
+        CASE
+          WHEN h.informations_locaux ->> 'reglementationErp' = 'true' THEN TRUE
+          WHEN h.informations_locaux ->> 'reglementationErp' = 'false' THEN FALSE
+          ELSE NULL
+        END AS "reglementationErp"
+      FROM
+        front.hebergement h
+      WHERE
+        h.coordonnees -> 'adresse' ->> 'departement' = ANY($1)
+        AND (
+          h.nom ILIKE '%' || $2 || '%' OR
+          h.coordonnees ->> 'email' ILIKE '%' || $2 || '%' OR
+          h.coordonnees -> 'adresse' ->> 'label' ILIKE '%' || $2 || '%'
+        )
+      ORDER BY "${sort}" ${order}    
+    ),
+    total_count AS (
+      SELECT COUNT(*) AS count FROM filtered_hebergements
+    ),
+    paged_hebergements AS (
+      SELECT * FROM filtered_hebergements
+      LIMIT $3 OFFSET $4
+    )
+    SELECT 
+    jsonb_build_object(
+      'total_count', (SELECT count FROM total_count),
+      'hebergements', jsonb_agg(ph.*)
+    ) AS data
+  FROM paged_hebergements AS ph;
+    `,
+    [departementCodes, search, limit, offset],
+  ],
   getById: (id) => [
     `
     SELECT
@@ -102,6 +150,15 @@ module.exports.update = async (
     throw new AppError("hebergement " + hebergementId + " not found");
   }
   log.i("update - DONE");
+};
+
+module.exports.getByDepartementCodes = async (departementsCodes, params) => {
+  log.i("getByDepartementCodes - IN");
+  const { rows } = await pool.query(
+    ...query.getByDepartementCodes(departementsCodes, params),
+  );
+  log.d("getByDepartementCodes - DONE");
+  return rows[0];
 };
 
 module.exports.getByUserId = async (userId) => {

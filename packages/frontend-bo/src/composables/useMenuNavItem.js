@@ -65,6 +65,19 @@ export const useMenuNavItems = () => {
               text: "Informations",
               to: "/informations",
             },
+            {
+              title: "Hébergements",
+              links: [
+                {
+                  text: "simple",
+                  to: "/hebergements/simple",
+                },
+                {
+                  text: "Hébergements dans les sejours",
+                  to: "/hebergements/pour-sejours",
+                },
+              ],
+            },
           ]
         : []),
     ];

@@ -23,30 +23,58 @@
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <Hebergement
-          v-if="hebergementId"
-          :init-hebergement="hebergementStore.hebergementCourant"
-          label-next="Modifier hébergement"
+          :init-hebergement="
+            hebergementId ? hebergementStore.hebergementCourant : {}
+          "
+          :cdn-url="`${config.public.backendUrl}/documents/`"
+          default-back-route="/hebergements"
           :is-downloading="apiStatus.isDownloading"
           :message="apiStatus.message"
-          @cancel="back"
+          is-save-visible
           @submit="updateOrCreate"
-        ></Hebergement>
-        <Hebergement
-          v-else
-          :is-downloading="apiStatus.isDownloading"
-          :message="apiStatus.message"
-          @cancel="back"
-          @submit="updateOrCreate"
-        ></Hebergement>
+        >
+          <template #search="scope">
+            <SearchAddress
+              name="coordonnees.adresse"
+              :value="scope.adresse"
+              :label="scope.label"
+              :initial-adress="scope.initialAdress"
+              :error-message="scope.errorMessage"
+              @select="(value) => scope.onAddresseChange(value)"
+            />
+          </template>
+          <template #map="scope">
+            <div style="height: 50vh">
+              <LMap
+                ref="map"
+                :zoom="zoom"
+                :center="scope.markers"
+                :use-global-leaflet="false"
+                style="z-index: 0"
+              >
+                <LTileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+                  layer-type="base"
+                  name="OpenStreetMap"
+                />
+                <LMarker :lat-lng="scope.markers"></LMarker>
+              </LMap>
+            </div>
+          </template>
+        </Hebergement>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { Hebergement } from "@vao/shared";
 definePageMeta({
   middleware: ["is-connected", "check-hebergement-id-param"],
 });
+
+const config = useRuntimeConfig();
 
 const toaster = useToaster();
 const log = logger("pages/hebermgents/[[hebergementId]]");
@@ -69,6 +97,8 @@ useHead({
     },
   ],
 });
+
+const zoom = 16;
 
 const links = [
   {

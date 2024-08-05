@@ -12,7 +12,7 @@
         :is-answer="!m.frontUserId"
         :name="m.frontUserId ? m.frontUserPrenom : m.backUserPrenom"
         :file="m.file"
-        :html-prefix="backendUrl"
+        :cdn-url="cdnUrl"
         :data="m"
       />
     </div>
@@ -88,7 +88,7 @@ import FileUpload from "./FileUpload.vue";
 
 const props = defineProps({
   messages: { type: Array, required: true },
-  backendUrl: { type: String, required: true },
+  cdnUrl: { type: String, required: true },
   isLoading: { type: Boolean, default: true },
 });
 
