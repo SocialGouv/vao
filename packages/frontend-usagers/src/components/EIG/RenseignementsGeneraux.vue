@@ -1,7 +1,7 @@
 <template>
   <h6>Renseignements generaux</h6>
   <dsfr-alert class="fr-mb-6v">
-    <EIGSummary />
+    <Summary :eig="eigStore.currentEig" />
   </dsfr-alert>
   <fieldset class="fr-fieldset">
     <h6>Personnel présent lors de événements</h6>
@@ -117,7 +117,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { DsfrAlert, DsfrSelect } from "@gouvminint/vue-dsfr";
 import Error from "~/components/EIG/Error.vue";
-import { eigModel, eigSchema } from "@vao/shared";
+import { eigModel, eigSchema, Summary } from "@vao/shared";
 
 const emit = defineEmits(["next", "update", "previous"]);
 

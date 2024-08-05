@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container fr-pt-8v">
-    <h1>Liste de mes événements indésirables et graves (EIG)</h1>
+    <h1>Liste des événements indésirables et graves (EIG)</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
@@ -24,12 +24,42 @@
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
+                  v-model="searchState.organisme"
+                  type="text"
+                  name="organisme"
+                  label="Organisme"
+                  placeholder="Organisme"
+                  :label-visible="true"
+                />
+              </div>
+            </div>
+            <div
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+            >
+              <div class="fr-input-group">
+                <DsfrInputGroup
                   v-model="searchState.libelle"
                   type="text"
                   name="Séjour"
                   label="Séjour"
                   placeholder="Séjour"
                   :label-visible="true"
+                />
+              </div>
+            </div>
+            <div
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+            >
+              <div class="fr-input-group">
+                <DsfrSelect
+                  :model-value="searchState.departement"
+                  label="Territoire"
+                  name="Territoire"
+                  mode="tags"
+                  :searchable="true"
+                  :close-on-select="false"
+                  :options="departement"
+                  @update:model-value="onSelect($event, 'departement')"
                 />
               </div>
             </div>
@@ -77,7 +107,7 @@
       :sort-by="sortState.sortBy"
       :sort-direction="sortState.sortDirection"
       :items-by-page="limitState"
-      :on-click-cell="navigate"
+      :on-click-cell="openModal"
       @update-sort="updateSort"
       @update-items-by-page="updateItemsByPage"
       @update-current-page="updateCurrentPage"
@@ -88,24 +118,34 @@
       </DsfrButton>
     </fieldset>
     <ValidationModal
-      modal-ref="modal-eig-list"
-      name="delete-eig"
-      :opened="eigToDelete != null"
-      title="Suppression d'un EIG ?"
+      modal-ref="modal-eig-list-consult"
+      name="consult-eig"
+      :opened="eigToRead != null"
+      title="Consultation d’un EIG"
       :on-close="closeEigModal"
-      :on-validate="deleteEig"
-      >Vous vous apprêtez à supprimer l'EIG : <br />
-      - {{ eigToDelete }}
+      :on-validate="() => readEig(eigToRead)"
+      >Vous vous apprêtez à consulter un Evènement Indésirable Grave. Cette
+      consultation enverra un email de notification à l’organisme.
     </ValidationModal>
   </div>
 </template>
 
 <script setup>
 import dayjs from "dayjs";
-import EigStatusBadge from "@vao/shared/src/components/eig/EigStatusBadge.vue";
-import { eigModel, TableWithPagination, ValidationModal } from "@vao/shared";
+import {
+  eigModel,
+  EigStatusBadge,
+  TableWithPagination,
+  ValidationModal,
+} from "@vao/shared";
 import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
 
+definePageMeta({
+  middleware: ["is-connected", "check-role"],
+  roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
+});
+
+const departementStore = useDepartementStore();
 const DsfrButton = resolveComponent("DsfrButton");
 
 const toaster = useToaster();
@@ -123,6 +163,8 @@ const searchState = reactive({
   statut: null,
   idFonctionnelle: null,
   type: null,
+  organisme: null,
+  departement: null,
 });
 
 try {
@@ -131,6 +173,7 @@ try {
     offset: defaultOffset,
     search: searchState,
   });
+  await departementStore.fetch();
 } catch (error) {
   toaster.error("Une erreur est survenue lors de la récupération des demandes");
 }
@@ -151,7 +194,7 @@ const paginateResults = async (sortValue, limitValue, currentPageValue) => {
   }
 };
 
-const fetchDemandesDebounce = debounce(async (search) => {
+const fetchEigsDebounce = debounce(async (search) => {
   try {
     await eigStore.get({
       sortBy: sortState.value.sortBy,
@@ -168,15 +211,14 @@ const fetchDemandesDebounce = debounce(async (search) => {
 });
 
 watch([searchState], ([searchValue]) => {
-  fetchDemandesDebounce(searchValue);
+  fetchEigsDebounce(searchValue);
 });
 
-const status = [
+const status = [allStatus, eigModel.Statuts.ENVOYE, eigModel.Statuts.LU];
+const departement = computed(() => [
   allStatus,
-  eigModel.Statuts.BROUILLON,
-  eigModel.Statuts.ENVOYE,
-  eigModel.Statuts.LU,
-];
+  ...departementStore.departements,
+]);
 const typesOption = [
   allStatus,
   ...[
@@ -231,9 +273,9 @@ const headers = [
     sort: true,
   },
   {
-    column: "createdAt",
-    text: "Date de déclaration de l’EIG",
-    format: (value) => dayjs(value.createdAt).format("DD/MM/YYYY"),
+    column: "organisme",
+    text: "Organisme",
+    format: (value) => value.raisonSociale ?? `${value?.prenom} ${value?.nom}`,
     sort: true,
   },
   {
@@ -241,6 +283,7 @@ const headers = [
     text: "Déclaration",
     sort: true,
   },
+  { column: "departement", text: "Territoire (n° département)", sort: true },
   {
     column: "libelle",
     text: "Séjour",
@@ -248,7 +291,7 @@ const headers = [
   },
   {
     column: "dateDebut",
-    text: "Dates (Début-fin)",
+    text: "Dates du séjour (Début-fin)",
     format: (value) =>
       `${dayjs(value.dateDebut).format("DD/MM/YYYY")} - ${dayjs(value.dateFin).format("DD/MM/YYYY")}`,
     sort: true,
@@ -259,6 +302,12 @@ const headers = [
     format: (value) => (value.types ?? []).map((t) => mapEigToLabel[t]),
   },
   {
+    column: "dateDepot",
+    text: "Dates de depot",
+    format: (value) => dayjs(value.dateDepot).format("DD/MM/YYYY"),
+    sort: true,
+  },
+  {
     column: "statut",
     text: "Statut",
     component: ({ statut }) => ({
@@ -266,20 +315,6 @@ const headers = [
       statut: statut,
     }),
     sort: true,
-  },
-  {
-    text: "Actions",
-    component: ({ statut, id }) => ({
-      component: DsfrButton,
-      disabled: !eig.canDelete(statut),
-      onClick: (event) => {
-        event.stopPropagation();
-        eigToDelete.value = id;
-      },
-      label: "Suppression",
-      iconOnly: true,
-      icon: "ri-delete-bin-2-line",
-    }),
   },
 ];
 
@@ -299,21 +334,23 @@ const updateCurrentPage = (val) => {
   paginateResults(sortState.value, limitState.value, currentPageState.value);
 };
 
-const navigate = (state) => {
-  navigateTo(`/eig/${state.id}`);
-};
-
-const eigToDelete = ref(null);
-
-const closeEigModal = () => (eigToDelete.value = null);
-const deleteEig = async () => {
+const readEig = async (id) => {
   try {
-    await eigStore.delete(eigToDelete.value);
-    await eigStore.get();
+    await eigStore.markAsRead(id);
+    navigateTo(`/eig/${id}`);
   } catch (e) {
-    toaster.error("Une erreur est survenue de la suppression de l'EIG");
-  } finally {
-    closeEigModal();
+    toaster.error("Une erreur est survenue lors de la lecture de l'eig");
   }
 };
+
+const eigToRead = ref(null);
+
+const openModal = (state) => {
+  if (eigStore.getStatut(state.id) === eigModel.Statuts.ENVOYE) {
+    eigToRead.value = state.id;
+  } else {
+    navigateTo(`/eig/${state.id}`);
+  }
+};
+const closeEigModal = () => (eigToRead.value = null);
 </script>

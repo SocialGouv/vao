@@ -1,6 +1,6 @@
 <template>
   <dsfr-alert class="fr-mb-6v">
-    <EIGSummary />
+    <Summary :eig="eigStore.currentEig" />
   </dsfr-alert>
   <h6>Type d'événement</h6>
   <fieldset class="fr-fieldset">
@@ -185,7 +185,8 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { eigModel, eigSchema } from "@vao/shared";
+import { eigModel, eigSchema, Summary } from "@vao/shared";
+import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
 
 const emit = defineEmits(["previous", "next", "update"]);
 
@@ -256,25 +257,25 @@ const types = {
   [eigModel.Categorie.VICTIMES]: Object.values(
     eigModel.Types[eigModel.Categorie.VICTIMES],
   ).map((t) => ({
-    label: eig.mapEigToLabel[t],
+    label: mapEigToLabel[t],
     name: t,
   })),
   [eigModel.Categorie.SANTE]: Object.values(
     eigModel.Types[eigModel.Categorie.SANTE],
   ).map((t) => ({
-    label: eig.mapEigToLabel[t],
+    label: mapEigToLabel[t],
     name: t,
   })),
   [eigModel.Categorie.SECURITE]: Object.values(
     eigModel.Types[eigModel.Categorie.SECURITE],
   ).map((t) => ({
-    label: eig.mapEigToLabel[t],
+    label: mapEigToLabel[t],
     name: t,
   })),
   [eigModel.Categorie.FONCTIONNEMENT_ORGANISME]: Object.values(
     eigModel.Types[eigModel.Categorie.FONCTIONNEMENT_ORGANISME],
   ).map((t) => ({
-    label: eig.mapEigToLabel[t],
+    label: mapEigToLabel[t],
     name: t,
   })),
 };

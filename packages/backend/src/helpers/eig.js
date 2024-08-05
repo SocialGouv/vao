@@ -4,6 +4,7 @@ const dsStatuts = require("./ds-statuts");
 module.exports.statuts = {
   BROUILLON: "BROUILLON",
   ENVOYE: "ENVOYE",
+  LU: "LU",
 };
 
 const Categorie = {

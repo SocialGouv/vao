@@ -8,7 +8,7 @@
     "
     message="Erreur dans la selection des types"
   ></EIGError>
-  <EIGSummary />
+  <Summary :eig="eigStore.currentEig" />
   <h5>Personnel présent lors des événement</h5>
   <EIGError
     :is-error="!!errors.personnel"
@@ -147,7 +147,7 @@
 <script setup>
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
-import { eigSchema } from "@vao/shared";
+import { eigSchema, Summary } from "@vao/shared";
 import IsDownloading from "~/components/utils/IsDownloading.vue";
 
 const emit = defineEmits(["finalize", "previous"]);
@@ -210,6 +210,11 @@ function finalizeDeclaration() {
 <style scoped lang="scss">
 h5 {
   margin-top: 1.5rem;
+}
+
+h6 {
+  margin-top: 1.5rem;
+  margin-bottom: 0;
 }
 
 hr {
