@@ -67,45 +67,42 @@ const refreshTable = () => {
 };
 
 const router = useRouter();
-let timeout = null;
-const debounceRefresh = () => {
-  if (timeout) {
-    clearTimeout(timeout);
+
+const refresqueryParams = () => {
+  if (props.isUrlUpdate) {
+    router.replace({
+      query: {
+        search: search.value,
+        sort: sort.value,
+        limit: limit.value,
+        offset: page.value * limit.value,
+      },
+    });
   }
-  timeout = setTimeout(() => {
-    if (props.isUrlUpdate) {
-      router.replace({
-        query: {
-          search: search.value,
-          sort: sort.value,
-          limit: limit.value,
-          offset: page.value * limit.value,
-        },
-      });
-    }
-    refreshTable();
-  }, 300);
+  refreshTable();
 };
+
+const fetchDataandUrl = debounce(refresqueryParams, 300);
 
 const handleSearch = () => {
   page.value = 0;
-  debounceRefresh();
+  fetchDataandUrl();
 };
 
 const handleHupdateSort = (value) => {
   sortBy.value = value.sortBy;
   sortDirection.value = value.sortDirection;
-  debounceRefresh();
+  fetchDataandUrl();
 };
 const handleUpdateItemsByPage = (val) => {
   limit.value = val;
   page.value = 1;
-  debounceRefresh();
+  fetchDataandUrl();
 };
 
 const handleUpdateCurrentPage = (val) => {
   page.value = val;
-  debounceRefresh();
+  fetchDataandUrl();
 };
 
 defineExpose({
