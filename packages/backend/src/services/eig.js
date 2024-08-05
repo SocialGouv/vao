@@ -55,7 +55,7 @@ EIG.ID,
   EIG.USER_ID AS "userId",
   S.STATUT AS "statut",
   EIG.DEPARTEMENT AS "departement",
-  DS.ID AS "demandeSejourId",
+  DS.ID AS "declarationId",
   DS.ID_FONCTIONNELLE AS "idFonctionnelle",
   DS.LIBELLE as "libelle",
   DS.DATE_DEBUT AS "dateDebut",
@@ -192,12 +192,12 @@ WHERE
   `,
 };
 
-module.exports.create = async ({ userId, demandeSejourId, departement }) => {
+module.exports.create = async ({ userId, declarationId, departement }) => {
   log.i("create - IN");
 
   const response = await pool.query(query.create, [
     userId,
-    demandeSejourId,
+    declarationId,
     departement,
   ]);
   log.d(response);
@@ -226,7 +226,7 @@ module.exports.getById = async ({ eigId }) => {
   };
 };
 
-module.exports.getByDsId = async ({ dsId }) => {
+module.exports.getByDsId = async (dsId) => {
   log.i("create - IN");
 
   const response = await pool.query(query.getByDsId, [dsId]);
@@ -245,11 +245,11 @@ module.exports.getStatut = async (eigId) => {
   return response.rows?.[0]?.statut ?? null;
 };
 
-module.exports.updateDS = async (eigId, { demandeSejourId, departement }) => {
+module.exports.updateDS = async (eigId, { declarationId, departement }) => {
   log.i("updateDS - IN");
 
   const response = await pool.query(query.updateDs, [
-    demandeSejourId,
+    declarationId,
     departement,
     eigId,
   ]);
