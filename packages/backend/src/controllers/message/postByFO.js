@@ -52,11 +52,12 @@ module.exports = async function post(req, res, next) {
         MailUtils.bo.declarationSejour.sendMessageNotify({
           declaration,
           destinataires,
+          message,
         }),
       );
     }
   } catch (error) {
-    log.w("erreur sur l'envoi de mail a l'organisme :", error);
+    log.w("erreur sur l'envoi de mail au service déconcentré :", error);
   }
   return res.status(200).json({
     id,

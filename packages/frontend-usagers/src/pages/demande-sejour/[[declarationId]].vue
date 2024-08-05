@@ -281,21 +281,38 @@ const {
   credentials: "include",
 });
 
-const selectTab = (idx) => {
+const selectTab = async (idx) => {
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
   if (idx === 2 && !historique.value) {
     execute();
   }
+  if (idx === 3) {
+    await demandeSejourStore.readMessages(route.params.declarationId);
+    demandeSejourStore.fetchMessages(route.params.declarationId);
+  }
 };
 
+const unreadMessages = computed(() => {
+  const nb = demandeSejourStore.messages.filter(
+    (m) => !m.readAt && m.backUserId != null,
+  ).length;
+  return nb && nb > 0 ? `(${nb})` : "";
+});
 const sejourId = ref(route.params.declarationId);
 
 const tabTitles = computed(() => [
   { title: "Formulaire" },
   { title: "Documents joints" },
   ...(sejourId.value ? [{ title: "Historique de la déclaration" }] : []),
-  ...(sejourId.value ? [{ title: "Messagerie" }] : []),
+  ...(sejourId.value
+    ? [
+        {
+          title: `Messagerie ${unreadMessages.value}`,
+          icon: `${unreadMessages.value ? "ri-feedback-line" : ""}`,
+        },
+      ]
+    : []),
 ]);
 
 const sommaireOptions = demandeSejourMenus

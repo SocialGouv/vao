@@ -7,7 +7,7 @@ const log = logger(module.filename);
 
 module.exports = async function get(req, res, next) {
   log.i("IN");
-  const { declarationId } = req.params;
+  const { declarationId, origin } = req.params;
 
   if (!declarationId) {
     log.w("missing or invalid parameter");
@@ -18,12 +18,13 @@ module.exports = async function get(req, res, next) {
     );
   }
   try {
-    const messages = await Message.select(declarationId);
-    return res.status(200).json(messages);
+    await Message.markAsRead(declarationId, origin);
+    return res.status(200).json({ readMessages: true });
   } catch (error) {
     log.w("DONE with error");
+    log.w(error);
     return res.status(400).json({
-      message: "une erreur est survenue durant la récupération des messages",
+      message: "une erreur est survenue durant la lecture des messages",
     });
   }
 };

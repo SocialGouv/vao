@@ -57,6 +57,26 @@ module.exports.getBody = (titre, content, signature) => {
     `;
   }
 
+  function formatQuote({ p }) {
+    return `
+  <tr>
+    <td style="mso-line-height-rule:exactly;font: 12px/14px sans-serif;font-style:italic;padding:30;Margin:0;padding-top:15px;">
+  ${p
+    .map(
+      (element) =>
+        `
+      <p>
+        ${element}
+      </p>
+      <BR>
+  `,
+    )
+    .join("")}
+    </td>
+  </tr>  
+    `;
+  }
+
   function formatLink({ link, text }) {
     return `
     <tr>
@@ -88,19 +108,19 @@ module.exports.getBody = (titre, content, signature) => {
     `;
   }
 
-  function formatCode({ code }) {
-    return `
-  <tr>                                
-    <td align="center" style="width="25%";padding:0;Margin:0;padding-top:15px">
-      <p style="border: 0;line-height: 2.5;padding: 0 20px;font: 20px/22px sans-serif;text-align: center;color: #fff;background-color: #000091;">
-        ${code}
-      </p>
-      <BR>
-      <BR>
-    </td>
-  </tr>
-  `;
-  }
+  // function formatCode({ code }) {
+  //   return `
+  // <tr>
+  //   <td align="center" style="width="25%";padding:0;Margin:0;padding-top:15px">
+  //     <p style="border: 0;line-height: 2.5;padding: 0 20px;font: 20px/22px sans-serif;text-align: center;color: #fff;background-color: #000091;">
+  //       ${code}
+  //     </p>
+  //     <BR>
+  //     <BR>
+  //   </td>
+  // </tr>
+  // `;
+  // }
 
   function formatArray({ headers, lines }) {
     return `
@@ -157,8 +177,8 @@ module.exports.getBody = (titre, content, signature) => {
       ? formatP(others)
       : type === "link"
         ? formatLink(others)
-        : type === "code"
-          ? formatCode(others)
+        : type === "quote"
+          ? formatQuote(others)
           : type === "array"
             ? formatArray(others)
             : "",

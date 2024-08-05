@@ -10,16 +10,17 @@ const query = {
     VALUES ($1,$2,$3,$4,$5, NOW() )
     RETURNING id as id;
     `,
-  // delete: (criterias) => [
-  //   `
-  //     DELETE FROM front.sessions
-  //     WHERE 1=1
-  //     ${Object.keys(criterias)
-  //       .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
-  //       .join(" ")}
-  //     `,
-  //   Object.values(criterias),
-  // ],
+  markAsRead: `
+      UPDATE front.demande_sejour_message
+      SET read_at = current_timestamp
+      WHERE declaration_id =$1
+      AND read_at is NULL
+      AND 
+        CASE 
+          WHEN $2 = 'back' THEN front_user_id IS NOT NULL
+          ELSE back_user_id IS NOT NULL
+        END
+      `,
   select: `
     SELECT
       m.id as id,
@@ -27,6 +28,7 @@ const query = {
       m.back_user_id as "backUserId",
       m.message as "message",
       m.created_at as "created",
+      m.read_at as "readAt",
       fu.prenom as "frontUserPrenom",
       bu.prenom as "backUserPrenom",
       m.file as file
@@ -65,7 +67,16 @@ module.exports.post = async (declarationId, userId, message, file, sender) => {
 module.exports.select = async (declarationId) => {
   log.i("select - IN");
   const messages = await pool.query(query.select, [declarationId]);
-  if (!messages) throw new AppError("erreur sur l'insertion du message'");
+  if (!messages) throw new AppError("erreur sur la récupération des messages'");
   log.i("select - DONE");
   return messages.rows;
+};
+
+module.exports.markAsRead = async (declarationId, origin) => {
+  log.i("markAsRead - IN");
+  const messages = await pool.query(query.markAsRead, [declarationId, origin]);
+  if (!messages) throw new AppError("erreur sur la lecture des messages'");
+  log.i(messages.rowCount);
+  log.i("markAsRead - DONE");
+  return messages.rowCount;
 };
