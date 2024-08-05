@@ -302,7 +302,7 @@ const {
   data: eigs,
   error: errorEigs,
   execute: executeEig,
-} = useFetchBackend(`/eig/ds/${route.params.demandeId}`, {
+} = useFetchBackend(`/eig/ds/${route.params.declarationId}`, {
   immediate: false,
   method: "GET",
   credentials: "include",

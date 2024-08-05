@@ -4,14 +4,12 @@ const eigService = require("../../services/eig");
 const log = logger(module.filename);
 
 module.exports = async function get(req, res, next) {
-  const { id: dsId } = req.params;
+  const { declarationId } = req.params;
   // La vérification de la non nullité de eigId est effectuée par le middleware checkPermissionEIG
-  log.i("IN", { dsId });
+  log.i("IN", { declarationId });
 
   try {
-    const eigs = await eigService.getByDsId({
-      dsId,
-    });
+    const eigs = await eigService.getByDsId(declarationId);
 
     return res.status(200).json({ eigs });
   } catch (error) {

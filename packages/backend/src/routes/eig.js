@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.get("/me", checkJWT, eigController.getMe);
 router.get(
-  "/ds/:id",
+  "/ds/:declarationId",
   checkJWT,
   checkPermissionDeclarationSejour,
   eigController.getByDsId,

@@ -10,7 +10,7 @@
           class="fr-mb-4v"
           :label="selectedDemandeLabel"
           :disabled="!eigStore.canModify"
-          @click="() => onDemandeSejourIdChange(null)"
+          @click="() => onDeclarationIdChange(null)"
         />
         <DsfrSearchBar
           label="Selectionner le séjour"
@@ -22,14 +22,14 @@
         />
         <div
           v-for="demande in search.length > 0 ? filteredDemandes : []"
-          :key="demande.demandeSejourId"
+          :key="demande.declarationId"
         >
           <DsfrTag
             tag-name="button"
             class="fr-my-2v"
             @click="
               () => {
-                onDemandeSejourIdChange(demande.demandeSejourId);
+                onDeclarationIdChange(demande.declarationId);
                 search = '';
               }
             "
@@ -97,14 +97,14 @@ const filteredDemandes = computed(() =>
         eig.isDeclarationligibleToEig(d) &&
         (new RegExp(search.value, "i").test(d.idFonctionnelle) ||
           new RegExp(search.value, "i").test(d.libelle)) &&
-        d.demandeSejourId !== demandeSejourId.value,
+        d.declarationId !== declarationId.value,
     )
     .slice(0, 10),
 );
 const selectedDemande = computed(() => {
   return (
     demandeSejourStore.demandes?.find(
-      (d) => d.demandeSejourId === demandeSejourId.value,
+      (d) => d.declarationId === declarationId.value,
     ) ?? null
   );
 });
@@ -125,8 +125,8 @@ const departementsOptions = computed(
 
 const validationSchema = yup.object(eigSchema.selectionSejourSchema);
 const initialValues = {
-  demandeSejourId:
-    eigStore.currentEig?.demandeSejourId ??
+  declarationId:
+    eigStore.currentEig?.declarationId ??
     (!isNaN(route.query.dsId) ? parseInt(route.query.dsId) : null),
   departement: eigStore.currentEig?.departement ?? null,
 };
@@ -137,8 +137,8 @@ const { meta, values } = useForm({
   validateOnMount: false,
 });
 
-const { value: demandeSejourId, handleChange: onDemandeSejourIdChange } =
-  useField("demandeSejourId");
+const { value: declarationId, handleChange: onDeclarationIdChange } =
+  useField("declarationId");
 const {
   value: departement,
   handleChange: onDepartementChange,

@@ -25,7 +25,7 @@ module.exports = async (req, res, next) => {
   }
 
   try {
-    const ds = await DemandeSejour.getOne({ "ds.id": eig.demandeSejourId });
+    const ds = await DemandeSejour.getOne({ "ds.id": eig.declarationId });
     if (!idDeclarationeligibleToEig(ds)) {
       return res.status(400).send({
         message: "La déclaration n'est pas éligible à la création d'un EIG",
@@ -37,7 +37,7 @@ module.exports = async (req, res, next) => {
 
   try {
     const eigId = await eigService.create({
-      demandeSejourId: eig.demandeSejourId,
+      declarationId: eig.declarationId,
       departement: eig.departement,
       userId,
     });
