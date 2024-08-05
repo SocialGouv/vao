@@ -33,7 +33,7 @@ module.exports = async (req, res, next) => {
   try {
     const checkEig = await eigService.getById({ eigId });
     const ds = await DemandeSejour.getOne({
-      "ds.id": checkEig.demandeSejourId,
+      "ds.id": checkEig.declarationId,
     });
     if (!idDeclarationeligibleToEig(ds)) {
       return res.status(400).send({
@@ -49,7 +49,7 @@ module.exports = async (req, res, next) => {
     switch (type) {
       case UpdateTypes.DECLARATION_SEJOUR:
         updatedEigId = await eigService.updateDS(eigId, {
-          demandeSejourId: eig.demandeSejourId,
+          declarationId: eig.declarationId,
           departement: eig.departement,
         });
         break;

@@ -45,7 +45,7 @@ module.exports = async (req, res, next) => {
   try {
     await DemandeSejour.insertEvent(
       "Organisateur",
-      eig.demandeSejourId,
+      eig.declarationId,
       eig.userId,
       null,
       "declaration_eig",
