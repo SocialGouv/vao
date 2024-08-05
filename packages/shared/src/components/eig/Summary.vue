@@ -14,11 +14,9 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
+import { mapEigToLabel } from "../../utils/eigUtils";
 
 const props = defineProps({ eig: { type: Object, required: true } });
-
-const eigStore = useEigStore();
 
 const currentEigValues = computed(() => [
   {
@@ -31,9 +29,7 @@ const currentEigValues = computed(() => [
   },
   {
     label: "Organisme",
-    value:
-      props.eig.raisonSociale ??
-      `${props.eig?.prenom} ${props.eig?.nom}`,
+    value: props.eig.raisonSociale ?? `${props.eig?.prenom} ${props.eig?.nom}`,
   },
   {
     label: "Date (début / fin)",

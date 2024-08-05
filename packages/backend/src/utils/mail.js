@@ -477,6 +477,43 @@ module.exports = {
 
         return params;
       },
+      sendMarkAsRead: ({ dest, eig }) => {
+        log.i("sendMarkAsRead - In", {
+          dest,
+        });
+        if (!dest) {
+          const message = `paramètre manquant à la requête`;
+          log.w(`sendMarkAsRead - ${message}`);
+          throw new AppError(message);
+        }
+
+        const html = sendTemplate.getBody(
+          "Consultation de votre EIG déposé sur la plateforme VAO",
+          [
+            {
+              p: [
+                `Bonjour`,
+                `Le rapport de l'évènement indésirable grave que vous avez déposé le ${dayjs(eig.dateDepot).format("DD/MM/YYYY")} et qui s’est déroulé lors du séjour ${eig.libelle} a été consulté par un agent de la préfecture. Si c’est nécessaire, cette personne pourra vous contacter via la messagerie de la plateforme VAO`,
+                `Cordialement,`,
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        log.d("sendMarkAsRead - sending sendMarkAsRead mail");
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: `Consultation de votre EIG déposé sur la plateforme VAO`,
+          to: dest,
+        };
+        log.d("sendMarkAsRead post email", { params });
+
+        return params;
+      },
       sendToOrganisme: ({
         dest,
         eig,

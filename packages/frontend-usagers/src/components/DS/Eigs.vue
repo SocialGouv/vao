@@ -26,8 +26,9 @@
 
 <script setup>
 import dayjs from "dayjs";
-import EigStatusBadge from "~/components/EIG/EigStatusBadge.vue";
+import EigStatusBadge from "@vao/shared/src/components/eig/EigStatusBadge.vue";
 import { ValidationModal } from "@vao/shared";
+import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
 
 const DsfrButton = resolveComponent("DsfrButton");
 
@@ -70,7 +71,7 @@ const headers = [
     column: "types",
     text: "Types d'événement",
     format: (value) =>
-      (value.types ?? []).map((t) => eig.mapEigToLabel[t]).join(", "),
+      (value.types ?? []).map((t) => mapEigToLabel[t]).join(", "),
   },
   {
     column: "statut",
