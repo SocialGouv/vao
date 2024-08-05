@@ -9,7 +9,7 @@
 
 <script setup>
 import { DsfrBadge } from "@gouvminint/vue-dsfr";
-import { eigModel } from "@vao/shared";
+import * as eigModel from "../../models/eig";
 
 const props = defineProps({
   statut: {
@@ -26,6 +26,8 @@ const type = computed(() => {
       return "new";
     case eigModel.Statuts.ENVOYE:
       return "success";
+    case eigModel.Statuts.LU:
+      return "info";
     default:
       return "union";
   }

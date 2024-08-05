@@ -5,31 +5,6 @@ const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 
-const getEigListQuery = (where) => `
-SELECT
-  EIG.ID,
-  EIG.created_at as "createdAt",
-  S.STATUT AS "statut",
-  DS.ID_FONCTIONNELLE AS "idFonctionnelle",
-  DS.LIBELLE,
-  DS.DATE_DEBUT AS "dateDebut",
-  DS.DATE_FIN AS "dateFin",
-  ARRAY_AGG(ET.TYPE) as "types"
-FROM
-  FRONT.EIG EIG
-  INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
-  LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
-  LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
-  LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
-  LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
-WHERE
- ${where}
-GROUP BY
-  EIG.ID,
-  S.ID,
-  DS.ID
-  `;
-
 const query = {
   create: `
   INSERT INTO
@@ -48,7 +23,36 @@ const query = {
 DELETE FROM FRONT.EIG_TO_EIG_TYPE
 WHERE
 EIG_ID = $1`,
-  getByDsId: getEigListQuery("DS.ID = $1"),
+  get: (where, search) => `
+SELECT
+  EIG.ID,
+  EIG.created_at as "createdAt",
+  EIG.DEPARTEMENT as "departement",
+  S.STATUT AS "statut",
+  DS.ID_FONCTIONNELLE AS "idFonctionnelle",
+  DS.LIBELLE,
+  DS.DATE_DEBUT AS "dateDebut",
+  DS.DATE_FIN AS "dateFin",
+  EIG.DATE_DEPOT AS "dateDepot",
+  DS.ORGANISME -> 'personneMorale' ->> 'raisonSociale' AS "raisonSociale",
+  DS.ORGANISME -> 'personnePhysique' ->> 'prenom' AS "prenom",
+  DS.ORGANISME -> 'personnePhysique' ->> 'nomUsage' AS "nom",
+  ARRAY_AGG(ET.TYPE) as "types"
+FROM
+  FRONT.EIG EIG
+  INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+  LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
+  LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
+  LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
+  LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
+WHERE
+ ${where}
+ ${search}
+GROUP BY
+  EIG.ID,
+  S.ID,
+  DS.ID
+  `,
   getById: `
 SELECT
 EIG.ID,
@@ -60,6 +64,7 @@ EIG.ID,
   DS.LIBELLE as "libelle",
   DS.DATE_DEBUT AS "dateDebut",
   DS.DATE_FIN AS "dateFin",
+  DS.ORGANISME_ID as "organismeId",
   DS.ORGANISME -> 'personneMorale' ->> 'raisonSociale' AS "raisonSociale",
   DS.ORGANISME -> 'personnePhysique' ->> 'prenom' AS "prenom",
   DS.ORGANISME -> 'personnePhysique' ->> 'nomUsage' AS "nom",
@@ -89,19 +94,13 @@ GROUP BY
   S.ID,
   DS.ID;
   `,
-  getByUserId: (search) =>
-    getEigListQuery(
-      `
-    UO.ORG_ID IN ( SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)
-    ${search.map((s) => ` AND ${s} `).join("")}`,
-    ),
   getStatut: `
   SELECT S.STATUT as statut
   FROM FRONT.EIG
   LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
   WHERE EIG.ID = $1
   `,
-  getTotal: (search) => `
+  getTotal: (where, search) => `
 SELECT COUNT(DISTINCT EIG.ID)
 FROM
   FRONT.EIG EIG
@@ -109,7 +108,7 @@ FROM
   LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
   LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
 WHERE
-  UO.ORG_ID IN ( SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)
+  ${where}
   ${search.map((s) => ` AND ${s} `).join("")}
   `,
   insertIntoEigToEigType: (values) => `
@@ -186,9 +185,24 @@ SET
     WHERE
         STATUT = 'ENVOYE'
     ),
-    IS_ATTESTE = TRUE
+    IS_ATTESTE = TRUE,
+    DATE_DEPOT = NOW()
 WHERE
     ID = $1
+  `,
+  markAsRead: `
+UPDATE FRONT.EIG
+SET
+  STATUT_ID = (
+    SELECT
+      ID
+    FROM
+      FRONT.EIG_STATUT
+    WHERE
+     STATUT = 'LU'
+)
+WHERE
+  ID = $1
   `,
 };
 
@@ -229,7 +243,21 @@ module.exports.getById = async ({ eigId }) => {
 module.exports.getByDsId = async (dsId) => {
   log.i("create - IN");
 
-  const response = await pool.query(query.getByDsId, [dsId]);
+  const response = await pool.query(query.get("DS.ID = $1", ""), [dsId]);
+
+  log.d(response);
+  log.i("create - DONE");
+  return response.rows ?? [];
+};
+
+module.exports.getByDsIdAdmin = async (dsId) => {
+  log.i("create - IN");
+
+  const response = await pool.query(
+    query.get("DS.ID = $1 AND S.STATUT <> 'BROUILLON'", "") +
+      "ORDER BY EIG.ID DESC",
+    [dsId],
+  );
 
   log.d(response);
   log.i("create - DONE");
@@ -359,13 +387,14 @@ module.exports.updateRenseignementsGeneraux = async (
   return id;
 };
 
-module.exports.getByUserId = async (
-  userId,
+const getEigs = async (
+  where,
+  intialParams,
   { limit, offset, sortBy, sortDirection = "ASC", search } = {},
 ) => {
   log.i("getByUserId - IN");
-  const params = [userId];
   const searchQuery = [];
+  const params = [...(intialParams ?? [])];
 
   // Search management
   if (search?.idFonctionnelle && search.idFonctionnelle.length) {
@@ -397,7 +426,26 @@ module.exports.getByUserId = async (
     params.push(`%${search.libelle}%`);
   }
 
-  let queryWithPagination = query.getByUserId(searchQuery);
+  if (search?.organisme && search.organisme.length) {
+    searchQuery.push(`
+  	(CONCAT(
+		DS.ORGANISME -> 'personnePhysique' ->> 'prenom',
+		' ',
+		DS.ORGANISME -> 'personnePhysique' ->> 'nomUsage'
+	) ILIKE $${params.length + 1}
+	OR DS.ORGANISME -> 'personneMorale' ->> 'raisonSociale' ILIKE $${params.length + 1})`);
+    params.push(`%${search.organisme}%`);
+  }
+
+  if (search?.departement && search.departement.length) {
+    searchQuery.push(`eig.departement = $${params.length + 1}`);
+    params.push(`${search?.departement}`);
+  }
+
+  let queryWithPagination = query.get(
+    where,
+    searchQuery.map((s) => ` AND ${s} `).join(""),
+  );
 
   if (sortBy && sortDirection) {
     queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, EIG.CREATED_AT DESC`;
@@ -427,7 +475,7 @@ module.exports.getByUserId = async (
   }
 
   const total = (
-    await pool.query(query.getTotal(searchQuery, params), params)
+    await pool.query(query.getTotal(where, searchQuery), params)
   ).rows.find((t) => t.count)?.count;
 
   log.d(response);
@@ -436,6 +484,40 @@ module.exports.getByUserId = async (
     eigs: response.rows ?? [],
     total: total ? parseInt(total) : 0,
   };
+};
+
+module.exports.getByUserId = async (
+  userId,
+  { limit, offset, sortBy, sortDirection = "ASC", search } = {},
+) => {
+  const params = [userId];
+  const where = `UO.ORG_ID IN ( SELECT ORG_ID FROM FRONT.USER_ORGANISME WHERE USE_ID = $1)`;
+
+  return await getEigs(where, params, {
+    limit,
+    offset,
+    search,
+    sortBy,
+    sortDirection,
+  });
+};
+
+module.exports.getAdmin = async ({
+  limit,
+  offset,
+  sortBy,
+  sortDirection = "ASC",
+  search,
+} = {}) => {
+  const where = `S.STATUT <> 'BROUILLON'`;
+
+  return await getEigs(where, [], {
+    limit,
+    offset,
+    search,
+    sortBy,
+    sortDirection,
+  });
 };
 
 module.exports.getEmailByTerCode = async (terCode) => {
@@ -471,5 +553,12 @@ module.exports.delete = async ({ eigId }) => {
 
   log.i("delete EIG - OUT");
 
+  return eigId;
+};
+
+module.exports.markAsRead = async (eigId) => {
+  log.i("updateStatut - IN", { eigId });
+  await pool.query(query.markAsRead, [eigId]);
+  log.i("updateStatut - DONE");
   return eigId;
 };

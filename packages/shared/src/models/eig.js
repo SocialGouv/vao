@@ -1,6 +1,7 @@
 const Statuts = {
   BROUILLON: "BROUILLON",
   ENVOYE: "ENVOYE",
+  LU: "LU",
 };
 
 const Categorie = {

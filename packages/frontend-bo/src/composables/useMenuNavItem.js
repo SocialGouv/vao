@@ -1,4 +1,4 @@
-import { useUserStore, computed } from "#imports";
+import { computed, useUserStore } from "#imports";
 
 export const useMenuNavItems = () => {
   const userStore = useUserStore();
@@ -64,6 +64,14 @@ export const useMenuNavItems = () => {
             {
               text: "Informations",
               to: "/informations",
+            },
+          ]
+        : []),
+      ...(roles.includes("eig")
+        ? [
+            {
+              text: "EIG",
+              to: "/eig",
             },
           ]
         : []),

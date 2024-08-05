@@ -66,6 +66,14 @@
           @send="sendMessage"
         />
       </DsfrTabContent>
+      <DsfrTabContent
+        panel-id="tab-content-4"
+        tab-id="tab-4"
+        :selected="selectedTabIndex === 4"
+        :asc="asc"
+      >
+        <DemandesSejourEigs :eigs="eigs?.eigs ?? []" :fetch-eig="executeEig" />
+      </DsfrTabContent>
     </DsfrTabs>
     <div
       v-if="
@@ -197,6 +205,9 @@ const selectTab = (idx) => {
   if (idx === 2 && !historique.value) {
     execute();
   }
+  if (idx === 4 && !historique.value) {
+    executeEig();
+  }
 };
 
 const demandeStore = useDemandeSejourStore();
@@ -212,6 +223,14 @@ const {
   method: "GET",
   credentials: "include",
 });
+const { data: eigs, execute: executeEig } = useFetchBackend(
+  `/eig/admin/ds/${route.params.declarationId}`,
+  {
+    immediate: false,
+    method: "GET",
+    credentials: "include",
+  },
+);
 
 organismeStore.fetchOrganismesNonAgrees({});
 
@@ -281,6 +300,7 @@ const tabTitles = [
   { title: "Documents joints" },
   { title: "Historique de la déclaration" },
   { title: "Messagerie" },
+  { title: "EIG" },
 ];
 
 const modalComplement = reactive({

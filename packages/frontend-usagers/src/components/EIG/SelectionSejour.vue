@@ -34,7 +34,7 @@
               }
             "
           >
-            {{ eig.getTagSejourLibelle(demande) }}
+            {{ getTagSejourLibelle(demande) }}
           </DsfrTag>
         </div>
       </div>
@@ -73,6 +73,7 @@
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
 import { eigModel, eigSchema } from "@vao/shared";
+import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
 
 const emit = defineEmits(["next", "update"]);
 
@@ -113,7 +114,7 @@ const selectedDemandeLabel = computed(() => {
   if (!selectedDemande.value) {
     return null;
   }
-  return eig.getTagSejourLibelle(selectedDemande.value);
+  return getTagSejourLibelle(selectedDemande.value);
 });
 
 const departementsOptions = computed(
@@ -131,7 +132,7 @@ const initialValues = {
   departement: eigStore.currentEig?.departement ?? null,
 };
 
-const { meta, values } = useForm({
+const { meta, values, errors } = useForm({
   validationSchema,
   initialValues,
   validateOnMount: false,
