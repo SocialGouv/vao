@@ -53,6 +53,18 @@ const query = {
     ;`,
     [normalize(email), nom, prenom, territoireCode],
   ],
+  delete: (id, deleted_use_id) => [
+    `
+      UPDATE back.users
+      SET
+        deleted = true,
+        deleted_use_id = $2,
+        deleted_date = now()
+      WHERE
+        id = $1
+      `,
+    [id, deleted_use_id],
+  ],
   deleteRole: (id) => [
     `
   DELETE FROM back.user_roles
@@ -168,6 +180,16 @@ ${additionalParamsQuery}
       )
       AND deleted is False
     `,
+  undelete: (id) => [
+    `
+      UPDATE back.users
+      SET
+        deleted = false
+      WHERE
+        id = $1
+      `,
+    [id],
+  ],
   update: (id, nom, prenom, territoireCode) => [
     `
       UPDATE back.users
@@ -180,28 +202,6 @@ ${additionalParamsQuery}
         id = $1
       `,
     [id, nom, prenom, territoireCode],
-  ],
-  delete: (id,deleted_use_id)=> [
-    `
-      UPDATE back.users
-      SET
-        deleted = true,
-        deleted_use_id = $2,
-        deleted_date = now()
-      WHERE
-        id = $1
-      `,
-    [id, deleted_use_id],
-  ],
-  undelete: (id)=> [
-    `
-      UPDATE back.users
-      SET
-        deleted = false
-      WHERE
-        id = $1
-      `,
-    [id],
   ],
 };
 
@@ -242,7 +242,11 @@ module.exports.create = async ({
   return { code: "CreationCompte", user };
 };
 
-module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted },deleted_use_id) => {
+module.exports.update = async (
+  id,
+  { nom, prenom, roles, territoireCode, deleted },
+  deleted_use_id,
+) => {
   log.i("update - IN", { id });
   if (!id) {
     throw new AppError("Paramètre manquant", {
@@ -253,7 +257,7 @@ module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted
   const { rowCount } = await pool.query(
     ...query.update(id, nom, prenom, territoireCode),
   );
-  
+
   if (rowCount === 0) {
     log.d("update - DONE - Utilisateur BO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
@@ -261,8 +265,7 @@ module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted
     });
   }
   // Suppression logique du compte
-  if (deleted) 
-    await pool.query(...query.delete(id, deleted_use_id));
+  if (deleted) await pool.query(...query.delete(id, deleted_use_id));
 
   // Suppression des roles de l'utilisateur
   await pool.query(...query.deleteRole(id));
@@ -358,7 +361,7 @@ module.exports.read = async (
     searchParams.push(`%${normalize(search.email)}%`);
   }
   if (search?.territoire && search.territoire.length) {
-    searchQuery += `   AND ter.label ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND (ter.label ilike $${searchParams.length + 1} OR TER.PARENT_CODE ilike $${searchParams.length + 1})\n`;
     searchParams.push(`%${search.territoire}%`);
   }
   if (search?.valide !== undefined) {
