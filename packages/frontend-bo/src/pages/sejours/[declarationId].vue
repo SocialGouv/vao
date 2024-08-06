@@ -168,7 +168,7 @@
         </fieldset>
       </DsfrModal>
     </div>
-    <isDownloading
+    <IsDownloading
       :is-downloading="apiStatus.isDownloading"
       :message="apiStatus.message"
     />
@@ -209,7 +209,7 @@ const selectTab = async (idx) => {
     await demandeStore.readMessages(route.params.declarationId);
     demandeStore.fetchMessages(route.params.declarationId);
   }
-  if (idx === 4 && !historique.value) {
+  if (idx === 4) {
     executeEig();
   }
 };

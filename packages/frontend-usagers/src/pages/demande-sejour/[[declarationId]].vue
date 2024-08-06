@@ -198,7 +198,6 @@
             ref="chatRef"
             :cdn-url="`${config.public.backendUrl}/documents/`"
             :messages="demandeSejourStore.messages ?? []"
-            :backend-url="`${config.public.backendUrl}/documents/`"
             :is-loading="isSendingMessage"
             @send="sendMessage"
           />
@@ -344,7 +343,6 @@ const tabTitles = computed(() => [
         },
       ]
     : []),
-  ...(sejourId.value ? [{ title: "Messagerie" }] : []),
   ...(sejourId.value ? [{ title: "EIG" }] : []),
 ]);
 
