@@ -63,7 +63,7 @@ const headers = [
 
 const redirectOnHebergement = (row) => {
   navigateTo(
-    `/hebergements/pour-sejour/${row.declarationId}/${row.hebergementIndex}`,
+    `/hebergements/lie-a-des-sejours/${row.declarationId}/${row.hebergementIndex}`,
   );
 };
 

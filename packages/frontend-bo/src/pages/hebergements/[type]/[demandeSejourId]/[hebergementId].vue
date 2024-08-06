@@ -54,8 +54,8 @@ const config = useRuntimeConfig();
 
 // const zoom = 16;
 
-if (route.params.type !== "pour-sejours") {
-  router.replace({ params: { ...route.params, type: "pour-sejours" } });
+if (route.params.type !== "lies-a-des-sejours") {
+  router.replace({ params: { ...route.params, type: "lies-a-des-sejours" } });
 }
 
 const hebergement = computed(() => demandeSejourStore.hebergement);
@@ -65,7 +65,7 @@ const demandeSejourId = parseInt(route.params.demandeSejourId, 10);
 const hebergementId = parseInt(route.params.hebergementId, 10);
 if (isNaN(demandeSejourId) || isNaN(hebergementId)) {
   toaster.error("Cet hébergement n'existe pas");
-  navigateTo("/hebergements/pour-sejours");
+  navigateTo("/hebergements/lies-a-des-sejours");
 }
 try {
   await demandeSejourStore.getHebergement(
@@ -75,7 +75,7 @@ try {
 } catch (error) {
   if (error?.response?.status === 404) {
     toaster.error("Cet hébergement n'existe pas");
-    navigateTo("/hebergements/pour-sejours");
+    navigateTo("/hebergements/lies-a-des-sejours");
   }
   throw error;
 }
