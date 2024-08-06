@@ -34,14 +34,6 @@ router.get(
   demandeSejourController.getExtract,
 );
 router.get(
-  "/admin/:declarationId",
-  boCheckJWT,
-  boCheckRoleDS,
-  getDepartements,
-  checkPermissionBODeclarationSejour,
-  demandeSejourController.getByIdBo,
-);
-router.get(
   "/admin/hebergements",
   boCheckJWT,
   boCheckRoleDS,
@@ -62,6 +54,14 @@ router.get(
   getDepartements,
   checkPermissionBODeclarationSejour,
   demandeSejourController.historique,
+);
+router.get(
+  "/admin/:declarationId",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  checkPermissionBODeclarationSejour,
+  demandeSejourController.getByIdBo,
 );
 router.post(
   "/admin/:declarationId/prise-en-charge",
