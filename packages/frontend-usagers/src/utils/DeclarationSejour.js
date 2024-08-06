@@ -1,7 +1,6 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
 import {
-  hebergementUtils,
   informationsPersonnel,
   informationsVacanciers,
   logger,
