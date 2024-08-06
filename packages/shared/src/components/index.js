@@ -4,6 +4,8 @@ import TableWithPagination from "./TableWithPagination.vue";
 import ValidationModal from "./ValidationModal.vue";
 import EigStatusBadge from "./eig/EigStatusBadge.vue";
 import Summary from "./eig/Summary.vue";
+import IsDownloading from "./IsDownloading.vue";
+import Hebergement from "./Hebergement.vue";
 
 export {
   FileUpload,
@@ -12,4 +14,6 @@ export {
   ValidationModal,
   EigStatusBadge,
   Summary,
+  IsDownloading,
+  Hebergement,
 };
