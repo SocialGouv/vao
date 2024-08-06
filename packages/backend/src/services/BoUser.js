@@ -360,7 +360,11 @@ module.exports.read = async (
     searchQuery += `   AND us.mail ilike $${searchParams.length + 1}\n`;
     searchParams.push(`%${normalize(search.email)}%`);
   }
-  if (search?.territoire && search.territoire.length) {
+  if (
+    search?.territoire &&
+    search?.territoire !== "FRA" &&
+    search.territoire.length
+  ) {
     searchQuery += `   AND (ter.label ilike $${searchParams.length + 1} OR TER.PARENT_CODE ilike $${searchParams.length + 1})\n`;
     searchParams.push(`%${search.territoire}%`);
   }
