@@ -57,7 +57,7 @@ const headers = [
 ];
 
 const redirectOnHebergement = (row) => {
-  navigateTo(`/hebergements/simple/${row.id}`);
+  navigateTo(`/hebergements/tous/${row.id}`);
 };
 
 const table = ref(null);

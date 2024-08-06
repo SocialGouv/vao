@@ -12,7 +12,7 @@
         :selected="selectedTabIndex === 0"
         :asc="asc"
       >
-        <HebergementsSimple ref="tables1" />
+        <HebergementsTous ref="tables1" />
       </DsfrTabContent>
 
       <DsfrTabContent
@@ -21,7 +21,7 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
-        <HebergementsPourSejour ref="tables2" />
+        <HebergementsLiesADesSejours ref="tables2" />
       </DsfrTabContent>
     </DsfrTabs>
   </div>
@@ -36,12 +36,14 @@ definePageMeta({
 const route = useRoute();
 
 const tabTitles = [
-  { title: "Hebergements" },
-  { title: "Hebergements dans les séjours" },
+  { title: "Tous les hébergements" },
+  { title: "Hebergements liés à des séjours" },
 ];
 
-const selectedTabIndex = ref(route.params.type === "pour-sejours" ? 1 : 0);
-const tabListName = "Hébergements";
+const selectedTabIndex = ref(
+  route.params.type === "lies-a-des-sejours" ? 1 : 0,
+);
+const tabListName = "Tous les hébergements";
 
 const asc = ref(true);
 
@@ -56,7 +58,7 @@ const selectTab = (idx) => {
   selectedTabIndex.value = idx;
   router.replace({
     query: {},
-    params: { type: idx === 1 ? "pour-sejours" : "simple" },
+    params: { type: idx === 1 ? "lies-a-des-sejours" : "tous" },
   });
   tables[idx].value.refreshTable();
 };

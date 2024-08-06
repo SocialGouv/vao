@@ -69,12 +69,12 @@ export const useMenuNavItems = () => {
               title: "Hébergements",
               links: [
                 {
-                  text: "simple",
-                  to: "/hebergements/simple",
+                  text: "Tous les hébergements",
+                  to: "/hebergements/tous",
                 },
                 {
-                  text: "Hébergements dans les sejours",
-                  to: "/hebergements/pour-sejours",
+                  text: "Hébergements liés à des séjours",
+                  to: "/hebergements/lies-a-des-sejours",
                 },
               ],
             },

@@ -54,8 +54,10 @@ const config = useRuntimeConfig();
 
 // const zoom = 16;
 
-if (route.params.type !== "simple") {
-  router.replace({ params: { ...route.params, type: "simple" } });
+if (route.params.type !== "tous") {
+  router.replace({
+    params: { ...route.params, type: "tous" },
+  });
 }
 
 const hebergement = computed(() => hebergementStore.hebergement);
@@ -64,14 +66,14 @@ const toaster = useToaster();
 const hebergementId = parseInt(route.params.hebergementId, 10);
 if (isNaN(hebergementId)) {
   toaster.error("Cet hébergement n'existe pas");
-  navigateTo("/hebergements/simple");
+  navigateTo("/hebergements/tous");
 }
 try {
   await hebergementStore.getHebergement(route.params.hebergementId);
 } catch (error) {
   if (error?.response?.status === 404) {
     toaster.error("Cet hébergement n'existe pas");
-    navigateTo("/hebergements/simple");
+    navigateTo("/hebergements/tous");
   }
   throw error;
 }
