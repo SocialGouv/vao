@@ -121,7 +121,6 @@ const updateOrCreate = async (data, type) => {
     );
   } finally {
     resetApiStatut();
-    data;
   }
 };
 
