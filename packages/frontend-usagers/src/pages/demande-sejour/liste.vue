@@ -33,7 +33,7 @@
                   >
                     <template #option="{ option, isPointed }">
                       <MultiSelectOption
-                        :label="option.label"
+                        :label="option.label.toString()"
                         :is-pointed="isPointed(option)"
                       />
                     </template>
@@ -56,7 +56,7 @@
                   >
                     <template #option="{ option, isPointed }">
                       <MultiSelectOption
-                        :label="option.label"
+                        :label="`${option.label}`"
                         :is-pointed="isPointed(option)"
                       />
                     </template>
@@ -79,7 +79,7 @@
                   >
                     <template #option="{ option, isPointed }">
                       <MultiSelectOption
-                        :label="option.label"
+                        :label="`${option.label}`"
                         :is-pointed="isPointed(option)"
                       />
                     </template>
@@ -128,7 +128,7 @@
                   >
                     <template #option="{ option, isPointed }">
                       <MultiSelectOption
-                        :label="option.label"
+                        :label="`${option.label}`"
                         :is-pointed="isPointed(option)"
                       />
                     </template>
@@ -152,7 +152,7 @@
                   >
                     <template #option="{ option, isPointed }">
                       <MultiSelectOption
-                        :label="option.label"
+                        :label="`${option.label}`"
                         :is-pointed="isPointed(option)"
                       />
                     </template>
@@ -205,6 +205,7 @@ import MultiSelectOption from "~/components/utils/MultiSelectOption.vue";
 const log = logger("pages/demande-sejour/liste");
 const toaster = useToaster();
 
+
 definePageMeta({
   middleware: ["is-connected", "check-organisme-is-complet"],
 });
@@ -228,8 +229,9 @@ useHead({
     },
   ],
 });
+
 const navigate = (item) => {
-  navigateTo(`/demande-sejour/${item.demandeSejourId}`);
+  navigateTo(`/demande-sejour/${item.declarationId}`);
 };
 
 const search = reactive({
@@ -246,7 +248,7 @@ const demandeSejourStore = useDemandeSejourStore();
 
 const idOptions = computed(() => {
   return demandeSejourStore.demandes
-    .map((d) => d.demandeSejourId)
+    .map((d) => d.declarationId)
     .filter((v, i, a) => a.indexOf(v) === i);
 });
 
@@ -296,7 +298,7 @@ const statutOptions = [
 ];
 
 const onUpdateId = (id) => {
-  search.demandeSejourId = id;
+  search.declarationId = id;
 };
 
 const onUpdateSiret = (siret) => {
@@ -451,7 +453,7 @@ const headers = [
             ].includes(row.statut),
             onClick: (event) => {
               event.stopPropagation();
-              copyDS(row.demandeSejourId);
+              copyDS(row.declarationId);
             },
           },
           {
@@ -467,8 +469,8 @@ const headers = [
             onClick: (event) => {
               event.stopPropagation();
               row.statut === DeclarationSejour.statuts.BROUILLON
-                ? deleteDS(row.demandeSejourId)
-                : cancelDS(row.demandeSejourId);
+                ? deleteDS(row.declarationId)
+                : cancelDS(row.declarationId);
             },
             disabled: !listeStatutAutoriseBoutonDeleteCancel.includes(
               row.statut,
@@ -491,11 +493,11 @@ async function copyDS(dsId) {
       method: "POST",
       credentials: "include",
     });
-    if (response.demandeId) {
+    if (response.declarationId) {
       toaster.success(`Déclaration dupliquée`);
       demandeSejourStore.fetchDemandes();
     }
-    log.d(`demande de séjour ${response.demandeId} dupliquée`);
+    log.d(`demande de séjour ${response.declarationId} dupliquée`);
   } catch (error) {
     log.w("Copie de la declaration de sejour : ", { error });
     return toaster.error(

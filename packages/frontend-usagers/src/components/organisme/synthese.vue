@@ -131,7 +131,7 @@
 <script setup>
 import * as yup from "yup";
 import { useForm } from "vee-validate";
-import IsDownloading from "~/components/utils/IsDownloading.vue";
+import { IsDownloading } from "@vao/shared";
 
 const props = defineProps({
   initOrganisme: { type: Object, default: null, required: true },

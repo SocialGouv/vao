@@ -8,8 +8,9 @@ import {
   protocoleTransport,
   protocoleSanitaire,
   projetSejour,
-  hebergementUtils,
 } from "#imports";
+
+import { hebergement as hebergementUtils } from "@vao/shared";
 
 const statuts = {
   BROUILLON: "BROUILLON",

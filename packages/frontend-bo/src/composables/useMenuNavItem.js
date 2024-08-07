@@ -13,11 +13,11 @@ export const useMenuNavItems = () => {
             title: "Comptes",
             links: [
               {
-                text: "back office",
+                text: "Back-office",
                 to: "/comptes/liste",
               },
               {
-                text: "organismes",
+                text: "Organismes",
                 to: "/comptes/liste-organisme",
               },
             ],
@@ -28,7 +28,7 @@ export const useMenuNavItems = () => {
             title: "Comptes",
             links: [
               {
-                text: "organismes",
+                text: "Organismes",
                 to: "/comptes/liste-organisme",
               },
             ],
@@ -64,6 +64,19 @@ export const useMenuNavItems = () => {
             {
               text: "Informations",
               to: "/informations",
+            },
+            {
+              title: "Hébergements",
+              links: [
+                {
+                  text: "Tous les hébergements",
+                  to: "/hebergements/tous",
+                },
+                {
+                  text: "Hébergements liés à des séjours",
+                  to: "/hebergements/lies-a-des-sejours",
+                },
+              ],
             },
           ]
         : []),

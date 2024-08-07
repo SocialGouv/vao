@@ -11,7 +11,7 @@ module.exports = async function post(req, res, next) {
   log.i("IN");
   const { body, decoded } = req;
   const { message, file } = body;
-  const declarationId = req.params.id;
+  const { declarationId } = req.params;
   const userId = decoded.id;
 
   if (!declarationId || (!message && !file)) {
@@ -48,9 +48,10 @@ module.exports = async function post(req, res, next) {
 
     if (destinataires) {
       await Send(
-        MailUtils.usagers.declarationSejour.sendMessageMail({
+        MailUtils.usagers.declarationSejour.sendMessageNotify({
           declaration,
           destinataires,
+          message,
         }),
       );
     }

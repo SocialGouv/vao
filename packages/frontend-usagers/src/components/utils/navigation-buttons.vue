@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import IsDownloading from "~/components/utils/IsDownloading.vue";
+import { IsDownloading } from "@vao/shared";
 
 const emit = defineEmits(["previous", "next"]);
 

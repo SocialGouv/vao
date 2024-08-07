@@ -1,7 +1,7 @@
 <template>
   <div v-show="props.isDownloading" class="container">
     <span v-show="message">{{ props.message }}</span>
-    <img src="/assets/Download.svg" alt="download" height="30" width="30" />
+    <img :src="downloadSVG" alt="download" height="30" width="30" />
   </div>
 </template>
 
@@ -10,6 +10,8 @@ const props = defineProps({
   isDownloading: { type: Boolean, default: false },
   message: { type: String, required: false, default: null },
 });
+
+import downloadSVG from "../assets/download.svg";
 </script>
 
 <style scoped>

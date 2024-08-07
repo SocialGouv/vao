@@ -196,7 +196,7 @@
           <Chat
             ref="chatRef"
             :messages="demandeSejourStore.messages"
-            :backend-url="`${config.public.backendUrl}/documents/`"
+            :cdn-url="`${config.public.backendUrl}/documents/`"
             :is-loading="isSendingMessage"
             @send="sendMessage"
           />
@@ -253,7 +253,7 @@ const links = [
   },
 ];
 
-const log = logger("pages/demande-sejour/[[demandeId]]");
+const log = logger("pages/demande-sejour/[[declarationId]]");
 
 const config = useRuntimeConfig();
 const demandeSejourStore = useDemandeSejourStore();
@@ -267,35 +267,52 @@ const chatRef = ref(null);
 const asc = ref(true);
 const selectedTabIndex = ref(initialSelectedIndex);
 
-if (route.params.demandeId) {
-  demandeSejourStore.fetchMessages(route.params.demandeId);
+if (route.params.declarationId) {
+  demandeSejourStore.fetchMessages(route.params.declarationId);
 }
 
 const {
   data: historique,
   error,
   execute,
-} = useFetchBackend(`/sejour/historique/${route.params.demandeId}`, {
+} = useFetchBackend(`/sejour/historique/${route.params.declarationId}`, {
   immediate: false,
   method: "GET",
   credentials: "include",
 });
 
-const selectTab = (idx) => {
+const selectTab = async (idx) => {
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
   if (idx === 2 && !historique.value) {
     execute();
   }
+  if (idx === 3) {
+    await demandeSejourStore.readMessages(route.params.declarationId);
+    demandeSejourStore.fetchMessages(route.params.declarationId);
+  }
 };
 
-const sejourId = ref(route.params.demandeId);
+const unreadMessages = computed(() => {
+  const nb = demandeSejourStore.messages.filter(
+    (m) => !m.readAt && m.backUserId != null,
+  ).length;
+  return nb && nb > 0 ? `(${nb})` : "";
+});
+const sejourId = ref(route.params.declarationId);
 
 const tabTitles = computed(() => [
   { title: "Formulaire" },
   { title: "Documents joints" },
   ...(sejourId.value ? [{ title: "Historique de la déclaration" }] : []),
-  ...(sejourId.value ? [{ title: "Messagerie" }] : []),
+  ...(sejourId.value
+    ? [
+        {
+          title: `Messagerie ${unreadMessages.value}`,
+          icon: `${unreadMessages.value ? "ri-feedback-line" : ""}`,
+        },
+      ]
+    : []),
 ]);
 
 const sommaireOptions = demandeSejourMenus

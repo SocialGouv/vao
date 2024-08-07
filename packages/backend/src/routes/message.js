@@ -5,9 +5,12 @@ const router = express.Router();
 const checkJWT = require("../middlewares/checkJWT");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 const boCheckRole = require("../middlewares/bo-check-role");
+const checkPermissionBODeclarationSejour = require("../middlewares/checkPermissionBODeclarationSejour");
+const checkPermissionBODeclarationSejourUpdate = require("../middlewares/checkPermissionBODeclarationSejourUpdate");
 const checkPermissionDeclarationSejour = require("../middlewares/checkPermissionDeclarationSejour");
-const messageController = require("../controllers/message");
 const getDepartements = require("../middlewares/getDepartements");
+const checkComingFrom = require("../middlewares/checkComingFrom");
+const messageController = require("../controllers/message");
 
 const boCheckRoleDS = boCheckRole([
   "DemandeSejour_Lecture",
@@ -15,22 +18,45 @@ const boCheckRoleDS = boCheckRole([
 ]);
 
 router.post(
-  "/admin/:id",
+  "/admin/:declarationId",
   boCheckJWT,
   boCheckRoleDS,
   getDepartements,
+  checkPermissionBODeclarationSejourUpdate,
   messageController.postByBO,
 );
-
 router.post(
-  "/:id",
+  "/:declarationId",
   checkJWT,
   checkPermissionDeclarationSejour,
   messageController.postByFO,
 );
-router.get("/admin/:id", boCheckJWT, messageController.get);
 router.get(
-  "/:id",
+  "/admin/read/:declarationId",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  checkComingFrom,
+  checkPermissionBODeclarationSejour,
+  messageController.read,
+);
+router.get(
+  "/admin/:declarationId",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  checkPermissionBODeclarationSejour,
+  messageController.get,
+);
+router.get(
+  "/read/:declarationId",
+  checkJWT,
+  checkPermissionDeclarationSejour,
+  checkComingFrom,
+  messageController.read,
+);
+router.get(
+  "/:declarationId",
   checkJWT,
   checkPermissionDeclarationSejour,
   messageController.get,

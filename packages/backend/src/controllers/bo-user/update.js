@@ -36,7 +36,7 @@ module.exports = async function update(req, res, next) {
     )
   ) {
     try {
-      await BoUser.update(userId, user);
+      await BoUser.update(userId, user, req.decoded.id);
       return res.status(200).json({ message: "Utilisateur mis à jour" });
     } catch (error) {
       log.w("DONE with error");

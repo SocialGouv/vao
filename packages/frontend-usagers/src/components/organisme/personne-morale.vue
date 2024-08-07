@@ -344,7 +344,7 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import IsDownloading from "~/components/utils/IsDownloading.vue";
+import { IsDownloading } from "@vao/shared";
 
 const toaster = useToaster();
 

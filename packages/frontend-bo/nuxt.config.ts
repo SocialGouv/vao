@@ -21,6 +21,7 @@ export default defineNuxtConfig({
   modules: [
     "nuxt-security",
     "@pinia/nuxt",
+    "@nuxtjs/leaflet",
     "@socialgouv/dsfr-toaster-nuxt-module",
   ],
   runtimeConfig: {
@@ -36,6 +37,7 @@ export default defineNuxtConfig({
       matomoSiteId: undefined,
       sentry: {
         dsn: undefined,
+        release: undefined,
         enabled: undefined,
       },
     },
@@ -58,6 +60,9 @@ export default defineNuxtConfig({
   },
   srcDir: "src",
   ssr: false,
+  sourcemap: {
+    client: true,
+  },
   vite: {
     plugins: [
       sentryVitePlugin({
@@ -65,6 +70,7 @@ export default defineNuxtConfig({
         org: process.env.SENTRY_ORG,
         project: process.env.SENTRY_PROJECT,
         url: process.env.SENTRY_URL,
+        release: { name: process.env.SENTRY_RELEASE },
       }),
     ],
   },

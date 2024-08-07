@@ -61,7 +61,7 @@
         <Chat
           ref="chatRef"
           :messages="demandeStore.messages"
-          :backend-url="`${config.public.backendUrl}/documents/`"
+          :cdn-url="`${config.public.backendUrl}/documents/`"
           :is-loading="isSendingMessage"
           @send="sendMessage"
         />
@@ -160,7 +160,7 @@
         </fieldset>
       </DsfrModal>
     </div>
-    <UtilsIsDownloading
+    <isDownloading
       :is-downloading="apiStatus.isDownloading"
       :message="apiStatus.message"
     />
@@ -169,7 +169,7 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { Chat } from "@vao/shared";
+import { Chat, IsDownloading } from "@vao/shared";
 import { useIsDownloading } from "~/composables/useIsDownloading";
 
 definePageMeta({
@@ -191,11 +191,15 @@ const selectedTabIndex = ref(initialSelectedIndex);
 
 const config = useRuntimeConfig();
 
-const selectTab = (idx) => {
+const selectTab = async (idx) => {
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
   if (idx === 2 && !historique.value) {
     execute();
+  }
+  if (idx === 3) {
+    await demandeStore.readMessages(route.params.declarationId);
+    demandeStore.fetchMessages(route.params.declarationId);
   }
 };
 
@@ -207,7 +211,7 @@ const {
   data: historique,
   error,
   execute,
-} = useFetchBackend(`/sejour/admin/historique/${route.params.demandeId}`, {
+} = useFetchBackend(`/sejour/admin/historique/${route.params.declarationId}`, {
   immediate: false,
   method: "GET",
   credentials: "include",
@@ -227,8 +231,8 @@ const isOrganismeNonAgree = computed(() => {
 
 onMounted(async () => {
   try {
-    await demandeStore.setCurrentDemande(route.params.demandeId);
-    fetchMessages();
+    await demandeStore.setCurrentDemande(route.params.declarationId);
+    demandeStore.fetchMessages(route.params.declarationId);
   } catch (e) {
     navigateTo("/sejours");
   }
@@ -256,7 +260,7 @@ const sendMessage = async ({ message, file }) => {
     }
   }
   try {
-    const url = `/message/admin/${route.params.demandeId}`;
+    const url = `/message/admin/${route.params.declarationId}`;
     const response = await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
@@ -273,15 +277,25 @@ const sendMessage = async ({ message, file }) => {
       `Une erreur est survenue lors de l'envoi de votre message`,
     );
   }
-  fetchMessages();
+  demandeStore.fetchMessages(route.params.declarationId);
 };
 
-const tabTitles = [
-  { title: " Formulaire" },
+const unreadMessages = computed(() => {
+  const nb = demandeStore.messages.filter(
+    (m) => !m.readAt && m.frontUserId != null,
+  ).length;
+  return nb && nb > 0 ? `(${nb})` : "";
+});
+
+const tabTitles = computed(() => [
+  { title: "Formulaire" },
   { title: "Documents joints" },
   { title: "Historique de la déclaration" },
-  { title: "Messagerie" },
-];
+  {
+    title: `Messagerie ${unreadMessages.value}`,
+    icon: `${unreadMessages.value ? "ri-feedback-line" : ""}`,
+  },
+]);
 
 const modalComplement = reactive({
   opened: false,
@@ -295,9 +309,6 @@ const modalEnregistrement2Mois = reactive({
   opened: false,
 });
 
-const fetchMessages = () => {
-  demandeStore.fetchMessages(route.params.demandeId);
-};
 const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
 };
@@ -328,14 +339,14 @@ const onValidComplement = async (commentaires) => {
 
   try {
     await $fetchBackend(
-      `/sejour/admin/${route.params.demandeId}/demande-complements`,
+      `/sejour/admin/${route.params.declarationId}/demande-complements`,
       {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(commentaires),
       },
     );
-    await demandeStore.setCurrentDemande(route.params.demandeId);
+    await demandeStore.setCurrentDemande(route.params.declarationId);
     execute();
   } catch (error) {
     log.w("prend en charge", error);
@@ -350,12 +361,12 @@ const onValidRefus = async (commentaires) => {
   onCloseModalDemandeComplements();
 
   try {
-    await $fetchBackend(`/sejour/admin/${route.params.demandeId}/refus`, {
+    await $fetchBackend(`/sejour/admin/${route.params.declarationId}/refus`, {
       method: "POST",
       credentials: "include",
       body: JSON.stringify(commentaires),
     });
-    await demandeStore.setCurrentDemande(route.params.demandeId);
+    await demandeStore.setCurrentDemande(route.params.declarationId);
     execute();
   } catch (error) {
     log.w("prend en charge", error);
@@ -371,13 +382,13 @@ const onValidEnregistrement2Mois = async () => {
   onCloseModalEnregistrement2Mois();
   try {
     await $fetchBackend(
-      `/sejour/admin/${route.params.demandeId}/enregistrement-2-mois`,
+      `/sejour/admin/${route.params.declarationId}/enregistrement-2-mois`,
       {
         method: "POST",
         credentials: "include",
       },
     );
-    await demandeStore.setCurrentDemande(route.params.demandeId);
+    await demandeStore.setCurrentDemande(route.params.declarationId);
     execute();
   } catch (error) {
     log.w("prend en charge", error);

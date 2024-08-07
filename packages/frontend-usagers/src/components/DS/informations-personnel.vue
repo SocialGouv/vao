@@ -11,33 +11,32 @@
           :large="true"
         />
       </div>
-      <div class="fr-fieldset__element">
+      <div
+        v-if="!DeclarationSejour.isUpdate8Jour(declarationStatut)"
+        class="fr-fieldset__element"
+      >
         <DsfrInputGroup
           name="nombreResponsable"
           label="Nombre total de personnes responsables du déroulement du séjour sur le(s) lieu(x) de séjour"
           :label-visible="true"
           :model-value="nombreResponsable"
-          :readonly="
-            !props.modifiable ||
-            DeclarationSejour.isUpdate8Jour(declarationStatut)
-          "
+          :readonly="!props.modifiable"
           :is-valid="nombreResponsableMeta.valid"
           :error-message="nombreResponsableErrorMessage"
           placeholder="nombre total de responsable"
           @update:model-value="onNombreResponsableChange"
         />
       </div>
-      <div class="fr-fieldset__element">
+      <div
+        v-if="!DeclarationSejour.isUpdate8Jour(declarationStatut)"
+        class="fr-fieldset__element"
+      >
         <DsfrInputGroup
           name="nombreAccompagnant"
           label="Nombre total d'accompagnants sur le(s) lieu(x) de séjour"
           :label-visible="true"
           :model-value="nombreAccompagnant"
-          :readonly="
-            !props.modifiable ||
-            declarationStatut === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
-            declarationStatut === DeclarationSejour.statuts.A_MODIFIER_8J
-          "
+          :readonly="!props.modifiable"
           :is-valid="nombreAccompagnantMeta.valid"
           :error-message="nombreAccompagnantErrorMessage"
           placeholder="nombre total d'accompagnant"
@@ -85,9 +84,9 @@
         @expand="(id) => (expandedId = id)"
       >
         <template #title>
-          <span :style="encadrantsMeta.valid ?? 'color: #b34000'"
-            >Personnel d'encadrement&nbsp;</span
-          >
+          <span :style="encadrantsMeta.valid ?? 'color: #b34000'">{{
+            `Personnel d'encadrement - ${nombreResponsable ?? 0}&nbsp;`
+          }}</span>
           <DsfrBadge
             :label="encadrantsMeta.valid ? 'Complet' : 'Incomplet'"
             :small="true"
@@ -118,9 +117,9 @@
         @expand="(id) => (expandedId = id)"
       >
         <template #title>
-          <span :style="accompagnantsMeta.valid ?? 'color: #b34000'"
-            >Personnel d'accompagnement&nbsp;</span
-          >
+          <span :style="accompagnantsMeta.valid ?? 'color: #b34000'">{{
+            `Personnel d'accompagnement - ${nombreAccompagnant ?? 0}&nbsp;`
+          }}</span>
           <DsfrBadge
             :label="accompagnantsMeta.valid ? 'Complet' : 'Incomplet'"
             :small="true"
@@ -264,8 +263,8 @@ const initialValues = {
   nombreResponsable:
     declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
     declarationStatut === DeclarationSejour.statuts.A_MODIFIER_8J
-      ? props.initData.encadrants?.length ?? "0"
-      : props.initData.nombreResponsable ?? null,
+      ? (props.initData.encadrants?.length ?? "0")
+      : (props.initData.nombreResponsable ?? null),
   encadrants: props.initData.encadrants ?? [],
   accompagnants: props.initData.accompagnants ?? [],
   prestatairesMedicaments: props.initData.prestatairesMedicaments ?? [],
@@ -279,8 +278,8 @@ const initialValues = {
   nombreAccompagnant:
     declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
     declarationStatut.value === DeclarationSejour.statuts.A_MODIFIER_8J
-      ? props.initData.accompagnants?.length ?? "0"
-      : props.initData.nombreAccompagnant ?? null,
+      ? (props.initData.accompagnants?.length ?? "0")
+      : (props.initData.nombreAccompagnant ?? null),
 };
 
 const { meta, values } = useForm({

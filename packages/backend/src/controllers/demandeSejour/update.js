@@ -9,10 +9,10 @@ const ValidationAppError = require("../../utils/validation-error");
 const log = logger(module.filename);
 
 module.exports = async function post(req, res, next) {
-  let demandeSejourId = req.params.id;
+  let { declarationId } = req.params;
   const { type } = req.body;
   let { parametre } = req.body;
-  log.i("IN", { demandeSejourId, parametre, type });
+  log.i("IN", { declarationId, parametre, type });
 
   if (!type || !parametre) {
     log.w("missing parameter");
@@ -24,21 +24,21 @@ module.exports = async function post(req, res, next) {
   }
 
   try {
-    demandeSejourId = await number().required().validate(demandeSejourId);
+    declarationId = await number().required().validate(declarationId);
     parametre = await object().json().required().validate(parametre);
   } catch (error) {
     return next(new ValidationAppError(error));
   }
 
   try {
-    const demandeId = await DemandeSejour.update(
+    const updatedDeclarationId = await DemandeSejour.update(
       type,
-      demandeSejourId,
+      declarationId,
       parametre,
     );
 
     log.i("DONE");
-    return res.status(200).json({ id: demandeId });
+    return res.status(200).json({ id: updatedDeclarationId });
   } catch (error) {
     log.w("DONE with error");
     return next(error);

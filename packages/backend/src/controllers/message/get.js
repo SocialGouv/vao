@@ -7,7 +7,7 @@ const log = logger(module.filename);
 
 module.exports = async function get(req, res, next) {
   log.i("IN");
-  const declarationId = req.params.id;
+  const { declarationId } = req.params;
 
   if (!declarationId) {
     log.w("missing or invalid parameter");
@@ -23,8 +23,7 @@ module.exports = async function get(req, res, next) {
   } catch (error) {
     log.w("DONE with error");
     return res.status(400).json({
-      message:
-        "une erreur est survenue durant la récupération des hebergements",
+      message: "une erreur est survenue durant la récupération des messages",
     });
   }
 };

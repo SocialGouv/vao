@@ -11,6 +11,7 @@
           :error-message="nomErrorMessage"
           :is-valid="nomMeta"
           required
+          :disabled="isDisabled"
           @update:model-value="onNomChange"
         />
       </div>
@@ -24,43 +25,29 @@
           :error-message="nomGestionnaireErrorMessage"
           :is-valid="nomGestionnaireMeta"
           required
+          :disabled="isDisabled"
           @update:model-value="onNomGestionnaireChange"
         />
       </div>
-      <SearchAddress
-        name="coordonnees.adresse"
-        :value="adresse"
-        :label="
-          props.initHebergement.coordonnees?.adresse
-            ? 'Nouvelle adresse de l\'hébergement *'
-            : 'Adresse de l\'hébergement *'
-        "
-        :initial-adress="props.initHebergement.coordonnees?.adresse?.label"
-        :error-message="adresseErrorMessage"
-        @select="onAdresseChange"
-      ></SearchAddress>
-
+      <div class="fr-fieldset__element fr-col-12">
+        <slot
+          name="search"
+          :label="
+            initHebergement.coordonnees?.adresse
+              ? 'Nouvelle adresse de l\'hébergement *'
+              : 'Adresse de l\'hébergement *'
+          "
+          :initial-adress="initHebergement.coordonnees?.adresse.label"
+          :adresse="adresse"
+          :error-message="adresseErrorMessage"
+          :on-addresse-change="onAdresseChange"
+        />
+      </div>
       <div
         v-if="adresse && !isCssDisabled"
         class="fr-fieldset__element fr-col-12"
       >
-        <div style="height: 50vh; width: 50vw">
-          <LMap
-            ref="map"
-            :zoom="zoom"
-            :center="markerLatLng"
-            :use-global-leaflet="false"
-            style="z-index: 0"
-          >
-            <LTileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-              layer-type="base"
-              name="OpenStreetMap"
-            />
-            <LMarker :lat-lng="markerLatLng"></LMarker>
-          </LMap>
-        </div>
+        <slot name="map" :markers="markers" />
       </div>
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
@@ -72,6 +59,7 @@
           :error-message="numTelephone1ErrorMessage"
           hint="Le numéro de téléphone saisi doit être valide. Exemple : 0612345678"
           placeholder=""
+          :disabled="isDisabled"
           @update:model-value="onNumTelephone1Change"
         />
       </div>
@@ -85,6 +73,7 @@
           :error-message="numTelephone2ErrorMessage"
           hint="Le numéro de téléphone saisi doit être valide. Exemple : 0612345678"
           placeholder=""
+          :disabled="isDisabled"
           @update:model-value="onNumTelephone2Change"
         />
       </div>
@@ -99,6 +88,7 @@
           hint="Format attendu : nom@domaine.fr"
           placeholder=""
           required
+          :disabled="isDisabled"
           @update:model-value="onEmailChange"
         />
       </div>
@@ -114,6 +104,7 @@
             :is-valid="typeMeta"
             :inline="false"
             required
+            :disabled="isDisabled"
             :error-message="typeErrorMessage"
             @update:model-value="onTypeChange"
           />
@@ -121,7 +112,7 @@
       </div>
     </DsfrFieldset>
     <DsfrFieldset legend="Informations sur les locaux">
-      <div class="fr-fieldset__element fr-col-12">
+      <div class="fr-col-12">
         <div class="fr-input-group">
           <DsfrRadioButtonSet
             name="informationsLocaux.visiteLocaux"
@@ -131,12 +122,13 @@
             :is-valid="visiteLocauxMeta.valid"
             :inline="true"
             required
+            :disabled="isDisabled"
             :error-message="visiteLocauxErrorMessage"
             @update:model-value="onVisiteLocauxChange"
           />
         </div>
       </div>
-      <div v-if="visiteLocaux" class="fr-fieldset__element fr-col-6">
+      <div v-if="visiteLocaux" class="fr-col-6">
         <DsfrInputGroup
           name="informationsLocaux.visiteLocauxAt"
           type="date"
@@ -145,6 +137,7 @@
           :label-visible="true"
           :model-value="visiteLocauxAt"
           :is-valid="visiteLocauxAtMeta.valid"
+          :disabled="isDisabled"
           :error-message="visiteLocauxAtErrorMessage"
           @update:model-value="
             onVisiteLocauxAtChange($event === '' ? null : $event)
@@ -181,7 +174,7 @@
           </li>
         </ol>
       </DsfrAlert>
-      <div class="fr-fieldset__element fr-col-12">
+      <div class="fr-col-12">
         <div class="fr-input-group">
           <DsfrRadioButtonSet
             name="informationsLocaux.reglementationErp"
@@ -192,32 +185,39 @@
             :inline="true"
             :error-message="reglementationErpErrorMessage"
             required
+            :disabled="isDisabled"
             @update:model-value="onReglementationErpChange"
           />
         </div>
       </div>
-      <div v-if="reglementationErp">
-        <UtilsFileUpload
+      <div v-if="reglementationErp" class="fr-col-12">
+        <FileUpload
           v-model="fileDerniereAttestationSecurite"
           label="Téléchargement du document Dernière attestation de passage de la commission sécurité"
           hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
-          :modifiable="props.modifiable"
+          :modifiable="!isDisabled"
+          :cdn-url="cdnUrl"
+          :is-disabled="isDisabled"
           :error-message="fileDerniereAttestationSecuriteErrorMessage"
         />
-        <UtilsFileUpload
+        <FileUpload
           v-model="fileDernierArreteAutorisationMaire"
           label="Téléchargement du document Dernier arrêté d’autorisation du maire"
           hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
-          :modifiable="props.modifiable"
+          :modifiable="!isDisabled"
+          :cdn-url="cdnUrl"
+          :is-disabled="isDisabled"
           :error-message="fileDernierArreteAutorisationMaireErrorMessage"
         />
       </div>
-      <div v-if="reglementationErp === false">
-        <UtilsFileUpload
+      <div v-if="reglementationErp === false" class="fr-col-12">
+        <FileUpload
           v-model="fileReponseExploitantOuProprietaire"
           label="Téléchargement du document Réponse du propriétaire ou exploitant indiquant les raisons pour lesquelles le lieu d’hébergement n’est pas soumis à la réglementation ERP *"
           hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
-          :modifiable="props.modifiable"
+          :modifiable="!isDisabled"
+          :cdn-url="cdnUrl"
+          :is-disabled="isDisabled"
           :error-message="fileReponseExploitantOuProprietaireErrorMessage"
         />
       </div>
@@ -232,6 +232,7 @@
             :inline="false"
             :error-message="accessibiliteErrorMessage"
             required
+            :disabled="isDisabled"
             @update:model-value="onAccessibiliteChange"
           />
         </div>
@@ -249,6 +250,7 @@
           :model-value="accessibilitePrecision"
           :error-message="accessibilitePrecisionErrorMessage"
           :is-valid="accessibilitePrecisionMeta.valid"
+          :disabled="isDisabled"
           @update:model-value="onAccessibilitePrecisionChange"
         />
       </div>
@@ -262,6 +264,7 @@
             :is-valid="pensionMeta.valid"
             :inline="false"
             :error-message="pensionErrorMessage"
+            :disabled="isDisabled"
             @update:model-value="onPensionChange"
           />
         </div>
@@ -275,6 +278,7 @@
           :options="hebergementUtils.prestationsHotelieresOptions"
           :small="true"
           :error-message="prestationsHotelieresErrorMessage"
+          :disabled="isDisabled"
           @update:model-value="onPrestationsHotelieresChange"
         />
       </div>
@@ -290,6 +294,7 @@
           :error-message="descriptionLieuHebergementErrorMessage"
           :is-valid="descriptionLieuHebergementMeta.valid"
           required
+          :disabled="isDisabled"
           @update:model-value="onDescriptionLieuHebergementChange"
         />
       </div>
@@ -305,6 +310,7 @@
           :error-message="nombreLitsErrorMessage"
           :is-valid="nombreLitsMeta.valid"
           required
+          :disabled="isDisabled"
           @update:model-value="
             onNombreLitsChange($event !== '' ? $event : null)
           "
@@ -321,17 +327,15 @@
           :model-value="nombreLitsSuperposes"
           :error-message="nombreLitsSuperposesErrorMessage"
           :is-valid="nombreLitsSuperposesMeta.valid"
+          :disabled="isDisabled"
           @update:model-value="
             onNombreLitsSuperposesChange($event !== '' ? $event : null)
           "
         />
       </div>
 
-      <div
-        v-if="nombreLitsSuperposes > 0"
-        class="fr-fieldset__element fr-col-12"
-      >
-        <div class="fr-input-group">
+      <div v-if="nombreLitsSuperposes > 0" class="fr-col-12">
+        <div class="fr-fieldset__element fr-input-group">
           <DsfrRadioButtonSet
             name="informationsLocaux.litsDessus"
             legend="Pour les lits superposés, les lits « du dessus » seront-ils occupés par des vacanciers  ?"
@@ -341,6 +345,7 @@
             :inline="true"
             :error-message="litsDessusErrorMessage"
             required
+            :disabled="isDisabled"
             @update:model-value="onLitsDessusChange"
           />
         </div>
@@ -356,6 +361,7 @@
           :error-message="nombreMaxPersonnesCouchageErrorMessage"
           :is-valid="nombreMaxPersonnesCouchageMeta.valid"
           required
+          :disabled="isDisabled"
           @update:model-value="
             onNombreMaxPersonnesCouchageChange($event !== '' ? $event : null)
           "
@@ -372,6 +378,7 @@
             :is-valid="couchageIndividuelMeta.valid"
             :inline="true"
             required
+            :disabled="isDisabled"
             :error-message="couchageIndividuelErrorMessage"
             @update:model-value="onCouchageIndividuelChange"
           />
@@ -388,6 +395,7 @@
             :is-valid="rangementIndividuelMeta.valid"
             :inline="true"
             required
+            :disabled="isDisabled"
             :error-message="rangementIndividuelErrorMessage"
             @update:model-value="onRangementIndividuelChange"
           />
@@ -403,6 +411,7 @@
             :options="ouiNonOptions"
             :is-valid="chambresUnisexesMeta.valid"
             :inline="true"
+            :disabled="isDisabled"
             :error-message="chambresUnisexesErrorMessage"
             @update:model-value="onChambresUnisexesChange"
           />
@@ -419,6 +428,7 @@
             :is-valid="chambresDoublesMeta.valid"
             :inline="true"
             required
+            :disabled="isDisabled"
             :error-message="chambresDoublesErrorMessage"
             @update:model-value="onChambresDoublesChange"
           />
@@ -435,6 +445,7 @@
             :is-valid="amenagementsSpecifiquesMeta.valid"
             :inline="true"
             required
+            :disabled="isDisabled"
             :error-message="amenagementsSpecifiquesErrorMessage"
             @update:model-value="onAmenagementsSpecifiquesChange"
           />
@@ -455,6 +466,7 @@
           :model-value="precisionAmenagementsSpecifiques"
           :error-message="precisionAmenagementsSpecifiquesErrorMessage"
           :is-valid="precisionAmenagementsSpecifiquesMeta.valid"
+          :disabled="isDisabled"
           hitn="Minumum 5 caractères"
           @update:model-value="onPrecisionAmenagementsSpecifiquesChange"
         />
@@ -472,6 +484,7 @@
             :is-valid="vehiculesAdaptesMeta.valid"
             :inline="true"
             required
+            :disabled="isDisabled"
             :error-message="vehiculesAdaptesErrorMessage"
             @update:model-value="onVehiculesAdaptesChange"
           />
@@ -489,6 +502,7 @@
           :error-message="deplacementProximiteErrorMessage"
           :is-valid="deplacementProximiteMeta.valid"
           required
+          :disabled="isDisabled"
           @update:model-value="onDeplacementProximiteChange"
         />
       </div>
@@ -504,35 +518,38 @@
           :error-message="excursionErrorMessage"
           :is-valid="excursionMeta.valid"
           required
+          :disabled="isDisabled"
           @update:model-value="onExcursionChange"
         />
       </div>
+      <div class="fr-fieldset__element">
+        <div class="fr-grid-row">
+          <div v-if="!props.isDownloading" class="fr-col-4">
+            <div class="fr-input-group">
+              <nuxt-link :to="backRoute" class="back-button">
+                <DsfrButton type="button" secondary>Retour</DsfrButton>
+              </nuxt-link>
+            </div>
+          </div>
+          <div v-if="isSaveVisible" class="fr-col-4">
+            <div class="fr-input-group">
+              <DsfrButton
+                v-if="!props.isDownloading"
+                id="next-step"
+                :disabled="!meta.valid"
+                type="button"
+                @click="submit"
+                >{{ labelNext }}
+              </DsfrButton>
+              <is-downloading
+                :is-downloading="props.isDownloading"
+                :message="props.message"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </DsfrFieldset>
-
-    <fieldset class="fr-fieldset">
-      <div v-if="!props.isDownloading" class="fr-col-4">
-        <div class="fr-input-group">
-          <DsfrButton id="previous-step" :secondary="true" @click.prevent="back"
-            >Retour
-          </DsfrButton>
-        </div>
-      </div>
-      <div class="fr-col-4">
-        <div class="fr-input-group">
-          <DsfrButton
-            v-if="!props.isDownloading"
-            id="next-step"
-            :disabled="!meta.valid"
-            @click.prevent="submit"
-            >{{ labelNext }}
-          </DsfrButton>
-          <is-downloading
-            :is-downloading="props.isDownloading"
-            :message="props.message"
-          />
-        </div>
-      </div>
-    </fieldset>
   </div>
 </template>
 
@@ -540,25 +557,46 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import IsDownloading from "~/components/utils/IsDownloading.vue";
+import {
+  DsfrInputGroup,
+  DsfrButton,
+  DsfrRadioButtonSet,
+  DsfrCheckboxSet,
+} from "@gouvminint/vue-dsfr";
+import IsDownloading from "./IsDownloading.vue";
+import { hebergement as hebergementUtils } from "@vao/shared";
+import FileUpload from "./FileUpload.vue";
 
 const toaster = useToaster();
 
 const emit = defineEmits(["cancel", "submit"]);
+
+const ouiNonOptions = [
+  {
+    label: "Oui",
+    value: true,
+  },
+  {
+    label: "Non",
+    value: false,
+  },
+];
 
 const props = defineProps({
   initHebergement: {
     type: Object,
     default: () => ({}),
   },
+  isDisabled: { type: Boolean, default: false },
   labelNext: { type: String, default: "Ajouter hébergement" },
-  isDownloading: { type: Boolean, required: false, default: false },
+  isDownloading: { type: Boolean, default: false },
   message: { type: String, required: false, default: null },
+  isSaveVisible: { type: Boolean, default: false },
+  defaultBackRoute: { type: String, required: true },
+  cdnUrl: { type: String, required: true },
 });
 
 const log = logger("components/hebergement");
-
-const zoom = 16;
 
 const validationSchema = yup.object(hebergementUtils.schema);
 
@@ -608,7 +646,12 @@ const initialValues = {
   },
 };
 
-const isCssDisabled = cssHelper.isCssDisabled();
+const router = useRouter();
+const backRoute = computed(
+  () => router.options.history.state.back ?? props.defaultBackRoute,
+);
+
+const isCssDisabled = !document.styleSheets.length;
 
 const { meta, values } = useForm({
   validationSchema,
@@ -794,13 +837,9 @@ const {
   meta: excursionMeta,
 } = useField("informationsTransport.excursion");
 
-const markerLatLng = computed(() => {
+const markers = computed(() => {
   return [adresse.value.coordinates[1], adresse.value.coordinates[0]];
 });
-
-function back() {
-  emit("cancel");
-}
 
 function verifFormatFile(file, toasterMessage) {
   if (checkFormatFile(file.value)) return true;
@@ -836,4 +875,8 @@ function submit() {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.back-button {
+  background-image: none;
+}
+</style>

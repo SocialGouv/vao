@@ -13,6 +13,11 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     countTransmis: 0,
     countEncCours: 0,
     countTransmis8j: 0,
+    hebergements: [],
+    hebergementsCount: 0,
+    isGetHebergementsLoading: false,
+    hebergement: null,
+    isGetHebergementLoading: false,
   }),
   actions: {
     async fetchDemandes({ limit, offset, sortBy, sortDirection, search } = {}) {
@@ -112,6 +117,72 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       } catch (err) {
         log.w("fetchMessages - DONE with error", err);
         this.messages = null;
+        throw err;
+      }
+    },
+
+    async getHebergements(params = {}) {
+      log.i("getHebergements - IN");
+      this.isGetHebergementsLoading = true;
+      try {
+        const { hebergements, count } = await $fetchBackend(
+          "/sejour/admin/hebergements",
+          {
+            method: "GET",
+            credentials: "include",
+            params,
+          },
+        );
+        log.i("getHebergements - DONE");
+        this.hebergements = hebergements;
+        this.hebergementsCount = count;
+      } catch (err) {
+        log.w("getHebergements - DONE with error", err);
+        this.hebergements = [];
+        this.hebergementsCount = 0;
+        throw err;
+      } finally {
+        this.isGetHebergementsLoading = false;
+      }
+    },
+    async getHebergement(demandeSejourId, hebergementId) {
+      log.i("getHebergement - IN");
+      this.isGetHebergementLoading = true;
+      try {
+        const data = await $fetchBackend(
+          `/sejour/admin/hebergement/${demandeSejourId}/${hebergementId}`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+        this.hebergement = data.hebergement;
+        log.i("getHebergement - DONE");
+        return data;
+      } catch (err) {
+        log.w("getHebergement - DONE with error", err);
+        throw err;
+      } finally {
+        this.isGetHebergementLoading = false;
+      }
+    },
+    async readMessages(declarationId) {
+      try {
+        const { readMessages } = await $fetchBackend(
+          `/message/admin/read/${declarationId}`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+
+        if (readMessages) {
+          log.i("readMessages - DONE");
+        } else {
+          throw new Error("erreur sur la lecture des messages");
+        }
+      } catch (err) {
+        log.w("readMessages - DONE with error", err);
         throw err;
       }
     },

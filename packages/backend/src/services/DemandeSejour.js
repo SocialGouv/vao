@@ -77,7 +77,7 @@ const query = {
     )
     VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
     RETURNING
-        id as "demandeId"
+        id as "declarationId"
     ;`,
     [
       organismeId,
@@ -126,7 +126,7 @@ const query = {
   )
   VALUES ('BROUILLON',$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
   RETURNING
-      id as "demandeId"
+      id as "declarationId"
   ;`,
     [
       organismeId,
@@ -155,7 +155,7 @@ const query = {
     [declarationId, userId],
   ],
   finalize: (
-    demandeSejourId,
+    declarationId,
     idFonctionnelle,
     departementSuivi,
     vacanciers,
@@ -183,10 +183,10 @@ SET
 WHERE
   ds.id = $1
 RETURNING
-  id as "demandeId"
+  id as "declarationId"
 ;`,
     [
-      demandeSejourId,
+      declarationId,
       idFonctionnelle,
       departementSuivi,
       vacanciers,
@@ -199,7 +199,7 @@ RETURNING
     ],
   ],
   finalize8jours: (
-    demandeSejourId,
+    declarationId,
     vacanciers,
     personnel,
     hebergement,
@@ -217,14 +217,14 @@ SET
 WHERE
   ds.id = $1
 RETURNING
-  id as "demandeId"
+  id as "declarationId"
 ;`,
-    [demandeSejourId, vacanciers, personnel, hebergement, attestation],
+    [declarationId, vacanciers, personnel, hebergement, attestation],
   ],
   get: (organismeIds) => [
     `
 SELECT
-  ds.id as "demandeSejourId",
+  ds.id as "declarationId",
   ds.statut as "statut",
   ds.id_fonctionnelle as "idFonctionnelle",
   ds.departement_suivi as "departementSuivi",
@@ -255,7 +255,7 @@ WHERE
   getByDepartementCodes: (search, territoireCode, departementQuery, params) => {
     return `
 SELECT
-  ds.id as "demandeSejourId",
+  ds.id as "declarationId",
   ds.created_at as "createdAt",
   ds.statut as "statut",
   ds.organisme_id as "organismeId",
@@ -291,11 +291,11 @@ WHERE
   ${search.map((s) => ` AND ${s} `).join("")}
 `;
   },
-  getById: (territoireCode, departementQuery, params) => {
+  getById: (declarationId, departements) => {
     return [
       `
     SELECT
-      ds.id as "demandeSejourId",
+      ds.id as "declarationId",
       ds.statut as "statut",
       ds.organisme_id as "organismeId",
       ds.id_fonctionnelle as "idFonctionnelle",
@@ -318,17 +318,14 @@ WHERE
       o.personne_physique as "personnePhysique",
       o.type_organisme as "typeOrganisme",
       ds.files as "files",
-      ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length}) as "estInstructeurPrincipal",
+      ds.departement_suivi = ANY($2) as "estInstructeurPrincipal",
       ds.created_at as "createdAt",
       ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
       LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
-    where ((${departementQuery})
-      OR a.region_obtention = '${territoireCode}')
-      AND ds.id = $1
-`,
-      params,
+    where ds.id = $1`,
+      [declarationId, departements],
     ];
   },
   getCount: (departementQuery, territoireCode) => `
@@ -426,6 +423,77 @@ LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 WHERE ((${departementQuery})
   AND statut <> 'BROUILLON'
   OR a.region_obtention = '${territoireCode}')`,
+  getHebergement: (demandeSejourId, departementCodes, hebergementIndex) => [
+    `
+SELECT
+  ds.id AS demande_sejour_id,
+  ds.date_debut AS date_sejour,
+  ds.departement_suivi AS departement,
+  h.hebergement AS hebergement
+FROM
+  front.demande_sejour ds,
+  jsonb_array_elements(ds.hebergement -> 'hebergements') WITH ORDINALITY AS h(hebergement, ordinality)
+WHERE
+  ds.id = $1
+  AND h.hebergement -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($2)
+  AND ordinality = $3
+    `,
+    [demandeSejourId, departementCodes, hebergementIndex],
+  ],
+  getHebergementsByDepartementCodes: (
+    departementCodes,
+    { search, limit, offset, order, sort },
+  ) => [
+    `
+  WITH filtered_hebergements AS (
+    SELECT
+      ds.id AS "declarationId",
+      ds.date_debut as "dateSejour",
+      ds.departement_suivi as departement,
+      h.hebergement ->> 'nom' AS nom,
+      h.hebergement ->> 'dateFin' AS "dateFin",
+      h.hebergement ->> 'dateDebut' AS "dateDebut",
+      h.hebergement -> 'coordonnees' ->> 'email' AS email,
+      h.hebergement -> 'coordonnees' ->> 'numTelephone1' AS telephone,
+      h.hebergement -> 'coordonnees' ->> 'nomGestionnaire' AS "nomGestionnaire",
+      h.hebergement -> 'coordonnees' -> 'adresse'  AS adresse,
+      h.hebergement -> 'informationsLocaux' ->> 'type' AS "typeHebergement",
+      h.hebergement -> 'informationsLocaux' ->> 'visiteLocauxAt' AS "dateVisite",
+      CASE
+        WHEN h.hebergement -> 'informationsLocaux' ->> 'reglementationErp' = 'true' THEN TRUE
+        WHEN h.hebergement -> 'informationsLocaux' ->> 'reglementationErp' = 'false' THEN FALSE
+        ELSE NULL
+      END AS "reglementationErp",
+      ordinality AS "hebergementIndex"
+    FROM 
+      front.demande_sejour ds,
+      jsonb_array_elements(ds.hebergement -> 'hebergements') WITH ORDINALITY AS h(hebergement, ordinality)
+    WHERE 
+      ds.statut <> 'BROUILLON'
+      AND h.hebergement -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($1)
+      AND (
+        h.hebergement ->> 'nom' ILIKE '%' || $2 || '%' OR
+        h.hebergement -> 'coordonnees' ->> 'email' ILIKE '%' || $2 || '%' OR
+        h.hebergement -> 'coordonnees' -> 'adresse' ->> 'label' ILIKE '%' || $2 || '%'
+      )
+    ORDER BY "${sort}" ${order}
+  ),
+  total_count AS (
+    SELECT COUNT(*) AS count FROM filtered_hebergements
+  ),
+  paged_hebergements AS (
+    SELECT * FROM filtered_hebergements
+    LIMIT $3 OFFSET $4
+  )
+  SELECT 
+    jsonb_build_object(
+      'total_count', (SELECT count FROM total_count),
+      'hebergements', jsonb_agg(ph.*)
+    ) AS data
+  FROM paged_hebergements AS ph;
+  `,
+    [departementCodes, search, limit, offset],
+  ],
   getNextIndex: `
 SELECT nextval('front.seq_declaration_sejour') AS index
 `,
@@ -477,7 +545,7 @@ SELECT
   h.id as "historiqueId",
   h.source as "source",
   h.demande_sejour_id as "declarationId",
-  CASE WHEN u.id IS NOT null then u.mail ELSE bu.mail END as "userEmail",
+  CASE WHEN u.id IS NOT null then u.mail ELSE bu.mail || replace(replace(bu.deleted::text,'true',' (inactif)'),'false','') END as "userEmail",
   h.bo_user_id as "userAdminId",
   h.type as "type",
   h.type_precision as "typePrecision",
@@ -519,7 +587,7 @@ WHERE
   WHERE
     ds.id = $2
   RETURNING
-    id as "demandeId"
+    id as "declarationId"
     `,
   updateInformationsGenerales: (
     libelle,
@@ -528,7 +596,7 @@ WHERE
     duree,
     periode,
     responsableSejour,
-    demandeSejourId,
+    declarationId,
   ) => [
     `
 UPDATE front.demande_sejour ds
@@ -543,7 +611,7 @@ SET
 WHERE
   ds.id = $7
 RETURNING
-  id as "demandeId"
+  id as "declarationId"
 `,
     [
       libelle,
@@ -552,7 +620,7 @@ RETURNING
       duree,
       periode,
       responsableSejour,
-      demandeSejourId,
+      declarationId,
     ],
   ],
   updateInformationsPersonnel: `
@@ -563,7 +631,7 @@ SET
 WHERE
   ds.id = $2
 RETURNING
-  id as "demandeId"
+  id as "declarationId"
 `,
   updateInformationsProjetSejour: `
 UPDATE front.demande_sejour ds
@@ -573,7 +641,7 @@ SET
 WHERE
   ds.id = $2
 RETURNING
-  id as "demandeId"
+  id as "declarationId"
 `,
   updateInformationsSanitaires: `
 UPDATE front.demande_sejour ds
@@ -583,7 +651,7 @@ SET
 WHERE
   ds.id = $2
 RETURNING
-  id as "demandeId"
+  id as "declarationId"
 `,
   updateInformationsTransport: `
 UPDATE front.demande_sejour ds
@@ -593,7 +661,7 @@ SET
 WHERE
   ds.id = $2
 RETURNING
-  id as "demandeId"
+  id as "declarationId"
 `,
   updateInformationsVacanciers: `
   UPDATE front.demande_sejour ds
@@ -603,7 +671,7 @@ RETURNING
   WHERE
     ds.id = $2
   RETURNING
-    id as "demandeId"
+    id as "declarationId"
   `,
   updateOrganisme: `
   UPDATE front.demande_sejour ds
@@ -613,7 +681,7 @@ RETURNING
   WHERE
     ds.id = $2
   RETURNING
-    id as "demandeId"
+    id as "declarationId"
   `,
   updateProjetSejour: `
   UPDATE front.demande_sejour ds
@@ -623,7 +691,7 @@ RETURNING
   WHERE
     ds.id = $2
   RETURNING
-    id as "demandeId"
+    id as "declarationId"
   `,
   updateStatut: `
 UPDATE front.demande_sejour ds
@@ -633,7 +701,7 @@ SET
 WHERE
   ds.id = $2
 RETURNING
-  id as "demandeId"
+  id as "declarationId"
 `,
 };
 
@@ -672,9 +740,9 @@ module.exports.create = async ({
     ),
   );
   log.d(response);
-  const { demandeId } = response.rows[0];
-  log.i("create - DONE", { demandeId });
-  return demandeId;
+  const { declarationId } = response.rows[0];
+  log.i("create - DONE", { declarationId });
+  return declarationId;
 };
 
 module.exports.copy = async (declaration) => {
@@ -699,9 +767,9 @@ module.exports.copy = async (declaration) => {
     ),
   );
   log.d(response);
-  const { demandeId } = response.rows[0];
-  log.i("copy - DONE", { demandeId });
-  return demandeId;
+  const { declarationId } = response.rows[0];
+  log.i("copy - DONE", { declarationId });
+  return declarationId;
 };
 
 module.exports.delete = async (declarationId, userId) => {
@@ -864,27 +932,41 @@ module.exports.getByDepartementCodes = async (
   };
 };
 
-module.exports.getById = async (
-  demandeId,
-  territoireCode,
-  departementCodes,
-) => {
-  log.i("getById - IN", { demandeId });
+module.exports.getById = async (declarationId, departements) => {
+  log.i("getById - IN", { declarationId });
 
-  if (departementCodes && departementCodes.length === 0) {
-    return;
-  }
-
-  const params = [demandeId, departementCodes];
-  const departementQuery = getDepartementWhereQuery(departementCodes, params);
-
-  const { rows: demande } = await pool.query(
-    ...query.getById(territoireCode, departementQuery, params),
+  const { rows: declarations } = await pool.query(
+    ...query.getById(declarationId, departements),
   );
+  log.d(declarations);
 
   log.i("getById - DONE");
-  log.d(demande);
-  return demande[0];
+  return declarations[0];
+};
+
+module.exports.getHebergement = async (
+  demandeSejourId,
+  departementCodes,
+  hebergementId,
+) => {
+  log.i("getHebergement - IN");
+  const { rows } = await pool.query(
+    ...query.getHebergement(demandeSejourId, departementCodes, hebergementId),
+  );
+  log.d("getHebergement - DONE");
+  return rows;
+};
+
+module.exports.getHebergementsByDepartementCodes = async (
+  departementsCodes,
+  params,
+) => {
+  log.i("getHebergementsByDepartementCodes - IN");
+  const { rows } = await pool.query(
+    ...query.getHebergementsByDepartementCodes(departementsCodes, params),
+  );
+  log.d("getHebergementsByDepartementCodes - DONE");
+  return rows[0];
 };
 
 module.exports.getStatut = async (declarationId) => {
@@ -895,8 +977,8 @@ module.exports.getStatut = async (declarationId) => {
   return data[0].statut ?? null;
 };
 
-module.exports.update = async (type, demandeSejourId, parametre) => {
-  log.i("update - IN", { demandeSejourId, parametre, type });
+module.exports.update = async (type, declarationId, parametre) => {
+  log.i("update - IN", { declarationId, parametre, type });
   let response;
 
   switch (type) {
@@ -921,56 +1003,56 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
           duree,
           periode,
           responsableSejour,
-          demandeSejourId,
+          declarationId,
         ),
       );
       break;
     }
     case "informationsVacanciers": {
-      log.d("informationsVacanciers", demandeSejourId);
+      log.d("informationsVacanciers", declarationId);
       response = await pool.query(query.updateInformationsVacanciers, [
         parametre,
-        demandeSejourId,
+        declarationId,
       ]);
       break;
     }
     case "informationsPersonnel": {
-      log.d("informationsPersonnel", demandeSejourId);
+      log.d("informationsPersonnel", declarationId);
       response = await pool.query(query.updateInformationsPersonnel, [
         parametre,
-        demandeSejourId,
+        declarationId,
       ]);
       break;
     }
     case "projetSejour": {
-      log.d("projetSejour", demandeSejourId);
+      log.d("projetSejour", declarationId);
       response = await pool.query(query.updateProjetSejour, [
         parametre,
-        demandeSejourId,
+        declarationId,
       ]);
       break;
     }
     case "protocole_transport": {
-      log.d("protocole_transport", demandeSejourId);
+      log.d("protocole_transport", declarationId);
       response = await pool.query(query.updateInformationsTransport, [
         parametre,
-        demandeSejourId,
+        declarationId,
       ]);
       break;
     }
     case "protocole_sanitaire": {
-      log.d("protocole_sanitaire", demandeSejourId);
+      log.d("protocole_sanitaire", declarationId);
       response = await pool.query(query.updateInformationsSanitaires, [
         parametre,
-        demandeSejourId,
+        declarationId,
       ]);
       break;
     }
     case "hebergements": {
-      log.d("hebergements", demandeSejourId);
+      log.d("hebergements", declarationId);
       response = await pool.query(query.updateHebergement, [
         parametre,
-        demandeSejourId,
+        declarationId,
       ]);
       break;
     }
@@ -979,12 +1061,12 @@ module.exports.update = async (type, demandeSejourId, parametre) => {
       return null;
   }
   log.i("update - DONE");
-  const demandeId = response.rows[0].demandeId ?? null;
-  return demandeId;
+  const updatedDeclarationId = response.rows[0].declarationId ?? null;
+  return updatedDeclarationId;
 };
 
 module.exports.finalize8jours = async (
-  demandeSejourId,
+  declarationId,
   { informationsVacanciers, informationsPersonnel, hebergement, attestation },
 ) => {
   log.i("finalize - IN", {
@@ -994,12 +1076,12 @@ module.exports.finalize8jours = async (
       informationsPersonnel,
       informationsVacanciers,
     },
-    demandeSejourId,
+    declarationId,
   });
 
   await pool.query(
     ...query.finalize8jours(
-      demandeSejourId,
+      declarationId,
       informationsVacanciers,
       informationsPersonnel,
       hebergement,
@@ -1010,7 +1092,7 @@ module.exports.finalize8jours = async (
 };
 
 module.exports.finalize = async (
-  demandeSejourId,
+  declarationId,
   departementSuivi,
   idFonctionnelle,
   {
@@ -1033,14 +1115,14 @@ module.exports.finalize = async (
       informationsVacanciers,
       projetSejour,
     },
-    demandeSejourId,
+    declarationId,
     departementSuivi,
     idFonctionnelle,
   });
 
   await pool.query(
     ...query.finalize(
-      demandeSejourId,
+      declarationId,
       idFonctionnelle,
       departementSuivi,
       informationsVacanciers,
@@ -1152,19 +1234,19 @@ module.exports.historique = async (declarationId) => {
 };
 
 module.exports.updateStatut = async (
-  demandeSejourId,
+  declarationId,
   statut,
   event = null,
   cb = null,
 ) => {
-  log.i("updateStatut - IN", { demandeSejourId, statut });
+  log.i("updateStatut - IN", { declarationId, statut });
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
     const response = await client.query(query.updateStatut, [
       statut,
-      demandeSejourId,
+      declarationId,
     ]);
     await client.query(query.insertEvent, [
       event.source,
@@ -1180,10 +1262,10 @@ module.exports.updateStatut = async (
     }
 
     await client.query("COMMIT");
-    const demandeId = response.rows[0].demandeId ?? null;
+    const updatedDeclarationId = response.rows[0].declarationId ?? null;
     log.i("updateStatut - DONE");
 
-    return demandeId;
+    return updatedDeclarationId;
   } catch (e) {
     await client.query("ROLLBACK");
     throw e;

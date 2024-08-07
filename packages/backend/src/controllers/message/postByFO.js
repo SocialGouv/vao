@@ -11,7 +11,7 @@ module.exports = async function post(req, res, next) {
   log.i("IN");
   const { body, decoded } = req;
   const { message, file } = body;
-  const declarationId = req.params.id;
+  const { declarationId } = req.params;
   const userId = decoded.id;
 
   if (!declarationId || (!message && !file)) {
@@ -52,11 +52,12 @@ module.exports = async function post(req, res, next) {
         MailUtils.bo.declarationSejour.sendMessageNotify({
           declaration,
           destinataires,
+          message,
         }),
       );
     }
   } catch (error) {
-    log.w("erreur sur l'envoi de mail a l'organisme :", error);
+    log.w("erreur sur l'envoi de mail au service déconcentré :", error);
   }
   return res.status(200).json({
     id,

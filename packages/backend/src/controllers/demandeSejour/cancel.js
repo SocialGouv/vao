@@ -8,15 +8,15 @@ const AppError = require("../../utils/error");
 const log = logger(module.filename);
 
 module.exports = async function cancel(req, res, next) {
-  const demandeSejourId = req.params.id;
+  const { declarationId } = req.params;
   const { id: userId } = req.decoded;
 
-  log.i("IN", { demandeSejourId });
+  log.i("IN", { declarationId });
   let declaration;
   let canceletedRows;
   try {
     declaration = await DemandeSejour.getOne({
-      "ds.id": demandeSejourId,
+      "ds.id": declarationId,
     });
 
     if (!declaration) {

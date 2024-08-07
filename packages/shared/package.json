@@ -13,8 +13,13 @@
   "dependencies": {
     "@gouvfr/dsfr": "^1.12.1",
     "@gouvminint/vue-dsfr": "^5.18.1",
+    "@socialgouv/dsfr-toaster-nuxt-module": "~1.2.1",
+    "@vueform/multiselect": "~2.6.7",
+    "debug": "~4.3.4",
     "dayjs": "^1.11.11",
-    "vue": "^3.4.31"
+    "vee-validate": "~4.13.0",
+    "vue": "^3.4.31",
+    "yup": "~1.4.0"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.3.13",
