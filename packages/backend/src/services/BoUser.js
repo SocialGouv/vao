@@ -181,7 +181,7 @@ ${additionalParamsQuery}
       `,
     [id, nom, prenom, territoireCode],
   ],
-  delete: (id,deleted_use_id)=> [
+  delete: (id, deleted_use_id) => [
     `
       UPDATE back.users
       SET
@@ -193,7 +193,7 @@ ${additionalParamsQuery}
       `,
     [id, deleted_use_id],
   ],
-  undelete: (id)=> [
+  undelete: (id) => [
     `
       UPDATE back.users
       SET
@@ -236,13 +236,19 @@ module.exports.create = async ({
   for (const role of roles) {
     await pool.query(...query.bindRole(user.id, role));
   }
+  // le role eig est attribué par default a tous les utilisateurs back
+  await pool.query(...query.bindRole(user.id, "eig"));
 
   log.i("create - DONE", { userId });
 
   return { code: "CreationCompte", user };
 };
 
-module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted },deleted_use_id) => {
+module.exports.update = async (
+  id,
+  { nom, prenom, roles, territoireCode, deleted },
+  deleted_use_id,
+) => {
   log.i("update - IN", { id });
   if (!id) {
     throw new AppError("Paramètre manquant", {
@@ -253,7 +259,7 @@ module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted
   const { rowCount } = await pool.query(
     ...query.update(id, nom, prenom, territoireCode),
   );
-  
+
   if (rowCount === 0) {
     log.d("update - DONE - Utilisateur BO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
@@ -261,8 +267,7 @@ module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted
     });
   }
   // Suppression logique du compte
-  if (deleted) 
-    await pool.query(...query.delete(id, deleted_use_id));
+  if (deleted) await pool.query(...query.delete(id, deleted_use_id));
 
   // Suppression des roles de l'utilisateur
   await pool.query(...query.deleteRole(id));
@@ -271,6 +276,8 @@ module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted
   for (const role of roles) {
     await pool.query(...query.bindRole(id, role));
   }
+  // le role eig est attribué par default a tous les utilisateurs back
+  await pool.query(...query.bindRole(id, "eig"));
 
   log.i("update - DONE");
   return { code: "MajCompte" };

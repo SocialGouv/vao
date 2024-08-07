@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { personne, DeclarationSejour, prestataireUtils } from "#imports";
+import { DeclarationSejour, personne, prestataireUtils } from "#imports";
 
 yup.setLocale({
   mixed: {

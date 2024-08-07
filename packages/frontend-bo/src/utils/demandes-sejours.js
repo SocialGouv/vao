@@ -38,6 +38,8 @@ const isDeclaration8Jours = (statut) =>
     statuts.REFUSEE_8J,
     statuts.A_MODIFIER_8J,
     statuts.EN_COURS_8J,
+    statuts.SEJOUR_EN_COURS,
+    statuts.TERMINEE,
   ].includes(statut);
 
 const getOrganismeTitle = (demande) => {

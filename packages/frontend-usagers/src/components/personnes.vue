@@ -96,7 +96,7 @@ const personnesToDisplay = computed(() => {
           deleteItem(index);
         },
       });
-    } else row.push({});
+    } else row.push("");
     return {
       rowData: row,
       rowAttrs: { class: "pointer", onClick: () => editItem(index) },

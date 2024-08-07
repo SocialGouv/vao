@@ -1,4 +1,4 @@
-import { useUserStore, computed } from "#imports";
+import { computed, useUserStore } from "#imports";
 
 export const useMenuNavItems = () => {
   const userStore = useUserStore();
@@ -77,6 +77,14 @@ export const useMenuNavItems = () => {
                   to: "/hebergements/lies-a-des-sejours",
                 },
               ],
+            },
+          ]
+        : []),
+      ...(roles.includes("eig")
+        ? [
+            {
+              text: "EIG",
+              to: "/eig",
             },
           ]
         : []),
