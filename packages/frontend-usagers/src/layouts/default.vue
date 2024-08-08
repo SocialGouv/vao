@@ -107,9 +107,14 @@ const navItems = useMenuNavItems();
         >
           Environnement : {{ config.public.environment }}
         </p>
-        <p v-if="config.public.appVersion" class="fr-footer__content-desc">
+        <a
+          v-if="config.public.appVersion"
+          href="https://vao-assistance.atlassian.net/wiki/spaces/IS/pages/91095041/MISE+A+JOUR+DE+LA+PLATEFORME+VAO"
+          class="fr-footer__content-desc"
+          target="_blank"
+        >
           Version : {{ config.public.appVersion }}
-        </p>
+        </a>
       </template>
     </DsfrFooter>
 
@@ -123,5 +128,3 @@ const navItems = useMenuNavItems();
     />
   </div>
 </template>
-
-<style></style>
