@@ -23,11 +23,14 @@
         </div>
       </DsfrHighlight>
     </div>
+    <cards-number :values="topcards" />
+    <cards-number :values="bottomCards" />
     <DsfrTiles :tiles="tiles" class="fr-grid-row--center fr-py-5v" />
   </div>
 </template>
 
 <script setup>
+import { CardsNumber } from "@vao/shared";
 definePageMeta({
   middleware: ["is-connected"],
 });
@@ -38,6 +41,7 @@ useHead({
 });
 
 const userStore = useUserStore();
+const demandeSejourStore = useDemandeSejourStore();
 const organismeStore = useOrganismeStore();
 
 await organismeStore.setMyOrganisme();
@@ -45,6 +49,44 @@ await organismeStore.setMyOrganisme();
 const organismeCourant = computed(() => {
   return organismeStore.organismeCourant;
 });
+
+demandeSejourStore.getStats();
+
+const topcards = computed(() => [
+  {
+    title: "Déclarations en brouillon",
+    value: demandeSejourStore.stats?.countBrouillon ?? 0,
+    redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.BROUILLON}`,
+  },
+  {
+    title: "Déclaration à compléter",
+    value: demandeSejourStore.stats?.countDeclarationAcompleter ?? 0,
+    redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.A_MODIFIER_8J},${DeclarationSejour.statuts.ATTENTE_8_JOUR},${DeclarationSejour.statuts.TRANSMISE_8J}`,
+  },
+  {
+    title: "Déclaration en instruction",
+    value: demandeSejourStore.stats?.countDeclarationEnInstruction ?? 0,
+    redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.TRANSMISE},${DeclarationSejour.statuts.TRANSMISE_8J},${DeclarationSejour.statuts.EN_COURS},${DeclarationSejour.statuts.EN_COURS_8J}`,
+  },
+]);
+
+const bottomCards = computed(() => [
+  {
+    title: "Déclarations finalisées",
+    value: demandeSejourStore.stats?.countDeclarationFinalisee ?? 0,
+    redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.VALIDEE_8J}`,
+  },
+  {
+    title: "Séjours en cours",
+    value: demandeSejourStore.stats?.countSejourEnCours ?? 0,
+    redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.SEJOUR_EN_COURS}`,
+  },
+  {
+    title: "Séjours terminées",
+    value: demandeSejourStore.stats?.countTerminee ?? 0,
+    redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.TERMINEE}`,
+  },
+]);
 
 const libelleMessageAccueil =
   "Afin de profiter de toutes les fonctionnalités de ce site, nous vous invitons à renseigner votre fiche organisateur";
