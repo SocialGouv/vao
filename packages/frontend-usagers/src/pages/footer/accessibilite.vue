@@ -9,34 +9,113 @@
     <h1>Déclaration d’accessibilité</h1>
 
     <p>
-      <strong>Le Ministère du travail, de la santé et des solidarités, </strong>
-      s’engage à rendre ses sites internet, intranet, extranet et ses progiciels
-      accessibles (et ses applications mobiles et mobilier urbain numérique)
-      conformément à l’article 47 de la loi n°2005-102 du 11 février 2005.
+      <strong>Les Ministères Sociaux</strong> s’engage à rendre ses sites
+      internet, intranet, extranet et ses progiciels accessibles (et ses
+      applications mobiles et mobilier urbain numérique) conformément à
+      l’article 47 de la loi n°2005-102 du 11 février 2005.
     </p>
 
     <p>
-      Cette déclaration d’accessibilité s’applique au service numérique
-      <strong>https://vao.social.gouv.fr/</strong>. L’accessibilité numérique
-      consiste à rendre les contenus et services numériques compréhensibles et
-      utilisables par les personnes en situation de handicap.
+      Cette déclaration d’accessibilité s’applique à
+      <strong>https://vao.social.gouv.fr/</strong>.
     </p>
 
     <h2>État de conformité</h2>
 
     <p>
-      L'audit de conformité au référentiel général d’amélioration de
-      l’accessibilité (RGAA) est en cours de réalisation.
+      <strong
+        >VAO (Vacances Adaptées Organisées)
+        <a target="_blank" href="https://vao.social.gouv.fr/"
+          >https://vao.social.gouv.fr/</a
+        ></strong
+      >
+      est <strong>non</strong> conforme avec le référentiel général
+      d’amélioration de l’accessibilité (RGAA).
     </p>
-    <p>Les résultats seront publiés prochainement.</p>
 
     <h2>Résultats des tests</h2>
 
-    <p>En attente des résultats de l’audit accessibilité numérique</p>
+    <p>
+      L’audit de conformité réalisé par <strong>Access Ethics</strong> révèle
+      que <strong>47%</strong> des critères du RGAA version 4 sont respectés.
+    </p>
 
+    <h2>Contenus non accessibles</h2>
+
+    <h3>Non-conformités</h3>
+
+    <div>
+      <p>
+        Liste non exhaustive des erreurs d'accessibilité présentes sur le site :
+      </p>
+
+      <ul>
+        <li>
+          les contrastes ne sont pas respectés sur les messages d'erreur ;
+        </li>
+
+        <li>
+          certains composants interactifs ne sont pas correctement identifiable
+          ;
+        </li>
+
+        <li>
+          certains liens ne sont pas pertinents et des boutons n'ont pas de nom
+          ;
+        </li>
+
+        <li>le code HTML n'est pas toujours valide ;</li>
+
+        <li>le changement de langue n'est pas toujours définit ;</li>
+
+        <li>éléments HTML utilisés à des fins de présentation ;</li>
+
+        <li>certains pages n'ont pas de titre pertinent ;</li>
+
+        <li>la structure des titres n'est pas toujours cohérentes ;</li>
+
+        <li>certains éléments ne sont pas structurés en liste ;</li>
+
+        <li>certains contenus ne sont pas présents sans CSS ;</li>
+
+        <li>
+          les contenus sont parfois difficile à lire avec un zoom à 200% ;
+        </li>
+
+        <li>
+          certains contenu se chevauchent en mode portrait et nécessitent un
+          scroll horizontal sur écran de 320px ;
+        </li>
+
+        <li>les tableaux n'ont pas de titre ;</li>
+
+        <li>absence de lien d'accès rapide vers le contenu principal ;</li>
+
+        <li>les messages de statut ne sont pas toujours restitués ;</li>
+
+        <li>l'information est parfois indiquée uniquement par un picto ;</li>
+
+        <li>
+          les champs de formulaire obligatoires ne sont pas correctement
+          paramétrés ;
+        </li>
+
+        <li>absence de texte d'aide ;</li>
+
+        <li>
+          les données de l'usager ne sont pas prédéfinis dans les champs
+          concernés ;
+        </li>
+
+        <li>l'usager n'a pas le contrôle sur le temps de session.</li>
+      </ul>
+    </div>
     <h2>Établissement de cette déclaration d’accessibilité</h2>
 
-    <p>Cette déclaration a été établie le <strong>15 avril 2024</strong>.</p>
+    <p>
+      Cette déclaration a été établie le <strong>23 avril 2024</strong>. Elle a
+      été mise à jour le <strong>11 juillet 2024</strong>.
+    </p>
 
     <h3>Technologies utilisées pour la réalisation de l’audit</h3>
 
@@ -55,9 +134,9 @@
     </p>
 
     <ul>
-      <li>Sur ordinateur Windows avec Firefox et NVDA</li>
-      <li>Sur ordinateur Windows avec Firefox et JAWS</li>
-      <li>Sur ordinateur MacOS avec Safari et VoiceOver</li>
+      <li>Sur desktop MacOS avec Safari et VoiceOver</li>
+      <li>Sur desktop Windows avec Firefox et JAWS</li>
+      <li>Sur desktop Windows avec Firefox et NVDA</li>
       <li>Sur mobile iOS avec Safari et VoiceOver</li>
     </ul>
 
@@ -70,38 +149,113 @@
       <li>WCAG Contrast checker</li>
       <li>Inspecteur de composants</li>
       <li>Validateur HTML du W3C</li>
+      <li>Contraste élevé</li>
     </ul>
 
     <h3>Pages du site ayant fait l’objet de la vérification de conformité</h3>
 
     <ul>
-      <li>Création de compte</li>
-      <li>Mot de passe oublié</li>
-      <li>Authentification</li>
-      <li>Accueil</li>
-      <li>Accessibilité</li>
-      <li>Mentions légales</li>
-      <li>Données personnelles</li>
-      <li>Ma fiche organisateur (5 étapes)</li>
-      <li>Mes hébergements</li>
-      <li>Création d'un hébergement</li>
-      <li>Nouvelle déclaration de séjour</li>
-      <li>Mes séjours</li>
+      <li>
+        Création de compte
+        <strong>https://vao.social.gouv.fr/connexion/enregistrement</strong>
+      </li>
+      <li>
+        Mot de passe oublié
+        <strong
+          >https://vao.social.gouv.fr/connexion/mot-de-passe-oublie</strong
+        >
+      </li>
+      <li>
+        Authentification <strong>https://vao.social.gouv.fr/connexion/</strong>
+      </li>
+      <li>
+        Mentions légales
+        <strong>https://vao.social.gouv.fr/footer/mentions-legales</strong>
+      </li>
+      <li>
+        Données personnelles
+        <strong>https://vao.social.gouv.fr/footer/donnees-personnelles</strong>
+      </li>
+      <li>
+        Ma fiche organisateur - Étape 1 sur 5 - Infos générales
+        <strong>https://vao.social.gouv.fr/organisme/64</strong>
+      </li>
+      <li>
+        Ma fiche organisateur - Étape 2 sur 5 - Agrément
+        <strong>https://vao.social.gouv.fr/organisme/64#agrement</strong>
+      </li>
+      <li>
+        Ma fiche organisateur - Étape 3 sur 5 - Infos transport
+        <strong
+          >https://vao.social.gouv.fr/organisme/64#protocole-transport</strong
+        >
+      </li>
+      <li>Accueil <strong>https://vao.social.gouv.fr/</strong></li>
+      <li>
+        Accessibilité
+        <strong>https://vao.social.gouv.fr/footer/accessibilite</strong>
+      </li>
+      <li>
+        Ma fiche organisateur - Étape 4 sur 5 - Infos sanitaire
+        <strong
+          >https://vao.social.gouv.fr/organisme/64#protocole-sanitaire</strong
+        >
+      </li>
+      <li>
+        Ma fiche organisateur - Étape 5 sur 5 - Synthèse
+        <strong>https://vao.social.gouv.fr/organisme/64#synthese</strong>
+      </li>
+      <li>
+        Mes hébergements
+        <strong>https://vao.social.gouv.fr/hebergements/liste</strong>
+      </li>
+      <li>
+        Création d'un hébergement
+        <strong>https://vao.social.gouv.fr/hebergements</strong>
+      </li>
+      <li>Mes séjours <strong>https://vao.social.gouv.fr/</strong></li>
+      <li>
+        Nouveau séjour : étape 1 : informations générales
+        <strong
+          >https://vao.social.gouv.fr/demande-sejour/100#info-generales</strong
+        >
+      </li>
+      <li>
+        Nouveau séjour étape 2 : informations sur les vacanciers
+        <strong
+          >https://vao.social.gouv.fr/demande-sejour/100#info-vacanciers</strong
+        >
+      </li>
+      <li>
+        Nouveau séjour étape 3 : informations sur le personnel
+        <strong
+          >https://vao.social.gouv.fr/demande-sejour/100#info-personnel</strong
+        >
+      </li>
+      <li>
+        Nouveau séjour étape 4 : Sélection des hébergements
+        <strong
+          >https://vao.social.gouv.fr/demande-sejour/100#hebergements</strong
+        >
+      </li>
     </ul>
 
     <h2>Retour d’information et contact</h2>
 
     <p>
       Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez
-      contacter le responsable de AGAPE'TH - Espace documentaire pour être
+      contacter le responsable de VAO (Vacances Adaptées Organisées) pour être
       orienté vers une alternative accessible ou obtenir le contenu sous une
       autre forme.
     </p>
 
     <ul>
       <li>
-        Contacter le ou la référente accessibilité à
-        <strong> accessibilite@sante.gouv.fr</strong>
+        Contacter
+        <strong
+          >Les Ministères Sociaux :
+          referent-accessibilite@sg.social.gouv.fr</strong
+        >
       </li>
     </ul>
 
