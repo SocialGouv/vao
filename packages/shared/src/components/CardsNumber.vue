@@ -5,15 +5,16 @@
       :key="v.title"
       :title="v.title"
       :value="v.value"
+      :redirect="v.redirect"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import CardNumber from "~/components/utils/CardNumber.vue";
+import CardNumber from "./CardNumber.vue";
 
 defineProps<{
-  values: Array<{ title: string; value: number }>;
+  values: Array<{ title: string; value: number; redirect?: string }>;
 }>();
 </script>
 
