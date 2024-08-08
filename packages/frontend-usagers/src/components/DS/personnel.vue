@@ -108,7 +108,7 @@
               label="Je certifie sur l'honneur avoir vérifié que les personnes ci-dessus n’ont pas fait l’objet d’une condamnation inscrite au bulletin n°3 du casier judiciaire"
               :small="true"
               :disabled="!props.modifiable"
-              @update:model-value="certifiePersonnesAttestation(personnes)"
+              @update:model-value="true"
             />
           </div>
         </div>
@@ -180,17 +180,17 @@ const personnesWithId = computed(() =>
   [...(props.personnes ?? [])].map((p, index) => ({ ...p, id: index })),
 );
 
-const personnesAttestation = computed(() =>
-  personnesAttestationCertifie(props.personnes),
-);
 
-function personnesAttestationCertifie(personnes) {
-  return personnes.length > 0 && personnes.every(personne => personne.attestation === true);
-}
-
-function certifiePersonnesAttestation(personnes) {
-  personnes.forEach(personne => personne.attestation = true);
-}
+const personnesAttestation = computed({
+  get() {
+    return Array.isArray(props.personnes) && props.personnes.length > 0 && props.personnes.every(personne => personne.attestation);
+  },
+  set(value) {
+    if (Array.isArray(props.personnes)) {
+      props.personnes.forEach(personne => personne.attestation = value);
+    }
+  },
+});
 
 const emit = defineEmits(["updatePersonne"]);
 const log = logger("pages/component/personnel");
