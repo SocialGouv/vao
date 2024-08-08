@@ -95,6 +95,7 @@ router.post(
   checkPermissionBODeclarationSejourUpdate,
   demandeSejourController.enregistrementDemande2Mois,
 );
+router.get("/stats", checkJWT, demandeSejourController.getStats);
 router.get(
   "/:declarationId",
   checkJWT,
