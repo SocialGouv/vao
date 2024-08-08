@@ -23,8 +23,10 @@
         </div>
       </DsfrHighlight>
     </div>
-    <cards-number :values="topcards" />
-    <cards-number :values="bottomCards" />
+    <div v-if="organismeCourant && organismeCourant.complet">
+      <cards-number :values="topcards" />
+      <cards-number :values="bottomCards" />
+    </div>
     <DsfrTiles :tiles="tiles" class="fr-grid-row--center fr-py-5v" />
   </div>
 </template>
