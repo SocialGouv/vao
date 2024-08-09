@@ -406,19 +406,9 @@ function formaterCSV(p) {
 }
 
 function exportCSV(modele) {
-  let fileNameCsv;
-  let objetAExporter;
-  let rows;
-  if (modele) {
-    fileNameCsv = "modele_personnel.csv"
-    objetAExporter = dataExemplePersonnel;
-  }
-  else
-  {
-    fileNameCsv = "personnel.csv"
-    objetAExporter = props.personnes;
-    rows = ["Nom;Prenom;Date de Naissance;Compétences;Fonctions;Téléphone\n"]
-  }
+  const fileNameCsv = modele ? "modele_personnel.csv" : "personnel.csv";
+  let rows = !modele ?  ["Nom;Prenom;Date de Naissance;Compétences;Fonctions;Téléphone\n"] : [];
+  const objetAExporter = modele ? dataExemplePersonnel : props.personnes;
   objetAExporter.forEach((p) => {
     rows.push(
       formaterCSV(p)+`\n`,
