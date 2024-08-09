@@ -48,15 +48,15 @@
               </div>
             </div>
             <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-4"
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
-                  v-model="searchState.siret"
-                  type="text"
-                  name="SIRET"
-                  label="SIRET"
-                  placeholder="numéro SIREN ou SIREN"
+                  v-model="searchState.organisme"
+                  type="organisme"
+                  name="organisme"
+                  label="Organisme"
+                  placeholder="Organisme"
                   :label-visible="true"
                 />
               </div>
@@ -86,10 +86,11 @@
 
 <script setup>
 import dayjs from "dayjs";
+
 definePageMeta({
   middleware: ["is-connected"],
 });
-import { useUserStore } from "~/stores/user";
+
 const usersStore = useUserStore();
 const defaultLimit = 10;
 const defaultOffset = 0;
@@ -99,8 +100,8 @@ const limitState = ref(defaultLimit);
 const searchState = reactive({
   nom: null,
   prenom: null,
-  siret: null,
   email: null,
+  organisme: null,
 });
 // Appel du store à l'ouverture
 usersStore.fetchUsersOrganisme({
@@ -166,28 +167,6 @@ const headers = [
     column: "dateCreation",
     text: "Date de création",
     format: (u) => dayjs(u.dateCreation).format("DD/MM/YYYY HH:MM"),
-    sort: true,
-  },
-  {
-    column: "organismeId",
-    text: "Numéro d'organisme",
-    sort: true,
-  },
-  {
-    column: "typeOrganisme",
-    text: "Type",
-    format: (u) => u.typeOrganisme?.replace("_", " "),
-    sort: true,
-  },
-  {
-    column: "siren",
-    text: "SIREN",
-    sort: true,
-  },
-  {
-    column: "siret",
-    text: "SIRET",
-    format: (u) => u.siret ?? u.prenomPersonnePhysique,
     sort: true,
   },
   {
