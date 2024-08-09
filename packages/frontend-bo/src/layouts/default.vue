@@ -115,12 +115,14 @@ function acceptAll() {
               >
                 Environnement : {{ config.public.environment }}
               </p>
-              <p
+              <a
                 v-if="config.public.appVersion"
+                href="https://vao-assistance.atlassian.net/wiki/spaces/IS/pages/91095041/MISE+A+JOUR+DE+LA+PLATEFORME+VAO"
                 class="fr-footer__content-desc"
+                target="_blank"
               >
                 Version : {{ config.public.appVersion }}
-              </p>
+              </a>
             </template>
           </DsfrFooter>
           <DsfrNotice
@@ -136,5 +138,3 @@ function acceptAll() {
     </div>
   </div>
 </template>
-
-<style></style>
