@@ -147,20 +147,6 @@
           </div>
         </div>
       </div>
-      <div v-if="showAttestation" class="fr-col-12">
-        <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-12">
-            <DsfrCheckbox
-              v-model="attestation"
-              name="attestation"
-              label="Je certifie sur l'honneur avoir vérifié que la personne ci dessus n’a pas fait l’objet d’une condamnation inscrite au bulletin n°3 du casier judiciaire"
-              :small="true"
-              :disabled="!props.modifiable"
-              @update:model-value="onAttestationChange"
-            />
-          </div>
-        </div>
-      </div>
     </fieldset>
     <fieldset v-if="showButton" class="fr-fieldset">
       <div class="fr-input-group">
@@ -201,7 +187,6 @@ const validationSchema = computed(() =>
   yup.object({
     ...personne.schema({
       showAdresse: props.showAdresse,
-      showAttestation: props.showAttestation,
       showCompetence: props.showCompetence,
       showDateNaissance: props.showDateNaissance,
       showEmail: props.showEmail,
@@ -218,9 +203,7 @@ const initialValues = {
   ...(props.showAdresse && {
     adresse: props.personne.adresse,
   }),
-  ...(props.showAttestation && {
     attestation: props.personne.attestation,
-  }),
   ...(props.showCompetence && {
     competence: props.personne.competence,
   }),

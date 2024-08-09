@@ -108,6 +108,20 @@
       />
     </div>
     <DsfrFieldset>
+      <div v-if="showAttestation" class="fr-col-12">
+        <div class="fr-fieldset__element">
+          <div class="fr-input-group fr-col-12">
+            <DsfrCheckbox
+              v-model="personnesAttestation"
+              name="attestation"
+              label="Je certifie sur l'honneur avoir vérifié que les personnes ci-dessus n’ont pas fait l’objet d’une condamnation inscrite au bulletin n°3 du casier judiciaire"
+              :small="true"
+              :disabled="!props.modifiable"
+              @update:model-value="true"
+            />
+          </div>
+        </div>
+      </div>    
       <div v-if="props.modifiable" class="fr-fieldset__element">
         <DsfrButton
           ref="modalOrigin"
@@ -179,6 +193,18 @@ const props = defineProps({
 const personnesWithId = computed(() =>
   [...(props.personnes ?? [])].map((p, index) => ({ ...p, id: index })),
 );
+
+
+const personnesAttestation = computed({
+  get() {
+    return Array.isArray(props.personnes) && props.personnes.length > 0 && props.personnes.every(personne => personne.attestation);
+  },
+  set(value) {
+    if (Array.isArray(props.personnes)) {
+      props.personnes.forEach(personne => personne.attestation = value);
+    }
+  },
+});
 
 const emit = defineEmits(["updatePersonne"]);
 const log = logger("pages/component/personnel");
@@ -390,7 +416,7 @@ async function handlePaste(lignesCollees) {
     encadrantsFromCsv.push({
       nom,
       prenom,
-      attestation: true,
+      attestation: false,
       competence,
       listeFonction,
       dateNaissance,
