@@ -47,7 +47,6 @@ definePageMeta({
 });
 
 const route = useRoute();
-const router = useRouter();
 const hebergementStore = useHebergementStore();
 
 const config = useRuntimeConfig();
@@ -55,7 +54,8 @@ const config = useRuntimeConfig();
 // const zoom = 16;
 
 if (route.params.type !== "tous") {
-  router.replace({
+  navigateTo({
+    replace: true,
     params: { ...route.params, type: "tous" },
   });
 }

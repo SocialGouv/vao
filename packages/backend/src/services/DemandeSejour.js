@@ -535,16 +535,16 @@ ${Object.keys(criterias)
   getStats: (userId) => [
     `
     SELECT
-        SUM(CASE WHEN ds.statut = $2 THEN 1 ELSE 0 END)::integer AS "countBrouillon",
-        SUM(CASE WHEN ds.statut IN ($3, $4, $5) THEN 1 ELSE 0 END)::integer AS "countDeclarationAcompleter",
-        SUM(CASE WHEN ds.statut IN ($6, $7, $8, $9) THEN 1 ELSE 0 END)::integer AS "countDeclarationEnInstruction",
-        SUM(CASE WHEN ds.statut = $10 THEN 1 ELSE 0 END)::integer AS "countDeclarationFinalisee",
-        SUM(CASE WHEN ds.statut = $11 THEN 1 ELSE 0 END)::integer AS "countSejourEnCours",
-        SUM(CASE WHEN ds.statut = $12 THEN 1 ELSE 0 END)::integer AS "countTerminee"
-      FROM front.demande_sejour ds
-      JOIN front.organismes o ON ds.organisme_id = o.id
-      JOIN front.user_organisme uo ON o.id = uo.org_id
-      WHERE uo.use_id = $1;
+      COUNT(DISTINCT CASE WHEN ds.statut = $2 THEN ds.id ELSE NULL END)::integer AS "countBrouillon",
+      COUNT(DISTINCT CASE WHEN ds.statut IN ($3, $4, $5) THEN ds.id ELSE NULL END)::integer AS "countDeclarationAcompleter",
+      COUNT(DISTINCT CASE WHEN ds.statut IN ($6, $7, $8, $9) THEN ds.id ELSE NULL END)::integer AS "countDeclarationEnInstruction",
+      COUNT(DISTINCT CASE WHEN ds.statut = $10 THEN ds.id ELSE NULL END)::integer AS "countDeclarationFinalisee",
+      COUNT(DISTINCT CASE WHEN ds.statut = $11 THEN ds.id ELSE NULL END)::integer AS "countSejourEnCours",
+      COUNT(DISTINCT CASE WHEN ds.statut = $12 THEN ds.id ELSE NULL END)::integer AS "countTerminee"
+    FROM front.demande_sejour ds
+    JOIN front.organismes o ON ds.organisme_id = o.id
+    JOIN front.user_organisme uo ON o.id = uo.org_id
+    WHERE uo.use_id = $1;
     `,
     [
       userId,

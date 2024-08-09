@@ -47,7 +47,6 @@ const tabListName = "Tous les hébergements";
 
 const asc = ref(true);
 
-const router = useRouter();
 const tables1 = ref(null);
 const tables2 = ref(null);
 
@@ -56,7 +55,8 @@ const tables = [tables1, tables2];
 const selectTab = (idx) => {
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
-  router.replace({
+  navigateTo({
+    replace: true,
     query: {},
     params: { type: idx === 1 ? "lies-a-des-sejours" : "tous" },
   });

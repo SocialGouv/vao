@@ -237,9 +237,12 @@ const route = useRoute();
 const departementStore = useDepartementStore();
 
 const saisonOptions = computed(() => {
-  return demandeSejourStore.demandes
-    .map((d) => d.periode)
-    .filter((v, i, a) => a.indexOf(v) === i);
+  return demandeSejourStore.demandes.reduce((acc, elem) => {
+    if (elem.periode) {
+      acc.push(elem);
+    }
+    return acc;
+  }, []);
 });
 
 const saisons = DeclarationSejour.saisons.map((saison) =>
@@ -317,72 +320,82 @@ const statutOptions = [
   { label: "TERMINEE", value: "TERMINEE" },
 ];
 
-const router = useRouter();
-
 const removeAttribute = (object, key) =>
   (({ [key]: rest, ...query }) => ({ [key]: rest, query }))(object);
 
 const onUpdateId = (id) => {
   if (id.length) {
-    router.replace({
+    navigateTo({
+      replace: true,
       query: { ...route.query, declarationId: id.join(",") },
     });
   } else {
     const { query } = removeAttribute(route.query, "declarationId");
-    router.replace({ query });
+    navigateTo({ replace: true, query });
   }
   search.declarationId = id;
 };
 
 const onUpdateSiret = (siret) => {
   if (siret.length) {
-    router.replace({ query: { ...route.query, siret: siret.join(",") } });
+    navigateTo({
+      replace: true,
+      query: { ...route.query, siret: siret.join(",") },
+    });
   } else {
     const { query } = removeAttribute(route.query, "siret");
-    router.replace({ query });
+    navigateTo({ replace: true, query });
   }
   search.siret = siret;
 };
 const onUpdateIdFonctionnelle = (idFonctionnelle) => {
   if (idFonctionnelle.length) {
-    router.replace({
+    navigateTo({
+      replace: true,
       query: { ...route.query, idFonctionnelle: idFonctionnelle.join(",") },
     });
   } else {
     const { query } = removeAttribute(route.query, "idFonctionnelle");
-    router.replace({ query });
+    navigateTo({ replace: true, query });
   }
   search.idFonctionnelle = idFonctionnelle;
 };
 
 const onUpdateDepartement = (d) => {
   if (d.length) {
-    router.replace({
+    navigateTo({
+      replace: true,
       query: { ...route.query, departementSuivi: d.join(",") },
     });
   } else {
     const { query } = removeAttribute(route.query, "departementSuivi");
-    router.replace({ query });
+    navigateTo({ replace: true, query });
   }
   search.departementSuivi = d;
 };
 
 const onUpdateStatut = (s) => {
   if (s.length) {
-    router.replace({ query: { ...route.query, statut: s.join(",") } });
+    navigateTo({
+      replace: true,
+      query: { ...route.query, statut: s.join(",") },
+    });
   } else {
     const { query } = removeAttribute(route.query, "statut");
-    router.replace({ query });
+    navigateTo({ replace: true, query });
   }
   search.statut = s;
 };
 
 const onUpdateSaison = (periode) => {
   if (periode.length) {
-    router.replace({ query: { ...route.query, periode: periode.join(",") } });
+    navigateTo({
+      replace: true,
+      query: { ...route.query, periode: periode.join(",") },
+    });
   } else {
     const { query } = removeAttribute(route.query, "periode");
-    router.replace({ query });
+    navigateTo({ replace: true, query });
   }
   search.periode = periode;
 };

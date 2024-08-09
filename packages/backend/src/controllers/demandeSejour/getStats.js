@@ -12,10 +12,8 @@ module.exports = async function get(req, res, next) {
 
   try {
     const stats = await DemandeSejour.getStats(userId);
-    console.log(stats);
     return res.status(200).json({ stats });
   } catch (error) {
-    console.log(error);
     log.w("DONE with error");
     return next(error);
   }
