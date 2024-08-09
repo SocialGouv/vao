@@ -310,7 +310,7 @@ FROM back.organisme_non_agree ona
       type_organisme = $2,
       personne_morale = $3, 
       personne_physique = $4,
-      complet = false,
+      complet = complet AND $5,
       edited_at = NOW()
     WHERE id = $1
   `,
@@ -318,7 +318,7 @@ FROM back.organisme_non_agree ona
     UPDATE front.organismes 
     SET 
       protocole_sanitaire = $2,
-      complet = false,
+      complet = complet AND $3,
       edited_at = NOW()
     WHERE id = $1
 `,
@@ -326,7 +326,7 @@ FROM back.organisme_non_agree ona
     UPDATE front.organismes 
     SET 
       protocole_transport = $2,
-      complet = false,
+      complet = complet AND $3,
       edited_at = NOW()
     WHERE id = $1
 `,
@@ -361,36 +361,48 @@ module.exports.link = async (userId, organismeId) => {
 module.exports.update = async (type, parametre, organismeId) => {
   log.i("update - IN", { type });
   let response;
+
+  if (!regions) {
+    regions = await Regions.fetch();
+  }
   switch (type) {
     case "personne_morale": {
+      const complet = await Organisme.schema(regions).personneMorale.isValid(parametre);
       response = await pool.query(query.updatePersonne, [
         organismeId,
         type,
         parametre,
         {},
+        complet,
       ]);
       break;
     }
     case "personne_physique": {
+      const complet = await Organisme.schema(regions).personnePhysique.isValid(parametre);
       response = await pool.query(query.updatePersonne, [
         organismeId,
         type,
         {},
         parametre,
+        complet,
       ]);
       break;
     }
     case "protocole_transport": {
+      const complet = await Organisme.schema(regions).protocoleTransport.isValid(parametre);
       response = await pool.query(query.updateTransport, [
         organismeId,
         parametre,
+        complet,
       ]);
       break;
     }
     case "protocole_sanitaire": {
+      const complet = await Organisme.schema(regions).protocoleSanitaire.isValid(parametre);
       response = await pool.query(query.updateSanitaire, [
         organismeId,
         parametre,
+        complet,
       ]);
       break;
     }
