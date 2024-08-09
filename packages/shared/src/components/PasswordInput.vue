@@ -79,7 +79,7 @@ function togglePasswordType() {
         'fr-input--valid': isValid,
       }"
       :value="modelValue"
-      :aria-describedby="descriptionId || undefined"
+      :aria-describedby="descriptionId || null"
       @input="$emit('update:modelValue', $event.target.value)"
     />
 
