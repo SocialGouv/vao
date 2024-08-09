@@ -70,9 +70,25 @@ const sortBy = ref("id");
 const sortDirection = ref(1);
 const h = ref([]);
 
+const getValue = (row, key) => {
+  const splitedProp = key.split(".");
+  let currentValue = row;
+  for (const propChunk of splitedProp) {
+    if (currentValue && Object.hasOwnProperty.call(currentValue, propChunk)) {
+      currentValue = currentValue[propChunk];
+    } else {
+      return null;
+    }
+  }
+  return currentValue;
+};
+
 const sorter = (col) => () => {
-  if (sortBy.value !== col) {
-    sortBy.value = col;
+  const column = col.objectLabel
+    ? `${col.column}.${col.objectLabel}`
+    : col.column;
+  if (sortBy.value !== column) {
+    sortBy.value = column;
     sortDirection.value = 1;
   } else {
     sortDirection.value = sortDirection.value * -1;
@@ -151,20 +167,21 @@ const filteredData = computed(() => {
   });
 
   rows.sort((a, b) => {
-    const type = typeof a[sortBy.value];
-    const col = sortBy.value;
+    const valueA = getValue(a, sortBy.value);
+    const valueB = getValue(b, sortBy.value);
+    const type = typeof valueA;
     const direction = sortDirection.value;
     let res;
-    if (b[col] === null || b[col] === undefined) {
+    if (valueB === null || valueB === undefined) {
       res = -1;
-    } else if (a[col] === null || a[col] === undefined) {
+    } else if (valueA === null || valueA === undefined) {
       res = 1;
     } else if (type === "String") {
-      res = b[col] > a[col] ? -1 : a[col] > b[col] ? 1 : 0;
+      res = valueB > valueA ? -1 : valueA > valueB ? 1 : 0;
     } else if (type === "Number") {
-      res = Number(b[col]) - Number(a[col]);
+      res = Number(valueB) - Number(valueA);
     } else {
-      res = b[col] > a[col] ? -1 : a[col] > b[col] ? 1 : 0;
+      res = valueB > valueA ? -1 : valueA > valueB ? 1 : 0;
     }
     return direction * res;
   });
@@ -235,7 +252,7 @@ onMounted(() => {
         ...h,
         headerAttrs: {
           class: "pointer",
-          onClick: sorter(h.column),
+          onClick: sorter(h),
         },
       };
     }
@@ -244,7 +261,7 @@ onMounted(() => {
         ...h,
         headerAttrs: {
           class: "pointer",
-          onClick: sorter(h.sorter),
+          onClick: sorter(h),
         },
       };
     }
