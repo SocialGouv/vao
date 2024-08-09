@@ -13,10 +13,10 @@
   },
   "dependencies": {
     "@gouvfr/dsfr": "~1.12.0",
-    "@gouvminint/vue-dsfr": "~5.18.0",
+    "@gouvminint/vue-dsfr": "~5.19.0",
     "@nuxtjs/leaflet": "^1.0.14",
     "@pinia/nuxt": "~0.5.1",
-    "@sentry/vue": "~8.17.0",
+    "@sentry/vue": "~8.25.0",
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.2.1",
     "@typescript-eslint/eslint-plugin": "^7.16.1",
     "@vao/shared": "^1.0.0",
@@ -27,7 +27,7 @@
     "debug": "~4.3.4",
     "nuxt": "~3.12.4",
     "oh-vue-icons": "~1.0.0-rc3",
-    "pinia": "~2.1.7",
+    "pinia": "~2.2.0",
     "vee-validate": "~4.13.0",
     "vue-matomo": "~4.2.0",
     "yup": "~1.4.0"
