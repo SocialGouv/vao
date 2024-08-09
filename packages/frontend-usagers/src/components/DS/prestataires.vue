@@ -3,7 +3,7 @@
     <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
           On cherche a rapprocher le bouton du tableau -->
     <div class="fr-mb-n6v">
-      <UtilsTableFull
+      <TableFull
         :headers="headers"
         :data="prestataires"
         @click-row="editPrestataire"
@@ -38,6 +38,7 @@
 </template>
 
 <script setup>
+import { TableFull } from "@vao/shared";
 import dayjs from "dayjs";
 
 const props = defineProps({

@@ -165,12 +165,12 @@
       </div>
       <div class="fr-grid-row">
         <div class="fr-col">
-          <UtilsTableFull
+          <TableFull
             :headers="headers"
             :data="demandeSejourStore.demandes"
             :search="search"
             @click-row="navigate"
-          ></UtilsTableFull>
+          />
         </div>
       </div>
     </template>
@@ -191,6 +191,7 @@
   </div>
 </template>
 <script setup>
+import { TableFull } from "@vao/shared";
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
 const NuxtLink = resolveComponent("NuxtLink");

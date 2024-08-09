@@ -4,7 +4,7 @@
     legend-id="docs_generes"
   >
     <div v-if="filesGeneres.length > 0">
-      <UtilsTableFull :headers="headers" :data="filesGeneres"></UtilsTableFull>
+      <TableFull :headers="headers" :data="filesGeneres" />
     </div>
     <div v-else>
       <span>Aucun document joint à la demande</span>
@@ -12,10 +12,7 @@
   </DsfrFieldset>
   <DsfrFieldset legend="Documents téléversés" legend-id="doc_televerses">
     <div v-if="filesTeleverses.length > 0">
-      <UtilsTableFull
-        :headers="headers"
-        :data="filesTeleverses"
-      ></UtilsTableFull>
+      <TableFull :headers="headers" :data="filesTeleverses" />
     </div>
     <div v-else>
       <span>Aucun document joint à la demande</span>
@@ -25,6 +22,7 @@
 
 <script setup>
 import { formatDate } from "date-fns/format";
+import { TableFull } from "@vao/shared";
 
 const config = useRuntimeConfig();
 const NuxtLink = resolveComponent("NuxtLink");

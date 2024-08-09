@@ -48,7 +48,7 @@
       </div>
       <div class="fr-grid-row">
         <div class="fr-col">
-          <UtilsTableFull
+          <TableFull
             :headers="headers"
             :data="hebergementStore.hebergements"
             :search="search"
@@ -75,6 +75,8 @@
 </template>
 
 <script setup>
+import { TableFull } from "@vao/shared";
+
 const hebergementStore = useHebergementStore();
 hebergementStore.fetch();
 

@@ -1,7 +1,8 @@
 <template>
-  <UtilsTableFull :headers="headers" :data="personnel" />
+  <TableFull :headers="headers" :data="personnel" />
 </template>
 <script setup>
+import { TableFull } from "@vao/shared";
 import { formatDate } from "date-fns/format";
 
 defineProps({

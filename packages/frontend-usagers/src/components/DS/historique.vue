@@ -1,11 +1,11 @@
 <template>
   <div>
-    <UtilsTableFull :headers="headers" :data="props.historique">
-    </UtilsTableFull>
+    <TableFull :headers="headers" :data="props.historique" />
   </div>
 </template>
 
 <script setup>
+import { TableFull } from "@vao/shared";
 import dayjs from "dayjs";
 import DisplayTypePrecision from "~/components/DS/DisplayTypePrecision.vue";
 
