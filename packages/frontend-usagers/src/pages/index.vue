@@ -61,12 +61,12 @@ const topcards = computed(() => [
     redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.BROUILLON}`,
   },
   {
-    title: "Déclaration à compléter",
+    title: "Déclarations à compléter",
     value: demandeSejourStore.stats?.countDeclarationAcompleter ?? 0,
-    redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.A_MODIFIER_8J},${DeclarationSejour.statuts.ATTENTE_8_JOUR},${DeclarationSejour.statuts.TRANSMISE_8J}`,
+    redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.A_MODIFIER_8J},${DeclarationSejour.statuts.ATTENTE_8_JOUR},${DeclarationSejour.statuts.A_MODIFIER}`,
   },
   {
-    title: "Déclaration en instruction",
+    title: "Déclarations en instruction",
     value: demandeSejourStore.stats?.countDeclarationEnInstruction ?? 0,
     redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.TRANSMISE},${DeclarationSejour.statuts.TRANSMISE_8J},${DeclarationSejour.statuts.EN_COURS},${DeclarationSejour.statuts.EN_COURS_8J}`,
   },
@@ -84,7 +84,7 @@ const bottomCards = computed(() => [
     redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.SEJOUR_EN_COURS}`,
   },
   {
-    title: "Séjours terminées",
+    title: "Séjours terminés",
     value: demandeSejourStore.stats?.countTerminee ?? 0,
     redirect: `/demande-sejour/liste?statut=${DeclarationSejour.statuts.TERMINEE}`,
   },
