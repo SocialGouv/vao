@@ -101,7 +101,7 @@
     <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
           On cherche a rapprocher le bouton du tableau -->
     <div class="fr-fieldset__element">
-      <UtilsTableFull
+      <TableFull
         :headers="headers"
         :data="personnesWithId"
         @click-row="editItem"
@@ -161,6 +161,7 @@
 </template>
 
 <script setup>
+import { TableFull } from "@vao/shared";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";

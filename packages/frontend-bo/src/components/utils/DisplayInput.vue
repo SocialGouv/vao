@@ -18,12 +18,13 @@
       <div class="fr-col-10">
         <span class="read-only-label">{{ input.label }}</span>
       </div>
-      <UtilsTableFull :headers="header" :data="rows"></UtilsTableFull>
+      <TableFull :headers="header" :data="rows" />
     </div>
   </div>
 </template>
 
 <script setup>
+import { TableFull } from "@vao/shared";
 import displayInput from "~/utils/display-input";
 
 defineEmits(["emitComment"]);

@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 2em; overflow-x: auto">
+  <div style="margin-bottom: 1em">
     <div v-if="displayedData.length">
       <DsfrTable
         style="display: table"
@@ -29,12 +29,19 @@
 </template>
 
 <script setup>
+import { DsfrPagination, DsfrSelect, DsfrTable } from "@gouvminint/vue-dsfr";
+
+import { ref, computed, onMounted } from "vue";
+
+import createLogger from "../utils/createLogger";
+
+const logger = createLogger("vao-shared");
 const log = logger("components/TableFull");
+
+const emit = defineEmits("click-row");
 
 const itemByPageOptions = [10, 20, 50, 100];
 const itemByPage = ref(50);
-
-const emit = defineEmits(["click-row"]);
 
 const props = defineProps({
   headers: { type: Object, required: true },
@@ -59,6 +66,8 @@ const props = defineProps({
       return 0;
     },
   },
+  sortByInit: { type: String, default: "id" },
+  sortDirectionInit: { type: Number, default: 1 },
 });
 
 const onUpdateItemByPage = (val) => {
@@ -66,13 +75,29 @@ const onUpdateItemByPage = (val) => {
   currentPage.value = 0;
 };
 
-const sortBy = ref("id");
-const sortDirection = ref(1);
+const sortBy = ref(props.sortByInit);
+const sortDirection = ref(props.sortDirectionInit);
 const h = ref([]);
 
+const getValue = (row, key) => {
+  const splitedProp = key.split(".");
+  let currentValue = row;
+  for (const propChunk of splitedProp) {
+    if (currentValue && Object.hasOwnProperty.call(currentValue, propChunk)) {
+      currentValue = currentValue[propChunk];
+    } else {
+      return null;
+    }
+  }
+  return currentValue;
+};
+
 const sorter = (col) => () => {
-  if (sortBy.value !== col) {
-    sortBy.value = col;
+  const column = col.objectLabel
+    ? `${col.column}.${col.objectLabel}`
+    : col.column;
+  if (sortBy.value !== column) {
+    sortBy.value = column;
     sortDirection.value = 1;
   } else {
     sortDirection.value = sortDirection.value * -1;
@@ -80,6 +105,7 @@ const sorter = (col) => () => {
 };
 
 const filteredData = computed(() => {
+  log.d(props.search);
   const criterias = Object.entries(props.search).filter((criteria) => {
     const [key, value] = criteria;
     if (
@@ -94,79 +120,77 @@ const filteredData = computed(() => {
 
   // Permet la récupération des lignes user correspondant au critères
   // On filtre chaque ligne qu'on récupère si les critères sont respecter
-  const rows =
-    criterias.length === 0
-      ? [...props.data]
-      : props.data.filter((item) => {
-          // On va essayer de trouvé un critère qui n'est pas valide
-          const firstUnmatchedCriteria = criterias.find(([key, values]) => {
-            const rule = props.dict[key];
-            if (typeof rule === "function") {
-              return !rule(item, values);
-            }
+  const rows = props.data.filter((item) => {
+    // On va essayer de trouvé un critère qui n'est pas valide
+    const firstUnmatchedCriteria = criterias.find(([key, values]) => {
+      const rule = props.dict[key];
+      if (typeof rule === "function") {
+        return !rule(item, values);
+      }
 
-            let target;
+      let target;
 
-            if (!rule) {
-              target = item[key];
-            } else if (typeof rule === "object") {
-              target = Array.isArray(item[rule.obj])
-                ? item[rule.obj].map((el) => el[rule.val])
-                : item[rule.obj][rule.val];
-            } else {
-              target = item[rule];
-            }
-            if (typeof values === "string") {
-              const noMatch = Array.isArray(target)
-                ? target.findIndex((item) =>
-                    values
-                      .toLowerCase()
-                      .includes(item.toString().toLowerCase()),
-                  ) === -1
-                : !target
-                    .toString()
-                    .toLowerCase()
-                    .includes(values.toLowerCase());
-              return noMatch;
-            } else if (typeof values === "boolean") {
-              const noMatch = Array.isArray(target)
-                ? target.findIndex((item) => values !== item) === -1
-                : values !== target;
-              return noMatch;
-            } else if (Array.isArray(values)) {
-              const noMatch = Array.isArray(target)
-                ? target.findIndex((item) => values.includes(item)) === -1
-                : !values.includes(target);
-              return noMatch;
-            } else {
-              log.i("Comportement anormal");
-              const noMatch = !target
-                .toString()
-                .toLowerCase()
-                .includes(values.toLowerCase());
-              return noMatch;
-            }
-          });
-          // Si tous les critères sont ok alors on conserve la ligne
-          const isMatchedAllCriterias = firstUnmatchedCriteria === undefined;
-          return isMatchedAllCriterias;
-        });
+      if (!rule) {
+        target = item[key];
+      } else if (typeof rule === "object") {
+        target = Array.isArray(item[rule.obj])
+          ? item[rule.obj].map((el) => el[rule.val])
+          : item[rule.obj]?.[rule.val];
+      } else {
+        target = item[rule];
+      }
+
+      if (typeof values === "string") {
+        const noMatch = Array.isArray(target)
+          ? target.findIndex((item) =>
+              values.toLowerCase().includes(item.toString().toLowerCase()),
+            ) === -1
+          : !target?.toString().toLowerCase().includes(values.toLowerCase());
+        return noMatch;
+      } else if (typeof rule === "object") {
+        target = Array.isArray(item[rule.obj])
+          ? item[rule.obj].map((el) => el[rule.val])
+          : item[rule.obj]?.[rule.val];
+      } else if (typeof values === "boolean") {
+        const noMatch = Array.isArray(target)
+          ? target.findIndex((item) => values !== item) === -1
+          : values !== target;
+        return noMatch;
+      } else if (Array.isArray(values)) {
+        const noMatch = Array.isArray(target)
+          ? target.findIndex((item) => values.includes(item)) === -1
+          : !values.includes(target);
+        return noMatch;
+      } else {
+        log.i("Comportement anormal");
+        const noMatch = !target
+          .toString()
+          .toLowerCase()
+          .includes(values.toLowerCase());
+        return noMatch;
+      }
+    });
+    // Si tous les critères sont ok alors on conserve la ligne
+    const isMatchedAllCriterias = firstUnmatchedCriteria === undefined;
+    return isMatchedAllCriterias;
+  });
 
   rows.sort((a, b) => {
-    const type = typeof a[sortBy.value];
-    const col = sortBy.value;
+    const valueA = getValue(a, sortBy.value);
+    const valueB = getValue(b, sortBy.value);
+    const type = typeof valueA;
     const direction = sortDirection.value;
     let res;
-    if (b[col] === null || b[col] === undefined) {
+    if (valueB === null || valueB === undefined) {
       res = -1;
-    } else if (a[col] === null || a[col] === undefined) {
+    } else if (valueA === null || valueA === undefined) {
       res = 1;
     } else if (type === "String") {
-      res = b[col] > a[col] ? -1 : a[col] > b[col] ? 1 : 0;
+      res = valueB > valueA ? -1 : valueA > valueB ? 1 : 0;
     } else if (type === "Number") {
-      res = Number(b[col]) - Number(a[col]);
+      res = Number(valueB) - Number(valueA);
     } else {
-      res = b[col] > a[col] ? -1 : a[col] > b[col] ? 1 : 0;
+      res = valueB > valueA ? -1 : valueA > valueB ? 1 : 0;
     }
     return direction * res;
   });
@@ -174,18 +198,21 @@ const filteredData = computed(() => {
 });
 
 const displayableData = computed(() => {
-  return filteredData.value.map((item, index) => {
+  return filteredData.value.map((item) => {
     const rowdata = h.value.map((header) => {
       if (header.component) {
-        return header.component(item, index);
+        return header.component(item) ?? "";
       }
       if (header.format) {
-        return header.format(item, index) ?? "";
+        return header.format(item) ?? "";
+      }
+      if (header.objectLabel) {
+        return item[header.column]?.[header.objectLabel] ?? "";
       }
       if (Array.isArray(item[header.column])) {
         return item[header.column]
           .map((val) => {
-            return val[header.objectLabel] ?? val;
+            return val[header.objectLabel] ?? "";
           })
           .join(", ");
       }
@@ -193,7 +220,9 @@ const displayableData = computed(() => {
       return data ?? "";
     });
     const rowAttrs = { class: "pointer" };
-    rowAttrs.onClick = () => emit("click-row", item, index);
+    rowAttrs.onClick = () => {
+      emit("click-row", item);
+    };
     return {
       rowData: rowdata,
       rowAttrs,
@@ -232,7 +261,7 @@ onMounted(() => {
         ...h,
         headerAttrs: {
           class: "pointer",
-          onClick: sorter(h.column),
+          onClick: sorter(h),
         },
       };
     }
@@ -241,7 +270,7 @@ onMounted(() => {
         ...h,
         headerAttrs: {
           class: "pointer",
-          onClick: sorter(h.sorter),
+          onClick: sorter(h),
         },
       };
     }
