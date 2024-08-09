@@ -187,10 +187,10 @@ const statusTagStates = {
   [statuts.SEJOUR_EN_COURS]: "success",
 };
 
+const saisons = ["Hiver", "Printemps", "Été", "Automne"];
+
 const getSaison = (date) =>
-  ["Hiver", "Printemps", "Eté", "Automne"].flatMap((season) =>
-    Array(4).fill(season),
-  )[new Date(date).getMonth()];
+  saisons.flatMap((season) => Array(4).fill(season))[new Date(date).getMonth()];
 
 const getOrganismeName = (demande) =>
   demande.organisme.typeOrganisme === "personne_morale"
@@ -203,6 +203,7 @@ export default {
   hebergementDetailsSchema,
   hebergementSchema,
   schema,
+  saisons,
   statuts,
   statusTagStates,
   getSaison,

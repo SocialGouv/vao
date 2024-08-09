@@ -11,6 +11,7 @@ const resetDemandeCourante = () => ({
   informationsTransport: {},
   informationsSanitaires: {},
   hebergement: {},
+  stats: null,
 });
 
 export const useDemandeSejourStore = defineStore("demandeSejour", {
@@ -107,6 +108,20 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         }
       } catch (err) {
         log.w("readMessages - DONE with error", err);
+        throw err;
+      }
+    },
+    async getStats() {
+      log.i("getStats - In");
+      try {
+        const { stats } = await $fetchBackend("/sejour/stats", {
+          method: "GET",
+          credentials: "include",
+        });
+        this.stats = stats;
+        return stats;
+      } catch (err) {
+        log.w("getStats - DONE with error", err);
         throw err;
       }
     },

@@ -532,6 +532,41 @@ ${Object.keys(criterias)
 `,
     Object.values(criterias),
   ],
+  getStats: (userId) => [
+    `
+    SELECT
+      COUNT(DISTINCT CASE WHEN ds.statut = $2 THEN ds.id ELSE NULL END)::integer AS "countBrouillon",
+      COUNT(DISTINCT CASE WHEN ds.statut IN ($3, $4, $5) THEN ds.id ELSE NULL END)::integer AS "countDeclarationAcompleter",
+      COUNT(DISTINCT CASE WHEN ds.statut IN ($6, $7, $8, $9) THEN ds.id ELSE NULL END)::integer AS "countDeclarationEnInstruction",
+      COUNT(DISTINCT CASE WHEN ds.statut = $10 THEN ds.id ELSE NULL END)::integer AS "countDeclarationFinalisee",
+      COUNT(DISTINCT CASE WHEN ds.statut = $11 THEN ds.id ELSE NULL END)::integer AS "countSejourEnCours",
+      COUNT(DISTINCT CASE WHEN ds.statut = $12 THEN ds.id ELSE NULL END)::integer AS "countTerminee"
+    FROM front.demande_sejour ds
+    JOIN front.organismes o ON ds.organisme_id = o.id
+    JOIN front.user_organisme uo ON o.id = uo.org_id
+    WHERE uo.use_id = $1;
+    `,
+    [
+      userId,
+      // countBrouillon
+      dsStatus.statuts.BROUILLON,
+      // countDeclarationAcompleter
+      dsStatus.statuts.A_MODIFIER,
+      dsStatus.statuts.A_MODIFIER_8J,
+      dsStatus.statuts.ATTENTE_8_JOUR,
+      // countDeclarationEnInstruction
+      dsStatus.statuts.TRANSMISE,
+      dsStatus.statuts.TRANSMISE_8J,
+      dsStatus.statuts.EN_COURS,
+      dsStatus.statuts.EN_COURS_8J,
+      // countDeclarationFinalisee
+      dsStatus.statuts.VALIDEE_8J,
+      // countSejourEnCours
+      dsStatus.statuts.SEJOUR_EN_COURS,
+      // countTerminee
+      dsStatus.statuts.TERMINEE,
+    ],
+  ],
   getStatut: `
   SELECT
     STATUT as "statut"
@@ -967,6 +1002,15 @@ module.exports.getHebergementsByDepartementCodes = async (
   );
   log.d("getHebergementsByDepartementCodes - DONE");
   return rows[0];
+};
+
+module.exports.getStats = async (userId) => {
+  log.i("getStatts - IN");
+  const {
+    rows: [stats],
+  } = await pool.query(...query.getStats(userId));
+  log.i("getStatts - DONE");
+  return stats;
 };
 
 module.exports.getStatut = async (declarationId) => {

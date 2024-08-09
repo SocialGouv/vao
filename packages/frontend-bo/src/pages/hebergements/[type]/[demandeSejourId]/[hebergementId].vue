@@ -47,7 +47,6 @@ definePageMeta({
 });
 
 const route = useRoute();
-const router = useRouter();
 const demandeSejourStore = useDemandeSejourStore();
 
 const config = useRuntimeConfig();
@@ -55,7 +54,10 @@ const config = useRuntimeConfig();
 // const zoom = 16;
 
 if (route.params.type !== "lies-a-des-sejours") {
-  router.replace({ params: { ...route.params, type: "lies-a-des-sejours" } });
+  navigateTo({
+    replace: true,
+    params: { ...route.params, type: "lies-a-des-sejours" },
+  });
 }
 
 const hebergement = computed(() => demandeSejourStore.hebergement);

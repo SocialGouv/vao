@@ -23,7 +23,7 @@
                 <div class="fr-input-group">
                   <label class="fr-label">ID</label>
                   <Multiselect
-                    :model-value="search.id"
+                    :model-value="search.declarationId"
                     name="id"
                     mode="tags"
                     :searchable="true"
@@ -141,7 +141,7 @@
                 <div class="fr-input-group">
                   <label class="fr-label"> Saison</label>
                   <Multiselect
-                    :model-value="search.saison"
+                    :model-value="search.periode"
                     :hide-selected="true"
                     :searchable="false"
                     :close-on-select="false"
@@ -205,7 +205,6 @@ import MultiSelectOption from "~/components/utils/MultiSelectOption.vue";
 const log = logger("pages/demande-sejour/liste");
 const toaster = useToaster();
 
-
 definePageMeta({
   middleware: ["is-connected", "check-organisme-is-complet"],
 });
@@ -234,16 +233,46 @@ const navigate = (item) => {
   navigateTo(`/demande-sejour/${item.declarationId}`);
 };
 
-const search = reactive({
-  id: null,
-  idFonctionnelle: null,
-  siret: null,
-  statut: null,
-  departementSuivi: null,
-  periode: null,
+const route = useRoute();
+const departementStore = useDepartementStore();
+
+const saisonOptions = computed(() => {
+  return demandeSejourStore.demandes.reduce((acc, elem) => {
+    if (elem.periode) {
+      acc.push(elem);
+    }
+    return acc;
+  }, []);
 });
 
-const departementStore = useDepartementStore();
+const saisons = DeclarationSejour.saisons.map((saison) =>
+  saison.toLocaleLowerCase(),
+);
+
+const search = reactive({
+  declarationId:
+    route.query.declarationId
+      ?.split(",")
+      ?.flatMap((id) => (isNaN(id) ? [] : [parseInt(id, 10)])) ?? null,
+  idFonctionnelle: route.query.idFonctionnelle?.split(",") ?? null,
+  siret: route.query.siret?.split(",") ?? null,
+  statut: route.query.statut
+    ? route.query.statut
+        .split(",")
+        .filter((statut) =>
+          Object.values(DeclarationSejour.statuts).includes(statut),
+        )
+    : null,
+  departementSuivi: route.query.departementSuivi
+    ? route.query.departementSuivi.split(",")
+    : null,
+  periode: route.query.periode
+    ? route.query.periode
+        .split(",")
+        .filter((periode) => saisons.includes(periode))
+    : null,
+});
+
 const demandeSejourStore = useDemandeSejourStore();
 
 const idOptions = computed(() => {
@@ -270,12 +299,6 @@ const departementOptions = computed(() => {
   });
 });
 
-const saisonOptions = computed(() => {
-  return demandeSejourStore.demandes
-    .map((d) => d.periode)
-    .filter((v, i, a) => a.indexOf(v) === i);
-});
-
 const statutOptions = [
   { label: "BROUILLON", value: "BROUILLON" },
   { label: "TRANSMISE", value: "TRANSMISE" },
@@ -297,27 +320,84 @@ const statutOptions = [
   { label: "TERMINEE", value: "TERMINEE" },
 ];
 
+const removeAttribute = (object, key) =>
+  (({ [key]: rest, ...query }) => ({ [key]: rest, query }))(object);
+
 const onUpdateId = (id) => {
+  if (id.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, declarationId: id.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "declarationId");
+    navigateTo({ replace: true, query });
+  }
   search.declarationId = id;
 };
 
 const onUpdateSiret = (siret) => {
+  if (siret.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, siret: siret.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "siret");
+    navigateTo({ replace: true, query });
+  }
   search.siret = siret;
 };
-const onUpdateIdFonctionnelle = (id) => {
-  search.idFonctionnelle = id;
+const onUpdateIdFonctionnelle = (idFonctionnelle) => {
+  if (idFonctionnelle.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, idFonctionnelle: idFonctionnelle.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "idFonctionnelle");
+    navigateTo({ replace: true, query });
+  }
+  search.idFonctionnelle = idFonctionnelle;
 };
 
 const onUpdateDepartement = (d) => {
+  if (d.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, departementSuivi: d.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "departementSuivi");
+    navigateTo({ replace: true, query });
+  }
   search.departementSuivi = d;
 };
 
 const onUpdateStatut = (s) => {
+  if (s.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, statut: s.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "statut");
+    navigateTo({ replace: true, query });
+  }
   search.statut = s;
 };
 
-const onUpdateSaison = (s) => {
-  search.periode = s;
+const onUpdateSaison = (periode) => {
+  if (periode.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, periode: periode.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "periode");
+    navigateTo({ replace: true, query });
+  }
+  search.periode = periode;
 };
 
 const listeStatutAutoriseBoutonDeleteCancel = [

@@ -70,7 +70,8 @@ const router = useRouter();
 
 const refresqueryParams = () => {
   if (props.isUrlUpdate) {
-    router.replace({
+    navigateTo({
+      replace: true,
       query: {
         search: search.value,
         sort: sort.value,

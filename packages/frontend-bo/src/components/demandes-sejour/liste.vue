@@ -6,7 +6,7 @@
     </h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
-        <cards-number
+        <cardsNumber
           v-if="!props.organisme"
           :values="[
             {
@@ -176,7 +176,7 @@ const props = defineProps({
 
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
-import CardsNumber from "~/components/utils/CardsNumber.vue";
+import { CardsNumber } from "@vao/shared";
 
 const log = logger("pages/sejours");
 
