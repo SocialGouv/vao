@@ -1,6 +1,11 @@
 <template>
   <div>
-    <TableFull :headers="headers" :data="props.historique" />
+    <TableFull
+      :headers="headers"
+      :data="props.historique"
+      :sort-direction-init="-1"
+      sort-by-init="createdAt"
+    />
   </div>
 </template>
 

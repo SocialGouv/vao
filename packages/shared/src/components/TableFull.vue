@@ -66,6 +66,8 @@ const props = defineProps({
       return 0;
     },
   },
+  sortByInit: { type: String, default: "id" },
+  sortDirectionInit: { type: Number, default: 1 },
 });
 
 const onUpdateItemByPage = (val) => {
@@ -73,8 +75,8 @@ const onUpdateItemByPage = (val) => {
   currentPage.value = 0;
 };
 
-const sortBy = ref("id");
-const sortDirection = ref(1);
+const sortBy = ref(props.sortByInit);
+const sortDirection = ref(props.sortDirectionInit);
 const h = ref([]);
 
 const getValue = (row, key) => {
