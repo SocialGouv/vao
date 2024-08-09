@@ -64,18 +64,27 @@
         <span class="fr-hint-text">
           <i><u>Exemple</u></i>
         </span>
-        <span class="fr-hint-text"
-          ><i
-            >Durand;philippe;25/01/1977;infirmier;Distribution des
-            médicaments,autre;0610203040</i
-          ></span
-        >
-        <span class="fr-hint-text"
-          ><i
-            >dupont;Nathalie;15/07/1985;Cuisinière;Restauration;+33612345678</i
+        <div>
+          <span
+            class="fr-hint-text"
+            v-for="(p, index) in dataExemplePersonnel"
+            :key="index"
           >
-        </span>
-        <br />
+              <i>{{ formaterCSV(p) }}</i><br>
+            </span>
+          <br />
+        </div>
+        <DsfrFieldset>
+          <a
+            href="#"
+            @click.prevent="exportCSV(true)"
+            ref="modalOrigin"
+            role="button"
+            aria-label="Télécharger le modèle de fichier CSV"
+          >
+            <span aria-hidden="true">Téléchargez le fichier CSV modèle</span>
+          </a>
+        </DsfrFieldset>
         <DsfrInputGroup
           name="pasteFrom"
           :model-value="pasteFrom"
@@ -105,7 +114,7 @@
           label="Export CSV"
           size="sm"
           :secondary="true"
-          @click.prevent="exportCSV"
+          @click.prevent="exportCSV(false)"
         />
       </div>
     </DsfrFieldset>
@@ -144,6 +153,11 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DsfrFieldset } from "@gouvminint/vue-dsfr";
 
 dayjs.extend(customParseFormat);
+
+const dataExemplePersonnel = [
+    {nom:"Durand",prenom:"philippe",dateNaissance:"1977-01-25",competence:"infirmier",listeFonction:["Distribution des médicaments","autre"],telephone:"0610203040"},
+    {nom:"dupont",prenom:"Nathalie",dateNaissance:"1985-07-15",competence:"Cuisinière",listeFonction:["Restauration"],telephone:"+33612345678"},
+  ];
 
 const DsfrBadge = resolveComponent("DsfrBadge");
 
@@ -387,20 +401,34 @@ async function handlePaste(lignesCollees) {
   emit("updatePersonne", encadrantsFromCsv);
 }
 
-function exportCSV() {
-  const rows = [
-    "Nom;Prenom;Date de Naissance;Compétences;Fonctions;Téléphone\n",
-  ];
-  props.personnes.forEach((p) => {
+function formaterCSV(p) {
+  return `${p.nom};${p.prenom};${dayjs(p.dateNaissance).format("DD/MM/YYYY")};${p.competence};${p.listeFonction.join(",")};${p.telephone}`;
+}
+
+function exportCSV(modele) {
+  let fileNameCsv;
+  let objetAExporter;
+  let rows;
+  if (modele) {
+    fileNameCsv = "modele_personnel.csv"
+    objetAExporter = dataExemplePersonnel;
+  }
+  else
+  {
+    fileNameCsv = "personnel.csv"
+    objetAExporter = props.personnes;
+    rows = ["Nom;Prenom;Date de Naissance;Compétences;Fonctions;Téléphone\n"]
+  }
+  objetAExporter.forEach((p) => {
     rows.push(
-      `${p.nom};${p.prenom};${dayjs(p.dateNaissance).format("DD/MM/YYYY")};${p.competence};${p.listeFonction.join(",")};${p.telephone}\n`,
+      formaterCSV(p)+`\n`,
     );
   });
   const blob = new Blob(rows, { type: "text/csv;charset-utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.setAttribute("download", "personnel.csv");
+  link.setAttribute("download", fileNameCsv);
   link.click();
 }
 </script>
