@@ -564,8 +564,9 @@ import {
   DsfrCheckboxSet,
 } from "@gouvminint/vue-dsfr";
 import IsDownloading from "./IsDownloading.vue";
-import { hebergement as hebergementUtils } from "@vao/shared";
+import hebergementUtils from "../utils/hebergement";
 import FileUpload from "./FileUpload.vue";
+import createLogger from "../utils/createLogger";
 
 const toaster = useToaster();
 
@@ -596,6 +597,7 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
 });
 
+const logger = createLogger("vao-shared");
 const log = logger("components/hebergement");
 
 const validationSchema = yup.object(hebergementUtils.schema);
