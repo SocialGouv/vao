@@ -63,17 +63,18 @@
         </form>
       </div>
     </div>
-    <UtilsTableFull
+    <TableFull
       :headers="headers"
       :data="organismeStore.organismes ?? []"
       :dict="dict"
       :search="search"
       @click-row="navigate"
-    >
-    </UtilsTableFull>
+    />
   </div>
 </template>
 <script setup>
+import { TableFull } from "@vao/shared";
+
 import dayjs from "dayjs";
 definePageMeta({
   middleware: ["is-connected"],
