@@ -374,12 +374,13 @@ const sendMessage = async ({ message, file }) => {
         name: file.name ?? "document_messagerie",
         createdAt: new Date(),
       };
-      toaster.info(`Document déposé`);
+      toaster.info({ titleTag: "h2", description: `Document déposé` });
     } catch (error) {
       log.w(error);
-      return toaster.error(
-        `Une erreur est survenue lors du dépôt du document ${file.name}`,
-      );
+      return toaster.error({
+        titleTag: "h2",
+        description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+      });
     }
   }
   try {
@@ -396,9 +397,10 @@ const sendMessage = async ({ message, file }) => {
   } catch (error) {
     isSendingMessage.value = false;
     log.w("envoi de message : ", { error });
-    return toaster.error(
-      `Une erreur est survenue lors de l'envoi de votre message`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de l'envoi de votre message`,
+    });
   }
   demandeSejourStore.fetchMessages(sejourId.value);
 };
@@ -421,16 +423,18 @@ async function updateOrCreate(data, type) {
           name: file.name,
           createdAt: new Date(),
         };
-        toaster.info(`Document déposé`);
+        toaster.info({ titleTag: "h2", description: `Document déposé` });
       } catch (error) {
         if (error.response.status === 413) {
-          return toaster.error(
-            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
-          );
+          return toaster.error({
+            titleTag: "h2",
+            description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          });
         }
-        return toaster.error(
-          `Une erreur est survenue lors du dépôt du document ${file.name}`,
-        );
+        return toaster.error({
+          titleTag: "h2",
+          description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+        });
       }
     }
   }
@@ -458,18 +462,21 @@ async function updateOrCreate(data, type) {
         counter++;
       } catch (error) {
         if (error.response.status === 413) {
-          return toaster.error(
-            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
-          );
+          return toaster.error({
+            titleTag: "h2",
+            description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          });
         }
-        return toaster.error(
-          `Une erreur est survenue lors du dépôt du document ${file.name}`,
-        );
+        return toaster.error({
+          titleTag: "h2",
+          description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+        });
       }
     }
-    toaster.info(
-      `${counter} document${counter > 1 ? "s" : ""} déposé${counter > 1 ? "s" : ""}`,
-    );
+    toaster.info({
+      titleTag: "h2",
+      description: `${counter} document${counter > 1 ? "s" : ""} déposé${counter > 1 ? "s" : ""}`,
+    });
     data.files = files;
   }
 
@@ -493,9 +500,10 @@ async function updateOrCreate(data, type) {
     return await nextHash();
   } catch (error) {
     log.w("Creation/modification de declaration de sejour: ", { error });
-    return toaster.error(
-      `Une erreur est survenue lors de la mise à jour de la déclaration de séjour`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de la mise à jour de la déclaration de séjour`,
+    });
   } finally {
     resetApiStatut();
   }
@@ -514,34 +522,40 @@ async function finalize(attestation) {
       },
     });
 
-    toaster.success(
-      `Félicitations, votre déclaration de séjour "${demandeCourante.value.libelle}" a été transmise`,
-    );
+    toaster.success({
+      titleTag: "h2",
+      description: `Félicitations, votre déclaration de séjour "${demandeCourante.value.libelle}" a été transmise`,
+    });
 
     if (response.DSuuid) {
       if (
         demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
         demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER
       )
-        toaster.info(
-          `Le PDF déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
-        );
+        toaster.info({
+          titleTag: "h2",
+          description: `Le PDF déclaration_2_mois a été ajouté aux documents de la déclaration de séjour`,
+        });
       else
-        toaster.info(
-          `Le PDF déclaration_8_jours a été ajouté aux documents de la déclaration de séjour`,
-        );
+        toaster.info({
+          titleTag: "h2",
+          description: `Le PDF déclaration_8_jours a été ajouté aux documents de la déclaration de séjour`,
+        });
     } else {
-      toaster.error(
-        "Une erreur est survenue durant la génération du PDF mais la déclaration a bien été transmise",
-      );
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Une erreur est survenue durant la génération du PDF mais la déclaration a bien été transmise",
+      });
     }
     log.d(`demande de séjour ${sejourId.value} transmise`);
     return await navigateTo("/demande-sejour/liste");
   } catch (error) {
     log.w("Finalisation de la declaration de sejour : ", { error });
-    return toaster.error(
-      `Une erreur est survenue lors de la transmission de la déclaration de séjour`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de la transmission de la déclaration de séjour`,
+    });
   } finally {
     resetApiStatut();
   }

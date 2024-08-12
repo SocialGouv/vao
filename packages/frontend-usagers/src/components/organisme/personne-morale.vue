@@ -578,9 +578,11 @@ async function searchApiInsee() {
       etablissementPrincipal,
     });
   } catch (error) {
-    toaster.error(
-      "erreur lors de la récupération des données à partir du SIRET",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "erreur lors de la récupération des données à partir du SIRET",
+    });
     log.w("searchApiInsee - erreur:", { error });
     setValues({
       siren: null,
@@ -614,9 +616,11 @@ async function searchOrganismeBySiret() {
       return data.organisme;
     }
   } catch (error) {
-    toaster.error(
-      "erreur lors de la récupération des données internes à partir du SIRET",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "erreur lors de la récupération des données internes à partir du SIRET",
+    });
     log.w("searchOrganismeBySiret - erreur:", { error });
     return null;
   }
@@ -631,9 +635,11 @@ async function searchOrganisme() {
   }
   if (siren.value) {
     if (!porteurAgrement.value && siegeSocial.value) {
-      toaster.error(
-        "Un établissement principal est nécessairement titulaire d'un agrément",
-      );
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Un établissement principal est nécessairement titulaire d'un agrément",
+      });
       setValues({
         siren: null,
         siegeSocial: null,
@@ -649,9 +655,11 @@ async function searchOrganisme() {
       return false;
     }
     if (!porteurAgrement.value && !etablissementPrincipal.value.siret) {
-      toaster.error(
-        "L'établissement principal ne s'est pas encore déclaré sur la plateforme. Veuillez réessayer plus tard.",
-      );
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "L'établissement principal ne s'est pas encore déclaré sur la plateforme. Veuillez réessayer plus tard.",
+      });
       setValues({
         siren: null,
         siegeSocial: null,
@@ -666,7 +674,8 @@ async function searchOrganisme() {
       });
       return false;
     }
-    if (siren) toaster.success("Données récupérées");
+    if (siren)
+      toaster.success({ titleTag: "h2", description: "Données récupérées" });
     randomId.value = random.getRandomId();
     keyRepresentantLegaux.value += 1;
   }
@@ -692,9 +701,11 @@ async function refreshEtablissmentsSecondaires() {
 
     etablissements.value = newList;
   } catch (error) {
-    toaster.error(
-      "erreur lors du rafraichissment des établissements secondaires",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "erreur lors du rafraichissment des établissements secondaires",
+    });
     log.w("searchOrganismeBySiret - erreur:", { error });
     return null;
   }

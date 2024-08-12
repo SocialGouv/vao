@@ -60,7 +60,10 @@ const searchAddressDebounced = debounce(async function (queryString) {
   } catch (error) {
     log.w("searchAddress", error);
     isLoading.value = false;
-    toaster.error("erreur lors de l'appel à l'API adresse");
+    toaster.error({
+      titleTag: "h2",
+      description: "erreur lors de l'appel à l'API adresse",
+    });
   }
   log.d("searchAddressDebounced - DONE", { queryString });
 }, 500);

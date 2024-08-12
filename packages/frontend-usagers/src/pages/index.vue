@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container">
     <div class="fr-grid-row fr-py-5w">
-      <h3>Bienvenue {{ userStore.user.prenom }} {{ userStore.user.nom }}</h3>
+      <h2>Bienvenue {{ userStore.user.prenom }} {{ userStore.user.nom }}</h2>
     </div>
     <div
       v-if="!organismeCourant || !organismeCourant.complet"

@@ -125,7 +125,10 @@ async function updateOrCreate(hebergement) {
   try {
     await hebergementStore.updaloadFiles(hebergement);
   } catch (e) {
-    toaster.error(e.message ?? "Erreur lors de la sauvegarde de l'hébergement");
+    toaster.error({
+      titleTag: "h2",
+      description: e.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+    });
     resetApiStatut();
     return;
   }
@@ -137,15 +140,17 @@ async function updateOrCreate(hebergement) {
       hebergementId.value,
     );
     log.d("hebergement sauvegardé");
-    toaster.success("Hébergement sauvegardé");
+    toaster.success({ titleTag: "h2", description: "Hébergement sauvegardé" });
 
     if (!hebergementId.value && id) {
       return await navigateTo("/hebergements/liste");
     }
   } catch (error) {
-    toaster.error(
-      error.data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        error.data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+    });
     log.w("updateOrCreate - erreur", { error });
   } finally {
     resetApiStatut();

@@ -66,7 +66,10 @@ const toaster = useToaster();
 const demandeSejourId = parseInt(route.params.demandeSejourId, 10);
 const hebergementId = parseInt(route.params.hebergementId, 10);
 if (isNaN(demandeSejourId) || isNaN(hebergementId)) {
-  toaster.error("Cet hébergement n'existe pas");
+  toaster.error({
+    titleTag: "h2",
+    description: "Cet hébergement n'existe pas",
+  });
   navigateTo("/hebergements/lies-a-des-sejours");
 }
 try {
@@ -76,7 +79,10 @@ try {
   );
 } catch (error) {
   if (error?.response?.status === 404) {
-    toaster.error("Cet hébergement n'existe pas");
+    toaster.error({
+      titleTag: "h2",
+      description: "Cet hébergement n'existe pas",
+    });
     navigateTo("/hebergements/lies-a-des-sejours");
   }
   throw error;

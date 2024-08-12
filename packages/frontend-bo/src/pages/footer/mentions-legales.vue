@@ -13,7 +13,7 @@
     </div>
     <div class="fr-grid-row">
       <div class="fr-col-12">
-        <h4>Editeur</h4>
+        <h2>Editeur</h2>
         <p>Le suivi éditorial, graphique et technique est assuré par :</p>
         <em>
           <dl>
@@ -27,13 +27,13 @@
         <p></p>
       </div>
       <div class="fr-col-12">
-        <h4>Directeur de la publication</h4>
+        <h2>Directeur de la publication</h2>
         <p>
           Monsieur Jean-Benoît DUJOL - Directeur général de la cohésion sociale
         </p>
       </div>
       <div class="fr-col-12">
-        <h4>Prestataires</h4>
+        <h2>Prestataires</h2>
         <strong>Hébergement</strong>
         <em>
           <dl>
@@ -63,7 +63,7 @@
         </p>
       </div>
       <div class="fr-col-12">
-        <h4>Droits de reproduction</h4>
+        <h2>Droits de reproduction</h2>
         <p>
           Les contenus des services numériques vao.social.gouv.fr et
           admin-vao.social.gouv.fr, à l’exception des marques et logos et des
@@ -79,7 +79,7 @@
         </p>
       </div>
       <div class="fr-col-12">
-        <h4>Liens vers d'autres sites</h4>
+        <h2>Liens vers d'autres sites</h2>
         <p>
           Des liens vers d’autres sites sont proposés. Leur présence ne saurait
           engager la Direction Générale de la Cohésion Sociale quant à leur
@@ -88,7 +88,7 @@
         </p>
       </div>
       <div class="fr-col-12">
-        <h4>Création de liens vers le site</h4>
+        <h2>Création de liens vers le site</h2>
         <p>
           La mise en place de lien vers vao.social.gouv.fr n’est conditionnée à
           aucun accord préalable. La mise en place de lien vers
