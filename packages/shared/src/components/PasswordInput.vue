@@ -80,6 +80,7 @@ function togglePasswordType() {
       }"
       :value="modelValue"
       :aria-describedby="descriptionId || null"
+      autocomplete="current-password"
       @input="$emit('update:modelValue', $event.target.value)"
     />
 
