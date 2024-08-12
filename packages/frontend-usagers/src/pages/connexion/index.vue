@@ -88,8 +88,8 @@
                       </fieldset>
                     </div>
                     <div class="fr-fieldset__element">
-                      <ul class="fr-btns-group">
-                        <li>
+                      <ul role="list" class="fr-btns-group">
+                        <li role="listitem">
                           <DsfrButton
                             :disabled="!canLogin"
                             @click.prevent="login"
@@ -103,8 +103,8 @@
               </div>
               <hr />
               <h4>Vous n’avez pas de compte ?</h4>
-              <ul class="fr-btns-group">
-                <li>
+              <ul role="list" class="fr-btns-group">
+                <li role="listitem">
                   <DsfrButton
                     @click.prevent="navigateTo('/connexion/enregistrement')"
                     >Créer un compte</DsfrButton

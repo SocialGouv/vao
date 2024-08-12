@@ -49,65 +49,83 @@
         Liste non exhaustive des erreurs d'accessibilité présentes sur le site :
       </p>
 
-      <ul>
-        <li>
+      <ul role="list">
+        <li role="listitem">
           les contrastes ne sont pas respectés sur les messages d'erreur ;
         </li>
 
-        <li>
+        <li role="listitem">
           certains composants interactifs ne sont pas correctement identifiable
           ;
         </li>
 
-        <li>
+        <li role="listitem">
           certains liens ne sont pas pertinents et des boutons n'ont pas de nom
           ;
         </li>
 
-        <li>le code HTML n'est pas toujours valide ;</li>
+        <li role="listitem">le code HTML n'est pas toujours valide ;</li>
 
-        <li>le changement de langue n'est pas toujours définit ;</li>
+        <li role="listitem">
+          le changement de langue n'est pas toujours définit ;
+        </li>
 
-        <li>éléments HTML utilisés à des fins de présentation ;</li>
+        <li role="listitem">
+          éléments HTML utilisés à des fins de présentation ;
+        </li>
 
-        <li>certains pages n'ont pas de titre pertinent ;</li>
+        <li role="listitem">certains pages n'ont pas de titre pertinent ;</li>
 
-        <li>la structure des titres n'est pas toujours cohérentes ;</li>
+        <li role="listitem">
+          la structure des titres n'est pas toujours cohérentes ;
+        </li>
 
-        <li>certains éléments ne sont pas structurés en liste ;</li>
+        <li role="listitem">
+          certains éléments ne sont pas structurés en liste ;
+        </li>
 
-        <li>certains contenus ne sont pas présents sans CSS ;</li>
+        <li role="listitem">
+          certains contenus ne sont pas présents sans CSS ;
+        </li>
 
-        <li>
+        <li role="listitem">
           les contenus sont parfois difficile à lire avec un zoom à 200% ;
         </li>
 
-        <li>
+        <li role="listitem">
           certains contenu se chevauchent en mode portrait et nécessitent un
           scroll horizontal sur écran de 320px ;
         </li>
 
-        <li>les tableaux n'ont pas de titre ;</li>
+        <li role="listitem">les tableaux n'ont pas de titre ;</li>
 
-        <li>absence de lien d'accès rapide vers le contenu principal ;</li>
+        <li role="listitem">
+          absence de lien d'accès rapide vers le contenu principal ;
+        </li>
 
-        <li>les messages de statut ne sont pas toujours restitués ;</li>
+        <li role="listitem">
+          les messages de statut ne sont pas toujours restitués ;
+        </li>
 
-        <li>l'information est parfois indiquée uniquement par un picto ;</li>
+        <li role="listitem">
+          l'information est parfois indiquée uniquement par un picto ;
+        </li>
 
-        <li>
+        <li role="listitem">
           les champs de formulaire obligatoires ne sont pas correctement
           paramétrés ;
         </li>
 
-        <li>absence de texte d'aide ;</li>
+        <li role="listitem">absence de texte d'aide ;</li>
 
-        <li>
+        <li role="listitem">
           les données de l'usager ne sont pas prédéfinis dans les champs
           concernés ;
         </li>
 
-        <li>l'usager n'a pas le contrôle sur le temps de session.</li>
+        <li role="listitem">
+          l'usager n'a pas le contrôle sur le temps de session.
+        </li>
       </ul>
     </div>
     <h2>Établissement de cette déclaration d’accessibilité</h2>
@@ -119,10 +137,10 @@
 
     <h3>Technologies utilisées pour la réalisation de l’audit</h3>
 
-    <ul>
-      <li>HTML</li>
-      <li>CSS</li>
-      <li>Javascript</li>
+    <ul role="list">
+      <li role="listitem">HTML</li>
+      <li role="listitem">CSS</li>
+      <li role="listitem">Javascript</li>
     </ul>
 
     <h3>Environnement de test</h3>
@@ -133,106 +151,110 @@
       versions suivantes :
     </p>
 
-    <ul>
-      <li>Sur desktop MacOS avec Safari et VoiceOver</li>
-      <li>Sur desktop Windows avec Firefox et JAWS</li>
-      <li>Sur desktop Windows avec Firefox et NVDA</li>
-      <li>Sur mobile iOS avec Safari et VoiceOver</li>
+    <ul role="list">
+      <li role="listitem">Sur desktop MacOS avec Safari et VoiceOver</li>
+      <li role="listitem">Sur desktop Windows avec Firefox et JAWS</li>
+      <li role="listitem">Sur desktop Windows avec Firefox et NVDA</li>
+      <li role="listitem">Sur mobile iOS avec Safari et VoiceOver</li>
     </ul>
 
     <h3>Outils pour évaluer l’accessibilité</h3>
 
-    <ul>
-      <li>Web Developer Toolbar</li>
-      <li>Colour Contrast Analyser</li>
-      <li>HeadingsMap</li>
-      <li>WCAG Contrast checker</li>
-      <li>Inspecteur de composants</li>
-      <li>Validateur HTML du W3C</li>
-      <li>Contraste élevé</li>
+    <ul role="list">
+      <li role="listitem">Web Developer Toolbar</li>
+      <li role="listitem">Colour Contrast Analyser</li>
+      <li role="listitem">HeadingsMap</li>
+      <li role="listitem">WCAG Contrast checker</li>
+      <li role="listitem">Inspecteur de composants</li>
+      <li role="listitem">Validateur HTML du W3C</li>
+      <li role="listitem">Contraste élevé</li>
     </ul>
 
     <h3>Pages du site ayant fait l’objet de la vérification de conformité</h3>
 
-    <ul>
-      <li>
+    <ul role="list">
+      <li role="listitem">
         Création de compte
         <strong>https://vao.social.gouv.fr/connexion/enregistrement</strong>
       </li>
-      <li>
+      <li role="listitem">
         Mot de passe oublié
         <strong
           >https://vao.social.gouv.fr/connexion/mot-de-passe-oublie</strong
         >
       </li>
-      <li>
+      <li role="listitem">
         Authentification <strong>https://vao.social.gouv.fr/connexion/</strong>
       </li>
-      <li>
+      <li role="listitem">
         Mentions légales
         <strong>https://vao.social.gouv.fr/footer/mentions-legales</strong>
       </li>
-      <li>
+      <li role="listitem">
         Données personnelles
         <strong>https://vao.social.gouv.fr/footer/donnees-personnelles</strong>
       </li>
-      <li>
+      <li role="listitem">
         Ma fiche organisateur - Étape 1 sur 5 - Infos générales
         <strong>https://vao.social.gouv.fr/organisme/64</strong>
       </li>
-      <li>
+      <li role="listitem">
         Ma fiche organisateur - Étape 2 sur 5 - Agrément
         <strong>https://vao.social.gouv.fr/organisme/64#agrement</strong>
       </li>
-      <li>
+      <li role="listitem">
         Ma fiche organisateur - Étape 3 sur 5 - Infos transport
         <strong
           >https://vao.social.gouv.fr/organisme/64#protocole-transport</strong
         >
       </li>
-      <li>Accueil <strong>https://vao.social.gouv.fr/</strong></li>
-      <li>
+      <li role="listitem">
+        Accueil <strong>https://vao.social.gouv.fr/</strong>
+      </li>
+      <li role="listitem">
         Accessibilité
         <strong>https://vao.social.gouv.fr/footer/accessibilite</strong>
       </li>
-      <li>
+      <li role="listitem">
         Ma fiche organisateur - Étape 4 sur 5 - Infos sanitaire
         <strong
           >https://vao.social.gouv.fr/organisme/64#protocole-sanitaire</strong
         >
       </li>
-      <li>
+      <li role="listitem">
         Ma fiche organisateur - Étape 5 sur 5 - Synthèse
         <strong>https://vao.social.gouv.fr/organisme/64#synthese</strong>
       </li>
-      <li>
+      <li role="listitem">
         Mes hébergements
         <strong>https://vao.social.gouv.fr/hebergements/liste</strong>
       </li>
-      <li>
+      <li role="listitem">
         Création d'un hébergement
         <strong>https://vao.social.gouv.fr/hebergements</strong>
       </li>
-      <li>Mes séjours <strong>https://vao.social.gouv.fr/</strong></li>
-      <li>
+      <li role="listitem">
+        Mes séjours <strong>https://vao.social.gouv.fr/</strong>
+      </li>
+      <li role="listitem">
         Nouveau séjour : étape 1 : informations générales
         <strong
           >https://vao.social.gouv.fr/demande-sejour/100#info-generales</strong
         >
       </li>
-      <li>
+      <li role="listitem">
         Nouveau séjour étape 2 : informations sur les vacanciers
         <strong
           >https://vao.social.gouv.fr/demande-sejour/100#info-vacanciers</strong
         >
       </li>
-      <li>
+      <li role="listitem">
         Nouveau séjour étape 3 : informations sur le personnel
         <strong
           >https://vao.social.gouv.fr/demande-sejour/100#info-personnel</strong
         >
       </li>
-      <li>
+      <li role="listitem">
         Nouveau séjour étape 4 : Sélection des hébergements
         <strong
           >https://vao.social.gouv.fr/demande-sejour/100#hebergements</strong
@@ -249,8 +271,8 @@
       autre forme.
     </p>
 
-    <ul>
-      <li>
+    <ul role="list">
+      <li role="listitem">
         Contacter
         <strong
           >Les Ministères Sociaux :
@@ -271,9 +293,11 @@
 
     <p>Plusieurs moyens sont à votre disposition :</p>
 
-    <ul>
-      <li>Écrire un message au Défenseur des droits</li>
-      <li>Contacter le délégué du Défenseur des droits dans votre région</li>
+    <ul role="list">
+      <li role="listitem">Écrire un message au Défenseur des droits</li>
+      <li role="listitem">
+        Contacter le délégué du Défenseur des droits dans votre région
+      </li>
     </ul>
 
     <p>

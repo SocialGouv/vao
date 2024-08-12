@@ -201,22 +201,22 @@
             justificatifs.
           </p>
           <p>On distingue 3 catégories d’hébergements :</p>
-          <ol>
-            <li>
+          <ul role="list">
+            <li role="listitem">
               Les établissements recevant du public (ERP, tous les hôtels et les
               gros meubles de tourisme deplus de 15 personnes de type gîtes de
               groupes
             </li>
-            <li>
+            <li role="listitem">
               Les Bâtiments d’Habitation Collective (BHC, comme des résidences
               de tourisme)
             </li>
-            <li>
+            <li role="listitem">
               Les maisons individuelles (MI, comme des chambres d’hôtes et
               petits meublés, qui ne peuvent dépasser 5 chambres et hébergent 15
               personnes au maximum)
             </li>
-          </ol>
+          </ul>
         </DsfrAlert>
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
