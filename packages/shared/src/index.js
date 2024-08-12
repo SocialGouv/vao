@@ -5,6 +5,7 @@ import FileUpload from "./components/FileUpload.vue";
 import Hebergement from "./components/Hebergement.vue";
 import IsDownloading from "./components/IsDownloading.vue";
 import TableFull from "./components/TableFull.vue";
+import PasswordInput from "./components/PasswordInput.vue";
 import createLogger from "./utils/createLogger";
 import hebergement from "./utils/hebergement";
 
@@ -17,5 +18,6 @@ export {
   Hebergement,
   IsDownloading,
   TableFull,
+  PasswordInput,
   hebergement,
 };

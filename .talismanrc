@@ -213,6 +213,8 @@ fileignoreconfig:
   checksum: 1d3be5d2c46636eb90b74382447f23ffefc943ed963736ffab7556336d2df667
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
+- filename: packages/shared/src/components/PasswordInput.vue
+  checksum: 6d60a6028edc072a3300ac06e693436bc38405cb5847bf32c5ef67448cb60ceb
 - filename: pg/scripts/01-init.sql
   checksum: 20dd5b8d36b1b0517fe185d30003af7866ef5678eed4e7571a6d9797ec3b2a46
 - filename: pg/scripts/02/02-1-geo-init.sql

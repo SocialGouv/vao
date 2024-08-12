@@ -120,6 +120,8 @@
 </template>
 
 <script setup>
+import { PasswordInput } from "@vao/shared";
+
 const toaster = useToaster();
 
 const config = useRuntimeConfig();
