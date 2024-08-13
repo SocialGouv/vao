@@ -37,6 +37,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -60,6 +61,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -83,6 +85,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -108,6 +111,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -132,6 +136,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -156,6 +161,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>

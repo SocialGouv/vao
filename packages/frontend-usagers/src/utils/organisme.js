@@ -243,7 +243,8 @@ const agrementSchema = (regions) => ({
     )
     .required(),
   dateObtention: yup
-    .date("la date d'obtention est obligatoire")
+    .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
+    .typeError("date invalide")
     .max(new Date(), "La date doit être inférieure à la date du jour.")
     .min(
       dayjs().add(-5, "year"),
