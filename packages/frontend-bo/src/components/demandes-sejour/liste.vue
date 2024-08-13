@@ -26,7 +26,7 @@
       </div>
       <div class="fr-col-12">
         <form>
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
@@ -113,7 +113,7 @@
                 />
               </div>
             </div>
-          </fieldset>
+          </div>
         </form>
       </div>
     </div>
@@ -141,7 +141,7 @@
         Vous vous apprêtez à prendre en charge la déclaration du séjour : <br />
         - {{ declarationAPrendreEnCharge.libelle }}
       </article>
-      <fieldset class="fr-fieldset">
+      <div class="fr-fieldset">
         <div class="fr-col-4">
           <div class="fr-input-group">
             <DsfrButton
@@ -159,7 +159,7 @@
             </DsfrButton>
           </div>
         </div>
-      </fieldset>
+      </div>
     </DsfrModal>
   </div>
 </template>

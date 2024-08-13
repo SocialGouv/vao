@@ -6,7 +6,7 @@
         sont obligatoires</span
       >
     </div>
-    <DsfrFieldset legend="Transports vers le lieu de séjour">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <DsfrCheckboxSet
           v-model="responsableTransportLieuSejour"
@@ -51,8 +51,8 @@
           </div>
         </div>
       </div>
-    </DsfrFieldset>
-    <DsfrFieldset legend="Déplacements sur le séjour">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <DsfrRadioButtonSet
           legend="Des déplacements sont-ils prévus durant le séjour "
@@ -66,13 +66,14 @@
           @update:model-value="onDeplacementDurantSejourChange"
         />
       </div>
-    </DsfrFieldset>
-    <DsfrFieldset
+    </div>
+    <div
       v-if="
         deplacementDurantSejour ||
         modeTransport?.includes('Autobus, car') ||
         modeTransport?.includes('Automobile')
       "
+      class="fr-fieldset"
       legend="Véhicules adaptés"
     >
       <div class="fr-fieldset__element">
@@ -108,15 +109,15 @@
           </div>
         </div>
       </div>
-    </DsfrFieldset>
-    <DsfrFieldset>
+    </div>
+    <div>
       <UtilsMultiFilesUpload
         v-model="files"
         label="Vous avez la possibilité de joindre des documents relatifs à l'organisation des transports (optionnel)"
         hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
         :modifiable="props.modifiable"
       />
-    </DsfrFieldset>
+    </div>
     <UtilsNavigationButtons
       :show-buttons="props.showButtons"
       :is-downloading="props.isDownloading"

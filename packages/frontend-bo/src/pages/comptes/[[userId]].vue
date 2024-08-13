@@ -22,9 +22,7 @@
         </div>
         <div v-else>
           <form>
-            <fieldset
-              class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v"
-            >
+            <div class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v">
               <h1
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
@@ -119,7 +117,7 @@
                 "
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
-                <fieldset class="fr-fieldset">
+                <div class="fr-fieldset">
                   <div class="fr-fieldset__element">
                     <div class="fr-input-group fr-col-6">
                       <DsfrSelect
@@ -147,7 +145,7 @@
                       />
                     </div>
                   </div>
-                </fieldset>
+                </div>
               </div>
               <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
@@ -223,7 +221,7 @@
                 </div>
               </div>
               <div class="fr-messages-group" aria-live="assertive"></div>
-            </fieldset>
+            </div>
           </form>
         </div>
       </div>

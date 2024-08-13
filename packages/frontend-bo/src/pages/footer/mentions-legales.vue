@@ -24,7 +24,6 @@
             <dt>Téléphone du standard : 01 40 56 60 00</dt>
           </dl>
         </em>
-        <p></p>
       </div>
       <div class="fr-col-12">
         <h4>Directeur de la publication</h4>
@@ -43,13 +42,11 @@
             <dt>France</dt>
           </dl>
         </em>
-        <p></p>
         <strong>Développement et maintenance</strong>
         <p>
           Le développement et la maintenance sont assurés par la Direction du
           Numérique des ministères sociaux.
         </p>
-        <p></p>
         <strong>Prestataire Statistiques</strong>
         <p>
           Les statistiques de consultation du site sont assurées par la société

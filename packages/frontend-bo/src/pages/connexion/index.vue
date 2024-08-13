@@ -12,7 +12,7 @@
               <h2>Portail Administration</h2>
               <div>
                 <form id="login-1760">
-                  <fieldset
+                  <div
                     id="login-1760-fieldset"
                     class="fr-fieldset"
                     aria-labelledby="login-1760-fieldset-legend login-1760-fieldset-messages"
@@ -35,7 +35,7 @@
                       />
                     </div>
                     <div class="fr-fieldset__element">
-                      <fieldset
+                      <div
                         id="credentials"
                         class="fr-fieldset"
                         aria-labelledby="credentials-messages"
@@ -86,7 +86,7 @@
                             </p>
                           </div>
                         </div>
-                      </fieldset>
+                      </div>
                     </div>
                     <div class="fr-fieldset__element">
                       <ul class="fr-btns-group">
@@ -99,7 +99,7 @@
                         </li>
                       </ul>
                     </div>
-                  </fieldset>
+                  </div>
                 </form>
               </div>
               <hr />

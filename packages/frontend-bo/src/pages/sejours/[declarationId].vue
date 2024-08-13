@@ -137,7 +137,7 @@
           d’un accusé réception : <br />
           - {{ demandeStore.currentDemande.libelle }}
         </article>
-        <fieldset class="fr-fieldset">
+        <div class="fr-fieldset">
           <div class="fr-col-4">
             <div class="fr-input-group">
               <DsfrButton
@@ -157,7 +157,7 @@
               </DsfrButton>
             </div>
           </div>
-        </fieldset>
+        </div>
       </DsfrModal>
     </div>
     <isDownloading

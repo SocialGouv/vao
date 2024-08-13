@@ -6,7 +6,7 @@
         sont obligatoires</span
       >
     </div>
-    <fieldset class="fr-fieldset">
+    <div class>
       <div class="fr-fieldset__element">
         <DsfrInputGroup
           name="effectifPrevisionnel"
@@ -85,7 +85,7 @@
           />
         </div>
       </div>
-    </fieldset>
+    </div>
     <UtilsNavigationButtons
       :show-buttons="props.showButtons"
       :is-downloading="props.isDownloading"

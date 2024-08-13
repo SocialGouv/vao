@@ -207,7 +207,7 @@
       </DsfrAccordionsGroup>
     </div>
     <form>
-      <DsfrFieldset v-if="showAttestation" legend="Attestation">
+      <div v-if="showAttestation" class="fr-fieldset" legend="Attestation">
         <div v-if="props.modifiable" class="fr-fieldset__element fr-col-12">
           Vous allez finaliser votre déclaration complémentaire de façon
           définitive. Vous ne pourrez pas revenir dessus et la modifier
@@ -270,8 +270,8 @@
             :model-value="at"
           />
         </div>
-      </DsfrFieldset>
-      <fieldset class="fr-fieldset">
+      </div>
+      <div class="fr-fieldset">
         <DsfrButtonGroup
           v-if="!props.isDownloading"
           :inline-layout-when="true"
@@ -298,7 +298,7 @@
           :message="props.message"
           :is-downloading="props.isDownloading"
         />
-      </fieldset>
+      </div>
     </form>
   </div>
 </template>
