@@ -40,6 +40,6 @@
     "prettier": "^3.2.5"
   },
   "lint-staged": {
-    "src/**/*.{js,ts}": "npx eslint --cache --fix"
+    "src/**/*.{js,ts}": "npx eslint --cache --fix --max-warnings=0"
   }
 }
