@@ -47,7 +47,7 @@ const IPersonneMorale = {
   },
   email: {
     inputType: InputTypes.TEXT,
-    label: "Courriel",
+    label: "Adresse courriel",
   },
   representantsLegaux: {
     inputType: InputTypes.TABLE,
@@ -168,7 +168,7 @@ const IResponsableSejour = {
   },
   email: {
     inputType: InputTypes.TEXT,
-    label: "Email",
+    label: "Adresse courriel",
   },
   telephone: {
     inputType: InputTypes.TEXT,

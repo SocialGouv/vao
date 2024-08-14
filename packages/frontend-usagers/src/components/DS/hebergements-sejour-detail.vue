@@ -132,7 +132,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="email"
-            label="Courriel"
+            label="Adresse courriel"
             :label-visible="true"
             :model-value="hebergementStore.hebergementCourant.coordonnees.email"
             readonly

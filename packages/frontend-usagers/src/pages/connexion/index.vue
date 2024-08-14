@@ -165,7 +165,8 @@ const displayInfos = {
   },
   WrongCredentials: {
     title: "Erreur d'authentification",
-    description: "Votre email ou votre mot de passe sont incorrects.",
+    description:
+      "Votre adresse courriel ou votre mot de passe sont incorrects.",
     type: "error",
   },
   UnexpectedError: {

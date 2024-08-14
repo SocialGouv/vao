@@ -41,8 +41,8 @@
                   v-model="searchState.email"
                   type="mail"
                   name="mail"
-                  label="Courriel"
-                  placeholder="Courriel"
+                  label="Adresse courriel"
+                  placeholder="Adresse courriel"
                   :label-visible="true"
                 />
               </div>
@@ -146,7 +146,7 @@ const headers = [
   },
   {
     column: "email",
-    text: "Courriel",
+    text: "Adresse courriel",
     sort: true,
   },
   {

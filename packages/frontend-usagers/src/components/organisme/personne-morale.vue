@@ -95,14 +95,14 @@
         <div class="fr-fieldset__element">
           <DsfrInputGroup
             name="email"
-            label="Courriel"
+            label="Adresse courriel"
             :label-visible="true"
             :model-value="email"
             :readonly="!props.modifiable"
             :is-valid="emailMeta.valid"
             :error-message="emailErrorMessage"
             placeholder=""
-            hint="L'adresse mail doit être un email valide"
+            hint="L'adresse de courriel doit être valide"
             @update:model-value="onEmailChange"
           />
         </div>
@@ -171,7 +171,7 @@
         <div class="fr-fieldset__element">
           <DsfrInputGroup
             name="agreeEmail"
-            label="Courriel"
+            label="Adresse courriel"
             :label-visible="true"
             :model-value="etablissementPrincipal.email"
             :readonly="true"

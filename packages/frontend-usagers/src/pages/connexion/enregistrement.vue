@@ -16,7 +16,7 @@
               :error-message="emailField.errorMessage"
               :model-value="emailField.modelValue"
               type="text"
-              label="Email"
+              label="Adresse courriel"
               name="email"
               :label-visible="true"
               placeholder="Veuillez saisir votre email"
@@ -285,7 +285,9 @@ function checkValidEmail(email) {
   emailField.modelValue = email;
   emailField.isValid = !email || regex.emailRegex.test(email);
   emailField.errorMessage =
-    !email || emailField.isValid ? "" : "Cet email semble incorrect";
+    !email || emailField.isValid
+      ? ""
+      : "Cette adresse courriel semble incorrect";
 }
 
 function checkValidPassword(pwd) {

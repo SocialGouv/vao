@@ -43,7 +43,7 @@ const headers = [
   },
   {
     column: "email",
-    text: "Courriel",
+    text: "Adresse courriel",
     sort: true,
   },
   {

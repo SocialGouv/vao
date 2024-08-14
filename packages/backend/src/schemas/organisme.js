@@ -84,8 +84,8 @@ const etablissementPrincipalSchema = () => ({
   adresse: yup.string().required(),
   email: yup
     .string()
-    .email("le format de l'email n'est pas valide")
-    .required("L'email de contact est obligatoire"),
+    .email("le format de l'adresse courriel n'est pas valide")
+    .required("L'adresse courriel de contact est obligatoire"),
 
   nomCommercial: yup.string().nullable().default(null),
   pays: yup.string().required(),
@@ -110,8 +110,8 @@ const personneMoraleSchema = () => ({
   adresse: yup.string().required(),
   email: yup
     .string()
-    .email("le format de l'email n'est pas valide")
-    .required("L'email de contact est obligatoire"),
+    .email("le format de l'adresse courriel n'est pas valide")
+    .required("L'adresse courriel de contact est obligatoire"),
   etablissementPrincipal: yup.object().when("porteurAgrement", {
     is: (val) => !val,
     otherwise: (val) => val.nullable(),
