@@ -107,6 +107,7 @@ function acceptAll() {
             personal-data-link="/footer/donnees-personnelles"
             cookies-link="/footer/gestion-cookies"
             a11y-compliance-link="/footer/accessibilite"
+            home-title="Retour à l'accueil Vacances Adaptées Organisés, République Française"
           >
             <template #description>
               <p
@@ -119,6 +120,7 @@ function acceptAll() {
                 v-if="config.public.appVersion"
                 href="https://vao-assistance.atlassian.net/wiki/spaces/IS/pages/91095041/MISE+A+JOUR+DE+LA+PLATEFORME+VAO"
                 class="fr-footer__content-desc"
+                title="assistance, nouvelle page"
                 target="_blank"
               >
                 Version : {{ config.public.appVersion }}

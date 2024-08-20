@@ -25,7 +25,10 @@
     <p>
       <strong
         >VAO (Vacances Adaptées Organisées)
-        <a target="_blank" href="https://vao.social.gouv.fr/"
+        <a
+          target="_blank"
+          href="https://vao.social.gouv.fr/"
+          title="https://vao.social.gouv.fr/, nouvelle fenêtre"
           >https://vao.social.gouv.fr/</a
         ></strong
       >
