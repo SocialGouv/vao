@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DsfrFieldset legend="Informations sur le lieu de l'hébergement">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="nom"
@@ -92,8 +92,8 @@
           @update:model-value="onEmailChange"
         />
       </div>
-    </DsfrFieldset>
-    <DsfrFieldset legend="Informations sur le type d'hébergement">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <div class="fr-input-group">
           <DsfrRadioButtonSet
@@ -110,8 +110,8 @@
           />
         </div>
       </div>
-    </DsfrFieldset>
-    <DsfrFieldset legend="Informations sur les locaux">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-col-12">
         <div class="fr-input-group">
           <DsfrRadioButtonSet
@@ -471,7 +471,7 @@
           @update:model-value="onPrecisionAmenagementsSpecifiquesChange"
         />
       </div>
-    </DsfrFieldset>
+    </div>
 
     <DsfrFieldset legend="Informations transports durant le séjour">
       <div class="fr-fieldset__element fr-col-12">

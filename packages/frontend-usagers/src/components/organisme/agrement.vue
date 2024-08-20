@@ -7,7 +7,7 @@
       >
     </div>
     <form>
-      <fieldset class="fr-fieldset">
+      <div class="fr-fieldset">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
             <DsfrHighlight
@@ -17,8 +17,8 @@
             ></DsfrHighlight>
           </div>
         </div>
-      </fieldset>
-      <fieldset class="fr-fieldset">
+      </div>
+      <div class="fr-fieldset">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-6">
             <DsfrInputGroup
@@ -37,8 +37,8 @@
             />
           </div>
         </div>
-      </fieldset>
-      <fieldset class="fr-fieldset">
+      </div>
+      <div class="fr-fieldset">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-6">
             <DsfrInputGroup
@@ -58,8 +58,8 @@
             />
           </div>
         </div>
-      </fieldset>
-      <fieldset class="fr-fieldset">
+      </div>
+      <div class="fr-fieldset">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-6">
             <DsfrSelect
@@ -74,19 +74,17 @@
             />
           </div>
         </div>
-      </fieldset>
+      </div>
 
-      <DsfrFieldset
-        legend="Téléversez l’arrêté portant la décision de l’agrément."
-      >
+      <div class="fr-fieldset">
         <UtilsFileUpload
           v-model="file"
           :label="label"
           :modifiable="props.modifiable"
           hint="Format autorisé : PDF uniquement. Taille maximale : 5 Mo "
         />
-      </DsfrFieldset>
-      <DsfrFieldset v-if="props.showButtons">
+      </div>
+      <div v-if="props.showButtons">
         <div class="fr-fieldset__element">
           <UtilsNavigationButtons
             :show-buttons="props.showButtons"
@@ -97,7 +95,7 @@
             @previous="emit('previous')"
           />
         </div>
-      </DsfrFieldset>
+      </div>
     </form>
   </div>
 </template>

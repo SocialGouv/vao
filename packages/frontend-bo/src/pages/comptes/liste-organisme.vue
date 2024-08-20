@@ -4,7 +4,7 @@
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
@@ -61,7 +61,7 @@
                 />
               </div>
             </div>
-          </fieldset>
+          </div>
           <!--<DsfrButton @click.prevent="test">Test</DsfrButton
               >
             -->
