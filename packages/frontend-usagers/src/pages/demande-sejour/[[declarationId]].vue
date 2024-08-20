@@ -323,10 +323,56 @@ const sommaireOptions = demandeSejourMenus
   )
   .map((m) => m.id);
 
+const titleStart = computed(() =>
+  route.params.declarationId ? "Séjour | " : "Nouveau séjour | ",
+);
+const titleEnd = " | Vacances Adaptées Organisées";
+
+const titles = {
+  "#info-generales": () =>
+    titleStart.value + "étape 1 sur 8 | Informations générales" + titleEnd,
+  "#info-vacanciers": () =>
+    titleStart.value +
+    "étape 2 sur 8 | Informations sur les vacanciers" +
+    titleEnd,
+  "#info-personnel": () =>
+    titleStart.value +
+    "étape 3 sur 8 | Informations sur le personnel" +
+    titleEnd,
+  "#projet-sejour": () =>
+    titleStart.value + "étape 4 sur 5 | Projet de séjour" + titleEnd,
+  "#info-transport": () =>
+    titleStart.value +
+    "étape 5 sur 8 | Informations sur le transport" +
+    titleEnd,
+  "#info-sanitaires": () =>
+    titleStart.value + "étape 6 sur 8 | Informations sanitaires" + titleEnd,
+  "#hebergements": () =>
+    titleStart.value + "étape 7 sur 8 | Sélection des hébergements" + titleEnd,
+  "#synthese": () => titleStart + "étape 8 sur 8 | Synthèse" + titleEnd,
+  1: () => titleStart.value + "Documents joints" + titleEnd,
+  2: () => titleStart.value + "Historique de la déclaration" + titleEnd,
+  3: () => titleStart.value + "Messagerie" + titleEnd,
+};
+
 const hash = computed(() => {
   if (route.hash) {
+    useHead({
+      title:
+        titles[
+          selectedTabIndex.value === 0 ? route.hash : selectedTabIndex.value
+        ](),
+    });
     return route.hash.slice(1);
   }
+  useHead({
+    title:
+      titles[
+        selectedTabIndex.value === 0
+          ? "#info-generales"
+          : selectedTabIndex.value
+      ](),
+  });
   return sommaireOptions[0];
 });
 

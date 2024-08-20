@@ -98,7 +98,7 @@ const links = [
 ];
 
 useHead({
-  title: "Fiche organisateur | Vacances Adaptées Organisées",
+  title: "Fiche organisateur | ",
   meta: [
     {
       name: "description",
@@ -106,6 +106,22 @@ useHead({
     },
   ],
 });
+
+const titleStart = "Fiche organisateur | ";
+const titleEnd = " | Vacances Adaptées Organisées";
+
+const titles = {
+  "#info-generales":
+    titleStart +
+    "étape 1 sur 5 | Renseignements généraux sur l’organisateur VAO" +
+    titleEnd,
+  "#agrement": titleStart + "étape 2 sur 5 | Agrément" + titleEnd,
+  "#protocole-transport":
+    titleStart + "étape 3 sur 5 | Informations sur le transport" + titleEnd,
+  "#protocole-sanitaire":
+    titleStart + "étape 4 sur 5 | Informations sanitaires" + titleEnd,
+  "#synthese": titleStart + "étape 5 sur 5 | Synthèse" + titleEnd,
+};
 
 const organismeStore = useOrganismeStore();
 
@@ -120,8 +136,14 @@ const sommaireOptions = computed(() => organismeMenus.map((m) => m.id));
 
 const hash = computed(() => {
   if (route.hash) {
+    useHead({
+      title: titles[route.hash],
+    });
     return route.hash.slice(1);
   }
+  useHead({
+    title: titles["#info-generales"],
+  });
   return sommaireOptions.value[0];
 });
 
