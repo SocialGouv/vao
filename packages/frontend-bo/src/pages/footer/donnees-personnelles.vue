@@ -128,7 +128,7 @@
           <p>
             Consultez le site de la
             <a
-              title="Site internet de la CNIL"
+              title="Site internet de la CNIL, nouvelle fenêtre"
               href="https://cnil.fr/"
               target="_blank"
               rel="noopener external"
@@ -138,7 +138,7 @@
           </p>
         </em>
         <a
-          title="formulaire de plainte de la CNIL"
+          title="formulaire de plainte de la CNIL, nouvelle fenêtre"
           href="https://www.cnil.fr/fr/plaintes"
           target="_blank"
           rel="noopener external"

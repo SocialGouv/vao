@@ -99,6 +99,7 @@ const navItems = useMenuNavItems();
       cookies-link="/footer/gestion-cookies"
       a11y-compliance-link="/footer/accessibilite"
       class="fr-mt-2w"
+      home-title="Retour à l'accueil Vacances Adaptées Organisés, République Française"
     >
       <template #description>
         <p
@@ -111,6 +112,7 @@ const navItems = useMenuNavItems();
           v-if="config.public.appVersion"
           href="https://vao-assistance.atlassian.net/wiki/spaces/IS/pages/91095041/MISE+A+JOUR+DE+LA+PLATEFORME+VAO"
           class="fr-footer__content-desc"
+          title="assistance, nouvelle page"
           target="_blank"
         >
           Version : {{ config.public.appVersion }}

@@ -51,7 +51,7 @@
         <p>
           Les statistiques de consultation du site sont assurées par la société
           <a
-            title="Site Internet MATOMO"
+            title="Site Internet MATOMO, nouvelle fenêtre"
             href="https://matomo.org/"
             target="_blank"
             rel="noopener external"
