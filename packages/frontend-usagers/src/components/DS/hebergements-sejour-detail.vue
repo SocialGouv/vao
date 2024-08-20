@@ -596,12 +596,15 @@
       ref="modal"
       name="add-hebergement"
       :opened="addHebergementOpened"
-      title="Défintion d'un hébergement"
+      title="Définition d'un hébergement"
       size="xl"
       @close="closeAddHebergement"
     >
-      <Hebergement
+      <HebergementWithSave
         :is-downloading="apiStatus.isDownloading"
+        default-back-route="/hebergements"
+        :cdn-url="`${config.public.backendUrl}/documents/`"
+        is-save-visible
         :message="apiStatus.message"
         @cancel="closeAddHebergement"
         @submit="addHebergement"
@@ -614,7 +617,9 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { Hebergement, hebergement as hebergementUtils } from "@vao/shared";
+import { hebergement as hebergementUtils } from "@vao/shared";
+
+const config = useRuntimeConfig();
 
 const toaster = useToaster();
 const { apiStatus, setApiStatut, resetApiStatut } = useIsDownloading();
