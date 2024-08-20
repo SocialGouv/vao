@@ -88,9 +88,9 @@
             `Personnel d'encadrement - ${nombreResponsable ?? 0}&nbsp;`
           }}</span>
           <DsfrBadge
-            :label="encadrantsMeta.valid ? 'Complet' : 'Incomplet'"
+            :label="(encadrantsMeta.valid && encadrants.every(encadrant => encadrant.attestation)) ? 'Complet' : 'Incomplet'"
             :small="true"
-            :type="encadrantsMeta.valid ? 'success' : 'warning'"
+            :type="(encadrantsMeta.valid && encadrants.every(encadrant => encadrant.attestation)) ? 'success' : 'warning'"
           />
         </template>
         <div class="fr-fieldset__element fr-input-group fr-col-12">
@@ -121,9 +121,9 @@
             `Personnel d'accompagnement - ${nombreAccompagnant ?? 0}&nbsp;`
           }}</span>
           <DsfrBadge
-            :label="accompagnantsMeta.valid ? 'Complet' : 'Incomplet'"
+            :label="(accompagnantsMeta.valid && accompagnants.every(accompagnant => accompagnant.attestation)) ? 'Complet' : 'Incomplet'"
             :small="true"
-            :type="accompagnantsMeta.valid ? 'success' : 'warning'"
+            :type="(accompagnantsMeta.valid && accompagnants.every(accompagnant => accompagnant.attestation)) ? 'success' : 'warning'"
           />
         </template>
         <div class="fr-fieldset__element fr-input-group fr-col-12">
