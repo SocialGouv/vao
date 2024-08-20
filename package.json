@@ -7,11 +7,12 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "lint:all": "yarn run lint:backend && yarn run lint:frontend-usagers && yarn run lint:frontend-bo",
-    "lint:all:fix": "yarn run lint:backend --fix && yarn run lint:frontend-usagers --fix && yarn run lint:frontend-bo --fix",
+    "lint:all": "yarn run lint:backend && yarn run lint:frontend-usagers && yarn run lint:frontend-bo && run lint:shared",
+    "lint:all:fix": "yarn run lint:backend --fix && yarn run lint:frontend-usagers --fix && yarn run lint:frontend-bo --fix && run lint:shared --fix",
     "lint:backend": "yarn --cwd ./packages/backend run lint",
     "lint:frontend-usagers": "yarn --cwd ./packages/frontend-usagers run lint",
     "lint:frontend-bo": "yarn --cwd ./packages/frontend-bo run lint",
+    "lint:shared": "yarn --cwd ./packages/shared run lint",
     "knex": "POSTGRES_HOST=localhost POSTGRES_PORT=5436 env-cmd --no-override knex --cwd ./packages/migrations/src"
   },
   "devDependencies": {

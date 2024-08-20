@@ -49,6 +49,6 @@
     "typescript": "~5.4.3"
   },
   "lint-staged": {
-    "src/**/*.{js,vue,ts}": "npx eslint --cache --fix"
+    "src/**/*.{js,vue,ts}": "npx eslint --cache --max-warnings=0"
   }
 }
