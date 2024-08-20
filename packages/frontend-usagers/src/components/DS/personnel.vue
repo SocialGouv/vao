@@ -168,11 +168,19 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DsfrFieldset } from "@gouvminint/vue-dsfr";
 
 dayjs.extend(customParseFormat);
-
+/*
 const dataExemplePersonnel = [
     {nom:"Durand",prenom:"philippe",dateNaissance:"1977-01-25",competence:"infirmier",listeFonction:["Distribution des médicaments","autre"],telephone:"0610203040"},
     {nom:"dupont",prenom:"Nathalie",dateNaissance:"1985-07-15",competence:"Cuisinière",listeFonction:["Restauration"],telephone:"+33612345678"},
   ];
+*/
+const dataExemplePersonnel = [
+  {nom:"Durand",prenom:"philippe",dateNaissance:"1977-01-25",competence:"infirmier",listeFonction:["Distribution des médicaments","autre"],telephone:"0610203040"},
+  {nom:"Dupont",prenom:"Nathalie",dateNaissance:"1985-07-155",competence:"Cuisinière",listeFonction:["Restauration"],telephone:"0610203041"},
+  {nom:"Dupond",prenom:"Kevin",dateNaissance:"1991-11-20",competence:"Guide",listeFonction:["Activités spécifiques"],telephone:"0780101010"},
+  {nom:"Payet",prenom:"Carole",dateNaissance:"1966-10-01",competence:"Chauffeur",listeFonction:["Transport des vacanciers"],telephone:"0610102010"},
+  {nom:"Merlin",prenom:"Nathalie",dateNaissance:"1980-08-02",competence:"Agent d'entretien",listeFonction:["Entretien des locaux"],telephone:"0602060202"},
+];
 
 const DsfrBadge = resolveComponent("DsfrBadge");
 
