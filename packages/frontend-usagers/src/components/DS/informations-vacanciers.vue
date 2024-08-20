@@ -74,7 +74,7 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionDeficiences"
-            label="Précisez le nombre de personnes par déficiences"
+            label="Apportez plus de précisions sur les déficiences des vacanciers"
             :model-value="precisionDeficiences"
             :label-visible="true"
             :is-textarea="true"
