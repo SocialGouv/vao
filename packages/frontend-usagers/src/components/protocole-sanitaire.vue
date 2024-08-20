@@ -730,9 +730,11 @@ function valid() {
   if (checkFormatFiles(files))
     emit("update", { ...values }, "protocole_sanitaire");
   else
-    toaster.error(
-      "Les documents requis pour les informations sanitaires doivent obligatoirement être au format pdf, png ou jpg",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Les documents requis pour les informations sanitaires doivent obligatoirement être au format pdf, png ou jpg",
+    });
 }
 </script>
 

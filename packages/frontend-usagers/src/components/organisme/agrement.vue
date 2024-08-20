@@ -166,7 +166,10 @@ const { value: file } = useField("file");
 async function next() {
   log.i("next - IN");
   if (file.value.type && file.value.type !== "application/pdf") {
-    toaster.error("L'agrément doit obligatoirement être au format PDF");
+    toaster.error({
+      titleTag: "h2",
+      description: "L'agrément doit obligatoirement être au format PDF",
+    });
   } else {
     if (!meta.value.dirty) {
       return emit("next");

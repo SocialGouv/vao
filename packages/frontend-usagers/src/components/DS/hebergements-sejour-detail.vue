@@ -886,9 +886,11 @@ async function handleHebergementIdChange(hebergementId) {
 function verifFormatFile(file, toasterMessage) {
   if (checkFormatFile(file.value)) return true;
   else {
-    toaster.error(
-      toasterMessage + " doit obligatoirement être au format pdf, png ou jpg",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        toasterMessage + " doit obligatoirement être au format pdf, png ou jpg",
+    });
     return false;
   }
 }
@@ -928,7 +930,10 @@ async function addHebergement(hebergement) {
   try {
     await hebergementStore.updaloadFiles(hebergement);
   } catch (e) {
-    toaster.error(e.message ?? "Erreur lors de la sauvegarde de l'hébergement");
+    toaster.error({
+      titleTag: "h2",
+      description: e.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+    });
     resetApiStatut();
     return;
   }
@@ -937,9 +942,11 @@ async function addHebergement(hebergement) {
     id = await hebergementStore.updateOrCreate(hebergement);
   } catch (error) {
     log.w("addHebergement - DONE with error", error);
-    toaster.error(
-      "Une erreur est survenue lors de l'ajout de l'hébergement au référentiel",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Une erreur est survenue lors de l'ajout de l'hébergement au référentiel",
+    });
   }
   if (!id) {
     return;

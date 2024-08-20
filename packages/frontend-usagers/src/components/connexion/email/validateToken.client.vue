@@ -59,9 +59,10 @@ watch(data, () => {
   if (data.value == null) {
     return;
   }
-  toaster.success(
-    `Votre compte est maintenant activé. Vous allez être redirigé vers la page de connexion pour terminer votre inscription.`,
-  );
+  toaster.success({
+    titleTag: "h2",
+    description: `Votre compte est maintenant activé. Vous allez être redirigé vers la page de connexion pour terminer votre inscription.`,
+  });
 
   return navigateTo("/connexion");
 });
@@ -93,16 +94,17 @@ async function renewToken() {
     body: JSON.stringify({ email: decoded.email }),
   })
     .then(() => {
-      toaster.success(
-        `Un nouveau courriel de validation a été envoyé sur votre boîte de courriel.`,
-      );
-
+      toaster.success({
+        titleTag: "h2",
+        description: `Un nouveau courriel de validation a été envoyé sur votre boîte de courriel.`,
+      });
       log.i("renew - Done");
     })
     .catch((error) => {
-      toaster.error(
-        `Une erreur est survenue lors de l'envoi de du courriel. Veuillez contacter l'assistance.`,
-      );
+      toaster.error({
+        titleTag: "h2",
+        description: `Une erreur est survenue lors de l'envoi de du courriel. Veuillez contacter l'assistance.`,
+      });
       log.w("renew", error);
     });
 }

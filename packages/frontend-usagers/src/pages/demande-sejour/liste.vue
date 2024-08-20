@@ -581,15 +581,16 @@ async function copyDS(dsId) {
       credentials: "include",
     });
     if (response.declarationId) {
-      toaster.success(`Déclaration dupliquée`);
+      toaster.success({ titleTag: "h2", description: `Déclaration dupliquée` });
       demandeSejourStore.fetchDemandes();
     }
     log.d(`demande de séjour ${response.declarationId} dupliquée`);
   } catch (error) {
     log.w("Copie de la declaration de sejour : ", { error });
-    return toaster.error(
-      `Une erreur est survenue lors de la copie de la déclaration de séjour`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de la copie de la déclaration de séjour`,
+    });
   }
 }
 async function deleteDS(dsId) {
@@ -601,19 +602,21 @@ async function deleteDS(dsId) {
       credentials: "include",
     });
     if (response.deletedRows === 1) {
-      toaster.success(`Déclaration supprimée`);
+      toaster.success({ titleTag: "h2", description: `Déclaration supprimée` });
       demandeSejourStore.fetchDemandes();
     } else {
       log.w("Erreur durant la suppression de la declaration de sejour");
-      return toaster.error(
-        `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
-      );
+      return toaster.error({
+        titleTag: "h2",
+        description: `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
+      });
     }
   } catch (error) {
     log.w("Erreur durant la suppression de la declaration de sejour : ");
-    return toaster.error(
-      `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
+    });
   }
 }
 async function cancelDS(dsId) {
@@ -625,19 +628,21 @@ async function cancelDS(dsId) {
       credentials: "include",
     });
     if (response.canceletedRows === 1) {
-      toaster.success(`Déclaration annulée`);
+      toaster.success({ titleTag: "h2", description: `Déclaration annulée` });
       demandeSejourStore.fetchDemandes();
     } else {
       log.w("Erreur durant l'annulation de la declaration de sejour");
-      return toaster.error(
-        `Une erreur est survenue lors de l'annulation' de la déclaration de séjour`,
-      );
+      return toaster.error({
+        titleTag: "h2",
+        description: `Une erreur est survenue lors de l'annulation' de la déclaration de séjour`,
+      });
     }
   } catch (error) {
     log.w("Erreur durant l'annulation de la declaration de sejour : ");
-    return toaster.error(
-      `Une erreur est survenue lors de l'annulation de la déclaration de séjour`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de l'annulation de la déclaration de séjour`,
+    });
   }
 }
 

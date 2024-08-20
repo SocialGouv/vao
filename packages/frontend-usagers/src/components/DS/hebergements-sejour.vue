@@ -238,7 +238,10 @@ async function addNuitee(hebergement) {
   try {
     await hebergementStore.updaloadFiles(hebergement);
   } catch (e) {
-    toaster.error(e.message ?? "Erreur lors de la sauvegarde de l'hébergement");
+    toaster.error({
+      titleTag: "h2",
+      description: e.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+    });
     return;
   }
 

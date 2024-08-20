@@ -225,7 +225,10 @@ try {
     search: searchState,
   });
 } catch (error) {
-  toaster.error("Une erreur est survenue lors de la récupération des demandes");
+  toaster.error({
+    titleTag: "h2",
+    description: "Une erreur est survenue lors de la récupération des demandes",
+  });
 }
 
 const needAction = computed({
@@ -249,9 +252,11 @@ watch(
         search: searchState,
       });
     } catch (error) {
-      toaster.error(
-        "Une erreur est survenue lors de la récupération de la demande",
-      );
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Une erreur est survenue lors de la récupération de la demande",
+      });
     }
   },
 );
@@ -266,9 +271,11 @@ const fetchDemandesDebounce = debounce(async (search) => {
       search,
     });
   } catch (error) {
-    toaster.error(
-      "Une erreur est survenue lors de la récupération de la demande",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Une erreur est survenue lors de la récupération de la demande",
+    });
   }
 });
 
@@ -364,7 +371,10 @@ const validatePriseEnCharge = async () => {
     navigateTo(`/sejours/${declarationId}`);
   } catch (error) {
     log.w("prend en charge", error);
-    toaster.error("Erreur lors de la prise en charge de la demande");
+    toaster.error({
+      titleTag: "h2",
+      description: "Erreur lors de la prise en charge de la demande",
+    });
   }
 };
 

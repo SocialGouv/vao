@@ -846,9 +846,11 @@ const markers = computed(() => {
 function verifFormatFile(file, toasterMessage) {
   if (checkFormatFile(file.value)) return true;
   else {
-    toaster.error(
-      toasterMessage + " doit obligatoirement être au format pdf, png ou jpg",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        toasterMessage + " doit obligatoirement être au format pdf, png ou jpg",
+    });
     return false;
   }
 }
