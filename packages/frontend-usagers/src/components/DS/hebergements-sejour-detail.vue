@@ -576,7 +576,7 @@
         <DsfrButton
           v-if="props.modifiable"
           id="cancel-add-hebergement"
-          label="Annuler l'ajout d'étape"
+          label="Annuler l'ajout d'hébergement"
           :secondary="true"
           @click.prevent="cancel"
         >
