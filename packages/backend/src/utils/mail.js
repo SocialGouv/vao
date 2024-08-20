@@ -18,7 +18,7 @@ module.exports = {
           token,
         });
         if (!email) {
-          const message = `Le paramètre email manque à la requête`;
+          const message = `Le paramètre de l'adresse courriel manque à la requête`;
           log.w(`sendForgottenPassword - ${message}`);
           throw new AppError(message);
         }
@@ -68,7 +68,7 @@ module.exports = {
           token,
         });
         if (!email) {
-          const message = `Le paramètre email manque à la requête`;
+          const message = `Le paramètre de l'adresse courriel manque à la requête`;
           log.w(`sendValidationMail - ${message}`);
           throw new AppError(message);
         }
@@ -105,7 +105,7 @@ module.exports = {
           from: senderEmail,
           html: html,
           replyTo: senderEmail,
-          subject: `Portail VAO Administration - Validez votre email`,
+          subject: `Portail VAO Administration - Validez votre courriel`,
           to: email,
         };
         log.d("sendValidationMail post email", {
@@ -330,7 +330,7 @@ module.exports = {
           token,
         });
         if (!email) {
-          const message = `Le paramètre email manque à la requête`;
+          const message = `Le paramètre de l'adresse courriel manque à la requête`;
           log.w(`sendForgottenPassword - ${message}`);
           throw new AppError(message);
         }
@@ -379,7 +379,7 @@ module.exports = {
           token,
         });
         if (!email) {
-          const message = `Le paramètre email manque à la requête`;
+          const message = `Le paramètre de l'adresse courriel manque à la requête`;
           log.w(`sendValidationMail - ${message}`);
           throw new AppError(message);
         }
@@ -404,7 +404,7 @@ module.exports = {
             },
             {
               link,
-              text: "Je valide mon email",
+              text: "Je valide mon adresse courriel",
               type: "link",
             },
             {
@@ -422,7 +422,7 @@ module.exports = {
           from: senderEmail,
           html,
           replyTo: senderEmail,
-          subject: `Portail VAO - Validez votre email`,
+          subject: `Portail VAO - Validez votre adresse courriel`,
           to: email,
         };
         log.d("sendValidationMail post email", {

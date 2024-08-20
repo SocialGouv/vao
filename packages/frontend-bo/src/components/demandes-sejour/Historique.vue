@@ -25,7 +25,7 @@ const headers = [
   {
     column: "userEmail",
     sorter: "userEmail",
-    text: "Email",
+    text: "Courriel",
     headerAttrs: {
       class: "suivi",
     },

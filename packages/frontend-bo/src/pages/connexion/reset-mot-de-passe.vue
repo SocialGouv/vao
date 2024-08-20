@@ -24,7 +24,7 @@
                       <DsfrInputGroup
                         :model-value="email"
                         type="text"
-                        label="Email"
+                        label="Adresse Courriel"
                         :label-visible="true"
                         disabled
                       />

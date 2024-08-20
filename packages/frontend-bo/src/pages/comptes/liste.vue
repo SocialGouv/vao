@@ -44,8 +44,8 @@
                   v-model="searchState.email"
                   type="mail"
                   name="mail"
-                  label="Courriel"
-                  placeholder="Courriel"
+                  label="Adresse courriel"
+                  placeholder="Adresse courriel"
                   :label-visible="true"
                 />
               </div>
@@ -84,7 +84,7 @@
               <p id="toggle-valide" class="fr-hint-text">
                 Compte validé par courriel
               </p>
-            </div>            
+            </div>
             <div class="fr-toggle">
               <input
                 id="toggle-actif"
@@ -100,11 +100,8 @@
                 data-fr-unchecked-label="Désactivé"
                 >Compte actif</label
               >
-              <p id="toggle-actif" class="fr-hint-text">
-                Compte actif
-              </p>
+              <p id="toggle-actif" class="fr-hint-text">Compte actif</p>
             </div>
-
           </fieldset>
           <!--<DsfrButton @click.prevent="test">Test</DsfrButton
             >
@@ -207,7 +204,7 @@ const headers = [
   },
   {
     column: "email",
-    text: "Courriel",
+    text: "Adresse courriel",
     sort: true,
   },
   {

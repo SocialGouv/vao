@@ -80,7 +80,7 @@
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="coordonnees.email"
-          label="Courriel"
+          label="Adresse courriel"
           :label-visible="true"
           :model-value="email"
           :is-valid="emailMeta.valid"

@@ -134,14 +134,14 @@
           <div class="fr-input-group fr-col-12">
             <DsfrInputGroup
               name="email"
-              label="Email"
+              label="Adresse courriel"
               :label-visible="true"
               :model-value="email"
               :readonly="!props.modifiable"
               :is-valid="emailMeta.valid"
               :error-message="emailErrorMessage"
               placeholder=""
-              hint="courriel de la personne"
+              hint="Adresse courriel de la personne"
               @update:model-value="onEmailChange"
             />
           </div>
@@ -203,7 +203,7 @@ const initialValues = {
   ...(props.showAdresse && {
     adresse: props.personne.adresse,
   }),
-    attestation: props.personne.attestation,
+  attestation: props.personne.attestation,
   ...(props.showCompetence && {
     competence: props.personne.competence,
   }),
