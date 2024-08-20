@@ -119,6 +119,7 @@ function select(_value, option) {
                 :is-pointed="isPointed(option)"
               />
             </template>
+            <template #no-result> Pas de résultat </template>
           </Multiselect>
           <div v-if="message" class="fr-messages-group">
             <p :class="messageClass">
