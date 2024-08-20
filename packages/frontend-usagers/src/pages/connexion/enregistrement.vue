@@ -190,13 +190,13 @@
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          <ul class="fr-btns-group fr-btns-group--right">
-            <li>
+          <ul role="list" class="fr-btns-group fr-btns-group--right">
+            <li role="listitem">
               <p>
                 <NuxtLink to="/">J'ai déjà un compte</NuxtLink>
               </p>
             </li>
-            <li>
+            <li role="listitem">
               <DsfrButton :disabled="!canRegister" @click.prevent="register"
                 >Créer mon compte
               </DsfrButton>

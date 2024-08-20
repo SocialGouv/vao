@@ -89,8 +89,8 @@
                       </div>
                     </div>
                     <div class="fr-fieldset__element">
-                      <ul class="fr-btns-group">
-                        <li>
+                      <ul role="list" class="fr-btns-group">
+                        <li role="listitem">
                           <DsfrButton
                             :disabled="!canLogin"
                             @click.prevent="login"
