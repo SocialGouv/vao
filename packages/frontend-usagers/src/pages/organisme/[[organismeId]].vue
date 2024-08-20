@@ -186,13 +186,15 @@ async function updateOrCreate(organismeData, type) {
       } catch (error) {
         resetApiStatut();
         if (error.response.status === 413) {
-          return toaster.error(
-            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
-          );
+          return toaster.error({
+            titleTag: "h2",
+            description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          });
         }
-        return toaster.error(
-          `Une erreur est survenue lors du dépôt du document ${file.name}`,
-        );
+        return toaster.error({
+          titleTag: "h2",
+          description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+        });
       }
     }
   }
@@ -222,17 +224,20 @@ async function updateOrCreate(organismeData, type) {
         log.w(error.response);
         resetApiStatut();
         if (error.response.status === 413) {
-          return toaster.error(
-            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
-          );
+          return toaster.error({
+            titleTag: "h2",
+            description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          });
         }
-        return toaster.error(
-          `Une erreur est survenue lors du dépôt du document ${file.name}`,
-        );
+        return toaster.error({
+          titleTag: "h2",
+          description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+        });
       }
     }
     toaster.info({
       duration: 5000,
+      titleTag: "h2",
       description: `${counter} ${counter === 1 ? "document déposé" : "documents déposés"}`,
     });
     organismeData.files = files;
@@ -251,18 +256,21 @@ async function updateOrCreate(organismeData, type) {
       },
     });
 
-    toaster.success(
-      `Fiche organisateur ${organismeId.value ? "sauvegardée" : "créée"}`,
-    );
+    toaster.success({
+      titleTag: "h2",
+      description: `Fiche organisateur ${organismeId.value ? "sauvegardée" : "créée"}`,
+    });
     organismeId.value = data.organismeId;
     await organismeStore.setMyOrganisme();
     log.d(`organisme ${organismeId.value} mis à jour`);
     return await nextHash();
   } catch (error) {
     log.w("Creation/modification d'organisme : ", { error });
-    toaster.error(
-      "Une erreur est survenue lors de la sauvegarde de la fiche organisateur",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Une erreur est survenue lors de la sauvegarde de la fiche organisateur",
+    });
   } finally {
     resetApiStatut();
   }
@@ -285,9 +293,10 @@ async function updateOrCreateAgrement(agrementData, type) {
       } catch (error) {
         if (error.response.status === 413) {
           resetApiStatut();
-          return toaster.error(
-            `Le fichier ${file.name} dépasse la taille maximale autorisée`,
-          );
+          return toaster.error({
+            titleTag: "h2",
+            description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+          });
         }
         if (error.response.status === 415) {
           return toaster.error(
@@ -310,15 +319,16 @@ async function updateOrCreateAgrement(agrementData, type) {
       body: { ...agrementData, organismeId: organismeId.value },
     });
 
-    toaster.success(`Agrément sauvegardé`);
+    toaster.success({ titleTag: "h2", description: `Agrément sauvegardé` });
     log.d(`agrement mis à jour`);
 
     return await nextHash();
   } catch (error) {
     log.w("Creation/modification d'agrement : ", { error });
-    return toaster.error(
-      `Une erreur est survenue lors de la mise à jour des informations de l'agrément`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de la mise à jour des informations de l'agrément`,
+    });
   } finally {
     resetApiStatut();
   }
@@ -336,13 +346,18 @@ async function finalizeOrganisme() {
     log.d(
       `organisateur ${organismeStore.organismeCourant.organismeId} finalisé`,
     );
-    toaster.success("Fiche organisateur finalisée");
+    toaster.success({
+      titleTag: "h2",
+      description: "Fiche organisateur finalisée",
+    });
     return await navigateTo("/");
   } catch (error) {
     log.w("Creation/modification d'organisateur : ", { error });
-    toaster.error(
-      "Une erreur est survenue lors de la finalisation de la fiche organisateur",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Une erreur est survenue lors de la finalisation de la fiche organisateur",
+    });
   } finally {
     resetApiStatut();
   }

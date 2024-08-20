@@ -20,7 +20,7 @@
                       id="login-1760-fieldset-legend"
                       class="fr-fieldset__legend"
                     >
-                      <h4>Se connecter avec son compte</h4>
+                      <h2>Se connecter avec son compte</h2>
                     </legend>
 
                     <div v-if="displayType" class="fr-grid-row">
@@ -206,7 +206,10 @@ async function login() {
     );
     formStatus.value = formStates.SUBMITTED;
     userStore.user = response.user;
-    toaster.success(`Authentification réalisée avec succès`);
+    toaster.success({
+      titleTag: "h2",
+      description: `Authentification réalisée avec succès`,
+    });
     displayType.value = "Success";
     return navigateTo("/");
   } catch (error) {

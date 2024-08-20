@@ -214,9 +214,11 @@ function next() {
       "protocole_transport",
     );
   else
-    toaster.error(
-      "Les documents requis relatifs à l'organisation des transports  doivent obligatoirement être au format pdf, png ou jpg",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Les documents requis relatifs à l'organisation des transports  doivent obligatoirement être au format pdf, png ou jpg",
+    });
 }
 </script>
 
