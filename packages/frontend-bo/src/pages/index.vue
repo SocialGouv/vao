@@ -9,4 +9,12 @@ definePageMeta({
   layout: "default",
   middleware: ["is-connected"],
 });
+
+onMounted(() => {
+  document
+    .querySelector(
+      "[title='Accueil - Back-office : Vacances Adaptées Organisées (VAO)']",
+    )
+    .focus();
+});
 </script>
