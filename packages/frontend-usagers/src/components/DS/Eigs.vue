@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container fr-pt-8v">
     <fieldset v-if="eigs && eigs.length > 0" class="fr-fieldset">
-      <UtilsTableFull :headers="headers" :data="eigs" @click-row="navigate" />
+      <TableFull :headers="headers" :data="eigs" @click-row="navigate" />
     </fieldset>
     <p v-else>Aucun Eig déclaré actuellement</p>
     <fieldset v-if="eig.isDeclarationligibleToEig(ds)" class="fr-fieldset">
@@ -27,7 +27,7 @@
 <script setup>
 import dayjs from "dayjs";
 import EigStatusBadge from "@vao/shared/src/components/eig/EigStatusBadge.vue";
-import { ValidationModal } from "@vao/shared";
+import { ValidationModal, TableFull } from "@vao/shared";
 import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
 
 const DsfrButton = resolveComponent("DsfrButton");

@@ -384,6 +384,7 @@ const titles = {
   1: () => titleStart.value + "Documents joints" + titleEnd,
   2: () => titleStart.value + "Historique de la déclaration" + titleEnd,
   3: () => titleStart.value + "Messagerie" + titleEnd,
+  4: () => titleStart.value + "EIG" + titleEnd,
 };
 
 const hash = computed(() => {

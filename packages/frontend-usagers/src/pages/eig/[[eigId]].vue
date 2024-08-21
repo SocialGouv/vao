@@ -49,6 +49,10 @@
             l’intégrité ou le bien être physique et moral des personnes
             handicapées majeures.
           </p>
+          <p>
+            Le préfet de région qui a délivré l'agrément est informé de cette
+            transmission.
+          </p>
         </DsfrAlert>
       </div>
     </div>

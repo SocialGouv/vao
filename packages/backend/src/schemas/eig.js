@@ -129,7 +129,7 @@ const informationsGeneralesSchema = {
       yup.object(
         personne({
           showAdresse: false,
-          showAttestation: true,
+          showAttestation: false,
           showCompetence: true,
           showDateNaissance: true,
           showEmail: false,
