@@ -198,13 +198,13 @@ const filteredData = computed(() => {
 });
 
 const displayableData = computed(() => {
-  return filteredData.value.map((item) => {
+  return filteredData.value.map((item, index) => {
     const rowdata = h.value.map((header) => {
       if (header.component) {
         return header.component(item) ?? "";
       }
       if (header.format) {
-        return header.format(item) ?? "";
+        return header.format(item, index) ?? "";
       }
       if (header.objectLabel) {
         return item[header.column]?.[header.objectLabel] ?? "";
