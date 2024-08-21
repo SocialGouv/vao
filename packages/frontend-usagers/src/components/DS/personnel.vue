@@ -41,46 +41,47 @@
           propositions suivantes. S'il y en a plusieurs, les séparer par une
           virgule.
         </span>
-        <ul>
-          <ol>
+        <ol role="list">
+          <li role="listitem">
             <span class="fr-hint-text">- Distribution des médicaments</span>
-          </ol>
-          <ol>
+          </li>
+          <li role="listitem">
             <span class="fr-hint-text">- Transport des vacanciers</span>
-          </ol>
-          <ol>
+          </li>
+          <li role="listitem">
             <span class="fr-hint-text">- Restauration</span>
-          </ol>
-          <ol>
+          </li>
+          <li role="listitem">
             <span class="fr-hint-text">- Entretien des locaux</span>
-          </ol>
-          <ol>
+          </li>
+          <li role="listitem">
             <span class="fr-hint-text">- Activités spécifiques</span>
-          </ol>
-          <ol>
+          </li>
+          <li role="listitem">
             <span class="fr-hint-text">- Autre</span>
-          </ol>
-        </ul>
+          </li>
+        </ol>
         <span class="fr-hint-text">
           <i><u>Exemple</u></i>
         </span>
         <div>
           <span
-            class="fr-hint-text"
             v-for="(p, index) in dataExemplePersonnel"
             :key="index"
+            class="fr-hint-text"
           >
-              <i>{{ formaterCSV(p) }}</i><br>
-            </span>
+            <i>{{ formaterCSV(p) }}</i
+            ><br />
+          </span>
           <br />
         </div>
         <DsfrFieldset>
           <a
-            href="#"
-            @click.prevent="exportCSV(true)"
             ref="modalOrigin"
+            href="#"
             role="button"
             aria-label="Télécharger le modèle de fichier CSV"
+            @click.prevent="exportCSV(true)"
           >
             <span aria-hidden="true">Téléchargez le fichier CSV modèle</span>
           </a>
@@ -121,7 +122,7 @@
             />
           </div>
         </div>
-      </div>    
+      </div>
       <div v-if="props.modifiable" class="fr-fieldset__element">
         <DsfrButton
           ref="modalOrigin"
@@ -170,9 +171,23 @@ import { DsfrFieldset } from "@gouvminint/vue-dsfr";
 dayjs.extend(customParseFormat);
 
 const dataExemplePersonnel = [
-    {nom:"Durand",prenom:"philippe",dateNaissance:"1977-01-25",competence:"infirmier",listeFonction:["Distribution des médicaments","autre"],telephone:"0610203040"},
-    {nom:"dupont",prenom:"Nathalie",dateNaissance:"1985-07-15",competence:"Cuisinière",listeFonction:["Restauration"],telephone:"+33612345678"},
-  ];
+  {
+    nom: "Durand",
+    prenom: "philippe",
+    dateNaissance: "1977-01-25",
+    competence: "infirmier",
+    listeFonction: ["Distribution des médicaments", "autre"],
+    telephone: "0610203040",
+  },
+  {
+    nom: "dupont",
+    prenom: "Nathalie",
+    dateNaissance: "1985-07-15",
+    competence: "Cuisinière",
+    listeFonction: ["Restauration"],
+    telephone: "+33612345678",
+  },
+];
 
 const dataExempleCsvPersonnel = [
   {nom:"Durand",prenom:"philippe",dateNaissance:"1977-01-25",competence:"infirmier",listeFonction:["Distribution des médicaments","autre"],telephone:"0610203040"},
@@ -203,14 +218,17 @@ const personnesWithId = computed(() =>
   [...(props.personnes ?? [])].map((p, index) => ({ ...p, id: index })),
 );
 
-
 const personnesAttestation = computed({
   get() {
-    return Array.isArray(props.personnes) && props.personnes.length > 0 && props.personnes.every(personne => personne.attestation);
+    return (
+      Array.isArray(props.personnes) &&
+      props.personnes.length > 0 &&
+      props.personnes.every((personne) => personne.attestation)
+    );
   },
   set(value) {
     if (Array.isArray(props.personnes)) {
-      props.personnes.forEach(personne => personne.attestation = value);
+      props.personnes.forEach((personne) => (personne.attestation = value));
     }
   },
 });
@@ -442,12 +460,12 @@ function formaterCSV(p) {
 
 function exportCSV(modele) {
   const fileNameCsv = modele ? "modele_personnel.csv" : "personnel.csv";
-  let rows = !modele ?  ["Nom;Prenom;Date de Naissance;Compétences;Fonctions;Téléphone\n"] : [];
+  const rows = !modele
+    ? ["Nom;Prenom;Date de Naissance;Compétences;Fonctions;Téléphone\n"]
+    : [];
   const objetAExporter = modele ? dataExempleCsvPersonnel : props.personnes;
   objetAExporter.forEach((p) => {
-    rows.push(
-      formaterCSV(p)+`\n`,
-    );
+    rows.push(formaterCSV(p) + `\n`);
   });
   const blob = new Blob(rows, { type: "text/csv;charset-utf-8" });
   const url = URL.createObjectURL(blob);

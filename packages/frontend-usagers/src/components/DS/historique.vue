@@ -30,7 +30,7 @@ const headers = [
   {
     column: "userEmail",
     sorter: "userEmail",
-    text: "Email",
+    text: "Adresse courriel",
     headerAttrs: {
       class: "suivi",
     },

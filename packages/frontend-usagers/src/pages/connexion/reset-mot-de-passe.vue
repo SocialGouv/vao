@@ -24,7 +24,7 @@
                       <DsfrInputGroup
                         :model-value="email"
                         type="text"
-                        label="Email"
+                        label="Adresse courriel"
                         :label-visible="true"
                         disabled
                       />
@@ -126,8 +126,8 @@
                     </div>
                   </div>
                   <div class="fr-fieldset__element">
-                    <ul class="fr-btns-group fr-btns-group--right">
-                      <li>
+                    <ul role="list" class="fr-btns-group fr-btns-group--right">
+                      <li role="listitem">
                         <DsfrButton
                           :disabled="!canRenewPassword"
                           @click.prevent="renewPassword"

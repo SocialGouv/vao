@@ -7,7 +7,7 @@
           <DsfrButton @click.prevent="createUser"
             >Créer un nouvel utilisateur
           </DsfrButton>
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
@@ -44,8 +44,8 @@
                   v-model="searchState.email"
                   type="mail"
                   name="mail"
-                  label="Courriel"
-                  placeholder="Courriel"
+                  label="Adresse courriel"
+                  placeholder="Adresse courriel"
                   :label-visible="true"
                 />
               </div>
@@ -64,8 +64,8 @@
                 />
               </div>
             </div>
-          </fieldset>
-          <fieldset class="fr-fieldset">
+          </div>
+          <div class="fr-fieldset">
             <div class="fr-toggle">
               <input
                 id="toggle-valide"
@@ -84,7 +84,7 @@
               <p id="toggle-valide" class="fr-hint-text">
                 Compte validé par courriel
               </p>
-            </div>            
+            </div>
             <div class="fr-toggle">
               <input
                 id="toggle-actif"
@@ -100,12 +100,9 @@
                 data-fr-unchecked-label="Désactivé"
                 >Compte actif</label
               >
-              <p id="toggle-actif" class="fr-hint-text">
-                Compte actif
-              </p>
+              <p id="toggle-actif" class="fr-hint-text">Compte actif</p>
             </div>
-
-          </fieldset>
+          </div>
           <!--<DsfrButton @click.prevent="test">Test</DsfrButton
             >
           -->
@@ -207,7 +204,7 @@ const headers = [
   },
   {
     column: "email",
-    text: "Courriel",
+    text: "Adresse courriel",
     sort: true,
   },
   {

@@ -40,9 +40,11 @@ const loadXlsx = async () => {
     }
   } catch (error) {
     log.w("get static", error);
-    toaster.error(
-      "Erreur lors de la récupération de la liste des organisateurs VAO ayant fait l’objet d’un retrait",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Erreur lors de la récupération de la liste des organisateurs VAO ayant fait l’objet d’un retrait",
+    });
   }
 };
 

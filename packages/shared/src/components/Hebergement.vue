@@ -1,6 +1,6 @@
 <template>
   <div>
-    <DsfrFieldset legend="Informations sur le lieu de l'hébergement">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="nom"
@@ -80,7 +80,7 @@
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="coordonnees.email"
-          label="Courriel"
+          label="Adresse courriel"
           :label-visible="true"
           :model-value="email"
           :is-valid="emailMeta.valid"
@@ -92,8 +92,8 @@
           @update:model-value="onEmailChange"
         />
       </div>
-    </DsfrFieldset>
-    <DsfrFieldset legend="Informations sur le type d'hébergement">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <div class="fr-input-group">
           <DsfrRadioButtonSet
@@ -110,8 +110,8 @@
           />
         </div>
       </div>
-    </DsfrFieldset>
-    <DsfrFieldset legend="Informations sur les locaux">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-col-12">
         <div class="fr-input-group">
           <DsfrRadioButtonSet
@@ -157,17 +157,17 @@
           une annulation des séjours, si absence de tous les justificatifs.
         </p>
         <p>On distingue 3 catégories d’hébergements :</p>
-        <ol>
-          <li>
+        <ol role="list">
+          <li role="listitem">
             Les établissements recevant du public (ERP, tous les hôtels et les
             gros meubles de tourisme deplus de 15 personnes de type gîtes de
             groupes
           </li>
-          <li>
+          <li role="listitem">
             Les Bâtiments d’Habitation Collective (BHC, comme des résidences de
             tourisme)
           </li>
-          <li>
+          <li role="listitem">
             Les maisons individuelles (MI, comme des chambres d’hôtes et petits
             meublés, qui ne peuvent dépasser 5 chambres et hébergent 15
             personnes au maximum)
@@ -471,7 +471,7 @@
           @update:model-value="onPrecisionAmenagementsSpecifiquesChange"
         />
       </div>
-    </DsfrFieldset>
+    </div>
 
     <DsfrFieldset legend="Informations transports durant le séjour">
       <div class="fr-fieldset__element fr-col-12">
@@ -846,9 +846,11 @@ const markers = computed(() => {
 function verifFormatFile(file, toasterMessage) {
   if (checkFormatFile(file.value)) return true;
   else {
-    toaster.error(
-      toasterMessage + " doit obligatoirement être au format pdf, png ou jpg",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        toasterMessage + " doit obligatoirement être au format pdf, png ou jpg",
+    });
     return false;
   }
 }

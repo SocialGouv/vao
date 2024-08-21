@@ -6,7 +6,7 @@
         sont obligatoires</span
       >
     </div>
-    <DsfrFieldset legend="Modalités d’ordre sanitaire ">
+    <div class="fr-fieldset">
       <DsfrHighlight
         v-if="props.modifiable"
         text="L’acte d’administration proprement dit consiste à faire prendre le bon médicament au bon patient, à la bonne posologie, au bon moment, par la bonne voie. Cet acte inclut le contrôle de la prise effective du traitement. Il est recommandé que la distribution des médicaments préalablement préparés, leur administration et son enregistrement soient réalisés par la même personne."
@@ -110,10 +110,8 @@
           @update:model-value="onTroussePharmacieChange"
         />
       </div>
-    </DsfrFieldset>
-    <DsfrFieldset
-      legend="Organisation prévue en matière de distribution et de stockage des médicaments"
-    >
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrHighlight
@@ -331,8 +329,8 @@
           @update:model-value="onFicheSuiviMedicamentsChange"
         />
       </div>
-    </DsfrFieldset>
-    <DsfrFieldset legend="Autres protocoles">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <DsfrRadioButtonSet
           name="protocoleEvacuation"
@@ -464,17 +462,15 @@
           @update:model-value="onGestionBudgetPersonnelChange"
         />
       </div>
-    </DsfrFieldset>
-    <DsfrFieldset
-      legend="Téléversement des pièces justificatives concernant les protocoles de santé"
-    >
+    </div>
+    <div class="fr-fieldset">
       <UtilsMultiFilesUpload
         v-model="files"
         label="Vous avez la possibilité de joindre des documents relatifs aux informations d’ordre sanitaire (optionnel)"
         hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
         :modifiable="props.modifiable"
       />
-    </DsfrFieldset>
+    </div>
     <UtilsNavigationButtons
       :show-buttons="props.showButtons"
       :is-downloading="props.isDownloading"
@@ -734,9 +730,11 @@ function valid() {
   if (checkFormatFiles(files))
     emit("update", { ...values }, "protocole_sanitaire");
   else
-    toaster.error(
-      "Les documents requis pour les informations sanitaires doivent obligatoirement être au format pdf, png ou jpg",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Les documents requis pour les informations sanitaires doivent obligatoirement être au format pdf, png ou jpg",
+    });
 }
 </script>
 

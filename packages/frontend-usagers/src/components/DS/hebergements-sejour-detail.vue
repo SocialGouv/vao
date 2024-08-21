@@ -132,7 +132,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="email"
-            label="Courriel"
+            label="Adresse courriel"
             :label-visible="true"
             :model-value="hebergementStore.hebergementCourant.coordonnees.email"
             readonly
@@ -201,22 +201,22 @@
             justificatifs.
           </p>
           <p>On distingue 3 catégories d’hébergements :</p>
-          <ol>
-            <li>
+          <ul role="list">
+            <li role="listitem">
               Les établissements recevant du public (ERP, tous les hôtels et les
               gros meubles de tourisme deplus de 15 personnes de type gîtes de
               groupes
             </li>
-            <li>
+            <li role="listitem">
               Les Bâtiments d’Habitation Collective (BHC, comme des résidences
               de tourisme)
             </li>
-            <li>
+            <li role="listitem">
               Les maisons individuelles (MI, comme des chambres d’hôtes et
               petits meublés, qui ne peuvent dépasser 5 chambres et hébergent 15
               personnes au maximum)
             </li>
-          </ol>
+          </ul>
         </DsfrAlert>
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
@@ -576,7 +576,7 @@
         <DsfrButton
           v-if="props.modifiable"
           id="cancel-add-hebergement"
-          label="Annuler l'ajout d'étape"
+          label="Annuler l'ajout d'hébergement"
           :secondary="true"
           @click.prevent="cancel"
         >
@@ -596,12 +596,15 @@
       ref="modal"
       name="add-hebergement"
       :opened="addHebergementOpened"
-      title="Défintion d'un hébergement"
+      title="Définition d'un hébergement"
       size="xl"
       @close="closeAddHebergement"
     >
-      <Hebergement
+      <HebergementWithSave
         :is-downloading="apiStatus.isDownloading"
+        default-back-route="/hebergements"
+        :cdn-url="`${config.public.backendUrl}/documents/`"
+        is-save-visible
         :message="apiStatus.message"
         @cancel="closeAddHebergement"
         @submit="addHebergement"
@@ -614,7 +617,9 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { Hebergement, hebergement as hebergementUtils } from "@vao/shared";
+import { hebergement as hebergementUtils } from "@vao/shared";
+
+const config = useRuntimeConfig();
 
 const toaster = useToaster();
 const { apiStatus, setApiStatut, resetApiStatut } = useIsDownloading();
@@ -886,9 +891,11 @@ async function handleHebergementIdChange(hebergementId) {
 function verifFormatFile(file, toasterMessage) {
   if (checkFormatFile(file.value)) return true;
   else {
-    toaster.error(
-      toasterMessage + " doit obligatoirement être au format pdf, png ou jpg",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        toasterMessage + " doit obligatoirement être au format pdf, png ou jpg",
+    });
     return false;
   }
 }
@@ -928,7 +935,10 @@ async function addHebergement(hebergement) {
   try {
     await hebergementStore.updaloadFiles(hebergement);
   } catch (e) {
-    toaster.error(e.message ?? "Erreur lors de la sauvegarde de l'hébergement");
+    toaster.error({
+      titleTag: "h2",
+      description: e.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+    });
     resetApiStatut();
     return;
   }
@@ -937,9 +947,11 @@ async function addHebergement(hebergement) {
     id = await hebergementStore.updateOrCreate(hebergement);
   } catch (error) {
     log.w("addHebergement - DONE with error", error);
-    toaster.error(
-      "Une erreur est survenue lors de l'ajout de l'hébergement au référentiel",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Une erreur est survenue lors de l'ajout de l'hébergement au référentiel",
+    });
   }
   if (!id) {
     return;

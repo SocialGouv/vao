@@ -1,6 +1,6 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -17,8 +17,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-input-group">
         <DsfrButton
           id="ValidationDemandeComplement"
@@ -28,7 +28,7 @@
           >Valider
         </DsfrButton>
       </div>
-    </fieldset>
+    </div>
   </div>
 </template>
 

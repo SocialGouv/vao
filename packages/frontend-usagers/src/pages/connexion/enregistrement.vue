@@ -2,7 +2,7 @@
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
     <form>
-      <fieldset class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v">
+      <div class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v">
         <h1
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
@@ -16,7 +16,7 @@
               :error-message="emailField.errorMessage"
               :model-value="emailField.modelValue"
               type="text"
-              label="Email"
+              label="Adresse courriel"
               name="email"
               :label-visible="true"
               placeholder="Veuillez saisir votre email"
@@ -190,13 +190,13 @@
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          <ul class="fr-btns-group fr-btns-group--right">
-            <li>
+          <ul role="list" class="fr-btns-group fr-btns-group--right">
+            <li role="listitem">
               <p>
                 <NuxtLink to="/">J'ai déjà un compte</NuxtLink>
               </p>
             </li>
-            <li>
+            <li role="listitem">
               <DsfrButton :disabled="!canRegister" @click.prevent="register"
                 >Créer mon compte
               </DsfrButton>
@@ -204,7 +204,7 @@
           </ul>
         </div>
         <div class="fr-messages-group" aria-live="assertive"></div>
-      </fieldset>
+      </div>
     </form>
   </div>
 </template>
@@ -285,7 +285,9 @@ function checkValidEmail(email) {
   emailField.modelValue = email;
   emailField.isValid = !email || regex.emailRegex.test(email);
   emailField.errorMessage =
-    !email || emailField.isValid ? "" : "Cet email semble incorrect";
+    !email || emailField.isValid
+      ? ""
+      : "Cette adresse courriel semble incorrect";
 }
 
 function checkValidPassword(pwd) {
@@ -383,34 +385,43 @@ async function register() {
     })
       .then((response) => {
         log.d("register", { response });
-        toaster.success(
-          "Félicitations, votre compte a bien été créé ! Veuillez le valider en cliquant sur le lien reçu par email",
-        );
+        toaster.success({
+          titleTag: "h2",
+          description:
+            "Félicitations, votre compte a bien été créé ! Veuillez le valider en cliquant sur le lien reçu par email",
+        });
       })
       .catch((error) => {
         const body = error.data;
         const codeError = body.name;
         log.w("register", { body, codeError });
         if (codeError === "UserAlreadyExists") {
-          toaster.error(
-            `Une erreur est survenue. Si vous pensez que cette adresse mail est déjà utilisée, cliquez sur “j'ai déjà un compte“ puis “Mot de passe oublié”`,
-          );
+          toaster.error({
+            titleTag: "h2",
+            description: `Une erreur est survenue. Si vous pensez que cette adresse mail est déjà utilisée, cliquez sur “j'ai déjà un compte“ puis “Mot de passe oublié”`,
+          });
         }
         if (codeError === "ValidationError") {
-          toaster.error(
-            "Une erreur technique est survenue, veuillez réessayer plus tard",
-          );
+          toaster.error({
+            titleTag: "h2",
+            description:
+              "Une erreur technique est survenue, veuillez réessayer plus tard",
+          });
         }
         if (codeError === "UnexpectedError") {
-          toaster.error(
-            "Une erreur est survenue, peut être un compte existe-t-il déjà avec cet email ...",
-          );
+          toaster.error({
+            titleTag: "h2",
+            description:
+              "Une erreur est survenue, peut être un compte existe-t-il déjà avec cet email ...",
+          });
         }
 
         if (codeError === "MailError") {
-          toaster.error(
-            "Une erreur est survenue, le mail d'activation n'a pu vous être envoyé. Veuillez utiliser la fonction 'mot de passe oublié'",
-          );
+          toaster.error({
+            titleTag: "h2",
+            description:
+              "Une erreur est survenue, le mail d'activation n'a pu vous être envoyé. Veuillez utiliser la fonction 'mot de passe oublié'",
+          });
         }
       });
     return navigateTo("/");

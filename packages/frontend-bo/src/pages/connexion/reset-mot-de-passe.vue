@@ -18,13 +18,13 @@
           <div class="fr-container fr-mt-5v">
             <div class="fr-grid-row fr-grid-row--center">
               <form class="fr-col-12">
-                <fieldset class="fr-fieldset">
+                <div class="fr-fieldset">
                   <div class="fr-fieldset__element fr-col-12">
                     <div class="fr-input-group">
                       <DsfrInputGroup
                         :model-value="email"
                         type="text"
-                        label="Email"
+                        label="Adresse Courriel"
                         :label-visible="true"
                         disabled
                       />
@@ -125,8 +125,8 @@
                     </div>
                   </div>
                   <div class="fr-fieldset__element">
-                    <ul class="fr-btns-group fr-btns-group--right">
-                      <li>
+                    <ul role="list" class="fr-btns-group fr-btns-group--right">
+                      <li role="listitem">
                         <DsfrButton
                           :disabled="!canRenewPassword"
                           @click.prevent="renewPassword"
@@ -136,7 +136,7 @@
                     </ul>
                   </div>
                   <div class="fr-messages-group" aria-live="assertive"></div>
-                </fieldset>
+                </div>
               </form>
             </div>
           </div>

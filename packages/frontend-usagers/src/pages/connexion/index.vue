@@ -11,7 +11,7 @@
               <h1>Connexion à VAO</h1>
               <div>
                 <form id="login-1760">
-                  <fieldset
+                  <div
                     id="login-1760-fieldset"
                     class="fr-fieldset"
                     aria-labelledby="login-1760-fieldset-legend login-1760-fieldset-messages"
@@ -20,7 +20,7 @@
                       id="login-1760-fieldset-legend"
                       class="fr-fieldset__legend"
                     >
-                      <h4>Se connecter avec son compte</h4>
+                      <h2>Se connecter avec son compte</h2>
                     </legend>
 
                     <div v-if="displayType" class="fr-grid-row">
@@ -34,7 +34,7 @@
                       />
                     </div>
                     <div class="fr-fieldset__element">
-                      <fieldset
+                      <div
                         id="credentials"
                         class="fr-fieldset"
                         aria-labelledby="credentials-messages"
@@ -85,11 +85,11 @@
                             </p>
                           </div>
                         </div>
-                      </fieldset>
+                      </div>
                     </div>
                     <div class="fr-fieldset__element">
-                      <ul class="fr-btns-group">
-                        <li>
+                      <ul role="list" class="fr-btns-group">
+                        <li role="listitem">
                           <DsfrButton
                             :disabled="!canLogin"
                             @click.prevent="login"
@@ -98,13 +98,13 @@
                         </li>
                       </ul>
                     </div>
-                  </fieldset>
+                  </div>
                 </form>
               </div>
               <hr />
               <h4>Vous n’avez pas de compte ?</h4>
-              <ul class="fr-btns-group">
-                <li>
+              <ul role="list" class="fr-btns-group">
+                <li role="listitem">
                   <DsfrButton
                     @click.prevent="navigateTo('/connexion/enregistrement')"
                     >Créer un compte</DsfrButton
@@ -165,7 +165,8 @@ const displayInfos = {
   },
   WrongCredentials: {
     title: "Erreur d'authentification",
-    description: "Votre email ou votre mot de passe sont incorrects.",
+    description:
+      "Votre adresse courriel ou votre mot de passe sont incorrects.",
     type: "error",
   },
   UnexpectedError: {
@@ -205,7 +206,10 @@ async function login() {
     );
     formStatus.value = formStates.SUBMITTED;
     userStore.user = response.user;
-    toaster.success(`Authentification réalisée avec succès`);
+    toaster.success({
+      titleTag: "h2",
+      description: `Authentification réalisée avec succès`,
+    });
     displayType.value = "Success";
     return navigateTo("/");
   } catch (error) {
