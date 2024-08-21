@@ -189,6 +189,14 @@ const dataExemplePersonnel = [
   },
 ];
 
+const dataExempleCsvPersonnel = [
+  {nom:"Durand",prenom:"philippe",dateNaissance:"1977-01-25",competence:"infirmier",listeFonction:["Distribution des médicaments","autre"],telephone:"0610203040"},
+  {nom:"Dupont",prenom:"Nathalie",dateNaissance:"1985-07-155",competence:"Cuisinière",listeFonction:["Restauration"],telephone:"0610203041"},
+  {nom:"Dupond",prenom:"Kevin",dateNaissance:"1991-11-20",competence:"Guide",listeFonction:["Activités spécifiques"],telephone:"0780101010"},
+  {nom:"Payet",prenom:"Carole",dateNaissance:"1966-10-01",competence:"Chauffeur",listeFonction:["Transport des vacanciers"],telephone:"0610102010"},
+  {nom:"Merlin",prenom:"Nathalie",dateNaissance:"1980-08-02",competence:"Agent d'entretien",listeFonction:["Entretien des locaux"],telephone:"0602060202"},
+];
+
 const DsfrBadge = resolveComponent("DsfrBadge");
 
 const props = defineProps({
@@ -455,7 +463,7 @@ function exportCSV(modele) {
   const rows = !modele
     ? ["Nom;Prenom;Date de Naissance;Compétences;Fonctions;Téléphone\n"]
     : [];
-  const objetAExporter = modele ? dataExemplePersonnel : props.personnes;
+  const objetAExporter = modele ? dataExempleCsvPersonnel : props.personnes;
   objetAExporter.forEach((p) => {
     rows.push(formaterCSV(p) + `\n`);
   });
