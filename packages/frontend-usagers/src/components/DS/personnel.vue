@@ -168,13 +168,13 @@ import customParseFormat from "dayjs/plugin/customParseFormat";
 import { DsfrFieldset } from "@gouvminint/vue-dsfr";
 
 dayjs.extend(customParseFormat);
-/*
+
 const dataExemplePersonnel = [
     {nom:"Durand",prenom:"philippe",dateNaissance:"1977-01-25",competence:"infirmier",listeFonction:["Distribution des médicaments","autre"],telephone:"0610203040"},
     {nom:"dupont",prenom:"Nathalie",dateNaissance:"1985-07-15",competence:"Cuisinière",listeFonction:["Restauration"],telephone:"+33612345678"},
   ];
-*/
-const dataExemplePersonnel = [
+
+const dataExempleCsvPersonnel = [
   {nom:"Durand",prenom:"philippe",dateNaissance:"1977-01-25",competence:"infirmier",listeFonction:["Distribution des médicaments","autre"],telephone:"0610203040"},
   {nom:"Dupont",prenom:"Nathalie",dateNaissance:"1985-07-155",competence:"Cuisinière",listeFonction:["Restauration"],telephone:"0610203041"},
   {nom:"Dupond",prenom:"Kevin",dateNaissance:"1991-11-20",competence:"Guide",listeFonction:["Activités spécifiques"],telephone:"0780101010"},
@@ -443,7 +443,7 @@ function formaterCSV(p) {
 function exportCSV(modele) {
   const fileNameCsv = modele ? "modele_personnel.csv" : "personnel.csv";
   let rows = !modele ?  ["Nom;Prenom;Date de Naissance;Compétences;Fonctions;Téléphone\n"] : [];
-  const objetAExporter = modele ? dataExemplePersonnel : props.personnes;
+  const objetAExporter = modele ? dataExempleCsvPersonnel : props.personnes;
   objetAExporter.forEach((p) => {
     rows.push(
       formaterCSV(p)+`\n`,
