@@ -197,7 +197,7 @@
   </div>
 </template>
 <script setup>
-import { TableFull } from "@vao/shared";
+import { TableFull, MultiSelectOption } from "@vao/shared";
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
 const NuxtLink = resolveComponent("NuxtLink");
@@ -207,7 +207,6 @@ import "@vueform/multiselect/themes/default.css";
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 import { DeclarationSejour } from "#imports";
-import MultiSelectOption from "~/components/utils/MultiSelectOption.vue";
 
 const log = logger("pages/demande-sejour/liste");
 const toaster = useToaster();
