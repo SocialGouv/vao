@@ -125,6 +125,10 @@ const tiles = computed(() => [
       ]
     : []),
 ]);
+
+onMounted(() => {
+  document.querySelector("header").focus();
+});
 </script>
 
 <style lang="scss" scoped></style>

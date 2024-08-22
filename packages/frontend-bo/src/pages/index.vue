@@ -9,4 +9,8 @@ definePageMeta({
   layout: "default",
   middleware: ["is-connected"],
 });
+
+onMounted(() => {
+  document.querySelector("#header").focus();
+});
 </script>
