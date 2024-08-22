@@ -2,7 +2,7 @@
   <div class="fr-container">
     <h1 class="header">
       Liste des séjours déclarés
-      {{ props.organisme ? "" : `(${sejourStore.countGlobal})` }}
+      {{ props.organisme ? "" : `(${sejourStore.stats?.global})` }}
     </h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
@@ -11,15 +11,15 @@
           :values="[
             {
               title: 'Déclarations transmises à traiter',
-              value: sejourStore.countTransmis,
+              value: sejourStore.stats?.transmis,
             },
             {
               title: 'Déclarations en cours de traitement',
-              value: sejourStore.countEncCours,
+              value: sejourStore.stats?.enCours,
             },
             {
               title: 'Déclarations 8 jours à traiter',
-              value: sejourStore.countTransmis8j,
+              value: sejourStore.stats?.transmis8J,
             },
           ]"
         />
