@@ -11,10 +11,6 @@ definePageMeta({
 });
 
 onMounted(() => {
-  document
-    .querySelector(
-      "[title='Accueil - Back-office : Vacances Adaptées Organisées (VAO)']",
-    )
-    .focus();
+  document.querySelector("#header").focus();
 });
 </script>

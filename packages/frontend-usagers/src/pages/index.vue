@@ -127,9 +127,7 @@ const tiles = computed(() => [
 ]);
 
 onMounted(() => {
-  document
-    .querySelector("[title='Accueil - Vacances Adaptées Organisées (VAO)']")
-    .focus();
+  document.querySelector("header").focus();
 });
 </script>
 
