@@ -14,11 +14,11 @@
               value: sejourStore.countTransmis,
             },
             {
-              title: 'Déclaration en cours de traitement',
+              title: 'Déclarations en cours de traitement',
               value: sejourStore.countEncCours,
             },
             {
-              title: 'Déclaration 8 jours a traiter',
+              title: 'Déclarations 8 jours à traiter',
               value: sejourStore.countTransmis8j,
             },
           ]"
