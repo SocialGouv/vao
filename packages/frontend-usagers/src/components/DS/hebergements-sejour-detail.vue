@@ -5,7 +5,7 @@
         <DsfrInputGroup
           name="dateDebut"
           type="date"
-          label="Du "
+          label="Date de début"
           :min="props.dateDebutIni"
           :max="props.dateFinIni"
           :label-visible="true"
@@ -21,7 +21,7 @@
         <DsfrInputGroup
           name="dateFin"
           type="date"
-          label="Au : "
+          label="Date de fin"
           :min="props.dateDebutIni"
           :max="props.dateFinIni"
           :label-visible="true"
@@ -279,7 +279,7 @@
         >
           <DsfrInputGroup
             name="informationsLocaux.accessibilitePrecision"
-            label="Précisez"
+            label="Précisez les informations concernant l'accessibilité"
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
@@ -488,7 +488,7 @@
         >
           <DsfrInputGroup
             name="informationsLocaux.precisionAmenagementsSpecifiques"
-            label="Précisez"
+            label="Précisez les types d'aménagements"
             hint="Redimensionnez le champ pour saisir plus de ligne. Minumum 5 caractères"
             :readonly="!props.modifiable"
             :label-visible="true"

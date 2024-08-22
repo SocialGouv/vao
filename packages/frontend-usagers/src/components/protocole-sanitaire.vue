@@ -30,7 +30,7 @@
         <DsfrInputGroup
           name="precisionDispositionsSpecifiques"
           :readonly="!props.modifiable"
-          label="Précisez"
+          label="Précisez ces dispositions"
           hint="Redimensionnez le champ pour saisir plus de ligne. Minumum 5 caractères"
           :label-visible="true"
           :is-textarea="true"
@@ -56,7 +56,7 @@
         <DsfrInputGroup
           name="precisionConstitutionEquipe"
           :readonly="!props.modifiable"
-          label="Précisez"
+          label="Précisez la constitution de l'équipe"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""
@@ -141,7 +141,7 @@
         <DsfrInputGroup
           name="precisionResponsableAdministrationMedicament"
           :readonly="!props.modifiable"
-          label="Précisez"
+          label="Précisez le rôle des personnes désignées"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""
@@ -179,7 +179,7 @@
         <DsfrInputGroup
           name="precisionStockageMedicamentSecurise"
           :readonly="!props.modifiable"
-          label="Précisez"
+          label="Décrivez le dispositif de stockage des médicaments"
           hint="Redimensionnez le champ pour saisir plus de ligne. Minumum 5 caractères"
           :label-visible="true"
           :is-textarea="true"
@@ -305,7 +305,7 @@
           name="precisionProtocoleModificationTraitement"
           :readonly="!props.modifiable"
           placeholder=""
-          label="Précisez"
+          label="Décrivez ce protocole"
           hint="Minumum 5 caractères"
           :label-visible="true"
           :is-textarea="true"
@@ -349,7 +349,7 @@
         <DsfrInputGroup
           name="precisionProtocoleEvacuation"
           :readonly="!props.modifiable"
-          label="Précisez"
+          label="Décrivez ce protocole"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""
@@ -378,7 +378,7 @@
         <DsfrInputGroup
           name="precisionProtocoleAccident"
           :readonly="!props.modifiable"
-          label="Précisez"
+          label="Décrivez ce protocole"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""
@@ -408,7 +408,7 @@
         <DsfrInputGroup
           name="precisionProtocoleReorientation"
           :readonly="!props.modifiable"
-          label="Précisez"
+          label="Décrivez ce protocole"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""
@@ -436,7 +436,7 @@
         <DsfrInputGroup
           name="precisionProtocoleCanicule"
           :readonly="!props.modifiable"
-          label="Précisez"
+          label="Décrivez ce protocole"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""

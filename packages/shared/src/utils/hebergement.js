@@ -36,7 +36,7 @@ const typeOptions = [
 const accessibiliteOptions = [
   { label: "Accessible", value: "accessible" },
   { label: "Signalé comme non adapté", value: "non_adapte" },
-  { label: "Commentaires", value: "commentaires" },
+  { label: "Autre (précisez ci-dessous)", value: "commentaires" },
 ];
 
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
