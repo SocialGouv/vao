@@ -1,5 +1,10 @@
 <template>
-  <component :is="wrapper" :to="redirect" class="card-number fr-p-2w">
+  <component
+    :is="wrapper"
+    :to="redirect"
+    class="card-number fr-p-2w"
+    :class="{ 'card-number--has-hover-effect': redirect }"
+  >
     <div class="card-number__title">
       {{ title }}
     </div>
@@ -30,7 +35,7 @@ const wrapper = computed(() => (props.redirect ? "router-link" : "div"));
   height: 10rem;
   flex: 1;
   background-image: none;
-  &:hover {
+  &--has-hover-effect:hover {
     background-color: var(--blue-france-sun-113-625-hover) !important;
   }
   &__title {
