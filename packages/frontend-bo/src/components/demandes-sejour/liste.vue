@@ -220,6 +220,7 @@ const status = computed(() => [
   demandesSejours.statuts.VALIDEE_8J,
   demandesSejours.statuts.SEJOUR_EN_COURS,
   demandesSejours.statuts.TERMINEE,
+  demandesSejours.statuts.ANNULEE,
   demandesSejours.statuts.ABANDONNEE,
 ]);
 

@@ -3,6 +3,7 @@
     :is="wrapper"
     :to="redirect"
     class="card-number fr-p-2w"
+    :title="htmlTitle"
     :class="{ 'card-number--has-hover-effect': redirect }"
   >
     <div class="card-number__title">
@@ -16,11 +17,18 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-const props = defineProps<{
-  title: string;
-  value: number;
-  redirect?: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    title: string;
+    value: number;
+    redirect?: string;
+    htmlTitle?: string;
+  }>(),
+  {
+    redirect: "",
+    htmlTitle: "",
+  },
+);
 
 const wrapper = computed(() => (props.redirect ? "router-link" : "div"));
 </script>

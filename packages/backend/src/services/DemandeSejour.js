@@ -262,7 +262,10 @@ SELECT
   COUNT(CASE WHEN statut = 'EN ATTENTE DECLARATION 8 JOURS' THEN 1 END)::integer AS "declaration8J",
   COUNT(CASE WHEN statut = 'VALIDEE 8J' THEN 1 END)::integer AS "validee8J",
   COUNT(CASE WHEN statut = 'TERMINEE' THEN 1 END)::integer AS "terminee",
-  COUNT(CASE WHEN statut IN ('ANNULEE', 'ABANDONNEE', 'REFUSEE', 'REFUSEE 8J') THEN 1 END)::integer AS "nonFinalisees",
+  COUNT(CASE WHEN statut = 'ANNULEE' THEN 1 END)::integer AS "annulee",
+  COUNT(CASE WHEN statut = 'ABANDONNEE' THEN 1 END)::integer AS "abandonnee",
+  COUNT(CASE WHEN statut = 'REFUSEE' THEN 1 END)::integer AS "refusee",
+  COUNT(CASE WHEN statut = 'REFUSEE 8J' THEN 1 END)::integer AS "refuse8J",
   COUNT(CASE WHEN statut <> 'BROUILLON' THEN 1 END)::integer AS "global"
 FROM
   front.demande_sejour ds

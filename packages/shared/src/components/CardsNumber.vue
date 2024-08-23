@@ -6,6 +6,7 @@
       :title="v.title"
       :value="v.value"
       :redirect="v.redirect"
+      :html-title="v.htmlTitle"
     />
   </div>
 </template>
@@ -14,7 +15,12 @@
 import CardNumber from "./CardNumber.vue";
 
 defineProps<{
-  values: Array<{ title: string; value: number; redirect?: string }>;
+  values: Array<{
+    title: string;
+    value: number;
+    redirect?: string;
+    htmlTitle?: string;
+  }>;
 }>();
 </script>
 
