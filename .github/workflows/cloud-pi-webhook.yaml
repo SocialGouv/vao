@@ -1,0 +1,17 @@
+name: Webhook to update the Cloud Pi repo
+on: push
+jobs:
+  curl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: call webhook
+        env:
+          GIT_MIRROR_TOKEN: ${{ secrets.GIT_MIRROR_TOKEN }}
+          BRANCH_TO_SYNC: ${{ github.head_ref || github.ref_name }}
+        run: |
+          curl -X POST --fail \
+          -F token=$GIT_MIRROR_TOKEN \
+          -F ref=main \
+          -F variables[GIT_BRANCH_DEPLOY]=$BRANCH_TO_SYNC \
+          -F variables[PROJECT_NAME]=vao-app \
+          "https://gitlab.apps.dso.numerique-interieur.com/api/v4/projects/225/trigger/pipeline"
