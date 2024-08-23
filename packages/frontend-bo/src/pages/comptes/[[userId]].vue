@@ -230,7 +230,6 @@
 </template>
 
 <script setup>
-import "@vueform/multiselect/themes/default.css";
 import { formatDate } from "date-fns/format";
 
 const route = useRoute();

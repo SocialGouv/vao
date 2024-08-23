@@ -1,7 +1,7 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
-import MultiSelectOption from "~/components/utils/MultiSelectOption.vue";
+import { MultiSelectOption } from "@vao/shared";
 
 const toaster = useToaster();
 

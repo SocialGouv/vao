@@ -9,10 +9,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     messages: [],
     currentDemande: null,
     total: 0,
-    countGlobal: 0,
-    countTransmis: 0,
-    countEncCours: 0,
-    countTransmis8j: 0,
+    stats: null,
     hebergements: [],
     hebergementsCount: 0,
     isGetHebergementsLoading: false,
@@ -41,14 +38,26 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
           log.i("fetchDemandes - DONE");
           this.demandes = demandesWithPagination.demandes_sejour;
           this.total = demandesWithPagination.total;
-          this.countGlobal = demandesWithPagination.count_global;
-          this.countTransmis = demandesWithPagination.count_transmis;
-          this.countEncCours = demandesWithPagination.count_en_cours;
-          this.countTransmis8j = demandesWithPagination.count_transmis_8j;
+          this.stats = demandesWithPagination.stats;
         }
       } catch (err) {
         log.w("fetchDemandes - DONE with error", err);
         this.demandes = [];
+        throw err;
+      }
+    },
+    async getStats() {
+      log.i("fetchDemandes - IN");
+      try {
+        const { stats } = await $fetchBackend("/sejour/admin/stats", {
+          method: "GET",
+          credentials: "include",
+        });
+        this.stats = stats;
+        return stats;
+      } catch (err) {
+        log.w("getStats - DONE with error", err);
+        this.stats = null;
         throw err;
       }
     },

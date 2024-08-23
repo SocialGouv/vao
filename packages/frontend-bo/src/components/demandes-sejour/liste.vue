@@ -2,7 +2,7 @@
   <div class="fr-container">
     <h1 class="header">
       Liste des séjours déclarés
-      {{ props.organisme ? "" : `(${sejourStore.countGlobal})` }}
+      {{ props.organisme ? "" : `(${sejourStore.stats?.global})` }}
     </h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
@@ -11,15 +11,15 @@
           :values="[
             {
               title: 'Déclarations transmises à traiter',
-              value: sejourStore.countTransmis,
+              value: sejourStore.stats?.transmis,
             },
             {
               title: 'Déclarations en cours de traitement',
-              value: sejourStore.countEncCours,
+              value: sejourStore.stats?.enCours,
             },
             {
               title: 'Déclarations 8 jours à traiter',
-              value: sejourStore.countTransmis8j,
+              value: sejourStore.stats?.transmis8J,
             },
           ]"
         />
@@ -74,16 +74,24 @@
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
-                <DsfrSelect
-                  :model-value="searchState.statut"
-                  label="Statut"
-                  name="status"
-                  mode="tags"
+                <Multiselect
+                  :model-value="searchState.statuts"
+                  :hide-selected="true"
                   :searchable="true"
                   :close-on-select="false"
+                  mode="tags"
+                  name="statut"
                   :options="status"
                   @update:model-value="onStatutSelect"
-                />
+                >
+                  <template #option="{ option, isPointed }">
+                    <MultiSelectOption
+                      :label="`${option.label}`"
+                      :is-pointed="isPointed(option)"
+                    />
+                  </template>
+                  <template #no-result> Pas de résultat </template>
+                </Multiselect>
               </div>
             </div>
             <div
@@ -174,9 +182,11 @@ const props = defineProps({
   organisme: { type: String, required: false, default: null },
 });
 
+import Multiselect from "@vueform/multiselect";
+import "@vueform/multiselect/themes/default.css";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
-import { CardsNumber } from "@vao/shared";
+import { CardsNumber, MultiSelectOption } from "@vao/shared";
 
 const log = logger("pages/sejours");
 
@@ -189,19 +199,15 @@ const userStore = useUserStore();
 const defaultLimit = 10;
 const defaultOffset = 0;
 
-const allStatus = "Tous les statuts";
 const sortState = ref({});
 const currentPageState = ref(defaultOffset);
 const limitState = ref(defaultLimit);
-const searchState = reactive({
-  libelle: null,
-  organisme: props.organisme,
-  statut: null,
-  action: null,
-});
+
+const route = useRoute();
+
+const parseBoolean = (value) => value === "true";
 
 const status = computed(() => [
-  allStatus,
   demandesSejours.statuts.TRANSMISE,
   demandesSejours.statuts.EN_COURS,
   demandesSejours.statuts.A_MODIFIER,
@@ -217,19 +223,17 @@ const status = computed(() => [
   demandesSejours.statuts.ABANDONNEE,
 ]);
 
-sejourStore.currentDemande = null;
-try {
-  await sejourStore.fetchDemandes({
-    limit: defaultLimit,
-    offset: defaultOffset,
-    search: searchState,
-  });
-} catch (error) {
-  toaster.error({
-    titleTag: "h2",
-    description: "Une erreur est survenue lors de la récupération des demandes",
-  });
-}
+const searchState = reactive({
+  libelle: route.query.libelle,
+  idFonctionnelle: route.query.idFonctionnelle,
+  organisme: props.organisme ?? route.query.organisme,
+  statuts: route.query.statuts
+    ? route.query.statuts
+        .split(",")
+        .filter((statut) => Object.values(status.value).includes(statut))
+    : null,
+  action: parseBoolean(route.query.action),
+});
 
 const needAction = computed({
   get() {
@@ -240,6 +244,33 @@ const needAction = computed({
   },
 });
 
+const searchParams = computed(() =>
+  Object.entries(searchState).reduce((acc, [key, value]) => {
+    if (
+      value !== null &&
+      value !== "" &&
+      (!Array.isArray(value) || value.length > 0)
+    ) {
+      acc[key] = Array.isArray(value) ? value.join(",") : value;
+    }
+    return acc;
+  }, {}),
+);
+
+sejourStore.currentDemande = null;
+try {
+  await sejourStore.fetchDemandes({
+    limit: defaultLimit,
+    offset: defaultOffset,
+    search: searchParams.value,
+  });
+} catch (error) {
+  toaster.error({
+    titleTag: "h2",
+    description: "Une erreur est survenue lors de la récupération des demandes",
+  });
+}
+
 watch(
   [sortState, limitState, currentPageState],
   async ([sortValue, limitValue, currentPageValue]) => {
@@ -249,7 +280,7 @@ watch(
         sortDirection: sortValue.sortDirection,
         limit: limitValue,
         offset: currentPageValue * limitValue,
-        search: searchState,
+        search: searchParams.value,
       });
     } catch (error) {
       toaster.error({
@@ -262,6 +293,7 @@ watch(
 );
 
 const fetchDemandesDebounce = debounce(async (search) => {
+  navigateTo({ replace: true, query: search });
   try {
     await sejourStore.fetchDemandes({
       sortBy: sortState.value.sortBy,
@@ -279,15 +311,15 @@ const fetchDemandesDebounce = debounce(async (search) => {
   }
 });
 
-watch([searchState], ([searchValue]) => {
-  fetchDemandesDebounce(searchValue);
+watch(searchParams, (search) => {
+  fetchDemandesDebounce(search);
 });
 
 const onStatutSelect = (value) => {
-  if (value === allStatus) {
-    searchState.statut = null;
+  if (value.length) {
+    searchState.statuts = value;
   } else {
-    searchState.statut = value;
+    searchState.statuts = null;
   }
 };
 

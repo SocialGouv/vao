@@ -119,6 +119,8 @@ fileignoreconfig:
   checksum: d56114de12eaab4e9121eaf17ca1760370673c3c1526218896bacaa7daf5cc82
 - filename: packages/backend/src/services/BoUser.js
   checksum: cb82592388d082e0a2c47ba57074816622f5a6466d3f23fa7292d297f7807414
+- filename: packages/backend/src/services/DemandeSejour.js
+  checksum: 4750be681e052f36aa9e073d56c4cf43cda4676e574a3b6d8c17e2f642d42401
 - filename: packages/backend/src/services/User.js
   checksum: 6f3bcdcbe1d0e813fb032939778cd11cf0acf3ba7f2e25ca4707f114f31cfae0
 - filename: packages/backend/src/services/geo/Commune.js
@@ -151,6 +153,8 @@ fileignoreconfig:
   checksum: 0c1ba679433b38f376fbbecfa020e9e7375c8a816ac43b1e46ab2225e9f19342
 - filename: packages/frontend-bo/src/components/demandes-sejour/DisplayPj.vue
   checksum: 7416e86be161886c048c7108e2ef95027e0dbaa858d2b4961e1effa469e98901
+- filename: packages/frontend-bo/src/components/demandes-sejour/liste.vue
+  checksum: 8efe57bb6843ae4fd02761d8187656cb6b8e3925840200f36858aa175b6aced4
 - filename: packages/frontend-bo/src/components/utils/TableFull.vue
   checksum: 74a74e68299d204eac907efee98c2eb3d776ff4c206b304acbca02d058bfbc4e
 - filename: packages/frontend-bo/src/pages/connexion/index.vue
