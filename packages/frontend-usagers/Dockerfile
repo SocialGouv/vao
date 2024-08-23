@@ -30,7 +30,7 @@ COPY packages/frontend-usagers packages/frontend-usagers
 RUN yarn workspace @vao/frontend-usagers generate
 
 
-FROM ghcr.io/dnum-socialgouv/docker-images/nginx4spa:sha-7bc5b03
+FROM ghcr.io/dnum-socialgouv/docker-images/nginx4spa:sha-5389949
 
 COPY --chmod=755 100-start-prod.sh /docker-entrypoint.d/100-start-prod.sh
 COPY --from=builder --chown=101:101 /app/packages/frontend-usagers/.output/public /app
