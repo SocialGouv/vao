@@ -120,7 +120,7 @@ fileignoreconfig:
 - filename: packages/backend/src/services/BoUser.js
   checksum: cb82592388d082e0a2c47ba57074816622f5a6466d3f23fa7292d297f7807414
 - filename: packages/backend/src/services/DemandeSejour.js
-  checksum: 4750be681e052f36aa9e073d56c4cf43cda4676e574a3b6d8c17e2f642d42401
+  checksum: 8a3761a96a2775987fea844c5e0d47c7c6f83ea2dfddfd878c30a90f7d9775cc
 - filename: packages/backend/src/services/User.js
   checksum: 6f3bcdcbe1d0e813fb032939778cd11cf0acf3ba7f2e25ca4707f114f31cfae0
 - filename: packages/backend/src/services/geo/Commune.js
