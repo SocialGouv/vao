@@ -79,6 +79,8 @@ fileignoreconfig:
   checksum: ebaeaef58dff99ed0a70ace0cb1cfceb31c0656d921999e19ce183e2adc9431f
 - filename: .kontinuous/values.yaml
   checksum: 40913e433609d86128443db129e4b97da472b3f0811f4db61024ab2943051ca4
+- filename: 100-start-prod.sh
+  checksum: 61fc46497c2c057c938a6bccda8e6506d5390a66e102616fff9a50d691d301bd
 - filename: README.md
   checksum: 3627cd363d1cfc640df689ce74d5467e13707a2cc9c44b0bffaba14f217296e2
 - filename: _scripts/dev/local-node.dockerfile
