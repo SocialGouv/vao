@@ -977,11 +977,11 @@ module.exports.getByDepartementCodes = async (
   log.i("getByDepartementCodes - DONE");
   return {
     demandes_sejour: response.rows,
-    total: total.rows.find((t) => t.count)?.count ?? 0,
-    ...Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
+    stats: Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
       acc[key] = Number(value);
       return acc;
     }, {}),
+    total: total.rows.find((t) => t.count)?.count ?? 0,
   };
 };
 
