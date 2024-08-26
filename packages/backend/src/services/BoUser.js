@@ -339,6 +339,7 @@ module.exports.read = async (
 
   log.w("read - IN", { search });
   let searchQuery = "";
+  let territoireSearchParamId = "";
   const searchParams = [];
 
   if (territoireCode && territoireCode !== "FRA") {
@@ -349,15 +350,15 @@ module.exports.read = async (
 
   // Search management
   if (search?.nom && search.nom.length) {
-    searchQuery += `   AND us.nom ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND us.nom ILIKE $${searchParams.length + 1}\n`;
     searchParams.push(`%${search.nom}%`);
   }
   if (search?.prenom && search.prenom.length) {
-    searchQuery += `   AND us.prenom ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND us.prenom ILIKE $${searchParams.length + 1}\n`;
     searchParams.push(`%${search.prenom}%`);
   }
   if (search?.email && search.email.length) {
-    searchQuery += `   AND us.mail ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND us.mail ILIKE $${searchParams.length + 1}\n`;
     searchParams.push(`%${normalize(search.email)}%`);
   }
   if (
@@ -365,7 +366,12 @@ module.exports.read = async (
     search?.territoire !== "FRA" &&
     search.territoire.length
   ) {
-    searchQuery += `   AND (ter.label ilike $${searchParams.length + 1} OR TER.PARENT_CODE ilike $${searchParams.length + 1})\n`;
+    searchQuery += `   AND (
+      ter.label ILIKE $${searchParams.length + 1}
+      OR code ILIKE $${searchParams.length + 1}
+      OR ter.parent_code IN (SELECT code FROM matched_elements)
+    )\n`;
+    territoireSearchParamId = searchParams.length + 1;
     searchParams.push(`%${search.territoire}%`);
   }
   if (search?.valide !== undefined) {
@@ -401,14 +407,40 @@ module.exports.read = async (
   log.d("read", searchQuery + "\n   " + additionalQueryParts);
   log.d("read", [...searchParams, ...additionalParams]);
 
-  const response = await pool.query(
-    ...query.get(undefined, searchQuery + "\n   " + additionalQueryParts, [
-      ...searchParams,
-      ...additionalParams,
-    ]),
+  // const response = await pool.query(
+  //   ...query.get(undefined, searchQuery + "\n   " + additionalQueryParts, [
+  //     ...searchParams,
+  //     ...additionalParams,
+  //   ]),
+  // );
+
+  const queryPrepared = query.get(
+    undefined,
+    searchQuery + "\n   " + additionalQueryParts,
+    [...searchParams, ...additionalParams],
   );
 
-  const total = await pool.query(...query.getTotal(searchQuery, searchParams));
+  const territoirePreQuery = `
+    WITH matched_elements AS (
+      SELECT code
+      FROM geo.territoires
+      WHERE label ILIKE $${territoireSearchParamId}
+      OR code ILIKE $${territoireSearchParamId}
+    )\n`;
+
+  const response = await pool.query(
+    `${territoireSearchParamId ? territoirePreQuery : ""}
+    ${queryPrepared[0]}`,
+    queryPrepared[1],
+  );
+
+  const preparedTotalQuery = query.getTotal(searchQuery, searchParams);
+
+  const total = await pool.query(
+    `${territoireSearchParamId ? territoirePreQuery : ""}
+    ${preparedTotalQuery[0]}`,
+    preparedTotalQuery[1],
+  );
 
   log.i("read - DONE");
   return {
