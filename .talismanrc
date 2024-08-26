@@ -164,7 +164,7 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/pages/sejours/[idDemande].vue
   checksum: 5e065bcbafcfbefc24c9cab2ba0026b2b7926bb8c9391434a7469c763c0b3c89
 - filename: packages/frontend-usagers/Dockerfile
-  checksum: 4716f6a0de6f2dc2af6d8ac8abf11a253a5a719c231df5ae51c783e6148c42ed
+  checksum: 32ef6178fe3efa0b59222fa5324f2318f8b37f2627d0cc7d2f16fb09ecd2d467
 - filename: packages/frontend-usagers/src/assets/Download.svg
   checksum: a5c2caf47b1b715b2cf8240e9af9090061faae6261b21bc62173689f1666536e
 - filename: packages/frontend-usagers/src/components/DS/synthese.vue

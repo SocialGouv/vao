@@ -16,7 +16,6 @@ RUN yarn workspace @vao/frontend-usagers install --frozen-lockfile
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 ARG SENTRY_URL
-ARG SENTRY_AUTH_TOKEN
 
 # Cannot be changed at runtime
 ENV SENTRY_RELEASE=$SENTRY_RELEASE
@@ -27,10 +26,12 @@ ENV SENTRY_URL=$SENTRY_URL
 COPY packages/shared packages/shared
 COPY packages/frontend-usagers packages/frontend-usagers
 
-RUN yarn workspace @vao/frontend-usagers generate
+RUN --mount=type=secret,id=sentry_auth_token \
+    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token || cat /kaniko/sentry_auth_token) \ 
+    && yarn workspace @vao/frontend-usagers generate
 
 
 FROM ghcr.io/dnum-socialgouv/docker-images/nginx4spa:sha-5389949
 
-COPY --chmod=755 100-start-prod.sh /docker-entrypoint.d/100-start-prod.sh
+COPY --chmod=755 packages/frontend-usagers/100-start-prod.sh /docker-entrypoint.d/100-start-prod.sh
 COPY --from=builder --chown=101:101 /app/packages/frontend-usagers/.output/public /app
