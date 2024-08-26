@@ -12,30 +12,13 @@ COPY packages/shared/package.json packages/shared/
 COPY packages/frontend-bo/package.json packages/frontend-bo/yarn.lock packages/frontend-bo/
 RUN yarn workspace @vao/frontend-bo install --frozen-lockfile
 
-# these variables are needed at build time because we produce a *static* app
-ARG NUXT_PUBLIC_APP_VERSION=development
-ARG NUXT_PUBLIC_BACKEND_URL
-ARG NUXT_PUBLIC_ENVIRONMENT
-ARG NUXT_PUBLIC_MATOMO_ENABLED
-ARG NUXT_PUBLIC_MATOMO_HOST
-ARG NUXT_PUBLIC_MATOMO_SITE_ID
-ARG NUXT_PUBLIC_SENTRY_DSN
-ARG NUXT_PUBLIC_SENTRY_RELEASE
-ARG NUXT_PUBLIC_SENTRY_ENABLED
+# Sentry variables are needed at build time to upload sourcemaps
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 ARG SENTRY_URL
 
-ENV NUXT_PUBLIC_APP_VERSION=$NUXT_PUBLIC_APP_VERSION
-ENV NUXT_PUBLIC_BACKEND_URL=$NUXT_PUBLIC_BACKEND_URL
-ENV NUXT_PUBLIC_ENVIRONMENT=$NUXT_PUBLIC_ENVIRONMENT
-ENV NUXT_PUBLIC_MATOMO_ENABLED=$NUXT_PUBLIC_MATOMO_ENABLED
-ENV NUXT_PUBLIC_MATOMO_HOST=$NUXT_PUBLIC_MATOMO_HOST
-ENV NUXT_PUBLIC_MATOMO_SITE_ID=$NUXT_PUBLIC_MATOMO_SITE_ID
-ENV NUXT_PUBLIC_SENTRY_DSN=$NUXT_PUBLIC_SENTRY_DSN
-ENV NUXT_PUBLIC_SENTRY_RELEASE=$NUXT_PUBLIC_SENTRY_RELEASE
-ENV NUXT_PUBLIC_SENTRY_ENABLED=$NUXT_PUBLIC_SENTRY_ENABLED
-ENV SENTRY_RELEASE=$NUXT_PUBLIC_SENTRY_RELEASE
+# Cannot be changed at runtime
+ENV SENTRY_RELEASE=$SENTRY_RELEASE
 ENV SENTRY_ORG=$SENTRY_ORG
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
 ENV SENTRY_URL=$SENTRY_URL
@@ -44,9 +27,11 @@ COPY packages/shared packages/shared
 COPY packages/frontend-bo packages/frontend-bo
 
 RUN --mount=type=secret,id=sentry_auth_token \
-    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \ 
+    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token || cat /kaniko/sentry_auth_token) \ 
     && yarn workspace @vao/frontend-bo generate
 
-FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.3
 
-COPY --from=builder --chown=101:101 /app/packages/frontend-bo/.output/public /usr/share/nginx/html
+FROM ghcr.io/dnum-socialgouv/docker-images/nginx4spa:sha-5389949
+
+COPY --chmod=755 packages/frontend-bo/100-start-prod.sh /docker-entrypoint.d/100-start-prod.sh
+COPY --from=builder --chown=101:101 /app/packages/frontend-bo/.output/public /app
