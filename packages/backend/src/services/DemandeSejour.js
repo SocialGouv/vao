@@ -29,10 +29,10 @@ const query = {
   cancel: (declarationId, userId) => [
     `
     UPDATE front.demande_sejour d
-    SET statut = 'ANNULEE' 
+    SET statut = 'ANNULEE'
     FROM front.organismes o, front.user_organisme uo
-    WHERE 
-      o.id = d.organisme_id 
+    WHERE
+      o.id = d.organisme_id
       AND uo.org_id = o.id
       AND d.id = $1
       AND uo.use_id = $2;
@@ -252,6 +252,32 @@ WHERE
 `,
     [organismeIds],
   ],
+  getAdminStats: (departements, territoireCode) => [
+    `
+SELECT
+  COUNT(CASE WHEN statut = 'EN COURS' THEN 1 END)::integer AS "enCours",
+  COUNT(CASE WHEN statut = 'TRANSMISE' THEN 1 END)::integer AS "transmis",
+  COUNT(CASE WHEN statut = 'TRANSMISE 8J' THEN 1 END)::integer AS "transmis8J",
+  COUNT(CASE WHEN statut = 'EN COURS 8J' THEN 1 END)::integer AS "enCours8J",
+  COUNT(CASE WHEN statut = 'EN ATTENTE DECLARATION 8 JOURS' THEN 1 END)::integer AS "declaration8J",
+  COUNT(CASE WHEN statut = 'VALIDEE 8J' THEN 1 END)::integer AS "validee8J",
+  COUNT(CASE WHEN statut = 'TERMINEE' THEN 1 END)::integer AS "terminee",
+  COUNT(CASE WHEN statut = 'ANNULEE' THEN 1 END)::integer AS "annulee",
+  COUNT(CASE WHEN statut = 'ABANDONNEE' THEN 1 END)::integer AS "abandonnee",
+  COUNT(CASE WHEN statut = 'REFUSEE' THEN 1 END)::integer AS "refusee",
+  COUNT(CASE WHEN statut = 'REFUSEE 8J' THEN 1 END)::integer AS "refuse8J",
+  COUNT(CASE WHEN statut <> 'BROUILLON' THEN 1 END)::integer AS "global"
+FROM
+  front.demande_sejour ds
+  JOIN front.organismes o ON o.id = ds.organisme_id
+  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id,
+  jsonb_array_elements(ds.hebergement -> 'hebergements') h
+WHERE
+  h -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($1)
+  OR a.region_obtention = '${territoireCode}'
+`,
+    [departements],
+  ],
   getByDepartementCodes: (search, territoireCode, departementQuery, params) => {
     return `
 SELECT
@@ -328,17 +354,6 @@ WHERE
       [declarationId, departements],
     ];
   },
-  getCount: (departementQuery, territoireCode) => `
-  SELECT
-    COUNT(CASE WHEN statut = 'EN COURS' THEN 1 END) AS count_en_cours,
-    COUNT(CASE WHEN statut = 'TRANSMISE' THEN 1 END) AS count_transmis,
-    COUNT(CASE WHEN statut = 'TRANSMISE 8J' THEN 1 END) AS count_transmis_8j,
-    COUNT(CASE WHEN statut <> 'BROUILLON' THEN 1 END) AS count_global
-  FROM front.demande_sejour ds
-      JOIN front.organismes o ON o.id = ds.organisme_id
-      LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
-  where ((${departementQuery})
-      OR a.region_obtention = '${territoireCode}')`,
   getEmailBack: `
 WITH
   roles AS
@@ -465,10 +480,10 @@ WHERE
         ELSE NULL
       END AS "reglementationErp",
       ordinality AS "hebergementIndex"
-    FROM 
+    FROM
       front.demande_sejour ds,
       jsonb_array_elements(ds.hebergement -> 'hebergements') WITH ORDINALITY AS h(hebergement, ordinality)
-    WHERE 
+    WHERE
       ds.statut <> 'BROUILLON'
       AND h.hebergement -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($1)
       AND (
@@ -485,7 +500,7 @@ WHERE
     SELECT * FROM filtered_hebergements
     LIMIT $3 OFFSET $4
   )
-  SELECT 
+  SELECT
     jsonb_build_object(
       'total_count', (SELECT count FROM total_count),
       'hebergements', jsonb_agg(ph.*)
@@ -531,6 +546,41 @@ ${Object.keys(criterias)
   .join(" ")}
 `,
     Object.values(criterias),
+  ],
+  getStats: (userId) => [
+    `
+    SELECT
+      COUNT(DISTINCT CASE WHEN ds.statut = $2 THEN ds.id ELSE NULL END)::integer AS "countBrouillon",
+      COUNT(DISTINCT CASE WHEN ds.statut IN ($3, $4, $5) THEN ds.id ELSE NULL END)::integer AS "countDeclarationAcompleter",
+      COUNT(DISTINCT CASE WHEN ds.statut IN ($6, $7, $8, $9) THEN ds.id ELSE NULL END)::integer AS "countDeclarationEnInstruction",
+      COUNT(DISTINCT CASE WHEN ds.statut = $10 THEN ds.id ELSE NULL END)::integer AS "countDeclarationFinalisee",
+      COUNT(DISTINCT CASE WHEN ds.statut = $11 THEN ds.id ELSE NULL END)::integer AS "countSejourEnCours",
+      COUNT(DISTINCT CASE WHEN ds.statut = $12 THEN ds.id ELSE NULL END)::integer AS "countTerminee"
+    FROM front.demande_sejour ds
+    JOIN front.organismes o ON ds.organisme_id = o.id
+    JOIN front.user_organisme uo ON o.id = uo.org_id
+    WHERE uo.use_id = $1;
+    `,
+    [
+      userId,
+      // countBrouillon
+      dsStatus.statuts.BROUILLON,
+      // countDeclarationAcompleter
+      dsStatus.statuts.A_MODIFIER,
+      dsStatus.statuts.A_MODIFIER_8J,
+      dsStatus.statuts.ATTENTE_8_JOUR,
+      // countDeclarationEnInstruction
+      dsStatus.statuts.TRANSMISE,
+      dsStatus.statuts.TRANSMISE_8J,
+      dsStatus.statuts.EN_COURS,
+      dsStatus.statuts.EN_COURS_8J,
+      // countDeclarationFinalisee
+      dsStatus.statuts.VALIDEE_8J,
+      // countSejourEnCours
+      dsStatus.statuts.SEJOUR_EN_COURS,
+      // countTerminee
+      dsStatus.statuts.TERMINEE,
+    ],
   ],
   getStatut: `
   SELECT
@@ -812,11 +862,18 @@ module.exports.getByDepartementCodes = async (
 ) => {
   if (departementCodes && departementCodes.length === 0) {
     return {
-      count_en_cours: 0,
-      count_global: 0,
-      count_transmis: 0,
-      count_transmis_8j: 0,
       demandes_sejour: [],
+      stats: {
+        declaration8J: 0,
+        enCours: 0,
+        enCours8J: 0,
+        global: 0,
+        nonFinalisees: 0,
+        terminee: 0,
+        transmis: 0,
+        transmis8J: 0,
+        validee8J: 0,
+      },
       total: 0,
     };
   }
@@ -847,9 +904,9 @@ module.exports.getByDepartementCodes = async (
       `%${search.organisme}%`,
     );
   }
-  if (search?.statut && search.statut.length) {
-    searchQuery.push(`statut = $${params.length + 1}`);
-    params.push(`${search.statut}`);
+  if (search?.statuts && search.statuts.length) {
+    searchQuery.push(`statut = ANY($${params.length + 1})`);
+    params.push(search.statuts.split(","));
   }
 
   if (search?.action) {
@@ -872,12 +929,8 @@ module.exports.getByDepartementCodes = async (
     params,
   );
 
-  const countQueryDepartement = getDepartementWhereQuery(departementCodes, [
-    departementCodes,
-  ]);
   const stats = await pool.query(
-    query.getCount(countQueryDepartement, territoireCode),
-    [departementCodes],
+    ...query.getAdminStats(departementCodes, territoireCode),
   );
 
   // Order management
@@ -904,11 +957,11 @@ module.exports.getByDepartementCodes = async (
   if (limit === null || response.rowCount < limit) {
     return {
       demandes_sejour: response.rows,
-      total: response.rowCount + parseInt(offset ?? 0),
-      ...Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
+      stats: Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
         acc[key] = Number(value);
         return acc;
       }, {}),
+      total: response.rowCount + parseInt(offset ?? 0),
     };
   }
 
@@ -924,11 +977,11 @@ module.exports.getByDepartementCodes = async (
   log.i("getByDepartementCodes - DONE");
   return {
     demandes_sejour: response.rows,
-    total: total.rows.find((t) => t.count)?.count ?? 0,
-    ...Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
+    stats: Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
       acc[key] = Number(value);
       return acc;
     }, {}),
+    total: total.rows.find((t) => t.count)?.count ?? 0,
   };
 };
 
@@ -967,6 +1020,24 @@ module.exports.getHebergementsByDepartementCodes = async (
   );
   log.d("getHebergementsByDepartementCodes - DONE");
   return rows[0];
+};
+
+module.exports.getAdminStats = async (departements, territoireCode) => {
+  log.i("getAdminStats - IN");
+  const {
+    rows: [stats],
+  } = await pool.query(...query.getAdminStats(departements, territoireCode));
+  log.i("getAdminStats - DONE");
+  return stats;
+};
+
+module.exports.getStats = async (userId) => {
+  log.i("getStatts - IN");
+  const {
+    rows: [stats],
+  } = await pool.query(...query.getStats(userId));
+  log.i("getStatts - DONE");
+  return stats;
 };
 
 module.exports.getStatut = async (declarationId) => {

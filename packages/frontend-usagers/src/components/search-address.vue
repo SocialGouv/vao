@@ -1,7 +1,7 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
-import MultiSelectOption from "~/components/utils/MultiSelectOption.vue";
+import { MultiSelectOption } from "@vao/shared";
 
 const toaster = useToaster();
 
@@ -60,7 +60,10 @@ const searchAddressDebounced = debounce(async function (queryString) {
   } catch (error) {
     log.w("searchAddress", error);
     isLoading.value = false;
-    toaster.error("erreur lors de l'appel à l'API adresse");
+    toaster.error({
+      titleTag: "h2",
+      description: "erreur lors de l'appel à l'API adresse",
+    });
   }
   log.d("searchAddressDebounced - DONE", { queryString });
 }, 500);
@@ -119,6 +122,7 @@ function select(_value, option) {
                 :is-pointed="isPointed(option)"
               />
             </template>
+            <template #no-result> Pas de résultat </template>
           </Multiselect>
           <div v-if="message" class="fr-messages-group">
             <p :class="messageClass">

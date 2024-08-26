@@ -137,7 +137,7 @@
           d’un accusé réception : <br />
           - {{ demandeStore.currentDemande.libelle }}
         </article>
-        <fieldset class="fr-fieldset">
+        <div class="fr-fieldset">
           <div class="fr-col-4">
             <div class="fr-input-group">
               <DsfrButton
@@ -157,7 +157,7 @@
               </DsfrButton>
             </div>
           </div>
-        </fieldset>
+        </div>
       </DsfrModal>
     </div>
     <isDownloading
@@ -254,9 +254,10 @@ const sendMessage = async ({ message, file }) => {
       toaster.info(`Document déposé`);
     } catch (error) {
       log.w(error);
-      return toaster.error(
-        `Une erreur est survenue lors du dépôt du document ${file.name}`,
-      );
+      return toaster.error({
+        titleTag: "h2",
+        description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+      });
     }
   }
   try {
@@ -273,9 +274,10 @@ const sendMessage = async ({ message, file }) => {
   } catch (error) {
     isSendingMessage.value = false;
     log.w("envoi de message : ", { error });
-    return toaster.error(
-      `Une erreur est survenue lors de l'envoi de votre message`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de l'envoi de votre message`,
+    });
   }
   demandeStore.fetchMessages(route.params.declarationId);
 };
@@ -350,7 +352,10 @@ const onValidComplement = async (commentaires) => {
     execute();
   } catch (error) {
     log.w("prend en charge", error);
-    toaster.error("Erreur lors de la prise en charge de la demande");
+    toaster.error({
+      titleTag: "h2",
+      description: "Erreur lors de la prise en charge de la demande",
+    });
   } finally {
     resetApiStatut();
   }
@@ -370,7 +375,10 @@ const onValidRefus = async (commentaires) => {
     execute();
   } catch (error) {
     log.w("prend en charge", error);
-    toaster.error("Erreur lors de la prise en charge de la demande");
+    toaster.error({
+      titleTag: "h2",
+      description: "Erreur lors de la prise en charge de la demande",
+    });
   } finally {
     resetApiStatut();
   }
@@ -392,7 +400,10 @@ const onValidEnregistrement2Mois = async () => {
     execute();
   } catch (error) {
     log.w("prend en charge", error);
-    toaster.error("Erreur lors de la prise en charge de la demande");
+    toaster.error({
+      titleTag: "h2",
+      description: "Erreur lors de la prise en charge de la demande",
+    });
   } finally {
     resetApiStatut();
   }

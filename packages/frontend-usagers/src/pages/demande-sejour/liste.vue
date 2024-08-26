@@ -23,7 +23,7 @@
                 <div class="fr-input-group">
                   <label class="fr-label">ID</label>
                   <Multiselect
-                    :model-value="search.id"
+                    :model-value="search.declarationId"
                     name="id"
                     mode="tags"
                     :searchable="true"
@@ -37,6 +37,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -60,6 +61,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -83,6 +85,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -108,6 +111,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -132,6 +136,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -141,7 +146,7 @@
                 <div class="fr-input-group">
                   <label class="fr-label"> Saison</label>
                   <Multiselect
-                    :model-value="search.saison"
+                    :model-value="search.periode"
                     :hide-selected="true"
                     :searchable="false"
                     :close-on-select="false"
@@ -156,6 +161,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
+                    <template #no-result> Pas de résultat </template>
                   </Multiselect>
                 </div>
               </div>
@@ -165,12 +171,12 @@
       </div>
       <div class="fr-grid-row">
         <div class="fr-col">
-          <UtilsTableFull
+          <TableFull
             :headers="headers"
             :data="demandeSejourStore.demandes"
             :search="search"
             @click-row="navigate"
-          ></UtilsTableFull>
+          />
         </div>
       </div>
     </template>
@@ -191,6 +197,7 @@
   </div>
 </template>
 <script setup>
+import { TableFull, MultiSelectOption } from "@vao/shared";
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
 const NuxtLink = resolveComponent("NuxtLink");
@@ -200,11 +207,9 @@ import "@vueform/multiselect/themes/default.css";
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 import { DeclarationSejour } from "#imports";
-import MultiSelectOption from "~/components/utils/MultiSelectOption.vue";
 
 const log = logger("pages/demande-sejour/liste");
 const toaster = useToaster();
-
 
 definePageMeta({
   middleware: ["is-connected", "check-organisme-is-complet"],
@@ -234,16 +239,46 @@ const navigate = (item) => {
   navigateTo(`/demande-sejour/${item.declarationId}`);
 };
 
-const search = reactive({
-  id: null,
-  idFonctionnelle: null,
-  siret: null,
-  statut: null,
-  departementSuivi: null,
-  periode: null,
+const route = useRoute();
+const departementStore = useDepartementStore();
+
+const saisonOptions = computed(() => {
+  return demandeSejourStore.demandes.reduce((acc, elem) => {
+    if (elem.periode) {
+      acc.push(elem);
+    }
+    return acc;
+  }, []);
 });
 
-const departementStore = useDepartementStore();
+const saisons = DeclarationSejour.saisons.map((saison) =>
+  saison.toLocaleLowerCase(),
+);
+
+const search = reactive({
+  declarationId:
+    route.query.declarationId
+      ?.split(",")
+      ?.flatMap((id) => (isNaN(id) ? [] : [parseInt(id, 10)])) ?? null,
+  idFonctionnelle: route.query.idFonctionnelle?.split(",") ?? null,
+  siret: route.query.siret?.split(",") ?? null,
+  statut: route.query.statut
+    ? route.query.statut
+        .split(",")
+        .filter((statut) =>
+          Object.values(DeclarationSejour.statuts).includes(statut),
+        )
+    : null,
+  departementSuivi: route.query.departementSuivi
+    ? route.query.departementSuivi.split(",")
+    : null,
+  periode: route.query.periode
+    ? route.query.periode
+        .split(",")
+        .filter((periode) => saisons.includes(periode))
+    : null,
+});
+
 const demandeSejourStore = useDemandeSejourStore();
 
 const idOptions = computed(() => {
@@ -270,12 +305,6 @@ const departementOptions = computed(() => {
   });
 });
 
-const saisonOptions = computed(() => {
-  return demandeSejourStore.demandes
-    .map((d) => d.periode)
-    .filter((v, i, a) => a.indexOf(v) === i);
-});
-
 const statutOptions = [
   { label: "BROUILLON", value: "BROUILLON" },
   { label: "TRANSMISE", value: "TRANSMISE" },
@@ -297,27 +326,84 @@ const statutOptions = [
   { label: "TERMINEE", value: "TERMINEE" },
 ];
 
+const removeAttribute = (object, key) =>
+  (({ [key]: rest, ...query }) => ({ [key]: rest, query }))(object);
+
 const onUpdateId = (id) => {
+  if (id.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, declarationId: id.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "declarationId");
+    navigateTo({ replace: true, query });
+  }
   search.declarationId = id;
 };
 
 const onUpdateSiret = (siret) => {
+  if (siret.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, siret: siret.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "siret");
+    navigateTo({ replace: true, query });
+  }
   search.siret = siret;
 };
-const onUpdateIdFonctionnelle = (id) => {
-  search.idFonctionnelle = id;
+const onUpdateIdFonctionnelle = (idFonctionnelle) => {
+  if (idFonctionnelle.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, idFonctionnelle: idFonctionnelle.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "idFonctionnelle");
+    navigateTo({ replace: true, query });
+  }
+  search.idFonctionnelle = idFonctionnelle;
 };
 
 const onUpdateDepartement = (d) => {
+  if (d.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, departementSuivi: d.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "departementSuivi");
+    navigateTo({ replace: true, query });
+  }
   search.departementSuivi = d;
 };
 
 const onUpdateStatut = (s) => {
+  if (s.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, statut: s.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "statut");
+    navigateTo({ replace: true, query });
+  }
   search.statut = s;
 };
 
-const onUpdateSaison = (s) => {
-  search.periode = s;
+const onUpdateSaison = (periode) => {
+  if (periode.length) {
+    navigateTo({
+      replace: true,
+      query: { ...route.query, periode: periode.join(",") },
+    });
+  } else {
+    const { query } = removeAttribute(route.query, "periode");
+    navigateTo({ replace: true, query });
+  }
+  search.periode = periode;
 };
 
 const listeStatutAutoriseBoutonDeleteCancel = [
@@ -494,15 +580,16 @@ async function copyDS(dsId) {
       credentials: "include",
     });
     if (response.declarationId) {
-      toaster.success(`Déclaration dupliquée`);
+      toaster.success({ titleTag: "h2", description: `Déclaration dupliquée` });
       demandeSejourStore.fetchDemandes();
     }
     log.d(`demande de séjour ${response.declarationId} dupliquée`);
   } catch (error) {
     log.w("Copie de la declaration de sejour : ", { error });
-    return toaster.error(
-      `Une erreur est survenue lors de la copie de la déclaration de séjour`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de la copie de la déclaration de séjour`,
+    });
   }
 }
 async function deleteDS(dsId) {
@@ -514,19 +601,21 @@ async function deleteDS(dsId) {
       credentials: "include",
     });
     if (response.deletedRows === 1) {
-      toaster.success(`Déclaration supprimée`);
+      toaster.success({ titleTag: "h2", description: `Déclaration supprimée` });
       demandeSejourStore.fetchDemandes();
     } else {
       log.w("Erreur durant la suppression de la declaration de sejour");
-      return toaster.error(
-        `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
-      );
+      return toaster.error({
+        titleTag: "h2",
+        description: `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
+      });
     }
   } catch (error) {
     log.w("Erreur durant la suppression de la declaration de sejour : ");
-    return toaster.error(
-      `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
+    });
   }
 }
 async function cancelDS(dsId) {
@@ -538,19 +627,21 @@ async function cancelDS(dsId) {
       credentials: "include",
     });
     if (response.canceletedRows === 1) {
-      toaster.success(`Déclaration annulée`);
+      toaster.success({ titleTag: "h2", description: `Déclaration annulée` });
       demandeSejourStore.fetchDemandes();
     } else {
       log.w("Erreur durant l'annulation de la declaration de sejour");
-      return toaster.error(
-        `Une erreur est survenue lors de l'annulation' de la déclaration de séjour`,
-      );
+      return toaster.error({
+        titleTag: "h2",
+        description: `Une erreur est survenue lors de l'annulation' de la déclaration de séjour`,
+      });
     }
   } catch (error) {
     log.w("Erreur durant l'annulation de la declaration de sejour : ");
-    return toaster.error(
-      `Une erreur est survenue lors de l'annulation de la déclaration de séjour`,
-    );
+    return toaster.error({
+      titleTag: "h2",
+      description: `Une erreur est survenue lors de l'annulation de la déclaration de séjour`,
+    });
   }
 }
 

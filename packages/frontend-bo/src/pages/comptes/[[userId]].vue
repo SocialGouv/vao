@@ -22,9 +22,7 @@
         </div>
         <div v-else>
           <form>
-            <fieldset
-              class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v"
-            >
+            <div class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v">
               <h1
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
@@ -41,7 +39,7 @@
                     :error-message="emailField.errorMessage"
                     :model-value="emailField.modelValue"
                     type="text"
-                    label="Email"
+                    label="Adresse courriel"
                     name="email"
                     :disabled="formStatus === formStates.EDITION"
                     :required="true"
@@ -119,7 +117,7 @@
                 "
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
-                <fieldset class="fr-fieldset">
+                <div class="fr-fieldset">
                   <div class="fr-fieldset__element">
                     <div class="fr-input-group fr-col-6">
                       <DsfrSelect
@@ -147,7 +145,7 @@
                       />
                     </div>
                   </div>
-                </fieldset>
+                </div>
               </div>
               <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
@@ -182,7 +180,9 @@
                       v-model="actifField.modelValue"
                       type="checkbox"
                       class="fr-toggle__input"
-                      :disabled="!(usersStore.user.roles.includes('Desactivation'))"
+                      :disabled="
+                        !usersStore.user.roles.includes('Desactivation')
+                      "
                       aria-describedby="toggle-valide"
                       @update:model-value="checkValidDeleted"
                     />
@@ -192,9 +192,27 @@
                       data-fr-checked-label="Activé"
                       data-fr-unchecked-label="Désactivé"
                       >Compte actif</label
-                    ><div v-if="!actifField.modelValue && usersStore.userSelected.deleted_date"><br>Désactivé le {{ formatDate(usersStore.userSelected.deleted_date, "dd/MM/yyyy") }}</div>
-                    <p id="toggle-valide" class="fr-hint-text" v-if="usersStore.user.roles.includes('Desactivation')">
-                      <br>Compte actif
+                    >
+                    <div
+                      v-if="
+                        !actifField.modelValue &&
+                        usersStore.userSelected.deleted_date
+                      "
+                    >
+                      <br />Désactivé le
+                      {{
+                        formatDate(
+                          usersStore.userSelected.deleted_date,
+                          "dd/MM/yyyy",
+                        )
+                      }}
+                    </div>
+                    <p
+                      v-if="usersStore.user.roles.includes('Desactivation')"
+                      id="toggle-valide"
+                      class="fr-hint-text"
+                    >
+                      <br />Compte actif
                     </p>
                   </div>
                   <DsfrButton :disabled="!canSubmit" @click.prevent="update"
@@ -203,7 +221,7 @@
                 </div>
               </div>
               <div class="fr-messages-group" aria-live="assertive"></div>
-            </fieldset>
+            </div>
           </form>
         </div>
       </div>
@@ -212,7 +230,6 @@
 </template>
 
 <script setup>
-import "@vueform/multiselect/themes/default.css";
 import { formatDate } from "date-fns/format";
 
 const route = useRoute();
@@ -226,7 +243,7 @@ const searchState = reactive({
   territoireCode: null,
   valide: true,
   email: null,
-  deleted: false
+  deleted: false,
 });
 
 definePageMeta({
@@ -299,8 +316,8 @@ const roleOptions = [
   },
   {
     label: "Autorisé à désactiver les comptes",
-    name: "Desactivation"
-  },  
+    name: "Desactivation",
+  },
 ];
 
 const formStates = {
@@ -517,7 +534,7 @@ onMounted(async () => {
       roleUtilisateurField.modelValue.push(role);
     });
     // Suppression du rôle "Autorisé à désactiver les comptes" si l'a pas le droit lui même de le faire
-    if (!usersStore.user.roles.includes('Desactivation')) {
+    if (!usersStore.user.roles.includes("Desactivation")) {
       roleOptions.pop();
     }
     roleUtilisateurField.isValid = true;

@@ -56,6 +56,12 @@ router.get(
   demandeSejourController.historique,
 );
 router.get(
+  "/admin/stats",
+  boCheckJWT,
+  getDepartements,
+  demandeSejourController.getAdminStats,
+);
+router.get(
   "/admin/:declarationId",
   boCheckJWT,
   boCheckRoleDS,
@@ -95,6 +101,7 @@ router.post(
   checkPermissionBODeclarationSejourUpdate,
   demandeSejourController.enregistrementDemande2Mois,
 );
+router.get("/stats", checkJWT, demandeSejourController.getStats);
 router.get(
   "/:declarationId",
   checkJWT,

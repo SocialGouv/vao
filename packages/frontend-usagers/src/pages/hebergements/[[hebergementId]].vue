@@ -22,7 +22,7 @@
     </div>
     <div class="fr-grid-row">
       <div class="fr-col-12">
-        <Hebergement
+        <HebergementWithSave
           :init-hebergement="
             hebergementId ? hebergementStore.hebergementCourant : {}
           "
@@ -32,44 +32,13 @@
           :message="apiStatus.message"
           is-save-visible
           @submit="updateOrCreate"
-        >
-          <template #search="scope">
-            <SearchAddress
-              name="coordonnees.adresse"
-              :value="scope.adresse"
-              :label="scope.label"
-              :initial-adress="scope.initialAdress"
-              :error-message="scope.errorMessage"
-              @select="(value) => scope.onAddresseChange(value)"
-            />
-          </template>
-          <template #map="scope">
-            <div style="height: 50vh">
-              <LMap
-                ref="map"
-                :zoom="zoom"
-                :center="scope.markers"
-                :use-global-leaflet="false"
-                style="z-index: 0"
-              >
-                <LTileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-                  layer-type="base"
-                  name="OpenStreetMap"
-                />
-                <LMarker :lat-lng="scope.markers"></LMarker>
-              </LMap>
-            </div>
-          </template>
-        </Hebergement>
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { Hebergement } from "@vao/shared";
 definePageMeta({
   middleware: ["is-connected", "check-hebergement-id-param"],
 });
@@ -98,8 +67,6 @@ useHead({
   ],
 });
 
-const zoom = 16;
-
 const links = [
   {
     to: "/",
@@ -125,7 +92,10 @@ async function updateOrCreate(hebergement) {
   try {
     await hebergementStore.updaloadFiles(hebergement);
   } catch (e) {
-    toaster.error(e.message ?? "Erreur lors de la sauvegarde de l'hébergement");
+    toaster.error({
+      titleTag: "h2",
+      description: e.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+    });
     resetApiStatut();
     return;
   }
@@ -137,23 +107,21 @@ async function updateOrCreate(hebergement) {
       hebergementId.value,
     );
     log.d("hebergement sauvegardé");
-    toaster.success("Hébergement sauvegardé");
+    toaster.success({ titleTag: "h2", description: "Hébergement sauvegardé" });
 
     if (!hebergementId.value && id) {
       return await navigateTo("/hebergements/liste");
     }
   } catch (error) {
-    toaster.error(
-      error.data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
-    );
+    toaster.error({
+      titleTag: "h2",
+      description:
+        error.data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+    });
     log.w("updateOrCreate - erreur", { error });
   } finally {
     resetApiStatut();
   }
-}
-
-function back() {
-  navigateTo("/hebergements/liste");
 }
 </script>
 

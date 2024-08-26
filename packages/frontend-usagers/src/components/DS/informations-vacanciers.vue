@@ -6,7 +6,7 @@
         sont obligatoires</span
       >
     </div>
-    <fieldset class="fr-fieldset">
+    <div class>
       <div class="fr-fieldset__element">
         <DsfrInputGroup
           name="effectifPrevisionnel"
@@ -16,7 +16,7 @@
           :readonly="!props.modifiable"
           :is-valid="effectifPrevisionnelMeta.valid"
           :error-message="effectifPrevisionnelErrorMessage"
-          placeholder="nombre de vacanciers"
+          placeholder="5"
           @update:model-value="onEffectifPrevisionnelChange"
         />
       </div>
@@ -29,7 +29,7 @@
           :readonly="!props.modifiable"
           :is-valid="effectifPrevisionnelHommeMeta.valid"
           :error-message="effectifPrevisionnelHommeErrorMessage"
-          placeholder="nombre d'hommes prévus"
+          placeholder="5"
           @update:model-value="onEffectifPrevisionnelHommeChange"
         />
       </div>
@@ -42,7 +42,7 @@
           :readonly="!props.modifiable"
           :is-valid="effectifPrevisionnelFemmeMeta.valid"
           :error-message="effectifPrevisionnelFemmeErrorMessage"
-          placeholder="nombre de femmes prévues"
+          placeholder="5"
           @update:model-value="onEffectifPrevisionnelFemmeChange"
         />
       </div>
@@ -74,7 +74,7 @@
         <div class="fr-col-12">
           <DsfrInputGroup
             name="precisionDeficiences"
-            label="Précisez"
+            label="Apportez plus de précisions sur les déficiences des vacanciers"
             :model-value="precisionDeficiences"
             :label-visible="true"
             :is-textarea="true"
@@ -85,7 +85,7 @@
           />
         </div>
       </div>
-    </fieldset>
+    </div>
     <UtilsNavigationButtons
       :show-buttons="props.showButtons"
       :is-downloading="props.isDownloading"

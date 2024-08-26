@@ -22,9 +22,9 @@
                 <DsfrInputGroup
                   :model-value="email"
                   type="text"
-                  label="Email"
+                  label="Adresse courriel"
                   :label-visible="true"
-                  placeholder="Veuillez saisir votre email"
+                  placeholder="Veuillez saisir votre adresse courriel"
                   @update:model-value="editMail"
                 />
               </div>
@@ -81,7 +81,7 @@ const editMail = (v) => (email.value = v);
 
 const displayInfos = {
   Success: {
-    title: "Email envoyé",
+    title: "Courriel envoyé",
     description:
       "Si un compte est rattaché à cette adresse électronique, vous allez recevoir un courriel dans quelques instants. Il vous permettra de réinitialiser votre mot de passe en quelques clics",
     type: "success",

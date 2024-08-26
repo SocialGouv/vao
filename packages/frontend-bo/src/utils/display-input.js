@@ -47,7 +47,7 @@ const IPersonneMorale = {
   },
   email: {
     inputType: InputTypes.TEXT,
-    label: "Courriel",
+    label: "Adresse courriel",
   },
   representantsLegaux: {
     inputType: InputTypes.TABLE,
@@ -168,7 +168,7 @@ const IResponsableSejour = {
   },
   email: {
     inputType: InputTypes.TEXT,
-    label: "Email",
+    label: "Adresse courriel",
   },
   telephone: {
     inputType: InputTypes.TEXT,
@@ -443,12 +443,12 @@ const ISanitaire = {
 const IHebergement = {
   dateDebut: {
     inputType: InputTypes.TO_FORMAT,
-    label: "Du",
+    label: "Date de début",
     formatter: (value) => formatDate(value, "dd/MM/yyyy"),
   },
   dateFin: {
     inputType: InputTypes.TO_FORMAT,
-    label: "Au",
+    label: "Date de fin",
     formatter: (value) => formatDate(value, "dd/MM/yyyy"),
   },
   nom: {

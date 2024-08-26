@@ -36,7 +36,7 @@ const typeOptions = [
 const accessibiliteOptions = [
   { label: "Accessible", value: "accessible" },
   { label: "Signalé comme non adapté", value: "non_adapte" },
-  { label: "Commentaires", value: "commentaires" },
+  { label: "Autre (précisez ci-dessous)", value: "commentaires" },
 ];
 
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
@@ -61,7 +61,7 @@ const coordonneesSchema = {
         numTelephone2 == null || numTelephoneRegex.test(numTelephone2),
     )
     .nullable(),
-  email: yup.string().email("Format de courriel invalide").nullable(),
+  email: yup.string().email("Format de l'adresse courriel invalide").nullable(),
 };
 const informationsLocauxSchema = {
   type: yup

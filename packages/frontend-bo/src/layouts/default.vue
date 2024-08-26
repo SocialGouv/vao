@@ -77,6 +77,7 @@ function acceptAll() {
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
           <DsfrHeader
+            id="header"
             service-title="Back-office : Vacances Adaptées Organisées (VAO)"
             service-description="La plateforme de déclaration et suivi des séjours organisés pour les personnes handicapées majeures"
             :home-to="homeTo"
@@ -85,14 +86,33 @@ function acceptAll() {
             :logo-text="header.logoText"
           >
             <template #mainnav>
-              <DsfrNavigation :nav-items="navItems" />
+              <div class="fr-skiplinks">
+                <nav
+                  class="fr-container"
+                  role="navigation"
+                  aria-label="Accès rapide"
+                >
+                  <ul class="fr-skiplinks__list" role="list">
+                    <li role="listitem">
+                      <a class="fr-link" href="#menu">Menu</a>
+                    </li>
+                    <li role="listitem">
+                      <a class="fr-link" href="#content">Contenu</a>
+                    </li>
+                    <li role="listitem">
+                      <a class="fr-link" href="#footer">Pied de page</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+              <DsfrNavigation id="menu" :nav-items="navItems" />
             </template>
           </DsfrHeader>
         </div>
       </div>
     </div>
 
-    <div class="fr-container">
+    <div id="content" class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
           <slot />
@@ -103,10 +123,12 @@ function acceptAll() {
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
           <DsfrFooter
+            id="footer"
             legal-link="/footer/mentions-legales"
             personal-data-link="/footer/donnees-personnelles"
             cookies-link="/footer/gestion-cookies"
             a11y-compliance-link="/footer/accessibilite"
+            home-title="Retour à l'accueil Vacances Adaptées Organisés, République Française"
           >
             <template #description>
               <p
@@ -115,12 +137,15 @@ function acceptAll() {
               >
                 Environnement : {{ config.public.environment }}
               </p>
-              <p
+              <a
                 v-if="config.public.appVersion"
+                href="https://vao-assistance.atlassian.net/wiki/spaces/IS/pages/91095041/MISE+A+JOUR+DE+LA+PLATEFORME+VAO"
                 class="fr-footer__content-desc"
+                title="assistance, nouvelle page"
+                target="_blank"
               >
                 Version : {{ config.public.appVersion }}
-              </p>
+              </a>
             </template>
           </DsfrFooter>
           <DsfrNotice
@@ -136,5 +161,3 @@ function acceptAll() {
     </div>
   </div>
 </template>
-
-<style></style>

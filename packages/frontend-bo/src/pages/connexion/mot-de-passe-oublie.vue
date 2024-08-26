@@ -19,15 +19,15 @@
           <div class="fr-container fr-mt-5v">
             <div class="fr-grid-row fr-grid-row--center">
               <form class="fr-col-12">
-                <fieldset class="fr-fieldset">
+                <div class="fr-fieldset">
                   <div class="fr-fieldset__element fr-col-12">
                     <div class="fr-input-group">
                       <DsfrInputGroup
                         :model-value="email"
                         type="text"
-                        label="Email"
+                        label="Adresse courriel"
                         :label-visible="true"
-                        placeholder="Veuillez saisir votre email"
+                        placeholder="Veuillez saisir votre adresse courriel"
                         @update:model-value="editMail"
                       />
                     </div>
@@ -39,7 +39,7 @@
                       >Renouveler mon mot de passe</DsfrButton
                     >
                   </div>
-                </fieldset>
+                </div>
               </form>
             </div>
           </div>
@@ -80,9 +80,9 @@ const editMail = (v) => (email.value = v);
 
 const displayInfos = {
   Success: {
-    title: "Email envoyé",
+    title: "Courriel envoyé",
     description:
-      "Un email a été envoyé sur la boîte mail à l'adresse renseignée si un compte y est rattaché . Veuillez le consulter pour réinitialiser votre mot de passe",
+      "Un courriel a été envoyé sur la boîte mail à l'adresse renseignée si un compte y est rattaché . Veuillez le consulter pour réinitialiser votre mot de passe",
     type: "success",
   },
   UnexpectedError: {

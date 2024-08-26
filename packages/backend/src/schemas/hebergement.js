@@ -5,7 +5,7 @@ const adresseSchema = require("./parts/adresse.js")({ isFromAPIAdresse: true });
 
 const coordonneesSchema = () => ({
   adresse: yup.object(adresseSchema).required(),
-  email: yup.string().email("Format de courriel invalide").nullable(),
+  email: yup.string().email("Format de l'adresse courriel invalide").nullable(),
   nomGestionnaire: yup.string().required(),
   numTelephone1: telephoneSchema(),
   numTelephone2: telephoneSchema().notRequired(),

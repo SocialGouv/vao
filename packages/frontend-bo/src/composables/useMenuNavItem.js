@@ -13,11 +13,11 @@ export const useMenuNavItems = () => {
             title: "Comptes",
             links: [
               {
-                text: "Back-office",
+                text: "Agents de l’Etat",
                 to: "/comptes/liste",
               },
               {
-                text: "Organismes",
+                text: "Organisateurs",
                 to: "/comptes/liste-organisme",
               },
             ],

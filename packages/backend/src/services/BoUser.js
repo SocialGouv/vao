@@ -53,6 +53,18 @@ const query = {
     ;`,
     [normalize(email), nom, prenom, territoireCode],
   ],
+  delete: (id, deleted_use_id) => [
+    `
+      UPDATE back.users
+      SET
+        deleted = true,
+        deleted_use_id = $2,
+        deleted_date = now()
+      WHERE
+        id = $1
+      `,
+    [id, deleted_use_id],
+  ],
   deleteRole: (id) => [
     `
   DELETE FROM back.user_roles
@@ -168,6 +180,16 @@ ${additionalParamsQuery}
       )
       AND deleted is False
     `,
+  undelete: (id) => [
+    `
+      UPDATE back.users
+      SET
+        deleted = false
+      WHERE
+        id = $1
+      `,
+    [id],
+  ],
   update: (id, nom, prenom, territoireCode) => [
     `
       UPDATE back.users
@@ -180,28 +202,6 @@ ${additionalParamsQuery}
         id = $1
       `,
     [id, nom, prenom, territoireCode],
-  ],
-  delete: (id,deleted_use_id)=> [
-    `
-      UPDATE back.users
-      SET
-        deleted = true,
-        deleted_use_id = $2,
-        deleted_date = now()
-      WHERE
-        id = $1
-      `,
-    [id, deleted_use_id],
-  ],
-  undelete: (id)=> [
-    `
-      UPDATE back.users
-      SET
-        deleted = false
-      WHERE
-        id = $1
-      `,
-    [id],
   ],
 };
 
@@ -242,7 +242,11 @@ module.exports.create = async ({
   return { code: "CreationCompte", user };
 };
 
-module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted },deleted_use_id) => {
+module.exports.update = async (
+  id,
+  { nom, prenom, roles, territoireCode, deleted },
+  deleted_use_id,
+) => {
   log.i("update - IN", { id });
   if (!id) {
     throw new AppError("Paramètre manquant", {
@@ -253,7 +257,7 @@ module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted
   const { rowCount } = await pool.query(
     ...query.update(id, nom, prenom, territoireCode),
   );
-  
+
   if (rowCount === 0) {
     log.d("update - DONE - Utilisateur BO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
@@ -261,8 +265,7 @@ module.exports.update = async (id, { nom, prenom, roles, territoireCode, deleted
     });
   }
   // Suppression logique du compte
-  if (deleted) 
-    await pool.query(...query.delete(id, deleted_use_id));
+  if (deleted) await pool.query(...query.delete(id, deleted_use_id));
 
   // Suppression des roles de l'utilisateur
   await pool.query(...query.deleteRole(id));
@@ -336,6 +339,7 @@ module.exports.read = async (
 
   log.w("read - IN", { search });
   let searchQuery = "";
+  let territoireSearchParamId = "";
   const searchParams = [];
 
   if (territoireCode && territoireCode !== "FRA") {
@@ -346,19 +350,28 @@ module.exports.read = async (
 
   // Search management
   if (search?.nom && search.nom.length) {
-    searchQuery += `   AND us.nom ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND us.nom ILIKE $${searchParams.length + 1}\n`;
     searchParams.push(`%${search.nom}%`);
   }
   if (search?.prenom && search.prenom.length) {
-    searchQuery += `   AND us.prenom ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND us.prenom ILIKE $${searchParams.length + 1}\n`;
     searchParams.push(`%${search.prenom}%`);
   }
   if (search?.email && search.email.length) {
-    searchQuery += `   AND us.mail ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND us.mail ILIKE $${searchParams.length + 1}\n`;
     searchParams.push(`%${normalize(search.email)}%`);
   }
-  if (search?.territoire && search.territoire.length) {
-    searchQuery += `   AND ter.label ilike $${searchParams.length + 1}\n`;
+  if (
+    search?.territoire &&
+    search?.territoire !== "FRA" &&
+    search.territoire.length
+  ) {
+    searchQuery += `   AND (
+      ter.label ILIKE $${searchParams.length + 1}
+      OR code ILIKE $${searchParams.length + 1}
+      OR ter.parent_code IN (SELECT code FROM matched_elements)
+    )\n`;
+    territoireSearchParamId = searchParams.length + 1;
     searchParams.push(`%${search.territoire}%`);
   }
   if (search?.valide !== undefined) {
@@ -394,14 +407,40 @@ module.exports.read = async (
   log.d("read", searchQuery + "\n   " + additionalQueryParts);
   log.d("read", [...searchParams, ...additionalParams]);
 
-  const response = await pool.query(
-    ...query.get(undefined, searchQuery + "\n   " + additionalQueryParts, [
-      ...searchParams,
-      ...additionalParams,
-    ]),
+  // const response = await pool.query(
+  //   ...query.get(undefined, searchQuery + "\n   " + additionalQueryParts, [
+  //     ...searchParams,
+  //     ...additionalParams,
+  //   ]),
+  // );
+
+  const queryPrepared = query.get(
+    undefined,
+    searchQuery + "\n   " + additionalQueryParts,
+    [...searchParams, ...additionalParams],
   );
 
-  const total = await pool.query(...query.getTotal(searchQuery, searchParams));
+  const territoirePreQuery = `
+    WITH matched_elements AS (
+      SELECT code
+      FROM geo.territoires
+      WHERE label ILIKE $${territoireSearchParamId}
+      OR code ILIKE $${territoireSearchParamId}
+    )\n`;
+
+  const response = await pool.query(
+    `${territoireSearchParamId ? territoirePreQuery : ""}
+    ${queryPrepared[0]}`,
+    queryPrepared[1],
+  );
+
+  const preparedTotalQuery = query.getTotal(searchQuery, searchParams);
+
+  const total = await pool.query(
+    `${territoireSearchParamId ? territoirePreQuery : ""}
+    ${preparedTotalQuery[0]}`,
+    preparedTotalQuery[1],
+  );
 
   log.i("read - DONE");
   return {

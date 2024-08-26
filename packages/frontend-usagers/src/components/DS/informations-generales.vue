@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <fieldset class="fr-fieldset">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-6">
         <DsfrInputGroup
           name="dateDebut"
@@ -51,8 +51,8 @@
           @update:model-value="onDateFinChange"
         />
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           name="periode"
@@ -62,8 +62,8 @@
           :readonly="true"
         />
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
           v-if="duree > 0"
@@ -90,7 +90,7 @@
         :show-button="false"
         @update:personne="onResponsableSejourChange"
       ></Personne>
-    </fieldset>
+    </div>
     <div
       v-if="organismeStore.organismeCourant.typeOrganisme === 'personne_morale'"
     >
@@ -103,7 +103,7 @@
       ></OrganismePersonneMorale>
     </div>
 
-    <fieldset v-if="props.showButtons" class="fr-fieldset">
+    <div v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton
         v-if="!props.isDownloading"
         id="next-step"
@@ -115,7 +115,7 @@
         :message="props.message"
         :is-downloading="props.isDownloading"
       />
-    </fieldset>
+    </div>
   </div>
 </template>
 

@@ -55,13 +55,16 @@ function togglePasswordType() {
         </slot>
       </slot>
       <DsfrButton
+        class="show-password"
+        type="button"
         style="float: right"
         :icon="icon"
         :tertiary="true"
         :no-outline="true"
-        :icon-only="true"
         @click.prevent="togglePasswordType"
-      />
+      >
+        <span class="fr-sr-only">Afficher mot de passe</span>
+      </DsfrButton>
 
       <span v-if="hint" class="fr-hint-text">{{ hint }}</span>
     </label>
@@ -76,7 +79,7 @@ function togglePasswordType() {
         'fr-input--valid': isValid,
       }"
       :value="modelValue"
-      :aria-describedby="descriptionId || undefined"
+      :aria-describedby="descriptionId || null"
       @input="$emit('update:modelValue', $event.target.value)"
     />
 
@@ -99,5 +102,8 @@ function togglePasswordType() {
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+.show-password {
+  gap: 0;
 }
 </style>

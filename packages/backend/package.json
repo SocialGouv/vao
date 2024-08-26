@@ -10,7 +10,7 @@
   "dependencies": {
     "@sentry/node": "~8.17.0",
     "@sentry/profiling-node": "^8.20.0",
-    "axios": "^1.6.8",
+    "axios": "^1.7.4",
     "body-parser": "~1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "~2.8.5",
@@ -40,6 +40,6 @@
     "prettier": "^3.2.5"
   },
   "lint-staged": {
-    "src/**/*.{js,ts}": "npx eslint --cache --fix"
+    "src/**/*.{js,ts}": "npx eslint --cache --fix --max-warnings=0"
   }
 }

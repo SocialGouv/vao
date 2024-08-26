@@ -10,9 +10,10 @@ export default defineNuxtPlugin(() => {
       }
       if (response.status === 403) {
         const toaster = useToaster();
-        return toaster.error(
-          "Vous n'êtes pas autorisé à réaliser cette action",
-        );
+        return toaster.error({
+          titleTag: "h2",
+          description: "Vous n'êtes pas autorisé à réaliser cette action",
+        });
       }
     },
   });

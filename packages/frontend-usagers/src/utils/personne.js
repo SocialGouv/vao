@@ -89,8 +89,10 @@ const schema = ({
     ...(showEmail && {
       email: yup
         .string()
-        .test("email", "l'email n'est pas au format attendu", (email) =>
-          regex.emailRegex.test(email),
+        .test(
+          "email",
+          "l'adresse de courriel n'est pas au format attendu",
+          (email) => regex.emailRegex.test(email),
         )
         .required(),
     }),

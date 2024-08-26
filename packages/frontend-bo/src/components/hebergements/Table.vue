@@ -1,7 +1,7 @@
 <template>
   <h1>Hebergements ({{ count }})</h1>
   <div class="fr-col-12">
-    <fieldset class="fr-fieldset">
+    <div class="fr-fieldset">
       <div
         class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
       >
@@ -17,7 +17,7 @@
           />
         </div>
       </div>
-    </fieldset>
+    </div>
   </div>
   <UtilsTable
     :headers="headers"
@@ -70,7 +70,8 @@ const router = useRouter();
 
 const refresqueryParams = () => {
   if (props.isUrlUpdate) {
-    router.replace({
+    navigateTo({
+      replace: true,
       query: {
         search: search.value,
         sort: sort.value,

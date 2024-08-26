@@ -33,7 +33,7 @@ const helpers = {
   TokenExpiredError:
     "Le lien utilisé est déjà expiré. Cliquer sur le bouton « Générer un nouveau lien »",
   UserAlreadyVerified:
-    "L'email associé à votre email semble déjà activé. Rendez-vous sur la page de connexion pour vous identifier.",
+    "Votre adresse courriel semble déjà activé. Rendez-vous sur la page de connexion pour vous identifier.",
 };
 const { data, error, pending } = useFetchBackend(
   "/bo-authentication/email/validate",
@@ -58,9 +58,10 @@ watch(data, () => {
   if (data.value == null) {
     return;
   }
-  toaster.success(
-    `Votre compte est maintenant activé. Vous allez être redirigé vers la page de modification du mot de passe.`,
-  );
+  toaster.success({
+    titleTag: "h2",
+    description: `Votre compte est maintenant activé. Vous allez être redirigé vers la page de modification du mot de passe.`,
+  });
 
   //props.token
   //xxxxxxxxxxxxxxxxxxxxxxxxx
@@ -97,16 +98,18 @@ async function renewToken() {
     },
   )
     .then(() => {
-      toaster.success(
-        `Un nouvel email de validation a été envoyé sur votre boîte mail.`,
-      );
+      toaster.success({
+        titleTag: "h2",
+        description: `Un nouvel courriel de validation a été envoyé sur votre boîte de courriel.`,
+      });
 
       log.i("renew - Done");
     })
     .catch((error) => {
-      toaster.error(
-        `Une erreur est survenue lors de l'envoi de l'email. Veuillez contacter l'assistance.`,
-      );
+      toaster.error({
+        titleTag: "h2",
+        description: `Une erreur est survenue lors de l'envoi du courriel. Veuillez contacter l'assistance.`,
+      });
       log.w("renew", error);
     });
 }

@@ -18,7 +18,7 @@
     "@nuxtjs/leaflet": "^1.0.14",
     "@pinia/nuxt": "~0.5.1",
     "@sentry/vue": "~8.17.0",
-    "@socialgouv/dsfr-toaster-nuxt-module": "~1.2.1",
+    "@socialgouv/dsfr-toaster-nuxt-module": "~1.3.0",
     "@vao/shared": "1.0.0",
     "@vee-validate/i18n": "~4.13.0",
     "@vee-validate/rules": "~4.13.0",
@@ -48,6 +48,6 @@
     "typescript": "~5.4.3"
   },
   "lint-staged": {
-    "src/**/*.{js,vue,ts}": "npx eslint --cache --fix"
+    "src/**/*.{js,vue,ts}": "npx eslint --cache --max-warnings=0"
   }
 }

@@ -42,7 +42,6 @@ const schema = (statut) => {
           yup.object(
             personne.schema({
               showAdresse: false,
-              showAttestation: true,
               showFonction: false,
               showCompetence: true,
               showDateNaissance: true,
@@ -62,7 +61,6 @@ const schema = (statut) => {
           yup.object(
             personne.schema({
               showAdresse: false,
-              showAttestation: true,
               showFonction: false,
               showCompetence: true,
               showDateNaissance: true,

@@ -35,7 +35,7 @@ const query = {
   ],
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
-SELECT 
+SELECT
   COUNT (DISTINCT us.id)
 FROM front.users AS us
   LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
@@ -75,6 +75,14 @@ module.exports.read = async ({
   if (search?.siret && search.siret.length) {
     searchQuery += `   AND org.personne_morale->>'siret' ilike $${searchParams.length + 1}\n`;
     searchParams.push(`%${normalize(search.siret)}%`);
+  }
+  if (search?.organisme && search.organisme.length) {
+    searchQuery += `AND (
+      org.personne_morale ->> 'raisonSociale' ilike $${searchParams.length + 1}
+      OR org.personne_physique ->> 'prenom' ilike $${searchParams.length + 1}
+      OR org.personne_physique ->> 'nomUsage' ilike $${searchParams.length + 1}
+      )`;
+    searchParams.push(`%${search.organisme}%`);
   }
 
   let additionalQueryParts = "";

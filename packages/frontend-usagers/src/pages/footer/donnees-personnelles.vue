@@ -36,23 +36,23 @@
         <h2>Finalités du traitement</h2>
         <p>Ce traitement a pour finalités :</p>
 
-        <ol>
-          <li>
+        <ol role="list">
+          <li role="listitem">
             Le dépôt et l’instruction des demandes d’agrément « vacances
             adaptées organisées », tel que prévu aux articles L. 412-2 et R.
             412-9 et suivants du code du tourisme ;
           </li>
-          <li>
+          <li role="listitem">
             Le dépôt et l’instruction des déclarations de séjours « vacances
             adaptées organisées », tel que prévu à l’article R. 412-14 du même
             code ;
           </li>
-          <li>
+          <li role="listitem">
             Le recueil et le suivi des signalements des évènements indésirables
             graves déclarés en application de l’article R. 412-14-1 du même code
             ;
           </li>
-          <li>
+          <li role="listitem">
             Le suivi et l’évaluation du dispositif « vacances adaptées
             organisées » au niveau national et local.
           </li>
@@ -64,24 +64,24 @@
           Sont habilités à accéder au traitement mentionné, à raison de leurs
           attributions respectives et dans la limite du besoin d'en connaître :
         </p>
-        <ol>
-          <li>
+        <ol role="list">
+          <li role="listitem">
             Les personnes physiques ou morales demandant un agrément “vacances
             adaptées organisées“, déclarant un séjour « vacances adaptées
             organisées » ou signalant un évènement indésirable grave, pour les
             seules données qu’ils enregistrent ;
           </li>
-          <li>
+          <li role="listitem">
             Les agents des services déconcentrés du ministère chargé des
             affaires sociales spécialement habilités par leur directeur ;
           </li>
-          <li>
+          <li role="listitem">
             Les agents de la direction générale de la cohésion sociale
             spécialement habilités par le directeur général de la cohésion
             sociale, pour le suivi et l’évaluation du dispositif « vacances
             adaptées organisées » au niveau national et local ;
           </li>
-          <li>
+          <li role="listitem">
             Le cas échéant, les sous-traitants auxquels les responsables de
             traitement ont recours, dans le respect des conditions fixées par
             l'article 28 du règlement (UE) 2016/679 du 27 avril 2016 susvisé.
@@ -128,7 +128,7 @@
           <p>
             Consultez le site de la
             <a
-              title="Site internet de la CNIL"
+              title="Site internet de la CNIL, nouvelle fenêtre"
               href="https://cnil.fr/"
               target="_blank"
               rel="noopener external"
@@ -138,7 +138,7 @@
           </p>
         </em>
         <a
-          title="formulaire de plainte de la CNIL"
+          title="formulaire de plainte de la CNIL, nouvelle fenêtre"
           href="https://www.cnil.fr/fr/plaintes"
           target="_blank"
           rel="noopener external"

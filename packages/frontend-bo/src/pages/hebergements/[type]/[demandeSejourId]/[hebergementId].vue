@@ -47,7 +47,6 @@ definePageMeta({
 });
 
 const route = useRoute();
-const router = useRouter();
 const demandeSejourStore = useDemandeSejourStore();
 
 const config = useRuntimeConfig();
@@ -55,7 +54,10 @@ const config = useRuntimeConfig();
 // const zoom = 16;
 
 if (route.params.type !== "lies-a-des-sejours") {
-  router.replace({ params: { ...route.params, type: "lies-a-des-sejours" } });
+  navigateTo({
+    replace: true,
+    params: { ...route.params, type: "lies-a-des-sejours" },
+  });
 }
 
 const hebergement = computed(() => demandeSejourStore.hebergement);
@@ -64,7 +66,10 @@ const toaster = useToaster();
 const demandeSejourId = parseInt(route.params.demandeSejourId, 10);
 const hebergementId = parseInt(route.params.hebergementId, 10);
 if (isNaN(demandeSejourId) || isNaN(hebergementId)) {
-  toaster.error("Cet hébergement n'existe pas");
+  toaster.error({
+    titleTag: "h2",
+    description: "Cet hébergement n'existe pas",
+  });
   navigateTo("/hebergements/lies-a-des-sejours");
 }
 try {
@@ -74,7 +79,10 @@ try {
   );
 } catch (error) {
   if (error?.response?.status === 404) {
-    toaster.error("Cet hébergement n'existe pas");
+    toaster.error({
+      titleTag: "h2",
+      description: "Cet hébergement n'existe pas",
+    });
     navigateTo("/hebergements/lies-a-des-sejours");
   }
   throw error;

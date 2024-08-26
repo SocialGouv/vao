@@ -92,8 +92,8 @@ const etablissementPrincipalSchema = () => ({
   adresse: yup.string().required(),
   email: yup
     .string()
-    .email("le format de l'email n'est pas valide")
-    .required("L'email de contact est obligatoire"),
+    .email("le format de l'adresse courriel n'est pas valide")
+    .required("L'adresse de courriel de contact est obligatoire"),
 
   nomCommercial: yup.string().nullable().default(null),
   pays: yup.string().required(),
@@ -144,8 +144,8 @@ const personneMoraleSchema = {
   pays: yup.string().required(),
   email: yup
     .string()
-    .email("le format de l'email n'est pas valide")
-    .required("L'email de contact est obligatoire"),
+    .email("le format de l'adresse courriel n'est pas valide")
+    .required("L'adresse courriel de contact est obligatoire"),
   telephone: yup
     .string()
     .test("telephone", "Format de numéro de téléphone invalide", (telephone) =>
@@ -243,7 +243,8 @@ const agrementSchema = (regions) => ({
     )
     .required(),
   dateObtention: yup
-    .date("la date d'obtention est obligatoire")
+    .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
+    .typeError("date invalide")
     .max(new Date(), "La date doit être inférieure à la date du jour.")
     .min(
       dayjs().add(-5, "year"),

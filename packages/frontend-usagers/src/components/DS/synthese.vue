@@ -2,8 +2,8 @@
   <div>
     <div class="fr-grid-row fr-my-5v">
       <DsfrAccordionsGroup>
-        <ul>
-          <li v-if="stepToDisplay('info-generales')">
+        <ul role="list">
+          <li v-if="stepToDisplay('info-generales')" role="listitem">
             <DsfrAccordion
               :id="1"
               title="Informations générales"
@@ -27,7 +27,7 @@
               ></DSInformationsGenerales>
             </DsfrAccordion>
           </li>
-          <li v-if="stepToDisplay('info-vacanciers')">
+          <li v-if="stepToDisplay('info-vacanciers')" role="listitem">
             <DsfrAccordion
               :id="2"
               title="Informations sur les vacanciers"
@@ -53,7 +53,7 @@
               </DSInformationsVacanciers>
             </DsfrAccordion>
           </li>
-          <li v-if="stepToDisplay('info-personnel')">
+          <li v-if="stepToDisplay('info-personnel')" role="listitem">
             <DsfrAccordion
               :id="3"
               title="Informations sur le personnel"
@@ -78,7 +78,7 @@
               ></DSInformationsPersonnel>
             </DsfrAccordion>
           </li>
-          <li v-if="stepToDisplay('projet-sejour')">
+          <li v-if="stepToDisplay('projet-sejour')" role="listitem">
             <DsfrAccordion
               :id="4"
               title="Projet de séjour"
@@ -101,7 +101,7 @@
               ></DSProjetSejour>
             </DsfrAccordion>
           </li>
-          <li v-if="stepToDisplay('info-transport')">
+          <li v-if="stepToDisplay('info-transport')" role="listitem">
             <DsfrAccordion
               :id="5"
               title="Informations sur le transport"
@@ -126,7 +126,7 @@
               ></ProtocoleTransport>
             </DsfrAccordion>
           </li>
-          <li v-if="stepToDisplay('info-sanitaires')">
+          <li v-if="stepToDisplay('info-sanitaires')" role="listitem">
             <DsfrAccordion
               :id="6"
               title="Informations sanitaires"
@@ -151,7 +151,7 @@
               ></ProtocoleSanitaire>
             </DsfrAccordion>
           </li>
-          <li v-if="stepToDisplay('hebergements')">
+          <li v-if="stepToDisplay('hebergements')" role="listitem">
             <DsfrAccordion
               id="synthese-hebergement"
               title="Hébergements"
@@ -173,6 +173,7 @@
                   v-for="(item, index) in props.declarationCourante.hebergement
                     .hebergements"
                   :key="index"
+                  role="listitem"
                 >
                   <DsfrAccordion
                     :id="'synthese-hebergement-' + index"
@@ -207,7 +208,7 @@
       </DsfrAccordionsGroup>
     </div>
     <form>
-      <DsfrFieldset v-if="showAttestation" legend="Attestation">
+      <div v-if="showAttestation" class="fr-fieldset" legend="Attestation">
         <div v-if="props.modifiable" class="fr-fieldset__element fr-col-12">
           Vous allez finaliser votre déclaration complémentaire de façon
           définitive. Vous ne pourrez pas revenir dessus et la modifier
@@ -270,8 +271,8 @@
             :model-value="at"
           />
         </div>
-      </DsfrFieldset>
-      <fieldset class="fr-fieldset">
+      </div>
+      <div class="fr-fieldset">
         <DsfrButtonGroup
           v-if="!props.isDownloading"
           :inline-layout-when="true"
@@ -298,7 +299,7 @@
           :message="props.message"
           :is-downloading="props.isDownloading"
         />
-      </fieldset>
+      </div>
     </form>
   </div>
 </template>
