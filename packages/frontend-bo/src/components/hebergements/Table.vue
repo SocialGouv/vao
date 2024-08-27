@@ -19,7 +19,7 @@
       </div>
     </div>
   </div>
-  <UtilsTable
+  <TableWithPagination
     :headers="headers"
     :data="data"
     :total-items="count"
@@ -35,6 +35,8 @@
 </template>
 
 <script setup>
+import { TableWithPagination } from "@vao/shared";
+
 const props = defineProps({
   headers: { type: Array, required: true },
   data: { type: Array, required: true },
