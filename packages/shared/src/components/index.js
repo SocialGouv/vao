@@ -10,6 +10,7 @@ import CardsNumber from "./CardsNumber.vue";
 import CardNumber from "./CardNumber.vue";
 import PasswordInput from "./PasswordInput.vue";
 import TableFull from "./TableFull.vue";
+import MultiSelectOption from "./MultiSelectOption.vue";
 
 export {
   FileUpload,
@@ -24,4 +25,5 @@ export {
   CardNumber,
   PasswordInput,
   TableFull,
+  MultiSelectOption,
 };
