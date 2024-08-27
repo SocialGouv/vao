@@ -112,11 +112,6 @@
       @update-items-by-page="updateItemsByPage"
       @update-current-page="updateCurrentPage"
     />
-    <fieldset class="fr-fieldset">
-      <DsfrButton>
-        <NuxtLink to="/eig"> Déclarer un EIG</NuxtLink>
-      </DsfrButton>
-    </fieldset>
     <ValidationModal
       modal-ref="modal-eig-list-consult"
       name="consult-eig"
