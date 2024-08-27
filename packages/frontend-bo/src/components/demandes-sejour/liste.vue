@@ -90,7 +90,7 @@
                       :is-pointed="isPointed(option)"
                     />
                   </template>
-                  <template #no-result> Pas de résultat </template>
+                  <template #no-result> Pas de résultat</template>
                 </Multiselect>
               </div>
             </div>
@@ -152,9 +152,16 @@
 </template>
 
 <script setup>
-import { TableWithPagination, ValidationModal, CardsNumber } from "@vao/shared";
+import {
+  CardsNumber,
+  MultiSelectOption,
+  TableWithPagination,
+  ValidationModal,
+} from "@vao/shared";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
+import Multiselect from "@vueform/multiselect";
+import "@vueform/multiselect/themes/default.css";
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],
@@ -164,9 +171,6 @@ definePageMeta({
 const props = defineProps({
   organisme: { type: String, required: false, default: null },
 });
-
-import Multiselect from "@vueform/multiselect";
-import "@vueform/multiselect/themes/default.css";
 
 const log = logger("pages/sejours");
 
