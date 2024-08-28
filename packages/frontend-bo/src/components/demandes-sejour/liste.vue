@@ -145,6 +145,7 @@
       title="Prise en charge d'une déclaration de séjour"
       :on-close="closePrendEnChargeModal"
       :on-validate="validatePriseEnCharge"
+      validation-label="Valider la prise en charge"
       >Vous vous apprêtez à prendre en charge la déclaration du séjour : <br />
       - {{ declarationAPrendreEnCharge.libelle }}
     </ValidationModal>
