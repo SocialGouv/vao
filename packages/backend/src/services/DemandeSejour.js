@@ -250,6 +250,7 @@ FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
 WHERE
   o.id  = ANY ($1)
+ORDER BY ds.edited_at DESC
 `,
     [organismeIds],
   ],
@@ -936,9 +937,9 @@ module.exports.getByDepartementCodes = async (
 
   // Order management
   if (sortBy && sortDirection) {
-    queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, "createdAt" DESC`;
+    queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, ds.edited_at DESC`;
   } else {
-    queryWithPagination += 'ORDER BY "createdAt" DESC';
+    queryWithPagination += "ORDER BY ds.edited_at DESC";
   }
 
   const paramsWithPagination = [...params];
