@@ -459,7 +459,7 @@
         <DsfrInputGroup
           name="informationsLocaux.precisionAmenagementsSpecifiques"
           label="Précisez les informations concernant l'accessibilité"
-          hint="Redimensionnez le champ pour saisir plus de ligne. Minumum 5 caractères"
+          hint="Redimensionnez le champ pour saisir plus de ligne. Minimum 5 caractères"
           :label-visible="true"
           :is-textarea="true"
           placeholder=""
@@ -467,7 +467,7 @@
           :error-message="precisionAmenagementsSpecifiquesErrorMessage"
           :is-valid="precisionAmenagementsSpecifiquesMeta.valid"
           :disabled="isDisabled"
-          hitn="Minumum 5 caractères"
+          hitn="Minimum 5 caractères"
           @update:model-value="onPrecisionAmenagementsSpecifiquesChange"
         />
       </div>

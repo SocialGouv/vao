@@ -283,7 +283,7 @@
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
-            hint="Minumum 5 caractères"
+            hint="Minimum 5 caractères"
             :model-value="accessibilitePrecision"
             :error-message="accessibilitePrecisionErrorMessage"
             :is-valid="accessibilitePrecisionMeta.valid"
@@ -489,7 +489,7 @@
           <DsfrInputGroup
             name="informationsLocaux.precisionAmenagementsSpecifiques"
             label="Précisez les types d'aménagements"
-            hint="Redimensionnez le champ pour saisir plus de ligne. Minumum 5 caractères"
+            hint="Redimensionnez le champ pour saisir plus de ligne. Minimum 5 caractères"
             :readonly="!props.modifiable"
             :label-visible="true"
             :is-textarea="true"
@@ -522,7 +522,7 @@
           <DsfrInputGroup
             name="informationsTransport.deplacementProximite"
             :readonly="!props.modifiable"
-            label="Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité. Minumum 5 caractères"
+            label="Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité. Minimum 5 caractères"
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
@@ -537,7 +537,7 @@
           <DsfrInputGroup
             name="informationsTransport.excursion"
             :readonly="!props.modifiable"
-            label="Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions. Minumum 5 caractères"
+            label="Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions. Minimum 5 caractères"
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
