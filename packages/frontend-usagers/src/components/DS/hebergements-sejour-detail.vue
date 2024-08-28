@@ -38,6 +38,7 @@
       <div class="fr-fieldset__element fr-col-6">
         <DsfrSelect
           :model-value="hebergementId"
+          default-unselected-text="Sélectionner un hébergement"
           name="hebergementId"
           label="Hebergement"
           :disabled="!props.modifiable"
