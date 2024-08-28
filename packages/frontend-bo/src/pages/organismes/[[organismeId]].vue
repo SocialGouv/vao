@@ -66,6 +66,7 @@
 </template>
 <script setup>
 import { useOrganismeStore } from "~/stores/organisme";
+
 const organismeStore = useOrganismeStore();
 const route = useRoute();
 const log = logger("pages/organismes/[[organismeId]]");
@@ -79,9 +80,6 @@ const selectedTabIndex = ref(0);
 const selectTab = (idx) => {
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
-  if (idx === 2 && !historique.value) {
-    execute();
-  }
 };
 
 const tabTitles = [
@@ -93,8 +91,8 @@ const organismeName = computed(() => {
   if (organismeStore.organisme) {
     return organismeStore.organisme.typeOrganisme ===
       organisme.type.PERSONNE_MORALE
-      ? organismeStore.organisme.personneMorale.raisonSociale ?? ""
-      : organismeStore.organisme.personnePhysique.nomUsage ?? "";
+      ? (organismeStore.organisme.personneMorale.raisonSociale ?? "")
+      : (organismeStore.organisme.personnePhysique.nomUsage ?? "");
   }
 });
 
@@ -107,15 +105,3 @@ onMounted(async () => {
   }
 });
 </script>
-<style scoped>
-.header {
-  padding: 1em 0em;
-}
-.container {
-  display: flex;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  justify-content: right;
-  gap: 1rem;
-}
-</style>
