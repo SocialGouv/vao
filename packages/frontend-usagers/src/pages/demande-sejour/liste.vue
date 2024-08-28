@@ -37,7 +37,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
-                    <template #no-result> Pas de résultat </template>
+                    <template #no-result> Pas de résultat</template>
                   </Multiselect>
                 </div>
               </div>
@@ -61,7 +61,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
-                    <template #no-result> Pas de résultat </template>
+                    <template #no-result> Pas de résultat</template>
                   </Multiselect>
                 </div>
               </div>
@@ -85,7 +85,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
-                    <template #no-result> Pas de résultat </template>
+                    <template #no-result> Pas de résultat</template>
                   </Multiselect>
                 </div>
               </div>
@@ -111,7 +111,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
-                    <template #no-result> Pas de résultat </template>
+                    <template #no-result> Pas de résultat</template>
                   </Multiselect>
                 </div>
               </div>
@@ -136,7 +136,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
-                    <template #no-result> Pas de résultat </template>
+                    <template #no-result> Pas de résultat</template>
                   </Multiselect>
                 </div>
               </div>
@@ -161,7 +161,7 @@
                         :is-pointed="isPointed(option)"
                       />
                     </template>
-                    <template #no-result> Pas de résultat </template>
+                    <template #no-result> Pas de résultat</template>
                   </Multiselect>
                 </div>
               </div>
@@ -194,19 +194,35 @@
         </form>
       </div>
     </div>
+    <ValidationModal
+      modal-ref="modal-ds-list"
+      name="modal-ds-action"
+      :opened="popUpParams != null"
+      :title="(popUpParams?.msg ?? '') + ' ?'"
+      :on-close="closeModal"
+      :on-validate="popUpParams?.cb ?? (() => {})"
+      validation-label="Confirmer"
+    >
+      <p>Vous vous apprêtez à effectuer l’action suivante :</p>
+      <ul>
+        <li>{{ popUpParams.msg }}</li>
+      </ul>
+      <p>Souhaitez vous poursuivre?</p>
+    </ValidationModal>
   </div>
 </template>
 <script setup>
-import { TableFull, MultiSelectOption } from "@vao/shared";
+import { MultiSelectOption, TableFull, ValidationModal } from "@vao/shared";
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
-const NuxtLink = resolveComponent("NuxtLink");
-const DsfrBadge = resolveComponent("DsfrBadge");
-const DsfrButtonGroup = resolveComponent("DsfrButtonGroup");
 import "@vueform/multiselect/themes/default.css";
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
 import { DeclarationSejour } from "#imports";
+
+const NuxtLink = resolveComponent("NuxtLink");
+const DsfrBadge = resolveComponent("DsfrBadge");
+const DsfrButtonGroup = resolveComponent("DsfrButtonGroup");
 
 const log = logger("pages/demande-sejour/liste");
 const toaster = useToaster();
@@ -406,6 +422,9 @@ const onUpdateSaison = (periode) => {
   search.periode = periode;
 };
 
+const popUpParams = ref(null);
+const closeModal = () => (popUpParams.value = null);
+
 const listeStatutAutoriseBoutonDeleteCancel = [
   DeclarationSejour.statuts.BROUILLON,
   DeclarationSejour.statuts.TRANSMISE,
@@ -539,7 +558,10 @@ const headers = [
             ].includes(row.statut),
             onClick: (event) => {
               event.stopPropagation();
-              copyDS(row.declarationId);
+              popUpParams.value = {
+                cb: () => copyDS(row.declarationId),
+                msg: "Duplication d’une déclaration",
+              };
             },
           },
           {
@@ -554,9 +576,18 @@ const headers = [
                 : "ri-close-line",
             onClick: (event) => {
               event.stopPropagation();
-              row.statut === DeclarationSejour.statuts.BROUILLON
-                ? deleteDS(row.declarationId)
-                : cancelDS(row.declarationId);
+
+              if (row.statut === DeclarationSejour.statuts.BROUILLON) {
+                popUpParams.value = {
+                  cb: () => deleteDS(row.declarationId),
+                  msg: "Suppression d’une déclaration",
+                };
+              } else {
+                popUpParams.value = {
+                  cb: () => cancelDS(row.declarationId),
+                  msg: "Annulation d’une déclaration",
+                };
+              }
             },
             disabled: !listeStatutAutoriseBoutonDeleteCancel.includes(
               row.statut,
@@ -571,6 +602,7 @@ const headers = [
     },
   },
 ];
+
 async function copyDS(dsId) {
   log.i("copyDS -IN");
   try {
@@ -590,8 +622,11 @@ async function copyDS(dsId) {
       titleTag: "h2",
       description: `Une erreur est survenue lors de la copie de la déclaration de séjour`,
     });
+  } finally {
+    closeModal();
   }
 }
+
 async function deleteDS(dsId) {
   log.i("deleteDS -IN");
   try {
@@ -616,8 +651,11 @@ async function deleteDS(dsId) {
       titleTag: "h2",
       description: `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
     });
+  } finally {
+    closeModal();
   }
 }
+
 async function cancelDS(dsId) {
   log.i("cancelDS -IN");
   try {
@@ -642,15 +680,11 @@ async function cancelDS(dsId) {
       titleTag: "h2",
       description: `Une erreur est survenue lors de l'annulation de la déclaration de séjour`,
     });
+  } finally {
+    closeModal();
   }
 }
 
 departementStore.fetch();
 demandeSejourStore.fetchDemandes();
 </script>
-
-<style>
-th.suivi {
-  cursor: pointer;
-}
-</style>

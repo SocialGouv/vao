@@ -276,8 +276,11 @@ module.exports.update = async (
   for (const role of roles) {
     await pool.query(...query.bindRole(id, role));
   }
-  // le role eig est attribué par default a tous les utilisateurs back
-  await pool.query(...query.bindRole(id, "eig"));
+
+  if (!roles.includes("eig")) {
+    // le role eig est attribué par default a tous les utilisateurs back
+    await pool.query(...query.bindRole(id, "eig"));
+  }
 
   log.i("update - DONE");
   return { code: "MajCompte" };

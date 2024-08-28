@@ -23,7 +23,7 @@
       <div class="fr-col-8">
         <div class="fr-input-group">
           <DsfrButton id="next-step" @click.prevent="onValidate"
-            >Valider la prise en charge
+            >{{ validationLabel ?? "Valider" }}
           </DsfrButton>
         </div>
       </div>
@@ -44,6 +44,11 @@ defineProps({
   onValidate: {
     type: Function,
     default: () => {},
+  },
+  validationLabel: {
+    type: String,
+    required: false,
+    default: null,
   },
 });
 </script>

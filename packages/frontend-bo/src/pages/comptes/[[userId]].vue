@@ -174,45 +174,38 @@
                   </DsfrButton>
                 </div>
                 <div v-else>
-                  <div class="fr-toggle">
-                    <input
+                  <div class="fr-fieldset__element">
+                    <DsfrToggleSwitch
+                      :key="modalOpenCounter"
                       id="toggle-valide"
-                      v-model="actifField.modelValue"
-                      type="checkbox"
-                      class="fr-toggle__input"
+                      :label="actifField.modelValue ? 'Activé' : 'Désactivé'"
+                      :model-value="actifField.modelValue"
                       :disabled="
                         !usersStore.user.roles.includes('Desactivation')
                       "
                       aria-describedby="toggle-valide"
-                      @update:model-value="checkValidDeleted"
+                      @update:model-value="openModal"
                     />
-                    <label
-                      class="fr-toggle__label"
-                      for="toggle-valide"
-                      data-fr-checked-label="Activé"
-                      data-fr-unchecked-label="Désactivé"
-                      >Compte actif</label
-                    >
-                    <div
+                    <p
                       v-if="
                         !actifField.modelValue &&
                         usersStore.userSelected.deleted_date
                       "
                     >
-                      <br />Désactivé le
+                      Désactivé le
                       {{
                         formatDate(
                           usersStore.userSelected.deleted_date,
                           "dd/MM/yyyy",
                         )
                       }}
-                    </div>
+                    </p>
                     <p
                       v-if="usersStore.user.roles.includes('Desactivation')"
                       id="toggle-valide"
                       class="fr-hint-text"
                     >
-                      <br />Compte actif
+                      Compte actif
                     </p>
                   </div>
                   <DsfrButton :disabled="!canSubmit" @click.prevent="update"
@@ -226,11 +219,29 @@
         </div>
       </div>
     </div>
+    <ValidationModal
+      modal-ref="modal-toggle-bo-user-actif"
+      name="modal-toggle-bo-user-actif"
+      :opened="popUpParams != null"
+      :title="
+        actifField.modelValue
+          ? 'Désactivation du compte ?'
+          : 'Activation du compte'
+      "
+      :on-close="closeModal"
+      :on-validate="popUpParams?.cb ?? (() => {})"
+      validation-label="Confirmer"
+    >
+      <p>{{ popUpParams.msg }}</p>
+      <p>Souhaitez vous poursuivre?</p>
+    </ValidationModal>
   </div>
 </template>
 
 <script setup>
 import { formatDate } from "date-fns/format";
+import { DsfrButton, DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
+import { ValidationModal } from "@vao/shared";
 
 const route = useRoute();
 const log = logger("pages/comptes/[[userId]]");
@@ -654,6 +665,23 @@ async function update() {
     log.i("update - DONE");
   }
 }
+
+const popUpParams = ref(null);
+const closeModal = () => (popUpParams.value = null);
+const modalOpenCounter = ref(0);
+
+const openModal = (p) => {
+  modalOpenCounter.value++;
+  popUpParams.value = {
+    cb: () => {
+      checkValidDeleted(p);
+      closeModal();
+    },
+    msg: p
+      ? "Attention, vous vous apprêtez à réactiver ce compte. Voulez vous confirmer cette action?"
+      : "Attention, vous vous apprêtez à désactiver ce compte. Voulez vous confirmer cette action?",
+  };
+};
 </script>
 
 <style lang="scss" scoped></style>
