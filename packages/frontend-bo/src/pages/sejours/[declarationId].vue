@@ -66,6 +66,14 @@
           @send="sendMessage"
         />
       </DsfrTabContent>
+      <DsfrTabContent
+        panel-id="tab-content-4"
+        tab-id="tab-4"
+        :selected="selectedTabIndex === 4"
+        :asc="asc"
+      >
+        <DemandesSejourEigs :eigs="eigs?.eigs ?? []" :fetch-eig="executeEig" />
+      </DsfrTabContent>
     </DsfrTabs>
     <div
       v-if="
@@ -160,7 +168,7 @@
         </div>
       </DsfrModal>
     </div>
-    <isDownloading
+    <IsDownloading
       :is-downloading="apiStatus.isDownloading"
       :message="apiStatus.message"
     />
@@ -201,6 +209,9 @@ const selectTab = async (idx) => {
     await demandeStore.readMessages(route.params.declarationId);
     demandeStore.fetchMessages(route.params.declarationId);
   }
+  if (idx === 4) {
+    executeEig();
+  }
 };
 
 const demandeStore = useDemandeSejourStore();
@@ -216,6 +227,14 @@ const {
   method: "GET",
   credentials: "include",
 });
+const { data: eigs, execute: executeEig } = useFetchBackend(
+  `/eig/admin/ds/${route.params.declarationId}`,
+  {
+    immediate: false,
+    method: "GET",
+    credentials: "include",
+  },
+);
 
 organismeStore.fetchOrganismesNonAgrees({});
 
@@ -297,6 +316,7 @@ const tabTitles = computed(() => [
     title: `Messagerie ${unreadMessages.value}`,
     icon: `${unreadMessages.value ? "ri-feedback-line" : ""}`,
   },
+  { title: "EIG" },
 ]);
 
 const modalComplement = reactive({
@@ -311,6 +331,9 @@ const modalEnregistrement2Mois = reactive({
   opened: false,
 });
 
+const fetchMessages = () => {
+  demandeStore.fetchMessages(route.params.declarationId);
+};
 const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
 };

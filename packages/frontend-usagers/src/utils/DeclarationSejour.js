@@ -1,13 +1,13 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
 import {
-  logger,
-  personne,
   informationsPersonnel,
   informationsVacanciers,
-  protocoleTransport,
-  protocoleSanitaire,
+  logger,
+  personne,
   projetSejour,
+  protocoleSanitaire,
+  protocoleTransport,
 } from "#imports";
 
 import { hebergement as hebergementUtils } from "@vao/shared";

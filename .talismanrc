@@ -171,6 +171,16 @@ fileignoreconfig:
   checksum: a5c2caf47b1b715b2cf8240e9af9090061faae6261b21bc62173689f1666536e
 - filename: packages/frontend-usagers/src/components/DS/synthese.vue
   checksum: 1745df4066b3957901ec41d0b0e546cb5ed32dcc2abadcd1e825e06d092bd031
+- filename: packages/frontend-usagers/src/components/EIG/Recap.vue
+  checksum: aa69252e3dbbb5da65b958f40c1ce0480f0f63be8ec1432751f653c2df1de323
+- filename: packages/frontend-usagers/src/components/EIG/RenseignementsGeneraux.vue
+  checksum: 631468ef733eba4b1e73db7be01fe565df7d0006b7a6a1f55940e5b48b67c2de
+- filename: packages/frontend-usagers/src/components/EIG/SelectionSejour.vue
+  checksum: 682a6dea0cfa5dfa8b17a48042114f0420eae006ee4716535011167550a9a93f
+- filename: packages/frontend-usagers/src/components/EIG/Summary.vue
+  checksum: c9db57531db09ec221d07b3a695d81caef7948b109147ad47e605a00c33b5ae0
+- filename: packages/frontend-usagers/src/components/EIG/Type.vue
+  checksum: fb6ea335f92549ebf30e662bca4d9cfbd654aac221aeba5b9714ef5bf4978dc3
 - filename: packages/frontend-usagers/src/components/PasswordInput.vue
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
 - filename: packages/frontend-usagers/src/components/customInput.vue
@@ -215,8 +225,12 @@ fileignoreconfig:
   checksum: c792d383dfec26115dfab5a391e6427b5b9c4416da783388c7ef00d4f97585bb
 - filename: packages/migrations/src/knexfile.js
   checksum: 1d3be5d2c46636eb90b74382447f23ffefc943ed963736ffab7556336d2df667
+- filename: packages/migrations/src/migrations/20240710125537_eig.js
+  checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
+- filename: packages/migrations/src/migrations/20240710125537_eig.js
+  checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/shared/src/components/PasswordInput.vue
   checksum: 6d60a6028edc072a3300ac06e693436bc38405cb5847bf32c5ef67448cb60ceb
 - filename: pg/scripts/01-init.sql

@@ -6,6 +6,8 @@ const sendTemplate = require("../helpers/mail");
 
 const logger = require("./logger");
 const AppError = require("./error");
+const { mapEigToLabel } = require("../helpers/eig");
+const { generateTypes } = require("../helpers/eigMail");
 
 const log = logger(module.filename);
 
@@ -317,6 +319,257 @@ module.exports = {
         log.d("sendMessageNotify post email", {
           params,
         });
+
+        return params;
+      },
+    },
+    eig: {
+      sendToAutre: ({ dest, eig, userName, departementName, regionName }) => {
+        log.i("sendToDREETS - In", {
+          dest,
+        });
+        if (!dest) {
+          const message = `paramètre manquant à la requête`;
+          log.w(`sendToDREETS - ${message}`);
+          throw new AppError(message);
+        }
+
+        const orgName = eig.raisonSociale ?? `${eig?.prenom} ${eig?.nom}`;
+        const link = `${frontBODomain}/eig/${eig.id}`;
+
+        const html = sendTemplate.getBody(
+          "Portail VAO - Déclaration d’un Evènement indésirable grave",
+          [
+            {
+              p: [
+                `Bonjour`,
+                `${userName} a déclaré un évènement indésirable grave survenu lors du séjour ${eig.idFonctionnelle}, ${eig.libelle}, organisé par ${orgName}`,
+                `Le qualificatif de l’incident est :`,
+                generateTypes(eig),
+              ],
+              type: "p",
+            },
+            {
+              link,
+              text: "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en cliquant ici",
+              type: "link",
+            },
+            {
+              p: [
+                `Cette déclaration a été envoyée à la préfecture du département de ${departementName} ainsi qu'à la région ${regionName}`,
+                "Cordialement",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        log.d("sendToDREETS - sending sendToDDETS mail");
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: `Déclaration d’un Evènement indésirable grave par ${orgName}`,
+          to: dest,
+        };
+        log.d("sendToDREETS post email", { params });
+
+        return params;
+      },
+      sendToDDETS: ({ dest, eig }) => {
+        log.i("sendToDDETS - In", {
+          dest,
+        });
+        if (!dest) {
+          const message = `paramètre manquant à la requête`;
+          log.w(`sendToDDETS - ${message}`);
+          throw new AppError(message);
+        }
+
+        const orgName = eig.raisonSociale ?? `${eig?.prenom} ${eig?.nom}`;
+        const link = `${frontBODomain}/eig/${eig.id}`;
+
+        const html = sendTemplate.getBody(
+          "Portail VAO - Déclaration d’un Evènement indésirable grave",
+          [
+            {
+              p: [
+                `Bonjour`,
+                `L’organisme ${orgName} a déclaré un évènement indésirable grave lors du séjour ${eig.idFonctionnelle}, ${eig.libelle}, qui s’est déroulé dans votre département.`,
+                `Le type d'évènement est :`,
+                generateTypes(eig),
+              ],
+              type: "p",
+            },
+            {
+              link,
+              text: "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en cliquant ici",
+              type: "link",
+            },
+            {
+              p: ["Cordialement"],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        log.d("sendToDDETS - sending sendToDDETS mail");
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: `Déclaration d’un Evènement indésirable grave par ${orgName}`,
+          to: dest,
+        };
+        log.d("sendToDDETS post email", { params });
+
+        return params;
+      },
+      sendToDREETS: ({ dest, eig, departementName }) => {
+        log.i("sendToDREETS - In", {
+          dest,
+        });
+        if (!dest) {
+          const message = `paramètre manquant à la requête`;
+          log.w(`sendToDREETS - ${message}`);
+          throw new AppError(message);
+        }
+
+        const orgName = eig.raisonSociale ?? `${eig?.prenom} ${eig?.nom}`;
+        const link = `${frontBODomain}/eig/${eig.id}`;
+
+        const html = sendTemplate.getBody(
+          "Portail VAO - Déclaration d’un Evènement indésirable grave",
+          [
+            {
+              p: [
+                `Bonjour`,
+                `L’organisme ${orgName}, qui a reçu son agrément dans votre région, a déclaré un évènement indésirable grave lors du séjour  ${eig.idFonctionnelle}, ${eig.libelle}, qui s’est déroulé dans le département ${departementName} `,
+                `Le type d'évènement est :`,
+                generateTypes(eig),
+              ],
+              type: "p",
+            },
+            {
+              link,
+              text: "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en cliquant ici",
+              type: "link",
+            },
+            {
+              p: ["Cordialement"],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        log.d("sendToDREETS - sending sendToDDETS mail");
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: `Déclaration d’un Evènement indésirable grave par ${orgName}`,
+          to: dest,
+        };
+        log.d("sendToDREETS post email", { params });
+
+        return params;
+      },
+      sendMarkAsRead: ({ dest, eig }) => {
+        log.i("sendMarkAsRead - In", {
+          dest,
+        });
+        if (!dest) {
+          const message = `paramètre manquant à la requête`;
+          log.w(`sendMarkAsRead - ${message}`);
+          throw new AppError(message);
+        }
+
+        const html = sendTemplate.getBody(
+          "Consultation de votre EIG déposé sur la plateforme VAO",
+          [
+            {
+              p: [
+                `Bonjour`,
+                `Le rapport de l'évènement indésirable grave que vous avez déposé le ${dayjs(eig.dateDepot).format("DD/MM/YYYY")} et qui s’est déroulé lors du séjour ${eig.libelle} a été consulté par un agent de la préfecture. Si c’est nécessaire, cette personne pourra vous contacter via la messagerie de la plateforme VAO`,
+                `Cordialement,`,
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        log.d("sendMarkAsRead - sending sendMarkAsRead mail");
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: `Consultation de votre EIG déposé sur la plateforme VAO`,
+          to: dest,
+        };
+        log.d("sendMarkAsRead post email", { params });
+
+        return params;
+      },
+      sendToOrganisme: ({
+        dest,
+        eig,
+        userName,
+        departementName,
+        regionName,
+      }) => {
+        log.i("sendToDREETS - In", {
+          dest,
+        });
+        if (!dest) {
+          const message = `paramètre manquant à la requête`;
+          log.w(`sendToDREETS - ${message}`);
+          throw new AppError(message);
+        }
+
+        const orgName = eig.raisonSociale ?? `${eig?.prenom} ${eig?.nom}`;
+        const link = `${frontBODomain}/eig/${eig.id}`;
+
+        const html = sendTemplate.getBody(
+          "Portail VAO - Déclaration d’un Evènement indésirable grave",
+          [
+            {
+              p: [
+                `Bonjour`,
+                `${userName} a déclaré un évènement indésirable grave survenu lors du séjour ${eig.idFonctionnelle}, ${eig.libelle}`,
+                `Le qualificatif de l’incident est :`,
+                generateTypes(eig),
+              ],
+              type: "p",
+            },
+            {
+              link,
+              text: "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en cliquant ici",
+              type: "link",
+            },
+            {
+              p: [
+                `Cette déclaration a été envoyée à la préfecture du département de ${departementName} ainsi qu'à la région ${regionName}`,
+                "Cordialement",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        log.d("sendToDREETS - sending sendToDDETS mail");
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: `Déclaration d’un Evènement indésirable grave par ${orgName}`,
+          to: dest,
+        };
+        log.d("sendToDREETS post email", { params });
 
         return params;
       },

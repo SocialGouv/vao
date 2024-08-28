@@ -6,7 +6,7 @@
     </h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
-        <cardsNumber
+        <CardsNumber
           v-if="!props.organisme"
           :values="[
             {
@@ -90,7 +90,7 @@
                       :is-pointed="isPointed(option)"
                     />
                   </template>
-                  <template #no-result> Pas de résultat </template>
+                  <template #no-result> Pas de résultat</template>
                 </Multiselect>
               </div>
             </div>
@@ -125,7 +125,7 @@
         </form>
       </div>
     </div>
-    <UtilsTable
+    <TableWithPagination
       :headers="headers"
       :data="sejourStore.demandes"
       :total-items="sejourStore.total"
@@ -137,42 +137,32 @@
       @update-sort="updateSort"
       @update-items-by-page="updateItemsByPage"
       @update-current-page="updateCurrentPage"
-    ></UtilsTable>
-    <DsfrModal
-      ref="modal"
+    />
+    <ValidationModal
+      modal-ref="modal"
       name="prend-en-charge"
       :opened="declarationAPrendreEnCharge != null"
       title="Prise en charge d'une déclaration de séjour"
-      @close="closePrendEnChargeModal"
-    >
-      <article class="fr-mb-4v">
-        Vous vous apprêtez à prendre en charge la déclaration du séjour : <br />
-        - {{ declarationAPrendreEnCharge.libelle }}
-      </article>
-      <div class="fr-fieldset">
-        <div class="fr-col-4">
-          <div class="fr-input-group">
-            <DsfrButton
-              id="previous-step"
-              :secondary="true"
-              @click.prevent="closePrendEnChargeModal"
-              >Retour
-            </DsfrButton>
-          </div>
-        </div>
-        <div class="fr-col-8">
-          <div class="fr-input-group">
-            <DsfrButton id="next-step" @click.prevent="validatePriseEnCharge"
-              >Valider la prise en charge
-            </DsfrButton>
-          </div>
-        </div>
-      </div>
-    </DsfrModal>
+      :on-close="closePrendEnChargeModal"
+      :on-validate="validatePriseEnCharge"
+      >Vous vous apprêtez à prendre en charge la déclaration du séjour : <br />
+      - {{ declarationAPrendreEnCharge.libelle }}
+    </ValidationModal>
   </div>
 </template>
 
 <script setup>
+import {
+  CardsNumber,
+  MultiSelectOption,
+  TableWithPagination,
+  ValidationModal,
+} from "@vao/shared";
+import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
+import Declaration from "~/components/demandes-sejour/Declaration.vue";
+import Multiselect from "@vueform/multiselect";
+import "@vueform/multiselect/themes/default.css";
+
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
@@ -181,12 +171,6 @@ definePageMeta({
 const props = defineProps({
   organisme: { type: String, required: false, default: null },
 });
-
-import Multiselect from "@vueform/multiselect";
-import "@vueform/multiselect/themes/default.css";
-import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
-import Declaration from "~/components/demandes-sejour/Declaration.vue";
-import { CardsNumber, MultiSelectOption } from "@vao/shared";
 
 const log = logger("pages/sejours");
 

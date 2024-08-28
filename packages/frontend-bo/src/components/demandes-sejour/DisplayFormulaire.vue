@@ -90,13 +90,13 @@
           >
             Personnel d'encadrement
           </h4>
-          <DemandesSejourDisplayEncadrementAccompagnement
+          <UtilsDisplayEncadrementAccompagnement
             :personnel="
               demandeStore.currentDemande?.informationsPersonnel?.encadrants ??
               []
             "
           >
-          </DemandesSejourDisplayEncadrementAccompagnement>
+          </UtilsDisplayEncadrementAccompagnement>
 
           <h4
             v-if="
@@ -106,12 +106,12 @@
           >
             Personnel d'accompagnement
           </h4>
-          <DemandesSejourDisplayEncadrementAccompagnement
+          <UtilsDisplayEncadrementAccompagnement
             :personnel="
               demandeStore.currentDemande?.informationsPersonnel
                 ?.accompagnants ?? []
             "
-          ></DemandesSejourDisplayEncadrementAccompagnement>
+          ></UtilsDisplayEncadrementAccompagnement>
           <h4
             v-if="
               demandeStore.currentDemande?.informationsPersonnel
@@ -228,7 +228,8 @@
           :key="`transport-${entry}`"
           :value="demandeStore.currentDemande.informationsSanitaires[entry]"
           :input="displayInput.ISanitaire[entry]"
-        />DisplayInput
+        />
+        DisplayInput
       </DsfrAccordion>
     </li>
     <li v-if="demandeStore.currentDemande?.hebergement">
