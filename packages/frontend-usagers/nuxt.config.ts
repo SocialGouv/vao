@@ -57,6 +57,8 @@ export default defineNuxtConfig({
         ],
       },
     },
+    // required to get non empty sourcemaps https://github.com/Baroshem/nuxt-security/issues/501
+    removeLoggers: false,
   },
   srcDir: "src",
   ssr: false,
