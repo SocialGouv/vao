@@ -221,6 +221,12 @@ const searchState = reactive({
   action: parseBoolean(route.query.action),
 });
 
+watch(
+  () => props.organisme,
+  () => (searchState.organisme = props.organisme),
+  { immediate: true },
+);
+
 const needAction = computed({
   get() {
     return searchState.action ? "Oui" : "Non";
@@ -297,9 +303,13 @@ const fetchDemandesDebounce = debounce(async (search) => {
   }
 });
 
-watch(searchParams, (search) => {
-  fetchDemandesDebounce(search);
-});
+watch(
+  searchParams,
+  (search) => {
+    fetchDemandesDebounce(search);
+  },
+  { immediate: true },
+);
 
 const onStatutSelect = (value) => {
   if (value.length) {
