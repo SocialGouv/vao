@@ -95,7 +95,12 @@ const query = {
       `,
     [userId, isBlocked],
   ],
-  get: (criterias = {}, additionalParamsQuery = "", additionalParams = []) => [
+  get: (
+    criterias = {},
+    selectQuery = "",
+    additionalParamsQuery = "",
+    additionalParams = [],
+  ) => [
     `
     SELECT
       us.id AS id,
@@ -111,6 +116,7 @@ const query = {
       us.ter_code AS "territoireCode",
       ter.parent_code AS "territoireParent",
       ur.roles
+      ${selectQuery}
     FROM back.users AS us
     LEFT OUTER JOIN (
       SELECT
@@ -349,12 +355,6 @@ module.exports.read = async (
   let territoireSearchParamId = "";
   const searchParams = [];
 
-  if (territoireCode && territoireCode !== "FRA") {
-    const paramNumber = searchParams.length + 1;
-    searchQuery += `AND (TER.CODE = $${paramNumber} OR TER.PARENT_CODE = $${paramNumber})`;
-    searchParams.push(territoireCode);
-  }
-
   // Search management
   if (search?.nom && search.nom.length) {
     searchQuery += `   AND us.nom ILIKE $${searchParams.length + 1}\n`;
@@ -411,18 +411,26 @@ module.exports.read = async (
     additionalParams.push(offset, limit);
   }
 
-  log.d("read", searchQuery + "\n   " + additionalQueryParts);
+  let selectQuery = "";
+  if (territoireCode && territoireCode !== "FRA") {
+    selectQuery = `,COALESCE((ter.code = $${searchParams.length + additionalParams.length + 1} OR ter.parent_code = $${searchParams.length + additionalParams.length + 1}), false)`;
+    additionalParams.push(`${territoireCode}`);
+  } else {
+    selectQuery = `,$${searchParams.length + additionalParams.length + 1}`;
+    additionalParams.push(`true`);
+  }
+  selectQuery += ` AS "editable"`;
+
+  log.d(
+    "read",
+    selectQuery + "\n " + searchQuery + "\n " + additionalQueryParts,
+  );
   log.d("read", [...searchParams, ...additionalParams]);
 
-  // const response = await pool.query(
-  //   ...query.get(undefined, searchQuery + "\n   " + additionalQueryParts, [
-  //     ...searchParams,
-  //     ...additionalParams,
-  //   ]),
-  // );
 
   const queryPrepared = query.get(
     undefined,
+    selectQuery,
     searchQuery + "\n   " + additionalQueryParts,
     [...searchParams, ...additionalParams],
   );
@@ -434,7 +442,6 @@ module.exports.read = async (
       WHERE label ILIKE $${territoireSearchParamId}
       OR code ILIKE $${territoireSearchParamId}
     )\n`;
-
   const response = await pool.query(
     `${territoireSearchParamId ? territoirePreQuery : ""}
     ${queryPrepared[0]}`,
@@ -442,7 +449,6 @@ module.exports.read = async (
   );
 
   const preparedTotalQuery = query.getTotal(searchQuery, searchParams);
-
   const total = await pool.query(
     `${territoireSearchParamId ? territoirePreQuery : ""}
     ${preparedTotalQuery[0]}`,
@@ -456,7 +462,7 @@ module.exports.read = async (
   };
 };
 
-module.exports.readOne = async (id) => {
+module.exports.readOne = async (id, territoireCode) => {
   log.i("readOne - IN", { id });
 
   if (!id) {
@@ -465,8 +471,19 @@ module.exports.readOne = async (id) => {
     });
   }
 
+  const selectParams = [];
+  let selectQuery = "";
+  if (territoireCode && territoireCode !== "FRA") {
+    selectQuery = `,COALESCE((ter.code = $${selectParams.length + 1} OR ter.parent_code = $${selectParams.length + 1}), false)`;
+    selectParams.push(`${territoireCode}`);
+  } else {
+    selectQuery = `,$${selectParams.length + selectParams.length + 1}`;
+    selectParams.push(`true`);
+  }
+  selectQuery += ` AS "editable"`;
+
   const { rowCount, rows: users } = await pool.query(
-    ...query.get({ "us.id": id }),
+    ...query.get({ "us.id": id }, selectQuery, undefined, selectParams),
   );
 
   if (rowCount === 0) {
