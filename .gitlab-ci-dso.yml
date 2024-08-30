@@ -77,7 +77,7 @@ build-frontend-bo:
     - echo "$DOCKER_AUTH" > /kaniko/.docker/config.json
     - echo "$SENTRY_AUTH_TOKEN" > /kaniko/sentry_auth_token
     - echo "SENTRY_AUTH_TOKEN="
-    - echo "$SENTRY_AUTH_TOKEN" | sed 's/^\(...\).*\(...\)$/\1...\2/'"
+    - echo "$SENTRY_AUTH_TOKEN" | sed 's/^\(...\).*\(...\)$/\1...\2/'
     - /kaniko/executor --build-arg http_proxy=$http_proxy
       --build-arg https_proxy=$https_proxy
       --build-arg no_proxy=$no_proxy
