@@ -26,10 +26,7 @@
               <h1
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
-                <div v-if="formStatus === formStates.CREATION">
-                  Création d'un nouvel utilisateur
-                </div>
-                <div v-else>Modification d'un utilisateur</div>
+                {{ titreForm }}
               </h1>
               <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
@@ -61,7 +58,7 @@
                     type="text"
                     label="Nom"
                     name="nom"
-                    :disabled="!actifField.modelValue"
+                    :disabled="isFormDisabled"
                     :required="true"
                     :label-visible="true"
                     placeholder=""
@@ -81,7 +78,7 @@
                     type="text"
                     label="Prénom"
                     name="prenom"
-                    :disabled="!actifField.modelValue"
+                    :disabled="isFormDisabled"
                     :required="true"
                     :label-visible="true"
                     hint="Veuillez saisir votre prénom"
@@ -98,7 +95,7 @@
                   <div class="fr-input-group fr-col-12">
                     <DsfrRadioButtonSet
                       name="competence"
-                      :disabled="!actifField.modelValue"
+                      :disabled="isFormDisabled"
                       legend="Type de compétence du service"
                       :required="true"
                       :model-value="serviceCompetenceField.modelValue"
@@ -124,7 +121,7 @@
                         v-if="serviceCompetenceField.modelValue === 'DEP'"
                         :model-value="territoireField.modelValue"
                         name="departementTerritoire"
-                        :disabled="!actifField.modelValue"
+                        :disabled="isFormDisabled"
                         label="Département du service"
                         :required="true"
                         :options="userDepartements"
@@ -136,7 +133,7 @@
                         v-if="serviceCompetenceField.modelValue === 'REG'"
                         :model-value="territoireField.modelValue"
                         name="regionTerritoire"
-                        :disabled="!actifField.modelValue"
+                        :disabled="isFormDisabled"
                         label="Région du service"
                         :required="true"
                         :options="userRegions"
@@ -152,7 +149,7 @@
               >
                 <DsfrCheckboxSet
                   name="roleUtilisateurField"
-                  :disabled="!actifField.modelValue"
+                  :disabled="isFormDisabled"
                   legend="Rôle(s) associé(s) à l'utilisateur ?"
                   :required="true"
                   :model-value="roleUtilisateurField.modelValue"
@@ -176,12 +173,14 @@
                 <div v-else>
                   <div class="fr-fieldset__element">
                     <DsfrToggleSwitch
-                      :key="modalOpenCounter"
                       id="toggle-valide"
+                      :key="modalOpenCounter"
                       :label="actifField.modelValue ? 'Activé' : 'Désactivé'"
                       :model-value="actifField.modelValue"
                       :disabled="
-                        !usersStore.user.roles.includes('Desactivation')
+                        !usersStore.user.roles.includes('Desactivation') ||
+                        !usersStore.userSelected ||
+                        !usersStore.userSelected.editable
                       "
                       aria-describedby="toggle-valide"
                       @update:model-value="openModal"
@@ -208,8 +207,22 @@
                       Compte actif
                     </p>
                   </div>
-                  <DsfrButton :disabled="!canSubmit" @click.prevent="update"
+                  <DsfrButton
+                    v-if="
+                      usersStore.userSelected &&
+                      usersStore.userSelected.editable
+                    "
+                    :disabled="!canSubmit"
+                    @click.prevent="update"
                     >Enregistrer les modifications
+                  </DsfrButton>
+                  <DsfrButton
+                    v-if="
+                      usersStore.userSelected &&
+                      !usersStore.userSelected.editable
+                    "
+                    @click.prevent="close"
+                    >Fermer
                   </DsfrButton>
                 </div>
               </div>
@@ -255,6 +268,7 @@ const searchState = reactive({
   valide: true,
   email: null,
   deleted: false,
+  editable: false,
 });
 
 definePageMeta({
@@ -338,6 +352,21 @@ const formStates = {
 };
 
 let formStatus = ref(formStates.CREATION);
+
+const titreForm = computed(() => {
+  return !userId
+    ? "Création d'un nouvel utilisateur"
+    : usersStore.userSelected?.editable
+      ? "Modification d'un utilisateur"
+      : "Consultation d'un utilisateur";
+});
+
+const isFormDisabled = computed(() => {
+  return (
+    (userId && !usersStore.userSelected?.editable) || !actifField.modelValue
+  );
+});
+
 let serviceCompetenceOptions = [];
 
 const emailField = reactive({
@@ -614,6 +643,9 @@ async function post() {
   } finally {
     log.i("post - DONE");
   }
+}
+async function close() {
+  navigateTo("/comptes/liste");
 }
 
 async function update() {

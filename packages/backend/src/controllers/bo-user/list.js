@@ -34,6 +34,7 @@ module.exports = async function list(req, res, next) {
           "territoireCode",
           "territoireParent",
           "roles",
+          "editable",
         ])
         .nullable(),
       sortDirection: string().oneOf(["ASC", "DESC"]).nullable(),

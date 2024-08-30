@@ -220,6 +220,13 @@ const headers = [
     format: (value) => (value.validated ? "Oui" : "Non"),
     sort: true,
   },
+  {
+    column: "editable",
+    text: "Modifiable",
+    type: "icon",
+    format: (value) => (value.editable ? "Oui" : "Non"),
+    sort: true,
+  },
 ];
 
 const updateSort = ({ sortBy: sb, sortDirection: sd }) => {
