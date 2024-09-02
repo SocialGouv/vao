@@ -92,7 +92,7 @@
           :is-valid="telephoneMeta.valid"
           :error-message="telephoneErrorMessage"
           placeholder=""
-          hint="Au format 0X, +33X ou 0033"
+          hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
           @update:model-value="onTelephoneChange"
         />
       </div>

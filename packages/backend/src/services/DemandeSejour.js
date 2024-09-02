@@ -275,7 +275,7 @@ FROM
   LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id,
   jsonb_array_elements(ds.hebergement -> 'hebergements') h
 WHERE
-  h -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($1)
+  jsonb_path_query_array(hebergement, '$.hebergements[*].coordonnees.adresse.departement') ?| ($1)::text[]
   OR a.region_obtention = '${territoireCode}'
 `,
     [departements],
