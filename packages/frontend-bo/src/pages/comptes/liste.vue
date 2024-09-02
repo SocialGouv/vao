@@ -103,9 +103,14 @@
               <p id="toggle-actif" class="fr-hint-text">Compte actif</p>
             </div>
           </div>
-          <!--<DsfrButton @click.prevent="test">Test</DsfrButton
-            >
-          -->
+          <div class="fr-input-group">
+            <DsfrButton
+              type="button"
+              label="Extraire en CSV"
+              primary
+              @click="getCsv"
+            />
+          </div>
         </form>
       </div>
     </div>
@@ -240,6 +245,11 @@ const updateItemsByPage = (val) => {
 };
 const updateCurrentPage = (val) => {
   currentPageState.value = val;
+};
+
+const getCsv = async () => {
+  const response = await usersStore.exportUsers();
+  exportCsv(response, "users.csv");
 };
 </script>
 

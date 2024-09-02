@@ -12,6 +12,12 @@ const BOcheckRoleCompte = BOcheckRole(["Compte"]);
 
 // Renvoie la liste des utilisateurs du BO
 router.get("/", BOcheckJWT, BOcheckRoleCompte, BOUserController.list);
+router.get(
+  "/extract",
+  BOcheckJWT,
+  BOcheckRoleCompte,
+  BOUserController.getExtract,
+);
 // Gère une connexion via mot de passe.
 router.get("/me", BOcheckJWT, BOUserController.getMe);
 // Renvoie les informations liées à l'utilisateur
