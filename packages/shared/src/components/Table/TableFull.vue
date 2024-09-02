@@ -1,47 +1,29 @@
 <template>
-  <div style="margin-bottom: 1em">
-    <div v-if="displayedData.length">
-      <DsfrTable
-        style="display: table"
-        :headers="h"
-        :rows="displayedData"
-        :no-caption="true"
-      />
-      <div class="fr-grid-row fr-col-md-12">
-        <DsfrPagination
-          v-if="pages && pages !== 0"
-          v-model:current-page="currentPage"
-          :pages="pages"
-          :trunc-limit="5"
-          @update:current-page="(p) => (currentPage = p)"
-        />
-        <DsfrSelect
-          v-if="pages && pages !== 0"
-          :model-value="itemByPage"
-          name="itemByPage"
-          label=""
-          :options="itemByPageOptions"
-          @update:model-value="onUpdateItemByPage"
-        />
-      </div>
-    </div>
-  </div>
+  <TableUI
+    :on-update-item-by-page="onUpdateItemByPage"
+    :on-update-current-page="(p) => (currentPage = p)"
+    :items-by-page="itemByPage"
+    :total-items="filteredData?.length ?? 0"
+    :headers="h"
+    :displayed-data="displayedData"
+    :current-page="currentPage"
+    @click-row="onClickRow"
+  />
 </template>
 
 <script setup>
-import { DsfrPagination, DsfrSelect, DsfrTable } from "@gouvminint/vue-dsfr";
+import { computed, onMounted, ref } from "vue";
 
-import { ref, computed, onMounted } from "vue";
-
-import createLogger from "../utils/createLogger";
+import createLogger from "../../utils/createLogger";
+import TableUI from "./TableUI.vue";
 
 const logger = createLogger("vao-shared");
 const log = logger("components/TableFull");
 
-const emit = defineEmits("click-row");
-
-const itemByPageOptions = [10, 20, 50, 100];
-const itemByPage = ref(50);
+const emit = defineEmits(["click-row"]);
+const onClickRow = (item) => {
+  emit("click-row", item);
+};
 
 const props = defineProps({
   headers: { type: Object, required: true },
@@ -70,8 +52,10 @@ const props = defineProps({
   sortDirectionInit: { type: Number, default: 1 },
 });
 
+const itemByPage = ref(10);
+
 const onUpdateItemByPage = (val) => {
-  itemByPage.value = val;
+  itemByPage.value = parseInt(val);
   currentPage.value = 0;
 };
 
@@ -197,62 +181,14 @@ const filteredData = computed(() => {
   return rows;
 });
 
-const displayableData = computed(() => {
-  return filteredData.value.map((item, index) => {
-    const rowdata = h.value.map((header) => {
-      if (header.component) {
-        return header.component(item) ?? "";
-      }
-      if (header.format) {
-        return header.format(item, index) ?? "";
-      }
-      if (header.objectLabel) {
-        return item[header.column]?.[header.objectLabel] ?? "";
-      }
-      if (Array.isArray(item[header.column])) {
-        return item[header.column]
-          .map((val) => {
-            return val[header.objectLabel] ?? "";
-          })
-          .join(", ");
-      }
-      const data = item[header.column]?.toString();
-      return data ?? "";
-    });
-    const rowAttrs = { class: "pointer" };
-    rowAttrs.onClick = () => {
-      emit("click-row", item);
-    };
-    return {
-      rowData: rowdata,
-      rowAttrs,
-    };
-  });
-});
-
 const displayedData = computed(() => {
-  return displayableData.value.slice(
+  return filteredData.value.slice(
     currentPage.value * (itemByPage.value ?? 10),
     (currentPage.value + 1) * (itemByPage.value ?? 10),
   );
 });
 
 const currentPage = ref(props.currentPage);
-const pages = computed(() => {
-  const numberOfPages = Math.ceil(
-    displayableData.value.length / (itemByPage.value ?? 10),
-  );
-  if (numberOfPages < 2) {
-    return null;
-  }
-  return new Array(numberOfPages).fill().map((_p, index) => {
-    return {
-      label: `${index + 1}`,
-      title: `Page ${index + 1}`,
-      href: "",
-    };
-  });
-});
 
 onMounted(() => {
   h.value = props.headers.map((h) => {
@@ -281,10 +217,6 @@ onMounted(() => {
       },
     };
   });
-});
-
-defineExpose({
-  displayableData,
 });
 </script>
 

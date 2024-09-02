@@ -109,7 +109,7 @@
         </form>
       </div>
     </div>
-    <TableWithPagination
+    <TableWithBackendPagination
       :headers="headers"
       :data="usersStore.users"
       :total-items="usersStore.total"
@@ -131,7 +131,7 @@ definePageMeta({
   roles: ["Compte"],
 });
 import { useUserStore } from "~/stores/user";
-import { TableWithPagination } from "@vao/shared";
+import { TableWithBackendPagination } from "@vao/shared";
 
 const usersStore = useUserStore();
 

@@ -260,8 +260,8 @@ const departementStore = useDepartementStore();
 
 const saisonOptions = computed(() => {
   return demandeSejourStore.demandes.reduce((acc, elem) => {
-    if (elem.periode) {
-      acc.push(elem);
+    if (elem.periode && !acc.includes(elem.periode)) {
+      acc.push(elem.periode);
     }
     return acc;
   }, []);

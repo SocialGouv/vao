@@ -19,7 +19,7 @@
       </div>
     </div>
   </div>
-  <TableWithPagination
+  <TableWithBackendPagination
     :headers="headers"
     :data="data"
     :total-items="count"
@@ -35,7 +35,7 @@
 </template>
 
 <script setup>
-import { TableWithPagination } from "@vao/shared";
+import { TableWithBackendPagination } from "@vao/shared";
 
 const props = defineProps({
   headers: { type: Array, required: true },
