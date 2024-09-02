@@ -362,13 +362,6 @@ const headers = [
       statut: statut,
     }),
   },
-  {
-    column: "estInstructeurPrincipal",
-    text: "Action",
-    format: (value) =>
-      value.estInstructeurPrincipal ? "A instruire" : "Lecture seule",
-    sort: false,
-  },
 ];
 
 const declarationAPrendreEnCharge = ref(null);
