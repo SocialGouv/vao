@@ -432,6 +432,7 @@ SELECT
   ds.organisme as organisme,
   ds.responsable_sejour->>'email' as responsable_sejour_email,
   ds.responsable_sejour->>'telephone' as responsable_sejour_telephone,
+  ds.id_fonctionnelle as reference,
   ds.statut as statut,
   ds.created_at as created_at
 FROM front.demande_sejour ds
