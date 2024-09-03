@@ -29,7 +29,7 @@ const file = ref(null);
 const loadXlsx = async () => {
   try {
     const blob = await $fetchBackend(
-      `/documents/admin/static/agrements_VAO_non_actifs_05_06_2024.pdf`,
+      `/documents/admin/static/agrements_VAO_non_actifs_07_08_2024.pdf`,
       {
         method: "GET",
         credentials: "include",
