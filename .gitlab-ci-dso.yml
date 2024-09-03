@@ -15,6 +15,7 @@ variables:
 stages:
   - read-secret
   - build-images
+  - deploy
 
 read_secret:
   stage: read-secret
@@ -90,3 +91,25 @@ build-frontend-bo:
       --registry-mirror=nexus-docker-proxy.apps.c6.numerique-interieur.com 
       --destination $REGISTRY_URL/$IMAGE_NAME:$TAG
 
+deploy:
+  stage: deploy
+  variables:
+      GITHUB_TOKEN_INFRA_REPO: "${GITHUB_TOKEN_INFRA_REPO}"
+  script:
+    - echo "Deploying tag $TAG from branch $CI_COMMIT_REF_SLUG"
+    - apt-get update && apt-get install --no-install-recommends --yes curl ca-certificates
+    - |
+      if [[ "$CI_COMMIT_REF_SLUG" == "cloud-pi-demo" ]]; then
+        ENVIRONMENT=main
+      elif [[ "$CI_COMMIT_REF_SLUG" == "cloud-pi-demo-preprod" ]]; then
+        ENVIRONMENT=preprod
+      fi
+
+      echo "Environment: $ENVIRONMENT"
+      if [[ -n "$ENVIRONMENT" ]]; then
+        curl -X POST \
+        -H "Accept: application/vnd.github.v3+json" \
+        -H "Authorization: token $GITHUB_TOKEN_INFRA_REPO" \
+        https://api.github.com/repos/DNUm-socialgouv/vao-infra-pi/dispatches \
+        -d "{\"event_type\":\"deploy-event\", \"client_payload\": {\"environment\": \"$ENVIRONMENT\", \"appTag\": \"$TAG\"}}"
+      fi
