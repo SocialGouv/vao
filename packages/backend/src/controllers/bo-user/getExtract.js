@@ -17,14 +17,12 @@ const escapeCsvField = (field) => {
 
 module.exports = async function getExtract(req, res, next) {
   log.i("IN");
-  const { decoded } = req;
-  const { territoireCode } = decoded ?? {};
 
   res.setHeader("Content-Type", "text/csv");
   res.setHeader("Content-Disposition", 'attachment; filename="data.csv"');
 
   try {
-    const result = await BoUser.read({}, territoireCode);
+    const result = await BoUser.read({}, "FRA");
 
     const titles = [
       { key: "nom", label: "Nom" },
