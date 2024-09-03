@@ -66,15 +66,17 @@ build-frontend-bo:
     WORKING_DIR: .
     IMAGE_NAME: ""
     SENTRY_PROJECT: ""
+    SENTRY_AUTH_TOKEN: "${SENTRY_AUTH_TOKEN}"
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   script:
-    # CA
     - if [ ! -z $CA_BUNDLE ]; then cat $CA_BUNDLE >> /kaniko/ssl/certs/additional-ca-cert-bundle.crt; fi
     - mkdir -p /kaniko/.docker
     - echo "$DOCKER_AUTH" > /kaniko/.docker/config.json
     - echo "$SENTRY_AUTH_TOKEN" > /kaniko/sentry_auth_token
+    - echo "SENTRY_AUTH_TOKEN="
+    - echo "$SENTRY_AUTH_TOKEN" | sed 's/^\(...\).*\(...\)$/\1...\2/'
     - /kaniko/executor --build-arg http_proxy=$http_proxy
       --build-arg https_proxy=$https_proxy
       --build-arg no_proxy=$no_proxy
