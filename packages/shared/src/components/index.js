@@ -1,6 +1,6 @@
 import FileUpload from "./FileUpload.vue";
 import Chat from "./Chat.vue";
-import TableWithPagination from "./TableWithPagination.vue";
+import TableWithBackendPagination from "./Table/TableWithBackendPagination.vue";
 import ValidationModal from "./ValidationModal.vue";
 import EigStatusBadge from "./eig/EigStatusBadge.vue";
 import Summary from "./eig/Summary.vue";
@@ -9,13 +9,13 @@ import Hebergement from "./Hebergement.vue";
 import CardsNumber from "./CardsNumber.vue";
 import CardNumber from "./CardNumber.vue";
 import PasswordInput from "./PasswordInput.vue";
-import TableFull from "./TableFull.vue";
+import TableFull from "./Table/TableFull.vue";
 import MultiSelectOption from "./MultiSelectOption.vue";
 
 export {
   FileUpload,
   Chat,
-  TableWithPagination,
+  TableWithBackendPagination,
   ValidationModal,
   EigStatusBadge,
   Summary,

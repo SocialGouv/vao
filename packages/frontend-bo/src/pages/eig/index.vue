@@ -99,7 +99,7 @@
         </form>
       </div>
     </div>
-    <TableWithPagination
+    <TableWithBackendPagination
       :headers="headers"
       :data="eigStore.eigs ?? []"
       :total-items="eigStore.total"
@@ -130,7 +130,7 @@ import dayjs from "dayjs";
 import {
   eigModel,
   EigStatusBadge,
-  TableWithPagination,
+  TableWithBackendPagination,
   ValidationModal,
 } from "@vao/shared";
 import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
@@ -141,7 +141,6 @@ definePageMeta({
 });
 
 const departementStore = useDepartementStore();
-const DsfrButton = resolveComponent("DsfrButton");
 
 const toaster = useToaster();
 

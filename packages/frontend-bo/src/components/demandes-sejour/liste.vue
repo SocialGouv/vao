@@ -125,7 +125,7 @@
         </form>
       </div>
     </div>
-    <TableWithPagination
+    <TableWithBackendPagination
       :headers="headers"
       :data="sejourStore.demandes"
       :total-items="sejourStore.total"
@@ -156,7 +156,7 @@
 import {
   CardsNumber,
   MultiSelectOption,
-  TableWithPagination,
+  TableWithBackendPagination,
   ValidationModal,
 } from "@vao/shared";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";

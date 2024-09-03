@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { logger, $fetchBackend } from "#imports";
+import { $fetchBackend, logger } from "#imports";
 
 const log = logger("stores/demande-sejour");
 

@@ -69,7 +69,7 @@
         </form>
       </div>
     </div>
-    <TableWithPagination
+    <TableWithBackendPagination
       :headers="headers"
       :data="eigStore.eigs ?? []"
       :total-items="eigStore.total"
@@ -103,7 +103,7 @@
 <script setup>
 import dayjs from "dayjs";
 import EigStatusBadge from "@vao/shared/src/components/eig/EigStatusBadge.vue";
-import { eigModel, TableWithPagination, ValidationModal } from "@vao/shared";
+import { eigModel, TableWithBackendPagination, ValidationModal } from "@vao/shared";
 import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
 
 const DsfrButton = resolveComponent("DsfrButton");

@@ -68,7 +68,7 @@
         </form>
       </div>
     </div>
-    <TableWithPagination
+    <TableWithBackendPagination
       :headers="headers"
       :data="usersStore.usersFO"
       :total-items="usersStore.totalUsersFO"
@@ -86,7 +86,7 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { TableWithPagination } from "@vao/shared";
+import { TableWithBackendPagination } from "@vao/shared";
 import { useUserStore } from "~/stores/user";
 
 
