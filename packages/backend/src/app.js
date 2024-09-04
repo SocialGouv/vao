@@ -7,6 +7,7 @@ if (config.sentry.enabled) {
   Sentry.init({
     dsn: config.sentry.dsn,
     environment: config.sentry.environment,
+    ignoreTransactions: [/^GET \/$/],
     includeLocalVariables: true,
     integrations: [
       Sentry.requestDataIntegration({
