@@ -3,10 +3,9 @@ const navItems = useMenuNavItems();
 
 const log = logger("layouts/default");
 const userStore = useUserStore();
-
 const config = useRuntimeConfig();
 
-const header = reactive({
+const header = computed(() => ({
   dimension: { height: "80px" },
   logoText: ["Republique", "française"],
   quickLinks: [
@@ -20,10 +19,10 @@ const header = reactive({
     },
     {
       label: "Mon compte",
-      to: "/",
+      to: `/comptes/mon-compte`,
       icon: "ri-account-circle-line",
       iconRight: false,
-      class: computed(() => (userStore.isConnected ? "" : "fr-hidden")),
+      class: userStore.isConnected ? "" : "fr-hidden",
     },
     {
       label: "Se déconnecter",
@@ -31,10 +30,10 @@ const header = reactive({
       icon: "ri-logout-box-line",
       iconRight: false,
       button: true,
-      class: computed(() => (userStore.isConnected ? "" : "fr-hidden")),
+      class: userStore.isConnected ? "" : "fr-hidden",
     },
   ],
-});
+}));
 
 const homeTo = computed(() => {
   return userStore.isConnected ? "/" : "/connexion/";
