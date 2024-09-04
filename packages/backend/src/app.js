@@ -1,5 +1,5 @@
 const Sentry = require("@sentry/node");
-const { nodeProfilingIntegration } = require("@sentry/profiling-node");
+const { ProfilingIntegration } = require("@sentry/profiling-node");
 
 const config = require("./config");
 
@@ -17,7 +17,7 @@ if (config.sentry.enabled) {
           },
         },
       }),
-      nodeProfilingIntegration(),
+      ProfilingIntegration(),
     ],
     profilesSampleRate: 1.0,
     release: config.sentry.release,
