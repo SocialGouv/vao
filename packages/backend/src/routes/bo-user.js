@@ -22,6 +22,8 @@ router.get(
 router.get("/me", BOcheckJWT, BOUserController.getMe);
 // Renvoie les informations liées à l'utilisateur
 router.get("/:userId", BOcheckJWT, BOcheckRoleCompte, BOUserController.getOne);
+// Mise à jour de mes informations
+router.post("/me", BOcheckJWT, BOUserController.updateMe);
 // Création d'un utilisateur
 router.post(
   "/",

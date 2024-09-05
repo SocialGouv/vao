@@ -209,6 +209,17 @@ ${additionalParamsQuery}
       `,
     [id, nom, prenom, territoireCode],
   ],
+  updateMe: (id, nom, prenom) => [
+    `
+      UPDATE back.users
+      SET
+        nom = $2,
+        prenom = $3
+      WHERE
+        id = $1
+      `,
+    [id, nom, prenom],
+  ],
 };
 
 module.exports.create = async ({
@@ -249,6 +260,27 @@ module.exports.create = async ({
 
   return { code: "CreationCompte", user };
 };
+
+module.exports.updateMe = async (id, { nom, prenom }) => {
+  log.i("update - IN", { id });
+  if (!id) {
+    throw new AppError("Paramètre manquant ou erroné de patate", {
+      statusCode: 500,
+    });
+  }
+  // Mise à jour du compte en base de données
+  const { rowCount } = await pool.query(...query.updateMe(id, nom, prenom));
+
+  if (rowCount === 0) {
+    log.d("update - DONE - Utilisateur BO inexistant");
+    throw new AppError("Utilisateur déjà inexistant", {
+      name: "UserNotFound",
+    });
+  }
+  log.i("updateMe - DONE");
+  return { code: "MajCompte" };
+};
+
 
 module.exports.update = async (
   id,
