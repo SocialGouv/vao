@@ -293,7 +293,8 @@ const headers = [
   {
     column: "types",
     text: "Types d'événement",
-    format: (value) => (value.types ?? []).map((t) => mapEigToLabel[t]),
+    format: (value) =>
+      (value.types ?? []).map((t) => mapEigToLabel[t]).join(", "),
   },
   {
     column: "dateDepot",
