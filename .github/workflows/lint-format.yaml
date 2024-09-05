@@ -18,7 +18,7 @@ jobs:
           node-version: 20
       - name: Install packages
         run: yarn --immutable
-      - name: Run the TS linter
-        run: yarn lint
+      - name: Run the ES linter
+        run: yarn:lint:all
       - name: Run prettier
         run: yarn format:check
