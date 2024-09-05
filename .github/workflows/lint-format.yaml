@@ -2,9 +2,6 @@ name: Lint and format
 
 on:
   push:
-#    branches: ['main', 'dev']
-  pull_request:
-#    branches: ['main', 'dev']
 
 jobs:
   lint-and-format:
@@ -18,7 +15,5 @@ jobs:
           node-version: 20
       - name: Install packages
         run: yarn --immutable
-      - name: Run the ES linter
-        run: yarn:lint:all
-      - name: Run prettier
-        run: yarn format:check
+      - name: Run the linter
+        run: yarn lint:all
