@@ -414,7 +414,7 @@ const updateCurrentPage = (val) => {
 
 const getCsv = async () => {
   const response = await demandeSejour.exportSejours();
-  exportCsv(response);
+  exportCsv(response, "sejours.csv");
 };
 </script>
 

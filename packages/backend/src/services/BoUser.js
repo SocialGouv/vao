@@ -427,7 +427,6 @@ module.exports.read = async (
   );
   log.d("read", [...searchParams, ...additionalParams]);
 
-
   const queryPrepared = query.get(
     undefined,
     selectQuery,
