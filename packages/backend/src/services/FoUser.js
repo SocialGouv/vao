@@ -21,7 +21,7 @@ const query = {
       org.personne_morale->>'siret' AS siret,
       org.personne_morale->>'siren' AS siren,
       org.personne_morale->>'raisonSociale' AS "raisonSociale",
-      count(ds.id) AS "nombreDeclarations"
+      count(CASE WHEN ds.statut <> 'BROUILLON' THEN ds.id ELSE NULL END) AS "nombreDeclarations"
     FROM front.users AS us
       LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
       LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
