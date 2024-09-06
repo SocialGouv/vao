@@ -14,7 +14,7 @@ module.exports = async function getOne(req, res, next) {
   try {
     // TODO: contrôle des paramètres de recherche
     const userId = req.params.userId;
-    log.d({ userId, territoireCode });
+    log.d({ territoireCode, userId });
 
     if (!userId) {
       return next(

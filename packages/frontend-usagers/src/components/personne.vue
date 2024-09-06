@@ -247,8 +247,6 @@ const {
   errorMessage: adresseErrorMessage,
   handleChange: onAddressChange,
 } = useField("adresse");
-const { value: attestation, handleChange: onAttestationChange } =
-  useField("attestation");
 const {
   value: competence,
   errorMessage: competenceErrorMessage,

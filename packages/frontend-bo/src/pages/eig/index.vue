@@ -141,7 +141,6 @@ definePageMeta({
 });
 
 const departementStore = useDepartementStore();
-const DsfrButton = resolveComponent("DsfrButton");
 
 const toaster = useToaster();
 

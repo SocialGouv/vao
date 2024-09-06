@@ -31,11 +31,11 @@ module.exports.getEmails = async (departement, userId) => {
 
   return {
     departementName,
-    userName,
     emailsDDETS,
     emailsDREETS,
     emailsOrganisateur,
     regionName,
+    userName,
   };
 };
 

@@ -6,12 +6,12 @@ const prenomSchema = require("./parts/prenom");
 
 const schema = () =>
   object({
+    deleted: boolean().required(),
     email: emailSchema(),
     nom: nomSchema(),
     prenom: prenomSchema(),
     roles: array().required(),
     territoireCode: string().required(),
-    deleted: boolean().required(),
   });
 
 module.exports = schema;

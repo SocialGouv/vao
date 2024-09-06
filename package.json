@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "lint:all": "yarn run lint:backend && yarn run lint:frontend-usagers && yarn run lint:frontend-bo && run lint:shared",
+    "lint:all": "yarn run lint:backend && yarn run lint:frontend-usagers && yarn run lint:frontend-bo && yarn run lint:shared",
     "lint:all:fix": "yarn run lint:backend --fix && yarn run lint:frontend-usagers --fix && yarn run lint:frontend-bo --fix && run lint:shared --fix",
     "lint:backend": "yarn --cwd ./packages/backend run lint",
     "lint:frontend-usagers": "yarn --cwd ./packages/frontend-usagers run lint",

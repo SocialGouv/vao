@@ -16,13 +16,34 @@ const query = {
         $2,
         $3,
         FALSE
-       )
-   RETURNING id
+    )
+  RETURNING id
   `,
+  delete: `
+DELETE FROM FRONT.EIG
+WHERE
+    ID = $1
+`,
   deleteEigToEigType: `
 DELETE FROM FRONT.EIG_TO_EIG_TYPE
 WHERE
-EIG_ID = $1`,
+    EIG_ID = $1`,
+  depose: `
+  UPDATE FRONT.EIG
+  SET
+      STATUT_ID = (
+          SELECT
+          ID
+      FROM
+          FRONT.EIG_STATUT
+      WHERE
+          STATUT = 'ENVOYE'
+      ),
+      IS_ATTESTE = TRUE,
+      DATE_DEPOT = NOW()
+  WHERE
+      ID = $1
+  `,
   get: (where, search) => `
 SELECT
   EIG.ID,
@@ -46,8 +67,8 @@ FROM
   LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
   LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
 WHERE
- ${where}
- ${search}
+  ${where}
+  ${search}
 GROUP BY
   EIG.ID,
   S.ID,
@@ -94,6 +115,27 @@ GROUP BY
   S.ID,
   DS.ID;
   `,
+  getEmailByTerCode: `
+WITH
+  roles AS
+  (
+    SELECT array_agg(id) as ids
+    from back.roles
+    WHERE label IN ('eig')
+  ),
+  users AS
+  (
+    SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
+    FROM back.users u
+    JOIN back.user_roles ur ON u.id = ur.use_id
+    WHERE u.ter_code = $1
+    GROUP BY mail
+  )
+SELECT mail
+FROM
+  roles r,
+  users u
+WHERE u.ids && r.ids`,
   getStatut: `
   SELECT S.STATUT as statut
   FROM FRONT.EIG
@@ -115,6 +157,20 @@ WHERE
     INSERT INTO FRONT.EIG_TO_EIG_TYPE (EIG_ID, EIG_TYPE_ID, PRECISIONS)
     VALUES
     ${values.join(",")}
+  `,
+  markAsRead: `
+UPDATE FRONT.EIG
+SET
+  STATUT_ID = (
+    SELECT
+      ID
+    FROM
+      FRONT.EIG_STATUT
+    WHERE
+      STATUT = 'LU'
+)
+WHERE
+  ID = $1
   `,
   updateDs: `
 UPDATE FRONT.EIG
@@ -147,62 +203,6 @@ SET
 WHERE
   ID = $1
 RETURNING id
-  `,
-  delete: `
-DELETE FROM FRONT.EIG
-WHERE
-    ID = $1
-`,
-  getEmailByTerCode: `
-WITH
-  roles AS
-  (
-    SELECT array_agg(id) as ids
-    from back.roles
-    WHERE label IN ('eig')
-  ),
-  users AS
-  (
-    SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
-    FROM back.users u
-    JOIN back.user_roles ur ON u.id = ur.use_id
-    WHERE u.ter_code = $1
-    GROUP BY mail
-  )
-SELECT mail
-FROM
-  roles r,
-  users u
-WHERE u.ids && r.ids`,
-  depose: `
-UPDATE FRONT.EIG
-SET
-    STATUT_ID = (
-        SELECT
-        ID
-    FROM
-        FRONT.EIG_STATUT
-    WHERE
-        STATUT = 'ENVOYE'
-    ),
-    IS_ATTESTE = TRUE,
-    DATE_DEPOT = NOW()
-WHERE
-    ID = $1
-  `,
-  markAsRead: `
-UPDATE FRONT.EIG
-SET
-  STATUT_ID = (
-    SELECT
-      ID
-    FROM
-      FRONT.EIG_STATUT
-    WHERE
-     STATUT = 'LU'
-)
-WHERE
-  ID = $1
   `,
 };
 

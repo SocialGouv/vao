@@ -2,9 +2,11 @@
   "name": "@vao/backend",
   "version": "0.1.0",
   "description": "Backend du projet VAO",
+  "author": "orgs/SocialGouv/teams/vao",
+  "license": "Apache-2.0",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint ./src",
+    "lint": "eslint --fix ./src",
     "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js"
   },
   "dependencies": {

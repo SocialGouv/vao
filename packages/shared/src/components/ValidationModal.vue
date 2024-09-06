@@ -32,6 +32,8 @@
 </template>
 
 <script setup>
+import { DsfrButton } from "@gouvminint/vue-dsfr";
+
 defineProps({
   modalRef: { type: String, required: true },
   name: { type: String, required: true },

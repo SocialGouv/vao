@@ -132,7 +132,7 @@ const initialValues = {
   departement: eigStore.currentEig?.departement ?? null,
 };
 
-const { meta, values, errors } = useForm({
+const { meta, values } = useForm({
   validationSchema,
   initialValues,
   validateOnMount: false,

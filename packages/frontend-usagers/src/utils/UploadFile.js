@@ -1,7 +1,6 @@
 import { $fetchBackend } from "./fetchBackend";
 import { logger } from "#imports";
 
-
 export default async function UploadFile(category, file) {
   const log = logger("utils/UploadFile");
   log.d("uploadFile - IN", { category, name: file.name });
