@@ -1,3 +1,5 @@
+const Sentry = require("@sentry/node");
+
 /* eslint-disable no-param-reassign */
 const logger = require("../../../utils/logger");
 const build = require("./build");
@@ -47,4 +49,15 @@ const generate = async (declaration, idFonctionnelle, departementSuivi) => {
   }
 };
 
-module.exports = generate;
+module.exports = module.exports = async (
+  declaration,
+  idFonctionnelle,
+  departementSuivi,
+) => {
+  await Sentry.startSpan(
+    { name: "services.pdf.declaration2mois.generate" },
+    async () => {
+      return await generate(declaration, idFonctionnelle, departementSuivi);
+    },
+  );
+};
