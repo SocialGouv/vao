@@ -89,7 +89,6 @@ import dayjs from "dayjs";
 import { TableWithBackendPagination } from "@vao/shared";
 import { useUserStore } from "~/stores/user";
 
-
 definePageMeta({
   middleware: ["is-connected"],
 });

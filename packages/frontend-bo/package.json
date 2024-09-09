@@ -2,6 +2,8 @@
   "name": "@vao/frontend-bo",
   "version": "0.1.1",
   "description": "Client pour les instructeurs du projet VAO",
+  "author": "orgs/SocialGouv/teams/vao",
+  "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
     "build": "nuxt build",

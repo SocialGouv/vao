@@ -68,8 +68,6 @@ const refreshTable = () => {
   });
 };
 
-const router = useRouter();
-
 const refresqueryParams = () => {
   if (props.isUrlUpdate) {
     navigateTo({

@@ -367,7 +367,8 @@ module.exports.update = async (type, parametre, organismeId) => {
   }
   switch (type) {
     case "personne_morale": {
-      const complet = await Organisme.schema(regions).personneMorale.isValid(parametre);
+      const complet =
+        await Organisme.schema(regions).personneMorale.isValid(parametre);
       response = await pool.query(query.updatePersonne, [
         organismeId,
         type,
@@ -378,7 +379,8 @@ module.exports.update = async (type, parametre, organismeId) => {
       break;
     }
     case "personne_physique": {
-      const complet = await Organisme.schema(regions).personnePhysique.isValid(parametre);
+      const complet =
+        await Organisme.schema(regions).personnePhysique.isValid(parametre);
       response = await pool.query(query.updatePersonne, [
         organismeId,
         type,
@@ -389,7 +391,8 @@ module.exports.update = async (type, parametre, organismeId) => {
       break;
     }
     case "protocole_transport": {
-      const complet = await Organisme.schema(regions).protocoleTransport.isValid(parametre);
+      const complet =
+        await Organisme.schema(regions).protocoleTransport.isValid(parametre);
       response = await pool.query(query.updateTransport, [
         organismeId,
         parametre,
@@ -398,7 +401,8 @@ module.exports.update = async (type, parametre, organismeId) => {
       break;
     }
     case "protocole_sanitaire": {
-      const complet = await Organisme.schema(regions).protocoleSanitaire.isValid(parametre);
+      const complet =
+        await Organisme.schema(regions).protocoleSanitaire.isValid(parametre);
       response = await pool.query(query.updateSanitaire, [
         organismeId,
         parametre,

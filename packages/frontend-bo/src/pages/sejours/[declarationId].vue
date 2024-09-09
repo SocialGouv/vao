@@ -331,9 +331,6 @@ const modalEnregistrement2Mois = reactive({
   opened: false,
 });
 
-const fetchMessages = () => {
-  demandeStore.fetchMessages(route.params.declarationId);
-};
 const onOpenModalDemandeComplements = () => {
   modalComplement.opened = true;
 };

@@ -1,14 +1,15 @@
 {
   "name": "@vao/shared",
   "version": "1.0.0",
+
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint --fix ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "sourceType": "module",
-  "author": "",
-  "license": "ISC",
+  "author": "orgs/SocialGouv/teams/vao",
+  "license": "Apache-2.0",
   "description": "",
   "dependencies": {
     "@gouvfr/dsfr": "^1.12.1",

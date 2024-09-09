@@ -24,7 +24,6 @@ const eigTypeBase = yup
   .required();
 
 const eigTypeDepose = {
-  type: eigTypeBase,
   categorie: yup
     .string()
     .oneOf(
@@ -49,10 +48,11 @@ const eigTypeDepose = {
           type === Types[Categorie.SANTE].AUTRE
         );
       },
+      otherwise: (precision) => precision.nullable().strip(),
       then: (precision) =>
         precision.min(5, "Ce champ est obligatoire").required(),
-      otherwise: (precision) => precision.nullable().strip(),
     }),
+  type: eigTypeBase,
 };
 
 const eigTypesDepose = {
@@ -60,40 +60,6 @@ const eigTypesDepose = {
 };
 
 const eigTypesSchemaCRUD = {
-  types: yup.array().of(eigTypeBase).min(1).required(),
-  victimesAutrePrecision: yup
-    .string()
-    .nullable()
-    .when("types", {
-      is: (types) => {
-        return (types ?? []).includes(Types[Categorie.VICTIMES].AUTRE);
-      },
-      then: (precision) =>
-        precision.min(5, "Ce champ est obligatoire").required(),
-      otherwise: (precision) => precision.nullable().strip(),
-    }),
-  securiteAutrePrecision: yup
-    .string()
-    .nullable()
-    .when("types", {
-      is: (types) => {
-        return (types ?? []).includes(Types[Categorie.SECURITE].AUTRE);
-      },
-      then: (precision) =>
-        precision.min(5, "Ce champ est obligatoire").required(),
-      otherwise: (precision) => precision.nullable().strip(),
-    }),
-  santeAutrePrecision: yup
-    .string()
-    .nullable()
-    .when("types", {
-      is: (types) => {
-        return (types ?? []).includes(Types[Categorie.SANTE].AUTRE);
-      },
-      then: (precision) =>
-        precision.min(5, "Ce champ est obligatoire").required(),
-      otherwise: (precision) => precision.nullable().strip(),
-    }),
   fonctionnementAutrePrecision: yup
     .string()
     .nullable()
@@ -103,9 +69,43 @@ const eigTypesSchemaCRUD = {
           Types[Categorie.FONCTIONNEMENT_ORGANISME].AUTRE,
         );
       },
+      otherwise: (precision) => precision.nullable().strip(),
       then: (precision) =>
         precision.min(5, "Ce champ est obligatoire").required(),
+    }),
+  santeAutrePrecision: yup
+    .string()
+    .nullable()
+    .when("types", {
+      is: (types) => {
+        return (types ?? []).includes(Types[Categorie.SANTE].AUTRE);
+      },
       otherwise: (precision) => precision.nullable().strip(),
+      then: (precision) =>
+        precision.min(5, "Ce champ est obligatoire").required(),
+    }),
+  securiteAutrePrecision: yup
+    .string()
+    .nullable()
+    .when("types", {
+      is: (types) => {
+        return (types ?? []).includes(Types[Categorie.SECURITE].AUTRE);
+      },
+      otherwise: (precision) => precision.nullable().strip(),
+      then: (precision) =>
+        precision.min(5, "Ce champ est obligatoire").required(),
+    }),
+  types: yup.array().of(eigTypeBase).min(1).required(),
+  victimesAutrePrecision: yup
+    .string()
+    .nullable()
+    .when("types", {
+      is: (types) => {
+        return (types ?? []).includes(Types[Categorie.VICTIMES].AUTRE);
+      },
+      otherwise: (precision) => precision.nullable().strip(),
+      then: (precision) =>
+        precision.min(5, "Ce champ est obligatoire").required(),
     }),
 };
 
