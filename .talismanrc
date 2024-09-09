@@ -87,6 +87,8 @@ fileignoreconfig:
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
   checksum: a631fbf33a27c02362e3986094d5f674db98a3265c10c3f8aad9abad6dd43679
+- filename: e2e/register-login-organisateur.spec.ts
+  checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
 - filename: packages/backend/src/config.js
   checksum: c0baf7f4f878d3f3406030471f15c092ed9fc671b1e66276fe9b071ea025b58c
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
@@ -229,8 +231,6 @@ fileignoreconfig:
   checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
-- filename: packages/migrations/src/migrations/20240710125537_eig.js
-  checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/shared/src/components/PasswordInput.vue
   checksum: 6d60a6028edc072a3300ac06e693436bc38405cb5847bf32c5ef67448cb60ceb
 - filename: pg/scripts/01-init.sql
@@ -257,4 +257,6 @@ fileignoreconfig:
   checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
 scopeconfig:
 - scope: node
+version: "1.0"
+e
 version: "1.0"
