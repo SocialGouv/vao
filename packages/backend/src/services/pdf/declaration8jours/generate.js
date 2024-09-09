@@ -64,7 +64,7 @@ module.exports = async (
   departementSuivi,
   dateDeposeA2mois,
 ) => {
-  await Sentry.startSpan(
+  return await Sentry.startSpan(
     { name: "services.pdf.declaration8jours.generate" },
     async () => {
       return await generate(

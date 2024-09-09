@@ -60,5 +60,4 @@ async function doSend(payload) {
   }
 
   log.i("send - DONE");
-  return module.exports.mailService.send(payload);
 }
