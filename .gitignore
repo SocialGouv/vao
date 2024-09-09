@@ -13,3 +13,5 @@ notes.txt
 
 .anonymizer
 
+playwright-report/
+test-results/
