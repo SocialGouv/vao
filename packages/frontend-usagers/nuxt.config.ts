@@ -22,14 +22,15 @@ export default defineNuxtConfig({
   modules: [
     "nuxt-security",
     "@pinia/nuxt",
-    "@nuxtjs/leaflet",
     "@socialgouv/dsfr-toaster-nuxt-module",
+    "nuxt-maplibre",
   ],
   runtimeConfig: {
     public: {
       appVersion: undefined,
       backendUrl: undefined,
       environment: undefined,
+      apiMapTiler: undefined,
       matomo: {
         enabled: undefined,
         host: undefined,

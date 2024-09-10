@@ -839,9 +839,7 @@ const {
   meta: excursionMeta,
 } = useField("informationsTransport.excursion");
 
-const markers = computed(() => {
-  return [adresse.value.coordinates[1], adresse.value.coordinates[0]];
-});
+const markers = computed(() => adresse.value.coordinates);
 
 function verifFormatFile(file, toasterMessage) {
   if (checkFormatFile(file.value)) return true;

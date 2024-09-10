@@ -131,12 +131,12 @@ jobs:
       use: build
       envFrom:
         - secretRef:
-            name: "{{ or $.with.registrySecretRefName $.Values.global.registrySecretRefName }}"      
+            name: "{{ or $.with.registrySecretRefName $.Values.global.registrySecretRefName }}"
         - configMapRef:
             name: matomo
       with:
         imagePackage: frontend-usagers
-        context: ./ 
+        context: ./
         dockerfile: packages/frontend-usagers/Dockerfile
         buildArgs:
           NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
@@ -145,6 +145,7 @@ jobs:
           NUXT_PUBLIC_MATOMO_SITE_ID: "${FRONTEND_USAGERS_MATOMO_SITE_ID}"
           NUXT_PUBLIC_SENTRY_DSN: "https://38eaf4da504d4809a74ce3134b759c91@sentry.fabrique.social.gouv.fr/103"
           NUXT_PUBLIC_SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
+          NUXT_PUBLIC_API_MAP_TILER: "g9IvoA8h0Ow8I9szhdzW"
           SENTRY_URL: "https://sentry.fabrique.social.gouv.fr"
           SENTRY_ORG: incubateur
           SENTRY_PROJECT: vao-usagers
@@ -157,7 +158,7 @@ jobs:
       use: build
       envFrom:
         - secretRef:
-            name: "{{ or $.with.registrySecretRefName $.Values.global.registrySecretRefName }}"      
+            name: "{{ or $.with.registrySecretRefName $.Values.global.registrySecretRefName }}"
         - configMapRef:
             name: matomo
       with:
@@ -171,6 +172,7 @@ jobs:
           NUXT_PUBLIC_MATOMO_SITE_ID: "${FRONTEND_BO_MATOMO_SITE_ID}"
           NUXT_PUBLIC_SENTRY_DSN: "https://1c0cbefef75a451ca753a4392ebea5b4@sentry.fabrique.social.gouv.fr/104"
           NUXT_PUBLIC_SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
+          NUXT_PUBLIC_API_MAP_TILER: "g9IvoA8h0Ow8I9szhdzW"
           SENTRY_URL: "https://sentry.fabrique.social.gouv.fr"
           SENTRY_ORG: incubateur
           SENTRY_PROJECT: vao-admin
@@ -210,7 +212,7 @@ jobs:
             secretKeyRef:
               name: pg-app
               key: PGDATABASE
-      
+
     init-db:
       ~needs: [pg]
       retry: 3
@@ -251,7 +253,7 @@ jobs:
         else
           echo "01-init : "
           psql -f /workspace/pg/scripts/01-init.sql
-          
+
           echo "Users creation : "
           psql -d $PGDATABASE -c "CREATE USER \"$PG_VAO_USER\" WITH password '$PG_VAO_PASSWORD'"
           psql -d $PGDATABASE -c "CREATE USER \"$PG_VAO_DOCUMENT_USER\" WITH password '$PG_VAO_DOCUMENT_PASSWORD'"
