@@ -55,7 +55,7 @@ const query = {
         AND (
           unaccent(h.nom) ILIKE '%' || unaccent($2) || '%' OR
           h.coordonnees ->> 'email' ILIKE '%' || $2 || '%' OR
-          unaccent(h.coordonnees -> 'adresse') ->> 'label' ILIKE '%' || unaccent($2) || '%'
+          unaccent(h.coordonnees -> 'adresse' ->> 'label') ILIKE '%' || unaccent($2) || '%'
         )
       ORDER BY "${sort}" ${order}
     ),
