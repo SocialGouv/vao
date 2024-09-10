@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: dfd9f0258a5e81735c0b4aee57b7a9637ca6a9167b537e1bce8ee1fbe61f9e3a
+  checksum: 05f7ec05c61f09c4b38f2fda318f6aa209ebda02ffeaada74ab2b167577bdc6d
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -229,8 +229,6 @@ fileignoreconfig:
   checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
-- filename: packages/migrations/src/migrations/20240710125537_eig.js
-  checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/shared/src/components/PasswordInput.vue
   checksum: 6d60a6028edc072a3300ac06e693436bc38405cb5847bf32c5ef67448cb60ceb
 - filename: pg/scripts/01-init.sql
@@ -254,6 +252,11 @@ fileignoreconfig:
 - filename: pg/scripts/03/03-3-ref-data.sql
   checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
 - filename: pg/seeds/BO-1-back-user.sql
+  checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
+scopeconfig:
+- scope: node
+version: "1.0"
+g/seeds/BO-1-back-user.sql
   checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
 scopeconfig:
 - scope: node
