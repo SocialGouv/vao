@@ -491,7 +491,7 @@ WHERE
       AND h.hebergement -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($1)
       AND (
         unaccent(h.hebergement ->> 'nom') ILIKE '%' || unaccent($2) || '%' OR
-        unaccent(h.hebergement -> 'coordonnees') ->> 'email' ILIKE '%' || unaccent($2) || '%' OR
+        h.hebergement -> 'coordonnees' ->> 'email' ILIKE '%' || $2 || '%' OR
         unaccent(h.hebergement -> 'coordonnees' -> 'adresse' ->> 'label') ILIKE '%' || unaccent($2) || '%'
       )
     ORDER BY "${sort}" ${order}
