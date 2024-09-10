@@ -490,9 +490,9 @@ WHERE
       ds.statut <> 'BROUILLON'
       AND h.hebergement -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($1)
       AND (
-        h.hebergement ->> 'nom' ILIKE '%' || $2 || '%' OR
-        h.hebergement -> 'coordonnees' ->> 'email' ILIKE '%' || $2 || '%' OR
-        h.hebergement -> 'coordonnees' -> 'adresse' ->> 'label' ILIKE '%' || $2 || '%'
+        unaccent(h.hebergement ->> 'nom') ILIKE '%' || unaccent($2) || '%' OR
+        unaccent(h.hebergement -> 'coordonnees') ->> 'email' ILIKE '%' || unaccent($2) || '%' OR
+        unaccent(h.hebergement -> 'coordonnees' -> 'adresse' ->> 'label') ILIKE '%' || unaccent($2) || '%'
       )
     ORDER BY "${sort}" ${order}
   ),
@@ -888,18 +888,18 @@ module.exports.getByDepartementCodes = async (
 
   // Search management
   if (search?.idFonctionnelle && search.idFonctionnelle.length) {
-    searchQuery.push(`id_fonctionnelle ilike $${params.length + 1}`);
+    searchQuery.push(`id_fonctionnelle ILIKE $${params.length + 1}`);
     params.push(`%${search.idFonctionnelle}%`);
   }
   if (search?.libelle && search.libelle.length) {
-    searchQuery.push(`libelle ilike $${params.length + 1}`);
+    searchQuery.push(`libelle ILIKE unaccent($${params.length + 1})`);
     params.push(`%${search.libelle}%`);
   }
   if (search?.organisme && search.organisme.length) {
     searchQuery.push(`(
-      personne_morale ->> 'raisonSociale' ilike $${params.length + 1}
-      OR personne_physique ->> 'prenom' ilike $${params.length + 2}
-      OR personne_physique ->> 'nomUsage' ilike $${params.length + 3}
+      personne_morale ->> 'raisonSociale' ILIKE $${params.length + 1}
+      OR unaccent(personne_physique ->> 'prenom') ILIKE unaccent($${params.length + 2})
+      OR unaccent(personne_physique ->> 'nomUsage') ILIKE unaccent($${params.length + 3})
       )`);
     params.push(
       `%${search.organisme}%`,

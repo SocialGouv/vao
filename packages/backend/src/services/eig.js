@@ -398,7 +398,7 @@ const getEigs = async (
 
   // Search management
   if (search?.idFonctionnelle && search.idFonctionnelle.length) {
-    searchQuery.push(`DS.id_fonctionnelle ilike $${params.length + 1}`);
+    searchQuery.push(`DS.id_fonctionnelle ILIKE $${params.length + 1}`);
     params.push(`%${search.idFonctionnelle}%`);
   }
 
@@ -422,13 +422,15 @@ const getEigs = async (
   }
 
   if (search?.libelle && search.libelle.length) {
-    searchQuery.push(`DS.LIBELLE ilike $${params.length + 1}`);
+    searchQuery.push(
+      `unaccent(DS.LIBELLE) ILIKE unaccent($${params.length + 1})`,
+    );
     params.push(`%${search.libelle}%`);
   }
 
   if (search?.organisme && search.organisme.length) {
     searchQuery.push(`
-  	(CONCAT(
+    (CONCAT(
 		DS.ORGANISME -> 'personnePhysique' ->> 'prenom',
 		' ',
 		DS.ORGANISME -> 'personnePhysique' ->> 'nomUsage'
