@@ -383,7 +383,7 @@ const titles = {
     titleStart.value + "étape 6 sur 8 | Informations sanitaires" + titleEnd,
   "#hebergements": () =>
     titleStart.value + "étape 7 sur 8 | Sélection des hébergements" + titleEnd,
-  "#synthese": () => titleStart + "étape 8 sur 8 | Synthèse" + titleEnd,
+  "#synthese": () => titleStart.value + "étape 8 sur 8 | Synthèse" + titleEnd,
   1: () => titleStart.value + "Documents joints" + titleEnd,
   2: () => titleStart.value + "Historique de la déclaration" + titleEnd,
   3: () => titleStart.value + "Messagerie" + titleEnd,
