@@ -330,14 +330,11 @@ const tabTitles = computed(() => [
     panelId: "tab-content-3",
     icon: `${unreadMessages.value ? "ri:feedback-line" : ""}`,
   },
-  // TODO(eig): unhide when ok
-  /*
-    {
-      title: "EIG",
-      tabId: "tab-4",
-      panelId: "tab-content-4",
-    },
-  */
+  {
+    title: "EIG",
+    tabId: "tab-4",
+    panelId: "tab-content-4",
+  },
 ]);
 
 const modalComplement = reactive({
