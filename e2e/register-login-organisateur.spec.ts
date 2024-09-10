@@ -4,6 +4,7 @@ import path from "path";
 
 const baseUrl =
   process.env.E2E_BASE_URL || "vao-main.ovh.fabrique.social.gouv.fr";
+const runLocal = process.env.E2E_LOCAL === "true";
 
 const username = process.env.E2E_USERNAME || `e2e-${randomUUID()}@test.com`;
 const password = "Pizza1234567;";
@@ -12,7 +13,13 @@ const password = "Pizza1234567;";
 test.describe.configure({ mode: "serial" });
 
 function getUrl(prefix?: string) {
-  return `https://${prefix ? prefix + "-" : ""}${baseUrl}`;
+  if (runLocal) {
+    if (prefix === "maildev") {
+      return `http://localhost:1080`;
+    }
+    return `http://localhost:3000`;
+  }
+  return `${runLocal ? "http" : "https"}://${prefix ? prefix + "-" : ""}${baseUrl}`;
 }
 
 async function login(page) {

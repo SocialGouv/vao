@@ -13,7 +13,9 @@
     "lint:frontend-usagers": "yarn --cwd ./packages/frontend-usagers run lint",
     "lint:frontend-bo": "yarn --cwd ./packages/frontend-bo run lint",
     "lint:shared": "yarn --cwd ./packages/shared run lint",
-    "knex": "POSTGRES_HOST=localhost POSTGRES_PORT=5436 env-cmd --no-override knex --cwd ./packages/migrations/src"
+    "knex": "POSTGRES_HOST=localhost POSTGRES_PORT=5436 env-cmd --no-override knex --cwd ./packages/migrations/src",
+    "tests:e2e": "E2E_LOCAL=true playwright test",
+    "tests:e2e:ui": "E2E_LOCAL=true playwright test --ui"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
