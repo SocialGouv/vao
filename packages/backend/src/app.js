@@ -90,8 +90,7 @@ app.use(`/hebergement`, routes.hebergement);
 app.use(`/siret`, routes.siret);
 app.use(`/documents`, routes.documents);
 app.use(`/geo`, routes.geo);
-// TODO(eig): unhide when ok
-//app.use(`/eig`, routes.eig);
+app.use(`/eig`, routes.eig);
 app.use(`/message`, routes.message);
 
 if (config.sentry.environment !== "production") {

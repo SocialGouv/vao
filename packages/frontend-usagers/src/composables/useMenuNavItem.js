@@ -43,8 +43,7 @@ export const useMenuNavItems = () => {
         text: "Mes hébergements",
         to: "/hebergements/liste",
       },
-      // TODO(eig): unhide when ok
-      /*{
+      {
         title: "EIG",
         links: [
           {
@@ -56,7 +55,7 @@ export const useMenuNavItems = () => {
             to: "/eig",
           },
         ],
-      },*/
+      },
     ];
   });
 };

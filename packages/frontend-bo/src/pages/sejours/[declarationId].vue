@@ -316,10 +316,7 @@ const tabTitles = computed(() => [
     title: `Messagerie ${unreadMessages.value}`,
     icon: `${unreadMessages.value ? "ri-feedback-line" : ""}`,
   },
-  // TODO(eig): unhide when ok
-  /*
-    { title: "EIG" },
-  */
+  { title: "EIG" },
 ]);
 
 const modalComplement = reactive({

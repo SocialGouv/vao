@@ -343,10 +343,7 @@ const tabTitles = computed(() => [
         },
       ]
     : []),
-  // TODO(eig): unhide when ok
-  /*
-    ...(sejourId.value ? [{ title: "EIG" }] : []),
-  */
+  ...(sejourId.value ? [{ title: "EIG" }] : []),
 ]);
 
 const sommaireOptions = demandeSejourMenus
