@@ -61,26 +61,26 @@ module.exports.read = async ({
 
   // Search management
   if (search?.nom && search.nom.length) {
-    searchQuery += `   AND us.nom ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND unaccent(us.nom) ILIKE unaccent($${searchParams.length + 1})\n`;
     searchParams.push(`%${search.nom}%`);
   }
   if (search?.prenom && search.prenom.length) {
-    searchQuery += `   AND us.prenom ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND unaccent(us.prenom) ILIKE unaccent($${searchParams.length + 1})\n`;
     searchParams.push(`%${search.prenom}%`);
   }
   if (search?.email && search.email.length) {
-    searchQuery += `   AND us.mail ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND us.mail ILIKE $${searchParams.length + 1}\n`;
     searchParams.push(`%${normalize(search.email)}%`);
   }
   if (search?.siret && search.siret.length) {
-    searchQuery += `   AND org.personne_morale->>'siret' ilike $${searchParams.length + 1}\n`;
+    searchQuery += `   AND org.personne_morale->>'siret' ILIKE $${searchParams.length + 1}\n`;
     searchParams.push(`%${normalize(search.siret)}%`);
   }
   if (search?.organisme && search.organisme.length) {
     searchQuery += `AND (
-      org.personne_morale ->> 'raisonSociale' ilike $${searchParams.length + 1}
-      OR org.personne_physique ->> 'prenom' ilike $${searchParams.length + 1}
-      OR org.personne_physique ->> 'nomUsage' ilike $${searchParams.length + 1}
+      org.personne_morale ->> 'raisonSociale' ILIKE $${searchParams.length + 1}
+      OR unaccent(org.personne_physique ->> 'prenom') ILIKE unaccent($${searchParams.length + 1})
+      OR unaccent(org.personne_physique ->> 'nomUsage')ILIKE unaccent($${searchParams.length + 1})
       )`;
     searchParams.push(`%${search.organisme}%`);
   }
