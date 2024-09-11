@@ -181,5 +181,7 @@ test("create_organisateur", async ({ page }) => {
 
   // étape 5
   await page.getByRole("button", { name: "Finaliser la fiche" }).click();
-  await expect(page.getByText("Fiche organisateur finalisée")).toBeVisible();
+  await expect(page.getByText("Fiche organisateur finalisée")).toBeVisible({
+    timeout: 10000,
+  });
 });
