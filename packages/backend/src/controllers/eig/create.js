@@ -4,7 +4,7 @@ const { selectionSejourSchema } = require("../../schemas/eig");
 const ValidationAppError = require("../../utils/validation-error");
 const eigService = require("../../services/eig");
 const DemandeSejour = require("../../services/DemandeSejour");
-const { idDeclarationeligibleToEig } = require("../../helpers/eig");
+const { isDeclarationligibleToEig } = require("../../helpers/eig");
 
 const log = logger(module.filename);
 
@@ -33,7 +33,7 @@ module.exports = async (req, res, next) => {
     return res.status(500).send({ errors: err.errors, name: err.name });
   }
 
-  if (!idDeclarationeligibleToEig(ds)) {
+  if (!isDeclarationligibleToEig(ds)) {
     return res.status(400).send({
       message: "La déclaration n'est pas éligible à la création d'un EIG",
     });

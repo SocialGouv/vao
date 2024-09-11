@@ -109,12 +109,12 @@ module.exports.UpdateTypes = {
   TYPE_EVENEMENT: "TYPE_EVENEMENT",
 };
 
-module.exports.idDeclarationeligibleToEig = (d) =>
+module.exports.isDeclarationligibleToEig = (d) =>
   d.dateDebut <= dayjs().format("YYYY-MM-DD") &&
   dayjs(d.dateFin).add(1, "week").format("YYYY-MM-DD") >=
     dayjs().format("YYYY-MM-DD") &&
-  ![
-    dsStatuts.statuts.BROUILLON,
-    dsStatuts.statuts.ABANDONNEE,
-    dsStatuts.statuts.ANNULEE,
+  [
+    dsStatuts.statuts.VALIDEE_8J,
+    dsStatuts.statuts.SEJOUR_EN_COURS,
+    dsStatuts.statuts.TERMINEE,
   ].includes(d.statut);
