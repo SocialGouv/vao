@@ -10,6 +10,7 @@ const selectionSejourSchema = {
     .integer("Ce champ doit contenir un nombre entier")
     .required(),
   departement: yup.string().required("ce champ est obligatoire"),
+  date: yup.date().typeError("La date n'est pas au format attendu").required(),
 };
 
 const eigTypeBase = yup

@@ -24,6 +24,14 @@ const currentEigValues = computed(() => [
     value: props.eig?.idFonctionnelle ?? "",
   },
   {
+    label: "Département ou a eu lieu l'EIG",
+    value: props.eig?.departement ?? "",
+  },
+  {
+    label: "Date de l'incident",
+    value: props.eig?.date ? dayjs(props.eig?.date).format("DD/MM/YYYY") : "",
+  },
+  {
     label: "Séjour",
     value: props.eig?.libelle ?? "",
   },

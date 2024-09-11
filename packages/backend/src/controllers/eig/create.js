@@ -13,30 +13,48 @@ module.exports = async (req, res, next) => {
   log.i("IN", { body: req.body });
   const { parametre } = req.body;
 
+  if (!parametre.declarationId) {
+    return res.status(400).send({
+      errors: "Le champs declarationId est obligatoire",
+      name: "UnexpectedError",
+    });
+  }
+
+  let ds;
+
+  try {
+    ds = await DemandeSejour.getOne({ "ds.id": parametre.declarationId });
+    if (!ds) {
+      return res
+        .status(404)
+        .send({ errors: "Aucune déclaration trouvée", name: "Not found" });
+    }
+  } catch (err) {
+    return res.status(500).send({ errors: err.errors, name: err.name });
+  }
+
+  if (!idDeclarationeligibleToEig(ds)) {
+    return res.status(400).send({
+      message: "La déclaration n'est pas éligible à la création d'un EIG",
+    });
+  }
+
   let eig;
 
   try {
-    eig = await yup.object(selectionSejourSchema).validate(parametre, {
-      abortEarly: false,
-      stripUnknown: true,
-    });
+    eig = await yup
+      .object(selectionSejourSchema(ds.dateDebut, ds.dateFin))
+      .validate(parametre, {
+        abortEarly: false,
+        stripUnknown: true,
+      });
   } catch (error) {
     return next(new ValidationAppError(error));
   }
 
   try {
-    const ds = await DemandeSejour.getOne({ "ds.id": eig.declarationId });
-    if (!idDeclarationeligibleToEig(ds)) {
-      return res.status(400).send({
-        message: "La déclaration n'est pas éligible à la création d'un EIG",
-      });
-    }
-  } catch (err) {
-    return res.status(400).send({ errors: err.errors, name: err.name });
-  }
-
-  try {
     const eigId = await eigService.create({
+      date: eig.date,
       declarationId: eig.declarationId,
       departement: eig.departement,
       userId,
