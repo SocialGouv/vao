@@ -6,10 +6,10 @@ const isDeclarationligibleToEig = (d) =>
   d.dateDebut <= dayjs().format("YYYY-MM-DD") &&
   dayjs(d.dateFin).add(1, "week").format("YYYY-MM-DD") >=
     dayjs().format("YYYY-MM-DD") &&
-  ![
-    DeclarationSejour.statuts.BROUILLON,
-    DeclarationSejour.statuts.ABANDONNEE,
-    DeclarationSejour.statuts.ANNULEE,
+  [
+    DeclarationSejour.statuts.VALIDEE_8J,
+    DeclarationSejour.statuts.SEJOUR_EN_COURS,
+    DeclarationSejour.statuts.TERMINEE,
   ].includes(d.statut);
 
 const canDelete = (statut) => eigModel.Statuts.BROUILLON === statut;
