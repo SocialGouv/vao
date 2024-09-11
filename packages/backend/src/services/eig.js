@@ -8,13 +8,14 @@ const log = logger(module.filename);
 const query = {
   create: `
   INSERT INTO
-    FRONT.EIG (USER_ID, STATUT_ID, DEMANDE_SEJOUR_ID, DEPARTEMENT, IS_ATTESTE)
+    FRONT.EIG (USER_ID, STATUT_ID, DEMANDE_SEJOUR_ID, DEPARTEMENT, DATE, IS_ATTESTE)
   VALUES
     (
         $1,
         (SELECT ID FROM FRONT.EIG_STATUT WHERE STATUT = '${statuts.BROUILLON}'),
         $2,
         $3,
+        $4,
         FALSE
     )
   RETURNING id
@@ -48,6 +49,7 @@ WHERE
 SELECT
   EIG.ID,
   EIG.created_at as "createdAt",
+  EIG.date as "date",
   EIG.DEPARTEMENT as "departement",
   S.STATUT AS "statut",
   DS.ID_FONCTIONNELLE AS "idFonctionnelle",
@@ -80,6 +82,7 @@ EIG.ID,
   EIG.USER_ID AS "userId",
   S.STATUT AS "statut",
   EIG.DEPARTEMENT AS "departement",
+  EIG.date as "date",
   DS.ID AS "declarationId",
   DS.ID_FONCTIONNELLE AS "idFonctionnelle",
   DS.LIBELLE as "libelle",
@@ -184,9 +187,10 @@ UPDATE FRONT.EIG
 SET
   DEMANDE_SEJOUR_ID = $1,
   DEPARTEMENT=$2,
+  DATE=$3,
   EDITED_AT = NOW()
 WHERE
-  ID = $3
+  ID = $4
 RETURNING id
   `,
   updateEmailAutresDestinataires: `
@@ -213,13 +217,19 @@ RETURNING id
   `,
 };
 
-module.exports.create = async ({ userId, declarationId, departement }) => {
+module.exports.create = async ({
+  userId,
+  declarationId,
+  departement,
+  date,
+}) => {
   log.i("create - IN");
 
   const response = await pool.query(query.create, [
     userId,
     declarationId,
     departement,
+    date,
   ]);
   log.d(response);
   const { id } = response.rows[0];
@@ -280,12 +290,16 @@ module.exports.getStatut = async (eigId) => {
   return response.rows?.[0]?.statut ?? null;
 };
 
-module.exports.updateDS = async (eigId, { declarationId, departement }) => {
+module.exports.updateDS = async (
+  eigId,
+  { declarationId, departement, date },
+) => {
   log.i("updateDS - IN");
 
   const response = await pool.query(query.updateDs, [
     declarationId,
     departement,
+    date,
     eigId,
   ]);
   log.d(response);

@@ -1,7 +1,7 @@
 <template>
   <div>
     <h6>Sélectionner un séjour</h6>
-    <div class="fr-fieldset">
+    <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <DsfrTag
           v-if="selectedDemandeLabel"
@@ -10,7 +10,7 @@
           class="fr-mb-4v"
           :label="selectedDemandeLabel"
           :disabled="!eigStore.canModify"
-          @click="() => onDeclarationIdChange(null)"
+          @click="() => onChooseDeclaration(null)"
         />
         <DsfrSearchBar
           label="Selectionner le séjour"
@@ -29,7 +29,7 @@
             class="fr-my-2v"
             @click="
               () => {
-                onDeclarationIdChange(demande.declarationId);
+                onChooseDeclaration(demande.declarationId);
                 search = '';
               }
             "
@@ -52,8 +52,25 @@
           @update:model-value="onDepartementChange"
         />
       </div>
-    </div>
-    <div v-if="props.showButtons" class="fr-fieldset">
+      <div class="fr-fieldset__element">
+        <DsfrInputGroup
+          v-if="!!selectedDemande"
+          name="date"
+          type="date"
+          label="Date de l'incident"
+          :label-visible="true"
+          :min="selectedDemandeDateRange?.[0]"
+          :max="selectedDemandeDateRange?.[1]"
+          :model-value="date"
+          :readonly="!eigStore.canModify"
+          :is-valid="dateMeta.valid"
+          :error-message="dateErrorMessage"
+          placeholder="Date de l'incident"
+          @update:model-value="onDateChange"
+        />
+      </div>
+    </fieldset>
+    <fieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton
         v-if="!props.isDownloading"
         id="next-step"
@@ -65,7 +82,7 @@
         :message="props.message"
         :is-downloading="props.isDownloading"
       />
-    </div>
+    </fieldset>
   </div>
 </template>
 
@@ -74,6 +91,7 @@ import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
 import { eigModel, eigSchema } from "@vao/shared";
 import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
+import dayjs from "dayjs";
 
 const emit = defineEmits(["next", "update"]);
 
@@ -117,6 +135,13 @@ const selectedDemandeLabel = computed(() => {
   return getTagSejourLibelle(selectedDemande.value);
 });
 
+const selectedDemandeDateRange = computed(() => {
+  if (!selectedDemande.value) {
+    return null;
+  }
+  return [selectedDemande.value.dateDebut, selectedDemande.value.dateFin];
+});
+
 const departementsOptions = computed(
   () =>
     selectedDemande.value?.hebergements?.hebergements
@@ -130,6 +155,9 @@ const initialValues = {
     eigStore.currentEig?.declarationId ??
     (!isNaN(route.query.dsId) ? parseInt(route.query.dsId) : null),
   departement: eigStore.currentEig?.departement ?? null,
+  date: eigStore.currentEig?.date
+    ? dayjs(eigStore.currentEig?.date).format("YYYY-MM-DD")
+    : null,
 };
 
 const { meta, values } = useForm({
@@ -140,12 +168,28 @@ const { meta, values } = useForm({
 
 const { value: declarationId, handleChange: onDeclarationIdChange } =
   useField("declarationId");
+
 const {
   value: departement,
   handleChange: onDepartementChange,
   errorMessage: departementErrorMessage,
   meta: departementMeta,
 } = useField("departement");
+
+const {
+  value: date,
+  handleChange: onDateChange,
+  errorMessage: dateErrorMessage,
+  meta: dateMeta,
+} = useField("date");
+
+const onChooseDeclaration = (id) => {
+  onDeclarationIdChange(id);
+  if (id == null) {
+    onDepartementChange(null, false);
+    onDateChange(null, false);
+  }
+};
 
 const next = () => {
   if (!eigStore.canModify) {

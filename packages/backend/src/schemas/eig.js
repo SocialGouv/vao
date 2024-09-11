@@ -2,13 +2,25 @@ const yup = require("yup");
 const { UpdateTypes, Types, Categorie } = require("../helpers/eig");
 const personne = require("./parts/personne.js");
 
-const selectionSejourSchema = {
+const selectionSejourSchema = (dateDebut, dateFin) => ({
   declarationId: yup
     .number()
     .integer("Ce champ doit contenir un nombre entier")
     .required(),
   departement: yup.string().required("ce champ est obligatoire"),
-};
+  date: yup
+    .date()
+    .typeError("La date n'est pas au format attendu")
+    .min(
+      dateDebut,
+      "La date de l'incident doit être supérieure à la date de début de séjour",
+    )
+    .max(
+      dateFin,
+      "La date de l'incident doit être inférieure à la date de fin de séjour",
+    )
+    .required(),
+});
 
 const eigTypeBase = yup
   .string()
@@ -149,22 +161,22 @@ const emailAutresDestinatairesSchema = {
     .of(yup.string().email("Format de courriel invalide").nullable()),
 };
 
-const syntheseSchema = {
-  ...selectionSejourSchema,
+const syntheseSchema = (dateDebut, dateFin) => ({
+  ...selectionSejourSchema(dateDebut, dateFin),
   ...eigTypesDepose,
   ...informationsGeneralesSchema,
   ...emailAutresDestinatairesSchema,
-};
+});
 
 module.exports.selectionSejourSchema = selectionSejourSchema;
 module.exports.eigTypesSchema = eigTypesSchemaCRUD;
 module.exports.informationsGeneralesSchema = informationsGeneralesSchema;
 module.exports.syntheseSchema = syntheseSchema;
 
-module.exports.updateSchemaAdapteur = (type) => {
+module.exports.updateSchemaAdapteur = (type, dateRange) => {
   switch (type) {
     case UpdateTypes.DECLARATION_SEJOUR:
-      return selectionSejourSchema;
+      return selectionSejourSchema(dateRange[0], dateRange[1]);
     case UpdateTypes.TYPE_EVENEMENT:
       return eigTypesSchemaCRUD;
     case UpdateTypes.RENSEIGNEMENT_GENERAUX:
