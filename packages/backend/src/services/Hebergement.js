@@ -8,8 +8,8 @@ const log = logger(module.filename);
 const query = {
   create: `
     INSERT INTO front.hebergement(
-      organisme_id, 
-      nom,  
+      organisme_id,
+      nom,
       coordonnees,
       informations_locaux,
       informations_transport,
@@ -17,11 +17,11 @@ const query = {
       edited_at
     )
     VALUES (
-      (SELECT org_id FROM front.user_organisme WHERE use_id = $1), 
-      $2, 
-      $3, 
-      $4, 
-      $5, 
+      (SELECT org_id FROM front.user_organisme WHERE use_id = $1),
+      $2,
+      $3,
+      $4,
+      $5,
       NOW(),
       NOW()
     )
@@ -53,11 +53,11 @@ const query = {
       WHERE
         h.coordonnees -> 'adresse' ->> 'departement' = ANY($1)
         AND (
-          h.nom ILIKE '%' || $2 || '%' OR
+          unaccent(h.nom) ILIKE '%' || unaccent($2) || '%' OR
           h.coordonnees ->> 'email' ILIKE '%' || $2 || '%' OR
-          h.coordonnees -> 'adresse' ->> 'label' ILIKE '%' || $2 || '%'
+          unaccent(h.coordonnees -> 'adresse' ->> 'label') ILIKE '%' || unaccent($2) || '%'
         )
-      ORDER BY "${sort}" ${order}    
+      ORDER BY "${sort}" ${order}
     ),
     total_count AS (
       SELECT COUNT(*) AS count FROM filtered_hebergements
@@ -66,7 +66,7 @@ const query = {
       SELECT * FROM filtered_hebergements
       LIMIT $3 OFFSET $4
     )
-    SELECT 
+    SELECT
     jsonb_build_object(
       'total_count', (SELECT count FROM total_count),
       'hebergements', jsonb_agg(ph.*)
@@ -86,8 +86,8 @@ const query = {
       informations_transport as "informationsTransport",
       created_at as "createdAt",
       edited_at as "editedAt"
-    FROM front.hebergement          
-    WHERE id = $1 
+    FROM front.hebergement
+    WHERE id = $1
     `,
     [id],
   ],
@@ -106,11 +106,11 @@ const query = {
     `,
   update: `
     UPDATE front.hebergement
-    SET 
-      nom = $2, 
+    SET
+      nom = $2,
       coordonnees = $3,
       informations_locaux = $4,
-      informations_transport = $5, 
+      informations_transport = $5,
       edited_at = NOW()
     WHERE id = $1
   `,

@@ -23,21 +23,14 @@
     </template>
     <template #map="scope">
       <div style="height: 50vh">
-        <LMap
-          ref="map"
+        <MglMap
+          :map-style="`https://api.maptiler.com/maps/streets/style.json?key=${config.public.apiMapTiler}`"
           :zoom="zoom"
           :center="scope.markers"
-          :use-global-leaflet="false"
-          style="z-index: 0"
         >
-          <LTileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-            layer-type="base"
-            name="OpenStreetMap"
-          />
-          <LMarker :lat-lng="scope.markers"></LMarker>
-        </LMap>
+          <MglNavigationControl />
+          <MglMarker :coordinates="scope.markers" />
+        </MglMap>
       </div>
     </template>
   </Hebergement>
@@ -46,7 +39,9 @@
 <script setup>
 import { Hebergement } from "@vao/shared";
 
-const zoom = 16;
+const config = useRuntimeConfig();
+
+const zoom = 15;
 
 const props = defineProps({
   initHebergement: {

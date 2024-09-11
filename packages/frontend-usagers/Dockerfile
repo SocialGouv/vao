@@ -8,7 +8,7 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-COPY packages/shared/package.json packages/shared/ 
+COPY packages/shared/package.json packages/shared/
 COPY packages/frontend-usagers/package.json packages/frontend-usagers/yarn.lock packages/frontend-usagers/
 RUN yarn workspace @vao/frontend-usagers install --frozen-lockfile
 
@@ -22,6 +22,7 @@ ARG NUXT_PUBLIC_MATOMO_SITE_ID
 ARG NUXT_PUBLIC_SENTRY_DSN
 ARG NUXT_PUBLIC_SENTRY_RELEASE
 ARG NUXT_PUBLIC_SENTRY_ENABLED
+ARG NUXT_PUBLIC_API_MAP_TILER
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
 ARG SENTRY_URL
@@ -35,6 +36,7 @@ ENV NUXT_PUBLIC_MATOMO_SITE_ID=$NUXT_PUBLIC_MATOMO_SITE_ID
 ENV NUXT_PUBLIC_SENTRY_DSN=$NUXT_PUBLIC_SENTRY_DSN
 ENV NUXT_PUBLIC_SENTRY_RELEASE=$NUXT_PUBLIC_SENTRY_RELEASE
 ENV NUXT_PUBLIC_SENTRY_ENABLED=$NUXT_PUBLIC_SENTRY_ENABLED
+ENV NUXT_PUBLIC_API_MAP_TILER=$NUXT_PUBLIC_API_MAP_TILER
 ENV SENTRY_RELEASE=$NUXT_PUBLIC_SENTRY_RELEASE
 ENV SENTRY_ORG=$SENTRY_ORG
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
@@ -44,7 +46,7 @@ COPY packages/shared packages/shared
 COPY packages/frontend-usagers packages/frontend-usagers
 
 RUN --mount=type=secret,id=sentry_auth_token \
-    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \ 
+    export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \
     && yarn workspace @vao/frontend-usagers generate
 
 

@@ -15,7 +15,6 @@
   "dependencies": {
     "@gouvfr/dsfr": "~1.12.0",
     "@gouvminint/vue-dsfr": "~5.18.0",
-    "@nuxtjs/leaflet": "^1.0.14",
     "@pinia/nuxt": "~0.5.1",
     "@sentry/vue": "~8.17.0",
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.3.0",
@@ -27,6 +26,7 @@
     "dayjs": "~1.11.10",
     "debug": "~4.3.4",
     "nuxt": "~3.12.4",
+    "nuxt-maplibre": "^1.0.0",
     "oh-vue-icons": "~1.0.0-rc3",
     "pinia": "~2.1.7",
     "vee-validate": "~4.13.0",

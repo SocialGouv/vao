@@ -281,7 +281,6 @@ module.exports.updateMe = async (id, { nom, prenom }) => {
   return { code: "MajCompte" };
 };
 
-
 module.exports.update = async (
   id,
   { nom, prenom, roles, territoireCode, deleted },
@@ -389,11 +388,11 @@ module.exports.read = async (
 
   // Search management
   if (search?.nom && search.nom.length) {
-    searchQuery += `   AND us.nom ILIKE $${searchParams.length + 1}\n`;
+    searchQuery += `   AND unaccent(us.nom) ILIKE unaccent($${searchParams.length + 1})\n`;
     searchParams.push(`%${search.nom}%`);
   }
   if (search?.prenom && search.prenom.length) {
-    searchQuery += `   AND us.prenom ILIKE $${searchParams.length + 1}\n`;
+    searchQuery += `   AND unaccent(us.prenom) ILIKE unaccent($${searchParams.length + 1})\n`;
     searchParams.push(`%${search.prenom}%`);
   }
   if (search?.email && search.email.length) {
@@ -406,7 +405,7 @@ module.exports.read = async (
     search.territoire.length
   ) {
     searchQuery += `   AND (
-      ter.label ILIKE $${searchParams.length + 1}
+      unaccent(ter.label) ILIKE unaccent($${searchParams.length + 1})
       OR code ILIKE $${searchParams.length + 1}
       OR ter.parent_code IN (SELECT code FROM matched_elements)
     )\n`;
@@ -470,7 +469,7 @@ module.exports.read = async (
     WITH matched_elements AS (
       SELECT code
       FROM geo.territoires
-      WHERE label ILIKE $${territoireSearchParamId}
+      WHERE unaccent(label) ILIKE unaccent($${territoireSearchParamId})
       OR code ILIKE $${territoireSearchParamId}
     )\n`;
   const response = await pool.query(
