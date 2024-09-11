@@ -24,7 +24,7 @@ module.exports = async (req, res, next) => {
   try {
     const checkEig = await eigService.getById({ eigId });
     ds = await DemandeSejour.getOne({
-      "ds.id": checkEig.declarationId,
+      "ds.id": parametre.declarationId ?? checkEig.declarationId,
     });
     if (!ds) {
       return res
