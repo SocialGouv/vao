@@ -41,7 +41,7 @@
       <div class="fr-fieldset__element">
         <DsfrSelect
           v-if="!!selectedDemande"
-          label="Selection du département ou a eu lieu l'EIG"
+          label="Sélection du département ou a eu lieu l'EIG"
           name="departements"
           :close-on-select="true"
           :options="departementsOptions"
@@ -176,6 +176,14 @@ const {
   meta: departementMeta,
 } = useField("departement");
 
+const setDepartement = () => {
+  if (departementsOptions.value.length === 1) {
+    onDepartementChange(departementsOptions.value[0]);
+  } else {
+    onDepartementChange(null, false);
+  }
+};
+
 const {
   value: date,
   handleChange: onDateChange,
@@ -185,8 +193,8 @@ const {
 
 const onChooseDeclaration = (id) => {
   onDeclarationIdChange(id);
+  setDepartement();
   if (id == null) {
-    onDepartementChange(null, false);
     onDateChange(null, false);
   }
 };
