@@ -87,6 +87,8 @@ fileignoreconfig:
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
   checksum: a631fbf33a27c02362e3986094d5f674db98a3265c10c3f8aad9abad6dd43679
+- filename: e2e/register-login-organisateur.spec.ts
+  checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
 - filename: package.json
   checksum: 8437030cbab7db5734c16f9924b7e25a26b9145414d2bd1c81031d2f9f5558bd
 - filename: packages/backend/src/config.js
@@ -265,4 +267,6 @@ fileignoreconfig:
   checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
 scopeconfig:
 - scope: node
+version: "1.0"
+e
 version: "1.0"
