@@ -24,12 +24,14 @@
 <script setup>
 import { DsfrFileDownload, DsfrHighlight } from "@gouvminint/vue-dsfr";
 
+const log = logger("pages/information");
+const toaster = useToaster();
 const file = ref(null);
 
 const loadXlsx = async () => {
   try {
     const blob = await $fetchBackend(
-      `/documents/admin/static/agrements_VAO_non_actifs_07_08_2024.pdf`,
+      `/documents/admin/static/agrements_VAO_non_actifs_07_24_2024.pdf`,
       {
         method: "GET",
         credentials: "include",
