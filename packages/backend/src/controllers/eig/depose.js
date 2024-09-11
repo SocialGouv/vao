@@ -27,8 +27,21 @@ module.exports = async (req, res, next) => {
     return next(error);
   }
 
+  let ds;
+
   try {
-    await yup.object(syntheseSchema).validate(eig, {
+    ds = await DemandeSejour.getOne({ "ds.id": eig.declarationId });
+    if (!ds) {
+      return res
+        .status(404)
+        .send({ errors: "Aucune déclaration trouvée", name: "Not found" });
+    }
+  } catch (err) {
+    return res.status(500).send({ errors: err.errors, name: err.name });
+  }
+
+  try {
+    await yup.object(syntheseSchema(ds.dateDebut, ds.dateFin)).validate(eig, {
       abortEarly: false,
       stripUnknown: true,
     });
