@@ -151,6 +151,8 @@ function onClose() {
   modalPersonne.opened = false;
 }
 
+const defaultOffset = 0;
+const currentPageState = ref(defaultOffset);
 const updateCurrentPage = (val) => {
   currentPageState.value = val++;
 };
