@@ -19,29 +19,39 @@ module.exports = async (req, res, next) => {
   log.i("IN", { body: req.body });
   const { parametre, type } = req.body;
 
-  let eig;
-
-  try {
-    eig = await yup.object(updateSchemaAdapteur(type)).validate(parametre, {
-      abortEarly: false,
-      stripUnknown: true,
-    });
-  } catch (error) {
-    return next(new ValidationAppError(error));
-  }
+  let ds;
 
   try {
     const checkEig = await eigService.getById({ eigId });
-    const ds = await DemandeSejour.getOne({
+    ds = await DemandeSejour.getOne({
       "ds.id": checkEig.declarationId,
     });
-    if (!idDeclarationeligibleToEig(ds)) {
-      return res.status(400).send({
-        message: "La déclaration n'est pas éligible à la création d'un EIG",
-      });
+    if (!ds) {
+      return res
+        .status(404)
+        .send({ errors: "Aucune déclaration trouvée", name: "Not found" });
     }
   } catch (err) {
-    return res.status(400).send({ errors: err.errors, name: err.name });
+    return res.status(500).send({ errors: err.errors, name: err.name });
+  }
+
+  if (!idDeclarationeligibleToEig(ds)) {
+    return res.status(400).send({
+      message: "La déclaration n'est pas éligible à la création d'un EIG",
+    });
+  }
+
+  let eig;
+
+  try {
+    eig = await yup
+      .object(updateSchemaAdapteur(type, [ds.dateDebut, ds.dateFin]))
+      .validate(parametre, {
+        abortEarly: false,
+        stripUnknown: true,
+      });
+  } catch (error) {
+    return next(new ValidationAppError(error));
   }
 
   try {
@@ -51,6 +61,7 @@ module.exports = async (req, res, next) => {
         updatedEigId = await eigService.updateDS(eigId, {
           declarationId: eig.declarationId,
           departement: eig.departement,
+          date: eig.date,
         });
         break;
       case UpdateTypes.TYPE_EVENEMENT:
