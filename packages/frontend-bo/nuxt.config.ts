@@ -19,10 +19,10 @@ export default defineNuxtConfig({
     "@/assets/css/main.css",
   ],
   modules: [
-    "nuxt-security",
     "@pinia/nuxt",
     "@socialgouv/dsfr-toaster-nuxt-module",
     "nuxt-maplibre",
+    "vue-dsfr-nuxt-module",
   ],
   runtimeConfig: {
     public: {
