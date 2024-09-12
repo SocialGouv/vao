@@ -38,6 +38,7 @@
       <div class="fr-fieldset__element fr-col-6">
         <DsfrSelect
           :model-value="hebergementId"
+          default-unselected-text="Sélectionner un hébergement"
           name="hebergementId"
           label="Hebergement"
           :disabled="!props.modifiable"
@@ -89,23 +90,16 @@
         <div
           v-if="!isCssDisabled"
           class="fr-fieldset__element fr-col-12"
-          style="height: 50vh; width: 50vw"
+          style="height: 50vh"
         >
-          <LMap
-            ref="map"
+          <MglMap
+            :map-style="`https://api.maptiler.com/maps/streets/style.json?key=${config.public.apiMapTiler}`"
             :zoom="zoom"
             :center="markerLatLng"
-            style="z-index: 0"
-            :use-global-leaflet="false"
           >
-            <LTileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-              layer-type="base"
-              name="OpenStreetMap"
-            />
-            <LMarker :lat-lng="markerLatLng"></LMarker>
-          </LMap>
+            <MglNavigationControl />
+            <MglMarker :coordinates="markerLatLng" />
+          </MglMap>
         </div>
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
@@ -283,7 +277,7 @@
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
-            hint="Minumum 5 caractères"
+            hint="Minimum 5 caractères"
             :model-value="accessibilitePrecision"
             :error-message="accessibilitePrecisionErrorMessage"
             :is-valid="accessibilitePrecisionMeta.valid"
@@ -489,7 +483,7 @@
           <DsfrInputGroup
             name="informationsLocaux.precisionAmenagementsSpecifiques"
             label="Précisez les types d'aménagements"
-            hint="Redimensionnez le champ pour saisir plus de ligne. Minumum 5 caractères"
+            hint="Redimensionnez le champ pour saisir plus de ligne. Minimum 5 caractères"
             :readonly="!props.modifiable"
             :label-visible="true"
             :is-textarea="true"
@@ -522,7 +516,7 @@
           <DsfrInputGroup
             name="informationsTransport.deplacementProximite"
             :readonly="!props.modifiable"
-            label="Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité. Minumum 5 caractères"
+            label="Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité. Minimum 5 caractères"
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
@@ -537,7 +531,7 @@
           <DsfrInputGroup
             name="informationsTransport.excursion"
             :readonly="!props.modifiable"
-            label="Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions. Minumum 5 caractères"
+            label="Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions. Minimum 5 caractères"
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
@@ -639,16 +633,13 @@ const log = logger("components/DS/hebergement-sejour-detail");
 
 const hebergementStore = useHebergementStore();
 
-const zoom = 16;
+const zoom = 15;
 const markerLatLng = computed(() => {
   if (!hebergementStore.hebergementCourant?.coordonnees.adresse) {
     return null;
   }
 
-  return [
-    hebergementStore.hebergementCourant.coordonnees.adresse.coordinates[1],
-    hebergementStore.hebergementCourant.coordonnees.adresse.coordinates[0],
-  ];
+  return hebergementStore.hebergementCourant.coordonnees.adresse.coordinates;
 });
 
 const hebergementsFavoris = computed(() => {
@@ -971,5 +962,3 @@ function closeAddHebergement() {
   addHebergementOpened.value = false;
 }
 </script>
-
-<style lang="scss" scoped></style>

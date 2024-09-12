@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: dfd9f0258a5e81735c0b4aee57b7a9637ca6a9167b537e1bce8ee1fbe61f9e3a
+  checksum: 1e080a0322cbf88ef7699a975c648434a20b3c22b259d744a9ba1a003d671968
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -87,6 +87,10 @@ fileignoreconfig:
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
   checksum: a631fbf33a27c02362e3986094d5f674db98a3265c10c3f8aad9abad6dd43679
+- filename: e2e/register-login-organisateur.spec.ts
+  checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
+- filename: package.json
+  checksum: 8437030cbab7db5734c16f9924b7e25a26b9145414d2bd1c81031d2f9f5558bd
 - filename: packages/backend/src/config.js
   checksum: c0baf7f4f878d3f3406030471f15c092ed9fc671b1e66276fe9b071ea025b58c
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
@@ -161,6 +165,10 @@ fileignoreconfig:
   checksum: 804991141c657357577a88be19580a02b64d7868cb69f034cc74e9be7ae8617f
 - filename: packages/frontend-bo/src/pages/connexion/reset-mot-de-passe.vue
   checksum: f544299c6795c35ca29f1ddd0babb1c840f7c25c72435b3c6b0939e0ea55d120
+- filename: packages/frontend-bo/src/pages/hebergements/[type]/[demandeSejourId]/[hebergementId].vue
+  checksum: ec721f5acc148b6156ea413f0f3045193d881df49300efffe04722d185f83a5e
+- filename: packages/frontend-bo/src/pages/hebergements/[type]/[hebergementId].vue
+  checksum: 712a9bb80aa048127944c8d4d189923207c77122e6eadc95631e3e01f6a28d17
 - filename: packages/frontend-bo/src/pages/sejours/[[idDemande]].vue
   checksum: e076b4e667aeda0b354d743dd92a8ae129c61a3fbdfc6bea4e39b603caa90791
 - filename: packages/frontend-bo/src/pages/sejours/[idDemande].vue
@@ -169,8 +177,22 @@ fileignoreconfig:
   checksum: 4716f6a0de6f2dc2af6d8ac8abf11a253a5a719c231df5ae51c783e6148c42ed
 - filename: packages/frontend-usagers/src/assets/Download.svg
   checksum: a5c2caf47b1b715b2cf8240e9af9090061faae6261b21bc62173689f1666536e
+- filename: packages/frontend-usagers/src/components/DS/hebergements-sejour-detail.vue
+  checksum: ea2516289eea24b6cf226322360163f840249383a5b30f5766ac730e52463162
 - filename: packages/frontend-usagers/src/components/DS/synthese.vue
   checksum: 1745df4066b3957901ec41d0b0e546cb5ed32dcc2abadcd1e825e06d092bd031
+- filename: packages/frontend-usagers/src/components/EIG/Recap.vue
+  checksum: aa69252e3dbbb5da65b958f40c1ce0480f0f63be8ec1432751f653c2df1de323
+- filename: packages/frontend-usagers/src/components/EIG/RenseignementsGeneraux.vue
+  checksum: 631468ef733eba4b1e73db7be01fe565df7d0006b7a6a1f55940e5b48b67c2de
+- filename: packages/frontend-usagers/src/components/EIG/SelectionSejour.vue
+  checksum: 682a6dea0cfa5dfa8b17a48042114f0420eae006ee4716535011167550a9a93f
+- filename: packages/frontend-usagers/src/components/EIG/Summary.vue
+  checksum: c9db57531db09ec221d07b3a695d81caef7948b109147ad47e605a00c33b5ae0
+- filename: packages/frontend-usagers/src/components/EIG/Type.vue
+  checksum: fb6ea335f92549ebf30e662bca4d9cfbd654aac221aeba5b9714ef5bf4978dc3
+- filename: packages/frontend-usagers/src/components/HebergementWithSave.vue
+  checksum: 59d65c7e15f215c9bcb33eed7919c8a63a77b6fe9b83eb3b043e936310ca12f3
 - filename: packages/frontend-usagers/src/components/PasswordInput.vue
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
 - filename: packages/frontend-usagers/src/components/customInput.vue
@@ -215,6 +237,8 @@ fileignoreconfig:
   checksum: c792d383dfec26115dfab5a391e6427b5b9c4416da783388c7ef00d4f97585bb
 - filename: packages/migrations/src/knexfile.js
   checksum: 1d3be5d2c46636eb90b74382447f23ffefc943ed963736ffab7556336d2df667
+- filename: packages/migrations/src/migrations/20240710125537_eig.js
+  checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/PasswordInput.vue
@@ -243,4 +267,6 @@ fileignoreconfig:
   checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
 scopeconfig:
 - scope: node
+version: "1.0"
+e
 version: "1.0"

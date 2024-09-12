@@ -4,7 +4,7 @@ import { useRuntimeConfig } from "#imports";
 
 export default defineNuxtPlugin((nuxtApp) => {
   const {
-    public: { sentry, environment, release, backendUrl },
+    public: { sentry, environment, backendUrl },
   } = useRuntimeConfig();
 
   if (sentry.enabled) {
@@ -12,7 +12,7 @@ export default defineNuxtPlugin((nuxtApp) => {
       app: nuxtApp.vueApp,
       dsn: sentry.dsn,
       environment,
-      release,
+      release: sentry.release,
       integrations: [
         Sentry.browserTracingIntegration({ router: nuxtApp.$router }),
         Sentry.replayIntegration({

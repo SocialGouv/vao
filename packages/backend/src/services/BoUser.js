@@ -95,7 +95,12 @@ const query = {
       `,
     [userId, isBlocked],
   ],
-  get: (criterias = {}, additionalParamsQuery = "", additionalParams = []) => [
+  get: (
+    criterias = {},
+    selectQuery = "",
+    additionalParamsQuery = "",
+    additionalParams = [],
+  ) => [
     `
     SELECT
       us.id AS id,
@@ -111,6 +116,7 @@ const query = {
       us.ter_code AS "territoireCode",
       ter.parent_code AS "territoireParent",
       ur.roles
+      ${selectQuery}
     FROM back.users AS us
     LEFT OUTER JOIN (
       SELECT
@@ -203,6 +209,17 @@ ${additionalParamsQuery}
       `,
     [id, nom, prenom, territoireCode],
   ],
+  updateMe: (id, nom, prenom) => [
+    `
+      UPDATE back.users
+      SET
+        nom = $2,
+        prenom = $3
+      WHERE
+        id = $1
+      `,
+    [id, nom, prenom],
+  ],
 };
 
 module.exports.create = async ({
@@ -236,10 +253,32 @@ module.exports.create = async ({
   for (const role of roles) {
     await pool.query(...query.bindRole(user.id, role));
   }
+  // le role eig est attribué par default a tous les utilisateurs back
+  await pool.query(...query.bindRole(user.id, "eig"));
 
   log.i("create - DONE", { userId });
 
   return { code: "CreationCompte", user };
+};
+
+module.exports.updateMe = async (id, { nom, prenom }) => {
+  log.i("update - IN", { id });
+  if (!id) {
+    throw new AppError("Paramètre manquant ou erroné de patate", {
+      statusCode: 500,
+    });
+  }
+  // Mise à jour du compte en base de données
+  const { rowCount } = await pool.query(...query.updateMe(id, nom, prenom));
+
+  if (rowCount === 0) {
+    log.d("update - DONE - Utilisateur BO inexistant");
+    throw new AppError("Utilisateur déjà inexistant", {
+      name: "UserNotFound",
+    });
+  }
+  log.i("updateMe - DONE");
+  return { code: "MajCompte" };
 };
 
 module.exports.update = async (
@@ -273,6 +312,11 @@ module.exports.update = async (
   // Création des rôles en base de données
   for (const role of roles) {
     await pool.query(...query.bindRole(id, role));
+  }
+
+  if (!roles.includes("eig")) {
+    // le role eig est attribué par default a tous les utilisateurs back
+    await pool.query(...query.bindRole(id, "eig"));
   }
 
   log.i("update - DONE");
@@ -342,19 +386,13 @@ module.exports.read = async (
   let territoireSearchParamId = "";
   const searchParams = [];
 
-  if (territoireCode && territoireCode !== "FRA") {
-    const paramNumber = searchParams.length + 1;
-    searchQuery += `AND (TER.CODE = $${paramNumber} OR TER.PARENT_CODE = $${paramNumber})`;
-    searchParams.push(territoireCode);
-  }
-
   // Search management
   if (search?.nom && search.nom.length) {
-    searchQuery += `   AND us.nom ILIKE $${searchParams.length + 1}\n`;
+    searchQuery += `   AND unaccent(us.nom) ILIKE unaccent($${searchParams.length + 1})\n`;
     searchParams.push(`%${search.nom}%`);
   }
   if (search?.prenom && search.prenom.length) {
-    searchQuery += `   AND us.prenom ILIKE $${searchParams.length + 1}\n`;
+    searchQuery += `   AND unaccent(us.prenom) ILIKE unaccent($${searchParams.length + 1})\n`;
     searchParams.push(`%${search.prenom}%`);
   }
   if (search?.email && search.email.length) {
@@ -367,7 +405,7 @@ module.exports.read = async (
     search.territoire.length
   ) {
     searchQuery += `   AND (
-      ter.label ILIKE $${searchParams.length + 1}
+      unaccent(ter.label) ILIKE unaccent($${searchParams.length + 1})
       OR code ILIKE $${searchParams.length + 1}
       OR ter.parent_code IN (SELECT code FROM matched_elements)
     )\n`;
@@ -404,18 +442,25 @@ module.exports.read = async (
     additionalParams.push(offset, limit);
   }
 
-  log.d("read", searchQuery + "\n   " + additionalQueryParts);
-  log.d("read", [...searchParams, ...additionalParams]);
+  let selectQuery = "";
+  if (territoireCode && territoireCode !== "FRA") {
+    selectQuery = `,COALESCE((ter.code = $${searchParams.length + additionalParams.length + 1} OR ter.parent_code = $${searchParams.length + additionalParams.length + 1}), false)`;
+    additionalParams.push(`${territoireCode}`);
+  } else {
+    selectQuery = `,$${searchParams.length + additionalParams.length + 1}`;
+    additionalParams.push(`true`);
+  }
+  selectQuery += ` AS "editable"`;
 
-  // const response = await pool.query(
-  //   ...query.get(undefined, searchQuery + "\n   " + additionalQueryParts, [
-  //     ...searchParams,
-  //     ...additionalParams,
-  //   ]),
-  // );
+  log.d(
+    "read",
+    selectQuery + "\n " + searchQuery + "\n " + additionalQueryParts,
+  );
+  log.d("read", [...searchParams, ...additionalParams]);
 
   const queryPrepared = query.get(
     undefined,
+    selectQuery,
     searchQuery + "\n   " + additionalQueryParts,
     [...searchParams, ...additionalParams],
   );
@@ -424,10 +469,9 @@ module.exports.read = async (
     WITH matched_elements AS (
       SELECT code
       FROM geo.territoires
-      WHERE label ILIKE $${territoireSearchParamId}
+      WHERE unaccent(label) ILIKE unaccent($${territoireSearchParamId})
       OR code ILIKE $${territoireSearchParamId}
     )\n`;
-
   const response = await pool.query(
     `${territoireSearchParamId ? territoirePreQuery : ""}
     ${queryPrepared[0]}`,
@@ -435,7 +479,6 @@ module.exports.read = async (
   );
 
   const preparedTotalQuery = query.getTotal(searchQuery, searchParams);
-
   const total = await pool.query(
     `${territoireSearchParamId ? territoirePreQuery : ""}
     ${preparedTotalQuery[0]}`,
@@ -449,7 +492,7 @@ module.exports.read = async (
   };
 };
 
-module.exports.readOne = async (id) => {
+module.exports.readOne = async (id, territoireCode) => {
   log.i("readOne - IN", { id });
 
   if (!id) {
@@ -458,8 +501,19 @@ module.exports.readOne = async (id) => {
     });
   }
 
+  const selectParams = [];
+  let selectQuery = "";
+  if (territoireCode && territoireCode !== "FRA") {
+    selectQuery = `,COALESCE((ter.code = $${selectParams.length + 1} OR ter.parent_code = $${selectParams.length + 1}), false)`;
+    selectParams.push(`${territoireCode}`);
+  } else {
+    selectQuery = `,$${selectParams.length + selectParams.length + 1}`;
+    selectParams.push(`true`);
+  }
+  selectQuery += ` AS "editable"`;
+
   const { rowCount, rows: users } = await pool.query(
-    ...query.get({ "us.id": id }),
+    ...query.get({ "us.id": id }, selectQuery, undefined, selectParams),
   );
 
   if (rowCount === 0) {

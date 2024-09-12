@@ -7,7 +7,7 @@ const log = logger(module.filename);
 
 const getSaison = (date) =>
   ["Hiver", "Printemps", "Eté", "Automne"].flatMap((season) =>
-    Array(4).fill(season),
+    Array(3).fill(season),
   )[new Date(date).getMonth()];
 
 const escapeCsvField = (field) => {
@@ -36,7 +36,7 @@ module.exports = async function get(req, res, next) {
     );
 
     const titles = [
-      "id",
+      "reference",
       "libelle",
       "date_debut",
       "date_fin",

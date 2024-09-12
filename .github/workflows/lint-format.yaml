@@ -1,0 +1,19 @@
+name: Lint and format
+
+on:
+  push:
+
+jobs:
+  lint-and-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: yarn
+          cache-dependency-path: ./yarn.lock
+          node-version: 20
+      - name: Install packages
+        run: yarn --immutable
+      - name: Run the linter
+        run: yarn lint:all

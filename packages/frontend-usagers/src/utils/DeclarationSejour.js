@@ -1,13 +1,13 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
 import {
-  logger,
-  personne,
   informationsPersonnel,
   informationsVacanciers,
-  protocoleTransport,
-  protocoleSanitaire,
+  logger,
+  personne,
   projetSejour,
+  protocoleSanitaire,
+  protocoleTransport,
 } from "#imports";
 
 import { hebergement as hebergementUtils } from "@vao/shared";
@@ -190,7 +190,7 @@ const statusTagStates = {
 const saisons = ["Hiver", "Printemps", "Été", "Automne"];
 
 const getSaison = (date) =>
-  saisons.flatMap((season) => Array(4).fill(season))[new Date(date).getMonth()];
+  saisons.flatMap((season) => Array(3).fill(season))[new Date(date).getMonth()];
 
 const getOrganismeName = (demande) =>
   demande.organisme.typeOrganisme === "personne_morale"

@@ -1,4 +1,4 @@
-import { useUserStore, computed } from "#imports";
+import { computed, useUserStore } from "#imports";
 
 export const useMenuNavItems = () => {
   const userStore = useUserStore();
@@ -80,6 +80,15 @@ export const useMenuNavItems = () => {
             },
           ]
         : []),
+      // TODO(eig): unhide when ok
+      /*...(roles.includes("eig")
+        ? [
+            {
+              text: "EIG",
+              to: "/eig",
+            },
+          ]
+        : []),*/
     ];
   });
 

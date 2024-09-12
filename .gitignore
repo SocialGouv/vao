@@ -3,6 +3,8 @@ node_modules
 .vscode
 .prettierrc
 .eslintcache
+.local
+.cache
 
 yarn-error.log
 .yarn
@@ -10,3 +12,6 @@ coverage
 notes.txt
 
 .anonymizer
+
+playwright-report/
+test-results/

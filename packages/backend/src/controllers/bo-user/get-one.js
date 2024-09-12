@@ -8,13 +8,13 @@ const log = logger(module.filename);
 module.exports = async function getOne(req, res, next) {
   log.i("IN");
   const { decoded } = req;
-  const { id: adminId } = decoded;
+  const { id: adminId, territoireCode } = decoded ?? {};
   log.d({ adminId });
 
   try {
     // TODO: contrôle des paramètres de recherche
     const userId = req.params.userId;
-    log.d({ userId });
+    log.d({ territoireCode, userId });
 
     if (!userId) {
       return next(
@@ -24,7 +24,7 @@ module.exports = async function getOne(req, res, next) {
       );
     }
 
-    const user = await BoUser.readOne(userId);
+    const user = await BoUser.readOne(userId, territoireCode);
     log.d("Done");
     return res.status(200).json(user);
   } catch (error) {

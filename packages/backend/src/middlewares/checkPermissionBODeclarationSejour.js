@@ -22,7 +22,7 @@ async function checkPermissionDeclarationSejour(req, res, next) {
   }
 
   const query = `
-      SELECT 
+      SELECT
          ds.id
       FROM front.demande_sejour ds
       JOIN front.agrements a ON a.organisme_id = ds.organisme_id
@@ -37,6 +37,7 @@ async function checkPermissionDeclarationSejour(req, res, next) {
     territoireCode,
     departements.map((d) => d.value),
   ]);
+
   if (!rows || rows.length !== 1) {
     return next(
       new AppError(

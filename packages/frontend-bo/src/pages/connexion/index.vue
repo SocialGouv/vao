@@ -235,6 +235,10 @@ const canLogin = computed(() => {
 
 const userStore = useUserStore();
 
+onMounted(() => {
+  if (userStore?.isConnected) navigateTo("/");
+});
+
 async function login() {
   log.i("login", { email: email.value });
   try {

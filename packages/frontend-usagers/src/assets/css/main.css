@@ -9,3 +9,19 @@
 .fr-fieldset:disabled .fr-fieldset__legend {
   color: var(--text-label-grey);
 }
+
+.blank-button {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  text-align: left;
+}
+
+.pointer {
+  cursor: pointer;
+}
+

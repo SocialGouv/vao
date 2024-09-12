@@ -103,13 +103,18 @@
               <p id="toggle-actif" class="fr-hint-text">Compte actif</p>
             </div>
           </div>
-          <!--<DsfrButton @click.prevent="test">Test</DsfrButton
-            >
-          -->
+          <div class="fr-input-group">
+            <DsfrButton
+              type="button"
+              label="Extraire en CSV"
+              primary
+              @click="getCsv"
+            />
+          </div>
         </form>
       </div>
     </div>
-    <UtilsTable
+    <TableWithBackendPagination
       :headers="headers"
       :data="usersStore.users"
       :total-items="usersStore.total"
@@ -121,7 +126,7 @@
       @update-sort="updateSort"
       @update-items-by-page="updateItemsByPage"
       @update-current-page="updateCurrentPage"
-    ></UtilsTable>
+    />
   </div>
 </template>
 
@@ -131,6 +136,7 @@ definePageMeta({
   roles: ["Compte"],
 });
 import { useUserStore } from "~/stores/user";
+import { TableWithBackendPagination } from "@vao/shared";
 
 const usersStore = useUserStore();
 
@@ -219,6 +225,13 @@ const headers = [
     format: (value) => (value.validated ? "Oui" : "Non"),
     sort: true,
   },
+  {
+    column: "editable",
+    text: "Modifiable",
+    type: "icon",
+    format: (value) => (value.editable ? "Oui" : "Non"),
+    sort: true,
+  },
 ];
 
 const updateSort = ({ sortBy: sb, sortDirection: sd }) => {
@@ -232,6 +245,11 @@ const updateItemsByPage = (val) => {
 };
 const updateCurrentPage = (val) => {
   currentPageState.value = val;
+};
+
+const getCsv = async () => {
+  const response = await usersStore.exportUsers();
+  exportCsv(response, "users.csv");
 };
 </script>
 

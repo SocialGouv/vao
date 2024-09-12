@@ -26,6 +26,12 @@ export const useUserStore = defineStore("user", {
         if (user) {
           log.i("refreshProfile - DONE");
           this.user = user;
+          this.user.serviceCompetent =
+            this.user.territoireCode === "FRA"
+              ? "NAT"
+              : /^"\d"+$/.test(user.territoireCode)
+                ? "DEP"
+                : "REG";
         }
       } catch (err) {
         log.w("refreshProfile - DONE with error", err);
@@ -59,6 +65,21 @@ export const useUserStore = defineStore("user", {
         this.users = [];
         this.total = 0;
         log.w("fetchUsers - Erreur", { error });
+      }
+    },
+
+    async exportUsers() {
+      log.i("exportUsers - IN");
+      try {
+        const response = await $fetchBackend(`/bo-user/extract`, {
+          method: "GET",
+          credentials: "include",
+        });
+        log.i("exportUsers - DONE");
+        return response;
+      } catch (err) {
+        log.w("exportUsers - DONE with error", err);
+        throw err;
       }
     },
 
@@ -101,7 +122,6 @@ export const useUserStore = defineStore("user", {
     async getUser(id) {
       log.i("getUser - IN", { id });
       try {
-        // Appel du back pour la liste des utilisateurs
         const user = await $fetchBackend("/bo-user/" + id, {
           credentials: "include",
           method: "GET",

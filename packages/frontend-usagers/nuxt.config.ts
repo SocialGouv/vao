@@ -22,14 +22,15 @@ export default defineNuxtConfig({
   modules: [
     "nuxt-security",
     "@pinia/nuxt",
-    "@nuxtjs/leaflet",
     "@socialgouv/dsfr-toaster-nuxt-module",
+    "nuxt-maplibre",
   ],
   runtimeConfig: {
     public: {
       appVersion: undefined,
       backendUrl: undefined,
       environment: undefined,
+      apiMapTiler: undefined,
       matomo: {
         enabled: undefined,
         host: undefined,
@@ -57,6 +58,8 @@ export default defineNuxtConfig({
         ],
       },
     },
+    // required to get non empty sourcemaps https://github.com/Baroshem/nuxt-security/issues/501
+    removeLoggers: false,
   },
   srcDir: "src",
   ssr: false,

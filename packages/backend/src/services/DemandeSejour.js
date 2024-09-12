@@ -239,6 +239,7 @@ SELECT
   ds.vacanciers as "vacanciers",
   ds.personnel as "personnel",
   ds.transport as "transport",
+  ds.hebergement as "hebergements",
   COALESCE(ds.projet_sejour, '{}'::jsonb) as "projetSejour",
   ds.sanitaires as "sanitaires",
   ds.files as "files",
@@ -249,6 +250,7 @@ FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
 WHERE
   o.id  = ANY ($1)
+ORDER BY ds.edited_at DESC
 `,
     [organismeIds],
   ],
@@ -273,7 +275,7 @@ FROM
   LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id,
   jsonb_array_elements(ds.hebergement -> 'hebergements') h
 WHERE
-  h -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($1)
+  jsonb_path_query_array(hebergement, '$.hebergements[*].coordonnees.adresse.departement') ?| ($1)::text[]
   OR a.region_obtention = '${territoireCode}'
 `,
     [departements],
@@ -430,6 +432,7 @@ SELECT
   ds.organisme as organisme,
   ds.responsable_sejour->>'email' as responsable_sejour_email,
   ds.responsable_sejour->>'telephone' as responsable_sejour_telephone,
+  ds.id_fonctionnelle as reference,
   ds.statut as statut,
   ds.created_at as created_at
 FROM front.demande_sejour ds
@@ -487,9 +490,9 @@ WHERE
       ds.statut <> 'BROUILLON'
       AND h.hebergement -> 'coordonnees' -> 'adresse' ->> 'departement' = ANY($1)
       AND (
-        h.hebergement ->> 'nom' ILIKE '%' || $2 || '%' OR
+        unaccent(h.hebergement ->> 'nom') ILIKE '%' || unaccent($2) || '%' OR
         h.hebergement -> 'coordonnees' ->> 'email' ILIKE '%' || $2 || '%' OR
-        h.hebergement -> 'coordonnees' -> 'adresse' ->> 'label' ILIKE '%' || $2 || '%'
+        unaccent(h.hebergement -> 'coordonnees' -> 'adresse' ->> 'label') ILIKE '%' || unaccent($2) || '%'
       )
     ORDER BY "${sort}" ${order}
   ),
@@ -885,18 +888,18 @@ module.exports.getByDepartementCodes = async (
 
   // Search management
   if (search?.idFonctionnelle && search.idFonctionnelle.length) {
-    searchQuery.push(`id_fonctionnelle ilike $${params.length + 1}`);
+    searchQuery.push(`id_fonctionnelle ILIKE $${params.length + 1}`);
     params.push(`%${search.idFonctionnelle}%`);
   }
   if (search?.libelle && search.libelle.length) {
-    searchQuery.push(`libelle ilike $${params.length + 1}`);
+    searchQuery.push(`libelle ILIKE unaccent($${params.length + 1})`);
     params.push(`%${search.libelle}%`);
   }
   if (search?.organisme && search.organisme.length) {
     searchQuery.push(`(
-      personne_morale ->> 'raisonSociale' ilike $${params.length + 1}
-      OR personne_physique ->> 'prenom' ilike $${params.length + 2}
-      OR personne_physique ->> 'nomUsage' ilike $${params.length + 3}
+      personne_morale ->> 'raisonSociale' ILIKE $${params.length + 1}
+      OR unaccent(personne_physique ->> 'prenom') ILIKE unaccent($${params.length + 2})
+      OR unaccent(personne_physique ->> 'nomUsage') ILIKE unaccent($${params.length + 3})
       )`);
     params.push(
       `%${search.organisme}%`,
@@ -935,9 +938,9 @@ module.exports.getByDepartementCodes = async (
 
   // Order management
   if (sortBy && sortDirection) {
-    queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, "createdAt" DESC`;
+    queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, ds.edited_at DESC`;
   } else {
-    queryWithPagination += 'ORDER BY "createdAt" DESC';
+    queryWithPagination += "ORDER BY ds.edited_at DESC";
   }
 
   const paramsWithPagination = [...params];
@@ -975,13 +978,14 @@ module.exports.getByDepartementCodes = async (
   );
 
   log.i("getByDepartementCodes - DONE");
+  const totalValue = total.rows.find((t) => t.count)?.count;
   return {
     demandes_sejour: response.rows,
     stats: Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
       acc[key] = Number(value);
       return acc;
     }, {}),
-    total: total.rows.find((t) => t.count)?.count ?? 0,
+    total: totalValue ? parseInt(totalValue) : 0,
   };
 };
 

@@ -6,6 +6,7 @@ on:
       - main
       - "feat/**"
       - "fix/**"
+      - "chore/**"
 
 concurrency:
   cancel-in-progress: true
@@ -16,3 +17,7 @@ jobs:
     name: "🇫🇷 SocialGouv"
     uses: socialgouv/workflows/.github/workflows/use-ks-gh-review-auto.yaml@v1
     secrets: inherit
+
+  e2e:
+    needs: socialgouv
+    uses: ./.github/workflows/reusable-e2e.yaml

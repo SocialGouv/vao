@@ -127,6 +127,24 @@ Afin de conserver les données dans le cas d'une mise à jour du schéma de la b
 
 `docker compose exec -ti postgres psql -U <PG_VAO_USER>`
 
+### Tests end-to-end
+
+Installer les paquets (sans passer par docker) :
+
+`yarn`
+
+Installer les navigateurs (headless) utilisés par Playwright :
+
+`yarn playwright install`
+
+Lancer les tests (attention il faut avoir démarré la stack locale via docker, cf plus haut) :
+
+`yarn tests:e2e`
+
+Pour débugger ou écrire de nouveaux tests, utiliser l'interface graphique de Playwright :
+
+`yarn tests:e2e:ui`
+
 ## Kubernetes
 
 ## CI/CD

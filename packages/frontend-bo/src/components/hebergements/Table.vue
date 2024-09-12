@@ -19,7 +19,7 @@
       </div>
     </div>
   </div>
-  <UtilsTable
+  <TableWithBackendPagination
     :headers="headers"
     :data="data"
     :total-items="count"
@@ -35,6 +35,8 @@
 </template>
 
 <script setup>
+import { TableWithBackendPagination } from "@vao/shared";
+
 const props = defineProps({
   headers: { type: Array, required: true },
   data: { type: Array, required: true },
@@ -65,8 +67,6 @@ const refreshTable = () => {
     offset: page.value * limit.value,
   });
 };
-
-const router = useRouter();
 
 const refresqueryParams = () => {
   if (props.isUrlUpdate) {
