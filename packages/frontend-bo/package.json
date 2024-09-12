@@ -15,11 +15,11 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@gouvfr/dsfr": "~1.12.0",
-    "@gouvminint/vue-dsfr": "~5.18.0",
+    "@gouvfr/dsfr": "~1.12.1",
+    "@gouvminint/vue-dsfr": "~6.0.1",
     "@pinia/nuxt": "~0.5.1",
     "@sentry/vue": "~8.17.0",
-    "@socialgouv/dsfr-toaster-nuxt-module": "~1.3.0",
+    "@socialgouv/dsfr-toaster-nuxt-module": "~1.3.5",
     "@vao/shared": "1.0.0",
     "@vee-validate/i18n": "~4.13.0",
     "@vee-validate/rules": "~4.13.0",
@@ -29,12 +29,13 @@
     "debug": "~4.3.4",
     "nuxt": "~3.12.4",
     "nuxt-maplibre": "^1.0.0",
-    "nuxt-security": "~1.4.0",
-    "oh-vue-icons": "~1.0.0-rc3",
+    "nuxt-security": "^2.0.0-rc.9",
     "pinia": "~2.1.7",
     "ufo": "^1.5.4",
     "vee-validate": "~4.13.0",
+    "vue": "latest",
     "vue-matomo": "~4.2.0",
+    "vue-router": "latest",
     "yup": "~1.4.0"
   },
   "devDependencies": {
@@ -47,7 +48,8 @@
     "prettier": "^3.2.5",
     "sass": "~1.77.0",
     "sass-loader": "~14.2.0",
-    "typescript": "~5.4.3"
+    "typescript": "~5.4.3",
+    "vue-dsfr-nuxt-module": "^2.0.0"
   },
   "lint-staged": {
     "src/**/*.{js,vue,ts}": "npx eslint --cache --max-warnings=0"

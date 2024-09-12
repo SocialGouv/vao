@@ -9,7 +9,7 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 COPY packages/shared/package.json packages/shared/
-COPY packages/frontend-bo/package.json packages/frontend-bo/yarn.lock packages/frontend-bo/
+COPY packages/frontend-bo/package.json packages/frontend-bo/
 RUN yarn workspace @vao/frontend-bo install --frozen-lockfile
 
 # these variables are needed at build time because we produce a *static* app

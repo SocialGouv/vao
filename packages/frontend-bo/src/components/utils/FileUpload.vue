@@ -53,7 +53,7 @@ const rows = computed(() => {
 
     const buttons = [
       {
-        icon: "ri-delete-bin-2-line",
+        icon: "ri:delete-bin-2-line",
         iconOnly: true,
         tertiary: true,
         noOutline: true,

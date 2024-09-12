@@ -339,7 +339,7 @@ const tabTitles = computed(() => [
     ? [
         {
           title: `Messagerie ${unreadMessages.value}`,
-          icon: `${unreadMessages.value ? "ri-feedback-line" : ""}`,
+          icon: `${unreadMessages.value ? "ri:feedback-line" : ""}`,
         },
       ]
     : []),

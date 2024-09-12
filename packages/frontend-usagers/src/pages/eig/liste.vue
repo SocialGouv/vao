@@ -283,7 +283,7 @@ const headers = [
       },
       label: "Suppression",
       iconOnly: true,
-      icon: "ri-delete-bin-2-line",
+      icon: "ri:delete-bin-2-line",
     }),
   },
 ];

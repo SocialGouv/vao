@@ -548,7 +548,7 @@ const headers = [
           {
             label: "Dupliquer",
             iconOnly: true,
-            icon: "ri-file-copy-2-fill",
+            icon: "ri:file-copy-2-fill",
             disabled: ![
               DeclarationSejour.statuts.BROUILLON,
               DeclarationSejour.statuts.TRANSMISE,
@@ -572,8 +572,8 @@ const headers = [
             iconOnly: true,
             icon:
               row.statut === DeclarationSejour.statuts.BROUILLON
-                ? "ri-delete-bin-2-line"
-                : "ri-close-line",
+                ? "ri:delete-bin-2-line"
+                : "ri:close-line",
             onClick: (event) => {
               event.stopPropagation();
 

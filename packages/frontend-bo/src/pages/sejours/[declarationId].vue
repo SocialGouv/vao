@@ -314,7 +314,7 @@ const tabTitles = computed(() => [
   { title: "Historique de la déclaration" },
   {
     title: `Messagerie ${unreadMessages.value}`,
-    icon: `${unreadMessages.value ? "ri-feedback-line" : ""}`,
+    icon: `${unreadMessages.value ? "ri:feedback-line" : ""}`,
   },
   // TODO(eig): unhide when ok
   /*
