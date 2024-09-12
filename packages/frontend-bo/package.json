@@ -29,6 +29,7 @@
     "debug": "~4.3.4",
     "nuxt": "~3.12.4",
     "nuxt-maplibre": "^1.0.0",
+    "nuxt-security": "^2.0.0-rc.9",
     "pinia": "~2.1.7",
     "ufo": "^1.5.4",
     "vee-validate": "~4.13.0",
