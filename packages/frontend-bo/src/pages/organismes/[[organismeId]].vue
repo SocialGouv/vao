@@ -35,6 +35,11 @@
             "
             :input="displayInput.IResponsableSejour[entry]"
           />
+          <DsfrTable
+            title="Liste des comptes avec le numéro de siret de l'organisme"
+            :headers="['Nom', 'Prenom', 'Email', 'Date inscription']"
+            :rows="usersWithSiret"
+          ></DsfrTable>
         </div>
         <div
           v-if="
@@ -66,8 +71,10 @@
 </template>
 <script setup>
 import { useOrganismeStore } from "~/stores/organisme";
+import dayjs from "dayjs";
 
 const organismeStore = useOrganismeStore();
+const userStore = useUserStore();
 const route = useRoute();
 const log = logger("pages/organismes/[[organismeId]]");
 definePageMeta({
@@ -81,6 +88,15 @@ const selectTab = (idx) => {
   asc.value = selectedTabIndex.value < idx;
   selectedTabIndex.value = idx;
 };
+
+const usersWithSiret = computed(() =>
+  userStore.usersFO.map((user) => [
+    user.nom,
+    user.prenom,
+    user.email,
+    dayjs(user.dateCreation).format("DD/MM/YYYY HH:MM"),
+  ]),
+);
 
 const tabTitles = [
   { title: "Informations" },
@@ -99,9 +115,17 @@ const organismeName = computed(() => {
 onMounted(async () => {
   try {
     await organismeStore.getOrganisme(route.params.organismeId);
+    if (organismeStore.organisme?.personneMorale) {
+      await userStore.fetchUsersOrganisme({
+        search: { siret: organismeStore.organisme.personneMorale.siret },
+      });
+    }
   } catch (e) {
-    log.w("not authorized for this user", e);
-    navigateTo("/organismes");
+    if (e.response?.status === 403) {
+      log.w("not authorized for this user", e);
+      navigateTo("/organismes");
+    }
+    throw e;
   }
 });
 </script>
