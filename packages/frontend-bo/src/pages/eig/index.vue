@@ -95,6 +95,14 @@
                 />
               </div>
             </div>
+            <div
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+            >
+              <RangeDatePicker
+                v-model="searchState.dateRange"
+                label="Date de l'eig"
+              />
+            </div>
           </div>
         </form>
       </div>
@@ -130,6 +138,8 @@ import dayjs from "dayjs";
 import {
   eigModel,
   EigStatusBadge,
+  EigTypeListe,
+  RangeDatePicker,
   TableWithBackendPagination,
   ValidationModal,
 } from "@vao/shared";
@@ -159,6 +169,7 @@ const searchState = reactive({
   type: null,
   organisme: null,
   departement: null,
+  dateRange: null,
 });
 
 try {
@@ -265,11 +276,6 @@ const onSelect = (value, key) => {
 
 const headers = [
   {
-    column: "id",
-    text: "ID",
-    sort: true,
-  },
-  {
     column: "organisme",
     text: "Organisme",
     format: (value) => value.raisonSociale ?? `${value?.prenom} ${value?.nom}`,
@@ -280,7 +286,7 @@ const headers = [
     text: "Déclaration",
     sort: true,
   },
-  { column: "departement", text: "Territoire (n° département)", sort: true },
+  { column: "departement", text: "Territoire", sort: true },
   {
     column: "libelle",
     text: "Séjour",
@@ -296,8 +302,16 @@ const headers = [
   {
     column: "types",
     text: "Types d'événement",
-    format: (value) =>
-      (value.types ?? []).map((t) => mapEigToLabel[t]).join(", "),
+    component: ({ types }) => ({
+      component: EigTypeListe,
+      types: (types ?? []).map((t) => mapEigToLabel[t]),
+    }),
+  },
+  {
+    column: "date",
+    text: "Dates de l'incident",
+    format: (value) => dayjs(value.date).format("DD/MM/YYYY"),
+    sort: true,
   },
   {
     column: "dateDepot",
