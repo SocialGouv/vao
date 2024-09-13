@@ -19,6 +19,7 @@
     "@gouvminint/vue-dsfr": "~5.18.0",
     "@nuxtjs/leaflet": "^1.0.14",
     "@pinia/nuxt": "~0.5.1",
+    "@samk-dev/nuxt-vcalendar": "^1.0.4",
     "@sentry/vue": "~8.17.0",
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.3.0",
     "@vao/shared": "1.0.0",

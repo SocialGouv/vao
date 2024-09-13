@@ -456,6 +456,14 @@ const getEigs = async (
     params.push(`${search?.departement}`);
   }
 
+  if (search?.dateRange?.start && search?.dateRange?.end) {
+    searchQuery.push(
+      `eig.date BETWEEN $${params.length + 1} AND $${params.length + 2}`,
+    );
+    params.push(`${search.dateRange.start}`);
+    params.push(`${search.dateRange.end}`);
+  }
+
   let queryWithPagination = query.get(
     where,
     searchQuery.map((s) => ` AND ${s} `).join(""),

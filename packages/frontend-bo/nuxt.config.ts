@@ -23,6 +23,7 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "@nuxtjs/leaflet",
     "@socialgouv/dsfr-toaster-nuxt-module",
+    "@samk-dev/nuxt-vcalendar",
   ],
   runtimeConfig: {
     public: {
