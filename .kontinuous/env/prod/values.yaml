@@ -1,9 +1,15 @@
+global:
+  s3SecretName: vao-prod-app-access-key
+
 backend:
   autoscale:
     enabled: true
   host: api-vao.social.gouv.fr
   redirectFrom:
     - "api-{{ .Values.global.host }}"
+  vars:
+    S3_BUCKET_ROOT_DIR: prod/files
+
 
 frontend-usagers:
   autoscale:

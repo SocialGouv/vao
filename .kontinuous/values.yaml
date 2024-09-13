@@ -45,30 +45,23 @@ backend:
         name: smtp
     - secretRef:
         name: token
-  env:
-    - name: DEBUG
-      value: "*info*"
-    - name: DEBUG_HIDE_DATE
-      value: "true"
-    - name: TZ
-      value: Europe/Paris
-    - name: POSTGRES_HOST
-      valueFrom:
-        secretKeyRef:
-          name: pg-app
-          key: PGHOST
-    - name: POSTGRES_PORT
-      valueFrom:
-        secretKeyRef:
-          name: pg-app
-          key: PGPORT
-    - name: POSTGRES_DB
-      valueFrom:
-        secretKeyRef:
-          name: pg-app
-          key: PGDATABASE
-    - name: SENTRY_RELEASE
-      value: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
+    - secretRef:
+        name: "{{.Values.global.s3SecretName}}"
+  vars:
+    DEBUG: "*info*"
+    DEBUG_HIDE_DATE: "true"
+    TZ: Europe/Paris
+    SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
+    POSTGRES_HOST: "$(PGHOST)"
+    POSTGRES_PORT: "$(PGPORT)"
+    POSTGRES_DB: "$(PGDATABASE)"
+
+    S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
+    S3_BUCKET_NAME: "$(bucket_name)"
+    S3_BUCKET_REGION: "$(bucket_region)"
+    S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
+    S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
+
 
 frontend-usagers:
   ~chart: app

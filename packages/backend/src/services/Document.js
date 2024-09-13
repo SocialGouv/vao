@@ -4,7 +4,22 @@ const logger = require("../utils/logger");
 const poolDoc = require("../utils/pgpoolDoc").getPool();
 const AppError = require("../utils/error");
 
+const { S3Client, ListObjectsV2Command } = require("@aws-sdk/client-s3");
+
+const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
+const S3_BUCKET_ROOT_DIR = process.env.S3_BUCKET_ROOT_DIR;
+
 const log = logger(module.filename);
+
+const s3Client = new S3Client({
+  credentials: {
+    accessKeyId: process.env.S3_BUCKET_ACCESS_KEY,
+    secretAccessKey: process.env.S3_BUCKET_SECRET_KEY,
+  },
+  endpoint: process.env.S3_BUCKET_ENDPOINT,
+  forcePathStyle: true,
+  region: process.env.S3_BUCKET_REGION,
+});
 
 const query = {
   create: (category, filename, mime_type, file) => [
@@ -86,3 +101,21 @@ module.exports.getStatic = async (name) => {
   log.i("getOrganisateurAvecUnRetrait - In");
   return `${__dirname}/static/${name}`;
 };
+
+const listFiles = async () => {
+  try {
+    const command = new ListObjectsV2Command({
+      Bucket: S3_BUCKET_NAME,
+      Prefix: S3_BUCKET_ROOT_DIR,
+    });
+
+    const data = await s3Client.send(command);
+    console.log("Success:", data.Contents);
+  } catch (err) {
+    console.error("Error:", err);
+  }
+};
+
+// Example code to test S3 is ok
+// TODO: delete
+listFiles();

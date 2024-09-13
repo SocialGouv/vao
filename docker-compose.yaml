@@ -1,5 +1,6 @@
 volumes:
   postgres-data:
+  minio-data:
 
 services:
   frontend-usagers:
@@ -123,3 +124,16 @@ services:
       - "8080:8080"
     depends_on:
       - postgres
+
+  minio:
+    image: minio/minio
+    volumes:
+      - minio-data:/data
+    ports:
+      - "9000:9000" # MinIO api
+      - "9001:9001" # MinIO admin console
+    environment:
+      MINIO_ROOT_USER: ${S3_BUCKET_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${S3_BUCKET_SECRET_KEY}
+      MINIO_REGION: ${S3_BUCKET_REGION}
+    command: server /data --console-address ":9001"
