@@ -77,12 +77,9 @@
     </DsfrFieldset>
     <DsfrAccordionsGroup
       v-if="DeclarationSejour.isPost8Jour(declarationStatut)"
+      v-model="expandedIndex"
     >
-      <DsfrAccordion
-        :id="1"
-        :expanded-id="expandedId"
-        @expand="(id) => (expandedId = id)"
-      >
+      <DsfrAccordion :id="1">
         <template #title>
           <span :style="encadrantsMeta.valid ?? 'color: #b34000'">{{
             `Personnel d'encadrement - ${nombreResponsable ?? 0}&nbsp;`
@@ -121,11 +118,7 @@
           ></DSPersonnel>
         </div>
       </DsfrAccordion>
-      <DsfrAccordion
-        :id="2"
-        :expanded-id="expandedId"
-        @expand="(id) => (expandedId = id)"
-      >
+      <DsfrAccordion :id="2">
         <template #title>
           <span :style="accompagnantsMeta.valid ?? 'color: #b34000'">{{
             `Personnel d'accompagnement - ${nombreAccompagnant ?? 0}&nbsp;`
@@ -167,9 +160,7 @@
       </DsfrAccordion>
       <DsfrAccordion
         :id="3"
-        :expanded-id="expandedId"
         :title="`Prestataire en charge des médicaments - ${prestatairesMedicaments.length ?? 0}`"
-        @expand="(id) => (expandedId = id)"
       >
         <DSPrestataires
           :modifiable="props.modifiable"
@@ -181,9 +172,7 @@
       </DsfrAccordion>
       <DsfrAccordion
         :id="4"
-        :expanded-id="expandedId"
         :title="`Prestataire en charge du transport des vacanciers - ${prestatairesTransport.length ?? 0}`"
-        @expand="(id) => (expandedId = id)"
       >
         <DSPrestataires
           :modifiable="props.modifiable"
@@ -195,9 +184,7 @@
       </DsfrAccordion>
       <DsfrAccordion
         :id="5"
-        :expanded-id="expandedId"
         :title="`Prestataire en charge de la restauration - ${prestatairesRestauration.length ?? 0}`"
-        @expand="(id) => (expandedId = id)"
       >
         <DSPrestataires
           :modifiable="props.modifiable"
@@ -209,9 +196,7 @@
       </DsfrAccordion>
       <DsfrAccordion
         :id="6"
-        :expanded-id="expandedId"
         :title="`Prestataire en charge de l’entretien et du ménage - ${prestatairesEntretien.length ?? 0}`"
-        @expand="(id) => (expandedId = id)"
       >
         <DSPrestataires
           :modifiable="props.modifiable"
@@ -223,9 +208,7 @@
       </DsfrAccordion>
       <DsfrAccordion
         :id="7"
-        :expanded-id="expandedId"
         :title="`Prestataire en charge d'encadrer les activités spécifiques - ${prestatairesActivites.length ?? 0}`"
-        @expand="(id) => (expandedId = id)"
       >
         <DSPrestataires
           :modifiable="props.modifiable"
@@ -273,7 +256,7 @@ const declarationStatut = computed(() => {
   return demandeSejourStore.demandeCourante.statut;
 });
 
-const expandedId = ref(0);
+const expandedIndex = ref(-1);
 
 const validationSchema = yup.object(
   informationsPersonnel.schema(declarationStatut.value),

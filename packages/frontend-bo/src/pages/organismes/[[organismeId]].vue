@@ -3,10 +3,11 @@
     <h4>Organisme</h4>
 
     <DsfrTabs
+      v-model="selectedTabIndex"
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
       :initial-selected-index="0"
-      @select-tab="selectTab"
+      @update:model-value="selectTab"
     >
       <DsfrTabContent
         panel-id="tab-content-0"
@@ -86,7 +87,6 @@ const selectedTabIndex = ref(0);
 
 const selectTab = (idx) => {
   asc.value = selectedTabIndex.value < idx;
-  selectedTabIndex.value = idx;
 };
 
 const usersWithSiret = computed(() =>
@@ -99,8 +99,16 @@ const usersWithSiret = computed(() =>
 );
 
 const tabTitles = [
-  { title: "Informations" },
-  { title: "Déclarations de séjour" },
+  {
+    title: "Informations",
+    tabId: "tab-0",
+    panelId: "tab-content-0",
+  },
+  {
+    title: "Déclarations de séjour",
+    tabId: "tab-1",
+    panelId: "tab-content-1",
+  },
 ];
 
 const organismeName = computed(() => {

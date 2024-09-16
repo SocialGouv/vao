@@ -12,10 +12,11 @@
       </DsfrAlert>
     </div>
     <DsfrTabs
+      v-model="selectedTabIndex"
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
       :initial-selected-index="initialSelectedIndex"
-      @select-tab="selectTab"
+      @update:model-value="selectTab"
     >
       <DsfrTabContent
         panel-id="tab-content-0"
@@ -201,7 +202,6 @@ const config = useRuntimeConfig();
 
 const selectTab = async (idx) => {
   asc.value = selectedTabIndex.value < idx;
-  selectedTabIndex.value = idx;
   if (idx === 2 && !historique.value) {
     execute();
   }
@@ -309,16 +309,34 @@ const unreadMessages = computed(() => {
 });
 
 const tabTitles = computed(() => [
-  { title: "Formulaire" },
-  { title: "Documents joints" },
-  { title: "Historique de la déclaration" },
+  {
+    title: "Formulaire",
+    tabId: "tab-0",
+    panelId: "tab-content-0",
+  },
+  {
+    title: "Documents joints",
+    tabId: "tab-1",
+    panelId: "tab-content-1",
+  },
+  {
+    title: "Historique de la déclaration",
+    tabId: "tab-2",
+    panelId: "tab-content-2",
+  },
   {
     title: `Messagerie ${unreadMessages.value}`,
+    tabId: "tab-3",
+    panelId: "tab-content-3",
     icon: `${unreadMessages.value ? "ri:feedback-line" : ""}`,
   },
   // TODO(eig): unhide when ok
   /*
-    { title: "EIG" },
+    {
+      title: "EIG",
+      tabId: "tab-4",
+      panelId: "tab-content-4",
+    },
   */
 ]);
 

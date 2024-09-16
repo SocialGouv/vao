@@ -1,10 +1,11 @@
 <template>
   <div class="fr-container">
     <DsfrTabs
+      v-model="selectedTabIndex"
       :tab-list-name="tabListName"
       :tab-titles="tabTitles"
       :initial-selected-index="selectedTabIndex"
-      @select-tab="selectTab"
+      @update:model-value="selectTab"
     >
       <DsfrTabContent
         panel-id="tab-content-0"
@@ -36,8 +37,16 @@ definePageMeta({
 const route = useRoute();
 
 const tabTitles = [
-  { title: "Tous les hébergements" },
-  { title: "Hebergements liés à des séjours" },
+  {
+    title: "Tous les hébergements",
+    tabId: "tab-0",
+    panelId: "tab-content-0",
+  },
+  {
+    title: "Hebergements liés à des séjours",
+    tabId: "tab-1",
+    panelId: "tab-content-1",
+  },
 ];
 
 const selectedTabIndex = ref(
@@ -54,7 +63,6 @@ const tables = [tables1, tables2];
 
 const selectTab = (idx) => {
   asc.value = selectedTabIndex.value < idx;
-  selectedTabIndex.value = idx;
   navigateTo({
     replace: true,
     query: {},

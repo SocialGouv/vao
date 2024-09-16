@@ -34,10 +34,11 @@
       </div>
     </div>
     <DsfrTabs
+      v-model="selectedTabIndex"
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
       :initial-selected-index="initialSelectedIndex"
-      @select-tab="selectTab"
+      @update:model-value="selectTab"
     >
       <DsfrTabContent
         panel-id="declaration-sejour-content-0"
@@ -163,7 +164,7 @@
 
       <DsfrTabContent
         panel-id="declaration-sejour-content-1"
-        tab-id="declaration-sejour-1"
+        tab-id="declaration-sejour-tab-1"
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
@@ -174,7 +175,7 @@
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="declaration-sejour-content-2"
-        tab-id="declaration-sejour-2"
+        tab-id="declaration-sejour-tab-2"
         :selected="selectedTabIndex === 2"
         :asc="asc"
       >
@@ -189,7 +190,7 @@
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="declaration-sejour-content-3"
-        tab-id="declaration-sejour-3"
+        tab-id="declaration-sejour-tab-3"
         :selected="selectedTabIndex === 3"
         :asc="asc"
       >
@@ -211,7 +212,7 @@
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="declaration-sejour-content-4"
-        tab-id="declaration-sejour-4"
+        tab-id="declaration-sejour-tab-4"
         :selected="selectedTabIndex === 4"
         :asc="asc"
       >
@@ -310,7 +311,6 @@ const {
 
 const selectTab = async (idx) => {
   asc.value = selectedTabIndex.value < idx;
-  selectedTabIndex.value = idx;
   if (idx === 2 && !historique.value) {
     executeHistorique();
   }
@@ -332,20 +332,46 @@ const unreadMessages = computed(() => {
 const sejourId = ref(route.params.declarationId);
 
 const tabTitles = computed(() => [
-  { title: "Formulaire" },
-  { title: "Documents joints" },
-  ...(sejourId.value ? [{ title: "Historique de la déclaration" }] : []),
+  {
+    title: "Formulaire",
+    tabId: "declaration-sejour-tab-0",
+    panelId: "declaration-sejour-content-0",
+  },
+  {
+    title: "Documents joints",
+    tabId: "declaration-sejour-tab-1",
+    panelId: "declaration-sejour-content-1",
+  },
+  ...(sejourId.value
+    ? [
+        {
+          title: "Historique de la déclaration",
+          tabId: "declaration-sejour-tab-2",
+          panelId: "declaration-sejour-content-2",
+        },
+      ]
+    : []),
   ...(sejourId.value
     ? [
         {
           title: `Messagerie ${unreadMessages.value}`,
+          tabId: "declaration-sejour-tab-3",
+          panelId: "declaration-sejour-content-3",
           icon: `${unreadMessages.value ? "ri:feedback-line" : ""}`,
         },
       ]
     : []),
   // TODO(eig): unhide when ok
   /*
-    ...(sejourId.value ? [{ title: "EIG" }] : []),
+    ...(sejourId.value
+      ? [
+          {
+            title: "EIG",
+            tabId: "declaration-sejour-tab-4",
+            panelId: "declaration-sejour-content-4",
+          }
+        ]
+      : []),
   */
 ]);
 

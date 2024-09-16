@@ -1,12 +1,13 @@
 <template>
-  <DsfrAccordionsGroup>
+  <DsfrAccordionsGroup
+    v-model="expandedIndex"
+    @update:model-value="openModal(eigs[expandedIndex])"
+  >
     <DsfrAccordion
       v-for="eig in eigs"
       :id="eig.id"
       :key="eig.id"
-      :expanded-id="expandedId"
       :title="getTitle(eig)"
-      @expand="() => openModal(eig)"
     >
       <EigSynthese v-if="eigStore.currentEig" :eig="eigStore.currentEig" />
     </DsfrAccordion>
@@ -37,7 +38,7 @@ const eigStore = useEigStore();
 const getTitle = (eig) =>
   `EIG ${eig.id} déposé le ${dayjs(eig.dateDepot).format("DD/MM/YYYY")} / statut : ${eig.statut}`;
 
-const expandedId = ref(0);
+const expandedIndex = ref(-1);
 
 const eigToRead = ref(null);
 

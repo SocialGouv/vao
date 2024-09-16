@@ -5,12 +5,10 @@
   <h6>Type d'événement</h6>
   <fieldset class="fr-fieldset">
     <div class="fr-fieldset__element">
-      <DsfrAccordionsGroup>
+      <DsfrAccordionsGroup v-model="expandedIndex">
         <DsfrAccordion
           :id="1"
-          :expanded-id="expandedId"
           title="Evénements relatifs aux victimes présumées"
-          @expand="(id) => (expandedId = id)"
         >
           <fieldset class="fr-fieldset">
             <div class="fr-fieldset__element">
@@ -45,13 +43,9 @@
             </div>
           </fieldset>
         </DsfrAccordion>
-      </DsfrAccordionsGroup>
-      <DsfrAccordionsGroup>
         <DsfrAccordion
           :id="2"
-          :expanded-id="expandedId"
           title="Evènements relatifs à la santé de la personne"
-          @expand="(id) => (expandedId = id)"
         >
           <fieldset class="fr-fieldset">
             <div class="fr-fieldset__element">
@@ -86,13 +80,9 @@
             </div>
           </fieldset>
         </DsfrAccordion>
-      </DsfrAccordionsGroup>
-      <DsfrAccordionsGroup>
         <DsfrAccordion
           :id="3"
-          :expanded-id="expandedId"
           title="Evènements relatifs à la sécurité des biens et des personnes"
-          @expand="(id) => (expandedId = id)"
         >
           <fieldset class="fr-fieldset">
             <div class="fr-fieldset__element">
@@ -127,13 +117,9 @@
             </div>
           </fieldset>
         </DsfrAccordion>
-      </DsfrAccordionsGroup>
-      <DsfrAccordionsGroup>
         <DsfrAccordion
           :id="4"
-          :expanded-id="expandedId"
           title="Evènements relatifs au fonctionnement de l’organisme responsable du séjour"
-          @expand="(id) => (expandedId = id)"
         >
           <fieldset class="fr-fieldset">
             <div class="fr-fieldset__element">
@@ -280,7 +266,7 @@ const types = {
   })),
 };
 
-const expandedId = ref(0);
+const expandedIndex = ref(-1);
 
 const next = () => {
   if (!eigStore.canModify) {
