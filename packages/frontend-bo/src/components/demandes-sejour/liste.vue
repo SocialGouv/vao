@@ -11,15 +11,15 @@
           :values="[
             {
               title: 'Déclarations transmises à traiter',
-              value: sejourStore.stats?.transmis,
+              value: sejourStore.stats?.transmis || 0,
             },
             {
               title: 'Déclarations en cours de traitement',
-              value: sejourStore.stats?.enCours,
+              value: sejourStore.stats?.enCours || 0,
             },
             {
               title: 'Déclarations 8 jours à traiter',
-              value: sejourStore.stats?.transmis8J,
+              value: sejourStore.stats?.transmis8J || 0,
             },
           ]"
         />
@@ -248,20 +248,6 @@ const searchParams = computed(() =>
     return acc;
   }, {}),
 );
-
-sejourStore.currentDemande = null;
-try {
-  await sejourStore.fetchDemandes({
-    limit: defaultLimit,
-    offset: defaultOffset,
-    search: searchParams.value,
-  });
-} catch (error) {
-  toaster.error({
-    titleTag: "h2",
-    description: "Une erreur est survenue lors de la récupération des demandes",
-  });
-}
 
 watch(
   [sortState, limitState, currentPageState],

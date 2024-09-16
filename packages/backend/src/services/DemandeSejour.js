@@ -272,8 +272,7 @@ SELECT
 FROM
   front.demande_sejour ds
   JOIN front.organismes o ON o.id = ds.organisme_id
-  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id,
-  jsonb_array_elements(ds.hebergement -> 'hebergements') h
+  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 WHERE
   jsonb_path_query_array(hebergement, '$.hebergements[*].coordonnees.adresse.departement') ?| ($1)::text[]
   OR a.region_obtention = '${territoireCode}'
@@ -1028,6 +1027,7 @@ module.exports.getHebergementsByDepartementCodes = async (
 
 module.exports.getAdminStats = async (departements, territoireCode) => {
   log.i("getAdminStats - IN");
+
   const {
     rows: [stats],
   } = await pool.query(...query.getAdminStats(departements, territoireCode));
