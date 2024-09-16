@@ -1,9 +1,12 @@
 <template>
   <div class="fr-col-7">
     <div v-for="detail in currentEigValues" :key="detail.label">
-      <strong>{{ detail.label }} : </strong
-      ><span v-if="typeof detail.value === 'string'">{{ detail.value }}</span>
-      <div v-if="Array.isArray(detail.value)">
+      <strong>{{ detail.label }} : </strong>
+      <a v-if="!!detail.href" :href="detail.href">{{ detail.value }}</a>
+      <span v-else-if="typeof detail.value === 'string'">{{
+        detail.value
+      }}</span>
+      <div v-else-if="Array.isArray(detail.value)">
         <ul>
           <li v-for="item in detail.value" :key="item">{{ item }}</li>
         </ul>
@@ -21,6 +24,9 @@ const props = defineProps({ eig: { type: Object, required: true } });
 const currentEigValues = computed(() => [
   {
     label: "Déclaration",
+    href: props.eig?.declarationId
+      ? `/demande-sejour/${props.eig.declarationId}`
+      : "",
     value: props.eig?.idFonctionnelle ?? "",
   },
   {
