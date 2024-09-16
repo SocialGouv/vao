@@ -22,6 +22,18 @@
           "
         >
           <UtilsDisplayInput
+            :value="organismeStore.organisme.complet"
+            :input="displayInput.IPersonneMorale['complet']"
+          />
+          <UtilsDisplayInput
+            :value="organismeStore.organisme.createdAt"
+            :input="displayInput.IPersonneMorale['createdAt']"
+          />
+          <UtilsDisplayInput
+            :value="organismeStore.organisme.editedAt"
+            :input="displayInput.IPersonneMorale['editedAt']"
+          />
+          <UtilsDisplayInput
             v-for="entry in Object.keys(displayInput.IPersonneMorale)"
             :key="`organisme-${entry}`"
             :value="organismeStore.organisme.personneMorale[entry]"
@@ -48,6 +60,18 @@
             organisme.type.PERSONNE_PHYSIQUE
           "
         >
+          <UtilsDisplayInput
+            :value="organismeStore.organisme.complet"
+            :input="displayInput.IPersonneMorale['complet']"
+          />
+          <UtilsDisplayInput
+            :value="organismeStore.organisme.createdAt"
+            :input="displayInput.IPersonneMorale['createdAt']"
+          />
+          <UtilsDisplayInput
+            :value="organismeStore.organisme.editedAt"
+            :input="displayInput.IPersonneMorale['editedAt']"
+          />
           <UtilsDisplayInput
             v-for="entry in Object.keys(displayInput.IPersonnePhysique)"
             :key="`organisme-${entry}`"
