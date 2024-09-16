@@ -1,15 +1,10 @@
 <template>
   <div>
     <div class="fr-grid-row fr-my-5v">
-      <DsfrAccordionsGroup>
+      <DsfrAccordionsGroup v-model="expandedIndex">
         <ul role="list">
           <li v-if="stepToDisplay('info-generales')" role="listitem">
-            <DsfrAccordion
-              :id="1"
-              title="Informations générales"
-              :expanded-id="expandedId"
-              @expand="(id) => (expandedId = id)"
-            >
+            <DsfrAccordion :id="1" title="Informations générales">
               <template #title>
                 <span>Informations générales&nbsp;</span>
                 <DsfrBadge
@@ -28,12 +23,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('info-vacanciers')" role="listitem">
-            <DsfrAccordion
-              :id="2"
-              title="Informations sur les vacanciers"
-              :expanded-id="expandedId"
-              @expand="(id) => (expandedId = id)"
-            >
+            <DsfrAccordion :id="2" title="Informations sur les vacanciers">
               <template #title>
                 <span>Informations sur les vacanciers&nbsp;</span>
                 <DsfrBadge
@@ -54,12 +44,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('info-personnel')" role="listitem">
-            <DsfrAccordion
-              :id="3"
-              title="Informations sur le personnel"
-              :expanded-id="expandedId"
-              @expand="(id) => (expandedId = id)"
-            >
+            <DsfrAccordion :id="3" title="Informations sur le personnel">
               <template #title>
                 <span>Informations sur le personnel&nbsp;</span>
                 <DsfrBadge
@@ -79,12 +64,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('projet-sejour')" role="listitem">
-            <DsfrAccordion
-              :id="4"
-              title="Projet de séjour"
-              :expanded-id="expandedId"
-              @expand="(id) => (expandedId = id)"
-            >
+            <DsfrAccordion :id="4" title="Projet de séjour">
               <template #title>
                 <span>Projet de séjour &nbsp;</span>
                 <DsfrBadge
@@ -102,12 +82,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('info-transport')" role="listitem">
-            <DsfrAccordion
-              :id="5"
-              title="Informations sur le transport"
-              :expanded-id="expandedId"
-              @expand="(id) => (expandedId = id)"
-            >
+            <DsfrAccordion :id="5" title="Informations sur le transport">
               <template #title>
                 <span>Informations sur le transport &nbsp;</span>
                 <DsfrBadge
@@ -127,12 +102,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('info-sanitaires')" role="listitem">
-            <DsfrAccordion
-              :id="6"
-              title="Informations sanitaires"
-              :expanded-id="expandedId"
-              @expand="(id) => (expandedId = id)"
-            >
+            <DsfrAccordion :id="6" title="Informations sanitaires">
               <template #title>
                 <span>Informations sanitaires &nbsp;</span>
                 <DsfrBadge
@@ -152,12 +122,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('hebergements')" role="listitem">
-            <DsfrAccordion
-              id="synthese-hebergement"
-              title="Hébergements"
-              :expanded-id="expandedId"
-              @expand="(id) => (expandedId = id)"
-            >
+            <DsfrAccordion id="synthese-hebergement" title="Hébergements">
               <template #title>
                 <span>Hébergements &nbsp;</span>
                 <DsfrBadge
@@ -168,6 +133,7 @@
               </template>
               <DsfrAccordionsGroup
                 v-if="props.declarationCourante.hebergement?.hebergements"
+                v-model="subExpandedIndex"
               >
                 <li
                   v-for="(item, index) in props.declarationCourante.hebergement
@@ -178,8 +144,6 @@
                   <DsfrAccordion
                     :id="'synthese-hebergement-' + index"
                     :title="`Fiche annexe n°${index + 1}`"
-                    :expanded-id="subExpandedId"
-                    @expand="(id) => (subExpandedId = id)"
                   >
                     <template #title>
                       <span>Fiche annexe n°{{ index + 1 }} &nbsp;</span>
@@ -318,8 +282,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["previous", "finalize"]);
-const expandedId = ref(0);
-const subExpandedId = ref(0);
+const expandedIndex = ref(-1);
+const subExpandedIndex = ref(-1);
 
 const userStore = useUserStore();
 const demandeSejourStore = useDemandeSejourStore();
