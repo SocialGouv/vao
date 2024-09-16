@@ -1,6 +1,9 @@
 <template>
   <div>
     <h6>Sélectionner un séjour</h6>
+    <dsfr-alert v-if="eigStore.currentEig" class="fr-mb-6v">
+      <Summary :eig="eigStore.currentEig" />
+    </dsfr-alert>
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <DsfrTag
@@ -89,9 +92,10 @@
 <script setup>
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
-import { eigModel, eigSchema } from "@vao/shared";
+import { eigModel, eigSchema, Summary } from "@vao/shared";
 import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
 import dayjs from "dayjs";
+import { DsfrAlert } from "@gouvminint/vue-dsfr";
 
 const emit = defineEmits(["next", "update"]);
 
