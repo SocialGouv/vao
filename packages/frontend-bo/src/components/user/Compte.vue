@@ -186,7 +186,7 @@
                     />
                     <p v-if="!actifField.modelValue && props.user.deleted_date">
                       Désactivé le
-                      {{ formatDate(props.user.deleted_date, "dd/MM/yyyy") }}
+                      {{ dayjs(props.user.deleted_date).format("DD/MM/YYYY") }}
                     </p>
                     <p
                       v-if="usersStore.user.roles.includes('Desactivation')"
@@ -241,7 +241,7 @@
 </template>
 
 <script setup>
-import { formatDate } from "date-fns/format";
+import dayjs from "dayjs";
 import { DsfrButton, DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
 import { ValidationModal } from "@vao/shared";
 import { defineProps } from "vue";

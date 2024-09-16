@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { formatDate } from "date-fns";
+import dayjs from "dayjs";
 
 const hebergementStore = useHebergementStore();
 
@@ -46,7 +46,7 @@ const headers = [
     text: "Date dernière visite",
     sort: true,
     format: (row) =>
-      row.dateVisite ? formatDate(row.dateVisite, "dd/MM/yyyy") : "",
+      row.dateVisite ? dayjs(row.dateVisite).format("DD/MM/YYYY") : "",
   },
   {
     column: "reglementatioEerp",
