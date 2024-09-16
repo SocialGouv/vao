@@ -297,7 +297,9 @@ const updateCurrentPage = (val) => {
 };
 
 const navigate = (state) => {
-  navigateTo(`/eig/${state.id}`);
+  navigateTo(
+    `/eig/${state.id}${state.statut !== eigModel.Statuts.BROUILLON ? "#eig-recap" : ""}`,
+  );
 };
 
 const eigToDelete = ref(null);
