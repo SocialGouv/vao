@@ -2,7 +2,7 @@
   <div>
     <h6>Sélectionner un séjour</h6>
     <dsfr-alert v-if="eigStore.currentEig" class="fr-mb-6v">
-      <Summary :eig="eigStore.currentEig" />
+      <Summary :eig="eigStore.currentEig" env="USAGER" />
     </dsfr-alert>
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
@@ -202,6 +202,12 @@ const onChooseDeclaration = (id) => {
     onDateChange(null, false);
   }
 };
+
+onMounted(() => {
+  if (!departement.value) {
+    setDepartement();
+  }
+});
 
 const next = () => {
   if (!eigStore.canModify) {

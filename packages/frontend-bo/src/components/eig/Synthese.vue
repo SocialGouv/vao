@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container">
     <h5>Informations de séjour</h5>
-    <Summary :eig="eig" />
+    <Summary :eig="eig" env="BO" />
     <h5>Personnel présent lors des événement</h5>
     <UtilsDisplayEncadrementAccompagnement :personnel="eig.personnel ?? []" />
     <h5>Les faits</h5>

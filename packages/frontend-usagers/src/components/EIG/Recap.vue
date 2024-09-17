@@ -8,7 +8,7 @@
     "
     message="Erreur dans la selection des types"
   ></EIGError>
-  <Summary :eig="eigStore.currentEig" />
+  <Summary :eig="eigStore.currentEig" env="USAGER" />
   <h5>Personnel présent lors des événement</h5>
   <EIGError
     :is-error="!!errors.personnel"

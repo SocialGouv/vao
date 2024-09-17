@@ -1,7 +1,7 @@
 <template>
   <h6>Renseignements generaux</h6>
   <dsfr-alert class="fr-mb-6v">
-    <Summary :eig="eigStore.currentEig" />
+    <Summary :eig="eigStore.currentEig" env="USAGER" />
   </dsfr-alert>
   <fieldset class="fr-fieldset">
     <h6>Personnel présent lors de événements</h6>

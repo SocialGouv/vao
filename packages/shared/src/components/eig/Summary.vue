@@ -19,13 +19,19 @@
 import dayjs from "dayjs";
 import { mapEigToLabel } from "../../utils/eigUtils";
 
-const props = defineProps({ eig: { type: Object, required: true } });
-
+const props = defineProps({
+  eig: { type: Object, required: true },
+  env: {
+    type: String,
+    required: true,
+    validator: (value) => ["BO", "USAGER"].includes(value),
+  },
+});
 const currentEigValues = computed(() => [
   {
     label: "Déclaration",
     href: props.eig?.declarationId
-      ? `/demande-sejour/${props.eig.declarationId}`
+      ? `/${props.env === "BO" ? "sejours" : "demande-sejour"}/${props.eig.declarationId}`
       : "",
     value: props.eig?.idFonctionnelle ?? "",
   },
