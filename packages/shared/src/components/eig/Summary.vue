@@ -27,6 +27,7 @@ const props = defineProps({
     validator: (value) => ["BO", "USAGER"].includes(value),
   },
 });
+
 const currentEigValues = computed(() => [
   {
     label: "Déclaration",

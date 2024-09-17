@@ -7,6 +7,7 @@ const DemandeSejour = require("../../services/DemandeSejour");
 const MailUtils = require("../../utils/mail");
 const AppError = require("../../utils/error");
 const { getEmails } = require("../../helpers/eigMail");
+const Commune = require("../../services/geo/Commune");
 const Send = require("../../services/mail").mailService.send;
 
 const log = logger(module.filename);
@@ -79,11 +80,26 @@ module.exports = async (req, res, next) => {
       userName,
     } = await getEmails(eig.departement, eig.userId);
 
+    const hebergementCodeInsee = ds.hebergement.hebergements.find(
+      (h) => h?.coordonnees?.adresse?.departement === eig.departement,
+    )?.coordonnees?.adresse?.codeInsee;
+
+    const communeName = (
+      await Commune.get({
+        code_insee: hebergementCodeInsee,
+        date: new Date(),
+      })
+    )?.text;
+
     emailsDDETS?.length &&
       (await Send(
         MailUtils.bo.eig.sendToDDETS({
           dest: emailsDDETS,
+          departementName,
           eig,
+          declarationSejour: ds,
+          regionName,
+          communeName,
         }),
       ));
 
@@ -93,27 +109,26 @@ module.exports = async (req, res, next) => {
           departementName,
           dest: emailsDREETS,
           eig,
+          declarationSejour: ds,
+          communeName,
         }),
       ));
 
     emailsOrganisateur?.length > 0 &&
       (await Send(
         MailUtils.bo.eig.sendToOrganisme({
-          departementName,
-          dest: emailsOrganisateur,
+          dest: [...emailsOrganisateur, ds.responsableSejour.email],
           eig,
-          regionName,
           userName,
+          declarationSejour: ds,
         }),
       ));
 
     eig.emailAutresDestinataires?.length > 0 &&
       (await Send(
         MailUtils.bo.eig.sendToAutre({
-          departementName,
           dest: eig.emailAutresDestinataires,
           eig,
-          regionName,
           userName,
         }),
       ));

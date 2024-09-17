@@ -1,8 +1,15 @@
 const AppError = require("../../utils/error");
 const eigService = require("../../services/eig");
+const Departement = require("../../services/geo/Departement");
+const Region = require("../../services/geo/Region");
 
 const logger = require("../../utils/logger");
-const { statuts } = require("../../helpers/eig");
+const {
+  statuts,
+  isUserDreetsWhoDeliveredAgrement,
+  isUserDdetsWhereEigHappened,
+  mustMarkAsRead,
+} = require("../../helpers/eig");
 const DemandeSejour = require("../../services/DemandeSejour");
 const MailUtils = require("../../utils/mail");
 const Send = require("../../services/mail").mailService.send;
@@ -41,10 +48,36 @@ module.exports = async function markAsRead(req, res, next) {
     );
   }
 
+  if (!mustMarkAsRead(territoireCode, eig)) {
+    log.w("L'EIG n'as pas à être marqué comme lu par le user");
+    return next(
+      new AppError("Statut incompatible", {
+        statusCode: 400,
+      }),
+    );
+  }
+
+  const typeReader = isUserDreetsWhoDeliveredAgrement(
+    territoireCode,
+    eig.agrementRegionObtention,
+  )
+    ? "DREETS"
+    : isUserDdetsWhereEigHappened(territoireCode, eig.departement)
+      ? "DDETS"
+      : null;
+
+  if (!typeReader) {
+    return next(
+      new AppError("L'utilisateur BO n'a aucune action a faire", {
+        statusCode: 400,
+      }),
+    );
+  }
+
   try {
-    await eigService.markAsRead(eigId);
+    await eigService.markAsRead(eigId, typeReader);
     await DemandeSejour.insertEvent(
-      `DDETS/DREETS ${territoireCode}`,
+      `${typeReader} ${territoireCode}`,
       eig.declarationId,
       null,
       userId,
@@ -57,6 +90,18 @@ module.exports = async function markAsRead(req, res, next) {
     return next(error);
   }
 
+  let territoireName;
+
+  try {
+    territoireName =
+      typeReader === "DREETS"
+        ? await Region.fetchOne(territoireCode)
+        : await Departement.fetchOne(territoireCode);
+  } catch (error) {
+    log.w("DONE with error");
+    return next(error);
+  }
+
   try {
     const destinataires = await DemandeSejour.getEmailToList(eig.organismeId);
     destinataires?.length &&
@@ -64,6 +109,9 @@ module.exports = async function markAsRead(req, res, next) {
         MailUtils.bo.eig.sendMarkAsRead({
           dest: destinataires,
           eig,
+          typeReader,
+          territoireCode,
+          territoireName: territoireName.text,
         }),
       ));
   } catch (error) {
