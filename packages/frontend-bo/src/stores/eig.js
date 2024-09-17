@@ -11,8 +11,8 @@ export const useEigStore = defineStore("eig", {
   }),
 
   actions: {
-    getStatut(eigId) {
-      return this.eigs.find((eig) => eig.id === eigId).statut;
+    getById(eigId) {
+      return this.eigs.find((eig) => eig.id === eigId);
     },
     async setCurrentEig(eigId) {
       if (!eigId) {

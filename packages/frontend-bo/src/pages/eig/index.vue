@@ -123,10 +123,10 @@
     <ValidationModal
       modal-ref="modal-eig-list-consult"
       name="consult-eig"
-      :opened="eigToRead != null"
+      :opened="eigIdToRead != null"
       title="Consultation d’un EIG"
       :on-close="closeEigModal"
-      :on-validate="() => readEig(eigToRead)"
+      :on-validate="() => readEig(eigIdToRead)"
       >Vous vous apprêtez à consulter un Evènement Indésirable Grave. Cette
       consultation enverra un email de notification à l’organisme.
     </ValidationModal>
@@ -151,10 +151,11 @@ definePageMeta({
 });
 
 const departementStore = useDepartementStore();
+const usersStore = useUserStore();
+const eigStore = useEigStore();
 
 const toaster = useToaster();
 
-const eigStore = useEigStore();
 const defaultLimit = 10;
 const defaultOffset = 0;
 
@@ -319,9 +320,17 @@ const headers = [
   {
     column: "statut",
     text: "Statut",
-    component: ({ statut }) => ({
+    component: ({
+      statut,
+      readByDreets,
+      readByDdets,
+      agrementRegionObtention,
+      departement,
+    }) => ({
       component: EigStatusBadge,
-      statut: statut,
+      statut,
+      dreets: { isRead: readByDreets, territoireCode: agrementRegionObtention },
+      ddets: { isRead: readByDdets, territoireCode: departement },
     }),
     sort: true,
   },
@@ -352,14 +361,15 @@ const readEig = async (id) => {
   }
 };
 
-const eigToRead = ref(null);
+const eigIdToRead = ref(null);
 
 const openModal = (state) => {
-  if (eigStore.getStatut(state.id) === eigModel.Statuts.ENVOYE) {
-    eigToRead.value = state.id;
+  const eig = eigStore.getById(state.id);
+  if (utilsEig.mustMarkAsRead(eig, usersStore.user)) {
+    eigIdToRead.value = state.id;
   } else {
     navigateTo(`/eig/${state.id}`);
   }
 };
-const closeEigModal = () => (eigToRead.value = null);
+const closeEigModal = () => (eigIdToRead.value = null);
 </script>

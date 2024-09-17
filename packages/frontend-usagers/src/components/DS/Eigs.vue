@@ -27,7 +27,7 @@
 <script setup>
 import dayjs from "dayjs";
 import EigStatusBadge from "@vao/shared/src/components/eig/EigStatusBadge.vue";
-import { ValidationModal, TableFull } from "@vao/shared";
+import { TableFull, ValidationModal } from "@vao/shared";
 import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
 
 const DsfrButton = resolveComponent("DsfrButton");
@@ -76,9 +76,17 @@ const headers = [
   {
     column: "statut",
     text: "Statut",
-    component: ({ statut }) => ({
+    component: ({
+      statut,
+      readByDreets,
+      readByDdets,
+      departement,
+      agrementRegionObtention,
+    }) => ({
       component: EigStatusBadge,
-      statut: statut,
+      statut,
+      dreets: { isRead: readByDreets, territoireCode: agrementRegionObtention },
+      ddets: { isRead: readByDdets, territoireCode: departement },
     }),
     sort: true,
   },

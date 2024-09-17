@@ -51,6 +51,8 @@ SELECT
   EIG.created_at as "createdAt",
   EIG.date as "date",
   EIG.DEPARTEMENT as "departement",
+  EIG.READ_BY_DREETS as "readByDreets",
+  EIG.READ_BY_DDETS as "readByDdets",
   S.STATUT AS "statut",
   DS.ID_FONCTIONNELLE AS "idFonctionnelle",
   DS.LIBELLE,
@@ -60,10 +62,12 @@ SELECT
   DS.ORGANISME -> 'personneMorale' ->> 'raisonSociale' AS "raisonSociale",
   DS.ORGANISME -> 'personnePhysique' ->> 'prenom' AS "prenom",
   DS.ORGANISME -> 'personnePhysique' ->> 'nomUsage' AS "nom",
-  ARRAY_AGG(ET.TYPE) as "types"
+  ARRAY_AGG(ET.TYPE) as "types",
+  AGR.region_obtention as "agrementRegionObtention"
 FROM
   FRONT.EIG EIG
   INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+  LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
   LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
   LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
   LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
@@ -74,7 +78,8 @@ WHERE
 GROUP BY
   EIG.ID,
   S.ID,
-  DS.ID
+  DS.ID,
+  AGR.ID
   `,
   getById: `
 SELECT
@@ -83,6 +88,8 @@ EIG.ID,
   S.STATUT AS "statut",
   EIG.DEPARTEMENT AS "departement",
   EIG.date as "date",
+  EIG.READ_BY_DREETS as "readByDreets",
+  EIG.READ_BY_DDETS as "readByDdets",
   DS.ID AS "declarationId",
   DS.ID_FONCTIONNELLE AS "idFonctionnelle",
   DS.LIBELLE as "libelle",
@@ -104,8 +111,11 @@ EIG.ID,
   EIG.DISPOSITION_INFORMATIONS as "dispositionInformations",
   EIG.IS_ATTESTE as "isAtteste",
   EIG.PERSONNEL as "personnel",
-  EIG.EMAIL_AUTRES_DESTINATAIRES as "emailAutresDestinataires"
+  EIG.EMAIL_AUTRES_DESTINATAIRES as "emailAutresDestinataires",
+  AGR.region_obtention as "agrementRegionObtention"
 FROM FRONT.EIG EIG
+    INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+    LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
     LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
     LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
     LEFT JOIN FRONT.EIG_CATEGORIE EC ON EC.ID = ET.EIG_CATEGORIE_ID
@@ -116,7 +126,8 @@ WHERE
 GROUP BY
   EIG.ID,
   S.ID,
-  DS.ID;
+  DS.ID,
+  AGR.ID;
   `,
   getEmailByTerCode: `
 WITH
@@ -161,20 +172,44 @@ WHERE
     VALUES
     ${values.join(",")}
   `,
-  markAsRead: `
+  markAsReadDdets: `
 UPDATE FRONT.EIG
 SET
-  STATUT_ID = (
-    SELECT
-      ID
-    FROM
-      FRONT.EIG_STATUT
-    WHERE
-      STATUT = 'LU'
-)
+  READ_BY_DDETS = TRUE,
+  STATUT_ID = CASE
+    WHEN READ_BY_DREETS THEN (
+      SELECT
+        ID
+      FROM
+        FRONT.EIG_STATUT
+      WHERE
+        STATUT = 'LU'
+    )
+    ELSE STATUT_ID
+  END,
+  EDITED_AT = NOW()
 WHERE
   ID = $1
   `,
+  markAsReadDreets: `
+UPDATE FRONT.EIG
+SET
+  READ_BY_DREETS = TRUE,
+  STATUT_ID = CASE
+    WHEN READ_BY_DDETS THEN (
+      SELECT
+        ID
+      FROM
+        FRONT.EIG_STATUT
+      WHERE
+        STATUT = 'LU'
+    )
+    ELSE STATUT_ID
+  END,
+  EDITED_AT = NOW()
+WHERE
+  ID = $1
+ `,
   updateDs: `
 UPDATE FRONT.EIG
 SET
@@ -580,9 +615,14 @@ module.exports.delete = async ({ eigId }) => {
   return eigId;
 };
 
-module.exports.markAsRead = async (eigId) => {
-  log.i("updateStatut - IN", { eigId });
-  await pool.query(query.markAsRead, [eigId]);
-  log.i("updateStatut - DONE");
+module.exports.markAsRead = async (eigId, type) => {
+  log.i("markAsReadDdets - IN", { eigId });
+  if (type === "DREETS") {
+    await pool.query(query.markAsReadDreets, [eigId]);
+  }
+  if (type === "DDETS") {
+    await pool.query(query.markAsReadDdets, [eigId]);
+  }
+  log.i("markAsReadDdets - DONE");
   return eigId;
 };

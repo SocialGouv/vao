@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { eigModel, ValidationModal } from "@vao/shared";
+import { ValidationModal } from "@vao/shared";
 import dayjs from "dayjs";
 
 const props = defineProps({
@@ -34,6 +34,7 @@ const props = defineProps({
 });
 
 const eigStore = useEigStore();
+const userStore = useUserStore();
 
 const getTitle = (eig) =>
   `EIG ${eig.id} déposé le ${dayjs(eig.dateDepot).format("DD/MM/YYYY")} / statut : ${eig.statut}`;
@@ -60,7 +61,7 @@ const openModal = async (index) => {
     return;
   }
 
-  if (eig.statut === eigModel.Statuts.ENVOYE) {
+  if (utilsEig.mustMarkAsRead(eig, userStore.user)) {
     expandedIndex.value = -1;
     modalDetails.value = { eigId: eig.id, index };
   } else {
