@@ -118,3 +118,28 @@ module.exports.isDeclarationligibleToEig = (d) =>
     dsStatuts.statuts.SEJOUR_EN_COURS,
     dsStatuts.statuts.TERMINEE,
   ].includes(d.statut);
+
+const isUserDreetsWhoDeliveredAgrement = (
+  territoireCode,
+  agrementRegionObtention,
+) => territoireCode === agrementRegionObtention;
+
+const isUserDdetsWhereEigHappened = (territoireCode, eigDepartement) =>
+  territoireCode === eigDepartement;
+
+module.exports.isUserDreetsWhoDeliveredAgrement =
+  isUserDreetsWhoDeliveredAgrement;
+
+module.exports.isUserDdetsWhereEigHappened = isUserDdetsWhereEigHappened;
+
+module.exports.mustMarkAsRead = (territoireCode, eig) => {
+  return (
+    (!eig.readByDdets &&
+      isUserDdetsWhereEigHappened(territoireCode, eig.departement)) ||
+    (!eig.readByDreets &&
+      isUserDreetsWhoDeliveredAgrement(
+        territoireCode,
+        eig.agrementRegionObtention,
+      ))
+  );
+};

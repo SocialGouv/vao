@@ -282,9 +282,17 @@ const headers = [
   {
     column: "statut",
     text: "Statut",
-    component: ({ statut }) => ({
+    component: ({
+      statut,
+      readByDreets,
+      readByDdets,
+      agrementRegionObtention,
+      departement,
+    }) => ({
       component: EigStatusBadge,
       statut: statut,
+      dreets: { isRead: readByDreets, territoireCode: agrementRegionObtention },
+      ddets: { isRead: readByDdets, territoireCode: departement },
     }),
     sort: true,
   },

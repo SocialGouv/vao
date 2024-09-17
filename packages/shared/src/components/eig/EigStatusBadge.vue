@@ -1,10 +1,25 @@
 <template>
   <DsfrBadge
+    v-if="props.statut === eigModel.Statuts.BROUILLON"
     :small="small"
-    :type="type"
+    type="new"
     :label="props.statut"
     class="pointer"
   />
+  <div v-else class="container">
+    <DsfrBadge
+      :small="small"
+      :type="dreets.isRead ? 'success' : 'new'"
+      :label="`${dreets.isRead ? 'Lu' : 'Non lu'} par la DREETS ${dreets.territoireCode}`"
+      class="pointer"
+    />
+    <DsfrBadge
+      :small="small"
+      :type="ddets.isRead ? 'success' : 'new'"
+      :label="`${ddets.isRead ? 'Lu' : 'Non lu'} par la DDETS  ${ddets.territoireCode}`"
+      class="pointer"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -18,18 +33,17 @@ const props = defineProps({
     validator: (value) => Object.values(eigModel.Statuts).includes(value),
   },
   small: { default: true, type: Boolean },
-});
-
-const type = computed(() => {
-  switch (props.statut) {
-    case eigModel.Statuts.BROUILLON:
-      return "new";
-    case eigModel.Statuts.ENVOYE:
-      return "success";
-    case eigModel.Statuts.LU:
-      return "info";
-    default:
-      return "union";
-  }
+  dreets: { type: Object, required: true },
+  ddets: { type: Object, required: true },
 });
 </script>
+
+<style scoped>
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  gap: 10px;
+}
+</style>

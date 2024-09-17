@@ -4,6 +4,7 @@ const canUpdateEig = require("../middlewares/can-update-or-delete-eig");
 const checkPermissionDeclarationSejourForEig = require("../middlewares/checkPermissionDeclarationSejourEig");
 const checkPermissionDeclarationSejour = require("../middlewares/checkPermissionDeclarationSejour");
 const checkPermissionEIG = require("../middlewares/checkPermissionEIG");
+const checkPermissionBOEIG = require("../middlewares/checkPermissionBOEIG");
 const boCheckRole = require("../middlewares/bo-check-role");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 
@@ -37,7 +38,13 @@ router.get(
 );
 router.get("/admin", boCheckJWT, boCheckRoleEig, eigController.getAdmin);
 router.get("/:id", checkJWT, checkPermissionEIG, eigController.getById);
-router.get("/admin/:id", boCheckJWT, boCheckRoleEig, eigController.getById);
+router.get(
+  "/admin/:id",
+  boCheckJWT,
+  boCheckRoleEig,
+  checkPermissionBOEIG,
+  eigController.getById,
+);
 router.post(
   "/",
   checkJWT,
