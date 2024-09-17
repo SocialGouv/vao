@@ -1,7 +1,7 @@
 <template>
   <DsfrAccordionsGroup
     v-model="expandedIndex"
-    @update:model-value="openModal(props.eigs[expandedIndex])"
+    @update:model-value="openModal(expandedIndex)"
   >
     <DsfrAccordion
       v-for="eig in eigs"
@@ -15,10 +15,10 @@
   <ValidationModal
     modal-ref="modal-eig-list-consult"
     name="consult-eig"
-    :opened="eigToRead != null"
+    :opened="modalDetails != null"
     title="Consultation d’un EIG"
     :on-close="closeEigModal"
-    :on-validate="() => readEig(eigToRead)"
+    :on-validate="() => readEig()"
     >Vous vous apprêtez à consulter un Evènement Indésirable Grave. Cette
     consultation enverra un email de notification à l’organisme.
   </ValidationModal>
@@ -41,14 +41,14 @@ const getTitle = (eig) =>
 
 const expandedIndex = ref(-1);
 
-const eigToRead = ref(null);
+const modalDetails = ref(null);
 
-const readEig = async (id) => {
+const readEig = async () => {
   try {
-    await eigStore.markAsRead(id);
-    expandedId.value = id;
+    await eigStore.markAsRead(modalDetails.value.eigId);
+    expandedIndex.value = modalDetails.value.index;
     emits("getEigs");
-    await eigStore.setCurrentEig(id);
+    await eigStore.setCurrentEig(modalDetails.value.eigId);
     closeEigModal();
   } catch (error) {
     toaster.error("Une erreur est survenue lors de la lecture de l'eig");
@@ -56,15 +56,20 @@ const readEig = async (id) => {
   }
 };
 
-const openModal = async (eig) => {
+const openModal = async (index) => {
+  const eig = props.eigs[index];
+  if (!eig) {
+    return;
+  }
+
   if (eig.statut === eigModel.Statuts.ENVOYE) {
-    eigToRead.value = eig.id;
+    expandedIndex.value = -1;
+    modalDetails.value = { eigId: eig.id, index };
   } else {
-    expandedId.value = eig.id;
     await eigStore.setCurrentEig(eig.id);
   }
 };
-const closeEigModal = () => (eigToRead.value = null);
+const closeEigModal = () => (modalDetails.value = null);
 </script>
 
 <style scoped></style>

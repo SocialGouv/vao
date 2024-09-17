@@ -689,7 +689,7 @@ function nextHash() {
   return navigateTo({
     path: `/demande-sejour/${sejourId.value}`,
     hash: "#" + sommaireOptions[index + 1],
-  "#synthese": () => titleStart.value + "étape 8 sur 8 | Synthèse" + titleEnd,
+    "#synthese": () => titleStart.value + "étape 8 sur 8 | Synthèse" + titleEnd,
   });
 }
 

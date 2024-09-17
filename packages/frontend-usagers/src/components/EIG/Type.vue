@@ -1,6 +1,6 @@
 <template>
   <dsfr-alert class="fr-mb-6v">
-    <Summary :eig="eigStore.currentEig" />
+    <Summary :eig="eigStore.currentEig" env="USAGER" />
   </dsfr-alert>
   <h6>Type d'événement</h6>
   <div class="fr-fieldset">
