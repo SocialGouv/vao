@@ -64,6 +64,8 @@ services:
         condition: service_started
       migrations:
         condition: service_completed_successfully
+      create-bucket:
+        condition: service_completed_successfully
     env_file:
       - ./.env
     environment:
@@ -83,7 +85,10 @@ services:
     volumes:
       - $PWD:/app:delegated
     depends_on:
-      - postgres
+      postgres:
+        condition: service_started
+      create-bucket:
+        condition: service_completed_successfully
     env_file:
       - ./.env
     user: 1000:1000
@@ -137,3 +142,23 @@ services:
       MINIO_ROOT_PASSWORD: ${S3_BUCKET_SECRET_KEY}
       MINIO_REGION: ${S3_BUCKET_REGION}
     command: server /data --console-address ":9001"
+
+  create-bucket:
+    image: alpine:3.15
+    volumes:
+      - ./create-bucket.sh:/app/create-bucket.sh
+    command: /bin/sh /app/create-bucket.sh
+    environment:
+      - S3_BUCKET_ACCESS_KEY=${S3_BUCKET_ACCESS_KEY}
+      - S3_BUCKET_SECRET_KEY=${S3_BUCKET_SECRET_KEY}
+      - S3_BUCKET_NAME=${S3_BUCKET_NAME}
+    depends_on:
+      - minio
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        apk add --no-cache curl && \
+        curl -O https://dl.min.io/client/mc/release/linux-amd64/mc && \
+        chmod +x mc && mv mc /usr/bin/mc && \
+        /bin/sh /app/create-bucket.sh
