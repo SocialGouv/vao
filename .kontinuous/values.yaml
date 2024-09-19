@@ -111,7 +111,8 @@ jobs:
       use: build
       with:
         imagePackage: migrations
-        context: packages/migrations
+        context: ./
+        dockerfile: packages/migrations/Dockerfile
 
     build-backend:
       use: build
