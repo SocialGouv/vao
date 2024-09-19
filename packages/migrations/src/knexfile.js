@@ -11,6 +11,7 @@ module.exports = {
     user: process.env.PG_VAO_SUPERUSER,
   },
   migrations: {
+    directory: "./migrations",
     tableName: "knex_migrations",
   },
 };

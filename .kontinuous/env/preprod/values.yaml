@@ -1,4 +1,11 @@
+global:
+  s3SecretName: vao-dev-app-access-key
+
 maildev: {}
+
+backend:
+  vars:
+    S3_BUCKET_ROOT_DIR: preprod/files
 
 pgweb:
   ~chart: pgweb

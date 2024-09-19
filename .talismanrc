@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 1e080a0322cbf88ef7699a975c648434a20b3c22b259d744a9ba1a003d671968
+  checksum: 5655ccafe29c738ceec05bb62c32804ef6ee92c4d3aab098dacc682b4d059e56
 - filename: .github/workflows/deactivate.yaml
   checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
 - filename: .github/workflows/preproduction.yaml
@@ -36,7 +36,7 @@ fileignoreconfig:
 - filename: .kontinuous/env/dev/templates/www-secret.sealed-secret.yaml
   checksum: 37195a30d1ce573ef302859dab7f512e48f0df384e7ec5a72cf834ee8321908c
 - filename: .kontinuous/env/dev/values.yaml
-  checksum: dba8f891ae5f985e1f32c0f6aabfaee0fda4a63976fd8356fc5fcfe96f084143
+  checksum: a3634b2a5b76b840b139c28b20635885a63b5663b72dbea38d628eb8ef7d3ba9
 - filename: .kontinuous/env/preprod/templates/api-entreprise.sealed.secret.yaml
   checksum: b316b242ceb79aa49aaa277ced74ea4dfd55054239c05c015836f1845942290e
 - filename: .kontinuous/env/preprod/templates/api-insee.sealed.secret.yaml
@@ -53,6 +53,8 @@ fileignoreconfig:
   checksum: 2414a3f1746ccd11cbb12b86dd2bb4a16cbc5bd6fe1450c308579972128176e6
 - filename: .kontinuous/env/preprod/templates/token.sealed.secret.yaml
   checksum: 4aaab89fff588b5c4098042f6c8945a65eb30c6384d3b3aa35225611fa005b7e
+- filename: .kontinuous/env/preprod/values.yaml
+  checksum: 90d1caf0237ac811e8d008d15c17c0e09ab9aaf253a317eaaa218c3fee9ef545
 - filename: .kontinuous/env/prod/templates/api-entreprise.sealed.secret.yaml
   checksum: 07c62e872bc95967cdc28800b92b8c9625efe9ad7ab2b43237ea3205e184858e
 - filename: .kontinuous/env/prod/templates/api-insee.sealed.secret.yaml
@@ -67,6 +69,8 @@ fileignoreconfig:
   checksum: 161db1ab1b716057d75b52c054e6ccdf8af90cd15b401dd5fe57dde64ef12297
 - filename: .kontinuous/env/prod/templates/token.sealed.secret.yaml
   checksum: 930f9289c37f13b2424b8c6ee0e7895689e922539f1c6fba8b2dd4c0ad45ba1e
+- filename: .kontinuous/env/prod/values.yaml
+  checksum: 0baab599dcabc7422dc37b1e4cc59a31dd4601313d2789f8104c763c19591408
 - filename: .kontinuous/preprod/templates/apientreprise.sealed.secret.yaml
   checksum: 6e1a0def42dc791767f353c6676e385b21eb2c9c9637a2b3cae3e7a33505c76a
 - filename: .kontinuous/preprod/templates/pg.sealed.secret.yaml
@@ -78,7 +82,7 @@ fileignoreconfig:
 - filename: .kontinuous/prod/templates/pg.sealed.secret.yaml
   checksum: ebaeaef58dff99ed0a70ace0cb1cfceb31c0656d921999e19ce183e2adc9431f
 - filename: .kontinuous/values.yaml
-  checksum: 40913e433609d86128443db129e4b97da472b3f0811f4db61024ab2943051ca4
+  checksum: ec9fd26e16478e9c89ff109bbb465a4a17aa7bf6158f3e1b97ccbe9ed5f005e7
 - filename: README.md
   checksum: 3627cd363d1cfc640df689ce74d5467e13707a2cc9c44b0bffaba14f217296e2
 - filename: _scripts/dev/local-node.dockerfile
@@ -86,7 +90,7 @@ fileignoreconfig:
 - filename: docker-compose.prod.yaml
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
-  checksum: a631fbf33a27c02362e3986094d5f674db98a3265c10c3f8aad9abad6dd43679
+  checksum: c882626f19ca66fb8ef048900b179923f959fea9fbff52b4913537bad55e795d
 - filename: e2e/register-login-organisateur.spec.ts
   checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
 - filename: package.json
@@ -125,6 +129,8 @@ fileignoreconfig:
   checksum: cb82592388d082e0a2c47ba57074816622f5a6466d3f23fa7292d297f7807414
 - filename: packages/backend/src/services/DemandeSejour.js
   checksum: 8a3761a96a2775987fea844c5e0d47c7c6f83ea2dfddfd878c30a90f7d9775cc
+- filename: packages/backend/src/services/Document.js
+  checksum: cb9b7a55df4edbc587f87f30a2ae6dd01fe72c29d9996e4f2cb4920b93e2c041
 - filename: packages/backend/src/services/User.js
   checksum: 6f3bcdcbe1d0e813fb032939778cd11cf0acf3ba7f2e25ca4707f114f31cfae0
 - filename: packages/backend/src/services/geo/Commune.js
@@ -239,6 +245,8 @@ fileignoreconfig:
   checksum: 1d3be5d2c46636eb90b74382447f23ffefc943ed963736ffab7556336d2df667
 - filename: packages/migrations/src/migrations/20240710125537_eig.js
   checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
+- filename: packages/migrations/src/migrations/20240918085236_migrate_files_to_minio.js
+  checksum: e064a2ee73c2ecb4da219f78c7458302383d264330cc7bf645239519f906f64f
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/PasswordInput.vue
