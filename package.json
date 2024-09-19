@@ -32,9 +32,6 @@
     "prettier": "^3.2.5"
   },
   "workspaces": [
-    "packages/frontend-bo",
-    "packages/frontend-usagers",
-    "packages/backend",
-    "packages/shared"
+    "packages/*"
   ]
 }
