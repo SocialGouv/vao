@@ -9,19 +9,6 @@
     <div class>
       <div class="fr-fieldset__element">
         <DsfrInputGroup
-          name="effectifPrevisionnel"
-          :label="`${DeclarationSejour.isPost8Jour(declarationStatut) ? 'Effectif des vacanciers' : 'Effectif prévisionnel des vacanciers'}`"
-          :label-visible="true"
-          :model-value="effectifPrevisionnel"
-          :readonly="!props.modifiable"
-          :is-valid="effectifPrevisionnelMeta.valid"
-          :error-message="effectifPrevisionnelErrorMessage"
-          placeholder="5"
-          @update:model-value="onEffectifPrevisionnelChange"
-        />
-      </div>
-      <div class="fr-fieldset__element">
-        <DsfrInputGroup
           name="effectifPrevisionnelHomme"
           label="Hommes"
           :label-visible="true"
@@ -44,6 +31,23 @@
           :error-message="effectifPrevisionnelFemmeErrorMessage"
           placeholder="5"
           @update:model-value="onEffectifPrevisionnelFemmeChange"
+        />
+      </div>
+      <div class="fr-fieldset__element">
+        <DsfrInputGroup
+          name="effectifPrevisionnel"
+          :label="`${DeclarationSejour.isPost8Jour(declarationStatut) ? 'Effectif des vacanciers' : 'Effectif prévisionnel des vacanciers'}`"
+          :label-visible="true"
+          :model-value="
+            effectifPrevisionnel ??
+            (parseInt(effectifPrevisionnelFemme, 10) || 0) +
+              (parseInt(effectifPrevisionnelHomme, 10) || 0)
+          "
+          :readonly="!props.modifiable"
+          :is-valid="effectifPrevisionnelMeta.valid"
+          :error-message="effectifPrevisionnelErrorMessage"
+          placeholder="5"
+          disabled
         />
       </div>
       <div class="fr-fieldset__element">
@@ -137,7 +141,6 @@ const { meta, values } = useForm({
 const {
   value: effectifPrevisionnel,
   errorMessage: effectifPrevisionnelErrorMessage,
-  handleChange: onEffectifPrevisionnelChange,
   meta: effectifPrevisionnelMeta,
 } = useField("effectifPrevisionnel");
 const {
@@ -169,7 +172,16 @@ function next() {
   }
   emit(
     "update",
-    { ...values, meta: meta.value.valid },
+    {
+      ...values,
+      meta: meta.value.valid,
+      effectifPrevisionnel:
+        effectifPrevisionnel.value ??
+        String(
+          (parseInt(effectifPrevisionnelHomme.value, 10) || 0) +
+            (parseInt(effectifPrevisionnelFemme.value, 10) || 0),
+        ),
+    },
     "informationsVacanciers",
   );
 }
