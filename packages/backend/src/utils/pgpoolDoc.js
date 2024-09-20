@@ -13,6 +13,9 @@ const configPool = {
   max: 15,
   password: config.postgres.document.password,
   port: config.postgres.port,
+  ssl: {
+    rejectUnauthorized: false, // to authorize CNPG self-signed certificates
+  },
   user: config.postgres.document.user,
 };
 

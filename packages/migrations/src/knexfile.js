@@ -8,6 +8,9 @@ module.exports = {
     host: process.env.POSTGRES_HOST,
     password: process.env.PG_VAO_SUPERPASSWORD,
     port: process.env.POSTGRES_PORT,
+    ssl: {
+      rejectUnauthorized: false, // to authorize CNPG self-signed certificates
+    },
     user: process.env.PG_VAO_SUPERUSER,
   },
   migrations: {
