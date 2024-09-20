@@ -38,6 +38,8 @@ backend:
     - secretRef:
         name: pg
     - secretRef:
+        name: app
+    - secretRef:
         name: api-entreprise
     - secretRef:
         name: api-insee
