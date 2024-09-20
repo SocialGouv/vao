@@ -38,7 +38,7 @@ backend:
     - secretRef:
         name: pg
     - secretRef:
-        name: app
+        name: pg-app
     - secretRef:
         name: api-entreprise
     - secretRef:
