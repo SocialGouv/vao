@@ -17,6 +17,21 @@ const ouiNon = {
 };
 
 const IPersonneMorale = {
+  complet: {
+    inputType: InputTypes.RADIO,
+    label: "Fiche Complète",
+    options: ouiNon,
+  },
+  createdAt: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de création",
+    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+  },
+  editedAt: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de dernière modification",
+    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+  },
   raisonSociale: {
     inputType: InputTypes.TEXT,
     label: "Raison sociale",
@@ -115,6 +130,21 @@ const IPersonneMorale = {
 };
 
 const IPersonnePhysique = {
+  complet: {
+    inputType: InputTypes.RADIO,
+    label: "Fiche Complète",
+    options: ouiNon,
+  },
+  createdAt: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de création",
+    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+  },
+  editedAt: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de dernière modification",
+    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+  },
   prenom: {
     inputType: InputTypes.TEXT,
     label: "Prénom",
