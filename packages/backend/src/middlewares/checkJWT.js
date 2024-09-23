@@ -16,7 +16,6 @@ async function checkJWT(req, res, next) {
   try {
     if (!cookies) {
       log.i("DONE - Aucun cookie présent");
-
       throw new AppError("Utilisateur non identifié", {
         name: "UnsignedUser",
         statusCode: 401,
