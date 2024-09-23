@@ -13,7 +13,7 @@ const configPool = {
   max: 15,
   password: config.postgres.document.password,
   port: config.postgres.port,
-  ssl: config.ssl,
+  ssl: config.postgres.ssl,
   user: config.postgres.document.user,
 };
 
