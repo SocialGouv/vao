@@ -9,12 +9,7 @@
       :initial-selected-index="0"
       @update:model-value="selectTab"
     >
-      <DsfrTabContent
-        panel-id="tab-content-0"
-        tab-id="tab-0"
-        :selected="selectedTabIndex === 0"
-        :asc="asc"
-      >
+      <DsfrTabContent panel-id="tab-content-0" tab-id="tab-0">
         <div
           v-if="
             organismeStore.organisme?.typeOrganisme ===
@@ -80,12 +75,49 @@
           />
         </div>
       </DsfrTabContent>
-      <DsfrTabContent
-        panel-id="tab-content-1"
-        tab-id="tab-1"
-        :selected="selectedTabIndex === 1"
-        :asc="asc"
-      >
+      <DsfrTabContent panel-id="tab-content-1" tab-id="tab-1">
+        <div v-if="organismeStore.organisme?.agrement">
+          <UtilsDisplayInput
+            :value="organismeStore.organisme.agrement.numero"
+            :input="displayInput.IAgrement.numero"
+          />
+          <UtilsDisplayInput
+            :value="organismeStore.organisme.agrement.dateObtention"
+            :input="displayInput.IAgrement.dateObtention"
+          />
+          <UtilsDisplayInput
+            :value="organismeStore.organisme.agrement.regionObtention"
+            :input="displayInput.IAgrement.regionObtention"
+          >
+            <template #default="{ value }">
+              {{ regionDisplay(value) }}
+            </template>
+          </UtilsDisplayInput>
+          <UtilsDisplayInput
+            :value="organismeStore.organisme.agrement.regionObtention"
+            :input="displayInput.IAgrement.regionObtention"
+          >
+            <template #default="{ value }">
+              {{ regionDisplay(value) }}
+            </template>
+          </UtilsDisplayInput>
+          <UtilsDisplayInput
+            :value="organismeStore.organisme.agrement.file"
+            :input="displayInput.IAgrement.file"
+          >
+            <template #default="{ value }">
+              <a
+                class="file-link"
+                :href="`${config.public.backendUrl}/documents/admin/${value.uuid}`"
+              >
+                {{ value.name }}
+              </a>
+              créé le {{ formatDate(value.createdAt) }}
+            </template>
+          </UtilsDisplayInput>
+        </div>
+      </DsfrTabContent>
+      <DsfrTabContent panel-id="tab-content-2" tab-id="tab-2">
         <DemandesSejourListe
           v-if="organismeName"
           :organisme="organismeName"
@@ -100,11 +132,15 @@ import dayjs from "dayjs";
 
 const organismeStore = useOrganismeStore();
 const userStore = useUserStore();
+const regionStore = useRegionStore();
 const route = useRoute();
+const config = useRuntimeConfig();
 const log = logger("pages/organismes/[[organismeId]]");
 definePageMeta({
   middleware: ["is-connected"],
 });
+
+regionStore.fetch();
 
 const asc = ref(true);
 const selectedTabIndex = ref(0);
@@ -122,6 +158,11 @@ const usersWithSiret = computed(() =>
   ]),
 );
 
+const formatDate = (date) => dayjs(date).format("DD/MM/YYYY");
+
+const regionDisplay = (region) =>
+  regionStore.regions.find(({ value }) => value === region)?.text;
+
 const tabTitles = [
   {
     title: "Informations",
@@ -129,9 +170,14 @@ const tabTitles = [
     panelId: "tab-content-0",
   },
   {
-    title: "Déclarations de séjour",
+    title: "Agrément",
     tabId: "tab-1",
     panelId: "tab-content-1",
+  },
+  {
+    title: "Déclarations de séjour",
+    tabId: "tab-2",
+    panelId: "tab-content-2",
   },
 ];
 
@@ -161,3 +207,9 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style scoped>
+.file-link {
+  margin-right: 2rem;
+}
+</style>

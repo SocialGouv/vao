@@ -1,7 +1,8 @@
-import { formatDate } from "date-fns/format";
+import dayjs from "dayjs";
 import { organisme } from "#imports";
 
 const InputTypes = {
+  RAW: "raw",
   TEXT: "text",
   RADIO: "radio",
   SELECT: "select",
@@ -474,12 +475,12 @@ const IHebergement = {
   dateDebut: {
     inputType: InputTypes.TO_FORMAT,
     label: "Date de début",
-    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
   },
   dateFin: {
     inputType: InputTypes.TO_FORMAT,
     label: "Date de fin",
-    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
   },
   nom: {
     inputType: InputTypes.TEXT,
@@ -645,6 +646,26 @@ const IHebergementInformationsTransport = {
   },
 };
 
+const IAgrement = {
+  numero: {
+    inputType: InputTypes.TEXT,
+    label: "Numéro d'agrément \"Vacances adaptées organisées",
+  },
+  dateObtention: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date d'obtention de l'agrément",
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
+  },
+  regionObtention: {
+    inputType: InputTypes.TEXT,
+    label: "Région d´obtention de l´agrément",
+  },
+  file: {
+    inputType: InputTypes.RAW,
+    label: "Copie de l´agrément",
+  },
+};
+
 export default {
   InputTypes,
   IPersonneMorale,
@@ -659,4 +680,5 @@ export default {
   IHebergementInformationLocaux,
   IHebergementInformationsTransport,
   IAttestation,
+  IAgrement,
 };
