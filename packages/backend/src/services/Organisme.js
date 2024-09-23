@@ -202,10 +202,12 @@ const query = {
     SELECT
       o.id AS "organismeId",
       o.type_organisme AS "typeOrganisme",
+      o.complet as "complet",
       o.personne_morale->>'siren' AS "siren",
       o.personne_morale->>'siret' AS "siret",
       o.personne_morale->>'raisonSociale' AS "raisonSociale",
       o.personne_physique->>'nomNaissance' AS "nomPersonnePhysique",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut <> 'BROUILLON' THEN 1 ELSE NULL END)::integer AS "sejourCount",
       CASE
         WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
         THEN
@@ -215,7 +217,8 @@ const query = {
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
-                'file', file
+                'file', file,
+                'yearObtention', EXTRACT(YEAR FROM a.date_obtention)
               ) AS "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
@@ -228,7 +231,8 @@ const query = {
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
-                'file', file
+                'file', file,
+                'yearObtention', EXTRACT(YEAR FROM a.date_obtention)
               ) AS "agrement"
           FROM front.agrements a
           WHERE organisme_id = o.id
@@ -237,7 +241,9 @@ const query = {
       END AS agrement,
       o.edited_at AS "editedAt"
     FROM front.organismes o
+    LEFT JOIN front.demande_sejour ds ON ds.organisme_id = o.id
     WHERE o.supprime = false
+    GROUP BY o.id;
 `,
   getNonAgrees: `
 SELECT
