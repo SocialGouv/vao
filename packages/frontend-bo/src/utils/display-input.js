@@ -26,12 +26,12 @@ const IPersonneMorale = {
   createdAt: {
     inputType: InputTypes.TO_FORMAT,
     label: "Date de création",
-    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
   },
   editedAt: {
     inputType: InputTypes.TO_FORMAT,
     label: "Date de dernière modification",
-    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
   },
   raisonSociale: {
     inputType: InputTypes.TEXT,
@@ -139,12 +139,12 @@ const IPersonnePhysique = {
   createdAt: {
     inputType: InputTypes.TO_FORMAT,
     label: "Date de création",
-    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
   },
   editedAt: {
     inputType: InputTypes.TO_FORMAT,
     label: "Date de dernière modification",
-    formatter: (value) => formatDate(value, "dd/MM/yyyy"),
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
   },
   prenom: {
     inputType: InputTypes.TEXT,
