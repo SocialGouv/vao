@@ -7,7 +7,10 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint --fix ./src",
-    "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js"
+    "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js",
+    "test": "jest --config=jest.config.js",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.649.0",
@@ -40,7 +43,8 @@
     "jest": "29.7.0",
     "lint-staged": "^15.2.2",
     "nodemon": "^3.1.0",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "supertest": "^6.3.1"
   },
   "lint-staged": {
     "src/**/*.{js,ts}": "npx eslint --cache --fix --max-warnings=0"
