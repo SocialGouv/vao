@@ -229,7 +229,6 @@ import { useDemandeSejourStore } from "~/stores/demande-sejour";
 import { DeclarationSejour } from "#imports";
 import { defineProps } from "vue";
 
-
 const NuxtLink = resolveComponent("NuxtLink");
 const DsfrBadge = resolveComponent("DsfrBadge");
 const DsfrButtonGroup = resolveComponent("DsfrButtonGroup");
@@ -240,7 +239,6 @@ const toaster = useToaster();
 const props = defineProps({
   display: { type: String, required: true },
 });
-
 
 definePageMeta({
   middleware: ["is-connected", "check-organisme-is-complet"],
@@ -640,7 +638,6 @@ const headersOrganisme = [
   },
 ];
 
-
 const headersMessagerie = [
   {
     column: "idFonctionnelle",
@@ -839,6 +836,5 @@ onMounted(async () => {
   demandeSejourStore.fetchDemandes({
     sortBy: defaultSort.value,
   });
-})
-
+});
 </script>

@@ -29,7 +29,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
           credentials: "include",
           params: {
             sortBy,
-          }
+          },
         });
         if (demandes) {
           log.i("fetchDemandes - DONE");
