@@ -192,7 +192,7 @@ const toaster = useToaster();
 const { apiStatus, resetApiStatut, setApiStatut } = useIsDownloading();
 const route = useRoute();
 
-const initialSelectedIndex = 0;
+const initialSelectedIndex = parseInt(route.query.defaultTabIndex);
 
 const chatRef = ref(null);
 const asc = ref(true);
@@ -252,9 +252,12 @@ onMounted(async () => {
   try {
     await demandeStore.setCurrentDemande(route.params.declarationId);
     demandeStore.fetchMessages(route.params.declarationId);
+    if (parseInt(route.query.defaultTabIndex) === 3)
+      await demandeStore.readMessages(route.params.declarationId);
   } catch (e) {
     navigateTo("/sejours");
   }
+
 });
 
 const isSendingMessage = ref(false);

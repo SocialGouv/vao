@@ -1,13 +1,14 @@
 <template>
   <div class="fr-container">
-    <h1 class="header">
+    <h1 v-if="props.display === displayType.Organisme" class="header">
       Liste des séjours déclarés
       {{ props.organisme ? "" : `(${sejourStore.stats?.global})` }}
     </h1>
+    <h1 v-else class="header">Liste des messages par déclaration</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <CardsNumber
-          v-if="!props.organisme"
+          v-if="!props.organisme && props.display === displayType.Organisme"
           :values="[
             {
               title: 'Déclarations transmises à traiter',
@@ -20,6 +21,29 @@
             {
               title: 'Déclarations 8 jours à traiter',
               value: sejourStore.stats?.transmis8J || 0,
+            },
+          ]"
+        />
+        <CardsNumber
+          v-if="!props.organisme && props.display === displayType.Messagerie"
+          :values="[
+            {
+              title: 'Messages non lus',
+              value: filteredDemandes.filter(
+                (d) => d.messageEtat === messageEtat.etat.NON_LU,
+              ).length,
+            },
+            {
+              title: 'Messages lus',
+              value: filteredDemandes.filter(
+                (d) => d.messageEtat === messageEtat.etat.LU,
+              ).length,
+            },
+            {
+              title: 'Messages répondus',
+              value: filteredDemandes.filter(
+                (d) => d.messageEtat === messageEtat.etat.REPONDU,
+              ).length,
             },
           ]"
         />
@@ -71,9 +95,13 @@
               </div>
             </div>
             <div
+              v-if="props.display === displayType.Messagerie"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
+              <div
+                v-if="props.display === displayType.Organisme"
+                class="fr-input-group"
+              >
                 <Multiselect
                   :model-value="searchState.statuts"
                   :hide-selected="true"
@@ -95,7 +123,7 @@
               </div>
             </div>
             <div
-              v-if="!props.organisme"
+              v-if="!props.organisme && props.display === displayType.Organisme"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
@@ -111,7 +139,10 @@
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
+              <div
+                v-if="props.display === displayType.Organisme"
+                class="fr-input-group"
+              >
                 <DsfrButton
                   v-if="!props.organisme"
                   type="button"
@@ -127,7 +158,7 @@
     </div>
     <TableWithBackendPagination
       :headers="headers"
-      :data="sejourStore.demandes"
+      :data="filteredDemandes"
       :total-items="sejourStore.total"
       :current-page="currentPageState"
       :sort-by="sortState.sortBy"
@@ -158,11 +189,17 @@ import {
   MultiSelectOption,
   TableWithBackendPagination,
   ValidationModal,
+  MessageHover,
+  MessageEtat,
 } from "@vao/shared";
+import dayjs from "dayjs";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
+import { defineProps } from "vue";
+import messageEtat from "@vao/shared/src/utils/messageUtils";
+
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],
@@ -171,6 +208,7 @@ definePageMeta({
 
 const props = defineProps({
   organisme: { type: String, required: false, default: null },
+  display: { type: String, required: true },
 });
 
 const log = logger("pages/sejours");
@@ -180,17 +218,24 @@ const toaster = useToaster();
 const sejourStore = useDemandeSejourStore();
 const demandeSejour = useDemandeSejourStore();
 const userStore = useUserStore();
-
+const filteredDemandes = computed(() =>
+  props.display === displayType.Messagerie
+    ? sejourStore.demandes.filter((d) => d.message)
+    : sejourStore.demandes,
+);
+const defaultSort = [];
 const defaultLimit = 10;
 const defaultOffset = 0;
 
 const sortState = ref({});
+
 const currentPageState = ref(defaultOffset);
 const limitState = ref(defaultLimit);
 
 const route = useRoute();
 
 const parseBoolean = (value) => value === "true";
+const displayType = { Messagerie: "Messagerie", Organisme: "Organisme" };
 
 const status = computed(() => [
   demandesSejours.statuts.TRANSMISE,
@@ -249,6 +294,21 @@ const searchParams = computed(() =>
   }, {}),
 );
 
+sejourStore.currentDemande = null;
+try {
+  await sejourStore.fetchDemandes({
+    sortBy: defaultSort,
+    limit: defaultLimit,
+    offset: defaultOffset,
+    search: searchParams.value,
+  });
+} catch (error) {
+  toaster.error({
+    titleTag: "h2",
+    description: "Une erreur est survenue lors de la récupération des demandes",
+  });
+}
+
 watch(
   [sortState, limitState, currentPageState],
   async ([sortValue, limitValue, currentPageValue]) => {
@@ -305,7 +365,7 @@ const onStatutSelect = (value) => {
   }
 };
 
-const headers = [
+const headersOrganisme = [
   {
     column: "idFonctionnelle",
     text: "Numéro de déclaration",
@@ -350,6 +410,71 @@ const headers = [
   },
 ];
 
+const headersMessagerie = [
+  {
+    column: "idFonctionnelle",
+    text: "Numéro de déclaration",
+    sort: true,
+  },
+  {
+    column: "libelle",
+    text: "Libelle",
+    sort: true,
+  },
+  {
+    column: "demandeSejourStatut",
+    text: "Statut",
+    component: ({ statut }) => ({
+      component: DemandeStatusBadge,
+      statut: statut,
+    }),
+  },
+  {
+    column: "demandeSejourOrganisme",
+    text: "Organisme",
+    format: (value) => demandesSejours.getOrganismeTitle(value),
+  },
+  {
+    column: "dateDebut",
+    text: "Dates (Début-fin)",
+    format: (value) => demandesSejours.getDateDebutFin(value),
+    sort: true,
+  },
+  {
+    column: "messageCreatedAt",
+    sorter: "messageCreatedAt",
+    format: (value) =>
+      value.messageLastAt
+        ? dayjs(value.messageLastAt).format("DD/MM/YYYY HH:mm")
+        : "",
+    text: "Date dernier message",
+  },
+  {
+    column: "message",
+    text: "Dernier message",
+    component: ({ message }) => ({
+      component: MessageHover,
+      content: message,
+    }),
+  },
+  {
+    column: "messageEtat",
+    text: "Message",
+    component: ({ messageEtat }) => ({
+      component: MessageEtat,
+      etat: messageEtat,
+    }),
+  },
+];
+
+const headers = computed(() =>
+  props.display === displayType.Organisme ? headersOrganisme : headersMessagerie,
+);
+
+const tabIndexSejour = computed(() =>
+  props.display === displayType.Messagerie ? 3 : 0,
+);
+
 const declarationAPrendreEnCharge = ref(null);
 
 const closePrendEnChargeModal = () =>
@@ -364,7 +489,10 @@ const navigate = (state) => {
   ) {
     declarationAPrendreEnCharge.value = state;
   } else {
-    navigateTo(`/sejours/${state.declarationId}`);
+    navigateTo({
+      path: `/sejours/${state.declarationId}`,
+      query: { defaultTabIndex: `${tabIndexSejour.value}` },
+    });
   }
 };
 const validatePriseEnCharge = async () => {
@@ -375,7 +503,10 @@ const validatePriseEnCharge = async () => {
       credentials: "include",
     });
     declarationAPrendreEnCharge.value = null;
-    navigateTo(`/sejours/${declarationId}`);
+    navigateTo({
+      path: `/sejours/${state.declarationId}`,
+      query: { defaultTabIndex: `${tabIndexSejour.value}` },
+    });
   } catch (error) {
     log.w("prend en charge", error);
     toaster.error({
@@ -402,6 +533,14 @@ const getCsv = async () => {
   const response = await demandeSejour.exportSejours();
   exportCsv(response, "sejours.csv");
 };
+
+onMounted(async () => {
+  if (props.display === displayType.Messagerie)
+    sortState.value = {
+      sortBy: "messageOrdreEtat",
+      sortDirection: "ASC",
+    };
+});
 </script>
 
 <style scoped>

@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container">
-    <DemandesSejourListe :display="'Organisme'" />
+    <DemandesSejourListe :display="'Messagerie'" />
   </div>
 </template>
 

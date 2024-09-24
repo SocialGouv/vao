@@ -50,6 +50,10 @@ export const useMenuNavItems = () => {
                   text: "Mes déclarations",
                   to: "/sejours",
                 },
+                {
+                  text: "Messagerie",
+                  to: "/messagerie",
+                },
               ],
             },
           ]
