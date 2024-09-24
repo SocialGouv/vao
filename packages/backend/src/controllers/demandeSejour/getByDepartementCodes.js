@@ -44,6 +44,7 @@ module.exports = async function getByDepartementCodes(req, res, next) {
               "organismeId",
               "organisme",
               "idFonctionnelle",
+              "messageOrdreEtat",
             ])
             .nullable(),
           sortDirection: yup.string().oneOf(["ASC", "DESC"]).nullable(),

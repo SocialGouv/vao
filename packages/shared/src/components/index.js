@@ -11,7 +11,8 @@ import CardNumber from "./CardNumber.vue";
 import PasswordInput from "./PasswordInput.vue";
 import TableFull from "./Table/TableFull.vue";
 import MultiSelectOption from "./MultiSelectOption.vue";
-
+import MessageHover from "./messages/MessageHover.vue";
+import MessageEtat from "./messages/MessageEtat.vue";
 export {
   FileUpload,
   Chat,
@@ -26,4 +27,6 @@ export {
   PasswordInput,
   TableFull,
   MultiSelectOption,
+  MessageHover,
+  MessageEtat,
 };

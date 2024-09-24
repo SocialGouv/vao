@@ -257,19 +257,34 @@ useHead({
     },
   ],
 });
-const links = [
-  {
-    to: "/",
-    text: "Accueil",
-  },
-  {
-    to: "/demande-sejour/liste",
-    text: "Liste des déclarations de séjour",
-  },
-  {
-    text: "Ma déclaration de séjour",
-  },
-];
+const links =
+  parseInt(route.query?.defaultTabIndex) === 0
+    ? [
+        {
+          to: "/",
+          text: "Accueil",
+        },
+        {
+          to: "/demande-sejour/liste",
+          text: "Liste des déclarations de séjour",
+        },
+        {
+          text: "Ma déclaration de séjour",
+        },
+      ]
+    : [
+        {
+          to: "/",
+          text: "Accueil",
+        },
+        {
+          to: "/messagerie",
+          text: "Liste des messages par déclaration",
+        },
+        {
+          text: "Messages de ma déclaration de séjour",
+        },
+      ];
 
 const log = logger("pages/demande-sejour/[[declarationId]]");
 
@@ -279,7 +294,9 @@ const demandeCourante = computed(() => {
   return demandeSejourStore.demandeCourante;
 });
 
-const initialSelectedIndex = 0;
+const initialSelectedIndex = parseInt(
+  route.query?.defaultTabIndex ? route.query.defaultTabIndex : 0,
+);
 
 const chatRef = ref(null);
 const asc = ref(true);
@@ -680,6 +697,11 @@ function nextHash() {
     hash: "#" + sommaireOptions[index + 1],
   });
 }
+
+onMounted(async () => {
+  if (parseInt(route.query?.defaultTabIndex) === 3)
+    await demandeSejourStore.readMessages(route.params.declarationId);
+});
 </script>
 
 <style scoped>

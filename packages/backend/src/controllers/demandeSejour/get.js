@@ -10,7 +10,11 @@ module.exports = async function get(req, res, next) {
   const { decoded } = req;
   const { id: userId } = decoded;
   log.d("userId", { userId });
+  const { sortBy } = req.query;
 
+  const params = {
+    sortBy,
+  };
   try {
     const organisme = await Organisme.getOne({
       use_id: userId,
@@ -24,7 +28,7 @@ module.exports = async function get(req, res, next) {
     } else {
       organismesId.push(organisme.organismeId);
     }
-    const demandes = await DemandeSejour.get(organismesId);
+    const demandes = await DemandeSejour.get(params, organismesId);
     log.d(demandes);
     return res.status(200).json({ demandes });
   } catch (error) {
