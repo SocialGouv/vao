@@ -257,7 +257,6 @@ onMounted(async () => {
   } catch (e) {
     navigateTo("/sejours");
   }
-
 });
 
 const isSendingMessage = ref(false);

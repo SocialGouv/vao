@@ -200,7 +200,6 @@ import "@vueform/multiselect/themes/default.css";
 import { defineProps } from "vue";
 import messageEtat from "@vao/shared/src/utils/messageUtils";
 
-
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
@@ -468,7 +467,9 @@ const headersMessagerie = [
 ];
 
 const headers = computed(() =>
-  props.display === displayType.Organisme ? headersOrganisme : headersMessagerie,
+  props.display === displayType.Organisme
+    ? headersOrganisme
+    : headersMessagerie,
 );
 
 const tabIndexSejour = computed(() =>

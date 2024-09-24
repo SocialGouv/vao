@@ -268,7 +268,7 @@ LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm
 WHERE
   o.id IN ($1)
 `,
-      [organismeIds],
+    [organismeIds],
   ],
   getAdminStats: (departements, territoireCode) => [
     `
