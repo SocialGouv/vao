@@ -109,9 +109,9 @@ module.exports = async function markAsRead(req, res, next) {
         MailUtils.bo.eig.sendMarkAsRead({
           dest: destinataires,
           eig,
-          typeReader,
           territoireCode,
           territoireName: territoireName.text,
+          typeReader,
         }),
       ));
   } catch (error) {

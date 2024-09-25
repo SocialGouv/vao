@@ -8,11 +8,6 @@ const {
 const personne = require("./parts/personne.js");
 
 const selectionSejourSchema = (dateDebut, dateFin) => ({
-  declarationId: yup
-    .number()
-    .integer("Ce champ doit contenir un nombre entier")
-    .required(),
-  departement: yup.string().required("ce champ est obligatoire"),
   date: yup
     .date()
     .typeError("La date n'est pas au format attendu")
@@ -24,7 +19,12 @@ const selectionSejourSchema = (dateDebut, dateFin) => ({
       dateFin,
       "La date de l'incident doit être inférieure à la date de fin de séjour",
     )
-    .required(),
+    .required("Ce champ est obligatoire"),
+  declarationId: yup
+    .number()
+    .integer("Ce champ doit contenir un nombre entier")
+    .required("Ce champ est obligatoire"),
+  departement: yup.string().required("Ce champ est obligatoire"),
 });
 
 const eigTypeBase = yup
@@ -44,7 +44,7 @@ const eigTypeBase = yup
         (type) => isTypeActive(type),
       ),
     ],
-    "la valeur insérée ne fait pas partie de la liste des possibles",
+    "La valeur insérée ne fait pas partie de la liste des possibles",
   )
   .required();
 
@@ -96,7 +96,9 @@ const eigTypesSchemaCRUD = {
       },
       otherwise: (precision) => precision.nullable().strip(),
       then: (precision) =>
-        precision.min(5, "Ce champ est obligatoire").required(),
+        precision
+          .required("Ce champ est obligatoire")
+          .min(5, "Ce champ doit faire au moins 5 caractères"),
     }),
   santeAutrePrecision: yup
     .string()
@@ -107,7 +109,9 @@ const eigTypesSchemaCRUD = {
       },
       otherwise: (precision) => precision.nullable().strip(),
       then: (precision) =>
-        precision.min(5, "Ce champ est obligatoire").required(),
+        precision
+          .required("Ce champ est obligatoire")
+          .min(5, "Ce champ doit faire au moins 5 caractères"),
     }),
   securiteAutrePrecision: yup
     .string()
@@ -118,9 +122,15 @@ const eigTypesSchemaCRUD = {
       },
       otherwise: (precision) => precision.nullable().strip(),
       then: (precision) =>
-        precision.min(5, "Ce champ est obligatoire").required(),
+        precision
+          .required("Ce champ est obligatoire")
+          .min(5, "Ce champ doit faire au moins 5 caractères"),
     }),
-  types: yup.array().of(eigTypeBase).min(1).required(),
+  types: yup
+    .array()
+    .of(eigTypeBase)
+    .min(1)
+    .required("Ce champ est obligatoire"),
   victimesAutrePrecision: yup
     .string()
     .nullable()
@@ -130,24 +140,29 @@ const eigTypesSchemaCRUD = {
       },
       otherwise: (precision) => precision.nullable().strip(),
       then: (precision) =>
-        precision.min(5, "Ce champ est obligatoire").required(),
+        precision
+          .required("Ce champ est obligatoire")
+          .min(5, "Ce champ doit faire au moins 5 caractères"),
     }),
 };
 
 const informationsGeneralesSchema = {
-  deroulement: yup.string().min(5, "Ce champ est obligatoire").required(),
+  deroulement: yup
+    .string()
+    .min(5, "Ce champ doit faire au moins 5 caractères")
+    .required("Ce champ est obligatoire"),
   dispositionInformations: yup
     .string()
-    .min(5, "Ce champ est obligatoire")
-    .required(),
+    .min(5, "Ce champ doit faire au moins 5 caractères")
+    .required("Ce champ est obligatoire"),
   dispositionRemediation: yup
     .string()
-    .min(5, "Ce champ est obligatoire")
-    .required(),
+    .min(5, "Ce champ doit faire au moins 5 caractères")
+    .required("Ce champ est obligatoire"),
   dispositionVictimes: yup
     .string()
-    .min(5, "Ce champ est obligatoire")
-    .required(),
+    .min(5, "Ce champ doit faire au moins 5 caractères")
+    .required("Ce champ est obligatoire"),
   personnel: yup
     .array()
     .of(
@@ -165,7 +180,7 @@ const informationsGeneralesSchema = {
       ),
     )
     .min(1, "Vous devez saisir au moins 1 personnel")
-    .required(),
+    .required("Ce champ est obligatoire"),
 };
 
 const emailAutresDestinatairesSchema = {
@@ -185,6 +200,7 @@ module.exports.selectionSejourSchema = selectionSejourSchema;
 module.exports.eigTypesSchema = eigTypesSchemaCRUD;
 module.exports.informationsGeneralesSchema = informationsGeneralesSchema;
 module.exports.syntheseSchema = syntheseSchema;
+module.exports.emailAutresDestinatairesSchema = emailAutresDestinatairesSchema;
 
 module.exports.updateSchemaAdapteur = (type, dateRange) => {
   switch (type) {
