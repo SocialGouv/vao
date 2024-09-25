@@ -520,7 +520,7 @@ module.exports = {
             {
               p: [
                 `Bonjour`,
-                `L’organisme ${orgName}, dont l’agrément vacances adaptées organisées (VAO) a été délivré dans votre région, a déclaré un évènement indésirable grave qui s’est produit le ${dayjs(eig.date).format("DD/MM/YYYY")}, lors d’un séjour organisé dans  la commune de ${communeName} le département de ${departementName}.`,
+                `L’organisme ${orgName}, dont l’agrément vacances adaptées organisées (VAO) a été délivré dans votre région, a déclaré un évènement indésirable grave qui s’est produit le ${dayjs(eig.date).format("DD/MM/YYYY")}, lors d’un séjour organisé dans  la commune de ${communeName} dans le département de ${departementName}.`,
                 `Référence de la déclaration de séjour : ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
                 `Le type d'évènement déclaré est :`,
                 generateTypes(eig),

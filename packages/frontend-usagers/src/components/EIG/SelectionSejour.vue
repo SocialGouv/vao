@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h6>Sélectionner un séjour</h6>
+    <h5>Sélectionner un séjour</h5>
     <dsfr-alert v-if="eigStore.currentEig" class="fr-mb-6v">
       <Summary :eig="eigStore.currentEig" env="USAGER" />
     </dsfr-alert>
@@ -44,7 +44,7 @@
       <div class="fr-fieldset__element">
         <DsfrSelect
           v-if="!!selectedDemande"
-          label="Sélection du département ou a eu lieu l'EIG"
+          label="Sélection du département où a eu lieu l'incident"
           name="departements"
           :close-on-select="true"
           :options="departementsOptions"

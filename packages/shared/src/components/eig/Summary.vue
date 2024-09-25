@@ -37,7 +37,7 @@ const currentEigValues = computed(() => [
     value: props.eig?.idFonctionnelle ?? "",
   },
   {
-    label: "Département ou a eu lieu l'EIG",
+    label: "Département où a eu lieu l'incident",
     value: props.eig?.departement ?? "",
   },
   {
@@ -68,11 +68,15 @@ const currentEigValues = computed(() => [
     value: props.eig?.adresses ?? [],
   },
   {
-    label: "type d'événements",
+    label: "type d'événement",
     value:
       props.eig?.types?.map(
         (t) => mapEigToLabel[t.type] + (t.precision ? " : " + t.precision : ""),
       ) ?? [],
+  },
+  {
+    label: "Personnel présent lors de l'évènement",
+    value: props.eig?.personnel?.map((p) => `${p.prenom} ${p.nom}`) ?? [],
   },
 ]);
 </script>

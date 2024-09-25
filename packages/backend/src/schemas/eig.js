@@ -1,5 +1,10 @@
 const yup = require("yup");
-const { UpdateTypes, Types, Categorie } = require("../helpers/eig");
+const {
+  UpdateTypes,
+  Types,
+  Categorie,
+  isTypeActive,
+} = require("../helpers/eig");
 const personne = require("./parts/personne.js");
 
 const selectionSejourSchema = (dateDebut, dateFin) => ({
@@ -26,10 +31,18 @@ const eigTypeBase = yup
   .string()
   .oneOf(
     [
-      ...Object.values(Types[Categorie.VICTIMES]),
-      ...Object.values(Types[Categorie.SECURITE]),
-      ...Object.values(Types[Categorie.SANTE]),
-      ...Object.values(Types[Categorie.FONCTIONNEMENT_ORGANISME]),
+      ...Object.values(Types[Categorie.VICTIMES]).filter((type) =>
+        isTypeActive(type),
+      ),
+      ...Object.values(Types[Categorie.SECURITE]).filter((type) =>
+        isTypeActive(type),
+      ),
+      ...Object.values(Types[Categorie.SANTE]).filter((type) =>
+        isTypeActive(type),
+      ),
+      ...Object.values(Types[Categorie.FONCTIONNEMENT_ORGANISME]).filter(
+        (type) => isTypeActive(type),
+      ),
     ],
     "la valeur insérée ne fait pas partie de la liste des possibles",
   )
