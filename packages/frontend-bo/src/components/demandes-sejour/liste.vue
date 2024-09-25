@@ -505,7 +505,7 @@ const validatePriseEnCharge = async () => {
     });
     declarationAPrendreEnCharge.value = null;
     navigateTo({
-      path: `/sejours/${state.declarationId}`,
+      path: `/sejours/${declarationId}`,
       query: { defaultTabIndex: `${tabIndexSejour.value}` },
     });
   } catch (error) {
