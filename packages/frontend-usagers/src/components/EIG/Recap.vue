@@ -65,7 +65,7 @@
   <article>{{ eigStore.currentEig.dispositionInformations }}</article>
   <hr />
   <article>
-    La déclaration de cet EIG sera envoyé à :
+    La déclaration de cet incident sera envoyé à :
     <h6 class="fr-mb-0">DDETS</h6>
     <ul class="fr-mt-0 fr-mb-4w">
       <li v-for="email in eigStore.currentEig.emailsDDETS" :key="email">

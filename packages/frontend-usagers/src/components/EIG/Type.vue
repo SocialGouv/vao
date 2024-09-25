@@ -2,7 +2,7 @@
   <dsfr-alert class="fr-mb-6v">
     <Summary :eig="eigStore.currentEig" env="USAGER" />
   </dsfr-alert>
-  <h6>Type d'événement</h6>
+  <h5>Type d'événement</h5>
   <fieldset class="fr-fieldset">
     <div class="fr-fieldset__element">
       <DsfrAccordionsGroup v-model="expandedIndex">
@@ -173,6 +173,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { eigModel, eigSchema, Summary } from "@vao/shared";
 import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
+import { isTypeActive } from "@vao/shared/src/models";
 
 const emit = defineEmits(["previous", "next", "update"]);
 
@@ -242,28 +243,36 @@ const {
 const types = {
   [eigModel.Categorie.VICTIMES]: Object.values(
     eigModel.Types[eigModel.Categorie.VICTIMES],
-  ).map((t) => ({
-    label: mapEigToLabel[t],
-    name: t,
-  })),
+  )
+    .filter((t) => isTypeActive(t))
+    .map((t) => ({
+      label: mapEigToLabel[t],
+      name: t,
+    })),
   [eigModel.Categorie.SANTE]: Object.values(
     eigModel.Types[eigModel.Categorie.SANTE],
-  ).map((t) => ({
-    label: mapEigToLabel[t],
-    name: t,
-  })),
+  )
+    .filter((t) => isTypeActive(t))
+    .map((t) => ({
+      label: mapEigToLabel[t],
+      name: t,
+    })),
   [eigModel.Categorie.SECURITE]: Object.values(
     eigModel.Types[eigModel.Categorie.SECURITE],
-  ).map((t) => ({
-    label: mapEigToLabel[t],
-    name: t,
-  })),
+  )
+    .filter((t) => isTypeActive(t))
+    .map((t) => ({
+      label: mapEigToLabel[t],
+      name: t,
+    })),
   [eigModel.Categorie.FONCTIONNEMENT_ORGANISME]: Object.values(
     eigModel.Types[eigModel.Categorie.FONCTIONNEMENT_ORGANISME],
-  ).map((t) => ({
-    label: mapEigToLabel[t],
-    name: t,
-  })),
+  )
+    .filter((t) => isTypeActive(t))
+    .map((t) => ({
+      label: mapEigToLabel[t],
+      name: t,
+    })),
 };
 
 const expandedIndex = ref(-1);

@@ -143,3 +143,7 @@ module.exports.mustMarkAsRead = (territoireCode, eig) => {
       ))
   );
 };
+
+module.exports.isTypeActive = (type) => {
+  return ![Types[Categorie.VICTIMES].VIOLS].includes(type);
+};
