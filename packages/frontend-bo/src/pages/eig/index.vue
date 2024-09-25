@@ -316,7 +316,7 @@ const headers = [
   },
   {
     column: "dateDepot",
-    text: "Dates de depot",
+    text: "Dates de dépôt",
     format: (value) => dayjs(value.dateDepot).format("DD/MM/YYYY"),
     sort: true,
   },

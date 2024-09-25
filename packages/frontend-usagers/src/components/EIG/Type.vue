@@ -173,6 +173,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { eigModel, eigSchema, Summary } from "@vao/shared";
 import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
+import { isTypeActive } from "@vao/shared/src/models";
 
 const emit = defineEmits(["previous", "next", "update"]);
 
@@ -242,32 +243,40 @@ const {
 const types = {
   [eigModel.Categorie.VICTIMES]: Object.values(
     eigModel.Types[eigModel.Categorie.VICTIMES],
-  ).map((t) => ({
-    label: mapEigToLabel[t],
-    name: t,
-    value: t,
-  })),
+  )
+    .filter((t) => isTypeActive(t))
+    .map((t) => ({
+      label: mapEigToLabel[t],
+      name: t,
+      value: t,
+    })),
   [eigModel.Categorie.SANTE]: Object.values(
     eigModel.Types[eigModel.Categorie.SANTE],
-  ).map((t) => ({
-    label: mapEigToLabel[t],
-    name: t,
-    value: t,
-  })),
+  )
+    .filter((t) => isTypeActive(t))
+    .map((t) => ({
+      label: mapEigToLabel[t],
+      name: t,
+      value: t,
+    })),
   [eigModel.Categorie.SECURITE]: Object.values(
     eigModel.Types[eigModel.Categorie.SECURITE],
-  ).map((t) => ({
-    label: mapEigToLabel[t],
-    name: t,
-    value: t,
-  })),
+  )
+    .filter((t) => isTypeActive(t))
+    .map((t) => ({
+      label: mapEigToLabel[t],
+      name: t,
+      value: t,
+    })),
   [eigModel.Categorie.FONCTIONNEMENT_ORGANISME]: Object.values(
     eigModel.Types[eigModel.Categorie.FONCTIONNEMENT_ORGANISME],
-  ).map((t) => ({
-    label: mapEigToLabel[t],
-    name: t,
-    value: t,
-  })),
+  )
+    .filter((t) => isTypeActive(t))
+    .map((t) => ({
+      label: mapEigToLabel[t],
+      name: t,
+      value: t,
+    })),
 };
 
 const expandedIndex = ref(-1);
