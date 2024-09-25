@@ -1,10 +1,10 @@
-name: Lint and format
+name: Lint, format and test
 
 on:
   push:
 
 jobs:
-  lint-and-format:
+  lint-format-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,3 +17,5 @@ jobs:
         run: yarn --immutable
       - name: Run the linter
         run: yarn lint:all
+      - name: Run backend tests
+        run: yarn workspace @vao/backend test
