@@ -94,33 +94,33 @@ module.exports = async (req, res, next) => {
     emailsDDETS?.length &&
       (await Send(
         MailUtils.bo.eig.sendToDDETS({
-          dest: emailsDDETS,
-          departementName,
-          eig,
-          declarationSejour: ds,
-          regionName,
           communeName,
+          declarationSejour: ds,
+          departementName,
+          dest: emailsDDETS,
+          eig,
+          regionName,
         }),
       ));
 
     emailsDREETS?.length > 0 &&
       (await Send(
         MailUtils.bo.eig.sendToDREETS({
+          communeName,
+          declarationSejour: ds,
           departementName,
           dest: emailsDREETS,
           eig,
-          declarationSejour: ds,
-          communeName,
         }),
       ));
 
     emailsOrganisateur?.length > 0 &&
       (await Send(
         MailUtils.bo.eig.sendToOrganisme({
+          declarationSejour: ds,
           dest: [...emailsOrganisateur, ds.responsableSejour.email],
           eig,
           userName,
-          declarationSejour: ds,
         }),
       ));
 

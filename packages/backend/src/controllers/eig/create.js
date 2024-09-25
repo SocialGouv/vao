@@ -13,7 +13,7 @@ module.exports = async (req, res, next) => {
   log.i("IN", { body: req.body });
   const { parametre } = req.body;
 
-  if (!parametre.declarationId) {
+  if (!parametre?.declarationId) {
     return res.status(400).send({
       errors: "Le champs declarationId est obligatoire",
       name: "UnexpectedError",

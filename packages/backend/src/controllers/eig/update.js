@@ -56,9 +56,9 @@ module.exports = async (req, res, next) => {
     switch (type) {
       case UpdateTypes.DECLARATION_SEJOUR:
         updatedEigId = await eigService.updateDS(eigId, {
+          date: eig.date,
           declarationId: eig.declarationId,
           departement: eig.departement,
-          date: eig.date,
         });
         break;
       case UpdateTypes.TYPE_EVENEMENT:

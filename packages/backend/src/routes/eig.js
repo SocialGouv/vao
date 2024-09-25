@@ -78,7 +78,6 @@ router.delete(
 router.post(
   "/admin/:id/mark-as-read",
   boCheckJWT,
-  getDepartements,
   boCheckRoleEig,
   eigController.markAsRead,
 );
