@@ -102,7 +102,7 @@
             :is-valid="emailMeta.valid"
             :error-message="emailErrorMessage"
             placeholder=""
-            hint="L'adresse de courriel doit être valide"
+            hint="L'adresse de courriel doit être valide. Exemple: nom@domaine.fr"
             @update:model-value="onEmailChange"
           />
         </div>

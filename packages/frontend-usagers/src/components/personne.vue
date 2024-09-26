@@ -12,7 +12,7 @@
             :is-valid="nomMeta.valid"
             :error-message="nomErrorMessage"
             placeholder=""
-            hint="nom d'usage"
+            hint="Saisissez le nom d'usage. Exemple: Dupont"
             @update:model-value="onNomChange"
           />
         </div>
@@ -28,7 +28,7 @@
             :is-valid="prenomMeta.valid"
             :error-message="prenomErrorMessage"
             placeholder=""
-            hint="Saisissez le premier prénom"
+            hint="Saisissez le premier prénom. Exemple: Dupont"
             @update:model-value="onPrenomChange"
           />
         </div>
@@ -79,7 +79,7 @@
             :is-valid="fonctionMeta.valid"
             :error-message="fonctionErrorMessage"
             placeholder=""
-            hint="Fonction du représentant légal au sein de l'organisation"
+            hint="Fonction du représentant légal au sein de l'organisation. Exemple: directeur"
             @update:model-value="onFonctionChange"
           />
         </div>
@@ -141,7 +141,7 @@
               :is-valid="emailMeta.valid"
               :error-message="emailErrorMessage"
               placeholder=""
-              hint="Adresse courriel de la personne"
+              hint="Adresse courriel de la personne. Exemple: nom@domaine.fr"
               @update:model-value="onEmailChange"
             />
           </div>

@@ -52,7 +52,7 @@
         <form>
           <div class="fr-fieldset">
             <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
@@ -66,7 +66,7 @@
               </div>
             </div>
             <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
@@ -306,6 +306,7 @@ try {
     titleTag: "h2",
     description: "Une erreur est survenue lors de la récupération des demandes",
   });
+  throw error;
 }
 
 watch(
@@ -325,6 +326,7 @@ watch(
         description:
           "Une erreur est survenue lors de la récupération de la demande",
       });
+      throw error;
     }
   },
 );
@@ -345,6 +347,7 @@ const fetchDemandesDebounce = debounce(async (search) => {
       description:
         "Une erreur est survenue lors de la récupération de la demande",
     });
+    throw error;
   }
 });
 
@@ -372,7 +375,7 @@ const headersOrganisme = [
   },
   {
     column: "libelle",
-    text: "Libelle",
+    text: "Nom de séjour",
     sort: true,
   },
   {
@@ -514,6 +517,7 @@ const validatePriseEnCharge = async () => {
       titleTag: "h2",
       description: "Erreur lors de la prise en charge de la demande",
     });
+    throw error;
   }
 };
 
