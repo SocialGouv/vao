@@ -120,6 +120,7 @@
       <DsfrTabContent panel-id="tab-content-2" tab-id="tab-2">
         <DemandesSejourListe
           v-if="organismeName"
+          display="Organisme"
           :organisme="organismeName"
         ></DemandesSejourListe>
       </DsfrTabContent>
@@ -193,7 +194,9 @@ const organismeName = computed(() => {
 onMounted(async () => {
   try {
     await organismeStore.getOrganisme(route.params.organismeId);
-    if (organismeStore.organisme?.personneMorale) {
+    if (
+      organismeStore.organisme?.typeOrganisme === organisme.type.PERSONNE_MORALE
+    ) {
       await userStore.fetchUsersOrganisme({
         search: { siret: organismeStore.organisme.personneMorale.siret },
       });
