@@ -25,7 +25,11 @@
           ]"
         />
         <CardsNumber
-          v-if="!props.organisme && props.display === displayType.Messagerie"
+          v-if="
+            !props.organisme &&
+            props.display === displayType.Messagerie &&
+            userStore.user.serviceCompetent === 'DEP'
+          "
           :values="[
             {
               title: 'Messages non lus',

@@ -1,7 +1,9 @@
 <template>
-  <DsfrTooltip on-hover :content="content">
-    <div class="fr-icon-mail-line"></div>
-  </DsfrTooltip>
+  <div>
+    <DsfrTooltip on-hover :content="content">
+      <div class="fr-icon-mail-line"></div>
+    </DsfrTooltip>
+  </div>
 </template>
 
 <script setup>

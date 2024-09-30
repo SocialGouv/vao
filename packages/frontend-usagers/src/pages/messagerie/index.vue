@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container">
-    <DemandeSejourListe :display="'Messagerie'" />
+    <DemandeSejourListe display="Messagerie" />
   </div>
 </template>
 
