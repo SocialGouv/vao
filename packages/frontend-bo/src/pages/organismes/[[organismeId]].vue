@@ -121,6 +121,7 @@
         <DemandesSejourListe
           v-if="organismeName"
           :organisme="organismeName"
+          display="Organisme"
         ></DemandesSejourListe>
       </DsfrTabContent>
     </DsfrTabs>

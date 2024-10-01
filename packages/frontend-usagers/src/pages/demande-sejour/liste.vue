@@ -1,3 +1,3 @@
 <template>
-  <DemandeSejourListe :display="'Organisme'" />
+  <DemandeSejourListe display="Organisme" />
 </template>

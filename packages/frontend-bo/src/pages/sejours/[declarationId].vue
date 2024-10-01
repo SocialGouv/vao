@@ -186,6 +186,8 @@ definePageMeta({
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
 });
 
+const usersStore = useUserStore();
+
 const log = logger("pages/sejours");
 
 const toaster = useToaster();
@@ -205,7 +207,7 @@ const selectTab = async (idx) => {
   if (idx === 2 && !historique.value) {
     execute();
   }
-  if (idx === 3) {
+  if (idx === 3 && userStore.user.serviceCompetent === "DEP") {
     await demandeStore.readMessages(route.params.declarationId);
     demandeStore.fetchMessages(route.params.declarationId);
   }
@@ -249,10 +251,19 @@ const isOrganismeNonAgree = computed(() => {
 });
 
 onMounted(async () => {
+  if (!usersStore.user.serviceCompetent) {
+    await usersStore.refreshProfile();
+  }
   try {
     await demandeStore.setCurrentDemande(route.params.declarationId);
     demandeStore.fetchMessages(route.params.declarationId);
-    if (parseInt(route.query.defaultTabIndex) === 3)
+    if (!usersStore.user.serviceCompetent) {
+      await usersStore.refreshProfile();
+    }
+    if (
+      parseInt(route.query.defaultTabIndex) === 3 &&
+      userStore.user.serviceCompetent === "DEP"
+    )
       await demandeStore.readMessages(route.params.declarationId);
   } catch (e) {
     navigateTo("/sejours");

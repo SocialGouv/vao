@@ -25,10 +25,6 @@ const props = defineProps({
     type: String,
     validator: (value) => Object.values(messageEtat.etat).includes(value),
   },
-  message: {
-    required: true,
-    type: String,
-  },
 });
 
 import messageEtat from "@vao/shared/src/utils/messageUtils";
