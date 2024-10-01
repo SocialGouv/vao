@@ -284,11 +284,18 @@ SELECT
   COUNT(CASE WHEN statut = 'ABANDONNEE' THEN 1 END)::integer AS "abandonnee",
   COUNT(CASE WHEN statut = 'REFUSEE' THEN 1 END)::integer AS "refusee",
   COUNT(CASE WHEN statut = 'REFUSEE 8J' THEN 1 END)::integer AS "refuse8J",
-  COUNT(CASE WHEN statut <> 'BROUILLON' THEN 1 END)::integer AS "global"
+  COUNT(CASE WHEN statut <> 'BROUILLON' THEN 1 END)::integer AS "global",
+  COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "nonlu",
+  COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "lu",
+  COUNT(CASE WHEN (dsm.message is not null AND dsm.front_user_id IS NULL) THEN 1 END)::integer AS "repondu"
 FROM
   front.demande_sejour ds
   JOIN front.organismes o ON o.id = ds.organisme_id
   LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+  LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
+      SELECT MAX(dsmax.id)
+      FROM front.demande_sejour_message  dsmax
+      WHERE dsmax.declaration_id = ds.id)
 WHERE
   jsonb_path_query_array(hebergement, '$.hebergements[*].coordonnees.adresse.departement') ?| ($1)::text[]
   OR a.region_obtention = '${territoireCode}'
@@ -345,6 +352,7 @@ SELECT COUNT(DISTINCT ds.id)
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
 LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id
 WHERE
   statut <> 'BROUILLON'
   AND ((${departementQuery})
@@ -961,6 +969,9 @@ module.exports.getByDepartementCodes = async (
       `statut in ('${dsStatus.statuts.EN_COURS}', '${dsStatus.statuts.EN_COURS_8J}', '${dsStatus.statuts.TRANSMISE}', '${dsStatus.statuts.TRANSMISE_8J}')`,
     );
   }
+  if (search?.message) {
+    searchQuery.push(`dsm.message is not null`);
+  }
 
   /*
    * Cette Partie du code soit toujours etre appelé juste avant la fonction query.getByDepartementCodes
@@ -975,7 +986,6 @@ module.exports.getByDepartementCodes = async (
     departementQuery,
     params,
   );
-
   const stats = await pool.query(
     ...query.getAdminStats(departementCodes, territoireCode),
   );

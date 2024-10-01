@@ -33,21 +33,15 @@
           :values="[
             {
               title: 'Messages non lus',
-              value: filteredDemandes.filter(
-                (d) => d.messageEtat === messageEtat.etat.NON_LU,
-              ).length,
+              value: sejourStore.stats?.nonlu || 0,
             },
             {
               title: 'Messages lus',
-              value: filteredDemandes.filter(
-                (d) => d.messageEtat === messageEtat.etat.LU,
-              ).length,
+              value: sejourStore.stats?.lu || 0,
             },
             {
               title: 'Messages répondus',
-              value: filteredDemandes.filter(
-                (d) => d.messageEtat === messageEtat.etat.REPONDU,
-              ).length,
+              value: sejourStore.stats?.repondu || 0,
             },
           ]"
         />
@@ -162,7 +156,7 @@
     </div>
     <TableWithBackendPagination
       :headers="headers"
-      :data="filteredDemandes"
+      :data="sejourStore.demandes"
       :total-items="sejourStore.total"
       :current-page="currentPageState"
       :sort-by="sortState.sortBy"
@@ -202,7 +196,6 @@ import Declaration from "~/components/demandes-sejour/Declaration.vue";
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import { defineProps } from "vue";
-import messageEtat from "@vao/shared/src/utils/messageUtils";
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],
@@ -221,11 +214,6 @@ const toaster = useToaster();
 const sejourStore = useDemandeSejourStore();
 const demandeSejour = useDemandeSejourStore();
 const userStore = useUserStore();
-const filteredDemandes = computed(() =>
-  props.display === displayType.Messagerie
-    ? sejourStore.demandes.filter((d) => d.message)
-    : sejourStore.demandes,
-);
 const defaultSort = [];
 const defaultLimit = 10;
 const defaultOffset = 0;
@@ -267,6 +255,7 @@ const searchState = reactive({
         .filter((statut) => Object.values(status.value).includes(statut))
     : null,
   action: parseBoolean(route.query.action),
+  message: props.display === displayType.Messagerie,
 });
 
 watch(
