@@ -19,7 +19,7 @@
     title="Consultation d’un EIG"
     :on-close="closeEigModal"
     :on-validate="() => readEig()"
-    >Vous vous apprêtez à consulter un Evènement Indésirable Grave. Cette
+    >Vous vous apprêtez à consulter une déclaration d’un Evènement Indésirable Grave. Cette
     consultation enverra un email de notification à l’organisme.
   </ValidationModal>
 </template>

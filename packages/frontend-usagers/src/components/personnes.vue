@@ -4,12 +4,11 @@
         On cherche a rapprocher le bouton du tableau -->
     <div v-if="props.personnes.length > 0" class="fr-mb-n6v">
       <DsfrTable
+        :key="'table-' + props.personnes.length"
         :headers="headersToDisplay"
         :rows="personnesToDisplay"
-        :results-displayed="10"
         :current-page="currentPage"
-        :pagination="true"
-        @update:current-page="updateCurrentPage"
+        :pagination="(personnesToDisplay ?? []).length > 10"
       />
     </div>
     <DsfrButton
@@ -150,8 +149,4 @@ function updatePersonne(data) {
 function onClose() {
   modalPersonne.opened = false;
 }
-
-const updateCurrentPage = (val) => {
-  currentPageState.value = val++;
-};
 </script>
