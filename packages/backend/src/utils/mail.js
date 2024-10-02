@@ -346,7 +346,6 @@ module.exports = {
               p: [
                 `Bonjour`,
                 `La déclaration d’un évènement indésirable grave que vous avez déposée le ${dayjs(eig.dateDepot).format("DD/MM/YYYY")} et qui s’est déroulé ${dayjs(eig.date).format("DD/MM/YYYY")} lors du séjour dans le département ${eig.departement}, a été consultée ${typeReader === "DREETS" ? `par un agent de la préfecture de la région ${territoireName}` : `par un agent de la DDETS ${territoireCode} du département ${territoireName}`}. Si c’est nécessaire, cette personne pourra vous contacter via la messagerie de la plateforme VAO. `,
-                `Cordialement,`,
               ],
               type: "p",
             },
@@ -405,7 +404,6 @@ module.exports = {
             {
               p: [
                 `Cette déclaration a été envoyée à la direction départementale de l'emploi, du travail, des solidarités et de la protection des populations (DDETS-PP), ainsi qu’à la direction régionale de l’économie, de l’emploi, du travail et des solidarités (DREETS) ayant délivré l’agrément VAO`,
-                "Cordialement",
               ],
               type: "p",
             },
@@ -452,7 +450,7 @@ module.exports = {
               p: [
                 `Bonjour`,
                 `L’organisme ${orgName} a déclaré un évènement indésirable grave, qui s’est produit le ${dayjs(eig.date).format("DD/MM/YYYY")}, lors d’un séjour de vacances adaptées organisées (VAO), sur la commune de ${communeName} dans votre département ${departementName}`,
-                `Référence de la déclaration de séjour : ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
+                `Référence de la déclaration de séjour : ${declarationSejour.libelle} - ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
                 `Le type d'évènement déclaré est :`,
                 generateTypes(eig),
               ],
@@ -473,10 +471,6 @@ module.exports = {
               p: [
                 `Cet email a également été envoyé à la DREETS de la région ${regionName} qui a délivré l’agrément de l’organisme déclarant`,
               ],
-              type: "p",
-            },
-            {
-              p: ["Cordialement"],
               type: "p",
             },
           ],
@@ -521,7 +515,7 @@ module.exports = {
               p: [
                 `Bonjour`,
                 `L’organisme ${orgName}, dont l’agrément vacances adaptées organisées (VAO) a été délivré dans votre région, a déclaré un évènement indésirable grave qui s’est produit le ${dayjs(eig.date).format("DD/MM/YYYY")}, lors d’un séjour organisé dans  la commune de ${communeName} dans le département de ${departementName}.`,
-                `Référence de la déclaration de séjour : ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
+                `Référence de la déclaration de séjour : ${declarationSejour.libelle} - ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
                 `Le type d'évènement déclaré est :`,
                 generateTypes(eig),
               ],
@@ -540,12 +534,8 @@ module.exports = {
             },
             {
               p: [
-                `Cet email a également été envoyé à la DDETS du département ${departementName}`,
+                `Cette déclaration d’EIG a également été envoyée à la DDETS du département ${departementName}`,
               ],
-              type: "p",
-            },
-            {
-              p: ["Cordialement"],
               type: "p",
             },
           ],
@@ -583,8 +573,8 @@ module.exports = {
             {
               p: [
                 `Bonjour`,
-                `${userName} a déclaré un évènement indésirable grave survenu le ${dayjs(eig.date).format("DD/MM/YYYY")} lors du séjour ${eig.libelle}].`,
-                `Référence de la déclaration de séjour : ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
+                `${userName} a déclaré un évènement indésirable grave survenu le ${dayjs(eig.date).format("DD/MM/YYYY")} lors du séjour ${eig.libelle}.`,
+                `Référence de la déclaration de séjour : ${declarationSejour.libelle} - ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
                 `Le type de l’événement est :`,
                 generateTypes(eig),
               ],
@@ -604,7 +594,6 @@ module.exports = {
             {
               p: [
                 `Cette déclaration a été envoyée à la direction départementale de l'emploi, du travail, des solidarités et de la protection des populations (DDETS-PP), ainsi qu’à la direction régionale de l’économie, de l’emploi, du travail et des solidarités (DREETS) ayant délivré l’agrément VAO.`,
-                "Cordialement",
               ],
               type: "p",
             },
