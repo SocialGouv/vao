@@ -65,7 +65,7 @@
   <article>{{ eigStore.currentEig.dispositionInformations }}</article>
   <hr />
   <article>
-    La déclaration de cet incident sera envoyé à :
+    La déclaration de cet incident sera envoyée à :
     <h6 class="fr-mb-0">DDETS</h6>
     <ul class="fr-mt-0 fr-mb-4w">
       <li v-for="email in eigStore.currentEig.emailsDDETS" :key="email">
@@ -85,24 +85,26 @@
       </li>
     </ul>
   </article>
+  <!--  TODO: hise in a first time. We keep the logic for later
   <div class="fr-fieldset__element">
-    <div class="fr-input-group">
-      <DsfrInputGroup
-        autocomplete="off"
-        type="text"
-        name="email-autres-destinataires"
-        label="Envoyer la déclaration à d'autres destinataires (optionnel)"
-        :label-visible="true"
-        hint="Renseigner les adresses mail séparées par des virgules"
-        required
-        :is-valid="emailAutresDestinatairesMeta.valid"
-        :error-message="emailAutresDestinatairesMessage"
-        :disabled="!eigStore.canModify"
-        :model-value="displayEmailAutresDestinataires"
-        @update:model-value="setEmailAutresDestinataires"
-      />
+      <div class="fr-input-group">
+        <DsfrInputGroup
+          autocomplete="off"
+          type="text"
+          name="email-autres-destinataires"
+          label="Envoyer la déclaration à d'autres destinataires (optionnel)"
+          :label-visible="true"
+          hint="Renseigner les adresses mail séparées par des virgules"
+          required
+          :is-valid="emailAutresDestinatairesMeta.valid"
+          :error-message="emailAutresDestinatairesMessage"
+          :disabled="!eigStore.canModify"
+          :model-value="displayEmailAutresDestinataires"
+          @update:model-value="setEmailAutresDestinataires"
+        />
+      </div>
     </div>
-  </div>
+  -->
   <hr />
   <div class="fr-fieldset__element fr-col-12">
     <DsfrCheckbox
@@ -175,22 +177,22 @@ const { value: isAtteste, handleChange: onIsAttesteChange } =
   useField("isAtteste");
 const {
   value: emailAutresDestinataires,
-  handleChange: onEmailAutresDestinatairesChange,
-  errorMessage: emailAutresDestinatairesMessage,
-  meta: emailAutresDestinatairesMeta,
+  /*handleChange: onEmailAutresDestinatairesChange,
+    errorMessage: emailAutresDestinatairesMessage,
+  meta: emailAutresDestinatairesMeta,*/
 } = useField("emailAutresDestinataires");
 
-const displayEmailAutresDestinataires = computed(() =>
+/*const displayEmailAutresDestinataires = computed(() =>
   (emailAutresDestinataires.value ?? []).join(","),
-);
-const setEmailAutresDestinataires = (emailsInString) => {
+);*/
+/*const setEmailAutresDestinataires = (emailsInString) => {
   onEmailAutresDestinatairesChange(
     emailsInString
       .split(",")
       .map((email) => email.trim())
       .filter((e) => e.length > 0),
   );
-};
+};*/
 
 const headers = [
   {

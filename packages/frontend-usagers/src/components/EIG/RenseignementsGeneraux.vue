@@ -140,7 +140,7 @@ const dsPersonnel = computed(() => [
 ]);
 
 const initialValues = {
-  personnel: eigStore.currentEig.personnel ?? dsPersonnel.value,
+  personnel: eigStore.currentEig.personnel ?? [],
   deroulement: eigStore.currentEig.deroulement,
   dispositionInformations: eigStore.currentEig.dispositionInformations,
   dispositionRemediation: eigStore.currentEig.dispositionRemediation,

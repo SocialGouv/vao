@@ -30,6 +30,10 @@ const props = defineProps({
 
 const currentEigValues = computed(() => [
   {
+    label: "Organisme",
+    value: props.eig.raisonSociale ?? `${props.eig?.prenom} ${props.eig?.nom}`,
+  },
+  {
     label: "Déclaration",
     href: props.eig?.declarationId
       ? `/${props.env === "BO" ? "sejours" : "demande-sejour"}/${props.eig.declarationId}`
@@ -37,23 +41,11 @@ const currentEigValues = computed(() => [
     value: props.eig?.idFonctionnelle ?? "",
   },
   {
-    label: "Département où a eu lieu l'incident",
-    value: props.eig?.departement ?? "",
-  },
-  {
-    label: "Date de l'incident",
-    value: props.eig?.date ? dayjs(props.eig?.date).format("DD/MM/YYYY") : "",
-  },
-  {
-    label: "Séjour",
+    label: "Nom du séjour",
     value: props.eig?.libelle ?? "",
   },
   {
-    label: "Organisme",
-    value: props.eig.raisonSociale ?? `${props.eig?.prenom} ${props.eig?.nom}`,
-  },
-  {
-    label: "Date (début / fin)",
+    label: "Date du séjour",
     value:
       props.eig.dateDebut && props.eig.dateFin
         ? `${dayjs(props.eig.dateDebut).format("DD/MM/YYYY")} - ${dayjs(props.eig.dateFin).format("DD/MM/YYYY")}`
@@ -68,7 +60,15 @@ const currentEigValues = computed(() => [
     value: props.eig?.adresses ?? [],
   },
   {
-    label: "type d'événement",
+    label: "Date de l'incident",
+    value: props.eig?.date ? dayjs(props.eig?.date).format("DD/MM/YYYY") : "",
+  },
+  {
+    label: "Département où a eu lieu l'incident",
+    value: `${props.eig?.departement ?? ""} ${props.eig?.departementLibelle ? " - " + props.eig?.departementLibelle : ""}`,
+  },
+  {
+    label: "type(s) d'événement(s)",
     value:
       props.eig?.types?.map(
         (t) => mapEigToLabel[t.type] + (t.precision ? " : " + t.precision : ""),
