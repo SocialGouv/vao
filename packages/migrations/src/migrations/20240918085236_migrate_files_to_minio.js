@@ -18,6 +18,9 @@ const s3Client = new S3Client({
  * @returns { Promise<void> }
  */
 exports.up = (knex) => {
+  console.log("Migrating files to S3");
+  console.log("S3_BUCKET_NAME", S3_BUCKET_NAME);
+  console.log("S3_BUCKET_ROOT_DIR", S3_BUCKET_ROOT_DIR);
   return knex
     .withSchema("doc")
     .select()
@@ -38,6 +41,7 @@ exports.up = (knex) => {
               },
             }),
           );
+          console.log(`Uploaded ${S3_BUCKET_ROOT_DIR}/${row.uuid}`);
         } catch (err) {
           console.error(`Failed to upload ${row.uuid}:`, err);
           throw err;
