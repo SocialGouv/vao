@@ -249,8 +249,16 @@ fileignoreconfig:
   checksum: e064a2ee73c2ecb4da219f78c7458302383d264330cc7bf645239519f906f64f
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
+- filename: packages/shared/src/components/DsfrTabsV2.vue
+  checksum: 960c18a7ad76a91c74e5535240ae6ac4f87bb8aff10155096cd35afe5609cff8
 - filename: packages/shared/src/components/PasswordInput.vue
   checksum: af4fe62dc455e943fcfacaa6ee0495e1ab20f9ed2094ad70c457b7a27ab46759
+- filename: packages/shared/src/components/Table/DsfrDataTableV2.vue
+  checksum: 0ee6a9eef7c67650f38d6a7160bcca5aa28939925a00ae6d56d008fe93900666
+- filename: packages/shared/src/type.ts
+  checksum: 8c75e8784ded25a61d6e14cd682bfe67e4ecdde5a6582fb83035fcae39a87b98
+- filename: packages/shared/src/types/DsfrDataTableV2.type.ts
+  checksum: 1a97906b8d2d4c66febb1aceb3344696ef780480ab0711a93dd49780b66c20ab
 - filename: pg/scripts/01-init.sql
   checksum: 20dd5b8d36b1b0517fe185d30003af7866ef5678eed4e7571a6d9797ec3b2a46
 - filename: pg/scripts/02/02-1-geo-init.sql
