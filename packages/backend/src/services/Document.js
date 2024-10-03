@@ -11,7 +11,7 @@ const {
 } = require("@aws-sdk/client-s3");
 
 const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
-const S3_ROOT_DIR = process.env.S3_ROOT_DIR;
+const S3_BUCKET_ROOT_DIR = process.env.S3_BUCKET_ROOT_DIR;
 
 const log = logger(module.filename);
 
@@ -71,7 +71,7 @@ module.exports.download = async (uuid) => {
     const data = await s3Client.send(
       new GetObjectCommand({
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: `${S3_ROOT_DIR}/${uuid}.pdf`,
+        Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.pdf`,
       }),
     );
     log.i("DONE");
@@ -111,7 +111,7 @@ module.exports.upload = async (category, file, uuid = crypto.randomUUID()) => {
       new PutObjectCommand({
         Body: data,
         Bucket: S3_BUCKET_NAME,
-        Key: `${S3_ROOT_DIR}/${uuid}.pdf`,
+        Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.pdf`,
         Metadata: {
           category,
           created_at: String(new Date()),

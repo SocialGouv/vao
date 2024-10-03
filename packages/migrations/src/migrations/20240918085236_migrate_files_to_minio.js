@@ -1,7 +1,7 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
-const S3_ROOT_DIR = process.env.S3_ROOT_DIR;
+const S3_BUCKET_ROOT_DIR = process.env.S3_BUCKET_ROOT_DIR;
 
 const s3Client = new S3Client({
   credentials: {
@@ -29,7 +29,7 @@ exports.up = (knex) => {
             new PutObjectCommand({
               Body: row.file,
               Bucket: S3_BUCKET_NAME,
-              Key: `${S3_ROOT_DIR}/${row.uuid}.pdf`,
+              Key: `${S3_BUCKET_ROOT_DIR}/${row.uuid}.pdf`,
               Metadata: {
                 category: String(row.category),
                 created_at: String(row.created_at),
