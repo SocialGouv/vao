@@ -40,6 +40,7 @@ exports.up = (knex) => {
           );
         } catch (err) {
           console.error(`Failed to upload ${row.uuid}:`, err);
+          throw err;
         }
       }
     });
