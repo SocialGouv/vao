@@ -93,13 +93,10 @@
               </div>
             </div>
             <div
-              v-if="props.display === displayType.Messagerie"
+              v-if="props.display === displayType.Organisme"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div
-                v-if="props.display === displayType.Organisme"
-                class="fr-input-group"
-              >
+              <div class="fr-input-group">
                 <Multiselect
                   :model-value="searchState.statuts"
                   :hide-selected="true"
