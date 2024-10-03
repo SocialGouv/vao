@@ -19,7 +19,7 @@ jobs:
         buildArgs:
           NUXT_PUBLIC_ENVIRONMENT: "development"
           NUXT_PUBLIC_SENTRY_ENABLED: "true"
-    build-migrations:
+    migrations-db:
       env:
         - name: PG_VAO_SUPERUSER
           valueFrom:

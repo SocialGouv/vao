@@ -46,7 +46,7 @@ jobs:
           NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
           NUXT_PUBLIC_ENVIRONMENT: "preprod"
           NUXT_PUBLIC_SENTRY_ENABLED: "true"
-    build-migrations:
+    migrations-db:
       env:
         - name: PG_VAO_SUPERUSER
           valueFrom:

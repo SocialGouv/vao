@@ -41,7 +41,7 @@ jobs:
           NUXT_PUBLIC_BACKEND_URL: "https://api-vao.social.gouv.fr"
           NUXT_PUBLIC_ENVIRONMENT: "production"
           NUXT_PUBLIC_SENTRY_ENABLED: "true"
-    build-migrations:
+    migrations-db:
       env:
         - name: PG_VAO_SUPERUSER
           valueFrom:
