@@ -43,6 +43,11 @@ exports.up = (knex) => {
           throw err;
         }
       }
+    })
+    .catch((err) => {
+      // Catch the error and rethrow it to ensure the migration fails
+      console.error("Migration failed:", err);
+      throw err;
     });
 };
 
