@@ -46,3 +46,6 @@ jobs:
           NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
           NUXT_PUBLIC_ENVIRONMENT: "preprod"
           NUXT_PUBLIC_SENTRY_ENABLED: "true"
+    build-migrations:
+      vars:
+        S3_BUCKET_ROOT_DIR: preprod/files

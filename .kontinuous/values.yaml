@@ -208,6 +208,15 @@ jobs:
             secretKeyRef:
               name: pg-app
               key: PGDATABASE
+      envFrom:
+        - secretRef:
+            name: "{{.Values.global.s3SecretName}}"
+      vars:
+        S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
+        S3_BUCKET_NAME: "$(bucket_name)"
+        S3_BUCKET_REGION: "$(bucket_region)"
+        S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
+        S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
 
     init-db:
       ~needs: [pg]

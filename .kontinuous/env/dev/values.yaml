@@ -19,3 +19,6 @@ jobs:
         buildArgs:
           NUXT_PUBLIC_ENVIRONMENT: "development"
           NUXT_PUBLIC_SENTRY_ENABLED: "true"
+    build-migrations:
+      vars:
+        S3_BUCKET_ROOT_DIR: review-branch/{{ .Values.global.branchSlug32  }}/files

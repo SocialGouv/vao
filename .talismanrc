@@ -82,7 +82,7 @@ fileignoreconfig:
 - filename: .kontinuous/prod/templates/pg.sealed.secret.yaml
   checksum: ebaeaef58dff99ed0a70ace0cb1cfceb31c0656d921999e19ce183e2adc9431f
 - filename: .kontinuous/values.yaml
-  checksum: ec9fd26e16478e9c89ff109bbb465a4a17aa7bf6158f3e1b97ccbe9ed5f005e7
+  checksum: 2841e3e7cd61e575ea1eadbc296a78f7eb49db91cc915d5f16d4e3a93c712f57
 - filename: README.md
   checksum: 3627cd363d1cfc640df689ce74d5467e13707a2cc9c44b0bffaba14f217296e2
 - filename: _scripts/dev/local-node.dockerfile
