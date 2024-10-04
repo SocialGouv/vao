@@ -10,8 +10,11 @@
       <fieldset class="fr-fieldset">
         <div class="fr-fieldset__element fr-col-12">
           <div>
-            <h4>Liste des hébergements sélectionnés</h4>
-            <DsfrTable :headers="headers" :rows="syntheseRows" />
+            <DsfrTable
+              title="Liste des hébergements sélectionnés"
+              :headers="headers"
+              :rows="syntheseRows"
+            />
           </div>
           <DsfrButton
             v-if="props.modifiable"

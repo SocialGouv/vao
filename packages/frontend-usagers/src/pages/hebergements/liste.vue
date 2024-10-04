@@ -50,6 +50,7 @@
         <div class="fr-col">
           <TableFull
             :headers="headers"
+            title="Hébergements"
             :data="hebergementStore.hebergements"
             :search="search"
             @click-row="navigate"

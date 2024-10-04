@@ -174,6 +174,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
       <div class="fr-grid-row">
         <div class="fr-col">
           <TableFull
+            title="Sejours"
             :headers="headers"
             :data="filteredDemandes"
             :search="search"
@@ -794,6 +795,7 @@ async function deleteDS(dsId) {
       titleTag: "h2",
       description: `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
     });
+    throw error;
   } finally {
     closeModal();
   }
@@ -825,6 +827,7 @@ async function cancelDS(dsId) {
       titleTag: "h2",
       description: `Une erreur est survenue lors de l'annulation de la déclaration de séjour`,
     });
+    throw error;
   } finally {
     closeModal();
   }

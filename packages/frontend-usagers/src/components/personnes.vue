@@ -4,6 +4,7 @@
         On cherche a rapprocher le bouton du tableau -->
     <div v-if="props.personnes.length > 0" class="fr-mb-n6v">
       <DsfrTable
+        :title="props.titre"
         :headers="headersToDisplay"
         :rows="personnesToDisplay"
         :results-displayed="10"
