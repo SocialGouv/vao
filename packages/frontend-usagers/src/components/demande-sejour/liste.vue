@@ -790,8 +790,7 @@ async function deleteDS(dsId) {
       });
     }
   } catch (error) {
-    log.w("Erreur durant la suppression de la declaration de sejour : ");
-    return toaster.error({
+    toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
     });
@@ -823,7 +822,7 @@ async function cancelDS(dsId) {
     }
   } catch (error) {
     log.w("Erreur durant l'annulation de la declaration de sejour : ");
-    return toaster.error({
+    toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de l'annulation de la déclaration de séjour`,
     });
