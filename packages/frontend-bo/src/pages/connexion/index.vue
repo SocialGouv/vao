@@ -49,7 +49,7 @@
                         <div class="fr-fieldset__element">
                           <div class="fr-input-group">
                             <DsfrInput
-                              autocomplete="off"
+                              autocomplete="email"
                               :model-value="email"
                               type="text"
                               name="email"
@@ -66,7 +66,7 @@
                             <div class="fr-input-wrap">
                               <PasswordInput
                                 id="password"
-                                autocomplete="off"
+                                autocomplete="current-password"
                                 :model-value="password"
                                 :type="showPassword ? 'text' : 'password'"
                                 label="Mot de passe"
@@ -110,61 +110,7 @@
     </div>
   </div>
 </template>
-<!--
-<template>
-  <div class="fr-container">
-    <DsfrBreadcrumb :links="links" />
-      <div v-if="displayType" class="fr-grid-row">
-        <DsfrAlert
-          class="fr-my-3v"
-          :title="displayInfos[displayType].title"
-          :description="displayInfos[displayType].description"
-          :type="displayInfos[displayType].type"
-          :closeable="false"
-        />
-      </div>
-      <div class="fr-grid-row">
-        <div class="fr-col-4"></div>
-        <div class="fr-col-4">
-          <form>
-            <h1 class="form-title">Se connecter</h1>
-            <p>Tous les champs sont obligatoires</p>
-            <DsfrFieldset>
-              <DsfrInputGroup
-                autocomplete="off"
-                :model-value="email"
-                type="text"
-                name="email"
-                label="Adresse électronique"
-                :label-visible="true"
-                hint="Veuillez saisir votre email"
-                @update:model-value="editMail"
-              />
-              <PasswordInput
-                id="password"
-                autocomplete="off"
-                :model-value="password"
-                :type="showPassword ? 'text' : 'password'"
-                label="Mot de passe"
-                name="password"
-                hint="Veuillez saisir votre mot de passe"
-                @update:model-value="editPwd"
-              ></PasswordInput>
-              <p>
-                <NuxtLink class="fr-link" to="/connexion/mot-de-passe-oublie">
-                  Mot de passe oublié ?
-                </NuxtLink>
-              </p>
-            </DsfrFieldset>
-            <DsfrButton :disabled="!canLogin" @click.prevent="login"
-              >Se connecter
-            </DsfrButton>
-          </form>
-        </div>
-      </div>
-  </div>
-</template>
--->
+
 <script setup>
 import { useUserStore } from "@/stores/user";
 import { PasswordInput } from "@vao/shared";
