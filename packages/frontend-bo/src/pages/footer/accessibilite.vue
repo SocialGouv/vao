@@ -29,6 +29,7 @@
           target="_blank"
           href="https://vao.social.gouv.fr/"
           title="https://vao.social.gouv.fr/, nouvelle fenêtre"
+          rel="noopener external"
           >https://vao.social.gouv.fr/</a
         ></strong
       >

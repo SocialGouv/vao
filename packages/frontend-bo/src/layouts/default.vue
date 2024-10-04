@@ -141,6 +141,7 @@ function acceptAll() {
                 href="https://vao-assistance.atlassian.net/wiki/spaces/IS/pages/91095041/MISE+A+JOUR+DE+LA+PLATEFORME+VAO"
                 class="fr-footer__content-desc"
                 title="assistance, nouvelle page"
+                rel="noopener external"
                 target="_blank"
               >
                 Version : {{ config.public.appVersion }}

@@ -132,6 +132,7 @@ const navItems = useMenuNavItems();
           class="fr-footer__content-desc"
           title="assistance, nouvelle page"
           target="_blank"
+          rel="noopener external"
         >
           Version : {{ config.public.appVersion }}
         </a>
