@@ -11,7 +11,7 @@ export type Row = {
 export type ValueFromNestedKey<
   T,
   K extends string,
-> = K extends `${infer Key}.${infer Rest}`
+> = K extends `${infer Key}-${infer Rest}`
   ? Key extends keyof T
     ? ValueFromNestedKey<T[Key], Rest>
     : never
@@ -24,13 +24,13 @@ export type NestedKeys<T> = {
     ? T[K] extends Primitive
       ? K
       : T[K] extends Row
-        ? K | `${K}.${NestedKeys<T[K]>}`
+        ? K | `${K}-${NestedKeys<T[K]>}`
         : never
     : never;
 }[keyof T];
 
 export type SlotProps<T> = {
-  [K in NestedKeys<T> as `cell-${K}`]?: (props: {
+  [K in NestedKeys<T> as `cell:${K}`]?: (props: {
     cell: ValueFromNestedKey<T, K>;
     row: T;
   }) => any;
@@ -84,7 +84,7 @@ const emits = defineEmits<{
 
 defineSlots<SlotProps<T>>();
 
-const getSlotName = (key: NestedKeys<T>) => `cell-${key}`;
+const getSlotName = (key: NestedKeys<T>) => `cell:${key}`;
 
 const selectedSync = computed({
   get() {
