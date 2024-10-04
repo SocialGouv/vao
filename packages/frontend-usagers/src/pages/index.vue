@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container">
     <div class="fr-grid-row fr-py-5w">
-      <h2>Bienvenue {{ userStore.user.prenom }} {{ userStore.user.nom }}</h2>
+      <h1>Bienvenue {{ userStore.user.prenom }} {{ userStore.user.nom }}</h1>
     </div>
     <div
       v-if="!organismeCourant || !organismeCourant.complet"
@@ -104,6 +104,7 @@ const tiles = computed(() => [
       ? `/organisme/${organismeStore.organismeCourant.organismeId}`
       : "/organisme/",
     imgSrc: NationalIdentityCard,
+    titleTag: "h2",
     description:
       "Cette page vous permet de renseigner les informations sur l'organisme.",
   },
@@ -111,6 +112,7 @@ const tiles = computed(() => [
     title: "Hébergements",
     to: "/hebergements/liste",
     imgSrc: House,
+    titleTag: "h2",
     description:
       "Cette page permet de gérer les informations sur les lieux d'hébergement de vos séjours.",
   },
@@ -120,6 +122,7 @@ const tiles = computed(() => [
           title: "Déclarations de séjour",
           to: "/demande-sejour/liste",
           imgSrc: Contract,
+          titleTag: "h2",
           description: "Cette page permet de gérer vos déclarations de séjour.",
         },
       ]

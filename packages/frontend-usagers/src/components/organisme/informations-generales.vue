@@ -6,7 +6,7 @@
         sont obligatoires</span
       >
     </div>
-    <fieldset class="fr-fieldset">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrRadioButtonSet
@@ -21,7 +21,7 @@
           />
         </div>
       </div>
-    </fieldset>
+    </div>
     <div v-if="typeOrganisme === 'personne_morale'">
       <OrganismePersonneMorale
         :init-data="initData.personneMorale ?? {}"

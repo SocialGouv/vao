@@ -1,6 +1,6 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-5">
         <DsfrInputGroup
           name="dateDebut"
@@ -33,8 +33,8 @@
           @update:model-value="onDateFinChange"
         />
       </div>
-    </fieldset>
-    <fieldset v-if="props.modifiable" class="fr-fieldset">
+    </div>
+    <div v-if="props.modifiable" class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-6">
         <DsfrSelect
           :model-value="hebergementId"
@@ -53,7 +53,7 @@
           >Créer un lieu d'hébergement
         </DsfrButton>
       </div>
-    </fieldset>
+    </div>
     <template v-if="hebergementStore.hebergementCourant">
       <DsfrFieldset legend="Informations sur le lieu d'hébergement">
         <div class="fr-fieldset__element fr-col-12">
@@ -557,7 +557,7 @@
       </DsfrFieldset>
     </template>
 
-    <fieldset v-if="props.showButtons" class="fr-fieldset">
+    <div v-if="props.showButtons" class="fr-fieldset">
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
           v-if="!props.modifiable"
@@ -584,7 +584,7 @@
         >
         </DsfrButton>
       </DsfrButtonGroup>
-    </fieldset>
+    </div>
 
     <DsfrModal
       ref="modal"

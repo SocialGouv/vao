@@ -1,16 +1,16 @@
 <template>
   <div class="fr-container fr-pt-8v">
-    <fieldset v-if="eigs && eigs.length > 0" class="fr-fieldset">
+    <div v-if="eigs && eigs.length > 0" class="fr-fieldset">
       <TableFull :headers="headers" :data="eigs" @click-row="navigate" />
-    </fieldset>
+    </div>
     <p v-else>Aucun Eig déclaré actuellement</p>
-    <fieldset v-if="eig.isDeclarationligibleToEig(ds)" class="fr-fieldset">
+    <div v-if="eig.isDeclarationligibleToEig(ds)" class="fr-fieldset">
       <DsfrButton>
         <NuxtLink :to="`/eig${ds.id != null ? '?dsId=' + ds.id : ''}`">
           Déclarer un EIG
         </NuxtLink>
       </DsfrButton>
-    </fieldset>
+    </div>
     <ValidationModal
       modal-ref="modal-eig-list"
       name="delete-eig"

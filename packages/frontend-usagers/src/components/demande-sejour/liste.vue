@@ -18,7 +18,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
       <div class="fr-grid-row">
         <div class="fr-col">
           <form>
-            <fieldset class="fr-fieldset">
+            <div class="fr-fieldset">
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
@@ -167,7 +167,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
                   </Multiselect>
                 </div>
               </div>
-            </fieldset>
+            </div>
           </form>
         </div>
       </div>
@@ -187,13 +187,13 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
     <div v-if="props.display === displayType.Organisme" class="fr-grid-row">
       <div class="fr-col">
         <form>
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <DsfrButton type="button">
               <NuxtLink to="/demande-sejour">
                 Déclarer un nouveau séjour
               </NuxtLink>
             </DsfrButton>
-          </fieldset>
+          </div>
         </form>
       </div>
     </div>

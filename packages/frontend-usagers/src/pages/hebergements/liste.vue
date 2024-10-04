@@ -15,7 +15,7 @@
       <div class="fr-grid-row">
         <div class="fr-col">
           <form>
-            <fieldset class="fr-fieldset">
+            <div class="fr-fieldset">
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col fr-col-lg-6"
               >
@@ -42,7 +42,7 @@
                   />
                 </div>
               </div>
-            </fieldset>
+            </div>
           </form>
         </div>
       </div>
@@ -62,13 +62,13 @@
     <div class="fr-grid-row">
       <div class="fr-col">
         <form>
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <DsfrButton>
               <NuxtLink to="/hebergements">
                 Déclarer un nouvel hébergement
               </NuxtLink>
             </DsfrButton>
-          </fieldset>
+          </div>
         </form>
       </div>
     </div>

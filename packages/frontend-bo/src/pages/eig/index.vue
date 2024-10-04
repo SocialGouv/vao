@@ -4,7 +4,7 @@
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
@@ -95,7 +95,7 @@
                 />
               </div>
             </div>
-          </fieldset>
+          </div>
         </form>
       </div>
     </div>
@@ -170,6 +170,7 @@ try {
   await departementStore.fetch();
 } catch (error) {
   toaster.error("Une erreur est survenue lors de la récupération des demandes");
+  throw error;
 }
 
 const paginateResults = async (sortValue, limitValue, currentPageValue) => {
@@ -185,6 +186,7 @@ const paginateResults = async (sortValue, limitValue, currentPageValue) => {
     toaster.error(
       "Une erreur est survenue lors de la récupération de la demande",
     );
+    throw error;
   }
 };
 
@@ -201,6 +203,7 @@ const fetchEigsDebounce = debounce(async (search) => {
     toaster.error(
       "Une erreur est survenue lors de la récupération de la demande",
     );
+    throw error;
   }
 });
 
@@ -333,8 +336,9 @@ const readEig = async (id) => {
   try {
     await eigStore.markAsRead(id);
     navigateTo(`/eig/${id}`);
-  } catch (e) {
+  } catch (error) {
     toaster.error("Une erreur est survenue lors de la lecture de l'eig");
+    throw error;
   }
 };
 

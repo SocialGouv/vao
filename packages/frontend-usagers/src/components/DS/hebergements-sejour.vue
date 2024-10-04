@@ -7,7 +7,7 @@
       >
     </div>
     <div v-if="!nuiteeOpened">
-      <fieldset class="fr-fieldset">
+      <div class="fr-fieldset">
         <div class="fr-fieldset__element fr-col-12">
           <div>
             <DsfrTable
@@ -23,9 +23,9 @@
             @click.prevent="onOpenNuitee"
           />
         </div>
-      </fieldset>
+      </div>
 
-      <fieldset class="fr-fieldset">
+      <div class="fr-fieldset">
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
@@ -56,7 +56,7 @@
             />
           </div>
         </div>
-      </fieldset>
+      </div>
 
       <UtilsNavigationButtons
         :show-buttons="props.showButtons"

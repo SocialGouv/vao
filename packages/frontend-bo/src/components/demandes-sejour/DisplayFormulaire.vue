@@ -72,104 +72,51 @@
       >
       </UtilsDisplayInput>
       <div v-if="!!demandeStore.currentDemande.statut && isDisplay8Jours">
-        <h4
-          v-if="
-            demandeStore.currentDemande?.informationsPersonnel?.encadrants
-              ?.length > 0
-          "
-        >
-          Personnel d'encadrement
-        </h4>
         <UtilsDisplayEncadrementAccompagnement
+          title="Personnel d'encadrement"
           :personnel="
             demandeStore.currentDemande?.informationsPersonnel?.encadrants ?? []
           "
         >
         </UtilsDisplayEncadrementAccompagnement>
-
-        <h4
-          v-if="
-            demandeStore.currentDemande?.informationsPersonnel?.accompagnants
-              ?.length > 0
-          "
-        >
-          Personnel d'accompagnement
-        </h4>
         <UtilsDisplayEncadrementAccompagnement
+          title="Personnel d'accompagnement"
           :personnel="
             demandeStore.currentDemande?.informationsPersonnel?.accompagnants ??
             []
           "
         ></UtilsDisplayEncadrementAccompagnement>
-        <h4
-          v-if="
-            demandeStore.currentDemande?.informationsPersonnel
-              ?.prestatairesMedicaments?.length > 0
-          "
-        >
-          Prestataire en charge des médicaments
-        </h4>
         <DemandesSejourDisplayPrestataire
+          title="Prestataire en charge des médicaments"
           :personnel="
             demandeStore.currentDemande?.informationsPersonnel
               ?.prestatairesMedicaments ?? []
           "
         >
         </DemandesSejourDisplayPrestataire>
-        <h4
-          v-if="
-            demandeStore.currentDemande?.informationsPersonnel
-              ?.prestatairesTransport?.length > 0
-          "
-        >
-          Prestataire en charge du transport des vacanciers
-        </h4>
         <DemandesSejourDisplayPrestataire
+          title="Prestataire en charge du transport des vacanciers"
           :personnel="
             demandeStore.currentDemande?.informationsPersonnel
               ?.prestatairesTransport ?? []
           "
         ></DemandesSejourDisplayPrestataire>
-
-        <h4
-          v-if="
-            demandeStore.currentDemande?.informationsPersonnel
-              ?.prestatairesRestauration?.length > 0
-          "
-        >
-          Prestataire en charge de la restauration
-        </h4>
         <DemandesSejourDisplayPrestataire
+          title="Prestataire en charge de la restauration"
           :personnel="
             demandeStore.currentDemande?.informationsPersonnel
               ?.prestatairesRestauration ?? []
           "
         ></DemandesSejourDisplayPrestataire>
-
-        <h4
-          v-if="
-            demandeStore.currentDemande?.informationsPersonnel
-              ?.prestatairesEntretien?.length > 0
-          "
-        >
-          Prestataire en charge de l’entretien et du ménage
-        </h4>
         <DemandesSejourDisplayPrestataire
+          title="Prestataire en charge de l’entretien et du ménage"
           :personnel="
             demandeStore.currentDemande?.informationsPersonnel
               ?.prestatairesEntretien ?? []
           "
         ></DemandesSejourDisplayPrestataire>
-
-        <h4
-          v-if="
-            demandeStore.currentDemande?.informationsPersonnel
-              ?.prestatairesActivites?.length > 0
-          "
-        >
-          Prestataire en charge d'encadrer les activités spécifiques
-        </h4>
         <DemandesSejourDisplayPrestataire
+          title="Prestataire en charge d'encadrer les activités spécifiques"
           :personnel="
             demandeStore.currentDemande?.informationsPersonnel
               ?.prestatairesActivites ?? []

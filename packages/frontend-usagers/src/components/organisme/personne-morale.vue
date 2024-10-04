@@ -211,7 +211,7 @@
         </div>
       </div>
       <DsfrFieldset v-if="siegeSocial">
-        <fieldset class="fr-fieldset">
+        <div class="fr-fieldset">
           <div
             class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
           >
@@ -266,7 +266,7 @@
               />
             </div>
           </div>
-        </fieldset>
+        </div>
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
             <DsfrTable

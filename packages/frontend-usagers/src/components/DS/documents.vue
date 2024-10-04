@@ -1,21 +1,23 @@
 <template>
-  <DsfrFieldset
-    legend="Documents générés par l'application : CERFA, Accusé de réception"
-    legend-id="docs_generes"
-  >
+  <DsfrFieldset legend-id="docs_generes">
     <div v-if="filesGeneres.length > 0">
-      <TableFull :headers="headers" :data="filesGeneres" />
+      <TableFull
+        title="Documents générés par l'application : CERFA, Accusé de réception"
+        :headers="headers"
+        :data="filesGeneres"
+      />
     </div>
     <div v-else>
       <span>Aucun document joint à la demande</span>
     </div>
   </DsfrFieldset>
-  <DsfrFieldset
-    legend="Documents téléversés par l'organisateur"
-    legend-id="doc_televerses"
-  >
+  <DsfrFieldset legend-id="doc_televerses">
     <div v-if="filesTeleverses.length > 0">
-      <TableFull :headers="headers" :data="filesTeleverses" />
+      <TableFull
+        title="Documents téléversés par l'organisateur"
+        :headers="headers"
+        :data="filesTeleverses"
+      />
     </div>
     <div v-else>
       <span>Aucun document joint à la demande</span>
