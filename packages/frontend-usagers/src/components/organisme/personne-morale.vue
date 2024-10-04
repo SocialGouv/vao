@@ -27,7 +27,7 @@
         :error-message="siretErrorMessage"
         :readonly="!props.modifiable"
         placeholder=""
-        hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
+        hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
         @update:model-value="trimSiret"
       />
       <div v-if="props.modifiable" class="fr-fieldset__element">

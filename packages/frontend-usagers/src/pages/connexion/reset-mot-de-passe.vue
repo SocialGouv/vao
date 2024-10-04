@@ -49,8 +49,8 @@
                       <p class="fr-message">
                         Votre mot de passe doit contenir :
                       </p>
-                      <div class="fr-grid-row">
-                        <p
+                      <ul class="fr-grid-row">
+                        <li
                           :class="[
                             'fr-col-6 fr-message',
                             isPwdLong ? 'fr-valid-text' : ' fr-error-text',
@@ -60,8 +60,8 @@
                           <span v-if="isPwdLong" class="fr-sr-only">
                             La règle est respectèe.
                           </span>
-                        </p>
-                        <p
+                        </li>
+                        <li
                           :class="[
                             'fr-col-6 fr-message',
                             isPwdMin ? 'fr-valid-text' : ' fr-error-text',
@@ -71,8 +71,8 @@
                           <span v-if="isPwdMin" class="fr-sr-only">
                             La règle est respectèe.
                           </span>
-                        </p>
-                        <p
+                        </li>
+                        <li
                           :class="[
                             'fr-col-6 fr-message',
                             isPwdMaj ? 'fr-valid-text' : ' fr-error-text',
@@ -82,8 +82,8 @@
                           <span v-if="isPwdMaj" class="fr-sr-only">
                             La règle est respectèe.
                           </span>
-                        </p>
-                        <p
+                        </li>
+                        <li
                           :class="[
                             'fr-col-6 fr-message',
                             isPwdNumber ? 'fr-valid-text' : ' fr-error-text',
@@ -93,8 +93,8 @@
                           <span v-if="isPwdNumber" class="fr-sr-only">
                             La règle est respectèe.
                           </span>
-                        </p>
-                        <p
+                        </li>
+                        <li
                           :class="[
                             'fr-col-6 fr-message',
                             isPwdSpecial ? 'fr-valid-text' : ' fr-error-text',
@@ -104,8 +104,8 @@
                           <span v-if="isPwdSpecial" class="fr-sr-only">
                             La règle est respectèe.
                           </span>
-                        </p>
-                      </div>
+                        </li>
+                      </ul>
                     </div>
                   </div>
                   <div class="fr-fieldset__element fr-col-12">

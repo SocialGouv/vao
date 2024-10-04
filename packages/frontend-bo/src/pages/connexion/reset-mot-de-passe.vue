@@ -25,6 +25,7 @@
                         :model-value="email"
                         type="text"
                         label="Adresse Courriel"
+                        hint="Exemple: nom@domaine.fr"
                         :label-visible="true"
                         disabled
                       />
