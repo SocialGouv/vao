@@ -3,6 +3,12 @@ pg:
   cnpg-cluster:
     persistence:
       size: "50Gi"
+    resources:
+      requests:
+        memory: 1Gi
+      limits:
+        cpu: "1"
+        memory: 1Gi
     annotations:
       oblik.socialgouv.io/enabled: "false"
 
@@ -14,11 +20,11 @@ backend:
   containerPort: 3000
   resources:
     requests:
-      cpu: 0.2
-      memory: 256Mi
-    limits:
-      cpu: 2
-      memory: 1Gi
+      cpu: 200m
+      memory: 512Mi
+    limits: # exports need a lot of CPU/RAM ATM
+      cpu: 500m
+      memory: 768Mi
   livenessProbe:
     tcpSocket:
       port: 3000
@@ -76,8 +82,8 @@ frontend-usagers:
       cpu: 50m
       memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 256Mi
+      cpu: 100m
+      memory: 128Mi
   livenessProbe:
     tcpSocket:
       port: 8080
@@ -97,8 +103,8 @@ frontend-bo:
       cpu: 50m
       memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 256Mi
+      cpu: 100m
+      memory: 128Mi
   livenessProbe:
     tcpSocket:
       port: 8080
