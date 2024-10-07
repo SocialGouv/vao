@@ -29,6 +29,10 @@ module.exports = {
           process.env.BACKEND_CRON_REQUEST_DS8J15J_DEADLINE_REMIND,
         name: "REQUEST_DS8J15J",
       },
+      notifyactionsbo: {
+        cron: process.env.BACKEND_CRON_REQUEST_ACTIONS_BO_CRON,
+        name: "REQUEST_ACTIONS_BO",
+      },
       update: {
         cron: process.env.BACKEND_CRON_UPDATE_STATUT_DS_CRON,
         name: "UPDATE_STATUT_DS",
