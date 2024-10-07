@@ -20,10 +20,11 @@ export default defineNuxtConfig({
   ],
   devtools: { enabled: false },
   modules: [
-    "nuxt-security",
     "@pinia/nuxt",
     "@socialgouv/dsfr-toaster-nuxt-module",
     "nuxt-maplibre",
+    "nuxt-security",
+    "vue-dsfr-nuxt-module",
   ],
   runtimeConfig: {
     public: {

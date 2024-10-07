@@ -330,6 +330,7 @@ const headers = [
     sorter: "listeFonction",
     objectLabel: "listeFonction",
     text: "Fonctions",
+    format: (value) => value.listeFonction.join(", "),
     headerAttrs: {
       class: "suivi",
     },

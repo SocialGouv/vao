@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container">
-    <DemandesSejourListe />
+    <DemandesSejourListe display="Organisme" />
   </div>
 </template>
 

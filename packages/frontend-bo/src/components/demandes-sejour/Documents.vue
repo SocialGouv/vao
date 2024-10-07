@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { formatDate } from "date-fns/format";
+import dayjs from "dayjs";
 import { TableFull } from "@vao/shared";
 
 const config = useRuntimeConfig();
@@ -51,7 +51,7 @@ const headers = [
   {
     column: "createdAt",
     sorter: "createdAt",
-    format: (item) => formatDate(item.createdAt, "dd/MM/yyyy HH:mm"),
+    format: (item) => dayjs(item.createdAt).format("DD/MM/YYYY"),
     text: "Date de dépose",
     headerAttrs: {
       class: "suivi",

@@ -29,7 +29,7 @@ export const useUserStore = defineStore("user", {
           this.user.serviceCompetent =
             this.user.territoireCode === "FRA"
               ? "NAT"
-              : /^"\d"+$/.test(user.territoireCode)
+              : /^\d+$/.test(this.user.territoireCode)
                 ? "DEP"
                 : "REG";
         }

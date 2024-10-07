@@ -97,6 +97,9 @@ Lancer la stack via docker compose :
 
 Attention : le premier lancement est long et peut prendre jusqu'à plusieurs minutes. Il faut regarder les logs via `docker compose logs -f` et attendre que les builds nuxt aient bien fini.
 
+Quand MinIO (S3 en local) a démarré, aller sur la console web `http://localhost:9001` et se connecter avec le compte user `minioadmin` et le mot de passe `minioadmin` (comme ce qui est indiqué dans le fichier `.env`).
+Créer ensuite un bucket appelé `vao` (qui correspond à `S3_BUCKET_NAME` dans le fichier `.env`). Par la suite, il est possible d'utiliser cette console pour vérifier et débugger toute la partie stockage de fichiers en local.
+
 ### Logs
 
 Afin de suivre toutes les logs de la stack simultanément :

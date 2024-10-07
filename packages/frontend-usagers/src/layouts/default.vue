@@ -11,7 +11,7 @@ const header = reactive({
     {
       label: "Aide",
       href: "https://vao-assistance.atlassian.net/servicedesk/customer/portals",
-      icon: "ri-question-line",
+      icon: "ri:question-line",
       iconRight: false,
       target: "_blank",
       rel: "noopener noreferrer",
@@ -19,14 +19,14 @@ const header = reactive({
     {
       label: "Mon compte",
       to: "/",
-      icon: "ri-account-circle-line",
+      icon: "ri:account-circle-line",
       iconRight: false,
       class: computed(() => (userStore.isConnected ? "" : "fr-hidden")),
     },
     {
       label: "Se déconnecter",
       onclick: logout,
-      icon: "ri-logout-box-line",
+      icon: "ri:logout-box-line",
       iconRight: false,
       button: true,
       class: computed(() => (userStore.isConnected ? "" : "fr-hidden")),

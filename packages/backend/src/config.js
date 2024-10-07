@@ -49,6 +49,11 @@ module.exports = {
     host: process.env.POSTGRES_HOST,
     password: process.env.PG_VAO_PASSWORD,
     port: process.env.POSTGRES_PORT,
+    ssl: process.env.PGSSLMODE
+      ? {
+          rejectUnauthorized: false, // to authorize CNPG self-signed certificates
+        }
+      : false,
     user: process.env.PG_VAO_USER,
   },
 

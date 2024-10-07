@@ -3,6 +3,12 @@ pg:
   cnpg-cluster:
     persistence:
       size: "50Gi"
+    resources:
+      requests:
+        memory: 1Gi
+      limits:
+        cpu: "1"
+        memory: 1Gi
     annotations:
       oblik.socialgouv.io/enabled: "false"
 
@@ -14,11 +20,11 @@ backend:
   containerPort: 3000
   resources:
     requests:
-      cpu: 0.2
-      memory: 256Mi
-    limits:
-      cpu: 2
-      memory: 1Gi
+      cpu: 200m
+      memory: 512Mi
+    limits: # exports need a lot of CPU/RAM ATM
+      cpu: 500m
+      memory: 768Mi
   livenessProbe:
     tcpSocket:
       port: 3000
@@ -38,6 +44,8 @@ backend:
     - secretRef:
         name: pg
     - secretRef:
+        name: pg-app
+    - secretRef:
         name: api-entreprise
     - secretRef:
         name: api-insee
@@ -45,30 +53,23 @@ backend:
         name: smtp
     - secretRef:
         name: token
-  env:
-    - name: DEBUG
-      value: "*info*"
-    - name: DEBUG_HIDE_DATE
-      value: "true"
-    - name: TZ
-      value: Europe/Paris
-    - name: POSTGRES_HOST
-      valueFrom:
-        secretKeyRef:
-          name: pg-app
-          key: PGHOST
-    - name: POSTGRES_PORT
-      valueFrom:
-        secretKeyRef:
-          name: pg-app
-          key: PGPORT
-    - name: POSTGRES_DB
-      valueFrom:
-        secretKeyRef:
-          name: pg-app
-          key: PGDATABASE
-    - name: SENTRY_RELEASE
-      value: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
+    - secretRef:
+        name: "{{.Values.global.s3SecretName}}"
+  vars:
+    DEBUG: "*info*"
+    DEBUG_HIDE_DATE: "true"
+    TZ: Europe/Paris
+    SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
+    POSTGRES_HOST: "$(PGHOST)"
+    POSTGRES_PORT: "$(PGPORT)"
+    POSTGRES_DB: "$(PGDATABASE)"
+
+    S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
+    S3_BUCKET_NAME: "$(bucket_name)"
+    S3_BUCKET_REGION: "$(bucket_region)"
+    S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
+    S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
+
 
 frontend-usagers:
   ~chart: app
@@ -81,8 +82,8 @@ frontend-usagers:
       cpu: 50m
       memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 256Mi
+      cpu: 100m
+      memory: 128Mi
   livenessProbe:
     tcpSocket:
       port: 8080
@@ -102,8 +103,8 @@ frontend-bo:
       cpu: 50m
       memory: 128Mi
     limits:
-      cpu: 500m
-      memory: 256Mi
+      cpu: 100m
+      memory: 128Mi
   livenessProbe:
     tcpSocket:
       port: 8080
@@ -118,7 +119,8 @@ jobs:
       use: build
       with:
         imagePackage: migrations
-        context: packages/migrations
+        context: ./
+        dockerfile: packages/migrations/Dockerfile
 
     build-backend:
       use: build
@@ -212,6 +214,35 @@ jobs:
             secretKeyRef:
               name: pg-app
               key: PGDATABASE
+        - name: S3_BUCKET_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: "{{.Values.global.s3SecretName}}"
+              key: bucket_endpoint
+        - name: S3_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: "{{.Values.global.s3SecretName}}"
+              key: bucket_name
+        - name: S3_BUCKET_REGION
+          valueFrom:
+            secretKeyRef:
+              name: "{{.Values.global.s3SecretName}}"
+              key: bucket_region  
+        - name: S3_BUCKET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{.Values.global.s3SecretName}}"
+              key: bucket_access_key  
+        - name: S3_BUCKET_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{.Values.global.s3SecretName}}"
+              key: bucket_secret_key
+      envFrom:
+        - secretRef:
+            name: "{{.Values.global.s3SecretName}}"
+
 
     init-db:
       ~needs: [pg]

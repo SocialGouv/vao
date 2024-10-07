@@ -102,7 +102,7 @@
             :is-valid="emailMeta.valid"
             :error-message="emailErrorMessage"
             placeholder=""
-            hint="L'adresse de courriel doit être valide"
+            hint="L'adresse de courriel doit être valide. Exemple: nom@domaine.fr"
             @update:model-value="onEmailChange"
           />
         </div>
@@ -345,6 +345,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading } from "@vao/shared";
+import { DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
 
 const toaster = useToaster();
 
@@ -511,7 +512,7 @@ const formatedEtablissements = computed(() => {
         e.codePostal ?? "",
         e.commune ?? "",
         {
-          component: "DsfrToggleSwitch",
+          component: DsfrToggleSwitch,
           modelValue: e.enabled,
           disabled:
             !props.modifiable ||

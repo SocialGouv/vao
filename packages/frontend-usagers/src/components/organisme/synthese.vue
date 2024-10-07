@@ -1,12 +1,8 @@
 <template>
   <div>
     <div class="fr-grid-row fr-my-5v">
-      <DsfrAccordionsGroup>
-        <DsfrAccordion
-          :id="1"
-          :expanded-id="expandedId"
-          @expand="(id) => (expandedId = id)"
-        >
+      <DsfrAccordionsGroup v-model="expandeIndex">
+        <DsfrAccordion :id="1">
           <template #title>
             <span>Renseignements généraux &nbsp;</span>
             <DsfrBadge
@@ -31,11 +27,7 @@
             :show-buttons="false"
           />
         </DsfrAccordion>
-        <DsfrAccordion
-          :id="2"
-          :expanded-id="expandedId"
-          @expand="(id) => (expandedId = id)"
-        >
+        <DsfrAccordion :id="2">
           <template #title>
             <span>Agrément &nbsp;</span>
             <DsfrBadge
@@ -50,12 +42,7 @@
             :show-buttons="false"
           />
         </DsfrAccordion>
-        <DsfrAccordion
-          :id="3"
-          title="Protocole de transport"
-          :expanded-id="expandedId"
-          @expand="(id) => (expandedId = id)"
-        >
+        <DsfrAccordion :id="3" title="Protocole de transport">
           <template #title>
             <span>Informations sur le transport &nbsp;</span>
             <DsfrBadge
@@ -71,12 +58,7 @@
             :show-buttons="false"
           ></ProtocoleTransport>
         </DsfrAccordion>
-        <DsfrAccordion
-          :id="4"
-          title="Protocole sanitaire"
-          :expanded-id="expandedId"
-          @expand="(id) => (expandedId = id)"
-        >
+        <DsfrAccordion :id="4" title="Protocole sanitaire">
           <template #title>
             <span>Informations sanitaires &nbsp;</span>
             <DsfrBadge
@@ -143,7 +125,7 @@ const regionStore = useRegionStore();
 regionStore.fetch();
 
 const emit = defineEmits(["previous", "finalize"]);
-const expandedId = ref(0);
+const expandeIndex = ref(-1);
 
 const initialValues = { ...props.initOrganisme };
 const validationSchema = computed(() =>

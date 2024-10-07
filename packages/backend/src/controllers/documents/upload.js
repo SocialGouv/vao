@@ -41,7 +41,8 @@ module.exports = async (req, res, next) => {
   }
 
   try {
-    const uuid = await DocumentService.upload(category, file);
+    const uuid = await DocumentService.uploadLegacy(category, file);
+    await DocumentService.upload(category, file, uuid);
     log.d("DONE", uuid);
     return res.json({ uuid });
   } catch (error) {

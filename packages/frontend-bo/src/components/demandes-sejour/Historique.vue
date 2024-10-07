@@ -1,12 +1,17 @@
 <template>
   <div>
-    <TableFull :headers="headers" :data="props.historique" />
+    <TableFull
+      :headers="headers"
+      :data="props.historique"
+      :sort-direction-init="-1"
+      sort-by-init="createdAt"
+    />
   </div>
 </template>
 
 <script setup>
 import { TableFull } from "@vao/shared";
-import { formatDate } from "date-fns/format";
+import dayjs from "dayjs";
 import DisplayTypePrecision from "~/components/demandes-sejour/DisplayTypePrecision.vue";
 
 const props = defineProps({
@@ -46,7 +51,7 @@ const headers = [
   {
     column: "createdAt",
     sorter: "createdAt",
-    format: (item) => formatDate(item.createdAt, "dd/MM/yyyy HH:mm"),
+    format: (item) => dayjs(item.createdAt).format("DD/MM/YYYY"),
     text: "Date",
     headerAttrs: {
       class: "suivi",

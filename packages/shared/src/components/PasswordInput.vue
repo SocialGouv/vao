@@ -25,7 +25,7 @@ const type = computed(() =>
   hidePassword.value === true ? "password" : "text",
 );
 const icon = computed(() => {
-  return hidePassword.value ? "ri-eye-line" : "ri-eye-off-line";
+  return hidePassword.value ? "ri:eye-line" : "ri:eye-off-line";
 });
 
 const finalLabelClass = computed(() => ["fr-label", props.labelClass]);

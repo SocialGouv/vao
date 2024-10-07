@@ -1,5 +1,4 @@
-import { getMonth } from "date-fns/getMonth";
-import { formatDate } from "date-fns/format";
+import dayjs from "dayjs";
 import { organisme } from "#imports";
 
 /*  Sur l'espace admin, le status BROUILLON ne sera jamais vu,
@@ -23,12 +22,13 @@ const statuts = {
 
 const getSaison = (demande) => {
   if (demande?.dateDebut) {
-    const moisDebut = getMonth(demande.dateDebut);
+    const moisDebut = dayjs(demande.dateDebut).month();
     if (moisDebut < 3) return "Hiver";
     if (moisDebut < 6) return "Printemps";
     if (moisDebut < 9) return "Eté";
     if (moisDebut < 12) return "Automne";
   }
+  return "NC";
 };
 
 const isDeclaration8Jours = (statut) =>
@@ -53,7 +53,7 @@ const getOrganismeTitle = (demande) => {
 };
 
 const getDateDebutFin = (demande) =>
-  `${formatDate(demande.dateDebut, "dd/MM/yyyy")} - ${formatDate(demande.dateFin, "dd/MM/yyyy")}`;
+  `${dayjs(demande.dateDebut).format("DD/MM/YYYY")} - ${dayjs(demande.dateFin).format("DD/MM/YYYY")}`;
 
 export default {
   statuts,

@@ -3,7 +3,7 @@
 </template>
 <script setup>
 import { TableFull } from "@vao/shared";
-import { formatDate } from "date-fns/format";
+import dayjs from "dayjs";
 
 defineProps({
   personnel: { required: true, default: () => [], type: Array },
@@ -29,7 +29,7 @@ const headers = [
   {
     column: "dateNaissance",
     sorter: "dateNaissance",
-    format: (item) => formatDate(item.dateNaissance, "dd/MM/yyyy"),
+    format: (item) => dayjs(item.dateNaissance).format("DD/MM/YYYY"),
     text: "Date de naissance",
     headerAttrs: {
       class: "suivi",

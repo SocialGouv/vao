@@ -1,9 +1,15 @@
+global:
+  s3SecretName: vao-prod-app-access-key
+
 backend:
   autoscale:
     enabled: true
   host: api-vao.social.gouv.fr
   redirectFrom:
     - "api-{{ .Values.global.host }}"
+  vars:
+    S3_BUCKET_ROOT_DIR: prod/files
+
 
 frontend-usagers:
   autoscale:
@@ -35,3 +41,57 @@ jobs:
           NUXT_PUBLIC_BACKEND_URL: "https://api-vao.social.gouv.fr"
           NUXT_PUBLIC_ENVIRONMENT: "production"
           NUXT_PUBLIC_SENTRY_ENABLED: "true"
+    migrations-db:
+      env:
+        - name: PG_VAO_SUPERUSER
+          valueFrom:
+            secretKeyRef:
+              name: pg-superuser
+              key: user
+        - name: PG_VAO_SUPERPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pg-superuser
+              key: password
+        - name: POSTGRES_HOST
+          valueFrom:
+            secretKeyRef:
+              name: pg-superuser
+              key: host
+        - name: POSTGRES_PORT
+          valueFrom:
+            secretKeyRef:
+              name: pg-superuser
+              key: port
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: pg-app
+              key: PGDATABASE
+        - name: S3_BUCKET_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: "{{.Values.global.s3SecretName}}"
+              key: bucket_endpoint
+        - name: S3_BUCKET_NAME
+          valueFrom:
+            secretKeyRef:
+              name: "{{.Values.global.s3SecretName}}"
+              key: bucket_name
+        - name: S3_BUCKET_REGION
+          valueFrom:
+            secretKeyRef:
+              name: "{{.Values.global.s3SecretName}}"
+              key: bucket_region  
+        - name: S3_BUCKET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{.Values.global.s3SecretName}}"
+              key: bucket_access_key  
+        - name: S3_BUCKET_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: "{{.Values.global.s3SecretName}}"
+              key: bucket_secret_key
+        - name: S3_BUCKET_ROOT_DIR
+          value: prod/files

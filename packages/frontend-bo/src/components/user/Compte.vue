@@ -88,8 +88,7 @@
                 </div>
               </div>
               <div
-                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-              >
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8">
                 <div class="fr-fieldset__element">
                   <div class="fr-input-group fr-col-12">
                     <DsfrRadioButtonSet
@@ -186,7 +185,7 @@
                     />
                     <p v-if="!actifField.modelValue && props.user.deleted_date">
                       Désactivé le
-                      {{ formatDate(props.user.deleted_date, "dd/MM/yyyy") }}
+                      {{ dayjs(props.user.deleted_date).format("DD/MM/YYYY") }}
                     </p>
                     <p
                       v-if="usersStore.user.roles.includes('Desactivation')"
@@ -241,7 +240,7 @@
 </template>
 
 <script setup>
-import { formatDate } from "date-fns/format";
+import dayjs from "dayjs";
 import { DsfrButton, DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
 import { ValidationModal } from "@vao/shared";
 import { defineProps } from "vue";
@@ -265,24 +264,24 @@ const departementStore = useDepartementStore();
 departementStore.fetch();
 
 const userDepartements = computed(() => {
-  if (props.user.territoireCode === "FRA") {
+  if (usersStore.user.territoireCode === "FRA" || isFormDisabled.value) {
     return departementStore.departements;
   }
   const departementsByRegion = departementStore.departements.filter(
-    (d) => d.region === props.user.territoireCode,
+    (d) => d.region === usersStore.user.territoireCode,
   );
   if (departementsByRegion?.length) {
     return departementsByRegion;
   }
   return (
     departementStore.departements.filter(
-      (d) => d.value === props.user.territoireCode,
+      (d) => d.value === usersStore.user.territoireCode,
     ) ?? []
   );
 });
 
 const userRegions = computed(() => {
-  if (usersStore.user.territoireCode === "FRA") {
+  if (usersStore.user.territoireCode === "FRA" || isFormDisabled.value) {
     return regionStore.regions;
   }
   return (
@@ -501,17 +500,22 @@ watch([() => serviceCompetenceField.modelValue], function () {
 onMounted(async () => {
   log.i("Mounted - IN");
   serviceCompetenceOptions = [];
+  if (!usersStore.user.serviceCompetent) {
+    await usersStore.refreshProfile();
+  }
   if (isFormDisabled.value) {
     serviceCompetenceOptions.push(serviceCompetenceNAT);
     serviceCompetenceOptions.push(serviceCompetenceREG);
   } else {
-    if (usersStore.user.serviceCompetent === competence.NATIONALE)
+    if (usersStore.user.serviceCompetent === competence.NATIONALE) {
       serviceCompetenceOptions.push(serviceCompetenceNAT);
+    }
     if (
       usersStore.user.serviceCompetent === competence.NATIONALE ||
       usersStore.user.serviceCompetent === competence.REGIONALE
-    )
+    ) {
       serviceCompetenceOptions.push(serviceCompetenceREG);
+    }
   }
   serviceCompetenceOptions.push(serviceCompetenceDEP);
   // Mode Edition

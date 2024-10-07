@@ -21,12 +21,15 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     messages: [],
   }),
   actions: {
-    async fetchDemandes() {
+    async fetchDemandes({ sortBy } = {}) {
       log.i("fetchDemandes - IN");
       try {
         const { demandes } = await $fetchBackend("/sejour", {
           method: "GET",
           credentials: "include",
+          params: {
+            sortBy,
+          },
         });
         if (demandes) {
           log.i("fetchDemandes - DONE");

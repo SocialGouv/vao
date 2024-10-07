@@ -129,16 +129,6 @@ const searchState = reactive({
   type: null,
 });
 
-try {
-  await eigStore.get({
-    limit: defaultLimit,
-    offset: defaultOffset,
-    search: searchState,
-  });
-} catch (error) {
-  toaster.error("Une erreur est survenue lors de la récupération des demandes");
-}
-
 const paginateResults = async (sortValue, limitValue, currentPageValue) => {
   try {
     await eigStore.get({
@@ -152,6 +142,7 @@ const paginateResults = async (sortValue, limitValue, currentPageValue) => {
     toaster.error(
       "Une erreur est survenue lors de la récupération de la demande",
     );
+    throw error;
   }
 };
 
@@ -168,6 +159,7 @@ const fetchDemandesDebounce = debounce(async (search) => {
     toaster.error(
       "Une erreur est survenue lors de la récupération de la demande",
     );
+    throw error;
   }
 });
 
@@ -283,7 +275,7 @@ const headers = [
       },
       label: "Suppression",
       iconOnly: true,
-      icon: "ri-delete-bin-2-line",
+      icon: "ri:delete-bin-2-line",
     }),
   },
 ];
@@ -315,10 +307,22 @@ const deleteEig = async () => {
   try {
     await eigStore.delete(eigToDelete.value);
     await eigStore.get();
-  } catch (e) {
+  } catch (error) {
     toaster.error("Une erreur est survenue de la suppression de l'EIG");
+    throw error;
   } finally {
     closeEigModal();
   }
 };
+
+try {
+  await eigStore.get({
+    limit: defaultLimit,
+    offset: defaultOffset,
+    search: searchState,
+  });
+} catch (error) {
+  toaster.error("Une erreur est survenue lors de la récupération des demandes");
+  throw error;
+}
 </script>

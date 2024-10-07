@@ -11,7 +11,9 @@
         <span class="read-only-label">{{ input.label }}</span>
       </div>
       <div class="fr-col-10">
-        <span class="read-only-value">{{ displayValue }}</span>
+        <span class="read-only-value">
+          <slot :value="displayValue">{{ displayValue }}</slot>
+        </span>
       </div>
     </div>
     <div v-else>
@@ -100,26 +102,28 @@ const header = computed(() => {
 });
 
 const displayValue = computed(() => {
-  switch (props.input.inputType) {
-    case displayInput.InputTypes.TEXT:
-      return props.value !== null && props.value !== undefined
+  const inputHandlers = {
+    [displayInput.InputTypes.RAW]: (props) => props.value,
+    [displayInput.InputTypes.TEXT]: (props) =>
+      props.value !== null && props.value !== undefined
         ? props.value.toString()
-        : null;
-    case displayInput.InputTypes.NUMBER:
-      return isNaN(parseInt(props.value)) ? null : parseInt(props.value);
-    case displayInput.InputTypes.RADIO:
-      return Object.keys(props.input.options).includes(props.value?.toString())
+        : null,
+    [displayInput.InputTypes.NUMBER]: (props) =>
+      isNaN(parseInt(props.value)) ? null : parseInt(props.value),
+    [displayInput.InputTypes.RADIO]: (props) =>
+      Object.keys(props.input.options).includes(props.value?.toString())
         ? props.input.options[props.value]
-        : null;
-    case displayInput.InputTypes.MULTISELECT:
-      return Array.isArray(props.value) ? props.value.join(" / ") : null;
-    case displayInput.InputTypes.TO_FORMAT:
-      return props.value ? props.input.formatter(props.value) : null;
-    case displayInput.InputTypes.TABLE:
-      return Array.isArray(props.value) ? props.value : null;
-    default:
-      return "error";
-  }
+        : null,
+    [displayInput.InputTypes.MULTISELECT]: (props) =>
+      Array.isArray(props.value) ? props.value.join(" / ") : null,
+    [displayInput.InputTypes.TO_FORMAT]: (props) =>
+      props.value ? props.input.formatter(props.value) : null,
+    [displayInput.InputTypes.TABLE]: (props) =>
+      Array.isArray(props.value) ? props.value : null,
+  };
+
+  const handler = inputHandlers[props.input.inputType];
+  return handler ? handler(props) : "error";
 });
 </script>
 

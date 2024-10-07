@@ -135,6 +135,12 @@ const filteredData = computed(() => {
         target = Array.isArray(item[rule.obj])
           ? item[rule.obj].map((el) => el[rule.val])
           : item[rule.obj]?.[rule.val];
+        const noMatch = Array.isArray(target)
+          ? target.findIndex((item) =>
+              values.toLowerCase().includes(item.toString().toLowerCase()),
+            ) === -1
+          : !target?.toString().toLowerCase().includes(values.toLowerCase());
+        return noMatch;
       } else if (typeof values === "boolean") {
         const noMatch = Array.isArray(target)
           ? target.findIndex((item) => values !== item) === -1

@@ -4,11 +4,8 @@ FROM node:$NODE_VERSION AS build
 WORKDIR /app
 
 COPY ./package.json ./yarn.lock ./
-RUN yarn --frozen-lockfile
-
-COPY . .
-
-RUN yarn install --production && yarn cache clean
+COPY packages/migrations/package.json packages/migrations/
+RUN yarn workspace @vao/migrations install --frozen-lockfile
 
 #--- Run stage
 FROM node:$NODE_VERSION
@@ -18,11 +15,11 @@ WORKDIR /app
 
 ENV NODE_ENV: production
 
-COPY --from=build /app/package.json /app/package.json
-COPY --from=build /app/node_modules /app/node_modules
-COPY --from=build /app/src /app/src
+COPY --from=build /app/node_modules node_modules
+COPY package.json yarn.lock ./
+COPY packages/migrations/package.json packages/migrations/yarn.lock packages/migrations/
+COPY packages/migrations/src packages/migrations/src
 
-# Note: Don't use "yarn start" as it doesn't handle linux signals (graceful shutdown for instance)
-CMD ["yarn", "knex", "--cwd", "/app/src", "migrate:latest"]
+CMD ["./node_modules/.bin/knex", "--cwd", "packages/migrations/src", "migrate:latest"]
 
 

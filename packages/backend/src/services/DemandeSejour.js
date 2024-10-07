@@ -222,8 +222,7 @@ RETURNING
     [declarationId, vacanciers, personnel, hebergement, attestation],
   ],
   get: (organismeIds) => [
-    `
-SELECT
+    `SELECT
   ds.id as "declarationId",
   ds.statut as "statut",
   ds.id_fonctionnelle as "idFonctionnelle",
@@ -245,12 +244,29 @@ SELECT
   ds.files as "files",
   ds.attestation as "attestation",
   o.personne_morale->>'siret' as "siret",
-  o.personne_morale->'etablissementPrincipal' as "organismeAgree"
+  o.personne_morale->'etablissementPrincipal' as "organismeAgree",
+  dsm.message as "message",
+  CASE 
+    WHEN (dsm.read_at IS NULL AND dsm.front_user_id IS NULL) THEN 'NON LU'
+    WHEN (dsm.read_at IS NOT NULL AND dsm.front_user_id IS NULL) THEN 'LU'
+    WHEN (dsm.back_user_id IS NULL) THEN 'REPONDU'
+  END AS "messageEtat",
+  CASE 
+    WHEN (dsm.read_at IS NULL AND dsm.front_user_id IS NULL) THEN 1 -- NON LU
+    WHEN (dsm.read_at IS NOT NULL AND dsm.front_user_id IS NULL) THEN 2 -- LU
+    WHEN (dsm.back_user_id IS NULL) THEN 3 -- REPONDU
+  END AS "messageOrdreEtat",
+  dsm.read_at AS "messageReadAt",
+  dsm.created_at AS "messageCreatedAt",
+  COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
+LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
+      SELECT MAX(dsmax.id)
+      FROM front.demande_sejour_message  dsmax
+      WHERE dsmax.declaration_id = ds.id)
 WHERE
-  o.id  = ANY ($1)
-ORDER BY ds.edited_at DESC
+  o.id IN ($1)
 `,
     [organismeIds],
   ],
@@ -268,12 +284,18 @@ SELECT
   COUNT(CASE WHEN statut = 'ABANDONNEE' THEN 1 END)::integer AS "abandonnee",
   COUNT(CASE WHEN statut = 'REFUSEE' THEN 1 END)::integer AS "refusee",
   COUNT(CASE WHEN statut = 'REFUSEE 8J' THEN 1 END)::integer AS "refuse8J",
-  COUNT(CASE WHEN statut <> 'BROUILLON' THEN 1 END)::integer AS "global"
+  COUNT(CASE WHEN statut <> 'BROUILLON' THEN 1 END)::integer AS "global",
+  COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "nonlu",
+  COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "lu",
+  COUNT(CASE WHEN (dsm.message is not null AND dsm.front_user_id IS NULL) THEN 1 END)::integer AS "repondu"
 FROM
   front.demande_sejour ds
   JOIN front.organismes o ON o.id = ds.organisme_id
-  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id,
-  jsonb_array_elements(ds.hebergement -> 'hebergements') h
+  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+  LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
+      SELECT MAX(dsmax.id)
+      FROM front.demande_sejour_message  dsmax
+      WHERE dsmax.declaration_id = ds.id)
 WHERE
   jsonb_path_query_array(hebergement, '$.hebergements[*].coordonnees.adresse.departement') ?| ($1)::text[]
   OR a.region_obtention = '${territoireCode}'
@@ -295,10 +317,28 @@ SELECT
   o.personne_morale as "personneMorale",
   o.personne_physique as "personnePhysique",
   o.type_organisme as "typeOrganisme",
-  ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length}) as "estInstructeurPrincipal"
+  ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length}) as "estInstructeurPrincipal",
+  dsm.message as "message",
+    CASE 
+      WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 'NON LU'
+      WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 'LU'
+      WHEN (dsm.front_user_id IS NULL) THEN 'REPONDU'
+    END AS "messageEtat",
+    CASE 
+      WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 -- NON LU
+      WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 2 -- LU
+      WHEN (dsm.front_user_id IS NULL) THEN 3 -- REPONDU
+    END AS "messageOrdreEtat",
+    dsm.read_at AS "messageReadAt",
+    dsm.created_at AS "messageCreatedAt",
+    COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
 FROM front.demande_sejour ds
   JOIN front.organismes o ON o.id = ds.organisme_id
   LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+  LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
+      SELECT MAX(dsmax.id)
+      FROM front.demande_sejour_message  dsmax
+      WHERE dsmax.declaration_id = ds.id)
 WHERE
   statut <> 'BROUILLON'
   AND ((${departementQuery})
@@ -312,6 +352,7 @@ SELECT COUNT(DISTINCT ds.id)
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
 LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id
 WHERE
   statut <> 'BROUILLON'
   AND ((${departementQuery})
@@ -837,9 +878,20 @@ module.exports.cancel = async (declarationId, userId) => {
   log.i("cancel - DONE");
   return rowCount;
 };
-module.exports.get = async (organismesId) => {
+module.exports.get = async ({ sortBy }, organismesId) => {
   log.i("get - IN", { organismesId });
-  const response = await pool.query(...query.get(organismesId));
+  const queryGet = query.get(organismesId[0]);
+  let querySorted = "";
+  if (sortBy) {
+    if (sortBy === "messageOrdreEtat")
+      querySorted += ` ORDER BY "messageOrdreEtat" ASC, "messageCreatedAt" ASC`;
+    else querySorted += ` ORDER BY "${sortBy}" ASC`;
+  } else {
+    querySorted += " ORDER BY ds.edited_at DESC";
+  }
+  const finalQuery = queryGet[0] + querySorted;
+  const queryParams = queryGet[1];
+  const response = await pool.query(finalQuery, queryParams[0]);
   log.i("get - DONE");
   const demandes = response.rows;
   return demandes;
@@ -917,6 +969,9 @@ module.exports.getByDepartementCodes = async (
       `statut in ('${dsStatus.statuts.EN_COURS}', '${dsStatus.statuts.EN_COURS_8J}', '${dsStatus.statuts.TRANSMISE}', '${dsStatus.statuts.TRANSMISE_8J}')`,
     );
   }
+  if (search?.message) {
+    searchQuery.push(`dsm.message is not null`);
+  }
 
   /*
    * Cette Partie du code soit toujours etre appelé juste avant la fonction query.getByDepartementCodes
@@ -931,14 +986,16 @@ module.exports.getByDepartementCodes = async (
     departementQuery,
     params,
   );
-
   const stats = await pool.query(
     ...query.getAdminStats(departementCodes, territoireCode),
   );
 
   // Order management
   if (sortBy && sortDirection) {
-    queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, ds.edited_at DESC`;
+    if (sortBy === "messageOrdreEtat")
+      queryWithPagination += ` ORDER BY "${sortBy}" ${sortDirection}, "messageCreatedAt" DESC`;
+    else
+      queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, ds.edited_at DESC`;
   } else {
     queryWithPagination += "ORDER BY ds.edited_at DESC";
   }
@@ -1028,6 +1085,7 @@ module.exports.getHebergementsByDepartementCodes = async (
 
 module.exports.getAdminStats = async (departements, territoireCode) => {
   log.i("getAdminStats - IN");
+
   const {
     rows: [stats],
   } = await pool.query(...query.getAdminStats(departements, territoireCode));

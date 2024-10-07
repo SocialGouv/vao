@@ -12,10 +12,11 @@
       </DsfrAlert>
     </div>
     <DsfrTabs
+      v-model="selectedTabIndex"
       tab-list-name="display-formulaire"
       :tab-titles="tabTitles"
       :initial-selected-index="initialSelectedIndex"
-      @select-tab="selectTab"
+      @update:model-value="selectTab"
     >
       <DsfrTabContent
         panel-id="tab-content-0"
@@ -185,13 +186,15 @@ definePageMeta({
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
 });
 
+const usersStore = useUserStore();
+
 const log = logger("pages/sejours");
 
 const toaster = useToaster();
 const { apiStatus, resetApiStatut, setApiStatut } = useIsDownloading();
 const route = useRoute();
 
-const initialSelectedIndex = 0;
+const initialSelectedIndex = parseInt(route.query.defaultTabIndex);
 
 const chatRef = ref(null);
 const asc = ref(true);
@@ -201,11 +204,10 @@ const config = useRuntimeConfig();
 
 const selectTab = async (idx) => {
   asc.value = selectedTabIndex.value < idx;
-  selectedTabIndex.value = idx;
   if (idx === 2 && !historique.value) {
     execute();
   }
-  if (idx === 3) {
+  if (idx === 3 && userStore.user.serviceCompetent === "DEP") {
     await demandeStore.readMessages(route.params.declarationId);
     demandeStore.fetchMessages(route.params.declarationId);
   }
@@ -249,9 +251,20 @@ const isOrganismeNonAgree = computed(() => {
 });
 
 onMounted(async () => {
+  if (!usersStore.user.serviceCompetent) {
+    await usersStore.refreshProfile();
+  }
   try {
     await demandeStore.setCurrentDemande(route.params.declarationId);
     demandeStore.fetchMessages(route.params.declarationId);
+    if (!usersStore.user.serviceCompetent) {
+      await usersStore.refreshProfile();
+    }
+    if (
+      parseInt(route.query.defaultTabIndex) === 3 &&
+      userStore.user.serviceCompetent === "DEP"
+    )
+      await demandeStore.readMessages(route.params.declarationId);
   } catch (e) {
     navigateTo("/sejours");
   }
@@ -309,16 +322,34 @@ const unreadMessages = computed(() => {
 });
 
 const tabTitles = computed(() => [
-  { title: "Formulaire" },
-  { title: "Documents joints" },
-  { title: "Historique de la déclaration" },
+  {
+    title: "Formulaire",
+    tabId: "tab-0",
+    panelId: "tab-content-0",
+  },
+  {
+    title: "Documents joints",
+    tabId: "tab-1",
+    panelId: "tab-content-1",
+  },
+  {
+    title: "Historique de la déclaration",
+    tabId: "tab-2",
+    panelId: "tab-content-2",
+  },
   {
     title: `Messagerie ${unreadMessages.value}`,
-    icon: `${unreadMessages.value ? "ri-feedback-line" : ""}`,
+    tabId: "tab-3",
+    panelId: "tab-content-3",
+    icon: `${unreadMessages.value ? "ri:feedback-line" : ""}`,
   },
   // TODO(eig): unhide when ok
   /*
-    { title: "EIG" },
+    {
+      title: "EIG",
+      tabId: "tab-4",
+      panelId: "tab-content-4",
+    },
   */
 ]);
 

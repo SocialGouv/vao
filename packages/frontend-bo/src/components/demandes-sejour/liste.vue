@@ -1,25 +1,47 @@
 <template>
   <div class="fr-container">
-    <h1 class="header">
+    <h1 v-if="props.display === displayType.Organisme" class="header">
       Liste des séjours déclarés
       {{ props.organisme ? "" : `(${sejourStore.stats?.global})` }}
     </h1>
+    <h1 v-else class="header">Liste des messages par déclaration</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <CardsNumber
-          v-if="!props.organisme"
+          v-if="!props.organisme && props.display === displayType.Organisme"
           :values="[
             {
               title: 'Déclarations transmises à traiter',
-              value: sejourStore.stats?.transmis,
+              value: sejourStore.stats?.transmis || 0,
             },
             {
               title: 'Déclarations en cours de traitement',
-              value: sejourStore.stats?.enCours,
+              value: sejourStore.stats?.enCours || 0,
             },
             {
               title: 'Déclarations 8 jours à traiter',
-              value: sejourStore.stats?.transmis8J,
+              value: sejourStore.stats?.transmis8J || 0,
+            },
+          ]"
+        />
+        <CardsNumber
+          v-if="
+            !props.organisme &&
+            props.display === displayType.Messagerie &&
+            userStore.user.serviceCompetent === 'DEP'
+          "
+          :values="[
+            {
+              title: 'Messages non lus',
+              value: sejourStore.stats?.nonlu || 0,
+            },
+            {
+              title: 'Messages lus',
+              value: sejourStore.stats?.lu || 0,
+            },
+            {
+              title: 'Messages répondus',
+              value: sejourStore.stats?.repondu || 0,
             },
           ]"
         />
@@ -28,7 +50,7 @@
         <form>
           <div class="fr-fieldset">
             <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
@@ -42,7 +64,7 @@
               </div>
             </div>
             <div
-              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
             >
               <div class="fr-input-group">
                 <DsfrInputGroup
@@ -71,6 +93,7 @@
               </div>
             </div>
             <div
+              v-if="props.display === displayType.Organisme"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
@@ -95,7 +118,7 @@
               </div>
             </div>
             <div
-              v-if="!props.organisme"
+              v-if="!props.organisme && props.display === displayType.Organisme"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
@@ -111,7 +134,10 @@
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
+              <div
+                v-if="props.display === displayType.Organisme"
+                class="fr-input-group"
+              >
                 <DsfrButton
                   v-if="!props.organisme"
                   type="button"
@@ -158,11 +184,15 @@ import {
   MultiSelectOption,
   TableWithBackendPagination,
   ValidationModal,
+  MessageHover,
+  MessageEtat,
 } from "@vao/shared";
+import dayjs from "dayjs";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
+import { defineProps } from "vue";
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],
@@ -171,6 +201,7 @@ definePageMeta({
 
 const props = defineProps({
   organisme: { type: String, required: false, default: null },
+  display: { type: String, required: true },
 });
 
 const log = logger("pages/sejours");
@@ -180,17 +211,19 @@ const toaster = useToaster();
 const sejourStore = useDemandeSejourStore();
 const demandeSejour = useDemandeSejourStore();
 const userStore = useUserStore();
-
+const defaultSort = [];
 const defaultLimit = 10;
 const defaultOffset = 0;
 
 const sortState = ref({});
+
 const currentPageState = ref(defaultOffset);
 const limitState = ref(defaultLimit);
 
 const route = useRoute();
 
 const parseBoolean = (value) => value === "true";
+const displayType = { Messagerie: "Messagerie", Organisme: "Organisme" };
 
 const status = computed(() => [
   demandesSejours.statuts.TRANSMISE,
@@ -219,6 +252,7 @@ const searchState = reactive({
         .filter((statut) => Object.values(status.value).includes(statut))
     : null,
   action: parseBoolean(route.query.action),
+  message: props.display === displayType.Messagerie,
 });
 
 watch(
@@ -252,6 +286,7 @@ const searchParams = computed(() =>
 sejourStore.currentDemande = null;
 try {
   await sejourStore.fetchDemandes({
+    sortBy: defaultSort,
     limit: defaultLimit,
     offset: defaultOffset,
     search: searchParams.value,
@@ -261,6 +296,7 @@ try {
     titleTag: "h2",
     description: "Une erreur est survenue lors de la récupération des demandes",
   });
+  throw error;
 }
 
 watch(
@@ -280,6 +316,7 @@ watch(
         description:
           "Une erreur est survenue lors de la récupération de la demande",
       });
+      throw error;
     }
   },
 );
@@ -300,6 +337,7 @@ const fetchDemandesDebounce = debounce(async (search) => {
       description:
         "Une erreur est survenue lors de la récupération de la demande",
     });
+    throw error;
   }
 });
 
@@ -319,7 +357,7 @@ const onStatutSelect = (value) => {
   }
 };
 
-const headers = [
+const headersOrganisme = [
   {
     column: "idFonctionnelle",
     text: "Numéro de déclaration",
@@ -327,7 +365,7 @@ const headers = [
   },
   {
     column: "libelle",
-    text: "Libelle",
+    text: "Nom de séjour",
     sort: true,
   },
   {
@@ -364,6 +402,73 @@ const headers = [
   },
 ];
 
+const headersMessagerie = [
+  {
+    column: "idFonctionnelle",
+    text: "Numéro de déclaration",
+    sort: true,
+  },
+  {
+    column: "libelle",
+    text: "Libelle",
+    sort: true,
+  },
+  {
+    column: "demandeSejourStatut",
+    text: "Statut",
+    component: ({ statut }) => ({
+      component: DemandeStatusBadge,
+      statut: statut,
+    }),
+  },
+  {
+    column: "demandeSejourOrganisme",
+    text: "Organisme",
+    format: (value) => demandesSejours.getOrganismeTitle(value),
+  },
+  {
+    column: "dateDebut",
+    text: "Dates (Début-fin)",
+    format: (value) => demandesSejours.getDateDebutFin(value),
+    sort: true,
+  },
+  {
+    column: "messageCreatedAt",
+    sorter: "messageCreatedAt",
+    format: (value) =>
+      value.messageLastAt
+        ? dayjs(value.messageLastAt).format("DD/MM/YYYY HH:mm")
+        : "",
+    text: "Date dernier message",
+  },
+  {
+    column: "message",
+    text: "Dernier message",
+    component: ({ message }) => ({
+      component: MessageHover,
+      content: message,
+    }),
+  },
+  {
+    column: "messageEtat",
+    text: "Message",
+    component: ({ messageEtat }) => ({
+      component: MessageEtat,
+      etat: messageEtat,
+    }),
+  },
+];
+
+const headers = computed(() =>
+  props.display === displayType.Organisme
+    ? headersOrganisme
+    : headersMessagerie,
+);
+
+const tabIndexSejour = computed(() =>
+  props.display === displayType.Messagerie ? 3 : 0,
+);
+
 const declarationAPrendreEnCharge = ref(null);
 
 const closePrendEnChargeModal = () =>
@@ -378,7 +483,10 @@ const navigate = (state) => {
   ) {
     declarationAPrendreEnCharge.value = state;
   } else {
-    navigateTo(`/sejours/${state.declarationId}`);
+    navigateTo({
+      path: `/sejours/${state.declarationId}`,
+      query: { defaultTabIndex: `${tabIndexSejour.value}` },
+    });
   }
 };
 const validatePriseEnCharge = async () => {
@@ -389,13 +497,17 @@ const validatePriseEnCharge = async () => {
       credentials: "include",
     });
     declarationAPrendreEnCharge.value = null;
-    navigateTo(`/sejours/${declarationId}`);
+    navigateTo({
+      path: `/sejours/${declarationId}`,
+      query: { defaultTabIndex: `${tabIndexSejour.value}` },
+    });
   } catch (error) {
     log.w("prend en charge", error);
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de la prise en charge de la demande",
     });
+    throw error;
   }
 };
 
@@ -416,6 +528,14 @@ const getCsv = async () => {
   const response = await demandeSejour.exportSejours();
   exportCsv(response, "sejours.csv");
 };
+
+onMounted(async () => {
+  if (props.display === displayType.Messagerie)
+    sortState.value = {
+      sortBy: "messageOrdreEtat",
+      sortDirection: "ASC",
+    };
+});
 </script>
 
 <style scoped>

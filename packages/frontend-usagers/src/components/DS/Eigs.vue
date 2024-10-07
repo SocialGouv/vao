@@ -93,7 +93,7 @@ const headers = [
       },
       label: "Suppression",
       iconOnly: true,
-      icon: "ri-delete-bin-2-line",
+      icon: "ri:delete-bin-2-line",
     }),
   },
 ];
@@ -109,8 +109,9 @@ const deleteEig = async () => {
   try {
     await eigStore.delete(eigToDelete.value);
     await props.fetchEig();
-  } catch (e) {
+  } catch (error) {
     toaster.error("Une erreur est survenue de la suppression de l'EIG");
+    throw error;
   } finally {
     closeEigModal();
   }
