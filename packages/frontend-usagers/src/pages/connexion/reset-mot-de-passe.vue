@@ -49,10 +49,9 @@
                       <p class="fr-message">
                         Votre mot de passe doit contenir :
                       </p>
-                      <ul class="fr-grid-row">
+                      <ul>
                         <li
                           :class="[
-                            'fr-col-6 fr-message',
                             isPwdLong ? 'fr-valid-text' : ' fr-error-text',
                           ]"
                         >
@@ -63,7 +62,6 @@
                         </li>
                         <li
                           :class="[
-                            'fr-col-6 fr-message',
                             isPwdMin ? 'fr-valid-text' : ' fr-error-text',
                           ]"
                         >
@@ -74,7 +72,6 @@
                         </li>
                         <li
                           :class="[
-                            'fr-col-6 fr-message',
                             isPwdMaj ? 'fr-valid-text' : ' fr-error-text',
                           ]"
                         >
@@ -85,7 +82,6 @@
                         </li>
                         <li
                           :class="[
-                            'fr-col-6 fr-message',
                             isPwdNumber ? 'fr-valid-text' : ' fr-error-text',
                           ]"
                         >
@@ -96,7 +92,6 @@
                         </li>
                         <li
                           :class="[
-                            'fr-col-6 fr-message',
                             isPwdSpecial ? 'fr-valid-text' : ' fr-error-text',
                           ]"
                         >

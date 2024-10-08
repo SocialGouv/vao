@@ -50,63 +50,38 @@
             aria-live="assertive"
           >
             <p class="fr-message">Votre mot de passe doit contenir :</p>
-            <div class="fr-grid-row">
-              <p
-                :class="[
-                  'fr-col-6 fr-message',
-                  isPwdLong ? 'fr-valid-text' : ' fr-error-text',
-                ]"
-              >
+            <ul>
+              <li :class="[isPwdLong ? 'fr-valid-text' : ' fr-error-text']">
                 12 caractères minimum
                 <span v-if="isPwdLong" class="fr-sr-only">
                   La règle est respectèe.
                 </span>
-              </p>
-              <p
-                :class="[
-                  'fr-col-6 fr-message',
-                  isPwdMin ? 'fr-valid-text' : ' fr-error-text',
-                ]"
-              >
+              </li>
+              <li :class="[isPwdMin ? 'fr-valid-text' : ' fr-error-text']">
                 1 lettre minuscule minimum
                 <span v-if="isPwdMin" class="fr-sr-only">
                   La règle est respectèe.
                 </span>
-              </p>
-              <p
-                :class="[
-                  'fr-col-6 fr-message',
-                  isPwdMaj ? 'fr-valid-text' : ' fr-error-text',
-                ]"
-              >
+              </li>
+              <li :class="[isPwdMaj ? 'fr-valid-text' : ' fr-error-text']">
                 1 lettre majuscule minimum
                 <span v-if="isPwdMaj" class="fr-sr-only">
                   La règle est respectèe.
                 </span>
-              </p>
-              <p
-                :class="[
-                  'fr-col-6 fr-message',
-                  isPwdNumber ? 'fr-valid-text' : ' fr-error-text',
-                ]"
-              >
+              </li>
+              <li :class="[isPwdNumber ? 'fr-valid-text' : ' fr-error-text']">
                 1 chiffre minimum
                 <span v-if="isPwdNumber" class="fr-sr-only">
                   La règle est respectèe.
                 </span>
-              </p>
-              <p
-                :class="[
-                  'fr-col-6 fr-message',
-                  isPwdSpecial ? 'fr-valid-text' : ' fr-error-text',
-                ]"
-              >
+              </li>
+              <li :class="[isPwdSpecial ? 'fr-valid-text' : ' fr-error-text']">
                 1 caractère spécial minimum
                 <span v-if="isPwdSpecial" class="fr-sr-only">
                   La règle est respectèe.
                 </span>
-              </p>
-            </div>
+              </li>
+            </ul>
           </div>
         </div>
         <div
