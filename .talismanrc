@@ -155,6 +155,8 @@ fileignoreconfig:
   checksum: 2ba032561adc4ef237463114e8761fb3f7a754e062f0d192f7b38d31f80763b7
 - filename: packages/frontend-bo/src/assets/Download.svg
   checksum: 2845f88f98040035bf7e9434a9bd5fe5cb8d0dd28fd1d765dd9c6a0b440e49f7
+- filename: packages/frontend-bo/src/components/comptes/territoires/Users.vue
+  checksum: 065d6b714ad389f32839879a339160eafcef5d33d4fad25b2c2ce9f9f0f42fcd
 - filename: packages/frontend-bo/src/components/connexion/email/validateToken.client.vue
   checksum: 595435cdea445525554cb0d703a53cf277127a3c0ad39c02502f865cb9fc5dd0
 - filename: packages/frontend-bo/src/components/demandes-sejour/Details.vue

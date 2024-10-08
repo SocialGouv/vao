@@ -20,6 +20,10 @@ export const useMenuNavItems = () => {
                 text: "Organisateurs",
                 to: "/comptes/liste-organisme",
               },
+              {
+                text: "Territoires",
+                to: "/comptes/territoires",
+              },
             ],
           },
         ]
