@@ -215,11 +215,11 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
 </template>
 <script setup>
 import {
+  MessageEtat,
+  MessageHover,
   MultiSelectOption,
   TableFull,
   ValidationModal,
-  MessageHover,
-  MessageEtat,
 } from "@vao/shared";
 import dayjs from "dayjs";
 import Multiselect from "@vueform/multiselect";
@@ -752,8 +752,8 @@ async function copyDS(dsId) {
     });
     if (response.declarationId) {
       toaster.success({ titleTag: "h2", description: `Déclaration dupliquée` });
-      demandeSejourStore.fetchDemandes({
-        sortBy: defaultSort,
+      await demandeSejourStore.fetchDemandes({
+        sortBy: defaultSort.value,
       });
     }
     log.d(`demande de séjour ${response.declarationId} dupliquée`);
@@ -778,8 +778,8 @@ async function deleteDS(dsId) {
     });
     if (response.deletedRows === 1) {
       toaster.success({ titleTag: "h2", description: `Déclaration supprimée` });
-      demandeSejourStore.fetchDemandes({
-        sortBy: defaultSort,
+      await demandeSejourStore.fetchDemandes({
+        sortBy: defaultSort.value,
       });
     } else {
       log.w("Erreur durant la suppression de la declaration de sejour");
@@ -809,8 +809,8 @@ async function cancelDS(dsId) {
     });
     if (response.canceletedRows === 1) {
       toaster.success({ titleTag: "h2", description: `Déclaration annulée` });
-      demandeSejourStore.fetchDemandes({
-        sortBy: defaultSort,
+      await demandeSejourStore.fetchDemandes({
+        sortBy: defaultSort.value,
       });
     } else {
       log.w("Erreur durant l'annulation de la declaration de sejour");
