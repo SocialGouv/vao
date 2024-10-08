@@ -38,15 +38,9 @@
           name="effectifPrevisionnel"
           :label="`${DeclarationSejour.isPost8Jour(declarationStatut) ? 'Effectif des vacanciers' : 'Effectif prévisionnel des vacanciers'}`"
           :label-visible="true"
-          :model-value="
-            effectifPrevisionnel ??
-            (parseInt(effectifPrevisionnelFemme, 10) || 0) +
-              (parseInt(effectifPrevisionnelHomme, 10) || 0)
-          "
-          :readonly="!props.modifiable"
-          :is-valid="effectifPrevisionnelMeta.valid"
-          :error-message="effectifPrevisionnelErrorMessage"
+          :model-value="effectifs"
           placeholder="5"
+          readonly
           disabled
         />
       </div>
@@ -139,11 +133,6 @@ const { meta, values } = useForm({
 });
 
 const {
-  value: effectifPrevisionnel,
-  errorMessage: effectifPrevisionnelErrorMessage,
-  meta: effectifPrevisionnelMeta,
-} = useField("effectifPrevisionnel");
-const {
   value: effectifPrevisionnelHomme,
   errorMessage: effectifPrevisionnelHommeErrorMessage,
   handleChange: onEffectifPrevisionnelHommeChange,
@@ -166,6 +155,16 @@ const {
   meta: precisionDeficiencesMeta,
 } = useField("precisionDeficiences");
 
+const effectifs = computed(() => {
+  const total =
+    (parseInt(effectifPrevisionnelFemme.value, 10) || 0) +
+    (parseInt(effectifPrevisionnelHomme.value, 10) || 0);
+  if (total === initialValues.effectifPrevisionnel) {
+    return initialValues.effectifPrevisionnel ?? 0;
+  }
+  return total;
+});
+
 function next() {
   if (!meta.value.dirty || !props.modifiable) {
     return emit("next");
@@ -175,12 +174,7 @@ function next() {
     {
       ...values,
       meta: meta.value.valid,
-      effectifPrevisionnel:
-        effectifPrevisionnel.value ??
-        String(
-          (parseInt(effectifPrevisionnelHomme.value, 10) || 0) +
-            (parseInt(effectifPrevisionnelFemme.value, 10) || 0),
-        ),
+      effectifPrevisionnel: effectifs.value,
     },
     "informationsVacanciers",
   );

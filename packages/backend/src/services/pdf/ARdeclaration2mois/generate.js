@@ -14,11 +14,18 @@ const generate = async (declaration) => {
     const buffer = await build(declaration ?? {});
 
     // insert into documents table
-    const uuid = await Document.createFile(
+    const uuid = await Document.createFileLegacy(
       `AR_${declaration.idFonctionnelle}.pdf`,
       "AR_declaration_2_mois",
       "application/pdf",
       buffer,
+    );
+    await Document.upload(
+      `AR_${declaration.idFonctionnelle}.pdf`,
+      "AR_declaration_2_mois",
+      "application/pdf",
+      buffer,
+      uuid,
     );
     log.d(`http://localhost:3010/documents/${uuid}`);
 

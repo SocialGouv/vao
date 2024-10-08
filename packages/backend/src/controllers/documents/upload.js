@@ -1,3 +1,4 @@
+const fs = require("node:fs/promises");
 const DocumentService = require("../../services/Document");
 const AppError = require("../../utils/error");
 
@@ -41,8 +42,15 @@ module.exports = async (req, res, next) => {
   }
 
   try {
-    const uuid = await DocumentService.uploadLegacy(category, file);
-    await DocumentService.upload(category, file, uuid);
+    const { path, originalname: filename, mimetype } = file;
+    const data = await fs.readFile(path);
+    const uuid = await DocumentService.uploadLegacy(
+      filename,
+      category,
+      mimetype,
+      data,
+    );
+    await DocumentService.upload(filename, category, mimetype, data, uuid);
     log.d("DONE", uuid);
     return res.json({ uuid });
   } catch (error) {

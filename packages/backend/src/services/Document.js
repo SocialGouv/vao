@@ -1,5 +1,3 @@
-/* eslint-disable no-param-reassign */
-const fs = require("node:fs/promises");
 const logger = require("../utils/logger");
 const poolDoc = require("../utils/pgpoolDoc").getPool();
 const AppError = require("../utils/error");
@@ -82,16 +80,14 @@ module.exports.download = async (uuid) => {
   }
 };
 
-module.exports.uploadLegacy = async (category, file) => {
+module.exports.uploadLegacy = async (filename, category, mimetype, data) => {
   log.i("uploadLegacy - In");
   try {
-    const { path, originalname: filename } = file;
-    const data = await fs.readFile(path);
     log.d("uploadLegacy", category, filename);
     const {
       rows: [{ uuid }],
     } = await poolDoc.query(
-      ...query.create(category, filename, file.mimetype, data),
+      ...query.create(category, filename, mimetype, data),
     );
     log.d("uploadLegacy - Done");
     return uuid;
@@ -101,11 +97,15 @@ module.exports.uploadLegacy = async (category, file) => {
   }
 };
 
-module.exports.upload = async (category, file, uuid = crypto.randomUUID()) => {
+module.exports.upload = async (
+  filename,
+  category,
+  mimetype,
+  data,
+  uuid = crypto.randomUUID(),
+) => {
   log.i("upload - In");
   try {
-    const { path, originalname: filename } = file;
-    const data = await fs.readFile(path);
     log.d("upload", category, filename);
     await s3Client.send(
       new PutObjectCommand({
@@ -115,7 +115,7 @@ module.exports.upload = async (category, file, uuid = crypto.randomUUID()) => {
         Metadata: {
           category,
           created_at: String(new Date()),
-          mimetype: file.mimetype,
+          mimetype: mimetype,
           originalname: filename,
         },
       }),
@@ -127,20 +127,25 @@ module.exports.upload = async (category, file, uuid = crypto.randomUUID()) => {
   }
 };
 
-module.exports.createFile = async (filename, category, typeMime, data) => {
-  log.i("createFile - In");
+module.exports.createFileLegacy = async (
+  filename,
+  category,
+  typeMime,
+  data,
+) => {
+  log.i("createFile pg - In");
   try {
-    log.i("createFile", { category, filename, typeMime });
+    log.i("createFile pg", { category, filename, typeMime });
     const {
       rows: [{ uuid }],
     } = await poolDoc.query(
       ...query.create(category, filename, typeMime, data),
     );
-    log.i("createFile - Done");
+    log.i("createFile pg - Done");
     return uuid;
   } catch (err) {
     log.w(err);
-    throw new AppError("createFile failed", { cause: err });
+    throw new AppError("createFile pg failed", { cause: err });
   }
 };
 
