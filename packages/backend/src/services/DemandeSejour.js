@@ -246,12 +246,12 @@ RETURNING
   o.personne_morale->>'siret' as "siret",
   o.personne_morale->'etablissementPrincipal' as "organismeAgree",
   dsm.message as "message",
-  CASE 
+  CASE
     WHEN (dsm.read_at IS NULL AND dsm.front_user_id IS NULL) THEN 'NON LU'
     WHEN (dsm.read_at IS NOT NULL AND dsm.front_user_id IS NULL) THEN 'LU'
     WHEN (dsm.back_user_id IS NULL) THEN 'REPONDU'
   END AS "messageEtat",
-  CASE 
+  CASE
     WHEN (dsm.read_at IS NULL AND dsm.front_user_id IS NULL) THEN 1 -- NON LU
     WHEN (dsm.read_at IS NOT NULL AND dsm.front_user_id IS NULL) THEN 2 -- LU
     WHEN (dsm.back_user_id IS NULL) THEN 3 -- REPONDU
@@ -319,12 +319,12 @@ SELECT
   o.type_organisme as "typeOrganisme",
   ds.hebergement #>> '{hebergements, 0, coordonnees, adresse, departement}' = ANY ($${params.length}) as "estInstructeurPrincipal",
   dsm.message as "message",
-    CASE 
+    CASE
       WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 'NON LU'
       WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 'LU'
       WHEN (dsm.front_user_id IS NULL) THEN 'REPONDU'
     END AS "messageEtat",
-    CASE 
+    CASE
       WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 -- NON LU
       WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 2 -- LU
       WHEN (dsm.front_user_id IS NULL) THEN 3 -- REPONDU
@@ -880,7 +880,7 @@ module.exports.cancel = async (declarationId, userId) => {
 };
 module.exports.get = async ({ sortBy }, organismesId) => {
   log.i("get - IN", { organismesId });
-  const queryGet = query.get(organismesId[0]);
+  const queryGet = query.get(organismesId);
   let querySorted = "";
   if (sortBy) {
     if (sortBy === "messageOrdreEtat")
