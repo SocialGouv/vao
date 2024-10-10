@@ -246,7 +246,7 @@ fileignoreconfig:
 - filename: packages/migrations/src/migrations/20240710125537_eig.js
   checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/migrations/src/migrations/20240918085236_migrate_files_to_minio.js
-  checksum: e6941cda67cdcf254719bc7cc5e1fde23365c22b62116fd49dad74d466d9f9f4
+  checksum: 697b937bde70ecf883bfc42137bf7bb34924dc860546cc0fc525d75c32f252b2
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/PasswordInput.vue
