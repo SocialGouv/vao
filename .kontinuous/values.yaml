@@ -185,6 +185,13 @@ jobs:
 
     migrations-db:
       ~needs: [build-migrations, init-db]
+      resources:
+        requests:
+          cpu: "2"
+          memory: 4Gi
+        limits:
+          cpu: "2"
+          memory: 6Gi
       retry: 3
       checkout: true
       image: "{{ .Values.global.registry }}/{{ .Values.global.projectName }}/{{ .Values.global.imageRepository }}/migrations:{{ .Values.global.imageTag }}"
