@@ -47,23 +47,23 @@ const query = {
   ],
 };
 
-// module.exports.download = async (uuid) => {
-//   log.i("IN");
-//   try {
-//     const { rows, rowCount } = await poolDoc.query(...query.getByUuid(uuid));
-//     if (rowCount > 0) {
-//       log.i("DONE", rows[0]);
-//       return rows[0];
-//     }
-//     log.i("DONE");
-//     return null;
-//   } catch (err) {
-//     log.w(err);
-//     throw new AppError("query.getByUuid failed", { cause: err });
-//   }
-// };
-
 module.exports.download = async (uuid) => {
+  log.i("IN");
+  try {
+    const { rows, rowCount } = await poolDoc.query(...query.getByUuid(uuid));
+    if (rowCount > 0) {
+      log.i("DONE", rows[0]);
+      return rows[0];
+    }
+    log.i("DONE");
+    return null;
+  } catch (err) {
+    log.w(err);
+    throw new AppError("query.getByUuid failed", { cause: err });
+  }
+};
+
+module.exports.downloadNext = async (uuid) => {
   log.i("IN");
   try {
     const data = await s3Client.send(
