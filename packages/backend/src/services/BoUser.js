@@ -11,7 +11,8 @@ const query = {
   UPDATE back.users
   SET
     validated = true,
-    edited_at = NOW()
+    edited_at = NOW(),
+    validated_at = NOW()
   WHERE
     id = $1
   `,
@@ -25,6 +26,13 @@ const query = {
     ;`,
     [user, role],
   ],
+  connection: `
+  UPDATE back.users
+  SET
+    lastconnection_at = NOW()
+  WHERE
+    id = $1
+  `,
   create: (email, nom, prenom, territoireCode) => [
     `INSERT INTO back.users (
       mail,
@@ -112,6 +120,10 @@ const query = {
       us.validated AS validated,
       us.deleted AS deleted,
       us.deleted_date as deleted_date,
+      ud.prenom || ' ' || ud.nom as deletion_user,
+      us.created_at as createdat,
+      us.validated_at as validatedat,
+      us.lastconnection_at as "lastConnectionAt",
       ter.label AS "territoire",
       us.ter_code AS "territoireCode",
       ter.parent_code AS "territoireParent",
@@ -138,6 +150,7 @@ const query = {
     LEFT OUTER JOIN geo.territoires ter on ter.code = us.ter_code
     LEFT OUTER JOIN geo.territoires reg ON reg.code = ter.code AND ter.parent_code = 'FRA'
     LEFT OUTER JOIN geo.territoires dep ON dep.code = us.ter_code AND dep.parent_code <> 'FRA'
+    LEFT OUTER JOIN back.users ud on ud.id = us.deleted_use_id
     WHERE 1 = 1
 ${Object.keys(criterias)
   .map(
@@ -565,6 +578,8 @@ module.exports.login = async ({ email, password }) => {
   const user = await pool.query(query.login, [normalize(email), password]);
   if (user.rowCount === 0) {
     return null;
+  } else {
+    await pool.query(query.connection, [user.rows[0].id]);
   }
   log.i("login - DONE");
   return user.rows[0];
