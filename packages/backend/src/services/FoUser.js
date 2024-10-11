@@ -60,6 +60,10 @@ module.exports.read = async ({
   const searchParams = [];
 
   // Search management
+  if (search?.organisme_id && search.organisme_id.length) {
+    searchQuery += `   AND org.id = $${searchParams.length + 1}\n`;
+    searchParams.push(`${search.organisme_id}`);
+  }
   if (search?.nom && search.nom.length) {
     searchQuery += `   AND unaccent(us.nom) ILIKE unaccent($${searchParams.length + 1})\n`;
     searchParams.push(`%${search.nom}%`);
