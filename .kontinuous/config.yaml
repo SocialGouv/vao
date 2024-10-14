@@ -6,6 +6,8 @@ dependencies:
     dependencies:
       contrib:
         patches:
+          addJobsAffinityAndTolerations:
+            enabled: false
           certs:
             options:
               internalHosts:
