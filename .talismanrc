@@ -250,7 +250,7 @@ fileignoreconfig:
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/DsfrMultiSelect.vue
-  checksum: 5f7a1afcb686dc9a80742231f432b0843b4d080ee7cb15d15a5600d0271450e4
+  checksum: e635a591f2e2247088bab3a7d25548f251da65330fecaed9ce886fd3dd24fb3e
 - filename: packages/shared/src/components/DsfrTabsV2.vue
   checksum: 960c18a7ad76a91c74e5535240ae6ac4f87bb8aff10155096cd35afe5609cff8
 - filename: packages/shared/src/components/PasswordInput.vue

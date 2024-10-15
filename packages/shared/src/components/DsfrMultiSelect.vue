@@ -133,8 +133,8 @@ const handleClick = async (event: MouseEvent) => {
   activeTracking.value = !isVisible.value;
   isVisible.value = !isVisible.value;
   if (isVisible.value) {
-    await nextTick();
     event.stopPropagation();
+    await nextTick();
     document.addEventListener("click", handleClickOutside);
     if (popover.value && searchElement.value) {
       searchElement.value.focus();
@@ -163,13 +163,8 @@ const isAllSelected = computed(() => {
   }
 
   return filterdOptions.value.every((option) => {
-    try {
-      const value = getValueOrId(option, props.idKey);
-      return props.modelValue.includes(value as never);
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+    const value = getValueOrId(option, props.idKey);
+    return props.modelValue.includes(value as never);
   });
 });
 
@@ -178,21 +173,13 @@ const handleClickSelectAllClick = () => {
 
   if (isAllSelected.value) {
     filterdOptions.value.forEach((option) => {
-      try {
-        const value = getValueOrId(option, props.idKey);
-        modelSet.delete(value as never);
-      } catch (error) {
-        console.error(error);
-      }
+      const value = getValueOrId(option, props.idKey);
+      modelSet.delete(value as never);
     });
   } else {
     filterdOptions.value.forEach((option) => {
-      try {
-        const value = getValueOrId(option, props.idKey);
-        modelSet.add(value as never);
-      } catch (error) {
-        console.error(error);
-      }
+      const value = getValueOrId(option, props.idKey);
+      modelSet.add(value as never);
     });
   }
 
@@ -202,7 +189,7 @@ const handleClickSelectAllClick = () => {
 const handleFocusFirstCheckbox = (event: KeyboardEvent) => {
   const [firstCheckbox] = getAllCheckbox();
   if (firstCheckbox) {
-    event?.preventDefault();
+    event.preventDefault();
     firstCheckbox.focus();
   }
 };
@@ -215,7 +202,6 @@ const handleFocusNextCheckbox = (event: KeyboardEvent) => {
 
   if (currentIndex !== -1) {
     const nextIndex = (currentIndex + 1) % checkboxes.length;
-    event?.preventDefault();
     checkboxes[nextIndex].focus();
   }
 };
@@ -229,7 +215,6 @@ const handleFocusPreviousCheckbox = (event: KeyboardEvent) => {
   if (currentIndex !== -1) {
     const previousIndex =
       (currentIndex - 1 + checkboxes.length) % checkboxes.length;
-    event?.preventDefault();
     checkboxes[previousIndex].focus();
   }
 };
@@ -292,140 +277,135 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div>
-    <div class="fr-select-group">
-      <label class="fr-label" :for="id">
-        <slot name="label"> {{ props.label }} totoot </slot>
-        <slot name="required-tip">
-          <span v-if="props.required" class="required">&nbsp;*</span>
-        </slot>
-        <span
-          v-if="props.description || $slots.description"
-          class="fr-hint-text"
+  <div class="fr-select-group">
+    <label class="fr-label" :for="id">
+      <slot name="label"> {{ props.label }} totoot </slot>
+      <slot name="required-tip">
+        <span v-if="props.required" class="required">&nbsp;*</span>
+      </slot>
+      <span v-if="props.description || $slots.description" class="fr-hint-text">
+        <slot name="description">{{ props.description }}</slot>
+      </span>
+    </label>
+    <button
+      :id="id"
+      ref="host"
+      class="fr-select fr-multi-select"
+      :class="{ 'fr-multi-select--is-open': isVisible }"
+      @click="handleClick"
+    >
+      <slot name="button-label">
+        {{ props.buttonLabel }}
+      </slot>
+    </button>
+    <Teleport to="body">
+      <transition name="fade">
+        <div
+          v-if="isVisible"
+          ref="popover"
+          :style="{
+            '--left-position': `${popoverPosition.x}px`,
+            '--top-position': `${popoverPosition.y}px`,
+            '--width-host': `${hostSize.width}px`,
+          }"
+          class="fr-multi-select__popover"
         >
-          <slot name="description">{{ props.description }}</slot>
-        </span>
-      </label>
-      <button
-        :id="id"
-        ref="host"
-        class="fr-select fr-multi-select"
-        :class="{ 'fr-multi-select--is-open': isVisible }"
-        @click="handleClick"
-      >
-        <slot name="button-label">
-          {{ props.buttonLabel }}
-        </slot>
-      </button>
-      <Teleport to="body">
-        <transition name="fade">
-          <div
-            v-if="isVisible"
-            ref="popover"
-            :style="{
-              '--left-position': `${popoverPosition.x}px`,
-              '--top-position': `${popoverPosition.y}px`,
-              '--width-host': `${hostSize.width}px`,
-            }"
-            class="fr-multi-select__popover"
+          <ul v-if="props.selectAll" class="fr-btns-group">
+            <li>
+              <button
+                ref="selectAllElement"
+                class="fr-btn fr-btn--sm fr-btn--secondary"
+                @click="handleClickSelectAllClick"
+                @keydown.shift.tab="handleFocusPreviousElement"
+              >
+                <span
+                  :class="
+                    isAllSelected
+                      ? 'fr-icon-close-circle-line'
+                      : 'fr-icon-check-line'
+                  "
+                ></span>
+                {{ props.selectAllLabel[isAllSelected ? 1 : 0] }}
+              </button>
+            </li>
+          </ul>
+          <div class="fr-input-group">
+            <div class="fr-input-wrap fr-icon-search-line">
+              <input
+                ref="searchElement"
+                v-model="searchInput"
+                class="fr-input"
+                placeholder="Rechercher"
+                :aria-describedby="`${id}-text-input-icon-messages`"
+                type="text"
+                @keydown.down="handleFocusFirstCheckbox"
+                @keydown.right="handleFocusFirstCheckbox"
+                @keydown.tab="handleFocusPreviousElement"
+              />
+            </div>
+            <div
+              :id="`${id}-text-input-icon-messages`"
+              class="fr-messages-group"
+              aria-live="assertive"
+            ></div>
+          </div>
+          <fieldset
+            :id="`${id}-checkboxes`"
+            class="fr-fieldset"
+            aria-labelledby="checkboxes-legend checkboxes-messages"
           >
-            <ul v-if="props.selectAll" class="fr-btns-group">
-              <li>
-                <button
-                  ref="selectAllElement"
-                  class="fr-btn fr-btn--sm fr-btn--secondary"
-                  @click="handleClickSelectAllClick"
-                  @keydown.shift.tab="handleFocusPreviousElement"
-                >
-                  <span
-                    :class="
-                      isAllSelected
-                        ? 'fr-icon-close-circle-line'
-                        : 'fr-icon-check-line'
-                    "
-                  ></span>
-                  {{ props.selectAllLabel[isAllSelected ? 1 : 0] }}
-                </button>
-              </li>
-            </ul>
-            <div class="fr-input-group">
-              <div class="fr-input-wrap fr-icon-search-line">
+            <legend
+              v-if="props.legend || $slots.legend"
+              :id="`${id}-checkboxes-legend`"
+              class="fr-fieldset__legend--regular fr-fieldset__legend"
+            >
+              <slot name="legend">{{ props.legend }}</slot>
+            </legend>
+            <div
+              v-for="option in filterdOptions"
+              :key="generateId(option, id, props.idKey) + '-checkbox'"
+              class="fr-fieldset__element"
+            >
+              <div class="fr-checkbox-group fr-checkbox-group--sm">
                 <input
-                  ref="searchElement"
-                  v-model="searchInput"
-                  class="fr-input"
-                  placeholder="Rechercher"
-                  :aria-describedby="`${id}-text-input-icon-messages`"
-                  type="text"
-                  @keydown.down="handleFocusFirstCheckbox"
-                  @keydown.right="handleFocusFirstCheckbox"
-                  @keydown.tab="handleFocusPreviousElement"
+                  :id="generateId(option, id, props.idKey) + '-checkbox'"
+                  v-model="model"
+                  type="checkbox"
+                  :aria-describedby="
+                    generateId(option, id, props.idKey) + '-message'
+                  "
+                  :value="getValueOrId(option, props.idKey)"
+                  @keydown.down="handleFocusNextCheckbox"
+                  @keydown.right="handleFocusNextCheckbox"
+                  @keydown.up="handleFocusPreviousCheckbox"
+                  @keydown.left="handleFocusPreviousCheckbox"
+                  @keydown.tab="handleFocusNextElementUsingTab"
+                />
+                <label
+                  class="fr-label"
+                  :for="generateId(option, id, props.idKey) + '-checkbox'"
+                >
+                  <slot name="checkbox-label" :option="option">
+                    {{
+                      typeof option === "object" &&
+                      props.labelKey &&
+                      props.labelKey in option
+                        ? `${option[props.labelKey]}`
+                        : `${option}`
+                    }}
+                  </slot>
+                </label>
+                <div
+                  :id="generateId(option, id, props.idKey) + '-message'"
+                  class="fr-messages-group"
+                  aria-live="assertive"
                 />
               </div>
-              <div
-                :id="`${id}-text-input-icon-messages`"
-                class="fr-messages-group"
-                aria-live="assertive"
-              ></div>
             </div>
-            <fieldset
-              :id="`${id}-checkboxes`"
-              class="fr-fieldset"
-              aria-labelledby="checkboxes-legend checkboxes-messages"
-            >
-              <legend
-                v-if="props.legend || $slots.legend"
-                :id="`${id}-checkboxes-legend`"
-                class="fr-fieldset__legend--regular fr-fieldset__legend"
-              >
-                <slot name="legend">{{ props.legend }}</slot>
-              </legend>
-              <div
-                v-for="option in filterdOptions"
-                :key="generateId(option, id, props.idKey) + '-checkbox'"
-                class="fr-fieldset__element"
-              >
-                <div class="fr-checkbox-group fr-checkbox-group--sm">
-                  <input
-                    :id="generateId(option, id, props.idKey) + '-checkbox'"
-                    v-model="model"
-                    type="checkbox"
-                    :aria-describedby="
-                      generateId(option, id, props.idKey) + '-message'
-                    "
-                    :value="getValueOrId(option, props.idKey)"
-                    @keydown.down="handleFocusNextCheckbox"
-                    @keydown.right="handleFocusNextCheckbox"
-                    @keydown.up="handleFocusPreviousCheckbox"
-                    @keydown.left="handleFocusPreviousCheckbox"
-                    @keydown.tab="handleFocusNextElementUsingTab"
-                  />
-                  <label
-                    class="fr-label"
-                    :for="generateId(option, id, props.idKey) + '-checkbox'"
-                  >
-                    <slot name="checkbox-label" :option="option">
-                      {{
-                        typeof option === "object" &&
-                        props.labelKey &&
-                        props.labelKey in option
-                          ? `${option[props.labelKey]}`
-                          : `${option}`
-                      }}
-                    </slot>
-                  </label>
-                  <div
-                    :id="generateId(option, id, props.idKey) + '-message'"
-                    class="fr-messages-group"
-                    aria-live="assertive"
-                  />
-                </div>
-              </div>
-            </fieldset>
-          </div>
-        </transition>
-      </Teleport>
-    </div>
+          </fieldset>
+        </div>
+      </transition>
+    </Teleport>
   </div>
 </template>
 
