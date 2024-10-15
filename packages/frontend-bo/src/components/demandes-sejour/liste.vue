@@ -97,7 +97,9 @@
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
+                <label class="fr-label">Statut</label>
                 <Multiselect
+                  class="fr-mt-2v"
                   :model-value="searchState.statuts"
                   :hide-selected="true"
                   :searchable="true"
@@ -181,11 +183,11 @@
 <script setup>
 import {
   CardsNumber,
+  MessageEtat,
+  MessageHover,
   MultiSelectOption,
   TableWithBackendPagination,
   ValidationModal,
-  MessageHover,
-  MessageEtat,
 } from "@vao/shared";
 import dayjs from "dayjs";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
