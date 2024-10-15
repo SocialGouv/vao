@@ -279,7 +279,7 @@ onUnmounted(() => {
 <template>
   <div class="fr-select-group">
     <label class="fr-label" :for="id">
-      <slot name="label"> {{ props.label }} totoot </slot>
+      <slot name="label">{{ props.label }}</slot>
       <slot name="required-tip">
         <span v-if="props.required" class="required">&nbsp;*</span>
       </slot>
