@@ -22,150 +22,77 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <div class="fr-input-group">
-                  <label class="fr-label">ID</label>
-                  <Multiselect
-                    :model-value="search.declarationId"
-                    name="id"
-                    mode="tags"
-                    :searchable="true"
-                    :close-on-select="false"
-                    :options="idOptions"
-                    @update:model-value="onUpdateId"
-                  >
-                    <template #option="{ option, isPointed }">
-                      <MultiSelectOption
-                        :label="option.label.toString()"
-                        :is-pointed="isPointed(option)"
-                      />
-                    </template>
-                    <template #no-result> Pas de résultat</template>
-                  </Multiselect>
-                </div>
+                <dsfr-multi-select
+                  :model-value="search.declarationId"
+                  label="ID"
+                  search
+                  select-all
+                  :options="idOptions"
+                  @update:model-value="onUpdateId"
+                />
               </div>
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <div class="fr-input-group">
-                  <label class="fr-label"> N° enregistrement </label>
-                  <Multiselect
-                    :model-value="search.idFonctionnelle"
-                    name="idFonctionnelle"
-                    mode="tags"
-                    :searchable="true"
-                    :close-on-select="false"
-                    :options="idFonctionnellesOptions"
-                    @update:model-value="onUpdateIdFonctionnelle"
-                  >
-                    <template #option="{ option, isPointed }">
-                      <MultiSelectOption
-                        :label="`${option.label}`"
-                        :is-pointed="isPointed(option)"
-                      />
-                    </template>
-                    <template #no-result> Pas de résultat</template>
-                  </Multiselect>
-                </div>
+                <dsfr-multi-select
+                  :model-value="search.idFonctionnelle"
+                  label="N° enregistrement"
+                  search
+                  select-all
+                  :options="idFonctionnellesOptions"
+                  @update:model-value="onUpdateIdFonctionnelle"
+                />
               </div>
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <div class="fr-input-group">
-                  <label class="fr-label">SIRET déclarant</label>
-                  <Multiselect
-                    :model-value="search.siret"
-                    name="siret"
-                    mode="tags"
-                    :searchable="true"
-                    :close-on-select="false"
-                    :options="siretOptions"
-                    @update:model-value="onUpdateSiret"
-                  >
-                    <template #option="{ option, isPointed }">
-                      <MultiSelectOption
-                        :label="`${option.label}`"
-                        :is-pointed="isPointed(option)"
-                      />
-                    </template>
-                    <template #no-result> Pas de résultat</template>
-                  </Multiselect>
-                </div>
+                <dsfr-multi-select
+                  :model-value="search.siret"
+                  label="SIRET déclarant"
+                  search
+                  select-all
+                  :options="siretOptions"
+                  @update:model-value="onUpdateSiret"
+                />
               </div>
 
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <div class="fr-input-group">
-                  <label class="fr-label"> Département d'instruction </label>
-                  <Multiselect
-                    :model-value="search.departementSuivi"
-                    :searchable="true"
-                    :close-on-select="false"
-                    value-prop="value"
-                    label="label"
-                    mode="tags"
-                    :options="departementOptions"
-                    @update:model-value="onUpdateDepartement"
-                  >
-                    <template #option="{ option, isPointed }">
-                      <MultiSelectOption
-                        :label="option.label"
-                        :is-pointed="isPointed(option)"
-                      />
-                    </template>
-                    <template #no-result> Pas de résultat</template>
-                  </Multiselect>
-                </div>
+                <dsfr-multi-select
+                  :model-value="search.departementSuivi"
+                  labe="Département d'instruction"
+                  search
+                  select-all
+                  id-key="value"
+                  :options="departementOptions"
+                  @update:model-value="onUpdateDepartement"
+                />
               </div>
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <div class="fr-input-group">
-                  <label class="fr-label"> Statut</label>
-                  <Multiselect
-                    :model-value="search.statut"
-                    :hide-selected="true"
-                    :searchable="true"
-                    :close-on-select="false"
-                    mode="tags"
-                    name="statut"
-                    :options="statutOptions"
-                    @update:model-value="onUpdateStatut"
-                  >
-                    <template #option="{ option, isPointed }">
-                      <MultiSelectOption
-                        :label="`${option.label}`"
-                        :is-pointed="isPointed(option)"
-                      />
-                    </template>
-                    <template #no-result> Pas de résultat</template>
-                  </Multiselect>
-                </div>
+                <dsfr-multi-select
+                  :model-value="search.statut"
+                  label="Statut"
+                  search
+                  select-all
+                  id-key="value"
+                  :options="statutOptions"
+                  @update:model-value="onUpdateStatut"
+                />
               </div>
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <div class="fr-input-group">
-                  <label class="fr-label"> Saison</label>
-                  <Multiselect
-                    :model-value="search.periode"
-                    :hide-selected="true"
-                    :searchable="false"
-                    :close-on-select="false"
-                    mode="tags"
-                    name="saison"
-                    :options="saisonOptions"
-                    @update:model-value="onUpdateSaison"
-                  >
-                    <template #option="{ option, isPointed }">
-                      <MultiSelectOption
-                        :label="`${option.label}`"
-                        :is-pointed="isPointed(option)"
-                      />
-                    </template>
-                    <template #no-result> Pas de résultat</template>
-                  </Multiselect>
-                </div>
+                <dsfr-multi-select
+                  :model-value="search.periode"
+                  label="Saison"
+                  search
+                  select-all
+                  :options="saisonOptions"
+                  @update:model-value="onUpdateSaison"
+                />
               </div>
             </div>
           </form>
@@ -218,12 +145,11 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
 import {
   MessageEtat,
   MessageHover,
-  MultiSelectOption,
   TableFull,
   ValidationModal,
+  DsfrMultiSelect,
 } from "@vao/shared";
 import dayjs from "dayjs";
-import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import { useDepartementStore } from "~/stores/referentiels";
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
@@ -305,24 +231,24 @@ const search = reactive({
   declarationId:
     route.query.declarationId
       ?.split(",")
-      ?.flatMap((id) => (isNaN(id) ? [] : [parseInt(id, 10)])) ?? null,
-  idFonctionnelle: route.query.idFonctionnelle?.split(",") ?? null,
-  siret: route.query.siret?.split(",") ?? null,
+      ?.flatMap((id) => (isNaN(id) ? [] : [parseInt(id, 10)])) ?? [],
+  idFonctionnelle: route.query.idFonctionnelle?.split(",") ?? [],
+  siret: route.query.siret?.split(",") ?? [],
   statut: route.query.statut
     ? route.query.statut
         .split(",")
         .filter((statut) =>
           Object.values(DeclarationSejour.statuts).includes(statut),
         )
-    : null,
+    : [],
   departementSuivi: route.query.departementSuivi
     ? route.query.departementSuivi.split(",")
-    : null,
+    : [],
   periode: route.query.periode
     ? route.query.periode
         .split(",")
         .filter((periode) => saisons.includes(periode))
-    : null,
+    : [],
 });
 
 const demandeSejourStore = useDemandeSejourStore();

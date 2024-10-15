@@ -72,6 +72,7 @@ const props = withDefaults(
       [K in keyof T as T[K] extends string | number ? K : never]: T[K];
     };
     filteringKeys?: (keyof T)[];
+    maxOverflowHeight?: CSSStyleDeclaration["maxHeight"];
   }>(),
   {
     label: "",
@@ -90,6 +91,7 @@ const props = withDefaults(
       [K in keyof T as T[K] extends string | number ? K : never]: T[K];
     },
     filteringKeys: () => ["label"] as (keyof T)[],
+    maxOverflowHeight: "400px",
   },
 );
 
@@ -108,6 +110,7 @@ type SlotProps<T> = {
   "button-label": () => any;
   legend: () => any;
   "checkbox-label": (props: { option: T | string | number }) => any;
+  "no-resuts": () => any;
 };
 
 defineSlots<SlotProps<T>>();
@@ -129,15 +132,21 @@ const handleClickOutside = (event: MouseEvent) => {
   }
 };
 
-const handleClick = async (event: MouseEvent) => {
+const handleClick = async () => {
   activeTracking.value = !isVisible.value;
   isVisible.value = !isVisible.value;
   if (isVisible.value) {
-    event.stopPropagation();
     await nextTick();
     document.addEventListener("click", handleClickOutside);
-    if (popover.value && searchElement.value) {
-      searchElement.value.focus();
+    if (popover.value) {
+      if (searchElement.value) {
+        searchElement.value.focus();
+      } else {
+        const [firstCheckbox] = getAllCheckbox();
+        if (firstCheckbox) {
+          firstCheckbox.focus();
+        }
+      }
     }
   } else {
     document.removeEventListener("click", handleClickOutside);
@@ -274,6 +283,14 @@ const focusPreviousElement = () => {
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
 });
+
+const defaultButtonLabel = computed(() => {
+  const nbElements = model.value?.length;
+  if (nbElements === 0) {
+    return "Sélectionner une option";
+  }
+  return `${nbElements} option${nbElements > 1 ? "s" : ""} sélectionnée${nbElements > 1 ? "s" : ""}`;
+});
 </script>
 
 <template>
@@ -290,12 +307,13 @@ onUnmounted(() => {
     <button
       :id="id"
       ref="host"
+      type="button"
       class="fr-select fr-multi-select"
       :class="{ 'fr-multi-select--is-open': isVisible }"
       @click="handleClick"
     >
       <slot name="button-label">
-        {{ props.buttonLabel }}
+        {{ props.buttonLabel || defaultButtonLabel }}
       </slot>
     </button>
     <Teleport to="body">
@@ -314,6 +332,8 @@ onUnmounted(() => {
             <li>
               <button
                 ref="selectAllElement"
+                type="button"
+                :disabled="filterdOptions.length === 0"
                 class="fr-btn fr-btn--sm fr-btn--secondary"
                 @click="handleClickSelectAllClick"
                 @keydown.shift.tab="handleFocusPreviousElement"
@@ -351,8 +371,9 @@ onUnmounted(() => {
           </div>
           <fieldset
             :id="`${id}-checkboxes`"
-            class="fr-fieldset"
+            class="fr-fieldset fr-multi-select__popover__fieldset"
             aria-labelledby="checkboxes-legend checkboxes-messages"
+            :style="{ '--maxOverflowHeight': `${props.maxOverflowHeight}` }"
           >
             <legend
               v-if="props.legend || $slots.legend"
@@ -403,6 +424,9 @@ onUnmounted(() => {
               </div>
             </div>
           </fieldset>
+          <div v-if="filterdOptions.length === 0">
+            <slot name="no-results">Pas de résultat</slot>
+          </div>
         </div>
       </transition>
     </Teleport>
@@ -454,41 +478,13 @@ onUnmounted(() => {
   top: var(--top-position);
   padding: 1rem;
   margin-top: 4px;
-  background-image: conic-gradient(
-      from -33.69deg at 50% 100%,
-      transparent 0deg,
-      var(--background-overlap-grey) 0deg,
-      var(--background-overlap-grey) 67.38deg,
-      transparent 67.38deg
-    ),
-    conic-gradient(
-      from -33.69deg at 50% 100%,
-      transparent 0deg,
-      var(--border-default-grey) 0deg,
-      var(--border-default-grey) 67.38deg,
-      transparent 67.38deg
-    ),
-    linear-gradient(
-      90deg,
-      var(--border-default-grey),
-      var(--border-default-grey)
-    ),
-    linear-gradient(
-      90deg,
-      var(--background-overlap-grey),
-      var(--background-overlap-grey)
-    );
-  background-position:
-    50% calc(100% - 0.5rem),
-    50% calc(100% - 0.375rem),
-    50% calc(100% - 0.75rem),
-    50% calc(100% - 0.75rem);
-  background-repeat: no-repeat;
-  background-size:
-    0.5rem 0.375rem,
-    0.5rem 0.375rem,
-    100% 1px,
-    100% calc(100% - 0.75rem);
+  background-color: var(--background-overlap-grey);
+  filter: drop-shadow(var(--overlap-shadow));
+}
+
+.fr-multi-select__popover__fieldset {
+  max-height: var(--maxOverflowHeight);
+  overflow: auto;
 }
 
 .fade-enter-active,

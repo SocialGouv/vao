@@ -96,26 +96,14 @@
               v-if="props.display === displayType.Organisme"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
-                <Multiselect
-                  :model-value="searchState.statuts"
-                  :hide-selected="true"
-                  :searchable="true"
-                  :close-on-select="false"
-                  mode="tags"
-                  name="statut"
-                  :options="status"
-                  @update:model-value="onStatutSelect"
-                >
-                  <template #option="{ option, isPointed }">
-                    <MultiSelectOption
-                      :label="`${option.label}`"
-                      :is-pointed="isPointed(option)"
-                    />
-                  </template>
-                  <template #no-result> Pas de résultat</template>
-                </Multiselect>
-              </div>
+              <dsfr-multi-select
+                v-model="searchState.statuts"
+                label="Statut"
+                search
+                select-all
+                id-key="value"
+                :options="status"
+              />
             </div>
             <div
               v-if="!props.organisme && props.display === displayType.Organisme"
@@ -181,7 +169,7 @@
 <script setup>
 import {
   CardsNumber,
-  MultiSelectOption,
+  DsfrMultiSelect,
   TableWithBackendPagination,
   ValidationModal,
   MessageHover,
@@ -190,7 +178,6 @@ import {
 import dayjs from "dayjs";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
-import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import { defineProps } from "vue";
 
@@ -250,7 +237,7 @@ const searchState = reactive({
     ? route.query.statuts
         .split(",")
         .filter((statut) => Object.values(status.value).includes(statut))
-    : null,
+    : [],
   action: parseBoolean(route.query.action),
   message: props.display === displayType.Messagerie,
 });
@@ -348,14 +335,6 @@ watch(
   },
   { immediate: true },
 );
-
-const onStatutSelect = (value) => {
-  if (value.length) {
-    searchState.statuts = value;
-  } else {
-    searchState.statuts = null;
-  }
-};
 
 const headersOrganisme = [
   {
