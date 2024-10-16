@@ -40,7 +40,7 @@ module.exports = function buildInformationsPersonnel(info) {
                 {
                   columns: [
                     {
-                      text: "Nombre de personnes responsables présentes :",
+                      text: "Personnel encadrant présent :",
                       width: 250,
                     },
                     {
@@ -65,7 +65,7 @@ module.exports = function buildInformationsPersonnel(info) {
                 {
                   columns: [
                     {
-                      text: "Nombre d'accompagnants présents :",
+                      text: "Personnel accompagnant présent :",
                       width: 250,
                     },
                     {
