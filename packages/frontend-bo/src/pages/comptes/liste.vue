@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container">
-    <h1 class="header">Liste des comptes ({{ usersStore.total }})</h1>
+    <h1 class="header">Liste des agents de l’Etat ({{ usersStore.total }})</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
