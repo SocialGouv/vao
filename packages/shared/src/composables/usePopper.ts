@@ -1,8 +1,12 @@
-import { onUnmounted, ref, watch, computed, Ref } from "vue";
+import { onUnmounted, ref, watch, computed } from "vue";
+import type { Ref } from "vue";
 
-function debounce(func: Function, wait: number) {
+function debounce<T extends (...args: Parameters<T>) => void>(
+  func: T,
+  wait: number,
+) {
   let timeout: ReturnType<typeof setTimeout>;
-  return (...args: any[]) => {
+  return (...args: Parameters<T>): void => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
