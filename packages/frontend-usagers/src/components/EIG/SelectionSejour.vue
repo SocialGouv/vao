@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h6>Sélectionner un séjour</h6>
+    <h5>Sélectionner un séjour</h5>
+    <dsfr-alert v-if="eigStore.currentEig" class="fr-mb-6v">
+      <Summary :eig="eigStore.currentEig" env="USAGER" />
+    </dsfr-alert>
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <DsfrTag
@@ -10,7 +13,7 @@
           class="fr-mb-4v"
           :label="selectedDemandeLabel"
           :disabled="!eigStore.canModify"
-          @click="() => onDeclarationIdChange(null)"
+          @click="() => onChooseDeclaration(null)"
         />
         <DsfrSearchBar
           label="Selectionner le séjour"
@@ -29,7 +32,7 @@
             class="fr-my-2v"
             @click="
               () => {
-                onDeclarationIdChange(demande.declarationId);
+                onChooseDeclaration(demande.declarationId);
                 search = '';
               }
             "
@@ -41,7 +44,7 @@
       <div class="fr-fieldset__element">
         <DsfrSelect
           v-if="!!selectedDemande"
-          label="Selection du département ou a eu lieu l'EIG"
+          label="Sélection du département où a eu lieu l'incident"
           name="departements"
           :close-on-select="true"
           :options="departementsOptions"
@@ -50,6 +53,23 @@
           :error-message="departementErrorMessage"
           :model-value="departement"
           @update:model-value="onDepartementChange"
+        />
+      </div>
+      <div class="fr-fieldset__element">
+        <DsfrInputGroup
+          v-if="!!selectedDemande"
+          name="date"
+          type="date"
+          label="Date de l'incident"
+          :label-visible="true"
+          :min="selectedDemandeDateRange?.[0]"
+          :max="selectedDemandeDateRange?.[1]"
+          :model-value="date"
+          :readonly="!eigStore.canModify"
+          :is-valid="dateMeta.valid"
+          :error-message="dateErrorMessage"
+          placeholder="Date de l'incident"
+          @update:model-value="onDateChange"
         />
       </div>
     </fieldset>
@@ -72,8 +92,10 @@
 <script setup>
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
-import { eigModel, eigSchema } from "@vao/shared";
+import { eigModel, eigSchema, Summary } from "@vao/shared";
 import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
+import dayjs from "dayjs";
+import { DsfrAlert } from "@gouvminint/vue-dsfr";
 
 const emit = defineEmits(["next", "update"]);
 
@@ -117,6 +139,13 @@ const selectedDemandeLabel = computed(() => {
   return getTagSejourLibelle(selectedDemande.value);
 });
 
+const selectedDemandeDateRange = computed(() => {
+  if (!selectedDemande.value) {
+    return null;
+  }
+  return [selectedDemande.value.dateDebut, selectedDemande.value.dateFin];
+});
+
 const departementsOptions = computed(
   () =>
     selectedDemande.value?.hebergements?.hebergements
@@ -130,6 +159,9 @@ const initialValues = {
     eigStore.currentEig?.declarationId ??
     (!isNaN(route.query.dsId) ? parseInt(route.query.dsId) : null),
   departement: eigStore.currentEig?.departement ?? null,
+  date: eigStore.currentEig?.date
+    ? dayjs(eigStore.currentEig?.date).format("YYYY-MM-DD")
+    : null,
 };
 
 const { meta, values } = useForm({
@@ -140,12 +172,42 @@ const { meta, values } = useForm({
 
 const { value: declarationId, handleChange: onDeclarationIdChange } =
   useField("declarationId");
+
 const {
   value: departement,
   handleChange: onDepartementChange,
   errorMessage: departementErrorMessage,
   meta: departementMeta,
 } = useField("departement");
+
+const setDepartement = () => {
+  if (departementsOptions.value.length === 1) {
+    onDepartementChange(departementsOptions.value[0]);
+  } else {
+    onDepartementChange(null, false);
+  }
+};
+
+const {
+  value: date,
+  handleChange: onDateChange,
+  errorMessage: dateErrorMessage,
+  meta: dateMeta,
+} = useField("date");
+
+const onChooseDeclaration = (id) => {
+  onDeclarationIdChange(id);
+  setDepartement();
+  if (id == null) {
+    onDateChange(null, false);
+  }
+};
+
+onMounted(() => {
+  if (!departement.value) {
+    setDepartement();
+  }
+});
 
 const next = () => {
   if (!eigStore.canModify) {

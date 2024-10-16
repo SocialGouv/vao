@@ -109,12 +109,41 @@ module.exports.UpdateTypes = {
   TYPE_EVENEMENT: "TYPE_EVENEMENT",
 };
 
-module.exports.idDeclarationeligibleToEig = (d) =>
+module.exports.isDeclarationligibleToEig = (d) =>
   d.dateDebut <= dayjs().format("YYYY-MM-DD") &&
   dayjs(d.dateFin).add(1, "week").format("YYYY-MM-DD") >=
     dayjs().format("YYYY-MM-DD") &&
-  ![
-    dsStatuts.statuts.BROUILLON,
-    dsStatuts.statuts.ABANDONNEE,
-    dsStatuts.statuts.ANNULEE,
+  [
+    dsStatuts.statuts.VALIDEE_8J,
+    dsStatuts.statuts.SEJOUR_EN_COURS,
+    dsStatuts.statuts.TERMINEE,
   ].includes(d.statut);
+
+const isUserDreetsWhoDeliveredAgrement = (
+  territoireCode,
+  agrementRegionObtention,
+) => territoireCode === agrementRegionObtention;
+
+const isUserDdetsWhereEigHappened = (territoireCode, eigDepartement) =>
+  territoireCode === eigDepartement;
+
+module.exports.isUserDreetsWhoDeliveredAgrement =
+  isUserDreetsWhoDeliveredAgrement;
+
+module.exports.isUserDdetsWhereEigHappened = isUserDdetsWhereEigHappened;
+
+module.exports.mustMarkAsRead = (territoireCode, eig) => {
+  return (
+    (!eig.readByDdets &&
+      isUserDdetsWhereEigHappened(territoireCode, eig.departement)) ||
+    (!eig.readByDreets &&
+      isUserDreetsWhoDeliveredAgrement(
+        territoireCode,
+        eig.agrementRegionObtention,
+      ))
+  );
+};
+
+module.exports.isTypeActive = (type) => {
+  return ![Types[Categorie.VICTIMES].VIOLS].includes(type);
+};

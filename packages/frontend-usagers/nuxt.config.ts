@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     "nuxt-maplibre",
     "nuxt-security",
     "vue-dsfr-nuxt-module",
+    "@samk-dev/nuxt-vcalendar",
   ],
   runtimeConfig: {
     public: {

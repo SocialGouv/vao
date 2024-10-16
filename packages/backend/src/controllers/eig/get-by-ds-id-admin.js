@@ -10,7 +10,6 @@ module.exports = async function get(req, res, next) {
 
   try {
     const eigs = await eigService.getByDsIdAdmin(declarationId);
-
     return res.status(200).json({ eigs });
   } catch (error) {
     log.w("DONE with error");
