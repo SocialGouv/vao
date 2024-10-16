@@ -1,5 +1,6 @@
 <script lang="ts" setup generic="T extends Object">
 import { useId, ref, computed, nextTick, onUnmounted } from "vue";
+import type { VNode } from "vue";
 import { usePopper } from "../composables/usePopper.ts";
 
 const isObjectWithIdKey = (
@@ -104,13 +105,13 @@ const selectAllElement = ref<null | HTMLElement>(null);
 const model = defineModel<(string | number)[]>({ required: true });
 
 type SlotProps<T> = {
-  label: () => any;
-  "required-tip": () => any;
-  description: () => any;
-  "button-label": () => any;
-  legend: () => any;
-  "checkbox-label": (props: { option: T | string | number }) => any;
-  "no-resuts": () => any;
+  label: () => VNode;
+  "required-tip": () => VNode;
+  description: () => VNode;
+  "button-label": () => VNode;
+  legend: () => VNode;
+  "checkbox-label": (props: { option: T | string | number }) => VNode;
+  "no-results": () => VNode;
 };
 
 defineSlots<SlotProps<T>>();
