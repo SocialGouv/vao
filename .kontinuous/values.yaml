@@ -310,3 +310,87 @@ jobs:
           echo "03-2-ref-data : "
           psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-3-ref-data.sql
         fi
+
+migrate-s3:
+  ~chart: app
+  ~needs: [build-migrations, init-db]
+  imagePackage: migrations
+  entrypoint: ["tail", "-f", "/dev/null"]
+  resources:
+    requests:
+      cpu: "1"
+      memory: 4Gi
+    limits:
+      cpu: "2"
+      memory: 6Gi
+  readinessProbe:
+    exec:
+      command: ["sh", "-c", "ls"]
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  livenessProbe:
+    exec:
+      command: ["sh", "-c", "ls"]
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  startupProbe:
+    exec:
+      command: ["sh", "-c", "ls"]
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  env:
+    - name: PG_VAO_SUPERUSER
+      valueFrom:
+        secretKeyRef:
+          name: pg-superuser
+          key: user
+    - name: PG_VAO_SUPERPASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: pg-superuser
+          key: password
+    - name: POSTGRES_HOST
+      valueFrom:
+        secretKeyRef:
+          name: pg-superuser
+          key: host
+    - name: POSTGRES_PORT
+      valueFrom:
+        secretKeyRef:
+          name: pg-superuser
+          key: port
+    - name: POSTGRES_DB
+      valueFrom:
+        secretKeyRef:
+          name: pg-app
+          key: PGDATABASE
+    - name: S3_BUCKET_ENDPOINT
+      valueFrom:
+        secretKeyRef:
+          name: "{{.Values.global.s3SecretName}}"
+          key: bucket_endpoint
+    - name: S3_BUCKET_NAME
+      valueFrom:
+        secretKeyRef:
+          name: "{{.Values.global.s3SecretName}}"
+          key: bucket_name
+    - name: S3_BUCKET_REGION
+      valueFrom:
+        secretKeyRef:
+          name: "{{.Values.global.s3SecretName}}"
+          key: bucket_region  
+    - name: S3_BUCKET_ACCESS_KEY
+      valueFrom:
+        secretKeyRef:
+          name: "{{.Values.global.s3SecretName}}"
+          key: bucket_access_key  
+    - name: S3_BUCKET_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: "{{.Values.global.s3SecretName}}"
+          key: bucket_secret_key
+  envFrom:
+    - secretRef:
+        name: "{{.Values.global.s3SecretName}}"
+  vars:
+    S3_BUCKET_ROOT_DIR: review-branch/{{ .Values.global.branchSlug32  }}/files
