@@ -1,6 +1,8 @@
 <template>
   <div class="fr-container">
-    <h1 class="fr-py-2w">Liste des comptes ({{ usersStore.totalUsersFO }})</h1>
+    <h1 class="fr-py-2w">
+      Liste des organismes ({{ usersStore.totalUsersFO }})
+    </h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
