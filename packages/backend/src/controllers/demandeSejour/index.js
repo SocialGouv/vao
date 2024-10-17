@@ -1,6 +1,7 @@
 module.exports.get = require("./get");
 module.exports.getAdminStats = require("./getAdminStats");
 module.exports.getExtract = require("./getExtract");
+module.exports.getExtractHebergement = require("./getExtractHebergement");
 module.exports.getHebergement = require("./getHebergement");
 module.exports.getHebergementsByDepartementCodes = require("./getHebergementsByDepartementCodes");
 module.exports.getById = require("./getById");
