@@ -88,11 +88,11 @@
 import { TableFull } from "@vao/shared";
 
 import dayjs from "dayjs";
+
 definePageMeta({
   middleware: ["is-connected"],
 });
-import { useOrganismeStore } from "~/stores/organisme";
-import { useRegionStore } from "~/stores/referentiels";
+
 const organismeStore = useOrganismeStore();
 const regionStore = useRegionStore();
 
@@ -179,7 +179,7 @@ const headers = [
   {
     column: "agrement",
     objectLabel: "regionObtention",
-    text: "Région d'agrémentation",
+    text: "Région d'agrément",
     sort: true,
   },
   {
