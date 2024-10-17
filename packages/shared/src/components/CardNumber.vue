@@ -4,7 +4,11 @@
     :to="redirect"
     class="card-number fr-p-2w"
     :title="htmlTitle"
-    :class="{ 'card-number--has-hover-effect': redirect }"
+    :class="{
+      'card-number--has-hover-effect': redirect || clickable,
+      'has-cursor': clickable,
+    }"
+    @click="$emit('click', title)"
   >
     <div class="card-number__title">
       {{ title }}
@@ -17,18 +21,23 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+
 const props = withDefaults(
   defineProps<{
     title: string;
     value: number;
     redirect?: string;
     htmlTitle?: string;
+    clickable?: boolean;
   }>(),
   {
     redirect: "",
     htmlTitle: "",
+    clickable: false,
   },
 );
+
+defineEmits<{ (e: "click", title: string) }>();
 
 const wrapper = computed(() => (props.redirect ? "router-link" : "div"));
 </script>
@@ -40,12 +49,14 @@ const wrapper = computed(() => (props.redirect ? "router-link" : "div"));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 10rem;
+  height: 7rem;
   flex: 1;
   background-image: none;
+
   &--has-hover-effect:hover {
     background-color: var(--blue-france-sun-113-625-hover) !important;
   }
+
   &__title {
     font-size: 1.5rem;
   }
@@ -56,5 +67,9 @@ const wrapper = computed(() => (props.redirect ? "router-link" : "div"));
     line-height: 3rem;
     font-weight: 800;
   }
+}
+
+.has-cursor {
+  cursor: pointer;
 }
 </style>

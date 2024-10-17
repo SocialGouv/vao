@@ -36,7 +36,7 @@ const formatHtmlTitle = (elements) =>
 
 const topCards = computed(() => [
   {
-    title: "Déclarations transmises à traiter",
+    title: "Déclarations reçues à traiter",
     value: stats.value?.transmis + stats.value?.enCours || 0,
     redirect: `/sejours?statuts=${demandesSejours.statuts.TRANSMISE},${demandesSejours.statuts.EN_COURS}`,
     htmlTitle: formatHtmlTitle([
