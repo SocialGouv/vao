@@ -21,7 +21,7 @@ const quickLinks = computed(() => {
       ? [
           {
             label: "Mon compte",
-            to: "/",
+            to: "/comptes/mon-compte",
             icon: "ri:account-circle-line",
             iconRight: false,
           },
