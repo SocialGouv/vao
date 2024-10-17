@@ -323,10 +323,12 @@ const titreForm = computed(() => {
   return !props.user?.id
     ? "Création d'un nouvel utilisateur"
     : isSameUser.value
-      ? "Modification de mon compte"
-      : props.user?.editable
-        ? "Modification d'un utilisateur"
-        : "Consultation d'un utilisateur";
+      ? isFormDisabled.value
+        ? "Consultation de mon compte"
+        : "Modification de mon compte"
+      : isFormDisabled.value
+        ? "Consultation d'un utilisateur"
+        : "Modification d'un utilisateur";
 });
 
 const isFormDisabled = computed(() => {
@@ -620,6 +622,7 @@ async function post() {
     log.i("post - DONE");
   }
 }
+
 async function close() {
   navigateTo("/comptes/liste");
 }
