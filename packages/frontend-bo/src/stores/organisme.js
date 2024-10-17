@@ -13,6 +13,20 @@ export const useOrganismeStore = defineStore("organisme", {
     isConnected: (state) => !!state.user,
   },
   actions: {
+    async exportOrganismes() {
+      log.i("exportOrganismes - IN");
+      try {
+        const response = await $fetchBackend(`/organisme/bo/extract`, {
+          method: "GET",
+          credentials: "include",
+        });
+        log.i("exportOrganismes - DONE");
+        return response;
+      } catch (err) {
+        log.w("exportOrganismes - DONE with error", err);
+        throw err;
+      }
+    },
     async fetchOrganismes({ search } = {}) {
       log.i("fetchOrganismes - IN");
       try {
