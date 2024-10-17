@@ -1,6 +1,7 @@
 import FileUpload from "./FileUpload.vue";
 import Chat from "./Chat.vue";
 import DsfrDataTableV2 from "./Table/DsfrDataTableV2.vue";
+import DsfrMultiSelect from "./DsfrMultiSelect.vue";
 import TableWithBackendPagination from "./Table/TableWithBackendPagination.vue";
 import ValidationModal from "./ValidationModal.vue";
 import EigStatusBadge from "./eig/EigStatusBadge.vue";
@@ -18,6 +19,7 @@ export {
   FileUpload,
   Chat,
   DsfrDataTableV2,
+  DsfrMultiSelect,
   TableWithBackendPagination,
   ValidationModal,
   EigStatusBadge,

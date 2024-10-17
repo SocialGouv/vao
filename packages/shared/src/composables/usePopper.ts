@@ -1,8 +1,12 @@
-import { onUnmounted, ref, watch, computed, Ref } from "vue";
+import { onUnmounted, ref, watch, computed } from "vue";
+import type { Ref } from "vue";
 
-function debounce(func: Function, wait: number) {
+function debounce<T extends (...args: Parameters<T>) => void>(
+  func: T,
+  wait: number,
+) {
   let timeout: ReturnType<typeof setTimeout>;
-  return (...args: any[]) => {
+  return (...args: Parameters<T>): void => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
@@ -10,7 +14,7 @@ function debounce(func: Function, wait: number) {
 
 function observeElementSize(
   element: HTMLElement,
-  callback: (elememt: HTMLElement, entry: ResizeObserverEntry) => void,
+  callback: (element: HTMLElement, entry: ResizeObserverEntry) => void,
 ) {
   const resizeObserver = new ResizeObserver((entries) => {
     for (const entry of entries) {
@@ -27,11 +31,11 @@ function observeElementSize(
 }
 
 function trackElementMovement(
-  elememt: HTMLElement,
-  callback: (elememt: HTMLElement) => void,
+  element: HTMLElement,
+  callback: (element: HTMLElement) => void,
 ) {
   const updatePosition = () => {
-    callback(elememt);
+    callback(element);
   };
 
   window.addEventListener("resize", updatePosition);
@@ -48,7 +52,7 @@ function trackElementMovement(
 function observeDomChanges(
   trackedElement: HTMLElement,
   element: HTMLElement,
-  callback: (elememt: HTMLElement) => void,
+  callback: (element: HTMLElement) => void,
 ) {
   const mutationObserver = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
@@ -89,8 +93,8 @@ export function usePopper(host: Ref<null | HTMLElement>) {
     }
   };
 
-  const setSize = (elememt: HTMLElement) => {
-    const rect = elememt.getBoundingClientRect();
+  const setSize = (element: HTMLElement) => {
+    const rect = element.getBoundingClientRect();
     if (
       rect.width !== hostSize.value.width ||
       rect.height !== hostSize.value.height

@@ -1,6 +1,8 @@
 <script lang="ts" setup generic="T extends Object">
 import { useId, ref, computed, nextTick, onUnmounted } from "vue";
+import type { VNode } from "vue";
 import { usePopper } from "../composables/usePopper.ts";
+import CollapseTransition from "../transitions/CollapseTransition.vue";
 
 const isObjectWithIdKey = (
   option: unknown,
@@ -72,6 +74,7 @@ const props = withDefaults(
       [K in keyof T as T[K] extends string | number ? K : never]: T[K];
     };
     filteringKeys?: (keyof T)[];
+    maxOverflowHeight?: CSSStyleDeclaration["maxHeight"];
   }>(),
   {
     label: "",
@@ -90,6 +93,7 @@ const props = withDefaults(
       [K in keyof T as T[K] extends string | number ? K : never]: T[K];
     },
     filteringKeys: () => ["label"] as (keyof T)[],
+    maxOverflowHeight: "400px",
   },
 );
 
@@ -102,12 +106,13 @@ const selectAllElement = ref<null | HTMLElement>(null);
 const model = defineModel<(string | number)[]>({ required: true });
 
 type SlotProps<T> = {
-  label: () => any;
-  "required-tip": () => any;
-  description: () => any;
-  "button-label": () => any;
-  legend: () => any;
-  "checkbox-label": (props: { option: T | string | number }) => any;
+  label: () => VNode;
+  "required-tip": () => VNode;
+  description: () => VNode;
+  "button-label": () => VNode;
+  legend: () => VNode;
+  "checkbox-label": (props: { option: T | string | number }) => VNode;
+  "no-results": () => VNode;
 };
 
 defineSlots<SlotProps<T>>();
@@ -126,21 +131,44 @@ const handleClickOutside = (event: MouseEvent) => {
     isVisible.value = false;
     activeTracking.value = false;
     document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDownEscape);
   }
 };
 
-const handleClick = async (event: MouseEvent) => {
+const handleKeyDownEscape = (event: KeyboardEvent) => {
+  if (event.key === "Escape") {
+    document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDownEscape);
+    isVisible.value = false;
+    activeTracking.value = false;
+    if (host.value) {
+      host.value.focus();
+    }
+  }
+};
+
+const handleClick = async () => {
   activeTracking.value = !isVisible.value;
   isVisible.value = !isVisible.value;
   if (isVisible.value) {
-    event.stopPropagation();
     await nextTick();
     document.addEventListener("click", handleClickOutside);
-    if (popover.value && searchElement.value) {
-      searchElement.value.focus();
+    document.addEventListener("keydown", handleKeyDownEscape);
+    if (popover.value) {
+      if (selectAllElement.value) {
+        selectAllElement.value.focus();
+      } else if (searchElement.value) {
+        searchElement.value.focus();
+      } else {
+        const [firstCheckbox] = getAllCheckbox();
+        if (firstCheckbox) {
+          firstCheckbox.focus();
+        }
+      }
     }
   } else {
     document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDownEscape);
   }
 };
 
@@ -238,6 +266,7 @@ const handleFocusNextElementUsingTab = (event: KeyboardEvent) => {
     isVisible.value = false;
     activeTracking.value = false;
     document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDownEscape);
   }
 };
 
@@ -258,6 +287,7 @@ const focusPreviousElement = () => {
     isVisible.value = false;
     activeTracking.value = false;
     document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDownEscape);
     host.value.focus();
     const focusableElements = getFocusableElements();
     const currentElement = document.activeElement as HTMLElement;
@@ -273,6 +303,15 @@ const focusPreviousElement = () => {
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
+  document.removeEventListener("keydown", handleKeyDownEscape);
+});
+
+const defaultButtonLabel = computed(() => {
+  const nbElements = model.value?.length;
+  if (nbElements === 0) {
+    return "Sélectionner une option";
+  }
+  return `${nbElements} option${nbElements > 1 ? "s" : ""} sélectionnée${nbElements > 1 ? "s" : ""}`;
 });
 </script>
 
@@ -290,18 +329,22 @@ onUnmounted(() => {
     <button
       :id="id"
       ref="host"
+      type="button"
       class="fr-select fr-multi-select"
+      :aria-expanded="isVisible"
+      :aria-controls="`${id}-popover`"
       :class="{ 'fr-multi-select--is-open': isVisible }"
       @click="handleClick"
     >
       <slot name="button-label">
-        {{ props.buttonLabel }}
+        {{ props.buttonLabel || defaultButtonLabel }}
       </slot>
     </button>
     <Teleport to="body">
-      <transition name="fade">
+      <CollapseTransition>
         <div
           v-if="isVisible"
+          :id="`${id}-popover`"
           ref="popover"
           :style="{
             '--left-position': `${popoverPosition.x}px`,
@@ -310,15 +353,22 @@ onUnmounted(() => {
           }"
           class="fr-multi-select__popover"
         >
-          <ul v-if="props.selectAll" class="fr-btns-group">
+          <p :id="`${id}-text-description`" class="fr-sr-only">
+            Utilisez la tabulation (ou les touches flèches) pour naviguer dans
+            la liste des suggestions
+          </p>
+          <ul v-if="selectAll" class="fr-btns-group">
             <li>
               <button
                 ref="selectAllElement"
+                type="button"
+                :disabled="filterdOptions.length === 0"
                 class="fr-btn fr-btn--sm fr-btn--secondary"
                 @click="handleClickSelectAllClick"
                 @keydown.shift.tab="handleFocusPreviousElement"
               >
                 <span
+                  class="fr-multi-select__search__icon"
                   :class="
                     isAllSelected
                       ? 'fr-icon-close-circle-line'
@@ -329,30 +379,29 @@ onUnmounted(() => {
               </button>
             </li>
           </ul>
-          <div class="fr-input-group">
+          <div v-if="props.search" class="fr-input-group">
             <div class="fr-input-wrap fr-icon-search-line">
               <input
                 ref="searchElement"
                 v-model="searchInput"
                 class="fr-input"
                 placeholder="Rechercher"
-                :aria-describedby="`${id}-text-input-icon-messages`"
+                :aria-describedby="`${id}-text-description`"
                 type="text"
+                :aria-controls="`${id}-checkboxes`"
+                aria-live="polite"
                 @keydown.down="handleFocusFirstCheckbox"
                 @keydown.right="handleFocusFirstCheckbox"
                 @keydown.tab="handleFocusPreviousElement"
               />
             </div>
-            <div
-              :id="`${id}-text-input-icon-messages`"
-              class="fr-messages-group"
-              aria-live="assertive"
-            ></div>
+            <div class="fr-messages-group" aria-live="assertive"></div>
           </div>
           <fieldset
             :id="`${id}-checkboxes`"
-            class="fr-fieldset"
-            aria-labelledby="checkboxes-legend checkboxes-messages"
+            class="fr-fieldset fr-multi-select__popover__fieldset"
+            aria-live="polite"
+            :style="{ '--maxOverflowHeight': `${props.maxOverflowHeight}` }"
           >
             <legend
               v-if="props.legend || $slots.legend"
@@ -386,13 +435,7 @@ onUnmounted(() => {
                   :for="generateId(option, id, props.idKey) + '-checkbox'"
                 >
                   <slot name="checkbox-label" :option="option">
-                    {{
-                      typeof option === "object" &&
-                      props.labelKey &&
-                      props.labelKey in option
-                        ? `${option[props.labelKey]}`
-                        : `${option}`
-                    }}
+                    {{ getValueOrId(option, props.labelKey) }}
                   </slot>
                 </label>
                 <div
@@ -403,8 +446,11 @@ onUnmounted(() => {
               </div>
             </div>
           </fieldset>
+          <div v-if="filterdOptions.length === 0">
+            <slot name="no-results">Pas de résultat</slot>
+          </div>
         </div>
-      </transition>
+      </CollapseTransition>
     </Teleport>
   </div>
 </template>
@@ -445,6 +491,10 @@ onUnmounted(() => {
   transform: rotate(-180deg);
 }
 
+.fr-multi-select__search__icon {
+  margin-right: 1rem;
+}
+
 .fr-multi-select__popover {
   z-index: 20000;
   position: absolute;
@@ -454,50 +504,12 @@ onUnmounted(() => {
   top: var(--top-position);
   padding: 1rem;
   margin-top: 4px;
-  background-image: conic-gradient(
-      from -33.69deg at 50% 100%,
-      transparent 0deg,
-      var(--background-overlap-grey) 0deg,
-      var(--background-overlap-grey) 67.38deg,
-      transparent 67.38deg
-    ),
-    conic-gradient(
-      from -33.69deg at 50% 100%,
-      transparent 0deg,
-      var(--border-default-grey) 0deg,
-      var(--border-default-grey) 67.38deg,
-      transparent 67.38deg
-    ),
-    linear-gradient(
-      90deg,
-      var(--border-default-grey),
-      var(--border-default-grey)
-    ),
-    linear-gradient(
-      90deg,
-      var(--background-overlap-grey),
-      var(--background-overlap-grey)
-    );
-  background-position:
-    50% calc(100% - 0.5rem),
-    50% calc(100% - 0.375rem),
-    50% calc(100% - 0.75rem),
-    50% calc(100% - 0.75rem);
-  background-repeat: no-repeat;
-  background-size:
-    0.5rem 0.375rem,
-    0.5rem 0.375rem,
-    100% 1px,
-    100% calc(100% - 0.75rem);
+  background-color: var(--background-overlap-grey);
+  filter: drop-shadow(var(--overlap-shadow));
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.fr-multi-select__popover__fieldset {
+  max-height: var(--maxOverflowHeight);
+  overflow: auto;
 }
 </style>
