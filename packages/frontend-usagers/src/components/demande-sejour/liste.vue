@@ -18,7 +18,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
       <div class="fr-grid-row">
         <div class="fr-col">
           <form>
-            <fieldset class="fr-fieldset">
+            <div class="fr-fieldset">
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
@@ -167,13 +167,14 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
                   </Multiselect>
                 </div>
               </div>
-            </fieldset>
+            </div>
           </form>
         </div>
       </div>
       <div class="fr-grid-row">
         <div class="fr-col">
           <TableFull
+            title="Sejours"
             :headers="headers"
             :data="filteredDemandes"
             :search="search"
@@ -186,13 +187,13 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
     <div v-if="props.display === displayType.Organisme" class="fr-grid-row">
       <div class="fr-col">
         <form>
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <DsfrButton type="button">
               <NuxtLink to="/demande-sejour">
                 Déclarer un nouveau séjour
               </NuxtLink>
             </DsfrButton>
-          </fieldset>
+          </div>
         </form>
       </div>
     </div>
@@ -789,11 +790,11 @@ async function deleteDS(dsId) {
       });
     }
   } catch (error) {
-    log.w("Erreur durant la suppression de la declaration de sejour : ");
-    return toaster.error({
+    toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
     });
+    throw error;
   } finally {
     closeModal();
   }
@@ -821,10 +822,11 @@ async function cancelDS(dsId) {
     }
   } catch (error) {
     log.w("Erreur durant l'annulation de la declaration de sejour : ");
-    return toaster.error({
+    toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de l'annulation de la déclaration de séjour`,
     });
+    throw error;
   } finally {
     closeModal();
   }

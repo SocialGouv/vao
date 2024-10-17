@@ -1,6 +1,7 @@
 <template>
   <div>
     <TableFull
+      title="Historique"
       :headers="headers"
       :data="props.historique"
       :sort-direction-init="-1"

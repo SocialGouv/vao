@@ -1,6 +1,6 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-12">
           <DsfrInputGroup
@@ -147,8 +147,8 @@
           </div>
         </div>
       </div>
-    </fieldset>
-    <fieldset v-if="showButton" class="fr-fieldset">
+    </div>
+    <div v-if="showButton" class="fr-fieldset">
       <div class="fr-input-group">
         <DsfrButton
           id="Suivant"
@@ -158,7 +158,7 @@
           >Valider
         </DsfrButton>
       </div>
-    </fieldset>
+    </div>
   </div>
 </template>
 

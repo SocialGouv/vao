@@ -77,7 +77,7 @@
       </div>
 
       <div class="fr-fieldset">
-        <UtilsFileUpload
+        <FileUpload
           v-model="file"
           :label="label"
           :modifiable="props.modifiable"
@@ -104,6 +104,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
+import { FileUpload } from "@vao/shared";
 
 const toaster = useToaster();
 

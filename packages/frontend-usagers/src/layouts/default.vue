@@ -73,6 +73,21 @@ const navItems = useMenuNavItems();
 <template>
   <div>
     <DsfrToaster />
+    <div class="fr-skiplinks">
+      <nav class="fr-container" role="navigation" aria-label="Accès rapide">
+        <ul class="fr-skiplinks__list" role="list">
+          <li role="listitem">
+            <a class="fr-link" href="#menu">Menu</a>
+          </li>
+          <li role="listitem">
+            <a class="fr-link" href="#content">Contenu</a>
+          </li>
+          <li role="listitem">
+            <a class="fr-link" href="#footer">Pied de page</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
     <DsfrHeader
       id="header"
       service-title="Vacances Adaptées Organisées (VAO)"
@@ -83,21 +98,6 @@ const navItems = useMenuNavItems();
       :logo-text="header.logoText"
     >
       <template #mainnav>
-        <div class="fr-skiplinks">
-          <nav class="fr-container" role="navigation" aria-label="Accès rapide">
-            <ul class="fr-skiplinks__list" role="list">
-              <li role="listitem">
-                <a class="fr-link" href="#menu">Menu</a>
-              </li>
-              <li role="listitem">
-                <a class="fr-link" href="#content">Contenu</a>
-              </li>
-              <li role="listitem">
-                <a class="fr-link" href="#footer">Pied de page</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
         <DsfrNavigation
           id="menu"
           :nav-items="navItems"
@@ -132,6 +132,7 @@ const navItems = useMenuNavItems();
           class="fr-footer__content-desc"
           title="assistance, nouvelle page"
           target="_blank"
+          rel="noopener external"
         >
           Version : {{ config.public.appVersion }}
         </a>

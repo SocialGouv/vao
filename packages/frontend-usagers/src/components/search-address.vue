@@ -75,7 +75,7 @@ function select(_value, option) {
 </script>
 
 <template>
-  <fieldset class="fr-fieldset">
+  <div class="fr-fieldset">
     <div v-if="initialAdress" class="fr-fieldset__element">
       <div class="fr-input-group fr-col-12">
         <DsfrInputGroup
@@ -132,7 +132,7 @@ function select(_value, option) {
         </div>
       </div>
     </div>
-  </fieldset>
+  </div>
 </template>
 
 <style lang="scss" scoped></style>

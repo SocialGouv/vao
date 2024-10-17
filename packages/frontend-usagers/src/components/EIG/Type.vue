@@ -3,14 +3,14 @@
     <Summary :eig="eigStore.currentEig" />
   </dsfr-alert>
   <h6>Type d'événement</h6>
-  <fieldset class="fr-fieldset">
+  <div class="fr-fieldset">
     <div class="fr-fieldset__element">
       <DsfrAccordionsGroup v-model="expandedIndex">
         <DsfrAccordion
           :id="1"
           title="Evénements relatifs aux victimes présumées"
         >
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <div class="fr-fieldset__element">
               <DsfrCheckboxSet
                 v-model="typesValue"
@@ -41,13 +41,13 @@
                 @update:model-value="victimesAutrePrecisionChange"
               />
             </div>
-          </fieldset>
+          </div>
         </DsfrAccordion>
         <DsfrAccordion
           :id="2"
           title="Evènements relatifs à la santé de la personne"
         >
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <div class="fr-fieldset__element">
               <DsfrCheckboxSet
                 v-model="typesValue"
@@ -78,13 +78,13 @@
                 @update:model-value="santeAutrePrecisionChange"
               />
             </div>
-          </fieldset>
+          </div>
         </DsfrAccordion>
         <DsfrAccordion
           :id="3"
           title="Evènements relatifs à la sécurité des biens et des personnes"
         >
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <div class="fr-fieldset__element">
               <DsfrCheckboxSet
                 v-model="typesValue"
@@ -115,13 +115,13 @@
                 @update:model-value="securiteAutrePrecisionChange"
               />
             </div>
-          </fieldset>
+          </div>
         </DsfrAccordion>
         <DsfrAccordion
           :id="4"
           title="Evènements relatifs au fonctionnement de l’organisme responsable du séjour"
         >
-          <fieldset class="fr-fieldset">
+          <div class="fr-fieldset">
             <div class="fr-fieldset__element">
               <DsfrCheckboxSet
                 v-model="typesValue"
@@ -153,11 +153,11 @@
                 @update:model-value="fonctionnementAutrePrecisionChange"
               />
             </div>
-          </fieldset>
+          </div>
         </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
-  </fieldset>
+  </div>
   <UtilsNavigationButtons
     :show-buttons="props.showButtons"
     :is-downloading="props.isDownloading"

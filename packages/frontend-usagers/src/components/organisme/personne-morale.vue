@@ -27,7 +27,7 @@
         :error-message="siretErrorMessage"
         :readonly="!props.modifiable"
         placeholder=""
-        hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
+        hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
         @update:model-value="trimSiret"
       />
       <div v-if="props.modifiable" class="fr-fieldset__element">
@@ -187,36 +187,31 @@
           />
         </div>
       </DsfrFieldset>
-      <DsfrFieldset legend="Représentants légaux">
-        <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-12">
-            <Personnes
-              :key="keyRepresentantLegaux"
-              :personnes="representantsLegaux"
-              :modifiable="props.modifiable"
-              :show-adresse="false"
-              :show-attestation="false"
-              :show-competence="false"
-              :show-date-naissance="false"
-              :show-email="false"
-              :show-fonction="true"
-              :show-liste-fonction="false"
-              :show-telephone="false"
-              titre="Représentant légal"
-              :headers="headers"
-              :current-page="currentPersonnesPage"
-              label-bouton-ajouter="Ajouter un représentant légal"
-              @valid="onRepresentantsLegauxChangeWithKeyChange"
-            >
-            </Personnes>
-          </div>
+      <div class="fr-fieldset__element">
+        <div class="fr-input-group fr-col-12">
+          <Personnes
+            :key="keyRepresentantLegaux"
+            :personnes="representantsLegaux"
+            :modifiable="props.modifiable"
+            :show-adresse="false"
+            :show-attestation="false"
+            :show-competence="false"
+            :show-date-naissance="false"
+            :show-email="false"
+            :show-fonction="true"
+            :show-liste-fonction="false"
+            :show-telephone="false"
+            titre="Représentant légaux"
+            :headers="headers"
+            :current-page="currentPersonnesPage"
+            label-bouton-ajouter="Ajouter un représentant légal"
+            @valid="onRepresentantsLegauxChangeWithKeyChange"
+          >
+          </Personnes>
         </div>
-      </DsfrFieldset>
-      <DsfrFieldset
-        v-if="siegeSocial"
-        :legend="`Etablissements secondaires (${etablissements.length}) dont ${formatedEtablissements.length} actifs`"
-      >
-        <fieldset class="fr-fieldset">
+      </div>
+      <DsfrFieldset v-if="siegeSocial">
+        <div class="fr-fieldset">
           <div
             class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
           >
@@ -271,10 +266,11 @@
               />
             </div>
           </div>
-        </fieldset>
+        </div>
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
             <DsfrTable
+              :title="`Etablissements secondaires (${etablissements.length}) dont ${formatedEtablissements.length} actifs`"
               :headers="[
                 'SIRET',
                 'Dénomination',

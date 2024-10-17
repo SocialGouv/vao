@@ -3,7 +3,7 @@
   <dsfr-alert class="fr-mb-6v">
     <Summary :eig="eigStore.currentEig" />
   </dsfr-alert>
-  <fieldset class="fr-fieldset">
+  <div class="fr-fieldset">
     <h6>Personnel présent lors de événements</h6>
     <div class="fr-fieldset__element">
       <div class="wrapper">
@@ -101,7 +101,7 @@
         @update:model-value="dispositionInformationsChange"
       />
     </div>
-  </fieldset>
+  </div>
   <UtilsNavigationButtons
     :show-buttons="props.showButtons"
     :is-downloading="props.isDownloading"

@@ -12,6 +12,7 @@
           :label="scope.label"
           :label-visible="true"
           placeholder=""
+          hint="Exemple: Hôtel du Châtelet 127 rue de Grenelle 75007 Paris France"
           :model-value="scope.adresse.label"
           disabled
         />
