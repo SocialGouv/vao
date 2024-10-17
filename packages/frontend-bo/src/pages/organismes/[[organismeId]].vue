@@ -48,6 +48,14 @@
             :headers="['Nom', 'Prenom', 'Email', 'Date inscription']"
             :rows="usersWithSiret"
           ></DsfrTable>
+          <div class="fr-input-group">
+            <DsfrButton
+              type="button"
+              label="Extraire les comptes en CSV"
+              primary
+              @click="getCsvUtilisateurs"
+            />
+          </div>
         </div>
         <div
           v-if="
@@ -190,6 +198,13 @@ const organismeName = computed(() => {
       : (organismeStore.organisme.personnePhysique.nomUsage ?? "");
   }
 });
+
+const getCsvUtilisateurs = async () => {
+  const response = await userStore.exportUsersOrganisme({
+    organismeId: organismeStore.organisme.organismeId,
+  });
+  exportCsv(response, "UtilisateursOrganisme.csv");
+};
 
 onMounted(async () => {
   try {

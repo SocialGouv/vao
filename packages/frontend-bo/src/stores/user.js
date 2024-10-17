@@ -83,6 +83,24 @@ export const useUserStore = defineStore("user", {
       }
     },
 
+    async exportUsersOrganisme({ organismeId } = {}) {
+      log.i("exportUsersOrganisme - IN");
+      try {
+        const response = await $fetchBackend(
+          `/fo-user/extract/${organismeId}`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+        log.i("exportUsersOrganisme - DONE");
+        return response;
+      } catch (err) {
+        log.w("exportUsersOrganisme - DONE with error", err);
+        throw err;
+      }
+    },
+
     async fetchUsersOrganisme({
       limit,
       offset,
