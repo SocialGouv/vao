@@ -10,6 +10,10 @@ backend:
   vars:
     S3_BUCKET_ROOT_DIR: prod/files
 
+migrate-s3:
+  vars:
+    S3_BUCKET_ROOT_DIR: prod/files
+
 
 frontend-usagers:
   autoscale:

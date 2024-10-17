@@ -388,5 +388,3 @@ migrate-s3:
   envFrom:
     - secretRef:
         name: "{{.Values.global.s3SecretName}}"
-  vars:
-    S3_BUCKET_ROOT_DIR: review-branch/{{ .Values.global.branchSlug32  }}/files

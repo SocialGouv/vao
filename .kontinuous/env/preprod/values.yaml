@@ -7,6 +7,11 @@ backend:
   vars:
     S3_BUCKET_ROOT_DIR: preprod/files
 
+migrate-s3:
+  vars:
+    S3_BUCKET_ROOT_DIR: preprod/files
+
+
 pgweb:
   ~chart: pgweb
   pgweb:
