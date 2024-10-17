@@ -2,6 +2,7 @@
 import { useId, ref, computed, nextTick, onUnmounted } from "vue";
 import type { VNode } from "vue";
 import { usePopper } from "../composables/usePopper.ts";
+import CollapseTransition from "../transitions/CollapseTransition.vue";
 
 const isObjectWithIdKey = (
   option: unknown,
@@ -130,6 +131,19 @@ const handleClickOutside = (event: MouseEvent) => {
     isVisible.value = false;
     activeTracking.value = false;
     document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDownEscape);
+  }
+};
+
+const handleKeyDownEscape = (event: KeyboardEvent) => {
+  if (event.key === "Escape") {
+    document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDownEscape);
+    isVisible.value = false;
+    activeTracking.value = false;
+    if (host.value) {
+      host.value.focus();
+    }
   }
 };
 
@@ -139,8 +153,11 @@ const handleClick = async () => {
   if (isVisible.value) {
     await nextTick();
     document.addEventListener("click", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDownEscape);
     if (popover.value) {
-      if (searchElement.value) {
+      if (selectAllElement.value) {
+        selectAllElement.value.focus();
+      } else if (searchElement.value) {
         searchElement.value.focus();
       } else {
         const [firstCheckbox] = getAllCheckbox();
@@ -151,6 +168,7 @@ const handleClick = async () => {
     }
   } else {
     document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDownEscape);
   }
 };
 
@@ -248,6 +266,7 @@ const handleFocusNextElementUsingTab = (event: KeyboardEvent) => {
     isVisible.value = false;
     activeTracking.value = false;
     document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDownEscape);
   }
 };
 
@@ -268,6 +287,7 @@ const focusPreviousElement = () => {
     isVisible.value = false;
     activeTracking.value = false;
     document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleKeyDownEscape);
     host.value.focus();
     const focusableElements = getFocusableElements();
     const currentElement = document.activeElement as HTMLElement;
@@ -283,6 +303,7 @@ const focusPreviousElement = () => {
 
 onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
+  document.removeEventListener("keydown", handleKeyDownEscape);
 });
 
 const defaultButtonLabel = computed(() => {
@@ -310,6 +331,8 @@ const defaultButtonLabel = computed(() => {
       ref="host"
       type="button"
       class="fr-select fr-multi-select"
+      :aria-expanded="isVisible"
+      :aria-controls="`${id}-popover`"
       :class="{ 'fr-multi-select--is-open': isVisible }"
       @click="handleClick"
     >
@@ -318,9 +341,10 @@ const defaultButtonLabel = computed(() => {
       </slot>
     </button>
     <Teleport to="body">
-      <transition name="fade">
+      <CollapseTransition>
         <div
           v-if="isVisible"
+          :id="`${id}-popover`"
           ref="popover"
           :style="{
             '--left-position': `${popoverPosition.x}px`,
@@ -329,7 +353,11 @@ const defaultButtonLabel = computed(() => {
           }"
           class="fr-multi-select__popover"
         >
-          <ul v-if="props.selectAll" class="fr-btns-group">
+          <p :id="`${id}-text-description`" class="fr-sr-only">
+            Utilisez la tabulation (ou les touches flèches) pour naviguer dans
+            la liste des suggestions
+          </p>
+          <ul v-if="selectAll" class="fr-btns-group">
             <li>
               <button
                 ref="selectAllElement"
@@ -340,6 +368,7 @@ const defaultButtonLabel = computed(() => {
                 @keydown.shift.tab="handleFocusPreviousElement"
               >
                 <span
+                  class="fr-multi-select__search__icon"
                   :class="
                     isAllSelected
                       ? 'fr-icon-close-circle-line'
@@ -350,30 +379,28 @@ const defaultButtonLabel = computed(() => {
               </button>
             </li>
           </ul>
-          <div class="fr-input-group">
+          <div v-if="props.search" class="fr-input-group">
             <div class="fr-input-wrap fr-icon-search-line">
               <input
                 ref="searchElement"
                 v-model="searchInput"
                 class="fr-input"
                 placeholder="Rechercher"
-                :aria-describedby="`${id}-text-input-icon-messages`"
+                :aria-describedby="`${id}-text-description`"
                 type="text"
+                :aria-controls="`${id}-checkboxes`"
+                aria-live="polite"
                 @keydown.down="handleFocusFirstCheckbox"
                 @keydown.right="handleFocusFirstCheckbox"
                 @keydown.tab="handleFocusPreviousElement"
               />
             </div>
-            <div
-              :id="`${id}-text-input-icon-messages`"
-              class="fr-messages-group"
-              aria-live="assertive"
-            ></div>
+            <div class="fr-messages-group" aria-live="assertive"></div>
           </div>
           <fieldset
             :id="`${id}-checkboxes`"
             class="fr-fieldset fr-multi-select__popover__fieldset"
-            aria-labelledby="checkboxes-legend checkboxes-messages"
+            aria-live="polite"
             :style="{ '--maxOverflowHeight': `${props.maxOverflowHeight}` }"
           >
             <legend
@@ -408,13 +435,7 @@ const defaultButtonLabel = computed(() => {
                   :for="generateId(option, id, props.idKey) + '-checkbox'"
                 >
                   <slot name="checkbox-label" :option="option">
-                    {{
-                      typeof option === "object" &&
-                      props.labelKey &&
-                      props.labelKey in option
-                        ? `${option[props.labelKey]}`
-                        : `${option}`
-                    }}
+                    {{ getValueOrId(option, props.labelKey) }}
                   </slot>
                 </label>
                 <div
@@ -429,7 +450,7 @@ const defaultButtonLabel = computed(() => {
             <slot name="no-results">Pas de résultat</slot>
           </div>
         </div>
-      </transition>
+      </CollapseTransition>
     </Teleport>
   </div>
 </template>
@@ -470,6 +491,10 @@ const defaultButtonLabel = computed(() => {
   transform: rotate(-180deg);
 }
 
+.fr-multi-select__search__icon {
+  margin-right: 1rem;
+}
+
 .fr-multi-select__popover {
   z-index: 20000;
   position: absolute;
@@ -486,15 +511,5 @@ const defaultButtonLabel = computed(() => {
 .fr-multi-select__popover__fieldset {
   max-height: var(--maxOverflowHeight);
   overflow: auto;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>
