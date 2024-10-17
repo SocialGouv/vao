@@ -678,7 +678,7 @@ const initialValues = {
   nom: props.hebergement.nom,
 };
 
-const { values, resetForm } = useForm({
+const { values, setValues } = useForm({
   initialValues,
   validationSchema,
   validateOnMount: props.validateOnMount,
@@ -872,9 +872,7 @@ async function handleHebergementIdChange(hebergementId) {
       },
       nom: hebergementStore.hebergementCourant.nom,
     };
-    resetForm({
-      values: newValues,
-    });
+    setValues(newValues);
     log.d("handleHebergementIdChange - done", { ...values });
   }
 }
