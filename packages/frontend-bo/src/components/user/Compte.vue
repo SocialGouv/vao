@@ -28,6 +28,32 @@
                 {{ titreForm }}
               </h1>
               <div
+                v-if="
+                  usersStore.user.serviceCompetent === competence.NATIONALE &&
+                  props.user.id
+                "
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8">
+                Date d'inscription :
+                {{ dayjs(props.user.createdat).format("DD/MM/YYYY") }}<br />
+                Date de validation :
+                <span v-if="props.user.validated">
+                  {{ dayjs(props.user.validatedat).format("DD/MM/YYYY") }}
+                </span>
+                <span v-else>Compte non validé</span>
+                <br />
+                <span v-if="props.user.lastconnectionat">
+                  Date de dernière connexion :
+                  {{ dayjs(props.user.lastconnectionat).format("DD/MM/YYYY") }}
+                  <br />
+                </span>
+                <span v-if="props.user.deleted">
+                  Date de désactivation du compte par
+                  {{ props.user.deletion_user }} :
+                  {{ dayjs(props.user.deleted_date).format("DD/MM/YYYY") }}
+                  <br />
+                </span>
+              </div>
+              <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
                 <div class="fr-input-group">
