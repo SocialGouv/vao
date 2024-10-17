@@ -8,6 +8,13 @@
     is-url-update
     @click-on-cell="redirectOnHebergement"
   />
+  <DsfrButton
+    v-if="hebergements"
+    type="button"
+    label="Extraire en CSV"
+    primary
+    @click="getCsv"
+  />
 </template>
 
 <script setup>
@@ -68,6 +75,11 @@ const redirectOnHebergement = (row) => {
 };
 
 const table = ref(null);
+
+const getCsv = async () => {
+  const response = await demandeSejourStore.exportHebergements();
+  exportCsv(response, "hébergements-sejours.csv");
+};
 
 defineExpose({
   refreshTable() {

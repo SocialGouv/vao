@@ -14,6 +14,14 @@ router.get(
   getDepartements,
   hebergementController.getByDepartements,
 );
+
+router.get(
+  "/extract/",
+  boCheckJWT,
+  getDepartements,
+  hebergementController.getExtract,
+);
+
 // Gère une connexion via mot de passe.
 router.get(
   "/:id",

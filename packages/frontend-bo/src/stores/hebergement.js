@@ -12,6 +12,22 @@ export const useHebergementStore = defineStore("hebergement", {
     isGetHebergementLoading: false,
   }),
   actions: {
+    async exportHebergements(params) {
+      log.i("exportHebergements - IN");
+      try {
+        const response = await $fetchBackend(`/hebergement/extract/`, {
+          method: "GET",
+          credentials: "include",
+          params,
+        });
+        log.i("exportHebergements - DONE");
+        return response;
+      } catch (err) {
+        log.w("exportHebergements - DONE with error", err);
+        throw err;
+      }
+    },
+
     async getHebergements(params = {}) {
       log.i("getHebergements - IN");
       this.isGetHebergementsLoading = true;
