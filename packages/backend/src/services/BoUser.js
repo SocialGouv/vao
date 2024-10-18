@@ -412,13 +412,14 @@ module.exports.read = async (
     territoireSearchParamId = searchParams.length + 1;
     searchParams.push(`%${search.territoire}%`);
   }
-  if (search?.valide !== undefined) {
-    searchQuery += `   AND us.validated = $${searchParams.length + 1}\n`;
-    searchParams.push(`${search.valide === true || search.valide === "true"}`);
+  if (search?.statut === "validated") {
+    searchQuery += `AND us.validated = true\n`;
   }
-  if (search?.actif !== undefined) {
-    searchQuery += `   AND us.deleted = not $${searchParams.length + 1}\n`;
-    searchParams.push(`${search.actif === true || search.actif === "true"}`);
+  if (search?.statut === "notValidated") {
+    searchQuery += `AND us.validated = false\n`;
+  }
+  if (search?.statut === "deleted") {
+    searchQuery += `AND us.deleted = true\n`;
   }
 
   let additionalQueryParts = "";
