@@ -28,6 +28,8 @@
 import { eigModel, ValidationModal } from "@vao/shared";
 import dayjs from "dayjs";
 
+const log = logger("pages/demandes-sejour/eigs");
+
 const props = defineProps({
   eigs: { type: Array, default: () => [] },
   fetchEig: { type: Function, required: true },
@@ -50,6 +52,7 @@ const readEig = async (id) => {
     await eigStore.setCurrentEig(id);
     closeEigModal();
   } catch (e) {
+    log.w(e);
     toaster.error("Une erreur est survenue lors de la lecture de l'eig");
   }
 };

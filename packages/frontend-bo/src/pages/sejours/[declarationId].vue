@@ -266,6 +266,7 @@ onMounted(async () => {
     )
       await demandeStore.readMessages(route.params.declarationId);
   } catch (e) {
+    log.w(e);
     navigateTo("/sejours");
   }
 });
