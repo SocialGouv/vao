@@ -266,7 +266,7 @@ LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm
       FROM front.demande_sejour_message  dsmax
       WHERE dsmax.declaration_id = ds.id)
 WHERE
-  o.id IN ($1)
+  o.id = ANY ($1)
 `,
     [organismeIds],
   ],
@@ -891,7 +891,7 @@ module.exports.get = async ({ sortBy }, organismesId) => {
   }
   const finalQuery = queryGet[0] + querySorted;
   const queryParams = queryGet[1];
-  const response = await pool.query(finalQuery, queryParams[0]);
+  const response = await pool.query(finalQuery, [queryParams[0]]);
   log.i("get - DONE");
   const demandes = response.rows;
   return demandes;
