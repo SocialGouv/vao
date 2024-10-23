@@ -7,6 +7,11 @@ backend:
   vars:
     S3_BUCKET_ROOT_DIR: preprod/files
 
+migrate-s3:
+  vars:
+    S3_BUCKET_ROOT_DIR: preprod/files
+
+
 pgweb:
   ~chart: pgweb
   pgweb:
@@ -31,6 +36,7 @@ pgweb:
 pg:
   backup:
     name: "202407291149" # backup on a new folder
+    ~tpl~enabled: "true"
 
 jobs:
   runs:
