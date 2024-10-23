@@ -7,5 +7,6 @@ const userController = require("../controllers/user");
 
 // Gère une connexion via mot de passe.
 router.get("/me", checkJWT, userController.getMe);
+router.patch("/me", checkJWT, userController.patchMe);
 
 module.exports = router;

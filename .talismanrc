@@ -132,7 +132,7 @@ fileignoreconfig:
 - filename: packages/backend/src/services/Document.js
   checksum: 59b5abe13b265c61dc6df8bbb92a3f989199dafaef0170d361f49e760d2ac385
 - filename: packages/backend/src/services/User.js
-  checksum: 6f3bcdcbe1d0e813fb032939778cd11cf0acf3ba7f2e25ca4707f114f31cfae0
+  checksum: 2a2d7d5e41c5584909ada6ba4a7f59b5918886b76b902efe0f3f43e8f47dc270
 - filename: packages/backend/src/services/geo/Commune.js
   checksum: 40213f6529d1282e73f0201199e28b66f9c99c76d16651d88aac0b59fb722ae2
 - filename: packages/backend/src/services/geo/Departement.js
@@ -229,6 +229,8 @@ fileignoreconfig:
   checksum: 4d8c14f196fb8fa661a90545fca0297d5481334bafbe4a22d12e33a039de4c98
 - filename: packages/frontend-usagers/src/pages/demande-sejour/liste.vue
   checksum: 1a15627cce01ea6d0bbff2d1ea7d71a44da574a5b69b1a565d275c704138ef69
+- filename: packages/frontend-usagers/src/pages/mon-compte.vue
+  checksum: 83d88bf7c3949ee0239b11ed60f256761b06ba893b5c027d49c6550b4f33cb22
 - filename: packages/frontend-usagers/src/pages/operateur/renseignements-generaux/[[idOperateur]].vue
   checksum: 3a6a45bbf16e8501e4d9bae581348c9b620df3417e0bc4953ef00b67e4213050
 - filename: packages/frontend-usagers/src/public/js/jquery.min.js
