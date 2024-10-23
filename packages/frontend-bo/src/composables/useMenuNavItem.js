@@ -62,6 +62,10 @@ export const useMenuNavItems = () => {
         text: "Organismes",
         to: "/organismes/liste",
       },
+      {
+        text: "Territoires",
+        to: "/territoires/liste",
+      },
       ...(roles.includes("DemandeSejour_Lecture") ||
       roles.includes("DemandeSejour_Ecriture")
         ? [

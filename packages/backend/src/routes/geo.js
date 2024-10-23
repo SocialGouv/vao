@@ -11,6 +11,11 @@ router.get("/communes", geoController.commune.fetch);
 router.get("/communes/:communeCode", geoController.commune.get);
 router.get("/departements", geoController.departement.fetch);
 router.get("/regions", geoController.region.fetch);
+router.get("/territoires", geoController.territoire.fetch);
+router.get(
+  "/territoires/:idTerritoire",
+  geoController.territoire.getOne,
+);
 router.post("/adresse", geoController.adresse.fetch);
 
 module.exports = router;

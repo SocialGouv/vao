@@ -1,6 +1,42 @@
 import { defineStore } from "pinia";
 import { $fetchBackend } from "#imports";
 
+export const useTerritoireStore = defineStore("territoire", {
+  state: () => ({
+    territoires: [],
+    territoire: {},
+  }),
+  actions: {
+    async fetch() {
+      try {
+        const { territoires } = await $fetchBackend("/geo/territoires");
+        if (territoires) {
+          this.territoires = territoires.map((territoire) => ({
+            territoireId: territoire.territoire_id,
+            text: territoire.text,
+            value: territoire.value,
+            typeTerritoire: territoire.type,
+            serviceMail: territoire.service_mail,
+            nbUsersBO: territoire.nbusersbo,
+          }));
+        }
+      } catch (err) {
+        this.territoires = [];
+      }
+    },
+    async get(idTerritoire) {
+      try {
+        const rows = await $fetchBackend(
+          `/geo/territoires/${idTerritoire}`,
+        );
+        this.territoire = rows.territoires[0];
+      } catch (err) {
+        this.territoire = [];
+      }
+    },    
+  },
+});
+
 export const useDepartementStore = defineStore("departement", {
   state: () => ({
     departements: [],
