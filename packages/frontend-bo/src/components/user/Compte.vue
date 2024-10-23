@@ -602,7 +602,6 @@ const closeModal = () => (popUpParams.value = null);
 const modalOpenCounter = ref(0);
 
 const openModal = (p) => {
-  console.log(p);
   modalOpenCounter.value++;
   popUpParams.value = {
     cb: () => {

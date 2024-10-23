@@ -11,6 +11,7 @@ module.exports.sejour = require("./sejour");
 module.exports.hebergement = require("./hebergement");
 module.exports.agrement = require("./agrement");
 module.exports.message = require("./message");
+module.exports.territoire = require("./territoire");
 
 module.exports.documents = require("./documents");
 

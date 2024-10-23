@@ -8,6 +8,7 @@ export const useUserStore = defineStore("user", {
     user: null,
     userFO: null,
     users: [],
+    usersTerritoire: [],
     usersFO: [],
     total: 0,
     totalUsersFO: 0,
@@ -67,7 +68,33 @@ export const useUserStore = defineStore("user", {
         log.w("fetchUsers - Erreur", { error });
       }
     },
+    async fetchUsersTerritoire(territoireCode) {
+      log.i("fetchUsers - IN");
 
+      try {
+        // Appel du back pour la liste des utilisateurs
+        const { users, total } = await $fetchBackend(
+          `/bo-user/territoires/${territoireCode}`,
+          {
+            credentials: "include",
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        log.d("fetchUsers - réponse", { users, total });
+        this.users = users;
+        this.total = total;
+        log.i("fetchUsers - DONE");
+      } catch (error) {
+        // Retour vide en cas d'erreur
+        this.users = [];
+        this.total = 0;
+        log.w("fetchUsers - Erreur", { error });
+        throw error;
+      }
+    },
     async exportUsers() {
       log.i("exportUsers - IN");
       try {

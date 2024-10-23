@@ -20,6 +20,12 @@ router.get(
 );
 // Gère une connexion via mot de passe.
 router.get("/me", BOcheckJWT, BOUserController.getMe);
+// Liste des utilisateurs BO Liés à un territoire et sous territoires
+router.get(
+  "/territoires/:territoireCode",
+  BOcheckJWT,
+  BOUserController.listUsersTerritoire,
+);
 // Renvoie les informations liées à l'utilisateur
 router.get("/:userId", BOcheckJWT, BOcheckRoleCompte, BOUserController.getOne);
 // Mise à jour de mes informations

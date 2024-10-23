@@ -174,6 +174,21 @@ ${additionalParamsQuery}
 `,
     additionalParams,
   ],
+  listUsersTerritoire: `
+    SELECT
+      us.mail as email,
+      us.blocked as "isBlocked",
+      us.nom as nom,
+      us.prenom as prenom,
+      us.ter_code as "territoireCode",
+      terp.label as "territoireLibelle"
+    FROM geo.territoires terp
+    LEFT JOIN geo.territoires ters ON ters.parent_code = terp.code 
+    INNER JOIN back.users us ON (terp.code = us.ter_code OR ters.code = us.ter_code) AND us.ter_code <> 'FRA'
+    WHERE terp.code =  $1 AND us.validated = true AND us.deleted = false
+    GROUP BY 1,2,3,4,5,6
+    ORDER BY nom
+    `,
   login: `
     SELECT
       us.id as id,
@@ -407,7 +422,6 @@ module.exports.read = async (
   let searchQuery = "";
   let territoireSearchParamId = "";
   const searchParams = [];
-
   // Search management
   if (search?.nom && search.nom.length) {
     searchQuery += `   AND unaccent(us.nom) ILIKE unaccent($${searchParams.length + 1})\n`;
@@ -424,16 +438,31 @@ module.exports.read = async (
   if (
     search?.territoire &&
     search?.territoire !== "FRA" &&
-    search.territoire.length
+    search?.territoire.length
   ) {
     searchQuery += `   AND (
       unaccent(ter.label) ILIKE unaccent($${searchParams.length + 1})
-      OR code ILIKE $${searchParams.length + 1}
+      OR ter.code ILIKE $${searchParams.length + 1}
       OR ter.parent_code IN (SELECT code FROM matched_elements)
     )\n`;
     territoireSearchParamId = searchParams.length + 1;
     searchParams.push(`%${search.territoire}%`);
   }
+
+  // Filtre utilisé pour rechercher tous les users pour un territoire et ses enfants
+  if (
+    search?.territoireParent &&
+    search?.territoireParent !== "FRA" &&
+    search.territoireParent.length
+  ) {
+    searchQuery += `   AND (
+      ter.code = $${searchParams.length + 1}
+      OR ter.parent_code = $${searchParams.length + 1}
+    )\n`;
+    territoireSearchParamId = searchParams.length + 1;
+    searchParams.push(`%${search.territoireParent}%`);
+  }
+
   if (search?.statut === "validated") {
     searchQuery += `AND us.validated = true\n`;
   }
@@ -495,6 +524,7 @@ module.exports.read = async (
       WHERE unaccent(label) ILIKE unaccent($${territoireSearchParamId})
       OR code ILIKE $${territoireSearchParamId}
     )\n`;
+
   const response = await pool.query(
     `${territoireSearchParamId ? territoirePreQuery : ""}
     ${queryPrepared[0]}`,
@@ -512,6 +542,18 @@ module.exports.read = async (
   return {
     total: total.rows[0].count,
     users: response.rows,
+  };
+};
+
+module.exports.readTerritoires = async (territoireParent) => {
+  log.i("readTerritoires - IN", territoireParent);
+  const userTerritoire = await pool.query(query.listUsersTerritoire, [
+    territoireParent,
+  ]);
+  log.i("readTerritoires - DONE");
+  return {
+    total: userTerritoire.rows.count,
+    users: userTerritoire.rows,
   };
 };
 
