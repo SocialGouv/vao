@@ -247,6 +247,8 @@ fileignoreconfig:
   checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/migrations/src/migrations/20240918085236_migrate_files_to_minio.js
   checksum: ce0b678503f6342414ed759fa31ac460060d1efd1daadffb3d7be0bfa049858c
+- filename: packages/migrations/src/scripts/migrate-files-to-s3.js
+  checksum: e22a659aca296659bcd27ea22fd6919938327d3a4ad17eaab229e55724d94dce
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/PasswordInput.vue
