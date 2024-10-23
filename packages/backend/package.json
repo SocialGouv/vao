@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.649.0",
-    "@sentry/node": "~8.31.0",
+    "@sentry/node": "~8.35.0",
     "@sentry/profiling-node": "^8.20.0",
     "axios": "^1.7.4",
     "body-parser": "~1.20.3",
@@ -26,7 +26,7 @@
     "db-migrate-pg": "~1.5.2",
     "debug": "~4.3.4",
     "express": "~4.21.0",
-    "helmet": "~7.1.0",
+    "helmet": "~7.2.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.13",
