@@ -87,27 +87,64 @@ const query = {
   select: (criterias) => [
     `
       SELECT
-        id,
-        mail as email,
-        pwd is not null as "hasPwd",
-        nom,
-        prenom,
-        telephone,
-        status_code as "statusCode"
-      FROM front.users
+        us.id as "id",
+        us.mail as email,
+        us.pwd is not null as "hasPwd",
+        us.nom as "nom",
+        us.prenom as "prenom",
+        us.telephone as "telephone",
+        us.created_at as "createdAt",
+        us.status_code as "statusCode",
+        CASE
+          WHEN o.personne_morale IS NULL THEN NULL
+          ELSE o.personne_morale->>'siret'
+        END as "siret",
+        CASE
+          WHEN o.personne_morale IS NULL THEN NULL
+          ELSE o.personne_morale->>'raisonSociale'
+        END as "raisonSociale"
+      FROM front.users us
+      INNER JOIN front.user_organisme uo ON us.id = uo.use_id
+      INNER JOIN front.organismes o ON uo.org_id = o.id
       WHERE 1=1
       ${Object.keys(criterias)
-        .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
+        .map((criteria, i) => ` AND us.${criteria} = $${i + 1}`)
         .join(" ")}
       `,
     Object.values(criterias),
   ],
-  updateLastConnection: `
-    UPDATE front.users
+  updateUser: `
+    WITH updated_user AS (
+      UPDATE front.users
       SET
-      LASTCONNECTION_AT = NOW()
-    WHERE
-      id = $1
+        nom = $2,
+        prenom = $3,
+        edited_at = NOW()
+      WHERE
+        id = $1
+      RETURNING id
+    )
+    SELECT
+      us.id as "id",
+      us.mail as email,
+      us.pwd IS NOT NULL as "hasPwd",
+      us.nom as "nom",
+      us.prenom as "prenom",
+      us.telephone as "telephone",
+      us.created_at as "createdAt",
+      us.status_code as "statusCode",
+      CASE
+        WHEN o.personne_morale IS NULL THEN NULL
+        ELSE o.personne_morale->>'siret'
+      END as "siret",
+      CASE
+        WHEN o.personne_morale IS NULL THEN NULL
+        ELSE o.personne_morale->>'raisonSociale'
+      END as "raisonSociale"
+    FROM front.users us
+    INNER JOIN updated_user uu ON us.id = uu.id
+    INNER JOIN front.user_organisme uo ON us.id = uo.use_id
+    INNER JOIN front.organismes o ON uo.org_id = o.id;
   `,
 };
 
@@ -203,4 +240,9 @@ module.exports.login = async ({ email, password }) => {
   pool.query(query.updateLastConnection, [user.rows[0].id]);
   log.i("read - DONE", { user: user.rows[0] });
   return user.rows[0];
+};
+
+module.exports.updateUser = async ({ id, nom, prenom }) => {
+  const users = await pool.query(query.updateUser, [id, nom, prenom]);
+  return users.rows[0];
 };

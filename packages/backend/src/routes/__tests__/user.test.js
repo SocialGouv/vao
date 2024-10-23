@@ -78,3 +78,79 @@ describe("GET /users/me", () => {
     expect(response.body).toHaveProperty("name", "UnexpectedError");
   });
 });
+
+describe("PATCH /users/me", () => {
+  beforeEach(() => {
+    User.updateUser.mockReset();
+  });
+
+  it("should update and return the user if the token and data are valid", async () => {
+    const user = {
+      id: 1,
+      mail: "test@example.com",
+      nom: "Updated",
+      prenom: "User",
+      telephone: "0102030405",
+    };
+
+    checkJWT.mockImplementationOnce((req, res, next) => {
+      req.decoded = { id: user.id };
+      next();
+    });
+
+    User.updateUser.mockResolvedValue(user);
+
+    const response = await request(app)
+      .patch("/users/me")
+      .send({ nom: "Updated", prenom: "User" });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toHaveProperty("user");
+    expect(response.body.user).toHaveProperty("nom", "Updated");
+    expect(response.body.user).toHaveProperty("prenom", "User");
+  });
+
+  it("should return a validation error if the input data is invalid", async () => {
+    const user = {
+      id: 1,
+      mail: "test@example.com",
+      nom: "Test",
+      prenom: "User",
+    };
+
+    checkJWT.mockImplementationOnce((req, res, next) => {
+      req.decoded = { id: user.id };
+      next();
+    });
+
+    const response = await request(app)
+      .patch("/users/me")
+      .send({ nom: "", prenom: "" }); // Invalid data
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body).toHaveProperty("name", "ValidationError");
+  });
+
+  it("should return a 500 error if the update query fails", async () => {
+    const user = {
+      id: 1,
+      mail: "test@example.com",
+      nom: "Test",
+      prenom: "User",
+    };
+
+    checkJWT.mockImplementationOnce((req, res, next) => {
+      req.decoded = { id: user.id };
+      next();
+    });
+
+    User.updateUser.mockRejectedValue(new Error("Database error"));
+
+    const response = await request(app)
+      .patch("/users/me")
+      .send({ nom: "Updated", prenom: "User" });
+
+    expect(response.statusCode).toBe(500);
+    expect(response.body).toHaveProperty("name", "UnexpectedError");
+  });
+});
