@@ -92,6 +92,14 @@ const filesGeneres = computed(() => {
 
 const filesTeleverses = computed(() => {
   let files = [];
+  if (props.declaration.organisme?.agrement?.file) {
+    files.push({
+      name: props.declaration.organisme.agrement.file.name,
+      type: "agrement",
+      createdAt: props.declaration.organisme.agrement.file.createdAt,
+      uuid: props.declaration.organisme.agrement.file.uuid,
+    });
+  }
   if (props.declaration?.informationsSanitaires?.files) {
     const filesSanitaires = props.declaration.informationsSanitaires.files.map(
       (f) => {
