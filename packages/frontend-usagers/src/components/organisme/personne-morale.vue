@@ -320,7 +320,12 @@
         </div>
       </DsfrFieldset>
     </div>
-
+    <DsfrTable
+      v-if="siren || siret"
+      title="Liste des comptes avec le numéro de siret de l'organisme"
+      :headers="['Nom', 'Prenom', 'Email', 'Date inscription']"
+      :rows="usersWithSiret"
+    ></DsfrTable>
     <DsfrFieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton
         v-if="!props.isDownloading"
@@ -342,12 +347,16 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading } from "@vao/shared";
 import { DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
+import dayjs from "dayjs";
 
 const toaster = useToaster();
 
 const log = logger("components/organisme/personne-morale");
 
 const emit = defineEmits(["previous", "next", "update"]);
+
+const organismeStore = useOrganismeStore();
+organismeStore.fetchUsersOrganisme();
 
 const props = defineProps({
   initData: { type: Object, required: true },
@@ -377,6 +386,14 @@ const currentPersonnesPage = ref(1);
 
 const validationSchema = computed(() =>
   yup.object(organisme.personneMoraleSchema),
+);
+const usersWithSiret = computed(() =>
+  organismeStore.usersFO.map((user) => [
+    user.nom,
+    user.prenom,
+    user.email,
+    dayjs(user.dateCreation).format("DD/MM/YYYY HH:MM"),
+  ]),
 );
 
 const etablissementFilter = ref({
