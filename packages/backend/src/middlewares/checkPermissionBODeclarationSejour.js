@@ -4,56 +4,29 @@ const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 
-async function checkPermissionDeclarationSejour(req, res, next) {
+export default function (req, res, next) {
+  try {
+    checkPermissionDeclarationSejour(req, res)
+    next()
+  } catch (error) {
+    log.w(error)
+    next(error) 
+  }
+}
+
+export default async function checkPermissionDeclarationSejour(req, _res) {
   const { declarationId } = req.params;
   const { departements } = req;
   const { territoireCode } = req.decoded;
   log.i("IN");
 
-  if (!declarationId || !departements) {
-    return next(
-      new AppError(
-        "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
-        {
-          statusCode: 403,
-        },
-      ),
+  if (!declarationId || !departements) { 
+    throwHttpForbiddenError(
+       "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
     );
   }
 
-  // Requête SQL simplifiée, ne récupérant que les informations brutes nécessaires
-  const query = `
-    SELECT ds.id, ds.hebergement, o.personne_morale, agr.region_obtention
-    FROM front.demande_sejour ds
-    INNER JOIN front.organismes o ON o.id = ds.organisme_id
-    LEFT JOIN front.agrements agr ON agr.organisme_id = ds.organisme_id
-    WHERE ds.id = $1
-  `;
-
-  let sejour;
-  try {
-    const { rows } = await pool.query(query, [declarationId]);
-    if (!rows || rows.length === 0) {
-      return next(
-        new AppError(
-          "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
-          {
-            statusCode: 403,
-          },
-        ),
-      );
-    }
-    // Récupération des données brutes
-    sejour = rows[0];
-  } catch (err) {
-    log.w(err);
-    return next(
-      new AppError("La recheche du séjour et de l'organisateur ont échoué", {
-        cause: err,
-      }),
-    );
-  }
-
+  const sejour = getSejour(declarationId)
   const { hebergement, personne_morale, region_obtention } = sejour;
 
   // Traitement des données JSON pour vérifier les départements
@@ -67,9 +40,39 @@ async function checkPermissionDeclarationSejour(req, res, next) {
   );
 
   if (hasValidDepartement) {
-    return next();
+    return;
   }
 
+  if (checkOrganismeAndAgrement({personne_morale, region_obtention, territoireCode})) {
+    return 
+  }
+
+  throwHttpForbiddenError("Vous n'êtes pas autorisé à accéder à cette déclaration de séjour")
+}
+
+async function getSejour(declarationId) {
+  const query = `
+    SELECT ds.id, ds.hebergement, o.personne_morale, agr.region_obtention
+    FROM front.demande_sejour ds
+    INNER JOIN front.organismes o ON o.id = ds.organisme_id
+    LEFT JOIN front.agrements agr ON agr.organisme_id = ds.organisme_id
+    WHERE ds.id = $1
+  `;
+
+  let sejour;
+  try {
+    const { rows } = await pool.query(query, [declarationId]);
+    if (!rows || rows.length === 0) {
+      throwHttpForbiddenError("Vous n'êtes pas autorisé à accéder à cette déclaration de séjour")
+    }
+    // Récupération des données brutes
+    return rows[0];
+  } catch (err) {
+    throwHttpForbiddenError("La recheche du séjour et de l'organisateur ont échoué")
+  }
+}
+
+async function checkOrganismeAndAgrement({personne_morale, region_obtention, territoireCode}) {
   try {
     // Vérification supplémentaire sur les organismes et leur agrément
     if (!personne_morale?.porteurAgrement) {
@@ -88,35 +91,39 @@ async function checkPermissionDeclarationSejour(req, res, next) {
         (agr) => agr.region_obtention === territoireCode,
       );
       if (hasAgrement) {
-        return next();
+        return true;
       }
     } else {
       //  Vérification sur la région d'obtention (Organisme porteur de l'agrément)
       if (region_obtention === territoireCode) {
-        return next();
+        return true;
       }
     }
   } catch (err) {
-    log.w(err);
-    return next(
-      new AppError(
+    throwHttpInternalError(
         "La recheche de l'agrément de l'organisateur principal a échoué",
-        {
-          cause: err,
-        },
-      ),
+        err
     );
   }
 
-  // Si aucune des conditions n'est remplie, accès refusé
-  return next(
-    new AppError(
-      "Vous n'êtes pas autorisé à accéder à cette déclaration de séjour",
-      {
-        statusCode: 403,
-      },
-    ),
+  return false
+}
+
+async function throwHttpForbiddenError(message) {
+  throw new AppError(
+    message,
+    {
+      statusCode: 403,
+    },
   );
 }
 
-module.exports = checkPermissionDeclarationSejour;
+async function throwHttpInternalError(message, err) {
+  throw new AppError(
+    message,
+    {
+      statusCode: 500,
+      cause: err
+    },
+  ); 
+}
