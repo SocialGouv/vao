@@ -28,7 +28,9 @@ module.exports = async function getExtract(req, res, next) {
       { key: "nom", label: "Nom" },
       { key: "prenom", label: "Prenom" },
       { key: "email", label: "Courriel" },
-      { key: "territoire", label: "Territoire" },
+      { key: "competence", label: "Compétence" },
+      { key: "region", label: "Région" },
+      { key: "departement", label: "Département" },
       { key: "validated", label: "Compte validé" },
       { key: "deleted", label: "Compte actif" },
     ];
