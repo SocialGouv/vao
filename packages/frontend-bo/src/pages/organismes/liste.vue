@@ -82,6 +82,7 @@
       :search="search"
       @click-row="navigate"
     />
+    <DsfrButton type="button" label="Extraire en CSV" primary @click="getCsv" />
   </div>
 </template>
 <script setup>
@@ -193,6 +194,10 @@ const headers = [
     text: "Nombre de séjours",
   },
 ];
+
+const getCsv = async () => {
+  await organismeStore.exportOrganismes();
+};
 
 const navigate = (organisme) => {
   navigateTo(`/organismes/${organisme.organismeId}`);
