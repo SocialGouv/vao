@@ -39,6 +39,16 @@ definePageMeta({
   middleware: ["is-connected"],
 });
 
+useHead({
+  title: "mon-compte | Vacances Adaptées Organisées",
+  meta: [
+    {
+      name: "mon-compte",
+      content: "Page pour editer ses informations",
+    },
+  ],
+});
+
 const userStore = useUserStore();
 
 const reactiveValues = {
