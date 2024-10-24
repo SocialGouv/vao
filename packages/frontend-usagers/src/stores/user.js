@@ -26,5 +26,15 @@ export const useUserStore = defineStore("user", {
         this.user = null;
       }
     },
+    async patchProfile(params) {
+      const { user } = await $fetchBackend("/users/me", {
+        method: "PATCH",
+        credentials: "include",
+        body: {
+          ...params,
+        },
+      });
+      this.user = user;
+    },
   },
 });
