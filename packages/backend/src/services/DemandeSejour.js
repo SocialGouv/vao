@@ -1011,7 +1011,6 @@ module.exports.getByDepartementCodes = async (
   }
 
   log.d({ paramsWithPagination, queryWithPagination });
-
   const response = await pool.query(queryWithPagination, paramsWithPagination);
 
   if (limit === null || response.rowCount < limit) {
