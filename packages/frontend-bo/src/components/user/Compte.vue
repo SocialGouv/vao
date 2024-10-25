@@ -28,6 +28,20 @@
                 {{ titreForm }}
               </h1>
               <div
+                v-if="
+                  usersStore.user.serviceCompetent === competence.NATIONALE &&
+                  props.user.id
+                "
+                class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+              >
+                <div
+                  v-for="(userInfo, index) in userInfos.split('\n')"
+                  :key="index"
+                  style="margin-bottom: 8px"
+                  v-text="userInfo"
+                ></div>
+              </div>
+              <div
                 class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
               >
                 <div class="fr-input-group">
@@ -264,6 +278,45 @@ regionStore.fetch();
 
 const departementStore = useDepartementStore();
 departementStore.fetch();
+
+const dateInscription = computed(() => {
+  return `Date d'inscription : ${
+    props.user?.createdat
+      ? dayjs(props.user.createdat).format("DD/MM/YYYY")
+      : ""
+  }`;
+});
+
+const dateValidation = computed(() => {
+  return `Date de validation : ${
+    props.user?.validatedat
+      ? dayjs(props.user.validatedat).format("DD/MM/YYYY")
+      : "Compte non validé"
+  }`;
+});
+
+const dateDerniereConnexion = computed(() => {
+  return props.user?.lastConnectionAt
+    ? `Date de dernière connexion : ${dayjs(props.user.lastConnectionAt).format("DD/MM/YYYY")}`
+    : ``;
+});
+
+const infoDesactivation = computed(() => {
+  return props.user?.deleted
+    ? `Date de désactivation du compte par ${props.user.deletion_user} : ${dayjs(props.user.deleted_date).format("DD/MM/YYYY")}`
+    : ``;
+});
+
+const userInfos = computed(() => {
+  return [
+    dateInscription.value,
+    dateValidation.value,
+    dateDerniereConnexion.value,
+    infoDesactivation.value,
+  ]
+    .filter(Boolean)
+    .join("\n");
+});
 
 const userDepartements = computed(() => {
   if (usersStore.user.territoireCode === "FRA" || isFormDisabled.value) {
