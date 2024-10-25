@@ -115,7 +115,14 @@ const query = {
       ter.label AS "territoire",
       us.ter_code AS "territoireCode",
       ter.parent_code AS "territoireParent",
-      ur.roles
+      ur.roles,
+      reg.label AS "region", 
+      dep.label AS "departement",
+      CASE
+        WHEN us.ter_code = 'FRA' THEN 'Nationale'
+        WHEN ter.parent_code = 'FRA' THEN 'Régionale'
+        ELSE 'Départementale'
+      END AS "competence"
       ${selectQuery}
     FROM back.users AS us
     LEFT OUTER JOIN (
@@ -129,6 +136,8 @@ const query = {
         GROUP BY use_id
     ) ur ON ur.use_id = us.id
     LEFT OUTER JOIN geo.territoires ter on ter.code = us.ter_code
+    LEFT OUTER JOIN geo.territoires reg ON reg.code = ter.code AND ter.parent_code = 'FRA'
+    LEFT OUTER JOIN geo.territoires dep ON dep.code = us.ter_code AND dep.parent_code <> 'FRA'
     WHERE 1 = 1
 ${Object.keys(criterias)
   .map(
