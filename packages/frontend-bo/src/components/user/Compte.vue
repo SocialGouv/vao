@@ -314,32 +314,9 @@ const userInfos = computed(() => {
     dateDerniereConnexion.value,
     infoDesactivation.value,
   ]
-    .filter(Boolean) // Ignore les champs vides
-    .join("\n"); // Ajoute un saut de ligne entre chaque champ non vide
+    .filter(Boolean)
+    .join("\n");
 });
-
-/*
-
-{{ dateInscription }}
-                {{ dateValidation }}
-                {{ dateDerniereConnexion }}
-                {{ infoDesactivation }}
-                Date d'inscription :
-                {{ dayjs(props.user.createdat).format("DD/MM/YYYY") }}<br />
-                Date de validation : {{ dateValidation }}
-                <br />
-                <span v-if="props.user.lastConnectionAt">
-                  Date de dernière connexion :
-                  {{ dayjs(props.user.lastConnectionAt).format("DD/MM/YYYY") }}
-                  <br />
-                </span>
-                <span v-if="props.user.deleted">
-                  Date de désactivation du compte par
-                  {{ props.user.deletion_user }} :
-                  {{ dayjs(props.user.deleted_date).format("DD/MM/YYYY") }}
-                  <br />
-                </span>
-*/
 
 const userDepartements = computed(() => {
   if (usersStore.user.territoireCode === "FRA" || isFormDisabled.value) {
