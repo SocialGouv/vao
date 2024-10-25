@@ -21,7 +21,7 @@ export const useOrganismeStore = defineStore("organisme", {
           credentials: "include",
         });
         log.i("exportOrganismes - DONE");
-        exportCsv(response, "organismes.csv");
+        return response;
       } catch (err) {
         log.w("exportOrganismes - DONE with error", err);
         throw err;

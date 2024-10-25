@@ -196,7 +196,8 @@ const headers = [
 ];
 
 const getCsv = async () => {
-  await organismeStore.exportOrganismes();
+  const response = await organismeStore.exportOrganismes();
+  exportCsv(response, "organismes.csv");
 };
 
 const navigate = (organisme) => {

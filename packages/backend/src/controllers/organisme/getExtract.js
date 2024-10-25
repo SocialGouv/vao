@@ -98,14 +98,14 @@ module.exports = async function get(_req, res, next) {
           newItem.typeOrganisme === "personne_morale"
             ? "personne morale"
             : "personne physique";
-        newItem.dateObtentionAgrement = newItem.agrement.dateObtention
+        newItem.dateObtentionAgrement = newItem.agrement?.dateObtention
           ? dayjs(newItem.agrement.dateObtention).format("DD/MM/YYYY")
           : "";
         newItem.dateModification = newItem.editedAt
           ? dayjs(newItem.editedAt).format("DD/MM/YYYY")
           : "";
         newItem.complet = newItem.complet ? "oui" : "non";
-        newItem.regionObtention = newItem.agrement.regionObtention;
+        newItem.regionObtention = newItem.agrement?.regionObtention;
         return [
           ...titles.map(({ key }) => escapeCsvField(newItem[key] ?? "")),
         ].join(";");
