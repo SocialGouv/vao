@@ -87,7 +87,7 @@ export const useUserStore = defineStore("user", {
       log.i("exportUsersOrganisme - IN");
       try {
         const response = await $fetchBackend(
-          `/fo-user/extract/${organismeId}`,
+          `/fo-user/admin/extract/${organismeId}`,
           {
             method: "GET",
             credentials: "include",
@@ -111,7 +111,7 @@ export const useUserStore = defineStore("user", {
       log.i("fetchUsersOrganisme - IN");
       try {
         // Appel du back pour la liste des utilisateurs
-        const { users, total } = await $fetchBackend("/fo-user", {
+        const { users, total } = await $fetchBackend("/fo-user/admin/list", {
           credentials: "include",
           method: "GET",
           headers: {

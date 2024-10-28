@@ -8,10 +8,6 @@ const log = logger(module.filename);
 
 module.exports = async function list(req, res, next) {
   log.i("IN");
-  const { decoded } = req;
-  const { id: adminId } = decoded ?? {};
-  log.d("userId", { adminId });
-
   let params;
   try {
     const search = req.query.search ? JSON.parse(req.query.search) : {};
