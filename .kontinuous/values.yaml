@@ -18,6 +18,8 @@ backend:
   imagePackage: backend
   host: "api-{{ .Values.global.host }}"
   containerPort: 3000
+  labels:
+    oblik.socialgouv.io/enabled: "false"
   resources:
     requests:
       cpu: 200m
@@ -77,6 +79,8 @@ frontend-usagers:
   imagePackage: frontend-usagers
   host: "{{ .Values.global.host }}"
   containerPort: 8080
+  labels:
+    oblik.socialgouv.io/enabled: "false"
   resources:
     requests:
       cpu: 50m
@@ -98,6 +102,8 @@ frontend-bo:
   imagePackage: frontend-bo
   host: "bo-{{ .Values.global.host }}"
   containerPort: 8080
+  labels:
+    oblik.socialgouv.io/enabled: "false"
   resources:
     requests:
       cpu: 50m
@@ -312,6 +318,8 @@ migrate-s3:
   ~needs: [build-migrations, init-db]
   imagePackage: migrations
   entrypoint: ["tail", "-f", "/dev/null"]
+  labels:
+    oblik.socialgouv.io/enabled: "false"
   resources:
     requests:
       cpu: "1"
