@@ -9,7 +9,7 @@ pg:
       limits:
         cpu: "1"
         memory: 1Gi
-    annotations:
+    clusterExtraLabels:
       oblik.socialgouv.io/enabled: "false"
 
 backend:
