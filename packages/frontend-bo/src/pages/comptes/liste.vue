@@ -4,8 +4,8 @@
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
-          <DsfrButton @click.prevent="createUser"
-            >Créer un nouvel utilisateur
+          <DsfrButton class="fr-mb-2v" @click.prevent="createUser">
+            Créer un nouvel utilisateur
           </DsfrButton>
           <div class="fr-fieldset">
             <div
@@ -64,43 +64,21 @@
                 />
               </div>
             </div>
-          </div>
-          <div class="fr-fieldset">
-            <div class="fr-toggle">
-              <input
-                id="toggle-valide"
-                v-model="searchState.valide"
-                type="checkbox"
-                class="fr-toggle__input"
-                aria-describedby="toggle-valide"
-              />
-              <label
-                class="fr-toggle__label"
-                for="toggle-valide"
-                data-fr-checked-label="Activé"
-                data-fr-unchecked-label="Désactivé"
-                >Compte validé</label
-              >
-              <p id="toggle-valide" class="fr-hint-text">
-                Compte validé par courriel
-              </p>
-            </div>
-            <div class="fr-toggle">
-              <input
-                id="toggle-actif"
-                v-model="searchState.actif"
-                type="checkbox"
-                class="fr-toggle__input"
-                aria-describedby="toggle-actif"
-              />
-              <label
-                class="fr-toggle__label"
-                for="toggle-actif"
-                data-fr-checked-label="Activé"
-                data-fr-unchecked-label="Désactivé"
-                >Compte actif</label
-              >
-              <p id="toggle-actif" class="fr-hint-text">Compte actif</p>
+            <div
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+            >
+              <div class="fr-input-group">
+                <DsfrSelect
+                  :model-value="searchState.statut"
+                  label="Statut"
+                  name="statut"
+                  mode="tags"
+                  searchable
+                  :close-on-select="false"
+                  :options="statutOptions"
+                  @update:model-value="onSelectStatut"
+                />
+              </div>
             </div>
           </div>
           <div class="fr-input-group">
@@ -150,10 +128,36 @@ const searchState = reactive({
   nom: null,
   prenom: null,
   territoire: null,
-  valide: true,
   email: null,
   actif: true,
+  statut: null,
 });
+
+const statutOptions = [
+  {
+    text: "Tous",
+    value: "tous",
+  },
+  {
+    text: "Validés",
+    value: "validated",
+  },
+  {
+    text: "Non validés",
+    value: "notValidated",
+  },
+  {
+    text: "Désactivés",
+    value: "deleted",
+  },
+];
+const onSelectStatut = (statut) => {
+  if (statut === "tous") {
+    searchState.statut = null;
+  } else {
+    searchState.statut = statutOptions.find((so) => so.value === statut).value;
+  }
+};
 
 // Appel du store à l'ouverture
 usersStore.fetchUsers({
@@ -219,7 +223,7 @@ const headers = [
     sort: true,
   },
   {
-    column: "valide",
+    column: "validated",
     text: "Compte validé",
     type: "checkbox",
     format: (value) => (value.validated ? "Oui" : "Non"),
