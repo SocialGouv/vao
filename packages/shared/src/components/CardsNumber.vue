@@ -7,6 +7,8 @@
       :value="v.value"
       :redirect="v.redirect"
       :html-title="v.htmlTitle"
+      :clickable="v.clickable"
+      @click="$emit('click', $event)"
     />
   </div>
 </template>
@@ -20,8 +22,11 @@ defineProps<{
     value: number;
     redirect?: string;
     htmlTitle?: string;
+    clickable?: boolean;
   }>;
 }>();
+
+defineEmits<{ (e: "click", title: string) }>();
 </script>
 
 <style lang="scss">
