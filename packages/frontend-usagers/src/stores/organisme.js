@@ -30,7 +30,7 @@ export const useOrganismeStore = defineStore("organismes", {
       log.i("fetchUsersOrganisme - IN");
       try {
         // Appel du back pour la liste des utilisateurs de liés à l'organisme
-        const { users } = await $fetchBackend("/fo-user", {
+        const { users } = await $fetchBackend("/fo-user/list", {
           credentials: "include",
           method: "GET",
           headers: {
