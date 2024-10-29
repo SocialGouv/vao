@@ -148,8 +148,8 @@ const query = {
         GROUP BY use_id
     ) ur ON ur.use_id = us.id
     LEFT OUTER JOIN geo.territoires ter on ter.code = us.ter_code
-    LEFT OUTER JOIN geo.territoires reg ON reg.code = ter.code AND ter.parent_code = 'FRA'
     LEFT OUTER JOIN geo.territoires dep ON dep.code = us.ter_code AND dep.parent_code <> 'FRA'
+    LEFT OUTER JOIN geo.territoires reg ON ((reg.code = ter.code AND ter.parent_code = 'FRA') or (dep.parent_code = reg.code)) 
     LEFT OUTER JOIN back.users ud on ud.id = us.deleted_use_id
     WHERE 1 = 1
 ${Object.keys(criterias)
