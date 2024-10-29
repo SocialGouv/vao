@@ -1,13 +1,5 @@
 <template>
   <div class="fr-container">
-    <h1 v-if="props.display === displayType.Organisme" class="header">
-      Déclarations à Traiter ({{
-        (sejourStore.stats?.transmis ?? 0) +
-        (sejourStore.stats?.enCours ?? 0) +
-        (sejourStore.stats?.transmis8J ?? 0)
-      }})
-    </h1>
-    <h1 v-else class="header">Liste des messages par déclaration</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <CardsNumber
