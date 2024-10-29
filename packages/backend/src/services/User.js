@@ -9,20 +9,20 @@ const log = logger(module.filename);
 
 const query = {
   activate: `
-  UPDATE front.users 
-  SET 
+  UPDATE front.users
+  SET
     verified = NOW(),
     edited_at = NOW()
   WHERE id = $1`,
   create: `
   INSERT INTO front.users (
-    mail, 
-    pwd, 
-    status_code, 
+    mail,
+    pwd,
+    status_code,
     nom,
     prenom,
     telephone
-  ) 
+  )
   VALUES (
     $1,
     crypt($2, gen_salt('bf')),
@@ -43,10 +43,10 @@ const query = {
   editPassword: (email, password) => [
     `
       UPDATE front.users
-      SET 
+      SET
         pwd = crypt($2, gen_salt('bf')),
         edited_at = NOW()
-      WHERE 
+      WHERE
         mail = $1
       `,
     [normalize(email), password],
@@ -54,16 +54,16 @@ const query = {
   editStatus: (userId, statusCode) => [
     `
       UPDATE front.users
-      SET 
+      SET
         status_code = $2,
         edited_at = NOW()
-      WHERE 
+      WHERE
         id = $1
       `,
     [userId, statusCode],
   ],
   login: `
-  SELECT 
+  SELECT
     id,
     mail as email,
     pwd is not null as "hasPwd",
@@ -72,21 +72,21 @@ const query = {
     telephone,
     status_code as "statusCode"
   FROM front.users
-  WHERE 
+  WHERE
     mail = $1
-    AND pwd = crypt($2, CASE 
-      WHEN pwd = '' 
-      THEN 
-        gen_salt('bf') 
-      ELSE 
-        pwd 
-      END 
+    AND pwd = crypt($2, CASE
+      WHEN pwd = ''
+      THEN
+        gen_salt('bf')
+      ELSE
+        pwd
+      END
     )
     AND deleted is False
   `,
   select: (criterias) => [
     `
-      SELECT 
+      SELECT
         id,
         mail as email,
         pwd is not null as "hasPwd",
@@ -95,13 +95,20 @@ const query = {
         telephone,
         status_code as "statusCode"
       FROM front.users
-      WHERE 1=1 
+      WHERE 1=1
       ${Object.keys(criterias)
         .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
         .join(" ")}
       `,
     Object.values(criterias),
   ],
+  updateLastConnection: `
+    UPDATE front.users
+      SET
+      LASTCONNECTION_AT = NOW()
+    WHERE
+      id = $1
+  `,
 };
 
 module.exports.registerByEmail = async ({
@@ -193,6 +200,7 @@ module.exports.login = async ({ email, password }) => {
   if (user.rows.length === 0) {
     return null;
   }
+  pool.query(query.updateLastConnection, [user.rows[0].id]);
   log.i("read - DONE", { user: user.rows[0] });
   return user.rows[0];
 };
