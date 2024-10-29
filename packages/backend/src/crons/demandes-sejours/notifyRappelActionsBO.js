@@ -175,7 +175,7 @@ function appendContentForNonAlert({ listeDsSansAlerte }) {
   const newContent = [];
   if (listeDsSansAlerte.length > 0) {
     newContent.push(
-      "<p>AUTRES DECLARATIONS DE SEJOUR NECESSITANT UNE ACTION DE VOTRE PART",
+      "<p><b>AUTRES DECLARATIONS DE SEJOUR NECESSITANT UNE ACTION DE VOTRE PART</b>",
     );
     newContent.push("<ul>");
     for (const ds of listeDsSansAlerte) {
@@ -213,6 +213,9 @@ async function sendNotificationMail({ content, email, isBO }) {
   let uriAppListeSejours = "";
   if (isBO) {
     uriAppListeSejours = frontBODomain + "/sejours";
+    textDeFin.push(
+      `Vous pouvez accéder à la liste des déclarations de votre département en <a href=${uriAppListeSejours}>cliquant ici</a>`,
+    ); 
   } else {
     uriAppListeSejours = frontUsagersDomain + "/demande-sejour/liste";
     textDeFin.push(
@@ -221,10 +224,10 @@ async function sendNotificationMail({ content, email, isBO }) {
     textDeFin.push(
       `<p>De plus, vous avez toujours la possibilité d’annuler des déclarations de séjours qui ne sont plus d’actualité pour garder votre tableau à jour.</p>`,
     );
+    textDeFin.push(
+      `Vous pouvez accéder à la liste de vos déclarations en <a href=${uriAppListeSejours}>cliquant ici</a>`,
+    );
   }
-  textDeFin.push(
-    `Vous pouvez accéder à la liste des déclarations de votre département en <a href=${uriAppListeSejours}>cliquant ici</a>`,
-  );
 
   if (!email) {
     const message = `Le paramètre email manque à la requête`;
