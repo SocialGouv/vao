@@ -44,7 +44,7 @@
         </div>
       </div>
     </div>
-  </dsfr-fieldset>
+  </div>
   <h6>Les faits</h6>
   <dsfr-alert type="warning" class="fr-mb-4w"
     >Merci de ne pas mettre d'éléments nominatifs
@@ -105,7 +105,7 @@
         :is-valid="dispositionInformationsMeta"
         @update:model-value="dispositionInformationsChange"
       />
-    </div>
+    </dsfr-fieldset>
   </div>
   <UtilsNavigationButtons
     :show-buttons="props.showButtons"
