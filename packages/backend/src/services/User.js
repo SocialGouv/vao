@@ -95,14 +95,8 @@ const query = {
         us.telephone as "telephone",
         us.created_at as "createdAt",
         us.status_code as "statusCode",
-        CASE
-          WHEN o.personne_morale IS NULL THEN NULL
-          ELSE o.personne_morale->>'siret'
-        END as "siret",
-        CASE
-          WHEN o.personne_morale IS NULL THEN NULL
-          ELSE o.personne_morale->>'raisonSociale'
-        END as "raisonSociale"
+        o.personne_morale->>'siret' as "siret"
+        o.personne_morale->>'raisonSociale' as "raisonSociale"
       FROM front.users us
       INNER JOIN front.user_organisme uo ON us.id = uo.use_id
       INNER JOIN front.organismes o ON uo.org_id = o.id
@@ -113,6 +107,13 @@ const query = {
       `,
     Object.values(criterias),
   ],
+  updateLastConnection: `
+    UPDATE front.users
+      SET
+      LASTCONNECTION_AT = NOW()
+    WHERE
+      id = $1
+  `,
   updateUser: `
     WITH updated_user AS (
       UPDATE front.users
@@ -133,14 +134,8 @@ const query = {
       us.telephone as "telephone",
       us.created_at as "createdAt",
       us.status_code as "statusCode",
-      CASE
-        WHEN o.personne_morale IS NULL THEN NULL
-        ELSE o.personne_morale->>'siret'
-      END as "siret",
-      CASE
-        WHEN o.personne_morale IS NULL THEN NULL
-        ELSE o.personne_morale->>'raisonSociale'
-      END as "raisonSociale"
+      o.personne_morale->>'siret' as "siret"
+      o.personne_morale->>'raisonSociale' as "raisonSociale"
     FROM front.users us
     INNER JOIN updated_user uu ON us.id = uu.id
     INNER JOIN front.user_organisme uo ON us.id = uo.use_id
