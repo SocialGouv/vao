@@ -1,11 +1,15 @@
-<script setup lang="ts" generic="T extends Row">
+<script
+  setup
+  lang="ts"
+  generic="T extends Row, RowId extends keyof T & PropertyKey"
+>
 import type { Component } from "vue";
 import { computed } from "vue";
 
 export type Primitive = string | number | boolean | bigint | null | symbol;
 
 export type Row = {
-  [key: string]: Primitive | Row;
+  [key: PropertyKey]: Primitive | Row;
 };
 
 export type ValueFromNestedKey<
@@ -45,8 +49,6 @@ export type Titles<T> = {
   };
 }[];
 
-type RowId = keyof T;
-
 const props = withDefaults(
   defineProps<{
     tableTitle?: string;
@@ -58,7 +60,7 @@ const props = withDefaults(
     isSelectable?: boolean;
     isSortable?: boolean;
     isBordered?: boolean;
-    rowId: keyof T;
+    rowId: RowId;
     selected?: Array<T[RowId]>;
     emptyPlaceholder?: string;
   }>(),
@@ -183,7 +185,7 @@ const handleCheckboxChange = (event: Event) => {
                   v-on="
                     props.isSortable && title.options?.isSortable
                       ? {
-                          click: () => handleSort(title.key),
+                          click: () => handleSort(title.key as NestedKeys<T>),
                         }
                       : {}
                   "
@@ -207,7 +209,7 @@ const handleCheckboxChange = (event: Event) => {
             <tbody>
               <tr
                 v-for="(row, index) in data"
-                :key="row[props.rowId] as RowId"
+                :key="row[props.rowId] as PropertyKey"
                 :data-row-key="index + 1"
                 :aria-selected="isSelected(row[props.rowId] as T[RowId])"
               >
