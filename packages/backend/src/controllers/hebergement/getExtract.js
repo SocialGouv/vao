@@ -29,10 +29,12 @@ module.exports = async function getExtract(req, res, next) {
       search: "",
       sort: "nom",
     });
-    const titles = [{ key: "nom", label: "Nom de l’hébergement" },
+    const titles = [
+      { key: "nom", label: "Nom de l’hébergement" },
       { key: "departement", label: "Département" },
       { key: "adresse", label: "Adresse" },
       { key: "telephone", label: "Téléphone" },
+      { key: "email", label: "Adresse courriel" },
       { key: "dateVisite", label: "Date de visite préalable" },
       { key: "reglementationErp", label: "Réglementation ERP" },
     ];

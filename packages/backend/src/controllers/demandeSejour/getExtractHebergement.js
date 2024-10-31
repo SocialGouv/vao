@@ -39,6 +39,7 @@ module.exports = async function get(req, res, next) {
       { key: "departement", label: "Département" },
       { key: "adresse", label: "Adresse" },
       { key: "telephone", label: "Téléphone" },
+      { key: "email", label: "Adresse courriel" },
       { key: "dateVisite", label: "Date de visite préalable" },
       { key: "reglementationErp", label: "Réglementation ERP" },
     ];
