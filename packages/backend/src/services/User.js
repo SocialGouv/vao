@@ -64,14 +64,18 @@ const query = {
   ],
   login: `
   SELECT
-    id,
-    mail as email,
-    pwd is not null as "hasPwd",
-    nom,
-    prenom,
-    telephone,
-    status_code as "statusCode"
-  FROM front.users
+    us.id,
+    us.mail as email,
+    us.pwd is not null as "hasPwd",
+    us.nom,
+    us.prenom,
+    us.telephone,
+    us.status_code as "statusCode",
+    o.personne_morale->>'siret' as "siret",
+    o.personne_morale->>'raisonSociale' as "raisonSociale"
+  FROM front.users us
+  LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
+  LEFT JOIN front.organismes o ON uo.org_id = o.id
   WHERE
     mail = $1
     AND pwd = crypt($2, CASE
