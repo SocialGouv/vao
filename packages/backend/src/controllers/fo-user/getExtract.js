@@ -33,6 +33,7 @@ module.exports = async function getExtract(req, res, next) {
       { key: "raisonSociale", label: "Raison sociale" },
       { key: "statut", label: "Statut" },
       { key: "dateCreation", label: "Date de création" },
+      { key: "lastConnectionAt", label: "Date dernière connexion" },
       { key: "nombreDeclarations", label: "Nombre de déclaration" },
     ];
 
@@ -43,6 +44,9 @@ module.exports = async function getExtract(req, res, next) {
         newItem.statut =
           newItem.statut === "VALIDATED" ? "Validé" : "Non validé";
         newItem.dateCreation = dayjs(newItem.dateCreation).format("DD/MM/YYYY");
+        newItem.lastConnectionAt = newItem.lastConnectionAt
+          ? dayjs(newItem.lastConnectionAt).format("DD/MM/YYYY")
+          : "";
         return [
           ...titles.map(({ key }) => escapeCsvField(newItem[key] ?? "")),
         ].join(";");
