@@ -210,22 +210,16 @@ async function sendNotificationMail({ content, email, isBO }) {
     email,
   });
   const textDeFin = [];
-  let uriAppListeSejours = "";
+  let link = "";
   if (isBO) {
-    uriAppListeSejours = frontBODomain + "/sejours";
-    textDeFin.push(
-      `Vous pouvez accéder à la liste des déclarations de votre département en <a href=${uriAppListeSejours}>cliquant ici</a>`,
-    ); 
+    link = frontBODomain + "/sejours";
   } else {
-    uriAppListeSejours = frontUsagersDomain + "/demande-sejour/liste";
+    link = frontUsagersDomain + "/demande-sejour/liste";
     textDeFin.push(
       `<p>Si vous avez des difficultés pour traiter vos déclarations, vous vous rappelons que vous pouvez <a href="https://vao-assistance.atlassian.net/servicedesk/customer/portals">contacter le support utilisateur</a>.</p>`,
     );
     textDeFin.push(
       `<p>De plus, vous avez toujours la possibilité d’annuler des déclarations de séjours qui ne sont plus d’actualité pour garder votre tableau à jour.</p>`,
-    );
-    textDeFin.push(
-      `Vous pouvez accéder à la liste de vos déclarations en <a href=${uriAppListeSejours}>cliquant ici</a>`,
     );
   }
 
@@ -245,6 +239,11 @@ async function sendNotificationMail({ content, email, isBO }) {
           textDeFin.join("\n"),
         ],
         type: "p",
+      },
+      {
+        link,
+        text: "Accéder à mes déclarations",
+        type: "link",
       },
     ],
     "L'équipe du SI VAO<br><br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>",
