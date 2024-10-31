@@ -20,7 +20,7 @@
           type="text"
           label="Nom"
           name="nom"
-          :disabled="false"
+          :disabled="!isModifiable"
           :required="true"
           :label-visible="true"
           placeholder=""
@@ -40,7 +40,7 @@
           type="text"
           label="Prénom"
           name="prenom"
-          :disabled="false"
+          :disabled="!isModifiable"
           :required="true"
           :label-visible="true"
           placeholder=""
@@ -60,7 +60,7 @@
           type="text"
           label="Adresse courriel"
           name="email"
-          :disabled="false"
+          :disabled="!isModifiable"
           :required="true"
           :label-visible="true"
           placeholder=""
@@ -80,13 +80,14 @@
           type="text"
           label="Numéro de téléphone"
           name="telephone"
+          :disabled="!isModifiable"
           :label-visible="true"
           hint="Veuillez saisir votre numéro de téléphone. Exemple: 0612345678"
           :is-valid="telephoneField.isValid"
           @update:model-value="checkValidTelephone"
         />
       </div>
-      <DsfrButton :disabled="!canSubmit" @click.prevent="update"
+      <DsfrButton :disabled="!canSubmit && isModifiable" @click.prevent="update"
         >Enregistrer
       </DsfrButton>
     </div>
@@ -98,12 +99,18 @@ import dayjs from "dayjs";
 const TerritoireStore = useTerritoireStore();
 const route = useRoute();
 const log = logger("pages/territoires/[[territoireId]]");
+const userStore = useUserStore();
+
+const displayType = ref(null);
 
 definePageMeta({
   middleware: ["is-connected"],
 });
 
 await TerritoireStore.get(route.params.territoireId);
+
+const isModifiable =
+  userStore.user.territoireCode === TerritoireStore.territoire.value;
 
 const nomField = reactive({
   errorMessage: "",
@@ -134,6 +141,8 @@ function checkValidEmail(email) {
   emailField.isValid = !email || regex.emailRegex.test(email);
   emailField.errorMessage =
     !email || emailField.isValid ? "" : "Cet email semble incorrect";
+
+  console.log("emailField.isValid : ", emailField.isValid);
 }
 
 function checkValidNom(n) {
@@ -146,6 +155,7 @@ function checkValidNom(n) {
     !regex.tripleDashRegex.test(n);
   nomField.errorMessage =
     !n || nomField.isValid ? "" : "Le nom contient des caractères incorrects";
+  console.log("nomField.isValid : ", nomField.isValid);
 }
 
 function checkValidPrenom(p) {
@@ -160,6 +170,8 @@ function checkValidPrenom(p) {
     !p || prenomField.isValid
       ? ""
       : "Le prénom contient des caractères incorrects";
+
+  console.log("prenomField.isValid : ", prenomField.isValid);
 }
 
 function checkValidTelephone(p) {
@@ -169,9 +181,11 @@ function checkValidTelephone(p) {
     !p || telephoneField.isValid
       ? ""
       : "Le numéro de téléphone n'est pas au format attendu";
+  console.log("telephoneField.isValid : ", telephoneField.isValid);
 }
 
 const canSubmit = computed(() => {
+  console.log("canSubmit");
   return (
     emailField.isValid &&
     nomField.isValid &&
@@ -183,7 +197,11 @@ const canSubmit = computed(() => {
 async function update() {
   log.i("update - IN");
   try {
-    await $fetch(config.public.backendUrl + "/bo-user/" + props.user.id, {
+    console.log(
+      "update : route.params.territoireId : ",
+      route.params.territoireId,
+    );
+    await $fetchBackend("/territoire/" + route.params.territoireId, {
       credentials: "include",
       method: "POST",
       headers: {
@@ -192,9 +210,9 @@ async function update() {
       body: JSON.stringify({
         nom: nomField.modelValue,
         prenom: prenomField.modelValue,
-        roles: roleUtilisateurField.modelValue,
-        territoireCode: territoireField.modelValue,
-        deleted: !actifField.modelValue,
+        email: emailField.modelValue,
+        telephone: telephoneField.modelValue,
+        territoire: TerritoireStore.territoire.value,
       }),
     })
       .then((response) => {
@@ -219,10 +237,10 @@ async function update() {
 onMounted(async () => {
   log.i("Mounted - IN");
   if (TerritoireStore.territoire) {
-    nomField.modelValue = TerritoireStore.territoire.corresp_vao_nom;
-    prenomField.modelValue = TerritoireStore.territoire.corresp_vao_prenom;
-    emailField.modelValue = TerritoireStore.territoire.service_mail;
-    telephoneField.modelValue = TerritoireStore.territoire.service_telephone;
+    checkValidNom(TerritoireStore.territoire.corresp_vao_nom);
+    checkValidPrenom(TerritoireStore.territoire.corresp_vao_prenom);
+    checkValidEmail(TerritoireStore.territoire.service_mail);
+    checkValidTelephone(TerritoireStore.territoire.service_telephone);
   }
   log.i("Mounted - DONE");
 });

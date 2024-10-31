@@ -15,51 +15,78 @@
                   label="Région d’obtention de l’agrément"
                   :options="regions"
                 />
-                <!--
-                <DsfrRadioButtonSet
-                  name="Type territoire"
-                  legend="Type de territoire (régional ou départemental)"
-                  :options="competence"
-                  :inline="true"
-                />
-
-                      <div class="fr-fieldset__element">
-                <DsfrRadioButtonSet
-                  name="dispositionsSpecifiques"
-                  legend="Des dispositions d’ordre sanitaire spécifiques sont-elles prévues ?"
-                  :disabled="!props.modifiable"
-                  :model-value="dispositionsSpecifiques"
-                  :options="ouiNonOptions"
-                  :is-valid="dispositionsSpecifiquesMeta.valid"
-                  :inline="true"
-                  :error-message="dispositionsSpecifiquesErrorMessage"
-                  @update:model-value="onDispositionsSpecifiquesChange"
-                />
-              </div>
-                -->
-                {{typeTerritoireField}}
               </div>
             </div>
           </div>
         </form>
       </div>
     </div>
+
     <TableFull
       :headers="headers"
       :data="territoireStore.territoires ?? []"
       :search="search"
       @click-row="navigate"
     />
+    <pre>{{territoireStore.territoires[0]}}</pre>
+    <!--
+    <dsfr-data-table-v2
+      v-model:sort="sort"
+      v-model:sort-direction="sortDirection"
+      :titles="titles"
+      table-title="Liste des territoires"
+      :data="territoireStore.territoires"
+      is-bordered
+      is-selectable
+      row-id="territoireId"
+      is-sortable
+    >
+    </dsfr-data-table-v2>
+    -->
   </div>
-  <pre>{{territoireStore.territoires}}</pre>
 </template>
-<script setup>
+
+<script setup lang="ts">
 import { TableFull } from "@vao/shared";
+/*
+import { DsfrDataTableV2 } from "@vao/shared";
+import type { NestedKeys, Titles } from "@vao/shared/src/type";
+import { ref } from "vue";
 
-import dayjs from "dayjs";
-import Compte from "~/components/user/Compte.vue";
+type InfoTerritoire = {
+  id: number;
+  value: string;
+  text: string;
+};
 
 
+const titles: Titles<InfoTerritoire> = [
+  {
+    key: "value",
+    label: "Nom",
+    options: {
+      isSortable: true,
+    },
+  },
+  {
+    key: "text",
+    label: "Prenom",
+    options: {
+      isSortable: true,
+    },
+  },
+  {
+    key: "test.territoire",
+    label: "Territoire",
+    options: {
+      isSortable: true,
+    },
+  },
+];
+//const selected = ref<InfoTerritoire["territoireId"][]>([]);
+const sort = ref<NestedKeys<InfoTerritoire>>("nom");
+const sortDirection = ref<"asc" | "desc">("asc");
+*/
 definePageMeta({
   middleware: ["is-connected"],
 });
@@ -83,6 +110,11 @@ const search = reactive({
 
 const headers = [
   {
+    column: "text",
+    text: "Libellé",
+    sort: true,
+  },
+  {
     column: "typeTerritoire",
     text: "Département/Région",
     sort: true,
@@ -90,22 +122,29 @@ const headers = [
       item.typeTerritoire === "DEP" ? "Département" : "Région",
   },
   {
+    column: "nbUsersBO",
+    text: "Contacts",
+    sort: false,
+  },
+  {
     column: "value",
     text: "Code",
     sort: true,
   },
   {
-    column: "text",
-    text: "Libellé",
+    column: "correspVaoNom",
+    text: "Référént VAO",
     sort: true,
   },
-  {
-    column: "nbUsersBO",
-    text: "Nombre d'utilisateurs",
-    sort: false,
-  },
-];
+  
 
+];
+/*
+serviceTelephone: territoire.service_telephone,
+            correspVaoNom: territoire.corresp_vao_nom,
+            correspVaoPrenom: territoire.corresp_vao_prenom,
+
+*/
 const navigate = (territoire) => {
   navigateTo(`/territoires/${territoire.territoireId}`);
 };

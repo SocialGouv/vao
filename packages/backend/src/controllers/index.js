@@ -10,3 +10,4 @@ module.exports.demandeSejourController = require("./demandeSejour");
 module.exports.hebergementController = require("./hebergement");
 module.exports.eigController = require("./eig");
 module.exports.messageController = require("./message");
+module.exports.territoireController = require("./territoire");
