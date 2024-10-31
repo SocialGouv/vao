@@ -16,6 +16,7 @@ const query = {
       us.prenom AS prenom,
       us.status_code AS statut,
       us.created_at AS "dateCreation",
+      us.lastconnection_at as "lastConnectionAt",
       org.id AS "organismeId",
       org.type_organisme AS "typeOrganisme",
       org.personne_morale->>'siret' AS siret,
