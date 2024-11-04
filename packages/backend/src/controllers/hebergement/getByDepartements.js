@@ -56,7 +56,7 @@ module.exports = async function get(req, res) {
   return await Sentry.startNewTrace(async () => {
     return await Sentry.startSpan(
       {
-        name: `Profile ${req.method} ${req.path}`,
+        name: `Profile ${req.method} ${req.baseUrl}/${req.path}`,
         op: "http",
       },
       async () => {

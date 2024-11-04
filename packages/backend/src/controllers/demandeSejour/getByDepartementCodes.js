@@ -3,10 +3,11 @@ const yup = require("yup");
 const DemandeSejour = require("../../services/DemandeSejour");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
+const Sentry = require("@sentry/node");
 
 const log = logger(module.filename);
 
-module.exports = async function getByDepartementCodes(req, res, next) {
+async function getByDepartementCodes(req, res, next) {
   log.i("IN");
   const { decoded } = req;
   const { id: adminId } = decoded ?? {};
@@ -66,4 +67,19 @@ module.exports = async function getByDepartementCodes(req, res, next) {
   } catch (error) {
     return next(error);
   }
+}
+
+module.exports = async function get(req, res, next) {
+  // create new Sentry trace manually to enable profiler for its nested span
+  return await Sentry.startNewTrace(async () => {
+    return await Sentry.startSpan(
+      {
+        name: `Profile ${req.method} ${req.baseUrl}/${req.path}`,
+        op: "http",
+      },
+      async () => {
+        return await getByDepartementCodes(req, res, next);
+      },
+    );
+  });
 };
