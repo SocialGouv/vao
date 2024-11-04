@@ -53,14 +53,14 @@ async function getByDepartements(req, res) {
 
 module.exports = async function get(req, res) {
   // create new Sentry trace manually to enable profiler for its nested span
-  return await Sentry.startNewTrace(async () => {
-    return await Sentry.startSpan(
+  Sentry.startNewTrace(async () => {
+    Sentry.startSpan(
       {
-        name: `Profile ${req.method} ${req.baseUrl}/${req.path}`,
+        name: `Profile ${req.method} ${req.baseUrl}${req.path}`,
         op: "http",
       },
       async () => {
-        return await getByDepartements(req, res);
+        await getByDepartements(req, res);
       },
     );
   });
