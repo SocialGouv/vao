@@ -580,7 +580,9 @@ async function searchApiInsee() {
     setValues({
       siren: uniteLegale.siren,
       siegeSocial: uniteLegale.etablissementSiege,
-      raisonSociale: uniteLegale.uniteLegale.denominationUniteLegale,
+      raisonSociale:
+        uniteLegale.uniteLegale.denominationUniteLegale ??
+        uniteLegale.uniteLegale.nomUsageUniteLegale,
       nomCommercial: nomCommercial ?? null,
       statut: uniteLegale.uniteLegale.categorieJuridiqueUniteLegale,
       adresse,
