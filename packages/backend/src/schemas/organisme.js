@@ -249,7 +249,7 @@ const schema = (regions) => ({
     is: (typeOrganisme, siegeSocial) => {
       return typeOrganisme === "personne_physique" || siegeSocial === true;
     },
-    otherwise: (schema) => schema.nullable(),
+    otherwise: (schema) => schema.shape(agrementSchema(regions)).nullable(),
     then: (schema) =>
       schema
         .shape(agrementSchema(regions))
@@ -271,33 +271,11 @@ const schema = (regions) => ({
       then: (schema) => schema.shape(personnePhysiqueSchema()),
     }),
   protocoleSanitaire: yup
-    .object()
-    .when(["typeOrganisme", "personneMorale.porteurAgrement"], {
-      is: (typeOrganisme, porteurAgrement) => {
-        return (
-          typeOrganisme === "personne_physique" || porteurAgrement === true
-        );
-      },
-      otherwise: (schema) => schema.nullable(),
-      then: (schema) =>
-        schema
-          .shape(protocoleSanitaireSchema())
-          .required("Aucune information renseignée"),
-    }),
+    .object(protocoleSanitaireSchema())
+    .required("Aucune information renseignée"),
   protocoleTransport: yup
-    .object()
-    .when(["typeOrganisme", "personneMorale.porteurAgrement"], {
-      is: (typeOrganisme, porteurAgrement) => {
-        return (
-          typeOrganisme === "personne_physique" || porteurAgrement === true
-        );
-      },
-      otherwise: (schema) => schema.nullable(),
-      then: (schema) =>
-        schema
-          .shape(protocoleTransportSchema())
-          .required("Aucune information renseignée"),
-    }),
+    .object(protocoleTransportSchema())
+    .required("Aucune information renseignée"),
   typeOrganisme: yup
     .string()
     .required()
