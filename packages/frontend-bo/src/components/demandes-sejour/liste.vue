@@ -333,13 +333,9 @@ const fetchDemandesDebounce = debounce(async (search) => {
   }
 });
 
-watch(
-  searchParams,
-  (search) => {
-    fetchDemandesDebounce(search);
-  },
-  { immediate: true },
-);
+watch(searchParams, (search) => {
+  fetchDemandesDebounce(search);
+});
 
 const onStatutSelect = (value) => {
   if (value.length) {

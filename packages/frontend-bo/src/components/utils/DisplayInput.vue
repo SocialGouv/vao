@@ -20,7 +20,7 @@
       <div class="fr-col-10">
         <span class="read-only-label">{{ input.label }}</span>
       </div>
-      <TableFull :headers="header" :data="rows" />
+      <TableFull :headers="header" :data="rows" title="" />
     </div>
   </div>
 </template>
@@ -77,29 +77,31 @@ const props = defineProps({
 const rows = computed(() => {
   const data =
     (props.input.filter && props.input.filter(props.value)) ?? props.value;
+
+  const formatter = props.input.fields?.reduce((acc, curr) => {
+    acc.set(curr.value, curr.format ?? ((data) => data[curr.value]));
+    return acc;
+  }, new Map());
+
   return data.map((d) => {
-    Object.keys(d).forEach((key) => {
-      const headerType = props.input.fields.find((h) => h.value === key);
-      if (headerType && headerType?.display !== "text") {
-        d[key] = headerType.format(d);
-      }
-    });
-    return d;
+    const res = {};
+    for (const [key, format] of formatter.entries()) {
+      res[key] = format(d);
+    }
+    return res;
   });
 });
 
-const header = computed(() => {
-  return props.input.fields.map((f) => {
-    return {
-      column: f.value,
-      sorter: f.value,
-      text: f.label,
-      headerAttrs: {
-        class: "suivi",
-      },
-    };
-  });
-});
+const header = computed(() =>
+  props.input.fields?.map((f) => ({
+    column: f.value,
+    sorter: f.value,
+    text: f.label,
+    headerAttrs: {
+      class: "suivi",
+    },
+  })),
+);
 
 const displayValue = computed(() => {
   const inputHandlers = {
