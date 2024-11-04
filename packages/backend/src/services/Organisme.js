@@ -12,8 +12,6 @@ const Organisme = require("../schemas/organisme");
 
 const log = logger(module.filename);
 
-let regions, organismeSchema;
-
 const query = {
   create: `
     INSERT INTO front.organismes (type_organisme, personne_morale, personne_physique)
@@ -385,9 +383,8 @@ module.exports.update = async (type, parametre, organismeId) => {
   log.i("update - IN", { type });
   let response;
 
-  if (!regions) {
-    regions = await Regions.fetch();
-  }
+  const regions = await Regions.fetch();
+
   switch (type) {
     case "personne_morale": {
       const complet =
@@ -449,12 +446,10 @@ module.exports.update = async (type, parametre, organismeId) => {
 
 module.exports.finalize = async function (userId) {
   log.i("finalize - IN", { userId });
-  if (!regions) {
-    regions = await Regions.fetch();
-  }
-  if (!organismeSchema) {
-    organismeSchema = Organisme.schema(regions);
-  }
+  const regions = await Regions.fetch();
+
+  const organismeSchema = Organisme.schema(regions);
+
   const criterias = {
     "uo.use_id": userId,
   };
