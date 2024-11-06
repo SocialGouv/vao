@@ -265,6 +265,16 @@ async function updateOrCreate(organismeData, type) {
     log.d(`organisme ${organismeId.value} mis à jour`);
     return await nextHash();
   } catch (error) {
+    if (
+      error.response?.status === 403 &&
+      error.data?.name?.match("siret update - organisme incomplete")
+    ) {
+      return toaster.error({
+        titleTag: "h2",
+        description: "Ce SIRET est déjà utilisé",
+      });
+    }
+
     log.w("Creation/modification d'organisme : ", { error });
     toaster.error({
       titleTag: "h2",

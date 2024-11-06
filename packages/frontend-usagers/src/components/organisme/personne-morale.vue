@@ -25,7 +25,9 @@
         :model-value="formatedSiret"
         :is-valid="siretMeta.valid"
         :error-message="siretErrorMessage"
-        :readonly="!props.modifiable"
+        :disabled="
+          !props.modifiable || !!organismeStore.organismeCourant.complet
+        "
         placeholder=""
         hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
         @update:model-value="trimSiret"
