@@ -26,7 +26,7 @@
         :is-valid="siretMeta.valid"
         :error-message="siretErrorMessage"
         :disabled="
-          !props.modifiable || !!organismeStore.organismeCourant.complet
+          !props.modifiable || !!organismeStore.organismeCourant?.complet
         "
         placeholder=""
         hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
