@@ -351,6 +351,20 @@ FROM back.organisme_non_agree ona
       edited_at = NOW()
     WHERE id = $1
 `,
+  getIsComplet: `
+    SELECT
+        complet
+    FROM
+        FRONT.ORGANISMES
+    WHERE id = $1
+  `,
+  getSiret: `
+    SELECT
+        personne_morale ->> 'siret' as siret
+    FROM
+        FRONT.ORGANISMES
+    WHERE id = $1
+  `,
 };
 
 module.exports.create = async (type, parametre) => {
@@ -528,4 +542,16 @@ module.exports.getNonAgrees = async () => {
   const { rows: organismes } = await pool.query(query.getNonAgrees, []);
   log.i("getNonAgrees - DONE");
   return organismes ?? [];
+};
+
+module.exports.getIsComplet = async (organismeId) => {
+  const { rows: isComplet } = await pool.query(query.getIsComplet, [
+    organismeId,
+  ]);
+  return isComplet?.[0].complet ?? false;
+};
+
+module.exports.getSiret = async (organismeId) => {
+  const { rows: siret } = await pool.query(query.getSiret, [organismeId]);
+  return siret?.[0].siret ?? null;
 };
