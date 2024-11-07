@@ -9,7 +9,6 @@
     </h1>
     <CardsNumber :values="cards" @click="onClickCards" />
     <DemandesSejourDefaultTable />
-    <!-- <DemandesSejourListe display="Organisme" /> -->
   </div>
 </template>
 
