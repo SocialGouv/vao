@@ -259,6 +259,10 @@ fileignoreconfig:
   checksum: af4fe62dc455e943fcfacaa6ee0495e1ab20f9ed2094ad70c457b7a27ab46759
 - filename: packages/shared/src/components/Table/DsfrDataTableV2.vue
   checksum: eaa191de00bd4bd60de2d9e7e4acd9551018be5bd3e510ea385940f5f450e778
+- filename: packages/shared/src/components/Table/DsfrDataTableV2Wrapper.vue
+  checksum: 3d201233abc1aedfe7c755f0c8c2ad79cf5e31a3c20dbdcb1d828d8c8ee27d45
+- filename: packages/shared/src/components/Table/dsfrDataTabeV2/DsfrPaginationV2.vue
+  checksum: c8d3e1442b00cb210ac0aeaea5a4cb9f40b7f1887d61604218d92c31ce9e2f49
 - filename: packages/shared/src/type.ts
   checksum: 8c75e8784ded25a61d6e14cd682bfe67e4ecdde5a6582fb83035fcae39a87b98
 - filename: packages/shared/src/types/DsfrDataTableV2.type.ts
