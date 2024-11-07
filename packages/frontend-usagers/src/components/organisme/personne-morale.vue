@@ -584,7 +584,7 @@ async function searchApiInsee() {
       siegeSocial: uniteLegale.etablissementSiege,
       raisonSociale:
         uniteLegale.uniteLegale.denominationUniteLegale ??
-        uniteLegale.uniteLegale.nomUsageUniteLegale,
+        `${uniteLegale.uniteLegale.nomUniteLegale ?? ""} ${uniteLegale.uniteLegale.prenom1UniteLegale ?? ""}`,
       nomCommercial: nomCommercial ?? null,
       statut: uniteLegale.uniteLegale.categorieJuridiqueUniteLegale,
       adresse,
