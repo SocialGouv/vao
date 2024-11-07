@@ -1,6 +1,8 @@
 import FileUpload from "./FileUpload.vue";
 import Chat from "./Chat.vue";
 import DsfrDataTableV2 from "./Table/DsfrDataTableV2.vue";
+import DsfrDataTableV2Wrapper from "./Table/DsfrDataTableV2Wrapper.vue";
+import DsfrPaginationV2 from "./Table/dsfrDataTabeV2/DsfrPaginationV2.vue";
 import DsfrMultiSelect from "./DsfrMultiSelect.vue";
 import TableWithBackendPagination from "./Table/TableWithBackendPagination.vue";
 import ValidationModal from "./ValidationModal.vue";
@@ -19,6 +21,8 @@ export {
   FileUpload,
   Chat,
   DsfrDataTableV2,
+  DsfrDataTableV2Wrapper,
+  DsfrPaginationV2,
   DsfrMultiSelect,
   TableWithBackendPagination,
   ValidationModal,
