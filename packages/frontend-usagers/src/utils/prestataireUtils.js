@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
 import regex from "./regex";
-import adresse from "./adresse";
+import { adresseSchema } from "@vao/shared/src/schema/adresse";
 
 const typePrestataireOptions = [
   {
@@ -53,7 +53,7 @@ const schema = {
     .required(),
   adresse: yup.object().when("typePrestataire", {
     is: (val) => val === "personne_morale",
-    then: () => yup.object(adresse.schema()),
+    then: () => yup.object(adresseSchema()),
     otherwise: (val) => val.nullable().strip(),
   }),
   competence: yup.string().when("typePrestataire", {

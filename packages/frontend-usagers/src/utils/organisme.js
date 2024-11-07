@@ -1,10 +1,10 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
 import regex from "./regex";
-import adresse from "./adresse";
 import personne from "./personne";
 import protocoleTransport from "./protocoleTransport";
 import protocoleSanitaire from "./protocoleSanitaire";
+import { adresseSchema } from "@vao/shared/src/schema/adresse";
 
 const types = [
   {
@@ -225,8 +225,8 @@ const personnePhysiqueSchema = {
       regex.numTelephoneRegex.test(tel),
     ),
   adresseIdentique: yup.boolean().required(),
-  adresseDomicile: yup.object({ ...adresse.schema(true) }).required(),
-  adresseSiege: yup.object({ ...adresse.schema(true) }).required(),
+  adresseDomicile: yup.object({ ...adresseSchema(true) }).required(),
+  adresseSiege: yup.object({ ...adresseSchema(true) }).required(),
 };
 const agrementSchema = (regions) => ({
   file: yup.mixed().required(),

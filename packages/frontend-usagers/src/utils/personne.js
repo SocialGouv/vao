@@ -1,8 +1,8 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
 import regex from "./regex";
-import adresse from "./adresse";
 import { informationsPersonnelListe } from "#imports";
+import { adresseSchema } from "@vao/shared/src/schema/adresse";
 
 const schema = ({
   showAdresse,
@@ -60,7 +60,7 @@ const schema = ({
 
     ...(showAdresse && {
       adresse: yup.object({
-        ...adresse.schema(),
+        ...adresseSchema(),
       }),
     }),
     ...(showAttestation && {

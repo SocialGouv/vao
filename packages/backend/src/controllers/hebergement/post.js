@@ -4,6 +4,7 @@ const HebergementSchema = require("../../schemas/hebergement");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
 const AppError = require("../../utils/error");
+const FOUser = require("../../services/FoUser");
 
 const log = logger(module.filename);
 
@@ -44,11 +45,12 @@ module.exports = async function post(req, res, next) {
   }
 
   try {
-    const id = await Hebergement.create(userId, hebergement);
+    const organismeId = await FOUser.getUserOrganisme(userId);
+    const id = await Hebergement.create(userId, organismeId, hebergement);
 
     return res.status(200).json({
       id,
-      message: "sauvegarde organisme OK",
+      message: "sauvegarde hebegement OK",
     });
   } catch (error) {
     log.w("DONE with error");

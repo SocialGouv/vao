@@ -10,15 +10,10 @@ const log = logger(module.filename);
 
 module.exports = async function post(req, res, next) {
   const hebergementId = req.params.id;
-  const { nom, coordonnees, informationsLocaux, informationsTransport } =
-    req.body;
-  log.i("IN", {
-    coordonnees,
-    hebergementId,
-    informationsLocaux,
-    informationsTransport,
-    nom,
-  });
+  const { body, decoded } = req;
+  const userId = decoded.id;
+
+  const { nom, coordonnees, informationsLocaux, informationsTransport } = body;
 
   if (
     !nom ||
@@ -36,6 +31,7 @@ module.exports = async function post(req, res, next) {
     );
   }
   let hebergement;
+
   try {
     hebergement = await yup.object(HebergementSchema.schema()).validate(
       {
@@ -54,10 +50,13 @@ module.exports = async function post(req, res, next) {
   }
 
   try {
-    await Hebergement.update(hebergementId, hebergement);
+    await Hebergement.update(userId, hebergementId, hebergement);
     log.i("DONE");
     return res.sendStatus(200);
   } catch (error) {
+    if (error.cause === "archive") {
+      return next(new AppError(error));
+    }
     log.w("DONE with error");
     return next(error);
   }
