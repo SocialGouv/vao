@@ -526,7 +526,7 @@ const cards = computed(() => [
   },
   {
     title: "Déclarations en cours de traitement",
-    value: sejourStore.stats?.enCours || 0,
+    value: sejourStore.stats?.enCours + sejourStore.stats?.enCours8J || 0,
     clickable: true,
     onClick: () =>
       onStatutSelect([
