@@ -258,7 +258,7 @@ fileignoreconfig:
 - filename: packages/shared/src/components/PasswordInput.vue
   checksum: af4fe62dc455e943fcfacaa6ee0495e1ab20f9ed2094ad70c457b7a27ab46759
 - filename: packages/shared/src/components/Table/DsfrDataTableV2.vue
-  checksum: 31aa309ec71678dff0c509d1d2ba35340b1da2caae40b3b2f5148aad83d3a410
+  checksum: eaa191de00bd4bd60de2d9e7e4acd9551018be5bd3e510ea385940f5f450e778
 - filename: packages/shared/src/type.ts
   checksum: 8c75e8784ded25a61d6e14cd682bfe67e4ecdde5a6582fb83035fcae39a87b98
 - filename: packages/shared/src/types/DsfrDataTableV2.type.ts
