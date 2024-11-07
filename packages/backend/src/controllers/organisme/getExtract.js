@@ -79,7 +79,7 @@ module.exports = async function get(_req, res, next) {
       label: `Déclarations en statut "annulée"`,
     },
     {
-      key: "sejourCountEnCours",
+      key: "sejourCountSejourEnCours",
       label: `Déclarations en statut "Séjour en cours"`,
     },
     {
