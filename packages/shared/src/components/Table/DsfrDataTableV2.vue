@@ -108,7 +108,10 @@ const selectedSync = computed({
 
 const handleSort = (key: NestedKeys<T>) => {
   if (props.sort === key) {
-    const direction = props.sortDirection === "asc" ? "desc" : "asc";
+    const direction = props.sortDirection === "asc" ? "desc" : "";
+    if (direction === "") {
+      emits("update:sort", "");
+    }
     emits("update:sort-direction", direction);
     emits("sort", { sort: key, direction });
   } else {
@@ -180,7 +183,7 @@ const handleCheckboxChange = (event: Event) => {
             <thead>
               <tr>
                 <th
-                  v-if="isSelectable"
+                  v-if="props.isSelectable"
                   class="fr-cell--fixed"
                   role="columnheader"
                   scope="col"
@@ -209,16 +212,18 @@ const handleCheckboxChange = (event: Event) => {
                     <span
                       v-if="props.isSortable && title.options?.isSortable"
                       :class="{
-                        [title.key === sort && sortDirection === 'desc'
-                          ? 'fr-icon-arrow-down-line'
-                          : 'fr-icon-arrow-up-line']: true,
+                        [title.key === sort
+                          ? sortDirection === 'desc'
+                            ? 'fr-icon-arrow-down-line'
+                            : 'fr-icon-arrow-up-line'
+                          : 'fr-icon-arrow-up-down-line']: true,
+                        'fr-sort-icon': true,
                         'fr-table--is-not-sorted': title.key !== sort,
                       }"
                       aria-hidden="true"
                     />
                   </div>
                 </th>
-                <th v-if="$slots.edit"></th>
               </tr>
             </thead>
             <tbody>
@@ -293,6 +298,16 @@ const handleCheckboxChange = (event: Event) => {
 .fr-table .fr-table--is-not-sorted {
   color: var(--grey-625-425);
 }
+.fr-table .fr-icon-arrow-down-line {
+  color: var(--blue-france-sun-113-625);
+}
+.fr-table .fr-icon-arrow-up-line {
+  color: var(--blue-france-sun-113-625);
+}
+.fr-sort-icon {
+  margin-left: 2rem;
+}
+
 .fr-table .fr-cell--empty {
   text-align: center;
 }
@@ -329,7 +344,6 @@ const handleCheckboxChange = (event: Event) => {
       var(--border-contrast-grey),
       var(--border-contrast-grey)
     );
-  background-color: var(--background-alt-grey);
   background-position:
     0px 100%,
     0px 0px !important;

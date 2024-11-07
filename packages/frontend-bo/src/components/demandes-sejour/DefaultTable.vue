@@ -17,6 +17,7 @@
     :total="total"
     row-id="declarationId"
     is-bordered
+    is-sortable
     @update-data="updateData"
   >
     <template #cell:dateDebut="{ row }">
@@ -206,6 +207,9 @@ const updateData = () => {
           ? { sortDirection: sortDirection.value }
           : {}),
         ...getSearchParams(),
+        ...(isValidParams(status.value) // we use english for url, but french for api
+          ? { status: status.value.join(",") }
+          : {}),
       },
     });
   }, 300);
