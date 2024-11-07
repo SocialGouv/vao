@@ -194,7 +194,7 @@ const toaster = useToaster();
 const { apiStatus, resetApiStatut, setApiStatut } = useIsDownloading();
 const route = useRoute();
 
-const initialSelectedIndex = parseInt(route.query.defaultTabIndex);
+const initialSelectedIndex = parseInt(route.query.defaultTabIndex) || 0;
 
 const chatRef = ref(null);
 const asc = ref(true);
@@ -267,6 +267,7 @@ onMounted(async () => {
       await demandeStore.readMessages(route.params.declarationId);
   } catch (e) {
     navigateTo("/sejours");
+    throw e;
   }
 });
 
