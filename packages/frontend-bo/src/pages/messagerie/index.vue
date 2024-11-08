@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container">
     <h1 class="header">Liste des messages par déclaration</h1>
-    <DemandesSejourListe display="Messagerie" />
+    <DemandesSejourMessagerieListe display="Messagerie" />
   </div>
 </template>
 

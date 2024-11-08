@@ -2,14 +2,9 @@
   <div class="fr-container">
     <div class="fr-grid-row">
       <div class="fr-col-12">
-        <CardsNumber
-          v-if="!props.organisme && props.display === displayType.Organisme"
-          :values="cards"
-          @click="onClickCards($event)"
-        />
+        <CardsNumber :values="cards" @click="onClickCards($event)" />
         <CardsNumber
           v-if="
-            !props.organisme &&
             props.display === displayType.Messagerie &&
             userStore.user.serviceCompetent === 'DEP'
           "
@@ -30,9 +25,9 @@
         />
       </div>
       <div class="fr-col-12">
-        <h1 v-if="props.display === displayType.Organisme" class="header">
+        <h1 class="header">
           Liste des déclarations reçues
-          {{ props.organisme ? "" : `(${sejourStore.stats?.global})` }}
+          {{ `(${sejourStore.stats?.global})` }}
         </h1>
         <form>
           <div class="fr-fieldset">
@@ -65,7 +60,6 @@
               </div>
             </div>
             <div
-              v-if="!props.organisme"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
@@ -80,7 +74,6 @@
               </div>
             </div>
             <div
-              v-if="props.display === displayType.Organisme"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <dsfr-multi-select
@@ -93,7 +86,6 @@
               />
             </div>
             <div
-              v-if="!props.organisme && props.display === displayType.Organisme"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
               <div class="fr-input-group">
@@ -113,12 +105,8 @@
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div
-                v-if="props.display === displayType.Organisme"
-                class="fr-input-group"
-              >
+              <div class="fr-input-group">
                 <DsfrButton
-                  v-if="!props.organisme"
                   type="button"
                   label="Extraire en CSV"
                   primary
@@ -181,7 +169,6 @@ definePageMeta({
 });
 
 const props = defineProps({
-  organisme: { type: String, required: false, default: null },
   display: { type: String, required: true },
 });
 
@@ -225,7 +212,7 @@ const status = computed(() => [
 const searchState = reactive({
   libelle: route.query.libelle,
   idFonctionnelle: route.query.idFonctionnelle,
-  organisme: props.organisme ?? route.query.organisme,
+  organisme: route.query.organisme,
   statuts: route.query.statuts
     ? route.query.statuts
         .split(",")
@@ -233,12 +220,6 @@ const searchState = reactive({
     : [],
   message: props.display === displayType.Messagerie,
 });
-
-watch(
-  () => props.organisme,
-  () => (searchState.organisme = props.organisme),
-  { immediate: true },
-);
 
 const onSelectAction = (value) => {
   switch (value) {

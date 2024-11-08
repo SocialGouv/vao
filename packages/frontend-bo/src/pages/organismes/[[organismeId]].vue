@@ -118,11 +118,7 @@
         </div>
       </DsfrTabContent>
       <DsfrTabContent panel-id="tab-content-2" tab-id="tab-2">
-        <DemandesSejourListe
-          v-if="organismeName"
-          display="Organisme"
-          :organisme="organismeName"
-        ></DemandesSejourListe>
+        <DemandesSejourListe display="Organisme" />
       </DsfrTabContent>
     </DsfrTabs>
   </div>
@@ -181,15 +177,6 @@ const tabTitles = [
     panelId: "tab-content-2",
   },
 ];
-
-const organismeName = computed(() => {
-  if (organismeStore.organisme) {
-    return organismeStore.organisme.typeOrganisme ===
-      organisme.type.PERSONNE_MORALE
-      ? (organismeStore.organisme.personneMorale.raisonSociale ?? "")
-      : (organismeStore.organisme.personnePhysique.nomUsage ?? "");
-  }
-});
 
 onMounted(async () => {
   try {

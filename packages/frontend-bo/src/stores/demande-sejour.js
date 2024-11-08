@@ -46,6 +46,41 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
+    async fetchDemandesMessagerie({
+      limit,
+      offset,
+      sortBy,
+      sortDirection,
+      search,
+    } = {}) {
+      log.i("fetchDemandes - IN");
+      try {
+        const { demandesWithPagination } = await $fetchBackend(
+          "/sejour/admin",
+          {
+            method: "GET",
+            credentials: "include",
+            params: {
+              limit,
+              offset,
+              sortBy,
+              sortDirection,
+              search: { ...search, message: true },
+            },
+          },
+        );
+        if (demandesWithPagination) {
+          log.i("fetchDemandes - DONE");
+          this.demandes = demandesWithPagination.demandes_sejour;
+          this.total = demandesWithPagination.total;
+          this.stats = demandesWithPagination.stats;
+        }
+      } catch (err) {
+        log.w("fetchDemandes - DONE with error", err);
+        this.demandes = [];
+        throw err;
+      }
+    },
     async getStats() {
       log.i("fetchDemandes - IN");
       try {
