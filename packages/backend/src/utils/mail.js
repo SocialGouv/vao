@@ -133,7 +133,7 @@ module.exports = {
           throw new AppError(message);
         }
 
-        const link = `${frontBODomain}/sejours/${declaration.id}`;
+        const link = `${frontBODomain}/sejours?statuts=TRANSMISE`;
 
         const html = sendTemplate.getBody(
           "PORTAIL VAO ADMINISTRATION - DECLARATION A 8 JOURS DEPOSEE",
@@ -153,7 +153,7 @@ module.exports = {
             },
             {
               link,
-              text: "Accéder à la déclaration",
+              text: "Accéder aux déclarations transmises",
               type: "link",
             },
           ],
@@ -235,7 +235,7 @@ module.exports = {
           throw new AppError(message);
         }
 
-        const link = `${frontUsagersDomain}/demande-sejour/${declaration.id}`;
+        const link = `${frontBODomain}/sejours?statuts=TRANSMISE`;
 
         const html = sendTemplate.getBody(
           "PORTAIL VAO ADMINISTRATION - NOUVELLE DECLARATION DE SEJOUR",
@@ -255,7 +255,7 @@ module.exports = {
             },
             {
               link,
-              text: "Accéder à ma déclaration",
+              text: "Accéder aux déclarations transmises",
               type: "link",
             },
           ],
