@@ -8,7 +8,7 @@
       }})
     </h1>
     <CardsNumber :values="cards" @click="onClickCards" />
-    <DemandesSejourDefaultTable />
+    <DemandesSejourDefaultTable ref="dataTable" />
   </div>
 </template>
 
@@ -21,7 +21,7 @@ definePageMeta({
 
 const sejourStore = useDemandeSejourStore();
 
-const statuts = ref(null);
+const dataTable = ref(null);
 
 const cards = computed(() => [
   {
@@ -49,10 +49,8 @@ const cards = computed(() => [
 ]);
 
 const onStatutSelect = (value) => {
-  if (value.length) {
-    statuts.value = value;
-  } else {
-    statuts.value = null;
+  if (dataTable.value) {
+    dataTable.value.updateStatus(value);
   }
 };
 

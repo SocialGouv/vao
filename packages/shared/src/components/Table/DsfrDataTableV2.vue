@@ -32,7 +32,7 @@ export type NestedKeys<T> = {
 export type CustomKeys = `custom-${string}`;
 
 export type Title<T> = {
-  key: NestedKeys<T> | `custom-${string}`;
+  key: NestedKeys<T> | CustomKeys;
   label: string;
   options?: {
     isFixedLeft?: boolean;
@@ -83,10 +83,10 @@ const props = withDefaults(
 );
 
 const emits = defineEmits<{
-  "update:sort": [NestedKeys<T>];
-  "update:sort-direction": ["asc" | "desc"];
+  "update:sort": [NestedKeys<T> | ""];
+  "update:sort-direction": ["asc" | "desc" | ""];
   "update:selected": [Array<T[RowId]>];
-  sort: [{ sort: NestedKeys<T>; direction: "asc" | "desc" }];
+  sort: [{ sort: NestedKeys<T>; direction: "asc" | "desc" | "" }];
 }>();
 
 defineSlots<

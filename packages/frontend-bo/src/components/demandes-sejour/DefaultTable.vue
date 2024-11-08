@@ -67,10 +67,11 @@ import { DsfrDataTableV2Wrapper, ValidationModal } from "@vao/shared";
 
 const demandeSejourStore = useDemandeSejourStore();
 const userStore = useUserStore();
+const route = useRoute();
 const data = computed(() => demandeSejourStore.demandes);
 const total = computed(() => demandeSejourStore.total);
 
-const params = Object.fromEntries(new URLSearchParams(window.location.search));
+const { query } = route;
 
 const titles = [
   {
@@ -130,40 +131,22 @@ const sortableTitles = titles.flatMap((title) =>
   title.options?.isSortable ? [title.key] : [],
 );
 
-const defaultStatus = [
-  demandesSejours.statuts.TRANSMISE,
-  demandesSejours.statuts.EN_COURS,
-  demandesSejours.statuts.A_MODIFIER,
-  demandesSejours.statuts.REFUSEE,
-  demandesSejours.statuts.ATTENTE_8_JOUR,
-  demandesSejours.statuts.TRANSMISE_8J,
-  demandesSejours.statuts.EN_COURS_8J,
-  demandesSejours.statuts.A_MODIFIER_8J,
-  demandesSejours.statuts.REFUSEE_8J,
-  demandesSejours.statuts.VALIDEE_8J,
-  demandesSejours.statuts.SEJOUR_EN_COURS,
-  demandesSejours.statuts.TERMINEE,
-  demandesSejours.statuts.ANNULEE,
-  demandesSejours.statuts.ABANDONNEE,
-];
-
-const idFonctionnelle = ref(params.idFonctionnelle || "");
-const libelle = ref(params.libelle || "");
-const organisme = ref(params.organisme || "");
+const defaultStatus = [...Object.values(demandesSejours.statuts)];
+const idFonctionnelle = ref(query.idFonctionnelle ?? "");
+const libelle = ref(query.libelle ?? "");
+const organisme = ref(query.organisme ?? "");
 const status = ref(
-  params.status
-    ? params.status
+  query.statuts
+    ? query.statuts
         .split(",")
         .filter((statut) => Object.values(defaultStatus).includes(statut))
     : [],
 );
-const limit = ref(parseInt(params.limit, 10) || 10);
-const offset = ref(parseInt(params.offset, 10) || 0);
-const sort = ref(sortableTitles.includes(params.sort) ? params.sort : "");
+const limit = ref(parseInt(query.limit, 10) || 10);
+const offset = ref(parseInt(query.offset, 10) || 0);
+const sort = ref(sortableTitles.includes(query.sort) ? query.sort : "");
 const sortDirection = ref(
-  ["", "asc", "desc"].includes(params.sortDirection)
-    ? params.sortDirection
-    : "",
+  ["", "asc", "desc"].includes(query.sortDirection) ? query.sortDirection : "",
 );
 
 const isValidParams = (params) =>
@@ -207,9 +190,6 @@ const updateData = () => {
           ? { sortDirection: sortDirection.value }
           : {}),
         ...getSearchParams(),
-        ...(isValidParams(status.value) // we use english for url, but french for api
-          ? { status: status.value.join(",") }
-          : {}),
       },
     });
   }, 300);
@@ -254,13 +234,12 @@ const navigate = (state) => {
 const validatePriseEnCharge = async () => {
   const declarationId = declarationAPrendreEnCharge.value.declarationId;
   try {
-    await demandeSejourStore.prendreEnCharge();
+    await demandeSejourStore.prendreEnCharge(declarationId);
     declarationAPrendreEnCharge.value = null;
     navigateTo({
       path: `/sejours/${declarationId}`,
     });
   } catch (error) {
-    log.w("prend en charge", error);
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de la prise en charge de la demande",
@@ -268,4 +247,13 @@ const validatePriseEnCharge = async () => {
     throw error;
   }
 };
+
+// exposxition to parents
+
+defineExpose({
+  updateStatus: (value) => {
+    status.value = value;
+    updateData();
+  },
+});
 </script>
