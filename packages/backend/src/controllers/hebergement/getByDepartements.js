@@ -1,10 +1,11 @@
 const Hebergement = require("../../services/Hebergement");
 
 const logger = require("../../utils/logger");
+const Sentry = require("@sentry/node");
 
 const log = logger(module.filename);
 
-module.exports = async function get(req, res) {
+async function getByDepartements(req, res) {
   log.i("IN");
   const departements = req.departements.map((d) => d.value);
   const { limit = 20, offset = 0, search = "", sort = "nom" } = req.query;
@@ -48,4 +49,19 @@ module.exports = async function get(req, res) {
         "une erreur est survenue durant la récupération des hebergements",
     });
   }
+}
+
+module.exports = async function get(req, res) {
+  // create new Sentry trace manually to enable profiler for its nested span
+  Sentry.startNewTrace(async () => {
+    Sentry.startSpan(
+      {
+        name: `Profile ${req.method} ${req.baseUrl}${req.path}`,
+        op: "http",
+      },
+      async () => {
+        await getByDepartements(req, res);
+      },
+    );
+  });
 };
