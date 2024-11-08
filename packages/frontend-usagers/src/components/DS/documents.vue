@@ -1,21 +1,23 @@
 <template>
-  <DsfrFieldset
-    legend="Documents générés par l'application : CERFA, Accusé de réception"
-    legend-id="docs_generes"
-  >
+  <DsfrFieldset legend-id="docs_generes">
     <div v-if="filesGeneres.length > 0">
-      <TableFull :headers="headers" :data="filesGeneres" />
+      <TableFull
+        title="Documents générés par l'application : CERFA, Accusé de réception"
+        :headers="headers"
+        :data="filesGeneres"
+      />
     </div>
     <div v-else>
       <span>Aucun document joint à la demande</span>
     </div>
   </DsfrFieldset>
-  <DsfrFieldset
-    legend="Documents téléversés par l'organisateur"
-    legend-id="doc_televerses"
-  >
+  <DsfrFieldset legend-id="doc_televerses">
     <div v-if="filesTeleverses.length > 0">
-      <TableFull :headers="headers" :data="filesTeleverses" />
+      <TableFull
+        title="Documents téléversés par l'organisateur"
+        :headers="headers"
+        :data="filesTeleverses"
+      />
     </div>
     <div v-else>
       <span>Aucun document joint à la demande</span>
@@ -90,6 +92,14 @@ const filesGeneres = computed(() => {
 
 const filesTeleverses = computed(() => {
   let files = [];
+  if (props.declaration.organisme?.agrement?.file) {
+    files.push({
+      name: props.declaration.organisme.agrement.file.name,
+      type: "agrement",
+      createdAt: props.declaration.organisme.agrement.file.createdAt,
+      uuid: props.declaration.organisme.agrement.file.uuid,
+    });
+  }
   if (props.declaration?.informationsSanitaires?.files) {
     const filesSanitaires = props.declaration.informationsSanitaires.files.map(
       (f) => {

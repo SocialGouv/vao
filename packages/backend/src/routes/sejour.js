@@ -34,6 +34,13 @@ router.get(
   demandeSejourController.getExtract,
 );
 router.get(
+  "/admin/extract-hebergement",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  demandeSejourController.getExtractHebergement,
+);
+router.get(
   "/admin/hebergements",
   boCheckJWT,
   boCheckRoleDS,

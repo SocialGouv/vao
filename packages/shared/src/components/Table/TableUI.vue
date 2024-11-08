@@ -3,9 +3,9 @@
     <div v-if="displayedData.length">
       <DsfrTable
         style="display: table"
+        :title="title"
         :headers="headers"
         :rows="rows"
-        :no-caption="true"
       />
       <div v-if="pages" class="fr-grid-row fr-my-md-n1v fr-col-md-2">
         <span style="font-style: italic"
@@ -41,6 +41,7 @@ const emit = defineEmits(["click-row"]);
 
 const props = defineProps({
   displayedData: { type: Array, required: true },
+  title: { type: String, required: true },
   headers: { type: Array, required: true },
   totalItems: { type: Number, required: true },
   currentPage: { type: Number, default: 0 },

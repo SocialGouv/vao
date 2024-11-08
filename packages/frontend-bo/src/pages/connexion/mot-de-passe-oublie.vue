@@ -27,7 +27,8 @@
                         type="text"
                         label="Adresse courriel"
                         :label-visible="true"
-                        placeholder="Veuillez saisir votre adresse courriel"
+                        placeholder=""
+                        hint="Veuillez saisir votre adresse courriel. Exemple nom@domaine.fr"
                         @update:model-value="editMail"
                       />
                     </div>

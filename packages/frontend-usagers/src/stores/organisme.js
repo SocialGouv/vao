@@ -7,6 +7,7 @@ export const useOrganismeStore = defineStore("organismes", {
   state: () => ({
     organismes: [],
     organismeCourant: null,
+    usersFO: [],
   }),
   actions: {
     async fetchOrganismes() {
@@ -22,6 +23,32 @@ export const useOrganismeStore = defineStore("organismes", {
       } catch (err) {
         this.organismes = [];
         log.i("fetchOrganismes - DONE with error");
+      }
+    },
+
+    async fetchUsersOrganisme() {
+      log.i("fetchUsersOrganisme - IN");
+      try {
+        // Appel du back pour la liste des utilisateurs de liés à l'organisme
+        const { users } = await $fetchBackend("/fo-user/list", {
+          credentials: "include",
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          params: {
+            search: {
+              siret: this.organismeCourant.personneMorale.siret,
+            },
+          },
+        });
+        log.d("fetchUsersOrganisme - réponse", { users });
+        this.usersFO = users;
+        log.i("fetchUsersOrganisme - DONE");
+      } catch (error) {
+        // Retour vide en cas d'erreur
+        this.usersFO = [];
+        log.w("fetchUsersOrganisme - Erreur", { error });
       }
     },
     async setMyOrganisme() {

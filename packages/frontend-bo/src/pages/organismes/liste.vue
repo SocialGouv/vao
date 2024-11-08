@@ -82,17 +82,18 @@
       :search="search"
       @click-row="navigate"
     />
+    <DsfrButton type="button" label="Extraire en CSV" primary @click="getCsv" />
   </div>
 </template>
 <script setup>
 import { TableFull } from "@vao/shared";
 
 import dayjs from "dayjs";
+
 definePageMeta({
   middleware: ["is-connected"],
 });
-import { useOrganismeStore } from "~/stores/organisme";
-import { useRegionStore } from "~/stores/referentiels";
+
 const organismeStore = useOrganismeStore();
 const regionStore = useRegionStore();
 
@@ -179,7 +180,7 @@ const headers = [
   {
     column: "agrement",
     objectLabel: "regionObtention",
-    text: "Région d'agrémentation",
+    text: "Région d'agrément",
     sort: true,
   },
   {
@@ -193,6 +194,11 @@ const headers = [
     text: "Nombre de séjours",
   },
 ];
+
+const getCsv = async () => {
+  const response = await organismeStore.exportOrganismes();
+  exportCsv(response, "organismes.csv");
+};
 
 const navigate = (organisme) => {
   navigateTo(`/organismes/${organisme.organismeId}`);

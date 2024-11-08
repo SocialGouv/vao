@@ -132,7 +132,7 @@ fileignoreconfig:
 - filename: packages/backend/src/services/Document.js
   checksum: 59b5abe13b265c61dc6df8bbb92a3f989199dafaef0170d361f49e760d2ac385
 - filename: packages/backend/src/services/User.js
-  checksum: 6f3bcdcbe1d0e813fb032939778cd11cf0acf3ba7f2e25ca4707f114f31cfae0
+  checksum: 78ddae12d185c4111aa837a178b75e6bda4083d06783ee6382503262298eefbc
 - filename: packages/backend/src/services/geo/Commune.js
   checksum: 40213f6529d1282e73f0201199e28b66f9c99c76d16651d88aac0b59fb722ae2
 - filename: packages/backend/src/services/geo/Departement.js
@@ -210,7 +210,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/organisme/personne-morale-read-only.vue
   checksum: 2b3e374044b3d7142a81fd3a6720e197e7839c281d74b594755d0df9035c3576
 - filename: packages/frontend-usagers/src/components/organisme/personne-morale.vue
-  checksum: 09bb8f48bab74bdf812ba50fe7723a22c8c1facbba76a4f6b02ca3ad36f3920b
+  checksum: 9b94b8a97eb6a2e9cea8c696ab32371c259112298147ae81f3c461463d04afa0
 - filename: packages/frontend-usagers/src/components/organisme/synthese.vue
   checksum: c9d27cea7175d829b78e524c08dd744b097f08a2fae2dffddab01f6703f3055c
 - filename: packages/frontend-usagers/src/components/personnes-read-only.vue
@@ -220,7 +220,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue
   checksum: 05743cc5c3dfd946e8ee41cb11571b1e505bbdb5260e9c59a53e4ca16cb11f08
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
-  checksum: ff1ceabb68d5c3bd637717235e78cbe7b82e626a5f1c8bbf233c58d5acaa2bc9
+  checksum: dd393d7c31566dfa3864bb9a63fe98f9bf040cc8321e8cad0f74e8634e8365f8
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
   checksum: e8dab7814ed9effec5c8630f2e1cd061416d254a131ebc88dbae61f99327436e
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
@@ -251,8 +251,18 @@ fileignoreconfig:
   checksum: e22a659aca296659bcd27ea22fd6919938327d3a4ad17eaab229e55724d94dce
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
+- filename: packages/shared/src/components/DsfrMultiSelect.vue
+  checksum: 90a7d72295ca0fb55d312f9608cbbe5475183936d21286952357b3961d1bd6fb
+- filename: packages/shared/src/components/DsfrTabsV2.vue
+  checksum: 960c18a7ad76a91c74e5535240ae6ac4f87bb8aff10155096cd35afe5609cff8
 - filename: packages/shared/src/components/PasswordInput.vue
   checksum: af4fe62dc455e943fcfacaa6ee0495e1ab20f9ed2094ad70c457b7a27ab46759
+- filename: packages/shared/src/components/Table/DsfrDataTableV2.vue
+  checksum: 31aa309ec71678dff0c509d1d2ba35340b1da2caae40b3b2f5148aad83d3a410
+- filename: packages/shared/src/type.ts
+  checksum: 8c75e8784ded25a61d6e14cd682bfe67e4ecdde5a6582fb83035fcae39a87b98
+- filename: packages/shared/src/types/DsfrDataTableV2.type.ts
+  checksum: 1a97906b8d2d4c66febb1aceb3344696ef780480ab0711a93dd49780b66c20ab
 - filename: pg/scripts/01-init.sql
   checksum: 20dd5b8d36b1b0517fe185d30003af7866ef5678eed4e7571a6d9797ec3b2a46
 - filename: pg/scripts/02/02-1-geo-init.sql

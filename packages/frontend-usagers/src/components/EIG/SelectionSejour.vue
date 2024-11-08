@@ -1,7 +1,7 @@
 <template>
   <div>
     <h6>Sélectionner un séjour</h6>
-    <fieldset class="fr-fieldset">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <DsfrTag
           v-if="selectedDemandeLabel"
@@ -52,8 +52,8 @@
           @update:model-value="onDepartementChange"
         />
       </div>
-    </fieldset>
-    <fieldset v-if="props.showButtons" class="fr-fieldset">
+    </div>
+    <div v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton
         v-if="!props.isDownloading"
         id="next-step"
@@ -65,7 +65,7 @@
         :message="props.message"
         :is-downloading="props.isDownloading"
       />
-    </fieldset>
+    </div>
   </div>
 </template>
 

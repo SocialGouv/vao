@@ -16,6 +16,7 @@ const query = {
       us.prenom AS prenom,
       us.status_code AS statut,
       us.created_at AS "dateCreation",
+      us.lastconnection_at as "lastConnectionAt",
       org.id AS "organismeId",
       org.type_organisme AS "typeOrganisme",
       org.personne_morale->>'siret' AS siret,
@@ -60,6 +61,10 @@ module.exports.read = async ({
   const searchParams = [];
 
   // Search management
+  if (search?.organisme_id && search.organisme_id.length) {
+    searchQuery += `   AND org.id = $${searchParams.length + 1}\n`;
+    searchParams.push(`${search.organisme_id}`);
+  }
   if (search?.nom && search.nom.length) {
     searchQuery += `   AND unaccent(us.nom) ILIKE unaccent($${searchParams.length + 1})\n`;
     searchParams.push(`%${search.nom}%`);

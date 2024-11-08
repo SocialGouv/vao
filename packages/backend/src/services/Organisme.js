@@ -12,8 +12,6 @@ const Organisme = require("../schemas/organisme");
 
 const log = logger(module.filename);
 
-let regions, organismeSchema;
-
 const query = {
   create: `
     INSERT INTO front.organismes (type_organisme, personne_morale, personne_physique)
@@ -205,9 +203,26 @@ const query = {
       o.complet as "complet",
       o.personne_morale->>'siren' AS "siren",
       o.personne_morale->>'siret' AS "siret",
+      o.personne_morale->>'email' AS "email",
       o.personne_morale->>'raisonSociale' AS "raisonSociale",
+      o.personne_physique->>'telephone' AS "telephone",
       o.personne_physique->>'nomNaissance' AS "nomPersonnePhysique",
+      o.personne_physique->>'prenom' AS "prenomPersonnePhysique",
       COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut <> 'BROUILLON' THEN 1 ELSE NULL END)::integer AS "sejourCount",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'TRANSMISE' THEN 1 ELSE NULL END)::integer AS "sejourCountTransmise",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'ABANDONNEE' THEN 1 ELSE NULL END)::integer AS "sejourCountAbamdonnee",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'ANNULEE' THEN 1 ELSE NULL END)::integer AS "sejourCountAnnulee",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'EN ATTENTE DECLARATION 8 JOURS' THEN 1 ELSE NULL END)::integer AS "sejourCountAttente8j",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'A MODIFIER' THEN 1 ELSE NULL END)::integer AS "sejourCountAModifier",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'A MODIFIER 8J' THEN 1 ELSE NULL END)::integer AS "sejourCountAModifier8j",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'EN COURS' THEN 1 ELSE NULL END)::integer AS "sejourCountEnCours",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'EN COURS 8J' THEN 1 ELSE NULL END)::integer AS "sejourCountEnCours8j",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'REFUSEE' THEN 1 ELSE NULL END)::integer AS "sejourCountRefusee",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'REFUSEE 8J' THEN 1 ELSE NULL END)::integer AS "sejourCountRefusee8j",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'SEJOUR EN COURS' THEN 1 ELSE NULL END)::integer AS "sejourCountSejourEnCours",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'TERMINEE' THEN 1 ELSE NULL END)::integer AS "sejourCountTerminee",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'TRANSMISE 8J' THEN 1 ELSE NULL END)::integer AS "sejourCountTransmise8j",
+      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'VALIDEE 8J' THEN 1 ELSE NULL END)::integer AS "sejourCountValide8j",
       CASE
         WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
         THEN
@@ -336,6 +351,20 @@ FROM back.organisme_non_agree ona
       edited_at = NOW()
     WHERE id = $1
 `,
+  getIsComplet: `
+    SELECT
+        complet
+    FROM
+        FRONT.ORGANISMES
+    WHERE id = $1
+  `,
+  getSiret: `
+    SELECT
+        personne_morale ->> 'siret' as siret
+    FROM
+        FRONT.ORGANISMES
+    WHERE id = $1
+  `,
 };
 
 module.exports.create = async (type, parametre) => {
@@ -368,9 +397,8 @@ module.exports.update = async (type, parametre, organismeId) => {
   log.i("update - IN", { type });
   let response;
 
-  if (!regions) {
-    regions = await Regions.fetch();
-  }
+  const regions = await Regions.fetch();
+
   switch (type) {
     case "personne_morale": {
       const complet =
@@ -432,12 +460,10 @@ module.exports.update = async (type, parametre, organismeId) => {
 
 module.exports.finalize = async function (userId) {
   log.i("finalize - IN", { userId });
-  if (!regions) {
-    regions = await Regions.fetch();
-  }
-  if (!organismeSchema) {
-    organismeSchema = Organisme.schema(regions);
-  }
+  const regions = await Regions.fetch();
+
+  const organismeSchema = Organisme.schema(regions);
+
   const criterias = {
     "uo.use_id": userId,
   };
@@ -516,4 +542,16 @@ module.exports.getNonAgrees = async () => {
   const { rows: organismes } = await pool.query(query.getNonAgrees, []);
   log.i("getNonAgrees - DONE");
   return organismes ?? [];
+};
+
+module.exports.getIsComplet = async (organismeId) => {
+  const { rows: isComplet } = await pool.query(query.getIsComplet, [
+    organismeId,
+  ]);
+  return isComplet?.[0].complet ?? false;
+};
+
+module.exports.getSiret = async (organismeId) => {
+  const { rows: siret } = await pool.query(query.getSiret, [organismeId]);
+  return siret?.[0].siret ?? null;
 };

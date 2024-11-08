@@ -82,6 +82,18 @@ export const useUserStore = defineStore("user", {
         throw err;
       }
     },
+    async exportUsersOrganismes() {
+      log.i("exportUsersOrganismes - IN");
+      try {
+        return await $fetchBackend(`/fo-user/admin/extract/`, {
+          method: "GET",
+          credentials: "include",
+        });
+      } catch (err) {
+        log.w("exportUsersOrganismes - DONE with error", err);
+        throw err;
+      }
+    },
 
     async fetchUsersOrganisme({
       limit,
@@ -93,7 +105,7 @@ export const useUserStore = defineStore("user", {
       log.i("fetchUsersOrganisme - IN");
       try {
         // Appel du back pour la liste des utilisateurs
-        const { users, total } = await $fetchBackend("/fo-user", {
+        const { users, total } = await $fetchBackend("/fo-user/admin/list", {
           credentials: "include",
           method: "GET",
           headers: {

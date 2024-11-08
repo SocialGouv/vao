@@ -281,32 +281,14 @@ const schema = (regions) => ({
       schema
         .shape(agrementSchema(regions))
         .required("Aucune information renseignée"),
-    otherwise: (schema) => schema.nullable(),
+    otherwise: (schema) => schema.shape(agrementSchema(regions)).nullable(),
   }),
   protocoleTransport: yup
-    .object()
-    .when(["typeOrganisme", "personneMorale.siegeSocial"], {
-      is: (typeOrganisme, siegeSocial) => {
-        return typeOrganisme === "personne_physique" || siegeSocial === true;
-      },
-      then: (schema) =>
-        schema
-          .shape(protocoleTransport.schema)
-          .required("Aucune information renseignée"),
-      otherwise: (schema) => schema.nullable(),
-    }),
+    .object(protocoleTransport.schema)
+    .required("Aucune information renseignée"),
   protocoleSanitaire: yup
-    .object()
-    .when(["typeOrganisme", "personneMorale.siegeSocial"], {
-      is: (typeOrganisme, siegeSocial) => {
-        return typeOrganisme === "personne_physique" || siegeSocial === true;
-      },
-      then: (schema) =>
-        schema
-          .shape(protocoleSanitaire.schema)
-          .required("Aucune information renseignée"),
-      otherwise: (schema) => schema.nullable(),
-    }),
+    .object(protocoleSanitaire.schema)
+    .required("Aucune information renseignée"),
 });
 
 export default {

@@ -106,6 +106,21 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
+    async exportHebergements() {
+      log.i("exportHebergements - IN");
+
+      try {
+        const response = await $fetchBackend(
+          `/sejour/admin/extract-hebergement/`,
+          { method: "GET", credentials: "include" },
+        );
+        log.i("exportHebergements - DONE");
+        return response;
+      } catch (err) {
+        log.w("exportHebergements - DONE with error", err);
+        throw err;
+      }
+    },
 
     async fetchMessages(declarationId) {
       try {

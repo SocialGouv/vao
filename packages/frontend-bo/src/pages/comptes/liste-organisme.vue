@@ -1,6 +1,8 @@
 <template>
   <div class="fr-container">
-    <h1 class="fr-py-2w">Liste des comptes ({{ usersStore.totalUsersFO }})</h1>
+    <h1 class="fr-py-2w">
+      Liste des organismes ({{ usersStore.totalUsersFO }})
+    </h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
@@ -81,6 +83,14 @@
       @update-items-by-page="updateItemsByPage"
       @update-current-page="updateCurrentPage"
     />
+    <div class="fr-input-group">
+      <DsfrButton
+        type="button"
+        label="Extraire en CSV"
+        primary
+        @click="getCsvUtilisateurs"
+      />
+    </div>
   </div>
 </template>
 
@@ -132,6 +142,12 @@ const fetchUsersDebounce = debounce((search) => {
     search,
   });
 });
+
+const getCsvUtilisateurs = async () => {
+  const response = await usersStore.exportUsersOrganismes();
+  exportCsv(response, "UtilisateursOrganismes.csv");
+};
+
 watch([searchState], ([searchValue]) => {
   fetchUsersDebounce(searchValue);
 });

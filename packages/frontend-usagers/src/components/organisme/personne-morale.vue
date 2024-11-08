@@ -25,9 +25,11 @@
         :model-value="formatedSiret"
         :is-valid="siretMeta.valid"
         :error-message="siretErrorMessage"
-        :readonly="!props.modifiable"
+        :disabled="
+          !props.modifiable || !!organismeStore.organismeCourant?.complet
+        "
         placeholder=""
-        hint="14 chiffres consécutifs qui indiquent l'établissement organisateur"
+        hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
         @update:model-value="trimSiret"
       />
       <div v-if="props.modifiable" class="fr-fieldset__element">
@@ -187,36 +189,31 @@
           />
         </div>
       </DsfrFieldset>
-      <DsfrFieldset legend="Représentants légaux">
-        <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-12">
-            <Personnes
-              :key="keyRepresentantLegaux"
-              :personnes="representantsLegaux"
-              :modifiable="props.modifiable"
-              :show-adresse="false"
-              :show-attestation="false"
-              :show-competence="false"
-              :show-date-naissance="false"
-              :show-email="false"
-              :show-fonction="true"
-              :show-liste-fonction="false"
-              :show-telephone="false"
-              titre="Représentant légal"
-              :headers="headers"
-              :current-page="currentPersonnesPage"
-              label-bouton-ajouter="Ajouter un représentant légal"
-              @valid="onRepresentantsLegauxChangeWithKeyChange"
-            >
-            </Personnes>
-          </div>
+      <div class="fr-fieldset__element">
+        <div class="fr-input-group fr-col-12">
+          <Personnes
+            :key="keyRepresentantLegaux"
+            :personnes="representantsLegaux"
+            :modifiable="props.modifiable"
+            :show-adresse="false"
+            :show-attestation="false"
+            :show-competence="false"
+            :show-date-naissance="false"
+            :show-email="false"
+            :show-fonction="true"
+            :show-liste-fonction="false"
+            :show-telephone="false"
+            titre="Représentant légaux"
+            :headers="headers"
+            :current-page="currentPersonnesPage"
+            label-bouton-ajouter="Ajouter un représentant légal"
+            @valid="onRepresentantsLegauxChangeWithKeyChange"
+          >
+          </Personnes>
         </div>
-      </DsfrFieldset>
-      <DsfrFieldset
-        v-if="siegeSocial"
-        :legend="`Etablissements secondaires (${etablissements.length}) dont ${formatedEtablissements.length} actifs`"
-      >
-        <fieldset class="fr-fieldset">
+      </div>
+      <DsfrFieldset v-if="siegeSocial">
+        <div class="fr-fieldset">
           <div
             class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
           >
@@ -271,10 +268,11 @@
               />
             </div>
           </div>
-        </fieldset>
+        </div>
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
             <DsfrTable
+              :title="`Etablissements secondaires (${etablissements.length}) dont ${formatedEtablissements.length} actifs`"
               :headers="[
                 'SIRET',
                 'Dénomination',
@@ -324,7 +322,12 @@
         </div>
       </DsfrFieldset>
     </div>
-
+    <DsfrTable
+      v-if="siren || siret"
+      title="Liste des comptes avec le numéro de siret de l'organisme"
+      :headers="['Nom', 'Prenom', 'Email', 'Date inscription']"
+      :rows="usersWithSiret"
+    ></DsfrTable>
     <DsfrFieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton
         v-if="!props.isDownloading"
@@ -346,12 +349,16 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading } from "@vao/shared";
 import { DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
+import dayjs from "dayjs";
 
 const toaster = useToaster();
 
 const log = logger("components/organisme/personne-morale");
 
 const emit = defineEmits(["previous", "next", "update"]);
+
+const organismeStore = useOrganismeStore();
+organismeStore.fetchUsersOrganisme();
 
 const props = defineProps({
   initData: { type: Object, required: true },
@@ -381,6 +388,14 @@ const currentPersonnesPage = ref(1);
 
 const validationSchema = computed(() =>
   yup.object(organisme.personneMoraleSchema),
+);
+const usersWithSiret = computed(() =>
+  organismeStore.usersFO.map((user) => [
+    user.nom,
+    user.prenom,
+    user.email,
+    dayjs(user.dateCreation).format("DD/MM/YYYY HH:MM"),
+  ]),
 );
 
 const etablissementFilter = ref({
@@ -567,7 +582,9 @@ async function searchApiInsee() {
     setValues({
       siren: uniteLegale.siren,
       siegeSocial: uniteLegale.etablissementSiege,
-      raisonSociale: uniteLegale.uniteLegale.denominationUniteLegale,
+      raisonSociale:
+        uniteLegale.uniteLegale.denominationUniteLegale ??
+        `${uniteLegale.uniteLegale.nomUniteLegale ?? ""} ${uniteLegale.uniteLegale.prenom1UniteLegale ?? ""}`,
       nomCommercial: nomCommercial ?? null,
       statut: uniteLegale.uniteLegale.categorieJuridiqueUniteLegale,
       adresse,

@@ -1,11 +1,12 @@
 <template>
-  <TableFull :headers="headers" :data="personnel" />
+  <TableFull :title="title" :headers="headers" :data="personnel" />
 </template>
 <script setup>
 import { TableFull } from "@vao/shared";
 import dayjs from "dayjs";
 
 defineProps({
+  title: { required: true, type: String },
   personnel: { required: true, default: () => [], type: Array },
 });
 

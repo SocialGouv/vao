@@ -1,6 +1,6 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
           <DsfrInputGroup
@@ -79,8 +79,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
           <SearchAddress
@@ -97,8 +97,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
+    </div>
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
           <DsfrRadioButtonSet
@@ -115,8 +115,8 @@
           />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
+    </div>
+    <div class="fr-fieldset">
       <div v-if="adresseIdentique === false" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
           <SearchAddress
@@ -133,7 +133,7 @@
           />
         </div>
       </div>
-    </fieldset>
+    </div>
     <DsfrFieldset v-if="props.showButtons" class="fr-fieldset">
       <DsfrButton
         v-if="!props.isDownloading"

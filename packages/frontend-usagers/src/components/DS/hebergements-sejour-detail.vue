@@ -1,6 +1,6 @@
 <template>
   <div>
-    <fieldset class="fr-fieldset">
+    <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-5">
         <DsfrInputGroup
           name="dateDebut"
@@ -33,8 +33,8 @@
           @update:model-value="onDateFinChange"
         />
       </div>
-    </fieldset>
-    <fieldset v-if="props.modifiable" class="fr-fieldset">
+    </div>
+    <div v-if="props.modifiable" class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-6">
         <DsfrSelect
           :model-value="hebergementId"
@@ -53,7 +53,7 @@
           >Créer un lieu d'hébergement
         </DsfrButton>
       </div>
-    </fieldset>
+    </div>
     <template v-if="hebergementStore.hebergementCourant">
       <DsfrFieldset legend="Informations sur le lieu d'hébergement">
         <div class="fr-fieldset__element fr-col-12">
@@ -228,14 +228,14 @@
           </div>
         </div>
         <div v-if="reglementationErp">
-          <UtilsFileUpload
+          <FileUpload
             v-model="fileDerniereAttestationSecurite"
             label="Téléchargement du document Dernière attestation de passage de la commission sécurité"
             hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
             :modifiable="props.modifiable"
             :error-message="fileDerniereAttestationSecuriteErrorMessage"
           />
-          <UtilsFileUpload
+          <FileUpload
             v-model="fileDernierArreteAutorisationMaire"
             label="Téléchargement du document Dernier arrêté d’autorisation du maire"
             hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
@@ -244,7 +244,7 @@
           />
         </div>
         <div v-if="reglementationErp === false">
-          <UtilsFileUpload
+          <FileUpload
             v-model="fileReponseExploitantOuProprietaire"
             label="Téléchargement du document Réponse du propriétaire ou exploitant indiquant les raisons pour lesquelles le lieu d’hébergement n’est pas soumis à la réglementation ERP"
             hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
@@ -557,7 +557,7 @@
       </DsfrFieldset>
     </template>
 
-    <fieldset v-if="props.showButtons" class="fr-fieldset">
+    <div v-if="props.showButtons" class="fr-fieldset">
       <DsfrButtonGroup :inline-layout-when="true" :reverse="true">
         <DsfrButton
           v-if="!props.modifiable"
@@ -584,7 +584,7 @@
         >
         </DsfrButton>
       </DsfrButtonGroup>
-    </fieldset>
+    </div>
 
     <DsfrModal
       ref="modal"
@@ -611,7 +611,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { hebergement as hebergementUtils } from "@vao/shared";
+import { hebergement as hebergementUtils, FileUpload } from "@vao/shared";
 
 const config = useRuntimeConfig();
 
@@ -678,7 +678,7 @@ const initialValues = {
   nom: props.hebergement.nom,
 };
 
-const { values, resetForm } = useForm({
+const { values, setValues } = useForm({
   initialValues,
   validationSchema,
   validateOnMount: props.validateOnMount,
@@ -872,9 +872,7 @@ async function handleHebergementIdChange(hebergementId) {
       },
       nom: hebergementStore.hebergementCourant.nom,
     };
-    resetForm({
-      values: newValues,
-    });
+    setValues(newValues);
     log.d("handleHebergementIdChange - done", { ...values });
   }
 }

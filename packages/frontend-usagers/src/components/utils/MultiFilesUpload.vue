@@ -1,7 +1,7 @@
 <template>
   <div class="fr-fieldset__element">
     <div v-if="rows.length > 0">
-      <DsfrTable :headers="headers" :rows="rows" />
+      <DsfrTable title="Fichiers téléversées" :headers="headers" :rows="rows" />
     </div>
     <div class="fr-input-group">
       <DsfrFileUpload

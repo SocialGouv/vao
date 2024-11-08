@@ -1,5 +1,5 @@
 <template>
-  <fieldset v-if="props.showButtons" class="fr-fieldset">
+  <div v-if="props.showButtons" class="fr-fieldset">
     <DsfrButtonGroup
       v-if="!props.isDownloading"
       :inline-layout-when="true"
@@ -26,7 +26,7 @@
       :message="props.message"
       :is-downloading="props.isDownloading"
     />
-  </fieldset>
+  </div>
 </template>
 
 <script setup>

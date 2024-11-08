@@ -48,7 +48,7 @@
                         <div class="fr-fieldset__element">
                           <div class="fr-input-group">
                             <DsfrInput
-                              autocomplete="off"
+                              autocomplete="email"
                               :model-value="email"
                               type="text"
                               name="email"
@@ -65,7 +65,7 @@
                             <div class="fr-input-wrap">
                               <PasswordInput
                                 id="password"
-                                autocomplete="off"
+                                autocomplete="current-password"
                                 :model-value="password"
                                 :type="showPassword ? 'text' : 'password'"
                                 label="Mot de passe"

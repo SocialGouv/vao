@@ -75,7 +75,7 @@
         />
       </div>
 
-      <h6>Responsable de l'organisation du séjour</h6>
+      <h3>Responsable de l'organisation du séjour</h3>
       <Personne
         :modifiable="props.modifiable"
         :personne="responsableSejour"
@@ -94,7 +94,7 @@
     <div
       v-if="organismeStore.organismeCourant.typeOrganisme === 'personne_morale'"
     >
-      <h6>Organisme</h6>
+      <h3>Organisme</h3>
       <OrganismePersonneMorale
         :init-data="organismeStore.organismeCourant.personneMorale"
         :show-responsable-sejour="false"

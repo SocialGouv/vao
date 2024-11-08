@@ -1,28 +1,11 @@
 <template>
   <div class="fr-container">
-    <h1 v-if="props.display === displayType.Organisme" class="header">
-      Liste des séjours déclarés
-      {{ props.organisme ? "" : `(${sejourStore.stats?.global})` }}
-    </h1>
-    <h1 v-else class="header">Liste des messages par déclaration</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <CardsNumber
           v-if="!props.organisme && props.display === displayType.Organisme"
-          :values="[
-            {
-              title: 'Déclarations transmises à traiter',
-              value: sejourStore.stats?.transmis || 0,
-            },
-            {
-              title: 'Déclarations en cours de traitement',
-              value: sejourStore.stats?.enCours || 0,
-            },
-            {
-              title: 'Déclarations 8 jours à traiter',
-              value: sejourStore.stats?.transmis8J || 0,
-            },
-          ]"
+          :values="cards"
+          @click="onClickCards($event)"
         />
         <CardsNumber
           v-if="
@@ -47,6 +30,10 @@
         />
       </div>
       <div class="fr-col-12">
+        <h1 v-if="props.display === displayType.Organisme" class="header">
+          Liste des déclarations reçues
+          {{ props.organisme ? "" : `(${sejourStore.stats?.global})` }}
+        </h1>
         <form>
           <div class="fr-fieldset">
             <div
@@ -96,26 +83,14 @@
               v-if="props.display === displayType.Organisme"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
-                <Multiselect
-                  :model-value="searchState.statuts"
-                  :hide-selected="true"
-                  :searchable="true"
-                  :close-on-select="false"
-                  mode="tags"
-                  name="statut"
-                  :options="status"
-                  @update:model-value="onStatutSelect"
-                >
-                  <template #option="{ option, isPointed }">
-                    <MultiSelectOption
-                      :label="`${option.label}`"
-                      :is-pointed="isPointed(option)"
-                    />
-                  </template>
-                  <template #no-result> Pas de résultat</template>
-                </Multiselect>
-              </div>
+              <dsfr-multi-select
+                v-model="searchState.statuts"
+                label="Statut"
+                search
+                select-all
+                id-key="value"
+                :options="status"
+              />
             </div>
             <div
               v-if="!props.organisme && props.display === displayType.Organisme"
@@ -123,11 +98,15 @@
             >
               <div class="fr-input-group">
                 <DsfrSelect
-                  v-model="needAction"
-                  label="Filtrer sur les séjours nécessitant une action"
+                  label="Actions à faire"
                   name="action"
                   mode="tags"
-                  :options="['Oui', 'Non']"
+                  :options="[
+                    { value: 'ALL', text: 'Toutes les déclarations' },
+                    { value: 'A_TRAITER', text: 'Déclarations à traiter' },
+                    { value: 'EN_ATTENTE', text: 'Déclarations en attente' },
+                  ]"
+                  @update:model-value="onSelectAction($event)"
                 />
               </div>
             </div>
@@ -151,6 +130,9 @@
         </form>
       </div>
     </div>
+    <span class="number-of-ds"
+      >{{ sejourStore.total }} déclarations affichées
+    </span>
     <TableWithBackendPagination
       :headers="headers"
       :data="sejourStore.demandes"
@@ -181,16 +163,15 @@
 <script setup>
 import {
   CardsNumber,
-  MultiSelectOption,
+  DsfrMultiSelect,
+  MessageEtat,
+  MessageHover,
   TableWithBackendPagination,
   ValidationModal,
-  MessageHover,
-  MessageEtat,
 } from "@vao/shared";
 import dayjs from "dayjs";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
-import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import { defineProps } from "vue";
 
@@ -222,7 +203,6 @@ const limitState = ref(defaultLimit);
 
 const route = useRoute();
 
-const parseBoolean = (value) => value === "true";
 const displayType = { Messagerie: "Messagerie", Organisme: "Organisme" };
 
 const status = computed(() => [
@@ -250,8 +230,7 @@ const searchState = reactive({
     ? route.query.statuts
         .split(",")
         .filter((statut) => Object.values(status.value).includes(statut))
-    : null,
-  action: parseBoolean(route.query.action),
+    : [],
   message: props.display === displayType.Messagerie,
 });
 
@@ -261,14 +240,27 @@ watch(
   { immediate: true },
 );
 
-const needAction = computed({
-  get() {
-    return searchState.action ? "Oui" : "Non";
-  },
-  set(value) {
-    searchState.action = value === "Oui" ? true : false;
-  },
-});
+const onSelectAction = (value) => {
+  switch (value) {
+    case "A_TRAITER":
+      onStatutSelect([
+        demandesSejours.statuts.TRANSMISE,
+        demandesSejours.statuts.TRANSMISE_8J,
+        demandesSejours.statuts.EN_COURS,
+        demandesSejours.statuts.EN_COURS_8J,
+      ]);
+      break;
+    case "EN_ATTENTE":
+      onStatutSelect([
+        demandesSejours.statuts.A_MODIFIER,
+        demandesSejours.statuts.A_MODIFIER_8J,
+        demandesSejours.statuts.ATTENTE_8_JOUR,
+      ]);
+      break;
+    default:
+      searchState.statuts = [];
+  }
+};
 
 const searchParams = computed(() =>
   Object.entries(searchState).reduce((acc, [key, value]) => {
@@ -341,13 +333,9 @@ const fetchDemandesDebounce = debounce(async (search) => {
   }
 });
 
-watch(
-  searchParams,
-  (search) => {
-    fetchDemandesDebounce(search);
-  },
-  { immediate: true },
-);
+watch(searchParams, (search) => {
+  fetchDemandesDebounce(search);
+});
 
 const onStatutSelect = (value) => {
   if (value.length) {
@@ -529,6 +517,35 @@ const getCsv = async () => {
   exportCsv(response, "sejours.csv");
 };
 
+const cards = computed(() => [
+  {
+    title: "Déclarations reçues à traiter",
+    value: sejourStore.stats?.transmis || 0,
+    clickable: true,
+    onClick: () => onStatutSelect([demandesSejours.statuts.TRANSMISE]),
+  },
+  {
+    title: "Déclarations en cours de traitement",
+    value: sejourStore.stats?.enCours + sejourStore.stats?.enCours8J || 0,
+    clickable: true,
+    onClick: () =>
+      onStatutSelect([
+        demandesSejours.statuts.EN_COURS,
+        demandesSejours.statuts.EN_COURS_8J,
+      ]),
+  },
+  {
+    title: "Déclarations 8 jours à traiter",
+    value: sejourStore.stats?.transmis8J || 0,
+    clickable: true,
+    onClick: () => onStatutSelect([demandesSejours.statuts.TRANSMISE_8J]),
+  },
+]);
+
+const onClickCards = (title) => {
+  cards.value.find((c) => c.title === title)?.onClick();
+};
+
 onMounted(async () => {
   if (props.display === displayType.Messagerie)
     sortState.value = {
@@ -541,5 +558,11 @@ onMounted(async () => {
 <style scoped>
 .header {
   padding: 1em 0em;
+}
+
+.number-of-ds {
+  font-weight: bold;
+  font-style: italic;
+  font-size: 1.25rem;
 }
 </style>
