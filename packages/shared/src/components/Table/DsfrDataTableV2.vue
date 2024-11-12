@@ -1,9 +1,5 @@
-<script
-  setup
-  lang="ts"
-  generic="T extends Row, RowId extends keyof T & PropertyKey"
->
-import type { Component } from "vue";
+<script setup lang="ts" generic="T extends Row, RowId extends keyof T & string">
+import type { Component, VNode } from "vue";
 import { computed } from "vue";
 
 export type Primitive = string | number | boolean | bigint | null | symbol;
@@ -33,60 +29,73 @@ export type NestedKeys<T> = {
     : never;
 }[keyof T];
 
-export type SlotProps<T> = {
-  [K in NestedKeys<T> as `cell:${K}`]?: (props: {
-    cell: ValueFromNestedKey<T, K>;
-    row: T;
-  }) => any;
-};
+export type CustomKeys = `custom-${string}`;
 
-export type Titles<T> = {
-  key: NestedKeys<T>;
+export type Title<T> = {
+  key: NestedKeys<T> | CustomKeys;
   label: string;
   options?: {
+    isFixedLeft?: boolean;
+    isFixedRight?: boolean;
     isSortable?: boolean;
     cellComponent?: Component;
   };
-}[];
+};
+
+export type Titles<T> = Title<T>[];
+
+export type SlotProps<T> = {
+  [K in Titles<T>[number] as `cell:${K["key"] & (NestedKeys<T> | CustomKeys)}`]?: (props: {
+    row: T;
+  }) => VNode;
+};
 
 const props = withDefaults(
   defineProps<{
-    tableTitle?: string;
+    // Required
     data: T[];
-    size?: "sm" | "md" | "sg";
-    titles: Titles<T>;
-    sortDirection?: "asc" | "desc";
-    sort?: string;
-    isSelectable?: boolean;
-    isSortable?: boolean;
-    isBordered?: boolean;
     rowId: RowId;
+    titles: Titles<T>;
+    // Selection
+    isSelectable?: boolean;
     selected?: Array<T[RowId]>;
+    // Sort
+    isSortable?: boolean;
+    sort?: NestedKeys<T> | "";
+    sortDirection?: "asc" | "desc" | "";
+    // Style
     emptyPlaceholder?: string;
+    isBordered?: boolean;
+    size?: "sm" | "md" | "sg";
+    tableTitle?: string;
   }>(),
   {
+    isSelectable: false,
+    selected: () => [],
+    isSortable: false,
     sort: "",
     sortDirection: "asc",
-    tableTitle: "",
-    size: "md",
-    isSelectable: false,
-    isSortable: false,
-    isBordered: false,
-    selected: () => [],
     emptyPlaceholder: "No data",
+    isBordered: false,
+    size: "md",
+    tableTitle: "",
   },
 );
 
 const emits = defineEmits<{
-  "update:sort": [NestedKeys<T>];
-  "update:sort-direction": ["asc" | "desc"];
+  "update:sort": [NestedKeys<T> | ""];
+  "update:sort-direction": ["asc" | "desc" | ""];
   "update:selected": [Array<T[RowId]>];
-  sort: [{ sort: NestedKeys<T>; direction: "asc" | "desc" }];
+  sort: [{ sort: NestedKeys<T>; direction: "asc" | "desc" | "" }];
 }>();
 
-defineSlots<SlotProps<T>>();
+defineSlots<
+  SlotProps<T> & {
+    footer: () => VNode;
+  }
+>();
 
-const getSlotName = (key: NestedKeys<T>) => `cell:${key}`;
+const getSlotName = (key: NestedKeys<T> | CustomKeys) => `cell:${key}`;
 
 const selectedSync = computed({
   get() {
@@ -99,7 +108,10 @@ const selectedSync = computed({
 
 const handleSort = (key: NestedKeys<T>) => {
   if (props.sort === key) {
-    const direction = props.sortDirection === "asc" ? "desc" : "asc";
+    const direction = props.sortDirection === "asc" ? "desc" : "";
+    if (direction === "") {
+      emits("update:sort", "");
+    }
     emits("update:sort-direction", direction);
     emits("sort", { sort: key, direction });
   } else {
@@ -111,14 +123,17 @@ const handleSort = (key: NestedKeys<T>) => {
 
 const valueFromObject = (
   string: string,
-  obj: unknown,
-): string | boolean | number | null => {
+  obj: Primitive | Row,
+): Primitive | Row => {
   if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
     return null;
   }
-  const [key, ...rest] = string.split(".");
+  if (string.startsWith("custom-")) {
+    return obj;
+  }
+  const [key, ...rest] = string.split("-");
   if (rest.length) {
-    return valueFromObject(rest.join("."), obj[key]);
+    return valueFromObject(rest.join("-"), obj[key]);
   }
   return obj[key] === undefined ? null : obj[key];
 };
@@ -168,7 +183,7 @@ const handleCheckboxChange = (event: Event) => {
             <thead>
               <tr>
                 <th
-                  v-if="isSelectable"
+                  v-if="props.isSelectable"
                   class="fr-cell--fixed"
                   role="columnheader"
                   scope="col"
@@ -180,7 +195,9 @@ const handleCheckboxChange = (event: Event) => {
                   :key="title.key"
                   scope="col"
                   :class="{
-                    'fr-th--is-selectable': props.isSortable,
+                    'fr-cell--fixed-left': title?.options?.isFixedLeft,
+                    'fr-cell--fixed-right': title?.options?.isFixedRight,
+                    'fr-th--is-selectable': title?.options?.isSortable,
                   }"
                   v-on="
                     props.isSortable && title.options?.isSortable
@@ -195,9 +212,12 @@ const handleCheckboxChange = (event: Event) => {
                     <span
                       v-if="props.isSortable && title.options?.isSortable"
                       :class="{
-                        [title.key === sort && sortDirection === 'desc'
-                          ? 'fr-icon-arrow-down-line'
-                          : 'fr-icon-arrow-up-line']: true,
+                        [title.key === sort
+                          ? sortDirection === 'desc'
+                            ? 'fr-icon-arrow-down-line'
+                            : 'fr-icon-arrow-up-line'
+                          : 'fr-icon-arrow-up-down-line']: true,
+                        'fr-sort-icon': true,
                         'fr-table--is-not-sorted': title.key !== sort,
                       }"
                       aria-hidden="true"
@@ -235,20 +255,22 @@ const handleCheckboxChange = (event: Event) => {
                     </label>
                   </div>
                 </th>
-                <td v-for="title in titles" :key="title.key">
-                  <slot
-                    :name="getSlotName(title.key)"
-                    :cell="row[title.key]"
-                    :row="row"
-                  >
+                <td
+                  v-for="title in titles"
+                  :key="title.key"
+                  :class="{
+                    'fr-cell--fixed-left': title?.options?.isFixedLeft,
+                    'fr-cell--fixed-right': title?.options?.isFixedRight,
+                  }"
+                >
+                  <slot :name="getSlotName(title.key)" :row="row">
                     <component
                       :is="title.options.cellComponent"
                       v-if="title.options?.cellComponent"
-                      :cell="row[title.key]"
                       :row="row"
                     />
                     <span v-else>{{
-                      typeof title.key === "string" && title.key.includes(".")
+                      typeof title.key === "string" && title.key.includes("-")
                         ? valueFromObject(String(title.key), row)
                         : row[title.key]
                     }}</span>
@@ -268,6 +290,7 @@ const handleCheckboxChange = (event: Event) => {
         </div>
       </div>
     </div>
+    <slot name="footer" />
   </div>
 </template>
 
@@ -275,6 +298,16 @@ const handleCheckboxChange = (event: Event) => {
 .fr-table .fr-table--is-not-sorted {
   color: var(--grey-625-425);
 }
+.fr-table .fr-icon-arrow-down-line {
+  color: var(--blue-france-sun-113-625);
+}
+.fr-table .fr-icon-arrow-up-line {
+  color: var(--blue-france-sun-113-625);
+}
+.fr-sort-icon {
+  margin-left: 2rem;
+}
+
 .fr-table .fr-cell--empty {
   text-align: center;
 }
@@ -290,5 +323,35 @@ const handleCheckboxChange = (event: Event) => {
 .fr-table__header {
   display: flex;
   justify-content: space-between;
+}
+
+.fr-table__content .fr-cell--fixed-left {
+  background-color: var(--background-alt-grey);
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.fr-table__content .fr-cell--fixed-right {
+  background-color: var(--background-default-grey);
+  background-image: linear-gradient(
+      0deg,
+      var(--border-contrast-grey),
+      var(--border-contrast-grey)
+    ),
+    linear-gradient(
+      0deg,
+      var(--border-contrast-grey),
+      var(--border-contrast-grey)
+    );
+  background-position:
+    0px 100%,
+    0px 0px !important;
+  background-size:
+    100% 1px,
+    1px 100% !important;
+  position: sticky;
+  right: 0;
+  z-index: 1;
 }
 </style>

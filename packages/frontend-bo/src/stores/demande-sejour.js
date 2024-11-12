@@ -145,6 +145,13 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       }
     },
 
+    async prendreEnCharge(declarationId) {
+      return $fetchBackend(`/sejour/admin/${declarationId}/prise-en-charge`, {
+        method: "POST",
+        credentials: "include",
+      });
+    },
+
     async getHebergements(params = {}) {
       log.i("getHebergements - IN");
       this.isGetHebergementsLoading = true;
