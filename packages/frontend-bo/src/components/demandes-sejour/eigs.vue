@@ -1,13 +1,13 @@
 <template>
   <DsfrAccordionsGroup
     v-model="expandedIndex"
-    @update:model-value="openModal(eigs[expandedIndex])"
+    @update:model-value="openModal(props.eigs[expandedIndex])"
   >
     <DsfrAccordion
       v-for="eig in eigs"
       :id="eig.id"
       :key="eig.id"
-      :title="getTitle(eig)"
+      :title="getTitle(props.eig)"
     >
       <EigSynthese v-if="eigStore.currentEig" :eig="eigStore.currentEig" />
     </DsfrAccordion>
@@ -30,8 +30,9 @@ import dayjs from "dayjs";
 
 const props = defineProps({
   eigs: { type: Array, default: () => [] },
-  fetchEig: { type: Function, required: true },
 });
+
+const emits = defineEmits(["getEigs"]);
 
 const eigStore = useEigStore();
 
@@ -46,11 +47,12 @@ const readEig = async (id) => {
   try {
     await eigStore.markAsRead(id);
     expandedId.value = id;
-    await props.fetchEig();
+    emits("getEigs");
     await eigStore.setCurrentEig(id);
     closeEigModal();
-  } catch (e) {
+  } catch (error) {
     toaster.error("Une erreur est survenue lors de la lecture de l'eig");
+    throw error;
   }
 };
 

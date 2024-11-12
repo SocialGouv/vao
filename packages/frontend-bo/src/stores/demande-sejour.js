@@ -7,6 +7,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
   state: () => ({
     demandes: [],
     messages: [],
+    history: [],
     currentDemande: null,
     total: 0,
     stats: null,
@@ -15,6 +16,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     isGetHebergementsLoading: false,
     hebergement: null,
     isGetHebergementLoading: false,
+    eigs: [],
   }),
   actions: {
     async fetchDemandes({ limit, offset, sortBy, sortDirection, search } = {}) {
@@ -61,7 +63,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
-    async setCurrentDemande(id) {
+    async getCurrentDemande(id) {
       try {
         const { demande } = await $fetchBackend(`/sejour/admin/${id}`, {
           method: "GET",
@@ -146,10 +148,20 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     },
 
     async prendreEnCharge(declarationId) {
-      return $fetchBackend(`/sejour/admin/${declarationId}/prise-en-charge`, {
+      const response = await $fetchBackend(`/sejour/admin/${declarationId}/prise-en-charge`, {
         method: "POST",
         credentials: "include",
       });
+      return response
+    },
+
+    async postMessage(declarationId, body) {
+      const response = await $fetchBackend(`/message/admin/${declarationId}`, {
+        method: "POST",
+        credentials: "include",
+        body,
+      });
+      return response;
     },
 
     async getHebergements(params = {}) {
@@ -216,6 +228,65 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         log.w("readMessages - DONE with error", err);
         throw err;
       }
+    },
+
+    async getHistory(declarationId) {
+      const response = await $fetchBackend(
+        `/sejour/admin/historique/${declarationId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      this.history = response.historique;
+      return response;
+    },
+
+    async setAdditionalRequest(declarationId, commentaires) {
+      const response = await $fetchBackend(
+        `/sejour/admin/${declarationId}/demande-complements`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: commentaires,
+        },
+      );
+      return response;
+    },
+
+    async setDenial(declarationId, commentaires) {
+      const response = await $fetchBackend(
+        `/sejour/admin/${declarationId}/refus`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: commentaires,
+        },
+      );
+      return response;
+    },
+
+    async setRegistration2Months(declarationId) {
+      const response = await $fetchBackend(
+        `/sejour/admin/${declarationId}/enregistrement-2-mois`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+      return response;
+    },
+
+    async getEigs(declarationId) {
+      const response = await $fetchBackend(
+        `/eig/admin/ds/${declarationId}/enregistrement-2-mois`,
+        {
+          method: "GET",
+          credentials: "include",
+        },
+      );
+      this.eigs = response.eigs;
+      return response;
     },
   },
 });

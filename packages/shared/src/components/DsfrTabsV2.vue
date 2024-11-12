@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { onMounted, onUnmounted, ref, computed } from "vue";
+import DsfrTabItemV2 from "./DsfrTabsItemV2.vue";
 
 const props = defineProps<{
   tabs: {
@@ -118,12 +119,12 @@ const animationEnd = () => {
       role="tablist"
       aria-label="[A modifier | nom du système d'onglet]"
     >
-      <dsfr-tab-item
+      <dsfr-tab-item-v2
         v-for="(tab, index) in tabs"
         :key="tab.tabId"
         :label="tab.label"
         :tab-id="tab.tabId"
-        :tab-panel-id="tab.tabPanelId"
+        :panel-id="tab.tabPanelId"
         :selected="activeTab === index"
         @click="selectTab(index)"
         @next="selectNext()"

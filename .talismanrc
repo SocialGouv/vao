@@ -179,6 +179,8 @@ fileignoreconfig:
   checksum: 712a9bb80aa048127944c8d4d189923207c77122e6eadc95631e3e01f6a28d17
 - filename: packages/frontend-bo/src/pages/sejours/[[idDemande]].vue
   checksum: e076b4e667aeda0b354d743dd92a8ae129c61a3fbdfc6bea4e39b603caa90791
+- filename: packages/frontend-bo/src/pages/sejours/[declarationId].vue
+  checksum: 49589cea04eb0f14c6d1345e5ce2e2df0c0a18ed97a6e16debb51b31df19cdcb
 - filename: packages/frontend-bo/src/pages/sejours/[idDemande].vue
   checksum: 5e065bcbafcfbefc24c9cab2ba0026b2b7926bb8c9391434a7469c763c0b3c89
 - filename: packages/frontend-usagers/Dockerfile
@@ -255,6 +257,8 @@ fileignoreconfig:
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/DsfrMultiSelect.vue
   checksum: 90a7d72295ca0fb55d312f9608cbbe5475183936d21286952357b3961d1bd6fb
+- filename: packages/shared/src/components/DsfrTabsItemV2.vue
+  checksum: f15e94b54f77730bdfb4fd28006256ba861ff7c608cf53c85820d8589f4f6e57
 - filename: packages/shared/src/components/DsfrTabsV2.vue
   checksum: 960c18a7ad76a91c74e5535240ae6ac4f87bb8aff10155096cd35afe5609cff8
 - filename: packages/shared/src/components/PasswordInput.vue
