@@ -148,11 +148,14 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     },
 
     async prendreEnCharge(declarationId) {
-      const response = await $fetchBackend(`/sejour/admin/${declarationId}/prise-en-charge`, {
-        method: "POST",
-        credentials: "include",
-      });
-      return response
+      const response = await $fetchBackend(
+        `/sejour/admin/${declarationId}/prise-en-charge`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+      return response;
     },
 
     async postMessage(declarationId, body) {

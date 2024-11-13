@@ -29,6 +29,7 @@ import { DsfrTabsV2 } from "@vao/shared";
 definePageMeta({
   layout: "default",
   middleware: ["is-connected"],
+  roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
 });
 
 const route = useRoute();

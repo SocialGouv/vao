@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isActionsVisible">
     <DsfrButton
       label="Demander des compléments à l'organisateur"
       tertiary
@@ -89,6 +89,7 @@
 import { useIsDownloading } from "~/composables/useIsDownloading";
 
 const demandeSejourStore = useDemandeSejourStore();
+const userStore = useUserStore();
 
 const currentDemande = computed(() => demandeSejourStore.currentDemande);
 const status = demandesSejours.statuts;
@@ -117,8 +118,18 @@ const onValidComplement = async (commentaires) => {
   } finally {
     resetApiStatut();
   }
-  demandeSejourStore.getCurrentDemande(route.params.declarationId);
-  demandeSejourStore.getHistory(route.params.declarationId);
+  try {
+    await promise.all([
+      demandeSejourStore.getCurrentDemande(route.params.declarationId),
+      demandeSejourStore.getHistory(route.params.declarationId),
+    ]);
+  } catch (error) {
+    toaster.error({
+      titleTag: "h2",
+      description: "Erreur lors de récupération des infos mise à jours",
+    });
+    throw error;
+  }
 };
 
 const onValidRefus = async (commentaires) => {
@@ -136,8 +147,18 @@ const onValidRefus = async (commentaires) => {
   } finally {
     resetApiStatut();
   }
-  demandeSejourStore.getCurrentDemande(route.params.declarationId);
-  demandeSejourStore.getHistory(route.params.declarationId);
+  try {
+    await Promise.all([
+      demandeSejourStore.getCurrentDemande(route.params.declarationId),
+      demandeSejourStore.getHistory(route.params.declarationId),
+    ]);
+  } catch (error) {
+    toaster.error({
+      titleTag: "h2",
+      description: "Erreur lors de récupération des infos mise à jours",
+    });
+    throw error;
+  }
 };
 
 const onValidEnregistrement2Mois = async () => {
@@ -155,7 +176,26 @@ const onValidEnregistrement2Mois = async () => {
   } finally {
     resetApiStatut();
   }
-  demandeSejourStore.getCurrentDemande(route.params.declarationId);
-  demandeSejourStore.getHistory(route.params.declarationId);
+  try {
+    await Promise.all([
+      demandeSejourStore.getHistory(route.params.declarationId),
+      demandeSejourStore.getCurrentDemande(route.params.declarationId),
+    ]);
+  } catch (error) {
+    toaster.error({
+      titleTag: "h2",
+      description: "Erreur lors de récupération des infos mise à jours",
+    });
+    throw error;
+  }
 };
+
+const isActionsVisible = computed(
+  () =>
+    !apiStatus.isDownloading &&
+    userStore.user?.roles?.includes("DemandeSejour_Ecriture") &&
+    demandeSejourStore.currentDemande.estInstructeurPrincipal &&
+    (demandeSejourStore.currentDemande.statut === status.EN_COURS ||
+      demandeSejourStore.currentDemande?.statut === status.EN_COURS_8J),
+);
 </script>
