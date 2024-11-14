@@ -93,6 +93,7 @@ app.use(`/geo`, routes.geo);
 // TODO(eig): unhide when ok
 //app.use(`/eig`, routes.eig);
 app.use(`/message`, routes.message);
+app.use(`/territoire`, routes.territoire);
 app.use(`/healthz`, routes.healthz);
 
 if (config.sentry.environment !== "production") {
