@@ -5,7 +5,7 @@ const AppError = require("../utils/error");
 const {
   S3Client,
   PutObjectCommand,
-  GetObjectCommand,
+  // GetObjectCommand,
 } = require("@aws-sdk/client-s3");
 
 const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
@@ -26,28 +26,25 @@ const s3Client = new S3Client({
 const query = {
   create: (category, filename, mime_type, file) => [
     `
-    INSERT INTO doc.documents
-      (category, filename, mime_type, file)
-    VALUES
-      ( $1, $2, $3, $4)
-    RETURNING uuid`,
+      INSERT INTO doc.documents
+        (category, filename, mime_type, file)
+      VALUES ($1, $2, $3, $4) RETURNING uuid`,
     [category, filename, mime_type, file],
   ],
   getByUuid: (uuid) => [
     `
-    SELECT
-      uuid,
-      category,
-      filename,
-      mime_type as mimeType,
-      file
-    FROM doc.documents
-    WHERE uuid = $1;`,
+      SELECT uuid,
+             category,
+             filename,
+             mime_type as mimeType,
+             file
+      FROM doc.documents
+      WHERE uuid = $1;`,
     [uuid],
   ],
 };
 
-module.exports.download = async (uuid) => {
+module.exports.getFile = async (uuid) => {
   log.i("IN");
   try {
     const { rows, rowCount } = await poolDoc.query(...query.getByUuid(uuid));
@@ -63,85 +60,19 @@ module.exports.download = async (uuid) => {
   }
 };
 
-module.exports.downloadNext = async (uuid) => {
-  log.i("IN");
+module.exports.createFile = async (filename, category, mimetype, data) => {
+  log.i("createFile pg - In");
   try {
-    const data = await s3Client.send(
-      new GetObjectCommand({
-        Bucket: process.env.S3_BUCKET_NAME,
-        Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.pdf`,
-      }),
-    );
-    log.i("DONE");
-    return data;
-  } catch (err) {
-    log.w(err);
-    throw new AppError("query.getByUuid failed", { cause: err });
-  }
-};
-
-module.exports.uploadLegacy = async (filename, category, mimetype, data) => {
-  log.i("uploadLegacy - In");
-  try {
-    log.d("uploadLegacy", category, filename);
+    log.i("createFile pg", { category, filename, mimetype });
     const {
       rows: [{ uuid }],
     } = await poolDoc.query(
       ...query.create(category, filename, mimetype, data),
     );
-    log.d("uploadLegacy - Done");
-    return uuid;
-  } catch (err) {
-    log.w(err);
-    throw new AppError("uploadLegacy failed", { cause: err });
-  }
-};
-
-module.exports.upload = async (
-  filename,
-  category,
-  mimetype,
-  data,
-  uuid = crypto.randomUUID(),
-) => {
-  log.i("upload - In");
-  try {
-    log.d("upload", category, filename);
-    await s3Client.send(
-      new PutObjectCommand({
-        Body: data,
-        Bucket: S3_BUCKET_NAME,
-        Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.pdf`,
-        Metadata: {
-          category,
-          created_at: String(new Date()),
-          mimetype: mimetype,
-          originalname: filename,
-        },
-      }),
-    );
-    return uuid;
-  } catch (err) {
-    log.w(err);
-    throw new AppError("upload failed", { cause: err });
-  }
-};
-
-module.exports.createFileLegacy = async (
-  filename,
-  category,
-  typeMime,
-  data,
-) => {
-  log.i("createFile pg - In");
-  try {
-    log.i("createFile pg", { category, filename, typeMime });
-    const {
-      rows: [{ uuid }],
-    } = await poolDoc.query(
-      ...query.create(category, filename, typeMime, data),
-    );
     log.i("createFile pg - Done");
+    log.i("upload file to s3");
+    await uploadToS3(filename, category, mimetype, data, uuid);
+    log.i("upload file to s3 - Done");
     return uuid;
   } catch (err) {
     log.w(err);
@@ -153,3 +84,52 @@ module.exports.getStatic = async (name) => {
   log.i("getOrganisateurAvecUnRetrait - In");
   return `${__dirname}/static/${name}`;
 };
+
+async function uploadToS3(
+  filename,
+  category,
+  mimetype,
+  data,
+  uuid = crypto.randomUUID(),
+) {
+  log.i("uploadToS3 - In");
+  try {
+    log.d("uploadToS3", category, filename);
+    const encodedFilename = Buffer.from(filename, "latin1").toString("base64");
+    await s3Client.send(
+      new PutObjectCommand({
+        Body: data,
+        Bucket: S3_BUCKET_NAME,
+        Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.pdf`,
+        Metadata: {
+          category,
+          created_at: String(new Date()),
+          mimetype: mimetype,
+          originalname: encodedFilename,
+        },
+      }),
+    );
+    log.i("uploadToS3 - Done");
+  } catch (err) {
+    log.w(err);
+    throw new AppError("upload failed", { cause: err });
+  }
+}
+
+// // -- next migration step: read files from S3
+// async function downloadFromS3(uuid) {
+//   log.i("IN");
+//   try {
+//     const data = await s3Client.send(
+//       new GetObjectCommand({
+//         Bucket: process.env.S3_BUCKET_NAME,
+//         Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.pdf`,
+//       }),
+//     );
+//     log.i("DONE");
+//     return data;
+//   } catch (err) {
+//     log.w(err);
+//     throw new AppError("query.getByUuid failed", { cause: err });
+//   }
+// }

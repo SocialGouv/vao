@@ -44,13 +44,12 @@ module.exports = async (req, res, next) => {
   try {
     const { path, originalname: filename, mimetype } = file;
     const data = await fs.readFile(path);
-    const uuid = await DocumentService.uploadLegacy(
+    const uuid = await DocumentService.createFile(
       filename,
       category,
       mimetype,
       data,
     );
-    await DocumentService.upload(filename, category, mimetype, data, uuid);
     log.d("DONE", uuid);
     return res.json({ uuid });
   } catch (error) {
