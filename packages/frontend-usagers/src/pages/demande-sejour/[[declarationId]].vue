@@ -24,13 +24,7 @@
         </div>
       </div>
       <div class="fr-col-5 badge">
-        <DsfrBadge
-          :small="false"
-          :type="
-            DeclarationSejour.statusTagStates[demandeCourante.statut] ?? 'union'
-          "
-          :label="demandeCourante.statut"
-        />
+        <DemandeStatusBadge :statut="demandeCourante.statut" type="fo" />
       </div>
     </div>
     <DsfrTabs
@@ -232,7 +226,7 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { Chat } from "@vao/shared";
+import { Chat, DemandeStatusBadge } from "@vao/shared";
 
 const route = useRoute();
 

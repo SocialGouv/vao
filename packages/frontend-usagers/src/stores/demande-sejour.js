@@ -17,14 +17,17 @@ const resetDemandeCourante = () => ({
 export const useDemandeSejourStore = defineStore("demandeSejour", {
   state: () => ({
     demandes: [],
+    totalDemandes: 0,
     demandeCourante: resetDemandeCourante(),
     messages: [],
+    demandesDeprecated: [],
+    totalDemandesDeprecated: 0,
   }),
   actions: {
-    async fetchDemandes({ sortBy } = {}) {
+    async fetchDemandesDeprecated({ sortBy } = {}) {
       log.i("fetchDemandes - IN");
       try {
-        const { demandes } = await $fetchBackend("/sejour", {
+        const { demandes, total } = await $fetchBackend("/sejour/deprecated", {
           method: "GET",
           credentials: "include",
           params: {
@@ -33,11 +36,34 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         });
         if (demandes) {
           log.i("fetchDemandes - DONE");
+          this.demandesDeprecated = demandes;
+          this.totalDemandesDeprecated = total;
+        }
+      } catch (err) {
+        log.w("fetchDemandes - DONE with error", err);
+        this.demandesDeprecated = [];
+        this.totalDemandesDeprecated = 0;
+        throw err;
+      }
+    },
+    async fetchDemandes(params) {
+      log.i("fetchDemandes - IN");
+      try {
+        const { demandes, total } = await $fetchBackend("/sejour", {
+          method: "GET",
+          credentials: "include",
+          params,
+        });
+        if (demandes) {
+          log.i("fetchDemandes - DONE");
           this.demandes = demandes;
+          this.totalDemandes = total;
         }
       } catch (err) {
         log.w("fetchDemandes - DONE with error", err);
         this.demandes = [];
+        this.totalDemandes = 0;
+        throw err;
       }
     },
     async setDemandeCourante(id) {
@@ -127,6 +153,27 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         log.w("getStats - DONE with error", err);
         throw err;
       }
+    },
+    async copyDemandeSejour(declarationId) {
+      const response = await $fetchBackend(`/sejour/${declarationId}/copy`, {
+        method: "POST",
+        credentials: "include",
+      });
+      return response;
+    },
+    async deleteDemandeSejour(declarationId) {
+      const response = await $fetchBackend(`/sejour/${declarationId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      return response;
+    },
+    async cancelDemandeSejour(declarationId) {
+      const response = await $fetchBackend(`/sejour/cancel/${declarationId}`, {
+        method: "POST",
+        credentials: "include",
+      });
+      return response;
     },
   },
 });
