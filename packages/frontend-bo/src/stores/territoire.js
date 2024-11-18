@@ -50,6 +50,23 @@ export const useTerritoireStore = defineStore("territoire", {
         throw err;
       }
     },
+    async getFicheIdByTerritoireCode(TerritoireCode) {
+      log.i("get - IN");
+      try {
+        const row = await $fetchBackend(
+          `/territoire/get-fiche-id-by-ter-code/${TerritoireCode}`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
+        log.i("get - DONE");
+        return row.territoire.id;
+      } catch (err) {
+        log.w("get - DONE with error", err);
+        throw err;
+      }
+    },
     async update(idTerritoire, params) {
       log.i("update - IN");
       try {
