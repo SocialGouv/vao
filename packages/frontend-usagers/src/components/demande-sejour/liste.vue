@@ -193,15 +193,13 @@ useHead({
 
 const displayType = { Messagerie: "Messagerie", Organisme: "Organisme" };
 
-const tabIndexSejour = computed(() =>
-  props.display === displayType.Messagerie ? 3 : 0,
+const nestedPage = computed(() =>
+  props.display === displayType.Messagerie ? "messagerie" : "formulaire",
 );
 
 const navigate = (item) => {
-  //navigateTo(`/demande-sejour/${item.declarationId}`);
   navigateTo({
-    path: `/demande-sejour/${item.declarationId}`,
-    query: { defaultTabIndex: `${tabIndexSejour.value}` },
+    path: `/demande-sejour/${item.declarationId}/${nestedPage.value}`,
   });
 };
 
