@@ -1,9 +1,6 @@
 const DemandeSejour = require("../../services/DemandeSejour");
 const Organisme = require("../../services/Organisme");
-const {
-  sanityzePaginationParams,
-  sanityzeFiltersParams,
-} = require("../../helpers/queryParams");
+
 const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
@@ -13,23 +10,11 @@ module.exports = async function get(req, res, next) {
   const { decoded } = req;
   const { id: userId } = decoded;
   log.d("userId", { userId });
+  const { sortBy } = req.query;
 
-  const titles = {
-    dateDebut: "ds.date_debut",
-    dateFin: "ds.date_fin",
-    departementSuivi: "ds.departement_suivi",
-    editedAt: "ds.edited_at",
-    idFonctionnelle: "ds.id_fonctionnelle",
-    libelle: "ds.libelle",
-    periode: "ds.periode",
-    siret: "o.personne_morale->>'siret'",
-    statut: "ds.statut",
+  const params = {
+    sortBy,
   };
-
-  const paginationParams = sanityzePaginationParams(req.query, {
-    sortBy: titles,
-  });
-  const filterParams = sanityzeFiltersParams(req.query, titles);
   try {
     const organisme = await Organisme.getOne({
       use_id: userId,
@@ -43,16 +28,9 @@ module.exports = async function get(req, res, next) {
     } else {
       organismesId = [organisme.organismeId];
     }
-    const demandes = await DemandeSejour.get(
-      organismesId,
-      paginationParams,
-      filterParams,
-    );
+    const demandes = await DemandeSejour.getDeprecated(params, organismesId);
     log.d(demandes);
-    return res.status(200).json({
-      demandes: demandes.rows,
-      total: demandes.total,
-    });
+    return res.status(200).json({ demandes });
   } catch (error) {
     log.w("DONE with error");
     return next(error);

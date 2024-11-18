@@ -1,4 +1,5 @@
 module.exports.get = require("./get");
+module.exports.getDeprecated = require("./getDeprecated");
 module.exports.getAdminStats = require("./getAdminStats");
 module.exports.getExtract = require("./getExtract");
 module.exports.getExtractHebergement = require("./getExtractHebergement");

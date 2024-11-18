@@ -115,6 +115,8 @@ fileignoreconfig:
   checksum: bfeae9adde26b42e23b228d733bc5b1c21e982d98f730277ff68fb12d34123d7
 - filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
   checksum: bda4c09e0af6e4c0d6b0976413b29e386148965d5c3f3eaf39fe6d9cba08e3ad
+- filename: packages/backend/src/helpers/queryParams.js
+  checksum: 15f34084cc5a55bcdd78b5bc2cade84b0ff4ef4915eb7dddf89fc593b2fdc6ad
 - filename: packages/backend/src/pgpool.js
   checksum: 06f9f5367c53fbdf6bf5d2ee9758d3a5302339f9f4d0c42e2c0f0831733097d0
 - filename: packages/backend/src/pgpoolDoc.js
