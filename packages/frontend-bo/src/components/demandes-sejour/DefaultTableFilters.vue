@@ -6,7 +6,7 @@
           <DsfrInputGroup
             v-model="idFonctionnelleSync"
             type="text"
-            name="libelle"
+            name="idFonmctionnelle"
             label="Numéro de déclaration"
             placeholder="Numéro de déclaration"
             :label-visible="true"
@@ -88,22 +88,7 @@ const props = defineProps<{
   status: string[];
 }>();
 
-const defaultStatus = [
-  demandesSejours.statuts.TRANSMISE,
-  demandesSejours.statuts.EN_COURS,
-  demandesSejours.statuts.A_MODIFIER,
-  demandesSejours.statuts.REFUSEE,
-  demandesSejours.statuts.ATTENTE_8_JOUR,
-  demandesSejours.statuts.TRANSMISE_8J,
-  demandesSejours.statuts.EN_COURS_8J,
-  demandesSejours.statuts.A_MODIFIER_8J,
-  demandesSejours.statuts.REFUSEE_8J,
-  demandesSejours.statuts.VALIDEE_8J,
-  demandesSejours.statuts.SEJOUR_EN_COURS,
-  demandesSejours.statuts.TERMINEE,
-  demandesSejours.statuts.ANNULEE,
-  demandesSejours.statuts.ABANDONNEE,
-];
+const defaultStatus = [...Object.values(demandesSejours.statuts)];
 
 const emits = defineEmits<{
   "update:idFonctionnelle": [string];

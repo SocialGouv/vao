@@ -10,24 +10,13 @@ import {
   protocoleTransport,
 } from "#imports";
 
-import { hebergement as hebergementUtils } from "@vao/shared";
+import {
+  hebergement as hebergementUtils,
+  status as statusUtils,
+} from "@vao/shared";
 
 const statuts = {
-  BROUILLON: "BROUILLON",
-  TRANSMISE: "TRANSMISE",
-  EN_COURS: "EN COURS",
-  A_MODIFIER: "A MODIFIER",
-  REFUSEE: "REFUSEE",
-  ATTENTE_8_JOUR: "EN ATTENTE DECLARATION 8 JOURS",
-  TRANSMISE_8J: "TRANSMISE 8J",
-  EN_COURS_8J: "EN COURS 8J",
-  A_MODIFIER_8J: "A MODIFIER 8J",
-  VALIDEE_8J: "VALIDEE 8J",
-  REFUSEE_8J: "REFUSEE 8J",
-  ANNULEE: "ANNULEE",
-  ABANDONNEE: "ABANDONNEE",
-  SEJOUR_EN_COURS: "SEJOUR EN COURS",
-  TERMINEE: "TERMINEE",
+  ...statusUtils.defaultStatus,
 };
 
 const log = logger("utils/DeclarationSejour");
@@ -173,20 +162,6 @@ const schema = (dateDebut, dateFin, statut) => ({
   attestation: yup.object(attestationSchema),
 });
 
-const statusTagStates = {
-  [statuts.EN_COURS]: "new",
-  [statuts.EN_COURS_8J]: "new",
-  [statuts.TRANSMISE]: "new",
-  [statuts.ATTENTE_8_JOUR]: "new",
-  [statuts.TRANSMISE_8J]: "new",
-  [statuts.VALIDEE_8J]: "success",
-  [statuts.A_MODIFIER]: "warning",
-  [statuts.A_MODIFIER_8J]: "warning",
-  [statuts.REFUSEE]: "error",
-  [statuts.REFUSEE_8J]: "error",
-  [statuts.SEJOUR_EN_COURS]: "success",
-};
-
 const saisons = ["Hiver", "Printemps", "Été", "Automne"];
 
 const getSaison = (date) =>
@@ -205,7 +180,6 @@ export default {
   schema,
   saisons,
   statuts,
-  statusTagStates,
   getSaison,
   getOrganismeName,
   isPost8Jour,

@@ -1,4 +1,4 @@
-<script lang="ts" setup generic="T extends Object">
+<script lang="ts" setup generic="T extends Object | string | number">
 import { useId, ref, computed, nextTick, onUnmounted } from "vue";
 import type { VNode } from "vue";
 import { usePopper } from "../composables/usePopper.ts";
@@ -14,7 +14,7 @@ const isObjectWithIdKey = (
 };
 
 const getValueOrId = (
-  option: T | string | number,
+  option: T,
   idKey: keyof T | undefined,
 ): string | number => {
   if (idKey && isObjectWithIdKey(option, idKey)) {
@@ -45,7 +45,7 @@ const getFocusableElements = (): HTMLElement[] => {
 };
 
 const generateId = (
-  option: T | string | number,
+  option: T,
   id: string,
   idKey: keyof T | undefined,
 ): string => {
@@ -55,7 +55,7 @@ const generateId = (
 const props = withDefaults(
   defineProps<{
     modelValue: (string | number)[];
-    options: (T | string | number)[];
+    options: T[];
     label?: string;
     name?: string;
     description?: string;
@@ -111,7 +111,7 @@ type SlotProps<T> = {
   description: () => VNode;
   "button-label": () => VNode;
   legend: () => VNode;
-  "checkbox-label": (props: { option: T | string | number }) => VNode;
+  "checkbox-label": (props: { option: T }) => VNode;
   "no-results": () => VNode;
 };
 

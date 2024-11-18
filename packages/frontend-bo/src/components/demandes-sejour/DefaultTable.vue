@@ -34,7 +34,7 @@
     </template>
     <template #cell:statut="{ row }">
       <div>
-        <DemandesSejourDemandeStatusBadge :statut="row.statut" />
+        <DemandeStatusBadge :statut="row.statut" type="bo" />
       </div>
     </template>
     <template #cell:custom-edit="{ row }">
@@ -63,7 +63,11 @@
 </template>
 
 <script setup>
-import { DsfrDataTableV2Wrapper, ValidationModal } from "@vao/shared";
+import {
+  DemandeStatusBadge,
+  DsfrDataTableV2Wrapper,
+  ValidationModal,
+} from "@vao/shared";
 
 const demandeSejourStore = useDemandeSejourStore();
 const userStore = useUserStore();
