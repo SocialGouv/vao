@@ -51,7 +51,7 @@
       <article class="fr-mb-4v">
         Vous vous apprêtez à enregistrer la déclaration de séjour par l’envoi
         d’un accusé réception : <br />
-        - {{ demandeStore.currentDemande.libelle }}
+        - {{ currentDemande.libelle }}
       </article>
       <div class="fr-fieldset">
         <div class="fr-col-4">
