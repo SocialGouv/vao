@@ -194,16 +194,15 @@ ${new Array(nbRows)
     `,
   getByUserId: `
     SELECT
-      id,
-      nom,
-      coordonnees#> '{adresse, departement}' as departement,
-      coordonnees#> '{adresse, label}' as adresse,
-      supprime,
-      created_at as "createdAt",
-      edited_at as "editedAt"
+      h.id as "id",
+      nom as "nom",
+      a.label,
+      a.departement
     FROM front.hebergement h
-    JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
-    WHERE uo.use_id = $1 AND CURRENT IS TRUE
+    LEFT JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
+    LEFT JOIN front.adresse a ON a.id = h.adresse_id
+    WHERE uo.use_id = 1
+      AND CURRENT IS TRUE
     `,
   getPreviousValueForHistory: `
   SELECT
