@@ -43,6 +43,7 @@ module.exports = async function get(req, res) {
         sort: titleSorted ?? "nom",
       },
     );
+
     return res.status(200).json({
       count: data.total_count,
       hebergements: data.hebergements || [],

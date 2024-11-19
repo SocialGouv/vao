@@ -92,7 +92,14 @@ EIG.ID,
   DS.PERSONNEL -> 'encadrants' as "encadrants",
   DS.PERSONNEL -> 'accompagnants' as "accompagnants",
   DS.STATUT as "dsStatut",
-  JSONB_PATH_QUERY_ARRAY(DS.HEBERGEMENT,'$.hebergements.coordonnees.adresse.label') as "adresses",
+  (SELECT DISTINCT
+    ARRAY_AGG(A.LABEL) as "label"
+  FROM
+    FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
+    INNER JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+    INNER JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+  WHERE
+    DEMANDE_SEJOUR_ID = DS.ID) as "adresses",
   DS.PERIODE as "saison",
   ARRAY_AGG(JSON_BUILD_OBJECT('type',ET.TYPE,'categorie',EC.CATEGORIE,'precision',E2ET.PRECISIONS)) as "types",
   EIG.DEROULEMENT as "deroulement",

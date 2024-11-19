@@ -184,7 +184,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       this.isGetHebergementLoading = true;
       try {
         const data = await $fetchBackend(
-          `/sejour/admin/hebergement/${demandeSejourId}/${hebergementId}`,
+          `/hebergement/admin/${hebergementId}`,
           {
             method: "GET",
             credentials: "include",

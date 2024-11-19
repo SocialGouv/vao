@@ -1,3 +1,5 @@
+const pool = require("../utils/pgpool").getPool();
+
 const query = {
   editCleInsee: `
   UPDATE FRONT.ADRESSE
@@ -31,6 +33,31 @@ const query = {
     ($1, $2, $3, $4, $5, $6, $7)
   RETURNING id
     `,
+  getById: `
+ SELECT
+  LABEL as "label",
+  CODE_INSEE as "codeInsee",
+  CODE_POSTAL as "codePostal",
+  LONG as "long",
+  LAT as "lat",
+  DEPARTEMENT as "departement"
+FROM
+  FRONT.ADRESSE
+WHERE id = $1
+  `,
+  getByIds: `
+ SELECT
+  id as "id",
+  LABEL as "label",
+  CODE_INSEE as "codeInsee",
+  CODE_POSTAL as "codePostal",
+  LONG as "long",
+  LAT as "lat",
+  DEPARTEMENT as "departement"
+FROM
+  FRONT.ADRESSE
+WHERE id = ANY ($1)
+  `,
 };
 
 const getByCleInseeOrLabel = async (client, { cleInsee, label }) => {
@@ -70,4 +97,14 @@ module.exports.saveAdresse = async (client, adresse) => {
   }
 
   return existingAdresse.id;
+};
+
+module.exports.getById = async (id) => {
+  const { rows } = await pool.query(query.getById, [id]);
+  return rows?.[0] ?? null;
+};
+
+module.exports.getByIds = async (ids) => {
+  const { rows } = await pool.query(query.getByIds, [ids]);
+  return rows ?? [];
 };

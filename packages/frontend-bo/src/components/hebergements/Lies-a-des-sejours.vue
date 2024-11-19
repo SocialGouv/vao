@@ -41,7 +41,6 @@ const headers = [
   {
     column: "adresse",
     text: "Adresse",
-    format: (row) => row.adresse.label,
   },
   {
     column: "telephone",
@@ -70,7 +69,7 @@ const headers = [
 
 const redirectOnHebergement = (row) => {
   navigateTo(
-    `/hebergements/lie-a-des-sejours/${row.declarationId}/${row.hebergementIndex}`,
+    `/hebergements/lie-a-des-sejours/${row.declarationId}/${row.hebergementId}`,
   );
 };
 

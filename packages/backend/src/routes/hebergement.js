@@ -21,8 +21,6 @@ router.get(
   getDepartements,
   hebergementController.getExtract,
 );
-
-// Gère une connexion via mot de passe.
 router.get(
   "/:id",
   checkJWT,

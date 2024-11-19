@@ -26,12 +26,15 @@ const generateRappelQuery = (
   additionalOrderBy = "",
 ) => `
   WITH hebergement_exploded AS (
-      SELECT
-        ds.id,
-        jsonb_array_elements(ds.hebergement->'hebergements') ->> 'dateDebut' AS date_debut_hebergement,
-        jsonb_array_elements(ds.hebergement->'hebergements') -> 'coordonnees' -> 'adresse' ->> 'codeInsee' AS code_insee
-      FROM
-        front.demande_sejour ds
+    SELECT
+      DS.ID as "id",
+      DSTH.DATE_DEBUT as "date_debut_hebergement",
+      A.CODE_INSEE as "code_insee"
+    FROM
+      FRONT.DEMANDE_SEJOUR DS
+      INNER JOIN FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH ON DSTH.DEMANDE_SEJOUR_ID = DS.ID
+      INNER JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+      INNER JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
     )
     SELECT
       ds.id,
