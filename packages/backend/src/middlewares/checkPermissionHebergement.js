@@ -1,6 +1,7 @@
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
-const pool = require("../utils/pgpool").getPool();
+const Organisme = require("../services/Organisme");
+const Hebergement = require("../services/Hebergement")
 
 const log = logger(module.filename);
 
@@ -17,16 +18,22 @@ async function checkPermissionHebergement(req, res, next) {
     );
   }
 
-  const query = `
-      SELECT h.id 
-      FROM 
-      front.hebergement h
-      JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
-      WHERE h.id = $1
-      AND uo.use_id = $2
-    `;
-  const { rows } = await pool.query(query, [hebergementId, userId]);
-  if (!rows || rows.length !== 1) {
+  const organisme = await Organisme.getOne({
+    use_id: userId,
+  });
+
+  const siren =
+    organisme.typeOrganisme === "personne_morale" &&
+    organisme.personneMorale?.porteurAgrement === true
+      ? organisme.personneMorale?.siren
+      : "";
+
+  const hebergements = await Hebergement.getByIdAndMySiren(
+    hebergementId,
+    userId,
+    siren,
+  );
+  if (!hebergements || hebergements.length !== 1) {
     return next(
       new AppError("Vous n'êtes pas autorisé à accéder à cet hébergement", {
         statusCode: 403,

@@ -127,9 +127,6 @@
                 <div id="hebergements">
                   <DSHebergementsSejour
                     v-if="hash === 'hebergements'"
-                    :date-debut="demandeCourante.dateDebut"
-                    :date-fin="demandeCourante.dateFin"
-                    :hebergement="demandeCourante.hebergement ?? {}"
                     :modifiable="canModify"
                     :is-downloading="apiStatus.isDownloading"
                     :message="apiStatus.message"
@@ -287,6 +284,8 @@ const demandeSejourStore = useDemandeSejourStore();
 const demandeCourante = computed(() => {
   return demandeSejourStore.demandeCourante;
 });
+
+const organismeStore = useOrganismeStore();
 
 const initialSelectedIndex = parseInt(
   route.query?.defaultTabIndex ? route.query.defaultTabIndex : 0,
@@ -451,10 +450,14 @@ const hash = computed(() => {
 const canModify = computed(() => {
   return (
     !demandeCourante.value.statut ||
-    demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
-    demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER ||
-    demandeCourante.value.statut === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
-    demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER_8J
+    ((demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
+      demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER ||
+      demandeCourante.value.statut ===
+        DeclarationSejour.statuts.ATTENTE_8_JOUR ||
+      demandeCourante.value.statut ===
+        DeclarationSejour.statuts.A_MODIFIER_8J) &&
+      organismeStore.organismeCourant?.organismeId ===
+        demandeCourante.value.organisme?.organismeId)
   );
 });
 
