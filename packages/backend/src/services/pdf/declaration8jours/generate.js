@@ -25,18 +25,11 @@ const generate = async (
     );
 
     // insert into documents table
-    const uuid = await Document.createFileLegacy(
+    const uuid = await Document.createFile(
       `${idFonctionnelle}_8jours.pdf`,
       "declaration_8jours",
       "application/pdf",
       buffer,
-    );
-    await Document.upload(
-      `${idFonctionnelle}_8jours.pdf`,
-      "declaration_8jours",
-      "application/pdf",
-      buffer,
-      uuid,
     );
     log.d(`http://localhost:3010/documents/${uuid}`);
 
