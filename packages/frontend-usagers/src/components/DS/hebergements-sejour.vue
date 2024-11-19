@@ -137,52 +137,47 @@ const { value: hebergements, handleChange: onHebergementsChange } =
 const syntheseRows = computed(() => {
   if (hebergementStore.hebergements.length > 0) {
     return hebergements.value.map((hebergement, index) => {
-      const currentHebergement = hebergementStore.hebergements.find((elem) => {
-        return elem.id.toString() === hebergement.hebergementId.toString();
-      });
-      if (currentHebergement) {
-        const buttons = [
-          {
-            icon: "ri:delete-bin-2-line",
-            iconOnly: true,
-            tertiary: true,
-            noOutline: true,
-            disabled: !props.modifiable,
-            onClick: (event) => {
-              event.stopPropagation();
-              removeHebergement(index);
-            },
+      const buttons = [
+        {
+          icon: "ri:delete-bin-2-line",
+          iconOnly: true,
+          tertiary: true,
+          noOutline: true,
+          disabled: !props.modifiable,
+          onClick: (event) => {
+            event.stopPropagation();
+            removeHebergement(index);
           },
-        ];
+        },
+      ];
 
-        const rows = [
-          `${index + 1}`,
-          hebergement.dateFin && hebergement.dateDebut
-            ? dayjs(hebergement.dateFin)
-                .diff(dayjs(hebergement.dateDebut), "day")
-                .toString()
-            : "",
-          hebergement.dateDebut
-            ? dayjs(hebergement.dateDebut).format("DD/MM/YYYY")
-            : "",
-          hebergement.dateFin
-            ? dayjs(hebergement.dateFin).format("DD/MM/YYYY")
-            : "",
-          currentHebergement.nom ?? "",
-          currentHebergement.adresse ?? "",
-          {
-            component: DsfrButtonGroup,
-            buttons: buttons,
-          },
-        ];
-        return {
-          rowData: rows,
-          rowAttrs: {
-            class: "pointer",
-            onClick: () => editNuitee(index),
-          },
-        };
-      } else return [];
+      const rows = [
+        `${index + 1}`,
+        hebergement.dateFin && hebergement.dateDebut
+          ? dayjs(hebergement.dateFin)
+              .diff(dayjs(hebergement.dateDebut), "day")
+              .toString()
+          : "",
+        hebergement.dateDebut
+          ? dayjs(hebergement.dateDebut).format("DD/MM/YYYY")
+          : "",
+        hebergement.dateFin
+          ? dayjs(hebergement.dateFin).format("DD/MM/YYYY")
+          : "",
+        hebergement.nom ?? "",
+        hebergement.adresse ?? "",
+        {
+          component: DsfrButtonGroup,
+          buttons: buttons,
+        },
+      ];
+      return {
+        rowData: rows,
+        rowAttrs: {
+          class: "pointer",
+          onClick: () => editNuitee(index),
+        },
+      };
     });
   } else return [];
 });

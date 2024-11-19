@@ -667,12 +667,43 @@ WHERE
   RETURNING
     id as "eventId"
   `,
+  /*
+   * La query peut insérer plusieurs hébergements d'un coup, d'ùou la necessité de generer plusieurs lignes via le .map
+   * de la requete. Par exemple, si l'on veut inserer 2 hebergements, on utilisera la syntaxe
+   * linkToHebergements(2) avec comme params le tableau (flat)
+   * [demande_sejour_id, HEBERGEMENT_ID_1, DATE_DEBUT_1, DATE_FIN_1, HEBERGEMENT_ID_2, DATE_DEBUT_2, DATE_FIN_2]
+   *
+   * Le .map genere le texte suivant :
+   * ($1, $2, $3, $4), ($1, $5, $6, $7)
+   * */
+  linkToHebergements: (nbRows) => `
+INSERT INTO
+  FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT (
+    DEMANDE_SEJOUR_ID,
+    HEBERGEMENT_ID,
+    DATE_DEBUT,
+    DATE_FIN
+  )
+VALUES
+${new Array(nbRows)
+  .fill(null)
+  .map(
+    (_, index) =>
+      `($1, $${3 * index + 2}, $${3 * index + 3}, $${3 * index + 4})`,
+  )
+  .join(",")}
+  `,
   saveDS2M: `
   UPDATE front.demande_sejour
   SET declaration_2m = $2
   WHERE id = $1
   RETURNING id as "declarationId"
 `,
+  unlinkToHebergement: `
+DELETE FROM FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT
+WHERE
+  DEMANDE_SEJOUR_ID = $1;
+  `,
   updateHebergement: `
   UPDATE front.demande_sejour ds
   SET
@@ -799,6 +830,16 @@ RETURNING
 `,
 };
 
+const linkToHebergements = async (client, declarationId, hebergements) => {
+  await client.query(query.unlinkToHebergement, [declarationId]);
+  if (hebergements.length > 0) {
+    await client.query(query.linkToHebergements(hebergements.length), [
+      declarationId,
+      ...hebergements.flatMap((h) => [h.hebergementId, h.dateDebut, h.dateFin]),
+    ]);
+  }
+};
+
 module.exports.create = async ({
   libelle,
   dateDebut,
@@ -841,33 +882,50 @@ module.exports.create = async ({
 
 module.exports.copy = async (declaration) => {
   log.i("copy - IN");
-  const response = await pool.query(
-    ...query.copy(
-      declaration.organismeId,
-      `COPIE - ${declaration.libelle}`,
-      declaration.dateDebut,
-      declaration.dateFin,
-      declaration.duree,
-      declaration.periode,
-      declaration.responsableSejour,
-      declaration.organisme,
-      declaration.hebergement,
-      declaration.informationsVacanciers,
-      declaration.informationsPersonnel,
-      declaration.informationsTransport,
-      declaration.projetSejour,
-      declaration.informationsSanitaires,
-      declaration.files,
-    ),
-  );
-  log.d(response);
-  const { declarationId } = response.rows[0];
+  const client = await pool.connect();
+  let declarationId;
+  try {
+    await client.query("BEGIN");
+    const response = await client.query(
+      ...query.copy(
+        declaration.organismeId,
+        `COPIE - ${declaration.libelle}`,
+        declaration.dateDebut,
+        declaration.dateFin,
+        declaration.duree,
+        declaration.periode,
+        declaration.responsableSejour,
+        declaration.organisme,
+        declaration.hebergement,
+        declaration.informationsVacanciers,
+        declaration.informationsPersonnel,
+        declaration.informationsTransport,
+        declaration.projetSejour,
+        declaration.informationsSanitaires,
+        declaration.files,
+      ),
+    );
+    log.d(response);
+    declarationId = response.rows[0].declarationId;
+    await linkToHebergements(
+      client,
+      declarationId,
+      declaration.hebergement?.hebergements ?? [],
+    );
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
   log.i("copy - DONE", { declarationId });
   return declarationId;
 };
 
 module.exports.delete = async (declarationId, userId) => {
   log.i("delete - IN");
+  await pool.query(query.unlinkToHebergement, [declarationId]);
   const { rowCount } = await pool.query(...query.delete(declarationId, userId));
   log.i("delete - DONE");
   return rowCount;
@@ -1182,10 +1240,21 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "hebergements": {
       log.d("hebergements", declarationId);
-      response = await pool.query(query.updateHebergement, [
-        parametre,
-        declarationId,
-      ]);
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        await linkToHebergements(client, declarationId, parametre.hebergements);
+        response = await client.query(query.updateHebergement, [
+          parametre,
+          declarationId,
+        ]);
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
       break;
     }
     default:

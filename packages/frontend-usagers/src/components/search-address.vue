@@ -49,6 +49,7 @@ const searchAddressDebounced = debounce(async function (queryString) {
     options.value = adresses.map((address) => {
       return {
         label: address.properties.label,
+        cleInsee: address.properties.id,
         codeInsee: address.properties.citycode,
         codePostal: address.properties.postcode,
         coordinates: address.geometry.coordinates,
@@ -122,7 +123,7 @@ function select(_value, option) {
                 :is-pointed="isPointed(option)"
               />
             </template>
-            <template #no-result> Pas de résultat </template>
+            <template #no-result> Pas de résultat</template>
           </Multiselect>
           <div v-if="message" class="fr-messages-group">
             <p :class="messageClass">

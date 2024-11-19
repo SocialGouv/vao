@@ -70,18 +70,6 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
           credentials: "include",
         });
 
-        for (const hebergement of demande?.hebergement?.hebergements ?? []) {
-          hebergement.nom = (
-            await $fetchBackend(
-              `/hebergement/admin/${hebergement.hebergementId}`,
-              {
-                method: "GET",
-                credentials: "include",
-              },
-            )
-          ).hebergement.nom;
-        }
-
         if (demande) {
           log.i("fetchDemandes for one id - DONE");
           this.currentDemande = demande;

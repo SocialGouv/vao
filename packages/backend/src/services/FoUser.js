@@ -47,6 +47,7 @@ ${additionalParamsQuery}
 `,
     additionalParams,
   ],
+  getUserOragnisme: `SELECT org_id as "organismeId" FROM front.user_organisme WHERE use_id = $1`,
 };
 
 module.exports.read = async ({
@@ -149,4 +150,9 @@ module.exports.readOne = async (id) => {
 
   log.i("readOne - DONE");
   return users[0];
+};
+
+module.exports.getUserOrganisme = async (userId) => {
+  const { rows } = await pool.query(query.getUserOragnisme, [userId]);
+  return rows[0]?.organismeId ?? null;
 };
