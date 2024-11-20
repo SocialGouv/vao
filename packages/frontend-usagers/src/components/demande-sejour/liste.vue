@@ -192,11 +192,9 @@ useHead({
 });
 
 const displayType = { Messagerie: "Messagerie", Organisme: "Organisme" };
-
 const tabIndexSejour = computed(() =>
   props.display === displayType.Messagerie ? 3 : 0,
 );
-
 const navigate = (item) => {
   //navigateTo(`/demande-sejour/${item.declarationId}`);
   navigateTo({
