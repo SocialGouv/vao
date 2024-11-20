@@ -9,7 +9,7 @@ async function checkPermissionDeclarationSejour(req, res, next) {
   const { departements } = req;
   log.i("IN");
 
-  if (!declarationId || !departements) {
+  if (!declarationId || isNaN(declarationId) || !departements) {
     return next(
       new AppError(
         "Vous n'êtes pas autorisé à modifier à cette déclaration de séjour",
