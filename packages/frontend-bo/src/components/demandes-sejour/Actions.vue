@@ -90,6 +90,8 @@ import { useIsDownloading } from "~/composables/useIsDownloading";
 
 const demandeSejourStore = useDemandeSejourStore();
 const userStore = useUserStore();
+const toaster = useToaster();
+const route = useRoute();
 
 const currentDemande = computed(() => demandeSejourStore.currentDemande);
 const status = demandesSejours.statuts;
@@ -106,7 +108,7 @@ const onValidComplement = async (commentaires) => {
 
   try {
     await demandeSejourStore.setAdditionalRequest(
-      route.params.id,
+      route.params.declarationId,
       commentaires,
     );
   } catch (error) {
@@ -119,7 +121,7 @@ const onValidComplement = async (commentaires) => {
     resetApiStatut();
   }
   try {
-    await promise.all([
+    await Promise.all([
       demandeSejourStore.getCurrentDemande(route.params.declarationId),
       demandeSejourStore.getHistory(route.params.declarationId),
     ]);
@@ -137,7 +139,10 @@ const onValidRefus = async (commentaires) => {
   isModalRefusOpened.value = false;
 
   try {
-    await demandeSejourStore.setDenial(route.params.id, commentaires);
+    await demandeSejourStore.setDenial(
+      route.params.declarationId,
+      commentaires,
+    );
   } catch (error) {
     toaster.error({
       titleTag: "h2",
@@ -166,7 +171,7 @@ const onValidEnregistrement2Mois = async () => {
   isModalEnregistrement2MoisOpened.value = false;
 
   try {
-    await demandeSejourStore.setRegistration2Months(route.params.id);
+    await demandeSejourStore.setRegistration2Months(route.params.declarationId);
   } catch (error) {
     toaster.error({
       titleTag: "h2",
