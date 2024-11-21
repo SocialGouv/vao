@@ -278,7 +278,7 @@ fileignoreconfig:
 - filename: packages/shared/src/types/DsfrDataTableV2.type.ts
   checksum: 1a97906b8d2d4c66febb1aceb3344696ef780480ab0711a93dd49780b66c20ab
 - filename: packages/shared/src/utils/status.js
-  checksum: 3a65aebb21ea893c491fd3efb3e61abe4cd9e1853ff1aa210993df51870b4f4c
+  checksum: d018fcbd54951acae026f53229ee84c3edc2224bc087490a83666826f48b32b7
 - filename: pg/scripts/01-init.sql
   checksum: 20dd5b8d36b1b0517fe185d30003af7866ef5678eed4e7571a6d9797ec3b2a46
 - filename: pg/scripts/02/02-1-geo-init.sql

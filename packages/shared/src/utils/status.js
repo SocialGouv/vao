@@ -17,7 +17,9 @@ const defaultStatus = {
 };
 
 const statusWithoutDraft = Object.fromEntries(
-  Object.entries(defaultStatus).filter(([key]) => key !== "BROUILLON"),
+  Object.entries(defaultStatus).filter(
+    ([key]) => key !== defaultStatus.BROUILLON,
+  ),
 );
 
 export default {

@@ -6,7 +6,7 @@
           <DsfrInputGroup
             v-model="idFonctionnelleSync"
             type="text"
-            name="idFonmctionnelle"
+            name="idFonctionnelle"
             label="Numéro de déclaration"
             placeholder="Numéro de déclaration"
             :label-visible="true"

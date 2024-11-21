@@ -77,6 +77,7 @@
     </template>
   </DsfrDataTableV2Wrapper>
   <ValidationModal
+    modal-ref="modal"
     name="modal-ds-action"
     :opened="popUpParams !== null"
     :title="`${popUpParams?.msg}  ?`"

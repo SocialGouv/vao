@@ -4,6 +4,10 @@ const logger = require("../utils/logger");
 const { applyFilters, applyPagination } = require("../helpers/queryParams");
 const pool = require("../utils/pgpool").getPool();
 const dsStatus = require("../helpers/ds-statuts");
+const {
+  sanityzePaginationParams,
+  sanityzeFiltersParams,
+} = require("../helpers/queryParams");
 
 const log = logger(module.filename);
 
@@ -956,11 +960,25 @@ module.exports.cancel = async (declarationId, userId) => {
   log.i("cancel - DONE");
   return rowCount;
 };
-module.exports.get = async (
-  organismesId,
-  { sortBy, sortDirection, limit, offset },
-  filterParams,
-) => {
+module.exports.get = async (organismesId, queryParams) => {
+  const titles = {
+    dateDebut: "ds.date_debut",
+    dateFin: "ds.date_fin",
+    departementSuivi: "ds.departement_suivi",
+    editedAt: "ds.edited_at",
+    idFonctionnelle: "ds.id_fonctionnelle",
+    libelle: "ds.libelle",
+    periode: "ds.periode",
+    siret: "o.personne_morale->>'siret'",
+    statut: "ds.statut",
+  };
+  const { limit, offset, sortBy, sortDirection } = sanityzePaginationParams(
+    queryParams,
+    {
+      sortBy: titles,
+    },
+  );
+  const filterParams = sanityzeFiltersParams(queryParams, titles);
   const queryGet = query.get();
   const filterQuery = applyFilters(queryGet, [organismesId], filterParams);
   const paginatedQuery = applyPagination(
