@@ -5,6 +5,7 @@ import eigUtils from "./hebergement";
 import messageUtils from "./messageUtils";
 import MessageHover from "../components/messages/MessageHover.vue";
 import MessageEtat from "../components/messages/MessageEtat.vue";
+import status from "./status";
 
 export {
   createLogger,
@@ -14,4 +15,5 @@ export {
   messageUtils,
   MessageHover,
   MessageEtat,
+  status,
 };

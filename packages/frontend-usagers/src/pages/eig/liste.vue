@@ -146,7 +146,7 @@ const paginateResults = async (sortValue, limitValue, currentPageValue) => {
   }
 };
 
-const fetchDemandesDebounce = debounce(async (search) => {
+const fetchEigDebounce = debounce(async (search) => {
   try {
     await eigStore.get({
       sortBy: sortState.value.sortBy,
@@ -164,7 +164,7 @@ const fetchDemandesDebounce = debounce(async (search) => {
 });
 
 watch([searchState], ([searchValue]) => {
-  fetchDemandesDebounce(searchValue);
+  fetchEigDebounce(searchValue);
 });
 
 const status = [

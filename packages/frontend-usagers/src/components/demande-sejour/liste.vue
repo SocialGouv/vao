@@ -14,7 +14,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
         <h1 v-else class="header">Liste des messages par déclaration</h1>
       </div>
     </div>
-    <template v-if="demandeSejourStore.demandes.length">
+    <template v-if="demandeSejourStore.demandesDeprecated.length">
       <div class="fr-grid-row">
         <div class="fr-col">
           <form>
@@ -213,7 +213,7 @@ const route = useRoute();
 const departementStore = useDepartementStore();
 
 const saisonOptions = computed(() => {
-  return demandeSejourStore.demandes.reduce((acc, elem) => {
+  return demandeSejourStore.demandesDeprecated.reduce((acc, elem) => {
     if (elem.periode && !acc.includes(elem.periode)) {
       acc.push(elem.periode);
     }
@@ -253,24 +253,24 @@ const demandeSejourStore = useDemandeSejourStore();
 
 const filteredDemandes = computed(() =>
   props.display === displayType.Messagerie
-    ? demandeSejourStore.demandes.filter((d) => d.message)
-    : demandeSejourStore.demandes,
+    ? demandeSejourStore.demandesDeprecated.filter((d) => d.message)
+    : demandeSejourStore.demandesDeprecated,
 );
 
 const idOptions = computed(() => {
-  return demandeSejourStore.demandes
+  return demandeSejourStore.demandesDeprecated
     .map((d) => d.declarationId)
     .filter((v, i, a) => a.indexOf(v) === i);
 });
 
 const siretOptions = computed(() => {
-  return demandeSejourStore.demandes
+  return demandeSejourStore.demandesDeprecated
     .map((d) => d.siret)
     .filter((v, i, a) => v !== null && a.indexOf(v) === i);
 });
 
 const idFonctionnellesOptions = computed(() => {
-  return demandeSejourStore.demandes
+  return demandeSejourStore.demandesDeprecated
     .filter((v) => v.idFonctionnelle)
     .map((d) => d.idFonctionnelle)
     .filter((v, i, a) => a.indexOf(v) === i);
@@ -677,7 +677,7 @@ async function copyDS(dsId) {
     });
     if (response.declarationId) {
       toaster.success({ titleTag: "h2", description: `Déclaration dupliquée` });
-      await demandeSejourStore.fetchDemandes({
+      await demandeSejourStore.fetchDemandesDeprecated({
         sortBy: defaultSort.value,
       });
     }
@@ -703,7 +703,7 @@ async function deleteDS(dsId) {
     });
     if (response.deletedRows === 1) {
       toaster.success({ titleTag: "h2", description: `Déclaration supprimée` });
-      await demandeSejourStore.fetchDemandes({
+      await demandeSejourStore.fetchDemandesDeprecated({
         sortBy: defaultSort.value,
       });
     } else {
@@ -735,7 +735,7 @@ async function cancelDS(dsId) {
     });
     if (response.canceletedRows === 1) {
       toaster.success({ titleTag: "h2", description: `Déclaration annulée` });
-      await demandeSejourStore.fetchDemandes({
+      await demandeSejourStore.fetchDemandesDeprecated({
         sortBy: defaultSort.value,
       });
     } else {
@@ -760,7 +760,7 @@ async function cancelDS(dsId) {
 onMounted(async () => {
   departementStore.fetch();
 
-  demandeSejourStore.fetchDemandes({
+  demandeSejourStore.fetchDemandesDeprecated({
     sortBy: defaultSort.value,
   });
 });
