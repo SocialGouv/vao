@@ -4,8 +4,7 @@ import { navigateTo, defineNuxtRouteMiddleware } from "#app";
 export default defineNuxtRouteMiddleware(async (to) => {
   const hasId = !!to.params.declarationId;
   const demandeStore = useDemandeSejourStore();
-
-  if (!!hasId || isNaN(to.params.declarationId)) {
+  if (hasId && isNaN(to.params.declarationId)) {
     return navigateTo("/");
   }
 
