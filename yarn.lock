@@ -1445,7 +1445,7 @@
   resolved "https://registry.npmjs.org/@gouvfr/dsfr/-/dsfr-1.12.1.tgz"
   integrity sha512-2zXBHSDjjlaNcxGtqbPQN/vyjJQKIRUP3CKOYoodj2/45pAWM1AXo3kCwXFLUo5kQOltShZUquQ7hSeVg4RRtA==
 
-"@gouvminint/vue-dsfr@^6.0.0", "@gouvminint/vue-dsfr@^6.0.1", "@gouvminint/vue-dsfr@^6.3.0", "@gouvminint/vue-dsfr@~6.3.0":
+"@gouvminint/vue-dsfr@^6.0.0", "@gouvminint/vue-dsfr@^6.0.1":
   version "6.3.1"
   resolved "https://registry.npmjs.org/@gouvminint/vue-dsfr/-/vue-dsfr-6.3.1.tgz"
   integrity sha512-NvSTXnBlVGOThpCpkBryZwncP4BuNHy02uLIa4vp1MBg/E/fRR4+czv9ujVah2QznxX1CwW2Sw7/4GVkvbPCNA==
@@ -1456,6 +1456,17 @@
     pnpm "^9.10.0"
     vue "^3.5.4"
     vue-router "^4.4.4"
+
+"@gouvminint/vue-dsfr@^7.0.0", "@gouvminint/vue-dsfr@~7.1.0":
+  version "7.1.0"
+  resolved "https://registry.npmjs.org/@gouvminint/vue-dsfr/-/vue-dsfr-7.1.0.tgz"
+  integrity sha512-Cn0IQQzlQOAEOA54fSKdAXI52ZGXrJRY6IvcdU9l8n2F2Z/2SqNPfW5tYg2XWtApz5kKVLwq/7Oz0p/ypVaJEw==
+  dependencies:
+    "@gouvfr/dsfr" "~1.12.1"
+    focus-trap "^7.6.0"
+    focus-trap-vue "^4.0.3"
+    vue "^3.5.12"
+    vue-router "^4.4.5"
 
 "@humanwhocodes/config-array@^0.11.14":
   version "0.11.14"
@@ -6753,10 +6764,10 @@ focus-trap-vue@^4.0.3:
   resolved "https://registry.npmjs.org/focus-trap-vue/-/focus-trap-vue-4.0.3.tgz"
   integrity sha512-cIX5rybkCAlNZ4IHYJ3nCFIsipDDljJHHjtTO2IgYWkVYg7X9ipUVdab3HzYp88kmHgMwjcB71LYnXRRsF6ZqQ==
 
-focus-trap@^7.5.4:
-  version "7.5.4"
-  resolved "https://registry.npmjs.org/focus-trap/-/focus-trap-7.5.4.tgz"
-  integrity sha512-N7kHdlgsO/v+iD/dMoJKtsSqs5Dz/dXZVebRgJw23LDk+jMi/974zyiOYDziY2JPp8xivq9BmUGwIJMiuSBi7w==
+focus-trap@^7.5.4, focus-trap@^7.6.0:
+  version "7.6.2"
+  resolved "https://registry.npmjs.org/focus-trap/-/focus-trap-7.6.2.tgz"
+  integrity sha512-9FhUxK1hVju2+AiQIDJ5Dd//9R2n2RAfJ0qfhF4IHGHgcoEUTMpbTeG/zbEuwaiYXfuAH6XE0/aCyxDdRM+W5w==
   dependencies:
     tabbable "^6.2.0"
 
@@ -12274,17 +12285,10 @@ vue-matomo@~4.2.0:
   resolved "https://registry.npmjs.org/vue-matomo/-/vue-matomo-4.2.0.tgz"
   integrity sha512-m5hCw7LH3wPDcERaF4sp/ojR9sEx7Rl8TpOyH/4jjQxMF2DuY/q5pO+i9o5Dx+BXLSa9+IQ0qhAbWYRyESQXmA==
 
-vue-router@^4.4.4, vue-router@^4.4.5:
+vue-router@^4.4.4, vue-router@^4.4.5, vue-router@latest:
   version "4.4.5"
   resolved "https://registry.npmjs.org/vue-router/-/vue-router-4.4.5.tgz"
   integrity sha512-4fKZygS8cH1yCyuabAXGUAsyi1b2/o/OKgu/RUb+znIYOxPRxdkytJEx+0wGcpBE1pX6vUgh5jwWOKRGvuA/7Q==
-  dependencies:
-    "@vue/devtools-api" "^6.6.4"
-
-vue-router@latest:
-  version "4.4.4"
-  resolved "https://registry.npmjs.org/vue-router/-/vue-router-4.4.4.tgz"
-  integrity sha512-3MlnDqwRwZwCQVbtVfpsU+nrNymNjnXSsQtXName5925NVC1+326VVfYH9vSrA0N13teGEo8z5x7gbRnGjCDiQ==
   dependencies:
     "@vue/devtools-api" "^6.6.4"
 
