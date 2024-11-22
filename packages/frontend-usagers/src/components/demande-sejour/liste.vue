@@ -22,7 +22,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <dsfr-multi-select
+                <DsfrMultiselect
                   :model-value="search.declarationId"
                   label="ID"
                   search
@@ -34,7 +34,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <dsfr-multi-select
+                <DsfrMultiselect
                   :model-value="search.idFonctionnelle"
                   label="N° enregistrement"
                   search
@@ -46,7 +46,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <dsfr-multi-select
+                <DsfrMultiselect
                   :model-value="search.siret"
                   label="SIRET déclarant"
                   search
@@ -59,7 +59,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <dsfr-multi-select
+                <DsfrMultiselect
                   :model-value="search.departementSuivi"
                   labe="Département d'instruction"
                   search
@@ -72,7 +72,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <dsfr-multi-select
+                <DsfrMultiselect
                   :model-value="search.statut"
                   label="Statut"
                   search
@@ -85,7 +85,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
               <div
                 class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
               >
-                <dsfr-multi-select
+                <DsfrMultiselect
                   :model-value="search.periode"
                   label="Saison"
                   search
@@ -147,8 +147,8 @@ import {
   MessageHover,
   TableFull,
   ValidationModal,
-  DsfrMultiSelect,
 } from "@vao/shared";
+import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 import dayjs from "dayjs";
 import "@vueform/multiselect/themes/default.css";
 import { useDepartementStore } from "~/stores/referentiels";
