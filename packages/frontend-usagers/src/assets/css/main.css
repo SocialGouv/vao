@@ -25,3 +25,6 @@
   cursor: pointer;
 }
 
+.fr-multiselect__collapse {
+  z-index: 2!important;
+}
