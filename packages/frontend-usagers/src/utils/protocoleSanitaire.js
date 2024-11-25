@@ -6,16 +6,19 @@ const constitutionEquipeOptions = [
       "Une personne formée aux gestes et soins d’urgence (PSC 1, SST, AFGSU 1, AFGSU 2, AFSGSU)",
     id: "personne_formee",
     name: "personne_formee",
+    value: "personne_formee",
   },
   {
     label: "Un(e) infirmier(e)",
     id: "infirmier",
     name: "infirmier",
+    value: "infirmier",
   },
   {
     label: "Un(e) aide soignant(e)",
     id: "aide_soignant",
     name: "aide_soignant",
+    value: "aide_soignant",
   },
 ];
 
@@ -24,16 +27,19 @@ const responsableAdministrationMedicamentOptions = [
     label: "Responsable du séjour",
     id: "responsable_sejour",
     name: "responsable_sejour",
+    value: "responsable_sejour",
   },
   {
     label: "Accompagnant(s)",
     id: "accompagnant",
     name: "accompagnant",
+    value: "accompagnant",
   },
   {
     label: "Professionnel de santé",
     id: "professionnel_sante",
     name: "professionnel_sante",
+    value: "professionnel_sante",
   },
 ];
 

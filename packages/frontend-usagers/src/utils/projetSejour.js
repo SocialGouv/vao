@@ -57,15 +57,16 @@ const bienEtreOption = [
 ];
 
 const destinationOptions = [
-  { label: "Mer", id: "mer", name: "mer" },
-  { label: "Montagne", id: "montagne", name: "montagne" },
-  { label: "Campagne", id: "campagne", name: "campagne" },
+  { label: "Mer", id: "mer", name: "mer", value: "mer" },
+  { label: "Montagne", id: "montagne", name: "montagne", value: "montagne" },
+  { label: "Campagne", id: "campagne", name: "campagne", value: "campagne" },
   {
     label: "Séjour à thème",
     id: "sejour_a_theme",
     name: "sejour_a_theme",
+    value: "sejour_a_theme",
   },
-  { label: "Etranger", id: "etranger", name: "etranger" },
+  { label: "Etranger", id: "etranger", name: "etranger", value: "etranger" },
 ];
 
 yup.setLocale({

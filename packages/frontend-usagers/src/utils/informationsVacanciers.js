@@ -1,20 +1,26 @@
 import * as yup from "yup";
 
 const trancheAgeOptions = [
-  { label: "18-39 ans", id: "18+", name: "18_39" },
-  { label: "40-59 ans", id: "40+", name: "40_59" },
-  { label: "Plus de 59 ans", id: "59+", name: "59_et_plus" },
+  { label: "18-39 ans", id: "18+", name: "18_39", value: "18_39" },
+  { label: "40-59 ans", id: "40+", name: "40_59", value: "40_59" },
+  {
+    label: "Plus de 59 ans",
+    id: "59+",
+    name: "59_et_plus",
+    value: "59_et_plus",
+  },
 ];
 
 const typeDeficiencesOptions = [
-  { label: "Auditif", id: "auditif", name: "auditif" },
-  { label: "Visuel", id: "visuel", name: "visuel" },
-  { label: "Mental/Psychique", id: "mental", name: "mental" },
-  { label: "Moteur", id: "moteur", name: "moteur" },
+  { label: "Auditif", id: "auditif", name: "auditif", value: "auditif" },
+  { label: "Visuel", id: "visuel", name: "visuel", value: "visuel" },
+  { label: "Mental/Psychique", id: "mental", name: "mental", value: "mental" },
+  { label: "Moteur", id: "moteur", name: "moteur", value: "moteur" },
   {
     label: "Polyhandicap",
     id: "polyhandicap",
     name: "polyhandicap",
+    value: "polyhandicap",
   },
 ];
 

@@ -11,11 +11,17 @@ const pensionOptions = [
 ];
 
 const prestationsHotelieresOptions = [
-  { label: "Blanchisserie", id: "blanchisseries", name: "blanchisseries" },
+  {
+    label: "Blanchisserie",
+    id: "blanchisseries",
+    name: "blanchisseries",
+    value: "blanchisseries",
+  },
   {
     label: "Entretien des locaux",
     id: "entretien_locaux",
     name: "entretien_locaux",
+    value: "entretien_locaux",
   },
 ];
 
