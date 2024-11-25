@@ -14,6 +14,7 @@ migrate-s3:
 
 pgweb:
   ~chart: pgweb
+  ~needs: [pg]
   pgweb:
     env:
       - name: PGWEB_DATABASE_URL
