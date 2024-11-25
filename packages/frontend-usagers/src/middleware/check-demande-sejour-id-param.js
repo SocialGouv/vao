@@ -1,5 +1,5 @@
 import { useDemandeSejourStore } from "~/stores/demande-sejour";
-import { navigateTo, defineNuxtRouteMiddleware } from "#app";
+import { defineNuxtRouteMiddleware, navigateTo } from "#app";
 
 export default defineNuxtRouteMiddleware(async (to) => {
   const hasId = !!to.params.declarationId;
@@ -15,5 +15,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
       navigateTo("/");
       throw error;
     }
+  } else {
+    await demandeStore.resetDemandeCourante();
   }
 });

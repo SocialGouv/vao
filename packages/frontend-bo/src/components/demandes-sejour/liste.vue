@@ -83,7 +83,7 @@
               v-if="props.display === displayType.Organisme"
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <dsfr-multi-select
+              <DsfrMultiselect
                 v-model="searchState.statuts"
                 label="Statut"
                 search
@@ -163,12 +163,12 @@
 <script setup>
 import {
   CardsNumber,
-  DsfrMultiSelect,
   MessageEtat,
   MessageHover,
   TableWithBackendPagination,
   ValidationModal,
 } from "@vao/shared";
+import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 import dayjs from "dayjs";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";
 import Declaration from "~/components/demandes-sejour/Declaration.vue";
