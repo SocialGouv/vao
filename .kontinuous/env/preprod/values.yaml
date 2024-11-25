@@ -35,7 +35,7 @@ pgweb:
 
 pg:
   backup:
-    name: "202407291149" # backup on a new folder
+    name: "1732544897" # backup on a new folder
     ~tpl~enabled: "true"
 
 jobs:
@@ -93,12 +93,12 @@ jobs:
           valueFrom:
             secretKeyRef:
               name: "{{.Values.global.s3SecretName}}"
-              key: bucket_region  
+              key: bucket_region
         - name: S3_BUCKET_ACCESS_KEY
           valueFrom:
             secretKeyRef:
               name: "{{.Values.global.s3SecretName}}"
-              key: bucket_access_key  
+              key: bucket_access_key
         - name: S3_BUCKET_SECRET_KEY
           valueFrom:
             secretKeyRef:
