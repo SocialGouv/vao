@@ -41,7 +41,7 @@
         </div>
       </div>
       <div :class="filedsetClass">
-        <dsfr-multi-select
+        <DsfrMultiselect
           v-model="statusSync"
           label="Statut"
           search
@@ -78,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { DsfrMultiSelect } from "@vao/shared";
+import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 const demandeSejourStore = useDemandeSejourStore();
 
 const props = defineProps<{

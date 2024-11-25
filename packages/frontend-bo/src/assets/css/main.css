@@ -9,3 +9,7 @@
 .read-only-value {
   color: black;
 }
+
+.fr-multiselect__collapse {
+  z-index: 2!important;
+}
