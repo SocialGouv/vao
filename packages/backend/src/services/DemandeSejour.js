@@ -281,6 +281,7 @@ WHERE
 SELECT
   ds.id as "declarationId",
   ds.created_at as "createdAt",
+  ds.edited_at as "editedAt",
   ds.statut as "statut",
   ds.organisme_id as "organismeId",
   ds.libelle as "libelle",
