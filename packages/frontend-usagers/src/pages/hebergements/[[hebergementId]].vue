@@ -102,16 +102,11 @@ async function updateOrCreate(hebergement) {
 
   // Sauvegarde de l'hébergement
   try {
-    const id = await hebergementStore.updateOrCreate(
-      hebergement,
-      hebergementId.value,
-    );
+    await hebergementStore.updateOrCreate(hebergement, hebergementId.value);
     log.d("hebergement sauvegardé");
     toaster.success({ titleTag: "h2", description: "Hébergement sauvegardé" });
 
-    if (!hebergementId.value && id) {
-      return await navigateTo("/hebergements/liste");
-    }
+    return await navigateTo("/hebergements/liste");
   } catch (error) {
     toaster.error({
       titleTag: "h2",
