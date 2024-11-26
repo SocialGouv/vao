@@ -14,8 +14,6 @@ const {
   frontBODomain,
 } = require("../../config");
 
-const { notifyRappelActionsBO } = require(".");
-
 const { name, cron } = require("../../config").crons.request.notifyactionsbo;
 
 const log = logger(module.filename);
@@ -28,43 +26,43 @@ const generateRappelQuery = (
   additionalOrderBy = "",
 ) => `
   WITH hebergement_exploded AS (
-      SELECT 
+      SELECT
         ds.id,
         jsonb_array_elements(ds.hebergement->'hebergements') ->> 'dateDebut' AS date_debut_hebergement,
         jsonb_array_elements(ds.hebergement->'hebergements') -> 'coordonnees' -> 'adresse' ->> 'codeInsee' AS code_insee
-      FROM 
+      FROM
         front.demande_sejour ds
     )
-    SELECT 
-      ds.id, 
-      ds.id_fonctionnelle, 
-      ds.date_debut, 
-      ds.statut, 
+    SELECT
+      ds.id,
+      ds.id_fonctionnelle,
+      ds.date_debut,
+      ds.statut,
       ds.libelle as titre,
       TO_CHAR(ds.date_debut, 'DD/MM/YYYY') as date_debut,
       use.mail,
       ${additionalColumns}
       ((ds.date_debut - ((10) * INTERVAL '1 day'))::date <= now()::date) as isalerte,
       string_agg(com.label, ', ' ORDER BY he.date_debut_hebergement::date ASC) AS Communes
-    FROM 
+    FROM
       hebergement_exploded he
       INNER JOIN front.demande_sejour ds ON ds.id = he.id
       INNER JOIN geo.communes com ON com.code_insee = he.code_insee AND com.date_fin is null
       ${additionalJoins}
     WHERE (ds.date_debut)::date>=now()::date
-      AND ds.statut IN (${statutsArray})  
-    GROUP BY 
-      ds.id, 
-      ds.id_fonctionnelle, 
-      ds.date_debut, 
-      ds.statut, 
-      ds.libelle, 
-      use.mail,  
+      AND ds.statut IN (${statutsArray})
+    GROUP BY
+      ds.id,
+      ds.id_fonctionnelle,
+      ds.date_debut,
+      ds.statut,
+      ds.libelle,
+      use.mail,
       ${additionalGroupBy}
       isalerte
-    ORDER BY 
+    ORDER BY
       ${additionalOrderBy}
-      isalerte DESC, 
+      isalerte DESC,
       ds.date_debut ASC;
 `;
 
@@ -131,7 +129,7 @@ function getUniqueMails({ isBO, rows }) {
     ...new Set(
       rows
         .filter((ds) => (isBO ? ds.mail : ds.mails))
-        .map((ds) => (isBO ? ds.mail : ds.mails))
+        .map((ds) => (isBO ? ds.mail : ds.mails)),
     ),
   ];
 }
@@ -145,13 +143,13 @@ function generateInitialEmailContent() {
 
 function filterRowsWithAlert({ isBO, rows, mail }) {
   return rows.filter(
-    (ds) => ds.isalerte && (isBO ? ds.mail === mail : ds.mails === mail)
+    (ds) => ds.isalerte && (isBO ? ds.mail === mail : ds.mails === mail),
   );
 }
 
 function filterRowsWithoutAlert({ isBO, rows, mail }) {
   return rows.filter(
-    (ds) => !ds.isalerte && (isBO ? ds.mail === mail : ds.mails === mail)
+    (ds) => !ds.isalerte && (isBO ? ds.mail === mail : ds.mails === mail),
   );
 }
 
@@ -251,7 +249,6 @@ async function sendNotificationMail({ content, email, isBO }) {
   const params = {
     from: senderEmail,
     html: html,
-    notifyRappelActionsBO,
     replyTo: senderEmail,
     subject: `Séjours VAO – Récapitulatif des déclarations de séjour en attente de traitement de votre part`,
     to: email,
