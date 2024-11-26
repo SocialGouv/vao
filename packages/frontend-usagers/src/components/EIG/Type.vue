@@ -245,24 +245,28 @@ const types = {
   ).map((t) => ({
     label: mapEigToLabel[t],
     name: t,
+    value: t,
   })),
   [eigModel.Categorie.SANTE]: Object.values(
     eigModel.Types[eigModel.Categorie.SANTE],
   ).map((t) => ({
     label: mapEigToLabel[t],
     name: t,
+    value: t,
   })),
   [eigModel.Categorie.SECURITE]: Object.values(
     eigModel.Types[eigModel.Categorie.SECURITE],
   ).map((t) => ({
     label: mapEigToLabel[t],
     name: t,
+    value: t,
   })),
   [eigModel.Categorie.FONCTIONNEMENT_ORGANISME]: Object.values(
     eigModel.Types[eigModel.Categorie.FONCTIONNEMENT_ORGANISME],
   ).map((t) => ({
     label: mapEigToLabel[t],
     name: t,
+    value: t,
   })),
 };
 
