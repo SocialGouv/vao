@@ -523,19 +523,13 @@ const formatedEtablissements = computed(() => {
           () => {
             if (etablissementFilter.value.autorisation === "Tous") return true;
             if (
-              etablissementFilter.value.autorisation === "En activité" &&
-              e.enabled
-            )
-              return true;
-            if (
-              etablissementFilter.value.autorisation === "Fermés" &&
-              !e.enabled
-            )
-              return true;
-            if (
-              etablissementFilter.value.autorisation ===
+              (etablissementFilter.value.autorisation === "En activité" &&
+                e.enabled) ||
+              (etablissementFilter.value.autorisation === "Fermés" &&
+                !e.enabled) ||
+              (etablissementFilter.value.autorisation ===
                 "Autorisés à organiser des séjours" &&
-              e.etatAdministratif === "En activité"
+                e.etatAdministratif === "En activité")
             )
               return true;
             return false;
