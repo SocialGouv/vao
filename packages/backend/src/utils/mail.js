@@ -576,6 +576,46 @@ module.exports = {
   },
   usagers: {
     authentication: {
+      sendAccountValided: (email) => {
+        const link = `${frontBODomain}/connexion/`;
+        const html = sendTemplate.getBody(
+          "Portail VAO - Prochaines étapes",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Vous venez de valider votre compte en tant qu’organisateur de séjours VAO. Voici les étapes à compléter pour pouvoir déclarer vos premiers séjours : ",
+                "- Rejoignez votre organisme en indiquant son numéro de SIRET",
+                "- complétez votre fiche organisme avec les informations légales et nécessaires à la déclaration d’un séjour",
+                "- créez les fiches des hébergements où vos vacanciers vont séjourner",
+                "- faites vos premières déclarations de séjour",
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
+              ],
+              type: "p",
+            },
+            {
+              link,
+              text: "Se connecter à VAO",
+              type: "link",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: `Portail VAO - Prochaines étapes`,
+          to: email,
+        };
+
+        return params;
+      },
       sendForgottenPassword: ({ email, token }) => {
         log.i("sendForgottenPassword - In", {
           email,

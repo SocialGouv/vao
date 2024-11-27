@@ -3,6 +3,8 @@ const config = require("../../../config");
 const User = require("../../../services/User");
 
 const AppError = require("../../../utils/error");
+const MailUtils = require("../../../utils/mail");
+const Send = require("../../../services/mail").mailService.send;
 
 const logger = require("../../../utils/logger");
 
@@ -19,15 +21,13 @@ module.exports = async (req, res, next) => {
       }),
     );
   }
+
+  let email = null;
   try {
-    const { email } = await jwt.verify(validationToken, config.tokenSecret, {
+    const result = await jwt.verify(validationToken, config.tokenSecret, {
       algorithm: "ES512",
     });
-    log.d({ email });
-    const user = await User.activate(email);
-    log.d({ user });
-    log.i("DONE");
-    return res.status(200).json({ user });
+    email = result.email;
   } catch (error) {
     log.w("DONE with error");
     if (error instanceof jwt.TokenExpiredError) {
@@ -40,4 +40,41 @@ module.exports = async (req, res, next) => {
     }
     return next(error);
   }
+
+  if (!email) {
+    return next(
+      new AppError("Token invalide", {
+        name: "InvalidToken",
+        statusCode: 401,
+      }),
+    );
+  }
+
+  let user = null;
+  try {
+    user = await User.activate(email);
+  } catch (error) {
+    return next(error);
+  }
+  if (!user) {
+    return next(
+      new AppError("Token invalide", {
+        name: "InvalidToken",
+        statusCode: 401,
+      }),
+    );
+  }
+  try {
+    await Send(MailUtils.usagers.authentication.sendAccountValided(email));
+  } catch (error) {
+    console.log(error);
+    return next(
+      new AppError("Erreur lors de l'envoi du mail", {
+        cause: error,
+        name: "MailError",
+        statusCode: 500,
+      }),
+    );
+  }
+  return res.status(200).json({ user });
 };
