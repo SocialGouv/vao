@@ -18,23 +18,37 @@
     :data="data"
     :total="total"
     row-id="declarationId"
-    is-bordered
     is-sortable
     @update-data="updateDataDebounced"
   >
     <template #cell:dateDebut="{ row }">
-      {{ displayDate(row.dateDebut) }}
-    </template>
-    <template #cell:dateFin="{ row }">
-      {{ displayDate(row.dateDebut) }}
+      {{ displayDate(row.dateDebut) }} -<br />
+      {{ displayDate(row.dateFin) }}
     </template>
     <template #cell:statut="{ row }">
       <div>
         <DemandeStatusBadge :statut="row.statut" type="fu" />
       </div>
     </template>
+    <template #cell:editedAt="{ row }">
+      {{ displayDate(row.editedAt) }}
+    </template>
     <template #cell:custom-edit="{ row }">
       <div class="buttons-group">
+        <NuxtLink
+          :to="`/demande-sejour/${row.declarationId}?defaultTabIndex=0`"
+          title="Naviguer vers la demande séjour"
+          class="no-background-image"
+        >
+          <DsfrButton
+            class="link__dsfrButton"
+            icon="ri:arrow-right-s-line"
+            icon-only
+            primary
+            size="small"
+            type="button"
+          />
+        </NuxtLink>
         <DsfrButton
           class="button--danger"
           :icon="
@@ -60,19 +74,6 @@
           :disabled="!enabledCopyStatus.includes(row.statut)"
           @click="handleDuplication(row.declarationId)"
         />
-        <NuxtLink
-          :to="`/demande-sejour/${row.declarationId}?defaultTabIndex=0`"
-          title="naviguer vers la demande séjour"
-          class="no-background-image"
-        >
-          <DsfrButton
-            icon="ri:arrow-right-s-line"
-            icon-only
-            primary
-            size="small"
-            type="button"
-          />
-        </NuxtLink>
       </div>
     </template>
   </DsfrDataTableV2Wrapper>
@@ -151,7 +152,7 @@ const titles = [
   },
   {
     key: "departementSuivi",
-    label: "Département instructeur",
+    label: "Dept",
     options: {
       isSortable: true,
     },
@@ -164,22 +165,8 @@ const titles = [
     },
   },
   {
-    key: "periode",
-    label: "Saison",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
     key: "dateDebut",
-    label: "Date de début",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "dateDebut",
-    label: "Date de fin",
+    label: "Dates (Début-fin)",
     options: {
       isSortable: true,
     },
@@ -192,18 +179,8 @@ const titles = [
     },
   },
   {
-    key: "editedAt",
-    label: "Date de modification",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
     key: "custom-edit",
-    label: "Edit",
-    options: {
-      isFixedRight: true,
-    },
+    label: "Action",
   },
 ];
 
@@ -417,5 +394,9 @@ const cancelDS = async (declarationId) => {
 .button--danger:not(:disabled) {
   color: var(--text-action-high-red-marianne);
   box-shadow: inset 0 0 0 1px var(--border-action-high-red-marianne);
+}
+
+.link__dsfrButton {
+  height: 100%;
 }
 </style>

@@ -16,15 +16,14 @@
     :data="data"
     :total="total"
     row-id="declarationId"
-    is-bordered
     is-sortable
     @update-data="updateData"
   >
     <template #cell:dateDebut="{ row }">
-      {{ getDateDebutFin(row) }}
+      {{ displayDate(row.dateDebut) }} -<br />{{ displayDate(row.dateFin) }}
     </template>
-    <template #cell:custom-saison="{ row }">
-      {{ getSaison(row) }}
+    <template #cell:editedAt="{ row }">
+      {{ displayDate(row.editedAt) }}
     </template>
     <template #cell:organisme="{ row }">
       {{ getOrganismeTitle(row) }}
@@ -68,6 +67,7 @@ import {
   DsfrDataTableV2Wrapper,
   ValidationModal,
 } from "@vao/shared";
+import dayjs from "dayjs";
 
 const demandeSejourStore = useDemandeSejourStore();
 const userStore = useUserStore();
@@ -100,16 +100,8 @@ const titles = [
     },
   },
   {
-    key: "custom-saison",
-    label: "Saison",
-  },
-  {
     key: "organisme",
     label: "Organisme",
-  },
-  {
-    key: "custom-declaration",
-    label: "Declaration",
   },
   {
     key: "statut",
@@ -119,11 +111,12 @@ const titles = [
     },
   },
   {
+    key: "editedAt",
+    label: "Date édition",
+  },
+  {
     key: "custom-edit",
-    label: "Edit",
-    options: {
-      isFixedRight: true,
-    },
+    label: "Action",
   },
 ];
 
@@ -205,11 +198,9 @@ onUnmounted(() => {
   }
 });
 
-const getDateDebutFin = (demande) => demandesSejours.getDateDebutFin(demande);
 const getOrganismeTitle = (demande) =>
   demandesSejours.getOrganismeTitle(demande);
-const getSaison = (demande) => demandesSejours.getSaison(demande);
-
+const displayDate = (date) => dayjs(date).format("DD/MM/YYYY");
 updateData();
 
 // actions

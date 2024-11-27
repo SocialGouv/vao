@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends Row, RowId extends keyof T & string">
-import type { Component, VNode } from "vue";
+import type { Component, StyleValue, VNode } from "vue";
 import { computed } from "vue";
 
 export type Primitive = string | number | boolean | bigint | null | symbol;
@@ -40,6 +40,7 @@ export type Title<T> = {
     isSortable?: boolean;
     cellComponent?: Component;
   };
+  style?: StyleValue;
 };
 
 export type Titles<T> = Title<T>[];
@@ -184,7 +185,7 @@ const handleCheckboxChange = (event: Event) => {
               <tr>
                 <th
                   v-if="props.isSelectable"
-                  class="fr-cell--fixed"
+                  class="fr-th fr-cell--fixed"
                   role="columnheader"
                   scope="col"
                 >
@@ -195,10 +196,12 @@ const handleCheckboxChange = (event: Event) => {
                   :key="title.key"
                   scope="col"
                   :class="{
+                    'fr-th': true,
                     'fr-cell--fixed-left': title?.options?.isFixedLeft,
                     'fr-cell--fixed-right': title?.options?.isFixedRight,
                     'fr-th--is-selectable': title?.options?.isSortable,
                   }"
+                  :style="title?.style"
                   v-on="
                     props.isSortable && title.options?.isSortable
                       ? {
@@ -258,7 +261,9 @@ const handleCheckboxChange = (event: Event) => {
                 <td
                   v-for="title in titles"
                   :key="title.key"
+                  :style="title?.style"
                   :class="{
+                    'fr-cell': true,
                     'fr-cell--fixed-left': title?.options?.isFixedLeft,
                     'fr-cell--fixed-right': title?.options?.isFixedRight,
                   }"
@@ -308,14 +313,20 @@ const handleCheckboxChange = (event: Event) => {
   margin-left: 2rem;
 }
 
+.fr-table .fr-cell {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
 .fr-table .fr-cell--empty {
   text-align: center;
 }
 
 .fr-table .fr-th {
-  display: flex;
-  justify-content: space-between;
+  word-wrap: break-word;
+  white-space: normal;
 }
+
 .fr-table .fr-th--is-selectable {
   cursor: pointer;
 }
