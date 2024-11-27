@@ -160,7 +160,7 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/components/connexion/email/validateToken.client.vue
   checksum: 595435cdea445525554cb0d703a53cf277127a3c0ad39c02502f865cb9fc5dd0
 - filename: packages/frontend-bo/src/components/demandes-sejour/DefaultTable.vue
-  checksum: bc7fe44db110e22eeaccacd75fb9f8df54abbe1b1b22da7c7b6e470ce5588b28
+  checksum: 9e3f652af004ec124031f0bc5ceac882c32c65152e8601939706eba9df3f7588
 - filename: packages/frontend-bo/src/components/demandes-sejour/Details.vue
   checksum: 2fcd6dcc607405fbbdf7dc8c5b9cf6229e8a65593503b5ebb55786b9788c514f
 - filename: packages/frontend-bo/src/components/demandes-sejour/DisplayFormulaire.vue
@@ -210,7 +210,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/demande-sejour/table.vue
-  checksum: 925ebd9d84249721619d4912e46bcd4dbf83e7c20634b23c42a0ef2cb85d39aa
+  checksum: 495f82ac0f8a1d0d1003291839e260f752f4461534d0a2411244d9a0f6fcaca3
 - filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
   checksum: 2237d2a196392be19f0ac6d116954898a4e68b24b1793fb8a060ba1da83564b0
 - filename: packages/frontend-usagers/src/components/organisateur.vue
