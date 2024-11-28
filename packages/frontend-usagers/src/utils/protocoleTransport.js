@@ -5,11 +5,13 @@ const responsableTransportLieuSejourOptions = [
     label: "Les vacanciers viennent par leurs propres moyens",
     id: "vacanciers",
     name: "vacanciers",
+    value: "vacanciers",
   },
   {
     label: "Le transport vers le lieu de séjour est assuré par l'organisateur",
     id: "organisateur",
     name: "organisateur",
+    value: "organisateur",
   },
 ];
 

@@ -115,6 +115,8 @@ fileignoreconfig:
   checksum: bfeae9adde26b42e23b228d733bc5b1c21e982d98f730277ff68fb12d34123d7
 - filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
   checksum: bda4c09e0af6e4c0d6b0976413b29e386148965d5c3f3eaf39fe6d9cba08e3ad
+- filename: packages/backend/src/helpers/queryParams.js
+  checksum: 15f34084cc5a55bcdd78b5bc2cade84b0ff4ef4915eb7dddf89fc593b2fdc6ad
 - filename: packages/backend/src/pgpool.js
   checksum: 06f9f5367c53fbdf6bf5d2ee9758d3a5302339f9f4d0c42e2c0f0831733097d0
 - filename: packages/backend/src/pgpoolDoc.js
@@ -157,6 +159,8 @@ fileignoreconfig:
   checksum: 2845f88f98040035bf7e9434a9bd5fe5cb8d0dd28fd1d765dd9c6a0b440e49f7
 - filename: packages/frontend-bo/src/components/connexion/email/validateToken.client.vue
   checksum: 595435cdea445525554cb0d703a53cf277127a3c0ad39c02502f865cb9fc5dd0
+- filename: packages/frontend-bo/src/components/demandes-sejour/DefaultTable.vue
+  checksum: 9e3f652af004ec124031f0bc5ceac882c32c65152e8601939706eba9df3f7588
 - filename: packages/frontend-bo/src/components/demandes-sejour/Details.vue
   checksum: 2fcd6dcc607405fbbdf7dc8c5b9cf6229e8a65593503b5ebb55786b9788c514f
 - filename: packages/frontend-bo/src/components/demandes-sejour/DisplayFormulaire.vue
@@ -177,6 +181,8 @@ fileignoreconfig:
   checksum: 712a9bb80aa048127944c8d4d189923207c77122e6eadc95631e3e01f6a28d17
 - filename: packages/frontend-bo/src/pages/sejours/[[idDemande]].vue
   checksum: e076b4e667aeda0b354d743dd92a8ae129c61a3fbdfc6bea4e39b603caa90791
+- filename: packages/frontend-bo/src/pages/sejours/[declarationId].vue
+  checksum: 49589cea04eb0f14c6d1345e5ce2e2df0c0a18ed97a6e16debb51b31df19cdcb
 - filename: packages/frontend-bo/src/pages/sejours/[idDemande].vue
   checksum: 5e065bcbafcfbefc24c9cab2ba0026b2b7926bb8c9391434a7469c763c0b3c89
 - filename: packages/frontend-usagers/Dockerfile
@@ -203,6 +209,8 @@ fileignoreconfig:
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
+- filename: packages/frontend-usagers/src/components/demande-sejour/table.vue
+  checksum: 495f82ac0f8a1d0d1003291839e260f752f4461534d0a2411244d9a0f6fcaca3
 - filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
   checksum: 2237d2a196392be19f0ac6d116954898a4e68b24b1793fb8a060ba1da83564b0
 - filename: packages/frontend-usagers/src/components/organisateur.vue
@@ -253,16 +261,24 @@ fileignoreconfig:
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/DsfrMultiSelect.vue
   checksum: 90a7d72295ca0fb55d312f9608cbbe5475183936d21286952357b3961d1bd6fb
+- filename: packages/shared/src/components/DsfrTabsItemV2.vue
+  checksum: f15e94b54f77730bdfb4fd28006256ba861ff7c608cf53c85820d8589f4f6e57
 - filename: packages/shared/src/components/DsfrTabsV2.vue
   checksum: 960c18a7ad76a91c74e5535240ae6ac4f87bb8aff10155096cd35afe5609cff8
 - filename: packages/shared/src/components/PasswordInput.vue
   checksum: af4fe62dc455e943fcfacaa6ee0495e1ab20f9ed2094ad70c457b7a27ab46759
 - filename: packages/shared/src/components/Table/DsfrDataTableV2.vue
-  checksum: 31aa309ec71678dff0c509d1d2ba35340b1da2caae40b3b2f5148aad83d3a410
+  checksum: f7d1a3d6315ed6b5dac684654daee6cca56a704f7dc3eed15f8ca0d1c7255993
+- filename: packages/shared/src/components/Table/DsfrDataTableV2Wrapper.vue
+  checksum: 3d201233abc1aedfe7c755f0c8c2ad79cf5e31a3c20dbdcb1d828d8c8ee27d45
+- filename: packages/shared/src/components/Table/dsfrDataTabeV2/DsfrPaginationV2.vue
+  checksum: c8d3e1442b00cb210ac0aeaea5a4cb9f40b7f1887d61604218d92c31ce9e2f49
 - filename: packages/shared/src/type.ts
   checksum: 8c75e8784ded25a61d6e14cd682bfe67e4ecdde5a6582fb83035fcae39a87b98
 - filename: packages/shared/src/types/DsfrDataTableV2.type.ts
   checksum: 1a97906b8d2d4c66febb1aceb3344696ef780480ab0711a93dd49780b66c20ab
+- filename: packages/shared/src/utils/status.js
+  checksum: d018fcbd54951acae026f53229ee84c3edc2224bc087490a83666826f48b32b7
 - filename: pg/scripts/01-init.sql
   checksum: 20dd5b8d36b1b0517fe185d30003af7866ef5678eed4e7571a6d9797ec3b2a46
 - filename: pg/scripts/02/02-1-geo-init.sql

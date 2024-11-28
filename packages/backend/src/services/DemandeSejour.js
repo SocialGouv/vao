@@ -1,8 +1,13 @@
 /* eslint-disable no-param-reassign */
 const dayjs = require("dayjs");
 const logger = require("../utils/logger");
+const { applyFilters, applyPagination } = require("../helpers/queryParams");
 const pool = require("../utils/pgpool").getPool();
 const dsStatus = require("../helpers/ds-statuts");
+const {
+  sanityzePaginationParams,
+  sanityzeFiltersParams,
+} = require("../helpers/queryParams");
 
 const log = logger(module.filename);
 
@@ -221,55 +226,24 @@ RETURNING
 ;`,
     [declarationId, vacanciers, personnel, hebergement, attestation],
   ],
-  get: (organismeIds) => [
+  get: () =>
+    // $1 organisationIds
     `SELECT
-  ds.id as "declarationId",
-  ds.statut as "statut",
-  ds.id_fonctionnelle as "idFonctionnelle",
-  ds.departement_suivi as "departementSuivi",
-  ds.organisme_id as "organismeId",
-  ds.libelle as "libelle",
-  ds.periode as "periode",
-  ds.date_debut::text as "dateDebut",
-  ds.date_fin::text as "dateFin",
-  ds.created_at as "createdAt",
-  ds.edited_at as "editedAt",
-  ds.duree as "duree",
-  ds.vacanciers as "vacanciers",
-  ds.personnel as "personnel",
-  ds.transport as "transport",
-  ds.hebergement as "hebergements",
-  COALESCE(ds.projet_sejour, '{}'::jsonb) as "projetSejour",
-  ds.sanitaires as "sanitaires",
-  ds.files as "files",
-  ds.attestation as "attestation",
-  o.personne_morale->>'siret' as "siret",
-  o.personne_morale->'etablissementPrincipal' as "organismeAgree",
-  dsm.message as "message",
-  CASE
-    WHEN (dsm.read_at IS NULL AND dsm.front_user_id IS NULL) THEN 'NON LU'
-    WHEN (dsm.read_at IS NOT NULL AND dsm.front_user_id IS NULL) THEN 'LU'
-    WHEN (dsm.back_user_id IS NULL) THEN 'REPONDU'
-  END AS "messageEtat",
-  CASE
-    WHEN (dsm.read_at IS NULL AND dsm.front_user_id IS NULL) THEN 1 -- NON LU
-    WHEN (dsm.read_at IS NOT NULL AND dsm.front_user_id IS NULL) THEN 2 -- LU
-    WHEN (dsm.back_user_id IS NULL) THEN 3 -- REPONDU
-  END AS "messageOrdreEtat",
-  dsm.read_at AS "messageReadAt",
-  dsm.created_at AS "messageCreatedAt",
-  COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
-FROM front.demande_sejour ds
-JOIN front.organismes o ON o.id = ds.organisme_id
-LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
-      SELECT MAX(dsmax.id)
-      FROM front.demande_sejour_message  dsmax
-      WHERE dsmax.declaration_id = ds.id)
-WHERE
-  o.id = ANY ($1)
-`,
-    [organismeIds],
-  ],
+      ds.id as "declarationId",
+      ds.statut as "statut",
+      ds.id_fonctionnelle as "idFonctionnelle",
+      ds.departement_suivi as "departementSuivi",
+      ds.libelle as "libelle",
+      o.personne_morale->>'siret' as "siret",
+      ds.date_debut as "dateDebut",
+      ds.date_fin as "dateFin",
+      ds.periode as "periode",
+      ds.edited_at as "editedAt"
+    FROM front.demande_sejour ds
+    JOIN front.organismes o ON o.id = ds.organisme_id
+    WHERE
+      o.id = ANY ($1)
+    `,
   getAdminStats: (departements, territoireCode) => [
     `
 SELECT
@@ -307,6 +281,7 @@ WHERE
 SELECT
   ds.id as "declarationId",
   ds.created_at as "createdAt",
+  ds.edited_at as "editedAt",
   ds.statut as "statut",
   ds.organisme_id as "organismeId",
   ds.libelle as "libelle",
@@ -397,6 +372,55 @@ WHERE
       [declarationId, departements],
     ];
   },
+  getDeprecated: (organismeIds) => [
+    `SELECT
+  ds.id as "declarationId",
+  ds.statut as "statut",
+  ds.id_fonctionnelle as "idFonctionnelle",
+  ds.departement_suivi as "departementSuivi",
+  ds.organisme_id as "organismeId",
+  ds.libelle as "libelle",
+  ds.periode as "periode",
+  ds.date_debut::text as "dateDebut",
+  ds.date_fin::text as "dateFin",
+  ds.created_at as "createdAt",
+  ds.edited_at as "editedAt",
+  ds.duree as "duree",
+  ds.vacanciers as "vacanciers",
+  ds.personnel as "personnel",
+  ds.transport as "transport",
+  ds.hebergement as "hebergements",
+  COALESCE(ds.projet_sejour, '{}'::jsonb) as "projetSejour",
+  ds.sanitaires as "sanitaires",
+  ds.files as "files",
+  ds.attestation as "attestation",
+  o.personne_morale->>'siret' as "siret",
+  o.personne_morale->'etablissementPrincipal' as "organismeAgree",
+  dsm.message as "message",
+  CASE
+    WHEN (dsm.read_at IS NULL AND dsm.front_user_id IS NULL) THEN 'NON LU'
+    WHEN (dsm.read_at IS NOT NULL AND dsm.front_user_id IS NULL) THEN 'LU'
+    WHEN (dsm.back_user_id IS NULL) THEN 'REPONDU'
+  END AS "messageEtat",
+  CASE
+    WHEN (dsm.read_at IS NULL AND dsm.front_user_id IS NULL) THEN 1 -- NON LU
+    WHEN (dsm.read_at IS NOT NULL AND dsm.front_user_id IS NULL) THEN 2 -- LU
+    WHEN (dsm.back_user_id IS NULL) THEN 3 -- REPONDU
+  END AS "messageOrdreEtat",
+  dsm.read_at AS "messageReadAt",
+  dsm.created_at AS "messageCreatedAt",
+  COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
+FROM front.demande_sejour ds
+JOIN front.organismes o ON o.id = ds.organisme_id
+LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
+      SELECT MAX(dsmax.id)
+      FROM front.demande_sejour_message  dsmax
+      WHERE dsmax.declaration_id = ds.id)
+WHERE
+  o.id = ANY ($1)
+`,
+    [organismeIds],
+  ],
   getEmailBack: `
 WITH
   roles AS
@@ -556,6 +580,7 @@ WHERE
   getNextIndex: `
 SELECT nextval('front.seq_declaration_sejour') AS index
 `,
+
   getOne: (criterias) => [
     `
 SELECT
@@ -667,12 +692,43 @@ WHERE
   RETURNING
     id as "eventId"
   `,
+  /*
+   * La query peut insérer plusieurs hébergements d'un coup, d'ùou la necessité de generer plusieurs lignes via le .map
+   * de la requete. Par exemple, si l'on veut inserer 2 hebergements, on utilisera la syntaxe
+   * linkToHebergements(2) avec comme params le tableau (flat)
+   * [demande_sejour_id, HEBERGEMENT_ID_1, DATE_DEBUT_1, DATE_FIN_1, HEBERGEMENT_ID_2, DATE_DEBUT_2, DATE_FIN_2]
+   *
+   * Le .map genere le texte suivant :
+   * ($1, $2, $3, $4), ($1, $5, $6, $7)
+   * */
+  linkToHebergements: (nbRows) => `
+INSERT INTO
+  FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT (
+    DEMANDE_SEJOUR_ID,
+    HEBERGEMENT_ID,
+    DATE_DEBUT,
+    DATE_FIN
+  )
+VALUES
+${new Array(nbRows)
+  .fill(null)
+  .map(
+    (_, index) =>
+      `($1, $${3 * index + 2}, $${3 * index + 3}, $${3 * index + 4})`,
+  )
+  .join(",")}
+  `,
   saveDS2M: `
   UPDATE front.demande_sejour
   SET declaration_2m = $2
   WHERE id = $1
   RETURNING id as "declarationId"
 `,
+  unlinkToHebergement: `
+DELETE FROM FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT
+WHERE
+  DEMANDE_SEJOUR_ID = $1;
+  `,
   updateHebergement: `
   UPDATE front.demande_sejour ds
   SET
@@ -799,6 +855,16 @@ RETURNING
 `,
 };
 
+const linkToHebergements = async (client, declarationId, hebergements) => {
+  await client.query(query.unlinkToHebergement, [declarationId]);
+  if (hebergements.length > 0) {
+    await client.query(query.linkToHebergements(hebergements.length), [
+      declarationId,
+      ...hebergements.flatMap((h) => [h.hebergementId, h.dateDebut, h.dateFin]),
+    ]);
+  }
+};
+
 module.exports.create = async ({
   libelle,
   dateDebut,
@@ -841,33 +907,50 @@ module.exports.create = async ({
 
 module.exports.copy = async (declaration) => {
   log.i("copy - IN");
-  const response = await pool.query(
-    ...query.copy(
-      declaration.organismeId,
-      `COPIE - ${declaration.libelle}`,
-      declaration.dateDebut,
-      declaration.dateFin,
-      declaration.duree,
-      declaration.periode,
-      declaration.responsableSejour,
-      declaration.organisme,
-      declaration.hebergement,
-      declaration.informationsVacanciers,
-      declaration.informationsPersonnel,
-      declaration.informationsTransport,
-      declaration.projetSejour,
-      declaration.informationsSanitaires,
-      declaration.files,
-    ),
-  );
-  log.d(response);
-  const { declarationId } = response.rows[0];
+  const client = await pool.connect();
+  let declarationId;
+  try {
+    await client.query("BEGIN");
+    const response = await client.query(
+      ...query.copy(
+        declaration.organismeId,
+        `COPIE - ${declaration.libelle}`,
+        declaration.dateDebut,
+        declaration.dateFin,
+        declaration.duree,
+        declaration.periode,
+        declaration.responsableSejour,
+        declaration.organisme,
+        declaration.hebergement,
+        declaration.informationsVacanciers,
+        declaration.informationsPersonnel,
+        declaration.informationsTransport,
+        declaration.projetSejour,
+        declaration.informationsSanitaires,
+        declaration.files,
+      ),
+    );
+    log.d(response);
+    declarationId = response.rows[0].declarationId;
+    await linkToHebergements(
+      client,
+      declarationId,
+      declaration.hebergement?.hebergements ?? [],
+    );
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
   log.i("copy - DONE", { declarationId });
   return declarationId;
 };
 
 module.exports.delete = async (declarationId, userId) => {
   log.i("delete - IN");
+  await pool.query(query.unlinkToHebergement, [declarationId]);
   const { rowCount } = await pool.query(...query.delete(declarationId, userId));
   log.i("delete - DONE");
   return rowCount;
@@ -878,9 +961,47 @@ module.exports.cancel = async (declarationId, userId) => {
   log.i("cancel - DONE");
   return rowCount;
 };
-module.exports.get = async ({ sortBy }, organismesId) => {
+module.exports.get = async (organismesId, queryParams) => {
+  const titles = {
+    dateDebut: "ds.date_debut",
+    dateFin: "ds.date_fin",
+    departementSuivi: "ds.departement_suivi",
+    editedAt: "ds.edited_at",
+    idFonctionnelle: "ds.id_fonctionnelle",
+    libelle: "ds.libelle",
+    periode: "ds.periode",
+    siret: "o.personne_morale->>'siret'",
+    statut: "ds.statut",
+  };
+  const { limit, offset, sortBy, sortDirection } = sanityzePaginationParams(
+    queryParams,
+    {
+      sortBy: titles,
+    },
+  );
+  const filterParams = sanityzeFiltersParams(queryParams, titles);
+  const queryGet = query.get();
+  const filterQuery = applyFilters(queryGet, [organismesId], filterParams);
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  );
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
+};
+module.exports.getDeprecated = async ({ sortBy }, organismesId) => {
   log.i("get - IN", { organismesId });
-  const queryGet = query.get(organismesId);
+  const queryGet = query.getDeprecated(organismesId);
   let querySorted = "";
   if (sortBy) {
     if (sortBy === "messageOrdreEtat")
@@ -1182,10 +1303,21 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "hebergements": {
       log.d("hebergements", declarationId);
-      response = await pool.query(query.updateHebergement, [
-        parametre,
-        declarationId,
-      ]);
+      const client = await pool.connect();
+      try {
+        await client.query("BEGIN");
+        await linkToHebergements(client, declarationId, parametre.hebergements);
+        response = await client.query(query.updateHebergement, [
+          parametre,
+          declarationId,
+        ]);
+        await client.query("COMMIT");
+      } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+      } finally {
+        client.release();
+      }
       break;
     }
     default:

@@ -9,9 +9,9 @@
         </h1>
         <div
           v-if="
-                  usersStore.user.serviceCompetent === competence.NATIONALE &&
-                  props.user.id
-                "
+            usersStore.user.serviceCompetent === competence.NATIONALE &&
+            props.user.id
+          "
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
           <div
@@ -342,18 +342,25 @@ const userRegions = computed(() => {
 });
 
 const roleOptions = [
-  { label: "Accès à la consultation et création de comptes", name: "Compte" },
+  {
+    label: "Accès à la consultation et création de comptes",
+    name: "Compte",
+    value: "Compte",
+  },
   {
     label: "Accès en lecture aux déclarations de séjour",
     name: "DemandeSejour_Lecture",
+    value: "DemandeSejour_Lecture",
   },
   {
     label: "Accès en lecture/écriture aux déclarations de séjour",
     name: "DemandeSejour_Ecriture",
+    value: "DemandeSejour_Ecriture",
   },
   {
     label: "Autorisé à désactiver les comptes",
     name: "Desactivation",
+    value: "Desactivation",
   },
 ];
 
@@ -602,7 +609,6 @@ const closeModal = () => (popUpParams.value = null);
 const modalOpenCounter = ref(0);
 
 const openModal = (p) => {
-  console.log(p);
   modalOpenCounter.value++;
   popUpParams.value = {
     cb: () => {

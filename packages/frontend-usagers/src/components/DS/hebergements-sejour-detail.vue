@@ -62,7 +62,7 @@
             label="Nom de l'hébergement"
             :label-visible="true"
             :model-value="hebergementStore.hebergementCourant.nom"
-            readonly
+            disabled
           />
         </div>
         <div class="fr-fieldset__element fr-col-12">
@@ -73,7 +73,7 @@
             :model-value="
               hebergementStore.hebergementCourant.coordonnees.nomGestionnaire
             "
-            readonly
+            disabled
           />
         </div>
         <div class="fr-fieldset__element fr-col-12">
@@ -84,7 +84,7 @@
             :model-value="
               hebergementStore.hebergementCourant.coordonnees.adresse.label
             "
-            readonly
+            disabled
           />
         </div>
         <div
@@ -109,7 +109,7 @@
             :model-value="
               hebergementStore.hebergementCourant.coordonnees.numTelephone1
             "
-            readonly
+            disabled
           />
         </div>
         <div class="fr-fieldset__element fr-col-12">
@@ -120,7 +120,7 @@
             :model-value="
               hebergementStore.hebergementCourant.coordonnees.numTelephone2
             "
-            readonly
+            disabled
           />
         </div>
         <div class="fr-fieldset__element fr-col-12">
@@ -129,7 +129,7 @@
             label="Adresse courriel"
             :label-visible="true"
             :model-value="hebergementStore.hebergementCourant.coordonnees.email"
-            readonly
+            disabled
           />
         </div>
       </DsfrFieldset>
@@ -140,12 +140,11 @@
               name="informationsLocaux.type"
               legend="Type du lieu d'hébergement"
               :model-value="type"
-              :disabled="!props.modifiable"
+              disabled
               :options="hebergementUtils.typeOptions"
               :is-valid="typeMeta.valid"
               :inline="false"
               :error-message="typeErrorMessage"
-              readonly
               @update:model-value="onTypeChange"
             />
           </div>
@@ -157,7 +156,7 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.visiteLocaux"
               legend="Une visite des locaux par l’organisateur a-t-elle été effectuée ?"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="visiteLocaux"
               :options="ouiNonOptions"
               :is-valid="visiteLocauxMeta.valid"
@@ -174,50 +173,18 @@
             label="Date de la dernière visite "
             :label-visible="true"
             :model-value="visiteLocauxAt"
-            :readonly="!props.modifiable"
+            disabled
             :is-valid="visiteLocauxAtMeta.valid"
             :error-message="visiteLocauxAtErrorMessage"
             @update:model-value="onVisiteLocauxAtChange"
           />
         </div>
-        <DsfrAlert role="status">
-          <p>
-            Informations ERP : Selon la circulaire du 6 octobre 2023, il sera
-            requis l’arrêté d’autorisation du maire et/ou la dernière
-            attestation du passage de la commission de sécurité datant de moins
-            de 5 ans pour séjours se déroulant en établissement recevant du
-            public (ERP).
-          </p>
-          <p>
-            A défaut de transmission de ces justificatifs, la DDETS met en
-            demeure l'organisme de produire ces pièces et propose au Préfet de
-            département une annulation des séjours, si absence de tous les
-            justificatifs.
-          </p>
-          <p>On distingue 3 catégories d’hébergements :</p>
-          <ul role="list">
-            <li role="listitem">
-              Les établissements recevant du public (ERP, tous les hôtels et les
-              gros meubles de tourisme deplus de 15 personnes de type gîtes de
-              groupes
-            </li>
-            <li role="listitem">
-              Les Bâtiments d’Habitation Collective (BHC, comme des résidences
-              de tourisme)
-            </li>
-            <li role="listitem">
-              Les maisons individuelles (MI, comme des chambres d’hôtes et
-              petits meublés, qui ne peuvent dépasser 5 chambres et hébergent 15
-              personnes au maximum)
-            </li>
-          </ul>
-        </DsfrAlert>
         <div class="fr-fieldset__element fr-col-12">
           <div class="fr-input-group">
             <DsfrRadioButtonSet
               name="informationsLocaux.reglementationErp"
               legend="Le lieu d’hébergement est-il soumis à la réglementation ERP (établissement recevant du public) ?"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="reglementationErp"
               :options="ouiNonOptions"
               :is-valid="reglementationErpMeta.valid"
@@ -232,14 +199,14 @@
             v-model="fileDerniereAttestationSecurite"
             label="Téléchargement du document Dernière attestation de passage de la commission sécurité"
             hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
-            :modifiable="props.modifiable"
+            :modifiable="false"
             :error-message="fileDerniereAttestationSecuriteErrorMessage"
           />
           <FileUpload
             v-model="fileDernierArreteAutorisationMaire"
             label="Téléchargement du document Dernier arrêté d’autorisation du maire"
             hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
-            :modifiable="props.modifiable"
+            :modifiable="false"
             :error-message="fileDernierArreteAutorisationMaireErrorMessage"
           />
         </div>
@@ -248,7 +215,7 @@
             v-model="fileReponseExploitantOuProprietaire"
             label="Téléchargement du document Réponse du propriétaire ou exploitant indiquant les raisons pour lesquelles le lieu d’hébergement n’est pas soumis à la réglementation ERP"
             hint="Taille maximale : 5 Mo. Formats supportés : jpg, png, pdf."
-            :modifiable="props.modifiable"
+            :modifiable="false"
             :error-message="fileReponseExploitantOuProprietaireErrorMessage"
           />
         </div>
@@ -257,7 +224,7 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.accessibilite"
               legend="Accessibilité"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="accessibilite"
               :options="hebergementUtils.accessibiliteOptions"
               :is-valid="accessibiliteMeta.valid"
@@ -281,6 +248,7 @@
             :model-value="accessibilitePrecision"
             :error-message="accessibilitePrecisionErrorMessage"
             :is-valid="accessibilitePrecisionMeta.valid"
+            disabled
             @update:model-value="onAccessibilitePrecisionChange"
           />
         </div>
@@ -289,7 +257,7 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.pension"
               legend="Type de pension"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="pension"
               :options="hebergementUtils.pensionOptions"
               :is-valid="pensionMeta.valid"
@@ -307,7 +275,7 @@
             :inline="true"
             :options="hebergementUtils.prestationsHotelieresOptions"
             :small="true"
-            :disabled="!props.modifiable"
+            disabled
             :error-message="prestationsHotelieresErrorMessage"
             @update:model-value="onPrestationsHotelieresChange"
           />
@@ -324,6 +292,7 @@
             :model-value="descriptionLieuHebergement"
             :error-message="descriptionLieuHebergementErrorMessage"
             :is-valid="descriptionLieuHebergementMeta.valid"
+            disabled
             @update:model-value="onDescriptionLieuHebergementChange"
           />
         </div>
@@ -339,6 +308,7 @@
             :model-value="nombreLits"
             :error-message="nombreLitsErrorMessage"
             :is-valid="nombreLitsMeta.valid"
+            disabled
             @update:model-value="onNombreLitsChange"
           />
         </div>
@@ -354,6 +324,7 @@
             :model-value="nombreLitsSuperposes"
             :error-message="nombreLitsSuperposesErrorMessage"
             :is-valid="nombreLitsSuperposesMeta.valid"
+            disabled
             @update:model-value="
               onNombreLitsSuperposesChange($event !== '' ? $event : null)
             "
@@ -369,7 +340,7 @@
               name="informationsLocaux.litsDessus"
               legend="Pour les lits superposés, les lits « du dessus » seront-ils occupés
             par des vacanciers ?"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="litsDessus"
               :options="ouiNonOptions"
               :is-valid="litsDessusMeta.valid"
@@ -385,7 +356,7 @@
             name="informationsLocaux.nombreMaxPersonnesCouchage"
             label="Nombre maximum de personnes prévues par espace de couchage"
             type="number"
-            :readonly="!props.modifiable"
+            disabled
             :label-visible="true"
             :model-value="nombreMaxPersonnesCouchage"
             :error-message="nombreMaxPersonnesCouchageErrorMessage"
@@ -399,7 +370,7 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.couchageIndividuel"
               legend="Chaque vacancier bénéficie-t-il d’un couchage individuel ?"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="couchageIndividuel"
               :options="ouiNonOptions"
               :is-valid="couchageIndividuelMeta.valid"
@@ -416,7 +387,7 @@
               name="informationsLocaux.rangementIndividuel"
               legend="Chaque vacancier bénéficie t-il d’un espace de rangement des
             affaires personnelles ?"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="rangementIndividuel"
               :options="ouiNonOptions"
               :is-valid="rangementIndividuelMeta.valid"
@@ -432,7 +403,7 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.chambresUnisexes"
               legend="Les femmes et les hommes dorment-ils dans des lieux séparés ?"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="chambresUnisexes"
               :options="ouiNonOptions"
               :is-valid="chambresUnisexesMeta.valid"
@@ -448,7 +419,7 @@
             <DsfrRadioButtonSet
               name="informationsLocaux.chambresDoubles"
               legend="Les couples de vacanciers bénéficient t-ils de chambres doubles ?"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="chambresDoubles"
               :options="ouiNonOptions"
               :is-valid="chambresDoublesMeta.valid"
@@ -465,7 +436,7 @@
               name="informationsLocaux.amenagementsSpecifiques"
               legend="Des aménagements spécifiques des locaux sont-ils prévus pour
             accueillir les vacanciers ?"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="amenagementsSpecifiques"
               :options="ouiNonOptions"
               :is-valid="amenagementsSpecifiquesMeta.valid"
@@ -484,7 +455,7 @@
             name="informationsLocaux.precisionAmenagementsSpecifiques"
             label="Précisez les types d'aménagements"
             hint="Redimensionnez le champ pour saisir plus de ligne. Minimum 5 caractères"
-            :readonly="!props.modifiable"
+            disabled
             :label-visible="true"
             :is-textarea="true"
             placeholder=""
@@ -501,7 +472,7 @@
             <DsfrRadioButtonSet
               name="informationsTransport.vehiculesAdaptes"
               legend="Les véhicules utilisés sont-ils adaptés ?"
-              :disabled="!props.modifiable"
+              disabled
               :model-value="vehiculesAdaptes"
               :options="ouiNonOptions"
               :is-valid="vehiculesAdaptesMeta.valid"
@@ -515,7 +486,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="informationsTransport.deplacementProximite"
-            :readonly="!props.modifiable"
+            disabled
             label="Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité. Minimum 5 caractères"
             :label-visible="true"
             :is-textarea="true"
@@ -530,7 +501,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="informationsTransport.excursion"
-            :readonly="!props.modifiable"
+            disabled
             label="Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions. Minimum 5 caractères"
             :label-visible="true"
             :is-textarea="true"
@@ -544,7 +515,7 @@
         <div class="fr-fieldset__element fr-col-12">
           <DsfrInputGroup
             name="informationsTransport.rejoindreEtape"
-            :readonly="!props.modifiable"
+            disabled
             label="Précisez le mode de transport utilisé pour rejoindre cette étape (optionnel)"
             :label-visible="true"
             :is-textarea="true"
@@ -611,7 +582,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { hebergement as hebergementUtils, FileUpload } from "@vao/shared";
+import { FileUpload, hebergement as hebergementUtils } from "@vao/shared";
 
 const config = useRuntimeConfig();
 

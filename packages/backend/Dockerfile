@@ -4,7 +4,7 @@ FROM node:$NODE_VERSION AS build
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-COPY packages/backend/package.json packages/backend/yarn.lock packages/backend/
+COPY packages/backend/package.json packages/backend/
 RUN yarn workspace @vao/backend install --frozen-lockfile --production
 
 #--- Run stage
@@ -18,7 +18,7 @@ ENV NODE_ENV: production
 
 COPY --from=build /app/node_modules node_modules
 COPY package.json yarn.lock ./
-COPY packages/backend/package.json packages/backend/yarn.lock packages/backend/
+COPY packages/backend/package.json packages/backend/
 COPY packages/backend/src packages/backend/src
 
 CMD ["node", "packages/backend/src/index.js"]

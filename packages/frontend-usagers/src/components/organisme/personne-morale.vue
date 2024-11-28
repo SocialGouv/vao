@@ -262,9 +262,14 @@
             <div class="fr-input-group">
               <DsfrSelect
                 v-model="etablissementFilter.autorisation"
-                label="Autorisation"
-                name="Autorisation"
-                :options="['Tous', 'En activité', 'Fermé']"
+                label="Statut"
+                name="Statut"
+                :options="[
+                  'Tous',
+                  'En activité',
+                  'Autorisés à organiser des séjours',
+                  'Fermés',
+                ]"
               />
             </div>
           </div>
@@ -272,7 +277,7 @@
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
             <DsfrTable
-              :title="`Etablissements secondaires (${etablissements.length}) dont ${formatedEtablissements.length} actifs`"
+              :title="`Etablissements secondaires (${etablissements.length}) dont ${openedEtablissements.length} actifs et ${authorizedEtablissements.length} autorisés à organiser des séjours`"
               :headers="[
                 'SIRET',
                 'Dénomination',
@@ -502,44 +507,86 @@ const formatedSiret = computed(() => {
 });
 
 const formatedEtablissements = computed(() => {
-  return etablissements.value
-    .filter((e) => {
-      return !props.modifiable ? e.enabled : e;
-    })
-    .filter(
-      (e) =>
-        new RegExp(etablissementFilter.value.siret, "i").test(e.siret) &&
-        new RegExp(etablissementFilter.value.denomination, "i").test(
-          e.denomination,
-        ) &&
-        new RegExp(etablissementFilter.value.commune, "i").test(e.commune) &&
-        (etablissementFilter.value.autorisation === "Tous"
-          ? "true"
-          : (etablissementFilter.value.autorisation === "En activité" &&
-              e.enabled) ||
-            (etablissementFilter.value.autorisation === "Fermé" && !e.enabled)),
-    )
-    .map((e) => {
-      const row = [
-        e.siret ?? "",
-        e.denomination ?? "",
-        e.adresse ?? "",
-        e.codePostal ?? "",
-        e.commune ?? "",
+  return (
+    etablissements.value
+      .filter((e) => {
+        // filtering conditions
+        const elements = [
+          () => (!props.modifiable ? e.enabled : e),
+          () => new RegExp(etablissementFilter.value.siret, "i").test(e.siret),
+          () =>
+            new RegExp(etablissementFilter.value.denomination, "i").test(
+              e.denomination,
+            ),
+          () =>
+            new RegExp(etablissementFilter.value.commune, "i").test(e.commune),
+          () => {
+            if (etablissementFilter.value.autorisation === "Tous") return true;
+            if (
+              (etablissementFilter.value.autorisation === "En activité" &&
+                e.enabled) ||
+              (etablissementFilter.value.autorisation === "Fermés" &&
+                !e.enabled) ||
+              (etablissementFilter.value.autorisation ===
+                "Autorisés à organiser des séjours" &&
+                e.etatAdministratif === "En activité")
+            )
+              return true;
+            return false;
+          },
+        ];
+        return elements.every((cb) => cb());
+      })
+      // sry
+      .map((e) => [
+        {
+          component: "span",
+          class: e.etatAdministratif === "En activité" ? "" : "cell--disabled",
+          text: e.siret ?? "",
+        },
+        {
+          component: "span",
+          class: e.etatAdministratif === "En activité" ? "" : "cell--disabled",
+          text: e.denomination ?? "",
+        },
+        {
+          component: "span",
+          class: e.etatAdministratif === "En activité" ? "" : "cell--disabled",
+          text: e.adresse ?? "",
+        },
+        {
+          component: "span",
+          class: e.etatAdministratif === "En activité" ? "" : "cell--disabled",
+          text: e.codePostal ?? "",
+        },
+        {
+          component: "span",
+          class: e.etatAdministratif === "En activité" ? "" : "cell--disabled",
+          text: e.commune ?? "",
+        },
         {
           component: DsfrToggleSwitch,
           modelValue: e.enabled,
+          inactiveText:
+            e.etatAdministratif === "En activité" ? "Désactivé" : "Fermé",
           disabled:
             !props.modifiable ||
-            (!e.enabled && !(e.etatAdministratif == "En activité")),
+            (!e.enabled && !(e.etatAdministratif === "En activité")),
           onChange: () => {
             e.enabled = !e.enabled;
           },
         },
-      ];
-      return row;
-    });
+      ])
+  );
 });
+
+const openedEtablissements = computed(() =>
+  etablissements.value.filter((e) => e.etatAdministratif === "En activité"),
+);
+
+const authorizedEtablissements = computed(() =>
+  etablissements.value.filter((e) => e.enabled),
+);
 
 function trimSiret(s) {
   return onSiretChange(s.replace(/ /g, ""));
@@ -760,3 +807,10 @@ function next() {
   );
 }
 </script>
+
+<style scoped>
+::v-deep(.cell--disabled) {
+  color: var(--text-disabled-grey);
+  font-style: italic;
+}
+</style>

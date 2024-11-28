@@ -1,10 +1,4 @@
-const {
-  S3Client,
-  PutObjectCommand,
-  HeadObjectCommand,
-  GetObjectCommand,
-} = require("@aws-sdk/client-s3");
-const { read } = require("fs");
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 
 const knex = require("knex")({
   client: "pg",
@@ -34,6 +28,7 @@ const s3Client = new S3Client({
   endpoint: process.env.S3_BUCKET_ENDPOINT,
   forcePathStyle: true,
   region: process.env.S3_BUCKET_REGION,
+  signatureVersion: "v4",
 });
 
 async function main() {
@@ -52,76 +47,39 @@ async function main() {
 
   for await (const row of stream) {
     rowId++;
-    if (rowId > 20) {
-      break;
-    }
-    console.log(`Processing row ${rowId} of ${nbRows} ; nbErrors: ${nbErrors}`);
+    console.log(
+      `Processing row ${rowId} of ${nbRows} ; nbErrors: ${nbErrors} ; uuid=${row.uuid}`,
+    );
     const objectKey = `${S3_BUCKET_ROOT_DIR}/${row.uuid}.pdf`;
-    // try {
-    //   // Check if the file already exists
-    //   await s3Client.send(
-    //     new HeadObjectCommand({
-    //       Bucket: S3_BUCKET_NAME,
-    //       Key: objectKey,
-    //     }),
-    //   );
-    //   // If the file exists, log it and skip the upload
-    //   console.log(`File ${objectKey} already exists. Skipping upload.`);
-    //   continue;
-    // } catch (err) {
-    // If a 404 error occurs, the file doesn't exist, proceed with upload
-    //   if (err.name === "NotFound") {
+
     try {
       const reencodedFileName = Buffer.from(row.filename, "latin1").toString(
-        "utf8",
+        "base64",
       );
+
       const metadata = {
         category: String(row.category),
         created_at: String(row.created_at),
         mimetype: String(row.mime_type),
         originalname: reencodedFileName,
       };
-      console.log("metadata", metadata);
-      console.log("row", row);
-      // Upload the file since it doesn't exist
+
       await s3Client.send(
         new PutObjectCommand({
           Body: row.file,
           Bucket: S3_BUCKET_NAME,
-          //   ContentType: "application/octet-stream",
           Key: objectKey,
           Metadata: metadata,
         }),
       );
-      console.log(`Uploaded ${objectKey}`);
     } catch (uploadErr) {
       console.error(`Failed to upload ${objectKey}:`, uploadErr);
       nbErrors++;
-      continue;
-      //   process.exit(1);
     }
-    //   } else {
-    //     // If the error isn't a 404, throw it to handle other failures
-    //     console.error(`Error checking existence of ${objectKey}:`, err);
-    //     process.exit(1);
-    //   }
-    // }
   }
 
   console.log("Migration complete");
   process.exit(0);
 }
 
-async function readS3Meta() {
-  const uuid = "0ee60561-3366-40f6-b3fc-485e6e74ae41";
-  const data = await s3Client.send(
-    new GetObjectCommand({
-      Bucket: process.env.S3_BUCKET_NAME,
-      Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.pdf`,
-    }),
-  );
-  console.log(data.Metadata);
-}
-
-// readS3Meta();
 main();

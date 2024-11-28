@@ -74,7 +74,7 @@
     size="md"
     @close="isModalOpen = false"
   >
-    <FileUpload v-model="file" :url="backendUrl" />
+    <FileUpload v-model="file" :cdn-url="props.cdnUrl" />
     <DsfrButton type="button" @click="isModalOpen = false">Valider</DsfrButton>
   </DsfrModal>
 </template>

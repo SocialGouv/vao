@@ -5,7 +5,21 @@ const DemandeSejour = require("../services/DemandeSejour");
 
 const router = express.Router();
 
-router.get("/debug-sentry", async function mainHandler(req, res, next) {
+router.get("/debug-sentry", (req, res, next) => {
+  Sentry.startNewTrace(async () => {
+    Sentry.startSpan(
+      {
+        name: `Profile ${req.method} ${req.baseUrl}${req.path}`,
+        op: "http",
+      },
+      async () => {
+        await mainHandler(req, res, next);
+      },
+    );
+  });
+});
+
+async function mainHandler(req, res, next) {
   // always use try/catch in async functions and forward errors to next()
   // otherwise express with crash
   try {
@@ -42,6 +56,6 @@ router.get("/debug-sentry", async function mainHandler(req, res, next) {
   } catch (err) {
     next(err);
   }
-});
+}
 
 module.exports = router;
