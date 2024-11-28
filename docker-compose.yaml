@@ -5,6 +5,7 @@ volumes:
 services:
   frontend-usagers:
     image: "node:20.15.1-bullseye-slim"
+    restart: unless-stopped
     working_dir: /app
     command: bash -c "/app/packages/frontend-usagers/start.sh"
     volumes:
@@ -30,6 +31,7 @@ services:
 
   frontend-bo:
     image: "node:20.15.1-bullseye-slim"
+    restart: unless-stopped
     working_dir: /app
     command: bash -c "/app/packages/frontend-bo/start.sh"
     volumes:
@@ -55,6 +57,7 @@ services:
 
   backend:
     image: "node:20.15.1-bullseye-slim"
+    restart: unless-stopped
     working_dir: /app
     command: bash -c "/app/packages/backend/start.sh"
     volumes:
@@ -95,7 +98,7 @@ services:
 
   postgres:
     image: postgres:15.1
-    restart: always
+    restart: unless-stopped
     environment:
       - PGTZ=Europe/Paris
       - NODE_ENV=development
@@ -110,19 +113,21 @@ services:
       - ./pg/scripts:/scripts
       - ./pg/seeds:/seeds
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
   maildev:
     image: maildev/maildev:2.1.0
+    restart: unless-stopped
     ports:
       - "1080:1080"
       - "1025:1025"
 
   pghero:
     image: ankane/pghero
+    restart: unless-stopped
     environment:
       - DATABASE_URL=postgres://${PG_VAO_SUPERUSER}:${PG_VAO_SUPERPASSWORD}@postgres:5432/vao
     ports:
@@ -132,6 +137,7 @@ services:
 
   minio:
     image: minio/minio
+    restart: unless-stopped
     volumes:
       - minio-data:/data
     ports:
