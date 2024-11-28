@@ -67,7 +67,6 @@ module.exports = async (req, res, next) => {
   try {
     await Send(MailUtils.usagers.authentication.sendAccountValided(email));
   } catch (error) {
-    console.log(error);
     return next(
       new AppError("Erreur lors de l'envoi du mail", {
         cause: error,

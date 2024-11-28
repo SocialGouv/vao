@@ -577,7 +577,7 @@ module.exports = {
   usagers: {
     authentication: {
       sendAccountValided: (email) => {
-        const link = `${frontBODomain}/connexion/`;
+        const link = `${frontUsagersDomain}/connexion/`;
         const html = sendTemplate.getBody(
           "Portail VAO - Prochaines étapes",
           [
@@ -604,7 +604,7 @@ module.exports = {
               type: "link",
             },
           ],
-          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
         const params = {
           from: senderEmail,
