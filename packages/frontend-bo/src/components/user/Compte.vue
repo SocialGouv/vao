@@ -145,6 +145,20 @@
           </div>
         </div>
         <div
+          v-if="serviceCompetence !== competence.NATIONALE"
+          class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+        >
+          <div class="fr-input-group">
+            <DsfrButton
+              :disabled="!territoireCode"
+              type="button"
+              label="Accéder à la fiche d’informations du territoire"
+              primary
+              @click="navigateFicheTerritoire"
+            />
+          </div>
+        </div>
+        <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
           <DsfrCheckboxSet
@@ -266,6 +280,7 @@ onMounted(async () => {
 
 const log = logger("pages/comptes/");
 const usersStore = useUserStore();
+const territoireStore = useTerritoireStore();
 const toaster = useToaster();
 const config = useRuntimeConfig();
 const regionStore = useRegionStore();
@@ -493,6 +508,13 @@ const displayInfos = {
   },
 };
 const displayType = ref("UnexpectedError");
+
+async function navigateFicheTerritoire() {
+  const idTerritoire = await territoireStore.getFicheIdByTerritoireCode(
+    territoireCode.value,
+  );
+  navigateTo(`/territoires/${idTerritoire}`);
+}
 
 async function close() {
   navigateTo("/comptes/liste");
