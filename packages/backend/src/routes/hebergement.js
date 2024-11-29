@@ -30,6 +30,7 @@ router.get(
   hebergementController.getById,
 );
 router.get("/admin/:id", boCheckJWT, hebergementController.getById);
+router.get("/siren/:siren", checkJWT, hebergementController.getBySiren);
 router.get("/", checkJWT, hebergementController.get);
 router.post("/", checkJWT, hebergementController.post);
 router.post(

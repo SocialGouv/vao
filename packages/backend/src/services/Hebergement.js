@@ -170,6 +170,28 @@ ${new Array(nbRows)
     `,
     [id],
   ],
+  getByIdAndMySiren: `
+    SELECT distinct(h.id)
+      FROM 
+      front.hebergement h
+      JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
+      JOIN front.organismes o ON o.id = uo.org_id
+      WHERE h.id = $1
+      AND (uo.use_id = $2 OR o.personne_morale->>'siren' = $3)
+  `,
+  getBySiren: `
+    SELECT
+      h.id,
+      h.nom,
+      h.coordonnees#> '{adresse, departement}' as departement,
+      h.coordonnees#> '{adresse, label}' as adresse,
+      h.supprime,
+      h.created_at as "createdAt",
+      h.edited_at as "editedAt"
+    FROM front.hebergement h
+    JOIN front.organismes o ON h.organisme_id = o.id
+    WHERE o.personne_morale->>'siren' = $1
+    `,
   getByUserId: `
     SELECT
       id,
@@ -369,6 +391,24 @@ module.exports.getByUserId = async (userId) => {
   return hebergements;
 };
 
+module.exports.getBySiren = async (siren) => {
+  log.i("getBySiren - IN", { siren });
+  const response = await pool.query(query.getBySiren, [siren]);
+  log.d("getBySiren - DONE");
+  return response.rows;
+};
+
+module.exports.getByIdAndMySiren = async (id, userId, siren) => {
+  log.i("getByIdAndSiren - IN");
+  const response = await pool.query(query.getByIdAndMySiren, [
+    id,
+    userId,
+    siren,
+  ]);
+  log.d("getByIdAndSiren - DONE");
+  return response.rows;
+};
+
 module.exports.getById = async (id) => {
   log.i("getById - IN", { id });
   const { rows: hebergements, rowCount } = await pool.query(
@@ -377,3 +417,4 @@ module.exports.getById = async (id) => {
   log.d("getById - DONE");
   return rowCount > 0 ? hebergements[0] : null;
 };
+

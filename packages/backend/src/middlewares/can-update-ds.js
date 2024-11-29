@@ -1,11 +1,16 @@
 const { number } = require("yup");
 const ValidationAppError = require("../utils/validation-error");
 const DemandeSejour = require("../services/DemandeSejour");
+const Organisme = require("../services/Organisme");
+
 const { statuts } = require("../helpers/ds-statuts");
 const AppError = require("../utils/error");
 
 async function canUpdateDs(req, _res, next) {
   let { declarationId } = req.params;
+  const { id: userId } = req.decoded;
+  let organisme;
+  let sejour;
 
   try {
     declarationId = await number().required().validate(declarationId);
@@ -14,6 +19,23 @@ async function canUpdateDs(req, _res, next) {
   }
 
   try {
+    organisme = await Organisme.getOne({
+      use_id: userId,
+    });
+    sejour = await DemandeSejour.getById(declarationId);
+
+    if (organisme.organismeId !== sejour.organismeId) {
+      next(
+        new AppError(
+          `Organisme non autorisé à faire une mise à jour sur cette demande de séjour`,
+          {
+            name: "Not Authorized",
+            statusCode: 403,
+          },
+        ),
+      );
+    }
+
     const statut = await DemandeSejour.getStatut(declarationId);
     if (
       [

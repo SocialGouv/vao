@@ -22,14 +22,12 @@ module.exports = async function post(req, res, next) {
       }),
     );
   }
-
   try {
     declarationId = await number().required().validate(declarationId);
     parametre = await object().json().required().validate(parametre);
   } catch (error) {
     return next(new ValidationAppError(error));
   }
-
   try {
     const updatedDeclarationId = await DemandeSejour.update(
       type,

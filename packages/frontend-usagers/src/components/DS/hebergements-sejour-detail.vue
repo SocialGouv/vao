@@ -603,6 +603,7 @@ const emit = defineEmits(["cancel", "update"]);
 const log = logger("components/DS/hebergement-sejour-detail");
 
 const hebergementStore = useHebergementStore();
+const demandeSejourStore = useDemandeSejourStore();
 
 const zoom = 15;
 const markerLatLng = computed(() => {
@@ -916,7 +917,9 @@ async function addHebergement(hebergement) {
   if (!id) {
     return;
   }
-  await hebergementStore.fetch();
+  await hebergementStore.fetch({
+    organismeId: demandeSejourStore.demandeCourante.organismeId,
+  });
   handleHebergementIdChange(id);
   resetApiStatut();
   closeAddHebergement();

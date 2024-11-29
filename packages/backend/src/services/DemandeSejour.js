@@ -421,6 +421,16 @@ WHERE
 `,
     [organismeIds],
   ],
+  getByIdOrUserSiren: `
+    SELECT distinct(ds.id)
+    FROM
+    front.demande_sejour ds
+    JOIN front.user_organisme uo ON uo.org_id = ds.organisme_id
+    JOIN front.users u ON uo.use_id = u.id
+    JOIN front.organismes o ON o.id = ds.organisme_id
+    WHERE ds.id = $1
+    AND (u.id = $3 OR o.personne_morale->>'siren' = $2)
+  `,
   getEmailBack: `
 WITH
   roles AS
@@ -1029,6 +1039,17 @@ module.exports.getOne = async (criterias = {}) => {
   }
   log.i("getOne - DONE");
   return demandes[0];
+};
+
+module.exports.getByIdOrUserSiren = async (id, siren, userId) => {
+  log.i("getByIdOrUserSiren - IN");
+  const response = await pool.query(query.getByIdOrUserSiren, [
+    id,
+    siren,
+    userId,
+  ]);
+  log.d("getByIdOrUserSiren - DONE");
+  return response.rows;
 };
 
 module.exports.getByDepartementCodes = async (
