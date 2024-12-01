@@ -13,7 +13,7 @@ jobs:
     name: Debug kubeconfig
     runs-on: ubuntu-latest
     steps:
-      - uses: azure/setup-kubectl@v3
+      - uses: azure/setup-kubectl@v4
       - name: extract kubeconfig
         run: |
           echo -n "${{secrets.KUBECONFIG}}" | base64 --decode > kubeconfig
@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: azure/setup-kubectl@v3
+      - uses: azure/setup-kubectl@v4
       - name: extract kubeconfig
         run: |
           echo -n "${{secrets.KUBECONFIG}}" | base64 --decode > kubeconfig
