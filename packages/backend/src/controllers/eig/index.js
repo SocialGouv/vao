@@ -8,3 +8,4 @@ module.exports.depose = require("./depose");
 module.exports.delete = require("./delete");
 module.exports.getAdmin = require("./get-admin");
 module.exports.markAsRead = require("./mark-as-read");
+module.exports.getAvailableDs = require("./available-ds");

@@ -18,22 +18,18 @@
         <DsfrSearchBar
           label="Selectionner le séjour"
           class="fr-mb-2v"
-          :model-value="search"
           placeholder="Rechercher par code ou libellé"
           :disabled="!eigStore.canModify"
-          @update:model-value="search = $event"
+          @update:model-value="fetchAvailableDsDebounce($event)"
         />
-        <div
-          v-for="demande in search.length > 0 ? filteredDemandes : []"
-          :key="demande.declarationId"
-        >
+        <div v-for="demande in filteredDemandes" :key="demande.id">
           <DsfrTag
             tag-name="button"
             class="fr-my-2v"
             @click="
               () => {
-                onChooseDeclaration(demande.declarationId);
-                search = '';
+                onChooseDeclaration(demande.id);
+                eigStore.setSelectedDemande(demande.id);
               }
             "
           >
@@ -43,7 +39,7 @@
       </div>
       <div class="fr-fieldset__element">
         <DsfrSelect
-          v-if="!!selectedDemande"
+          v-if="!!eigStore.selectedDemande"
           label="Sélection du département où a eu lieu l'incident"
           name="departements"
           :close-on-select="true"
@@ -57,7 +53,7 @@
       </div>
       <div class="fr-fieldset__element">
         <DsfrInputGroup
-          v-if="!!selectedDemande"
+          v-if="!!eigStore.selectedDemande"
           name="date"
           type="date"
           label="Date de l'incident"
@@ -86,6 +82,9 @@
         :is-downloading="props.isDownloading"
       />
     </fieldset>
+    <pre>{{ departementsOptions }}</pre>
+    <pre>{{ selectedDemandeDateRange }}</pre>
+
   </div>
 </template>
 
@@ -97,6 +96,8 @@ import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
 import dayjs from "dayjs";
 import { DsfrAlert } from "@gouvminint/vue-dsfr";
 
+const toaster = useToaster();
+
 const emit = defineEmits(["next", "update"]);
 
 const props = defineProps({
@@ -106,49 +107,46 @@ const props = defineProps({
 });
 
 const eigStore = useEigStore();
-const demandeSejourStore = useDemandeSejourStore();
-demandeSejourStore.fetchDemandes();
-
-const search = ref("");
-
 const route = useRoute();
 
+let timeout;
+const fetchAvailableDsDebounce = (search) => {
+  if (timeout) {
+    clearTimeout(timeout);
+  }
+  timeout = setTimeout(async () => {
+    try {
+      await eigStore.getAvailableDs(search);
+    } catch (error) {
+      toaster.error(
+        "Une erreur est survenue lors de la récupération de la demande",
+      );
+      throw error;
+    }
+  }, 300);
+};
+
 const filteredDemandes = computed(() =>
-  demandeSejourStore.demandes
-    .filter(
-      (d) =>
-        eig.isDeclarationligibleToEig(d) &&
-        (new RegExp(search.value, "i").test(d.idFonctionnelle) ||
-          new RegExp(search.value, "i").test(d.libelle)) &&
-        d.declarationId !== declarationId.value,
-    )
-    .slice(0, 10),
+  eigStore.availableDs.filter((d) => d.id !== declarationId.value),
 );
-const selectedDemande = computed(() => {
-  return (
-    demandeSejourStore.demandes?.find(
-      (d) => d.declarationId === declarationId.value,
-    ) ?? null
-  );
-});
 
 const selectedDemandeLabel = computed(() => {
-  if (!selectedDemande.value) {
+  if (!eigStore.selectedDemande) {
     return null;
   }
-  return getTagSejourLibelle(selectedDemande.value);
+  return getTagSejourLibelle(eigStore.selectedDemande);
 });
 
 const selectedDemandeDateRange = computed(() => {
-  if (!selectedDemande.value) {
+  if (!eigStore.selectedDemande) {
     return null;
   }
-  return [selectedDemande.value.dateDebut, selectedDemande.value.dateFin];
+  return [eigStore.selectedDemande.dateDebut, eigStore.selectedDemande.dateFin];
 });
 
 const departementsOptions = computed(
   () =>
-    selectedDemande.value?.hebergements?.hebergements
+    eigStore.selectedDemande?.hebergement?.hebergements
       ?.map((h) => h?.coordonnees?.adresse?.departement)
       .filter((d) => !!d) ?? [],
 );
@@ -163,6 +161,16 @@ const initialValues = {
     ? dayjs(eigStore.currentEig?.date).format("YYYY-MM-DD")
     : null,
 };
+
+onMounted(() => {
+  if (initialValues.declarationId) {
+    eigStore.setSelectedDemande(initialValues.declarationId);
+  }
+
+  if (!departement.value) {
+    setDepartement();
+  }
+});
 
 const { meta, values } = useForm({
   validationSchema,
@@ -197,17 +205,12 @@ const {
 
 const onChooseDeclaration = (id) => {
   onDeclarationIdChange(id);
+  eigStore.setSelectedDemande(null);
   setDepartement();
   if (id == null) {
     onDateChange(null, false);
   }
 };
-
-onMounted(() => {
-  if (!departement.value) {
-    setDepartement();
-  }
-});
 
 const next = () => {
   if (!eigStore.canModify) {
@@ -226,6 +229,12 @@ const next = () => {
     eigModel.UpdateTypes.DECLARATION_SEJOUR,
   );
 };
+
+onUnmounted(() => {
+  if (timeout) {
+    clearTimeout(timeout);
+  }
+});
 </script>
 
 <style scoped lang="scss"></style>

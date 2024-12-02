@@ -36,6 +36,7 @@ router.get(
   checkPermissionDeclarationSejour,
   eigController.getByDsId,
 );
+router.get("/available-ds", checkJWT, eigController.getAvailableDs);
 router.get("/admin", boCheckJWT, boCheckRoleEig, eigController.getAdmin);
 router.get("/:id", checkJWT, checkPermissionEIG, eigController.getById);
 router.get(

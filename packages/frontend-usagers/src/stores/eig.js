@@ -7,6 +7,8 @@ const log = logger("stores/hebergement");
 export const useEigStore = defineStore("eig", {
   state: () => ({
     eigs: [],
+    availableDs: [],
+    selectedDemande: null,
     currentEig: null,
     total: 0,
   }),
@@ -120,6 +122,42 @@ export const useEigStore = defineStore("eig", {
       } catch (err) {
         log.w("update for one id - DONE with error", err);
         throw err;
+      }
+    },
+    async getAvailableDs(search = null) {
+      try {
+        const res = await $fetchBackend(`/eig/available-ds`, {
+          method: "GET",
+          credentials: "include",
+          params: { search },
+        });
+
+        this.availableDs = res;
+      } catch (err) {
+        this.availableDs = [];
+        log.w("getAvailableDs - DONE with error", err);
+        throw err;
+      }
+    },
+    async setSelectedDemande(id) {
+      log.i("setSelectedDemande - IN");
+      if (!id) {
+        this.selectedDemande = null;
+        return;
+      }
+
+      try {
+        const { demande } = await $fetchBackend(`/sejour/${id}`, {
+          method: "GET",
+          credentials: "include",
+        });
+        if (demande) {
+          log.i("setDemandeCourante - DONE");
+          this.selectedDemande = demande;
+        }
+      } catch (err) {
+        log.w("setSelectedDemande - DONE with error", err);
+        this.selectedDemande = null;
       }
     },
   },
