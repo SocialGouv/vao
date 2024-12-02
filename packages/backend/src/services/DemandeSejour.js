@@ -1079,8 +1079,15 @@ module.exports.getByDepartementCodes = async (
 
   const params = [];
   const searchQuery = [];
-
   // Search management
+  if (search?.siren && search.siren.length) {
+    searchQuery.push(`o.personne_morale->>'siren' = $${params.length + 1}`);
+    params.push(`${search.siren}`);
+  }
+  if (search?.siret && search.siret.length) {
+    searchQuery.push(`o.personne_morale->>'siret' = $${params.length + 1}`);
+    params.push(`${search.siret}`);
+  }
   if (search?.idFonctionnelle && search.idFonctionnelle.length) {
     searchQuery.push(`id_fonctionnelle ILIKE $${params.length + 1}`);
     params.push(`%${search.idFonctionnelle}%`);

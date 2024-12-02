@@ -122,6 +122,7 @@
           v-if="organismeName"
           display="Organisme"
           :organisme="organismeName"
+          :organisme-id="route.params.organismeId"
         ></DemandesSejourListe>
       </DsfrTabContent>
     </DsfrTabs>
