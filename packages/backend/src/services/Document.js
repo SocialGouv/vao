@@ -42,6 +42,16 @@ const query = {
       WHERE uuid = $1;`,
     [uuid],
   ],
+  getFileMetaData: (uuid) => [
+    `
+    SELECT
+      uuid,
+      filename as "name",
+      created_at as "createdAt"
+    FROM doc.documents
+    WHERE uuid = $1;`,
+    [uuid],
+  ],
 };
 
 module.exports.getFile = async (uuid) => {
@@ -57,6 +67,24 @@ module.exports.getFile = async (uuid) => {
   } catch (err) {
     log.w(err);
     throw new AppError("query.getByUuid failed", { cause: err });
+  }
+};
+
+module.exports.getFileMetaData = async (uuid) => {
+  log.i("IN");
+  try {
+    const { rows, rowCount } = await poolDoc.query(
+      ...query.getFileMetaData(uuid),
+    );
+    if (rowCount > 0) {
+      log.i("DONE", rows[0]);
+      return rows[0];
+    }
+    log.i("DONE");
+    return null;
+  } catch (err) {
+    log.w(err);
+    throw new AppError("query.getFileMetaData failed", { cause: err });
   }
 };
 

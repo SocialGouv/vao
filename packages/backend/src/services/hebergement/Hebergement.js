@@ -1,7 +1,16 @@
 /* eslint-disable no-param-reassign */
-const logger = require("../utils/logger");
-const { saveAdresse } = require("./adresse");
-const pool = require("../utils/pgpool").getPool();
+const logger = require("../../utils/logger");
+const {
+  saveAdresse,
+  getById: getAdressById,
+  getByIds: getAdressByIds,
+} = require("../adresse");
+const {
+  queryGetFields,
+  mapDBHebergement,
+  mapDBHebergementToDSHebergement,
+} = require("./helpers");
+const pool = require("../../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 
@@ -112,30 +121,27 @@ ${new Array(nbRows)
     `
     WITH filtered_hebergements AS (
       SELECT
-        h.id AS "id",
-        h.nom AS "nom",
-        h.coordonnees -> 'adresse' ->> 'departement' AS "departement",
-        h.coordonnees ->> 'email' AS email,
-        h.coordonnees ->> 'numTelephone1' AS telephone,
-        h.coordonnees ->> 'nomGestionnaire' AS "nomGestionnaire",
-        h.coordonnees -> 'adresse'  AS adresse,
-        h.informations_locaux ->> 'type' AS "typeHebergement",
-        h.informations_locaux ->> 'visiteLocauxAt' AS "dateVisite",
-        CASE
-          WHEN h.informations_locaux ->> 'reglementationErp' = 'true' THEN TRUE
-          WHEN h.informations_locaux ->> 'reglementationErp' = 'false' THEN FALSE
-          ELSE NULL
-        END AS "reglementationErp"
+        H.ID AS "id",
+        A.DEPARTEMENT AS "departement",
+        H.EMAIL AS EMAIL,
+        H.TELEPHONE_1 AS TELEPHONE,
+        H.NOM_GESTIONNAIRE AS "nomGestionnaire",
+        A.LABEL AS ADRESSE,
+        H.NOM AS "nom",
+        ( SELECT VALUE FROM FRONT.HEBERGEMENT_TYPE WHERE ID = H.ID) AS "typeHebergement",
+        H.VISITE_LOCAUX_AT AS "dateVisite",
+        H.REGLEMENTATION_ERP AS "reglementationErp"
       FROM
-        front.hebergement h
+        FRONT.HEBERGEMENT H
+        LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
       WHERE
-        h.coordonnees -> 'adresse' ->> 'departement' = ANY($1)
+        A.DEPARTEMENT = ANY($1)
         AND (
-          unaccent(h.nom) ILIKE '%' || unaccent($2) || '%' OR
-          h.coordonnees ->> 'email' ILIKE '%' || $2 || '%' OR
-          unaccent(h.coordonnees -> 'adresse' ->> 'label') ILIKE '%' || unaccent($2) || '%'
+          unaccent(h.nom) ILIKE '%' || unaccent($2) || '%'
+          OR h.email ILIKE '%' || $2 || '%'
+          OR unaccent(a.label) ILIKE '%' || unaccent($2) || '%'
         )
-      AND CURRENT IS TRUE
+        AND CURRENT IS TRUE
       ORDER BY "${sort}" ${order}
     ),
     total_count AS (
@@ -154,25 +160,29 @@ ${new Array(nbRows)
     `,
     [departementCodes, search, limit, offset],
   ],
-  getById: (id) => [
-    `
+  getById: `
     SELECT
       id,
-      supprime,
       nom,
-      coordonnees,
-      informations_locaux as "informationsLocaux",
-      informations_transport as "informationsTransport",
-      created_at as "createdAt",
-      edited_at as "editedAt"
-    FROM front.hebergement
+      ${queryGetFields}
+    FROM front.hebergement h
     WHERE id = $1
     `,
-    [id],
-  ],
+  getByDSId: `
+    SELECT
+        ID as "hebergementId",
+        NOM,
+        DSTH.DATE_DEBUT as "dateDebut",
+        DSTH.DATE_FIN as "dateFin",
+        ${queryGetFields}
+    FROM
+        FRONT.HEBERGEMENT H
+        INNER JOIN FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH ON DSTH.HEBERGEMENT_ID = H.ID
+        AND DSTH.DEMANDE_SEJOUR_ID = $1 ;
+    `,
   getByIdAndMySiren: `
     SELECT distinct(h.id)
-      FROM 
+      FROM
       front.hebergement h
       JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
       JOIN front.organismes o ON o.id = uo.org_id
@@ -183,27 +193,27 @@ ${new Array(nbRows)
     SELECT
       h.id,
       h.nom,
-      h.coordonnees#> '{adresse, departement}' as departement,
-      h.coordonnees#> '{adresse, label}' as adresse,
+      a.departement as departement,
+      a.label as adresse,
       h.supprime,
       h.created_at as "createdAt",
       h.edited_at as "editedAt"
     FROM front.hebergement h
     JOIN front.organismes o ON h.organisme_id = o.id
+    LEFT JOIN front.adresse a on a.id = h.adresse_id
     WHERE o.personne_morale->>'siren' = $1
     `,
   getByUserId: `
     SELECT
-      id,
-      nom,
-      coordonnees#> '{adresse, departement}' as departement,
-      coordonnees#> '{adresse, label}' as adresse,
-      supprime,
-      created_at as "createdAt",
-      edited_at as "editedAt"
+      h.id as "id",
+      nom as "nom",
+      a.label as "adresse",
+      a.departement as "departement"
     FROM front.hebergement h
-    JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
-    WHERE uo.use_id = $1 AND CURRENT IS TRUE
+    LEFT JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
+    LEFT JOIN front.adresse a ON a.id = h.adresse_id
+    WHERE uo.use_id = $1
+      AND CURRENT IS TRUE
     `,
   getPreviousValueForHistory: `
   SELECT
@@ -411,10 +421,36 @@ module.exports.getByIdAndMySiren = async (id, userId, siren) => {
 
 module.exports.getById = async (id) => {
   log.i("getById - IN", { id });
-  const { rows: hebergements, rowCount } = await pool.query(
-    ...query.getById(id),
-  );
+  const { rows: hebergements, rowCount } = await pool.query(query.getById, [
+    id,
+  ]);
+
+  if (rowCount === 0) {
+    return null;
+  }
+  const hebergement = hebergements[0];
+  const adresse = await getAdressById(hebergement.adresseId);
+
   log.d("getById - DONE");
-  return rowCount > 0 ? hebergements[0] : null;
+  return await mapDBHebergement(hebergement, adresse);
 };
 
+module.exports.getByDSId = async (dsId) => {
+  log.i("getByDSId - IN", { dsId });
+  const { rows: hebergements, rowCount } = await pool.query(query.getByDSId, [
+    dsId,
+  ]);
+
+  if (rowCount === 0) {
+    return [];
+  }
+  const adresses = await getAdressByIds(hebergements.map((h) => h.adresseId));
+  return await Promise.all(
+    hebergements.map((h) =>
+      mapDBHebergementToDSHebergement(
+        h,
+        adresses.find((a) => a.id === h.adresseId),
+      ),
+    ),
+  );
+};

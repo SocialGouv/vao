@@ -1,6 +1,6 @@
 const yup = require("yup");
 
-const Hebergement = require("../../services/Hebergement");
+const Hebergement = require("../../services/hebergement/Hebergement");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
 const HebergementSchema = require("../../schemas/hebergement");

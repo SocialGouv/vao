@@ -172,7 +172,7 @@ const syntheseRows = computed(() => {
           ? dayjs(hebergement.dateFin).format("DD/MM/YYYY")
           : "",
         hebergement.nom ?? "",
-        hebergement.adresse ?? "",
+        hebergement.coordonnees?.adresse?.label ?? "",
         {
           component: DsfrButtonGroup,
           buttons: buttons,

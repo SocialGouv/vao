@@ -106,7 +106,7 @@ async function updateOrCreate(hebergement) {
     log.d("hebergement sauvegardé");
     toaster.success({ titleTag: "h2", description: "Hébergement sauvegardé" });
 
-    return await navigateTo("/hebergements/liste");
+    await navigateTo("/hebergements/liste");
   } catch (error) {
     toaster.error({
       titleTag: "h2",

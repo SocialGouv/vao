@@ -1,4 +1,4 @@
-const Hebergement = require("../../services/Hebergement");
+const Hebergement = require("../../services/hebergement/Hebergement");
 const Organisme = require("../../services/Organisme");
 
 const logger = require("../../utils/logger");
