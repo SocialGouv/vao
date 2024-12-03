@@ -28,6 +28,8 @@
 import { ValidationModal } from "@vao/shared";
 import dayjs from "dayjs";
 
+const toaster = useToaster();
+
 const props = defineProps({
   eigs: { type: Array, default: () => [] },
 });
@@ -38,7 +40,7 @@ const eigStore = useEigStore();
 const userStore = useUserStore();
 
 const getTitle = (eig) =>
-  `EIG ${eig.id} déposé le ${dayjs(eig.dateDepot).format("DD/MM/YYYY")} / statut : ${eig.statut}`;
+  `EIG ${eig.id} déposé le ${dayjs(eig.dateDepot).format("DD/MM/YYYY")} / statut : ${eig.readByDreets && eig.readByDdets ? "LU" : "NON LU"}`;
 
 const expandedIndex = ref(-1);
 
@@ -62,6 +64,8 @@ const openModal = async (index) => {
   if (!eig) {
     return;
   }
+
+  console.log(eig);
 
   if (utilsEig.mustMarkAsRead(eig, userStore.user)) {
     expandedIndex.value = -1;
