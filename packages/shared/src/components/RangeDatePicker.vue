@@ -4,8 +4,8 @@
     <VDatePicker
       is-range
       :model-value="modelValue"
-      @update:model-value="$emit('update:modelValue', $event)"
       timezone="UTC"
+      @update:model-value="$emit('update:modelValue', $event)"
     >
       <template #default="{ togglePopover, inputValue }">
         <div

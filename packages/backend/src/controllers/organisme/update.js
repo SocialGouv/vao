@@ -37,8 +37,8 @@ module.exports = async function update(req, res, next) {
         throw new AppError(
           "Le siret ne peux pas etre modifié car l'organisme est complet",
           {
-            statusCode: 403,
             name: "Forbidden - siret update - organisme complete",
+            statusCode: 403,
           },
         );
       }
@@ -54,8 +54,8 @@ module.exports = async function update(req, res, next) {
         throw new AppError(
           "Le siret ne peux pas etre modifé car il existe déjà en base",
           {
-            statusCode: 403,
             name: "Forbidden - siret update - organisme incomplete",
+            statusCode: 403,
           },
         );
       }

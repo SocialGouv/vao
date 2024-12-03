@@ -1,4 +1,4 @@
-const { statuts, Types, Categorie, isDeclarationligibleToEig } = require("../helpers/eig");
+const { statuts, Types, Categorie } = require("../helpers/eig");
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
 const pool = require("../utils/pgpool").getPool();
@@ -80,6 +80,27 @@ GROUP BY
   S.ID,
   DS.ID,
   AGR.ID
+  `,
+  getAvailableDs: `
+  SELECT
+    id AS "id",
+    id_fonctionnelle AS "idFonctionnelle",
+    libelle AS "libelle",
+    date_debut AS "dateDebut",
+    date_fin AS "dateFin"
+  FROM
+    front.demande_sejour ds
+  WHERE
+    (
+      UNACCENT (libelle) ILIKE '%' || UNACCENT ($1) || '%'
+      OR UNACCENT (id_fonctionnelle) ILIKE '%' || UNACCENT ($1) || '%'
+    )
+    -- ces regles implementent en sql la logique de isDeclarationligibleToEig
+    AND ds.statut IN ('VALIDEE 8J', 'SEJOUR EN COURS', 'TERMINEE')
+    AND ds.date_debut <= DATE_TRUNC('day', NOW())
+    AND DATE_TRUNC('day', NOW()) <= ds.date_fin + INTERVAL '1 week'
+  LIMIT
+    10
   `,
   getById: `
 SELECT
@@ -250,27 +271,6 @@ SET
 WHERE
   ID = $1
 RETURNING id
-  `,
-  getAvailableDs: `
-  SELECT
-    id AS "id",
-    id_fonctionnelle AS "idFonctionnelle",
-    libelle AS "libelle",
-    date_debut AS "dateDebut",
-    date_fin AS "dateFin"
-  FROM
-    front.demande_sejour ds
-  WHERE
-    (
-      UNACCENT (libelle) ILIKE '%' || UNACCENT ($1) || '%'
-      OR UNACCENT (id_fonctionnelle) ILIKE '%' || UNACCENT ($1) || '%'
-    )
-    -- ces regles implementent en sql la logique de isDeclarationligibleToEig
-    AND ds.statut IN ('VALIDEE 8J', 'SEJOUR EN COURS', 'TERMINEE')
-    AND ds.date_debut <= DATE_TRUNC('day', NOW())
-    AND DATE_TRUNC('day', NOW()) <= ds.date_fin + INTERVAL '1 week'
-  LIMIT
-    10
   `,
 };
 

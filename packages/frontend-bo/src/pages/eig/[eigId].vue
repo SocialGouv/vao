@@ -19,6 +19,7 @@ onMounted(async () => {
     await eigStore.setCurrentEig(route.params.eigId);
   } catch (e) {
     navigateTo("/eig");
+    throw e;
   }
 });
 </script>

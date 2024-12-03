@@ -119,8 +119,10 @@ const validationSchema = computed(() => {
 });
 
 const initialValues = {
-  sejourEtranger: demandeSejourStore.demandeCourante.hebergement?.sejourEtranger ?? false,
-  hebergements: demandeSejourStore.demandeCourante.hebergement?.hebergements ?? [],
+  sejourEtranger:
+    demandeSejourStore.demandeCourante.hebergement?.sejourEtranger ?? false,
+  hebergements:
+    demandeSejourStore.demandeCourante.hebergement?.hebergements ?? [],
 };
 
 const { meta, values } = useForm({
@@ -193,11 +195,15 @@ const hebergementCourant = ref();
 
 const nextMinDate = computed(() => {
   if (currentIndex.value !== -1) {
-    return dayjs(demandeSejourStore.demandeCourante.dateDebut).format("YYYY-MM-DD");
+    return dayjs(demandeSejourStore.demandeCourante.dateDebut).format(
+      "YYYY-MM-DD",
+    );
   }
 
   if (hebergements.value.length === 0) {
-    return dayjs(demandeSejourStore.demandeCourante.dateDebut).format("YYYY-MM-DD");
+    return dayjs(demandeSejourStore.demandeCourante.dateDebut).format(
+      "YYYY-MM-DD",
+    );
   }
   return dayjs(
     Math.max(

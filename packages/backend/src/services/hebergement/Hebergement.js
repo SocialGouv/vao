@@ -15,6 +15,18 @@ const pool = require("../../utils/pgpool").getPool();
 const log = logger(module.filename);
 
 const query = {
+  associatePrestation: (nbRows) => `
+INSERT INTO
+  FRONT.HEBERGEMENT_TO_PRESTATIONS_HOTELIERES (HEBERGEMENT_ID, PRESTATION_ID)
+VALUES
+${new Array(nbRows)
+  .fill(null)
+  .map(
+    (_, index) =>
+      `($1, (SELECT ID FROM FRONT.HEBERGEMENT_PRESTATIONS_HOTELIERES WHERE VALUE = $${index + 2}))`,
+  )
+  .join(",")}
+  `,
   create: `
     INSERT INTO front.hebergement(
       organisme_id,
@@ -102,18 +114,18 @@ const query = {
     )
     RETURNING id
     `,
-  associatePrestation: (nbRows) => `
-INSERT INTO
-  FRONT.HEBERGEMENT_TO_PRESTATIONS_HOTELIERES (HEBERGEMENT_ID, PRESTATION_ID)
-VALUES
-${new Array(nbRows)
-  .fill(null)
-  .map(
-    (_, index) =>
-      `($1, (SELECT ID FROM FRONT.HEBERGEMENT_PRESTATIONS_HOTELIERES WHERE VALUE = $${index + 2}))`,
-  )
-  .join(",")}
-  `,
+  getByDSId: `
+    SELECT
+        ID as "hebergementId",
+        NOM,
+        DSTH.DATE_DEBUT as "dateDebut",
+        DSTH.DATE_FIN as "dateFin",
+        ${queryGetFields}
+    FROM
+        FRONT.HEBERGEMENT H
+        INNER JOIN FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH ON DSTH.HEBERGEMENT_ID = H.ID
+        AND DSTH.DEMANDE_SEJOUR_ID = $1 ;
+    `,
   getByDepartementCodes: (
     departementCodes,
     { search, limit, offset, order, sort },
@@ -167,18 +179,6 @@ ${new Array(nbRows)
       ${queryGetFields}
     FROM front.hebergement h
     WHERE id = $1
-    `,
-  getByDSId: `
-    SELECT
-        ID as "hebergementId",
-        NOM,
-        DSTH.DATE_DEBUT as "dateDebut",
-        DSTH.DATE_FIN as "dateFin",
-        ${queryGetFields}
-    FROM
-        FRONT.HEBERGEMENT H
-        INNER JOIN FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH ON DSTH.HEBERGEMENT_ID = H.ID
-        AND DSTH.DEMANDE_SEJOUR_ID = $1 ;
     `,
   getByIdAndMySiren: `
     SELECT distinct(h.id)
@@ -329,8 +329,8 @@ module.exports.create = async (userId, organismeId, hebergement) => {
       {
         createdAt: new Date(),
         createdBy: userId,
-        updatedBy: userId,
         organismeId,
+        updatedBy: userId,
       },
       hebergement,
     );
@@ -364,10 +364,10 @@ module.exports.update = async (userId, hebergementId, hebergement) => {
     newHebergementId = await create(
       client,
       {
-        createdBy,
         createdAt,
-        updatedBy: userId,
+        createdBy,
         organismeId,
+        updatedBy: userId,
       },
       hebergement,
       hebergementUuid,

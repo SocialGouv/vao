@@ -38,10 +38,10 @@ describe("POST /:id", () => {
     Hebergement.update.mockResolvedValueOnce(true);
 
     const body = {
-      nom: "Hébergement 1",
       coordonnees: { lat: 10, lon: 20 },
       informationsLocaux: {},
       informationsTransport: {},
+      nom: "Hébergement 1",
     };
 
     jest.spyOn(yup, "object").mockImplementationOnce(() => ({
@@ -70,10 +70,10 @@ describe("POST /:id", () => {
     const res = await request(app)
       .post("/hebergement/123")
       .send({
-        nom: "Hébergement",
         coordonnees: {},
         informationsLocaux: "Info",
         informationsTransport: "Info",
+        nom: "Hébergement",
       })
       .expect(400);
 
@@ -94,10 +94,10 @@ describe("POST /:id", () => {
     const res = await request(app)
       .post("/hebergement/123")
       .send({
-        nom: "Hébergement",
         coordonnees: { lat: 10, lon: 20 },
         informationsLocaux: "Info locaux",
         informationsTransport: "Info transport",
+        nom: "Hébergement",
       });
 
     expect(res.status).toBe(400);
