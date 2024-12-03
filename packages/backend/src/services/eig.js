@@ -267,8 +267,8 @@ RETURNING id
     )
     -- ces regles implementent en sql la logique de isDeclarationligibleToEig
     AND ds.statut IN ('VALIDEE 8J', 'SEJOUR EN COURS', 'TERMINEE')
-    AND ds.date_debut < DATE_TRUNC('day', NOW())
-    AND DATE_TRUNC('day', NOW()) < ds.date_fin + INTERVAL '1 week'
+    AND ds.date_debut <= DATE_TRUNC('day', NOW())
+    AND DATE_TRUNC('day', NOW()) <= ds.date_fin + INTERVAL '1 week'
   LIMIT
     10
   `,

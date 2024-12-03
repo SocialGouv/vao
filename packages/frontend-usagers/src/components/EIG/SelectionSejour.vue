@@ -7,15 +7,16 @@
     <fieldset class="fr-fieldset">
       <div class="fr-fieldset__element">
         <DsfrTag
-          v-if="selectedDemandeLabel"
+          v-if="eigStore.selectedDemandeLabel"
           tag-name="button"
           icon="fr-icon-delete-line"
           class="fr-mb-4v"
-          :label="selectedDemandeLabel"
+          :label="eigStore.selectedDemandeLabel"
           :disabled="!eigStore.canModify"
-          @click="() => onChooseDeclaration(null)"
+          @click="() => onRemoveDeclaration()"
         />
         <DsfrSearchBar
+          v-model="search"
           label="Selectionner le séjour"
           class="fr-mb-2v"
           placeholder="Rechercher par code ou libellé"
@@ -29,7 +30,6 @@
             @click="
               () => {
                 onChooseDeclaration(demande.id);
-                eigStore.setSelectedDemande(demande.id);
               }
             "
           >
@@ -43,7 +43,7 @@
           label="Sélection du département où a eu lieu l'incident"
           name="departements"
           :close-on-select="true"
-          :options="departementsOptions"
+          :options="eigStore.departementsOptions"
           :is-valid="departementMeta.valid"
           :disabled="!eigStore.canModify"
           :error-message="departementErrorMessage"
@@ -58,8 +58,8 @@
           type="date"
           label="Date de l'incident"
           :label-visible="true"
-          :min="selectedDemandeDateRange?.[0]"
-          :max="selectedDemandeDateRange?.[1]"
+          :min="eigStore.selectedDemandeDateRange?.[0]"
+          :max="eigStore.selectedDemandeDateRange?.[1]"
           :model-value="date"
           :readonly="!eigStore.canModify"
           :is-valid="dateMeta.valid"
@@ -82,9 +82,6 @@
         :is-downloading="props.isDownloading"
       />
     </fieldset>
-    <pre>{{ departementsOptions }}</pre>
-    <pre>{{ selectedDemandeDateRange }}</pre>
-
   </div>
 </template>
 
@@ -109,6 +106,8 @@ const props = defineProps({
 const eigStore = useEigStore();
 const route = useRoute();
 
+const search = ref(null);
+
 let timeout;
 const fetchAvailableDsDebounce = (search) => {
   if (timeout) {
@@ -116,7 +115,7 @@ const fetchAvailableDsDebounce = (search) => {
   }
   timeout = setTimeout(async () => {
     try {
-      await eigStore.getAvailableDs(search);
+      await eigStore.setAvailableDs(search);
     } catch (error) {
       toaster.error(
         "Une erreur est survenue lors de la récupération de la demande",
@@ -130,27 +129,6 @@ const filteredDemandes = computed(() =>
   eigStore.availableDs.filter((d) => d.id !== declarationId.value),
 );
 
-const selectedDemandeLabel = computed(() => {
-  if (!eigStore.selectedDemande) {
-    return null;
-  }
-  return getTagSejourLibelle(eigStore.selectedDemande);
-});
-
-const selectedDemandeDateRange = computed(() => {
-  if (!eigStore.selectedDemande) {
-    return null;
-  }
-  return [eigStore.selectedDemande.dateDebut, eigStore.selectedDemande.dateFin];
-});
-
-const departementsOptions = computed(
-  () =>
-    eigStore.selectedDemande?.hebergement?.hebergements
-      ?.map((h) => h?.coordonnees?.adresse?.departement)
-      .filter((d) => !!d) ?? [],
-);
-
 const validationSchema = yup.object(eigSchema.selectionSejourSchema);
 const initialValues = {
   declarationId:
@@ -161,16 +139,6 @@ const initialValues = {
     ? dayjs(eigStore.currentEig?.date).format("YYYY-MM-DD")
     : null,
 };
-
-onMounted(() => {
-  if (initialValues.declarationId) {
-    eigStore.setSelectedDemande(initialValues.declarationId);
-  }
-
-  if (!departement.value) {
-    setDepartement();
-  }
-});
 
 const { meta, values } = useForm({
   validationSchema,
@@ -188,14 +156,6 @@ const {
   meta: departementMeta,
 } = useField("departement");
 
-const setDepartement = () => {
-  if (departementsOptions.value.length === 1) {
-    onDepartementChange(departementsOptions.value[0]);
-  } else {
-    onDepartementChange(null, false);
-  }
-};
-
 const {
   value: date,
   handleChange: onDateChange,
@@ -203,13 +163,36 @@ const {
   meta: dateMeta,
 } = useField("date");
 
-const onChooseDeclaration = (id) => {
-  onDeclarationIdChange(id);
-  eigStore.setSelectedDemande(null);
-  setDepartement();
-  if (id == null) {
-    onDateChange(null, false);
+onMounted(async () => {
+  if (initialValues.declarationId) {
+    await eigStore.setSelectedDemande(initialValues.declarationId);
   }
+  if (!departement.value) {
+    setDepartement();
+  }
+});
+
+const setDepartement = () => {
+  if (eigStore.departementsOptions.length === 1) {
+    onDepartementChange(eigStore.departementsOptions[0]);
+  } else {
+    onDepartementChange(null, false);
+  }
+};
+
+const onChooseDeclaration = async (id) => {
+  onDeclarationIdChange(id);
+  await eigStore.setSelectedDemande(id);
+  search.value = null;
+  await eigStore.setAvailableDs(null);
+  setDepartement();
+};
+
+const onRemoveDeclaration = async () => {
+  onDeclarationIdChange(null);
+  await eigStore.setSelectedDemande(null);
+  onDepartementChange(null, false);
+  onDateChange(null, false);
 };
 
 const next = () => {

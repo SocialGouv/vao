@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, eig, logger } from "#imports";
 import { eigModel } from "@vao/shared";
+import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
 
 const log = logger("stores/hebergement");
 
@@ -22,6 +23,25 @@ export const useEigStore = defineStore("eig", {
             dateFIn: this.currentEig.dateFIn,
             statut: this.currentEig.dsStatut,
           }))
+      );
+    },
+    selectedDemandeLabel() {
+      if (!this.selectedDemande) {
+        return null;
+      }
+      return getTagSejourLibelle(this.selectedDemande);
+    },
+    selectedDemandeDateRange() {
+      if (!this.selectedDemande) {
+        return null;
+      }
+      return [this.selectedDemande.dateDebut, this.selectedDemande.dateFin];
+    },
+    departementsOptions() {
+      return (
+        this.selectedDemande?.hebergement?.hebergements
+          ?.map((h) => h?.coordonnees?.adresse?.departement)
+          .filter((d) => !!d) ?? []
       );
     },
   },
@@ -124,7 +144,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async getAvailableDs(search = null) {
+    async setAvailableDs(search = null) {
       try {
         const res = await $fetchBackend(`/eig/available-ds`, {
           method: "GET",

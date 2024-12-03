@@ -4,10 +4,10 @@
     @update:model-value="openModal(expandedIndex)"
   >
     <DsfrAccordion
-      v-for="eig in eigs"
+      v-for="eig in props.eigs"
       :id="eig.id"
       :key="eig.id"
-      :title="getTitle(props.eig)"
+      :title="getTitle(eig)"
     >
       <EigSynthese v-if="eigStore.currentEig" :eig="eigStore.currentEig" />
     </DsfrAccordion>
@@ -19,8 +19,8 @@
     title="Consultation d’un EIG"
     :on-close="closeEigModal"
     :on-validate="() => readEig()"
-    >Vous vous apprêtez à consulter une déclaration d’un Evènement Indésirable Grave. Cette
-    consultation enverra un email de notification à l’organisme.
+    >Vous vous apprêtez à consulter une déclaration d’un Evènement Indésirable
+    Grave. Cette consultation enverra un email de notification à l’organisme.
   </ValidationModal>
 </template>
 
