@@ -1,0 +1,23 @@
+export const sentry = {
+  dsn: process.env.SENTRY_DSN,
+  enabled: process.env.SENTRY_ENABLED === "true",
+  environment: process.env.SENTRY_ENVIRONMENT,
+  release: process.env.SENTRY_RELEASE,
+};
+
+export const postgres = {
+  database: process.env.POSTGRES_DB,
+  document: {
+    password: process.env.PG_VAO_DOCUMENT_PASSWORD,
+    user: process.env.PG_VAO_DOCUMENT_USER,
+  },
+  host: process.env.POSTGRES_HOST,
+  password: process.env.PG_VAO_PASSWORD,
+  port: process.env.POSTGRES_PORT,
+  ssl: process.env.PGSSLMODE
+    ? {
+        rejectUnauthorized: false, // to authorize CNPG self-signed certificates
+      }
+    : false,
+  user: process.env.PG_VAO_USER,
+};
