@@ -37,7 +37,7 @@
               ? 'Nouvelle adresse de l\'hébergement *'
               : 'Adresse de l\'hébergement *'
           "
-          :initial-adress="initHebergement.coordonnees?.adresse.label"
+          :initial-adress="initHebergement.coordonnees?.adresse?.label"
           :adresse="adresse"
           :error-message="adresseErrorMessage"
           :on-addresse-change="onAdresseChange"
@@ -536,6 +536,19 @@
               <DsfrButton
                 v-if="!props.isDownloading"
                 id="next-step"
+                type="button"
+                @click="submitBrouillon"
+                >Enregistrer en mode brouillon
+              </DsfrButton>
+              <is-downloading
+                :is-downloading="props.isDownloading"
+                :message="props.message"
+              />
+            </div>
+            <div class="fr-input-group">
+              <DsfrButton
+                v-if="!props.isDownloading"
+                id="next-step"
                 :disabled="!meta.valid"
                 type="button"
                 @click="submit"
@@ -558,10 +571,10 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import {
-  DsfrInputGroup,
   DsfrButton,
-  DsfrRadioButtonSet,
   DsfrCheckboxSet,
+  DsfrInputGroup,
+  DsfrRadioButtonSet,
 } from "@gouvminint/vue-dsfr";
 import IsDownloading from "./IsDownloading.vue";
 import hebergementUtils from "../utils/hebergement";
@@ -851,6 +864,10 @@ function verifFormatFile(file, toasterMessage) {
     });
     return false;
   }
+}
+
+function submitBrouillon() {
+  emit("submit", { ...toRaw(values) });
 }
 
 function submit() {

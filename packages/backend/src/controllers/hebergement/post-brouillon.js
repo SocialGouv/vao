@@ -9,31 +9,21 @@ const FOUser = require("../../services/FoUser");
 
 const log = logger(module.filename);
 
-module.exports = async function post(req, res, next) {
-  log.i("IN");
+module.exports = async function postbrouillon(req, res, next) {
+  log.i("postbrouillon - IN");
   const { body, decoded } = req;
 
   const { nom, coordonnees, informationsLocaux, informationsTransport } = body;
+
   const userId = decoded.id;
-
-  log.d(userId);
-  if (!nom || !coordonnees || !informationsLocaux || !informationsTransport) {
-    log.w("missing or invalid parameter");
-
-    return next(
-      new AppError("Paramètre incorrect", {
-        statusCode: 400,
-      }),
-    );
-  }
 
   let hebergement;
   try {
-    hebergement = await yup.object(HebergementSchema.schema(false)).validate(
+    hebergement = await yup.object(HebergementSchema.schema(true)).validate(
       {
-        coordonnees,
-        informationsLocaux,
-        informationsTransport,
+        coordonnees: coordonnees ?? {},
+        informationsLocaux: informationsLocaux ?? {},
+        informationsTransport: informationsTransport ?? {},
         nom,
       },
       {
@@ -49,7 +39,7 @@ module.exports = async function post(req, res, next) {
     const organismeId = await FOUser.getUserOrganisme(userId);
     const id = await Hebergement.create(userId, organismeId, {
       ...hebergement,
-      statut: HebergementHelper.statuts.ACTIF,
+      statut: HebergementHelper.statuts.BROUILLON,
     });
 
     return res.status(200).json({

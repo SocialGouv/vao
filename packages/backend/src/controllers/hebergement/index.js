@@ -4,4 +4,5 @@ module.exports.getById = require("./getById");
 module.exports.getBySiren = require("./getBySiren");
 module.exports.getExtract = require("./getExtract");
 module.exports.post = require("./post");
+module.exports.postBrouillon = require("./post-brouillon");
 module.exports.update = require("./update");
