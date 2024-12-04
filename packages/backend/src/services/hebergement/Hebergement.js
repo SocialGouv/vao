@@ -68,7 +68,8 @@ ${new Array(nbRows)
       FILE_DERNIERE_ATTESTATION_SECURITE,
       VISITE_LOCAUX_AT,
       ACCESSIBILITE_PRECISION,
-      AMENAGEMENTS_SPECIFIQUES_PRECISION
+      AMENAGEMENTS_SPECIFIQUES_PRECISION,
+      STATUT_ID
     )
     VALUES (
       $1,                                                               --organisme_id,
@@ -110,7 +111,8 @@ ${new Array(nbRows)
       $35,                                                              --FILE_DERNIERE_ATTESTATION_SECURITE
       $36,                                                              --VISITE_LOCAUX_AT
       $37,                                                              --ACCESSIBILITE_PRECISION
-      $38                                                               --AMENAGEMENTS_SPECIFIQUES_PRECISION
+      $38,                                                              --AMENAGEMENTS_SPECIFIQUES_PRECISION
+      (SELECT ID FROM FRONT.HEBERGEMENT_STATUT WHERE VALUE = $39)         -- STATUT
     )
     RETURNING id
     `,
@@ -154,6 +156,7 @@ ${new Array(nbRows)
           OR unaccent(a.label) ILIKE '%' || unaccent($2) || '%'
         )
         AND CURRENT IS TRUE
+        AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = 'actif')
       ORDER BY "${sort}" ${order}
     ),
     total_count AS (
@@ -242,6 +245,15 @@ ${new Array(nbRows)
       edited_at = NOW()
     WHERE id = $1
   `,
+  getStatut: `
+    SELECT
+      value AS "statut"
+    FROM
+      front.hebergement h
+      LEFT JOIN front.hebergement_statut hs ON h.statut_id = hs.id
+    WHERE
+      h.id = $1
+  `,
 };
 
 /*
@@ -261,10 +273,14 @@ ${new Array(nbRows)
 const create = async (
   client,
   { createdBy, createdAt, updatedBy, organismeId },
-  { nom, coordonnees, informationsLocaux, informationsTransport },
+  { nom, coordonnees, informationsLocaux, informationsTransport, statut },
   hebergemenetUuid,
 ) => {
-  const adresseId = await saveAdresse(client, coordonnees.adresse);
+  console.log("tototot", coordonnees);
+
+  const adresseId = coordonnees.adresse
+    ? await saveAdresse(client, coordonnees.adresse)
+    : null;
   const { rows } = await client.query(query.create, [
     organismeId, // $1
     createdBy,
@@ -304,10 +320,13 @@ const create = async (
     informationsLocaux.visiteLocauxAt,
     informationsLocaux.accessibilitePrecision,
     informationsLocaux.precisionAmenagementsSpecifiques,
+    statut,
   ]);
 
   const hebergementId = rows[0].id;
   const prestationsHotelieres = informationsLocaux.prestationsHotelieres;
+
+  console.log(prestationsHotelieres);
   if (prestationsHotelieres.length > 0) {
     await client.query(
       query.associatePrestation(prestationsHotelieres.length),
@@ -429,7 +448,10 @@ module.exports.getById = async (id) => {
     return null;
   }
   const hebergement = hebergements[0];
-  const adresse = await getAdressById(hebergement.adresseId);
+  const adresse =
+    hebergement.adresseId ??
+    (await getAdressById(hebergement.adresseId)) ??
+    null;
 
   log.d("getById - DONE");
   return await mapDBHebergement(hebergement, adresse);
@@ -453,4 +475,12 @@ module.exports.getByDSId = async (dsId) => {
       ),
     ),
   );
+};
+
+module.exports.getStatut = async (hebergementId) => {
+  log.i("getStatut - IN");
+  const response = await pool.query(query.getStatut, [hebergementId]);
+  log.d(response);
+  log.i("getStatut - DONE");
+  return response.rows?.[0]?.statut ?? null;
 };

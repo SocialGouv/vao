@@ -5,6 +5,7 @@ const router = express.Router();
 const checkJWT = require("../middlewares/checkJWT");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 const checkPermissionHebergement = require("../middlewares/checkPermissionHebergement");
+const checkPermissionBOHebergement = require("../middlewares/checkPermissionBOHebergement");
 const getDepartements = require("../middlewares/getDepartements");
 const hebergementController = require("../controllers/hebergement");
 
@@ -27,10 +28,16 @@ router.get(
   checkPermissionHebergement,
   hebergementController.getById,
 );
-router.get("/admin/:id", boCheckJWT, hebergementController.getById);
+router.get(
+  "/admin/:id",
+  boCheckJWT,
+  checkPermissionBOHebergement,
+  hebergementController.getById,
+);
 router.get("/siren/:siren", checkJWT, hebergementController.getBySiren);
 router.get("/", checkJWT, hebergementController.get);
 router.post("/", checkJWT, hebergementController.post);
+router.post("/brouillon", checkJWT, hebergementController.postBrouillon);
 router.post(
   "/:id",
   checkJWT,

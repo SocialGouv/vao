@@ -8,9 +8,22 @@
 
     <div class="fr-grid-row">
       <div class="fr-col">
-        <h1 v-if="hebergementId">
-          Hébergement {{ hebergementStore.hebergementCourant.nom }}
-        </h1>
+        <div v-if="hebergementId" class="title">
+          <h1>
+            Hébergement {{ hebergementStore.hebergementCourant.nom }}
+            {{ hebergementStore.hebergementCourant.statut }}
+          </h1>
+          <DsfrBadge
+            v-if="
+              hebergementStore.hebergementCourant.statut ===
+              hebergementUtils.statut.ACTIF
+            "
+            actif
+            type="success"
+            :label="hebergementStore.hebergementCourant.statut"
+            class="pointer"
+          />
+        </div>
         <h1 v-else>Création d'un nouveau lieu d'hébergement</h1>
       </div>
     </div>
@@ -42,6 +55,10 @@
 definePageMeta({
   middleware: ["is-connected", "check-hebergement-id-param"],
 });
+import hebergementUtils from "@vao/shared/src/utils/hebergement";
+import { DsfrBadge } from "@gouvminint/vue-dsfr";
+
+console.log(hebergementUtils);
 
 const config = useRuntimeConfig();
 
@@ -120,4 +137,10 @@ async function updateOrCreate(hebergement) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+</style>
