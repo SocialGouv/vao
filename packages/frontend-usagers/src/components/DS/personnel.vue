@@ -385,11 +385,11 @@ function addPersonne() {
   modalPersonne.opened = true;
 }
 
-function editItem(item, index) {
+function editItem(item) {
   log.i("editItem - In", item);
   if (props.modifiable) {
     personnel.value = item;
-    indexCourant.value = index;
+    indexCourant.value = item.id;
     modalPersonne.opened = true;
   }
 }

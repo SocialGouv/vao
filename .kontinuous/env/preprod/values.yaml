@@ -36,7 +36,7 @@ pgweb:
 
 pg:
   backup:
-    name: "202407291149" # backup on a new folder
+    name: "1732544897" # backup on a new folder
     ~tpl~enabled: "true"
 
 jobs:
