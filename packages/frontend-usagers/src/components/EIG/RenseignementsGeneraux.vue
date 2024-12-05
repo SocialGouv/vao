@@ -1,7 +1,7 @@
 <template>
-  <h6>Renseignements generaux</h6>
+  <h5>Renseignements généraux</h5>
   <dsfr-alert class="fr-mb-6v">
-    <Summary :eig="eigStore.currentEig" />
+    <Summary :eig="eigStore.currentEig" env="USAGER" />
   </dsfr-alert>
   <div class="fr-fieldset">
     <h6>Personnel présent lors de événements</h6>
@@ -44,8 +44,13 @@
         </div>
       </div>
     </div>
-    <h6>Les faits</h6>
-    <div class="fr-fieldset__element">
+  </div>
+  <h6>Les faits</h6>
+  <dsfr-alert type="warning" class="fr-mb-4w"
+    >Merci de ne pas mettre d'éléments nominatifs
+  </dsfr-alert>
+  <div class="fr-container fr-my-2v">
+    <dsfr-fieldset>
       <DsfrInputGroup
         name="deroulement"
         :required="true"
@@ -58,8 +63,8 @@
         :is-valid="deroulementMeta"
         @update:model-value="deroulementChange"
       />
-    </div>
-    <div class="fr-fieldset__element">
+    </dsfr-fieldset>
+    <dsfr-fieldset>
       <DsfrInputGroup
         name="dispositionRemediation"
         :required="true"
@@ -72,8 +77,8 @@
         :is-valid="dispositionRemediationMeta"
         @update:model-value="dispositionRemediationChange"
       />
-    </div>
-    <div class="fr-fieldset__element">
+    </dsfr-fieldset>
+    <dsfr-fieldset>
       <DsfrInputGroup
         name="dispositionVictimes"
         :required="true"
@@ -86,8 +91,8 @@
         :is-valid="dispositionVictimesMeta"
         @update:model-value="dispositionVictimesChange"
       />
-    </div>
-    <div class="fr-fieldset__element">
+    </dsfr-fieldset>
+    <dsfr-fieldset>
       <DsfrInputGroup
         name="dispositionInformations"
         :required="true"
@@ -100,7 +105,7 @@
         :is-valid="dispositionInformationsMeta"
         @update:model-value="dispositionInformationsChange"
       />
-    </div>
+    </dsfr-fieldset>
   </div>
   <UtilsNavigationButtons
     :show-buttons="props.showButtons"
@@ -135,7 +140,7 @@ const dsPersonnel = computed(() => [
 ]);
 
 const initialValues = {
-  personnel: eigStore.currentEig.personnel ?? dsPersonnel.value,
+  personnel: eigStore.currentEig.personnel ?? [],
   deroulement: eigStore.currentEig.deroulement,
   dispositionInformations: eigStore.currentEig.dispositionInformations,
   dispositionRemediation: eigStore.currentEig.dispositionRemediation,

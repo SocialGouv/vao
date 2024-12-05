@@ -442,6 +442,16 @@ WHERE
       [declarationId, departements],
     ];
   },
+  getByIdOrUserSiren: `
+    SELECT distinct(ds.id)
+    FROM
+    front.demande_sejour ds
+    JOIN front.user_organisme uo ON uo.org_id = ds.organisme_id
+    JOIN front.users u ON uo.use_id = u.id
+    JOIN front.organismes o ON o.id = ds.organisme_id
+    WHERE ds.id = $1
+    AND (u.id = $3 OR o.personne_morale->>'siren' = $2)
+  `,
   getDeprecated: (organismeIds) => [
     `SELECT
   ds.id as "declarationId",
@@ -490,16 +500,6 @@ WHERE
 `,
     [organismeIds],
   ],
-  getByIdOrUserSiren: `
-    SELECT distinct(ds.id)
-    FROM
-    front.demande_sejour ds
-    JOIN front.user_organisme uo ON uo.org_id = ds.organisme_id
-    JOIN front.users u ON uo.use_id = u.id
-    JOIN front.organismes o ON o.id = ds.organisme_id
-    WHERE ds.id = $1
-    AND (u.id = $3 OR o.personne_morale->>'siren' = $2)
-  `,
   getEmailBack: `
 WITH
   roles AS
@@ -1105,8 +1105,8 @@ module.exports.getOne = async (criterias = {}) => {
     ...declaration,
     hebergement: {
       hebergements,
-      sejourItinerant: declaration.sejourItinerant ?? null,
       sejourEtranger: declaration.sejourEtranger ?? null,
+      sejourItinerant: declaration.sejourItinerant ?? null,
     },
   };
 };
@@ -1269,8 +1269,8 @@ module.exports.getById = async (declarationId, departements) => {
     ...declaration,
     hebergement: {
       hebergements,
-      sejourItinerant: declaration.sejourItinerant ?? null,
       sejourEtranger: declaration.sejourEtranger ?? null,
+      sejourItinerant: declaration.sejourItinerant ?? null,
     },
   };
 };

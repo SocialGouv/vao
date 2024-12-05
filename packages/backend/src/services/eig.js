@@ -8,13 +8,14 @@ const log = logger(module.filename);
 const query = {
   create: `
   INSERT INTO
-    FRONT.EIG (USER_ID, STATUT_ID, DEMANDE_SEJOUR_ID, DEPARTEMENT, IS_ATTESTE)
+    FRONT.EIG (USER_ID, STATUT_ID, DEMANDE_SEJOUR_ID, DEPARTEMENT, DATE, IS_ATTESTE)
   VALUES
     (
         $1,
         (SELECT ID FROM FRONT.EIG_STATUT WHERE STATUT = '${statuts.BROUILLON}'),
         $2,
         $3,
+        $4,
         FALSE
     )
   RETURNING id
@@ -48,7 +49,10 @@ WHERE
 SELECT
   EIG.ID,
   EIG.created_at as "createdAt",
+  EIG.date as "date",
   EIG.DEPARTEMENT as "departement",
+  EIG.READ_BY_DREETS as "readByDreets",
+  EIG.READ_BY_DDETS as "readByDdets",
   S.STATUT AS "statut",
   DS.ID_FONCTIONNELLE AS "idFonctionnelle",
   DS.LIBELLE,
@@ -58,10 +62,12 @@ SELECT
   DS.ORGANISME -> 'personneMorale' ->> 'raisonSociale' AS "raisonSociale",
   DS.ORGANISME -> 'personnePhysique' ->> 'prenom' AS "prenom",
   DS.ORGANISME -> 'personnePhysique' ->> 'nomUsage' AS "nom",
-  ARRAY_AGG(ET.TYPE) as "types"
+  ARRAY_AGG(ET.TYPE) as "types",
+  AGR.region_obtention as "agrementRegionObtention"
 FROM
   FRONT.EIG EIG
   INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+  LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
   LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
   LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
   LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
@@ -72,7 +78,29 @@ WHERE
 GROUP BY
   EIG.ID,
   S.ID,
-  DS.ID
+  DS.ID,
+  AGR.ID
+  `,
+  getAvailableDs: `
+  SELECT
+    id AS "id",
+    id_fonctionnelle AS "idFonctionnelle",
+    libelle AS "libelle",
+    date_debut AS "dateDebut",
+    date_fin AS "dateFin"
+  FROM
+    front.demande_sejour ds
+  WHERE
+    (
+      UNACCENT (libelle) ILIKE '%' || UNACCENT ($1) || '%'
+      OR UNACCENT (id_fonctionnelle) ILIKE '%' || UNACCENT ($1) || '%'
+    )
+    -- ces regles implementent en sql la logique de isDeclarationligibleToEig
+    AND ds.statut IN ('VALIDEE 8J', 'SEJOUR EN COURS', 'TERMINEE')
+    AND ds.date_debut <= DATE_TRUNC('day', NOW())
+    AND DATE_TRUNC('day', NOW()) <= ds.date_fin + INTERVAL '1 week'
+  LIMIT
+    10
   `,
   getById: `
 SELECT
@@ -80,6 +108,10 @@ EIG.ID,
   EIG.USER_ID AS "userId",
   S.STATUT AS "statut",
   EIG.DEPARTEMENT AS "departement",
+  (SELECT LABEL FROM GEO.TERRITOIRES WHERE CODE = EIG.DEPARTEMENT) as "departementLibelle",
+  EIG.date as "date",
+  EIG.READ_BY_DREETS as "readByDreets",
+  EIG.READ_BY_DDETS as "readByDdets",
   DS.ID AS "declarationId",
   DS.ID_FONCTIONNELLE AS "idFonctionnelle",
   DS.LIBELLE as "libelle",
@@ -108,8 +140,11 @@ EIG.ID,
   EIG.DISPOSITION_INFORMATIONS as "dispositionInformations",
   EIG.IS_ATTESTE as "isAtteste",
   EIG.PERSONNEL as "personnel",
-  EIG.EMAIL_AUTRES_DESTINATAIRES as "emailAutresDestinataires"
+  EIG.EMAIL_AUTRES_DESTINATAIRES as "emailAutresDestinataires",
+  AGR.region_obtention as "agrementRegionObtention"
 FROM FRONT.EIG EIG
+    INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+    LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
     LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
     LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
     LEFT JOIN FRONT.EIG_CATEGORIE EC ON EC.ID = ET.EIG_CATEGORIE_ID
@@ -120,7 +155,8 @@ WHERE
 GROUP BY
   EIG.ID,
   S.ID,
-  DS.ID;
+  DS.ID,
+  AGR.ID;
   `,
   getEmailByTerCode: `
 WITH
@@ -165,28 +201,53 @@ WHERE
     VALUES
     ${values.join(",")}
   `,
-  markAsRead: `
+  markAsReadDdets: `
 UPDATE FRONT.EIG
 SET
-  STATUT_ID = (
-    SELECT
-      ID
-    FROM
-      FRONT.EIG_STATUT
-    WHERE
-      STATUT = 'LU'
-)
+  READ_BY_DDETS = TRUE,
+  STATUT_ID = CASE
+    WHEN READ_BY_DREETS THEN (
+      SELECT
+        ID
+      FROM
+        FRONT.EIG_STATUT
+      WHERE
+        STATUT = 'LU'
+    )
+    ELSE STATUT_ID
+  END,
+  EDITED_AT = NOW()
 WHERE
   ID = $1
   `,
+  markAsReadDreets: `
+UPDATE FRONT.EIG
+SET
+  READ_BY_DREETS = TRUE,
+  STATUT_ID = CASE
+    WHEN READ_BY_DDETS THEN (
+      SELECT
+        ID
+      FROM
+        FRONT.EIG_STATUT
+      WHERE
+        STATUT = 'LU'
+    )
+    ELSE STATUT_ID
+  END,
+  EDITED_AT = NOW()
+WHERE
+  ID = $1
+ `,
   updateDs: `
 UPDATE FRONT.EIG
 SET
   DEMANDE_SEJOUR_ID = $1,
   DEPARTEMENT=$2,
+  DATE=$3,
   EDITED_AT = NOW()
 WHERE
-  ID = $3
+  ID = $4
 RETURNING id
   `,
   updateEmailAutresDestinataires: `
@@ -213,13 +274,19 @@ RETURNING id
   `,
 };
 
-module.exports.create = async ({ userId, declarationId, departement }) => {
+module.exports.create = async ({
+  userId,
+  declarationId,
+  departement,
+  date,
+}) => {
   log.i("create - IN");
 
   const response = await pool.query(query.create, [
     userId,
     declarationId,
     departement,
+    date,
   ]);
   log.d(response);
   const { id } = response.rows[0];
@@ -280,12 +347,16 @@ module.exports.getStatut = async (eigId) => {
   return response.rows?.[0]?.statut ?? null;
 };
 
-module.exports.updateDS = async (eigId, { declarationId, departement }) => {
+module.exports.updateDS = async (
+  eigId,
+  { declarationId, departement, date },
+) => {
   log.i("updateDS - IN");
 
   const response = await pool.query(query.updateDs, [
     declarationId,
     departement,
+    date,
     eigId,
   ]);
   log.d(response);
@@ -451,6 +522,14 @@ const getEigs = async (
     params.push(`${search?.departement}`);
   }
 
+  if (search?.dateRange?.start && search?.dateRange?.end) {
+    searchQuery.push(
+      `eig.date BETWEEN $${params.length + 1} AND $${params.length + 2}`,
+    );
+    params.push(`${search.dateRange.start}`);
+    params.push(`${search.dateRange.end}`);
+  }
+
   let queryWithPagination = query.get(
     where,
     searchQuery.map((s) => ` AND ${s} `).join(""),
@@ -565,9 +644,19 @@ module.exports.delete = async ({ eigId }) => {
   return eigId;
 };
 
-module.exports.markAsRead = async (eigId) => {
-  log.i("updateStatut - IN", { eigId });
-  await pool.query(query.markAsRead, [eigId]);
-  log.i("updateStatut - DONE");
+module.exports.markAsRead = async (eigId, type) => {
+  log.i("markAsReadDdets - IN", { eigId });
+  if (type === "DREETS") {
+    await pool.query(query.markAsReadDreets, [eigId]);
+  }
+  if (type === "DDETS") {
+    await pool.query(query.markAsReadDdets, [eigId]);
+  }
+  log.i("markAsReadDdets - DONE");
   return eigId;
+};
+
+module.exports.getAvailableDs = async (search) => {
+  const { rows: data } = await pool.query(query.getAvailableDs, [search]);
+  return data;
 };

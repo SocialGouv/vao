@@ -5,6 +5,11 @@ const pool = require("../utils/pgpool").getPool();
 const log = logger(module.filename);
 
 const query = {
+  getFicheIdByTerCode: `
+  select
+        fte.id AS id
+      FROM back.fiche_territoire fte
+      WHERE ter_code = $1`,
   getOne: `
     select
         fte.id AS territoire_id,
@@ -23,11 +28,6 @@ const query = {
       FROM back.fiche_territoire fte
       INNER JOIN geo.territoires ter ON fte.ter_code = ter.code
       WHERE fte.id = $1`,
-  getFicheIdByTerCode: `
-  select
-        fte.id AS id
-      FROM back.fiche_territoire fte
-      WHERE ter_code = $1`,
   select: `
       select
         fte.id AS territoire_id,
@@ -72,7 +72,6 @@ module.exports.fetch = async (criterias = {}) => {
     );
   });
 };
-
 
 module.exports.readFicheIdByTerCode = async (territoireCode) => {
   log.i("readFicheIdByTerCode - IN");

@@ -18,21 +18,6 @@ const query = {
       CLE_INSEE = $1
       OR LABEL = $2
   `,
-  insert: `
-  INSERT INTO
-    FRONT.ADRESSE (
-      CLE_INSEE,
-      LABEL,
-      CODE_INSEE,
-      CODE_POSTAL,
-      LONG,
-      LAT,
-      DEPARTEMENT
-    )
-  VALUES
-    ($1, $2, $3, $4, $5, $6, $7)
-  RETURNING id
-    `,
   getById: `
  SELECT
   LABEL as "label",
@@ -58,6 +43,21 @@ FROM
   FRONT.ADRESSE
 WHERE id = ANY ($1)
   `,
+  insert: `
+  INSERT INTO
+    FRONT.ADRESSE (
+      CLE_INSEE,
+      LABEL,
+      CODE_INSEE,
+      CODE_POSTAL,
+      LONG,
+      LAT,
+      DEPARTEMENT
+    )
+  VALUES
+    ($1, $2, $3, $4, $5, $6, $7)
+  RETURNING id
+    `,
 };
 
 const getByCleInseeOrLabel = async (client, { cleInsee, label }) => {

@@ -323,7 +323,13 @@ module.exports = {
       },
     },
     eig: {
-      sendMarkAsRead: ({ dest, eig }) => {
+      sendMarkAsRead: ({
+        dest,
+        eig,
+        typeReader,
+        territoireCode,
+        territoireName,
+      }) => {
         log.i("sendMarkAsRead - In", {
           dest,
         });
@@ -339,8 +345,7 @@ module.exports = {
             {
               p: [
                 `Bonjour`,
-                `Le rapport de l'évènement indésirable grave que vous avez déposé le ${dayjs(eig.dateDepot).format("DD/MM/YYYY")} et qui s’est déroulé lors du séjour ${eig.libelle} a été consulté par un agent de la préfecture. Si c’est nécessaire, cette personne pourra vous contacter via la messagerie de la plateforme VAO`,
-                `Cordialement,`,
+                `La déclaration d’un évènement indésirable grave que vous avez déposée le ${dayjs(eig.dateDepot).format("DD/MM/YYYY")} et qui s’est déroulé ${dayjs(eig.date).format("DD/MM/YYYY")} lors du séjour dans le département ${eig.departement}, a été consultée ${typeReader === "DREETS" ? `par un agent de la préfecture de la région ${territoireName}` : `par un agent de la DDETS ${territoireCode} du département ${territoireName}`}. Si c’est nécessaire, cette personne pourra vous contacter via la messagerie de la plateforme VAO. `,
               ],
               type: "p",
             },
@@ -360,7 +365,7 @@ module.exports = {
 
         return params;
       },
-      sendToAutre: ({ dest, eig, userName, departementName, regionName }) => {
+      sendToAutre: ({ dest, eig, userName }) => {
         log.i("sendToDREETS - In", {
           dest,
         });
@@ -374,26 +379,31 @@ module.exports = {
         const link = `${frontBODomain}/eig/${eig.id}`;
 
         const html = sendTemplate.getBody(
-          "Portail VAO - Déclaration d’un Evènement indésirable grave",
+          `VAO : Déclaration d’un évènement indésirable grave par ${orgName}`,
           [
             {
               p: [
                 `Bonjour`,
-                `${userName} a déclaré un évènement indésirable grave survenu lors du séjour ${eig.idFonctionnelle}, ${eig.libelle}, organisé par ${orgName}`,
-                `Le qualificatif de l’incident est :`,
+                `${userName} a déclaré un évènement indésirable grave survenu le ${dayjs(eig.date).format("DD/MM/YYYY")} lors du séjour ${eig.libelle}.`,
+                `Le type de l’événement est :`,
                 generateTypes(eig),
               ],
               type: "p",
             },
             {
+              p: [
+                `Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en vous connectant avec votre compte utilisateur nominatif`,
+              ],
+              type: "p",
+            },
+            {
               link,
-              text: "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en cliquant ici",
+              text: "SE CONNECTER A VAO",
               type: "link",
             },
             {
               p: [
-                `Cette déclaration a été envoyée à la préfecture du département de ${departementName} ainsi qu'à la région ${regionName}`,
-                "Cordialement",
+                `Cette déclaration a été envoyée à la direction départementale de l'emploi, du travail, des solidarités et de la protection des populations (DDETS-PP), ainsi qu’à la direction régionale de l’économie, de l’emploi, du travail et des solidarités (DREETS) ayant délivré l’agrément VAO`,
               ],
               type: "p",
             },
@@ -413,7 +423,14 @@ module.exports = {
 
         return params;
       },
-      sendToDDETS: ({ dest, eig }) => {
+      sendToDDETS: ({
+        dest,
+        eig,
+        departementName,
+        declarationSejour,
+        regionName,
+        communeName,
+      }) => {
         log.i("sendToDDETS - In", {
           dest,
         });
@@ -427,24 +444,33 @@ module.exports = {
         const link = `${frontBODomain}/eig/${eig.id}`;
 
         const html = sendTemplate.getBody(
-          "Portail VAO - Déclaration d’un Evènement indésirable grave",
+          `VAO : Déclaration d’un évènement indésirable grave par ${orgName}`,
           [
             {
               p: [
                 `Bonjour`,
-                `L’organisme ${orgName} a déclaré un évènement indésirable grave lors du séjour ${eig.idFonctionnelle}, ${eig.libelle}, qui s’est déroulé dans votre département.`,
-                `Le type d'évènement est :`,
+                `L’organisme ${orgName} a déclaré un évènement indésirable grave, qui s’est produit le ${dayjs(eig.date).format("DD/MM/YYYY")}, lors d’un séjour de vacances adaptées organisées (VAO), sur la commune de ${communeName} dans votre département ${departementName}`,
+                `Référence de la déclaration de séjour : ${declarationSejour.libelle} - ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
+                `Le type d'évènement déclaré est :`,
                 generateTypes(eig),
               ],
               type: "p",
             },
             {
+              p: [
+                "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en vous connectant avec votre compte utilisateur nominatif",
+              ],
+              type: "p",
+            },
+            {
               link,
-              text: "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en cliquant ici",
+              text: "SE CONNECTER A VAO",
               type: "link",
             },
             {
-              p: ["Cordialement"],
+              p: [
+                `Cet email a également été envoyé à la DREETS de la région ${regionName} qui a délivré l’agrément de l’organisme déclarant`,
+              ],
               type: "p",
             },
           ],
@@ -463,7 +489,13 @@ module.exports = {
 
         return params;
       },
-      sendToDREETS: ({ dest, eig, departementName }) => {
+      sendToDREETS: ({
+        dest,
+        eig,
+        departementName,
+        declarationSejour,
+        communeName,
+      }) => {
         log.i("sendToDREETS - In", {
           dest,
         });
@@ -477,24 +509,33 @@ module.exports = {
         const link = `${frontBODomain}/eig/${eig.id}`;
 
         const html = sendTemplate.getBody(
-          "Portail VAO - Déclaration d’un Evènement indésirable grave",
+          `VAO : Déclaration d’un évènement indésirable grave par ${orgName}`,
           [
             {
               p: [
                 `Bonjour`,
-                `L’organisme ${orgName}, qui a reçu son agrément dans votre région, a déclaré un évènement indésirable grave lors du séjour  ${eig.idFonctionnelle}, ${eig.libelle}, qui s’est déroulé dans le département ${departementName} `,
-                `Le type d'évènement est :`,
+                `L’organisme ${orgName}, dont l’agrément vacances adaptées organisées (VAO) a été délivré dans votre région, a déclaré un évènement indésirable grave qui s’est produit le ${dayjs(eig.date).format("DD/MM/YYYY")}, lors d’un séjour organisé dans  la commune de ${communeName} dans le département de ${departementName}.`,
+                `Référence de la déclaration de séjour : ${declarationSejour.libelle} - ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
+                `Le type d'évènement déclaré est :`,
                 generateTypes(eig),
               ],
               type: "p",
             },
             {
+              p: [
+                "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en vous connectant avec votre compte utilisateur nominatif",
+              ],
+              type: "p",
+            },
+            {
               link,
-              text: "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en cliquant ici",
+              text: "SE CONNECTER A VAO",
               type: "link",
             },
             {
-              p: ["Cordialement"],
+              p: [
+                `Cette déclaration d’EIG a également été envoyée à la DDETS du département ${departementName}`,
+              ],
               type: "p",
             },
           ],
@@ -513,13 +554,7 @@ module.exports = {
 
         return params;
       },
-      sendToOrganisme: ({
-        dest,
-        eig,
-        userName,
-        departementName,
-        regionName,
-      }) => {
+      sendToOrganisme: ({ dest, eig, userName, declarationSejour }) => {
         log.i("sendToDREETS - In", {
           dest,
         });
@@ -530,29 +565,35 @@ module.exports = {
         }
 
         const orgName = eig.raisonSociale ?? `${eig?.prenom} ${eig?.nom}`;
-        const link = `${frontBODomain}/eig/${eig.id}`;
+        const link = `${frontUsagersDomain}/eig/${eig.id}`;
 
         const html = sendTemplate.getBody(
-          "Portail VAO - Déclaration d’un Evènement indésirable grave",
+          `VAO : Déclaration d’un évènement indésirable grave par ${orgName}`,
           [
             {
               p: [
                 `Bonjour`,
-                `${userName} a déclaré un évènement indésirable grave survenu lors du séjour ${eig.idFonctionnelle}, ${eig.libelle}`,
-                `Le qualificatif de l’incident est :`,
+                `${userName} a déclaré un évènement indésirable grave survenu le ${dayjs(eig.date).format("DD/MM/YYYY")} lors du séjour ${eig.libelle}.`,
+                `Référence de la déclaration de séjour : ${declarationSejour.libelle} - ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
+                `Le type de l’événement est :`,
                 generateTypes(eig),
               ],
               type: "p",
             },
             {
+              p: [
+                `Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en vous connectant avec votre compte utilisateur nominatif`,
+              ],
+              type: "p",
+            },
+            {
               link,
-              text: "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en cliquant ici",
+              text: "SE CONNECTER A VAO",
               type: "link",
             },
             {
               p: [
-                `Cette déclaration a été envoyée à la préfecture du département de ${departementName} ainsi qu'à la région ${regionName}`,
-                "Cordialement",
+                `Cette déclaration a été envoyée à la direction départementale de l'emploi, du travail, des solidarités et de la protection des populations (DDETS-PP), ainsi qu’à la direction régionale de l’économie, de l’emploi, du travail et des solidarités (DREETS) ayant délivré l’agrément VAO.`,
               ],
               type: "p",
             },

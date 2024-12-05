@@ -65,6 +65,14 @@
                 />
               </div>
             </div>
+            <div
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+            >
+              <RangeDatePicker
+                v-model="searchState.dateRange"
+                label="Date de l'eig"
+              />
+            </div>
           </div>
         </form>
       </div>
@@ -105,6 +113,8 @@ import dayjs from "dayjs";
 import EigStatusBadge from "@vao/shared/src/components/eig/EigStatusBadge.vue";
 import {
   eigModel,
+  EigTypeListe,
+  RangeDatePicker,
   TableWithBackendPagination,
   ValidationModal,
 } from "@vao/shared";
@@ -127,6 +137,7 @@ const searchState = reactive({
   statut: null,
   idFonctionnelle: null,
   type: null,
+  dateRange: null,
 });
 
 const paginateResults = async (sortValue, limitValue, currentPageValue) => {
@@ -222,8 +233,8 @@ const onSelect = (value, key) => {
 
 const headers = [
   {
-    column: "id",
-    text: "ID",
+    column: "idFonctionnelle",
+    text: "Déclaration",
     sort: true,
   },
   {
@@ -232,11 +243,8 @@ const headers = [
     format: (value) => dayjs(value.createdAt).format("DD/MM/YYYY"),
     sort: true,
   },
-  {
-    column: "idFonctionnelle",
-    text: "Déclaration",
-    sort: true,
-  },
+  { column: "departement", text: "Territoire", sort: true },
+
   {
     column: "libelle",
     text: "Séjour",
@@ -252,15 +260,31 @@ const headers = [
   {
     column: "types",
     text: "Types d'événement",
-    format: (value) =>
-      (value.types ?? []).map((t) => mapEigToLabel[t]).join(", "),
+    component: ({ types }) => ({
+      component: EigTypeListe,
+      types: (types ?? []).map((t) => mapEigToLabel[t]),
+    }),
+  },
+  {
+    column: "date",
+    text: "Dates de l'incident",
+    format: (value) => dayjs(value.date).format("DD/MM/YYYY"),
+    sort: true,
   },
   {
     column: "statut",
     text: "Statut",
-    component: ({ statut }) => ({
+    component: ({
+      statut,
+      readByDreets,
+      readByDdets,
+      agrementRegionObtention,
+      departement,
+    }) => ({
       component: EigStatusBadge,
       statut: statut,
+      dreets: { isRead: readByDreets, territoireCode: agrementRegionObtention },
+      ddets: { isRead: readByDdets, territoireCode: departement },
     }),
     sort: true,
   },
@@ -297,7 +321,9 @@ const updateCurrentPage = (val) => {
 };
 
 const navigate = (state) => {
-  navigateTo(`/eig/${state.id}`);
+  navigateTo(
+    `/eig/${state.id}${state.statut !== eigModel.Statuts.BROUILLON ? "#eig-recap" : ""}`,
+  );
 };
 
 const eigToDelete = ref(null);

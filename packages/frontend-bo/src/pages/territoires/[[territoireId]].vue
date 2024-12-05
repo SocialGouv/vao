@@ -107,7 +107,7 @@ const userStore = useUserStore();
 const titleUser = computed(() =>
   !TerritoireStore.territoire
     ? null
-    : `Liste des comptes ${TerritoireStore.territoire.type === "DEP" ? "du département" : "de la région et de ses départements"}`
+    : `Liste des comptes ${TerritoireStore.territoire.type === "DEP" ? "du département" : "de la région et de ses départements"}`,
 );
 const titleTerritoire = computed(() => {
   if (!TerritoireStore.territoire) {

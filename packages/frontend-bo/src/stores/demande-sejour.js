@@ -269,13 +269,10 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     },
 
     async getEigs(declarationId) {
-      const response = await $fetchBackend(
-        `/eig/admin/ds/${declarationId}/enregistrement-2-mois`,
-        {
-          method: "GET",
-          credentials: "include",
-        },
-      );
+      const response = await $fetchBackend(`/eig/admin/ds/${declarationId}`, {
+        method: "GET",
+        credentials: "include",
+      });
       this.eigs = response.eigs;
       return response;
     },
