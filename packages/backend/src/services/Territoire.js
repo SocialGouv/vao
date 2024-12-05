@@ -3,6 +3,13 @@ const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);
+const {
+  sanityzePaginationParams,
+  sanityzeFiltersParams,
+  applyFilters,
+  applyPagination,
+  applyGroupBy,
+} = require("../helpers/queryParams");
 
 const query = {
   getFicheIdByTerCode: `
@@ -28,26 +35,25 @@ const query = {
       FROM back.fiche_territoire fte
       INNER JOIN geo.territoires ter ON fte.ter_code = ter.code
       WHERE fte.id = $1`,
-  select: `
+  select: () =>
+    `
       select
-        fte.id AS territoire_id,
+        fte.id AS "territoireId",
         CASE (ter.code ~ '[0-9]')
         	WHEN true THEN 'DEP'
  			    ELSE 'REG'
         END AS type,
-        ter.code AS value,
-        ter.label AS text,
-        fte.service_telephone AS service_telephone, 
-        fte.corresp_vao_nom AS corresp_vao_nom,
-        fte.corresp_vao_prenom AS corresp_vao_prenom,
-        fte.service_mail as service_mail,
-        COUNT(distinct(usr.id)) as nbusersbo
+        ter.code AS code,
+        ter.label AS label,
+        fte.corresp_vao_prenom AS "correspVaoPrenom",
+        fte.corresp_vao_nom AS "correspVaoNom",
+        fte.service_mail AS "serviceMail",
+        fte.service_telephone AS "serviceTelephone", 
+        COUNT(distinct(usr.id)) as "nbUsersBo"
       FROM geo.territoires ter
       INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
       LEFT JOIN back.users usr ON usr.ter_code = ter.code
-      WHERE code <> 'FRA'
-      GROUP BY territoire_id,type,value,text,service_telephone,corresp_vao_nom,corresp_vao_prenom,service_mail
-      ORDER BY type, text ASC`,
+      WHERE ter.code <> 'FRA'`,
   update: `
       UPDATE back.fiche_territoire
       SET
@@ -62,15 +68,49 @@ const query = {
       `,
 };
 
-module.exports.fetch = async (criterias = {}) => {
-  log.i("fetch - IN");
-  const { rows } = await pool.query(query.select);
+module.exports.fetch = async (queryParams) => {
+  const titles = {
+    label: "ter.label",
+    code: "ter.code",
+  };
+  const groupBy = [
+    "fte.id",
+    "type",
+    "code",
+    "label",
+    "fte.service_telephone",
+    "fte.corresp_vao_nom",
+    "fte.corresp_vao_prenom",
+    "fte.service_mail",
+  ];
 
-  return rows.filter((territoire) => {
-    return Object.entries(criterias).every(
-      ([key, value]) => territoire[key] == value,
-    );
-  });
+  const { limit, offset, sortBy, sortDirection } = sanityzePaginationParams(
+    queryParams,
+    {
+      sortBy: titles,
+    },
+  );
+  const filterParams = sanityzeFiltersParams(queryParams, titles);
+
+  const queryGet = query.select();
+  const filterQuery = applyFilters(queryGet, [], filterParams, groupBy);
+  filterQuery.query = applyGroupBy(filterQuery.query, groupBy);
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  );
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
 };
 
 module.exports.readFicheIdByTerCode = async (territoireCode) => {
