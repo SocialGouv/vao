@@ -9,6 +9,12 @@ const yup = require("yup");
 jest.mock("../../../services/hebergement/Hebergement");
 jest.mock("../../../middlewares/checkJWT");
 jest.mock("../../../middlewares/checkPermissionHebergement");
+jest.mock(
+  "../../../middlewares/checkStatutHebergement",
+  () => () => (req, res, next) => {
+    next();
+  },
+);
 jest.mock("../../../schemas/hebergement");
 
 describe("POST /:id", () => {

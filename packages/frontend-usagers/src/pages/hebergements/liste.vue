@@ -76,7 +76,7 @@
 </template>
 
 <script setup>
-import { TableFull } from "@vao/shared";
+import { hebergement as hebergementUtils, TableFull } from "@vao/shared";
 
 const hebergementStore = useHebergementStore();
 hebergementStore.fetch();
@@ -106,6 +106,7 @@ const search = reactive({
   adresse: null,
 });
 
+const DsfrBadge = resolveComponent("DsfrBadge");
 const headers = [
   {
     column: "nom",
@@ -122,6 +123,23 @@ const headers = [
     column: "adresse",
     text: "Adresse",
     sort: true,
+  },
+  {
+    column: "statut",
+    text: "Statut",
+    format: ({ statut }) => {
+      return {
+        component: DsfrBadge,
+        label: statut,
+        noIcon: true,
+        type:
+          statut === hebergementUtils.statut.ACTIF
+            ? "success"
+            : statut === hebergementUtils.statut.BROUILLON
+              ? "info"
+              : "error",
+      };
+    },
   },
 ];
 const navigate = (hebergement) => navigateTo(`/hebergements/${hebergement.id}`);

@@ -39,6 +39,10 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
   amenagementsSpecifiques: yup.boolean().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
+    else: (schema) =>
+      schema.required(
+        "Il est impératif de renseigner si les aménagements spécifiques",
+      ),
   }),
   chambresDoubles: yup.boolean().when([], {
     is: () => isBrouillon,

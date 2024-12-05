@@ -1390,7 +1390,6 @@ module.exports.update = async (type, declarationId, parametre) => {
       const client = await pool.connect();
       try {
         await client.query("BEGIN");
-        console.log(parametre);
         await linkToHebergements(client, declarationId, parametre.hebergements);
         response = await client.query(query.updateHebergement, [
           parametre,

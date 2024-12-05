@@ -51,7 +51,7 @@ module.exports.queryGetFields = `
   H.DEPLACEMENT_PROXIMITE_DESCRIPTION AS "deplacementProximiteDescription",
   H.VEHICULES_ADAPTES AS "vehiculesAdaptes",
   H.FILE_REPONSE_EXPLOITANT_OU_PROPRIETAIRE AS "fileReponseExploitantOuProprietaire",
-  H.FILE_DERNIER_ARRETE_AUTORISATION_MAIRE AS "fileDernierArreteAutorisationMaire",
+  H.file_dernier_arrete_autorisation_maire AS "fileDernierArreteAutorisationMaire",
   H.FILE_DERNIERE_ATTESTATION_SECURITE AS "fileDerniereAttestationSecurite",
   (
     SELECT

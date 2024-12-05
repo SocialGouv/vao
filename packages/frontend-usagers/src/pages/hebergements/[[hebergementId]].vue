@@ -43,8 +43,11 @@
           default-back-route="/hebergements"
           :is-downloading="apiStatus.isDownloading"
           :message="apiStatus.message"
+          mode-brouillon-activated
           is-save-visible
           @submit="updateOrCreate"
+          @submit-brouillon="updateOrCreateBrouillon"
+          @activate="activate"
         />
       </div>
     </div>
@@ -57,8 +60,6 @@ definePageMeta({
 });
 import hebergementUtils from "@vao/shared/src/utils/hebergement";
 import { DsfrBadge } from "@gouvminint/vue-dsfr";
-
-console.log(hebergementUtils);
 
 const config = useRuntimeConfig();
 
@@ -100,12 +101,7 @@ const links = [
   },
 ];
 
-async function updateOrCreate(hebergement) {
-  log.d("updateOrCreate - IN", { hebergement });
-  setApiStatut(
-    `${hebergementId.value ? "Modification" : "création"} de l'hébergement en cours`,
-  );
-
+const uploadFiles = async (hebergement) => {
   try {
     await hebergementStore.updaloadFiles(hebergement);
   } catch (e) {
@@ -114,9 +110,17 @@ async function updateOrCreate(hebergement) {
       description: e.message ?? "Erreur lors de la sauvegarde de l'hébergement",
     });
     resetApiStatut();
-    return;
+    throw e;
   }
+};
 
+async function updateOrCreate(hebergement) {
+  log.d("updateOrCreate - IN", { hebergement });
+  setApiStatut(
+    `${hebergementId.value ? "Modification" : "création"} de l'hébergement en cours`,
+  );
+
+  await uploadFiles(hebergement);
   // Sauvegarde de l'hébergement
   try {
     await hebergementStore.updateOrCreate(hebergement, hebergementId.value);
@@ -129,6 +133,63 @@ async function updateOrCreate(hebergement) {
       titleTag: "h2",
       description:
         error.data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+    });
+    log.w("updateOrCreate - erreur", { error });
+  } finally {
+    resetApiStatut();
+  }
+}
+
+async function updateOrCreateBrouillon(hebergement) {
+  log.d("updateOrCreate - IN", { hebergement });
+  setApiStatut(
+    `${hebergementId.value ? "Modification" : "création"} de l'hébergement en mode brouillon`,
+  );
+
+  await uploadFiles(hebergement);
+
+  // Sauvegarde de l'hébergement
+  try {
+    const res = await hebergementStore.updateOrCreateBrouillon(
+      hebergement,
+      hebergementId.value,
+    );
+    log.d("hebergement sauvegardé");
+    toaster.success({ titleTag: "h2", description: "Hébergement sauvegardé" });
+
+    await navigateTo(`/hebergements/${res}`);
+  } catch (error) {
+    toaster.error({
+      titleTag: "h2",
+      description:
+        error.data.message ??
+        "Erreur lors de la sauvegarde de l'hébergement en mode brouillon",
+    });
+    log.w("updateOrCreate - erreur", { error });
+  } finally {
+    resetApiStatut();
+  }
+}
+
+async function activate(hebergement) {
+  log.d("updateOrCreate - IN", { hebergement });
+  setApiStatut(
+    `${hebergementId.value ? "Modification" : "création"} de l'hébergement en mode brouillon`,
+  );
+  await uploadFiles(hebergement);
+
+  try {
+    await hebergementStore.activate(hebergement, hebergementId.value);
+    log.d("hebergement sauvegardé");
+    toaster.success({ titleTag: "h2", description: "Hébergement sauvegardé" });
+
+    await navigateTo("/hebergements/liste");
+  } catch (error) {
+    toaster.error({
+      titleTag: "h2",
+      description:
+        error.data.message ??
+        "Erreur lors de la sauvegarde de l'hébergement en mode brouillon",
     });
     log.w("updateOrCreate - erreur", { error });
   } finally {

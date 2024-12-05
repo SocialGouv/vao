@@ -4,7 +4,6 @@ const HebergementHelper = require("../../helpers/hebergement");
 const HebergementSchema = require("../../schemas/hebergement");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
-const AppError = require("../../utils/error");
 const FOUser = require("../../services/FoUser");
 
 const log = logger(module.filename);
@@ -37,10 +36,12 @@ module.exports = async function postbrouillon(req, res, next) {
 
   try {
     const organismeId = await FOUser.getUserOrganisme(userId);
-    const id = await Hebergement.create(userId, organismeId, {
-      ...hebergement,
-      statut: HebergementHelper.statuts.BROUILLON,
-    });
+    const id = await Hebergement.create(
+      userId,
+      organismeId,
+      HebergementHelper.statuts.BROUILLON,
+      hebergement,
+    );
 
     return res.status(200).json({
       id,
