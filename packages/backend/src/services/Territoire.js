@@ -5,6 +5,11 @@ const pool = require("../utils/pgpool").getPool();
 const log = logger(module.filename);
 
 const query = {
+  getFicheIdByTerCode: `
+  select
+        fte.id AS id
+      FROM back.fiche_territoire fte
+      WHERE ter_code = $1`,
   getOne: `
     select
         fte.id AS territoire_id,
@@ -23,12 +28,8 @@ const query = {
       FROM back.fiche_territoire fte
       INNER JOIN geo.territoires ter ON fte.ter_code = ter.code
       WHERE fte.id = $1`,
-  getFicheIdByTerCode: `
-  select
-        fte.id AS id
-      FROM back.fiche_territoire fte
-      WHERE ter_code = $1`,
-  select: `
+  select: (search) => {
+    return `
       select
         fte.id AS territoire_id,
         CASE (ter.code ~ '[0-9]')
@@ -45,9 +46,21 @@ const query = {
       FROM geo.territoires ter
       INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
       LEFT JOIN back.users usr ON usr.ter_code = ter.code
-      WHERE code <> 'FRA'
+      WHERE ter.code <> 'FRA'
+      ${search.map((s) => ` AND ${s} `).join("")}
       GROUP BY territoire_id,type,value,text,service_telephone,corresp_vao_nom,corresp_vao_prenom,service_mail
-      ORDER BY type, text ASC`,
+      `;
+  },
+  selectTotal: (search) => {
+    return `
+      select
+        count(distinct(fte.id )) AS count
+      FROM geo.territoires ter
+      INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
+      WHERE ter.code <> 'FRA'
+      ${search.map((s) => ` AND ${s} `).join("")}
+      `;
+  },
   update: `
       UPDATE back.fiche_territoire
       SET
@@ -62,17 +75,49 @@ const query = {
       `,
 };
 
-module.exports.fetch = async (criterias = {}) => {
+module.exports.fetch = async ({
+  limit,
+  offset,
+  sortBy = "text",
+  sortDirection = "ASC",
+  search,
+} = {}) => {
   log.i("fetch - IN");
-  const { rows } = await pool.query(query.select);
+  const searchQuery = [];
+  const params = [];
 
-  return rows.filter((territoire) => {
-    return Object.entries(criterias).every(
-      ([key, value]) => territoire[key] == value,
+  if (search?.text && search.text.length) {
+    searchQuery.push(
+      `unaccent(ter.label) ILIKE unaccent($${params.length + 1})`,
     );
-  });
-};
+    params.push(`%${search.text}%`);
+  }
+  let queryWithPagination = query.select(searchQuery);
 
+  // Order management
+  if (sortBy && sortDirection) {
+    queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}`;
+  } else {
+    queryWithPagination += `ORDER BY type, text ASC`;
+  }
+  const total = await pool.query(query.selectTotal(searchQuery), params);
+
+  const paramsWithPagination = [...params];
+  // Pagination management
+  if (limit != null && offset != null) {
+    queryWithPagination += `
+    OFFSET $${params.length + 1}
+    LIMIT $${params.length + 2}
+    `;
+    paramsWithPagination.push(offset, limit);
+  }
+
+  const territoires = await pool.query(
+    queryWithPagination,
+    paramsWithPagination,
+  );
+  return { territoires: territoires.rows, total: total.rows[0].count };
+};
 
 module.exports.readFicheIdByTerCode = async (territoireCode) => {
   log.i("readFicheIdByTerCode - IN");
