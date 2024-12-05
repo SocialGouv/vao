@@ -1,6 +1,7 @@
 const {
   applyFilters,
   applyPagination,
+  applyGroupBy,
   sanityzeFiltersParams,
   sanityzePaginationParams,
 } = require("../queryParams");
@@ -10,7 +11,7 @@ describe("queryParams", () => {
   it("should return the original query and params if no filters are provided", () => {
     const query = "SELECT * FROM users";
     const result = applyFilters(query, [], {});
-    expect(result.query).toBe(query);
+    expect(result.query.trim()).toBe(query);
     expect(result.params).toEqual([]);
   });
 
@@ -28,6 +29,17 @@ describe("queryParams", () => {
     expect(result.params).toEqual(["30", "John"]);
   });
 
+  it("should apply group by to the query", () => {
+    const query = "SELECT age, name, count(*) FROM users";
+    const groupParams = ["age", "name"];
+    const result = applyFilters(query, [], {});
+    result.query = applyGroupBy(query, groupParams);
+    // remove return at line to fix space pb
+    expect(result.query.replace(/\s+/g, " ").trim()).toContain(
+      "GROUP BY age, name",
+    );
+  });
+
   it("should handle array filters with ANY", () => {
     const query = "SELECT * FROM users";
     const filterParams = { roles: ["admin", "user"] };
@@ -38,7 +50,7 @@ describe("queryParams", () => {
 
   it("should return the original query if no parameters are provided", () => {
     const result = applyFilters();
-    expect(result.query).toBe("");
+    expect(result.query.trim()).toBe("");
     expect(result.params).toEqual([]);
   });
 

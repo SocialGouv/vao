@@ -4,7 +4,7 @@ module.exports = {
     if (Object.keys(filterParams).length === 0) {
       return {
         params: initialParams,
-        query,
+        query: `${query}`,
       };
     }
     const filters = Object.entries(filterParams)
@@ -21,6 +21,19 @@ module.exports = {
       query: `${query} AND ${filters}`,
     };
   },
+  applyGroupBy: (queryInitial, groupByParams = []) => {
+    if (Object.keys(groupByParams).length === 0) {
+      return `${queryInitial}`;
+    }
+    const group = Object.entries(groupByParams)
+      // eslint-disable-next-line no-unused-vars
+      .map(([_key, value]) => {
+        return value;
+      })
+      .join(", ");
+    return `${queryInitial} GROUP BY ${group}`;
+  },
+
   applyPagination: (
     query,
     params,
@@ -39,7 +52,6 @@ module.exports = {
     const countQuery = `
       SELECT COUNT(*) AS total FROM (${query}) AS subquery;
     `;
-
     return {
       countQuery,
       countQueryParams: params,
@@ -47,7 +59,7 @@ module.exports = {
       query: paginatedQuery,
     };
   },
-  sanityzeFiltersParams: (queryParams, availableParams) =>
+  sanityzeFiltersParams: (queryParams, availableParams) => 
     Object.entries(availableParams).reduce((acc, [key, value]) => {
       if (queryParams[key]) {
         acc[value] = queryParams[key];

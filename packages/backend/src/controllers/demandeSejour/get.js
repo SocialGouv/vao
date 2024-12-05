@@ -30,7 +30,7 @@ module.exports = async function get(req, res, next) {
       total: demandes.total,
     });
   } catch (error) {
-    console.log(error);
+    log.w(error);
     log.w("DONE with error");
     return next(error);
   }

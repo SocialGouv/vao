@@ -7,34 +7,28 @@ export const useTerritoireStore = defineStore("territoire", {
   state: () => ({
     territoires: [],
     territoire: {},
+    total: null,
   }),
   actions: {
-    async fetch() {
+    async fetch(params) {
       log.i("fetch - IN");
       try {
-        const { territoires } = await $fetchBackend("/territoire/list", {
+        const { territoires, total } = await $fetchBackend("/territoire/list", {
           method: "GET",
           credentials: "include",
+          params,
         });
         if (territoires) {
-          this.territoires = territoires.map((territoire) => ({
-            territoireId: territoire.territoire_id,
-            text: territoire.text,
-            value: territoire.value,
-            parent: territoire.parent,
-            typeTerritoire: territoire.type,
-            serviceMail: territoire.service_mail,
-            serviceTelephone: territoire.service_telephone,
-            correspVaoNom: territoire.corresp_vao_nom,
-            correspVaoPrenom: territoire.corresp_vao_prenom,
-            nbUsersBO: territoire.nbusersbo,
-          }));
+          log.i("fetch - DONE");
+          this.territoires = territoires;
+          this.total = total;
         }
       } catch (err) {
         log.w("fetch - DONE with error", err);
+        this.territoires = [];
+        this.total = 0;
         throw err;
       }
-      log.i("fetch - DONE");
     },
     async get(idTerritoire) {
       log.i("get - IN");
