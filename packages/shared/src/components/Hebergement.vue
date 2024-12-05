@@ -522,45 +522,55 @@
           @update:model-value="onExcursionChange"
         />
       </div>
-      <div class="fr-fieldset__element">
-        <div class="fr-grid-row">
-          <div v-if="!props.isDownloading" class="fr-col-4">
-            <div class="fr-input-group">
-              <nuxt-link :to="backRoute" class="back-button">
-                <DsfrButton type="button" secondary>Retour</DsfrButton>
-              </nuxt-link>
-            </div>
-          </div>
-          <div v-if="isSaveVisible" class="fr-col-4">
-            <div class="fr-input-group">
-              <DsfrButton
-                v-if="!props.isDownloading"
-                id="next-step"
-                type="button"
-                @click="submitBrouillon"
-                >Enregistrer en mode brouillon
-              </DsfrButton>
-              <is-downloading
-                :is-downloading="props.isDownloading"
-                :message="props.message"
-              />
-            </div>
-            <div class="fr-input-group">
-              <DsfrButton
-                v-if="!props.isDownloading"
-                id="next-step"
-                :disabled="!meta.valid"
-                type="button"
-                @click="submit"
-                >{{ labelNext }}
-              </DsfrButton>
-              <is-downloading
-                :is-downloading="props.isDownloading"
-                :message="props.message"
-              />
-            </div>
-          </div>
+      <div class="button-container">
+        <nuxt-link :to="backRoute" class="back-button">
+          <DsfrButton type="button" secondary>Retour</DsfrButton>
+        </nuxt-link>
+        <div
+          v-if="isSaveVisible && !props.isDownloading"
+          class="crud-button-container"
+        >
+          <DsfrButton
+            v-if="
+              props.modeBrouillonActivated &&
+              (!hebergementStatut ||
+                hebergementStatut === hebergementUtils.statut.BROUILLON)
+            "
+            id="next-step"
+            type="button"
+            @click="submitBrouillon"
+            >Enregistrer le brouillon
+          </DsfrButton>
+          <DsfrButton
+            v-if="
+              props.modeBrouillonActivated &&
+              hebergementStatut &&
+              hebergementStatut === hebergementUtils.statut.BROUILLON
+            "
+            id="next-step"
+            :disabled="!meta.valid"
+            type="button"
+            @click="activate"
+            >Activer l'hebergement
+          </DsfrButton>
+          <DsfrButton
+            v-if="
+              !hebergementStatut ||
+              hebergementStatut === hebergementUtils.statut.ACTIF
+            "
+            id="next-step"
+            :disabled="!meta.valid"
+            type="button"
+            @click="submit"
+            >{{
+              hebergementId ? "Modifier l'hebergement" : "Ajouter l'hebergement"
+            }}
+          </DsfrButton>
         </div>
+        <is-downloading
+          :is-downloading="props.isDownloading"
+          :message="props.message"
+        />
       </div>
     </DsfrFieldset>
   </div>
@@ -583,7 +593,7 @@ import createLogger from "../utils/createLogger";
 
 const toaster = useToaster();
 
-const emit = defineEmits(["cancel", "submit"]);
+const emit = defineEmits(["cancel", "submit", "submit-brouillon", "activate"]);
 
 const ouiNonOptions = [
   {
@@ -602,18 +612,21 @@ const props = defineProps({
     default: () => ({}),
   },
   isDisabled: { type: Boolean, default: false },
-  labelNext: { type: String, default: "Ajouter hébergement" },
   isDownloading: { type: Boolean, default: false },
   message: { type: String, required: false, default: null },
   isSaveVisible: { type: Boolean, default: false },
   defaultBackRoute: { type: String, required: true },
   cdnUrl: { type: String, required: true },
+  modeBrouillonActivated: { type: Boolean, default: false },
 });
 
 const logger = createLogger("vao-shared");
 const log = logger("components/hebergement");
 
 const validationSchema = yup.object(hebergementUtils.schema);
+
+const hebergementId = computed(() => props.initHebergement.id);
+const hebergementStatut = computed(() => props.initHebergement.statut);
 
 const initialValues = {
   nom: props.initHebergement.nom ?? null,
@@ -866,13 +879,8 @@ function verifFormatFile(file, toasterMessage) {
   }
 }
 
-function submitBrouillon() {
-  emit("submit", { ...toRaw(values) });
-}
-
-function submit() {
-  // Vérification du format des fichiers avant enregistrement
-  if (
+const formatFilesOk = computed(
+  () =>
     (reglementationErp.value === true &&
       verifFormatFile(
         fileDernierArreteAutorisationMaire,
@@ -886,8 +894,22 @@ function submit() {
       verifFormatFile(
         fileReponseExploitantOuProprietaire,
         "La réponse de l'exploitant/propriétaire",
-      ))
-  ) {
+      )),
+);
+
+function activate() {
+  if (formatFilesOk.value) {
+    emit("activate", { ...toRaw(values) });
+  }
+}
+
+function submitBrouillon() {
+  emit("submit-brouillon", { ...toRaw(values) });
+}
+
+function submit() {
+  // Vérification du format des fichiers avant enregistrement
+  if (formatFilesOk.value) {
     log.i("submit", { ...toRaw(values) });
     emit("submit", { ...toRaw(values) });
   }
@@ -897,5 +919,19 @@ function submit() {
 <style lang="scss" scoped>
 .back-button {
   background-image: none;
+}
+
+.button-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+}
+
+.crud-button-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
 }
 </style>

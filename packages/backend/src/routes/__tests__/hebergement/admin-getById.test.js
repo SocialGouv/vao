@@ -8,7 +8,12 @@ const checkPermissionHebergement = require("../../../middlewares/checkPermission
 jest.mock("../../../services/hebergement/Hebergement");
 jest.mock("../../../middlewares/bo-check-JWT");
 jest.mock("../../../middlewares/checkPermissionHebergement");
-
+jest.mock(
+  "../../../middlewares/checkStatutHebergement",
+  () => () => (req, res, next) => {
+    next();
+  },
+);
 describe("GET /hebergement/admin/:id", () => {
   const user = {
     id: 1,

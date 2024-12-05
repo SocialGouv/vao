@@ -6,3 +6,5 @@ module.exports.getExtract = require("./getExtract");
 module.exports.post = require("./post");
 module.exports.postBrouillon = require("./post-brouillon");
 module.exports.update = require("./update");
+module.exports.updateBrouillon = require("./update-brouillon");
+module.exports.activate = require("./activate");
