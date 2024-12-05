@@ -1,15 +1,17 @@
 <template>
-  <TableUI
-    :on-update-item-by-page="onUpdateItemByPage"
-    :on-update-current-page="(p) => (currentPage = p)"
-    :items-by-page="itemByPage"
-    :total-items="filteredData?.length ?? 0"
-    :headers="h"
-    :title="title"
-    :displayed-data="displayedData"
-    :current-page="currentPage"
-    @click-row="onClickRow"
-  />
+  <div class="table-container">
+    <TableUI
+      :on-update-item-by-page="onUpdateItemByPage"
+      :on-update-current-page="(p) => (currentPage = p)"
+      :items-by-page="itemByPage"
+      :total-items="filteredData?.length ?? 0"
+      :headers="h"
+      :title="title"
+      :displayed-data="displayedData"
+      :current-page="currentPage"
+      @click-row="onClickRow"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -228,4 +230,15 @@ onMounted(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.table-container {
+  overflow-x: auto; /* Active le défilement horizontal */
+  -webkit-overflow-scrolling: touch; /* Défilement fluide sur mobile */
+  max-width: 100%; /* Assure que le conteneur ne dépasse pas la largeur disponible */
+}
+
+.table-container table {
+  width: 100%; /* Le tableau utilise tout l'espace disponible */
+  min-width: 800px; /* Largeur minimale pour forcer le scroll si nécessaire */
+}
+</style>
