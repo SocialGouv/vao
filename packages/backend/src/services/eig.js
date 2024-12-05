@@ -83,13 +83,14 @@ GROUP BY
   `,
   getAvailableDs: `
   SELECT
-    id AS "id",
-    id_fonctionnelle AS "idFonctionnelle",
-    libelle AS "libelle",
-    date_debut AS "dateDebut",
-    date_fin AS "dateFin"
+    ds.id AS "id",
+    ds.id_fonctionnelle AS "idFonctionnelle",
+    ds.libelle AS "libelle",
+    ds.date_debut AS "dateDebut",
+    ds.date_fin AS "dateFin"
   FROM
     front.demande_sejour ds
+    JOIN front.organismes o ON o.id = ds.organisme_id
   WHERE
     (
       UNACCENT (libelle) ILIKE '%' || UNACCENT ($1) || '%'
@@ -99,6 +100,7 @@ GROUP BY
     AND ds.statut IN ('VALIDEE 8J', 'SEJOUR EN COURS', 'TERMINEE')
     AND ds.date_debut <= DATE_TRUNC('day', NOW())
     AND DATE_TRUNC('day', NOW()) <= ds.date_fin + INTERVAL '1 week'
+    AND o.id = ANY ($2)
   LIMIT
     10
   `,
@@ -656,7 +658,10 @@ module.exports.markAsRead = async (eigId, type) => {
   return eigId;
 };
 
-module.exports.getAvailableDs = async (search) => {
-  const { rows: data } = await pool.query(query.getAvailableDs, [search]);
+module.exports.getAvailableDs = async (organismeId, search) => {
+  const { rows: data } = await pool.query(query.getAvailableDs, [
+    search,
+    organismeId,
+  ]);
   return data;
 };
