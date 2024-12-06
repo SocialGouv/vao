@@ -90,7 +90,7 @@ app.use(`/hebergement`, routes.hebergement);
 app.use(`/siret`, routes.siret);
 app.use(`/documents`, routes.documents);
 app.use(`/geo`, routes.geo);
-app.use(`/eig`, routes.eig);
+//app.use(`/eig`, routes.eig);
 app.use(`/message`, routes.message);
 app.use(`/territoire`, routes.territoire);
 app.use(`/healthz`, routes.healthz);

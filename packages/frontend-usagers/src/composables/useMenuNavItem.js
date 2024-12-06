@@ -47,19 +47,19 @@ export const useMenuNavItems = () => {
         text: "Mes hébergements",
         to: "/hebergements/liste",
       },
-      {
-        title: "EIG",
-        links: [
-          {
-            text: "Mes EIG",
-            to: "/eig/liste",
-          },
-          {
-            text: "Créer un EIG",
-            to: "/eig",
-          },
-        ],
-      },
+      /* {
+         title: "EIG",
+         links: [
+           {
+             text: "Mes EIG",
+             to: "/eig/liste",
+           },
+           {
+             text: "Créer un EIG",
+             to: "/eig",
+           },
+         ],
+       },*/
     ];
   });
 };
