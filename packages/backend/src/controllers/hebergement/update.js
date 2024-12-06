@@ -33,7 +33,7 @@ module.exports = async function post(req, res, next) {
   let hebergement;
 
   try {
-    hebergement = await yup.object(HebergementSchema.schema()).validate(
+    hebergement = await yup.object(HebergementSchema.schema(false)).validate(
       {
         coordonnees,
         informationsLocaux,

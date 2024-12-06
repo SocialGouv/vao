@@ -45,6 +45,12 @@ const accessibiliteOptions = [
   { label: "Autre (précisez ci-dessous)", value: "commentaires" },
 ];
 
+const statut = {
+  BROUILLON: "brouillon",
+  ACTIF: "actif",
+  DESACTIVE: "desactive",
+};
+
 const numTelephoneRegex = /^(\+33|0|0033)[1-9][0-9]{8}$/i;
 
 const coordonneesSchema = {
@@ -236,4 +242,5 @@ export default {
   informationsLocauxSchema,
   informationsTransportSchema,
   schema,
+  statut,
 };
