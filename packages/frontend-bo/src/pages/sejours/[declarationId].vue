@@ -60,12 +60,12 @@ const tabs = [
     tabId: "tabpanel-messagerie",
     href: "messagerie",
   },
-  {
+  /*{
     label: "EIG",
     tabPanelId: "tabpanel-eig-panel",
     tabId: "tabpanel-eig",
     href: "eig",
-  },
+  },*/
 ];
 
 const defaultTab = tabs.findIndex(({ href }) => route.name.includes(href));

@@ -371,15 +371,15 @@ const tabTitles = computed(() => [
         },
       ]
     : []),
-  ...(sejourId.value
-    ? [
-        {
-          title: "EIG",
-          tabId: "declaration-sejour-tab-4",
-          panelId: "declaration-sejour-content-4",
-        },
-      ]
-    : []),
+  /*  ...(sejourId.value
+      ? [
+          {
+            title: "EIG",
+            tabId: "declaration-sejour-tab-4",
+            panelId: "declaration-sejour-content-4",
+          },
+        ]
+      : []),*/
 ]);
 
 const sommaireOptions = demandeSejourMenus
