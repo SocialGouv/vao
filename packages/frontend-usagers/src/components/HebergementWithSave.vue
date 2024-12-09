@@ -7,8 +7,11 @@
     :message="props.message"
     :is-save-visible="props.isSaveVisible"
     :default-back-route="props.defaultBackRoute"
+    :mode-brouillon-activated="props.modeBrouillonActivated"
     :cdn-url="props.cdnUrl"
     @submit="submit"
+    @submit-brouillon="submitBrouillon"
+    @activate="activate"
     @cancel="cancel"
   >
     <template #search="scope">
@@ -49,18 +52,26 @@ const props = defineProps({
     default: () => ({}),
   },
   isDisabled: { type: Boolean, default: false },
-  labelNext: { type: String, default: "Ajouter hébergement" },
   isDownloading: { type: Boolean, default: false },
   message: { type: String, required: false, default: null },
   isSaveVisible: { type: Boolean, default: false },
   defaultBackRoute: { type: String, required: true },
   cdnUrl: { type: String, required: true },
+  modeBrouillonActivated: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(["cancel", "submit"]);
+const emit = defineEmits(["cancel", "submit", "submit-brouillon", "activate"]);
 
 const submit = (hebergement) => {
   emit("submit", hebergement);
+};
+
+const submitBrouillon = (hebergement) => {
+  emit("submit-brouillon", hebergement);
+};
+
+const activate = (hebergement) => {
+  emit("activate", hebergement);
 };
 
 const cancel = () => {

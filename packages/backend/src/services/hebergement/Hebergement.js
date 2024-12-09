@@ -27,6 +27,11 @@ ${new Array(nbRows)
   )
   .join(",")}
   `,
+  removePrestationsHoteliere: `
+  DELETE FROM front.hebergement_to_prestations_hotelieres
+  WHERE
+    hebergement_id = $1;
+  `,
   create: `
     INSERT INTO front.hebergement(
       organisme_id,
@@ -68,7 +73,8 @@ ${new Array(nbRows)
       FILE_DERNIERE_ATTESTATION_SECURITE,
       VISITE_LOCAUX_AT,
       ACCESSIBILITE_PRECISION,
-      AMENAGEMENTS_SPECIFIQUES_PRECISION
+      AMENAGEMENTS_SPECIFIQUES_PRECISION,
+      STATUT_ID
     )
     VALUES (
       $1,                                                               --organisme_id,
@@ -110,10 +116,53 @@ ${new Array(nbRows)
       $35,                                                              --FILE_DERNIERE_ATTESTATION_SECURITE
       $36,                                                              --VISITE_LOCAUX_AT
       $37,                                                              --ACCESSIBILITE_PRECISION
-      $38                                                               --AMENAGEMENTS_SPECIFIQUES_PRECISION
+      $38,                                                              --AMENAGEMENTS_SPECIFIQUES_PRECISION
+      (SELECT ID FROM FRONT.HEBERGEMENT_STATUT WHERE VALUE = $39)         -- STATUT
     )
     RETURNING id
     `,
+  update: `
+  UPDATE front.hebergement
+  SET
+    edited_by = $2,
+    edited_at = NOW(),
+    nom = $3,
+    coordonnees = $4,
+    informations_locaux = $5,
+    informations_transport = $6,
+    email = $7,
+    adresse_id = $8,
+    telephone_1 = $9,
+    telephone_2 = $10,
+    nom_gestionnaire = $11,
+    type_id = (SELECT id FROM front.hebergement_type WHERE value = $12),
+    type_pension_id = (SELECT id FROM front.hebergement_type_pension WHERE value = $13),
+    nombre_lits = $14,
+    lit_dessus = $15,
+    nombre_lits_superposes = $16,
+    nombre_max_personnes_couchage = $17,
+    visite_locaux = $18,
+    accessibilite_id = (SELECT id FROM front.hebergement_accessibilite WHERE value = $19),
+    chambres_doubles = $20,
+    chambres_unisexes = $21,
+    reglementation_erp = $22,
+    couchage_individuel = $23,
+    rangement_individuel = $24,
+    amenagements_specifiques = $25,
+    description_lieu_hebergement = $26,
+    excursion_description = $27,
+    deplacement_proximite_description = $28,
+    vehicules_adaptes = $29,
+    file_reponse_exploitant_ou_proprietaire = $30,
+    file_dernier_arrete_autorisation_maire = $31,
+    file_derniere_attestation_securite = $32,
+    visite_locaux_at = $33,
+    accessibilite_precision = $34,
+    amenagements_specifiques_precision = $35,
+    statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $36)
+  WHERE
+    id = $1
+  `,
   getByDSId: `
     SELECT
         ID as "hebergementId",
@@ -154,6 +203,7 @@ ${new Array(nbRows)
           OR unaccent(a.label) ILIKE '%' || unaccent($2) || '%'
         )
         AND CURRENT IS TRUE
+        AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = 'actif')
       ORDER BY "${sort}" ${order}
     ),
     total_count AS (
@@ -197,10 +247,12 @@ ${new Array(nbRows)
       a.label as adresse,
       h.supprime,
       h.created_at as "createdAt",
-      h.edited_at as "editedAt"
+      h.edited_at as "editedAt",
+      hs.value as "statut"
     FROM front.hebergement h
     JOIN front.organismes o ON h.organisme_id = o.id
     LEFT JOIN front.adresse a on a.id = h.adresse_id
+    LEFT JOIN front.hebergement_statut hs on hs.id = h.statut_id
     WHERE o.personne_morale->>'siren' = $1
     `,
   getByUserId: `
@@ -208,39 +260,42 @@ ${new Array(nbRows)
       h.id as "id",
       nom as "nom",
       a.label as "adresse",
-      a.departement as "departement"
+      a.departement as "departement",
+      hs.value as "statut"
     FROM front.hebergement h
     LEFT JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
     LEFT JOIN front.adresse a ON a.id = h.adresse_id
+    LEFT JOIN front.hebergement_statut hs on hs.id = h.statut_id
     WHERE uo.use_id = $1
       AND CURRENT IS TRUE
     `,
   getPreviousValueForHistory: `
   SELECT
-    HEBERGEMENT_ID AS "hebergementUuid",
-    ORGANISME_ID as "organismeId",
-    CREATED_BY as "createdBy",
-    CREATED_AT as "createdAt",
-    CURRENT as "current"
+    h.hebergement_id AS "hebergementUuid",
+    h.organisme_id AS "organismeId",
+    h.created_by AS "createdBy",
+    h.created_at AS "createdAt",
+    h.current AS "current",
+    hs.value AS "statut"
   FROM
-    FRONT.HEBERGEMENT
+    front.hebergement h
+    LEFT JOIN front.hebergement_statut hs ON hs.id = h.statut_id
   WHERE
-    ID = $1;
+    h.id = $1;
   `,
   historize: `
     UPDATE front.hebergement
     SET current = FALSE
     WHERE id = $1
   `,
-  update: `
-    UPDATE front.hebergement
-    SET
-      nom = $2,
-      coordonnees = $3,
-      informations_locaux = $4,
-      informations_transport = $5,
-      edited_at = NOW()
-    WHERE id = $1
+  getStatut: `
+    SELECT
+      value AS "statut"
+    FROM
+      front.hebergement h
+      LEFT JOIN front.hebergement_statut hs ON h.statut_id = hs.id
+    WHERE
+      h.id = $1
   `,
 };
 
@@ -260,11 +315,13 @@ ${new Array(nbRows)
 */
 const create = async (
   client,
-  { createdBy, createdAt, updatedBy, organismeId },
+  { createdBy, createdAt, updatedBy, organismeId, statut },
   { nom, coordonnees, informationsLocaux, informationsTransport },
   hebergemenetUuid,
 ) => {
-  const adresseId = await saveAdresse(client, coordonnees.adresse);
+  const adresseId = coordonnees.adresse
+    ? await saveAdresse(client, coordonnees.adresse)
+    : null;
   const { rows } = await client.query(query.create, [
     organismeId, // $1
     createdBy,
@@ -304,10 +361,12 @@ const create = async (
     informationsLocaux.visiteLocauxAt,
     informationsLocaux.accessibilitePrecision,
     informationsLocaux.precisionAmenagementsSpecifiques,
+    statut,
   ]);
 
   const hebergementId = rows[0].id;
   const prestationsHotelieres = informationsLocaux.prestationsHotelieres;
+
   if (prestationsHotelieres.length > 0) {
     await client.query(
       query.associatePrestation(prestationsHotelieres.length),
@@ -318,7 +377,7 @@ const create = async (
   return hebergementId;
 };
 
-module.exports.create = async (userId, organismeId, hebergement) => {
+module.exports.create = async (userId, organismeId, statut, hebergement) => {
   const client = await pool.connect();
   let hebergementId;
 
@@ -330,6 +389,7 @@ module.exports.create = async (userId, organismeId, hebergement) => {
         createdAt: new Date(),
         createdBy: userId,
         organismeId,
+        statut,
         updatedBy: userId,
       },
       hebergement,
@@ -345,9 +405,90 @@ module.exports.create = async (userId, organismeId, hebergement) => {
   return hebergementId;
 };
 
+// Utilisée par exemple lorsque l'on modifie un hebergement en statut brouillon
+module.exports.updateWithoutHistory = async (
+  userId,
+  hebergementId,
+  statut,
+  hebergement,
+) => {
+  log.i("updateWithoutHistory - IN");
+  const { nom, coordonnees, informationsLocaux, informationsTransport } =
+    hebergement;
+
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+    const adresseId = coordonnees.adresse
+      ? await saveAdresse(client, coordonnees.adresse)
+      : null;
+    await client.query(query.update, [
+      hebergementId,
+      userId,
+      nom,
+      coordonnees,
+      informationsLocaux,
+      informationsTransport,
+      coordonnees.email,
+      adresseId,
+      coordonnees.numTelephone1,
+      coordonnees.numTelephone2,
+      coordonnees.nomGestionnaire,
+      informationsLocaux.type,
+      informationsLocaux.pension,
+      informationsLocaux.nombreLits,
+      informationsLocaux.litsDessus,
+      informationsLocaux.nombreLitsSuperposes,
+      informationsLocaux.nombreMaxPersonnesCouchage,
+      informationsLocaux.visiteLocaux,
+      informationsLocaux.accessibilite,
+      informationsLocaux.chambresDoubles,
+      informationsLocaux.chambresUnisexes,
+      informationsLocaux.reglementationErp,
+      informationsLocaux.couchageIndividuel,
+      informationsLocaux.rangementIndividuel,
+      informationsLocaux.amenagementsSpecifiques,
+      informationsLocaux.descriptionLieuHebergement,
+      informationsTransport.excursion,
+      informationsTransport.deplacementProximite,
+      informationsTransport.vehiculesAdaptes,
+      informationsLocaux.fileReponseExploitantOuProprietaire?.uuid ?? null,
+      informationsLocaux.fileDernierArreteAutorisationMaire?.uuid ?? null,
+      informationsLocaux.fileDerniereAttestationSecurite?.uuid ?? null,
+      informationsLocaux.visiteLocauxAt,
+      informationsLocaux.accessibilitePrecision,
+      informationsLocaux.precisionAmenagementsSpecifiques,
+      statut,
+    ]);
+
+    await client.query(query.removePrestationsHoteliere, [hebergementId]);
+    const prestationsHotelieres = informationsLocaux.prestationsHotelieres;
+    if (prestationsHotelieres.length > 0) {
+      await client.query(
+        query.associatePrestation(prestationsHotelieres.length),
+        [hebergementId, ...prestationsHotelieres],
+      );
+    }
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+
+  log.i("updateWithoutHistory - DONE");
+  return hebergementId;
+};
+
 module.exports.update = async (userId, hebergementId, hebergement) => {
+  log.i("update - IN");
   const {
-    rows: [{ hebergementUuid, organismeId, createdBy, createdAt, current }],
+    rows: [
+      { hebergementUuid, organismeId, createdBy, createdAt, current, statut },
+    ],
   } = await pool.query(query.getPreviousValueForHistory, [hebergementId]);
   const client = await pool.connect();
 
@@ -367,6 +508,7 @@ module.exports.update = async (userId, hebergementId, hebergement) => {
         createdAt,
         createdBy,
         organismeId,
+        statut,
         updatedBy: userId,
       },
       hebergement,
@@ -380,7 +522,7 @@ module.exports.update = async (userId, hebergementId, hebergement) => {
   } finally {
     client.release();
   }
-
+  log.i("update - DONE");
   return newHebergementId;
 };
 
@@ -393,17 +535,39 @@ module.exports.getByDepartementCodes = async (departementsCodes, params) => {
   return rows[0];
 };
 
-module.exports.getByUserId = async (userId) => {
+module.exports.getByUserId = async (userId, search) => {
   log.i("getByUserId - IN", { userId });
-  const response = await pool.query(query.getByUserId, [userId]);
+
+  let queryGet = query.getByUserId;
+  const params = [userId];
+  if (search.statut) {
+    queryGet = `
+    ${queryGet}
+    AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $2)
+    `;
+    params.push(search.statut);
+  }
+
+  const response = await pool.query(queryGet, params);
   log.d("getByUserId - DONE");
   const hebergements = response.rows;
   return hebergements;
 };
 
-module.exports.getBySiren = async (siren) => {
+module.exports.getBySiren = async (siren, search) => {
   log.i("getBySiren - IN", { siren });
-  const response = await pool.query(query.getBySiren, [siren]);
+
+  let queryGet = query.getBySiren;
+  const params = [siren];
+  if (search.statut) {
+    queryGet = `
+    ${queryGet}
+    AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $2)
+    `;
+    params.push(search.statut);
+  }
+
+  const response = await pool.query(queryGet, params);
   log.d("getBySiren - DONE");
   return response.rows;
 };
@@ -428,8 +592,11 @@ module.exports.getById = async (id) => {
   if (rowCount === 0) {
     return null;
   }
+
   const hebergement = hebergements[0];
-  const adresse = await getAdressById(hebergement.adresseId);
+  const adresse = hebergement.adresseId
+    ? await getAdressById(hebergement.adresseId)
+    : null;
 
   log.d("getById - DONE");
   return await mapDBHebergement(hebergement, adresse);
@@ -453,4 +620,12 @@ module.exports.getByDSId = async (dsId) => {
       ),
     ),
   );
+};
+
+module.exports.getStatut = async (hebergementId) => {
+  log.i("getStatut - IN");
+  const response = await pool.query(query.getStatut, [hebergementId]);
+  log.d(response);
+  log.i("getStatut - DONE");
+  return response.rows?.[0]?.statut ?? null;
 };
