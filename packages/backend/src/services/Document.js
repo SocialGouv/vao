@@ -24,20 +24,21 @@ const s3Client = new S3Client({
 });
 
 const query = {
-  create: (category, filename, mime_type, file) => [
+  create: (category, filename, mime_type, userId, file) => [
     `
       INSERT INTO doc.documents
-        (category, filename, mime_type, file)
-      VALUES ($1, $2, $3, $4) RETURNING uuid`,
-    [category, filename, mime_type, file],
+        (category, filename, mime_type, user_id, file)
+      VALUES ($1, $2, $3, $4, $5) RETURNING uuid`,
+    [category, filename, mime_type, userId, file],
   ],
   getByUuid: (uuid) => [
     `
       SELECT uuid,
-             category,
-             filename,
-             mime_type as mimeType,
-             file
+        category,
+        filename,
+        mime_type as "mimeType",
+        user_id as "userId",
+        file
       FROM doc.documents
       WHERE uuid = $1;`,
     [uuid],
@@ -47,6 +48,7 @@ const query = {
     SELECT
       uuid,
       filename as "name",
+      user_id as "userId",
       created_at as "createdAt"
     FROM doc.documents
     WHERE uuid = $1;`,
@@ -88,18 +90,24 @@ module.exports.getFileMetaData = async (uuid) => {
   }
 };
 
-module.exports.createFile = async (filename, category, mimetype, data) => {
+module.exports.createFile = async (
+  filename,
+  category,
+  mimetype,
+  data,
+  userid,
+) => {
   log.i("createFile pg - In");
   try {
     log.i("createFile pg", { category, filename, mimetype });
     const {
       rows: [{ uuid }],
     } = await poolDoc.query(
-      ...query.create(category, filename, mimetype, data),
+      ...query.create(category, filename, mimetype, userid, data),
     );
     log.i("createFile pg - Done");
     log.i("upload file to s3");
-    await uploadToS3(filename, category, mimetype, data, uuid);
+    await uploadToS3(filename, category, mimetype, userid, data, uuid);
     log.i("upload file to s3 - Done");
     return uuid;
   } catch (err) {
@@ -117,23 +125,29 @@ async function uploadToS3(
   filename,
   category,
   mimetype,
+  userid,
   data,
   uuid = crypto.randomUUID(),
 ) {
   log.i("uploadToS3 - In");
   try {
     log.d("uploadToS3", category, filename);
-    const encodedFilename = Buffer.from(filename, "latin1").toString("base64");
+    const encodedFilename = filename
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+    const extension = filename.split(".").pop();
     await s3Client.send(
       new PutObjectCommand({
         Body: data,
         Bucket: S3_BUCKET_NAME,
-        Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.pdf`,
+        Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.${extension}`,
         Metadata: {
           category,
           created_at: String(new Date()),
           mimetype: mimetype,
           originalname: encodedFilename,
+          userid: `${userid}`,
         },
       }),
     );
