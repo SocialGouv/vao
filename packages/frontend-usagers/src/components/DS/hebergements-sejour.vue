@@ -84,6 +84,7 @@
 import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
 import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
+import { hebergement as hebergementUtils } from "@vao/shared";
 
 const toaster = useToaster();
 
@@ -141,6 +142,7 @@ const { value: hebergements, handleChange: onHebergementsChange } =
 
 hebergementStore.fetch({
   organismeId: demandeSejourStore.demandeCourante.organismeId,
+  statut: hebergementUtils.statut.ACTIF,
 });
 
 const syntheseRows = computed(() => {

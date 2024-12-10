@@ -1,23 +1,27 @@
 const yup = require("yup");
-const Hebergement = require("../../services/hebergement/Hebergement");
-const HebergementHelper = require("../../helpers/hebergement");
-const HebergementSchema = require("../../schemas/hebergement");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
+const HebergementSchema = require("../../schemas/hebergement");
 const AppError = require("../../utils/error");
-const FOUser = require("../../services/FoUser");
+const Hebergement = require("../../services/hebergement/Hebergement");
+const HebergementHelper = require("../../helpers/hebergement");
 
 const log = logger(module.filename);
 
-module.exports = async function post(req, res, next) {
-  log.i("IN");
+module.exports = async function activate(req, res, next) {
+  const hebergementId = req.params.id;
   const { body, decoded } = req;
-
-  const { nom, coordonnees, informationsLocaux, informationsTransport } = body;
   const userId = decoded.id;
 
-  log.d(userId);
-  if (!nom || !coordonnees || !informationsLocaux || !informationsTransport) {
+  const { nom, coordonnees, informationsLocaux, informationsTransport } = body;
+
+  if (
+    !nom ||
+    !coordonnees ||
+    !informationsLocaux ||
+    !informationsTransport ||
+    !hebergementId
+  ) {
     log.w("missing or invalid parameter");
 
     return next(
@@ -26,8 +30,8 @@ module.exports = async function post(req, res, next) {
       }),
     );
   }
-
   let hebergement;
+
   try {
     hebergement = await yup.object(HebergementSchema.schema(false)).validate(
       {
@@ -46,19 +50,19 @@ module.exports = async function post(req, res, next) {
   }
 
   try {
-    const organismeId = await FOUser.getUserOrganisme(userId);
-    const id = await Hebergement.create(
+    await Hebergement.updateWithoutHistory(
       userId,
-      organismeId,
+      hebergementId,
       HebergementHelper.statuts.ACTIF,
       hebergement,
     );
 
-    return res.status(200).json({
-      id,
-      message: "sauvegarde hebegement OK",
-    });
+    log.i("DONE");
+    return res.sendStatus(200);
   } catch (error) {
+    if (error.cause === "archive") {
+      return next(new AppError(error));
+    }
     log.w("DONE with error");
     return next(error);
   }

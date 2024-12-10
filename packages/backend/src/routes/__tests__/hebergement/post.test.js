@@ -12,7 +12,12 @@ jest.mock("../../../middlewares/checkJWT");
 jest.mock("../../../middlewares/checkPermissionHebergement");
 jest.mock("../../../schemas/hebergement");
 jest.mock("../../../services/FoUser");
-
+jest.mock(
+  "../../../middlewares/checkStatutHebergement",
+  () => () => (req, res, next) => {
+    next();
+  },
+);
 describe("POST /", () => {
   const user = {
     id: 1,
@@ -58,6 +63,7 @@ describe("POST /", () => {
     expect(Hebergement.create).toHaveBeenCalledWith(
       1,
       1,
+      "actif",
       expect.objectContaining(body),
     );
   });
