@@ -59,6 +59,7 @@
           :error-message="numTelephone1ErrorMessage"
           hint="Le numéro de téléphone saisi doit être valide. Exemple : 0612345678"
           placeholder=""
+          required
           :disabled="isDisabled"
           @update:model-value="onNumTelephone1Change"
         />
@@ -87,7 +88,6 @@
           :error-message="emailErrorMessage"
           hint="Format attendu : nom@domaine.fr"
           placeholder=""
-          required
           :disabled="isDisabled"
           @update:model-value="onEmailChange"
         />
