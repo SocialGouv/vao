@@ -277,7 +277,7 @@
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
             <DsfrTable
-              :title="`Etablissements secondaires (${etablissements.length}) dont ${openedEtablissements.length} actifs et ${authorizedEtablissements.length} autorisés à organiser des séjours`"
+              :title="`Etablissements secondaires (${etablissements.length}) dont ${openedEtablissements.length} autorisé(s) à organiser des séjours et ${authorizedEtablissements.length} activé(s)`"
               :headers="[
                 'SIRET',
                 'Dénomination',
@@ -407,7 +407,7 @@ const etablissementFilter = ref({
   siret: "",
   denomination: "",
   commune: "",
-  autorisation: "Tous",
+  autorisation: "Autorisés à organiser des séjours",
 });
 
 const initialValues = {
