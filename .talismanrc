@@ -90,13 +90,35 @@ fileignoreconfig:
 - filename: docker-compose.prod.yaml
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
-  checksum: c882626f19ca66fb8ef048900b179923f959fea9fbff52b4913537bad55e795d
+  checksum: 461d1842b377eccdb0a61ba996d0316326ebda695fee24edee8038871a50909a
 - filename: e2e/register-login-organisateur.spec.ts
   checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
 - filename: package.json
   checksum: 8437030cbab7db5734c16f9924b7e25a26b9145414d2bd1c81031d2f9f5558bd
+- filename: packages/api/README.md
+  checksum: a7164c4ab47d1dd9d0e8808e8d7ff3652b3998daa71852eb3498fe2b83a78a77
+- filename: packages/api/environement.d.ts
+  checksum: 4a6b90c2704de5ee10e1d14903afd0a498471c0b96a008134d872ac1ff1ba4d4
+- filename: packages/api/package.json
+  checksum: af0124e5fc316df515a7d754264839daeda73589f3a064096369cba037d82cb7
+- filename: packages/api/src/accommodation/accommodation.controller.ts
+  checksum: c2a48075aaa104c4119a8e81657720e43ee0d167f62aa064dfad7817e36cb361
+- filename: packages/api/src/accommodation/accommodation.service.ts
+  checksum: 8fac98926fa33077b67b69b6de231110b8806e0f0c2018436094c66fdc89be1f
+- filename: packages/api/src/address/address.service.ts
+  checksum: 10fe8995290a99d5acf7cd815b63a0d8333b7cf9dab26aff0c54d51d4d9f9d09
+- filename: packages/api/src/config.ts
+  checksum: 5b445264584a80ead6bcb05771d5fabcdaee4473a911b1590b8ef8425dfcf95b
+- filename: packages/api/src/file/file.service.ts
+  checksum: 415ab372451c69dcf0917506b0855d8e1c435bd72f6ba025c311fd24a8e877c3
+- filename: packages/api/src/global/database.module.ts
+  checksum: d3a354a763a4563f39045320c3be478d1c3ca60d08e5401151e3f7880bb0b41e
+- filename: packages/api/src/global/s3.module.ts
+  checksum: ecb6129b8997266433b338cecdfe2c79a4f59f10ef5b6e4a7191eb7922b4815a
+- filename: packages/api/src/schemas/address.schema.ts
+  checksum: d6cd11b3acd01e096c9b1a34cfaccb866652b69a1a53442df5bb53ca174e6961
 - filename: packages/backend/src/config.js
-  checksum: c0baf7f4f878d3f3406030471f15c092ed9fc671b1e66276fe9b071ea025b58c
+  checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
   checksum: 8dde974d3051313b99c5abb76ec8b0e1f8480e6bb958474a4f95eb4240d90e2a
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
@@ -127,6 +149,8 @@ fileignoreconfig:
   checksum: 51d98862750e30ab4f852aee33a8c65bfa9ff92986b498c1d2650be3aff3511c
 - filename: packages/backend/src/schemas/register.js
   checksum: d56114de12eaab4e9121eaf17ca1760370673c3c1526218896bacaa7daf5cc82
+- filename: packages/backend/src/services/ApiToken.js
+  checksum: 1be2f39bdf814196b35376f6682bf2a4879168e06c3acbb65eb229bcc2068c28
 - filename: packages/backend/src/services/BoUser.js
   checksum: cb82592388d082e0a2c47ba57074816622f5a6466d3f23fa7292d297f7807414
 - filename: packages/backend/src/services/DemandeSejour.js
@@ -189,6 +213,8 @@ fileignoreconfig:
   checksum: 4716f6a0de6f2dc2af6d8ac8abf11a253a5a719c231df5ae51c783e6148c42ed
 - filename: packages/frontend-usagers/src/assets/Download.svg
   checksum: a5c2caf47b1b715b2cf8240e9af9090061faae6261b21bc62173689f1666536e
+- filename: packages/frontend-usagers/src/components/ApiTokenManager.vue
+  checksum: 56a62209a9c1ac0d43c66a8971c23c9db1bba9e77bc222211e10468fdc795d79
 - filename: packages/frontend-usagers/src/components/DS/hebergements-sejour-detail.vue
   checksum: ea2516289eea24b6cf226322360163f840249383a5b30f5766ac730e52463162
 - filename: packages/frontend-usagers/src/components/DS/synthese.vue
@@ -255,6 +281,8 @@ fileignoreconfig:
   checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/migrations/src/migrations/20240918085236_migrate_files_to_minio.js
   checksum: ce0b678503f6342414ed759fa31ac460060d1efd1daadffb3d7be0bfa049858c
+- filename: packages/migrations/src/migrations/20241210150854_create_api_keys_table.js
+  checksum: 81eb796463200a62bfb1669e6dcfc07b8a6c88623112e5f28198c3ea2ceaf35f
 - filename: packages/migrations/src/scripts/migrate-files-to-s3.js
   checksum: e22a659aca296659bcd27ea22fd6919938327d3a4ad17eaab229e55724d94dce
 - filename: packages/shared/src/components/Chat.vue
