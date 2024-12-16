@@ -5,6 +5,11 @@ const pool = require("../utils/pgpool").getPool();
 const log = logger(module.filename);
 
 const query = {
+  getFicheIdByTerCode: `
+  select
+        fte.id AS id
+      FROM back.fiche_territoire fte
+      WHERE ter_code = $1`,
   getOne: `
     select
         fte.id AS territoire_id,
@@ -66,6 +71,15 @@ module.exports.fetch = async (criterias = {}) => {
       ([key, value]) => territoire[key] == value,
     );
   });
+};
+
+module.exports.readFicheIdByTerCode = async (territoireCode) => {
+  log.i("readFicheIdByTerCode - IN");
+  const { rows } = await pool.query(query.getFicheIdByTerCode, [
+    territoireCode,
+  ]);
+  log.i("readFicheIdByTerCode - DONE");
+  return rows[0];
 };
 
 module.exports.readOne = async (idTerritoire) => {

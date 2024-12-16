@@ -1,5 +1,6 @@
 const yup = require("yup");
-const Hebergement = require("../../services/Hebergement");
+const Hebergement = require("../../services/hebergement/Hebergement");
+const HebergementHelper = require("../../helpers/hebergement");
 const HebergementSchema = require("../../schemas/hebergement");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
@@ -28,7 +29,7 @@ module.exports = async function post(req, res, next) {
 
   let hebergement;
   try {
-    hebergement = await yup.object(HebergementSchema.schema()).validate(
+    hebergement = await yup.object(HebergementSchema.schema(false)).validate(
       {
         coordonnees,
         informationsLocaux,
@@ -46,7 +47,12 @@ module.exports = async function post(req, res, next) {
 
   try {
     const organismeId = await FOUser.getUserOrganisme(userId);
-    const id = await Hebergement.create(userId, organismeId, hebergement);
+    const id = await Hebergement.create(
+      userId,
+      organismeId,
+      HebergementHelper.statuts.ACTIF,
+      hebergement,
+    );
 
     return res.status(200).json({
       id,

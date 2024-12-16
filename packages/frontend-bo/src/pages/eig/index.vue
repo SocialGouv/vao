@@ -95,6 +95,14 @@
                 />
               </div>
             </div>
+            <div
+              class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
+            >
+              <RangeDatePicker
+                v-model="searchState.dateRange"
+                label="Date de l'eig"
+              />
+            </div>
           </div>
         </form>
       </div>
@@ -115,12 +123,12 @@
     <ValidationModal
       modal-ref="modal-eig-list-consult"
       name="consult-eig"
-      :opened="eigToRead != null"
+      :opened="eigIdToRead != null"
       title="Consultation d’un EIG"
       :on-close="closeEigModal"
-      :on-validate="() => readEig(eigToRead)"
-      >Vous vous apprêtez à consulter un Evènement Indésirable Grave. Cette
-      consultation enverra un email de notification à l’organisme.
+      :on-validate="() => readEig(eigIdToRead)"
+      >Vous vous apprêtez à consulter une déclaration d’un Evènement Indésirable
+      Grave. Cette consultation enverra un email de notification à l’organisme.
     </ValidationModal>
   </div>
 </template>
@@ -130,6 +138,8 @@ import dayjs from "dayjs";
 import {
   eigModel,
   EigStatusBadge,
+  EigTypeListe,
+  RangeDatePicker,
   TableWithBackendPagination,
   ValidationModal,
 } from "@vao/shared";
@@ -141,10 +151,11 @@ definePageMeta({
 });
 
 const departementStore = useDepartementStore();
+const usersStore = useUserStore();
+const eigStore = useEigStore();
 
 const toaster = useToaster();
 
-const eigStore = useEigStore();
 const defaultLimit = 10;
 const defaultOffset = 0;
 
@@ -159,6 +170,7 @@ const searchState = reactive({
   type: null,
   organisme: null,
   departement: null,
+  dateRange: null,
 });
 
 try {
@@ -265,11 +277,6 @@ const onSelect = (value, key) => {
 
 const headers = [
   {
-    column: "id",
-    text: "ID",
-    sort: true,
-  },
-  {
     column: "organisme",
     text: "Organisme",
     format: (value) => value.raisonSociale ?? `${value?.prenom} ${value?.nom}`,
@@ -280,7 +287,7 @@ const headers = [
     text: "Déclaration",
     sort: true,
   },
-  { column: "departement", text: "Territoire (n° département)", sort: true },
+  { column: "departement", text: "Territoire", sort: true },
   {
     column: "libelle",
     text: "Séjour",
@@ -296,21 +303,37 @@ const headers = [
   {
     column: "types",
     text: "Types d'événement",
-    format: (value) =>
-      (value.types ?? []).map((t) => mapEigToLabel[t]).join(", "),
+    component: ({ types }) => ({
+      component: EigTypeListe,
+      types: (types ?? []).map((t) => mapEigToLabel[t]),
+    }),
+  },
+  {
+    column: "date",
+    text: "Dates de l'incident",
+    format: (value) => dayjs(value.date).format("DD/MM/YYYY"),
+    sort: true,
   },
   {
     column: "dateDepot",
-    text: "Dates de depot",
+    text: "Dates de dépôt",
     format: (value) => dayjs(value.dateDepot).format("DD/MM/YYYY"),
     sort: true,
   },
   {
     column: "statut",
     text: "Statut",
-    component: ({ statut }) => ({
+    component: ({
+      statut,
+      readByDreets,
+      readByDdets,
+      agrementRegionObtention,
+      departement,
+    }) => ({
       component: EigStatusBadge,
-      statut: statut,
+      statut,
+      dreets: { isRead: readByDreets, territoireCode: agrementRegionObtention },
+      ddets: { isRead: readByDdets, territoireCode: departement },
     }),
     sort: true,
   },
@@ -342,14 +365,15 @@ const readEig = async (id) => {
   }
 };
 
-const eigToRead = ref(null);
+const eigIdToRead = ref(null);
 
 const openModal = (state) => {
-  if (eigStore.getStatut(state.id) === eigModel.Statuts.ENVOYE) {
-    eigToRead.value = state.id;
+  const eig = eigStore.getById(state.id);
+  if (utilsEig.mustMarkAsRead(eig, usersStore.user)) {
+    eigIdToRead.value = state.id;
   } else {
     navigateTo(`/eig/${state.id}`);
   }
 };
-const closeEigModal = () => (eigToRead.value = null);
+const closeEigModal = () => (eigIdToRead.value = null);
 </script>

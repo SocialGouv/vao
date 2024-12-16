@@ -1,4 +1,4 @@
-const Hebergement = require("../../services/Hebergement");
+const Hebergement = require("../../services/hebergement/Hebergement");
 const logger = require("../../utils/logger");
 const dayjs = require("dayjs");
 

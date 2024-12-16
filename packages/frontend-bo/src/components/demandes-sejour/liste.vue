@@ -182,6 +182,7 @@ definePageMeta({
 
 const props = defineProps({
   organisme: { type: String, required: false, default: null },
+  organismeId: { type: Number, required: false, default: null },
   display: { type: String, required: true },
 });
 
@@ -226,6 +227,7 @@ const searchState = reactive({
   libelle: route.query.libelle,
   idFonctionnelle: route.query.idFonctionnelle,
   organisme: props.organisme ?? route.query.organisme,
+  organismeId: props.organismeId ?? null,
   statuts: route.query.statuts
     ? route.query.statuts
         .split(",")

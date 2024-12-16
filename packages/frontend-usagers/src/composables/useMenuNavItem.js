@@ -47,20 +47,19 @@ export const useMenuNavItems = () => {
         text: "Mes hébergements",
         to: "/hebergements/liste",
       },
-      // TODO(eig): unhide when ok
-      /*{
-        title: "EIG",
-        links: [
-          {
-            text: "Mes EIG",
-            to: "/eig/liste",
-          },
-          {
-            text: "Créer un EIG",
-            to: "/eig",
-          },
-        ],
-      },*/
+      /* {
+         title: "EIG",
+         links: [
+           {
+             text: "Mes EIG",
+             to: "/eig/liste",
+           },
+           {
+             text: "Créer un EIG",
+             to: "/eig",
+           },
+         ],
+       },*/
     ];
   });
 };

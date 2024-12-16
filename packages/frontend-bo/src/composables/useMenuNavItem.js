@@ -88,15 +88,14 @@ export const useMenuNavItems = () => {
             },
           ]
         : []),
-      // TODO(eig): unhide when ok
-      /*...(roles.includes("eig")
-        ? [
-            {
-              text: "EIG",
-              to: "/eig",
-            },
-          ]
-        : []),*/
+      /*      ...(roles.includes("eig")
+              ? [
+                  {
+                    text: "EIG",
+                    to: "/eig",
+                  },
+                ]
+              : []),*/
     ];
   });
 

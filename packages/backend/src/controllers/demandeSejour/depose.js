@@ -2,7 +2,7 @@ const dayjs = require("dayjs");
 const yup = require("yup");
 
 const DemandeSejour = require("../../services/DemandeSejour");
-const Hebergement = require("../../services/Hebergement");
+const Hebergement = require("../../services/hebergement/Hebergement");
 const Send = require("../../services/mail").mailService.send;
 const PdfDeclaration2Mois = require("../../services/pdf/declaration2mois/generate");
 const PdfDeclaration8jours = require("../../services/pdf/declaration8jours/generate");

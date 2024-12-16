@@ -1,12 +1,15 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, eig, logger } from "#imports";
 import { eigModel } from "@vao/shared";
+import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
 
 const log = logger("stores/hebergement");
 
 export const useEigStore = defineStore("eig", {
   state: () => ({
     eigs: [],
+    availableDs: [],
+    selectedDemande: null,
     currentEig: null,
     total: 0,
   }),
@@ -20,6 +23,25 @@ export const useEigStore = defineStore("eig", {
             dateFIn: this.currentEig.dateFIn,
             statut: this.currentEig.dsStatut,
           }))
+      );
+    },
+    selectedDemandeLabel() {
+      if (!this.selectedDemande) {
+        return null;
+      }
+      return getTagSejourLibelle(this.selectedDemande);
+    },
+    selectedDemandeDateRange() {
+      if (!this.selectedDemande) {
+        return null;
+      }
+      return [this.selectedDemande.dateDebut, this.selectedDemande.dateFin];
+    },
+    departementsOptions() {
+      return (
+        this.selectedDemande?.hebergement?.hebergements
+          ?.map((h) => h?.coordonnees?.adresse?.departement)
+          .filter((d) => !!d) ?? []
       );
     },
   },
@@ -120,6 +142,42 @@ export const useEigStore = defineStore("eig", {
       } catch (err) {
         log.w("update for one id - DONE with error", err);
         throw err;
+      }
+    },
+    async setAvailableDs(search = null) {
+      try {
+        const res = await $fetchBackend(`/eig/available-ds`, {
+          method: "GET",
+          credentials: "include",
+          params: { search },
+        });
+
+        this.availableDs = res;
+      } catch (err) {
+        this.availableDs = [];
+        log.w("getAvailableDs - DONE with error", err);
+        throw err;
+      }
+    },
+    async setSelectedDemande(id) {
+      log.i("setSelectedDemande - IN");
+      if (!id) {
+        this.selectedDemande = null;
+        return;
+      }
+
+      try {
+        const { demande } = await $fetchBackend(`/sejour/${id}`, {
+          method: "GET",
+          credentials: "include",
+        });
+        if (demande) {
+          log.i("setDemandeCourante - DONE");
+          this.selectedDemande = demande;
+        }
+      } catch (err) {
+        log.w("setSelectedDemande - DONE with error", err);
+        this.selectedDemande = null;
       }
     },
   },

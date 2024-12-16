@@ -127,9 +127,6 @@
                 <div id="hebergements">
                   <DSHebergementsSejour
                     v-if="hash === 'hebergements'"
-                    :date-debut="demandeCourante.dateDebut"
-                    :date-fin="demandeCourante.dateFin"
-                    :hebergement="demandeCourante.hebergement ?? {}"
                     :modifiable="canModify"
                     :is-downloading="apiStatus.isDownloading"
                     :message="apiStatus.message"
@@ -288,6 +285,8 @@ const demandeCourante = computed(() => {
   return demandeSejourStore.demandeCourante;
 });
 
+const organismeStore = useOrganismeStore();
+
 const initialSelectedIndex = parseInt(
   route.query?.defaultTabIndex ? route.query.defaultTabIndex : 0,
 );
@@ -372,18 +371,15 @@ const tabTitles = computed(() => [
         },
       ]
     : []),
-  // TODO(eig): unhide when ok
-  /*
-    ...(sejourId.value
+  /*  ...(sejourId.value
       ? [
           {
             title: "EIG",
             tabId: "declaration-sejour-tab-4",
             panelId: "declaration-sejour-content-4",
-          }
+          },
         ]
-      : []),
-  */
+      : []),*/
 ]);
 
 const sommaireOptions = demandeSejourMenus
@@ -420,7 +416,7 @@ const titles = {
     titleStart.value + "étape 6 sur 8 | Informations sanitaires" + titleEnd,
   "#hebergements": () =>
     titleStart.value + "étape 7 sur 8 | Sélection des hébergements" + titleEnd,
-  "#synthese": () => titleStart.value + "étape 8 sur 8 | Synthèse" + titleEnd,
+  "#synthese": () => titleStart + "étape 8 sur 8 | Synthèse" + titleEnd,
   1: () => titleStart.value + "Documents joints" + titleEnd,
   2: () => titleStart.value + "Historique de la déclaration" + titleEnd,
   3: () => titleStart.value + "Messagerie" + titleEnd,
@@ -451,10 +447,14 @@ const hash = computed(() => {
 const canModify = computed(() => {
   return (
     !demandeCourante.value.statut ||
-    demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
-    demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER ||
-    demandeCourante.value.statut === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
-    demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER_8J
+    ((demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
+      demandeCourante.value.statut === DeclarationSejour.statuts.A_MODIFIER ||
+      demandeCourante.value.statut ===
+        DeclarationSejour.statuts.ATTENTE_8_JOUR ||
+      demandeCourante.value.statut ===
+        DeclarationSejour.statuts.A_MODIFIER_8J) &&
+      organismeStore.organismeCourant?.organismeId ===
+        demandeCourante.value.organisme?.organismeId)
   );
 });
 
@@ -689,6 +689,7 @@ function nextHash() {
   return navigateTo({
     path: `/demande-sejour/${sejourId.value}`,
     hash: "#" + sommaireOptions[index + 1],
+    "#synthese": () => titleStart.value + "étape 8 sur 8 | Synthèse" + titleEnd,
   });
 }
 

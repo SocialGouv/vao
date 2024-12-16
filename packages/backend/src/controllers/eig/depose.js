@@ -7,6 +7,7 @@ const DemandeSejour = require("../../services/DemandeSejour");
 const MailUtils = require("../../utils/mail");
 const AppError = require("../../utils/error");
 const { getEmails } = require("../../helpers/eigMail");
+const Commune = require("../../services/geo/Commune");
 const Send = require("../../services/mail").mailService.send;
 
 const log = logger(module.filename);
@@ -27,8 +28,21 @@ module.exports = async (req, res, next) => {
     return next(error);
   }
 
+  let ds;
+
   try {
-    await yup.object(syntheseSchema).validate(eig, {
+    ds = await DemandeSejour.getOne({ "ds.id": eig.declarationId });
+    if (!ds) {
+      return res
+        .status(404)
+        .send({ errors: "Aucune déclaration trouvée", name: "Not found" });
+    }
+  } catch (err) {
+    return res.status(500).send({ errors: err.errors, name: err.name });
+  }
+
+  try {
+    await yup.object(syntheseSchema(ds.dateDebut, ds.dateFin)).validate(eig, {
       abortEarly: false,
       stripUnknown: true,
     });
@@ -66,17 +80,34 @@ module.exports = async (req, res, next) => {
       userName,
     } = await getEmails(eig.departement, eig.userId);
 
+    const hebergementCodeInsee = ds.hebergement.hebergements.find(
+      (h) => h?.coordonnees?.adresse?.departement === eig.departement,
+    )?.coordonnees?.adresse?.codeInsee;
+
+    const communeName = (
+      await Commune.get({
+        code_insee: hebergementCodeInsee,
+        date: new Date(),
+      })
+    )?.text;
+
     emailsDDETS?.length &&
       (await Send(
         MailUtils.bo.eig.sendToDDETS({
+          communeName,
+          declarationSejour: ds,
+          departementName,
           dest: emailsDDETS,
           eig,
+          regionName,
         }),
       ));
 
     emailsDREETS?.length > 0 &&
       (await Send(
         MailUtils.bo.eig.sendToDREETS({
+          communeName,
+          declarationSejour: ds,
           departementName,
           dest: emailsDREETS,
           eig,
@@ -86,10 +117,9 @@ module.exports = async (req, res, next) => {
     emailsOrganisateur?.length > 0 &&
       (await Send(
         MailUtils.bo.eig.sendToOrganisme({
-          departementName,
-          dest: emailsOrganisateur,
+          declarationSejour: ds,
+          dest: [...emailsOrganisateur, ds.responsableSejour.email],
           eig,
-          regionName,
           userName,
         }),
       ));
@@ -97,10 +127,8 @@ module.exports = async (req, res, next) => {
     eig.emailAutresDestinataires?.length > 0 &&
       (await Send(
         MailUtils.bo.eig.sendToAutre({
-          departementName,
           dest: eig.emailAutresDestinataires,
           eig,
-          regionName,
           userName,
         }),
       ));

@@ -9,30 +9,30 @@ const query = {
   select: ({ query: q, values }) =>
     format(
       `
-      SELECT 
-        geo_com_code_fijais as value,
-        geo_com_label as text,
-        geo_com_date_debut as "dateDebut",
-        geo_com_date_fin as "dateFin"
+      SELECT
+        code as value,
+        label as text,
+        date_debut as "dateDebut",
+        date_fin as "dateFin"
       FROM geo.communes
-      WHERE 1=1 
+      WHERE 1=1
       ${q}
-      ORDER BY geo_com_label ASC
+      ORDER BY label ASC
       `,
       ...values,
     ),
   selectWithDep: (criterias) => [
     `
-      SELECT 
-        geo_com_code_fijais as value,
-        geo_com_label as text,
-        geo_com_date_debut as "dateDebut",
-        geo_com_date_fin as "dateFin",
-        c.geo_ter_code,
-        t.geo_ter_label
+      SELECT
+        code as value,
+        label as text,
+        date_debut as "dateDebut",
+        date_fin as "dateFin",
+        c.code,
+        t.label
       FROM geo.communes c
-      JOIN geo.territoires t on t.geo_ter_code = c.geo_ter_code
-      WHERE 1=1 
+      JOIN geo.territoires t on t.code = c.code
+      WHERE 1=1
       ${Object.keys(criterias)
         .filter(
           (criteria) =>
@@ -45,7 +45,7 @@ const query = {
         )
         .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
         .join(" ")}
-      ORDER BY geo_com_label ASC
+      ORDER BY label ASC
       `,
     Object.values(criterias),
   ],
@@ -53,20 +53,20 @@ const query = {
 
 const dict = {
   code: (code) => `
-    AND geo_com_code_fijais IN (${format.literal(code)})`,
+    AND code IN (${format.literal(code)})`,
   date: (date) => `
     AND (
       TO_DATE(${format.literal(
         date,
-      )}, 'YYYY-MM-DD') >= geo_com_date_debut OR geo_com_date_debut is null
+      )}, 'YYYY-MM-DD') >= date_debut OR date_debut is null
     )
     AND (
-      geo_com_date_fin > TO_DATE(${format.literal(
+      date_fin > TO_DATE(${format.literal(
         date,
-      )}, 'YYYY-MM-DD') OR geo_com_date_fin is null
+      )}, 'YYYY-MM-DD') OR date_fin is null
     )`,
   departement: (departement) => `
-    AND geo_ter_code = ${format.literal(departement)}`,
+    AND code = ${format.literal(departement)}`,
 };
 
 const transpose = (search) =>

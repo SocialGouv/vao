@@ -58,4 +58,8 @@ const UpdateTypes = {
   EMAIL_AUTRES_DESTINATAIRES: "EMAIL_AUTRES_DESTINATAIRES",
 };
 
-export { Statuts, Categorie, Types, UpdateTypes };
+const isTypeActive = (type) => {
+  return ![Types[Categorie.VICTIMES].VIOLS].includes(type);
+};
+
+export { Statuts, Categorie, Types, UpdateTypes, isTypeActive };

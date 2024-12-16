@@ -196,6 +196,13 @@ const query = {
     JOIN front.user_organisme uo ON o.id = org_id
     WHERE o.personne_morale->>'siret' = $1
 `,
+  getIsComplet: `
+    SELECT
+        complet
+    FROM
+        FRONT.ORGANISMES
+    WHERE id = $1
+  `,
   getListe: `
     SELECT
       o.id AS "organismeId",
@@ -320,6 +327,13 @@ FROM back.organisme_non_agree ona
     WHERE o.personne_morale->>'siren' = $1
       AND o.personne_morale->>'siegeSocial' = 'true'
 `,
+  getSiret: `
+    SELECT
+        personne_morale ->> 'siret' as siret
+    FROM
+        FRONT.ORGANISMES
+    WHERE id = $1
+  `,
   link: `
     INSERT INTO front.user_organisme (use_id, org_id)
       VALUES($1, $2)
@@ -351,20 +365,6 @@ FROM back.organisme_non_agree ona
       edited_at = NOW()
     WHERE id = $1
 `,
-  getIsComplet: `
-    SELECT
-        complet
-    FROM
-        FRONT.ORGANISMES
-    WHERE id = $1
-  `,
-  getSiret: `
-    SELECT
-        personne_morale ->> 'siret' as siret
-    FROM
-        FRONT.ORGANISMES
-    WHERE id = $1
-  `,
 };
 
 module.exports.create = async (type, parametre) => {

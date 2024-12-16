@@ -5,8 +5,10 @@ const router = express.Router();
 const checkJWT = require("../middlewares/checkJWT");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 const checkPermissionHebergement = require("../middlewares/checkPermissionHebergement");
+const checkStatutHebergement = require("../middlewares/checkStatutHebergement");
 const getDepartements = require("../middlewares/getDepartements");
 const hebergementController = require("../controllers/hebergement");
+const HebergementHelper = require("../helpers/hebergement");
 
 router.get(
   "/admin/",
@@ -21,20 +23,38 @@ router.get(
   getDepartements,
   hebergementController.getExtract,
 );
-
-// Gère une connexion via mot de passe.
 router.get(
   "/:id",
   checkJWT,
   checkPermissionHebergement,
   hebergementController.getById,
 );
-router.get("/admin/:id", boCheckJWT, hebergementController.getById);
+router.get(
+  "/admin/:id",
+  boCheckJWT,
+  checkStatutHebergement(HebergementHelper.statuts.ACTIF),
+  hebergementController.getById,
+);
+router.get("/siren/:siren", checkJWT, hebergementController.getBySiren);
 router.get("/", checkJWT, hebergementController.get);
 router.post("/", checkJWT, hebergementController.post);
+router.post("/brouillon", checkJWT, hebergementController.postBrouillon);
+router.put(
+  "/:id/brouillon",
+  checkJWT,
+  checkStatutHebergement(HebergementHelper.statuts.BROUILLON),
+  hebergementController.updateBrouillon,
+);
+router.put(
+  "/:id/activate",
+  checkJWT,
+  checkStatutHebergement(HebergementHelper.statuts.BROUILLON),
+  hebergementController.activate,
+);
 router.post(
   "/:id",
   checkJWT,
+  checkStatutHebergement(HebergementHelper.statuts.ACTIF),
   checkPermissionHebergement,
   hebergementController.update,
 );

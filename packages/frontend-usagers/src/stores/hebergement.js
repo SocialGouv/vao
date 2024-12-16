@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { logger, $fetchBackend } from "#imports";
+import { $fetchBackend, logger } from "#imports";
 import UploadFile from "~/utils/UploadFile";
 
 const log = logger("stores/hebergement");
@@ -10,11 +10,32 @@ export const useHebergementStore = defineStore("hebergement", {
     hebergementCourant: null,
   }),
   actions: {
-    async fetch() {
+    async fetchBySiren(siren) {
+      try {
+        log.i("fetchBySiren - IN");
+        const { hebergements } = await $fetchBackend(
+          `/hebergement/siren/${siren}`,
+          {
+            credentials: "include",
+          },
+        );
+        if (hebergements) {
+          this.hebergements = hebergements;
+        }
+        log.d("fetchBySiren  - DONE");
+      } catch (err) {
+        this.hebergements = [];
+        log.i("fetchBySiren - DONE with error");
+      }
+    },
+    async fetch(search) {
       try {
         log.i("fetch - IN");
         const { hebergements } = await $fetchBackend("/hebergement", {
           credentials: "include",
+          params: {
+            search,
+          },
         });
         if (hebergements) {
           this.hebergements = hebergements;
@@ -57,7 +78,35 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("updateOrCreate - Done", { id });
       return id ?? hebergementId;
     },
+    async updateOrCreateBrouillon(hebergement, hebergementId) {
+      log.i("updateOrCreate - IN", { hebergement });
 
+      const url = hebergementId
+        ? `/hebergement/${hebergementId}/brouillon`
+        : `/hebergement/brouillon`;
+
+      const { id } = await $fetchBackend(url, {
+        method: hebergementId ? "PUT" : "POST",
+        body: hebergement,
+        credentials: "include",
+      });
+      log.i("updateOrCreate - Done", { id });
+      return id ?? hebergementId;
+    },
+    async activate(hebergement, hebergementId) {
+      log.i("updateOrCreate - IN", { hebergement });
+
+      const { id } = await $fetchBackend(
+        `/hebergement/${hebergementId}/activate`,
+        {
+          method: "PUT",
+          body: hebergement,
+          credentials: "include",
+        },
+      );
+      log.i("updateOrCreate - Done", { id });
+      return id ?? hebergementId;
+    },
     async updaloadFiles(hebergement) {
       if (hebergement.informationsLocaux.reglementationErp) {
         const fileDAS =

@@ -1,6 +1,7 @@
 const yup = require("yup");
 
 const DemandeSejour = require("../../services/DemandeSejour");
+const Organisme = require("../../services/Organisme");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
 const Sentry = require("@sentry/node");
@@ -56,6 +57,20 @@ async function getByDepartementCodes(req, res, next) {
         });
     } catch (error) {
       return next(new ValidationAppError(error));
+    }
+    // Si c'est l'organisme siège social alors on recherche sur le siren, sinon on recherchera sur le siret
+    // On ajoute alors un param dans le search
+    if (params.search?.organismeId) {
+      const organisme = await Organisme.getOne({
+        id: params.search.organismeId,
+      });
+      if (organisme?.personneMorale) {
+        if (organisme?.personneMorale?.siegeSocial) {
+          params.search.siren = organisme.personneMorale.siren;
+        } else {
+          params.search.siret = organisme.personneMorale.siret;
+        }
+      }
     }
     const demandesWithPagination = await DemandeSejour.getByDepartementCodes(
       params,

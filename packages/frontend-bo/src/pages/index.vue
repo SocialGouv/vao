@@ -2,8 +2,8 @@
   <div>
     <h1>Bienvenue {{ user.prenom }} {{ user.nom }}</h1>
     <div>
-      <cardsNumber :values="topCards" />
-      <cardsNumber :values="bottomCards" />
+      <CardsNumber :values="topCards" />
+      <CardsNumber :values="bottomCards" />
     </div>
   </div>
 </template>

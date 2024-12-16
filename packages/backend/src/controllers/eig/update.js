@@ -1,10 +1,7 @@
 const logger = require("../../utils/logger");
 const yup = require("yup");
 const { updateSchemaAdapteur } = require("../../schemas/eig");
-const {
-  UpdateTypes,
-  idDeclarationeligibleToEig,
-} = require("../../helpers/eig");
+const { UpdateTypes, isDeclarationligibleToEig } = require("../../helpers/eig");
 const ValidationAppError = require("../../utils/validation-error");
 const eigService = require("../../services/eig");
 const DemandeSejour = require("../../services/DemandeSejour");
@@ -19,29 +16,39 @@ module.exports = async (req, res, next) => {
   log.i("IN", { body: req.body });
   const { parametre, type } = req.body;
 
-  let eig;
-
-  try {
-    eig = await yup.object(updateSchemaAdapteur(type)).validate(parametre, {
-      abortEarly: false,
-      stripUnknown: true,
-    });
-  } catch (error) {
-    return next(new ValidationAppError(error));
-  }
+  let ds;
 
   try {
     const checkEig = await eigService.getById({ eigId });
-    const ds = await DemandeSejour.getOne({
-      "ds.id": checkEig.declarationId,
+    ds = await DemandeSejour.getOne({
+      "ds.id": parametre.declarationId ?? checkEig.declarationId,
     });
-    if (!idDeclarationeligibleToEig(ds)) {
-      return res.status(400).send({
-        message: "La déclaration n'est pas éligible à la création d'un EIG",
-      });
+    if (!ds) {
+      return res
+        .status(404)
+        .send({ errors: "Aucune déclaration trouvée", name: "Not found" });
     }
   } catch (err) {
-    return res.status(400).send({ errors: err.errors, name: err.name });
+    return res.status(500).send({ errors: err.errors, name: err.name });
+  }
+
+  if (!isDeclarationligibleToEig(ds)) {
+    return res.status(400).send({
+      message: "La déclaration n'est pas éligible à la création d'un EIG",
+    });
+  }
+
+  let eig;
+
+  try {
+    eig = await yup
+      .object(updateSchemaAdapteur(type, [ds.dateDebut, ds.dateFin]))
+      .validate(parametre, {
+        abortEarly: false,
+        stripUnknown: true,
+      });
+  } catch (error) {
+    return next(new ValidationAppError(error));
   }
 
   try {
@@ -49,6 +56,7 @@ module.exports = async (req, res, next) => {
     switch (type) {
       case UpdateTypes.DECLARATION_SEJOUR:
         updatedEigId = await eigService.updateDS(eigId, {
+          date: eig.date,
           declarationId: eig.declarationId,
           departement: eig.departement,
         });

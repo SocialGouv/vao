@@ -52,6 +52,16 @@ const headers = [
     sort: true,
   },
   {
+    column: "serviceTelephone",
+    text: "Téléphone",
+    sort: true,
+  },
+  {
+    column: "serviceMail",
+    text: "Boite fonctionnelle",
+    sort: true,
+  },
+  {
     column: "actions",
     component: (row) => {
       return {

@@ -9,6 +9,7 @@ const log = logger(module.filename);
 module.exports = async (req, res, next) => {
   log.i("IN");
   const { category } = req.body;
+  const { decoded } = req;
   const file = req.file;
   if (!category || !file) {
     log.w("DONE with error");
@@ -49,6 +50,7 @@ module.exports = async (req, res, next) => {
       category,
       mimetype,
       data,
+      decoded.id,
     );
     log.d("DONE", uuid);
     return res.json({ uuid });

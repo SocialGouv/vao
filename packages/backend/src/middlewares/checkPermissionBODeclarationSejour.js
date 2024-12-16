@@ -23,16 +23,33 @@ async function checkPermissionDeclarationSejour(req, res, next) {
 
   // Requête SQL simplifiée, ne récupérant que les informations brutes nécessaires
   const query = `
-    SELECT ds.id, ds.hebergement, o.personne_morale, agr.region_obtention
+    SELECT ds.id, o.personne_morale, agr.region_obtention
     FROM front.demande_sejour ds
     INNER JOIN front.organismes o ON o.id = ds.organisme_id
     LEFT JOIN front.agrements agr ON agr.organisme_id = ds.organisme_id
     WHERE ds.id = $1
   `;
 
+  const queryHebegements = `
+  SELECT DISTINCT
+    A.DEPARTEMENT AS DEPARTEMENT
+  FROM
+    FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
+    INNER JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+    INNER JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+  WHERE
+    DEMANDE_SEJOUR_ID = $1
+  `;
+
   let sejour;
+  let departementsHebergements;
   try {
     const { rows } = await pool.query(query, [declarationId]);
+    departementsHebergements =
+      (await pool.query(queryHebegements, [declarationId]))?.rows.map(
+        (r) => r.departement,
+      ) ?? [];
+
     if (!rows || rows.length === 0) {
       return next(
         new AppError(
@@ -54,14 +71,9 @@ async function checkPermissionDeclarationSejour(req, res, next) {
     );
   }
 
-  const { hebergement, personne_morale, region_obtention } = sejour;
+  const { personne_morale, region_obtention } = sejour;
 
   // Traitement des données JSON pour vérifier les départements
-  const hebergements = hebergement?.hebergements || [];
-  const departementsHebergements = hebergements.map(
-    (h) => h.coordonnees?.adresse?.departement,
-  );
-
   const hasValidDepartement = departements.some((dep) =>
     departementsHebergements.includes(dep.value),
   );

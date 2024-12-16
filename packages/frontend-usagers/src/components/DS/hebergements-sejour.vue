@@ -70,7 +70,9 @@
       v-else
       :hebergement="hebergementCourant"
       :date-debut-ini="nextMinDate"
-      :date-fin-ini="dayjs(props.dateFin).format('YYYY-MM-DD')"
+      :date-fin-ini="
+        dayjs(demandeSejourStore.demandeCourante.dateFin).format('YYYY-MM-DD')
+      "
       :modifiable="props.modifiable"
       @update="addNuitee"
       @cancel="onCloseNuitee"
@@ -82,13 +84,11 @@
 import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
 import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
+import { hebergement as hebergementUtils } from "@vao/shared";
 
 const toaster = useToaster();
 
 const props = defineProps({
-  dateDebut: { type: String, required: true },
-  dateFin: { type: String, required: true },
-  hebergement: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
@@ -108,16 +108,22 @@ const headers = [
   "Actions",
 ];
 const hebergementStore = useHebergementStore();
+const demandeSejourStore = useDemandeSejourStore();
 const nuiteeOpened = ref(false);
 const currentIndex = ref(-1);
 
 const validationSchema = computed(() => {
-  return DeclarationSejour.hebergementSchema(props.dateDebut, props.dateFin);
+  return DeclarationSejour.hebergementSchema(
+    demandeSejourStore.demandeCourante.dateDebut,
+    demandeSejourStore.demandeCourante.dateFin,
+  );
 });
 
 const initialValues = {
-  sejourEtranger: props.hebergement.sejourEtranger ?? false,
-  hebergements: props.hebergement.hebergements ?? [],
+  sejourEtranger:
+    demandeSejourStore.demandeCourante.hebergement?.sejourEtranger ?? false,
+  hebergements:
+    demandeSejourStore.demandeCourante.hebergement?.hebergements ?? [],
 };
 
 const { meta, values } = useForm({
@@ -133,6 +139,11 @@ const {
 } = useField("sejourEtranger");
 const { value: hebergements, handleChange: onHebergementsChange } =
   useField("hebergements");
+
+hebergementStore.fetch({
+  organismeId: demandeSejourStore.demandeCourante.organismeId,
+  statut: hebergementUtils.statut.ACTIF,
+});
 
 const syntheseRows = computed(() => {
   if (hebergementStore.hebergements.length > 0) {
@@ -165,7 +176,7 @@ const syntheseRows = computed(() => {
           ? dayjs(hebergement.dateFin).format("DD/MM/YYYY")
           : "",
         hebergement.nom ?? "",
-        hebergement.adresse ?? "",
+        hebergement.coordonnees?.adresse?.label ?? "",
         {
           component: DsfrButtonGroup,
           buttons: buttons,
@@ -186,11 +197,15 @@ const hebergementCourant = ref();
 
 const nextMinDate = computed(() => {
   if (currentIndex.value !== -1) {
-    return dayjs(props.dateDebut).format("YYYY-MM-DD");
+    return dayjs(demandeSejourStore.demandeCourante.dateDebut).format(
+      "YYYY-MM-DD",
+    );
   }
 
   if (hebergements.value.length === 0) {
-    return dayjs(props.dateDebut).format("YYYY-MM-DD");
+    return dayjs(demandeSejourStore.demandeCourante.dateDebut).format(
+      "YYYY-MM-DD",
+    );
   }
   return dayjs(
     Math.max(
@@ -261,8 +276,8 @@ async function addNuitee(hebergement) {
 const isSejourComplet = computed(() =>
   DeclarationSejour.isSejourComplet(
     hebergements.value,
-    props.dateDebut,
-    props.dateFin,
+    demandeSejourStore.demandeCourante.dateDebut,
+    demandeSejourStore.demandeCourante.dateFin,
   ),
 );
 
@@ -277,8 +292,6 @@ async function next() {
   };
   emit("update", data, "hebergements");
 }
-
-hebergementStore.fetch();
 </script>
 
 <style lang="scss" scoped></style>
