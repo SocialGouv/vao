@@ -22,10 +22,10 @@ const coordonneesSchema = (isBrouillon = false) => ({
 
 const informationsLocauxSchema = (isBrouillon = false) => ({
   accessibilite: yup.string().when([], {
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
     else: (schema) =>
       schema.required("Le choix d'un niveau d'accessibilté est obligatoire"),
+    is: () => isBrouillon,
+    then: (schema) => schema.notRequired(),
   }),
   accessibilitePrecision: yup
     .string()
@@ -37,42 +37,42 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
       then: (schema) => schema.strip(),
     }),
   amenagementsSpecifiques: yup.boolean().when([], {
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
     else: (schema) =>
       schema.required(
         "Il est impératif de renseigner si les aménagements spécifiques",
       ),
-  }),
-  chambresDoubles: yup.boolean().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
+  }),
+  chambresDoubles: yup.boolean().when([], {
     else: (schema) =>
       schema.required(
         "Il est impératif de renseigner si les couples sont dans des chambres séparés",
       ),
-  }),
-  chambresUnisexes: yup.boolean().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
+  }),
+  chambresUnisexes: yup.boolean().when([], {
     else: (schema) =>
       schema.required(
         "Il est impératif de renseigner si les chambres sont unisexes",
       ),
-  }),
-  couchageIndividuel: yup.boolean().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
+  }),
+  couchageIndividuel: yup.boolean().when([], {
     else: (schema) =>
       schema.required(
         "Il est impératif de renseigner l'individualité des couchages",
       ),
-  }),
-  descriptionLieuHebergement: yup.string().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
+  }),
+  descriptionLieuHebergement: yup.string().when([], {
     else: (schema) =>
       schema.required("Une description du lieu d'hébergement est obligatoire"),
+    is: () => isBrouillon,
+    then: (schema) => schema.notRequired(),
   }),
   fileDernierArreteAutorisationMaire: yup.mixed().when("reglementationErp", {
     is: true,
@@ -110,12 +110,12 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
     otherwise: (schema) => schema.nullable().strip(),
     then: (schema) =>
       schema.when([], {
-        is: () => isBrouillon,
-        then: (schema) => schema.notRequired(),
         else: (schema) =>
           schema.required(
             "Il est impératif de télécharger la réponse de l'exploitant ou du propriétaire",
           ),
+        is: () => isBrouillon,
+        then: (schema) => schema.notRequired(),
       }),
   }),
   litsDessus: yup.boolean().when("nombreLitsSuperposes", {
@@ -123,34 +123,34 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
     otherwise: (schema) => schema.nullable().strip(),
     then: (schema) =>
       schema.when([], {
-        is: () => isBrouillon,
-        then: (schema) => schema.notRequired(),
         else: (schema) =>
           schema.required(
             "Il est nécessaire de renseigner si les lits du dessus seront utilisés",
           ),
+        is: () => isBrouillon,
+        then: (schema) => schema.notRequired(),
       }),
   }),
   nombreLits: yup.number().when([], {
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
     else: (schema) =>
       schema.required("Il est impératif de renseigner le nombre de lits"),
+    is: () => isBrouillon,
+    then: (schema) => schema.notRequired(),
   }),
   nombreLitsSuperposes: yup.number().nullable(),
   nombreMaxPersonnesCouchage: yup.number().when([], {
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
     else: (schema) =>
       schema.required(
         "Il est impératif de renseigner le nombre de maximal de personnes par espace de couchage",
       ),
-  }),
-  pension: yup.string().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
+  }),
+  pension: yup.string().when([], {
     else: (schema) =>
       schema.required("Le choix d'un type de pension est obligatoire"),
+    is: () => isBrouillon,
+    then: (schema) => schema.notRequired(),
   }),
   precisionAmenagementsSpecifiques: yup
     .string()
@@ -159,8 +159,6 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
       otherwise: (schema) => schema.nullable().strip(),
       then: (schema) =>
         schema.when([], {
-          is: () => isBrouillon,
-          then: (schema) => schema.notRequired(),
           else: (schema) =>
             schema
               .min(
@@ -168,68 +166,54 @@ const informationsLocauxSchema = (isBrouillon = false) => ({
                 "Il est impératif de préciser ce que les aménagements ont de spécifiques",
               )
               .required(),
+          is: () => isBrouillon,
+          then: (schema) => schema.notRequired(),
         }),
     }),
   prestationsHotelieres: yup.array().when([], {
+    else: (schema) => schema.required(),
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
-    else: (schema) => schema.required(),
   }),
   rangementIndividuel: yup.boolean().when([], {
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
     else: (schema) =>
       schema.required(
         "Il est impératif de renseigner si des rangements individuels sont à disposition",
       ),
-  }),
-  reglementationErp: yup.boolean().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
+  }),
+  reglementationErp: yup.boolean().when([], {
     else: (schema) =>
       schema.required(
         "Il est impératif de renseigner si vous le local est soumis à la réglementation ERP (établissement recevant du public)",
       ),
+    is: () => isBrouillon,
+    then: (schema) => schema.notRequired(),
   }),
   type: yup.string().when([], {
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
     else: (schema) =>
       schema.required("Il est impératif de renseigner le type d'hébergement)"),
-  }),
-  visiteLocaux: yup.boolean().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
+  }),
+  visiteLocaux: yup.boolean().when([], {
     else: (schema) =>
       schema.required(
         "Il est impératif de renseigner si vous avez visité les locaux)",
       ),
+    is: () => isBrouillon,
+    then: (schema) => schema.notRequired(),
   }),
   visiteLocauxAt: yup
     .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
     .typeError("date invalide")
-    .when("visiteLocaux", {
-      is: (visiteLocaux) => !!visiteLocaux,
-      otherwise: (schema) => schema.nullable().strip(),
-      then: (schema) =>
-        schema.when([], {
-          is: () => isBrouillon,
-          then: (schema) => schema.notRequired(),
-          else: (schema) =>
-            schema
-              .max(
-                new Date(),
-                "La date doit être inférieure à la date du jour.",
-              )
-              .nullable(),
-        }),
-    }),
+    .max(new Date(), "La date doit être inférieure à la date du jour.")
+    .nullable(),
 });
 
 const informationsTransportSchema = (isBrouillon = false) => ({
   deplacementProximite: yup.string().when([], {
-    is: () => isBrouillon,
-    then: (schema) => schema.notRequired(),
     else: (schema) =>
       schema
         .min(
@@ -237,10 +221,10 @@ const informationsTransportSchema = (isBrouillon = false) => ({
           "Il est impératif de préciser le mode de transport utilisé pour les déplacements à proximité",
         )
         .required(),
-  }),
-  excursion: yup.string().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
+  }),
+  excursion: yup.string().when([], {
     else: (schema) =>
       schema
         .min(
@@ -248,14 +232,16 @@ const informationsTransportSchema = (isBrouillon = false) => ({
           "Il est impératif de préciser le mode de transport utilisé pour les excursions",
         )
         .required(),
-  }),
-  vehiculesAdaptes: yup.boolean().when([], {
     is: () => isBrouillon,
     then: (schema) => schema.notRequired(),
+  }),
+  vehiculesAdaptes: yup.boolean().when([], {
     else: (schema) =>
       schema.required(
         "Il est impératif de renseigner si les véhicules sont adaptés",
       ),
+    is: () => isBrouillon,
+    then: (schema) => schema.notRequired(),
   }),
 });
 
