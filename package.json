@@ -14,6 +14,8 @@
     "lint:frontend-bo": "yarn --cwd ./packages/frontend-bo run lint",
     "lint:shared": "yarn --cwd ./packages/shared run lint",
     "knex": "POSTGRES_HOST=localhost POSTGRES_PORT=5436 env-cmd --no-override knex --cwd ./packages/migrations/src",
+    "test:unit:all": "yarn run test:unit:backend",
+    "test:unit:backend": "yarn workspace @vao/backend test",
     "tests:e2e": "E2E_LOCAL=true playwright test",
     "tests:e2e:ui": "E2E_LOCAL=true playwright test --ui"
   },
