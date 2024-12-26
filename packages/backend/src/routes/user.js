@@ -8,5 +8,7 @@ const userController = require("../controllers/user");
 // Gère une connexion via mot de passe.
 router.get("/me", checkJWT, userController.getMe);
 router.patch("/me", checkJWT, userController.patchMe);
+router.post("/generate-api-token", checkJWT, userController.generateApiToken);
+router.get("/api-token", checkJWT, userController.getApiToken);
 
 module.exports = router;
