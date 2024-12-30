@@ -90,13 +90,45 @@ fileignoreconfig:
 - filename: docker-compose.prod.yaml
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
-  checksum: c882626f19ca66fb8ef048900b179923f959fea9fbff52b4913537bad55e795d
+  checksum: 461d1842b377eccdb0a61ba996d0316326ebda695fee24edee8038871a50909a
 - filename: e2e/register-login-organisateur.spec.ts
   checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
 - filename: package.json
   checksum: 8437030cbab7db5734c16f9924b7e25a26b9145414d2bd1c81031d2f9f5558bd
+- filename: packages/api/README.md
+  checksum: 9bc65d5ff21831a41d0e8d4e88269e6d89922ac72202c8aeb02d3964702ba432
+- filename: packages/api/environement.d.ts
+  checksum: e8a6dcdbda5830d02c0195c620dee8777f24ca42690e1c85b4527308283b3690
+- filename: packages/api/package.json
+  checksum: cf8de66e7ff3e048ea7fa298046a1863dedf3df76105ba42bd174f24c4dc2bd0
+- filename: packages/api/src/accommodation/accommodation.controller.ts
+  checksum: c2a48075aaa104c4119a8e81657720e43ee0d167f62aa064dfad7817e36cb361
+- filename: packages/api/src/accommodation/accommodation.service.spec.ts
+  checksum: 5c6bdce9ac69109e6bd62fc752dd5df76cbd5c5a53ebbf218b7bed159a1d0b18
+- filename: packages/api/src/accommodation/accommodation.service.ts
+  checksum: 87991cc4d74cca26dc78885d103921d539ebcc65883624ca53d2087a57e4d07c
+- filename: packages/api/src/accommodation/accomodation.controller.spec.ts
+  checksum: 2c78936432c9f1a29ebfdd26dce0253542f348f79eb576ea263dcac7d76ceecb
+- filename: packages/api/src/address/address.service.spec.ts
+  checksum: 2d3d8146f6157a6449a083251145ae49a50feca7ba87e37ab42121657c6081e0
+- filename: packages/api/src/address/address.service.ts
+  checksum: b858769faade1a8afd3ce0c78a19c70d5c4bab05317928ec6e83db7ea076cf49
+- filename: packages/api/src/config.ts
+  checksum: 5b445264584a80ead6bcb05771d5fabcdaee4473a911b1590b8ef8425dfcf95b
+- filename: packages/api/src/config/configuration.ts
+  checksum: 6d7614ffc23f2a2b5498ced171368d841b597e50bdd1a3f3ae100868b14c688f
+- filename: packages/api/src/file/file.service.spec.ts
+  checksum: 76e79379c1ecbb038ec93a1f7bf415e7f651b2a43002de44b31269bd523ce90c
+- filename: packages/api/src/file/file.service.ts
+  checksum: 1064bd08669824698bb9df0289958a28c11580c95ceb0447c67a183f60247304
+- filename: packages/api/src/global/database.module.ts
+  checksum: 0a0c57ae3d733e377cec0dc346e32485a88f90e22311dc992ce24944b72a6a64
+- filename: packages/api/src/global/s3.module.ts
+  checksum: 01f1b8dfeef8795cd7c6e3b8ccd2029064f7795994a13ff50f34bb01bf8f01a5
+- filename: packages/api/src/schemas/address.schema.ts
+  checksum: 173b9639170c241e9a2de13d2af13b552aea7571d9f8c77fab5c5c33fc463538
 - filename: packages/backend/src/config.js
-  checksum: c0baf7f4f878d3f3406030471f15c092ed9fc671b1e66276fe9b071ea025b58c
+  checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
   checksum: 8dde974d3051313b99c5abb76ec8b0e1f8480e6bb958474a4f95eb4240d90e2a
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
@@ -127,6 +159,8 @@ fileignoreconfig:
   checksum: 51d98862750e30ab4f852aee33a8c65bfa9ff92986b498c1d2650be3aff3511c
 - filename: packages/backend/src/schemas/register.js
   checksum: d56114de12eaab4e9121eaf17ca1760370673c3c1526218896bacaa7daf5cc82
+- filename: packages/backend/src/services/ApiToken.js
+  checksum: 1be2f39bdf814196b35376f6682bf2a4879168e06c3acbb65eb229bcc2068c28
 - filename: packages/backend/src/services/BoUser.js
   checksum: cb82592388d082e0a2c47ba57074816622f5a6466d3f23fa7292d297f7807414
 - filename: packages/backend/src/services/DemandeSejour.js
@@ -189,6 +223,8 @@ fileignoreconfig:
   checksum: 4716f6a0de6f2dc2af6d8ac8abf11a253a5a719c231df5ae51c783e6148c42ed
 - filename: packages/frontend-usagers/src/assets/Download.svg
   checksum: a5c2caf47b1b715b2cf8240e9af9090061faae6261b21bc62173689f1666536e
+- filename: packages/frontend-usagers/src/components/ApiTokenManager.vue
+  checksum: 56a62209a9c1ac0d43c66a8971c23c9db1bba9e77bc222211e10468fdc795d79
 - filename: packages/frontend-usagers/src/components/DS/hebergements-sejour-detail.vue
   checksum: ea2516289eea24b6cf226322360163f840249383a5b30f5766ac730e52463162
 - filename: packages/frontend-usagers/src/components/DS/synthese.vue
@@ -255,6 +291,8 @@ fileignoreconfig:
   checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/migrations/src/migrations/20240918085236_migrate_files_to_minio.js
   checksum: ce0b678503f6342414ed759fa31ac460060d1efd1daadffb3d7be0bfa049858c
+- filename: packages/migrations/src/migrations/20241210150854_create_api_keys_table.js
+  checksum: 81eb796463200a62bfb1669e6dcfc07b8a6c88623112e5f28198c3ea2ceaf35f
 - filename: packages/migrations/src/scripts/migrate-files-to-s3.js
   checksum: e22a659aca296659bcd27ea22fd6919938327d3a4ad17eaab229e55724d94dce
 - filename: packages/shared/src/components/Chat.vue
