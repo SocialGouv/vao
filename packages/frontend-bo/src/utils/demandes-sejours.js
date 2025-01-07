@@ -20,6 +20,14 @@ const statuts = {
   TERMINEE: "TERMINEE",
 };
 
+const filters = {
+  idFonctionnelle: "idFonctionnelle",
+  libelle: "libelle",
+  organisme: "organisme",
+  status: "status",
+  action: "action",
+};
+
 const getSaison = (demande) => {
   if (demande?.dateDebut) {
     const moisDebut = dayjs(demande.dateDebut).month();
@@ -61,4 +69,5 @@ export default {
   getOrganismeTitle,
   getDateDebutFin,
   isDeclaration8Jours,
+  filters,
 };
