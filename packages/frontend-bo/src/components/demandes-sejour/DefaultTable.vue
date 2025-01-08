@@ -174,7 +174,7 @@ const updateData = () => {
       ...(isValidParams(sortDirection.value)
         ? { sortDirection: sortDirection.value.toUpperCase() }
         : {}),
-      ...getSearchParams(),
+      search: getSearchParams(),
     };
 
     demandeSejourStore.fetchDemandes(query);
