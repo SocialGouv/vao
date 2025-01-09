@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { logger, $fetchBackend } from "#imports";
+import { $fetchBackend, logger } from "#imports";
 
 const log = logger("stores/organisme");
 
@@ -8,6 +8,7 @@ export const useOrganismeStore = defineStore("organisme", {
     organisme: null,
     organismes: [],
     organismesNonAgrees: [],
+    total: 0,
   }),
   getters: {
     isConnected: (state) => !!state.user,
@@ -27,7 +28,13 @@ export const useOrganismeStore = defineStore("organisme", {
         throw err;
       }
     },
-    async fetchOrganismes({ search } = {}) {
+    async fetchOrganismes({
+      search,
+      limit,
+      offset,
+      sortBy,
+      sortDirection,
+    } = {}) {
       log.i("fetchOrganismes - IN");
       try {
         // Appel du back pour la liste des utilisateurs
@@ -38,11 +45,17 @@ export const useOrganismeStore = defineStore("organisme", {
             "Content-Type": "application/json",
           },
           params: {
-            search,
+            ...(search ?? {}),
+            limit,
+            offset,
+            sortBy,
+            sortDirection,
           },
         });
+
         log.d("fetchOrganismes - réponse", { organismes });
-        this.organismes = organismes;
+        this.organismes = organismes.rows;
+        this.total = organismes.total;
         log.i("fetchOrganismes - DONE");
       } catch (error) {
         // Retour vide en cas d'erreur

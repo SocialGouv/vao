@@ -59,7 +59,7 @@ module.exports = {
       query: paginatedQuery,
     };
   },
-  sanityzeFiltersParams: (queryParams, availableParams) => 
+  sanityzeFiltersParams: (queryParams, availableParams) =>
     Object.entries(availableParams).reduce((acc, [key, value]) => {
       if (queryParams[key]) {
         acc[value] = queryParams[key];
