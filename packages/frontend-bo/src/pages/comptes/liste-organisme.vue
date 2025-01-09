@@ -1,8 +1,6 @@
 <template>
   <div class="fr-container">
-    <h1 class="fr-py-2w">
-      Liste des organismes ({{ usersStore.totalUsersFO }})
-    </h1>
+    <h1 class="fr-py-2w">Liste des organismes</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
@@ -18,6 +16,7 @@
                   label="Nom"
                   placeholder="Nom"
                   :label-visible="true"
+                  @update:model-value="updateData"
                 />
               </div>
             </div>
@@ -32,6 +31,7 @@
                   label="Prénom"
                   placeholder="Prénom"
                   :label-visible="true"
+                  @update:model-value="updateData"
                 />
               </div>
             </div>
@@ -46,6 +46,7 @@
                   label="Adresse courriel"
                   placeholder="Adresse courriel"
                   :label-visible="true"
+                  @update:model-value="updateData"
                 />
               </div>
             </div>
@@ -60,29 +61,49 @@
                   label="Organisme"
                   placeholder="Organisme"
                   :label-visible="true"
+                  @update:model-value="updateData"
                 />
               </div>
             </div>
           </div>
-          <!--<DsfrButton @click.prevent="test">Test</DsfrButton
-              >
-            -->
         </form>
       </div>
     </div>
-    <TableWithBackendPagination
-      :headers="headers"
+    <DsfrDataTableV2Wrapper
+      v-model:limit="limit"
+      v-model:offset="offset"
+      v-model:sort="sort"
+      v-model:sort-direction="sortDirection"
+      :titles="titles"
+      :table-title="`Liste des organismes (${usersStore.totalUsersFO})`"
       :data="usersStore.usersFO"
-      :total-items="usersStore.totalUsersFO"
-      :current-page="currentPageState"
-      :sort-by="sortState.sortBy"
-      :sort-direction="sortState.sortDirection"
-      :items-by-page="limitState"
-      :on-click-cell="navigate"
-      @update-sort="updateSort"
-      @update-items-by-page="updateItemsByPage"
-      @update-current-page="updateCurrentPage"
-    />
+      :total="usersStore.totalUsersFO"
+      row-id="organismeId"
+      is-sortable
+      @update-data="updateData"
+    >
+      <template #cell:statut="{ row }">
+        {{ mapStatutToLabel(row.statut) }}
+      </template>
+      <template #cell:dateCreation="{ row }">
+        {{ getDateCreationLabel(row.dateCreation) }}
+      </template>
+      <template #cell:custom-edit="{ row }">
+        <NuxtLink
+          :to="`/organismes/${row.organismeId}`"
+          title="Naviguer vers l'organisme"
+          class="no-background-image"
+        >
+          <DsfrButton
+            icon="ri:arrow-right-s-line"
+            icon-only
+            primary
+            size="small"
+            type="button"
+          />
+        </NuxtLink>
+      </template>
+    </DsfrDataTableV2Wrapper>
     <div class="fr-input-group">
       <DsfrButton
         type="button"
@@ -96,121 +117,149 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { TableWithBackendPagination } from "@vao/shared";
+import { DsfrDataTableV2Wrapper } from "@vao/shared";
 import { useUserStore } from "~/stores/user";
 
 definePageMeta({
   middleware: ["is-connected"],
 });
-
 const usersStore = useUserStore();
-const defaultLimit = 10;
-const defaultOffset = 0;
-const sortState = ref({});
-const currentPageState = ref(defaultOffset);
-const limitState = ref(defaultLimit);
-const searchState = reactive({
-  nom: null,
-  prenom: null,
-  email: null,
-  organisme: null,
-});
-// Appel du store à l'ouverture
-usersStore.fetchUsersOrganisme({
-  limit: defaultLimit,
-  offset: defaultOffset,
-  search: searchState,
-});
-watch(
-  [sortState, limitState, currentPageState],
-  ([sortValue, limitValue, currentPageValue]) => {
-    usersStore.fetchUsersOrganisme({
-      sortBy: sortValue.sortBy,
-      sortDirection: sortValue.sortDirection,
-      limit: limitValue,
-      offset: currentPageValue * limitValue,
-      search: searchState,
-    });
-  },
-);
-const fetchUsersDebounce = debounce((search) => {
-  usersStore.fetchUsersOrganisme({
-    sortBy: sortState.value.sortBy,
-    sortDirection: sortState.value.sortDirection,
-    limit: limitState.value,
-    offset: currentPageState.value * limitState.value,
-    search,
-  });
-});
+const route = useRoute();
+const { query } = route;
 
 const getCsvUtilisateurs = async () => {
   const response = await usersStore.exportUsersOrganismes();
   exportCsv(response, "UtilisateursOrganismes.csv");
 };
 
-watch([searchState], ([searchValue]) => {
-  fetchUsersDebounce(searchValue);
-});
-const headers = [
+const titles = [
   {
-    column: "nom",
-    text: "Nom",
-    sort: true,
-  },
-  {
-    column: "prenom",
-    text: "Prénom",
-    sort: true,
-  },
-  {
-    column: "email",
-    text: "Adresse courriel",
-    sort: true,
-  },
-  {
-    column: "statut",
-    text: "Statut",
-    format: (u) => {
-      return (
-        {
-          VALIDATED: "Validé",
-          NEED_EMAIL_VALIDATION: "En attente activation",
-          BLOCKED: "Bloqué",
-        }[u.statut] || "Statut inattendu"
-      );
+    key: "nom",
+    label: "Nom",
+    options: {
+      isSortable: true,
     },
-    sort: true,
   },
   {
-    column: "dateCreation",
-    text: "Date de création",
-    format: (u) => dayjs(u.dateCreation).format("DD/MM/YYYY HH:MM"),
-    sort: true,
+    key: "prenom",
+    label: "Prenom",
+    options: {
+      isSortable: true,
+    },
   },
   {
-    column: "raisonSociale",
-    text: "Raison sociale",
-    sort: true,
+    key: "email",
+    label: "Adresse courriel",
+    options: {
+      isSortable: true,
+    },
   },
   {
-    column: "nombreDeclarations",
-    text: "Déclarations de séjour",
-    sort: true,
+    key: "statut",
+    label: "Statut",
+    options: {
+      isSortable: true,
+    },
+  },
+  {
+    key: "dateCreation",
+    label: "Date de création",
+    options: {
+      isSortable: true,
+    },
+  },
+  {
+    key: "raisonSociale",
+    label: "Raison sociale",
+    options: {
+      isSortable: true,
+    },
+  },
+  {
+    key: "nombreDeclarations",
+    label: "Déclarations de séjour",
+    options: {
+      isSortable: true,
+    },
+  },
+  {
+    key: "custom-edit",
+    label: "Action",
   },
 ];
-const updateSort = ({ sortBy, sortDirection }) => {
-  sortState.value = {
-    sortBy,
-    sortDirection,
-  };
+const sortableTitles = titles.flatMap((title) =>
+  title.options?.isSortable ? [title.key] : [],
+);
+
+const mapStatutToLabel = (statut) => {
+  return {
+    VALIDATED: "Validé",
+    NEED_EMAIL_VALIDATION: "En attente activation",
+    BLOCKED: "Bloqué",
+  }[statut];
 };
-const navigate = (organisme) => {
-  navigateTo(`/organismes/${organisme.organismeId}`);
+const getDateCreationLabel = (date) => dayjs(date).format("DD/MM/YYYY HH:MM");
+
+const searchState = reactive({
+  nom: null,
+  prenom: null,
+  email: null,
+  organisme: null,
+});
+
+const defaultLimit = 10;
+const defaultOffset = 0;
+const limit = ref(parseInt(query.limit, 10) || defaultLimit);
+const offset = ref(parseInt(query.offset, 10) || defaultOffset);
+const sort = ref(sortableTitles.includes(query.sort) ? query.sort : "");
+const sortDirection = ref(
+  ["", "asc", "desc"].includes(query.sortDirection) ? query.sortDirection : "",
+);
+
+usersStore.fetchUsersOrganisme({
+  limit: limit.value,
+  offset: offset.value,
+});
+
+const isValidParams = (params) =>
+  params !== null &&
+  params !== "" &&
+  (!Array.isArray(params) || params.length > 0);
+
+let timeout = null;
+const updateData = () => {
+  if (timeout) {
+    clearTimeout(timeout);
+  }
+  timeout = setTimeout(() => {
+    const query = {
+      limit: limit.value,
+      offset: offset.value,
+      ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
+      ...(isValidParams(sortDirection.value)
+        ? { sortDirection: sortDirection.value.toUpperCase() }
+        : {}),
+      search: searchState,
+    };
+
+    usersStore.fetchUsersOrganisme(query);
+    navigateTo({
+      query: {
+        limit: limit.value,
+        offset: offset.value,
+        ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
+        ...(isValidParams(sortDirection.value)
+          ? { sortDirection: sortDirection.value }
+          : {}),
+        ...searchState,
+      },
+    });
+  }, 300);
 };
-const updateItemsByPage = (val) => {
-  limitState.value = parseInt(val);
-};
-const updateCurrentPage = (val) => {
-  currentPageState.value = val;
-};
+
+onUnmounted(() => {
+  if (timeout) {
+    clearTimeout(timeout);
+  }
+});
 </script>
