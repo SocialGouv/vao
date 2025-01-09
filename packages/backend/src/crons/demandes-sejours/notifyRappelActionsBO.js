@@ -43,7 +43,6 @@ const generateRappelQuery = (
       ds.statut,
       ds.libelle as titre,
       TO_CHAR(ds.date_debut, 'DD/MM/YYYY') as date_debut,
-      use.mail,
       ${additionalColumns}
       ((ds.date_debut - ((10) * INTERVAL '1 day'))::date <= now()::date) as isalerte,
       string_agg(com.label, ', ' ORDER BY he.date_debut_hebergement::date ASC) AS Communes
@@ -60,7 +59,6 @@ const generateRappelQuery = (
       ds.date_debut,
       ds.statut,
       ds.libelle,
-      use.mail,
       ${additionalGroupBy}
       isalerte
     ORDER BY
@@ -72,17 +70,19 @@ const generateRappelQuery = (
 const query = {
   fetchRappelDSBO: generateRappelQuery(
     `'${statuts.TRANSMISE}','${statuts.EN_COURS}','${statuts.TRANSMISE_8J}','${statuts.EN_COURS_8J}'`,
-    ``,
-    ` INNER JOIN geo.territoires ter ON ter.code = ds.departement_suivi INNER JOIN back.users use ON ter.code = use.ter_code `,
-    ``,
     `use.mail,`,
+    ` INNER JOIN geo.territoires ter ON ter.code = ds.departement_suivi INNER JOIN back.users use ON ter.code = use.ter_code `,
+    `use.mail,`,
+    ``,
   ),
   fetchRappelDSFUsager: generateRappelQuery(
     `'${statuts.ATTENTE_8_JOUR}','${statuts.A_MODIFIER}','${statuts.A_MODIFIER_8J}'`,
-    `((ds.responsable_sejour::jsonb)->>'email')::text as mailresp, mail || ';' || ((ds.responsable_sejour::jsonb)->>'email')::text as mails,`,
+    `STRING_AGG(use.mail, ';') AS mail, 
+    ((ds.responsable_sejour::jsonb)->>'email')::text as mailresp, 
+    STRING_AGG(use.mail, ';') || ';' || ((ds.responsable_sejour::jsonb)->>'email')::text as mails,`,
     ` INNER JOIN front.user_organisme uso ON uso.org_id = ds.organisme_id INNER JOIN front.users use ON use.id = uso.use_id `,
-    `mailresp,`,
-    `mail,`,
+    `ds.organisme_id,mailresp,`,
+    ``,
   ),
 };
 
@@ -189,10 +189,12 @@ function appendContentForNonAlert({ listeDsSansAlerte }) {
 }
 
 async function sendMail({ emailContent, mail, isBO }) {
+  const uniqueMails = [...new Set(mail.split(";").map((item) => item.trim()))];
+  const mailNew = uniqueMails.join(";");
   Send(
     await sendNotificationMail({
       content: emailContent.join("\n"),
-      email: mail.split(";"),
+      email: mailNew.split(";"),
       isBO,
     }),
   );
