@@ -7,6 +7,7 @@ export const useOrganismeStore = defineStore("organisme", {
   state: () => ({
     organisme: null,
     organismes: [],
+    organismesTotal: 0,
     organismesNonAgrees: [],
   }),
   getters: {
@@ -27,27 +28,23 @@ export const useOrganismeStore = defineStore("organisme", {
         throw err;
       }
     },
-    async fetchOrganismes({ search } = {}) {
-      log.i("fetchOrganismes - IN");
+    async fetchOrganismes(params) {
       try {
         // Appel du back pour la liste des utilisateurs
-        const { organismes } = await $fetchBackend("/organisme/bo/liste", {
+        const { rows, total } = await $fetchBackend("/organisme/bo/liste", {
           credentials: "include",
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          params: {
-            search,
-          },
+          params,
         });
-        log.d("fetchOrganismes - réponse", { organismes });
-        this.organismes = organismes;
-        log.i("fetchOrganismes - DONE");
+        this.organismes = rows;
+        this.organismesTotal = total;
       } catch (error) {
-        // Retour vide en cas d'erreur
         this.organismes = [];
-        log.w("fetchOrganismes - Erreur", { error });
+        this.organismesTotal = 0;
+        throw error;
       }
     },
     async fetchOrganismesNonAgrees({ search } = {}) {

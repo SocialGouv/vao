@@ -89,7 +89,7 @@ module.exports = async function get(_req, res, next) {
   ];
 
   try {
-    const organismes = await Organisme.get();
+    const organismes = await Organisme.getListeExtract();
     const csv = [
       titles.map(({ label }) => label).join(";"),
       ...organismes.map((item) => {
