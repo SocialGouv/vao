@@ -82,7 +82,7 @@ services:
     user: 1000:1000
 
   migrations:
-    image: "node:20.15.1-bullseye-slim"
+    image: "node:23.5-bullseye-slim"
     working_dir: /app
     command: bash -c "/app/packages/migrations/start.sh"
     volumes:
