@@ -9,6 +9,12 @@ const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 
 const Organisme = require("../schemas/organisme");
+const {
+  sanityzePaginationParams,
+  applyPagination,
+  sanityzeFiltersParams,
+  applyFilters,
+} = require("../helpers/queryParams");
 
 const log = logger(module.filename);
 
@@ -204,68 +210,64 @@ const query = {
     WHERE id = $1
   `,
   getListe: `
-    SELECT
-      o.id AS "organismeId",
-      o.type_organisme AS "typeOrganisme",
-      o.complet as "complet",
-      o.personne_morale->>'siren' AS "siren",
-      o.personne_morale->>'siret' AS "siret",
-      o.personne_morale->>'email' AS "email",
-      o.personne_morale->>'raisonSociale' AS "raisonSociale",
-      o.personne_physique->>'telephone' AS "telephone",
-      o.personne_physique->>'nomNaissance' AS "nomPersonnePhysique",
-      o.personne_physique->>'prenom' AS "prenomPersonnePhysique",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut <> 'BROUILLON' THEN 1 ELSE NULL END)::integer AS "sejourCount",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'TRANSMISE' THEN 1 ELSE NULL END)::integer AS "sejourCountTransmise",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'ABANDONNEE' THEN 1 ELSE NULL END)::integer AS "sejourCountAbamdonnee",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'ANNULEE' THEN 1 ELSE NULL END)::integer AS "sejourCountAnnulee",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'EN ATTENTE DECLARATION 8 JOURS' THEN 1 ELSE NULL END)::integer AS "sejourCountAttente8j",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'A MODIFIER' THEN 1 ELSE NULL END)::integer AS "sejourCountAModifier",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'A MODIFIER 8J' THEN 1 ELSE NULL END)::integer AS "sejourCountAModifier8j",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'EN COURS' THEN 1 ELSE NULL END)::integer AS "sejourCountEnCours",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'EN COURS 8J' THEN 1 ELSE NULL END)::integer AS "sejourCountEnCours8j",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'REFUSEE' THEN 1 ELSE NULL END)::integer AS "sejourCountRefusee",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'REFUSEE 8J' THEN 1 ELSE NULL END)::integer AS "sejourCountRefusee8j",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'SEJOUR EN COURS' THEN 1 ELSE NULL END)::integer AS "sejourCountSejourEnCours",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'TERMINEE' THEN 1 ELSE NULL END)::integer AS "sejourCountTerminee",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'TRANSMISE 8J' THEN 1 ELSE NULL END)::integer AS "sejourCountTransmise8j",
-      COUNT (CASE WHEN o.id = ds.organisme_id AND ds.statut = 'VALIDEE 8J' THEN 1 ELSE NULL END)::integer AS "sejourCountValide8j",
-      CASE
-        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
-        THEN
-        (
-            SELECT
-              json_build_object(
-                'numero', numero,
-                'regionObtention', region_obtention,
-                'dateObtention', date_obtention,
-                'file', file,
-                'yearObtention', EXTRACT(YEAR FROM a.date_obtention)
-              ) AS "agrement"
-            FROM front.agrements a
-            JOIN front.organismes o2 ON o2.id = a.organisme_id
-            WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
-            AND a.supprime = false
-        )
-        ELSE (
-          SELECT
-              json_build_object(
-                'numero', numero,
-                'regionObtention', region_obtention,
-                'dateObtention', date_obtention,
-                'file', file,
-                'yearObtention', EXTRACT(YEAR FROM a.date_obtention)
-              ) AS "agrement"
-          FROM front.agrements a
-          WHERE organisme_id = o.id
-          AND a.supprime = false
-        )
-      END AS agrement,
-      o.edited_at AS "editedAt"
-    FROM front.organismes o
-    LEFT JOIN front.demande_sejour ds ON ds.organisme_id = o.id
-    WHERE o.supprime = false
-    GROUP BY o.id;
+WITH stat AS (
+  SELECT organisme_id,
+         COUNT(CASE WHEN statut <> 'BROUILLON' THEN 1 ELSE NULL END)::INTEGER AS "sejourCount",
+         COUNT(CASE WHEN statut = 'TRANSMISE' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountTransmise",
+         COUNT(CASE WHEN statut = 'ABANDONNEE' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountAbamdonnee",
+         COUNT(CASE WHEN statut = 'ANNULEE' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountAnnulee",
+         COUNT(CASE WHEN statut = 'EN ATTENTE DECLARATION 8 JOURS' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountAttente8j",
+         COUNT(CASE WHEN statut = 'A MODIFIER' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountAModifier",
+         COUNT(CASE WHEN statut = 'A MODIFIER 8J' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountAModifier8j",
+         COUNT(CASE WHEN statut = 'EN COURS' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountEnCours",
+         COUNT(CASE WHEN statut = 'EN COURS 8J' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountEnCours8j",
+         COUNT(CASE WHEN statut = 'REFUSEE' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountRefusee",
+         COUNT(CASE WHEN statut = 'REFUSEE 8J' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountRefusee8j",
+         COUNT(CASE WHEN statut = 'SEJOUR EN COURS' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountSejourEnCours",
+         COUNT(CASE WHEN statut = 'TERMINEE' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountTerminee",
+         COUNT(CASE WHEN statut = 'TRANSMISE 8J' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountTransmise8j",
+         COUNT(CASE WHEN statut = 'VALIDEE 8J' THEN 1 ELSE NULL END)::INTEGER AS "sejourCountValide8j"
+  FROM front.demande_sejour
+  GROUP BY organisme_id
+),
+agrement_data AS (
+  SELECT o.id AS "organismeId",
+         CASE
+           WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::BOOLEAN IS FALSE THEN (
+             SELECT JSON_BUILD_OBJECT('numero', numero, 'regionObtention', region_obtention, 'dateObtention', date_obtention,
+                                      'file', file, 'yearObtention', EXTRACT(YEAR FROM a.date_obtention)) AS "agrement"
+             FROM front.agrements a
+             JOIN front.organismes o2 ON o2.id = a.organisme_id
+             WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
+               AND a.supprime = FALSE
+           )
+           ELSE (
+             SELECT JSON_BUILD_OBJECT('numero', numero, 'regionObtention', region_obtention, 'dateObtention', date_obtention,
+                                      'file', file, 'yearObtention', EXTRACT(YEAR FROM a.date_obtention)) AS "agrement"
+             FROM front.agrements a
+             WHERE organisme_id = o.id AND a.supprime = FALSE
+           )
+         END AS "agrement"
+  FROM front.organismes o
+)
+SELECT o.id AS "organismeId", o.type_organisme AS "typeOrganisme", o.complet AS "complet",
+       o.personne_morale ->> 'siren' AS "siren", o.personne_morale ->> 'siret' AS "siret",
+       o.personne_morale ->> 'email' AS "email", o.personne_morale ->> 'raisonSociale' AS "raisonSociale",
+       o.personne_physique ->> 'telephone' AS "telephone", o.personne_physique ->> 'nomNaissance' AS "nomPersonnePhysique",
+       o.personne_physique ->> 'prenom' AS "prenomPersonnePhysique",
+       COALESCE(stat."sejourCount", 0) AS "sejourCount", COALESCE(stat."sejourCountTransmise", 0) AS "sejourCountTransmise",
+       COALESCE(stat."sejourCountAbamdonnee", 0) AS "sejourCountAbamdonnee", COALESCE(stat."sejourCountAnnulee", 0) AS "sejourCountAnnulee",
+       COALESCE(stat."sejourCountAttente8j", 0) AS "sejourCountAttente8j", COALESCE(stat."sejourCountAModifier", 0) AS "sejourCountAModifier",
+       COALESCE(stat."sejourCountAModifier8j", 0) AS "sejourCountAModifier8j", COALESCE(stat."sejourCountEnCours", 0) AS "sejourCountEnCours",
+       COALESCE(stat."sejourCountEnCours8j", 0) AS "sejourCountEnCours8j", COALESCE(stat."sejourCountRefusee", 0) AS "sejourCountRefusee",
+       COALESCE(stat."sejourCountRefusee8j", 0) AS "sejourCountRefusee8j", COALESCE(stat."sejourCountSejourEnCours", 0) AS "sejourCountSejourEnCours",
+       COALESCE(stat."sejourCountTerminee", 0) AS "sejourCountTerminee", COALESCE(stat."sejourCountTransmise8j", 0) AS "sejourCountTransmise8j",
+       COALESCE(stat."sejourCountValide8j", 0) AS "sejourCountValide8j",
+       ad."agrement", o.edited_at AS "editedAt"
+FROM front.organismes o
+LEFT JOIN stat ON stat.organisme_id = o.id
+LEFT JOIN agrement_data ad ON ad."organismeId" = o.id
+WHERE o.supprime = FALSE
 `,
   getNonAgrees: `
 SELECT
@@ -535,6 +537,49 @@ module.exports.get = async () => {
   const { rows: organismes } = await pool.query(query.getListe, []);
   log.i("get - DONE");
   return organismes ?? [];
+};
+
+module.exports.getPaginated = async (queryParams) => {
+  log.i("get - IN");
+  const titles = {
+    agrementDateObtention: "ad.agrement ->> 'dateObtention'",
+    complet: "complet",
+    editedAt: "o.edited_at",
+    nomPersonnePhysique: "o.personne_physique ->> 'nomNaissance'",
+    raisonSociale: "o.personne_morale ->> 'raisonSociale'",
+    regionObtention: "ad.agrement ->> 'regionObtention'",
+    sejourCount: 'COALESCE(stat."sejourCount", 0)',
+    siret: "o.personne_morale ->> 'siret'",
+    typeOrganisme: "o.type_organisme",
+    yearObtention: "ad.agrement ->> 'dateObtention'",
+  };
+  const filterParams = sanityzeFiltersParams(queryParams, titles);
+  const { limit, offset, sortBy, sortDirection } = sanityzePaginationParams(
+    queryParams,
+    { sortBy: titles },
+  );
+  const queryListe = query.getListe;
+  const filterQuery = applyFilters(queryListe, [], filterParams);
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  );
+
+  // console.log(paginatedQuery);
+
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  log.i("get - DONE");
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
 };
 
 module.exports.getNonAgrees = async () => {
