@@ -132,7 +132,7 @@ fileignoreconfig:
 - filename: packages/backend/src/services/DemandeSejour.js
   checksum: 8a3761a96a2775987fea844c5e0d47c7c6f83ea2dfddfd878c30a90f7d9775cc
 - filename: packages/backend/src/services/Document.js
-  checksum: 1fbeae31395935da7b8daef1d3872151b793d433d1cde968d0607b4628ba50a8
+  checksum: 252b01b8bf69eebecf3c3572b5f4ecb50d34522c138c3f85b2aed793100bb7f5
 - filename: packages/backend/src/services/User.js
   checksum: 78ddae12d185c4111aa837a178b75e6bda4083d06783ee6382503262298eefbc
 - filename: packages/backend/src/services/geo/Commune.js
@@ -256,7 +256,7 @@ fileignoreconfig:
 - filename: packages/migrations/src/migrations/20240918085236_migrate_files_to_minio.js
   checksum: ce0b678503f6342414ed759fa31ac460060d1efd1daadffb3d7be0bfa049858c
 - filename: packages/migrations/src/scripts/migrate-files-to-s3.js
-  checksum: e22a659aca296659bcd27ea22fd6919938327d3a4ad17eaab229e55724d94dce
+  checksum: 0c60a5a9f3321ab3c36025bdeb35663395586d5bca3d21984fdbe5997b46c6eb
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/DsfrMultiSelect.vue

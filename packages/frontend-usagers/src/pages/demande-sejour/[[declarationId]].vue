@@ -494,6 +494,7 @@ const sendMessage = async ({ message, file }) => {
       };
       toaster.info({ titleTag: "h2", description: `Document déposé` });
     } catch (error) {
+      isSendingMessage.value = false;
       log.w(error);
       return toaster.error({
         titleTag: "h2",

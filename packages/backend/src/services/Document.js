@@ -1,3 +1,4 @@
+const { encodeFilename, getFileNameAndExtension } = require("../utils/file");
 const logger = require("../utils/logger");
 const poolDoc = require("../utils/pgpoolDoc").getPool();
 const AppError = require("../utils/error");
@@ -72,6 +73,24 @@ module.exports.getFile = async (uuid) => {
   }
 };
 
+// // -- next migration step: read files from S3
+// module.exports.getFile = async (uuid) => {
+//   log.i("IN");
+//   try {
+//     const data = await s3Client.send(
+//       new GetObjectCommand({
+//         Bucket: process.env.S3_BUCKET_NAME,
+//         Key: `${S3_BUCKET_ROOT_DIR}/${uuid}`,
+//       }),
+//     );
+//     log.i("DONE");
+//     return data;
+//   } catch (err) {
+//     log.w(err);
+//     throw new AppError("query.getByUuid failed", { cause: err });
+//   }
+// };
+
 module.exports.getFileMetaData = async (uuid) => {
   log.i("IN");
   try {
@@ -121,30 +140,22 @@ module.exports.getStatic = async (name) => {
   return `${__dirname}/static/${name}`;
 };
 
-async function uploadToS3(
-  filename,
-  category,
-  mimetype,
-  userid,
-  data,
-  uuid = crypto.randomUUID(),
-) {
+async function uploadToS3(filename, category, mimetype, userid, data, uuid) {
   log.i("uploadToS3 - In");
   try {
     log.d("uploadToS3", category, filename);
-    const encodedFilename = filename
-      .normalize("NFD")
-      .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-zA-Z0-9._-]/g, "_");
-    const extension = filename.split(".").pop();
+    const { file, extension } = getFileNameAndExtension(filename);
+    const encodedFilename = encodeFilename(file);
+
     await s3Client.send(
       new PutObjectCommand({
         Body: data,
         Bucket: S3_BUCKET_NAME,
-        Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.${extension}`,
+        Key: `${S3_BUCKET_ROOT_DIR}/${uuid}`,
         Metadata: {
           category,
-          created_at: String(new Date()),
+          created_at: new Date().toISOString(),
+          extension,
           mimetype: mimetype,
           originalname: encodedFilename,
           userid: `${userid}`,
@@ -154,24 +165,6 @@ async function uploadToS3(
     log.i("uploadToS3 - Done");
   } catch (err) {
     log.w(err);
-    throw new AppError("upload failed", { cause: err });
+    throw new AppError("uploadToS3 failed", { cause: err });
   }
 }
-
-// // -- next migration step: read files from S3
-// async function downloadFromS3(uuid) {
-//   log.i("IN");
-//   try {
-//     const data = await s3Client.send(
-//       new GetObjectCommand({
-//         Bucket: process.env.S3_BUCKET_NAME,
-//         Key: `${S3_BUCKET_ROOT_DIR}/${uuid}.pdf`,
-//       }),
-//     );
-//     log.i("DONE");
-//     return data;
-//   } catch (err) {
-//     log.w(err);
-//     throw new AppError("query.getByUuid failed", { cause: err });
-//   }
-// }
