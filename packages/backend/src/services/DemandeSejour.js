@@ -1158,6 +1158,10 @@ module.exports.getByDepartementCodes = async (
     searchQuery.push(`o.personne_morale->>'siret' = $${params.length + 1}`);
     params.push(`${search.siret}`);
   }
+  if (search?.organismeId && !search?.siret && !search?.siren) {
+    searchQuery.push(`o.id = $${params.length + 1}`);
+    params.push(`${search.organismeId}`);
+  }
   if (search?.idFonctionnelle && search.idFonctionnelle.length) {
     searchQuery.push(`id_fonctionnelle ILIKE $${params.length + 1}`);
     params.push(`%${search.idFonctionnelle}%`);
