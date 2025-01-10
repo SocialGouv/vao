@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { organisme } from "#imports";
 
 const InputTypes = {
   RAW: "raw",
@@ -122,11 +121,7 @@ const IPersonneMorale = {
         display: "function",
       },
     ],
-    filter: (tab) =>
-      tab.filter(
-        (e) =>
-          e.etatAdministratif !== organisme.statuEtablissementSecondaire.FERME,
-      ),
+    filter: (tab) => tab.filter((e) => e.enabled === true),
   },
 };
 
