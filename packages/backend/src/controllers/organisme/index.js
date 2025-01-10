@@ -1,5 +1,5 @@
-module.exports.getAll = require("./getAll");
-module.exports.getExtract = require("./getExtract");
+module.exports.getListe = require("./getListe");
+module.exports.getListeExtract = require("./getListeExtract");
 module.exports.getNonAgrees = require("./getNonAgrees");
 module.exports.getByOrganismeId = require("./getByOrganismeId");
 module.exports.getBySiret = require("./getBySiret");

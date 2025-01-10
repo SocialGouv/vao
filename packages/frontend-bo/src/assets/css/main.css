@@ -13,3 +13,7 @@
 .fr-multiselect__collapse {
   z-index: 2!important;
 }
+
+.no-background-image {
+  background-image: none;
+}

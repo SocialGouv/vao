@@ -8,8 +8,8 @@ const checkPermissionOrganisme = require("../middlewares/checkPermissionOrganism
 const checkComingFrom = require("../middlewares/checkComingFrom");
 const organismeController = require("../controllers/organisme");
 
-router.get("/bo/liste", BOcheckJWT, organismeController.getAll);
-router.get("/bo/extract", BOcheckJWT, organismeController.getExtract);
+router.get("/bo/liste", BOcheckJWT, organismeController.getListe);
+router.get("/bo/extract", BOcheckJWT, organismeController.getListeExtract);
 router.get("/bo/nonagrees", BOcheckJWT, organismeController.getNonAgrees);
 router.get(
   "/bo/:organismeId",
