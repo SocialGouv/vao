@@ -310,7 +310,7 @@ const handleCheckboxChange = (event: Event) => {
   color: var(--blue-france-sun-113-625);
 }
 .fr-sort-icon {
-  margin-left: 2rem;
+  margin-left: 1rem;
 }
 
 .fr-table .fr-cell {
