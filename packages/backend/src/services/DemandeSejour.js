@@ -568,32 +568,50 @@ JOIN front.user_organisme uo
 WHERE uo.org_id = $1
 `,
   getExtract: (territoireCode) => `
-SELECT
-  ds.id as id,
-  ds.libelle as libelle,
-  ds.date_debut::text as date_debut,
-  ds.date_fin::text as date_fin,
-  ds.organisme as organisme,
-  ds.responsable_sejour->>'email' as responsable_sejour_email,
-  ds.responsable_sejour->>'telephone' as responsable_sejour_telephone,
-  ds.id_fonctionnelle as reference,
-  ds.statut as statut,
-  ds.created_at as created_at
-FROM front.demande_sejour ds
-JOIN front.organismes o ON o.id = ds.organisme_id
-LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
-WHERE (
-    EXISTS (
-      SELECT
-        1
-      FROM
-        FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
-        LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
-        LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-      WHERE
-        DSTH.DEMANDE_SEJOUR_ID = DS.ID
-        AND A.DEPARTEMENT = ANY ($1)
-    )
+  SELECT
+    ds.id AS id,
+    ds.libelle AS libelle,
+    ds.date_debut::text AS date_debut,
+    ds.date_fin::text AS date_fin,
+    ds.organisme AS organisme,
+    ds.responsable_sejour->>'email' AS responsable_sejour_email,
+    ds.responsable_sejour->>'telephone' AS responsable_sejour_telephone,
+    ds.id_fonctionnelle AS reference,
+    ds.statut AS statut,
+    ds.created_at AS created_at,
+    (
+      SELECT adr.departement
+      FROM FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT dsth
+      LEFT JOIN FRONT.HEBERGEMENT h ON h.id = dsth.hebergement_id
+      LEFT JOIN front.adresse adr ON adr.id = h.adresse_id
+      WHERE dsth.demande_sejour_id = ds.id
+      ORDER BY dsth.date_debut ASC
+      LIMIT 1
+    ) AS departement_instruction,
+    (
+      SELECT reg.code
+      FROM FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT dsth
+      LEFT JOIN FRONT.HEBERGEMENT h ON h.id = dsth.hebergement_id
+      LEFT JOIN front.adresse adr ON adr.id = h.adresse_id
+      LEFT JOIN geo.territoires dep ON dep.code = adr.departement
+      LEFT JOIN geo.territoires reg ON dep.parent_code = reg.code
+      WHERE dsth.demande_sejour_id = ds.id
+      ORDER BY dsth.date_debut ASC
+      LIMIT 1
+    ) AS region_instruction
+  FROM front.demande_sejour ds
+  JOIN front.organismes o ON o.id = ds.organisme_id
+  LEFT JOIN front.agrements a ON a.organisme_id = ds.organisme_id
+  WHERE (
+      EXISTS (
+        SELECT
+          1
+        FROM FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT dsth
+        LEFT JOIN FRONT.HEBERGEMENT h ON h.id = dsth.hebergement_id
+        LEFT JOIN FRONT.ADRESSE a ON a.id = h.adresse_id
+        WHERE dsth.demande_sejour_id = ds.id
+        AND a.departement = ANY ($1)
+      )
   AND statut <> 'BROUILLON'
   OR a.region_obtention = '${territoireCode}')`,
   getHebergementsByDepartementCodes: (
