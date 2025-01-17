@@ -150,9 +150,13 @@ const IPersonnePhysique = {
     inputType: InputTypes.TEXT,
     label: "Prénom",
   },
+  nomNaissance: {
+    inputType: InputTypes.TEXT,
+    label: "Nom de naissance",
+  },
   nomUsage: {
     inputType: InputTypes.TEXT,
-    label: "Nom",
+    label: "Nom d'usage",
   },
   siret: {
     inputType: InputTypes.TEXT,
