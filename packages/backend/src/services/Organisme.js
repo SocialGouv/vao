@@ -5,6 +5,7 @@ const Regions = require("./geo/Region");
 const AppError = require("../utils/error");
 const ValidationAppError = require("../utils/validation-error");
 const logger = require("../utils/logger");
+const { orgType } = require("../helpers/org-type");
 
 const {
   applyFilters,
@@ -16,6 +17,10 @@ const {
 const pool = require("../utils/pgpool").getPool();
 
 const Organisme = require("../schemas/organisme");
+const PersonnePhysique = require("./organisme/PersonnePhysique");
+const PersonneMorale = require("./organisme/PersonneMorale");
+const ProtocoleSanitaire = require("./organisme/ProtocoleSanitaire");
+const ProtocoleTransport = require("./organisme/ProtocoleTransport");
 
 const log = logger(module.filename);
 
@@ -434,10 +439,15 @@ FROM back.organisme_non_agree ona
 module.exports.create = async (type, parametre) => {
   log.i("create - IN", { type });
   const response =
-    type === "personne_morale"
+    type === orgType.PERSONNE_MORALE
       ? await pool.query(query.create, [type, parametre, {}])
       : await pool.query(query.create, [type, {}, parametre]);
   const { organismeId } = response && response.rows[0];
+  const responseNew =
+    type === orgType.PERSONNE_MORALE
+      ? await PersonneMorale.createOrUpdate(organismeId, parametre)
+      : await PersonnePhysique.createOrUpdate(organismeId, parametre);
+  log.d("create - ", { responseNew });
   log.d("create - DONE", { organismeId });
   return organismeId;
 };
@@ -464,7 +474,7 @@ module.exports.update = async (type, parametre, organismeId) => {
   const regions = await Regions.fetch();
 
   switch (type) {
-    case "personne_morale": {
+    case orgType.PERSONNE_MORALE: {
       const complet =
         await Organisme.schema(regions).personneMorale.isValid(parametre);
       response = await pool.query(query.updatePersonne, [
@@ -474,9 +484,10 @@ module.exports.update = async (type, parametre, organismeId) => {
         {},
         complet,
       ]);
+      await PersonneMorale.createOrUpdate(organismeId, parametre);
       break;
     }
-    case "personne_physique": {
+    case orgType.PERSONNE_PHYSIQUE: {
       const complet =
         await Organisme.schema(regions).personnePhysique.isValid(parametre);
       response = await pool.query(query.updatePersonne, [
@@ -486,6 +497,7 @@ module.exports.update = async (type, parametre, organismeId) => {
         parametre,
         complet,
       ]);
+      await PersonnePhysique.createOrUpdate(organismeId, parametre);
       break;
     }
     case "protocole_transport": {
@@ -496,6 +508,7 @@ module.exports.update = async (type, parametre, organismeId) => {
         parametre,
         complet,
       ]);
+      await ProtocoleTransport.createOrUpdate(organismeId, parametre);
       break;
     }
     case "protocole_sanitaire": {
@@ -506,6 +519,7 @@ module.exports.update = async (type, parametre, organismeId) => {
         parametre,
         complet,
       ]);
+      await ProtocoleSanitaire.createOrUpdate(organismeId, parametre);
       break;
     }
     default:
@@ -551,6 +565,23 @@ module.exports.finalize = async function (userId) {
     throw new ValidationAppError(error);
   }
   await pool.query(...query.finalize(organisme));
+  organisme.type === orgType.PERSONNE_MORALE
+    ? await PersonneMorale.createOrUpdate(
+        organisme.organismeId,
+        organisme.personneMorale,
+      )
+    : await PersonnePhysique.createOrUpdate(
+        organisme.organismeId,
+        organisme.personnePhysique,
+      );
+  await ProtocoleTransport.createOrUpdate(
+    organisme.organismeId,
+    organisme.protocoleTransport,
+  );
+  await ProtocoleSanitaire.createOrUpdate(
+    organisme.organismeId,
+    organisme.protocoleSanitaire,
+  );
   log.i("finalize - DONE");
 };
 
