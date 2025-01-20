@@ -94,7 +94,7 @@ fileignoreconfig:
 - filename: e2e/register-login-organisateur.spec.ts
   checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
 - filename: package.json
-  checksum: 8437030cbab7db5734c16f9924b7e25a26b9145414d2bd1c81031d2f9f5558bd
+  checksum: 180654b4eb22710ddeba4331c45b63ed92542e989744f390182a90a563eb8e1b
 - filename: packages/backend/src/config.js
   checksum: c0baf7f4f878d3f3406030471f15c092ed9fc671b1e66276fe9b071ea025b58c
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
@@ -262,7 +262,9 @@ fileignoreconfig:
 - filename: packages/migrations/src/migrations/20240918085236_migrate_files_to_minio.js
   checksum: ce0b678503f6342414ed759fa31ac460060d1efd1daadffb3d7be0bfa049858c
 - filename: packages/migrations/src/scripts/migrate-files-to-s3.js
-  checksum: e22a659aca296659bcd27ea22fd6919938327d3a4ad17eaab229e55724d94dce
+  checksum: 0c60a5a9f3321ab3c36025bdeb35663395586d5bca3d21984fdbe5997b46c6eb
+- filename: packages/migrations/src/scripts/reset-s3.js
+  checksum: 7b52636c4c49bf85a592f649f8fbf653e0203b390f4f9d220fe3ae4da06422a7
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/DsfrMultiSelect.vue

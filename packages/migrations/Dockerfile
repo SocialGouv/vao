@@ -5,6 +5,7 @@ WORKDIR /app
 
 COPY ./package.json ./yarn.lock ./
 COPY packages/migrations/package.json packages/migrations/
+COPY packages/shared/package.json packages/shared/
 RUN yarn workspace @vao/migrations install --frozen-lockfile
 
 #--- Run stage
@@ -17,9 +18,9 @@ ENV NODE_ENV: production
 
 COPY --from=build /app/node_modules node_modules
 COPY package.json yarn.lock ./
-COPY packages/migrations/package.json packages/migrations/yarn.lock packages/migrations/
+COPY packages/migrations/package.json packages/migrations/
 COPY packages/migrations/src packages/migrations/src
 
+COPY packages/shared packages/shared
+
 CMD ["./node_modules/.bin/knex", "--cwd", "packages/migrations/src", "migrate:latest"]
-
-

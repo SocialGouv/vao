@@ -1,4 +1,8 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+const {
+  getFileNameAndExtension,
+  encodeFilename,
+} = require("@vao/shared/src/utils/file.js");
 
 const knex = require("knex")({
   client: "pg",
@@ -32,6 +36,10 @@ const s3Client = new S3Client({
 });
 
 async function main() {
+  console.log("Migrating filename in DB");
+  await updateFilenameInDataBase();
+  console.log("Migrating filename in DB complete");
+
   console.log("Migrating files to S3");
   console.log("S3_BUCKET_NAME", S3_BUCKET_NAME);
   console.log("S3_BUCKET_ROOT_DIR", S3_BUCKET_ROOT_DIR);
@@ -50,18 +58,19 @@ async function main() {
     console.log(
       `Processing row ${rowId} of ${nbRows} ; nbErrors: ${nbErrors} ; uuid=${row.uuid}`,
     );
-    const objectKey = `${S3_BUCKET_ROOT_DIR}/${row.uuid}.pdf`;
+    const objectKey = `${S3_BUCKET_ROOT_DIR}/${row.uuid}`;
 
     try {
-      const reencodedFileName = Buffer.from(row.filename, "latin1").toString(
-        "base64",
-      );
+      const { name, extension } = getFileNameAndExtension(row.filename);
+      const encodedFilename = encodeFilename(name);
 
       const metadata = {
         category: String(row.category),
         created_at: String(row.created_at),
+        extension: extension,
         mimetype: String(row.mime_type),
-        originalname: reencodedFileName,
+        originalname: encodedFilename,
+        userId: String(row.user_id || ""),
       };
 
       await s3Client.send(
@@ -78,8 +87,32 @@ async function main() {
     }
   }
 
-  console.log("Migration complete");
+  console.log("Migrating files to S3 complete");
   process.exit(0);
 }
+
+const updateFilenameInDataBase = async () => {
+  try {
+    const documents = await knex("doc.documents").select("id", "filename");
+
+    for (const doc of documents) {
+      const encodedFilename = encodeFilename(doc.filename);
+
+      await knex("doc.documents")
+        .where({ id: doc.id })
+        .update({ filename: encodedFilename });
+
+      console.log(
+        `Updated ID ${doc.id} with encoded filename: ${encodedFilename}`,
+      );
+    }
+
+    console.log("Update completed.");
+  } catch (error) {
+    console.error("Error updating filenames:", error);
+  } finally {
+    await knex.destroy();
+  }
+};
 
 main();
