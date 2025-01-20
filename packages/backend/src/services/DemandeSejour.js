@@ -1,15 +1,16 @@
 /* eslint-disable no-param-reassign */
 const dayjs = require("dayjs");
 const logger = require("../utils/logger");
-const { applyFilters, applyPagination } = require("../helpers/queryParams");
 const pool = require("../utils/pgpool").getPool();
 const dsStatus = require("../helpers/ds-statuts");
 const {
   getByDSId: getHebergementsByDSIds,
 } = require("./hebergement/Hebergement");
 const {
-  sanityzePaginationParams,
-  sanityzeFiltersParams,
+  sanitizePaginationParams,
+  sanitizeFiltersParams,
+  applyFilters,
+  applyPagination,
 } = require("../helpers/queryParams");
 
 const log = logger(module.filename);
@@ -1049,24 +1050,69 @@ module.exports.cancel = async (declarationId, userId) => {
   return rowCount;
 };
 module.exports.get = async (organismesId, queryParams) => {
-  const titles = {
-    dateDebut: "ds.date_debut",
-    dateFin: "ds.date_fin",
-    departementSuivi: "ds.departement_suivi",
-    editedAt: "ds.edited_at",
-    idFonctionnelle: "ds.id_fonctionnelle",
-    libelle: "ds.libelle",
-    periode: "ds.periode",
-    siret: "o.personne_morale->>'siret'",
-    statut: "ds.statut",
-  };
-  const { limit, offset, sortBy, sortDirection } = sanityzePaginationParams(
+  const titles = [
+    {
+      filterEnabled: true,
+      key: "ds.date_debut",
+      queryKey: "dateDebut",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "ds.date_fin",
+      queryKey: "dateFin",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "ds.departement_suivi",
+      queryKey: "departementSuivi",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "ds.edited_at",
+      queryKey: "editedAt",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "ds.id_fonctionnelle",
+      queryKey: "idFonctionnelle",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "ds.libelle",
+      queryKey: "libelle",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "ds.periode",
+      queryKey: "periode",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "o.personne_morale->>'siret'",
+      queryKey: "siret",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "ds.statut",
+      queryKey: "statut",
+      type: "default",
+    },
+  ];
+  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
     queryParams,
     {
       sortBy: titles,
     },
   );
-  const filterParams = sanityzeFiltersParams(queryParams, titles);
+  const filterParams = sanitizeFiltersParams(queryParams, titles);
   const queryGet = query.get();
   const filterQuery = applyFilters(queryGet, [organismesId], filterParams);
   const paginatedQuery = applyPagination(

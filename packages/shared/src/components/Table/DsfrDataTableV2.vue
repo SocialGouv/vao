@@ -96,7 +96,9 @@ defineSlots<
   }
 >();
 
-const getSlotName = (key: NestedKeys<T> | CustomKeys) => `cell:${key}`;
+const getSlotName = (
+  key: NestedKeys<T> | CustomKeys,
+): `cell:${NestedKeys<T> | CustomKeys}` => `cell:${key}`;
 
 const selectedSync = computed({
   get() {

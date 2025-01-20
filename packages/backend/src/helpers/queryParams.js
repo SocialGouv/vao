@@ -1,24 +1,37 @@
 module.exports = {
-  applyFilters: (query = "", initialParams = [], filterParams = {}) => {
-    const params = [...initialParams];
-    if (Object.keys(filterParams).length === 0) {
+  applyFilters: (query, initialParams, filters, groupBy = "") => {
+    if (filters.length === 0) {
+      let newQuery = query;
+      if (groupBy) {
+        newQuery += `\n${groupBy}\n`;
+      }
       return {
         params: initialParams,
-        query: `${query}`,
+        query: newQuery,
       };
     }
-    const filters = Object.entries(filterParams)
-      .map(([key, value], index) => {
-        params.push(value);
-        if (Array.isArray(value)) {
-          return `${key} = ANY($${initialParams.length + index + 1})`;
+    const params = [...initialParams];
+    const filteringQuery = filters
+      .map((filter, index) => {
+        params.push(filter.value);
+        if (filter.type === "default") {
+          if (Array.isArray(filter.value)) {
+            return `${filter.key} = ANY($${initialParams.length + index + 1})`;
+          }
+          return `unaccent(${filter.key}::text) ILIKE '%' ||  unaccent($${initialParams.length + index + 1}) || '%'`;
         }
-        return `unaccent(${key}::text) ILIKE '%' ||  unaccent($${initialParams.length + index + 1}) || '%'`;
+        if (filter.type === "custom") {
+          return filter.query(initialParams.length + index + 1);
+        }
       })
       .join(" AND ");
+    let newQuery = `${query} AND ${filteringQuery}`;
+    if (groupBy) {
+      newQuery += `\n${groupBy}\n`;
+    }
     return {
       params,
-      query: `${query} AND ${filters}`,
+      query: newQuery,
     };
   },
   applyGroupBy: (queryInitial, groupByParams = []) => {
@@ -59,15 +72,25 @@ module.exports = {
       query: paginatedQuery,
     };
   },
-  sanityzeFiltersParams: (queryParams, availableParams) => 
-    Object.entries(availableParams).reduce((acc, [key, value]) => {
-      if (queryParams[key]) {
-        acc[value] = queryParams[key];
+  sanitizeFiltersParams: (queryParams, filters) =>
+    filters.reduce((acc, filter) => {
+      const value = queryParams[filter.queryKey];
+      if (value !== undefined && value !== null) {
+        if (
+          filter.type === "default" &&
+          (typeof value === "string" ||
+            (Array.isArray(value) && value.every((e) => typeof e === "string")))
+        ) {
+          acc.push({ ...filter, value });
+        } else if (filter.type === "custom") {
+          acc.push({ ...filter, value });
+        }
       }
       return acc;
-    }, {}),
-  sanityzePaginationParams: (
+    }, []),
+  sanitizePaginationParams: (
     { sortBy, sortDirection, limit, offset } = {},
+    titles,
     defaultParams = {},
   ) => {
     const defaultSortDirection = ["", "ASC", "DESC"];
@@ -80,14 +103,20 @@ module.exports = {
       offset: isNaN(parseInt(offset, 10))
         ? (defaultParams?.offset ?? defaultOffset)
         : parseInt(offset, 10),
-      sortBy:
-        sortBy &&
-        Object.prototype.hasOwnProperty.call(defaultParams.sortBy, sortBy)
-          ? defaultParams.sortBy[sortBy]
-          : "",
+      sortBy: getSort(sortBy, titles, defaultParams.sortBy),
       sortDirection: defaultSortDirection.includes(sortDirection)
         ? sortDirection
         : "",
     };
   },
+};
+
+const getSort = (sortBy, titles, defaultSort = "") => {
+  if (sortBy) {
+    const title = titles.find((t) => t.queryKey === sortBy && t.filterEnabled);
+    if (title) {
+      return title.key;
+    }
+  }
+  return defaultSort;
 };
