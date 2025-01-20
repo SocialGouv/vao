@@ -11,7 +11,7 @@ module.exports.getFileNameAndExtension = (fileName) => {
 
   if (dotIndex === -1) {
     // Pas d'extension trouvée
-    return { extension: "", fileName };
+    return { extension: "", name };
   }
 
   const name = fileName.slice(0, dotIndex);

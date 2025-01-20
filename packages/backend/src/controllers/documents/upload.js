@@ -1,5 +1,4 @@
 const fs = require("node:fs/promises");
-const { fileTypeFromBuffer } = require("file-type");
 const DocumentService = require("../../services/Document");
 const AppError = require("../../utils/error");
 
@@ -24,7 +23,8 @@ module.exports = async (req, res, next) => {
   try {
     const { path, originalname: filename } = file;
     const fileBuffer = await fs.readFile(path);
-    const fileType = await fileTypeFromBuffer(fileBuffer);
+    const fileTypeLib = await import("file-type");
+    const fileType = await fileTypeLib.fileTypeFromBuffer(fileBuffer);
 
     if (!fileType) {
       log.w("DONE with error: Impossible de déterminer le type de fichier");
@@ -68,6 +68,7 @@ module.exports = async (req, res, next) => {
         }),
       );
     }
+
     const uuid = await DocumentService.createFile(
       filename,
       category,

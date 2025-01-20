@@ -8,7 +8,7 @@ export const getFileNameAndExtension = (fileName) => {
   const dotIndex = fileName.lastIndexOf(".");
 
   if (dotIndex === -1) {
-    return { extension: "", fileName };
+    return { extension: "", name };
   }
 
   const name = fileName.slice(0, dotIndex);

@@ -1,5 +1,8 @@
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
-const { getFileNameAndExtension, encodeFilename } = require("vao/shared");
+const {
+  getFileNameAndExtension,
+  encodeFilename,
+} = require("@vao/shared/src/utils/file.js");
 
 const knex = require("knex")({
   client: "pg",
@@ -58,8 +61,8 @@ async function main() {
     const objectKey = `${S3_BUCKET_ROOT_DIR}/${row.uuid}`;
 
     try {
-      const { filename, extension } = getFileNameAndExtension(row.filename);
-      const encodedFilename = encodeFilename(filename);
+      const { name, extension } = getFileNameAndExtension(row.filename);
+      const encodedFilename = encodeFilename(name);
 
       const metadata = {
         category: String(row.category),

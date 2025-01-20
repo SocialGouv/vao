@@ -2,7 +2,6 @@ const stream = require("stream");
 const DocumentService = require("../../services/Document");
 const AppError = require("../../utils/error");
 const logger = require("../../utils/logger");
-const { decodeFilename } = require("../../utils/file");
 
 const log = logger(module.filename);
 
@@ -28,8 +27,7 @@ module.exports = async (req, res, next) => {
     const file = await DocumentService.getFile(uuid);
     const readStream = new stream.PassThrough();
     readStream.end(file.file);
-    const filename = decodeFilename(metaData.name);
-    res.set("Content-disposition", `attachment; filename=${filename}`);
+    res.set("Content-disposition", `attachment; filename=${metaData.filename}`);
     res.set("Content-Type", "text/plain");
     readStream.pipe(res);
     // // -- next migration step: read files from S3

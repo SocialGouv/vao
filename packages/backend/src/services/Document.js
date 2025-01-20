@@ -144,8 +144,9 @@ async function uploadToS3(filename, category, mimetype, userid, data, uuid) {
   log.i("uploadToS3 - In");
   try {
     log.d("uploadToS3", category, filename);
-    const { file, extension } = getFileNameAndExtension(filename);
-    const encodedFilename = encodeFilename(file);
+    const { name, extension } = getFileNameAndExtension(filename);
+
+    const encodedFilename = encodeFilename(name);
 
     await s3Client.send(
       new PutObjectCommand({
