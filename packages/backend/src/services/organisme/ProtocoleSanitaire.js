@@ -206,8 +206,8 @@ module.exports.createOrUpdate = async (organismeId, parametre) => {
     await client.query(query.removeRAM, [protocoleSanitaireId]);
 
     const responsableAdministrationMedicament =
-      parametre.responsableAdministrationMedicament;
-    if (responsableAdministrationMedicament.length > 0) {
+      parametre.responsableAdministrationMedicament ?? null;
+    if (responsableAdministrationMedicament?.length > 0) {
       await client.query(
         query.associateRAM(responsableAdministrationMedicament.length),
         [protocoleSanitaireId, ...responsableAdministrationMedicament],
@@ -215,8 +215,8 @@ module.exports.createOrUpdate = async (organismeId, parametre) => {
     }
 
     await client.query(query.removeCE, [protocoleSanitaireId]);
-    const constitutionEquipe = parametre.constitutionEquipe;
-    if (constitutionEquipe.length > 0) {
+    const constitutionEquipe = parametre.constitutionEquipe ?? null;
+    if (constitutionEquipe?.length > 0) {
       await client.query(query.associateCE(constitutionEquipe.length), [
         protocoleSanitaireId,
         ...constitutionEquipe,

@@ -5,7 +5,7 @@ const Regions = require("./geo/Region");
 const AppError = require("../utils/error");
 const ValidationAppError = require("../utils/validation-error");
 const logger = require("../utils/logger");
-const { orgType } = require("../helpers/org-type");
+const { partOrganisme } = require("../helpers/org-part");
 
 const {
   applyFilters,
@@ -439,12 +439,12 @@ FROM back.organisme_non_agree ona
 module.exports.create = async (type, parametre) => {
   log.i("create - IN", { type });
   const response =
-    type === orgType.PERSONNE_MORALE
+    type === partOrganisme.PERSONNE_MORALE
       ? await pool.query(query.create, [type, parametre, {}])
       : await pool.query(query.create, [type, {}, parametre]);
   const { organismeId } = response && response.rows[0];
   const responseNew =
-    type === orgType.PERSONNE_MORALE
+    type === partOrganisme.PERSONNE_MORALE
       ? await PersonneMorale.createOrUpdate(organismeId, parametre)
       : await PersonnePhysique.createOrUpdate(organismeId, parametre);
   log.d("create - ", { responseNew });
@@ -474,7 +474,7 @@ module.exports.update = async (type, parametre, organismeId) => {
   const regions = await Regions.fetch();
 
   switch (type) {
-    case orgType.PERSONNE_MORALE: {
+    case partOrganisme.PERSONNE_MORALE: {
       const complet =
         await Organisme.schema(regions).personneMorale.isValid(parametre);
       response = await pool.query(query.updatePersonne, [
@@ -487,7 +487,7 @@ module.exports.update = async (type, parametre, organismeId) => {
       await PersonneMorale.createOrUpdate(organismeId, parametre);
       break;
     }
-    case orgType.PERSONNE_PHYSIQUE: {
+    case partOrganisme.PERSONNE_PHYSIQUE: {
       const complet =
         await Organisme.schema(regions).personnePhysique.isValid(parametre);
       response = await pool.query(query.updatePersonne, [
@@ -500,7 +500,7 @@ module.exports.update = async (type, parametre, organismeId) => {
       await PersonnePhysique.createOrUpdate(organismeId, parametre);
       break;
     }
-    case "protocole_transport": {
+    case partOrganisme.PROTOCOLE_TRANSPORT: {
       const complet =
         await Organisme.schema(regions).protocoleTransport.isValid(parametre);
       response = await pool.query(query.updateTransport, [
@@ -511,7 +511,7 @@ module.exports.update = async (type, parametre, organismeId) => {
       await ProtocoleTransport.createOrUpdate(organismeId, parametre);
       break;
     }
-    case "protocole_sanitaire": {
+    case partOrganisme.PROTOCOLE_SANITAIRE: {
       const complet =
         await Organisme.schema(regions).protocoleSanitaire.isValid(parametre);
       response = await pool.query(query.updateSanitaire, [
@@ -565,7 +565,7 @@ module.exports.finalize = async function (userId) {
     throw new ValidationAppError(error);
   }
   await pool.query(...query.finalize(organisme));
-  organisme.type === orgType.PERSONNE_MORALE
+  organisme.type === partOrganisme.PERSONNE_MORALE
     ? await PersonneMorale.createOrUpdate(
         organisme.organismeId,
         organisme.personneMorale,
