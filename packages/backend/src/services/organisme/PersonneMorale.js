@@ -53,9 +53,16 @@ const query = {
       resp_sejour_adresse_lat,
       resp_sejour_adresse_departement,
       resp_sejour_fonction,
-      resp_sejour_telephone
+      resp_sejour_telephone,
+      etab_principal_siret,
+      etab_principal_adresse,
+      etab_principal_telephone,
+      etab_principal_nom_commercial,
+      etab_principal_raison_sociale,
+      etab_principal_pays,
+      etab_principal_email
     )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31)
     RETURNING
       id as "personneMoraleId"
     ;
@@ -169,7 +176,7 @@ module.exports.createOrUpdate = async (organismeId, parametre) => {
         ? await create(client, organismeId, parametre)
         : personneMorale[0].id;
 
-    await pool.query(query.update, [
+    await client.query(query.update, [
       organismeId,
       parametre?.pays ?? null,
       parametre?.email ?? null,

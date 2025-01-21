@@ -121,18 +121,17 @@ module.exports.createOrUpdate = async (organismeId, parametre) => {
     ]);
 
     await client.query(query.removePTM, [protocoleTransportId]);
-    const modeTransport = parametre.modeTransport;
-    if (modeTransport.length > 0) {
+    const modeTransport = parametre.modeTransport ?? null;
+    if (modeTransport?.length > 0) {
       await client.query(query.associatePTM(modeTransport.length), [
         protocoleTransportId,
         ...modeTransport,
       ]);
     }
-
     await client.query(query.removePTR, [protocoleTransportId]);
     const responsableTransportLieuSejour =
-      parametre.responsableTransportLieuSejour;
-    if (responsableTransportLieuSejour.length > 0) {
+      parametre.responsableTransportLieuSejour ?? null;
+    if (responsableTransportLieuSejour?.length > 0) {
       await client.query(
         query.associatePTR(responsableTransportLieuSejour.length),
         [protocoleTransportId, ...responsableTransportLieuSejour],
