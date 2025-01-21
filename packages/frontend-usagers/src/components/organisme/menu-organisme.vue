@@ -9,11 +9,13 @@
 
 <script setup>
 const props = defineProps({
-  activeId: { type: String, default: organismeMenus[0].id, required: false },
+  activeId: { type: String, default: "info-generales", required: false },
   organisme: { type: Object, required: true },
 });
 
-const menus = organismeMenus.map((menu) => {
+const organismeStore = useOrganismeStore();
+
+const menus = organismeMenus.menus(organismeStore.isSiegeSocial).map((menu) => {
   return {
     ...menu,
     to: { hash: "#" + menu.id },
@@ -24,9 +26,26 @@ const sommaireOptionsToDisplay = computed(() => {
   if (!props.organisme.organismeId) {
     return [{ ...menus[0], active: true }];
   } else {
-    return menus.map((s) => {
-      return { ...s, active: s.id === props.activeId };
-    });
+    return menus.reduce((accMenus, currentMenu) => {
+      if (currentMenu.id !== "etablissement-secondaires") {
+        accMenus.push({
+          ...currentMenu,
+          active: currentMenu.id === props.activeId,
+        });
+      } else {
+        if (
+          props.organisme.personneMorale.siegeSocial &&
+          props.organisme.typeOrganisme === "personne_morale"
+        ) {
+          accMenus.push({
+            ...currentMenu,
+            active: currentMenu.id === props.activeId,
+          });
+        }
+      }
+
+      return accMenus;
+    }, []);
   }
 });
 </script>

@@ -212,94 +212,6 @@
           </Personnes>
         </div>
       </div>
-      <DsfrFieldset v-if="siegeSocial">
-        <div class="fr-fieldset">
-          <div
-            class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
-          >
-            <div class="fr-input-group">
-              <DsfrInputGroup
-                v-model="etablissementFilter.siret"
-                type="text"
-                name="siret"
-                label="SIRET"
-                placeholder="SIRET"
-                :label-visible="true"
-              />
-            </div>
-          </div>
-          <div
-            class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
-          >
-            <div class="fr-input-group">
-              <DsfrInputGroup
-                v-model="etablissementFilter.denomination"
-                type="text"
-                name="denomination"
-                label="Dénomination"
-                placeholder="Dénomination"
-                :label-visible="true"
-              />
-            </div>
-          </div>
-          <div
-            class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
-          >
-            <div class="fr-input-group">
-              <DsfrInputGroup
-                v-model="etablissementFilter.commune"
-                type="text"
-                name="commune"
-                label="Commune"
-                placeholder="Commune"
-                :label-visible="true"
-              />
-            </div>
-          </div>
-          <div
-            class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3"
-          >
-            <div class="fr-input-group">
-              <DsfrSelect
-                v-model="etablissementFilter.autorisation"
-                label="Statut"
-                name="Statut"
-                :options="[
-                  'Tous',
-                  'En activité',
-                  'Autorisés à organiser des séjours',
-                  'Fermés',
-                ]"
-              />
-            </div>
-          </div>
-        </div>
-        <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-12">
-            <DsfrTable
-              :title="`Etablissements secondaires (${etablissements.length}) dont ${openedEtablissements.length} autorisé(s) à organiser des séjours et ${authorizedEtablissements.length} activé(s)`"
-              :headers="[
-                'SIRET',
-                'Dénomination',
-                'Adresse',
-                'Code postal',
-                'Commune',
-                'Autorisé à organiser des séjours ?',
-              ]"
-              :rows="formatedEtablissements"
-              :results-displayed="10"
-              pagination
-            />
-          </div>
-          <DsfrButton
-            id="refresh-etablissement-sec"
-            size="sm"
-            :secondary="true"
-            @click.prevent="refreshEtablissmentsSecondaires"
-            >Rafraichir la liste des établissements secondaires
-          </DsfrButton>
-        </div>
-      </DsfrFieldset>
       <DsfrFieldset
         v-if="props.showResponsableSejour"
         legend="Responsable de l'organisation du séjour"
@@ -353,7 +265,6 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading } from "@vao/shared";
-import { DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
 import dayjs from "dayjs";
 
 const toaster = useToaster();
@@ -403,13 +314,6 @@ const usersWithSiret = computed(() =>
   ]),
 );
 
-const etablissementFilter = ref({
-  siret: "",
-  denomination: "",
-  commune: "",
-  autorisation: "Autorisés à organiser des séjours",
-});
-
 const initialValues = {
   siret: null,
   siren: null,
@@ -423,7 +327,6 @@ const initialValues = {
   email: null,
   telephone: null,
   representantsLegaux: [],
-  etablissements: [],
   responsableSejour: {},
   etablissementPrincipal: {},
   ...props.initData,
@@ -476,7 +379,6 @@ const {
   value: representantsLegaux,
   handleChange: onRepresentantsLegauxChange,
 } = useField("representantsLegaux");
-const { value: etablissements } = useField("etablissements");
 const { value: etablissementPrincipal } = useField("etablissementPrincipal");
 const { value: responsableSejour, handleChange: onResponsableSejourChange } =
   useField("responsableSejour");
@@ -506,88 +408,6 @@ const formatedSiret = computed(() => {
   return formatedSiret;
 });
 
-const formatedEtablissements = computed(() => {
-  return (
-    etablissements.value
-      .filter((e) => {
-        // filtering conditions
-        const elements = [
-          () => (!props.modifiable ? e.enabled : e),
-          () => new RegExp(etablissementFilter.value.siret, "i").test(e.siret),
-          () =>
-            new RegExp(etablissementFilter.value.denomination, "i").test(
-              e.denomination,
-            ),
-          () =>
-            new RegExp(etablissementFilter.value.commune, "i").test(e.commune),
-          () => {
-            if (etablissementFilter.value.autorisation === "Tous") return true;
-            if (
-              (etablissementFilter.value.autorisation === "En activité" &&
-                e.enabled) ||
-              (etablissementFilter.value.autorisation === "Fermés" &&
-                !e.enabled) ||
-              (etablissementFilter.value.autorisation ===
-                "Autorisés à organiser des séjours" &&
-                e.etatAdministratif === "En activité")
-            )
-              return true;
-            return false;
-          },
-        ];
-        return elements.every((cb) => cb());
-      })
-      // sry
-      .map((e) => [
-        {
-          component: "span",
-          class: e.etatAdministratif === "En activité" ? "" : "cell--disabled",
-          text: e.siret ?? "",
-        },
-        {
-          component: "span",
-          class: e.etatAdministratif === "En activité" ? "" : "cell--disabled",
-          text: e.denomination ?? "",
-        },
-        {
-          component: "span",
-          class: e.etatAdministratif === "En activité" ? "" : "cell--disabled",
-          text: e.adresse ?? "",
-        },
-        {
-          component: "span",
-          class: e.etatAdministratif === "En activité" ? "" : "cell--disabled",
-          text: e.codePostal ?? "",
-        },
-        {
-          component: "span",
-          class: e.etatAdministratif === "En activité" ? "" : "cell--disabled",
-          text: e.commune ?? "",
-        },
-        {
-          component: DsfrToggleSwitch,
-          modelValue: e.enabled,
-          inactiveText:
-            e.etatAdministratif === "En activité" ? "Désactivé" : "Fermé",
-          disabled:
-            !props.modifiable ||
-            (!e.enabled && !(e.etatAdministratif === "En activité")),
-          onChange: () => {
-            e.enabled = !e.enabled;
-          },
-        },
-      ])
-  );
-});
-
-const openedEtablissements = computed(() =>
-  etablissements.value.filter((e) => e.etatAdministratif === "En activité"),
-);
-
-const authorizedEtablissements = computed(() =>
-  etablissements.value.filter((e) => e.enabled),
-);
-
 function trimSiret(s) {
   return onSiretChange(s.replace(/ /g, ""));
 }
@@ -596,16 +416,11 @@ async function searchApiInsee() {
   log.i("searchApiInsee - IN");
   const url = `/siret/${siret.value}`;
   try {
-    const {
-      uniteLegale,
-      etablissements,
-      representantsLegaux,
-      nomCommercial,
-      siege,
-    } = await $fetchBackend(url, {
-      method: "GET",
-      credentials: "include",
-    });
+    const { uniteLegale, representantsLegaux, nomCommercial, siege } =
+      await $fetchBackend(url, {
+        method: "GET",
+        credentials: "include",
+      });
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
 
@@ -639,7 +454,6 @@ async function searchApiInsee() {
         uniteLegale.adresseEtablissement.libellePaysEtrangerEtablissement ??
         "France",
       representantsLegaux: representantsLegaux ?? [],
-      etablissements: etablissements ?? [],
       etablissementPrincipal,
     });
   } catch (error) {
@@ -658,7 +472,6 @@ async function searchApiInsee() {
       adresse: null,
       pays: null,
       representantsLegaux: [],
-      etablissements: [],
       etablissementPrincipal: {},
     });
   }
@@ -714,7 +527,6 @@ async function searchOrganisme() {
         adresse: null,
         pays: null,
         representantsLegaux: [],
-        etablissements: [],
         etablissementPrincipal: {},
       });
       return false;
@@ -734,7 +546,6 @@ async function searchOrganisme() {
         adresse: null,
         pays: null,
         representantsLegaux: [],
-        etablissements: [],
         etablissementPrincipal: {},
       });
       return false;
@@ -743,36 +554,6 @@ async function searchOrganisme() {
       toaster.success({ titleTag: "h2", description: "Données récupérées" });
     randomId.value = random.getRandomId();
     keyRepresentantLegaux.value += 1;
-  }
-}
-
-async function refreshEtablissmentsSecondaires() {
-  log.i("searchOrganismeBySiret - IN");
-  const url = `/siret/${siret.value}`;
-  try {
-    const data = await $fetchBackend(url, {
-      method: "GET",
-      credentials: "include",
-    });
-    const newList = [];
-    for (const etablissement of data.etablissements) {
-      newList.push({
-        ...etablissement,
-        enabled:
-          etablissements.value?.find((e) => e.siret === etablissement.siret)
-            ?.enabled ?? false,
-      });
-    }
-
-    etablissements.value = newList;
-  } catch (error) {
-    toaster.error({
-      titleTag: "h2",
-      description:
-        "erreur lors du rafraichissment des établissements secondaires",
-    });
-    log.w("searchOrganismeBySiret - erreur:", { error });
-    return null;
   }
 }
 

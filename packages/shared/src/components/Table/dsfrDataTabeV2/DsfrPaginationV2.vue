@@ -34,7 +34,7 @@
               title="Première page"
               :aria-disabled="offset === 0"
               role="link"
-              href="#"
+              :href="route.hash ? route.hash : '#'"
               @click="offset === 0 ? null : goToPage(1)"
             >
               Première page
@@ -46,7 +46,7 @@
               title="Précédente"
               :aria-disabled="offset === 0"
               role="link"
-              href="#"
+              :href="route.hash ? route.hash : '#'"
               @click="offset === 0 ? null : goToPage(currentPage - 1)"
             >
               Précédente
@@ -59,7 +59,7 @@
               :aria-current="page === currentPage ? 'page' : undefined"
               :title="`Page ${page}`"
               aria-disabled="false"
-              href="#"
+              :href="route.hash ? route.hash : '#'"
               @click="page === currentPage ? null : goToPage(page)"
             >
               {{ page }}
@@ -70,7 +70,7 @@
               class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label"
               title="Suivante"
               :aria-disabled="props.offset + props.limit >= total"
-              href="#"
+              :href="route.hash ? route.hash : '#'"
               @click="
                 props.offset + props.limit >= total
                   ? null
@@ -85,7 +85,7 @@
               class="fr-pagination__link fr-pagination__link--last"
               title="Dernière page"
               :aria-disabled="props.offset + props.limit >= total"
-              href="#"
+              :href="route.hash ? route.hash : '#'"
               @click="
                 props.offset + props.limit >= total
                   ? null
@@ -106,6 +106,8 @@
 
 <script lang="ts" setup>
 import { computed } from "vue";
+
+const route = useRoute();
 
 const props = withDefaults(
   defineProps<{
