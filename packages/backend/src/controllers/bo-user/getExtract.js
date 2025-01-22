@@ -22,7 +22,7 @@ module.exports = async function getExtract(req, res, next) {
   res.setHeader("Content-Disposition", 'attachment; filename="data.csv"');
 
   try {
-    const result = await BoUser.read({}, "FRA");
+    const result = await BoUser.getListe({}, req.decoded.territoireCode);
 
     const titles = [
       { key: "nom", label: "Nom" },
