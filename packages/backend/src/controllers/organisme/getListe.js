@@ -7,7 +7,7 @@ const log = logger(module.filename);
 module.exports = async function get(req, res, next) {
   log.i("IN");
   try {
-    const organismes = await Organisme.getliste(req.query);
+    const organismes = await Organisme.getListe(req.query);
     log.d(organismes);
     return res.status(200).json(organismes);
   } catch (error) {
