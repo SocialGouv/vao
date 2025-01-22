@@ -67,6 +67,8 @@ import {
   DemandeStatusBadge,
   DsfrDataTableV2Wrapper,
   ValidationModal,
+  usePagination,
+  isValidParams,
 } from "@vao/shared";
 import dayjs from "dayjs";
 
@@ -153,17 +155,11 @@ const status = ref(
         .filter((statut) => Object.values(defaultStatus).includes(statut))
     : [],
 );
-const limit = ref(parseInt(query.limit, 10) || 10);
-const offset = ref(parseInt(query.offset, 10) || 0);
-const sort = ref(sortableTitles.includes(query.sort) ? query.sort : "");
-const sortDirection = ref(
-  ["", "asc", "desc"].includes(query.sortDirection) ? query.sortDirection : "",
-);
 
-const isValidParams = (params) =>
-  params !== null &&
-  params !== "" &&
-  (!Array.isArray(params) || params.length > 0);
+const { limit, offset, sort, sortDirection } = usePagination(
+  query,
+  sortableTitles,
+);
 
 const getSearchParams = () => ({
   ...(isValidParams(idFonctionnelle.value)
