@@ -11,54 +11,7 @@
         <h1>Lieux d'hébergements déclarés</h1>
       </div>
     </div>
-    <template v-if="hebergementStore.hebergements.length">
-      <div class="fr-grid-row">
-        <div class="fr-col">
-          <form>
-            <div class="fr-fieldset">
-              <div
-                class="fr-fieldset__element fr-fieldset__element--inline fr-col fr-col-lg-6"
-              >
-                <div class="fr-input-group">
-                  <DsfrInputGroup
-                    v-model="search.nom"
-                    type="text"
-                    name="nom"
-                    label="Nom du lieu d'hébergement"
-                    :label-visible="true"
-                  />
-                </div>
-              </div>
-              <div
-                class="fr-fieldset__element fr-fieldset__element--inline fr-col fr-col-lg-6"
-              >
-                <div class="fr-input-group">
-                  <DsfrInputGroup
-                    v-model="search.adresse"
-                    type="text"
-                    name="adresse"
-                    label="Adresse"
-                    :label-visible="true"
-                  />
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-      <div class="fr-grid-row">
-        <div class="fr-col">
-          <TableFull
-            :headers="headers"
-            title="Hébergements"
-            :data="hebergementStore.hebergements"
-            :search="search"
-            @click-row="navigate"
-          />
-        </div>
-      </div>
-    </template>
-    <p v-else>Aucun hébergement déclaré actuellement</p>
+    <HebergementsListe />
     <div class="fr-grid-row">
       <div class="fr-col">
         <form>
@@ -76,11 +29,6 @@
 </template>
 
 <script setup>
-import { hebergement as hebergementUtils, TableFull } from "@vao/shared";
-
-const hebergementStore = useHebergementStore();
-hebergementStore.fetch();
-
 useHead({
   title: "Mes hébergements | Vacances Adaptées Organisées",
   meta: [
@@ -99,54 +47,4 @@ const links = [
     text: "Mes hébergements",
   },
 ];
-
-const search = reactive({
-  nom: null,
-  departement: null,
-  adresse: null,
-});
-
-const DsfrBadge = resolveComponent("DsfrBadge");
-const headers = [
-  {
-    column: "nom",
-    text: "Nom",
-    sort: true,
-  },
-  {
-    format: (hebergement) =>
-      geo.departements[hebergement.departement] ?? hebergement.departement,
-    text: "Département",
-    sorter: "departement",
-  },
-  {
-    column: "adresse",
-    text: "Adresse",
-    sort: true,
-  },
-  {
-    column: "statut",
-    text: "Statut",
-    format: ({ statut }) => {
-      return {
-        component: DsfrBadge,
-        label: statut,
-        noIcon: true,
-        type:
-          statut === hebergementUtils.statut.ACTIF
-            ? "success"
-            : statut === hebergementUtils.statut.BROUILLON
-              ? "info"
-              : "error",
-      };
-    },
-  },
-];
-const navigate = (hebergement) => navigateTo(`/hebergements/${hebergement.id}`);
 </script>
-
-<style scoped>
-.header {
-  padding: 1em 0em;
-}
-</style>

@@ -5,6 +5,14 @@ const {
   getById: getAdressById,
   getByIds: getAdressByIds,
 } = require("../adresse");
+
+const {
+  applyFilters,
+  applyPagination,
+  sanitizePaginationParams,
+  sanitizeFiltersParams,
+} = require("../../helpers/queryParams");
+
 const {
   queryGetFields,
   mapDBHebergement,
@@ -26,11 +34,6 @@ ${new Array(nbRows)
       `($1, (SELECT ID FROM FRONT.HEBERGEMENT_PRESTATIONS_HOTELIERES WHERE VALUE = $${index + 2}))`,
   )
   .join(",")}
-  `,
-  removePrestationsHoteliere: `
-  DELETE FROM front.hebergement_to_prestations_hotelieres
-  WHERE
-    hebergement_id = $1;
   `,
   create: `
     INSERT INTO front.hebergement(
@@ -121,48 +124,6 @@ ${new Array(nbRows)
     )
     RETURNING id
     `,
-  update: `
-  UPDATE front.hebergement
-  SET
-    edited_by = $2,
-    edited_at = NOW(),
-    nom = $3,
-    coordonnees = $4,
-    informations_locaux = $5,
-    informations_transport = $6,
-    email = $7,
-    adresse_id = $8,
-    telephone_1 = $9,
-    telephone_2 = $10,
-    nom_gestionnaire = $11,
-    type_id = (SELECT id FROM front.hebergement_type WHERE value = $12),
-    type_pension_id = (SELECT id FROM front.hebergement_type_pension WHERE value = $13),
-    nombre_lits = $14,
-    lit_dessus = $15,
-    nombre_lits_superposes = $16,
-    nombre_max_personnes_couchage = $17,
-    visite_locaux = $18,
-    accessibilite_id = (SELECT id FROM front.hebergement_accessibilite WHERE value = $19),
-    chambres_doubles = $20,
-    chambres_unisexes = $21,
-    reglementation_erp = $22,
-    couchage_individuel = $23,
-    rangement_individuel = $24,
-    amenagements_specifiques = $25,
-    description_lieu_hebergement = $26,
-    excursion_description = $27,
-    deplacement_proximite_description = $28,
-    vehicules_adaptes = $29,
-    file_reponse_exploitant_ou_proprietaire = $30,
-    file_dernier_arrete_autorisation_maire = $31,
-    file_derniere_attestation_securite = $32,
-    visite_locaux_at = $33,
-    accessibilite_precision = $34,
-    amenagements_specifiques_precision = $35,
-    statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $36)
-  WHERE
-    id = $1
-  `,
   getByDSId: `
     SELECT
         ID as "hebergementId",
@@ -255,19 +216,32 @@ ${new Array(nbRows)
     LEFT JOIN front.hebergement_statut hs on hs.id = h.statut_id
     WHERE o.personne_morale->>'siren' = $1
     `,
-  getByUserId: `
-    SELECT
-      h.id as "id",
-      nom as "nom",
-      a.label as "adresse",
-      a.departement as "departement",
-      hs.value as "statut"
-    FROM front.hebergement h
-    LEFT JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
-    LEFT JOIN front.adresse a ON a.id = h.adresse_id
-    LEFT JOIN front.hebergement_statut hs on hs.id = h.statut_id
-    WHERE uo.use_id = $1
-      AND CURRENT IS TRUE
+  getListe: () => `
+    WITH stat AS (
+      SELECT id,
+            COUNT(id)::INTEGER AS "hebergementCount"
+      FROM front.hebergement
+      GROUP BY id
+    ),
+    agrement_data AS (
+      SELECT
+        h.id as "herbergementId"
+      FROM front.hebergement h
+    )
+      SELECT
+        h.id as "hebergementId",
+        nom as "nom",
+        a.label as "adresse",
+        a.departement as "departement",
+        hs.value as "statut",
+        uo.use_id
+      FROM front.hebergement h
+		LEFT JOIN stat ON stat.id = h.id
+    	LEFT JOIN agrement_data ad ON ad."herbergementId" = h.id
+      LEFT JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
+      LEFT JOIN front.adresse a ON a.id = h.adresse_id
+      LEFT JOIN front.hebergement_statut hs on hs.id = h.statut_id
+      WHERE CURRENT IS TRUE
     `,
   getPreviousValueForHistory: `
   SELECT
@@ -283,10 +257,53 @@ ${new Array(nbRows)
   WHERE
     h.id = $1;
   `,
-  historize: `
-    UPDATE front.hebergement
-    SET current = FALSE
-    WHERE id = $1
+  removePrestationsHoteliere: `
+  DELETE FROM front.hebergement_to_prestations_hotelieres
+  WHERE
+    hebergement_id = $1;
+  `,
+
+  update: `
+  UPDATE front.hebergement
+  SET
+    edited_by = $2,
+    edited_at = NOW(),
+    nom = $3,
+    coordonnees = $4,
+    informations_locaux = $5,
+    informations_transport = $6,
+    email = $7,
+    adresse_id = $8,
+    telephone_1 = $9,
+    telephone_2 = $10,
+    nom_gestionnaire = $11,
+    type_id = (SELECT id FROM front.hebergement_type WHERE value = $12),
+    type_pension_id = (SELECT id FROM front.hebergement_type_pension WHERE value = $13),
+    nombre_lits = $14,
+    lit_dessus = $15,
+    nombre_lits_superposes = $16,
+    nombre_max_personnes_couchage = $17,
+    visite_locaux = $18,
+    accessibilite_id = (SELECT id FROM front.hebergement_accessibilite WHERE value = $19),
+    chambres_doubles = $20,
+    chambres_unisexes = $21,
+    reglementation_erp = $22,
+    couchage_individuel = $23,
+    rangement_individuel = $24,
+    amenagements_specifiques = $25,
+    description_lieu_hebergement = $26,
+    excursion_description = $27,
+    deplacement_proximite_description = $28,
+    vehicules_adaptes = $29,
+    file_reponse_exploitant_ou_proprietaire = $30,
+    file_dernier_arrete_autorisation_maire = $31,
+    file_derniere_attestation_securite = $32,
+    visite_locaux_at = $33,
+    accessibilite_precision = $34,
+    amenagements_specifiques_precision = $35,
+    statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $36)
+  WHERE
+    id = $1
   `,
   getStatut: `
     SELECT
@@ -296,6 +313,11 @@ ${new Array(nbRows)
       LEFT JOIN front.hebergement_statut hs ON h.statut_id = hs.id
     WHERE
       h.id = $1
+  `,
+  historize: `
+    UPDATE front.hebergement
+    SET current = FALSE
+    WHERE id = $1
   `,
 };
 
@@ -535,23 +557,54 @@ module.exports.getByDepartementCodes = async (departementsCodes, params) => {
   return rows[0];
 };
 
-module.exports.getByUserId = async (userId, search) => {
+
+module.exports.getByUserId = async (userId, queryParams) => {
   log.i("getByUserId - IN", { userId });
+  const queryParamsWithUserId = { ...queryParams, userId };
 
-  let queryGet = query.getByUserId;
-  const params = [userId];
-  if (search.statut) {
-    queryGet = `
-    ${queryGet}
-    AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $2)
-    `;
-    params.push(search.statut);
-  }
-
-  const response = await pool.query(queryGet, params);
-  log.d("getByUserId - DONE");
-  const hebergements = response.rows;
-  return hebergements;
+  const titles = [
+    {
+      filterEnabled: true,
+      key: "h.nom",
+      queryKey: "nom",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "a.label",
+      queryKey: "adresse",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "uo.use_id",
+      queryKey: "userId",
+      type: "number",
+    },
+  ];
+  const filterParams = sanitizeFiltersParams(queryParamsWithUserId, titles);
+  const queryGet = query.getListe();
+  const filterQuery = applyFilters(queryGet, [], filterParams);
+  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
+    queryParamsWithUserId,
+    titles,
+  );
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  );
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
 };
 
 module.exports.getBySiren = async (siren, search) => {

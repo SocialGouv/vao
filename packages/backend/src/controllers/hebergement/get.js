@@ -28,13 +28,14 @@ module.exports = async function get(req, res) {
           search,
         );
       }
+      return res.status(200).json({ hebergements });
     }
     if (searchByUserId) {
       // Si c'est l'oganisme de l'utilisateur connecté on remonte tous les hébergements de cet utilisateur
-      hebergements = await Hebergement.getByUserId(userId, search);
+      hebergements = await Hebergement.getByUserId(userId, req.query);
+      return res.status(200).json(hebergements);
     }
     log.d(hebergements);
-    return res.status(200).json({ hebergements });
   } catch (error) {
     log.w("DONE with error");
     return res.status(400).json({
