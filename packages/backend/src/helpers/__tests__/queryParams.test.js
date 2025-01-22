@@ -18,17 +18,31 @@ describe("queryParams", () => {
   it("should apply filters to the query", () => {
     const query = "SELECT * FROM users";
     const filters = [
-      { key: "age", type: "default", value: "30" },
+      { key: "age", type: "number", value: 30 },
       { key: "name", type: "default", value: "John" },
+      { key: "steps", type: "number", value: [1, 5, 10] },
+      {
+        key: "enemys",
+        type: "default",
+        value: ["Joe", "Jack", "William", "Averel"],
+      },
     ];
     const result = applyFilters(query, [], filters);
-    expect(result.query.replace(/\s+/g, " ").trim()).toContain(
-      "unaccent(age::text) ILIKE '%' || unaccent($1) || '%'",
-    );
+    expect(result.query.replace(/\s+/g, " ").trim()).toContain("age = $1");
     expect(result.query.replace(/\s+/g, " ").trim()).toContain(
       "unaccent(name::text) ILIKE '%' || unaccent($2) || '%'",
     );
-    expect(result.params).toEqual(["30", "John"]);
+    expect(result.query.replace(/\s+/g, " ").trim()).toContain("steps IN ($3)");
+    expect(result.query.replace(/\s+/g, " ").trim()).toContain(
+      "enemys = ANY($4)",
+    );
+
+    expect(result.params).toEqual([
+      30,
+      "John",
+      [1, 5, 10],
+      ["Joe", "Jack", "William", "Averel"],
+    ]);
   });
 
   it("should apply group by to the query", () => {

@@ -20,6 +20,12 @@ module.exports = {
           }
           return `unaccent(${filter.key}::text) ILIKE '%' ||  unaccent($${initialParams.length + index + 1}) || '%'`;
         }
+        if (filter.type === "number") {
+          if (Array.isArray(filter.value)) {
+            return `${filter.key} IN ($${initialParams.length + index + 1})`;
+          }
+          return `${filter.key} = $${initialParams.length + index + 1}`;
+        }
         if (filter.type === "custom") {
           return filter.query(initialParams.length + index + 1);
         }
@@ -77,9 +83,14 @@ module.exports = {
       const value = queryParams[filter.queryKey];
       if (value !== undefined && value !== null) {
         if (
-          filter.type === "default" &&
-          (typeof value === "string" ||
-            (Array.isArray(value) && value.every((e) => typeof e === "string")))
+          (filter.type === "default" &&
+            (typeof value === "string" ||
+              (Array.isArray(value) &&
+                value.every((e) => typeof e === "string")))) ||
+          (filter.type === "number" &&
+            (typeof value === "number" ||
+              (Array.isArray(value) &&
+                value.every((e) => typeof e === "number"))))
         ) {
           acc.push({ ...filter, value });
         } else if (filter.type === "custom") {

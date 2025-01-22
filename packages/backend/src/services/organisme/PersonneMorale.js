@@ -160,59 +160,55 @@ module.exports.create = async (client, organismeId, parametre) => {
   return response.rows[0].personneMoraleId;
 };
 
-module.exports.createOrUpdate = async (organismeId, parametre) => {
+module.exports.createOrUpdate = async (client, organismeId, parametre) => {
   log.i("createOrUpdate - IN");
 
   const { rows: personneMorale, rowCount } = await pool.query(
     query.getIdByOrganiseId,
     [organismeId],
   );
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
+  const personneMoraleId =
+    rowCount === 0
+      ? await create(client, organismeId, parametre)
+      : personneMorale[0].id;
 
-    const personneMoraleId =
-      rowCount === 0
-        ? await create(client, organismeId, parametre)
-        : personneMorale[0].id;
+  await client.query(query.update, [
+    organismeId,
+    parametre?.pays ?? null,
+    parametre?.email ?? null,
+    parametre?.siren ?? null,
+    parametre?.siret ?? null,
+    parametre?.statut ?? null,
+    parametre?.adresse ?? null,
+    parametre?.telephone ?? null,
+    parametre?.siegeSocial ?? null,
+    parametre?.nomCommercial ?? null,
+    parametre?.raisonSociale ?? null,
+    parametre?.porteurAgrement ?? null,
+    parametre?.responsableSejour?.nom ?? null,
+    parametre?.responsableSejour?.prenom ?? null,
+    parametre?.responsableSejour?.email ?? null,
+    parametre?.responsableSejour?.adresse.label ?? null,
+    parametre?.responsableSejour?.adresse.cleInsee ?? null,
+    parametre?.responsableSejour?.adresse.codeInsee ?? null,
+    parametre?.responsableSejour?.adresse.codePostal ?? null,
+    parametre?.responsableSejour?.adresse?.coordinates?.[0] ?? null,
+    parametre?.responsableSejour?.adresse?.coordinates?.[1] ?? null,
+    parametre?.responsableSejour?.adresse.departement ?? null,
+    parametre?.responsableSejour?.fonction ?? null,
+    parametre?.responsableSejour?.telephone ?? null,
+    parametre?.etablissementPrincipal?.siret ?? null,
+    parametre?.etablissementPrincipal?.adresse ?? null,
+    parametre?.etablissementPrincipal?.telephone ?? null,
+    parametre?.etablissementPrincipal?.nomCommercial ?? null,
+    parametre?.etablissementPrincipal?.raisonSociale ?? null,
+    parametre?.etablissementPrincipal?.pays ?? null,
+    parametre?.etablissementPrincipal?.email ?? null,
+  ]);
 
-    await client.query(query.update, [
-      organismeId,
-      parametre?.pays ?? null,
-      parametre?.email ?? null,
-      parametre?.siren ?? null,
-      parametre?.siret ?? null,
-      parametre?.statut ?? null,
-      parametre?.adresse ?? null,
-      parametre?.telephone ?? null,
-      parametre?.siegeSocial ?? null,
-      parametre?.nomCommercial ?? null,
-      parametre?.raisonSociale ?? null,
-      parametre?.porteurAgrement ?? null,
-      parametre?.responsableSejour?.nom ?? null,
-      parametre?.responsableSejour?.prenom ?? null,
-      parametre?.responsableSejour?.email ?? null,
-      parametre?.responsableSejour?.adresse.label ?? null,
-      parametre?.responsableSejour?.adresse.cleInsee ?? null,
-      parametre?.responsableSejour?.adresse.codeInsee ?? null,
-      parametre?.responsableSejour?.adresse.codePostal ?? null,
-      parametre?.responsableSejour?.adresse?.coordinates?.[0] ?? null,
-      parametre?.responsableSejour?.adresse?.coordinates?.[1] ?? null,
-      parametre?.responsableSejour?.adresse.departement ?? null,
-      parametre?.responsableSejour?.fonction ?? null,
-      parametre?.responsableSejour?.telephone ?? null,
-      parametre?.etablissementPrincipal?.siret ?? null,
-      parametre?.etablissementPrincipal?.adresse ?? null,
-      parametre?.etablissementPrincipal?.telephone ?? null,
-      parametre?.etablissementPrincipal?.nomCommercial ?? null,
-      parametre?.etablissementPrincipal?.raisonSociale ?? null,
-      parametre?.etablissementPrincipal?.pays ?? null,
-      parametre?.etablissementPrincipal?.email ?? null,
-    ]);
-
-    await client.query(query.removeEtablissements, [personneMoraleId]);
-    const etablissements = parametre.etablissements;
-
+  await client.query(query.removeEtablissements, [personneMoraleId]);
+  const etablissements = parametre.etablissements;
+  if (Object.keys(etablissements).length !== 0) {
     const valuesEtablissement = etablissements.flatMap((etablissement) => [
       personneMoraleId,
       etablissement?.nic ?? null,
@@ -236,10 +232,10 @@ module.exports.createOrUpdate = async (organismeId, parametre) => {
       query.associateEtablissement(valuesParamsEtab),
       valuesEtablissement,
     );
-
-    await client.query(query.removeRepresentantsLegaux, [personneMoraleId]);
-    const representantsLegaux = parametre.representantsLegaux;
-
+  }
+  await client.query(query.removeRepresentantsLegaux, [personneMoraleId]);
+  const representantsLegaux = parametre.representantsLegaux;
+  if (Object.keys(representantsLegaux).length !== 0) {
     const valuesRepreLegaux = representantsLegaux.flatMap(
       (representantLegal) => [
         personneMoraleId,
@@ -260,15 +256,7 @@ module.exports.createOrUpdate = async (organismeId, parametre) => {
       query.associateRepresentantsLegaux(valuesParamsRepLegaux),
       valuesRepreLegaux,
     );
-
-    await client.query("COMMIT");
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
   }
-
   log.i("createOrUpdate - DONE");
 };
 

@@ -28,18 +28,16 @@ export const useHebergementStore = defineStore("hebergement", {
         log.i("fetchBySiren - DONE with error");
       }
     },
-    async fetch(search) {
+    async fetch(params) {
       try {
         log.i("fetch - IN");
-        const { hebergements } = await $fetchBackend("/hebergement", {
+        const { rows, total } = await $fetchBackend("/hebergement", {
           credentials: "include",
-          params: {
-            search,
-          },
+          params,
         });
-        if (hebergements) {
-          this.hebergements = hebergements;
-        }
+
+        this.hebergements = rows;
+        this.hebergementsTotal = total;
         log.d("fetch  - DONE");
       } catch (err) {
         this.hebergements = [];
