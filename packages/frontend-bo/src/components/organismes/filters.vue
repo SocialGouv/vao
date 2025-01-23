@@ -30,7 +30,7 @@
       <div class="fr-input-group">
         <DsfrSelect
           v-model="yearObtentionSync"
-          label="Date d’obtention de l’agrément"
+          label="Date agrément"
           name="dateAgrément"
           mode="tags"
           :options="years"
@@ -42,7 +42,7 @@
       <div class="fr-input-group">
         <DsfrSelect
           v-model="regionObtentionSync"
-          label="Région d’obtention de l’agrément"
+          label="Région agrément"
           name="regionObtention"
           mode="tags"
           :options="regions"

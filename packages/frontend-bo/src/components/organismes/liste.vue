@@ -110,21 +110,21 @@ const titles = [
   },
   {
     key: "agrement-regionObtention",
-    label: "Région d'agrément",
+    label: "Région agrément",
     options: {
       isSortable: true,
     },
   },
   {
     key: "agrement-dateObtention",
-    label: "Date d'obtention",
+    label: "Date agrément",
     options: {
       isSortable: true,
     },
   },
   {
     key: "sejourCount",
-    label: "Nombre de séjours",
+    label: "séjours",
     options: {
       isSortable: true,
     },
