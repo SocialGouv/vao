@@ -1,7 +1,5 @@
 const logger = require("../../utils/logger");
 
-const pool = require("../../utils/pgpool").getPool();
-
 const log = logger(module.filename);
 
 const query = {
@@ -155,82 +153,70 @@ module.exports.create = async (client, organismeId, parametre) => {
   return response.rows[0].protocoleSanitaireId;
 };
 
-module.exports.createOrUpdate = async (organismeId, parametre) => {
+module.exports.createOrUpdate = async (client, organismeId, parametre) => {
   log.i("update - IN");
 
-  const { rows: protocoleSanitaire, rowCount } = await pool.query(
+  const { rows: protocoleSanitaire, rowCount } = await client.query(
     query.getIdByOrganiseId,
     [organismeId],
   );
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
 
-    const protocoleSanitaireId =
-      rowCount === 0
-        ? await create(client, organismeId, parametre)
-        : protocoleSanitaire[0].id;
+  const protocoleSanitaireId =
+    rowCount === 0
+      ? await create(client, organismeId, parametre)
+      : protocoleSanitaire[0].id;
 
-    await client.query(query.update, [
-      organismeId,
-      parametre?.accordCabinetMedical ?? null,
-      parametre?.conservationMedicamentThermosensible ?? null,
-      parametre?.dispositionsSpecifiques ?? null,
-      parametre?.ficheSuiviMedicaments ?? null,
-      parametre?.files[0]?.uuid ?? null,
-      parametre?.gestionBudgetPersonnel ?? null,
-      parametre?.individualisationMedicaments ?? null,
-      parametre?.precisionAccordCabinetMedical ?? null,
-      parametre?.precisionConstitutionEquipe ?? null,
-      parametre?.precisionDispositionsSpecifiques ?? null,
-      parametre?.precisionIndividualisationMedicaments ?? null,
-      parametre?.precisionPreparationPilluliers ?? null,
-      parametre?.precisionProtocoleAccident ?? null,
-      parametre?.precisionProtocoleCanicule ?? null,
-      parametre?.precisionProtocoleEvacuation ?? null,
-      parametre?.precisionProtocoleModificationTraitement ?? null,
-      parametre?.precisionProtocoleReorientation ?? null,
-      parametre?.precisionStockageMedicamentSecurise ?? null,
-      parametre?.preparationPilluliers ?? null,
-      parametre?.prescriptionMedicaleJointe ?? null,
-      parametre?.protocoleAccident ?? null,
-      parametre?.protocoleCanicule ?? null,
-      parametre?.protocoleEvacuation ?? null,
-      parametre?.protocoleModificationTraitement ?? null,
-      parametre?.protocoleReorientation ?? null,
-      parametre?.precisionResponsableAdministrationMedicament ?? null,
-      parametre?.stockageMedicamentSecurise ?? null,
-      parametre?.troussePharmacie ?? null,
-    ]);
+  await client.query(query.update, [
+    organismeId,
+    parametre?.accordCabinetMedical ?? null,
+    parametre?.conservationMedicamentThermosensible ?? null,
+    parametre?.dispositionsSpecifiques ?? null,
+    parametre?.ficheSuiviMedicaments ?? null,
+    parametre?.files[0]?.uuid ?? null,
+    parametre?.gestionBudgetPersonnel ?? null,
+    parametre?.individualisationMedicaments ?? null,
+    parametre?.precisionAccordCabinetMedical ?? null,
+    parametre?.precisionConstitutionEquipe ?? null,
+    parametre?.precisionDispositionsSpecifiques ?? null,
+    parametre?.precisionIndividualisationMedicaments ?? null,
+    parametre?.precisionPreparationPilluliers ?? null,
+    parametre?.precisionProtocoleAccident ?? null,
+    parametre?.precisionProtocoleCanicule ?? null,
+    parametre?.precisionProtocoleEvacuation ?? null,
+    parametre?.precisionProtocoleModificationTraitement ?? null,
+    parametre?.precisionProtocoleReorientation ?? null,
+    parametre?.precisionStockageMedicamentSecurise ?? null,
+    parametre?.preparationPilluliers ?? null,
+    parametre?.prescriptionMedicaleJointe ?? null,
+    parametre?.protocoleAccident ?? null,
+    parametre?.protocoleCanicule ?? null,
+    parametre?.protocoleEvacuation ?? null,
+    parametre?.protocoleModificationTraitement ?? null,
+    parametre?.protocoleReorientation ?? null,
+    parametre?.precisionResponsableAdministrationMedicament ?? null,
+    parametre?.stockageMedicamentSecurise ?? null,
+    parametre?.troussePharmacie ?? null,
+  ]);
 
-    await client.query(query.removeRAM, [protocoleSanitaireId]);
+  await client.query(query.removeRAM, [protocoleSanitaireId]);
 
-    const responsableAdministrationMedicament =
-      parametre.responsableAdministrationMedicament ?? null;
-    if (responsableAdministrationMedicament?.length > 0) {
-      await client.query(
-        query.associateRAM(responsableAdministrationMedicament.length),
-        [protocoleSanitaireId, ...responsableAdministrationMedicament],
-      );
-    }
-
-    await client.query(query.removeCE, [protocoleSanitaireId]);
-    const constitutionEquipe = parametre.constitutionEquipe ?? null;
-    if (constitutionEquipe?.length > 0) {
-      await client.query(query.associateCE(constitutionEquipe.length), [
-        protocoleSanitaireId,
-        ...constitutionEquipe,
-      ]);
-    }
-
-    await client.query("COMMIT");
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
+  const responsableAdministrationMedicament =
+    parametre.responsableAdministrationMedicament ?? null;
+  if (responsableAdministrationMedicament?.length > 0) {
+    await client.query(
+      query.associateRAM(responsableAdministrationMedicament.length),
+      [protocoleSanitaireId, ...responsableAdministrationMedicament],
+    );
   }
 
+  await client.query(query.removeCE, [protocoleSanitaireId]);
+  const constitutionEquipe = parametre.constitutionEquipe ?? null;
+  if (constitutionEquipe?.length > 0) {
+    await client.query(query.associateCE(constitutionEquipe.length), [
+      protocoleSanitaireId,
+      ...constitutionEquipe,
+    ]);
+  }
   log.i("update - DONE");
 };
 
