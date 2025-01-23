@@ -1,5 +1,9 @@
 <template>
   <div>
+    <OrganismesWarningNonAgree
+      :libelle="organismeStore.libelle"
+      :date-fin-validite="organismeStore.dateFinValidite"
+    />
     <h4>Organisme</h4>
 
     <DsfrTabs

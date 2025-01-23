@@ -1,5 +1,9 @@
 <template>
   <div>
+    <OrganismesWarningNonAgree
+      :libelle="organismeStore.libelle"
+      :date-fin-validite="organismeStore.dateFinValidite"
+    />
     <DemandesSejourDetails v-if="isCurrentDemandeIsAvailable" />
     <DsfrTabsV2
       v-model="activeTab"
@@ -26,6 +30,7 @@
 
 <script setup>
 import { DsfrTabsV2 } from "@vao/shared";
+
 definePageMeta({
   layout: "default",
   middleware: ["is-connected"],
@@ -34,6 +39,7 @@ definePageMeta({
 
 const route = useRoute();
 const demandeSejourStore = useDemandeSejourStore();
+const organismeStore = useOrganismeStore();
 
 const tabs = [
   {
@@ -91,6 +97,10 @@ const updatePage = (index) => {
 const init = async () => {
   try {
     await demandeSejourStore.getCurrentDemande(route.params.declarationId);
+    const organismeId = demandeSejourStore.currentDemande?.organismeId;
+    if (organismeId) {
+      await organismeStore.getOrganisme(organismeId);
+    }
   } catch (error) {
     navigateTo("/sejours");
     throw error;

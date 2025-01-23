@@ -12,6 +12,13 @@ export const useOrganismeStore = defineStore("organisme", {
   }),
   getters: {
     isConnected: (state) => !!state.user,
+    libelle: (state) =>
+      state.organisme?.personneMorale?.raisonSociale ??
+      `${state.organisme?.personnePhysique?.nomNaissance ?? ""} ${state.organisme?.personnePhysique?.prenom ?? ""}`,
+    dateFinValidite: (state) =>
+      state.organisme?.agrement?.dateFinValidite
+        ? new Date(state.organisme.agrement.dateFinValidite)
+        : null,
   },
   actions: {
     async exportOrganismes() {

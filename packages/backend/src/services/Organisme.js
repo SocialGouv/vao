@@ -82,6 +82,7 @@ const query = {
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
+                'dateFinValidite', date_fin_validite,
                 'file', file,
                 'createdAt', a.created_at
               ) as "agrement"
@@ -96,6 +97,7 @@ const query = {
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
+                'dateFinValidite', date_fin_validite,
                 'file', file,
                 'createdAt', a.created_at
               ) as "agrement"
