@@ -55,7 +55,6 @@ const query = {
       ) AS "nbUsersBo"
     FROM geo.territoires ter
     INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
-    LEFT JOIN back.users usr ON usr.ter_code = ter.code
     WHERE ter.code <> 'FRA'`,
   update: `
       UPDATE back.fiche_territoire
