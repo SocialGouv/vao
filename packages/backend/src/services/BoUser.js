@@ -680,8 +680,6 @@ module.exports.getListe = async (queryParams, territoireCode) => {
     sortBy,
     sortDirection,
   );
-  console.log(paginatedQuery.query);
-  console.log(paginatedQuery.params);
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
     pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
