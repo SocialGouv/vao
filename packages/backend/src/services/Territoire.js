@@ -4,11 +4,10 @@ const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 const {
-  sanityzePaginationParams,
-  sanityzeFiltersParams,
+  sanitizePaginationParams,
+  sanitizeFiltersParams,
   applyFilters,
   applyPagination,
-  applyGroupBy,
 } = require("../helpers/queryParams");
 
 const query = {
@@ -21,14 +20,14 @@ const query = {
     select
         fte.id AS territoire_id,
         CASE (ter.code ~ '[0-9]')
-        	WHEN true THEN 'DEP'
- 			    ELSE 'REG'
+          WHEN true THEN 'DEP'
+          ELSE 'REG'
         END AS type,
         ter.code AS value,
         ter.label AS text,
         ter.parent_code AS parent,
         fte.service_mail AS service_mail,
-        fte.service_telephone AS service_telephone, 
+        fte.service_telephone AS service_telephone,
         fte.corresp_vao_nom AS corresp_vao_nom,
         fte.corresp_vao_prenom AS corresp_vao_prenom,
         fte.edited_at AS edited_at
@@ -37,30 +36,33 @@ const query = {
       WHERE fte.id = $1`,
   select: () =>
     `
-      select
-        fte.id AS "territoireId",
-        CASE (ter.code ~ '[0-9]')
-        	WHEN true THEN 'DEP'
- 			    ELSE 'REG'
-        END AS type,
-        ter.code AS code,
-        ter.label AS label,
-        fte.corresp_vao_prenom AS "correspVaoPrenom",
-        fte.corresp_vao_nom AS "correspVaoNom",
-        fte.service_mail AS "serviceMail",
-        fte.service_telephone AS "serviceTelephone", 
-        COUNT(distinct(usr.id)) as "nbUsersBo"
-      FROM geo.territoires ter
-      INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
-      LEFT JOIN back.users usr ON usr.ter_code = ter.code
-      WHERE ter.code <> 'FRA'`,
+    SELECT
+      fte.id AS "territoireId",
+      CASE (ter.code ~ '[0-9]')
+        WHEN true THEN 'DEP'
+        ELSE 'REG'
+      END AS type,
+      ter.code AS code,
+      ter.label AS label,
+      fte.corresp_vao_prenom AS "correspVaoPrenom",
+      fte.corresp_vao_nom AS "correspVaoNom",
+      fte.service_mail AS "serviceMail",
+      fte.service_telephone AS "serviceTelephone",
+      (
+        SELECT COUNT(DISTINCT usr.id)
+        FROM back.users usr
+        WHERE usr.ter_code = ter.code
+      ) AS "nbUsersBo"
+    FROM geo.territoires ter
+    INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
+    WHERE ter.code <> 'FRA'`,
   update: `
       UPDATE back.fiche_territoire
       SET
         corresp_vao_nom = $2,
         corresp_vao_prenom = $3,
         service_mail = $4,
-        service_telephone = $5, 
+        service_telephone = $5,
         edited_at = NOW()
       WHERE
         id = $1
@@ -69,32 +71,29 @@ const query = {
 };
 
 module.exports.fetch = async (queryParams) => {
-  const titles = {
-    label: "ter.label",
-    code: "ter.code",
-  };
-  const groupBy = [
-    "fte.id",
-    "type",
-    "code",
-    "label",
-    "fte.service_telephone",
-    "fte.corresp_vao_nom",
-    "fte.corresp_vao_prenom",
-    "fte.service_mail",
+  const titles = [
+    {
+      filterEnabled: true,
+      key: "ter.code",
+      queryKey: "code",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "ter.label",
+      queryKey: "label",
+      type: "default",
+    },
   ];
 
-  const { limit, offset, sortBy, sortDirection } = sanityzePaginationParams(
+  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
     queryParams,
-    {
-      sortBy: titles,
-    },
+    titles,
   );
-  const filterParams = sanityzeFiltersParams(queryParams, titles);
+  const filterParams = sanitizeFiltersParams(queryParams, titles);
 
   const queryGet = query.select();
-  const filterQuery = applyFilters(queryGet, [], filterParams, groupBy);
-  filterQuery.query = applyGroupBy(filterQuery.query, groupBy);
+  const filterQuery = applyFilters(queryGet, [], filterParams);
   const paginatedQuery = applyPagination(
     filterQuery.query,
     filterQuery.params,
