@@ -51,7 +51,6 @@
 </template>
 
 <script setup>
-import { NuxtLink } from "#build/components";
 import {
   DsfrDataTableV2Wrapper,
   isValidParams,
