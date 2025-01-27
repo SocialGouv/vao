@@ -101,6 +101,8 @@ import {
   DsfrDataTableV2Wrapper,
   status as statusUtils,
   ValidationModal,
+  isValidParams,
+  usePagination,
 } from "@vao/shared";
 
 const route = useRoute();
@@ -214,17 +216,11 @@ const season = ref(
     ? paramsToArray(query.periode).filter((s) => seasons.includes(s))
     : [],
 );
-const limit = ref(parseInt(query.limit, 10) || 10);
-const offset = ref(parseInt(query.offset, 10) || 0);
-const sort = ref(sortableTitles.includes(query.sort) ? query.sort : "");
-const sortDirection = ref(
-  ["", "asc", "desc"].includes(query.sortDirection) ? query.sortDirection : "",
-);
 
-const isValidParams = (params) =>
-  params !== null &&
-  params !== "" &&
-  (!Array.isArray(params) || params.length > 0);
+const { limit, offset, sort, sortDirection } = usePagination(
+  query,
+  sortableTitles,
+);
 
 const getSearchParams = () => ({
   ...(isValidParams(idFonctionnelle.value)

@@ -116,9 +116,9 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
   checksum: bda4c09e0af6e4c0d6b0976413b29e386148965d5c3f3eaf39fe6d9cba08e3ad
 - filename: packages/backend/src/helpers/__tests__/queryParams.test.js
-  checksum: c136452cdd7ec787cba339a6f0a686b4197de17af349cc2ddeb418df3a8a4ed9
+  checksum: e14945664e13711d468fa39da07ed23f5eddba041fc49566c094717193af3d96
 - filename: packages/backend/src/helpers/queryParams.js
-  checksum: fc600f965eff32890df110ca68ef376abbe0974ea31d03fdd6b7159cd2a35e76
+  checksum: 5c840a9346e912b48660122bb3fd206d4cbedb6f0cb73972724ba95be6f4043b
 - filename: packages/backend/src/pgpool.js
   checksum: 06f9f5367c53fbdf6bf5d2ee9758d3a5302339f9f4d0c42e2c0f0831733097d0
 - filename: packages/backend/src/pgpoolDoc.js
@@ -130,7 +130,7 @@ fileignoreconfig:
 - filename: packages/backend/src/schemas/register.js
   checksum: d56114de12eaab4e9121eaf17ca1760370673c3c1526218896bacaa7daf5cc82
 - filename: packages/backend/src/services/BoUser.js
-  checksum: cb82592388d082e0a2c47ba57074816622f5a6466d3f23fa7292d297f7807414
+  checksum: 90d8297092ecec904d6055564334cc7ffdbd9a74a1e9a985b1f7a17f8f98b126
 - filename: packages/backend/src/services/DemandeSejour.js
   checksum: ef62076c76735fb6430604f4002b5de411a944854852ede45f5bae72ecf827b1
 - filename: packages/backend/src/services/Document.js
@@ -177,6 +177,8 @@ fileignoreconfig:
   checksum: 8efe57bb6843ae4fd02761d8187656cb6b8e3925840200f36858aa175b6aced4
 - filename: packages/frontend-bo/src/components/organismes/liste.vue
   checksum: f207f67500274aa6246124ef19b2ce3d9a12ad7e7efbb412dab20404a39beb73
+- filename: packages/frontend-bo/src/components/user/liste.vue
+  checksum: 3e5ac7759cd2b6af2f72ab8932447585ed179e3a36f8481aaf263320e96ee9ae
 - filename: packages/frontend-bo/src/components/utils/TableFull.vue
   checksum: 74a74e68299d204eac907efee98c2eb3d776ff4c206b304acbca02d058bfbc4e
 - filename: packages/frontend-bo/src/pages/connexion/index.vue

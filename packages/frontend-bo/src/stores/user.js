@@ -39,33 +39,23 @@ export const useUserStore = defineStore("user", {
         this.user = null;
       }
     },
-    async fetchUsers({ limit, offset, sortBy, sortDirection, search } = {}) {
-      log.i("fetchUsers - IN");
+    async fetchUsers(queryParams) {
       try {
-        // Appel du back pour la liste des utilisateurs
-        const { users, total } = await $fetchBackend("/bo-user", {
+        const { rows, total } = await $fetchBackend("/bo-user", {
           credentials: "include",
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          params: {
-            limit,
-            offset,
-            sortBy,
-            sortDirection,
-            search,
-          },
+          params: queryParams,
         });
-        log.d("fetchUsers - réponse", { users, total });
-        this.users = users;
+        this.users = rows;
         this.total = parseInt(total);
-        log.i("fetchUsers - DONE");
       } catch (error) {
         // Retour vide en cas d'erreur
-        this.users = [];
+        this.rows = [];
         this.total = 0;
-        log.w("fetchUsers - Erreur", { error });
+        throw error;
       }
     },
     async fetchUsersTerritoire(territoireCode) {

@@ -123,7 +123,7 @@ describe("queryParams", () => {
       sortBy: "name",
       sortDirection: "ASC",
     };
-    const titles = [{ filterEnabled: true, key: "name", queryKey: "name" }];
+    const titles = [{ key: "name", queryKey: "name", sortEnabled: true }];
     const result = sanitizePaginationParams(queryParams, titles, {
       sortBy: "created_at",
     });
@@ -142,7 +142,7 @@ describe("queryParams", () => {
       sortBy: "invalid",
       sortDirection: "INVALID",
     };
-    const titles = [{ filterEnabled: true, key: "name", queryKey: "name" }];
+    const titles = [{ key: "name", queryKey: "name", sortEnabled: true }];
     const result = sanitizePaginationParams(queryParams, titles, {
       sortBy: "created_at",
     });

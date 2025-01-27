@@ -20,30 +20,42 @@
       {{ row.type === "DEP" ? "Département" : "Région" }}
     </template>
     <template #cell:custom-edit="{ row }">
-      <DsfrButton
-        :label="
-          ['FRA', row.code, row.parent].includes(userStore.user.territoireCode)
-            ? 'Editer la fiche territoire'
-            : 'Consulter la fiche territoire'
-        "
-        :icon="
-          ['FRA', row.code, row.parent].includes(userStore.user.territoireCode)
-            ? 'fr-icon-edit-fill'
-            : 'fr-icon-eye-fill'
-        "
-        icon-only
-        primary
-        size="small"
-        type="button"
-        @click="navigate(row)"
-      />
+      <NuxtLink
+        :to="`/comptes/${row.id}`"
+        title="Naviguer vers le compte"
+        class="no-background-image"
+      >
+        <DsfrButton
+          :label="
+            ['FRA', row.code, row.parent].includes(
+              userStore.user.territoireCode,
+            )
+              ? 'Editer la fiche territoire'
+              : 'Consulter la fiche territoire'
+          "
+          :icon="
+            ['FRA', row.code, row.parent].includes(
+              userStore.user.territoireCode,
+            )
+              ? 'fr-icon-edit-fill'
+              : 'fr-icon-eye-fill'
+          "
+          icon-only
+          primary
+          size="small"
+          type="button"
+        />
+      </NuxtLink>
     </template>
   </DsfrDataTableV2Wrapper>
 </template>
 
 <script setup>
-
-import { DsfrDataTableV2Wrapper } from "@vao/shared";
+import {
+  DsfrDataTableV2Wrapper,
+  isValidParams,
+  usePagination,
+} from "@vao/shared";
 
 const territoireStore = useTerritoireStore();
 const userStore = useUserStore();
@@ -116,18 +128,11 @@ const sortableTitles = titles.flatMap((t) =>
 );
 
 const label = ref(query.label ?? "");
-const limit = ref(parseInt(query.limit, 10) || 10);
-const offset = ref(parseInt(query.offset, 10) || 0);
-const sort = ref(sortableTitles.includes(query.sort) ? query.sort : "");
-const sortDirection = ref(
-  ["", "ASC", "DESC"].includes(query.sortDirection) ? query.sortDirection : "",
-);
 
-const isValidParams = (params) =>
-  params !== undefined &&
-  params !== null &&
-  params !== "" &&
-  (!Array.isArray(params) || params.length > 0);
+const { limit, offset, sort, sortDirection } = usePagination(
+  query,
+  sortableTitles,
+);
 
 let timeout = null;
 
@@ -147,17 +152,7 @@ const updateData = () => {
     };
 
     territoireStore.fetch(queryParam);
-    navigateTo({
-      query: {
-        limit: limit.value,
-        offset: offset.value,
-        ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
-        ...(isValidParams(sortDirection.value)
-          ? { sortDirection: sortDirection.value }
-          : {}),
-        ...(isValidParams(label.value) ? { label: label.value } : {}),
-      },
-    });
+    navigateTo({ query });
   }, 300);
 };
 
@@ -168,11 +163,4 @@ onUnmounted(() => {
 });
 
 updateData();
-
-// actions
-const navigate = (state) => {
-  navigateTo({
-    path: `/territoires/${state.territoireId}`,
-  });
-};
 </script>

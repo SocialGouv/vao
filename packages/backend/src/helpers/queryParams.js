@@ -13,23 +13,33 @@ module.exports = {
     const params = [...initialParams];
     const filteringQuery = filters
       .map((filter, index) => {
-        params.push(filter.value);
         if (filter.type === "default") {
+          params.push(filter.value);
           if (Array.isArray(filter.value)) {
             return `${filter.key} = ANY($${initialParams.length + index + 1})`;
           }
           return `unaccent(${filter.key}::text) ILIKE '%' ||  unaccent($${initialParams.length + index + 1}) || '%'`;
         }
         if (filter.type === "number") {
+          params.push(filter.value);
           if (Array.isArray(filter.value)) {
             return `${filter.key} IN ($${initialParams.length + index + 1})`;
           }
           return `${filter.key} = $${initialParams.length + index + 1}`;
         }
         if (filter.type === "custom") {
-          return filter.query(initialParams.length + index + 1);
+          const customFilter = filter.query(
+            initialParams.length + index + 1,
+            filter.value,
+          );
+          if (customFilter.query) {
+            params.push(...customFilter.queryParams);
+            return `${customFilter.query}\n`;
+          }
         }
+        return null;
       })
+      .filter((filter) => filter)
       .join(" AND ");
     let newQuery = `${query} AND ${filteringQuery}`;
     if (groupBy) {
@@ -124,7 +134,7 @@ module.exports = {
 
 const getSort = (sortBy, titles, defaultSort = "") => {
   if (sortBy) {
-    const title = titles.find((t) => t.queryKey === sortBy && t.filterEnabled);
+    const title = titles.find((t) => t.queryKey === sortBy && t.sortEnabled);
     if (title) {
       return title.key;
     }

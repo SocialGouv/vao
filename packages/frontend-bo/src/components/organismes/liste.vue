@@ -64,7 +64,11 @@
 </template>
 
 <script setup>
-import { DsfrDataTableV2Wrapper } from "@vao/shared";
+import {
+  DsfrDataTableV2Wrapper,
+  isValidParams,
+  usePagination,
+} from "@vao/shared";
 import dayjs from "dayjs";
 
 const organismeStore = useOrganismeStore();
@@ -129,7 +133,6 @@ const titles = [
       isSortable: true,
     },
   },
-
   {
     key: "custom-edit",
     label: "Action",
@@ -147,17 +150,10 @@ const regionObtention = ref(query["agrement-regionObtention"] ?? "");
 const siret = ref(query.siret ?? "");
 const yearObtention = ref(query["agrement-dateObtention"] ?? "");
 
-const limit = ref(parseInt(query.limit, 10) || 10);
-const offset = ref(parseInt(query.offset, 10) || 0);
-const sort = ref(sortableTitles.includes(query.sort) ? query.sort : "");
-const sortDirection = ref(
-  ["", "asc", "desc"].includes(query.sortDirection) ? query.sortDirection : "",
+const { limit, offset, sort, sortDirection } = usePagination(
+  query,
+  sortableTitles,
 );
-
-const isValidParams = (params) =>
-  params !== null &&
-  params !== "" &&
-  (!Array.isArray(params) || params.length > 0);
 
 const getSearchParams = () => ({
   ...(isValidParams(name.value) ? { name: name.value } : {}),
@@ -188,17 +184,7 @@ const updateData = () => {
     };
 
     organismeStore.fetchOrganismes(query);
-    navigateTo({
-      query: {
-        limit: limit.value,
-        offset: offset.value,
-        ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
-        ...(isValidParams(sortDirection.value)
-          ? { sortDirection: sortDirection.value }
-          : {}),
-        ...getSearchParams(),
-      },
-    });
+    navigateTo({ query });
   }, 300);
 };
 

@@ -1052,57 +1052,57 @@ module.exports.cancel = async (declarationId, userId) => {
 module.exports.get = async (organismesId, queryParams) => {
   const titles = [
     {
-      filterEnabled: true,
       key: "ds.date_debut",
       queryKey: "dateDebut",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "ds.date_fin",
       queryKey: "dateFin",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "ds.departement_suivi",
       queryKey: "departementSuivi",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "ds.edited_at",
       queryKey: "editedAt",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "ds.id_fonctionnelle",
       queryKey: "idFonctionnelle",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "ds.libelle",
       queryKey: "libelle",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "ds.periode",
       queryKey: "periode",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "o.personne_morale->>'siret'",
       queryKey: "siret",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "ds.statut",
       queryKey: "statut",
+      sortEnabled: true,
       type: "default",
     },
   ];

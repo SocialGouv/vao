@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts" generic="T extends Row, RowId extends keyof T & string">
-import { computed, onUnmounted } from "vue";
+import { computed } from "vue";
 import { DsfrDataTableV2, DsfrPaginationV2 } from "@vao/shared";
 import type {
   Row,
@@ -150,26 +150,12 @@ const limitSync = computed({
   },
 });
 
-let timeout: null | ReturnType<typeof setTimeout> = null;
-
 const updateData = () => {
-  if (timeout) {
-    clearTimeout(timeout);
-  }
-  timeout = setTimeout(() => {
-    emits("updateData", {
-      sort: props.sort,
-      sortDirection: props.sortDirection,
-      offset: props.offset,
-      limit: props.limit,
-    });
-    timeout = null;
-  }, 300);
+  emits("updateData", {
+    sort: props.sort,
+    sortDirection: props.sortDirection,
+    offset: props.offset,
+    limit: props.limit,
+  });
 };
-
-onUnmounted(() => {
-  if (timeout) {
-    clearTimeout(timeout);
-  }
-});
 </script>

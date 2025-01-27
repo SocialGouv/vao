@@ -653,37 +653,37 @@ module.exports.getSiege = async (siret) => {
   return rowCount === 0 ? null : organismes[0];
 };
 
-module.exports.getliste = async (queryParams) => {
+module.exports.getListe = async (queryParams) => {
   log.i("get - IN");
   const titles = [
     {
-      filterEnabled: true,
       key: "o.complet",
       queryKey: "complet",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "o.edited_at",
       queryKey: "editedAt",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "ad.agrement ->> 'regionObtention'",
       queryKey: "agrement-regionObtention",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "ad.agrement ->> 'dateObtention'",
       queryKey: "agrement-dateObtention",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "o.personne_morale ->> 'siret'",
       queryKey: "siret",
+      sortEnabled: true,
       type: "default",
     },
     {
@@ -698,9 +698,9 @@ module.exports.getliste = async (queryParams) => {
       type: "custom",
     },
     {
-      filterEnabled: true,
       key: '"sejourCount"',
       queryKey: "sejourCount",
+      sortEnabled: true,
     },
   ];
   const filterParams = sanitizeFiltersParams(queryParams, titles);
