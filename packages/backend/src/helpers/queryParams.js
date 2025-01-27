@@ -21,6 +21,7 @@ module.exports = {
           return `unaccent(${filter.key}::text) ILIKE '%' ||  unaccent($${initialParams.length + index + 1}) || '%'`;
         }
         if (filter.type === "number") {
+          params.push(filter.value);
           if (Array.isArray(filter.value)) {
             return `${filter.key} IN ($${initialParams.length + index + 1})`;
           }
