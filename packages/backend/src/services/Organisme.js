@@ -624,8 +624,14 @@ module.exports.getOne = async (criterias = {}) => {
       statusCode: 404,
     });
   }
+  // Initialisation d'une valeur vide pour permettre l'affichage au niveau front BO
+  const organisme = organismes[0];
+  if (organisme?.personnePhysique) {
+    organisme.personnePhysique.nomUsage =
+      organisme.personnePhysique?.nomUsage ?? "";
+  }
   log.i("getOne - DONE");
-  return organismes[0];
+  return organisme;
 };
 
 module.exports.getBySiren = async (siren) => {
