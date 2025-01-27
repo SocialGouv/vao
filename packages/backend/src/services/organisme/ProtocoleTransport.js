@@ -1,7 +1,5 @@
 const logger = require("../../utils/logger");
 
-const pool = require("../../utils/pgpool").getPool();
-
 const log = logger(module.filename);
 
 const query = {
@@ -96,66 +94,54 @@ module.exports.create = async (client, organismeId, parametre) => {
   return response.rows[0].protocoleTransportId;
 };
 
-module.exports.createOrUpdate = async (organismeId, parametre) => {
+module.exports.createOrUpdate = async (client, organismeId, parametre) => {
   log.i("update - IN");
 
-  const { rows: protocoleTransport, rowCount } = await pool.query(
+  const { rows: protocoleTransport, rowCount } = await client.query(
     query.getIdByOrganiseId,
     [organismeId],
   );
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
+  const protocoleTransportId =
+    rowCount === 0
+      ? await create(client, organismeId, parametre)
+      : protocoleTransport[0].id;
 
-    const protocoleTransportId =
-      rowCount === 0
-        ? await create(client, organismeId, parametre)
-        : protocoleTransport[0].id;
+  await client.query(query.update, [
+    organismeId,
+    parametre?.vehiculesAdaptes ?? null,
+    parametre?.deplacementDurantSejour ?? null,
+    parametre?.precisionModeOrganisation ?? null,
+    parametre?.precisionVehiculesAdaptes ?? null,
+  ]);
 
-    await client.query(query.update, [
-      organismeId,
-      parametre?.vehiculesAdaptes ?? null,
-      parametre?.deplacementDurantSejour ?? null,
-      parametre?.precisionModeOrganisation ?? null,
-      parametre?.precisionVehiculesAdaptes ?? null,
+  await client.query(query.removePTM, [protocoleTransportId]);
+  const modeTransport = parametre.modeTransport ?? null;
+  if (modeTransport?.length > 0) {
+    await client.query(query.associatePTM(modeTransport.length), [
+      protocoleTransportId,
+      ...modeTransport,
     ]);
-
-    await client.query(query.removePTM, [protocoleTransportId]);
-    const modeTransport = parametre.modeTransport ?? null;
-    if (modeTransport?.length > 0) {
-      await client.query(query.associatePTM(modeTransport.length), [
-        protocoleTransportId,
-        ...modeTransport,
-      ]);
-    }
-    await client.query(query.removePTR, [protocoleTransportId]);
-    const responsableTransportLieuSejour =
-      parametre.responsableTransportLieuSejour ?? null;
-    if (responsableTransportLieuSejour?.length > 0) {
-      await client.query(
-        query.associatePTR(responsableTransportLieuSejour.length),
-        [protocoleTransportId, ...responsableTransportLieuSejour],
-      );
-    }
-
-    await client.query(query.removePTFiles, [protocoleTransportId]);
-
-    const ptFiles = parametre.files;
-
-    await ptFiles.forEach((ptFile) => {
-      client.query(query.associatePTFiles, [
-        protocoleTransportId,
-        ptFile?.uuid ?? null,
-      ]);
-    });
-
-    await client.query("COMMIT");
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
   }
+  await client.query(query.removePTR, [protocoleTransportId]);
+  const responsableTransportLieuSejour =
+    parametre.responsableTransportLieuSejour ?? null;
+  if (responsableTransportLieuSejour?.length > 0) {
+    await client.query(
+      query.associatePTR(responsableTransportLieuSejour.length),
+      [protocoleTransportId, ...responsableTransportLieuSejour],
+    );
+  }
+
+  await client.query(query.removePTFiles, [protocoleTransportId]);
+
+  const ptFiles = parametre.files;
+
+  await ptFiles.forEach((ptFile) => {
+    client.query(query.associatePTFiles, [
+      protocoleTransportId,
+      ptFile?.uuid ?? null,
+    ]);
+  });
   log.i("createOrUpdate - DONE");
 };
 

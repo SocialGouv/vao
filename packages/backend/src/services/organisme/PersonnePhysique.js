@@ -1,7 +1,5 @@
 const logger = require("../../utils/logger");
 
-const pool = require("../../utils/pgpool").getPool();
-
 const log = logger(module.filename);
 
 const query = {
@@ -68,10 +66,10 @@ const query = {
   `,
 };
 
-module.exports.create = async (organismeId, parametre) => {
+module.exports.create = async (client, organismeId, parametre) => {
   log.i("create - IN", parametre);
 
-  const response = await pool.query(query.create, [
+  const response = await client.query(query.create, [
     organismeId,
     parametre?.prenom ?? null,
     parametre?.nomUsage ?? null,
@@ -99,15 +97,15 @@ module.exports.create = async (organismeId, parametre) => {
   return response.rows[0];
 };
 
-module.exports.createOrUpdate = async (organismeId, parametre) => {
+module.exports.createOrUpdate = async (client, organismeId, parametre) => {
   log.i("createOrUpdate - IN");
   if (Object.keys(parametre).length === 0) {
     return null;
   }
-  const { rowCount } = await pool.query(query.getIdByOrganiseId, [organismeId]);
+  const { rowCount } = await client.query(query.getIdByOrganiseId, [organismeId]);
   rowCount === 0
-    ? await create(organismeId, parametre)
-    : await pool.query(query.update, [
+    ? await create(client, organismeId, parametre)
+    : await client.query(query.update, [
         organismeId,
         parametre?.prenom ?? null,
         parametre?.nomUsage ?? null,

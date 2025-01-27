@@ -438,18 +438,29 @@ FROM back.organisme_non_agree ona
 
 module.exports.create = async (type, parametre) => {
   log.i("create - IN", { type });
-  const response =
-    type === partOrganisme.PERSONNE_MORALE
-      ? await pool.query(query.create, [type, parametre, {}])
-      : await pool.query(query.create, [type, {}, parametre]);
-  const { organismeId } = response && response.rows[0];
-  const responseNew =
-    type === partOrganisme.PERSONNE_MORALE
-      ? await PersonneMorale.createOrUpdate(organismeId, parametre)
-      : await PersonnePhysique.createOrUpdate(organismeId, parametre);
-  log.d("create - ", { responseNew });
-  log.d("create - DONE", { organismeId });
-  return organismeId;
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    const response =
+      type === partOrganisme.PERSONNE_MORALE
+        ? await client.query(query.create, [type, parametre, {}])
+        : await client.query(query.create, [type, {}, parametre]);
+    const { organismeId } = response && response.rows[0];
+    const responseNew =
+      type === partOrganisme.PERSONNE_MORALE
+        ? await PersonneMorale.createOrUpdate(client, organismeId, parametre)
+        : await PersonnePhysique.createOrUpdate(client, organismeId, parametre);
+    log.d("create - ", { responseNew });
+
+    await client.query("COMMIT");
+    log.d("create - DONE", { organismeId });
+    return organismeId;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 module.exports.link = async (userId, organismeId) => {
@@ -469,71 +480,74 @@ module.exports.link = async (userId, organismeId) => {
 
 module.exports.update = async (type, parametre, organismeId) => {
   log.i("update - IN", { type });
-  let response;
 
   const regions = await Regions.fetch();
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    switch (type) {
+      case partOrganisme.PERSONNE_MORALE: {
+        const complet =
+          await Organisme.schema(regions).personneMorale.isValid(parametre);
+        await client.query(query.updatePersonne, [
+          organismeId,
+          type,
+          parametre,
+          {},
+          complet,
+        ]);
+        await PersonneMorale.createOrUpdate(client, organismeId, parametre);
+        break;
+      }
+      case partOrganisme.PERSONNE_PHYSIQUE: {
+        const complet =
+          await Organisme.schema(regions).personnePhysique.isValid(parametre);
+        await client.query(query.updatePersonne, [
+          organismeId,
+          type,
+          {},
+          parametre,
+          complet,
+        ]);
+        await PersonnePhysique.createOrUpdate(client, organismeId, parametre);
+        break;
+      }
+      case partOrganisme.PROTOCOLE_TRANSPORT: {
+        const complet =
+          await Organisme.schema(regions).protocoleTransport.isValid(parametre);
+        await client.query(query.updateTransport, [
+          organismeId,
+          parametre,
+          complet,
+        ]);
+        await ProtocoleTransport.createOrUpdate(client, organismeId, parametre);
+        break;
+      }
+      case partOrganisme.PROTOCOLE_SANITAIRE: {
+        const complet =
+          await Organisme.schema(regions).protocoleSanitaire.isValid(parametre);
+        await client.query(query.updateSanitaire, [
+          organismeId,
+          parametre,
+          complet,
+        ]);
+        await ProtocoleSanitaire.createOrUpdate(client, organismeId, parametre);
+        break;
+      }
+      default:
+        log.d("wrong type");
+        return null;
+    }
 
-  switch (type) {
-    case partOrganisme.PERSONNE_MORALE: {
-      const complet =
-        await Organisme.schema(regions).personneMorale.isValid(parametre);
-      response = await pool.query(query.updatePersonne, [
-        organismeId,
-        type,
-        parametre,
-        {},
-        complet,
-      ]);
-      await PersonneMorale.createOrUpdate(organismeId, parametre);
-      break;
-    }
-    case partOrganisme.PERSONNE_PHYSIQUE: {
-      const complet =
-        await Organisme.schema(regions).personnePhysique.isValid(parametre);
-      response = await pool.query(query.updatePersonne, [
-        organismeId,
-        type,
-        {},
-        parametre,
-        complet,
-      ]);
-      await PersonnePhysique.createOrUpdate(organismeId, parametre);
-      break;
-    }
-    case partOrganisme.PROTOCOLE_TRANSPORT: {
-      const complet =
-        await Organisme.schema(regions).protocoleTransport.isValid(parametre);
-      response = await pool.query(query.updateTransport, [
-        organismeId,
-        parametre,
-        complet,
-      ]);
-      await ProtocoleTransport.createOrUpdate(organismeId, parametre);
-      break;
-    }
-    case partOrganisme.PROTOCOLE_SANITAIRE: {
-      const complet =
-        await Organisme.schema(regions).protocoleSanitaire.isValid(parametre);
-      response = await pool.query(query.updateSanitaire, [
-        organismeId,
-        parametre,
-        complet,
-      ]);
-      await ProtocoleSanitaire.createOrUpdate(organismeId, parametre);
-      break;
-    }
-    default:
-      log.d("wrong type");
-      return null;
+    await client.query("COMMIT");
+    log.i("update - DONE");
+    return organismeId;
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
   }
-  const { rowCount } = response;
-  if (rowCount === 0) {
-    throw new AppError("Organisme non trouvé", {
-      name: "NOT_FOUND",
-      statusCode: 404,
-    });
-  }
-  log.i("update - DONE");
 };
 
 module.exports.finalize = async function (userId) {
@@ -564,25 +578,39 @@ module.exports.finalize = async function (userId) {
     log.w(error);
     throw new ValidationAppError(error);
   }
-  await pool.query(...query.finalize(organisme));
-  organisme.type === partOrganisme.PERSONNE_MORALE
-    ? await PersonneMorale.createOrUpdate(
-        organisme.organismeId,
-        organisme.personneMorale,
-      )
-    : await PersonnePhysique.createOrUpdate(
-        organisme.organismeId,
-        organisme.personnePhysique,
-      );
-  await ProtocoleTransport.createOrUpdate(
-    organisme.organismeId,
-    organisme.protocoleTransport,
-  );
-  await ProtocoleSanitaire.createOrUpdate(
-    organisme.organismeId,
-    organisme.protocoleSanitaire,
-  );
-  log.i("finalize - DONE");
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+    await client.query(...query.finalize(organisme));
+    organisme.type === partOrganisme.PERSONNE_MORALE
+      ? await PersonneMorale.createOrUpdate(
+          client,
+          organisme.organismeId,
+          organisme.personneMorale,
+        )
+      : await PersonnePhysique.createOrUpdate(
+          client,
+          organisme.organismeId,
+          organisme.personnePhysique,
+        );
+    await ProtocoleTransport.createOrUpdate(
+      client,
+      organisme.organismeId,
+      organisme.protocoleTransport,
+    );
+    await ProtocoleSanitaire.createOrUpdate(
+      client,
+      organisme.organismeId,
+      organisme.protocoleSanitaire,
+    );
+    await client.query("COMMIT");
+    log.i("finalize - DONE");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 module.exports.getOne = async (criterias = {}) => {
