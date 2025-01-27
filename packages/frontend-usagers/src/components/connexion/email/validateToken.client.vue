@@ -5,11 +5,22 @@
       <DsfrAlert
         role="alert"
         class="fr-grid-row fr-my-3v"
-        title="Erreur lors de la validation du compte"
-        :description="helpers[classError]"
         type="error"
         :closeable="false"
-      />
+      >
+        <h3>Erreur lors de la validation du compte</h3>
+        <span v-if="classError === 'TokenExpiredError'"
+          >Le lien utilisé est déjà expiré. Cliquer sur le bouton « Générer un
+          nouveau lien »</span
+        >
+        <span v-if="classError === 'UserAlreadyVerified'">
+          L'adresse courriel semble déjà utilisée. Rendez-vous sur
+          <NuxtLink class="fr-link" to="/connexion/">
+            la page de connexion
+          </NuxtLink>
+          pour vous identifier.
+        </span>
+      </DsfrAlert>
       <DsfrButton
         v-if="classError === 'TokenExpiredError'"
         class="fr-grid-row fr-grid-row--center fr-my-5v"
@@ -29,12 +40,7 @@ const toaster = useToaster();
 const config = useRuntimeConfig();
 
 const classError = ref("");
-const helpers = {
-  TokenExpiredError:
-    "Le lien utilisé est déjà expiré. Cliquer sur le bouton « Générer un nouveau lien »",
-  UserAlreadyVerified:
-    "L'adresse courriel semble déjà utilisée. Rendez-vous sur la page de connexion pour vous identifier.",
-};
+
 const { data, error, pending } = useFetchBackend(
   "/authentication/email/validate",
   {
