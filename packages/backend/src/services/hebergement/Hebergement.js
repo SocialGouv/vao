@@ -225,11 +225,11 @@ ${new Array(nbRows)
     ),
     agrement_data AS (
       SELECT
-        h.id as "herbergementId"
+        h.id as "id"
       FROM front.hebergement h
     )
       SELECT
-        h.id as "hebergementId",
+        h.id as "id",
         nom as "nom",
         a.label as "adresse",
         a.departement as "departement",
@@ -237,7 +237,7 @@ ${new Array(nbRows)
         uo.use_id
       FROM front.hebergement h
 		LEFT JOIN stat ON stat.id = h.id
-    	LEFT JOIN agrement_data ad ON ad."herbergementId" = h.id
+    	LEFT JOIN agrement_data ad ON ad."id" = h.id
       LEFT JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
       LEFT JOIN front.adresse a ON a.id = h.adresse_id
       LEFT JOIN front.hebergement_statut hs on hs.id = h.statut_id
