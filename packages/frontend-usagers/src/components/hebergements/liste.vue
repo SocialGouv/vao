@@ -13,7 +13,7 @@
     :table-title="title"
     :data="data"
     :total="total"
-    row-id="hebergementId"
+    row-id="id"
     is-sortable
     @update-data="updateData"
   >
@@ -36,7 +36,7 @@
     </template>
     <template #cell:custom-edit="{ row }">
       <NuxtLink
-        :to="`/hebergements/${row.hebergementId}`"
+        :to="`/hebergements/${row.id}`"
         title="Naviguer vers l'hébergement"
         class="no-background-image"
       >
