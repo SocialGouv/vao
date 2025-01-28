@@ -1,36 +1,4 @@
 fileignoreconfig:
-- filename: .env.dev.example.env
-  checksum: 5655ccafe29c738ceec05bb62c32804ef6ee92c4d3aab098dacc682b4d059e56
-- filename: .github/workflows/deactivate.yaml
-  checksum: 0458870e0ed4b3cfbe94be2ce65a16e697f5a61bc5b4ad9a87818f4facc7a422
-- filename: .github/workflows/preproduction.yaml
-  checksum: 232cf78cc8ef9d85c8591e73bec37350e8592fcd5617280541cb8addafcf8e4c
-- filename: .github/workflows/production.yaml
-  checksum: 5e21dfc40b41f4ee43ea755bbe17e9de43c2cc3a0eb7df40087775524348d3fd
-- filename: .github/workflows/review-auto.yaml
-  checksum: 55c6b1ac3eaf1318b6c0d1c74675a27dafc7b2273a80b59df5ceafd754537ba7
-- filename: .github/workflows/review.yaml
-  checksum: 143d1566fd63f230a4dde89302c4be38292a46f246cc8a2b475790e8322b072a
-- filename: .kontinuous/dev/templates/apientreprise.sealed.secret.yaml
-  checksum: efb1426b5ed73fa1c01115aec8a3166f08fd40d3ed70fd1d8dde154449bf88fe
-- filename: .kontinuous/dev/templates/pg.sealed.secret.yaml
-  checksum: 4781dbc9445d6f91299d128d56e2b5728131fd1a690e4fb7b8f65f7a6d37f63b
-- filename: .kontinuous/dev/templates/smtp.sealed.secret.yaml
-  checksum: 5d52e7281ab8b84b078d3a4de1ee0b961a5a8463b5478571ad1d6bf18240842d
-- filename: .kontinuous/env/dev/templates/api-entreprise.sealed.secret.yaml
-  checksum: 0ee3b1eb016b7ef5313d38838050284eddae671c5d8299b5b5d64a7b7a68a3c4
-- filename: .kontinuous/env/dev/templates/api-insee.sealed.secret.yaml
-  checksum: 1ad4f82701febd38af91d6e8a8e4a2e04ef641f29134305c09417b1e68033f64
-- filename: .kontinuous/env/dev/templates/backend.configmap.yaml
-  checksum: 1a87514b01d542124d0707c3508c903a3d55ebdc8159d6fc80c6876799de22e5
-- filename: .kontinuous/env/dev/templates/frontend.sealed-secret.yaml
-  checksum: 81df30b5b48c9d2ab036559b0c8a7b984193b6efe4ec1aa069bce823b943e83f
-- filename: .kontinuous/env/dev/templates/smtp.sealed.secret.yaml
-  checksum: b43b48e350f4b1957598febc30e1c75517f69f34855dec00e621308ae9deb81e
-- filename: .kontinuous/env/dev/templates/smtp/deployment.yaml
-  checksum: 4c8ff230678e8b659f305b2da0895269eeea1fe26b9395014c0ec060d8262857
-- filename: .kontinuous/env/dev/templates/smtp/ingress.yaml
-  checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
 - filename: .kontinuous/env/dev/templates/token.sealed.secret.yaml
   checksum: 04da46d9d1620a4f28009a7f9cc148919424044c5417f6db03efa29ac1ee261a
 - filename: .kontinuous/env/dev/templates/www-secret.sealed-secret.yaml
@@ -90,13 +58,43 @@ fileignoreconfig:
 - filename: docker-compose.prod.yaml
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
-  checksum: c882626f19ca66fb8ef048900b179923f959fea9fbff52b4913537bad55e795d
+  checksum: 4c29834d1782647485b51852dc7921ff87bd72bbe55134f21830f226ed9bc06d
 - filename: e2e/register-login-organisateur.spec.ts
   checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
 - filename: package.json
   checksum: 180654b4eb22710ddeba4331c45b63ed92542e989744f390182a90a563eb8e1b
+- filename: packages/api/README.md
+  checksum: 680eb243a98d30c994c399c96eb91af0caadc06ee88d2bda4eaf27976cb5e1bb
+- filename: packages/api/environement.d.ts
+  checksum: e8a6dcdbda5830d02c0195c620dee8777f24ca42690e1c85b4527308283b3690
+- filename: packages/api/package.json
+  checksum: a3a2b560fae7f3d977351debfae21123f84e826f5d89c760f6ee920ec0e3e565
+- filename: packages/api/src/accommodation/accommodation.service.spec.ts
+  checksum: 5c6bdce9ac69109e6bd62fc752dd5df76cbd5c5a53ebbf218b7bed159a1d0b18
+- filename: packages/api/src/accommodation/accommodation.service.ts
+  checksum: 87991cc4d74cca26dc78885d103921d539ebcc65883624ca53d2087a57e4d07c
+- filename: packages/api/src/accommodation/accomodation.controller.spec.ts
+  checksum: 2c78936432c9f1a29ebfdd26dce0253542f348f79eb576ea263dcac7d76ceecb
+- filename: packages/api/src/address/address.service.spec.ts
+  checksum: 2d3d8146f6157a6449a083251145ae49a50feca7ba87e37ab42121657c6081e0
+- filename: packages/api/src/address/address.service.ts
+  checksum: b858769faade1a8afd3ce0c78a19c70d5c4bab05317928ec6e83db7ea076cf49
+- filename: packages/api/src/config/configuration.ts
+  checksum: 6d7614ffc23f2a2b5498ced171368d841b597e50bdd1a3f3ae100868b14c688f
+- filename: packages/api/src/file/file.service.spec.ts
+  checksum: 76e79379c1ecbb038ec93a1f7bf415e7f651b2a43002de44b31269bd523ce90c
+- filename: packages/api/src/file/file.service.ts
+  checksum: 7c929c4ca6c6e2a80d36d8309673e654ff796b94a1b0acae75b2c9ad89670e13
+- filename: packages/api/src/global/database.module.ts
+  checksum: 0a0c57ae3d733e377cec0dc346e32485a88f90e22311dc992ce24944b72a6a64
+- filename: packages/api/src/global/s3.module.ts
+  checksum: 01f1b8dfeef8795cd7c6e3b8ccd2029064f7795994a13ff50f34bb01bf8f01a5
+- filename: packages/api/src/schemas/address.schema.ts
+  checksum: 173b9639170c241e9a2de13d2af13b552aea7571d9f8c77fab5c5c33fc463538
+- filename: packages/api/types/environment.d.ts
+  checksum: c4e3c7eb45d1cd4ec69df1f6dfb0b407aec5d4d76c02d8686bbdb9bff28f383a
 - filename: packages/backend/src/config.js
-  checksum: c0baf7f4f878d3f3406030471f15c092ed9fc671b1e66276fe9b071ea025b58c
+  checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
   checksum: 8dde974d3051313b99c5abb76ec8b0e1f8480e6bb958474a4f95eb4240d90e2a
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
@@ -129,6 +127,8 @@ fileignoreconfig:
   checksum: 51d98862750e30ab4f852aee33a8c65bfa9ff92986b498c1d2650be3aff3511c
 - filename: packages/backend/src/schemas/register.js
   checksum: d56114de12eaab4e9121eaf17ca1760370673c3c1526218896bacaa7daf5cc82
+- filename: packages/backend/src/services/ApiToken.js
+  checksum: 1be2f39bdf814196b35376f6682bf2a4879168e06c3acbb65eb229bcc2068c28
 - filename: packages/backend/src/services/BoUser.js
   checksum: 90d8297092ecec904d6055564334cc7ffdbd9a74a1e9a985b1f7a17f8f98b126
 - filename: packages/backend/src/services/DemandeSejour.js
@@ -201,6 +201,8 @@ fileignoreconfig:
   checksum: 4716f6a0de6f2dc2af6d8ac8abf11a253a5a719c231df5ae51c783e6148c42ed
 - filename: packages/frontend-usagers/src/assets/Download.svg
   checksum: a5c2caf47b1b715b2cf8240e9af9090061faae6261b21bc62173689f1666536e
+- filename: packages/frontend-usagers/src/components/ApiTokenManager.vue
+  checksum: 56a62209a9c1ac0d43c66a8971c23c9db1bba9e77bc222211e10468fdc795d79
 - filename: packages/frontend-usagers/src/components/DS/hebergements-sejour-detail.vue
   checksum: ea2516289eea24b6cf226322360163f840249383a5b30f5766ac730e52463162
 - filename: packages/frontend-usagers/src/components/DS/synthese.vue
@@ -269,6 +271,8 @@ fileignoreconfig:
   checksum: c358c5f8cf7a408173e9ff8d273f05c8e1a193c3369ec2389bfd713ff1bab716
 - filename: packages/migrations/src/migrations/20240918085236_migrate_files_to_minio.js
   checksum: ce0b678503f6342414ed759fa31ac460060d1efd1daadffb3d7be0bfa049858c
+- filename: packages/migrations/src/migrations/20241210150854_create_api_keys_table.js
+  checksum: 2fdccc406cc543d7ddbf91331b524ab24d9f170466ea2fd4555a43d2dfb2f5d6
 - filename: packages/migrations/src/scripts/migrate-files-to-s3.js
   checksum: 0c60a5a9f3321ab3c36025bdeb35663395586d5bca3d21984fdbe5997b46c6eb
 - filename: packages/migrations/src/scripts/reset-s3.js
@@ -317,6 +321,21 @@ fileignoreconfig:
   checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
 - filename: pg/seeds/BO-1-back-user.sql
   checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
+- filename: yarn.lock
+  checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
 scopeconfig:
 - scope: node
+version: "1.0"
+ename: pg/scripts/03/03-3-front-data.sql
+    checksum: 413817c8133c69f883087a7042258dcb75e4f75a45897ea830f86d8a5cba561a
+  - filename: pg/scripts/03/03-3-ref-data.sql
+    checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
+  - filename: pg/seeds/BO-1-back-user.sql
+    checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
+  - filename: yarn.lock
+    checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
+  - filename: pg/seeds/BO-1-back-user.sql
+    checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
+scopeconfig:
+  - scope: node
 version: "1.0"

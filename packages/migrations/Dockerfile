@@ -1,4 +1,4 @@
-ARG NODE_VERSION=20-bullseye-slim
+ARG NODE_VERSION=23.5-bullseye-slim
 FROM node:$NODE_VERSION AS build
 
 WORKDIR /app
