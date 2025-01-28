@@ -81,6 +81,42 @@ services:
       - 3010:3000
     user: 1000:1000
 
+  api:
+    working_dir: /app
+    build:
+      dockerfile: ./packages/api/Dockerfile
+    develop:
+      watch:
+        - action: sync
+          path: ./packages/api
+          target: /app/packages/api
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: ./packages/api/package.json
+    volumes:
+      - $PWD:/app:delegated
+    depends_on:
+      postgres:
+        condition: service_started
+      migrations:
+        condition: service_completed_successfully
+      create-bucket:
+        condition: service_completed_successfully
+    env_file:
+      - ./.env
+    environment:
+      DEBUG: "*info*"
+      SENTRY_DSN: ${BACKEND_SENTRY_DSN}
+      SENTRY_ENVIRONMENT: local
+      SENTRY_ENABLED: ${BACKEND_SENTRY_ENABLED}
+      TMP_DIRECTORY: ${BACKEND_TMP_DIRECTORY}
+    ports:
+      - 3020:3000
+    user: 1000:1000
+
   migrations:
     image: "node:23.5-bullseye-slim"
     working_dir: /app
