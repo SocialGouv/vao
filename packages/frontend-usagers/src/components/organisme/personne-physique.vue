@@ -83,7 +83,7 @@
     <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
-          <SearchAddress
+          <AddressSearchAddress
             :initial-adress="props.initData.adresseDomicile?.label"
             :modifiable="props.modifiable"
             :error-message="adresseDomicileErrorMessage"
@@ -119,7 +119,7 @@
     <div class="fr-fieldset">
       <div v-if="adresseIdentique === false" class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
-          <SearchAddress
+          <AddressSearchAddress
             :initial-adress="props.initData.adresseSiege?.label"
             :modifiable="props.modifiable"
             :error-message="adresseSiegeErrorMessage"
