@@ -73,7 +73,7 @@ module.exports = {
   ) => {
     const paginatedQuery = `
       ${query}
-      ${sortBy ? `ORDER BY ${sortBy} ${sortDirection}` : ""}
+      ${sortBy ? `ORDER BY LOWER(${sortBy}) ${sortDirection}` : ""}
       LIMIT $${params.length + 1}
       OFFSET $${params.length + 2};
     `;
