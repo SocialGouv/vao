@@ -23,8 +23,6 @@ module.exports = async function getExtract(req, res, next) {
   const departements = req.departements.map((d) => d.value);
   try {
     const result = await Hebergement.getByDepartementCodes(departements, {
-      limit: 20,
-      offset: 0,
       order: "ASC",
       search: "",
       sort: "nom",
