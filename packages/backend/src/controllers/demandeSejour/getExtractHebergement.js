@@ -25,8 +25,6 @@ module.exports = async function get(req, res, next) {
     const result = await DemandeSejour.getHebergementsByDepartementCodes(
       departements,
       {
-        limit: 20,
-        offset: 0,
         order: "ASC",
         search: "",
         sort: "nom",
