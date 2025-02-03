@@ -9,8 +9,8 @@ const log = logger(module.filename);
 module.exports = async (req, res, next) => {
   log.i("IN");
   const { category } = req.body;
-  const { decoded } = req;
-  const file = req.file;
+  const { decoded, file } = req;
+
   if (!category || !file) {
     log.w("DONE with error");
     return next(
@@ -20,38 +20,63 @@ module.exports = async (req, res, next) => {
     );
   }
 
-  if (category === "agrement" && file.mimetype !== "application/pdf") {
-    log.w("DONE with error");
-    return next(
-      new AppError("Format d'agrément incorrect.", {
-        statusCode: 415,
-      }),
-    );
-  } else if (
-    !(
-      file.mimetype == "application/pdf" ||
-      file.mimetype == "image/png" ||
-      file.mimetype == "image/jpeg"
-    )
-  ) {
-    log.w("DONE with error filetype : ", file.mimetype);
-    return next(
-      new AppError("Format de fichier non supporté.", {
-        statusCode: 415,
-      }),
-    );
-  }
-
   try {
-    const { path, originalname: filename, mimetype } = file;
-    const data = await fs.readFile(path);
+    const { path, originalname: filename } = file;
+    const fileBuffer = await fs.readFile(path);
+    const fileTypeLib = await import("file-type");
+    const fileType = await fileTypeLib.fileTypeFromBuffer(fileBuffer);
+
+    if (!fileType) {
+      log.w("DONE with error: Impossible de déterminer le type de fichier");
+      return next(
+        new AppError("Impossible de déterminer le type de fichier.", {
+          statusCode: 415,
+        }),
+      );
+    }
+
+    const { ext: fileExtension, mime: detectedMimeType } = fileType;
+
+    if (!["jpg", "jpeg", "png", "pdf"].includes(fileExtension)) {
+      log.w("DONE with error fileExtension: ", fileExtension);
+      return next(
+        new AppError("Extension de fichier non supportée.", {
+          statusCode: 415,
+        }),
+      );
+    }
+
+    if (
+      category === "agrement" &&
+      (detectedMimeType !== "application/pdf" || fileExtension !== "pdf")
+    ) {
+      log.w("DONE with error");
+      return next(
+        new AppError("Format d'agrément incorrect.", {
+          statusCode: 415,
+        }),
+      );
+    }
+
+    if (
+      !["application/pdf", "image/png", "image/jpeg"].includes(detectedMimeType)
+    ) {
+      log.w("DONE with error filetype: ", detectedMimeType);
+      return next(
+        new AppError("Format de fichier non supporté.", {
+          statusCode: 415,
+        }),
+      );
+    }
+
     const uuid = await DocumentService.createFile(
       filename,
       category,
-      mimetype,
-      data,
+      detectedMimeType,
+      fileBuffer,
       decoded.id,
     );
+
     log.d("DONE", uuid);
     return res.json({ uuid });
   } catch (error) {

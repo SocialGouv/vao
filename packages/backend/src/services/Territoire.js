@@ -3,6 +3,12 @@ const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);
+const {
+  sanitizePaginationParams,
+  sanitizeFiltersParams,
+  applyFilters,
+  applyPagination,
+} = require("../helpers/queryParams");
 
 const query = {
   getFicheIdByTerCode: `
@@ -14,47 +20,49 @@ const query = {
     select
         fte.id AS territoire_id,
         CASE (ter.code ~ '[0-9]')
-        	WHEN true THEN 'DEP'
- 			    ELSE 'REG'
+          WHEN true THEN 'DEP'
+          ELSE 'REG'
         END AS type,
         ter.code AS value,
         ter.label AS text,
         ter.parent_code AS parent,
         fte.service_mail AS service_mail,
-        fte.service_telephone AS service_telephone, 
+        fte.service_telephone AS service_telephone,
         fte.corresp_vao_nom AS corresp_vao_nom,
         fte.corresp_vao_prenom AS corresp_vao_prenom,
         fte.edited_at AS edited_at
       FROM back.fiche_territoire fte
       INNER JOIN geo.territoires ter ON fte.ter_code = ter.code
       WHERE fte.id = $1`,
-  select: `
-      select
-        fte.id AS territoire_id,
-        CASE (ter.code ~ '[0-9]')
-        	WHEN true THEN 'DEP'
- 			    ELSE 'REG'
-        END AS type,
-        ter.code AS value,
-        ter.label AS text,
-        fte.service_telephone AS service_telephone, 
-        fte.corresp_vao_nom AS corresp_vao_nom,
-        fte.corresp_vao_prenom AS corresp_vao_prenom,
-        fte.service_mail as service_mail,
-        COUNT(distinct(usr.id)) as nbusersbo
-      FROM geo.territoires ter
-      INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
-      LEFT JOIN back.users usr ON usr.ter_code = ter.code
-      WHERE code <> 'FRA'
-      GROUP BY territoire_id,type,value,text,service_telephone,corresp_vao_nom,corresp_vao_prenom,service_mail
-      ORDER BY type, text ASC`,
+  select: () =>
+    `
+    SELECT
+      fte.id AS "territoireId",
+      CASE (ter.code ~ '[0-9]')
+        WHEN true THEN 'DEP'
+        ELSE 'REG'
+      END AS type,
+      ter.code AS code,
+      ter.label AS label,
+      fte.corresp_vao_prenom AS "correspVaoPrenom",
+      fte.corresp_vao_nom AS "correspVaoNom",
+      fte.service_mail AS "serviceMail",
+      fte.service_telephone AS "serviceTelephone",
+      (
+        SELECT COUNT(DISTINCT usr.id)
+        FROM back.users usr
+        WHERE usr.ter_code = ter.code
+      ) AS "nbUsersBo"
+    FROM geo.territoires ter
+    INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
+    WHERE ter.code <> 'FRA'`,
   update: `
       UPDATE back.fiche_territoire
       SET
         corresp_vao_nom = $2,
         corresp_vao_prenom = $3,
         service_mail = $4,
-        service_telephone = $5, 
+        service_telephone = $5,
         edited_at = NOW()
       WHERE
         id = $1
@@ -62,15 +70,46 @@ const query = {
       `,
 };
 
-module.exports.fetch = async (criterias = {}) => {
-  log.i("fetch - IN");
-  const { rows } = await pool.query(query.select);
+module.exports.fetch = async (queryParams) => {
+  const titles = [
+    {
+      filterEnabled: true,
+      key: "ter.code",
+      queryKey: "code",
+      type: "default",
+    },
+    {
+      filterEnabled: true,
+      key: "ter.label",
+      queryKey: "label",
+      type: "default",
+    },
+  ];
 
-  return rows.filter((territoire) => {
-    return Object.entries(criterias).every(
-      ([key, value]) => territoire[key] == value,
-    );
-  });
+  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
+    queryParams,
+    titles,
+  );
+  const filterParams = sanitizeFiltersParams(queryParams, titles);
+
+  const queryGet = query.select();
+  const filterQuery = applyFilters(queryGet, [], filterParams);
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  );
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
 };
 
 module.exports.readFicheIdByTerCode = async (territoireCode) => {

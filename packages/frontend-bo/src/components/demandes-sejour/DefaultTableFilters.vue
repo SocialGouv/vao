@@ -1,7 +1,10 @@
 <template>
   <div>
     <div class="fr-fieldset">
-      <div :class="filedsetClass">
+      <div
+        v-if="filters.includes(availableFilters.idFonctionnelle)"
+        :class="filedsetClass"
+      >
         <div class="fr-input-group">
           <DsfrInputGroup
             v-model="idFonctionnelleSync"
@@ -14,7 +17,10 @@
           />
         </div>
       </div>
-      <div :class="filedsetClass">
+      <div
+        v-if="filters.includes(availableFilters.libelle)"
+        :class="filedsetClass"
+      >
         <div class="fr-input-group">
           <DsfrInputGroup
             v-model="libelleSync"
@@ -27,7 +33,10 @@
           />
         </div>
       </div>
-      <div :class="filedsetClass">
+      <div
+        v-if="filters.includes(availableFilters.organisme)"
+        :class="filedsetClass"
+      >
         <div class="fr-input-group">
           <DsfrInputGroup
             v-model="organismeSync"
@@ -40,7 +49,10 @@
           />
         </div>
       </div>
-      <div :class="filedsetClass">
+      <div
+        v-if="filters.includes(availableFilters.status)"
+        :class="filedsetClass"
+      >
         <DsfrMultiselect
           v-model="statusSync"
           label="Statut"
@@ -50,7 +62,10 @@
           @update:model-value="filtersUpdate"
         />
       </div>
-      <div :class="filedsetClass">
+      <div
+        v-if="filters.includes(availableFilters.action)"
+        :class="filedsetClass"
+      >
         <div class="fr-input-group">
           <DsfrSelect
             label="Actions à faire"
@@ -79,14 +94,20 @@
 
 <script setup lang="ts">
 import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
-const demandeSejourStore = useDemandeSejourStore();
 
-const props = defineProps<{
-  idFonctionnelle: string;
-  libelle: string;
-  organisme: string;
-  status: string[];
-}>();
+const demandeSejourStore = useDemandeSejourStore();
+const availableFilters = { ...demandesSejours.filters };
+
+const props = withDefaults(
+  defineProps<{
+    idFonctionnelle: string;
+    libelle: string;
+    organisme: string;
+    status: string[];
+    filters: string[];
+  }>(),
+  { filters: () => Object.values(demandesSejours.filters) },
+);
 
 const defaultStatus = [...Object.values(demandesSejours.statuts)];
 

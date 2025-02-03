@@ -14,6 +14,7 @@
   "dependencies": {
     "@gouvfr/dsfr": "^1.12.1",
     "@gouvminint/vue-dsfr": "^7.1.0",
+    "@vao/shared": "^1.0.0",
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.3.5",
     "@vueform/multiselect": "~2.6.7",
     "debug": "~4.3.4",

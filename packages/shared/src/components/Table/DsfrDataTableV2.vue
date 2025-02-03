@@ -96,7 +96,9 @@ defineSlots<
   }
 >();
 
-const getSlotName = (key: NestedKeys<T> | CustomKeys) => `cell:${key}`;
+const getSlotName = (
+  key: NestedKeys<T> | CustomKeys,
+): `cell:${NestedKeys<T> | CustomKeys}` => `cell:${key}`;
 
 const selectedSync = computed({
   get() {
@@ -310,7 +312,7 @@ const handleCheckboxChange = (event: Event) => {
   color: var(--blue-france-sun-113-625);
 }
 .fr-sort-icon {
-  margin-left: 2rem;
+  margin-left: 1rem;
 }
 
 .fr-table .fr-cell {

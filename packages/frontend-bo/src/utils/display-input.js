@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import { organisme } from "#imports";
 
 const InputTypes = {
   RAW: "raw",
@@ -122,11 +121,7 @@ const IPersonneMorale = {
         display: "function",
       },
     ],
-    filter: (tab) =>
-      tab.filter(
-        (e) =>
-          e.etatAdministratif !== organisme.statuEtablissementSecondaire.FERME,
-      ),
+    filter: (tab) => tab.filter((e) => e.enabled === true),
   },
 };
 
@@ -150,9 +145,13 @@ const IPersonnePhysique = {
     inputType: InputTypes.TEXT,
     label: "Prénom",
   },
+  nomNaissance: {
+    inputType: InputTypes.TEXT,
+    label: "Nom de naissance",
+  },
   nomUsage: {
     inputType: InputTypes.TEXT,
-    label: "Nom",
+    label: "Nom d'usage",
   },
   siret: {
     inputType: InputTypes.TEXT,

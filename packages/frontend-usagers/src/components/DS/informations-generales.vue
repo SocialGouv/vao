@@ -175,10 +175,10 @@ const initialValues = (() => {
     libelle: props.initData.libelle,
     dateDebut: props.initData.dateDebut
       ? dayjs(props.initData.dateDebut).format("YYYY-MM-DD")
-      : dayjs().add(1, "day").format("YYYY-MM-DD"),
+      : dayjs().add(2, "month").format("YYYY-MM-DD"),
     dateFin: props.initData.dateFin
       ? dayjs(props.initData.dateFin).format("YYYY-MM-DD")
-      : dayjs().add(8, "day").format("YYYY-MM-DD"),
+      : dayjs().add(2, "month").add(7, "day").format("YYYY-MM-DD"),
     responsableSejour,
   };
 })();

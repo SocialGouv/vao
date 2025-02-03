@@ -46,6 +46,8 @@ module.exports = async function get(req, res, next) {
       "responsable_sejour_telephone",
       "statut",
       "created_at",
+      "departement_instruction",
+      "region_instruction",
     ];
 
     const csv = [

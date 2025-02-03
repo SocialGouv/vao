@@ -22,7 +22,7 @@ module.exports = async function getExtract(req, res, next) {
   res.setHeader("Content-Disposition", 'attachment; filename="data.csv"');
 
   try {
-    const result = await BoUser.read({}, "FRA");
+    const result = await BoUser.getListe({ limit: 10000 }, "FRA");
 
     const titles = [
       { key: "nom", label: "Nom" },
@@ -37,7 +37,7 @@ module.exports = async function getExtract(req, res, next) {
 
     const csv = [
       titles.map(({ label }) => label).join(";"),
-      ...result.users.map((item) => {
+      ...result.rows.map((item) => {
         const newItem = { ...item };
         newItem.validated = newItem.validated ? "oui" : "non";
         newItem.deleted = newItem.deleted ? "non" : "oui";

@@ -2,6 +2,13 @@ const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const normalize = require("../utils/normalize");
 
+const {
+  applyFilters,
+  applyPagination,
+  sanitizePaginationParams,
+  sanitizeFiltersParams,
+} = require("../helpers/queryParams");
+
 const AppError = require("../utils/error");
 
 const log = logger(module.filename);
@@ -149,7 +156,7 @@ const query = {
     ) ur ON ur.use_id = us.id
     LEFT OUTER JOIN geo.territoires ter on ter.code = us.ter_code
     LEFT OUTER JOIN geo.territoires dep ON dep.code = us.ter_code AND dep.parent_code <> 'FRA'
-    LEFT OUTER JOIN geo.territoires reg ON ((reg.code = ter.code AND ter.parent_code = 'FRA') or (dep.parent_code = reg.code)) 
+    LEFT OUTER JOIN geo.territoires reg ON ((reg.code = ter.code AND ter.parent_code = 'FRA') or (dep.parent_code = reg.code))
     LEFT OUTER JOIN back.users ud on ud.id = us.deleted_use_id
     WHERE 1 = 1
 ${Object.keys(criterias)
@@ -162,6 +169,42 @@ ${Object.keys(criterias)
   `,
     [...additionalParams, ...Object.values(criterias)],
   ],
+  getListe: () => `
+    SELECT
+      us.id AS id,
+      us.mail AS email,
+      us.nom AS nom,
+      us.prenom AS prenom,
+      us.validated AS validated,
+      us.deleted AS deleted,
+      us.created_at as createdAt,
+      us.validated_at as validatedAt,
+      ter.label AS "territoire",
+      us.ter_code AS "territoireCode",
+      reg.label AS "region",
+      dep.label AS "departement",
+      CASE
+        WHEN us.ter_code = 'FRA' THEN 'Nationale'
+        WHEN ter.parent_code = 'FRA' THEN 'Régionale'
+        ELSE 'Départementale'
+      END AS "competence"
+    FROM back.users AS us
+    LEFT OUTER JOIN (
+      SELECT
+        use_id,
+        jsonb_agg(
+          label
+        ) AS roles
+        FROM back.user_roles ur
+        LEFT OUTER JOIN back.roles ro ON ur.rol_id = ro.id
+        GROUP BY use_id
+    ) ur ON ur.use_id = us.id
+    LEFT OUTER JOIN geo.territoires ter on ter.code = us.ter_code
+    LEFT OUTER JOIN geo.territoires dep ON dep.code = us.ter_code AND dep.parent_code <> 'FRA'
+    LEFT OUTER JOIN geo.territoires reg ON ((reg.code = ter.code AND ter.parent_code = 'FRA') or (dep.parent_code = reg.code))
+    LEFT OUTER JOIN back.users ud on ud.id = us.deleted_use_id
+    WHERE 1 = 1
+  `,
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
 SELECT
@@ -183,7 +226,7 @@ ${additionalParamsQuery}
       us.ter_code as "territoireCode",
       terp.label as "territoireLibelle"
     FROM geo.territoires terp
-    LEFT JOIN geo.territoires ters ON ters.parent_code = terp.code 
+    LEFT JOIN geo.territoires ters ON ters.parent_code = terp.code
     INNER JOIN back.users us ON (terp.code = us.ter_code OR ters.code = us.ter_code) AND us.ter_code <> 'FRA'
     WHERE terp.code =  $1 AND us.validated = true AND us.deleted = false
     GROUP BY 1,2,3,4,5,6
@@ -542,6 +585,108 @@ module.exports.read = async (
   return {
     total: total.rows[0].count,
     users: response.rows,
+  };
+};
+
+module.exports.getListe = async (queryParams, territoireCode) => {
+  const titles = [
+    {
+      key: "us.nom",
+      queryKey: "nom",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "us.prenom",
+      queryKey: "prenom",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "us.mail",
+      queryKey: "email",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "us.territoire",
+      query: (index, value) => {
+        if (value === "FRA") {
+          return {
+            query: "",
+            queryParams: [],
+          };
+        }
+        return {
+          query: `
+            (unaccent(ter.label) ILIKE unaccent('%' || $${index} || '%')
+            OR ter.code ILIKE '%' || $${index} || '%')
+          `,
+          queryParams: [value],
+        };
+      },
+      queryKey: "territoire",
+      sortEnabled: true,
+      type: "custom",
+    },
+    {
+      key: "us.validated",
+      queryKey: "validated",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "us.editable",
+      queryKey: "editable",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      query: (index, value) => {
+        const status = {
+          disabled: () => " us.deleted = true",
+          notValided: () => "us.validated = false",
+          valied: () => "us.validated = true",
+        };
+        return {
+          query: Object.keys(status).includes(value) ? status[value]() : "",
+          queryParams: [],
+        };
+      },
+      queryKey: "statut",
+      type: "custom",
+    },
+  ];
+  const filterParams = sanitizeFiltersParams(queryParams, titles);
+  let queryGet = query.getListe();
+  const params = [];
+  if (territoireCode !== "FRA") {
+    queryGet = `
+      ${queryGet}
+      AND (ter.code = $1 OR ter.parent_code = $1)
+    `;
+    params.push(territoireCode);
+  }
+  const filterQuery = applyFilters(queryGet, params, filterParams);
+  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
+    queryParams,
+    titles,
+  );
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  );
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
   };
 };
 

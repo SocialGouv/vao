@@ -4,6 +4,7 @@
     v-model:organisme="organisme"
     v-model:libelle="libelle"
     v-model:status="status"
+    :filters="filters"
     @filters-update="updateData"
   />
   <DsfrDataTableV2Wrapper
@@ -66,6 +67,8 @@ import {
   DemandeStatusBadge,
   DsfrDataTableV2Wrapper,
   ValidationModal,
+  usePagination,
+  isValidParams,
 } from "@vao/shared";
 import dayjs from "dayjs";
 
@@ -76,6 +79,18 @@ const data = computed(() => demandeSejourStore.demandes);
 const total = computed(() => demandeSejourStore.total);
 
 const { query } = route;
+
+const props = defineProps({
+  organismeId: { type: String, default: null },
+});
+
+const filters = [
+  demandesSejours.filters.idFonctionnelle,
+  demandesSejours.filters.libelle,
+  ...(!props.organismeId ? [demandesSejours.filters.organisme] : []),
+  demandesSejours.filters.status,
+  demandesSejours.filters.action,
+];
 
 const titles = [
   {
@@ -131,6 +146,7 @@ const sortableTitles = titles.flatMap((title) =>
 const defaultStatus = [...Object.values(demandesSejours.statuts)];
 const idFonctionnelle = ref(query.idFonctionnelle ?? "");
 const libelle = ref(query.libelle ?? "");
+const organismeId = ref(props.organismeId ?? "");
 const organisme = ref(query.organisme ?? "");
 const status = ref(
   query.statuts
@@ -139,17 +155,11 @@ const status = ref(
         .filter((statut) => Object.values(defaultStatus).includes(statut))
     : [],
 );
-const limit = ref(parseInt(query.limit, 10) || 10);
-const offset = ref(parseInt(query.offset, 10) || 0);
-const sort = ref(sortableTitles.includes(query.sort) ? query.sort : "");
-const sortDirection = ref(
-  ["", "asc", "desc"].includes(query.sortDirection) ? query.sortDirection : "",
-);
 
-const isValidParams = (params) =>
-  params !== null &&
-  params !== "" &&
-  (!Array.isArray(params) || params.length > 0);
+const { limit, offset, sort, sortDirection } = usePagination(
+  query,
+  sortableTitles,
+);
 
 const getSearchParams = () => ({
   ...(isValidParams(idFonctionnelle.value)
@@ -174,7 +184,12 @@ const updateData = () => {
       ...(isValidParams(sortDirection.value)
         ? { sortDirection: sortDirection.value.toUpperCase() }
         : {}),
-      search: getSearchParams(),
+      search: {
+        ...getSearchParams(),
+        ...(isValidParams(organismeId.value)
+          ? { organismeId: organismeId.value }
+          : {}),
+      },
     };
 
     demandeSejourStore.fetchDemandes(query);
