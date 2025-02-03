@@ -71,11 +71,12 @@ const query = {
     us.prenom,
     us.telephone,
     us.status_code as "statusCode",
-    o.personne_morale->>'siret' as "siret",
-    o.personne_morale->>'raisonSociale' as "raisonSociale"
+    pm.siret as "siret",
+    pm.raison_sociale as "raisonSociale"
   FROM front.users us
   LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
   LEFT JOIN front.organismes o ON uo.org_id = o.id
+  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
   WHERE
     mail = $1
     AND pwd = crypt($2, CASE
@@ -99,11 +100,12 @@ const query = {
         us.telephone as "telephone",
         us.created_at as "createdAt",
         us.status_code as "statusCode",
-        o.personne_morale->>'siret' as "siret",
-        o.personne_morale->>'raisonSociale' as "raisonSociale"
+        pm.siret as "siret",
+        pm.raison_sociale as "raisonSociale"
       FROM front.users us
       LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
       LEFT JOIN front.organismes o ON uo.org_id = o.id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
       WHERE 1=1
       ${Object.keys(criterias)
         .map((criteria, i) => ` AND us.${criteria} = $${i + 1}`)
@@ -138,12 +140,13 @@ const query = {
       us.telephone as "telephone",
       us.created_at as "createdAt",
       us.status_code as "statusCode",
-      o.personne_morale->>'siret' as "siret",
-      o.personne_morale->>'raisonSociale' as "raisonSociale"
+      pm.siret as "siret",
+      pm.raison_sociale as "raisonSociale"
     FROM front.users us
     INNER JOIN updated_user uu ON us.id = uu.id
     INNER JOIN front.user_organisme uo ON us.id = uo.use_id
     INNER JOIN front.organismes o ON uo.org_id = o.id;
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
   `,
 };
 
