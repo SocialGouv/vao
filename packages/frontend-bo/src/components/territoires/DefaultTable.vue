@@ -21,8 +21,8 @@
     </template>
     <template #cell:custom-edit="{ row }">
       <NuxtLink
-        :to="`/comptes/${row.id}`"
-        title="Naviguer vers le compte"
+        :to="`/territoires/${row.territoireId}`"
+        title="Naviguer vers la fiche territoire"
         class="no-background-image"
       >
         <DsfrButton
