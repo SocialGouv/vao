@@ -27,7 +27,7 @@ module.exports = async (req, res, next) => {
     const file = await DocumentService.getFile(uuid);
     const readStream = new stream.PassThrough();
     readStream.end(file.file);
-    res.set("Content-disposition", `attachment; filename=${metaData.filename}`);
+    res.set("Content-disposition", `attachment; filename=${file.filename}`);
     res.set("Content-Type", "text/plain");
     readStream.pipe(res);
     // // -- next migration step: read files from S3
