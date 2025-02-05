@@ -557,7 +557,6 @@ module.exports.getByDepartementCodes = async (departementsCodes, params) => {
   return rows[0];
 };
 
-
 module.exports.getByUserId = async (userId, queryParams) => {
   log.i("getByUserId - IN", { userId });
   const queryParamsWithUserId = { ...queryParams, userId };

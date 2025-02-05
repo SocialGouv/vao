@@ -2,6 +2,7 @@
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
 import { MultiSelectOption } from "@vao/shared";
+import { ref } from "vue";
 
 const toaster = useToaster();
 
@@ -22,6 +23,8 @@ const NB_CAR_ADDRESSE_MIN = 5;
 
 const options = ref([]);
 const isLoading = ref(false);
+
+const isModalOpen = ref(false);
 
 const message = computed(() => props.errorMessage || props.validMessage);
 const messageClass = computed(() =>
@@ -72,6 +75,16 @@ const searchAddressDebounced = debounce(async function (queryString) {
 function select(_value, option) {
   log.i("select", unref(option));
   emits("select", unref(option));
+}
+
+function onManualChooseAddress(adresse) {
+  options.value = [{ ...adresse }];
+  onCloseModal();
+  select(null, adresse);
+}
+
+function onCloseModal() {
+  isModalOpen.value = false;
 }
 </script>
 
@@ -125,6 +138,12 @@ function select(_value, option) {
             </template>
             <template #no-result> Pas de résultat</template>
           </Multiselect>
+          <div class="container">
+            <DsfrButton type="button" @click="isModalOpen = true" size="sm"
+              >Adresse introuvable
+            </DsfrButton>
+          </div>
+
           <div v-if="message" class="fr-messages-group">
             <p :class="messageClass">
               <span>{{ message }}</span>
@@ -132,8 +151,28 @@ function select(_value, option) {
           </div>
         </div>
       </div>
+      <DsfrModal
+        ref="modal-search-address-municipality"
+        name="modal-search-address-municipality"
+        :opened="isModalOpen"
+        title="Ajouter une adresse"
+        size="md"
+        @close="onCloseModal"
+      >
+        <AddressSearchAddressMunicipality
+          @choose-manual-address="onManualChooseAddress"
+        />
+      </DsfrModal>
     </div>
   </div>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  width: 100%;
+}
+</style>
