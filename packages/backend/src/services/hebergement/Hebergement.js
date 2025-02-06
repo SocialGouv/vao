@@ -551,6 +551,7 @@ module.exports.getByUserId = async (userId, queryParams) => {
       filterEnabled: true,
       key: "h.nom",
       queryKey: "nom",
+      sortEnabled: true,
       type: "default",
     },
     {
