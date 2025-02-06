@@ -101,6 +101,11 @@
         :show-buttons="false"
         :modifiable="false"
       ></OrganismePersonneMorale>
+      <OrganismeEtablissementsSecondaires
+        v-if="organismeStore.isSiegeSocial"
+        :modifiable="false"
+        :show-buttons="false"
+      />
     </div>
 
     <div v-if="props.showButtons" class="fr-fieldset">

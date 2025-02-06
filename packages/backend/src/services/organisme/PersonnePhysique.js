@@ -102,7 +102,9 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
   if (Object.keys(parametre).length === 0) {
     return null;
   }
-  const { rowCount } = await client.query(query.getIdByOrganiseId, [organismeId]);
+  const { rowCount } = await client.query(query.getIdByOrganiseId, [
+    organismeId,
+  ]);
   rowCount === 0
     ? await create(client, organismeId, parametre)
     : await client.query(query.update, [

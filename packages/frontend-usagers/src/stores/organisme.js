@@ -9,6 +9,12 @@ export const useOrganismeStore = defineStore("organismes", {
     organismeCourant: null,
     usersFO: [],
   }),
+  getters: {
+    isSiegeSocial: (state) =>
+      state.organismeCourant &&
+      state.organismeCourant.typeOrganisme === "personne_morale" &&
+      state.organismeCourant.personneMorale.siegeSocial,
+  },
   actions: {
     async fetchOrganismes() {
       try {
@@ -25,7 +31,6 @@ export const useOrganismeStore = defineStore("organismes", {
         log.i("fetchOrganismes - DONE with error");
       }
     },
-
     async fetchUsersOrganisme() {
       log.i("fetchUsersOrganisme - IN");
       try {
@@ -56,6 +61,7 @@ export const useOrganismeStore = defineStore("organismes", {
         const { organisme } = await $fetchBackend(`/organisme`, {
           credentials: "include",
         });
+
         // TODO : à retirer après que cette api ne renvoie que l'organisme souhaité
         if (!organisme || organisme.length === 0) {
           this.organismeCourant = null;

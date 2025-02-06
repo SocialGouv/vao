@@ -21,6 +21,7 @@ const PersonnePhysique = require("./organisme/PersonnePhysique");
 const PersonneMorale = require("./organisme/PersonneMorale");
 const ProtocoleSanitaire = require("./organisme/ProtocoleSanitaire");
 const ProtocoleTransport = require("./organisme/ProtocoleTransport");
+const EtablissementsSecondaires = require("./organisme/EtablissementsSecondaires");
 
 const log = logger(module.filename);
 
@@ -436,6 +437,27 @@ FROM back.organisme_non_agree ona
       edited_at = NOW()
     WHERE id = $1
 `,
+  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
+  // Utilisé uniquement pour mettre a jour les json personnes_morale
+  // lors de l'ajout des etablissement secondaire.
+  getPersonneMorale: `
+  SELECT
+    personne_morale AS "personneMorale"
+  FROM
+    front.organismes
+  Where id = $1
+  `,
+  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
+  // Utilisé uniquement pour mettre a jour les json personnes_morale
+  // lors de l'ajout des etablissement secondaire.
+  updatePersonneMorale: `
+    UPDATE front.organismes
+    SET
+      personne_morale = $2,
+      complet = complet AND $3,
+      edited_at = NOW()
+    WHERE id = $1
+`,
 };
 
 module.exports.create = async (type, parametre) => {
@@ -445,7 +467,11 @@ module.exports.create = async (type, parametre) => {
     await client.query("BEGIN");
     const response =
       type === partOrganisme.PERSONNE_MORALE
-        ? await client.query(query.create, [type, parametre, {}])
+        ? await client.query(query.create, [
+            type,
+            { ...parametre, etablissements: [] },
+            {},
+          ])
         : await client.query(query.create, [type, {}, parametre]);
     const { organismeId } = response && response.rows[0];
     const responseNew =
@@ -489,12 +515,21 @@ module.exports.update = async (type, parametre, organismeId) => {
     await client.query("BEGIN");
     switch (type) {
       case partOrganisme.PERSONNE_MORALE: {
+        const { rows } = await pool.query(query.getPersonneMorale, [
+          organismeId,
+        ]);
+        const etablissementsSecondaires =
+          rows[0].personneMorale.etablissements ?? [];
+        const parametreWithPersonneMorale = {
+          ...parametre,
+          etablissements: etablissementsSecondaires,
+        };
         const complet =
           await Organisme.schema(regions).personneMorale.isValid(parametre);
         await client.query(query.updatePersonne, [
           organismeId,
           type,
-          parametre,
+          parametreWithPersonneMorale,
           {},
           complet,
         ]);
@@ -512,6 +547,30 @@ module.exports.update = async (type, parametre, organismeId) => {
           complet,
         ]);
         await PersonnePhysique.createOrUpdate(client, organismeId, parametre);
+        break;
+      }
+      case partOrganisme.ETABLISSEMENTS_SECONDAIRES: {
+        const { rows } = await client.query(query.getPersonneMorale, [
+          organismeId,
+        ]);
+        const personneMorale = rows[0].personneMorale ?? {};
+        const parametreWithPersonneMorale = {
+          ...personneMorale,
+          etablissements: parametre.etablissements,
+        };
+        const complet =
+          await Organisme.schema(regions).personneMorale.isValid(parametre);
+
+        client.query(query.updatePersonneMorale, [
+          organismeId,
+          parametreWithPersonneMorale,
+          complet,
+        ]);
+        await EtablissementsSecondaires.createOrUpdate(
+          client,
+          organismeId,
+          parametre,
+        );
         break;
       }
       case partOrganisme.PROTOCOLE_TRANSPORT: {

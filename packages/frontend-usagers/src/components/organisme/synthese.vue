@@ -2,7 +2,9 @@
   <div>
     <div class="fr-grid-row fr-my-5v">
       <DsfrAccordionsGroup v-model="expandeIndex">
-        <DsfrAccordion :id="1">
+        <DsfrAccordion
+          :id="tabs.findIndex((t) => t.id === 'info-generales') + 1"
+        >
           <template #title>
             <span>Renseignements généraux &nbsp;</span>
             <DsfrBadge
@@ -13,21 +15,44 @@
           </template>
 
           <OrganismePersonnePhysique
-            v-if="props.initOrganisme.typeOrganisme === 'personne_physique'"
-            :init-data="props.initOrganisme.personnePhysique"
+            v-if="
+              organismeStore.organismeCourant.typeOrganisme ===
+              'personne_physique'
+            "
+            :init-data="organismeStore.organismeCourant.personnePhysique"
             :modifiable="false"
             :show-buttons="false"
             :validate-on-mount="true"
           />
           <OrganismePersonneMorale
-            v-if="props.initOrganisme.typeOrganisme === 'personne_morale'"
-            :init-data="props.initOrganisme.personneMorale"
+            v-if="
+              organismeStore.organismeCourant.typeOrganisme ===
+              'personne_morale'
+            "
+            :init-data="organismeStore.organismeCourant.personneMorale"
             :modifiable="false"
             :validate-on-mount="true"
             :show-buttons="false"
           />
         </DsfrAccordion>
-        <DsfrAccordion :id="2">
+        <DsfrAccordion
+          v-if="organismeStore.isSiegeSocial"
+          :id="tabs.findIndex((t) => t.id === 'etablissement-secondaires') + 1"
+        >
+          <template #title>
+            <span>Etablissements secondaires &nbsp;</span>
+            <DsfrBadge
+              :label="renseignementsGeneraux.label"
+              :small="true"
+              :type="renseignementsGeneraux.type"
+            />
+          </template>
+          <OrganismeEtablissementsSecondaires
+            :modifiable="false"
+            :show-buttons="false"
+          />
+        </DsfrAccordion>
+        <DsfrAccordion :id="tabs.findIndex((t) => t.id === 'agrement') + 1">
           <template #title>
             <span>Agrément &nbsp;</span>
             <DsfrBadge
@@ -37,12 +62,14 @@
             />
           </template>
           <OrganismeAgrement
-            :init-agrement="props.initOrganisme.agrement ?? {}"
+            :init-agrement="organismeStore.organismeCourant.agrement ?? {}"
             :modifiable="false"
             :show-buttons="false"
           />
         </DsfrAccordion>
-        <DsfrAccordion :id="3" title="Protocole de transport">
+        <DsfrAccordion
+          :id="tabs.findIndex((t) => t.id === 'protocole-transport') + 1"
+        >
           <template #title>
             <span>Informations sur le transport &nbsp;</span>
             <DsfrBadge
@@ -52,13 +79,17 @@
             />
           </template>
           <ProtocoleTransport
-            :init-data="props.initOrganisme.protocoleTransport ?? {}"
+            :init-data="
+              organismeStore.organismeCourant.protocoleTransport ?? {}
+            "
             :modifiable="false"
             :validate-on-mount="true"
             :show-buttons="false"
           ></ProtocoleTransport>
         </DsfrAccordion>
-        <DsfrAccordion :id="4" title="Protocole sanitaire">
+        <DsfrAccordion
+          :id="tabs.findIndex((t) => t.id === 'protocole-sanitaire') + 1"
+        >
           <template #title>
             <span>Informations sanitaires &nbsp;</span>
             <DsfrBadge
@@ -68,7 +99,9 @@
             />
           </template>
           <ProtocoleSanitaire
-            :init-data="props.initOrganisme.protocoleSanitaire ?? {}"
+            :init-data="
+              organismeStore.organismeCourant.protocoleSanitaire ?? {}
+            "
             :modifiable="false"
             :validate-on-mount="true"
             :show-buttons="false"
@@ -115,19 +148,23 @@ import * as yup from "yup";
 import { useForm } from "vee-validate";
 import { IsDownloading } from "@vao/shared";
 
+const organismeStore = useOrganismeStore();
+
 const props = defineProps({
-  initOrganisme: { type: Object, default: null, required: true },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
+  isSiegeSocial: { type: Boolean, required: false, default: false },
 });
 
 const regionStore = useRegionStore();
 regionStore.fetch();
 
 const emit = defineEmits(["previous", "finalize"]);
+
+const tabs = organismeMenus.menus(organismeStore.isSiegeSocial);
 const expandeIndex = ref(-1);
 
-const initialValues = { ...props.initOrganisme };
+const initialValues = { ...organismeStore.organismeCourant };
 const validationSchema = computed(() =>
   yup.object(organisme.schema(regionStore.regions)),
 );

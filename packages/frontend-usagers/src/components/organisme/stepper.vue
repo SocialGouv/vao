@@ -2,12 +2,22 @@
   <DsfrStepper :steps="steps" :current-step="currentStep + 1" />
 </template>
 <script setup>
+const organismeStore = useOrganismeStore();
+
 const props = defineProps({
-  step: { type: String, default: organismeMenus[0].id, required: false },
+  step: {
+    type: String,
+    default: "info-generales",
+    required: false,
+  },
 });
 
-const steps = organismeMenus.map((o) => o.text);
+const steps = organismeMenus
+  .menus(organismeStore.isSiegeSocial)
+  .map((o) => o.text);
 const currentStep = computed(() => {
-  return organismeMenus.findIndex((o) => o.id === props.step);
+  return organismeMenus
+    .menus(organismeStore.isSiegeSocial)
+    .findIndex((o) => o.id === props.step);
 });
 </script>
