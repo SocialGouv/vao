@@ -73,7 +73,7 @@ module.exports = {
   ) => {
     const paginatedQuery = `
       ${query}
-      ${sortBy ? `ORDER BY LOWER(${sortBy}) ${sortDirection}` : ""}
+      ${sortBy ? `ORDER BY LOWER(${sortBy}::varchar) ${sortDirection}` : ""}
       LIMIT $${params.length + 1}
       OFFSET $${params.length + 2};
     `;
@@ -114,7 +114,6 @@ module.exports = {
     titles,
     defaultParams = {},
   ) => {
-    const defaultSortDirection = ["", "ASC", "DESC"];
     const defaultLimit = 10;
     const defaultOffset = 0;
     return {
@@ -125,9 +124,10 @@ module.exports = {
         ? (defaultParams?.offset ?? defaultOffset)
         : parseInt(offset, 10),
       sortBy: getSort(sortBy, titles, defaultParams.sortBy),
-      sortDirection: defaultSortDirection.includes(sortDirection)
-        ? sortDirection
-        : "",
+      sortDirection: getSortDirection(
+        sortDirection,
+        defaultParams.sortDirection,
+      ),
     };
   },
 };
@@ -140,4 +140,14 @@ const getSort = (sortBy, titles, defaultSort = "") => {
     }
   }
   return defaultSort;
+};
+
+const getSortDirection = (sortDirection, defaultSortDirection) => {
+  const possibleSortDirections = ["", "ASC", "DESC"];
+  if (sortDirection) {
+    return possibleSortDirections.includes(sortDirection) ? sortDirection : "";
+  }
+  return possibleSortDirections.includes(defaultSortDirection)
+    ? defaultSortDirection
+    : "";
 };
