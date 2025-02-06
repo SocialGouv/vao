@@ -1108,8 +1108,10 @@ module.exports.get = async (organismesId, queryParams) => {
   ];
   const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
     queryParams,
+    titles,
     {
-      sortBy: titles,
+      sortBy: "ds.edited_at",
+      sortDirection: "DESC",
     },
   );
   const filterParams = sanitizeFiltersParams(queryParams, titles);

@@ -72,6 +72,8 @@ import {
 } from "@vao/shared";
 import dayjs from "dayjs";
 
+const toaster = useToaster();
+
 const demandeSejourStore = useDemandeSejourStore();
 const userStore = useUserStore();
 const route = useRoute();
