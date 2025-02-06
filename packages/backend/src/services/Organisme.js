@@ -687,13 +687,18 @@ module.exports.getListe = async (queryParams) => {
       type: "default",
     },
     {
-      query: (index) => `
+      query: (index, value) => {
+        return {
+          query: `
         (
           (o.type_organisme = 'personne_morale' AND o.personne_morale->>'raisonSociale' ILIKE '%' ||  unaccent($${index}) || '%')
             OR
           (o.type_organisme = 'personne_physique' AND o.personne_physique->>'nomUsage' ILIKE '%' ||  unaccent($${index}) || '%')
         )
       `,
+          queryParams: [value],
+        };
+      },
       queryKey: "name",
       type: "custom",
     },
