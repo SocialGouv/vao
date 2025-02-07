@@ -2,6 +2,8 @@
   <HebergementsFilters
     v-model:nom="nom"
     v-model:adresse="adresse"
+    v-model:statut="statut"
+    :status-filtre="status"
     @filters-update="updateData"
   />
   <DsfrDataTableV2Wrapper
@@ -55,6 +57,8 @@
 <script setup>
 import { DsfrDataTableV2Wrapper } from "@vao/shared";
 import HebergementStatusBadge from "./HebergementStatusBadge.vue";
+import hebergements from "../../utils/hebergements";
+
 const hebergementStore = useHebergementStore();
 const departementStore = useDepartementStore();
 const route = useRoute();
@@ -62,6 +66,9 @@ const route = useRoute();
 const data = computed(() => hebergementStore.hebergements);
 const total = computed(() => hebergementStore.hebergementsTotal);
 const { query } = route;
+
+const status = hebergements.statutsValues;
+
 const titles = [
   {
     key: "nom",
@@ -93,6 +100,7 @@ const sortableTitles = titles.flatMap((title) =>
 );
 const nom = ref(query.nom ?? "");
 const adresse = ref(query.adresse ?? "");
+const statut = ref(query.statut ?? "");
 const limit = ref(parseInt(query.limit, 10) || 10);
 const offset = ref(parseInt(query.offset, 10) || 0);
 const sort = ref(sortableTitles.includes(query.sort) ? query.sort : "");
@@ -106,6 +114,7 @@ const isValidParams = (params) =>
 const getSearchParams = () => ({
   ...(isValidParams(nom.value) ? { nom: nom.value } : {}),
   ...(isValidParams(adresse.value) ? { adresse: adresse.value } : {}),
+  ...(isValidParams(statut.value) ? { statut: statut.value } : {}),
 });
 let timeout = null;
 departementStore.fetch();
