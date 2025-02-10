@@ -1,9 +1,24 @@
 <template>
-  <div>
+  <div class="modal-container">
     <div class="fr-fieldset">
+      <div class="fr-fieldset__element">
+        <div class="fr-input-group fr-col-12">
+          <DsfrInputGroup
+            name="voie"
+            label="Indiquer la voie"
+            :label-visible="true"
+            :model-value="voie"
+            hint="Saisissez la voie. Exemple: 18 rue de la république / lieudit des Trois-Chênes"
+            @update:model-value="
+              voie = $event;
+              setAdresse();
+            "
+          />
+        </div>
+      </div>
       <div class="fr-input-group fr-col-12">
         <div class="fr-fieldset__element">
-          <label class="fr-label"> Selectionner un code postal </label>
+          <label class="fr-label"> Sélectionner un code postal </label>
           <Multiselect
             value-prop="label"
             mode="single"
@@ -16,7 +31,12 @@
             autocomplete="off"
             :filter-results="false"
             @search-change="searchAddress"
-            @select="selectMunicipality"
+            @select="
+              (value, option) => {
+                selectMunicipality(value, option);
+                setAdresse();
+              }
+            "
           >
             <template #option="{ option, isPointed }">
               <MultiSelectOption
@@ -27,23 +47,13 @@
             <template #no-result> Pas de résultat</template>
           </Multiselect>
         </div>
-        <div class="fr-fieldset__element">
-          <div class="fr-input-group fr-col-12">
-            <DsfrInputGroup
-              name="adresse"
-              label="Adresse"
-              :label-visible="true"
-              :model-value="values.label"
-              hint="Saisissez l'adresse. Exemple: 18 rue de la république, 39400 Morez"
-              @update:model-value="selectLabel"
-            />
-          </div>
-        </div>
       </div>
     </div>
+    <label class="fr-label"> Adresse selectionnée : </label>
+    <DsfrHighlight small>{{ adresseLabel }}</DsfrHighlight>
     <DsfrButton
       type="button"
-      label="Choisir la ville"
+      label="Valider"
       primary
       :disabled="!meta.valid"
       @click="validate"
@@ -68,6 +78,15 @@ const NB_CAR_ADDRESSE_MIN = 3;
 
 const options = ref([]);
 const isLoading = ref(false);
+
+const voie = ref("");
+const municipality = ref({
+  label: "",
+  codeInsee: "",
+  codePostal: "",
+  coordinates: [],
+  departement: "",
+});
 
 const validationSchema = yup.object(adresseSchema({ isFromAPIAdresse: true }));
 const { values, meta, setValues, resetForm } = useForm({
@@ -114,20 +133,41 @@ const searchAddressDebounced = debounce(async function (queryString) {
   log.d("searchAddressDebounced - DONE", { queryString });
 }, 500);
 
-function selectMunicipality(_option, municipality) {
-  setValues({
-    ...values,
-    codeInsee: municipality.codeInsee,
-    codePostal: municipality.codePostal,
-    coordinates: municipality.coordinates,
-    departement: municipality.departement,
-  });
+function selectMunicipality(_value, option) {
+  municipality.value = {
+    label: option.label,
+    codeInsee: option.codeInsee,
+    codePostal: option.codePostal,
+    coordinates: option.coordinates,
+    departement: option.departement,
+  };
 }
 
-function selectLabel(label) {
+const adresseLabel = computed(() => {
+  const voieFull = voie.value.trim();
+  const municipalityFull =
+    `${municipality.value.codePostal} ${municipality.value.label}`.trim();
+  if (voieFull.length > 0 && municipalityFull.length > 0) {
+    return `${voieFull}, ${municipalityFull}`;
+  } else if (voieFull.length > 0) {
+    return voieFull;
+  } else if (municipalityFull.length > 0) {
+    return municipalityFull;
+  } else return "";
+});
+
+function setAdresse() {
   setValues({
-    ...values,
-    label,
+    codeInsee: municipality.value.codeInsee,
+    codePostal: municipality.value.codePostal,
+    coordinates: municipality.value.coordinates,
+    departement: municipality.value.departement,
+    label:
+      voie.value?.length &&
+      municipality.value.label?.length &&
+      municipality.value.codePostal?.length
+        ? adresseLabel.value
+        : "",
   });
 }
 
@@ -139,3 +179,13 @@ function validate() {
   resetForm();
 }
 </script>
+
+<style scoped>
+.modal-container {
+  padding-top: 1rem;
+}
+
+.fr-fieldset > div {
+  margin-bottom: 2rem;
+}
+</style>
