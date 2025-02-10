@@ -143,6 +143,10 @@ const { value: hebergements, handleChange: onHebergementsChange } =
 hebergementStore.fetch({
   organismeId: demandeSejourStore.demandeCourante.organismeId,
   statut: hebergementUtils.statut.ACTIF,
+  // TO DO : Juste pour le hotfix. A élargir avec valeur par défaut dans applyPagination
+  limit: 10000,
+  offset: 0,
+  sortBy: "nom",
 });
 
 const syntheseRows = computed(() => {
