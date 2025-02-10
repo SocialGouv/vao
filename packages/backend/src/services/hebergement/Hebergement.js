@@ -562,7 +562,7 @@ module.exports.getByUserId = async (userId, queryParams) => {
     },
     {
       filterEnabled: true,
-      key: "h.statut_id",
+      key: "hs.value",
       queryKey: "statut",
       type: "default",
     },

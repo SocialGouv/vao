@@ -1,31 +1,27 @@
-const statutsValues = [
-  {
-    value: "",
-    text: "Tous",
-    label: "",
-  },
-  {
-    value: 1,
-    text: "Brouillon",
-    label: "brouillon",
-  },
-  {
-    value: 2,
-    text: "Actif",
-    label: "actif",
-  },
-  {
-    value: 3,
-    text: "Désactivé",
-    label: "desactive",
-  },
-];
-
 const statuts = {
   ACTIF: "actif",
   BROUILLON: "brouillon",
   DESACTIVE: "desactive",
 };
+
+const statutsValues = [
+  {
+    value: "",
+    text: "Tous",
+  },
+  {
+    value: statuts.BROUILLON,
+    text: "Brouillon",
+  },
+  {
+    value: statuts.ACTIF,
+    text: "Actif",
+  },
+  {
+    value: statuts.DESACTIVE,
+    text: "Désactivé",
+  },
+];
 
 export default {
   statuts,
