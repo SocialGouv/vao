@@ -36,7 +36,6 @@ const headers = [
   {
     column: "adresse",
     text: "Adresse",
-    format: (row) => row.adresse.label,
   },
   {
     column: "telephone",
