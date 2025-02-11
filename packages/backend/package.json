@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.649.0",
-    "@sentry/node": "^8.47.0",
+    "@sentry/node": "^8.49.0",
     "@sentry/profiling-node": "^8.47.0",
     "axios": "^1.7.4",
     "body-parser": "~1.20.3",
@@ -45,7 +45,7 @@
     "lint-staged": "^15.2.2",
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
-    "supertest": "^6.3.1"
+    "supertest": "^7.0.0"
   },
   "lint-staged": {
     "src/**/*.{js,ts}": "npx eslint --cache --fix --max-warnings=0"
