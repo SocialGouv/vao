@@ -2813,7 +2813,7 @@
   resolved "https://registry.npmjs.org/@sentry/core/-/core-8.55.0.tgz"
   integrity sha512-6g7jpbefjHYs821Z+EBJ8r4Z7LT5h80YSWRJaylGS4nW5W5Z2KXzpdnyFarv37O7QjauzVC2E+PABmpkw5/JGA==
 
-"@sentry/node@8.55.0", "@sentry/node@^8.49.0":
+"@sentry/node@8.55.0":
   version "8.55.0"
   resolved "https://registry.npmjs.org/@sentry/node/-/node-8.55.0.tgz"
   integrity sha512-h10LJLDTRAzYgay60Oy7moMookqqSZSviCWkkmHZyaDn+4WURnPp5SKhhfrzPRQcXKrweiOwDSHBgn1tweDssg==
@@ -2853,6 +2853,54 @@
     "@sentry/core" "8.55.0"
     "@sentry/opentelemetry" "8.55.0"
     import-in-the-middle "^1.11.2"
+
+"@sentry/node@^8.49.0":
+  version "8.54.0"
+  resolved "https://registry.npmjs.org/@sentry/node/-/node-8.54.0.tgz"
+  integrity sha512-z9ak481OtCw3V4l55ke/9FOiorF2J/niO1J1gvGefXpgFucpw0M3qqEFjB5cpg9HoZM8Y1WtA1OFusfTAnvcXg==
+  dependencies:
+    "@opentelemetry/api" "^1.9.0"
+    "@opentelemetry/context-async-hooks" "^1.30.1"
+    "@opentelemetry/core" "^1.30.1"
+    "@opentelemetry/instrumentation" "^0.57.1"
+    "@opentelemetry/instrumentation-amqplib" "^0.46.0"
+    "@opentelemetry/instrumentation-connect" "0.43.0"
+    "@opentelemetry/instrumentation-dataloader" "0.16.0"
+    "@opentelemetry/instrumentation-express" "0.47.0"
+    "@opentelemetry/instrumentation-fastify" "0.44.1"
+    "@opentelemetry/instrumentation-fs" "0.19.0"
+    "@opentelemetry/instrumentation-generic-pool" "0.43.0"
+    "@opentelemetry/instrumentation-graphql" "0.47.0"
+    "@opentelemetry/instrumentation-hapi" "0.45.1"
+    "@opentelemetry/instrumentation-http" "0.57.1"
+    "@opentelemetry/instrumentation-ioredis" "0.47.0"
+    "@opentelemetry/instrumentation-kafkajs" "0.7.0"
+    "@opentelemetry/instrumentation-knex" "0.44.0"
+    "@opentelemetry/instrumentation-koa" "0.47.0"
+    "@opentelemetry/instrumentation-lru-memoizer" "0.44.0"
+    "@opentelemetry/instrumentation-mongodb" "0.51.0"
+    "@opentelemetry/instrumentation-mongoose" "0.46.0"
+    "@opentelemetry/instrumentation-mysql" "0.45.0"
+    "@opentelemetry/instrumentation-mysql2" "0.45.0"
+    "@opentelemetry/instrumentation-nestjs-core" "0.44.0"
+    "@opentelemetry/instrumentation-pg" "0.50.0"
+    "@opentelemetry/instrumentation-redis-4" "0.46.0"
+    "@opentelemetry/instrumentation-tedious" "0.18.0"
+    "@opentelemetry/instrumentation-undici" "0.10.0"
+    "@opentelemetry/resources" "^1.30.1"
+    "@opentelemetry/sdk-trace-base" "^1.30.1"
+    "@opentelemetry/semantic-conventions" "^1.28.0"
+    "@prisma/instrumentation" "5.22.0"
+    "@sentry/core" "8.54.0"
+    "@sentry/opentelemetry" "8.54.0"
+    import-in-the-middle "^1.11.2"
+
+"@sentry/opentelemetry@8.54.0":
+  version "8.54.0"
+  resolved "https://registry.npmjs.org/@sentry/opentelemetry/-/opentelemetry-8.54.0.tgz"
+  integrity sha512-Tkmd8bmXMx0PKZF53ywk/FfvDrphX8NdPH5N53HxyMvGxSf2trZkTuOSFJg6zKibyGYO6+PUeGO3g2WJKUxwGA==
+  dependencies:
+    "@sentry/core" "8.54.0"
 
 "@sentry/opentelemetry@8.55.0":
   version "8.55.0"
@@ -4013,9 +4061,9 @@
     superjson "^2.2.1"
 
 "@vue/devtools-shared@^7.6.8":
-  version "7.7.2"
-  resolved "https://registry.npmjs.org/@vue/devtools-shared/-/devtools-shared-7.7.2.tgz"
-  integrity sha512-uBFxnp8gwW2vD6FrJB8JZLUzVb6PNRG0B0jBnHsOH8uKyva2qINY8PTF5Te4QlTbMDqU5K6qtJDr6cNsKWhbOA==
+  version "7.7.1"
+  resolved "https://registry.npmjs.org/@vue/devtools-shared/-/devtools-shared-7.7.1.tgz"
+  integrity sha512-BtgF7kHq4BHG23Lezc/3W2UhK2ga7a8ohAIAGJMBr4BkxUFzhqntQtCiuL1ijo2ztWnmusymkirgqUrXoQKumA==
   dependencies:
     rfdc "^1.4.1"
 
@@ -5462,9 +5510,9 @@ db-migrate@~0.11.14:
     yargs "^15.3.1"
 
 db0@^0.2.1:
-  version "0.2.4"
-  resolved "https://registry.npmjs.org/db0/-/db0-0.2.4.tgz"
-  integrity sha512-hIzftLH1nMsF95zSLjDLYLbE9huOXnLYUTAQ5yKF5amp0FpeD+B15XJa8BvGYSOeSCH4gl2WahB/y1FcUByQSg==
+  version "0.2.3"
+  resolved "https://registry.npmjs.org/db0/-/db0-0.2.3.tgz"
+  integrity sha512-PunuHESDNefmwVy1LDpY663uWwKt2ogLGoB6NOz2sflGREWqDreMwDgF8gfkXxgNXW+dqviyiJGm924H1BaGiw==
 
 debug@2.6.9, debug@^2.6.9:
   version "2.6.9"
@@ -5763,9 +5811,9 @@ ee-first@1.1.1:
   integrity sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==
 
 electron-to-chromium@^1.5.73:
-  version "1.5.98"
-  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.98.tgz"
-  integrity sha512-bI/LbtRBxU2GzK7KK5xxFd2y9Lf9XguHooPYbcXWy6wUoT8NMnffsvRhPmSeUHLSDKAEtKuTaEtK4Ms15zkIEA==
+  version "1.5.97"
+  resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.97.tgz"
+  integrity sha512-HKLtaH02augM7ZOdYRuO19rWDeY+QSJ1VxnXFa/XDFLf07HvM90pALIJFgrO+UVaajI3+aJMMpojoUTLZyQ7JQ==
 
 emittery@^0.13.1:
   version "0.13.1"
@@ -9721,9 +9769,9 @@ pathe@^1.0.0, pathe@^1.1.1, pathe@^1.1.2:
   integrity sha512-whLdWMYL2TwI08hn8/ZqAbrVemu0LNaNNJZX73O6qaIdCTfXutsLhMkjdENX0qhsQ9uIimo4/aQOmXkoon2nDQ==
 
 pathe@^2.0.1, pathe@^2.0.2:
-  version "2.0.3"
-  resolved "https://registry.npmjs.org/pathe/-/pathe-2.0.3.tgz"
-  integrity sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/pathe/-/pathe-2.0.2.tgz"
+  integrity sha512-15Ztpk+nov8DR524R4BF7uEuzESgzUEAV4Ah7CUMNGXdE5ELuvxElxGXndBl32vMSsWa1jpNf22Z+Er3sKwq+w==
 
 pbf@^3.2.1, pbf@^3.3.0:
   version "3.3.0"
@@ -11980,9 +12028,9 @@ unplugin-remove@^1.0.2:
     unplugin "^1.12.0"
 
 unplugin-utils@^0.2.3:
-  version "0.2.4"
-  resolved "https://registry.npmjs.org/unplugin-utils/-/unplugin-utils-0.2.4.tgz"
-  integrity sha512-8U/MtpkPkkk3Atewj1+RcKIjb5WBimZ/WSLhhR3w6SsIj8XJuKTacSP8g+2JhfSGw0Cb125Y+2zA/IzJZDVbhA==
+  version "0.2.3"
+  resolved "https://registry.npmjs.org/unplugin-utils/-/unplugin-utils-0.2.3.tgz"
+  integrity sha512-unB2e2ogZwEoMw/X0Gq1vj2jaRKLmTh9wcSEJggESPllcrZI68uO7B8ykixbXqsSwG8r9T7qaHZudXIC/3qvhw==
   dependencies:
     pathe "^2.0.2"
     picomatch "^4.0.2"
