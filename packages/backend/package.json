@@ -45,7 +45,7 @@
     "lint-staged": "^15.2.2",
     "nodemon": "^3.1.0",
     "prettier": "^3.2.5",
-    "supertest": "^7.0.0"
+    "supertest": "^6.3.1"
   },
   "lint-staged": {
     "src/**/*.{js,ts}": "npx eslint --cache --fix --max-warnings=0"
