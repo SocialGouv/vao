@@ -7,6 +7,9 @@ const BOcheckRole = require("../middlewares/bo-check-role.js");
 const BOUserController = require("../controllers/bo-user");
 const checkTerrForAccountCreation = require("../middlewares/bo-check-terr-for-account-creation");
 const getDepartements = require("../middlewares/getDepartements");
+const trackBoUser = require("../middlewares/trackBoUser");
+
+const { actions, userTypes } = require("../services/Tracking");
 
 const BOcheckRoleCompte = BOcheckRole(["Compte"]);
 
@@ -29,7 +32,16 @@ router.get(
 // Renvoie les informations liées à l'utilisateur
 router.get("/:userId", BOcheckJWT, BOcheckRoleCompte, BOUserController.getOne);
 // Mise à jour de mes informations
-router.post("/me", BOcheckJWT, BOUserController.updateMe);
+router.post(
+  "/me",
+  BOcheckJWT,
+  trackBoUser({
+    action: actions.modification,
+    itself: true,
+    userType: userTypes.back,
+  }),
+  BOUserController.updateMe,
+);
 // Création d'un utilisateur
 router.post(
   "/",
@@ -37,6 +49,7 @@ router.post(
   BOcheckRoleCompte,
   getDepartements,
   checkTerrForAccountCreation,
+  trackBoUser({ action: actions.creation, userType: userTypes.back }),
   BOUserController.create,
 );
 // Mise à jour d'un utilisateur
@@ -46,6 +59,7 @@ router.post(
   BOcheckRoleCompte,
   getDepartements,
   checkTerrForAccountCreation,
+  trackBoUser({ action: actions.modification, userType: userTypes.back }),
   BOUserController.update,
 );
 // Fonctione transverse de recherche du service compétent
