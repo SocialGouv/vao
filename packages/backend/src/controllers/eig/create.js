@@ -59,6 +59,10 @@ module.exports = async (req, res, next) => {
       departement: eig.departement,
       userId,
     });
+
+    // used by trackEig middleware
+    Object.assign(req, { tracking: { id: eigId } });
+
     return res.status(200).json({ id: eigId, userId });
   } catch (error) {
     log.w("DONE with error");

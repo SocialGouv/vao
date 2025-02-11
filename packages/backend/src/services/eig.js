@@ -1,7 +1,11 @@
+const Sentry = require("@sentry/node");
+
+const { sentry } = require("../config");
 const { statuts, Types, Categorie } = require("../helpers/eig");
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
 const pool = require("../utils/pgpool").getPool();
+const { addHistoric, entities, userTypes } = require("./Tracking");
 
 const log = logger(module.filename);
 
@@ -664,4 +668,46 @@ module.exports.getAvailableDs = async (organismeId, search) => {
     organismeId,
   ]);
   return data;
+};
+
+const getByEigId = async (eigId) => {
+  try {
+    const response = await pool.query(query.getById, [eigId]);
+    return response.rows[0];
+  } catch (error) {
+    log.w("getByEigId - DONE with error", error);
+    if (sentry.enabled) {
+      Sentry.captureException(error);
+    }
+    return null;
+  }
+};
+
+module.exports.getByEigId = getByEigId;
+
+module.exports.addAsyncEigHistoric = async ({
+  data: { oldData, newData },
+  eigId,
+  userId,
+  action,
+  userType,
+}) => {
+  try {
+    addHistoric({
+      action,
+      data: {
+        after: newData,
+        before: oldData,
+      },
+      entity: entities.eig,
+      entityId: eigId,
+      userId,
+      userType: userType ?? userTypes.front,
+    });
+  } catch (error) {
+    log.w("addAsyncHistoric - DONE with error", error);
+    if (sentry.enabled) {
+      Sentry.captureException(error);
+    }
+  }
 };

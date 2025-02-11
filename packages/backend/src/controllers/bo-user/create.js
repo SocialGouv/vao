@@ -40,7 +40,10 @@ module.exports = async function create(req, res, next) {
     )
   ) {
     try {
-      await BoUser.create(user);
+      const response = await BoUser.create(user);
+
+      // used by trackBoUser middleware
+      Object.assign(req, { tracking: { id: response.user.id } });
 
       try {
         const email = user.email;
