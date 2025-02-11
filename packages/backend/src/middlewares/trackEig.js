@@ -1,4 +1,4 @@
-const { actions } = require("../services/Tracking");
+const { actions } = require("../helpers/tracking");
 const eigService = require("../services/eig");
 
 function trackEig({ action, userType }) {

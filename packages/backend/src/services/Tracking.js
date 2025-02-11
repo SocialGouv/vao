@@ -1,29 +1,5 @@
 const pool = require("../utils/pgpool").getPool();
 
-const actions = {
-  creation: "CREATION",
-  deactivation: "DEACTIVATION",
-  deletion: "DELETION",
-  modification: "MODIFICATION",
-};
-
-module.exports.actions = actions;
-
-const entities = {
-  eig: "EIG",
-  userBack: "USER_BACK",
-  userFront: "USER_FRONT",
-};
-
-module.exports.entities = entities;
-
-const userTypes = {
-  back: "BACK",
-  front: "FRONT",
-};
-
-module.exports.userTypes = userTypes;
-
 const query = {
   add: `
     INSERT INTO tracking_actions (entity, entity_id, action, data, user_id, user_type)

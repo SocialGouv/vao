@@ -9,7 +9,7 @@ const checkTerrForAccountCreation = require("../middlewares/bo-check-terr-for-ac
 const getDepartements = require("../middlewares/getDepartements");
 const trackBoUser = require("../middlewares/trackBoUser");
 
-const { actions, userTypes } = require("../services/Tracking");
+const { actions, userTypes } = require("../helpers/tracking");
 
 const BOcheckRoleCompte = BOcheckRole(["Compte"]);
 

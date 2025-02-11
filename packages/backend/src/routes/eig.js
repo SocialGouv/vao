@@ -9,7 +9,7 @@ const boCheckRole = require("../middlewares/bo-check-role");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 const trackEig = require("../middlewares/trackEig");
 
-const { actions, userTypes } = require("../services/Tracking");
+const { actions, userTypes } = require("../helpers/tracking");
 
 const { eigController } = require("../controllers");
 const getDepartements = require("../middlewares/getDepartements");

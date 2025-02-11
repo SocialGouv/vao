@@ -1,4 +1,4 @@
-const { actions } = require("../services/Tracking");
+const { actions } = require("../helpers/tracking");
 const boUser = require("../services/BoUser");
 
 function trackFoUser({ action, userType, itself }) {
