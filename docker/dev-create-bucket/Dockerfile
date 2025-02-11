@@ -1,4 +1,4 @@
-FROM alpine:3.20
+FROM alpine:3.21
 
 RUN apk add --no-cache curl
 RUN curl -O https://dl.min.io/client/mc/release/linux-amd64/mc \
