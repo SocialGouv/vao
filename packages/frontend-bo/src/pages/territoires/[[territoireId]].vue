@@ -1,10 +1,11 @@
 <template>
   <div>
-    <h4>
+    <h1>
       Fiche territoire
       {{ titleTerritoire }}
-    </h4>
+    </h1>
     <div class="fr-fieldset__element fr-col-sm-8">
+      <h3>Référent VAO du territoire</h3>
       <div class="fr-input-group">
         <DsfrInputGroup
           :error-message="nomErrorMessage"
@@ -46,13 +47,13 @@
           :error-message="emailErrorMessage"
           :model-value="email"
           type="text"
-          label="Adresse courriel"
+          label="Boite fonctionnelle du service VAO"
           name="email"
           :disabled="!isModifiable"
           :required="true"
           :label-visible="true"
           placeholder=""
-          hint="Veuillez saisir l'email du correspondant. Exemple: nom@domaine.fr"
+          hint="Veuillez saisir l’adresse email du service VAO. Exemple: nom@domaine.fr"
           :is-valid="emailMeta.valid"
           @update:model-value="onEmailChange"
         />
@@ -69,7 +70,7 @@
           :disabled="!isModifiable"
           :required="true"
           :label-visible="true"
-          hint="Veuillez saisir votre numéro de téléphone. Exemple: 0612345678"
+          hint="Veuillez saisir le numéro de téléphone du service VAO. Exemple: 0612345678"
           placeholder=""
           :is-valid="telephoneMeta.valid"
           @update:model-value="onTelephoneChange"

@@ -550,7 +550,7 @@
           v-if="props.modifiable"
           id="submit-add-hebergement"
           :disabled="!hebergementId"
-          label="Valider l'étape"
+          label="Ajouter l’hébergement"
           @click.prevent="next"
         >
         </DsfrButton>
