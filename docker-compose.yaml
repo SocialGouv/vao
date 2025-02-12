@@ -114,13 +114,13 @@ services:
       - ./pg/scripts:/scripts
       - ./pg/seeds:/seeds
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   maildev:
-    image: maildev/maildev:2.1.0
+    image: maildev/maildev:2.2.1
     restart: unless-stopped
     ports:
       - "1080:1080"
