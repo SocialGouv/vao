@@ -15,8 +15,9 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@gouvfr/dsfr": "~1.12.1",
-    "@gouvminint/vue-dsfr": "~7.1.0",
+    "@gouvfr/dsfr": "^1.13.0",
+    "@gouvminint/vue-dsfr": "^8.2.1",
+    "@iconify/vue": "^4.3.0",
     "@pinia/nuxt": "~0.5.4",
     "@sentry/vue": "~8.31.0",
     "@samk-dev/nuxt-vcalendar": "^1.0.4",
