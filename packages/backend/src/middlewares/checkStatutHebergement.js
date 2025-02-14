@@ -26,7 +26,7 @@ function checkStatutHebergement(statut) {
 
     if (statut !== hebergementStatut) {
       return next(
-        new AppError("Vous n'êtes pas autorisé à accéder à cet hébergement", {
+        new AppError("Vous n'êtes pas autorisé à modifier cet hébergement", {
           statusCode: 403,
         }),
       );
