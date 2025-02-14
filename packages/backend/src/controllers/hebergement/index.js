@@ -8,3 +8,5 @@ module.exports.postBrouillon = require("./post-brouillon");
 module.exports.update = require("./update");
 module.exports.updateBrouillon = require("./update-brouillon");
 module.exports.activate = require("./activate");
+module.exports.desactivate = require("./desactivate");
+module.exports.reactivate = require("./reactivate");
