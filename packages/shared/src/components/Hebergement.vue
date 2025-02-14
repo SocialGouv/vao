@@ -29,7 +29,7 @@
           @update:model-value="onNomGestionnaireChange"
         />
       </div>
-      <div class="fr-fieldset__element fr-col-12">
+      <div v-if="!isDisabled" class="fr-fieldset__element fr-col-12">
         <slot
           name="search"
           :label="
@@ -566,6 +566,32 @@
               hebergementId ? "Modifier l'hebergement" : "Ajouter l'hebergement"
             }}
           </DsfrButton>
+          <DsfrButton
+            v-if="
+              hebergementId &&
+              siegeSocial &&
+              hebergementStatut === hebergementUtils.statut.ACTIF
+            "
+            id="next-step"
+            :disabled="!meta.valid"
+            :secondary="true"
+            type="button"
+            @click="desactivate"
+            >{{ "Désactiver l'hebergement" }}
+          </DsfrButton>
+          <DsfrButton
+            v-if="
+              hebergementId &&
+              siegeSocial &&
+              hebergementStatut === hebergementUtils.statut.DESACTIVE
+            "
+            id="next-step"
+            :disabled="!meta.valid"
+            :secondary="true"
+            type="button"
+            @click="reactivate"
+            >{{ "Réactiver l'hebergement" }}
+          </DsfrButton>
         </div>
         <is-downloading
           :is-downloading="props.isDownloading"
@@ -593,7 +619,14 @@ import createLogger from "../utils/createLogger";
 
 const toaster = useToaster();
 
-const emit = defineEmits(["cancel", "submit", "submit-brouillon", "activate"]);
+const emit = defineEmits([
+  "cancel",
+  "submit",
+  "submit-brouillon",
+  "activate",
+  "desactivate",
+  "reactivate",
+]);
 
 const ouiNonOptions = [
   {
@@ -611,6 +644,7 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
+  siegeSocial: { type: Boolean, default: false },
   isDisabled: { type: Boolean, default: false },
   isDownloading: { type: Boolean, default: false },
   message: { type: String, required: false, default: null },
@@ -675,6 +709,7 @@ const initialValues = {
 };
 
 const router = useRouter();
+
 const backRoute = computed(
   () => router.options.history.state.back ?? props.defaultBackRoute,
 );
@@ -901,6 +936,14 @@ function activate() {
   if (formatFilesOk.value) {
     emit("activate", { ...toRaw(values) });
   }
+}
+
+function desactivate() {
+  emit("desactivate");
+}
+
+function reactivate() {
+  emit("reactivate");
 }
 
 function submitBrouillon() {
