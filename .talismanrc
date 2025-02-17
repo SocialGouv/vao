@@ -140,7 +140,7 @@ fileignoreconfig:
 - filename: packages/backend/src/services/Territoire.js
   checksum: 9728f0b14665259bf62d6200be40153eb7a8bfaf0a8381e1a0ce4f90087cf59b
 - filename: packages/backend/src/services/User.js
-  checksum: 78ddae12d185c4111aa837a178b75e6bda4083d06783ee6382503262298eefbc
+  checksum: 8203852ff6c9cc57bb7d177b130034264d3b03a5e3501038e72563f49cd757be
 - filename: packages/backend/src/services/geo/Commune.js
   checksum: 40213f6529d1282e73f0201199e28b66f9c99c76d16651d88aac0b59fb722ae2
 - filename: packages/backend/src/services/geo/Departement.js

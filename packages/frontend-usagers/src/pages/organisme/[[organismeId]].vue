@@ -22,6 +22,16 @@
               @next="nextHash"
             />
           </div>
+          <div id="etablissement-secondaires">
+            <OrganismeEtablissementsSecondaires
+              v-if="hash === 'etablissement-secondaires'"
+              :is-downloading="apiStatus.isDownloading"
+              :message="apiStatus.message"
+              @update="updateOrCreate"
+              @previous="previousHash"
+              @next="nextHash"
+            />
+          </div>
           <div id="agrement">
             <OrganismeAgrement
               v-if="hash === 'agrement'"
@@ -63,7 +73,6 @@
           <div id="synthese">
             <OrganismeSynthese
               v-if="hash === 'synthese'"
-              :init-organisme="organismeStore.organismeCourant ?? {}"
               :is-downloading="apiStatus.isDownloading"
               :message="apiStatus.message"
               @finalize="finalizeOrganisme"
@@ -107,22 +116,6 @@ useHead({
   ],
 });
 
-const titleStart = "Fiche organisateur | ";
-const titleEnd = " | Vacances Adaptées Organisées";
-
-const titles = {
-  "#info-generales":
-    titleStart +
-    "étape 1 sur 5 | Renseignements généraux sur l’organisateur VAO" +
-    titleEnd,
-  "#agrement": titleStart + "étape 2 sur 5 | Agrément" + titleEnd,
-  "#protocole-transport":
-    titleStart + "étape 3 sur 5 | Informations sur le transport" + titleEnd,
-  "#protocole-sanitaire":
-    titleStart + "étape 4 sur 5 | Informations sanitaires" + titleEnd,
-  "#synthese": titleStart + "étape 5 sur 5 | Synthèse" + titleEnd,
-};
-
 const organismeStore = useOrganismeStore();
 
 const isPorteurAgrement = computed(() => {
@@ -132,17 +125,23 @@ const isPorteurAgrement = computed(() => {
   );
 });
 
-const sommaireOptions = computed(() => organismeMenus.map((m) => m.id));
+const sommaireOptions = computed(() =>
+  organismeMenus.menus(organismeStore.isSiegeSocial).map((m) => m.id),
+);
+
+const titles = computed(() =>
+  organismeMenus.titles(organismeStore.isSiegeSocial),
+);
 
 const hash = computed(() => {
   if (route.hash) {
     useHead({
-      title: titles[route.hash],
+      title: titles.value[route.hash],
     });
     return route.hash.slice(1);
   }
   useHead({
-    title: titles["#info-generales"],
+    title: titles.value["#info-generales"],
   });
   return sommaireOptions.value[0];
 });

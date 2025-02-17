@@ -65,8 +65,6 @@ const openModal = async (index) => {
     return;
   }
 
-  console.log(eig);
-
   if (utilsEig.mustMarkAsRead(eig, userStore.user)) {
     expandedIndex.value = -1;
     modalDetails.value = { eigId: eig.id, index };

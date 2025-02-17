@@ -7,6 +7,9 @@ const checkPermissionEIG = require("../middlewares/checkPermissionEIG");
 const checkPermissionBOEIG = require("../middlewares/checkPermissionBOEIG");
 const boCheckRole = require("../middlewares/bo-check-role");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
+const trackEig = require("../middlewares/trackEig");
+
+const { actions, userTypes } = require("../helpers/tracking");
 
 const { eigController } = require("../controllers");
 const getDepartements = require("../middlewares/getDepartements");
@@ -50,6 +53,7 @@ router.post(
   "/",
   checkJWT,
   checkPermissionDeclarationSejourForEig,
+  trackEig({ action: actions.creation, userType: userTypes.front }),
   eigController.create,
 );
 router.put(
@@ -58,6 +62,7 @@ router.put(
   checkPermissionEIG,
   checkPermissionDeclarationSejourForEig,
   canUpdateEig,
+  trackEig({ action: actions.modification, userType: userTypes.front }),
   eigController.update,
 );
 router.post(
@@ -65,6 +70,7 @@ router.post(
   checkJWT,
   checkPermissionEIG,
   canUpdateEig,
+  trackEig({ action: actions.modification, userType: userTypes.front }),
   eigController.depose,
 );
 
@@ -73,6 +79,7 @@ router.delete(
   checkJWT,
   checkPermissionEIG,
   canUpdateEig,
+  trackEig({ action: actions.deletion, userType: userTypes.front }),
   eigController.delete,
 );
 
@@ -80,6 +87,7 @@ router.post(
   "/admin/:id/mark-as-read",
   boCheckJWT,
   boCheckRoleEig,
+  trackEig({ action: actions.modification, userType: userTypes.back }),
   eigController.markAsRead,
 );
 

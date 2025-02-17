@@ -3,7 +3,7 @@
 </template>
 <script setup>
 const props = defineProps({
-  step: { type: String, default: organismeMenus[0].id, required: false },
+  step: { type: String, default: demandeSejourMenus[0].id, required: false },
 });
 
 const demandeSejourStore = useDemandeSejourStore();

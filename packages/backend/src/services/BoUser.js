@@ -1,3 +1,6 @@
+const Sentry = require("@sentry/node");
+
+const { sentry } = require("../config");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const normalize = require("../utils/normalize");
@@ -10,6 +13,8 @@ const {
 } = require("../helpers/queryParams");
 
 const AppError = require("../utils/error");
+
+const { addHistoric, entities } = require("./Tracking");
 
 const log = logger(module.filename);
 
@@ -348,7 +353,6 @@ module.exports.updateMe = async (id, { nom, prenom }) => {
       statusCode: 500,
     });
   }
-  // Mise à jour du compte en base de données
   const { rowCount } = await pool.query(...query.updateMe(id, nom, prenom));
 
   if (rowCount === 0) {
@@ -431,13 +435,13 @@ module.exports.editStatus = async (userId, isBlocked) => {
 
 module.exports.activate = async (email) => {
   log.i("active - IN", { email });
-  let response = await pool.query(
+  const response = await pool.query(
     ...query.get({ "us.mail": normalize(email) }),
   );
   if (response.rowCount === 0) {
     throw new AppError("Utilisateur non trouvé", { name: "UserNotFound" });
   }
-  let user = response.rows[0];
+  const user = response.rows[0];
   log.d("activate", { user });
   if (user.validate) {
     throw new AppError("Utilisateur déjà actif", {
@@ -448,10 +452,13 @@ module.exports.activate = async (email) => {
   await pool.query(query.activate, [user.id]);
 
   // TODO: remove
-  response = await pool.query(...query.get({ "us.mail": normalize(email) }));
-  [user] = response.rows;
-  log.i("active - DONE", { user });
-  return user;
+  const responseWithUpdate = await pool.query(
+    ...query.get({ "us.mail": normalize(email) }),
+  );
+  const [userUpdated] = responseWithUpdate.rows;
+
+  log.i("active - DONE", { userUpdated });
+  return userUpdated;
 };
 
 module.exports.read = async (
@@ -772,3 +779,50 @@ module.exports.login = async ({ email, password }) => {
   log.i("login - DONE");
   return user.rows[0];
 };
+
+const getByUserId = async (userId) => {
+  try {
+    const params = {
+      "us.id": userId,
+    };
+    const response = await pool.query(...query.get(params));
+    return response.rows[0];
+  } catch (error) {
+    log.w("getByUserId - DONE with error", error);
+    if (sentry.enabled) {
+      Sentry.captureException(error);
+    }
+    return null;
+  }
+};
+
+module.exports.getByUserId = getByUserId;
+
+const addAsyncUserHistoric = async ({
+  data: { oldData, newData },
+  boUserId,
+  userId,
+  action,
+  userType,
+}) => {
+  try {
+    addHistoric({
+      action,
+      data: {
+        after: newData,
+        before: oldData,
+      },
+      entity: entities.userBack,
+      entityId: boUserId,
+      userId,
+      userType,
+    });
+  } catch (error) {
+    log.w("addAsyncHistoric - DONE with error", error);
+    if (sentry.enabled) {
+      Sentry.captureException(error);
+    }
+  }
+};
+
+module.exports.addAsyncUserHistoric = addAsyncUserHistoric;

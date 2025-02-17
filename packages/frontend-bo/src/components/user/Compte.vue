@@ -9,7 +9,7 @@
         </h1>
         <div
           v-if="
-            usersStore.user.serviceCompetent === competence.NATIONALE &&
+            usersStore.user?.serviceCompetent === competence.NATIONALE &&
             props.user.id
           "
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"

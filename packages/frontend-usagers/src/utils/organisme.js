@@ -156,7 +156,6 @@ const personneMoraleSchema = {
     .array()
     .min(1, "Au moins un représentant légal est requis")
     .required(),
-  etablissements: yup.array().required(),
   etablissementPrincipal: yup.object().when("porteurAgrement", {
     is: (val) => !val,
     otherwise: (val) => val.nullable(),
@@ -171,6 +170,10 @@ const personneMoraleSchema = {
     }),
   }),
 };
+const etablissementsSecondaireSchema = {
+  etablissements: yup.array().required(),
+};
+
 const personnePhysiqueSchema = {
   nomNaissance: yup
     .string()
@@ -298,4 +301,5 @@ export default {
   personnePhysiqueSchema,
   agrementSchema,
   schema,
+  etablissementsSecondaireSchema,
 };

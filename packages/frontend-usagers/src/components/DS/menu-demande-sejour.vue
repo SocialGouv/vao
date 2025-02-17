@@ -9,7 +9,11 @@
 
 <script setup>
 const props = defineProps({
-  activeId: { type: String, default: organismeMenus[0].id, required: false },
+  activeId: {
+    type: String,
+    default: demandeSejourMenus[0].id,
+    required: false,
+  },
   demande: { type: Object, default: () => ({}) },
 });
 

@@ -15,7 +15,7 @@
     @cancel="cancel"
   >
     <template #search="scope">
-      <SearchAddress
+      <AddressSearchAddress
         name="coordonnees.adresse"
         :value="scope.adresse"
         :label="scope.label"

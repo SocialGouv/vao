@@ -39,7 +39,7 @@
       </div>
       <div v-if="typePrestataire === 'personne_morale'">
         <div class="fr-input-group fr-col-12">
-          <SearchAddress
+          <AddressSearchAddress
             :initial-adress="props.prestataire.adresse?.label"
             :modifiable="props.modifiable"
             :value="adresse"

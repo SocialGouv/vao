@@ -100,7 +100,7 @@
       <div v-if="props.showAdresse" class="fr-col-12">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-12">
-            <SearchAddress
+            <AddressSearchAddress
               :initial-adress="props.personne.adresse?.label"
               :modifiable="props.modifiable"
               :value="adresse"

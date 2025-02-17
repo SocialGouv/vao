@@ -1,9 +1,13 @@
+const Sentry = require("@sentry/node");
+
+const { sentry } = require("../config");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const normalize = require("../utils/normalize");
 
 const AppError = require("../utils/error");
 const { status } = require("../helpers/users");
+const { addHistoric, entities, userTypes } = require("./Tracking");
 
 const log = logger(module.filename);
 
@@ -182,14 +186,18 @@ module.exports.registerByEmail = async ({
 
 module.exports.editPassword = async ({ email, password }) => {
   log.i("editPassword - IN", { email });
-  let response = await pool.query(...query.select({ mail: normalize(email) }));
-  let [user] = response.rows;
+  const response = await pool.query(
+    ...query.select({ mail: normalize(email) }),
+  );
+  const [user] = response.rows;
   log.d("editPassword", { user });
   await pool.query(...query.editPassword(email, password));
-  response = await pool.query(...query.select({ mail: normalize(email) }));
-  [user] = response.rows;
-  log.i("editPassword - DONE", { user });
-  return user;
+  const responseWithUpdate = await pool.query(
+    ...query.select({ mail: normalize(email) }),
+  );
+  const [userUpdated] = responseWithUpdate.rows;
+  log.i("editPassword - DONE", { user: userUpdated });
+  return userUpdated;
 };
 
 module.exports.editStatus = async (userId, statusCode) => {
@@ -200,11 +208,13 @@ module.exports.editStatus = async (userId, statusCode) => {
 
 module.exports.activate = async (email) => {
   log.i("active - IN", { email });
-  let response = await pool.query(...query.select({ mail: normalize(email) }));
+  const response = await pool.query(
+    ...query.select({ mail: normalize(email) }),
+  );
   if (response.rows.length === 0) {
     throw new AppError("Utilisateur non trouvé", { name: "UserNotFound" });
   }
-  let user = response.rows[0];
+  const user = response.rows[0];
   log.d("activate", { user });
   if (!user.sub && user.statusCode !== status.NEED_EMAIL_VALIDATION) {
     throw new AppError("Utilisateur déjà actif", {
@@ -216,9 +226,12 @@ module.exports.activate = async (email) => {
   }
   await pool.query(query.activate, [user.id]);
 
-  response = await pool.query(...query.select({ mail: normalize(email) }));
-  [user] = response.rows;
-  log.i("active - DONE", { user });
+  const responseWithUpdate = await pool.query(
+    ...query.select({ mail: normalize(email) }),
+  );
+  const [userUpdated] = responseWithUpdate.rows;
+
+  log.i("active - DONE", { user: userUpdated });
   return user;
 };
 
@@ -242,6 +255,48 @@ module.exports.login = async ({ email, password }) => {
 };
 
 module.exports.updateUser = async ({ id, nom, prenom }) => {
-  const users = await pool.query(query.updateUser, [id, nom, prenom]);
-  return users.rows[0];
+  const response = await pool.query(query.updateUser, [id, nom, prenom]);
+  return response.rows[0];
+};
+
+const getByUserId = async (userId) => {
+  try {
+    const response = await pool.query(...query.select({ id: userId }));
+    return response.rows[0];
+  } catch (error) {
+    log.w("getByUserId - DONE with error", error);
+    if (sentry.enabled) {
+      Sentry.captureException(error);
+    }
+    return null;
+  }
+};
+
+module.exports.getByUserId = getByUserId;
+
+module.exports.addAsyncUserHistoric = async ({
+  data: { oldData, newData },
+  foUserId,
+  userId,
+  action,
+  userType,
+}) => {
+  try {
+    addHistoric({
+      action,
+      data: {
+        after: newData,
+        before: oldData,
+      },
+      entity: entities.userFront,
+      entityId: userId,
+      userId: foUserId,
+      userType: userType ?? userTypes.front,
+    });
+  } catch (error) {
+    log.w("addAsyncHistoric - DONE with error", error);
+    if (sentry.enabled) {
+      Sentry.captureException(error);
+    }
+  }
 };

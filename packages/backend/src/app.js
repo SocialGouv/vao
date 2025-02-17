@@ -51,11 +51,12 @@ const whitelist = [
   config.domain,
 ];
 const corsOptions = {
-  allowedHeaders: "Content-Type,Authorization,X-Requested-With,Accept",
+  allowedHeaders:
+    "Content-Type,Authorization,X-Requested-With,Accept,sentry-trace,baggage",
   credentials: true,
   methods: "GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS",
   origin(origin, callback) {
-    log.d("cors", { origin, whitelist });
+    log.w("cors", { origin, whitelist });
     if (!origin || whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {

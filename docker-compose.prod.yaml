@@ -1,4 +1,4 @@
-version: '3.4'
+version: "3.4"
 
 volumes:
   postgres-data:
@@ -38,7 +38,6 @@ services:
       DEBUG: info:vao*
     ports:
       - 8081:8080
-
 
   migrations-built:
     build:
@@ -99,7 +98,7 @@ services:
       retries: 5
 
   maildev:
-    image: maildev/maildev:2.1.0
+    image: maildev/maildev:2.2.1
     ports:
-      - '1080:1080'
-      - '1025:1025'
+      - "1080:1080"
+      - "1025:1025"

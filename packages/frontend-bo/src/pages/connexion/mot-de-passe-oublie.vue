@@ -71,7 +71,7 @@ const links = [
 
 const email = ref("");
 
-const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
+const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,}$/;
 
 const isValidEmail = computed(() => {
   return emailRegex.test(email.value);
