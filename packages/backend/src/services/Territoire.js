@@ -73,15 +73,15 @@ const query = {
 module.exports.fetch = async (queryParams) => {
   const titles = [
     {
-      filterEnabled: true,
       key: "ter.code",
       queryKey: "code",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "ter.label",
       queryKey: "label",
+      sortEnabled: true,
       type: "default",
     },
   ];

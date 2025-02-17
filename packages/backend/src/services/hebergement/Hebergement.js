@@ -251,12 +251,26 @@ ${new Array(nbRows)
   WHERE
     h.id = $1;
   `,
+  getStatut: `
+    SELECT
+      value AS "statut"
+    FROM
+      front.hebergement h
+      LEFT JOIN front.hebergement_statut hs ON h.statut_id = hs.id
+    WHERE
+      h.id = $1
+  `,
+
+  historize: `
+    UPDATE front.hebergement
+    SET current = FALSE
+    WHERE id = $1
+  `,
   removePrestationsHoteliere: `
   DELETE FROM front.hebergement_to_prestations_hotelieres
   WHERE
     hebergement_id = $1;
   `,
-
   update: `
   UPDATE front.hebergement
   SET
@@ -295,20 +309,6 @@ ${new Array(nbRows)
     statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $33)
   WHERE
     id = $1
-  `,
-  getStatut: `
-    SELECT
-      value AS "statut"
-    FROM
-      front.hebergement h
-      LEFT JOIN front.hebergement_statut hs ON h.statut_id = hs.id
-    WHERE
-      h.id = $1
-  `,
-  historize: `
-    UPDATE front.hebergement
-    SET current = FALSE
-    WHERE id = $1
   `,
 };
 
@@ -548,28 +548,27 @@ module.exports.getByUserId = async (userId, queryParams) => {
 
   const titles = [
     {
-      filterEnabled: true,
       key: "h.nom",
       queryKey: "nom",
       sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "a.label",
       queryKey: "adresse",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "hs.value",
       queryKey: "statut",
+      sortEnabled: true,
       type: "default",
     },
     {
-      filterEnabled: true,
       key: "uo.use_id",
       queryKey: "userId",
+      sortEnabled: true,
       type: "number",
     },
   ];
