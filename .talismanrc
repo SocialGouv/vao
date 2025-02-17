@@ -166,7 +166,7 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/components/connexion/email/validateToken.client.vue
   checksum: 595435cdea445525554cb0d703a53cf277127a3c0ad39c02502f865cb9fc5dd0
 - filename: packages/frontend-bo/src/components/demandes-sejour/DefaultTable.vue
-  checksum: 9e3f652af004ec124031f0bc5ceac882c32c65152e8601939706eba9df3f7588
+  checksum: 26ee444b3622ca3a1937be84b18d0245d85dfcf807c52490d2c11e4952edb290
 - filename: packages/frontend-bo/src/components/demandes-sejour/Details.vue
   checksum: 2fcd6dcc607405fbbdf7dc8c5b9cf6229e8a65593503b5ebb55786b9788c514f
 - filename: packages/frontend-bo/src/components/demandes-sejour/DisplayFormulaire.vue
@@ -176,9 +176,11 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/components/demandes-sejour/liste.vue
   checksum: 8efe57bb6843ae4fd02761d8187656cb6b8e3925840200f36858aa175b6aced4
 - filename: packages/frontend-bo/src/components/organismes/liste.vue
-  checksum: f207f67500274aa6246124ef19b2ce3d9a12ad7e7efbb412dab20404a39beb73
+  checksum: 769d80e2b72b263cfad8ad8aa25e2461ef1b85071e3fb0d744a100042243f45f
+- filename: packages/frontend-bo/src/components/territoires/DefaultTable.vue
+  checksum: 738c6d6507eae08d87cf3c603ef9128d110e094fafb4fea6ba28e0bf365b6abe
 - filename: packages/frontend-bo/src/components/user/liste.vue
-  checksum: 3e5ac7759cd2b6af2f72ab8932447585ed179e3a36f8481aaf263320e96ee9ae
+  checksum: 93bc040f6886d9c3c7318e4d8f8c01d3bc280e1d9f2da3656d2754888e1b448a
 - filename: packages/frontend-bo/src/components/utils/TableFull.vue
   checksum: 74a74e68299d204eac907efee98c2eb3d776ff4c206b304acbca02d058bfbc4e
 - filename: packages/frontend-bo/src/pages/connexion/index.vue
@@ -220,7 +222,9 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/demande-sejour/table.vue
-  checksum: 495f82ac0f8a1d0d1003291839e260f752f4461534d0a2411244d9a0f6fcaca3
+  checksum: d4a8d6f2bad35ffcbd7f0f389afde6d0c4acc1ed24878e40cf8666e0a7c344ca
+- filename: packages/frontend-usagers/src/components/hebergements/liste.vue
+  checksum: a36fb0ee6ada7f7ba7bbc21a9b32318cce0f2dfc515eb28ab6c4891732fd6321
 - filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
   checksum: 2237d2a196392be19f0ac6d116954898a4e68b24b1793fb8a060ba1da83564b0
 - filename: packages/frontend-usagers/src/components/organisateur.vue
@@ -280,9 +284,9 @@ fileignoreconfig:
 - filename: packages/shared/src/components/PasswordInput.vue
   checksum: af4fe62dc455e943fcfacaa6ee0495e1ab20f9ed2094ad70c457b7a27ab46759
 - filename: packages/shared/src/components/Table/DsfrDataTableV2.vue
-  checksum: 78377f91b74cf18036a56c4ac8a0a4c924f60f15e95e8c5fc1c1cadf1f0d619f
+  checksum: b899add08d34e3d7bfc07e0cb97e91382775dbcdb72e47fd82fe208e2eec6e34
 - filename: packages/shared/src/components/Table/DsfrDataTableV2Wrapper.vue
-  checksum: 3d201233abc1aedfe7c755f0c8c2ad79cf5e31a3c20dbdcb1d828d8c8ee27d45
+  checksum: 14b3637d2b3a223610245b68b4b6ed62119e4344b632255c5cf2a6c77a396572
 - filename: packages/shared/src/components/Table/dsfrDataTabeV2/DsfrPaginationV2.vue
   checksum: c8d3e1442b00cb210ac0aeaea5a4cb9f40b7f1887d61604218d92c31ce9e2f49
 - filename: packages/shared/src/type.ts

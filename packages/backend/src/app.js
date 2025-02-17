@@ -56,7 +56,6 @@ const corsOptions = {
   credentials: true,
   methods: "GET,HEAD,POST,PUT,PATCH,DELETE,OPTIONS",
   origin(origin, callback) {
-    log.w("cors", { origin, whitelist });
     if (!origin || whitelist.indexOf(origin) !== -1) {
       callback(null, true);
     } else {

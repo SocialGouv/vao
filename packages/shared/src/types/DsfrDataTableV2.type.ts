@@ -1,14 +1,14 @@
 import type {
   NestedKeys as ImportedNestedKeys,
-  Titles as ImportedTitles,
-  SlotProps as ImportedSlotProps,
+  Columns as ImportedColumns,
+  Slots as ImportedSlots,
   ValueFromNestedKey as ImportedValueFromNestedKey,
   Row as ImportedRow,
 } from "../components/Table/DsfrDataTableV2.vue";
 
 export type NestedKeys<T> = ImportedNestedKeys<T>;
-export type Titles<T> = ImportedTitles<T>;
-export type SlotProps<T> = ImportedSlotProps<T>;
+export type Columns<T> = ImportedColumns<T>;
+export type Slots<T> = ImportedSlots<T>;
 export type ValueFromNestedKey<
   T,
   U extends string,
