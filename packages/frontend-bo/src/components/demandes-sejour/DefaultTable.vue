@@ -26,7 +26,7 @@
     <template #cell-editedAt="{ cell }">
       {{ displayDate(cell) }}
     </template>
-    <template #slot:organisme="{ row }">
+    <template #cell-organisme="{ row }">
       {{ getOrganismeTitle(row) }}
     </template>
     <template #cell-custom:declaration="{ row }">
