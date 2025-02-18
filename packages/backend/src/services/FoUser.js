@@ -19,13 +19,15 @@ const query = {
       us.lastconnection_at as "lastConnectionAt",
       org.id AS "organismeId",
       org.type_organisme AS "typeOrganisme",
-      org.personne_morale->>'siret' AS siret,
-      org.personne_morale->>'siren' AS siren,
-      org.personne_morale->>'raisonSociale' AS "raisonSociale",
+      pm.siret AS siret,
+      pm.siren AS siren,
+      pm.raison_sociale AS "raisonSociale",
       count(CASE WHEN ds.statut <> 'BROUILLON' THEN ds.id ELSE NULL END) AS "nombreDeclarations"
     FROM front.users AS us
       LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
       LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
       LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
     WHERE 1 = 1
     ${searchQuery}
@@ -41,6 +43,8 @@ SELECT
 FROM front.users AS us
   LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
   LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
+  LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id
+  LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
   LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
 WHERE 1 = 1
 ${additionalParamsQuery}
@@ -79,14 +83,14 @@ module.exports.read = async ({
     searchParams.push(`%${normalize(search.email)}%`);
   }
   if (search?.siret && search.siret.length) {
-    searchQuery += `   AND org.personne_morale->>'siret' ILIKE $${searchParams.length + 1}\n`;
+    searchQuery += `   AND pm.siret ILIKE $${searchParams.length + 1}\n`;
     searchParams.push(`%${normalize(search.siret)}%`);
   }
   if (search?.organisme && search.organisme.length) {
     searchQuery += `AND (
-      org.personne_morale ->> 'raisonSociale' ILIKE $${searchParams.length + 1}
-      OR unaccent(org.personne_physique ->> 'prenom') ILIKE unaccent($${searchParams.length + 1})
-      OR unaccent(org.personne_physique ->> 'nomUsage')ILIKE unaccent($${searchParams.length + 1})
+      pm.raisonSociale ILIKE $${searchParams.length + 1}
+      OR unaccent(pp.prenom) ILIKE unaccent($${searchParams.length + 1})
+      OR unaccent(pp.nomUsage) ILIKE unaccent($${searchParams.length + 1})
       )`;
     searchParams.push(`%${search.organisme}%`);
   }

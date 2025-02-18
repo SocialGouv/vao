@@ -3,6 +3,9 @@ const dayjs = require("dayjs");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const dsStatus = require("../helpers/ds-statuts");
+const PersonneMorale = require("./organisme/PersonneMorale");
+const PersonnePhysique = require("./organisme/PersonnePhysique");
+const { getComplementOrganisme } = require("./Organisme");
 const {
   getByDSId: getHebergementsByDSIds,
 } = require("./hebergement/Hebergement");
@@ -245,8 +248,16 @@ RETURNING
   ds.date_fin::text as "dateFin",
   ds.created_at as "createdAt",
   ds.edited_at as "editedAt",
-  o.personne_morale->>'siret' as "siret",
-  o.personne_morale->'etablissementPrincipal' as "organismeAgree",
+  pm.siret as "siret",
+  JSON_BUILD_OBJECT(
+          'siret', pm.etab_principal_siret,
+          'adresse', pm.etab_principal_adresse,
+          'telephone', pm.etab_principal_telephone,
+          'nomCommercial', pm.etab_principal_nom_commercial,
+          'raisonSociale', pm.etab_principal_raison_sociale,
+          'pays', pm.etab_principal_pays,
+          'email', pm.etab_principal_email
+      ) AS "organismeAgree",
   dsm.message as "message",
   CASE
     WHEN (dsm.read_at IS NULL AND dsm.front_user_id IS NULL) THEN 'NON LU'
@@ -263,6 +274,7 @@ RETURNING
   COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
+LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
 LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
       SELECT MAX(dsmax.id)
       FROM front.demande_sejour_message  dsmax
@@ -325,8 +337,6 @@ SELECT
   ds.date_fin::text as "dateFin",
   ds.organisme as "organisme",
   ds.id_fonctionnelle as "idFonctionnelle",
-  o.personne_morale as "personneMorale",
-  o.personne_physique as "personnePhysique",
   o.type_organisme as "typeOrganisme",
   (
     SELECT
@@ -355,13 +365,15 @@ SELECT
     COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
 FROM front.demande_sejour ds
   JOIN front.organismes o ON o.id = ds.organisme_id
+  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+  LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
   LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
   LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
       SELECT MAX(dsmax.id)
       FROM front.demande_sejour_message  dsmax
       WHERE dsmax.declaration_id = ds.id)
 WHERE
-  statut <> 'BROUILLON'
+  ds.statut <> 'BROUILLON'
   AND (
       EXISTS (
     SELECT
@@ -384,10 +396,12 @@ WHERE
 SELECT COUNT(DISTINCT ds.id)
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
+LEFT JOIN front.personne_morale pm ON pm.organisme_id  = ds.organisme_id
+LEFT JOIN front.personne_physique pp ON pp.organisme_id  = ds.organisme_id
 LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id
 WHERE
-  statut <> 'BROUILLON'
+  ds.statut <> 'BROUILLON'
   AND (
     EXISTS (
       SELECT
@@ -429,8 +443,6 @@ WHERE
       sejour_etranger as "sejourEtranger",
       sejour_itinerant as "sejourItinerant",
       ds.organisme as "organisme",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
       o.type_organisme as "typeOrganisme",
       ds.files as "files",
       ds.departement_suivi = ANY($2) as "estInstructeurPrincipal",
@@ -438,6 +450,8 @@ WHERE
       ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
       LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
     where ds.id = $1`,
       [declarationId, departements],
@@ -450,8 +464,9 @@ WHERE
     JOIN front.user_organisme uo ON uo.org_id = ds.organisme_id
     JOIN front.users u ON uo.use_id = u.id
     JOIN front.organismes o ON o.id = ds.organisme_id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
     WHERE ds.id = $1
-    AND (u.id = $3 OR o.personne_morale->>'siren' = $2)
+    AND (u.id = $3 OR pm.siren = $2)
   `,
   getDeprecated: (organismeIds) => [
     `SELECT
@@ -474,8 +489,16 @@ WHERE
   ds.sanitaires as "sanitaires",
   ds.files as "files",
   ds.attestation as "attestation",
-  o.personne_morale->>'siret' as "siret",
-  o.personne_morale->'etablissementPrincipal' as "organismeAgree",
+  pm.siret as "siret",
+  JSON_BUILD_OBJECT(
+          'siret', pm.etab_principal_siret,
+          'adresse', pm.etab_principal_adresse,
+          'telephone', pm.etab_principal_telephone,
+          'nomCommercial', pm.etab_principal_nom_commercial,
+          'raisonSociale', pm.etab_principal_raison_sociale,
+          'pays', pm.etab_principal_pays,
+          'email', pm.etab_principal_email
+      ) AS "organismeAgree",
   dsm.message as "message",
   CASE
     WHEN (dsm.read_at IS NULL AND dsm.front_user_id IS NULL) THEN 'NON LU'
@@ -492,6 +515,7 @@ WHERE
   COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
+LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
 LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
       SELECT MAX(dsmax.id)
       FROM front.demande_sejour_message  dsmax
@@ -557,9 +581,10 @@ SELECT DISTINCT u.mail AS mail
 FROM front.users u
 JOIN front.user_organisme uo ON u.id = uo.use_id
 JOIN front.organismes o ON uo.org_id = o.id
+LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
 WHERE
-  o.personne_morale->>'siren' = $1 AND
-  o.personne_morale->>'siegeSocial' = 'true'
+  pm.siren = $1 AND
+  pm.siege_social = 'true'
 `,
   getEmailToList: `
 SELECT DISTINCT u.mail AS mail
@@ -694,12 +719,13 @@ SELECT
   ds.files as "files",
   ds.attestation as "attestation",
   ds.declaration_2m as "declaration2mois",
-  o.personne_morale->>'siret' as "siret",
+  pm.siret as "siret",
   ds.edited_at as "editedAt",
   sejour_etranger as "sejourEtranger",
   sejour_itinerant as "sejourItinerant"
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
+LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
 WHERE 1=1
 ${Object.keys(criterias)
   .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
@@ -1094,7 +1120,7 @@ module.exports.get = async (organismesId, queryParams) => {
       type: "default",
     },
     {
-      key: "o.personne_morale->>'siret'",
+      key: "pm.siret",
       queryKey: "siret",
       sortEnabled: true,
       type: "default",
@@ -1212,16 +1238,15 @@ module.exports.getByDepartementCodes = async (
   }
 
   log.i("getByDepartementCodes - IN");
-
   const params = [departementCodes];
   const searchQuery = [];
   // Search management
   if (search?.siren && search.siren.length) {
-    searchQuery.push(`o.personne_morale->>'siren' = $${params.length + 1}`);
+    searchQuery.push(`pm.siren = $${params.length + 1}`);
     params.push(`${search.siren}`);
   }
   if (search?.siret && search.siret.length) {
-    searchQuery.push(`o.personne_morale->>'siret' = $${params.length + 1}`);
+    searchQuery.push(`pm.siret = $${params.length + 1}`);
     params.push(`${search.siret}`);
   }
   if (search?.organismeId && !search?.siret && !search?.siren) {
@@ -1233,14 +1258,14 @@ module.exports.getByDepartementCodes = async (
     params.push(`%${search.idFonctionnelle}%`);
   }
   if (search?.libelle && search.libelle.length) {
-    searchQuery.push(`libelle ILIKE unaccent($${params.length + 1})`);
+    searchQuery.push(`unaccent(libelle) ILIKE unaccent($${params.length + 1})`);
     params.push(`%${search.libelle}%`);
   }
   if (search?.organisme && search.organisme.length) {
     searchQuery.push(`(
-      personne_morale ->> 'raisonSociale' ILIKE $${params.length + 1}
-      OR unaccent(personne_physique ->> 'prenom') ILIKE unaccent($${params.length + 2})
-      OR unaccent(personne_physique ->> 'nomUsage') ILIKE unaccent($${params.length + 3})
+      pm.raison_sociale ILIKE $${params.length + 1}
+      OR unaccent(pp.prenom) ILIKE unaccent($${params.length + 2})
+      OR unaccent(pp.nom_usage) ILIKE unaccent($${params.length + 3})
       )`);
     params.push(
       `%${search.organisme}%`,
@@ -1249,13 +1274,13 @@ module.exports.getByDepartementCodes = async (
     );
   }
   if (search?.statuts && search.statuts.length) {
-    searchQuery.push(`statut = ANY($${params.length + 1})`);
+    searchQuery.push(`ds.statut = ANY($${params.length + 1})`);
     params.push(search.statuts.split(","));
   }
 
   if (search?.action) {
     searchQuery.push(
-      `statut in ('${dsStatus.statuts.EN_COURS}', '${dsStatus.statuts.EN_COURS_8J}', '${dsStatus.statuts.TRANSMISE}', '${dsStatus.statuts.TRANSMISE_8J}')`,
+      `ds.statut in ('${dsStatus.statuts.EN_COURS}', '${dsStatus.statuts.EN_COURS_8J}', '${dsStatus.statuts.TRANSMISE}', '${dsStatus.statuts.TRANSMISE_8J}')`,
     );
   }
   if (search?.message) {
@@ -1293,14 +1318,18 @@ module.exports.getByDepartementCodes = async (
   log.d({ paramsWithPagination, queryWithPagination });
   const response = await pool.query(queryWithPagination, paramsWithPagination);
 
-  if (limit === null || response.rowCount < limit) {
+  const responseWithComplements = await Promise.all(
+    response.rows.map((demandeSejour) => getComplementOrganisme(demandeSejour)),
+  );
+
+  if (limit === null || responseWithComplements.length < limit) {
     return {
-      demandes_sejour: response.rows,
+      demandes_sejour: responseWithComplements,
       stats: Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
         acc[key] = Number(value);
         return acc;
       }, {}),
-      total: response.rowCount + parseInt(offset ?? 0),
+      total: responseWithComplements.length + parseInt(offset ?? 0),
     };
   }
 
@@ -1313,7 +1342,7 @@ module.exports.getByDepartementCodes = async (
   const totalValue = total.rows.find((t) => t.count)?.count;
 
   return {
-    demandes_sejour: response.rows,
+    demandes_sejour: responseWithComplements,
     stats: Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
       acc[key] = Number(value);
       return acc;
@@ -1329,10 +1358,15 @@ module.exports.getById = async (declarationId, departements) => {
     (await pool.query(...query.getById(declarationId, departements)))
       .rows?.[0] ?? null;
   const hebergements = await getHebergementsByDSIds(declarationId);
-
   if (!declaration) {
     return null;
   }
+  const personneMorale = await PersonneMorale.getByOrganismeId(
+    declaration.organismeId,
+  );
+  const personnePhysique = PersonnePhysique.getByOrganismeId(
+    declaration.organismeId,
+  );
 
   log.i("getById - DONE");
   return {
@@ -1342,6 +1376,8 @@ module.exports.getById = async (declarationId, departements) => {
       sejourEtranger: declaration.sejourEtranger ?? null,
       sejourItinerant: declaration.sejourItinerant ?? null,
     },
+    personneMorale: personneMorale,
+    personnePhysique: personnePhysique,
   };
 };
 
