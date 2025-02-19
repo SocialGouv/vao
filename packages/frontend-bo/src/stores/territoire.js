@@ -7,7 +7,7 @@ export const useTerritoireStore = defineStore("territoire", {
   state: () => ({
     territoires: [],
     territoire: {},
-    total: null,
+    total: 0,
   }),
   actions: {
     async fetch(params) {

@@ -12,7 +12,7 @@
     v-model:offset="offset"
     v-model:sort="sort"
     v-model:sort-direction="sortDirection"
-    :titles="titles"
+    :columns="columns"
     :table-title="title"
     :data="data"
     :total="total"
@@ -20,24 +20,24 @@
     is-sortable
     @update-data="updateData"
   >
-    <template #cell:dateDebut="{ row }">
+    <template #cell-dateDebut="{ row }">
       {{ displayDate(row.dateDebut) }} -<br />{{ displayDate(row.dateFin) }}
     </template>
-    <template #cell:editedAt="{ row }">
-      {{ displayDate(row.editedAt) }}
+    <template #cell-editedAt="{ cell }">
+      {{ displayDate(cell) }}
     </template>
-    <template #cell:organisme="{ row }">
+    <template #cell-organisme="{ row }">
       {{ getOrganismeTitle(row) }}
     </template>
-    <template #cell:custom-declaration="{ row }">
+    <template #cell-custom:declaration="{ row }">
       <DemandesSejourDeclaration :statut="row.statut" />
     </template>
-    <template #cell:statut="{ row }">
+    <template #cell-statut="{ cell }">
       <div>
-        <DemandeStatusBadge :statut="row.statut" type="bo" />
+        <DemandeStatusBadge :statut="cell" type="bo" />
       </div>
     </template>
-    <template #cell:custom-edit="{ row }">
+    <template #cell-custom:edit="{ row }">
       <DsfrButton
         label="naviguer vers la demande séjour"
         icon="ri:arrow-right-s-line"
@@ -94,7 +94,7 @@ const filters = [
   demandesSejours.filters.action,
 ];
 
-const titles = [
+const columns = [
   {
     key: "idFonctionnelle",
     label: "Numéro de déclaration",
@@ -132,7 +132,7 @@ const titles = [
     label: "Date édition",
   },
   {
-    key: "custom-edit",
+    key: "custom:edit",
     label: "Action",
   },
 ];
@@ -141,8 +141,8 @@ const title = computed(
   () => `Liste des déclarations reçues (${demandeSejourStore.stats?.global})`,
 );
 
-const sortableTitles = titles.flatMap((title) =>
-  title.options?.isSortable ? [title.key] : [],
+const sortableColumns = columns.flatMap((column) =>
+  column.options?.isSortable ? [column.key] : [],
 );
 
 const defaultStatus = [...Object.values(demandesSejours.statuts)];
@@ -160,7 +160,7 @@ const status = ref(
 
 const { limit, offset, sort, sortDirection } = usePagination(
   query,
-  sortableTitles,
+  sortableColumns,
 );
 
 const getSearchParams = () => ({
