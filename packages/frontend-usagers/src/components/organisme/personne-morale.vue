@@ -457,11 +457,19 @@ async function searchApiInsee() {
       etablissementPrincipal,
     });
   } catch (error) {
-    toaster.error({
-      titleTag: "h2",
-      description:
-        "erreur lors de la récupération des données à partir du SIRET",
-    });
+    if (error.response?.status === 403) {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Le SIRET renseigné n’est plus valide. Veuillez utiliser le nouveau SIRET de votre établissement",
+      });
+    } else {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "erreur lors de la récupération des données à partir du SIRET",
+      });
+    }
     log.w("searchApiInsee - erreur:", { error });
     setValues({
       siren: null,
