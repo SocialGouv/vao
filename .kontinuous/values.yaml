@@ -155,7 +155,7 @@ jobs:
           NUXT_PUBLIC_API_MAP_TILER: "g9IvoA8h0Ow8I9szhdzW"
           SENTRY_URL: "https://sentry2.fabrique.social.gouv.fr"
           SENTRY_ORG: incubateur
-          SENTRY_PROJECT: vao-usagers
+          SENTRY_PROJECT: psn-vao-usagers
         secrets:
           sentry_auth_token:
             secretName: frontend-secret
@@ -182,7 +182,7 @@ jobs:
           NUXT_PUBLIC_API_MAP_TILER: "g9IvoA8h0Ow8I9szhdzW"
           SENTRY_URL: "https://sentry2.fabrique.social.gouv.fr"
           SENTRY_ORG: incubateur
-          SENTRY_PROJECT: vao-admin
+          SENTRY_PROJECT: psn-vao-admin
         secrets:
           sentry_auth_token:
             secretName: frontend-secret
