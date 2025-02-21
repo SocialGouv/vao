@@ -62,7 +62,7 @@ async function getByDepartementCodes(req, res, next) {
     // On ajoute alors un param dans le search
     if (params.search?.organismeId) {
       const organisme = await Organisme.getOne({
-        id: params.search.organismeId,
+        "o.id": params.search.organismeId,
       });
       if (organisme?.personneMorale) {
         if (organisme?.personneMorale?.siegeSocial) {

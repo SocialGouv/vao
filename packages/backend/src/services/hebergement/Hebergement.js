@@ -191,8 +191,9 @@ ${new Array(nbRows)
       front.hebergement h
       JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
       JOIN front.organismes o ON o.id = uo.org_id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
       WHERE h.id = $1
-      AND (uo.use_id = $2 OR o.personne_morale->>'siren' = $3)
+      AND (uo.use_id = $2 OR pm.siren = $3)
   `,
   getBySiren: `
     SELECT
@@ -208,7 +209,8 @@ ${new Array(nbRows)
     JOIN front.organismes o ON h.organisme_id = o.id
     LEFT JOIN front.adresse a on a.id = h.adresse_id
     LEFT JOIN front.hebergement_statut hs on hs.id = h.statut_id
-    WHERE o.personne_morale->>'siren' = $1
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    WHERE pm.siren = $1
     `,
   getListe: () => `
     WITH stat AS (
