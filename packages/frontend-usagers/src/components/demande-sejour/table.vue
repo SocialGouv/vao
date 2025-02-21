@@ -33,7 +33,7 @@
     <template #cell-editedAt="{ cell }">
       {{ displayDate(cell) }}
     </template>
-    <template #cell:custom-edit="{ row }">
+    <template #cell-custom:edit="{ row }">
       <div class="buttons-group">
         <NuxtLink
           :to="`/demande-sejour/${row.declarationId}?defaultTabIndex=0`"
