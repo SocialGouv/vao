@@ -11,7 +11,7 @@ data:
   FRONTEND_USAGERS_URL: "https://vao.social.gouv.fr"
   FRONTEND_BO_URL: "https://admin-vao.social.gouv.fr"
   SENDER_EMAIL: "nepasrepondre@vao.social.gouv.fr"
-  SENTRY_DSN: "https://1c2b442e895c454c847d24182f8b1e90@sentry.fabrique.social.gouv.fr/102"
+  SENTRY_DSN: "https://6b7cfbf810e478e2d66aa6700082476b@sentry2.fabrique.social.gouv.fr/16"
   SENTRY_ENABLED: "true"
   SENTRY_ENVIRONMENT: production
   TMP_DIRECTORY: "/tmp"
