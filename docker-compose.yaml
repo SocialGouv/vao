@@ -109,10 +109,9 @@ services:
       - ./.env
     environment:
       DEBUG: "*info*"
-      SENTRY_DSN: ${BACKEND_SENTRY_DSN}
+      SENTRY_DSN: ${EXTERNAL-API_SENTRY_DSN}
       SENTRY_ENVIRONMENT: local
-      SENTRY_ENABLED: ${BACKEND_SENTRY_ENABLED}
-      TMP_DIRECTORY: ${BACKEND_TMP_DIRECTORY}
+      SENTRY_ENABLED: ${EXTERNAL-API_SENTRY_ENABLED}
     ports:
       - 3020:3000
     user: 1000:1000
