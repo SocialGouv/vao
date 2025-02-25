@@ -5,9 +5,7 @@ import { randomUUID } from "crypto";
 import { AuthService } from "../auth/auth.service";
 import {
   type Accommodation,
-  CreateAccommodation,
   CreateAccommodationDto,
-  CreateAccommodationResult,
 } from "../schemas/accommodation.schema";
 import { AuthGuardRequest } from "../types/auth.type";
 import { AccommodationController } from "./accommodation.controller";
