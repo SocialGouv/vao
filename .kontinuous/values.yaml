@@ -127,6 +127,13 @@ jobs:
         context: ./
         dockerfile: packages/migrations/Dockerfile
 
+    build-external-api:
+      use: build
+      with:
+        imagePackage: external-api
+        context: ./
+        dockerfile: packages/external-api/Dockerfile
+
     build-backend:
       use: build
       with:
