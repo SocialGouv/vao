@@ -139,7 +139,7 @@ function onCloseModal() {
             <template #no-result> Pas de résultat</template>
           </Multiselect>
           <div class="container">
-            <DsfrButton type="button" @click="isModalOpen = true" size="sm"
+            <DsfrButton type="button" size="sm" @click="isModalOpen = true"
               >Adresse introuvable
             </DsfrButton>
           </div>
