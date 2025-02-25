@@ -3,6 +3,7 @@ const yup = require("yup");
 const Hebergement = require("../../services/hebergement/Hebergement");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
+const HebergementHelper = require("../../helpers/hebergement");
 const HebergementSchema = require("../../schemas/hebergement");
 const AppError = require("../../utils/error");
 
@@ -50,7 +51,12 @@ module.exports = async function post(req, res, next) {
   }
 
   try {
-    await Hebergement.update(userId, hebergementId, hebergement);
+    await Hebergement.update(
+      userId,
+      hebergementId,
+      hebergement,
+      HebergementHelper.statuts.ACTIF,
+    );
     log.i("DONE");
     return res.sendStatus(200);
   } catch (error) {

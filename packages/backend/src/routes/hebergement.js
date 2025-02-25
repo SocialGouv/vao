@@ -5,6 +5,7 @@ const router = express.Router();
 const checkJWT = require("../middlewares/checkJWT");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 const checkPermissionHebergement = require("../middlewares/checkPermissionHebergement");
+const checkPermissionHebergementSiegeSocial = require("../middlewares/checkPermissionHebergementSiegeSocial");
 const checkStatutHebergement = require("../middlewares/checkStatutHebergement");
 const getDepartements = require("../middlewares/getDepartements");
 const hebergementController = require("../controllers/hebergement");
@@ -51,6 +52,21 @@ router.put(
   checkStatutHebergement(HebergementHelper.statuts.BROUILLON),
   hebergementController.activate,
 );
+router.put(
+  "/:id/desactivate",
+  checkJWT,
+  checkStatutHebergement(HebergementHelper.statuts.ACTIF),
+  checkPermissionHebergementSiegeSocial,
+  hebergementController.desactivate,
+);
+router.put(
+  "/:id/reactivate",
+  checkJWT,
+  checkStatutHebergement(HebergementHelper.statuts.DESACTIVE),
+  checkPermissionHebergementSiegeSocial,
+  hebergementController.reactivate,
+);
+
 router.post(
   "/:id",
   checkJWT,

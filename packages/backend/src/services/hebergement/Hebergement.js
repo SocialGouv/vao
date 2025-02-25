@@ -243,8 +243,7 @@ ${new Array(nbRows)
     h.organisme_id AS "organismeId",
     h.created_by AS "createdBy",
     h.created_at AS "createdAt",
-    h.current AS "current",
-    hs.value AS "statut"
+    h.current AS "current"
   FROM
     front.hebergement h
     LEFT JOIN front.hebergement_statut hs ON hs.id = h.statut_id
@@ -260,7 +259,6 @@ ${new Array(nbRows)
     WHERE
       h.id = $1
   `,
-
   historize: `
     UPDATE front.hebergement
     SET current = FALSE
@@ -309,6 +307,15 @@ ${new Array(nbRows)
     statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $33)
   WHERE
     id = $1
+  `,
+  updateStatut: `
+    UPDATE 
+      front.hebergement 
+    SET statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $3),
+        edited_by = $2,
+        edited_at = NOW()
+    WHERE id = $1 
+      AND current = TRUE
   `,
 };
 
@@ -490,12 +497,10 @@ module.exports.updateWithoutHistory = async (
   return hebergementId;
 };
 
-module.exports.update = async (userId, hebergementId, hebergement) => {
+module.exports.update = async (userId, hebergementId, hebergement, statut) => {
   log.i("update - IN");
   const {
-    rows: [
-      { hebergementUuid, organismeId, createdBy, createdAt, current, statut },
-    ],
+    rows: [{ hebergementUuid, organismeId, createdBy, createdAt, current }],
   } = await pool.query(query.getPreviousValueForHistory, [hebergementId]);
   const client = await pool.connect();
 
@@ -532,6 +537,14 @@ module.exports.update = async (userId, hebergementId, hebergement) => {
   log.i("update - DONE");
   return newHebergementId;
 };
+
+module.exports.updateStatut = async (userId, hebergementId, statut) => {
+  log.i("updateStatut - IN");
+  await pool.query(query.updateStatut, [hebergementId, userId, statut]);
+  log.i("update - DONE");
+  return hebergementId;
+};
+
 
 module.exports.getByDepartementCodes = async (departementsCodes, params) => {
   log.i("getByDepartementCodes - IN");

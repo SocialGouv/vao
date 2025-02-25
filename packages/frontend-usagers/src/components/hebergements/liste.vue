@@ -37,19 +37,44 @@
       </div>
     </template>
     <template #cell-custom:edit="{ row }">
-      <NuxtLink
-        :to="`/hebergements/${row.id}`"
-        title="Naviguer vers l'hébergement"
-        class="no-background-image"
-      >
+      <div class="buttons-group">
+        <NuxtLink
+          :to="`/hebergements/${row.id}`"
+          title="Naviguer vers l'hébergement"
+          class="no-background-image"
+        >
+          <DsfrButton
+            class="link__dsfrButton"
+            icon="ri:arrow-right-s-line"
+            icon-only
+            primary
+            size="small"
+            type="button"
+          />
+        </NuxtLink>
         <DsfrButton
-          icon="ri:arrow-right-s-line"
+          v-if="
+            canDesactivateOrReactivate &&
+            [statuts.ACTIF, statuts.DESACTIVE].includes(row.statut)
+          "
+          class="button--danger"
+          :icon="
+            row.statut === statuts.DESACTIVE
+              ? 'ri:lock-unlock-line'
+              : 'ri:lock-line'
+          "
           icon-only
-          primary
+          secondary
           size="small"
           type="button"
+          :label="
+            row.statut === statuts.DESACTIVE
+              ? 'Réactiver l\'hébergement'
+              : 'Désactiver l\'hébergement'
+          "
+          @click="desactivateOrReactivate(row)"
         />
-      </NuxtLink>
+      </div>
     </template>
   </DsfrDataTableV2Wrapper>
 </template>
@@ -57,10 +82,11 @@
 <script setup>
 import { DsfrDataTableV2Wrapper } from "@vao/shared";
 import HebergementStatusBadge from "./HebergementStatusBadge.vue";
-import hebergements from "../../utils/hebergements";
+const toaster = useToaster();
 
 const hebergementStore = useHebergementStore();
 const departementStore = useDepartementStore();
+const organismeStore = useOrganismeStore();
 const route = useRoute();
 
 const data = computed(() => hebergementStore.hebergements);
@@ -68,6 +94,16 @@ const total = computed(() => hebergementStore.hebergementsTotal);
 const { query } = route;
 
 const status = hebergements.statutsValues;
+const statuts = hebergements.statuts;
+
+organismeStore.setMyOrganisme();
+
+const canDesactivateOrReactivate = ref(() => {
+  return (
+    organismeStore.isSiegeSocial ||
+    organismeStore?.organismeCourant.typeOrganisme === "personne_physique"
+  );
+});
 
 const columns = [
   {
@@ -118,6 +154,44 @@ const getSearchParams = () => ({
 });
 let timeout = null;
 departementStore.fetch();
+
+async function desactivateOrReactivate(row) {
+  const hebergementId = row.id;
+  if (row.statut === statuts.ACTIF) {
+    try {
+      await hebergementStore.desactivate(hebergementId);
+      toaster.success({
+        titleTag: "h2",
+        description: "Hébergement " + row.nom + " désactivé avec succès",
+      });
+    } catch (error) {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          error.data.message ??
+          "Erreur lors de la désactivation de l'hébergement" + row.nom,
+      });
+      throw error;
+    }
+  } else {
+    try {
+      await hebergementStore.reactivate(hebergementId);
+      toaster.success({
+        titleTag: "h2",
+        description: "Hébergement " + row.nom + " réactivé avec succès",
+      });
+    } catch (error) {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          error.data.message ??
+          "Erreur lors de la réactivation de l'hébergement" + row.nom,
+      });
+      throw error;
+    }
+  }
+  updateData();
+}
 
 const updateData = () => {
   if (timeout) {
