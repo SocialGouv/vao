@@ -81,21 +81,21 @@ services:
       - 3010:3000
     user: 1000:1000
 
-  api:
+  external-api:
     working_dir: /app
     build:
-      dockerfile: ./packages/api/Dockerfile
+      dockerfile: ./packages/external-api/Dockerfile
     develop:
       watch:
         - action: sync
-          path: ./packages/api
-          target: /app/packages/api
+          path: ./packages/external-api
+          target: /app/packages/external-api
           ignore:
             - node_modules/
         - action: rebuild
           path: package.json
         - action: rebuild
-          path: ./packages/api/package.json
+          path: ./packages/external-api/package.json
     volumes:
       - $PWD:/app:delegated
     depends_on:
