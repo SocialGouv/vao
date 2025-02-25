@@ -46,8 +46,6 @@ const userStore = useUserStore();
 const demandeSejourStore = useDemandeSejourStore();
 const organismeStore = useOrganismeStore();
 
-await organismeStore.setMyOrganisme();
-
 const organismeCourant = computed(() => {
   return organismeStore.organismeCourant;
 });
