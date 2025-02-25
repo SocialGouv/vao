@@ -3,6 +3,8 @@ import { nodeProfilingIntegration } from "@sentry/profiling-node";
 
 import configuration from "../config/configuration";
 
+console.log(configuration().sentry.dsn);
+
 Sentry.init({
   dsn: configuration().sentry.dsn,
   environment: configuration().sentry.environment,

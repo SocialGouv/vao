@@ -132,7 +132,7 @@ jobs:
       with:
         imagePackage: external-api
         context: ./
-        dockerfile: packages/api/Dockerfile
+        dockerfile: packages/external-api/Dockerfile
 
     build-backend:
       use: build

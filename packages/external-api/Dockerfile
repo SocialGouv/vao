@@ -8,11 +8,11 @@ WORKDIR /app
 
 # Copier les fichiers nécessaires (ajustez si besoin)
 COPY package.json yarn.lock ./
-COPY packages/api/package.json ./packages/api/
-COPY packages/api/src ./packages/api/src
+COPY packages/external-api/package.json ./packages/external-api/
+COPY packages/external-api/src ./packages/external-api/src
 COPY packages/shared packages/shared
 
-RUN yarn workspace @vao/api install --frozen-lockfile
+RUN yarn workspace @vao/external-api install --frozen-lockfile
 
 # Commande par défaut
-CMD ["yarn", "workspace", "@vao/api", "start:dev"]
+CMD ["yarn", "workspace", "@vao/external-api", "start:dev"]

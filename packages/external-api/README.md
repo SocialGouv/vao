@@ -141,7 +141,7 @@ Create a new accommodation.
 
 **Important:** The `coordinates.address` field will be sent to the [adresse.data.gouv.fr API](https://adresse.data.gouv.fr/api-doc/adresse) to parse address information. The first result returned by the API will be used.
 
-validations are done with [zod](https://zod.dev/) the file is available on [github](https://github.com/SocialGouv/vao/blob/main/packages/api/src/schemas/accommodation.schema.ts)
+validations are done with [zod](https://zod.dev/) the file is available on [github](https://github.com/SocialGouv/vao/blob/main/packages/external-api/src/schemas/accommodation.schema.ts)
 
 **Response Codes:**
 
