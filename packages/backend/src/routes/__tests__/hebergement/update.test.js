@@ -1,6 +1,7 @@
 const request = require("supertest");
 const app = require("../../../app");
 const Hebergement = require("../../../services/hebergement/Hebergement");
+const HebergementHelpers = require("../../../helpers/hebergement");
 const checkJWT = require("../../../middlewares/checkJWT");
 const checkPermissionHebergement = require("../../../middlewares/checkPermissionHebergement");
 const yup = require("yup");
@@ -62,6 +63,7 @@ describe("POST /:id", () => {
       1, // userId
       "123", // hebergementId
       expect.objectContaining(body),
+      HebergementHelpers.statuts.ACTIF,
     );
   });
 

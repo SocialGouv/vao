@@ -105,6 +105,32 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("updateOrCreate - Done", { id });
       return id ?? hebergementId;
     },
+    async desactivate(hebergementId) {
+      log.i("desactivate - IN", { hebergementId });
+
+      const { id } = await $fetchBackend(
+        `/hebergement/${hebergementId}/desactivate`,
+        {
+          method: "PUT",
+          credentials: "include",
+        },
+      );
+      log.i("desactivate - Done", { id });
+      return id ?? hebergementId;
+    },
+    async reactivate(hebergementId) {
+      log.i("reactivate - IN", { hebergementId });
+
+      const { id } = await $fetchBackend(
+        `/hebergement/${hebergementId}/reactivate`,
+        {
+          method: "PUT",
+          credentials: "include",
+        },
+      );
+      log.i("desactivate - Done", { id });
+      return id ?? hebergementId;
+    },
     async updaloadFiles(hebergement) {
       if (hebergement.informationsLocaux.reglementationErp) {
         const fileDAS =
