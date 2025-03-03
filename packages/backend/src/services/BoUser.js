@@ -14,7 +14,9 @@ const {
 
 const AppError = require("../utils/error");
 
-const { addHistoric, entities } = require("./Tracking");
+const { addHistoric } = require("./Tracking");
+
+const { entities } = require("../helpers/tracking");
 
 const log = logger(module.filename);
 

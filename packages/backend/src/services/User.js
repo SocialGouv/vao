@@ -7,7 +7,9 @@ const normalize = require("../utils/normalize");
 
 const AppError = require("../utils/error");
 const { status } = require("../helpers/users");
-const { addHistoric, entities, userTypes } = require("./Tracking");
+const { addHistoric } = require("./Tracking");
+
+const { entities, userTypes } = require("../helpers/tracking");
 
 const log = logger(module.filename);
 
