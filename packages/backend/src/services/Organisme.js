@@ -739,8 +739,8 @@ module.exports.getOne = async (criterias = {}) => {
       statusCode: 404,
     });
   }
+  const organisme = await getComplementOrganisme(organismes[0]);
   // Initialisation d'une valeur vide pour permettre l'affichage au niveau front BO
-  const organisme = organismes[0];
   if (organisme?.personnePhysique) {
     organisme.personnePhysique.nomUsage =
       organisme.personnePhysique?.nomUsage ?? "";
@@ -751,13 +751,15 @@ module.exports.getOne = async (criterias = {}) => {
 
 module.exports.getBySiren = async (siren) => {
   log.i("getBySiren - IN", { siren });
-  const { rowCount, rows: organismes } = await pool.query(query.getBySiren, [siren]);
+  const { rowCount, rows: organismes } = await pool.query(query.getBySiren, [
+    siren,
+  ]);
   if (rowCount === 0) {
     log.i("getBySiren - Aucune correspondance trouvée");
     return [];
   }
   const organismesCompletes = await Promise.all(
-    organismes.map((organisme) => getComplementOrganisme(organisme))
+    organismes.map((organisme) => getComplementOrganisme(organisme)),
   );
   log.i("getBySiren - DONE");
   return organismesCompletes;
