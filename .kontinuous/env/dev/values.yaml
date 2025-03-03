@@ -7,10 +7,13 @@ backend:
   vars:
     S3_BUCKET_ROOT_DIR: review-branch/{{ .Values.global.branchSlug32  }}/files
 
-migrate-s3:
+external-api:
   vars:
     S3_BUCKET_ROOT_DIR: review-branch/{{ .Values.global.branchSlug32  }}/files
 
+migrate-s3:
+  vars:
+    S3_BUCKET_ROOT_DIR: review-branch/{{ .Values.global.branchSlug32  }}/files
 
 jobs:
   runs:
@@ -65,12 +68,12 @@ jobs:
           valueFrom:
             secretKeyRef:
               name: "{{.Values.global.s3SecretName}}"
-              key: bucket_region  
+              key: bucket_region
         - name: S3_BUCKET_ACCESS_KEY
           valueFrom:
             secretKeyRef:
               name: "{{.Values.global.s3SecretName}}"
-              key: bucket_access_key  
+              key: bucket_access_key
         - name: S3_BUCKET_SECRET_KEY
           valueFrom:
             secretKeyRef:
