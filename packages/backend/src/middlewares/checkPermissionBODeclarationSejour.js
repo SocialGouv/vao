@@ -1,5 +1,6 @@
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
+const PersonneMorale = require("../services/organisme/PersonneMorale")
 const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);
@@ -23,7 +24,7 @@ async function checkPermissionDeclarationSejour(req, res, next) {
 
   // Requête SQL simplifiée, ne récupérant que les informations brutes nécessaires
   const query = `
-    SELECT ds.id, o.personne_morale, agr.region_obtention
+    SELECT ds.id, agr.region_obtention, o.id AS organisme_id
     FROM front.demande_sejour ds
     INNER JOIN front.organismes o ON o.id = ds.organisme_id
     LEFT JOIN front.agrements agr ON agr.organisme_id = ds.organisme_id
@@ -71,8 +72,8 @@ async function checkPermissionDeclarationSejour(req, res, next) {
     );
   }
 
-  const { personne_morale, region_obtention } = sejour;
-
+  const { region_obtention, organisme_id } = sejour;
+  const personneMorale = await PersonneMorale.getByOrganismeId(organisme_id);
   // Traitement des données JSON pour vérifier les départements
   const hasValidDepartement = departements.some((dep) =>
     departementsHebergements.includes(dep.value),
@@ -84,16 +85,17 @@ async function checkPermissionDeclarationSejour(req, res, next) {
 
   try {
     // Vérification supplémentaire sur les organismes et leur agrément
-    if (!personne_morale?.porteurAgrement) {
+    if (!personneMorale?.porteurAgrement) {
       // Si l'agrément n'est pas "porteur", il faut vérifier les organismes liés
       const queryOrganismeAgre = `
         SELECT agr.region_obtention
         FROM front.organismes o
         INNER JOIN front.agrements agr ON agr.organisme_id = o.id
-        WHERE o.personne_morale->>'siret' = $1
+        INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id 
+        WHERE pm.siret = $1
       `;
       const { rows: agrements } = await pool.query(queryOrganismeAgre, [
-        personne_morale.etablissementPrincipal?.siret,
+        personneMorale.etablissementPrincipal?.siret,
       ]);
 
       const hasAgrement = agrements.some(

@@ -1,4 +1,5 @@
 const logger = require("../../utils/logger");
+const pool = require("../../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 
@@ -32,6 +33,35 @@ const query = {
       id as "personnePhysiqueId"
     ;
     `,
+  getByOrganismeId: `
+    SELECT 
+      prenom AS "prenom",
+      nom_usage AS "nomUsage",
+      nom_naissance AS "nomNaissance",
+      telephone AS "telephone",
+      profession AS "profession",
+      JSON_BUILD_OBJECT(
+          'label', adresse_siege_label,
+          'cleInsee', adresse_siege_cle_insee,
+          'codeInsee', adresse_siege_code_insee,
+          'codePostal', adresse_siege_code_postal,
+          'long', adresse_siege_long,
+          'lat', adresse_siege_lat,
+          'departement', adresse_siege_departement
+      ) AS "adresseSiege",
+      JSON_BUILD_OBJECT(
+          'label', adresse_domicile_label,
+          'cleInsee', adresse_domicile_cle_insee,
+          'codeInsee', adresse_domicile_code_insee,
+          'codePostal', adresse_domicile_code_postal,
+          'long', adresse_domicile_long,
+          'lat', adresse_domicile_lat,
+          'departement', adresse_domicile_departement
+      ) AS "adresseDomicile",
+      adresse_identique AS "adresseIdentique"
+    FROM front.personne_physique
+    WHERE organisme_id = $1
+  `,
   getIdByOrganiseId: `
     SELECT id
     FROM front.personne_physique
@@ -132,6 +162,16 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
       ]);
 
   log.i("createOrUpdate - DONE");
+};
+
+module.exports.getByOrganismeId = async (organismeId) => {
+  log.i("getByOrganismeId - IN", organismeId);
+  const { rowCount, rows: personnePhysiques } = await pool.query(
+    query.getByOrganismeId,
+    [organismeId],
+  );
+
+  return rowCount === 0 ? {} : personnePhysiques[0];
 };
 
 const { create } = module.exports;
