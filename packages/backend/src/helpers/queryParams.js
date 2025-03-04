@@ -136,7 +136,7 @@ const getSort = (sortBy, titles, defaultSort = "") => {
   if (sortBy) {
     const title = titles.find((t) => t.queryKey === sortBy && t.sortEnabled);
     if (title) {
-      return title.key;
+      return title.sortQuery ?? title.key;
     }
   }
   return defaultSort;

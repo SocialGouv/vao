@@ -215,13 +215,13 @@ const query = {
   `,
   getIsUserIdSiegeSocial: `
     SELECT uo.org_id
-    FROM 
-      front.user_organisme uo 
+    FROM
+      front.user_organisme uo
     INNER JOIN front.organismes o ON o.id = uo.org_id
     LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id
     JOIN front.users u ON uo.use_id = u.id
     WHERE u.id = $1
-      AND (pm.siege_social = 'true' 
+      AND (pm.siege_social = 'true'
         OR o.type_organisme = '${partOrganisme.PERSONNE_PHYSIQUE}')
   `,
   getListe: () =>
@@ -369,6 +369,17 @@ SELECT
   ona.edited_at AS "editedAt"
 FROM back.organisme_non_agree ona
 `,
+  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
+  // Utilisé uniquement pour mettre a jour les json personnes_morale
+  // lors de l'ajout des etablissement secondaire.
+  getPersonneMorale: `
+  SELECT
+    personne_morale AS "personneMorale"
+  FROM
+    front.organismes
+  Where id = $1
+  `,
+
   getSiege: `
     SELECT
       o.id as "organismeId",
@@ -391,7 +402,7 @@ FROM back.organisme_non_agree ona
             JOIN front.organismes o2 ON o2.id = a.organisme_id
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm.id
-            WHERE pm2.siret = etab.siret AND 
+            WHERE pm2.siret = etab.siret AND
             a.supprime = false
         )
         ELSE (
@@ -416,6 +427,7 @@ FROM back.organisme_non_agree ona
     WHERE pm.siren = $1
       AND pm.siege_social = 'true'
 `,
+
   getSiret: `
     SELECT
         pm.siret as siret
@@ -424,11 +436,13 @@ FROM back.organisme_non_agree ona
     INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id
     WHERE id = $1
   `,
+
   link: `
     INSERT INTO front.user_organisme (use_id, org_id)
       VALUES($1, $2)
     RETURNING use_id as "userLinked"
 `,
+
   updatePersonne: `
     UPDATE front.organismes
     SET
@@ -439,6 +453,19 @@ FROM back.organisme_non_agree ona
       edited_at = NOW()
     WHERE id = $1
   `,
+
+  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
+  // Utilisé uniquement pour mettre a jour les json personnes_morale
+  // lors de l'ajout des etablissement secondaire.
+  updatePersonneMorale: `
+    UPDATE front.organismes
+    SET
+      personne_morale = $2,
+      complet = complet AND $3,
+      edited_at = NOW()
+    WHERE id = $1
+`,
+
   updateSanitaire: `
     UPDATE front.organismes
     SET
@@ -447,31 +474,11 @@ FROM back.organisme_non_agree ona
       edited_at = NOW()
     WHERE id = $1
 `,
+
   updateTransport: `
     UPDATE front.organismes
     SET
       protocole_transport = $2,
-      complet = complet AND $3,
-      edited_at = NOW()
-    WHERE id = $1
-`,
-  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
-  // Utilisé uniquement pour mettre a jour les json personnes_morale
-  // lors de l'ajout des etablissement secondaire.
-  getPersonneMorale: `
-  SELECT
-    personne_morale AS "personneMorale"
-  FROM
-    front.organismes
-  Where id = $1
-  `,
-  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
-  // Utilisé uniquement pour mettre a jour les json personnes_morale
-  // lors de l'ajout des etablissement secondaire.
-  updatePersonneMorale: `
-    UPDATE front.organismes
-    SET
-      personne_morale = $2,
       complet = complet AND $3,
       edited_at = NOW()
     WHERE id = $1
@@ -843,6 +850,8 @@ module.exports.getListe = async (queryParams) => {
         };
       },
       queryKey: "name",
+      sortEnabled: true,
+      sortQuery: "COALESCE(pm.raison_sociale, pp.nom_usage)",
       type: "custom",
     },
     {
@@ -866,6 +875,9 @@ module.exports.getListe = async (queryParams) => {
     sortBy,
     sortDirection,
   );
+
+  log.w(paginatedQuery.query, paginatedQuery.params);
+
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
     pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
