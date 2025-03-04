@@ -19,7 +19,7 @@
     is-sortable
     @update-data="updateData"
   >
-    <template #cell-custom:name="{ row }">
+    <template #cell-name="{ row }">
       {{ row.personne.nom ? row.personne.nom : row.personne.raisonSociale }}
     </template>
     <template #cell-typeOrganisme="{ cell }">
@@ -79,8 +79,11 @@ const { query } = route;
 
 const columns = [
   {
-    key: "custom:name",
+    key: "name",
     label: "Nom",
+    options: {
+      isSortable: true,
+    },
   },
   {
     key: "typeOrganisme",
