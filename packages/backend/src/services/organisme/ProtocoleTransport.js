@@ -1,5 +1,6 @@
 const logger = require("../../utils/logger");
 const pool = require("../../utils/pgpool").getPool();
+const { getFileMetaData } = require("../Document");
 
 const log = logger(module.filename);
 
@@ -55,18 +56,6 @@ const query = {
       precision_mode_organisation AS "precisionModeOrganisation",
       precision_vehicules_adaptes AS "precisionVehiculesAdaptes",
       COALESCE(
-        (SELECT JSON_AGG(
-          JSON_BUILD_OBJECT(
-            'name', doc.filename,
-            'uuid', doc.uuid, 
-            'createdAt', doc.created_at
-          )
-        ) 
-        FROM front.org_protocole_transport_files ptf
-        LEFT JOIN doc.documents doc ON doc.uuid = ptf.files
-        WHERE ptf.protocole_transport_id = pt.id), '[]'
-      ) AS files,
-      COALESCE(
         (SELECT JSON_AGG(ptr.value)
           FROM front.opt_to_ptr pttptr
           LEFT JOIN front.protocole_transport_responsable ptr
@@ -87,6 +76,12 @@ const query = {
     FROM front.org_protocole_transport
     WHERE organisme_id = $1
   `,
+  getPTFiles: `
+    SELECT files AS "uuid"
+    FROM front.org_protocole_transport_files ptf
+    INNER JOIN front.org_protocole_transport pt ON pt.organisme_id = $1
+    WHERE ptf.protocole_transport_id = pt.id
+`,
   removePTFiles: `
     DELETE FROM front.org_protocole_transport_files
     WHERE
@@ -186,8 +181,12 @@ module.exports.getByOrganismeId = async (organismeId) => {
     query.getByOrganismeId,
     [organismeId],
   );
+  const { rows: uuids } = await pool.query(query.getPTFiles, [organismeId]);
+  const files = await Promise.all(
+    uuids.map(({ uuid }) => getFileMetaData(uuid) ?? null),
+  );
   log.i("getByOrganismeId - DONE");
-  return rowCount === 0 ? {} : protocoleTransport[0];
+  return rowCount === 0 ? {} : { ...protocoleTransport[0], files };
 };
 
 const { create } = module.exports;

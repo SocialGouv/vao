@@ -1,5 +1,6 @@
 const logger = require("../../utils/logger");
 const pool = require("../../utils/pgpool").getPool();
+const { getFileMetaData } = require("../Document");
 
 const log = logger(module.filename);
 
@@ -101,18 +102,6 @@ const query = {
       stockage_medicament_securise AS "stockageMedicamentSecurise",
       trousse_pharmacie AS "troussePharmacie",
       COALESCE(
-        (SELECT JSON_AGG(
-          JSON_BUILD_OBJECT(
-            'name', doc.filename,
-            'uuid', doc.uuid, 
-            'createdAt', doc.created_at
-          )
-        ) 
-        FROM front.org_protocole_sanitaire_files psf
-        LEFT JOIN doc.documents doc ON doc.uuid = psf.files
-        WHERE psf.protocole_sanitaire_id = ps.id), '[]'
-      ) AS files,
-      COALESCE(
         (SELECT JSON_AGG(psce.value)
         FROM front.ops_to_ce pstce
         LEFT JOIN front.protocole_sanitaire_constitution_equipe psce 
@@ -133,6 +122,12 @@ const query = {
     SELECT id
     FROM front.org_protocole_sanitaire
     WHERE organisme_id = $1
+  `,
+  getPSFiles: `
+    SELECT files AS "uuid"
+    FROM front.org_protocole_sanitaire_files psf
+    INNER JOIN front.org_protocole_sanitaire ps ON ps.organisme_id = $1
+    WHERE psf.protocole_sanitaire_id = ps.id
   `,
   removeCE: `
         DELETE FROM front.ops_to_ce
@@ -305,8 +300,12 @@ module.exports.getByOrganismeId = async (organismeId) => {
     query.getByOrganismeId,
     [organismeId],
   );
+  const { rows: uuids } = await pool.query(query.getPSFiles, [organismeId]);
+  const files = await Promise.all(
+    uuids.map(({ uuid }) => getFileMetaData(uuid) ?? null),
+  );
   log.i("getByOrganismeId - DONE");
-  return rowCount === 0 ? {} : protocoleSanitaire[0];
+  return rowCount === 0 ? {} : { ...protocoleSanitaire[0], files };
 };
 
 const { create } = module.exports;
