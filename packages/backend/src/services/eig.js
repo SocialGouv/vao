@@ -5,7 +5,9 @@ const { statuts, Types, Categorie } = require("../helpers/eig");
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
 const pool = require("../utils/pgpool").getPool();
-const { addHistoric, entities, userTypes } = require("./Tracking");
+const { addHistoric } = require("./Tracking");
+
+const { entities, userTypes } = require("../helpers/tracking");
 
 const log = logger(module.filename);
 
