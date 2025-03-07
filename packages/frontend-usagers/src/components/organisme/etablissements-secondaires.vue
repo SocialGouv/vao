@@ -229,7 +229,7 @@ const columns = [
     label: "Commune",
   },
   {
-    key: "custom-edit",
+    key: "custom:edit",
     label: "Action",
   },
 ];
