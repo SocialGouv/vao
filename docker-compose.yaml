@@ -82,20 +82,10 @@ services:
     user: 1000:1000
 
   external-api:
+    image: "node:22.13-bullseye-slim"
+    restart: unless-stopped
     working_dir: /app
-    build:
-      dockerfile: ./packages/external-api/Dockerfile
-    develop:
-      watch:
-        - action: sync
-          path: ./packages/external-api
-          target: /app/packages/external-api
-          ignore:
-            - node_modules/
-        - action: rebuild
-          path: package.json
-        - action: rebuild
-          path: ./packages/external-api/package.json
+    command: bash -c "/app/packages/external-api/start.sh"
     volumes:
       - $PWD:/app:delegated
     depends_on:

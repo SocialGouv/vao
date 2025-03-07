@@ -35,4 +35,6 @@ WORKDIR /app
 COPY --chown=1000:1000 --from=external-api-build /app/node_modules ./app/node_modules
 COPY --chown=1000:1000 --from=external-api-build /app/packages/external-api/dist ./app/packages/external-api/dist
 
-CMD [ "node", "app/packages/external-api/dist/main.js" ]
+ENV NODE_ENV production
+
+CMD [ "node", "/app/packages/external-api/dist/main.js" ]
