@@ -269,6 +269,19 @@ module.exports = function displayOrganisme(responsableSejour, organisme) {
             },
             {
               bold: true,
+              text: `${organisme.personnePhysique.siret ?? ""}`,
+              width: "*",
+            },
+          ],
+        },
+        {
+          columns: [
+            {
+              text: "Téléphone :",
+              width: 250,
+            },
+            {
+              bold: true,
               text: `${organisme.personnePhysique.telephone}`,
               width: "*",
             },

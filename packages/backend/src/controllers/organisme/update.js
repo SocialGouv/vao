@@ -20,7 +20,6 @@ module.exports = async function update(req, res, next) {
       }),
     );
   }
-
   if (parametre.siret) {
     try {
       const [organismeWithTheSiret, isComplet, currentSiret] =
@@ -42,7 +41,6 @@ module.exports = async function update(req, res, next) {
           },
         );
       }
-
       if (
         !isComplet &&
         organismeWithTheSiret &&
@@ -64,7 +62,6 @@ module.exports = async function update(req, res, next) {
       return next(error);
     }
   }
-
   try {
     await Organisme.update(type, parametre, organismeId);
     return res.status(200).json({
