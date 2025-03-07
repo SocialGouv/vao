@@ -214,6 +214,14 @@ const personnePhysiqueSchema = () => ({
     .string()
     .required()
     .oneOf(professionOptions.map((o) => o.value)),
+  siret: yup
+    .string()
+    .nullable(true)
+    .test(
+      "siret",
+      "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
+      (siret) => regex.siretRegex.test(siret),
+    ),
   telephone: yup
     .string()
     .test("telephone", "Format de numéro de téléphone invalide", (tel) =>

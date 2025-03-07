@@ -8,11 +8,12 @@ import { adresseSchema } from "@vao/shared/src/schema/adresse";
 
 const types = [
   {
-    label: "Personne physique",
+    label:
+      "Personne physique (forme juridique Entreprise individuelle, EIRL, micro entreprise)",
     value: "personne_physique",
   },
   {
-    label: "Personne morale",
+    label: "Personne morale (forme juridique Association, SAS, SARL…)",
     value: "personne_morale",
   },
 ];
@@ -226,6 +227,14 @@ const personnePhysiqueSchema = {
     .string()
     .test("telephone", "Format de numéro de téléphone invalide", (tel) =>
       regex.numTelephoneRegex.test(tel),
+    ),
+  siret: yup
+    .string()
+    .nullable(true)
+    .test(
+      "siret",
+      "Le numéro SIRET doit faire exactement 14 chiffres, sans espace",
+      (siret) => regex.siretRegex.test(siret),
     ),
   adresseIdentique: yup.boolean().required(),
   adresseDomicile: yup.object({ ...adresseSchema(true) }).required(),
