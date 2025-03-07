@@ -83,17 +83,15 @@ test("create_organisateur", async ({ page }) => {
 
   // étape 1
   await page.getByText("Personne physique").click();
-  await page.getByLabel("Nom de naissance Veuillez").click();
-  await page.getByLabel("Nom de naissance Veuillez").fill("NomTest");
-  await page.getByLabel("Prénom Veuillez saisir votre").click();
-  await page.getByLabel("Prénom Veuillez saisir votre").fill("PrénomTest");
+  await page.getByLabel("Numéro SIRET du titulaire de l’agrément VAO").click();
+  await page.getByLabel("Numéro SIRET du titulaire de l’agrément VAO").fill("79407263700042");  
+  await page.getByRole("button", { name: "Récupérer les informations de la personne physique" }).click();
+  await page.waitForSelector('[aria-label="Profession"]', { state: "visible" });
   await page
-    .getByLabel("Profession")
-    .selectOption("Agriculture, sylviculture et pêche");
+  .getByLabel("Profession")
+  .selectOption("Agriculture, sylviculture et pêche");
   await page.getByLabel("numéro de téléphone Veuillez").click();
   await page.getByLabel("numéro de téléphone Veuillez").fill("0123456789");
-  await page.locator('input[type="text"]').click();
-  await page.locator('input[type="text"]').fill("Rue Mirabeau 75016 Paris");
   await page.getByRole("button", { name: "Rue Mirabeau 75016 Paris" }).click();
   await page.getByText("Oui").click();
   await page.getByRole("button", { name: "Suivant" }).click();
