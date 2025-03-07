@@ -195,13 +195,6 @@ jobs:
         context: ./
         dockerfile: packages/backend/Dockerfile
 
-    build-external-api:
-      use: build
-      with:
-        imagePackage: external-api
-        context: ./
-        dockerfile: packages/external-api/Dockerfile
-
     build-frontend-usagers:
       use: build
       envFrom:
