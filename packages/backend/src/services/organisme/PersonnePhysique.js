@@ -26,9 +26,10 @@ const query = {
       adresse_domicile_long,
       adresse_domicile_lat,
       adresse_domicile_departement,
-      adresse_identique
+      adresse_identique,
+      siret
     )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
     RETURNING
       id as "personnePhysiqueId"
     ;
@@ -58,7 +59,8 @@ const query = {
           'lat', adresse_domicile_lat,
           'departement', adresse_domicile_departement
       ) AS "adresseDomicile",
-      adresse_identique AS "adresseIdentique"
+      adresse_identique AS "adresseIdentique",
+      siret AS "siret"
     FROM front.personne_physique
     WHERE organisme_id = $1
   `,
@@ -90,7 +92,8 @@ const query = {
       adresse_domicile_long = $18,
       adresse_domicile_lat = $19,
       adresse_domicile_departement = $20,
-      adresse_identique = $21
+      adresse_identique = $21,
+      siret = $22
   WHERE
     organisme_id = $1
   `,
@@ -121,6 +124,7 @@ module.exports.create = async (client, organismeId, parametre) => {
     parametre?.adresseDomicile?.coordinates[1] ?? null,
     parametre?.adresseDomicile?.departement ?? null,
     parametre?.adresseIdentique ?? null,
+    parametre?.siret ?? null,
   ]);
 
   log.d("create - DONE");
@@ -159,6 +163,7 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
         parametre?.adresseDomicile?.coordinates?.[1] ?? null,
         parametre?.adresseDomicile?.departement ?? null,
         parametre?.adresseIdentique ?? null,
+        parametre?.siret ?? null,
       ]);
 
   log.i("createOrUpdate - DONE");
