@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install -y procps && apt-get clean
 
 # Définir le répertoire de travail
 WORKDIR /app
+USER 1000
 
 # Copier les fichiers nécessaires (ajustez si besoin)
 COPY package.json yarn.lock ./
