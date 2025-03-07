@@ -18,7 +18,7 @@ external-api:
   imagePackage: external-api
   host: "external-api-{{ .Values.global.host }}"
   containerPort: 3000
-    labels:
+  labels:
     oblik.socialgouv.io/enabled: "false"
   resources:
     requests:
