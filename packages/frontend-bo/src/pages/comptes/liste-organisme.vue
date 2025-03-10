@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container">
-    <h1 class="fr-py-2w">Liste des organismes</h1>
+    <h1 class="fr-py-2w">Liste des comptes organisateurs</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
@@ -75,7 +75,7 @@
       v-model:sort="sort"
       v-model:sort-direction="sortDirection"
       :columns="columns"
-      :table-title="`Liste des organismes (${usersStore.totalUsersFO})`"
+      :table-title="`Liste des comptes organisateurs (${usersStore.totalUsersFO})`"
       :data="usersStore.usersFO"
       :total="usersStore.totalUsersFO"
       row-id="organismeId"
