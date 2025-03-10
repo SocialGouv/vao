@@ -1,6 +1,9 @@
+import "multer";
+
 import { BadRequestException } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { randomUUID } from "crypto";
+import type { Express } from "express";
 
 import { AuthService } from "../auth/auth.service";
 import { AuthGuardRequest } from "../types/auth.type";
