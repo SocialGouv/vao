@@ -14,6 +14,7 @@ import configuration from "./config/configuration";
 import { FileModule } from "./file/file.module";
 import { DatabaseModule } from "./global/database.module";
 import { S3Module } from "./global/s3.module";
+import { HealthModule } from "./health/health.module";
 import { OrganismModule } from "./organism/organism.module";
 import { UserModule } from "./user/user.module";
 
@@ -24,7 +25,6 @@ import { UserModule } from "./user/user.module";
       isGlobal: true,
       load: [configuration],
     }),
-    // TODO
     SentryModule.forRoot(),
     LoggerModule.forRootAsync({
       imports: [ConfigModule],
@@ -53,6 +53,7 @@ import { UserModule } from "./user/user.module";
           },
         };
       },
+      providers: undefined,
     }),
     DatabaseModule,
     S3Module,
@@ -61,6 +62,7 @@ import { UserModule } from "./user/user.module";
     FileModule,
     OrganismModule,
     UserModule,
+    HealthModule,
   ],
   providers: [
     {

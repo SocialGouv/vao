@@ -1,6 +1,8 @@
 ARG NODE_VERSION=22.13-bullseye-slim
 FROM node:$NODE_VERSION AS external-api-base
 
+USER root
+
 RUN apt-get update && apt-get install -y procps && apt-get clean
 
 FROM external-api-base AS external-api-deps
@@ -23,7 +25,7 @@ COPY packages/external-api/package.json ./packages/external-api/
 COPY packages/external-api/ ./packages/external-api/
 COPY packages/shared packages/shared
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 RUN yarn workspace @vao/external-api build
 
@@ -32,9 +34,9 @@ FROM external-api-base AS external-api-production
 USER 1000
 WORKDIR /app
 
-COPY --chown=1000:1000 --from=external-api-build /app/node_modules ./app/node_modules
-COPY --chown=1000:1000 --from=external-api-build /app/packages/external-api/dist ./app/packages/external-api/dist
+COPY --chown=1000:1000 --from=external-api-build /app/node_modules ./node_modules
+COPY --chown=1000:1000 --from=external-api-build /app/packages/external-api/dist ./packages/external-api/dist
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 CMD [ "node", "/app/packages/external-api/dist/main.js" ]

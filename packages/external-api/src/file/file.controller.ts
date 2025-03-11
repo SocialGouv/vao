@@ -1,3 +1,5 @@
+import "multer";
+
 import {
   BadRequestException,
   Controller,
@@ -18,6 +20,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
+import { Express } from "express";
 import { filetypeinfo } from "magic-bytes.js";
 
 import { AuthGuard } from "../auth/auth.guard";

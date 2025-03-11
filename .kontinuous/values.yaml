@@ -28,15 +28,16 @@ external-api:
       cpu: 100m
       memory: 128Mi
   livenessProbe:
-    tcpSocket:
+    httpGet:
+      path: /health
       port: 3000
   startupProbe:
     httpGet:
-      path: /
+      path: /health
       port: 3000
   readinessProbe:
     httpGet:
-      path: /
+      path: /health
       port: 3000
   envFrom:
     - configMapRef:
