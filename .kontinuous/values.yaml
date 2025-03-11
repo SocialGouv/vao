@@ -12,6 +12,61 @@ pg:
     clusterExtraLabels:
       oblik.socialgouv.io/enabled: "false"
 
+external-api:
+  ~chart: app
+  ~needs: [build-external-api, migrations-db, init-db]
+  imagePackage: external-api
+  host: "external-api-{{ .Values.global.host }}"
+  containerPort: 3000
+  labels:
+    oblik.socialgouv.io/enabled: "false"
+  resources:
+    requests:
+      cpu: 200m
+      memory: 768Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 3000
+  startupProbe:
+    httpGet:
+      path: /health
+      port: 3000
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 3000
+  envFrom:
+    - configMapRef:
+        name: external-api
+    - configMapRef:
+        name: pg
+    - secretRef:
+        name: pg
+    - secretRef:
+        name: pg-app
+    - secretRef:
+        name: token
+    - secretRef:
+        name: "{{.Values.global.s3SecretName}}"
+  vars:
+    DEBUG: "*info*"
+    DEBUG_HIDE_DATE: "true"
+    TZ: Europe/Paris
+    SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
+    POSTGRES_HOST: "$(PGHOST)"
+    POSTGRES_PORT: "$(PGPORT)"
+    POSTGRES_DB: "$(PGDATABASE)"
+
+    S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
+    S3_BUCKET_NAME: "$(bucket_name)"
+    S3_BUCKET_REGION: "$(bucket_region)"
+    S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
+    S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
+
 backend:
   ~chart: app
   ~needs: [build-backend, migrations-db, init-db]
@@ -126,6 +181,13 @@ jobs:
         imagePackage: migrations
         context: ./
         dockerfile: packages/migrations/Dockerfile
+
+    build-external-api:
+      use: build
+      with:
+        imagePackage: external-api
+        context: ./
+        dockerfile: packages/external-api/Dockerfile
 
     build-backend:
       use: build

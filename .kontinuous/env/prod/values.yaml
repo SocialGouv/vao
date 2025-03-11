@@ -10,10 +10,18 @@ backend:
   vars:
     S3_BUCKET_ROOT_DIR: prod/files
 
-migrate-s3:
+external-api:
+  autoscale:
+    enabled: true
+  host: external-api-vao.social.gouv.fr
+  redirectFrom:
+    - "external-api-{{ .Values.global.host }}"
   vars:
     S3_BUCKET_ROOT_DIR: prod/files
 
+migrate-s3:
+  vars:
+    S3_BUCKET_ROOT_DIR: prod/files
 
 frontend-usagers:
   autoscale:
@@ -86,12 +94,12 @@ jobs:
           valueFrom:
             secretKeyRef:
               name: "{{.Values.global.s3SecretName}}"
-              key: bucket_region  
+              key: bucket_region
         - name: S3_BUCKET_ACCESS_KEY
           valueFrom:
             secretKeyRef:
               name: "{{.Values.global.s3SecretName}}"
-              key: bucket_access_key  
+              key: bucket_access_key
         - name: S3_BUCKET_SECRET_KEY
           valueFrom:
             secretKeyRef:
