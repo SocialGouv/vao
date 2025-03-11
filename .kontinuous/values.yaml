@@ -22,11 +22,11 @@ external-api:
     oblik.socialgouv.io/enabled: "false"
   resources:
     requests:
-      cpu: 50m
-      memory: 128Mi
+      cpu: 200m
+      memory: 768Mi
     limits:
-      cpu: 100m
-      memory: 128Mi
+      cpu: 500m
+      memory: 1024Mi
   livenessProbe:
     httpGet:
       path: /health
