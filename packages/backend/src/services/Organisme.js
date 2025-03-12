@@ -423,7 +423,6 @@ FROM back.organisme_non_agree ona
       o.edited_at as "editedAt"
     FROM front.organismes o
     INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id
-    JOIN front.user_organisme uo ON o.id = org_id
     WHERE pm.siren = $1
       AND pm.siege_social = 'true'
 `,

@@ -424,6 +424,22 @@ async function searchApiInsee() {
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
 
+    if (Object.keys(siege).length !== 0) {
+      const isEstablishmentEnabled = siege?.personneMorale?.etablissements
+        .filter((e) => e.siret === siret.value)
+        .map((e) => {
+          return e.enabled;
+        });
+      if (!isEstablishmentEnabled[0] && !porteurAgrement.value) {
+        toaster.error({
+          titleTag: "h2",
+          description:
+            "Votre établissement n'est pas autorisé par le siège social à se déclarer",
+        });
+        setEmptyValues();
+        return false;
+      }
+    }
     const etablissementPrincipal =
       siege &&
       siege.complet &&
@@ -471,18 +487,22 @@ async function searchApiInsee() {
       });
     }
     log.w("searchApiInsee - erreur:", { error });
-    setValues({
-      siren: null,
-      siegeSocial: null,
-      raisonSociale: null,
-      nomCommercial: null,
-      statut: null,
-      adresse: null,
-      pays: null,
-      representantsLegaux: [],
-      etablissementPrincipal: {},
-    });
+    setEmptyValues();
   }
+}
+
+function setEmptyValues() {
+  setValues({
+    siren: null,
+    siegeSocial: null,
+    raisonSociale: null,
+    nomCommercial: null,
+    statut: null,
+    adresse: null,
+    pays: null,
+    representantsLegaux: [],
+    etablissementPrincipal: {},
+  });
 }
 
 async function searchOrganismeBySiret() {
