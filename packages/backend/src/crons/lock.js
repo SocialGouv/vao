@@ -25,3 +25,4 @@ module.exports = async function lock(lastDate, name) {
   log.d(`DONE`);
   return uuid;
 };
+z

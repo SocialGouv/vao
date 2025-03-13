@@ -211,3 +211,5 @@ module.exports.getBody = (titre, content, signature) => {
   `;
   return corpsMail;
 };
+
+

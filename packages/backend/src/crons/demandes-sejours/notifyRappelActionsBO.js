@@ -77,8 +77,8 @@ const query = {
   ),
   fetchRappelDSFUsager: generateRappelQuery(
     `'${statuts.ATTENTE_8_JOUR}','${statuts.A_MODIFIER}','${statuts.A_MODIFIER_8J}'`,
-    `STRING_AGG(use.mail, ';') AS mail, 
-    ((ds.responsable_sejour::jsonb)->>'email')::text as mailresp, 
+    `STRING_AGG(use.mail, ';') AS mail,
+    ((ds.responsable_sejour::jsonb)->>'email')::text as mailresp,
     STRING_AGG(use.mail, ';') || ';' || ((ds.responsable_sejour::jsonb)->>'email')::text as mails,`,
     ` INNER JOIN front.user_organisme uso ON uso.org_id = ds.organisme_id INNER JOIN front.users use ON use.id = uso.use_id `,
     `ds.organisme_id,mailresp,`,
@@ -208,7 +208,7 @@ function createDSContent({ ds }) {
   return content;
 }
 
-async function sendNotificationMail({ content, email, isBO }) {
+function sendNotificationMail({ content, email, isBO }) {
   log.i("sendNotificationMail - In", {
     email,
   });
