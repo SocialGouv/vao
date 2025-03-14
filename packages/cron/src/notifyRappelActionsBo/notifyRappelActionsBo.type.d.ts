@@ -29,3 +29,5 @@ export type QueryConfig = {
   additionalGroupBy?: string;
   additionalOrderBy?: string;
 };
+
+export type Rows = RappelDSBORow[] | RappelDSFUsagerRow[];

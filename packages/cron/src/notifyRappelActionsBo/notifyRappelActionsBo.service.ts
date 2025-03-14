@@ -1,11 +1,8 @@
 import { pool } from "../db";
 import { status } from "@vao/shared";
-import type { QueryConfig } from "./type";
-
-export const notifyRappelActionsBo = async () => {
-  const response = await pool.query("SELECT * FROM rappel_actions_bo");
-  return response.rows;
-};
+import { sendEmails } from "./notifyRappelActionsBo.email";
+import { insertCron } from "../cron/cron.service";
+import type { QueryConfig } from "./notifyRappelActionsBo.type";
 
 const configurableQuery = ({
   statutsArray,
@@ -56,7 +53,7 @@ const configurableQuery = ({
       ds.date_debut ASC;
 `;
 
-const getRappelDSBO = () =>
+const getRappelDSBo = () =>
   configurableQuery({
     statutsArray: `'${status.defaultStatus.TRANSMISE}','${status.defaultStatus.EN_COURS}','${status.defaultStatus.TRANSMISE_8J}','${status.defaultStatus.EN_COURS_8J}'`,
     additionalColumns: "use.mail,",
@@ -78,3 +75,27 @@ const getRappelDSFUsager = () =>
     additionalGroupBy: "ds.organisme_id,mailresp,",
     additionalOrderBy: "",
   });
+
+export const notifyRappelActions = async () => {
+  const startDate = new Date();
+  const responses = await Promise.all([
+    pool.query(getRappelDSBo()),
+    pool.query(getRappelDSFUsager()),
+  ]);
+  const BoRows = responses[0].rows;
+  const fUsagerRows = responses[1].rows;
+  const groupedBoRows = await sendEmails(BoRows, true);
+  const groupedFUsagerRows = await sendEmails(fUsagerRows, false);
+  const endDate = new Date();
+  insertCron({
+    cronName: "notifyRappelActions",
+    startDate,
+    endDate,
+    report: {
+      error: groupedBoRows.error + groupedFUsagerRows.error,
+      success: groupedBoRows.success + groupedFUsagerRows.success,
+      total: groupedBoRows.total + groupedFUsagerRows.total,
+      errors: [...groupedBoRows.errors, ...groupedFUsagerRows.errors],
+    },
+  });
+};

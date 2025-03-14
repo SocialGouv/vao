@@ -21,6 +21,10 @@ declare global {
       FRONTEND_USAGERS_URL: string;
       FRONTEND_BO_URL: string;
       SENDER_EMAIL: string;
+      SMTP_HOST: string;
+      SMTP_IS_POOLED: string;
+      SMTP_PORT: string;
+      SMTP_IS_SECURE: string;
     }
   }
 }

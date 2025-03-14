@@ -33,3 +33,21 @@ export const domains = {
 };
 
 export const senderEmail = process.env.SENDER_EMAIL;
+
+export const smtp = {
+  auth: {
+    pass: process.env.SMTP_PASSWORD,
+    user: process.env.SMTP_USER,
+  },
+  host: process.env.SMTP_HOST,
+  pool: process.env.SMTP_IS_POOLED !== "false",
+  port: process.env.SMTP_PORT,
+  secure: process.env.SMTP_IS_SECURE === "true",
+};
+
+export const sentry = {
+  dsn: process.env.SENTRY_DSN,
+  enabled: process.env.SENTRY_ENABLED === "true",
+  environment: process.env.SENTRY_ENVIRONMENT,
+  release: process.env.SENTRY_RELEASE,
+};
