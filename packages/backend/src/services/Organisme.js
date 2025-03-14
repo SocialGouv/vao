@@ -75,14 +75,14 @@ const query = {
         THEN
         (
             SELECT
-              json_build_object(
+              JSON_AGG(json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'dateFinValidite', date_fin_validite,
                 'file', file,
                 'createdAt', a.created_at
-              ) as "agrement"
+              )) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
@@ -128,13 +128,13 @@ const query = {
         THEN
         (
             SELECT
-              json_build_object(
+              JSON_AGG(json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'file', file,
                 'createdAt', a.created_at
-              ) as "agrement"
+              )) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
@@ -172,13 +172,13 @@ const query = {
         THEN
         (
             SELECT
-              json_build_object(
+              JSON_AGG(json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'file', file,
                 'createdAt', a.created_at
-              ) as "agrement"
+              )) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
@@ -236,11 +236,11 @@ const query = {
       SELECT o.id AS "organismeId",
             CASE
               WHEN o.type_organisme = 'personne_morale' AND (pm.porteur_agrement)::BOOLEAN IS FALSE THEN (
-                SELECT JSON_BUILD_OBJECT(
+                SELECT JSON_AGG(JSON_BUILD_OBJECT(
                           'numero', numero,
                           'regionObtention', region_obtention,
                           'dateObtention', date_obtention
-                        )
+                ))
                 FROM front.agrements a
                 JOIN front.organismes o2 ON o2.id = a.organisme_id
                 INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
@@ -315,8 +315,8 @@ const query = {
       SELECT o.id AS "organismeId",
             CASE
               WHEN o.type_organisme = 'personne_morale' AND (pm.porteur_agrement)::BOOLEAN IS FALSE THEN (
-                SELECT JSON_BUILD_OBJECT('numero', numero, 'regionObtention', region_obtention, 'dateObtention', date_obtention,
-                                          'file', file, 'yearObtention', EXTRACT(YEAR FROM a.date_obtention)) AS "agrement"
+                SELECT JSON_AGG(JSON_BUILD_OBJECT('numero', numero, 'regionObtention', region_obtention, 'dateObtention', date_obtention,
+                                          'file', file, 'yearObtention', EXTRACT(YEAR FROM a.date_obtention))) AS "agrement"
                 FROM front.agrements a
                 JOIN front.organismes o2 ON o2.id = a.organisme_id
                 INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
@@ -391,13 +391,13 @@ FROM back.organisme_non_agree ona
         THEN
         (
             SELECT
-              json_build_object(
+              JSON_AGG(json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'file', file,
                 'createdAt', a.created_at
-              ) as "agrement"
+              )) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
