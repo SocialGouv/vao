@@ -21,7 +21,18 @@
         />
       </div>
     </div>
-
+    <div class="fr-col-12">
+      <DsfrAlert
+        v-if="statutsAfficheRappel.includes(statutDeclaration)"
+        class="fr-grid-row fr-my-3v"
+        type="info"
+        :closeable="false"
+      >
+        Rappel : La déclaration de séjour doit être déposée à deux mois avant la
+        date de début du séjour. Ce délai peut être réduit à un mois en cas
+        d’urgence motivée.
+      </DsfrAlert>
+    </div>
     <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-6">
         <DsfrInputGroup
@@ -129,6 +140,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import { IsDownloading } from "@vao/shared";
+import { DsfrAlert } from "@gouvminint/vue-dsfr";
 
 const props = defineProps({
   initData: {
@@ -146,6 +158,16 @@ const emit = defineEmits(["next", "update"]);
 
 const organismeStore = useOrganismeStore();
 const userStore = useUserStore();
+
+const statutDeclaration = computed(() => {
+  return props.initData.statut ?? DeclarationSejour.statuts.BROUILLON;
+});
+
+const statutsAfficheRappel = [
+  DeclarationSejour.statuts.BROUILLON,
+  DeclarationSejour.statuts.A_MODIFIER,
+  DeclarationSejour.statuts.EN_COURS,
+];
 
 const duree = computed(() => {
   const nbjours = dayjs(dateFin.value).diff(dateDebut.value, "day") + 1;

@@ -8,7 +8,7 @@
     v-model:offset="offset"
     v-model:sort="sort"
     v-model:sort-direction="sortDirection"
-    :titles="titles"
+    :columns="columns"
     :table-title="title"
     :data="data"
     :total="total"
@@ -16,10 +16,10 @@
     is-sortable
     @update-data="updateData"
   >
-    <template #cell:typeTerritoire="{ row }">
+    <template #cell-typeTerritoire="{ row }">
       {{ row.type === "DEP" ? "Département" : "Région" }}
     </template>
-    <template #cell:custom-edit="{ row }">
+    <template #cell-custom:edit="{ row }">
       <NuxtLink
         :to="`/territoires/${row.territoireId}`"
         title="Naviguer vers la fiche territoire"
@@ -65,7 +65,7 @@ const total = computed(() => territoireStore.total);
 
 const { query } = route;
 
-const titles = [
+const columns = [
   {
     key: "label",
     label: "Libellé",
@@ -114,7 +114,7 @@ const titles = [
     },
   },
   {
-    key: "custom-edit",
+    key: "custom:edit",
     label: "Action",
   },
 ];
@@ -123,15 +123,15 @@ const title = computed(
   () => `Liste des territoires (${territoireStore.total})`,
 );
 
-const sortableTitles = titles.flatMap((t) =>
-  t.options?.isSortable ? [t.key] : [],
+const sortableColumns = columns.flatMap((c) =>
+  c.options?.isSortable ? [c.key] : [],
 );
 
 const label = ref(query.label ?? "");
 
 const { limit, offset, sort, sortDirection } = usePagination(
   query,
-  sortableTitles,
+  sortableColumns,
 );
 
 let timeout = null;

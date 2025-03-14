@@ -53,6 +53,14 @@ module.exports = async function get(req, res, next) {
         }),
       );
     }
+    if (
+      uniteLegale?.periodesEtablissement[0]?.etatAdministratifEtablissement ===
+      "F"
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Etablissement fermé, opération non autorisée" });
+    }
     if (uniteLegale.uniteLegale.categorieJuridiqueUniteLegale) {
       uniteLegale.uniteLegale.categorieJuridiqueUniteLegale =
         (await Referentiel.getLibelle(

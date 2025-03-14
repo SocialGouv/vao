@@ -70,12 +70,8 @@ const query = {
       o.supprime as "supprime",
       o.complet as "complet",
       o.type_organisme as "typeOrganisme",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
-      o.protocole_transport as "protocoleTransport",
-      o.protocole_sanitaire as "protocoleSanitaire",
       CASE
-        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
+        WHEN o.type_organisme = 'personne_morale' AND pm.porteur_agrement::boolean is False
         THEN
         (
             SELECT
@@ -89,7 +85,9 @@ const query = {
               ) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
-            WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
+            INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+            INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
+            WHERE pm.siret = etab.siret
             AND a.supprime = false
         )
         ELSE (
@@ -110,6 +108,7 @@ const query = {
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
     JOIN front.user_organisme uo ON o.id = uo.org_id
     WHERE 1 = 1
     ${Object.keys(criterias)
@@ -124,12 +123,8 @@ const query = {
       o.supprime as "supprime",
       o.complet as "complet",
       o.type_organisme as "typeOrganisme",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
-      o.protocole_transport as "protocoleTransport",
-      o.protocole_sanitaire as "protocoleSanitaire",
       CASE
-        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
+        WHEN o.type_organisme = 'personne_morale' AND pm.porteur_agrement::boolean is False
         THEN
         (
             SELECT
@@ -142,7 +137,9 @@ const query = {
               ) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
-            WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
+            INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+            INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
+            WHERE pm.siret = etab.siret
             AND a.supprime = false
         )
         ELSE (
@@ -162,20 +159,16 @@ const query = {
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
-    WHERE o.personne_morale->>'siren' = $1
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    WHERE pm.siren = $1
 `,
   getBySiret: `
     SELECT
       o.id as "organismeId",
       o.supprime as "supprime",
       o.complet as "complet",
-      o.type_organisme as "typeOrganisme",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
-      o.protocole_transport as "protocoleTransport",
-      o.protocole_sanitaire as "protocoleSanitaire",
       CASE
-        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
+        WHEN o.type_organisme = 'personne_morale' AND pm.porteur_agrement::boolean is False
         THEN
         (
             SELECT
@@ -188,7 +181,9 @@ const query = {
               ) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
-            WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
+            INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+            INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
+            WHERE pm.siret = etab.siret
             AND a.supprime = false
         )
         ELSE (
@@ -208,8 +203,8 @@ const query = {
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
-    JOIN front.user_organisme uo ON o.id = org_id
-    WHERE o.personne_morale->>'siret' = $1
+    INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    WHERE pm.siret = $1
 `,
   getIsComplet: `
     SELECT
@@ -217,6 +212,17 @@ const query = {
     FROM
         FRONT.ORGANISMES
     WHERE id = $1
+  `,
+  getIsUserIdSiegeSocial: `
+    SELECT uo.org_id
+    FROM
+      front.user_organisme uo
+    INNER JOIN front.organismes o ON o.id = uo.org_id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id
+    JOIN front.users u ON uo.use_id = u.id
+    WHERE u.id = $1
+      AND (pm.siege_social = 'true'
+        OR o.type_organisme = '${partOrganisme.PERSONNE_PHYSIQUE}')
   `,
   getListe: () =>
     `
@@ -229,7 +235,7 @@ const query = {
     agrement_data AS (
       SELECT o.id AS "organismeId",
             CASE
-              WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::BOOLEAN IS FALSE THEN (
+              WHEN o.type_organisme = 'personne_morale' AND (pm.porteur_agrement)::BOOLEAN IS FALSE THEN (
                 SELECT JSON_BUILD_OBJECT(
                           'numero', numero,
                           'regionObtention', region_obtention,
@@ -237,7 +243,9 @@ const query = {
                         )
                 FROM front.agrements a
                 JOIN front.organismes o2 ON o2.id = a.organisme_id
-                WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
+                INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+                INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
+                WHERE pm.siret = etab.siret
                   AND a.supprime = FALSE
               )
               ELSE (
@@ -251,6 +259,7 @@ const query = {
               )
             END AS "agrement"
       FROM front.organismes o
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
     )
     SELECT
       o.id as "organismeId",
@@ -261,13 +270,13 @@ const query = {
       CASE
         WHEN o.type_organisme = 'personne_morale' THEN
           json_build_object(
-            'raisonSociale', o.personne_morale->>'raisonSociale',
-            'siret', o.personne_morale->>'siret'
+            'raisonSociale', pm.raison_sociale,
+            'siret', pm.siret
           )
         WHEN o.type_organisme = 'personne_physique' THEN
           json_build_object(
-            'nom', o.personne_physique->>'nomUsage',
-            'prenom', o.personne_physique->>'prenom'
+            'nom', pp.nom_usage,
+            'prenom', pp.prenom
           )
         ELSE NULL
       END as "personne",
@@ -275,6 +284,8 @@ const query = {
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
     LEFT JOIN stat ON stat.organisme_id = o.id
     LEFT JOIN agrement_data ad ON ad."organismeId" = o.id
     WHERE o.supprime = FALSE
@@ -303,12 +314,14 @@ const query = {
     agrement_data AS (
       SELECT o.id AS "organismeId",
             CASE
-              WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::BOOLEAN IS FALSE THEN (
+              WHEN o.type_organisme = 'personne_morale' AND (pm.porteur_agrement)::BOOLEAN IS FALSE THEN (
                 SELECT JSON_BUILD_OBJECT('numero', numero, 'regionObtention', region_obtention, 'dateObtention', date_obtention,
                                           'file', file, 'yearObtention', EXTRACT(YEAR FROM a.date_obtention)) AS "agrement"
                 FROM front.agrements a
                 JOIN front.organismes o2 ON o2.id = a.organisme_id
-                WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
+                INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+                INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
+                WHERE pm.siret = etab.siret
                   AND a.supprime = FALSE
               )
               ELSE (
@@ -319,12 +332,15 @@ const query = {
               )
             END AS "agrement"
       FROM front.organismes o
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+
     )
     SELECT o.id AS "organismeId", o.type_organisme AS "typeOrganisme", o.complet AS "complet",
-          o.personne_morale ->> 'siren' AS "siren", o.personne_morale ->> 'siret' AS "siret",
-          o.personne_morale ->> 'email' AS "email", o.personne_morale ->> 'raisonSociale' AS "raisonSociale",
-          o.personne_physique ->> 'telephone' AS "telephone", o.personne_physique ->> 'nomNaissance' AS "nomPersonnePhysique",
-          o.personne_physique ->> 'prenom' AS "prenomPersonnePhysique",
+          pm.siren AS  "siren", pm.siret AS  "siret",
+          pm.email AS  "email", pm.raison_sociale AS  "raisonSociale",
+          pp.telephone AS "telephone", pp.nom_naissance AS "nomPersonnePhysique",
+          pp.prenom AS "prenomPersonnePhysique",
           COALESCE(stat."sejourCount", 0) AS "sejourCount", COALESCE(stat."sejourCountTransmise", 0) AS "sejourCountTransmise",
           COALESCE(stat."sejourCountAbamdonnee", 0) AS "sejourCountAbamdonnee", COALESCE(stat."sejourCountAnnulee", 0) AS "sejourCountAnnulee",
           COALESCE(stat."sejourCountAttente8j", 0) AS "sejourCountAttente8j", COALESCE(stat."sejourCountAModifier", 0) AS "sejourCountAModifier",
@@ -335,6 +351,8 @@ const query = {
           COALESCE(stat."sejourCountValide8j", 0) AS "sejourCountValide8j",
           ad."agrement", o.edited_at AS "editedAt"
     FROM front.organismes o
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
     LEFT JOIN stat ON stat.organisme_id = o.id
     LEFT JOIN agrement_data ad ON ad."organismeId" = o.id
     WHERE o.supprime = FALSE
@@ -351,18 +369,25 @@ SELECT
   ona.edited_at AS "editedAt"
 FROM back.organisme_non_agree ona
 `,
+  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
+  // Utilisé uniquement pour mettre a jour les json personnes_morale
+  // lors de l'ajout des etablissement secondaire.
+  getPersonneMorale: `
+  SELECT
+    personne_morale AS "personneMorale"
+  FROM
+    front.organismes
+  Where id = $1
+  `,
+
   getSiege: `
     SELECT
       o.id as "organismeId",
       o.supprime as "supprime",
       o.complet as "complet",
       o.type_organisme as "typeOrganisme",
-      o.personne_morale as "personneMorale",
-      o.personne_physique as "personnePhysique",
-      o.protocole_transport as "protocoleTransport",
-      o.protocole_sanitaire as "protocoleSanitaire",
       CASE
-        WHEN o.type_organisme = 'personne_morale' AND (o.personne_morale ->> 'porteurAgrement')::boolean is False
+        WHEN o.type_organisme = 'personne_morale' AND pm.porteur_agrement::boolean is False
         THEN
         (
             SELECT
@@ -375,8 +400,10 @@ FROM back.organisme_non_agree ona
               ) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
-            WHERE (o2.personne_morale ->> 'siret') = (o.personne_morale #>> '{etablissementPrincipal, siret}')
-            AND a.supprime = false
+            INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+            INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm.id
+            WHERE pm2.siret = etab.siret AND
+            a.supprime = false
         )
         ELSE (
           SELECT
@@ -395,22 +422,26 @@ FROM back.organisme_non_agree ona
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
-    JOIN front.user_organisme uo ON o.id = org_id
-    WHERE o.personne_morale->>'siren' = $1
-      AND o.personne_morale->>'siegeSocial' = 'true'
+    INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    WHERE pm.siren = $1
+      AND pm.siege_social = 'true'
 `,
+
   getSiret: `
     SELECT
-        personne_morale ->> 'siret' as siret
+        pm.siret as siret
     FROM
-        FRONT.ORGANISMES
+        front.organismes o
+    INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id
     WHERE id = $1
   `,
+
   link: `
     INSERT INTO front.user_organisme (use_id, org_id)
       VALUES($1, $2)
     RETURNING use_id as "userLinked"
 `,
+
   updatePersonne: `
     UPDATE front.organismes
     SET
@@ -421,6 +452,19 @@ FROM back.organisme_non_agree ona
       edited_at = NOW()
     WHERE id = $1
   `,
+
+  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
+  // Utilisé uniquement pour mettre a jour les json personnes_morale
+  // lors de l'ajout des etablissement secondaire.
+  updatePersonneMorale: `
+    UPDATE front.organismes
+    SET
+      personne_morale = $2,
+      complet = complet AND $3,
+      edited_at = NOW()
+    WHERE id = $1
+`,
+
   updateSanitaire: `
     UPDATE front.organismes
     SET
@@ -429,31 +473,11 @@ FROM back.organisme_non_agree ona
       edited_at = NOW()
     WHERE id = $1
 `,
+
   updateTransport: `
     UPDATE front.organismes
     SET
       protocole_transport = $2,
-      complet = complet AND $3,
-      edited_at = NOW()
-    WHERE id = $1
-`,
-  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
-  // Utilisé uniquement pour mettre a jour les json personnes_morale
-  // lors de l'ajout des etablissement secondaire.
-  getPersonneMorale: `
-  SELECT
-    personne_morale AS "personneMorale"
-  FROM
-    front.organismes
-  Where id = $1
-  `,
-  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
-  // Utilisé uniquement pour mettre a jour les json personnes_morale
-  // lors de l'ajout des etablissement secondaire.
-  updatePersonneMorale: `
-    UPDATE front.organismes
-    SET
-      personne_morale = $2,
       complet = complet AND $3,
       edited_at = NOW()
     WHERE id = $1
@@ -489,6 +513,13 @@ module.exports.create = async (type, parametre) => {
   } finally {
     client.release();
   }
+};
+
+module.exports.getIsUserIdSiegeSocial = async (userId) => {
+  log.i("getIsUserIdSiegeSocial - IN", userId);
+  const { rowCount } = await pool.query(query.getIsUserIdSiegeSocial, [userId]);
+  log.i("getIsUserIdSiegeSocial - DONE");
+  return rowCount === 0 ? false : true;
 };
 
 module.exports.link = async (userId, organismeId) => {
@@ -628,7 +659,7 @@ module.exports.finalize = async function (userId) {
       statusCode: 404,
     });
   }
-  let organisme = rows[0];
+  let organisme = await getComplementOrganisme(rows[0]);
   try {
     organisme = await yup.object(organismeSchema).validate(organisme, {
       abortEarly: false,
@@ -674,6 +705,35 @@ module.exports.finalize = async function (userId) {
   }
 };
 
+module.exports.getComplementOrganisme = async (organismeACompleter) => {
+  log.i("getComplementOrganisme - IN", organismeACompleter.organismeId);
+
+  const personneMorale =
+    organismeACompleter.typeOrganisme === partOrganisme.PERSONNE_MORALE
+      ? await PersonneMorale.getByOrganismeId(organismeACompleter.organismeId)
+      : {};
+  const personnePhysique =
+    organismeACompleter.typeOrganisme === partOrganisme.PERSONNE_PHYSIQUE
+      ? await PersonnePhysique.getByOrganismeId(organismeACompleter.organismeId)
+      : {};
+  const protocoleSanitaire = await ProtocoleSanitaire.getByOrganismeId(
+    organismeACompleter.organismeId,
+  );
+
+  const protocoleTransport = await ProtocoleTransport.getByOrganismeId(
+    organismeACompleter.organismeId,
+  );
+
+  const organisme = {
+    ...organismeACompleter,
+    personneMorale,
+    personnePhysique,
+    protocoleSanitaire,
+    protocoleTransport,
+  };
+  return organisme;
+};
+
 module.exports.getOne = async (criterias = {}) => {
   log.i("getOne - IN", { criterias });
   const { rowCount, rows: organismes } = await pool.query(
@@ -685,8 +745,8 @@ module.exports.getOne = async (criterias = {}) => {
       statusCode: 404,
     });
   }
+  const organisme = await getComplementOrganisme(organismes[0]);
   // Initialisation d'une valeur vide pour permettre l'affichage au niveau front BO
-  const organisme = organismes[0];
   if (organisme?.personnePhysique) {
     organisme.personnePhysique.nomUsage =
       organisme.personnePhysique?.nomUsage ?? "";
@@ -697,15 +757,31 @@ module.exports.getOne = async (criterias = {}) => {
 
 module.exports.getBySiren = async (siren) => {
   log.i("getBySiren - IN", { siren });
-  const { rows: organismes } = await pool.query(query.getBySiren, [siren]);
+  const { rowCount, rows: organismes } = await pool.query(query.getBySiren, [
+    siren,
+  ]);
+  if (rowCount === 0) {
+    log.i("getBySiren - Aucune correspondance trouvée");
+    return [];
+  }
+  const organismesCompletes = await Promise.all(
+    organismes.map((organisme) => getComplementOrganisme(organisme)),
+  );
   log.i("getBySiren - DONE");
-  return organismes;
+  return organismesCompletes;
 };
 module.exports.getBySiret = async (siret) => {
   log.i(`getBySiret - IN ${siret}`);
-  const { rows: organismes } = await pool.query(query.getBySiret, [siret]);
+  const { rowCount, rows: organismes } = await pool.query(query.getBySiret, [
+    siret,
+  ]);
+  if (rowCount === 1) {
+    log.i("getBySiret - DONE");
+    const organisme = await getComplementOrganisme(organismes[0]);
+    return organisme;
+  }
   log.i("getBySiret - DONE");
-  return !organismes || organismes.length === 0 ? null : organismes[0];
+  return null;
 };
 
 module.exports.getSiege = async (siret) => {
@@ -715,9 +791,15 @@ module.exports.getSiege = async (siret) => {
   const { rowCount, rows: organismes } = await pool.query(query.getSiege, [
     siren,
   ]);
-  log.d("getSiege", { organismes });
+  if (rowCount === 1) {
+    log.i("getBySiret - DONE");
+    const organisme = await getComplementOrganisme(organismes[0]);
+    log.d("getSiege", { organisme });
+    log.i("getSiege - DONE");
+    return organisme;
+  }
   log.i("getSiege - DONE");
-  return rowCount === 0 ? null : organismes[0];
+  return null;
 };
 
 module.exports.getListe = async (queryParams) => {
@@ -748,7 +830,7 @@ module.exports.getListe = async (queryParams) => {
       type: "default",
     },
     {
-      key: "o.personne_morale ->> 'siret'",
+      key: "pm.siret",
       queryKey: "siret",
       sortEnabled: true,
       type: "default",
@@ -757,16 +839,18 @@ module.exports.getListe = async (queryParams) => {
       query: (index, value) => {
         return {
           query: `
-        (
-          (o.type_organisme = 'personne_morale' AND o.personne_morale->>'raisonSociale' ILIKE '%' ||  unaccent($${index}) || '%')
-            OR
-          (o.type_organisme = 'personne_physique' AND o.personne_physique->>'nomUsage' ILIKE '%' ||  unaccent($${index}) || '%')
-        )
-      `,
+            (
+              (o.type_organisme = 'personne_morale' AND pm.raison_sociale ILIKE '%' ||  unaccent($${index}) || '%')
+                OR
+              (o.type_organisme = 'personne_physique' AND pp.nom_usage ILIKE '%' ||  unaccent($${index}) || '%')
+            )
+          `,
           queryParams: [value],
         };
       },
       queryKey: "name",
+      sortEnabled: true,
+      sortQuery: "COALESCE(pm.raison_sociale, pp.nom_usage)",
       type: "custom",
     },
     {
@@ -790,6 +874,9 @@ module.exports.getListe = async (queryParams) => {
     sortBy,
     sortDirection,
   );
+
+  log.w(paginatedQuery.query, paginatedQuery.params);
+
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
     pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
@@ -825,3 +912,5 @@ module.exports.getSiret = async (organismeId) => {
   const { rows: siret } = await pool.query(query.getSiret, [organismeId]);
   return siret?.[0].siret ?? null;
 };
+
+const { getComplementOrganisme } = module.exports;

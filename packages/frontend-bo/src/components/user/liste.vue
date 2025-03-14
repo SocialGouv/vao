@@ -13,7 +13,7 @@
     v-model:offset="offset"
     v-model:sort="sort"
     v-model:sort-direction="sortDirection"
-    :titles="titles"
+    :columns="columns"
     :table-title="title"
     :data="data"
     :total="total"
@@ -21,13 +21,13 @@
     is-sortable
     @update-data="updateData"
   >
-    <template #cell:validated="{ row }">
-      {{ row.validated ? "Oui" : "Non" }}
+    <template #cell-validated="{ cell }">
+      {{ cell ? "Oui" : "Non" }}
     </template>
-    <template #cell:editable="{ row }">
-      {{ row.editable ? "Oui" : "Non" }}
+    <template #cell-editable="{ cell }">
+      {{ cell ? "Oui" : "Non" }}
     </template>
-    <template #cell:custom-edit="{ row }">
+    <template #cell-custom:edit="{ row }">
       <NuxtLink
         :to="`/comptes/${row.id}`"
         title="Naviguer vers le compte"
@@ -60,7 +60,7 @@ const total = computed(() => userStore.total);
 
 const title = computed(() => `Liste des agents de l’État (${total.value})`);
 
-const titles = [
+const columns = [
   {
     key: "nom",
     label: "Nom",
@@ -104,15 +104,15 @@ const titles = [
     },
   },
   {
-    key: "custom-edit",
+    key: "custom:edit",
     label: "Action",
   },
 ];
 
 const { query } = route;
 
-const sortableTitles = titles.flatMap((title) =>
-  title.options?.isSortable ? [title.key] : [],
+const sortableColumns = columns.flatMap((column) =>
+  column.options?.isSortable ? [column.key] : [],
 );
 
 const status = [
@@ -143,7 +143,7 @@ const territoire = ref(query.territoire ?? "");
 const statut = ref(statusValue.includes(query.statut) ? query.statut : "");
 const { limit, offset, sort, sortDirection } = usePagination(
   query,
-  sortableTitles,
+  sortableColumns,
 );
 
 const getSearchParams = () => ({

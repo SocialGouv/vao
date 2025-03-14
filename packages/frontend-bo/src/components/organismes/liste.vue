@@ -11,7 +11,7 @@
     v-model:offset="offset"
     v-model:sort="sort"
     v-model:sort-direction="sortDirection"
-    :titles="titles"
+    :columns="columns"
     :table-title="title"
     :data="data"
     :total="total"
@@ -19,33 +19,31 @@
     is-sortable
     @update-data="updateData"
   >
-    <template #cell:custom-name="{ row }">
+    <template #cell-name="{ row }">
       {{ row.personne.nom ? row.personne.nom : row.personne.raisonSociale }}
     </template>
-    <template #cell:typeOrganisme="{ row }">
+    <template #cell-typeOrganisme="{ cell }">
       {{
-        row.typeOrganisme === "personne_physique"
-          ? "Personne physique"
-          : "Personne morale"
+        cell === "personne_physique" ? "Personne physique" : "Personne morale"
       }}
     </template>
-    <template #cell:complet="{ row }">
-      {{ row.complet ? "Oui" : "Non" }}
+    <template #cell-complet="{ cell }">
+      {{ cell ? "Oui" : "Non" }}
     </template>
-    <template #cell:editedAt="{ row }">
-      {{ dayjs(row.editedAt).format("DD/MM/YYYY") }}
+    <template #cell-editedAt="{ cell }">
+      {{ dayjs(cell).format("DD/MM/YYYY") }}
     </template>
-    <template #cell:siret="{ row }">
+    <template #cell-siret="{ row }">
       {{ row.personne.siret }}
     </template>
-    <template #cell:agrement-dateObtention="{ row }">
+    <template #cell-agrement:dateObtention="{ row }">
       {{
         row.agrement?.dateObtention
           ? dayjs(row.agrement?.dateObtention).format("DD/MM/YYYY")
           : ""
       }}
     </template>
-    <template #cell:custom-edit="{ row }">
+    <template #cell-custom:edit="{ row }">
       <NuxtLink
         :to="`/organismes/${row.organismeId}`"
         title="Naviguer vers l'organisme"
@@ -79,10 +77,13 @@ const total = computed(() => organismeStore.organismesTotal);
 
 const { query } = route;
 
-const titles = [
+const columns = [
   {
-    key: "custom-name",
+    key: "name",
     label: "Nom",
+    options: {
+      isSortable: true,
+    },
   },
   {
     key: "typeOrganisme",
@@ -113,14 +114,14 @@ const titles = [
     },
   },
   {
-    key: "agrement-regionObtention",
+    key: "agrement:regionObtention",
     label: "Région agrément",
     options: {
       isSortable: true,
     },
   },
   {
-    key: "agrement-dateObtention",
+    key: "agrement:dateObtention",
     label: "Date agrément",
     options: {
       isSortable: true,
@@ -134,15 +135,15 @@ const titles = [
     },
   },
   {
-    key: "custom-edit",
+    key: "custom:edit",
     label: "Action",
   },
 ];
 
 const title = "Liste des Organismes";
 
-const sortableTitles = titles.flatMap((title) =>
-  title.options?.isSortable ? [title.key] : [],
+const sortableColumns = columns.flatMap((column) =>
+  column.options?.isSortable ? [column.key] : [],
 );
 
 const name = ref(query.name ?? "");
@@ -152,7 +153,7 @@ const yearObtention = ref(query["agrement-dateObtention"] ?? "");
 
 const { limit, offset, sort, sortDirection } = usePagination(
   query,
-  sortableTitles,
+  sortableColumns,
 );
 
 const getSearchParams = () => ({

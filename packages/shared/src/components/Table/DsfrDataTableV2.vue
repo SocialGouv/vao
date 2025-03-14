@@ -1,17 +1,20 @@
-<script setup lang="ts" generic="T extends Row, RowId extends keyof T & string">
-import type { Component, StyleValue, VNode } from "vue";
-import { computed } from "vue";
-
-export type Primitive = string | number | boolean | bigint | null | symbol;
+<script
+  setup
+  lang="ts"
+  generic="Data extends Row, RowId extends keyof Data & string"
+>
+import { type Component, computed, type StyleValue, type VNode } from "vue";
 
 export type Row = {
   [key: PropertyKey]: Primitive | Row;
 };
 
+export type Primitive = string | number | boolean | bigint | null | symbol;
+
 export type ValueFromNestedKey<
   T,
   K extends string,
-> = K extends `${infer Key}-${infer Rest}`
+> = K extends `${infer Key}:${infer Rest}`
   ? Key extends keyof T
     ? ValueFromNestedKey<T[Key], Rest>
     : never
@@ -24,15 +27,13 @@ export type NestedKeys<T> = {
     ? T[K] extends Primitive
       ? K
       : T[K] extends Row
-        ? K | `${K}-${NestedKeys<T[K]>}`
+        ? K | `${K}:${NestedKeys<T[K]>}`
         : never
     : never;
 }[keyof T];
 
-export type CustomKeys = `custom-${string}`;
-
-export type Title<T> = {
-  key: NestedKeys<T> | CustomKeys;
+export type CustomColumn = {
+  key: `custom:${string}`;
   label: string;
   options?: {
     isFixedLeft?: boolean;
@@ -43,26 +44,46 @@ export type Title<T> = {
   style?: StyleValue;
 };
 
-export type Titles<T> = Title<T>[];
+export type DefaultColumn<T> = {
+  key: NestedKeys<T>;
+  label: string;
+  options?: {
+    isFixedLeft?: boolean;
+    isFixedRight?: boolean;
+    isSortable?: boolean;
+    cellComponent?: Component;
+  };
+  style?: StyleValue;
+};
 
-export type SlotProps<T> = {
-  [K in Titles<T>[number] as `cell:${K["key"] & (NestedKeys<T> | CustomKeys)}`]?: (props: {
+export type Columns<T> = (DefaultColumn<T> | CustomColumn)[];
+
+export type DefaultSlots<T> = {
+  [K in NestedKeys<T> as `cell-${K}`]?: (props: {
     row: T;
+    cell: ValueFromNestedKey<T, K>;
   }) => VNode;
 };
+
+export type CustomSlots<T> = Partial<
+  Record<`cell-${string}`, (props: { row: T }) => VNode>
+>;
+
+export type Slots<T> = DefaultSlots<T> &
+  CustomSlots<T> & { footer: () => VNode };
 
 const props = withDefaults(
   defineProps<{
     // Required
-    data: T[];
+    data: Data[];
     rowId: RowId;
-    titles: Titles<T>;
+    columns: Columns<Data>;
     // Selection
     isSelectable?: boolean;
-    selected?: Array<T[RowId]>;
+    selected?: Data[RowId][];
     // Sort
     isSortable?: boolean;
-    sort?: NestedKeys<T> | "";
+    sort?: Columns<Data>[number]["key"] | "";
     sortDirection?: "asc" | "desc" | "";
     // Style
     emptyPlaceholder?: string;
@@ -84,32 +105,17 @@ const props = withDefaults(
 );
 
 const emits = defineEmits<{
-  "update:sort": [NestedKeys<T> | ""];
+  "update:sort": [Columns<Data>[number]["key"] | ""];
   "update:sort-direction": ["asc" | "desc" | ""];
-  "update:selected": [Array<T[RowId]>];
-  sort: [{ sort: NestedKeys<T>; direction: "asc" | "desc" | "" }];
+  "update:selected": [Data[RowId][]];
+  sort: [
+    { sort: Columns<Data>[number]["key"]; direction: "asc" | "desc" | "" },
+  ];
 }>();
 
-defineSlots<
-  SlotProps<T> & {
-    footer: () => VNode;
-  }
->();
+defineSlots<Slots<Data>>();
 
-const getSlotName = (
-  key: NestedKeys<T> | CustomKeys,
-): `cell:${NestedKeys<T> | CustomKeys}` => `cell:${key}`;
-
-const selectedSync = computed({
-  get() {
-    return props.selected;
-  },
-  set(value) {
-    emits("update:selected", value);
-  },
-});
-
-const handleSort = (key: NestedKeys<T>) => {
+const handleSort = (key: Columns<Data>[number]["key"]) => {
   if (props.sort === key) {
     const direction = props.sortDirection === "asc" ? "desc" : "";
     if (direction === "") {
@@ -124,6 +130,15 @@ const handleSort = (key: NestedKeys<T>) => {
   }
 };
 
+const selectedSync = computed({
+  get() {
+    return props.selected;
+  },
+  set(value) {
+    emits("update:selected", value);
+  },
+});
+
 const valueFromObject = (
   string: string,
   obj: Primitive | Row,
@@ -131,17 +146,28 @@ const valueFromObject = (
   if (obj === null || typeof obj !== "object" || Array.isArray(obj)) {
     return null;
   }
-  if (string.startsWith("custom-")) {
-    return obj;
-  }
-  const [key, ...rest] = string.split("-");
+  const [key, ...rest] = string.split(":");
   if (rest.length) {
-    return valueFromObject(rest.join("-"), obj[key]);
+    return valueFromObject(rest.join(":"), obj[key]);
   }
   return obj[key] === undefined ? null : obj[key];
 };
 
-const isSelected = (id: T[RowId]) => props.selected.includes(id);
+function getSlotName(column: DefaultColumn<Data> | CustomColumn) {
+  return `cell-${column.key}` as keyof Slots<Data>;
+}
+
+const cellProps = (column: Columns<Data>[number], row: Data) => {
+  if (column.key.startsWith("custom:")) {
+    return { row };
+  }
+  return {
+    row,
+    cell: valueFromObject(String(column.key), row),
+  };
+};
+
+const isSelected = (id: Data[RowId]) => props.selected.includes(id);
 
 const handleCheckboxChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -194,36 +220,36 @@ const handleCheckboxChange = (event: Event) => {
                   <span class="fr-sr-only">Sélectionner</span>
                 </th>
                 <th
-                  v-for="title in titles"
-                  :key="title.key"
+                  v-for="column in columns"
+                  :key="column.key"
                   scope="col"
                   :class="{
                     'fr-th': true,
-                    'fr-cell--fixed-left': title?.options?.isFixedLeft,
-                    'fr-cell--fixed-right': title?.options?.isFixedRight,
-                    'fr-th--is-selectable': title?.options?.isSortable,
+                    'fr-cell--fixed-left': column?.options?.isFixedLeft,
+                    'fr-cell--fixed-right': column?.options?.isFixedRight,
+                    'fr-th--is-selectable': column?.options?.isSortable,
                   }"
-                  :style="title?.style"
+                  :style="column?.style"
                   v-on="
-                    props.isSortable && title.options?.isSortable
+                    props.isSortable && column.options?.isSortable
                       ? {
-                          click: () => handleSort(title.key as NestedKeys<T>),
+                          click: () => handleSort(column.key),
                         }
                       : {}
                   "
                 >
                   <div class="fr-table__header">
-                    {{ title.label }}
+                    {{ column.label }}
                     <span
-                      v-if="props.isSortable && title.options?.isSortable"
+                      v-if="props.isSortable && column.options?.isSortable"
                       :class="{
-                        [title.key === sort
+                        [column.key === sort
                           ? sortDirection === 'desc'
                             ? 'fr-icon-arrow-down-line'
                             : 'fr-icon-arrow-up-line'
                           : 'fr-icon-arrow-up-down-line']: true,
                         'fr-sort-icon': true,
-                        'fr-table--is-not-sorted': title.key !== sort,
+                        'fr-table--is-not-sorted': column.key !== sort,
                       }"
                       aria-hidden="true"
                     />
@@ -236,7 +262,7 @@ const handleCheckboxChange = (event: Event) => {
                 v-for="(row, index) in data"
                 :key="row[props.rowId] as PropertyKey"
                 :data-row-key="index + 1"
-                :aria-selected="isSelected(row[props.rowId] as T[RowId])"
+                :aria-selected="isSelected(row[props.rowId])"
               >
                 <th
                   v-if="props.isSelectable"
@@ -247,7 +273,7 @@ const handleCheckboxChange = (event: Event) => {
                     <input
                       id="table-select-checkbox--${index}"
                       v-model="selectedSync"
-                      :value="row[props.rowId] as T[RowId]"
+                      :value="row[props.rowId]"
                       type="checkbox"
                       name="row-select"
                       @change="handleCheckboxChange"
@@ -261,32 +287,39 @@ const handleCheckboxChange = (event: Event) => {
                   </div>
                 </th>
                 <td
-                  v-for="title in titles"
-                  :key="title.key"
-                  :style="title?.style"
+                  v-for="column in columns"
+                  :key="column.key"
+                  :style="column?.style"
                   :class="{
                     'fr-cell': true,
-                    'fr-cell--fixed-left': title?.options?.isFixedLeft,
-                    'fr-cell--fixed-right': title?.options?.isFixedRight,
+                    'fr-cell--fixed-left': column?.options?.isFixedLeft,
+                    'fr-cell--fixed-right': column?.options?.isFixedRight,
                   }"
                 >
-                  <slot :name="getSlotName(title.key)" :row="row">
+                  <slot
+                    v-if="$slots[getSlotName(column)]"
+                    :name="getSlotName(column)"
+                    v-bind="cellProps(column, row)"
+                  />
+                  <template v-else>
                     <component
-                      :is="title.options.cellComponent"
-                      v-if="title.options?.cellComponent"
+                      :is="column.options.cellComponent"
+                      v-if="column.options?.cellComponent"
                       :row="row"
                     />
                     <span v-else>{{
-                      typeof title.key === "string" && title.key.includes("-")
-                        ? valueFromObject(String(title.key), row)
-                        : row[title.key]
+                      column.key.includes("custom:")
+                        ? ""
+                        : column.key.includes(":")
+                          ? valueFromObject(column.key, row)
+                          : row[column.key]
                     }}</span>
-                  </slot>
+                  </template>
                 </td>
               </tr>
               <tr v-if="data.length === 0">
                 <td
-                  :colspan="titles.length + +isSelectable"
+                  :colspan="columns.length + +isSelectable"
                   class="fr-cell--empty"
                 >
                   {{ emptyPlaceholder }}

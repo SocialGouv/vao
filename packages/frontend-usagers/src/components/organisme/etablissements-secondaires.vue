@@ -71,13 +71,13 @@
         <DsfrDataTableV2Wrapper
           v-model:limit="limit"
           v-model:offset="offset"
-          :titles="titles"
+          :columns="columns"
           :data="fitleredEtablissements.slice(offset, offset + limit)"
           :total="fitleredEtablissements?.length ?? 0"
           row-id="siret"
           @update-data="updateData"
         >
-          <template #cell:custom-edit="{ row }">
+          <template #cell-custom:edit="{ row }">
             <DsfrToggleSwitch
               :model-value="row.enabled"
               :disabled="
@@ -207,7 +207,7 @@ const defaultOffset = 0;
 const limit = ref(defaultLimit);
 const offset = ref(defaultOffset);
 
-const titles = [
+const columns = [
   {
     key: "siret",
     label: "SIRET",
@@ -229,7 +229,7 @@ const titles = [
     label: "Commune",
   },
   {
-    key: "custom-edit",
+    key: "custom:edit",
     label: "Action",
   },
 ];

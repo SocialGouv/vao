@@ -13,7 +13,7 @@
     v-model:offset="offset"
     v-model:sort="sort"
     v-model:sort-direction="sortDirection"
-    :titles="titles"
+    :columns="columns"
     :table-title="title"
     :data="data"
     :total="total"
@@ -21,19 +21,19 @@
     is-sortable
     @update-data="updateDataDebounced"
   >
-    <template #cell:dateDebut="{ row }">
+    <template #cell-dateDebut="{ row }">
       {{ displayDate(row.dateDebut) }} -<br />
       {{ displayDate(row.dateFin) }}
     </template>
-    <template #cell:statut="{ row }">
+    <template #cell-statut="{ cell }">
       <div>
-        <DemandeStatusBadge :statut="row.statut" type="fu" />
+        <DemandeStatusBadge :statut="cell" type="fu" />
       </div>
     </template>
-    <template #cell:editedAt="{ row }">
-      {{ displayDate(row.editedAt) }}
+    <template #cell-editedAt="{ cell }">
+      {{ displayDate(cell) }}
     </template>
-    <template #cell:custom-edit="{ row }">
+    <template #cell-custom:edit="{ row }">
       <div class="buttons-group">
         <NuxtLink
           :to="`/demande-sejour/${row.declarationId}?defaultTabIndex=0`"
@@ -137,7 +137,7 @@ const enabledDeleteCancelStatus = [
   statusUtils.defaultStatus.A_MODIFIER_8J,
 ];
 
-const titles = [
+const columns = [
   {
     key: "idFonctionnelle",
     label: "Numéro de déclaration",
@@ -181,13 +181,13 @@ const titles = [
     },
   },
   {
-    key: "custom-edit",
+    key: "custom:edit",
     label: "Action",
   },
 ];
 
-const sortableTitles = titles.flatMap((title) =>
-  title.options?.isSortable ? [title.key] : [],
+const sortableColumns = columns.flatMap((column) =>
+  column.options?.isSortable ? [column.key] : [],
 );
 
 const defaultStatus = [...Object.values(statusUtils.defaultStatus)];
@@ -219,7 +219,7 @@ const season = ref(
 
 const { limit, offset, sort, sortDirection } = usePagination(
   query,
-  sortableTitles,
+  sortableColumns,
 );
 
 const getSearchParams = () => ({

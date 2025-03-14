@@ -25,6 +25,10 @@
         </li>
       </ul>
     </form>
+    <h2>Token d'api</h2>
+    <div class="token-api">
+      <ApiTokenManager />
+    </div>
   </div>
 </template>
 
@@ -32,6 +36,7 @@
 import { useField } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
+import ApiTokenManager from "~/components/ApiTokenManager.vue";
 
 const toaster = useToaster();
 
@@ -140,3 +145,9 @@ const isDisabled = computed(
     ),
 );
 </script>
+
+<style scoped>
+.token-api {
+  margin-bottom: 5rem;
+}
+</style>

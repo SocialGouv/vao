@@ -1,6 +1,6 @@
 <template>
   <div class="fr-container">
-    <h1 class="fr-py-2w">Liste des organismes</h1>
+    <h1 class="fr-py-2w">Liste des comptes organisateurs</h1>
     <div class="fr-grid-row">
       <div class="fr-col-12">
         <form>
@@ -74,21 +74,21 @@
       v-model:offset="offset"
       v-model:sort="sort"
       v-model:sort-direction="sortDirection"
-      :titles="titles"
-      :table-title="`Liste des organismes (${usersStore.totalUsersFO})`"
+      :columns="columns"
+      :table-title="`Liste des comptes organisateurs (${usersStore.totalUsersFO})`"
       :data="usersStore.usersFO"
       :total="usersStore.totalUsersFO"
       row-id="organismeId"
       is-sortable
       @update-data="updateData"
     >
-      <template #cell:statut="{ row }">
-        {{ mapStatutToLabel(row.statut) }}
+      <template #cell-statut="{ cell }">
+        {{ mapStatutToLabel(cell) }}
       </template>
-      <template #cell:dateCreation="{ row }">
-        {{ getDateCreationLabel(row.dateCreation) }}
+      <template #cell-dateCreation="{ cell }">
+        {{ getDateCreationLabel(cell) }}
       </template>
-      <template #cell:custom-edit="{ row }">
+      <template #cell-custom-edit="{ row }">
         <NuxtLink
           :to="`/organismes/${row.organismeId}`"
           title="Naviguer vers l'organisme"
@@ -132,7 +132,7 @@ const getCsvUtilisateurs = async () => {
   exportCsv(response, "UtilisateursOrganismes.csv");
 };
 
-const titles = [
+const columns = [
   {
     key: "nom",
     label: "Nom",
@@ -187,8 +187,8 @@ const titles = [
     label: "Action",
   },
 ];
-const sortableTitles = titles.flatMap((title) =>
-  title.options?.isSortable ? [title.key] : [],
+const sortableColumns = columns.flatMap((column) =>
+  column.options?.isSortable ? [column.key] : [],
 );
 
 const mapStatutToLabel = (statut) => {
@@ -211,7 +211,7 @@ const defaultLimit = 10;
 const defaultOffset = 0;
 const limit = ref(parseInt(query.limit, 10) || defaultLimit);
 const offset = ref(parseInt(query.offset, 10) || defaultOffset);
-const sort = ref(sortableTitles.includes(query.sort) ? query.sort : "");
+const sort = ref(sortableColumns.includes(query.sort) ? query.sort : "");
 const sortDirection = ref(
   ["", "asc", "desc"].includes(query.sortDirection) ? query.sortDirection : "",
 );

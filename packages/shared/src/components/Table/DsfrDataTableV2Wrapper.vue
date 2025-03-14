@@ -4,7 +4,7 @@
       v-model:sort="sortedSync"
       v-model:sort-direction="sortDirectionSync"
       v-model:selected="selectedSync"
-      :titles="props.titles"
+      :columns="props.columns"
       :data="props.data"
       :row-id="props.rowId"
       :is-selectable="props.isSelectable"
@@ -18,7 +18,7 @@
       <template v-for="bodySlot in bodySlots" #[bodySlot]="slotScope">
         <slot
           :name="bodySlot"
-          v-bind="slotScope as SlotProps<T>[typeof bodySlot]"
+          v-bind="slotScope as Slots<Data>[typeof bodySlot]"
         />
       </template>
       <template #footer>
@@ -34,28 +34,32 @@
   </div>
 </template>
 
-<script setup lang="ts" generic="T extends Row, RowId extends keyof T & string">
+<script
+  setup
+  lang="ts"
+  generic="Data extends Row, RowId extends keyof Data & string"
+>
 import { computed } from "vue";
-import { DsfrDataTableV2, DsfrPaginationV2 } from "@vao/shared";
+import DsfrPaginationV2 from "./dsfrDataTabeV2/DsfrPaginationV2.vue";
+import DsfrDataTableV2 from "./DsfrDataTableV2.vue";
 import type {
   Row,
-  NestedKeys,
-  Titles,
-  SlotProps,
+  Columns,
+  Slots,
 } from "@vao/shared/src/types/DsfrDataTableV2.type";
 
 const props = withDefaults(
   defineProps<{
     // Required
-    data: T[];
+    data: Data[];
     rowId: RowId;
-    titles: Titles<T>;
+    columns: Columns<Data>;
     // Selection
     isSelectable?: boolean;
-    selected?: T[RowId][];
+    selected?: Data[RowId][];
     // Sort
     isSortable?: boolean;
-    sort?: NestedKeys<T> | "";
+    sort?: Columns<Data>[number]["key"] | "";
     sortDirection?: "asc" | "desc" | "";
     // Pagination
     limit: number;
@@ -80,11 +84,11 @@ const props = withDefaults(
   },
 );
 
-const slots = defineSlots<SlotProps<T>>();
+const slots = defineSlots<Slots<Data>>();
 
 const emits = defineEmits<{
-  "update:selected": [Array<T[RowId]>];
-  "update:sort": [NestedKeys<T> | ""];
+  "update:selected": [Data[RowId][]];
+  "update:sort": [Columns<Data>[number]["key"] | ""];
   "update:sortDirection": ["asc" | "desc" | ""];
   "update:limit": [number];
   "update:offset": [number];
@@ -92,7 +96,7 @@ const emits = defineEmits<{
     {
       limit: number;
       offset: number;
-      sort: NestedKeys<T> | "";
+      sort: Columns<Data>[number]["key"] | "";
       sortDirection: "asc" | "desc" | "";
     },
   ];
@@ -107,10 +111,10 @@ const selectedSync = computed({
   },
 });
 
-const bodySlots = computed<(keyof SlotProps<T>)[]>(() =>
+const bodySlots = computed(() =>
   Object.keys(slots)
-    .filter((key) => key.startsWith("cell:"))
-    .map((key) => key as keyof SlotProps<T>),
+    .filter((key) => key.startsWith("cell-"))
+    .map((key) => key as keyof Slots<Data>),
 );
 
 const sortedSync = computed({

@@ -15,5 +15,7 @@ router.patch(
   trackFoUser({ action: actions.modification, userType: userTypes.front }),
   userController.patchMe,
 );
+router.post("/generate-api-token", checkJWT, userController.generateApiToken);
+router.get("/api-token", checkJWT, userController.getApiToken);
 
 module.exports = router;

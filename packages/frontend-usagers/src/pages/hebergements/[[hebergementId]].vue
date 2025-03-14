@@ -5,23 +5,16 @@
         <DsfrBreadcrumb :links="links" />
       </div>
     </div>
-
     <div class="fr-grid-row">
       <div class="fr-col">
         <div v-if="hebergementId" class="title">
-          <h1>
-            Hébergement {{ hebergementStore.hebergementCourant.nom }}
-            {{ hebergementStore.hebergementCourant.statut }}
-          </h1>
-          <DsfrBadge
-            v-if="
-              hebergementStore.hebergementCourant.statut ===
-              hebergementUtils.statut.ACTIF
+          <h1>Hébergement {{ hebergementStore.hebergementCourant.nom }}</h1>
+          <HebergementStatusBadge
+            :statut="
+              hebergementId
+                ? hebergementStore.hebergementCourant.statut
+                : hebergementUtils.statut.BROUILLON
             "
-            actif
-            type="success"
-            :label="hebergementStore.hebergementCourant.statut"
-            class="pointer"
           />
         </div>
         <h1 v-else>Création d'un nouveau lieu d'hébergement</h1>
@@ -39,15 +32,25 @@
           :init-hebergement="
             hebergementId ? hebergementStore.hebergementCourant : {}
           "
+          :siege-social="siegeSocial"
           :cdn-url="`${config.public.backendUrl}/documents/`"
           default-back-route="/hebergements"
           :is-downloading="apiStatus.isDownloading"
+          :is-disabled="
+            hebergementId
+              ? (hebergementStore.hebergementCourant.statut ??
+                  hebergementUtils.statut.BROUILLON) ===
+                hebergementUtils.statut.DESACTIVE
+              : false
+          "
           :message="apiStatus.message"
           mode-brouillon-activated
           is-save-visible
           @submit="updateOrCreate"
           @submit-brouillon="updateOrCreateBrouillon"
           @activate="activate"
+          @desactivate="desactivate"
+          @reactivate="reactivate"
         />
       </div>
     </div>
@@ -59,7 +62,7 @@ definePageMeta({
   middleware: ["is-connected", "check-hebergement-id-param"],
 });
 import hebergementUtils from "@vao/shared/src/utils/hebergement";
-import { DsfrBadge } from "@gouvminint/vue-dsfr";
+import HebergementStatusBadge from "../../components/hebergements/HebergementStatusBadge.vue";
 
 const config = useRuntimeConfig();
 
@@ -67,6 +70,16 @@ const toaster = useToaster();
 const log = logger("pages/hebermgents/[[hebergementId]]");
 
 const hebergementStore = useHebergementStore();
+const organismeStore = useOrganismeStore();
+
+organismeStore.setMyOrganisme();
+
+const siegeSocial = ref(() => {
+  return (
+    organismeStore?.isSiegeSocial ||
+    organismeStore?.organismeCourant.typeOrganisme === "personne_physique"
+  );
+});
 
 const route = useRoute();
 const hebergementId = ref(route.params.hebergementId);
@@ -192,6 +205,51 @@ async function activate(hebergement) {
         "Erreur lors de la sauvegarde de l'hébergement en mode brouillon",
     });
     log.w("updateOrCreate - erreur", { error });
+  } finally {
+    resetApiStatut();
+  }
+}
+
+async function desactivate() {
+  log.d("desactivate - IN");
+  setApiStatut(`Désactivation de l'hébergement`);
+
+  try {
+    await hebergementStore.desactivate(hebergementId.value);
+    log.d("hebergement désactivé");
+    toaster.success({ titleTag: "h2", description: "Hébergement désactivé" });
+
+    await navigateTo("/hebergements/liste");
+  } catch (error) {
+    toaster.error({
+      titleTag: "h2",
+      description:
+        error.data.message ??
+        "Erreur lors de la desactivation de l'hébergement",
+    });
+    log.w("desactivate - erreur", { error });
+  } finally {
+    resetApiStatut();
+  }
+}
+
+async function reactivate() {
+  log.d("reactivate - IN");
+  setApiStatut(`Réactivation de l'hébergement`);
+
+  try {
+    await hebergementStore.reactivate(hebergementId.value);
+    log.d("hebergement réactivé");
+    toaster.success({ titleTag: "h2", description: "Hébergement réactivé" });
+
+    await navigateTo("/hebergements/liste");
+  } catch (error) {
+    toaster.error({
+      titleTag: "h2",
+      description:
+        error.data.message ?? "Erreur lors de la réactivation de l'hébergement",
+    });
+    log.w("reaactivate - erreur", { error });
   } finally {
     resetApiStatut();
   }

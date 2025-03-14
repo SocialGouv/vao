@@ -12,6 +12,61 @@ pg:
     clusterExtraLabels:
       oblik.socialgouv.io/enabled: "false"
 
+external-api:
+  ~chart: app
+  ~needs: [build-external-api, migrations-db, init-db]
+  imagePackage: external-api
+  host: "external-api-{{ .Values.global.host }}"
+  containerPort: 3000
+  labels:
+    oblik.socialgouv.io/enabled: "false"
+  resources:
+    requests:
+      cpu: 200m
+      memory: 768Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 3000
+  startupProbe:
+    httpGet:
+      path: /health
+      port: 3000
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 3000
+  envFrom:
+    - configMapRef:
+        name: external-api
+    - configMapRef:
+        name: pg
+    - secretRef:
+        name: pg
+    - secretRef:
+        name: pg-app
+    - secretRef:
+        name: token
+    - secretRef:
+        name: "{{.Values.global.s3SecretName}}"
+  vars:
+    DEBUG: "*info*"
+    DEBUG_HIDE_DATE: "true"
+    TZ: Europe/Paris
+    SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
+    POSTGRES_HOST: "$(PGHOST)"
+    POSTGRES_PORT: "$(PGPORT)"
+    POSTGRES_DB: "$(PGDATABASE)"
+
+    S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
+    S3_BUCKET_NAME: "$(bucket_name)"
+    S3_BUCKET_REGION: "$(bucket_region)"
+    S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
+    S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
+
 backend:
   ~chart: app
   ~needs: [build-backend, migrations-db, init-db]
@@ -72,7 +127,6 @@ backend:
     S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
     S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
 
-
 frontend-usagers:
   ~chart: app
   ~needs: [build-frontend-usagers]
@@ -128,6 +182,13 @@ jobs:
         context: ./
         dockerfile: packages/migrations/Dockerfile
 
+    build-external-api:
+      use: build
+      with:
+        imagePackage: external-api
+        context: ./
+        dockerfile: packages/external-api/Dockerfile
+
     build-backend:
       use: build
       with:
@@ -151,12 +212,12 @@ jobs:
           NUXT_PUBLIC_MATOMO_ENABLED: "${FRONTEND_USAGERS_MATOMO_ENABLED}"
           NUXT_PUBLIC_MATOMO_HOST: "${FRONTEND_USAGERS_MATOMO_HOST}"
           NUXT_PUBLIC_MATOMO_SITE_ID: "${FRONTEND_USAGERS_MATOMO_SITE_ID}"
-          NUXT_PUBLIC_SENTRY_DSN: "https://38eaf4da504d4809a74ce3134b759c91@sentry.fabrique.social.gouv.fr/103"
+          NUXT_PUBLIC_SENTRY_DSN: "https://7fba53b76194053e13ea55fed61b7e0d@sentry2.fabrique.social.gouv.fr/17"
           NUXT_PUBLIC_SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
           NUXT_PUBLIC_API_MAP_TILER: "g9IvoA8h0Ow8I9szhdzW"
-          SENTRY_URL: "https://sentry.fabrique.social.gouv.fr"
+          SENTRY_URL: "https://sentry2.fabrique.social.gouv.fr"
           SENTRY_ORG: incubateur
-          SENTRY_PROJECT: vao-usagers
+          SENTRY_PROJECT: psn-vao-usagers
         secrets:
           sentry_auth_token:
             secretName: frontend-secret
@@ -178,12 +239,12 @@ jobs:
           NUXT_PUBLIC_MATOMO_ENABLED: "${FRONTEND_BO_MATOMO_ENABLED}"
           NUXT_PUBLIC_MATOMO_HOST: "${FRONTEND_BO_MATOMO_HOST}"
           NUXT_PUBLIC_MATOMO_SITE_ID: "${FRONTEND_BO_MATOMO_SITE_ID}"
-          NUXT_PUBLIC_SENTRY_DSN: "https://1c0cbefef75a451ca753a4392ebea5b4@sentry.fabrique.social.gouv.fr/104"
+          NUXT_PUBLIC_SENTRY_DSN: "https://65778f66439154c9e0321740d855ed80@sentry2.fabrique.social.gouv.fr/18"
           NUXT_PUBLIC_SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
           NUXT_PUBLIC_API_MAP_TILER: "g9IvoA8h0Ow8I9szhdzW"
-          SENTRY_URL: "https://sentry.fabrique.social.gouv.fr"
+          SENTRY_URL: "https://sentry2.fabrique.social.gouv.fr"
           SENTRY_ORG: incubateur
-          SENTRY_PROJECT: vao-admin
+          SENTRY_PROJECT: psn-vao-admin
         secrets:
           sentry_auth_token:
             secretName: frontend-secret
@@ -234,12 +295,12 @@ jobs:
           valueFrom:
             secretKeyRef:
               name: "{{.Values.global.s3SecretName}}"
-              key: bucket_region  
+              key: bucket_region
         - name: S3_BUCKET_ACCESS_KEY
           valueFrom:
             secretKeyRef:
               name: "{{.Values.global.s3SecretName}}"
-              key: bucket_access_key  
+              key: bucket_access_key
         - name: S3_BUCKET_SECRET_KEY
           valueFrom:
             secretKeyRef:
@@ -248,7 +309,6 @@ jobs:
       envFrom:
         - secretRef:
             name: "{{.Values.global.s3SecretName}}"
-
 
     init-db:
       ~needs: [pg]
@@ -382,12 +442,12 @@ migrate-s3:
       valueFrom:
         secretKeyRef:
           name: "{{.Values.global.s3SecretName}}"
-          key: bucket_region  
+          key: bucket_region
     - name: S3_BUCKET_ACCESS_KEY
       valueFrom:
         secretKeyRef:
           name: "{{.Values.global.s3SecretName}}"
-          key: bucket_access_key  
+          key: bucket_access_key
     - name: S3_BUCKET_SECRET_KEY
       valueFrom:
         secretKeyRef:

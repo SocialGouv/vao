@@ -1,4 +1,5 @@
 const logger = require("../../utils/logger");
+const pool = require("../../utils/pgpool").getPool();
 
 const log = logger(module.filename);
 
@@ -51,6 +52,75 @@ const query = {
       id as "personneMoraleId"
     ;
     `,
+  getByOrganismeId: `
+    SELECT id AS "id",
+      pays AS "pays",
+      email AS "email",
+      siren AS "siren",
+      siret AS "siret",
+      statut AS "statut",
+      adresse AS "adresse",
+      telephone AS "telephone",
+      siege_social AS "siegeSocial",
+      nom_commercial AS "nomCommercial",
+      raison_sociale AS "raisonSociale",
+      porteur_agrement AS "porteurAgrement",
+      COALESCE(
+        (SELECT JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'nic', nic,
+            'siret', siret,
+            'adresse', adresse,
+            'commune', commune,
+            'enabled', enabled,
+            'codePostal', code_postal,
+            'denomination', denomination,
+            'etatAdministratif', etat_administratif
+          )
+        ) 
+        FROM front.opm_etablissements opmetab
+        WHERE opmetab.personne_morale_id = pm.id), '[]'
+      ) AS etablissements,
+      COALESCE(
+        (SELECT JSON_AGG(
+          JSON_BUILD_OBJECT(
+            'nom', nom,
+            'prenom', prenom,
+            'fonction', fonction
+          )
+        ) 
+        FROM front.opm_representants_legaux oprepleg
+        WHERE oprepleg.personne_morale_id = pm.id), '[]'
+      ) AS 
+       "representantsLegaux",
+      JSON_BUILD_OBJECT(
+          'siret', etab_principal_siret,
+          'adresse', etab_principal_adresse,
+          'telephone', etab_principal_telephone,
+          'nomCommercial', etab_principal_nom_commercial,
+          'raisonSociale', etab_principal_raison_sociale,
+          'pays', etab_principal_pays,
+          'email', etab_principal_email
+      ) AS "etablissementPrincipal",
+      JSON_BUILD_OBJECT(
+          'nom', resp_sejour_nom,
+          'prenom', resp_sejour_prenom,
+          'email', resp_sejour_email,
+          'adresse', JSON_BUILD_OBJECT(
+            'label', resp_sejour_adresse_label,
+            'cleInsee', resp_sejour_adresse_cle_insee,
+            'codeInsee', resp_sejour_adresse_code_insee,
+            'codePostal', resp_sejour_adresse_code_postal,
+            'long', resp_sejour_adresse_long,
+            'lat', resp_sejour_adresse_lat,
+            'departement', resp_sejour_adresse_departement
+          ),
+          'fonction', resp_sejour_fonction,
+          'telephone', resp_sejour_telephone
+      ) AS "responsableSejour"
+    FROM front.personne_morale pm
+    WHERE organisme_id = $1
+  `,
   getIdByOrganiseId: `
     SELECT id
     FROM front.personne_morale
@@ -167,13 +237,13 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
     parametre?.responsableSejour?.nom ?? null,
     parametre?.responsableSejour?.prenom ?? null,
     parametre?.responsableSejour?.email ?? null,
-    parametre?.responsableSejour?.adresse.label ?? null,
-    parametre?.responsableSejour?.adresse.cleInsee ?? null,
-    parametre?.responsableSejour?.adresse.codeInsee ?? null,
-    parametre?.responsableSejour?.adresse.codePostal ?? null,
+    parametre?.responsableSejour?.adresse?.label ?? null,
+    parametre?.responsableSejour?.adresse?.cleInsee ?? null,
+    parametre?.responsableSejour?.adresse?.codeInsee ?? null,
+    parametre?.responsableSejour?.adresse?.codePostal ?? null,
     parametre?.responsableSejour?.adresse?.coordinates?.[0] ?? null,
     parametre?.responsableSejour?.adresse?.coordinates?.[1] ?? null,
-    parametre?.responsableSejour?.adresse.departement ?? null,
+    parametre?.responsableSejour?.adresse?.departement ?? null,
     parametre?.responsableSejour?.fonction ?? null,
     parametre?.responsableSejour?.telephone ?? null,
     parametre?.etablissementPrincipal?.siret ?? null,
@@ -210,6 +280,17 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
     );
   }
   log.i("createOrUpdate - DONE");
+};
+
+
+module.exports.getByOrganismeId = async (organismeId) => {
+  log.i("getByOrganismeId - IN", organismeId);
+  const { rowCount, rows: personneMorales } = await pool.query(
+    query.getByOrganismeId,
+    [organismeId],
+  );
+
+  return rowCount === 0 ? {} : personneMorales[0];
 };
 
 const { create } = module.exports;

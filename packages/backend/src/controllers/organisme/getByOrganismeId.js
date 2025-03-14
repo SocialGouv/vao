@@ -22,10 +22,10 @@ module.exports = async function get(req, res, next) {
   const criteria =
     origin === "back"
       ? {
-          id: organismeId,
+          "o.id": organismeId,
         }
       : {
-          id: organismeId,
+          "o.id": organismeId,
           use_id: userId,
         };
   try {

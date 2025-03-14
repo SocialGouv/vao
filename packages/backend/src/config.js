@@ -21,6 +21,10 @@ module.exports = {
     URI: process.env.API_INSEE_URI,
     URL: process.env.API_INSEE_URL,
   },
+  apiToken: {
+    expiresIn: 365 * 24 * 60 * 60 * 1000,
+    tokenSecret: process.env.API_TOKEN_SECRET_PRIV,
+  },
   crons: {
     request: {
       notify: {
@@ -90,7 +94,7 @@ module.exports = {
   tmpDirectory: process.env.TMP_DIRECTORY,
   tokenSecret: process.env.TOKEN_SECRET,
   validationToken: {
-    expiresIn: 60 * 60 * 1000, // 30 min
+    expiresIn: 60 * 60 * 1000, // 1h
     secret: process.env.VALIDATION_TOKEN_SECRET,
   },
 };
