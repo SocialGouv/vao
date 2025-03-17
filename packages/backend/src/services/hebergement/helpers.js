@@ -1,6 +1,7 @@
 const { getFileMetaData } = require("../Document");
 
 module.exports.queryGetFields = `
+  H.organisme_id AS "organismeId",
   H.NOM AS "nom",
   H.EMAIL AS "email",
   H.ADRESSE_ID AS "adresseId",
@@ -133,6 +134,7 @@ const mapDBHebergement = async (hebergement, adresse) => {
     informationsLocaux: await mapHebergementToInformationsLocaux(hebergement),
     informationsTransport: mapHebergementToInformationsTransport(hebergement),
     nom: hebergement.nom,
+    organismeId: hebergement.organismeId,
     statut: hebergement.statut ?? null,
   };
 };

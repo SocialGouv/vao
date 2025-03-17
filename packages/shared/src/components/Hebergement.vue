@@ -563,13 +563,12 @@
             type="button"
             @click="submit"
             >{{
-              hebergementId ? "Modifier l'hebergement" : "Ajouter l'hebergement"
+              hebergementId ? "Modifier l'hébergement" : "Ajouter l'hébergement"
             }}
           </DsfrButton>
           <DsfrButton
             v-if="
               hebergementId &&
-              siegeSocial &&
               hebergementStatut === hebergementUtils.statut.ACTIF
             "
             id="next-step"
@@ -577,12 +576,11 @@
             :secondary="true"
             type="button"
             @click="desactivate"
-            >{{ "Désactiver l'hebergement" }}
+            >{{ "Désactiver l'hébergement" }}
           </DsfrButton>
           <DsfrButton
             v-if="
               hebergementId &&
-              siegeSocial &&
               hebergementStatut === hebergementUtils.statut.DESACTIVE
             "
             id="next-step"
@@ -590,7 +588,7 @@
             :secondary="true"
             type="button"
             @click="reactivate"
-            >{{ "Réactiver l'hebergement" }}
+            >{{ "Réactiver l'hébergement" }}
           </DsfrButton>
         </div>
         <is-downloading
@@ -644,7 +642,6 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  siegeSocial: { type: Boolean, default: false },
   isDisabled: { type: Boolean, default: false },
   isDownloading: { type: Boolean, default: false },
   message: { type: String, required: false, default: null },

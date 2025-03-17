@@ -32,7 +32,6 @@
           :init-hebergement="
             hebergementId ? hebergementStore.hebergementCourant : {}
           "
-          :siege-social="siegeSocial"
           :cdn-url="`${config.public.backendUrl}/documents/`"
           default-back-route="/hebergements"
           :is-downloading="apiStatus.isDownloading"
@@ -40,7 +39,7 @@
             hebergementId
               ? (hebergementStore.hebergementCourant.statut ??
                   hebergementUtils.statut.BROUILLON) ===
-                hebergementUtils.statut.DESACTIVE
+                  hebergementUtils.statut.DESACTIVE
               : false
           "
           :message="apiStatus.message"
@@ -70,16 +69,6 @@ const toaster = useToaster();
 const log = logger("pages/hebermgents/[[hebergementId]]");
 
 const hebergementStore = useHebergementStore();
-const organismeStore = useOrganismeStore();
-
-organismeStore.setMyOrganisme();
-
-const siegeSocial = ref(() => {
-  return (
-    organismeStore?.isSiegeSocial ||
-    organismeStore?.organismeCourant.typeOrganisme === "personne_physique"
-  );
-});
 
 const route = useRoute();
 const hebergementId = ref(route.params.hebergementId);

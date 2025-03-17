@@ -23,8 +23,7 @@ async function checkPermissionHebergement(req, res, next) {
   });
 
   const siren =
-    organisme.typeOrganisme === "personne_morale" &&
-    organisme.personneMorale?.porteurAgrement === true
+    organisme.typeOrganisme === "personne_morale"
       ? organisme.personneMorale?.siren
       : "";
 
