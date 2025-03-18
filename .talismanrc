@@ -1,6 +1,8 @@
 fileignoreconfig:
-- filename: .kontinuous/env/dev/templates/cron.configmap.yaml
-  checksum: c7e8f622c46bb301dfbc4bea4551dfe7ee7307371fa33bb635bd775cc047e08d
+- filename: yarn.lock
+  checksum: 90e545b8b44fb11b0132fba72cedefcc8223578c6c79c88ca251e3495c129615
+version: ""
+7371fa33bb635bd775cc047e08d
 - filename: .kontinuous/env/dev/templates/cron.sealed-secret.yaml
   checksum: 9bb4092539bd6c8ba74ec977dd8d1f71b7160388d88fb1af62d54cc33acc1d0a
 - filename: .kontinuous/values.yaml
