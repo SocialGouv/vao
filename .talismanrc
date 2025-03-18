@@ -1,10 +1,12 @@
 fileignoreconfig:
-- filename: .kontinuous/env/preprod/templates/frontend.sealed-secret.yaml
-  checksum: 4e81a3d7794585727847fb5343790451927e73963dc9a163d88db22c47983cdd
-- filename: .kontinuous/env/preprod/templates/smtp.sealed.secret.yaml
-  checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-- filename: .kontinuous/env/preprod/templates/smtp/deployment.yaml
-  checksum: e05745b618cdfe033bd27bb7baffa0c77024de76b79fcd346f2ab33c5530fac0
+- filename: .kontinuous/env/dev/templates/cron.configmap.yaml
+  checksum: c7e8f622c46bb301dfbc4bea4551dfe7ee7307371fa33bb635bd775cc047e08d
+- filename: .kontinuous/env/dev/templates/cron.sealed-secret.yaml
+  checksum: 9bb4092539bd6c8ba74ec977dd8d1f71b7160388d88fb1af62d54cc33acc1d0a
+- filename: .kontinuous/values.yaml
+  checksum: 96cd35d426f9d8db51ecf0ab857917571a91066827407c880ae30116f3efb933
+version: ""
+c77024de76b79fcd346f2ab33c5530fac0
 - filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
   checksum: 2414a3f1746ccd11cbb12b86dd2bb4a16cbc5bd6fe1450c308579972128176e6
 - filename: .kontinuous/env/preprod/templates/token.sealed.secret.yaml
