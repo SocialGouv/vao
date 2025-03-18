@@ -27,11 +27,13 @@
     "@eslint/js": "^9.22.0",
     "@types/nodemailer": "^6.4.17",
     "@types/nodemailer-smtp-transport": "^2.7.8",
+    "cron": "^4.1.0",
     "eslint": "^9.22.0",
     "eslint-config-prettier": "^10.1.1",
     "globals": "^16.0.0",
     "pkgroll": "^2.11.2",
     "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.1",
     "vitest": "^3.0.9"
   },
