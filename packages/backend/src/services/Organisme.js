@@ -75,14 +75,14 @@ const query = {
         THEN
         (
             SELECT
-              JSON_AGG(json_build_object(
+              json_build_object(
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
                 'dateFinValidite', date_fin_validite,
                 'file', file,
                 'createdAt', a.created_at
-              )) as "agrement"
+              ) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
