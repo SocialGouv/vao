@@ -1,5 +1,5 @@
 import * as Sentry from "@sentry/node";
-import { status } from "@vao/shared";
+import { status } from "../utils/status";
 import { pool } from "../db";
 import { insertCron } from "../cron/cron.service";
 import { sendEmails } from "./notifyRappelActionsBo.email";
@@ -62,7 +62,7 @@ const configurableQuery = ({
 
 const queryRappelDSBo = () =>
   configurableQuery({
-    statutsArray: `'${status.defaultStatus.TRANSMISE}','${status.defaultStatus.EN_COURS}','${status.defaultStatus.TRANSMISE_8J}','${status.defaultStatus.EN_COURS_8J}'`,
+    statutsArray: `'${status.TRANSMISE}','${status.EN_COURS}','${status.TRANSMISE_8J}','${status.EN_COURS_8J}'`,
     additionalColumns: "use.mail,",
     additionalJoins:
       "INNER JOIN geo.territoires ter ON ter.code = ds.departement_suivi INNER JOIN back.users use ON ter.code = use.ter_code",
@@ -72,7 +72,7 @@ const queryRappelDSBo = () =>
 
 const queryRappelDSFUsager = () =>
   configurableQuery({
-    statutsArray: `'${status.defaultStatus.ATTENTE_8_JOUR}','${status.defaultStatus.A_MODIFIER}','${status.defaultStatus.A_MODIFIER_8J}'`,
+    statutsArray: `'${status.ATTENTE_8_JOUR}','${status.A_MODIFIER}','${status.A_MODIFIER_8J}'`,
     additionalColumns: `
       STRING_AGG(use.mail, ';') AS mail,
       ((ds.responsable_sejour::jsonb)->>'email')::text as mailresp,

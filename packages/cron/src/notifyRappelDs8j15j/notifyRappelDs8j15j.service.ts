@@ -1,4 +1,4 @@
-import { status } from "@vao/shared";
+import { status } from "../utils/status";
 import * as Sentry from "@sentry/node";
 import { notifyDs8jDs15, sentry } from "../config";
 import { pool } from "../db";
@@ -11,7 +11,6 @@ import type {
 import { logger } from "../utils/logger";
 
 const { deadlineRemind } = notifyDs8jDs15;
-const { defaultStatus } = status;
 
 const querySelectRappelDeclarationSejour8j15j = `
   SELECT
@@ -26,14 +25,14 @@ const querySelectRappelDeclarationSejour8j15j = `
   INNER JOIN front.users use on use.id = uso.use_id
   WHERE (ds.date_debut - (('${deadlineRemind}'+8) * INTERVAL '1 day'))::date<= now()::date
   AND now()::date<=(ds.date_debut - (8 * INTERVAL '1 day'))::date
-  AND ds.statut = '${defaultStatus.ATTENTE_8_JOUR}'
+  AND ds.statut = '${status.ATTENTE_8_JOUR}'
   AND ds.rappel_ds_compl = false;
 `;
 
 const queryUpdateRappel = `
 UPDATE front.demande_sejour
   SET rappel_ds_compl = true
-  WHERE id = $1;
+  WHERE id = $1
 RETURNING
   id;
 `;

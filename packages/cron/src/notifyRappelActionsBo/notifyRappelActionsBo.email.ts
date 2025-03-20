@@ -4,7 +4,7 @@ import {
   RappelDSFUsagerRow,
   RappelRows,
 } from "./notifyRappelActionsBo.type";
-import constructMail from "@vao/shared/src/templates/mails";
+import constructMail from "../utils/mails";
 import { transportEmails } from "../utils/transporter";
 
 export const initialEmailContent = [

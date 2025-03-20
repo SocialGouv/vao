@@ -10,12 +10,12 @@ const queryInsert = (params: QueryParams): [string, QueryParams] => [
     cron_name,
     start_date,
     end_date,
-    report,
+    report
   )
   VALUES (
-    $1
-    $2
-    $3
+    $1,
+    $2,
+    $3,
     $4
   )
   RETURNING *;

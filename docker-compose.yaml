@@ -106,6 +106,29 @@ services:
       - 3020:3000
     user: 1000:1000
 
+  cron:
+    image: "node:22.13-bullseye-slim"
+    restart: unless-stopped
+    working_dir: /app
+    command: bash -c "/app/packages/cron/start.sh"
+    volumes:
+      - $PWD:/app:delegated
+    depends_on:
+      postgres:
+        condition: service_started
+      migrations:
+        condition: service_completed_successfully
+      create-bucket:
+        condition: service_completed_successfully
+    env_file:
+      - ./.env
+    environment:
+      DEBUG: "*info*"
+      SENTRY_DSN: ${EXTERNAL-API_SENTRY_DSN}
+      SENTRY_ENVIRONMENT: local
+      SENTRY_ENABLED: ${EXTERNAL-API_SENTRY_ENABLED}
+    user: 1000:1000
+
   migrations:
     image: "node:23.5-bullseye-slim"
     working_dir: /app
