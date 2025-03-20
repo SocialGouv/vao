@@ -139,6 +139,11 @@ cron:
     limits: # exports need a lot of CPU/RAM ATM
       cpu: 500m
       memory: 1024Mi
+  livenessProbe:
+    exec:
+      command:
+        - cat
+        - /tmp/healthy
   envFrom:
     - configMapRef:
         name: cron
