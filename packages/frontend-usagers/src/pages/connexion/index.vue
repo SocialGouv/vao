@@ -123,6 +123,7 @@
 import { PasswordInput } from "@vao/shared";
 
 const toaster = useToaster();
+const organismeStore = useOrganismeStore();
 
 const config = useRuntimeConfig();
 
@@ -210,6 +211,7 @@ async function login() {
     );
     formStatus.value = formStates.SUBMITTED;
     userStore.user = response.user;
+    organismeStore.setMyOrganisme();
     toaster.success({
       titleTag: "h2",
       description: `Authentification réalisée avec succès`,
