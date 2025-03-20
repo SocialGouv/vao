@@ -1,4 +1,4 @@
-import { status } from "@vao/shared";
+import { status } from "../utils/status";
 import { pool } from "../db";
 import { insertCron } from "../cron/cron.service";
 import type {
@@ -12,38 +12,36 @@ import { sentry, updateStatusDs } from "../config";
 import * as Sentry from "@sentry/node";
 import { logger } from "../utils/logger";
 
-const { defaultStatus } = status;
-
 const querySelectAbandonDeclarations = `
   SELECT id, statut
   FROM front.demande_sejour
     WHERE (date_debut::date < now()::date)
-    AND statut in ('${defaultStatus.ATTENTE_8_JOUR}','${defaultStatus.A_MODIFIER}','${defaultStatus.A_MODIFIER_8J}');
+    AND statut in ('${status.ATTENTE_8_JOUR}','${status.A_MODIFIER}','${status.A_MODIFIER_8J}');
 `;
 
 const queryUpdateEnCoursDeclarations = `
   UPDATE front.demande_sejour
-    SET statut = '${defaultStatus.SEJOUR_EN_COURS}',
+    SET statut = '${status.SEJOUR_EN_COURS}',
     edited_at = NOW()
     WHERE (date_debut::date <= now()::date)
-    AND statut = '${defaultStatus.VALIDEE_8J}'
+    AND statut = '${status.VALIDEE_8J}'
   RETURNING id;
 `;
 
 const queryUpdateTermineDeclarations = `
   UPDATE front.demande_sejour
-    SET statut = '${defaultStatus.TERMINEE}',
+    SET statut = '${status.TERMINEE}',
     edited_at = NOW()
     WHERE (date_fin::date < now()::date)
-    AND statut in ('${defaultStatus.VALIDEE_8J}', '${defaultStatus.SEJOUR_EN_COURS}')
+    AND statut in ('${status.VALIDEE_8J}', '${status.SEJOUR_EN_COURS}')
   RETURNING id;
 `;
 
 const queryUpdateAbandonDeclaration = `
   UPDATE front.demande_sejour
-    SET statut = '${defaultStatus.ABANDONNEE}',
+    SET statut = '${status.ABANDONNEE}',
     edited_at = NOW()
-    WHERE id = $1;
+    WHERE id = $1
   RETURNING id;
 `;
 

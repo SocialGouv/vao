@@ -1,5 +1,5 @@
 import { senderEmail } from "../config";
-import constructMail from "@vao/shared/src/templates/mails";
+import constructMail from "../utils/mails";
 import { transportEmails } from "../utils/transporter";
 import type {
   RappelDeclarationSejour8j15jRow,
