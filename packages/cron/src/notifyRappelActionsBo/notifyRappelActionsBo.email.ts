@@ -62,7 +62,7 @@ const appendContent = (alerts: RappelRows, starter: string) => {
     newContent.push(...alerts.flatMap((ds) => createDSContent(ds)));
     newContent.push("</ul></p>");
   }
-  return newContent;
+  return newContent.join("");
 };
 
 type CreateContentParams = {
@@ -76,13 +76,13 @@ const createContent = ({
 }: CreateContentParams) => {
   const emailContent = [...initialEmailContent];
   emailContent.push(
-    ...appendContent(
+    appendContent(
       dsWithAlerts,
       "<p><b>DECLARATIONS NECESSITANT UNE ACTION URGENTE DE VOTRE PART dont la date de début de séjour est à moins de 10 jours</b>",
     ),
   );
   emailContent.push(
-    ...appendContent(
+    appendContent(
       dsWithoutAlerts,
       "<p><b>AUTRES DECLARATIONS DE SEJOUR NECESSITANT UNE ACTION DE VOTRE PART</b>",
     ),
@@ -130,7 +130,7 @@ const generateEmail = (email: string, content: string, isBO: boolean) => {
 };
 
 const sendEmail = (email: string, content: string[], isBO: boolean) => {
-  const mailNew = content.join(";");
+  const mailNew = content.join("\n");
   const mail = generateEmail(email, mailNew, isBO);
   return mail;
 };
