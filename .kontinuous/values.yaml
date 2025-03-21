@@ -143,7 +143,7 @@ cron:
     exec:
       command:
         - cat
-        - /tmp/healthy
+        - /app/healthy
   envFrom:
     - configMapRef:
         name: cron
