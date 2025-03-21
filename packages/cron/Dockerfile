@@ -25,7 +25,7 @@ COPY packages/shared packages/shared
 
 ENV NODE_ENV=production
 
-RUN touch /tmp/healthy
+RUN touch healthy
 
 CMD ["yarn", "workspace", "@vao/cron", "dev"]
 
