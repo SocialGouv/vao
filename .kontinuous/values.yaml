@@ -162,6 +162,8 @@ cron:
     - secretRef:
         name: pg
     - secretRef:
+        name: pg-app
+    - secretRef:
         name: smtp
     - secretRef:
         name: cron-secret
