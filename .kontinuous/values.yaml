@@ -154,7 +154,7 @@ cron:
     - secretRef:
         name: smtp
     - secretRef:
-        name: cron
+        name: cron-secret
   vars:
     SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
     POSTGRES_HOST: "$(PGHOST)"
