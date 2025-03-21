@@ -60,7 +60,6 @@ external-api:
     POSTGRES_HOST: "$(PGHOST)"
     POSTGRES_PORT: "$(PGPORT)"
     POSTGRES_DB: "$(PGDATABASE)"
-
     S3_BUCKET_ENDPOINT: "$(bucket_endpoint)"
     S3_BUCKET_NAME: "$(bucket_name)"
     S3_BUCKET_REGION: "$(bucket_region)"
@@ -126,6 +125,53 @@ backend:
     S3_BUCKET_REGION: "$(bucket_region)"
     S3_BUCKET_ACCESS_KEY: "$(bucket_access_key)"
     S3_BUCKET_SECRET_KEY: "$(bucket_secret_key)"
+
+cron:
+  ~chart: app
+  ~needs: [build-cron, migrations-db, init-db]
+  imagePackage: cron
+  labels:
+    oblik.socialgouv.io/enabled: "false"
+  resources:
+    requests:
+      cpu: 200m
+      memory: 768Mi
+    limits: # exports need a lot of CPU/RAM ATM
+      cpu: 500m
+      memory: 1024Mi
+  livenessProbe:
+    exec:
+      command:
+        - cat
+        - /app/healthy
+  readinessProbe:
+    exec:
+      command:
+        - cat
+        - /app/healthy
+  startupProbe:
+    exec:
+      command:
+        - cat
+        - /app/healthy
+  envFrom:
+    - configMapRef:
+        name: cron
+    - configMapRef:
+        name: pg
+    - secretRef:
+        name: pg
+    - secretRef:
+        name: pg-app
+    - secretRef:
+        name: smtp
+    - secretRef:
+        name: cron-secret
+  vars:
+    SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
+    POSTGRES_HOST: "$(PGHOST)"
+    POSTGRES_PORT: "$(PGPORT)"
+    POSTGRES_DB: "$(PGDATABASE)"
 
 frontend-usagers:
   ~chart: app
@@ -195,6 +241,20 @@ jobs:
         imagePackage: backend
         context: ./
         dockerfile: packages/backend/Dockerfile
+    build-cron:
+      use: build
+      with:
+        imagePackage: cron
+        context: ./
+        dockerfile: packages/cron/Dockerfile
+        buildArgs:
+          SENTRY_URL: "https://sentry2.fabrique.social.gouv.fr"
+          SENTRY_ORG: incubateur
+          SENTRY_PROJECT: psn-vao-cron
+        secrets:
+          sentry_auth_token:
+            secretName: cron-secret
+            secretKey: SENTRY_AUTH_TOKEN
 
     build-frontend-usagers:
       use: build
