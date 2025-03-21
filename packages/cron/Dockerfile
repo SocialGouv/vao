@@ -14,6 +14,8 @@ RUN yarn workspace @vao/cron install --frozen-lockfile
 
 FROM cron-deps AS cron-production
 
+RUN touch ./healthy
+
 USER 1000
 WORKDIR /app
 
@@ -24,8 +26,6 @@ COPY packages/cron ./packages/cron
 COPY packages/shared packages/shared
 
 ENV NODE_ENV=production
-
-RUN touch healthy
 
 CMD ["yarn", "workspace", "@vao/cron", "dev"]
 

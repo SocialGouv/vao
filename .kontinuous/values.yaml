@@ -144,6 +144,16 @@ cron:
       command:
         - cat
         - /app/healthy
+  readinessProbe:
+    exec:
+      command:
+        - cat
+        - /app/healthy
+  startupProbe:
+    exec:
+      command:
+        - cat
+        - /app/healthy
   envFrom:
     - configMapRef:
         name: cron
