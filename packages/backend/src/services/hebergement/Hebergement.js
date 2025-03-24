@@ -177,6 +177,31 @@ ${new Array(nbRows)
     `,
     [departementCodes, search, limit, offset],
   ],
+  getByDepartementCodes2: () => `
+    SELECT
+      H.ID AS "id",
+      A.DEPARTEMENT AS "departement",
+      H.EMAIL AS EMAIL,
+      H.TELEPHONE_1 AS TELEPHONE,
+      H.NOM_GESTIONNAIRE AS "nomGestionnaire",
+      A.LABEL AS ADRESSE,
+      H.NOM AS "nom",
+      ( SELECT VALUE FROM FRONT.HEBERGEMENT_TYPE WHERE ID = H.ID) AS "typeHebergement",
+      H.VISITE_LOCAUX_AT AS "dateVisite",
+      H.REGLEMENTATION_ERP AS "reglementationErp"
+    FROM
+      FRONT.HEBERGEMENT H
+      LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+    WHERE
+      A.DEPARTEMENT = ANY($1)
+      AND (
+        unaccent(h.nom) ILIKE '%' || unaccent($2) || '%'
+        OR h.email ILIKE '%' || $2 || '%'
+        OR unaccent(a.label) ILIKE '%' || unaccent($2) || '%'
+      )
+      AND CURRENT IS TRUE
+      AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = 'actif');
+  `,
   getById: `
     SELECT
       id,
@@ -311,12 +336,12 @@ ${new Array(nbRows)
     id = $1
   `,
   updateStatut: `
-    UPDATE 
-      front.hebergement 
+    UPDATE
+      front.hebergement
     SET statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $3),
         edited_by = $2,
         edited_at = NOW()
-    WHERE id = $1 
+    WHERE id = $1
       AND current = TRUE
   `,
 };
@@ -547,7 +572,6 @@ module.exports.updateStatut = async (userId, hebergementId, statut) => {
   return hebergementId;
 };
 
-
 module.exports.getByDepartementCodes = async (departementsCodes, params) => {
   log.i("getByDepartementCodes - IN");
   const { rows } = await pool.query(
@@ -555,6 +579,79 @@ module.exports.getByDepartementCodes = async (departementsCodes, params) => {
   );
   log.d("getByDepartementCodes - DONE");
   return rows[0];
+};
+module.exports.getByDepartementCodes2 = async (
+  departementsCodes,
+  queryParams,
+) => {
+  const titles = [
+    {
+      key: "h.nom",
+      queryKey: "nom",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "a.departement",
+      queryKey: "departement",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "a.label",
+      queryKey: "adresse",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: " h.telephone_1",
+      queryKey: "telephone",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: " h.email",
+      queryKey: "email",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "h.visite_locaux_at",
+      queryKey: "dateVisite",
+      sortEnabled: true,
+      type: "date",
+    },
+    {
+      key: "h.reglementation_erp",
+      queryKey: "reglementationErp",
+      sortEnabled: true,
+      type: "default",
+    },
+  ];
+  const filterParams = sanitizeFiltersParams(queryParams, titles);
+  const queryGet = query.getByDepartementCodes2();
+  const params = [...departementsCodes];
+  const filterQuery = applyFilters(queryGet, params, filterParams);
+  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
+    queryParams,
+    titles,
+  );
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  );
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
 };
 
 module.exports.getByUserId = async (userId, queryParams) => {

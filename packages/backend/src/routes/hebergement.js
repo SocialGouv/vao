@@ -19,6 +19,13 @@ router.get(
 );
 
 router.get(
+  "/admin2/",
+  boCheckJWT,
+  getDepartements,
+  hebergementController.getByDepartements2,
+);
+
+router.get(
   "/extract/",
   boCheckJWT,
   getDepartements,
