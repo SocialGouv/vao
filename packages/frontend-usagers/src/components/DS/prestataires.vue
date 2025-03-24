@@ -5,7 +5,7 @@
     <div class="fr-mb-n6v">
       <TableFull
         :headers="headers"
-        :data="prestataires"
+        :data="prestatairesWithId"
         @click-row="editPrestataire"
       />
     </div>
@@ -134,6 +134,12 @@ const headers = [
 
 const indexCourant = ref();
 const prestataire = ref();
+const prestatairesWithId = computed(() => {
+  if (Array.isArray(props.prestataires)) {
+    return props.prestataires.map((p, index) => ({ ...p, id: index }));
+  }
+  return [];
+});
 
 function deletePrestataire(index) {
   log.i("deletePrestataire - In");
@@ -153,29 +159,27 @@ function addPrestataire() {
   modalPrestataire.opened = true;
 }
 
-function editPrestataire(item, index) {
+function editPrestataire(item) {
   log.i("editPrestataire - In", item);
   if (props.modifiable) {
     prestataire.value = item;
-    indexCourant.value = index;
+    indexCourant.value = item.id;
     modalPrestataire.opened = true;
   }
 }
 
 function updatePrestataire(data) {
   log.i("updatePrestataire", data);
-  let prestataires;
   log.i("indexCourant.value");
   log.i(indexCourant.value);
-  if (indexCourant.value === -1) {
-    prestataires = [...props.prestataires, data];
-  } else {
-    prestataires = [
-      ...props.prestataires.slice(0, indexCourant.value),
-      data,
-      ...props.prestataires.slice(indexCourant.value + 1),
-    ];
-  }
+
+  const isNew = indexCourant.value === -1;
+
+  const prestataires = isNew
+    ? [...props.prestataires, data]
+    : prestatairesWithId.value.map(({ id, ...rest }) =>
+        id === indexCourant.value ? data : rest,
+      );
   emit("updatePrestataire", prestataires);
   indexCourant.value = null;
   modalPrestataire.opened = false;
