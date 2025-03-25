@@ -1,6 +1,5 @@
 module.exports.get = require("./get");
 module.exports.getByDepartements = require("./getByDepartements");
-module.exports.getByDepartements2 = require("./getByDepartements2");
 module.exports.getById = require("./getById");
 module.exports.getBySiren = require("./getBySiren");
 module.exports.getExtract = require("./getExtract");

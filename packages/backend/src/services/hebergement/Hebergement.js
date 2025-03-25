@@ -130,54 +130,7 @@ ${new Array(nbRows)
         INNER JOIN FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH ON DSTH.HEBERGEMENT_ID = H.ID
         AND DSTH.DEMANDE_SEJOUR_ID = $1 ;
     `,
-  getByDepartementCodes: (
-    departementCodes,
-    { search, limit, offset, order, sort },
-  ) => [
-    `
-    WITH filtered_hebergements AS (
-      SELECT
-        H.ID AS "id",
-        A.DEPARTEMENT AS "departement",
-        H.EMAIL AS EMAIL,
-        H.TELEPHONE_1 AS TELEPHONE,
-        H.NOM_GESTIONNAIRE AS "nomGestionnaire",
-        A.LABEL AS ADRESSE,
-        H.NOM AS "nom",
-        ( SELECT VALUE FROM FRONT.HEBERGEMENT_TYPE WHERE ID = H.ID) AS "typeHebergement",
-        H.VISITE_LOCAUX_AT AS "dateVisite",
-        H.REGLEMENTATION_ERP AS "reglementationErp"
-      FROM
-        FRONT.HEBERGEMENT H
-        LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-      WHERE
-        A.DEPARTEMENT = ANY($1)
-        AND (
-          unaccent(h.nom) ILIKE '%' || unaccent($2) || '%'
-          OR h.email ILIKE '%' || $2 || '%'
-          OR unaccent(a.label) ILIKE '%' || unaccent($2) || '%'
-        )
-        AND CURRENT IS TRUE
-        AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = 'actif')
-      ORDER BY "${sort}" ${order}
-    ),
-    total_count AS (
-      SELECT COUNT(*) AS count FROM filtered_hebergements
-    ),
-    paged_hebergements AS (
-      SELECT * FROM filtered_hebergements
-      LIMIT $3 OFFSET $4
-    )
-    SELECT
-    jsonb_build_object(
-      'total_count', (SELECT count FROM total_count),
-      'hebergements', jsonb_agg(ph.*)
-    ) AS data
-  FROM paged_hebergements AS ph;
-    `,
-    [departementCodes, search, limit, offset],
-  ],
-  getByDepartementCodes2: () => `
+  getByDepartementCodes: () => `
     SELECT
       H.ID AS "id",
       A.DEPARTEMENT AS "departement",
@@ -194,13 +147,8 @@ ${new Array(nbRows)
       LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
     WHERE
       A.DEPARTEMENT = ANY($1)
-      AND (
-        unaccent(h.nom) ILIKE '%' || unaccent($2) || '%'
-        OR h.email ILIKE '%' || $2 || '%'
-        OR unaccent(a.label) ILIKE '%' || unaccent($2) || '%'
-      )
       AND CURRENT IS TRUE
-      AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = 'actif');
+      AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = 'actif')
   `,
   getById: `
     SELECT
@@ -572,17 +520,9 @@ module.exports.updateStatut = async (userId, hebergementId, statut) => {
   return hebergementId;
 };
 
-module.exports.getByDepartementCodes = async (departementsCodes, params) => {
-  log.i("getByDepartementCodes - IN");
-  const { rows } = await pool.query(
-    ...query.getByDepartementCodes(departementsCodes, params),
-  );
-  log.d("getByDepartementCodes - DONE");
-  return rows[0];
-};
-module.exports.getByDepartementCodes2 = async (
-  departementsCodes,
+module.exports.getByDepartementCodes = async (
   queryParams,
+  departementsCodes,
 ) => {
   const titles = [
     {
@@ -627,10 +567,27 @@ module.exports.getByDepartementCodes2 = async (
       sortEnabled: true,
       type: "default",
     },
+    {
+      query: (index, value) => {
+        const query = `
+          (
+            unaccent(h.nom) ILIKE '%' || unaccent($${index}) || '%'
+            OR h.email ILIKE '%' || $${index} || '%'
+            OR unaccent(a.label) ILIKE '%' || unaccent($${index}) || '%'
+          )
+        `;
+        return {
+          query,
+          queryParams: [value],
+        };
+      },
+      queryKey: "search",
+      type: "custom",
+    },
   ];
   const filterParams = sanitizeFiltersParams(queryParams, titles);
-  const queryGet = query.getByDepartementCodes2();
-  const params = [...departementsCodes];
+  const queryGet = query.getByDepartementCodes();
+  const params = [departementsCodes];
   const filterQuery = applyFilters(queryGet, params, filterParams);
   const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
     queryParams,

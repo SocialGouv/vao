@@ -17,6 +17,8 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     hebergement: null,
     isGetHebergementLoading: false,
     eigs: [],
+    declarationsMessages: [],
+    declarationsMessagesTotal: 0,
   }),
   actions: {
     async fetchDemandes({ limit, offset, sortBy, sortDirection, search } = {}) {
@@ -135,6 +137,21 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       }
     },
 
+    async fetchDeclarationsMessages(params) {
+      try {
+        const { rows, total } = await $fetchBackend("/sejour/admin/messages/", {
+          method: "GET",
+          credentials: "include",
+        });
+        this.declarationsMessages = rows;
+        this.declarationsMessagesTotal = total;
+      } catch (err) {
+        this.declarationsMessages = [];
+        this.declarationsMessagesTotal = 0;
+        throw err;
+      }
+    },
+
     async prendreEnCharge(declarationId) {
       const response = await $fetchBackend(
         `/sejour/admin/${declarationId}/prise-en-charge`,
@@ -159,7 +176,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       log.i("getHebergements - IN");
       this.isGetHebergementsLoading = true;
       try {
-        const { hebergements, count } = await $fetchBackend(
+        const { rows, total } = await $fetchBackend(
           "/sejour/admin/hebergements",
           {
             method: "GET",
@@ -168,8 +185,8 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
           },
         );
         log.i("getHebergements - DONE");
-        this.hebergements = hebergements;
-        this.hebergementsCount = count;
+        this.hebergements = rows;
+        this.hebergementsCount = total;
       } catch (err) {
         log.w("getHebergements - DONE with error", err);
         this.hebergements = [];
