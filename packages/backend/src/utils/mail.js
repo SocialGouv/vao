@@ -7,6 +7,7 @@ const sendTemplate = require("../helpers/mail");
 const logger = require("./logger");
 const AppError = require("./error");
 const { generateTypes } = require("../helpers/eigMail");
+const { partOrganisme } = require("../helpers/org-part");
 
 const log = logger(module.filename);
 
@@ -313,6 +314,118 @@ module.exports = {
           html,
           replyTo: senderEmail,
           subject: `nouveau message sur la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendMessageNotify post email", {
+          params,
+        });
+
+        return params;
+      },
+      sendUpdateValide8jours: ({
+        declaration,
+        destinataires,
+        message,
+        dataUpdated,
+        type,
+      }) => {
+        log.i("sendMessageNotify - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const messageErreur = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendMessageNotify - ${messageErreur}`);
+          throw new AppError(messageErreur);
+        }
+        const content = [
+          "Bonjour",
+          `L’organisme ${declaration.organisme.typeOrganisme === partOrganisme.PERSONNE_MORALE ? declaration.organisme.personneMorale.raisonSociale : declaration.organisme.personnePhysique.nom} a apporté une modification au nombre de vacanciers présents lors du séjour ${declaration.libelle} qui se déroule à partir du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} dans votre département.`,
+          `Les modifications apportées sont les suivantes : `,
+        ];
+        switch (type) {
+          case "informationsVacanciers": {
+            content.push(
+              `<ul><li>Ancien nombre de vacanciers participant au séjour = ${declaration.informationsVacanciers.effectifPrevisionnel} (Hommes = ${declaration.informationsVacanciers.effectifPrevisionnelHomme}, Femmes = ${declaration.informationsVacanciers.effectifPrevisionnelFemme})</li>`,
+              `<li>Nouveau nombre de vacanciers participant au séjour = ${dataUpdated.effectifPrevisionnel.apres} (Hommes = ${dataUpdated?.effectifPrevisionnelHomme?.apres ?? declaration.informationsVacanciers.effectifPrevisionnelHomme}, Femmes = ${dataUpdated?.effectifPrevisionnelFemme?.apres ?? declaration.informationsVacanciers.effectifPrevisionnelFemme})</li></ul>`,
+            );
+            break;
+          }
+          case "informationsPersonnel": {
+            Object.entries(dataUpdated).map(([key, value]) => {
+              const includesKeysPersonnel = [
+                { cle: "encadrants", valeur: "personnel d'encadrement" },
+                { cle: "accompagnants", valeur: "personnel d'accompagnement" },
+                {
+                  cle: "prestatairesMedicaments",
+                  valeur: "prestataire en charge des médicaments",
+                },
+                {
+                  cle: "prestatairesActivites",
+                  valeur: "prestataire en charge des activités",
+                },
+                {
+                  cle: "prestatairesEntretien",
+                  valeur: "prestataire en charge de l'entretien",
+                },
+                {
+                  cle: "prestatairesTransport",
+                  valeur: "prestataire en charge du transport",
+                },
+                {
+                  cle: "prestatairesRestauration",
+                  valeur: "prestataire de restauration",
+                },
+              ];
+              const parts = key.split(".");
+              const cleanKey = parts[0];
+              const personnelInfo = includesKeysPersonnel.find(
+                (item) => item.cle === cleanKey,
+              );
+              const label = personnelInfo ? personnelInfo.valeur : null;
+              message = "";
+              if (label) {
+                if (value?.avant == null && value?.apres != null) {
+                  message = `Ajout d'un ${label} : ${value.apres?.prenom} ${value.apres?.nom}`;
+                } else if (value?.avant != null && value?.apres == null) {
+                  message = `Suppression d'un ${label} : ${value.avant?.prenom} ${value.avant?.nom}`;
+                } else {
+                  message = `Modification d'un ${label} ${parts[2]}: ${value?.avant} en ${value.apres}`;
+                }
+              }
+              if (message) {
+                content.push(message);
+              }
+            });
+            break;
+          }
+          default:
+            log.d("wrong type");
+            throw new AppError(`Type inconnu : ${type}`);
+        }
+        content.push(
+          `Cette modification est inscrite dans l’historique de la déclaration.`,
+        );
+        const link = `${frontBODomain}/sejours/${declaration.id}/formulaire`;
+        const html = sendTemplate.getBody(
+          "Portail VAO - Nouveau message",
+          [
+            {
+              p: content,
+              type: "p",
+            },
+            {
+              link,
+              text: "Accéder à ma déclaration",
+              type: "link",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: `VAO - Modification ${type === "informationsVacanciers" ? " du nombre de vacanciers " : " de personnel "} de la déclaration ${declaration.idFonctionnelle}`,
           to: destinataires,
         };
         log.d("sendMessageNotify post email", {

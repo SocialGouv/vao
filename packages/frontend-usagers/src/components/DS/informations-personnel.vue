@@ -103,7 +103,7 @@
         <div class="fr-fieldset__element fr-input-group fr-col-12">
           <DSPersonnel
             :personnes="encadrants"
-            :modifiable="props.modifiable"
+            :modifiable="props.modifiableEnCours"
             :show-adresse="false"
             :show-attestation="true"
             :show-competence="true"
@@ -142,7 +142,7 @@
         <div class="fr-fieldset__element fr-input-group fr-col-12">
           <DSPersonnel
             :personnes="accompagnants"
-            :modifiable="props.modifiable"
+            :modifiable="props.modifiableEnCours"
             :show-adresse="false"
             :show-attestation="true"
             :show-competence="true"
@@ -163,7 +163,7 @@
         :title="`Prestataire en charge des médicaments - ${prestatairesMedicaments.length ?? 0}`"
       >
         <DSPrestataires
-          :modifiable="props.modifiable"
+          :modifiable="props.modifiableEnCours"
           :prestataires="prestatairesMedicaments"
           titre="Prestaire en charge des médicaments"
           @update-prestataire="updatePrestatairesMedicaments"
@@ -175,7 +175,7 @@
         :title="`Prestataire en charge du transport des vacanciers - ${prestatairesTransport.length ?? 0}`"
       >
         <DSPrestataires
-          :modifiable="props.modifiable"
+          :modifiable="props.modifiableEnCours"
           :prestataires="prestatairesTransport"
           titre="Prestaire en charge du transport"
           @update-prestataire="updatePrestatairesTransport"
@@ -187,7 +187,7 @@
         :title="`Prestataire en charge de la restauration - ${prestatairesRestauration.length ?? 0}`"
       >
         <DSPrestataires
-          :modifiable="props.modifiable"
+          :modifiable="props.modifiableEnCours"
           :prestataires="prestatairesRestauration"
           titre="Prestaire en charge de la restauration"
           @update-prestataire="updatePrestatairesRestauration"
@@ -199,7 +199,7 @@
         :title="`Prestataire en charge de l’entretien et du ménage - ${prestatairesEntretien.length ?? 0}`"
       >
         <DSPrestataires
-          :modifiable="props.modifiable"
+          :modifiable="props.modifiableEnCours"
           :prestataires="prestatairesEntretien"
           titre="Prestaire en charge de l'entretien"
           @update-prestataire="updatePrestatairesEntretien"
@@ -211,7 +211,7 @@
         :title="`Prestataire en charge d'encadrer les activités spécifiques - ${prestatairesActivites.length ?? 0}`"
       >
         <DSPrestataires
-          :modifiable="props.modifiable"
+          :modifiable="props.modifiableEnCours"
           :prestataires="prestatairesActivites"
           titre="Prestaire en charge des activités'"
           @update-prestataire="updatePrestatairesActivites"
@@ -244,6 +244,7 @@ const log = logger("components/DS/informations-personnel");
 const props = defineProps({
   initData: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
+  modifiableEnCours: { type: Boolean, default: true },
   validateOnMount: { type: Boolean, default: false },
   showButtons: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
@@ -366,7 +367,7 @@ function updatePrestatairesActivites(prestataires) {
 }
 
 function next() {
-  if (!meta.value.dirty || !props.modifiable) {
+  if (!meta.value.dirty || (!props.modifiable && !props.modifiableEnCours)) {
     return emit("next");
   }
   emit(

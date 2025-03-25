@@ -1,10 +1,13 @@
-/* eslint-disable no-param-reassign */
+const Sentry = require("@sentry/node");
+const { sentry } = require("../config");
 const dayjs = require("dayjs");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const dsStatus = require("../helpers/ds-statuts");
 const PersonneMorale = require("./organisme/PersonneMorale");
 const PersonnePhysique = require("./organisme/PersonnePhysique");
+const { entities, userTypes } = require("../helpers/tracking");
+const { addHistoric } = require("./Tracking");
 const { getComplementOrganisme } = require("./Organisme");
 const {
   getByDSId: getHebergementsByDSIds,
@@ -1764,5 +1767,32 @@ module.exports.updateStatut = async (
     throw e;
   } finally {
     client.release();
+  }
+};
+
+module.exports.addAsyncDeclarationSejourHistoric = async ({
+  data: { oldData, newData },
+  declarationId,
+  userId,
+  action,
+  userType,
+}) => {
+  try {
+    addHistoric({
+      action,
+      data: {
+        after: newData,
+        before: oldData,
+      },
+      entity: entities.demandeSejour,
+      entityId: declarationId,
+      userId,
+      userType: userType ?? userTypes.front,
+    });
+  } catch (error) {
+    log.w("addAsyncHistoric - DONE with error", error);
+    if (sentry.enabled) {
+      Sentry.captureException(error);
+    }
   }
 };
