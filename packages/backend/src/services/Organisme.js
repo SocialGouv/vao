@@ -268,6 +268,7 @@ const query = {
         WHEN o.type_organisme = 'personne_physique' THEN
           json_build_object(
             'nom', pp.nom_usage,
+            'nomNaissance', pp.nom_naissance,
             'prenom', pp.prenom,
             'siret', pp.siret
           )

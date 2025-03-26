@@ -20,7 +20,11 @@
     @update-data="updateData"
   >
     <template #cell-name="{ row }">
-      {{ row.personne.nom ? row.personne.nom : row.personne.raisonSociale }}
+      {{
+        row.personne.nom
+          ? row.personne.nom
+          : row.personne?.raisonSociale || row.personne?.nomNaissance
+      }}
     </template>
     <template #cell-typeOrganisme="{ cell }">
       {{
