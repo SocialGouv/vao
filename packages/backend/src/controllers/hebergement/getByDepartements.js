@@ -1,5 +1,4 @@
 const Hebergement = require("../../services/hebergement/Hebergement");
-const logger = require("../../utils/logger");
 
 module.exports = async function list(req, res, next) {
   const departements = req.departements.map((d) => d.value);

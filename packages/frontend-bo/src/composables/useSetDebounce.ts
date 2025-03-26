@@ -20,7 +20,5 @@ export const useSetDebounce = (cb: Function, delay: number) => {
     }
   });
 
-  return {
-    debounce,
-  };
+  return debounce;
 };

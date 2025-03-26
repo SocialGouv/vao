@@ -142,6 +142,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         const { rows, total } = await $fetchBackend("/sejour/admin/messages/", {
           method: "GET",
           credentials: "include",
+          params,
         });
         this.declarationsMessages = rows;
         this.declarationsMessagesTotal = total;

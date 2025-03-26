@@ -391,7 +391,7 @@ WHERE
   ${search.map((s) => ` AND ${s} `).join("")}
 `;
   },
-  getByDepartementCodes2: () => `
+  getDeclarationsMessages: () => `
   SELECT
     ds.id as "declarationId",
     ds.statut as "statut",
@@ -402,15 +402,28 @@ WHERE
     ds.date_fin::text as "dateFin",
     ds.created_at as "createdAt",
     ds.edited_at as "editedAt",
-    JSON_BUILD_OBJECT(
-        'siret', pm.etab_principal_siret,
-        'adresse', pm.etab_principal_adresse,
-        'telephone', pm.etab_principal_telephone,
+    ds.organisme as "organisme",
+    CASE
+      WHEN o.type_organisme = 'personne_morale' THEN
+      JSON_BUILD_OBJECT(
+        'siret', pm.siret,
+        'adresse', pm.adresse,
+        'telephone', pm.telephone,
         'nomCommercial', pm.etab_principal_nom_commercial,
-        'raisonSociale', pm.etab_principal_raison_sociale,
-        'pays', pm.etab_principal_pays,
-        'email', pm.etab_principal_email
-    ) AS "organismeAgree",
+        'raisonSociale', pm.raison_sociale,
+        'pays', pm.pays,
+        'email', pm.email
+      )
+    ELSE
+      JSON_BUILD_OBJECT(
+        'adresse', pp.adresse_siege_label,
+        'nom', pp.nom_usage,
+        'prenom', pp.prenom,
+        'nomNaissance', pp.nom_naissance,
+        'telephone', pp.telephone,
+        'profession', pp.profession
+      )
+    END AS "organismeAgree",
     o.type_organisme as "typeOrganisme",
     (
       SELECT
@@ -438,28 +451,31 @@ WHERE
       dsm.created_at AS "messageCreatedAt",
       COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
   FROM front.demande_sejour ds
-    JOIN front.organismes o ON o.id = ds.organisme_id
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
-    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
-    LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
-    LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
-        SELECT MAX(dsmax.id)
-        FROM front.demande_sejour_message  dsmax
-        WHERE dsmax.declaration_id = ds.id)
+  JOIN front.organismes o ON o.id = ds.organisme_id
+  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+  LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+  LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
+      SELECT MAX(dsmax.id)
+      FROM front.demande_sejour_message  dsmax
+      WHERE dsmax.declaration_id = ds.id)
   WHERE
     ds.statut <> 'BROUILLON'
     AND (
-        EXISTS (
-      SELECT
-        1
-      FROM
-        FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
-        LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
-        LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-      WHERE
-        DSTH.DEMANDE_SEJOUR_ID = DS.ID
-        AND A.DEPARTEMENT = ANY ($1)
-    )`,
+      EXISTS (
+        SELECT
+          1
+        FROM
+          FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
+          LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+          LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+        WHERE
+          DSTH.DEMANDE_SEJOUR_ID = DS.ID
+          AND A.DEPARTEMENT = ANY ($1)
+      )
+      OR a.region_obtention = $2
+    )
+  `,
   getByDepartementCodesTotal: (search, territoireCode) => {
     return `
 SELECT COUNT(DISTINCT ds.id)
@@ -1393,9 +1409,10 @@ module.exports.getByDepartementCodes = async (
   };
 };
 
-module.exports.getMessagesByDeclaration = async (
+module.exports.getDeclarationsMessages = async (
   queryParams,
   departementsCodes,
+  territoireCode,
 ) => {
   const titles = [
     {
@@ -1448,8 +1465,8 @@ module.exports.getMessagesByDeclaration = async (
     },
   ];
   const filterParams = sanitizeFiltersParams(queryParams, titles);
-  const queryGet = query.getByDepartementCodes2();
-  const params = [departementsCodes];
+  const queryGet = query.getDeclarationsMessages();
+  const params = [departementsCodes, territoireCode];
   const filterQuery = applyFilters(queryGet, params, filterParams);
   const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
     queryParams,
@@ -1463,6 +1480,8 @@ module.exports.getMessagesByDeclaration = async (
     sortBy,
     sortDirection,
   );
+  log.w(queryParams);
+  log.w({ query: paginatedQuery.query, params: paginatedQuery.params });
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
     pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),

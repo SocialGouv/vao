@@ -1,12 +1,5 @@
-const yup = require("yup");
-
 const DemandeSejour = require("../../services/DemandeSejour");
-const Organisme = require("../../services/Organisme");
-const logger = require("../../utils/logger");
-const ValidationAppError = require("../../utils/validation-error");
 const Sentry = require("@sentry/node");
-
-const log = logger(module.filename);
 
 async function getDeclarationsMessages(req, res, next) {
   const departements = req.departements.map((d) => d.value);

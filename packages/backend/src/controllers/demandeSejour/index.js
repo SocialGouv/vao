@@ -1,5 +1,5 @@
 module.exports.get = require("./get");
-module.exports.getDeclarationsMessages = require("./get");
+module.exports.getDeclarationsMessages = require("./getDeclarationsMessages");
 module.exports.getDeprecated = require("./getDeprecated");
 module.exports.getAdminStats = require("./getAdminStats");
 module.exports.getExtract = require("./getExtract");

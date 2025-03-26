@@ -1,43 +1,37 @@
 <template>
   <div class="fr-fieldset">
     <div :class="filesetClass">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="idFonctionnelleSync"
-          type="text"
-          name="idFonctionnelle"
-          label="Numéro de déclaration"
-          placeholder="Numéro de déclaration"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
-      </div>
+      <DsfrInputGroup
+        v-model="idFonctionnelleSync"
+        type="text"
+        name="idFonctionnelle"
+        label="Numéro de déclaration"
+        placeholder="Numéro de déclaration"
+        :label-visible="true"
+        @update:model-value="filtersUpdate"
+      />
     </div>
     <div :class="filesetClass">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="libelleSync"
-          type="text"
-          name="libelle"
-          label="Nom du séjour"
-          placeholder="Nom du séjour"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
-      </div>
+      <DsfrInputGroup
+        v-model="libelleSync"
+        type="text"
+        name="libelle"
+        label="Nom du séjour"
+        placeholder="Nom du séjour"
+        :label-visible="true"
+        @update:model-value="filtersUpdate"
+      />
     </div>
     <div :class="filesetClass">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="organismeSync"
-          type="text"
-          name="organisme"
-          label="Organisme"
-          placeholder="Organisme"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
-      </div>
+      <DsfrInputGroup
+        v-model="organismeSync"
+        type="text"
+        name="organisme"
+        label="Organisme"
+        placeholder="Organisme"
+        :label-visible="true"
+        @update:model-value="filtersUpdate"
+      />
     </div>
   </div>
 </template>
@@ -57,7 +51,7 @@ const emits = defineEmits<{
 }>();
 
 const filesetClass =
-  "fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2";
+  "fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-3";
 
 const idFonctionnelleSync = computed({
   get() {
