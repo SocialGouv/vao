@@ -109,6 +109,7 @@ const query = {
       o.edited_at as "editedAt"
     FROM front.organismes o
     LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
     JOIN front.user_organisme uo ON o.id = uo.org_id
     WHERE 1 = 1
     ${Object.keys(criterias)
@@ -167,6 +168,7 @@ const query = {
       o.id as "organismeId",
       o.supprime as "supprime",
       o.complet as "complet",
+      o.type_organisme as "typeOrganisme",
       CASE
         WHEN o.type_organisme = 'personne_morale' AND pm.porteur_agrement::boolean is False
         THEN
@@ -203,8 +205,9 @@ const query = {
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
-    INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id
-    WHERE pm.siret = $1
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+    WHERE pm.siret = $1 OR pp.siret = $1
 `,
   getIsComplet: `
     SELECT
@@ -265,7 +268,8 @@ const query = {
         WHEN o.type_organisme = 'personne_physique' THEN
           json_build_object(
             'nom', pp.nom_usage,
-            'prenom', pp.prenom
+            'prenom', pp.prenom,
+            'siret', pp.siret
           )
         ELSE NULL
       END as "personne",
@@ -326,7 +330,8 @@ const query = {
 
     )
     SELECT o.id AS "organismeId", o.type_organisme AS "typeOrganisme", o.complet AS "complet",
-          pm.siren AS  "siren", pm.siret AS  "siret",
+          pm.siren AS  "siren", 
+          COALESCE(pm.siret, pp.siret) AS  "siret",
           pm.email AS  "email", pm.raison_sociale AS  "raisonSociale",
           pp.telephone AS "telephone", pp.nom_naissance AS "nomPersonnePhysique",
           pp.prenom AS "prenomPersonnePhysique",
@@ -418,11 +423,14 @@ FROM back.organisme_non_agree ona
 
   getSiret: `
     SELECT
-        pm.siret as siret
-    FROM
-        front.organismes o
-    INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id
-    WHERE id = $1
+        siret as siret
+    FROM front.personne_morale
+    WHERE organisme_id = $1
+    UNION
+    SELECT
+        siret as siret
+    FROM front.personne_physique
+    WHERE organisme_id = $1
   `,
 
   link: `
@@ -689,7 +697,6 @@ module.exports.finalize = async function (userId) {
 
 module.exports.getComplementOrganisme = async (organismeACompleter) => {
   log.i("getComplementOrganisme - IN", organismeACompleter.organismeId);
-
   const personneMorale =
     organismeACompleter.typeOrganisme === partOrganisme.PERSONNE_MORALE
       ? await PersonneMorale.getByOrganismeId(organismeACompleter.organismeId)
@@ -812,10 +819,20 @@ module.exports.getListe = async (queryParams) => {
       type: "default",
     },
     {
-      key: "pm.siret",
+      query: (index, value) => {
+        return {
+          query: `
+            (
+              (pm.siret ILIKE '%' || $${index} || '%')
+                OR
+              (pp.siret ILIKE '%' || $${index} || '%')
+            )
+          `,
+          queryParams: [value],
+        };
+      },
       queryKey: "siret",
-      sortEnabled: true,
-      type: "default",
+      type: "custom",
     },
     {
       query: (index, value) => {

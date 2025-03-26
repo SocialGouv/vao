@@ -19,7 +19,7 @@ const query = {
       us.lastconnection_at as "lastConnectionAt",
       org.id AS "organismeId",
       org.type_organisme AS "typeOrganisme",
-      pm.siret AS siret,
+      STRING_AGG(DISTINCT COALESCE(pm.siret, pp.siret), ', ') AS siret,
       pm.siren AS siren,
       pm.raison_sociale AS "raisonSociale",
       count(CASE WHEN ds.statut <> 'BROUILLON' THEN ds.id ELSE NULL END) AS "nombreDeclarations"
@@ -31,7 +31,7 @@ const query = {
       LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
     WHERE 1 = 1
     ${searchQuery}
-    GROUP BY(us.id,us.mail,us.nom,us.prenom,us.status_code,org.id,org.type_organisme,siren,siret,"raisonSociale","organismeId")
+    GROUP BY(us.id,us.mail,us.nom,us.prenom,us.status_code,org.id,org.type_organisme,siren,"raisonSociale","organismeId")
     ${additionalParamsQuery}
     `,
     [...params],
@@ -83,7 +83,7 @@ module.exports.read = async ({
     searchParams.push(`%${normalize(search.email)}%`);
   }
   if (search?.siret && search.siret.length) {
-    searchQuery += `   AND pm.siret ILIKE $${searchParams.length + 1}\n`;
+    searchQuery += `   AND (pm.siret ILIKE $${searchParams.length + 1} OR pp.siret ILIKE $${searchParams.length + 1})\n`;
     searchParams.push(`%${normalize(search.siret)}%`);
   }
   if (search?.organisme && search.organisme.length) {
