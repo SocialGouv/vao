@@ -8,6 +8,7 @@ const actions = {
 module.exports.actions = actions;
 
 const entities = {
+  demandeSejour: "DEMANDE_SEJOUR",
   eig: "EIG",
   userBack: "USER_BACK",
   userFront: "USER_FRONT",

@@ -13,7 +13,7 @@
           label="Hommes"
           :label-visible="true"
           :model-value="effectifPrevisionnelHomme"
-          :readonly="!props.modifiable"
+          :readonly="!props.modifiableEnCours"
           :is-valid="effectifPrevisionnelHommeMeta.valid"
           :error-message="effectifPrevisionnelHommeErrorMessage"
           placeholder="5"
@@ -26,7 +26,7 @@
           label="Femmes"
           :label-visible="true"
           :model-value="effectifPrevisionnelFemme"
-          :readonly="!props.modifiable"
+          :readonly="!props.modifiableEnCours"
           :is-valid="effectifPrevisionnelFemmeMeta.valid"
           :error-message="effectifPrevisionnelFemmeErrorMessage"
           placeholder="5"
@@ -101,6 +101,7 @@ import * as yup from "yup";
 const props = defineProps({
   initData: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
+  modifiableEnCours: { type: Boolean, default: true },
   validateOnMount: { type: Boolean, default: false },
   showButtons: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
@@ -166,7 +167,7 @@ const effectifs = computed(() => {
 });
 
 function next() {
-  if (!meta.value.dirty || !props.modifiable) {
+  if (!meta.value.dirty || (!props.modifiable && !props.modifiableEnCours)) {
     return emit("next");
   }
   emit(
