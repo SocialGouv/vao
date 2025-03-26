@@ -213,17 +213,6 @@ const query = {
         FRONT.ORGANISMES
     WHERE id = $1
   `,
-  getIsUserIdSiegeSocial: `
-    SELECT uo.org_id
-    FROM
-      front.user_organisme uo
-    INNER JOIN front.organismes o ON o.id = uo.org_id
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id
-    JOIN front.users u ON uo.use_id = u.id
-    WHERE u.id = $1
-      AND (pm.siege_social = 'true'
-        OR o.type_organisme = '${partOrganisme.PERSONNE_PHYSIQUE}')
-  `,
   getListe: () =>
     `
     WITH stat AS (
@@ -513,13 +502,6 @@ module.exports.create = async (type, parametre) => {
   } finally {
     client.release();
   }
-};
-
-module.exports.getIsUserIdSiegeSocial = async (userId) => {
-  log.i("getIsUserIdSiegeSocial - IN", userId);
-  const { rowCount } = await pool.query(query.getIsUserIdSiegeSocial, [userId]);
-  log.i("getIsUserIdSiegeSocial - DONE");
-  return rowCount === 0 ? false : true;
 };
 
 module.exports.link = async (userId, organismeId) => {
