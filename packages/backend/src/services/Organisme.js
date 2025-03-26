@@ -804,18 +804,26 @@ module.exports.getListe = async (queryParams) => {
       key: "o.edited_at",
       queryKey: "editedAt",
       sortEnabled: true,
-      type: "default",
+      sortQuery: "o.edited_at",
+      type: "date",
     },
     {
       key: "ad.agrement ->> 'regionObtention'",
-      queryKey: "agrement-regionObtention",
+      queryKey: "agrement:regionObtention",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "o.type_organisme",
+      queryKey: "typeOrganisme",
       sortEnabled: true,
       type: "default",
     },
     {
       key: "ad.agrement ->> 'dateObtention'",
-      queryKey: "agrement-dateObtention",
+      queryKey: "agrement:dateObtention",
       sortEnabled: true,
+      sortType: "date",
       type: "default",
     },
     {
@@ -832,6 +840,8 @@ module.exports.getListe = async (queryParams) => {
         };
       },
       queryKey: "siret",
+      sortEnabled: true,
+      sortQuery: "COALESCE(pm.siret, pp.siret)",
       type: "custom",
     },
     {

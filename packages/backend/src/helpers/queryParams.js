@@ -73,7 +73,7 @@ module.exports = {
   ) => {
     const paginatedQuery = `
       ${query}
-      ${sortBy ? `ORDER BY LOWER(${sortBy}::varchar) ${sortDirection}` : ""}
+      ${sortBy ? `ORDER BY ${sortBy} ${sortDirection}` : ""}
       LIMIT $${params.length + 1}
       OFFSET $${params.length + 2};
     `;
@@ -136,7 +136,9 @@ const getSort = (sortBy, titles, defaultSort = "") => {
   if (sortBy) {
     const title = titles.find((t) => t.queryKey === sortBy && t.sortEnabled);
     if (title) {
-      return title.sortQuery ?? title.key;
+      return title?.sortType === "date"
+        ? (title.sortQuery ?? title.key)
+        : `LOWER(${title.sortQuery ?? title.key}::varchar)`;
     }
   }
   return defaultSort;
