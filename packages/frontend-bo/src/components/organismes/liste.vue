@@ -147,9 +147,9 @@ const sortableColumns = columns.flatMap((column) =>
 );
 
 const name = ref(query.name ?? "");
-const regionObtention = ref(query["agrement-regionObtention"] ?? "");
+const regionObtention = ref(query["agrement:regionObtention"] ?? "");
 const siret = ref(query.siret ?? "");
-const yearObtention = ref(query["agrement-dateObtention"] ?? "");
+const yearObtention = ref(query["agrement:dateObtention"] ?? "");
 
 const { limit, offset, sort, sortDirection } = usePagination(
   query,
@@ -159,11 +159,11 @@ const { limit, offset, sort, sortDirection } = usePagination(
 const getSearchParams = () => ({
   ...(isValidParams(name.value) ? { name: name.value } : {}),
   ...(isValidParams(regionObtention.value)
-    ? { "agrement-regionObtention": regionObtention.value }
+    ? { "agrement:regionObtention": regionObtention.value }
     : {}),
   ...(isValidParams(siret.value) ? { siret: siret.value } : {}),
   ...(isValidParams(yearObtention.value)
-    ? { "agrement-dateObtention": yearObtention.value }
+    ? { "agrement:dateObtention": yearObtention.value }
     : {}),
 });
 
