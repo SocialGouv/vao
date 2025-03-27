@@ -36,6 +36,12 @@ const query = {
     `,
     [...params],
   ],
+  getRolesByUserId: `
+    SELECT r.label
+    FROM front.roles r
+    INNER JOIN front.user_roles ur ON ur.rol_id = r.id
+    WHERE ur.use_id = $1
+    `,
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
 SELECT
@@ -159,4 +165,13 @@ module.exports.readOne = async (id) => {
 module.exports.getUserOrganisme = async (userId) => {
   const { rows } = await pool.query(query.getUserOragnisme, [userId]);
   return rows[0]?.organismeId ?? null;
+};
+
+module.exports.getRolesByUserId = async (userId) => {
+  log.i("getRolesByUserId - IN");
+
+  const response = await pool.query(query.getRolesByUserId, [userId]);
+  log.d(response);
+  log.i("getRolesByUserId - DONE");
+  return response?.rows ?? null;
 };

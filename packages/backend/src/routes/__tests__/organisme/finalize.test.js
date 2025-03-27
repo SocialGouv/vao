@@ -33,5 +33,4 @@ describe("POST /organisme/:id/finalize", () => {
     expect(response.body).toHaveProperty("message", "sauvegarde organisme OK");
     expect(Organisme.finalize).toHaveBeenCalled();
   });
-
 });
