@@ -61,7 +61,7 @@ defaultSort<!-- eslint-disable vue/multi-word-component-names -->
               >
                 <DsfrMultiselect
                   :model-value="search.departementSuivi"
-                  labe="Département d'instruction"
+                  label="Département d'instruction"
                   search
                   select-all
                   id-key="value"
