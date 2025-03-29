@@ -17,11 +17,11 @@
     "@vao/shared": "^1.0.0",
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.5.0",
     "@vueform/multiselect": "~2.6.7",
-    "debug": "~4.3.4",
+    "debug": "~4.4.0",
     "dayjs": "^1.11.11",
-    "vee-validate": "~4.13.0",
+    "vee-validate": "~4.15.0",
     "vue": "latest",
-    "yup": "~1.4.0"
+    "yup": "~1.6.0"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.5.7",
