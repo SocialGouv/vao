@@ -78,7 +78,7 @@ describe("queryParams", () => {
     const query = "SELECT * FROM users";
     const params = [];
     const result = applyPagination(query, params, 10, 5, "name", "DESC");
-    expect(result.query).toContain("ORDER BY LOWER(name::varchar) DESC");
+    expect(result.query).toContain("ORDER BY name DESC");
     expect(result.query).toContain("LIMIT $1");
     expect(result.query).toContain("OFFSET $2");
     expect(result.params).toEqual([10, 5]);
@@ -130,7 +130,7 @@ describe("queryParams", () => {
     expect(result).toEqual({
       limit: 20,
       offset: 5,
-      sortBy: "name",
+      sortBy: "LOWER(name::varchar)",
       sortDirection: "ASC",
     });
   });
