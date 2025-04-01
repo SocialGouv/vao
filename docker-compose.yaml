@@ -95,6 +95,10 @@ services:
         condition: service_completed_successfully
       create-bucket:
         condition: service_completed_successfully
+      frontend-usagers:
+        condition: service_started
+      frontend-bo:
+        condition: service_started
     env_file:
       - ./.env
     environment:
@@ -120,6 +124,10 @@ services:
         condition: service_completed_successfully
       create-bucket:
         condition: service_completed_successfully
+      frontend-usagers:
+        condition: service_started
+      frontend-bo:
+        condition: service_started
     env_file:
       - ./.env
     environment:
