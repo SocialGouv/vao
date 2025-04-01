@@ -130,53 +130,26 @@ ${new Array(nbRows)
         INNER JOIN FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH ON DSTH.HEBERGEMENT_ID = H.ID
         AND DSTH.DEMANDE_SEJOUR_ID = $1 ;
     `,
-  getByDepartementCodes: (
-    departementCodes,
-    { search, limit, offset, order, sort },
-  ) => [
-    `
-    WITH filtered_hebergements AS (
-      SELECT
-        H.ID AS "id",
-        A.DEPARTEMENT AS "departement",
-        H.EMAIL AS EMAIL,
-        H.TELEPHONE_1 AS TELEPHONE,
-        H.NOM_GESTIONNAIRE AS "nomGestionnaire",
-        A.LABEL AS ADRESSE,
-        H.NOM AS "nom",
-        ( SELECT VALUE FROM FRONT.HEBERGEMENT_TYPE WHERE ID = H.ID) AS "typeHebergement",
-        H.VISITE_LOCAUX_AT AS "dateVisite",
-        H.REGLEMENTATION_ERP AS "reglementationErp"
-      FROM
-        FRONT.HEBERGEMENT H
-        LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-      WHERE
-        A.DEPARTEMENT = ANY($1)
-        AND (
-          unaccent(h.nom) ILIKE '%' || unaccent($2) || '%'
-          OR h.email ILIKE '%' || $2 || '%'
-          OR unaccent(a.label) ILIKE '%' || unaccent($2) || '%'
-        )
-        AND CURRENT IS TRUE
-        AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = 'actif')
-      ORDER BY "${sort}" ${order}
-    ),
-    total_count AS (
-      SELECT COUNT(*) AS count FROM filtered_hebergements
-    ),
-    paged_hebergements AS (
-      SELECT * FROM filtered_hebergements
-      LIMIT $3 OFFSET $4
-    )
+  getByDepartementCodes: () => `
     SELECT
-    jsonb_build_object(
-      'total_count', (SELECT count FROM total_count),
-      'hebergements', jsonb_agg(ph.*)
-    ) AS data
-  FROM paged_hebergements AS ph;
-    `,
-    [departementCodes, search, limit, offset],
-  ],
+      H.ID AS "id",
+      A.DEPARTEMENT AS "departement",
+      H.EMAIL AS EMAIL,
+      H.TELEPHONE_1 AS TELEPHONE,
+      H.NOM_GESTIONNAIRE AS "nomGestionnaire",
+      A.LABEL AS ADRESSE,
+      H.NOM AS "nom",
+      ( SELECT VALUE FROM FRONT.HEBERGEMENT_TYPE WHERE ID = H.ID) AS "typeHebergement",
+      H.VISITE_LOCAUX_AT AS "dateVisite",
+      H.REGLEMENTATION_ERP AS "reglementationErp"
+    FROM
+      FRONT.HEBERGEMENT H
+      LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+    WHERE
+      A.DEPARTEMENT = ANY($1)
+      AND CURRENT IS TRUE
+      AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = 'actif')
+  `,
   getById: `
     SELECT
       id,
@@ -219,7 +192,7 @@ ${new Array(nbRows)
     LEFT JOIN front.personne_morale pmh ON pmh.organisme_id = h.organisme_id
     LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren
     LEFT JOIN front.personne_physique pph ON pph.organisme_id = h.organisme_id
-    LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id) 
+    LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id)
     WHERE uo.use_id = $1 AND h.id = $2
   `,
 
@@ -235,7 +208,7 @@ ${new Array(nbRows)
         h.id as "id"
       FROM front.hebergement h
     )
-      SELECT 
+      SELECT
         h.id as "id",
         nom as "nom",
         a.label as "adresse",
@@ -251,7 +224,7 @@ ${new Array(nbRows)
 	    LEFT JOIN front.personne_morale pmh ON pmh.organisme_id = h.organisme_id
 	    LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren
 	    LEFT JOIN front.personne_physique pph ON pph.organisme_id = h.organisme_id
-	    LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id) 
+	    LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id)
       LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp.organisme_id = h.organisme_id
       WHERE CURRENT IS TRUE AND (pmh.siren = pmu.siren OR o.type_organisme = 'personne_physique') `,
   getPreviousValueForHistory: `
@@ -326,12 +299,12 @@ ${new Array(nbRows)
     id = $1
   `,
   updateStatut: `
-    UPDATE 
-      front.hebergement 
+    UPDATE
+      front.hebergement
     SET statut_id = (SELECT id FROM front.hebergement_statut WHERE value = $3),
         edited_by = $2,
         edited_at = NOW()
-    WHERE id = $1 
+    WHERE id = $1
       AND current = TRUE
   `,
 };
@@ -575,13 +548,95 @@ module.exports.getIsHebergementAutoriseForUserId = async (
   return rowCount !== 0;
 };
 
-module.exports.getByDepartementCodes = async (departementsCodes, params) => {
-  log.i("getByDepartementCodes - IN");
-  const { rows } = await pool.query(
-    ...query.getByDepartementCodes(departementsCodes, params),
+module.exports.getByDepartementCodes = async (
+  queryParams,
+  departementsCodes,
+) => {
+  const titles = [
+    {
+      key: "h.nom",
+      queryKey: "nom",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "a.departement",
+      queryKey: "departement",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "a.label",
+      queryKey: "adresse",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: " h.telephone_1",
+      queryKey: "telephone",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: " h.email",
+      queryKey: "email",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "h.visite_locaux_at",
+      queryKey: "dateVisite",
+      sortEnabled: true,
+      type: "date",
+    },
+    {
+      key: "h.reglementation_erp",
+      queryKey: "reglementationErp",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      query: (index, value) => {
+        const query = `
+          (
+            unaccent(h.nom) ILIKE '%' || unaccent($${index}) || '%'
+            OR h.email ILIKE '%' || $${index} || '%'
+            OR unaccent(a.label) ILIKE '%' || unaccent($${index}) || '%'
+          )
+        `;
+        return {
+          query,
+          queryParams: [value],
+        };
+      },
+      queryKey: "search",
+      type: "custom",
+    },
+  ];
+  const filterParams = sanitizeFiltersParams(queryParams, titles);
+  const queryGet = query.getByDepartementCodes();
+  const params = [departementsCodes];
+  const filterQuery = applyFilters(queryGet, params, filterParams);
+  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
+    queryParams,
+    titles,
   );
-  log.d("getByDepartementCodes - DONE");
-  return rows[0];
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  );
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
 };
 
 module.exports.getByUserId = async (userId, queryParams) => {
