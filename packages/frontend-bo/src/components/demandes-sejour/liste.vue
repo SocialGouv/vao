@@ -191,7 +191,6 @@ const log = logger("pages/sejours");
 const toaster = useToaster();
 
 const sejourStore = useDemandeSejourStore();
-const demandeSejour = useDemandeSejourStore();
 const userStore = useUserStore();
 const defaultSort = [];
 const defaultLimit = 10;
@@ -513,7 +512,7 @@ const updateCurrentPage = (val) => {
 };
 
 const getCsv = async () => {
-  const response = await demandeSejour.exportSejours();
+  const response = await sejourStore.exportSejours();
   exportCsv(response, "sejours.csv");
 };
 
