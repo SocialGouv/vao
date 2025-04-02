@@ -1,0 +1,33 @@
+{
+  "name": "@vao/cron",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "author": "orgs/SocialGouv/teams/vao",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint --fix ./src",
+    "dev": "tsx watch ./src"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/nodemailer": "^6.4.17",
+    "@types/nodemailer-smtp-transport": "^2.7.8",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "globals": "^16.0.0",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.1",
+    "vitest": "^3.0.9"
+  },
+  "dependencies": {
+    "@sentry/cli": "^2.42.3",
+    "@sentry/node": "^9.5.0",
+    "@vao/shared": "^1.0.0",
+    "cron": "^4.1.0",
+    "nodemailer": "^6.10.0",
+    "tsx": "^4.19.3",
+    "pg": "^8.14.0",
+    "pino": "^9.6.0",
+    "pino-pretty": "^13.0.0"
+  }
+}
