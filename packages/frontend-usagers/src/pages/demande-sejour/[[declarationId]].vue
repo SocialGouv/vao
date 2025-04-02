@@ -68,6 +68,7 @@
                     v-if="hash === 'info-vacanciers'"
                     :init-data="demandeCourante.informationsVacanciers ?? {}"
                     :modifiable="canModify"
+                    :modifiable-en-cours="canModifyEnCours"
                     :is-downloading="apiStatus.isDownloading"
                     :message="apiStatus.message"
                     @update="updateOrCreate"
@@ -103,6 +104,7 @@
                   <DSInformationsPersonnel
                     v-if="hash === 'info-personnel'"
                     :modifiable="canModify"
+                    :modifiable-en-cours="canModifyEnCours"
                     :init-data="demandeCourante.informationsPersonnel ?? {}"
                     :declaration-statut="demandeCourante.statut"
                     :is-downloading="apiStatus.isDownloading"
@@ -140,6 +142,7 @@
                     v-if="hash === 'synthese'"
                     :declaration-courante="demandeCourante ?? {}"
                     :modifiable="canModify"
+                    :modifiable-en-cours="canModifyEnCours"
                     :is-downloading="apiStatus.isDownloading"
                     :message="apiStatus.message"
                     @finalize="finalize"
@@ -458,6 +461,17 @@ const canModify = computed(() => {
   );
 });
 
+const canModifyEnCours = computed(() => {
+  return (
+    canModify.value ||
+    demandeCourante.value.statut === DeclarationSejour.statuts.VALIDEE_8J ||
+    (demandeCourante.value.statut ===
+      DeclarationSejour.statuts.SEJOUR_EN_COURS &&
+      organismeStore.organismeCourant?.organismeId ===
+        demandeCourante.value.organisme?.organismeId)
+  );
+});
+
 const demandeDetails = computed(() => {
   return [
     {
@@ -621,7 +635,9 @@ async function updateOrCreate(data, type) {
     log.w("Creation/modification de declaration de sejour: ", { error });
     return toaster.error({
       titleTag: "h2",
-      description: `Une erreur est survenue lors de la mise à jour de la déclaration de séjour`,
+      description:
+        error.data.message ??
+        `Une erreur est survenue lors de la mise à jour de la déclaration de séjour`,
     });
   } finally {
     resetApiStatut();
@@ -640,12 +656,20 @@ async function finalize(attestation) {
         attestation,
       },
     });
-
-    toaster.success({
-      titleTag: "h2",
-      description: `Félicitations, votre déclaration de séjour "${demandeCourante.value.libelle}" a été transmise`,
-    });
-
+    if (
+      demandeCourante.value.statut === DeclarationSejour.statuts.VALIDEE_8J ||
+      demandeCourante.value.statut === DeclarationSejour.statuts.SEJOUR_EN_COURS
+    ) {
+      toaster.success({
+        titleTag: "h2",
+        description: `Votre déclaration de séjour "${demandeCourante.value.libelle}" a bien été mise à jour`,
+      });
+    } else {
+      toaster.success({
+        titleTag: "h2",
+        description: `Félicitations, votre déclaration de séjour "${demandeCourante.value.libelle}" a été transmise`,
+      });
+    }
     if (response.DSuuid) {
       if (
         demandeCourante.value.statut === DeclarationSejour.statuts.BROUILLON ||
