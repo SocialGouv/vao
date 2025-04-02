@@ -33,10 +33,17 @@ module.exports = async function post(req, res, next) {
         throw new AppError("organisme agréé not found", { statusCode: 404 });
       }
     }
-    if (type === "personne_morale") {
-      const organisme = await Organisme.getBySiret(parametre.siret);
-      organismeId = organisme ? organisme.organismeId : null;
+    const organisme = await Organisme.getBySiret(parametre.siret);
+    organismeId = organisme ? organisme.organismeId : null;
+    if (organismeId && type === "personne_physique") {
+      log.w("DONE with error - siret déjà existant");
+      throw new AppError(
+        "Création d'un nouvel organisme pour ce siret personne physique non autorisé",
+        {
+          statusCode: 403,
+      });
     }
+
     if (!organismeId) {
       log.d("organisme inexistant, à créer");
       organismeId = await Organisme.create(type, parametre);

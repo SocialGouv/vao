@@ -2,12 +2,12 @@ const request = require("supertest");
 const app = require("../../../app");
 const Hebergement = require("../../../services/hebergement/Hebergement");
 const checkJWT = require("../../../middlewares/checkJWT");
-const checkPermissionHebergementSiegeSocial = require("../../../middlewares/checkPermissionHebergementSiegeSocial");
+const checkPermissionHebergementUser = require("../../../middlewares/checkPermissionHebergementUser");
 
 // Mock de la méthode Hebergement.update
 jest.mock("../../../services/hebergement/Hebergement");
 jest.mock("../../../middlewares/checkJWT");
-jest.mock("../../../middlewares/checkPermissionHebergementSiegeSocial");
+jest.mock("../../../middlewares/checkPermissionHebergementUser");
 jest.mock(
   "../../../middlewares/checkStatutHebergement",
   () => () => (req, res, next) => {
@@ -26,11 +26,9 @@ describe("PUT /:id/desactivate", () => {
       req.decoded = { ...user };
       next();
     });
-    checkPermissionHebergementSiegeSocial.mockImplementation(
-      (req, res, next) => {
-        next();
-      },
-    );
+    checkPermissionHebergementUser.mockImplementation((req, res, next) => {
+      next();
+    });
   });
   it("should return 404", async () => {
     Hebergement.update.mockResolvedValue();

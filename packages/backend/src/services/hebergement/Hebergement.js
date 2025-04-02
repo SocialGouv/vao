@@ -212,6 +212,17 @@ ${new Array(nbRows)
     LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
     WHERE pm.siren = $1
     `,
+  getIsHebergementAutoriseForUserId: `
+    SELECT h.organisme_id
+    FROM
+      front.hebergement h
+    LEFT JOIN front.personne_morale pmh ON pmh.organisme_id = h.organisme_id
+    LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren
+    LEFT JOIN front.personne_physique pph ON pph.organisme_id = h.organisme_id
+    LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id) 
+    WHERE uo.use_id = $1 AND h.id = $2
+  `,
+
   getListe: () => `
     WITH stat AS (
       SELECT id,
@@ -224,21 +235,25 @@ ${new Array(nbRows)
         h.id as "id"
       FROM front.hebergement h
     )
-      SELECT
+      SELECT 
         h.id as "id",
         nom as "nom",
         a.label as "adresse",
         a.departement as "departement",
         hs.value as "statut",
-        uo.use_id
+        h.organisme_id as "organismeId"
       FROM front.hebergement h
+      INNER JOIN front.organismes o on o.id = h.organisme_id
 		LEFT JOIN stat ON stat.id = h.id
     	LEFT JOIN agrement_data ad ON ad."id" = h.id
-      LEFT JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
       LEFT JOIN front.adresse a ON a.id = h.adresse_id
       LEFT JOIN front.hebergement_statut hs on hs.id = h.statut_id
-      WHERE CURRENT IS TRUE
-    `,
+	    LEFT JOIN front.personne_morale pmh ON pmh.organisme_id = h.organisme_id
+	    LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren
+	    LEFT JOIN front.personne_physique pph ON pph.organisme_id = h.organisme_id
+	    LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id) 
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp.organisme_id = h.organisme_id
+      WHERE CURRENT IS TRUE AND (pmh.siren = pmu.siren OR o.type_organisme = 'personne_physique') `,
   getPreviousValueForHistory: `
   SELECT
     h.hebergement_id AS "hebergementUuid",
@@ -547,6 +562,18 @@ module.exports.updateStatut = async (userId, hebergementId, statut) => {
   return hebergementId;
 };
 
+module.exports.getIsHebergementAutoriseForUserId = async (
+  userId,
+  hebergementId,
+) => {
+  log.i("getIsOrganismeAutoriseForUserId - IN", userId);
+  const { rowCount } = await pool.query(
+    query.getIsHebergementAutoriseForUserId,
+    [userId, hebergementId],
+  );
+  log.i("getIsOrganismeAutoriseForUserId - DONE");
+  return rowCount !== 0;
+};
 
 module.exports.getByDepartementCodes = async (departementsCodes, params) => {
   log.i("getByDepartementCodes - IN");

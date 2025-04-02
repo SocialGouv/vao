@@ -3,8 +3,9 @@ import { computed, useOrganismeStore, useUserStore } from "#imports";
 export const useMenuNavItems = () => {
   const userStore = useUserStore();
   const organismeStore = useOrganismeStore();
-  organismeStore.setMyOrganisme();
-
+  if (userStore.isConnected) {
+    organismeStore.setMyOrganisme();
+  }
   return computed(() => {
     if (!userStore.isConnected) {
       return [];
