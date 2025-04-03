@@ -1,5 +1,6 @@
 const dayjs = require("dayjs");
 
+const { escapeCsvField } = require("../../utils/csv");
 const DemandeSejour = require("../../services/DemandeSejour");
 const logger = require("../../utils/logger");
 
@@ -9,18 +10,6 @@ const getSaison = (date) =>
   ["Hiver", "Printemps", "Eté", "Automne"].flatMap((season) =>
     Array(3).fill(season),
   )[new Date(date).getMonth()];
-
-const escapeCsvField = (field) => {
-  if (typeof field !== "string") {
-    return `${field}`;
-  }
-
-  if (field.includes('"') || field.includes(";") || field.includes("\n")) {
-    const fieldEscaped = field.replace(/"/g, '""');
-    return `"${fieldEscaped}"`;
-  }
-  return field;
-};
 
 module.exports = async function get(req, res, next) {
   log.i("IN");
