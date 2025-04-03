@@ -108,7 +108,7 @@ const query = {
         us.telephone as "telephone",
         us.created_at as "createdAt",
         us.status_code as "statusCode",
-        us.siret as "userSiret"
+        us.siret as "userSiret",
         pm.siret as "siret",
         pm.raison_sociale as "raisonSociale",
         (
