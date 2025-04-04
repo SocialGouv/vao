@@ -1,21 +1,10 @@
+const { escapeCsvField } = require("../../utils/csv");
 const Organisme = require("../../services/Organisme");
 
 const logger = require("../../utils/logger");
 const dayjs = require("dayjs");
 
 const log = logger(module.filename);
-
-const escapeCsvField = (field) => {
-  if (typeof field !== "string") {
-    return `${field}`;
-  }
-
-  if (field.includes('"') || field.includes(";") || field.includes("\n")) {
-    const fieldEscaped = field.replace(/"/g, '""');
-    return `"${fieldEscaped}"`;
-  }
-  return field;
-};
 
 module.exports = async function get(_req, res, next) {
   log.i("IN");

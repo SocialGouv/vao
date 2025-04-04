@@ -24,6 +24,18 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     totalDemandesDeprecated: 0,
   }),
   actions: {
+    async exportSejours() {
+      log.i("exportSejours - In");
+      try {
+        return await $fetchBackend("/sejour/extract", {
+          method: "GET",
+          credentials: "include",
+        });
+      } catch (err) {
+        log.w("exportSejours - DONE with error", err);
+        throw err;
+      }
+    },
     async fetchDemandesDeprecated({ sortBy } = {}) {
       log.i("fetchDemandes - IN");
       try {

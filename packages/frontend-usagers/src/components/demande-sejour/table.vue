@@ -7,6 +7,7 @@
     v-model:departement-suivi="departementSuivi"
     v-model:season="season"
     @filters-update="onFiltersUpdate"
+    @export-get="getCsv"
   />
   <DsfrDataTableV2Wrapper
     v-model:limit="limit"
@@ -104,6 +105,7 @@ import {
   isValidParams,
   usePagination,
 } from "@vao/shared";
+import { exportCsv } from "../../utils/csv";
 
 const route = useRoute();
 const demandeSejourStore = useDemandeSejourStore();
@@ -374,6 +376,11 @@ const cancelDS = async (declarationId) => {
     popUpParams.value = null;
   }
   updateData();
+};
+
+const getCsv = async () => {
+  const response = await demandeSejourStore.exportSejours();
+  exportCsv(response, "sejours.csv");
 };
 </script>
 

@@ -640,6 +640,41 @@ WHERE uo.org_id = $1
       )
   AND statut <> 'BROUILLON'
   OR a.region_obtention = '${territoireCode}')`,
+  getExtractFO: `SELECT
+      ds.id as "declarationId",
+      ds.statut as "statut",
+      ds.id_fonctionnelle as "reference",
+      o.type_organisme as "type_organisme",
+      ds.libelle as "libelle",
+      ds.date_debut::text as "date_debut",
+      ds.date_fin::text as "date_fin",
+      pm.raison_sociale as "raison_sociale",
+      (
+          SELECT adr.departement
+          FROM front.demande_sejour_to_hebergement dsth
+          LEFT JOIN front.hebergement h ON h.id = dsth.hebergement_id
+          LEFT JOIN front.adresse adr ON adr.id = h.adresse_id
+          WHERE dsth.demande_sejour_id = ds.id
+          ORDER BY dsth.date_debut ASC
+          LIMIT 1
+        ) AS departement,
+      (
+        SELECT h.nom
+        FROM front.demande_sejour_to_hebergement dsth
+        LEFT JOIN front.hebergement h ON h.id = dsth.hebergement_id
+        LEFT JOIN front.adresse adr ON adr.id = h.adresse_id
+        WHERE dsth.demande_sejour_id = ds.id
+        ORDER BY dsth.date_debut ASC
+        LIMIT 1
+      ) AS hebergement_nom
+    FROM front.demande_sejour ds
+    JOIN front.organismes o ON o.id = ds.organisme_id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+    WHERE
+      o.id = ANY ($1)
+    ORDER BY date_debut
+    `,
   getHebergementsByDepartementCodes: (
     departementCodes,
     { search, limit, offset, order, sort },
@@ -1633,6 +1668,13 @@ module.exports.getExtract = async (territoireCode, departementCodes) => {
     departementCodes,
   ]);
   log.i("getExtract - DONE");
+  return data;
+};
+
+module.exports.getExtractFO = async (organismeId) => {
+  log.i("getExtractFO - IN");
+  const { rows: data } = await pool.query(query.getExtractFO, [organismeId]);
+  log.i("getExtractFO - DONE");
   return data;
 };
 

@@ -74,6 +74,14 @@
         @update:model-value="filtersUpdate"
       />
     </div>
+    <div :class="filedsetClass">
+      <DsfrButton
+        type="button"
+        label="Extraire en CSV"
+        primary
+        @click="exportGet"
+      />
+    </div>
   </div>
 </template>
 
@@ -114,10 +122,11 @@ const emits = defineEmits<{
   "update:season": [string[]];
   "update:departementSuivi": [string[]];
   "filters-update": [];
+  "export-get": [];
 }>();
 
 const filedsetClass =
-  "fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2";
+  "fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-4";
 
 const idFonctionnelleSync = computed({
   get() {
@@ -169,4 +178,5 @@ const seasonSync = computed({
 });
 
 const filtersUpdate = () => emits("filters-update");
+const exportGet = () => emits("export-get");
 </script>

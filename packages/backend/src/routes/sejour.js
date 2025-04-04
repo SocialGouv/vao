@@ -102,6 +102,7 @@ router.post(
   demandeSejourController.enregistrementDemande2Mois,
 );
 router.get("/stats", checkJWT, demandeSejourController.getStats);
+router.get("/extract", checkJWT, demandeSejourController.getExtractFO);
 router.get("/deprecated", checkJWT, demandeSejourController.getDeprecated);
 router.get(
   "/:declarationId",
