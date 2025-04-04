@@ -3,6 +3,7 @@ const actions = {
   deactivation: "DEACTIVATION",
   deletion: "DELETION",
   modification: "MODIFICATION",
+  reading: "READING",
 };
 
 module.exports.actions = actions;

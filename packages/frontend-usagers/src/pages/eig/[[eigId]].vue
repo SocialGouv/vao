@@ -63,7 +63,7 @@
 import { eigModel } from "@vao/shared";
 
 definePageMeta({
-  middleware: ["is-connected", "check-eig-id-param"],
+  middleware: ["is-connected", "check-roles", "check-eig-id-param"],
 });
 
 useHead({

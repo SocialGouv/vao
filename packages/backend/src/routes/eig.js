@@ -41,7 +41,12 @@ router.get(
 );
 router.get("/available-ds", checkJWT, eigController.getAvailableDs);
 router.get("/admin", boCheckJWT, boCheckRoleEig, eigController.getAdmin);
-router.get("/:id", checkJWT, checkPermissionEIG, eigController.getById);
+router.get(
+  "/:id",
+  checkJWT,
+  checkPermissionEIG({ action: actions.reading }),
+  eigController.getById,
+);
 router.get(
   "/admin/:id",
   boCheckJWT,
@@ -52,6 +57,7 @@ router.get(
 router.post(
   "/",
   checkJWT,
+  checkPermissionEIG({ action: actions.creation }),
   checkPermissionDeclarationSejourForEig,
   trackEig({ action: actions.creation, userType: userTypes.front }),
   eigController.create,
@@ -59,7 +65,7 @@ router.post(
 router.put(
   "/:id",
   checkJWT,
-  checkPermissionEIG,
+  checkPermissionEIG({ action: actions.modification }),
   checkPermissionDeclarationSejourForEig,
   canUpdateEig,
   trackEig({ action: actions.modification, userType: userTypes.front }),
@@ -68,7 +74,7 @@ router.put(
 router.post(
   "/depose/:id",
   checkJWT,
-  checkPermissionEIG,
+  checkPermissionEIG({ action: actions.modification }),
   canUpdateEig,
   trackEig({ action: actions.modification, userType: userTypes.front }),
   eigController.depose,
@@ -77,7 +83,7 @@ router.post(
 router.delete(
   "/:id",
   checkJWT,
-  checkPermissionEIG,
+  checkPermissionEIG({ action: actions.deletion }),
   canUpdateEig,
   trackEig({ action: actions.deletion, userType: userTypes.front }),
   eigController.delete,

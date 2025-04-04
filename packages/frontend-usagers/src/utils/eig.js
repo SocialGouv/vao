@@ -1,9 +1,11 @@
 import dayjs from "dayjs";
 import { eigModel } from "@vao/shared";
-import { DeclarationSejour } from "#imports";
+import { DeclarationSejour, useUserStore } from "#imports";
+import { ROLES as userRolesRef } from "../helpers/users";
+const userStore = useUserStore();
 
 const isDeclarationligibleToEig = (d) =>
-  d.dateDebut <= dayjs().format("YYYY-MM-DD") &&
+  dayjs(d.dateDebut).format("YYYY-MM-DD") <= dayjs().format("YYYY-MM-DD") &&
   dayjs(d.dateFin).add(1, "week").format("YYYY-MM-DD") >=
     dayjs().format("YYYY-MM-DD") &&
   [
@@ -13,7 +15,17 @@ const isDeclarationligibleToEig = (d) =>
   ].includes(d.statut);
 
 const canDelete = (statut) => eigModel.Statuts.BROUILLON === statut;
+
+const allowEigReadWrite = userStore.user?.roles?.includes(
+  userRolesRef.EIG_ECRITURE,
+);
+const allowEigReadOnly = userStore.user?.roles?.includes(
+  userRolesRef.EIG_LECTURE,
+);
+
 export default {
+  allowEigReadWrite,
+  allowEigReadOnly,
   isDeclarationligibleToEig,
   canDelete,
 };

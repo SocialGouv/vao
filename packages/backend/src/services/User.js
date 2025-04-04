@@ -107,7 +107,13 @@ const query = {
         us.created_at as "createdAt",
         us.status_code as "statusCode",
         pm.siret as "siret",
-        pm.raison_sociale as "raisonSociale"
+        pm.raison_sociale as "raisonSociale",
+        (
+          SELECT COALESCE(jsonb_agg(r.label), '[]'::jsonb)
+          FROM front.roles r
+          INNER JOIN front.user_roles ur ON ur.rol_id = r.id
+          WHERE ur.use_id = us.id
+        ) AS "roles"
       FROM front.users us
       LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
       LEFT JOIN front.organismes o ON uo.org_id = o.id
