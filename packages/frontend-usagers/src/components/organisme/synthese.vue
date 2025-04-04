@@ -64,6 +64,7 @@
           <OrganismeAgrement
             :init-agrement="organismeStore.organismeCourant.agrement ?? {}"
             :modifiable="false"
+            :cdn-url="`${config.public.backendUrl}/documents/`"
             :show-buttons="false"
           />
         </DsfrAccordion>
@@ -147,7 +148,7 @@
 import * as yup from "yup";
 import { useForm } from "vee-validate";
 import { IsDownloading } from "@vao/shared";
-
+const config = useRuntimeConfig();
 const organismeStore = useOrganismeStore();
 
 const props = defineProps({

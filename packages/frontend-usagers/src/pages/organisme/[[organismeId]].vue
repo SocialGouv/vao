@@ -39,6 +39,7 @@
               :modifiable="isPorteurAgrement"
               :is-downloading="apiStatus.isDownloading"
               :message="apiStatus.message"
+              :cdn-url="`${config.public.backendUrl}/documents/`"
               @previous="previousHash"
               @next="nextHash"
               @update="updateOrCreateAgrement"
@@ -89,7 +90,7 @@
 const route = useRoute();
 const toaster = useToaster();
 const log = logger("pages/organisme/[[organismeId]]");
-
+const config = useRuntimeConfig();
 const { apiStatus, setApiStatut, resetApiStatut } = useIsDownloading();
 
 definePageMeta({
