@@ -282,7 +282,6 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
   log.i("createOrUpdate - DONE");
 };
 
-
 module.exports.getByOrganismeId = async (organismeId) => {
   log.i("getByOrganismeId - IN", organismeId);
   const { rowCount, rows: personneMorales } = await pool.query(

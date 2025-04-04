@@ -39,7 +39,7 @@
             hebergementId
               ? (hebergementStore.hebergementCourant.statut ??
                   hebergementUtils.statut.BROUILLON) ===
-                  hebergementUtils.statut.DESACTIVE
+                hebergementUtils.statut.DESACTIVE
               : false
           "
           :message="apiStatus.message"
