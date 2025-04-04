@@ -1482,12 +1482,14 @@ module.exports.getDeclarationsMessages = async (
       key: "ds.date_debut",
       queryKey: "dateDebut",
       sortEnabled: true,
+      sortType: "date",
       type: "default",
     },
     {
       key: "ds.date_fin",
       queryKey: "dateFin",
       sortEnabled: true,
+      sortType: "date",
       type: "default",
     },
     {
@@ -1594,7 +1596,7 @@ module.exports.getHebergementsByDepartementCode = async (
       key: "h.visite_locaux_at",
       queryKey: "dateVisite",
       sortEnabled: true,
-      type: "date",
+      sortType: "date",
     },
     {
       key: "h.reglementation_erp",

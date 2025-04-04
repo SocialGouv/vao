@@ -587,7 +587,7 @@ module.exports.getByDepartementCodes = async (
       key: "h.visite_locaux_at",
       queryKey: "dateVisite",
       sortEnabled: true,
-      type: "date",
+      sortType: "date",
     },
     {
       key: "h.reglementation_erp",
