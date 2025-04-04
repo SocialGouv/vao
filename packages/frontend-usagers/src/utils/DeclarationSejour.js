@@ -15,6 +15,8 @@ import {
   status as statusUtils,
 } from "@vao/shared";
 
+import regex from "./regex";
+
 const statuts = {
   ...statusUtils.defaultStatus,
 };
@@ -172,6 +174,20 @@ const getOrganismeName = (demande) =>
     ? demande.organisme.personneMorale.raisonSociale
     : `${demande.organisme.personnePhysique.prenom} ${demande.organisme.personnePhysique.nomUsage ?? demande.organisme.personnePhysique.nomNaissance}`;
 
+const getOrganismeCommune = (demande) => {
+  if (demande.organisme.typeOrganisme === "personne_morale") {
+    const decomposeAdresse =
+      demande.organisme.personneMorale?.adresse.split(" ");
+    const cpIndex = decomposeAdresse.findIndex((mot) =>
+      regex.formatCommuneCP.test(mot),
+    );
+    return cpIndex > 0
+      ? `${decomposeAdresse.slice(cpIndex + 1).join(" ")} (${decomposeAdresse[cpIndex]})`
+      : null;
+  } else {
+    return null;
+  }
+};
 export default {
   isSejourComplet,
   baseSchema,
@@ -182,6 +198,7 @@ export default {
   statuts,
   getSaison,
   getOrganismeName,
+  getOrganismeCommune,
   isPost8Jour,
   isUpdate8Jour,
 };
