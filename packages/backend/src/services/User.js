@@ -27,7 +27,8 @@ const query = {
     status_code,
     nom,
     prenom,
-    telephone
+    telephone,
+    siret
   )
   VALUES (
     $1,
@@ -44,7 +45,8 @@ const query = {
     nom,
     prenom,
     telephone,
-    status_code as "statusCode"
+    status_code as "statusCode",
+    siret
   ;`,
   editPassword: (email, password) => [
     `
@@ -106,6 +108,7 @@ const query = {
         us.telephone as "telephone",
         us.created_at as "createdAt",
         us.status_code as "statusCode",
+        us.siret as "userSiret",
         pm.siret as "siret",
         pm.raison_sociale as "raisonSociale"
       FROM front.users us
@@ -162,6 +165,7 @@ module.exports.registerByEmail = async ({
   nom,
   prenom,
   telephone,
+  siret,
 }) => {
   log.i("registerByEmail - IN", { email });
   let response = await pool.query(...query.select({ mail: normalize(email) }));
@@ -183,6 +187,7 @@ module.exports.registerByEmail = async ({
     nom,
     prenom,
     telephone,
+    siret,
   ]);
   log.i("registerByEmail - DONE", { response });
   const [user] = response.rows;
@@ -226,8 +231,11 @@ module.exports.activate = async (email) => {
       name: "UserAlreadyVerified",
     });
   }
+  const newStatus = user.userSiret
+    ? status.NEED_SIRET_VALIDATION
+    : status.VALIDATED;
   if (!user.sub) {
-    await pool.query(...query.editStatus(user.id, status.VALIDATED));
+    await pool.query(...query.editStatus(user.id, newStatus));
   }
   await pool.query(query.activate, [user.id]);
 

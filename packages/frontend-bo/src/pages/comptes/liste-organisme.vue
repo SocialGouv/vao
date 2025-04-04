@@ -195,6 +195,7 @@ const mapStatutToLabel = (statut) => {
   return {
     VALIDATED: "Validé",
     NEED_EMAIL_VALIDATION: "En attente activation",
+    NEED_SIRET_VALIDATION: "En attente validation SIRET",
     BLOCKED: "Bloqué",
   }[statut];
 };
