@@ -153,9 +153,8 @@ const valueFromObject = (
   return obj[key] === undefined ? null : obj[key];
 };
 
-function getSlotName(column: DefaultColumn<Data> | CustomColumn) {
-  return `cell-${column.key}` as keyof Slots<Data>;
-}
+const getSlotName = (column: DefaultColumn<Data> | CustomColumn) =>
+  `cell-${column.key}` as keyof Slots<Data>;
 
 const cellProps = (column: Columns<Data>[number], row: Data) => {
   if (column.key.startsWith("custom:")) {
@@ -372,15 +371,14 @@ const handleCheckboxChange = (event: Event) => {
 }
 
 .fr-table__content .fr-cell--fixed-left {
-  background-color: var(--background-alt-grey);
   position: sticky;
   left: 0;
   z-index: 1;
 }
 
 .fr-table__content .fr-cell--fixed-right {
-  background-color: var(--background-default-grey);
-  background-image: linear-gradient(
+  background-image:
+    linear-gradient(
       0deg,
       var(--border-contrast-grey),
       var(--border-contrast-grey)
