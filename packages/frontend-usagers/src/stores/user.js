@@ -7,6 +7,8 @@ export const useUserStore = defineStore("user", {
   state: () => ({
     user: null,
     apiToken: null,
+    users: [],
+    total: 0,
   }),
   getters: {
     isConnected: (state) => !!state.user,
@@ -50,6 +52,24 @@ export const useUserStore = defineStore("user", {
         credentials: "include",
       });
       this.apiToken = response;
+    },
+    async fetchUsersOrganisme(params = {}) {
+      log.i("fetchUsersOrganisme - IN");
+      try {
+        const { users, total } = await $fetchBackend("/fo-user/", {
+          credentials: "include",
+          method: "GET",
+          params,
+        });
+        log.d("fetchUsersOrganisme - réponse", { users, total });
+        this.users = users;
+        this.total = parseInt(total);
+        log.i("fetchUsersOrganisme - DONE");
+      } catch (error) {
+        this.users = [];
+        this.total = 0;
+        log.w("fetchUsersOrganisme - Erreur", { error });
+      }
     },
   },
 });
