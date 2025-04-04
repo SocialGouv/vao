@@ -2,6 +2,13 @@ const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const normalize = require("../utils/normalize");
 
+const {
+  sanitizePaginationParams,
+  sanitizeFiltersParams,
+  applyFilters,
+  applyPagination,
+} = require("../helpers/queryParams");
+
 const AppError = require("../utils/error");
 
 const log = logger(module.filename);
@@ -36,6 +43,23 @@ const query = {
     `,
     [...params],
   ],
+  getByOrganismeId: () =>
+    `SELECT
+      u.id AS "userId",
+      u.mail AS email,
+      u.nom AS nom,
+      u.prenom AS prenom,
+      u.telephone AS telephone,
+      u.status_code AS statut,
+      u.created_at AS "dateCreation",
+      u.lastconnection_at as "lastConnectionAt"
+    FROM front.users AS u
+      LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = u.id
+      LEFT OUTER JOIN front.organismes AS o ON o.id = uo.org_id
+      --LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      --LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+    WHERE o.id = ANY ($1)
+    `,
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
 SELECT
@@ -52,6 +76,61 @@ ${additionalParamsQuery}
     additionalParams,
   ],
   getUserOragnisme: `SELECT org_id as "organismeId" FROM front.user_organisme WHERE use_id = $1`,
+};
+module.exports.getByOrganismeId = async (organismesId, queryParams) => {
+  const titles = [
+    {
+      key: "u.nom",
+      queryKey: "nom",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "u.prenom",
+      queryKey: "prenom",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "u.mail",
+      queryKey: "mail",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "u.status_code",
+      queryKey: "statut",
+      sortEnabled: true,
+      type: "default",
+    },
+  ];
+  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
+    queryParams,
+    titles,
+    {
+      sortBy: "u.nom",
+      sortDirection: "DESC",
+    },
+  );
+  const filterParams = sanitizeFiltersParams(queryParams, titles);
+  const queryGet = query.getByOrganismeId();
+  const filterQuery = applyFilters(queryGet, [organismesId], filterParams);
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  );
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
 };
 
 module.exports.read = async ({

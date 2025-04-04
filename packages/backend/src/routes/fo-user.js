@@ -10,5 +10,6 @@ const FOUserController = require("../controllers/fo-user");
 router.get("/admin/list", BOcheckJWT, FOUserController.list);
 router.get("/admin/extract/", BOcheckJWT, FOUserController.getExtract);
 router.get("/list", checkJWT, FOUserController.list);
+router.get("/", checkJWT, FOUserController.get);
 
 module.exports = router;
