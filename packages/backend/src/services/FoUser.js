@@ -2,11 +2,32 @@ const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const normalize = require("../utils/normalize");
 
+const {
+  sanitizePaginationParams,
+  sanitizeFiltersParams,
+  applyFilters,
+  applyPagination,
+} = require("../helpers/queryParams");
+
 const AppError = require("../utils/error");
 
 const log = logger(module.filename);
 
 const query = {
+  bindRole: (user, role) => [
+    `INSERT INTO front.user_roles (
+      use_id,
+      rol_id
+    ) SELECT $1, id
+    FROM front.roles
+    WHERE label = $2
+    ;`,
+    [user, role],
+  ],
+  deleteRoles: `
+    DELETE FROM front.user_roles
+    WHERE use_id = $1
+    `,
   get: (searchQuery = "", additionalParamsQuery = "", params = []) => [
     `
     SELECT
@@ -36,12 +57,71 @@ const query = {
     `,
     [...params],
   ],
+
+  getByOrganismeId: () =>
+    `SELECT
+      u.id AS "userId",
+      u.mail AS email,
+      u.nom AS nom,
+      u.prenom AS prenom,
+      u.telephone AS telephone,
+      u.status_code AS statut,
+      u.created_at AS "dateCreation",
+      u.lastconnection_at as "lastConnectionAt",
+      CASE 
+        WHEN o.type_organisme = 'personne_morale' THEN pm.siege_social 
+        ELSE true
+      END AS "siegeSocial",
+      COALESCE(pm.adresse, pp.adresse_siege_label) AS "Adresse"
+    FROM front.users AS u
+      LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = u.id
+      LEFT OUTER JOIN front.organismes AS o ON o.id = uo.org_id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+    WHERE o.id = ANY ($1)
+    `,
+  // uc : User connected  / uu : User recherché
+  getIsUserSameOrganismeOtherUser: `
+    SELECT count(*)
+    FROM front.user_organisme uco 
+    INNER JOIN front.personne_morale ucpm ON ucpm.organisme_id = uco.org_id
+    INNER JOIN front.personne_morale uupm ON uupm.siren = ucpm.siren
+    INNER JOIN front.user_organisme uuo ON uuo.org_id = uupm.organisme_id
+    WHERE uco.use_id = $1 AND uuo.use_id = $2
+  `,
+  getOne: `
+        SELECT
+      u.id AS "userId",
+      u.mail AS email,
+      u.nom AS nom,
+      u.prenom AS prenom,
+      u.telephone AS telephone,
+      u.status_code AS statut,
+      u.created_at AS "dateCreation",
+      u.lastconnection_at as "lastConnectionAt",
+      (
+          SELECT COALESCE(jsonb_agg(r.label), '[]'::jsonb)
+          FROM front.roles r
+          INNER JOIN front.user_roles ur ON ur.rol_id = r.id
+          WHERE ur.use_id = u.id
+        ) AS "roles",
+      o.type_organisme AS "typeOrganisme",
+      CASE 
+        WHEN o.type_organisme = 'personne_morale' THEN pm.siege_social 
+        ELSE true
+      END AS "siegeSocial"
+    FROM front.users AS u
+    INNER JOIN front.user_organisme uo ON uo.use_id = u.id
+    INNER JOIN front.organismes o ON o.id = uo.org_id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id
+    WHERE u.id = $1
+    `,
   getRolesByUserId: `
     SELECT r.label
     FROM front.roles r
     INNER JOIN front.user_roles ur ON ur.rol_id = r.id
     WHERE ur.use_id = $1
-    `,
+  `,
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
 SELECT
@@ -58,6 +138,61 @@ ${additionalParamsQuery}
     additionalParams,
   ],
   getUserOragnisme: `SELECT org_id as "organismeId" FROM front.user_organisme WHERE use_id = $1`,
+};
+module.exports.getByOrganismeId = async (organismesId, queryParams) => {
+  const titles = [
+    {
+      key: "u.nom",
+      queryKey: "nom",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "u.prenom",
+      queryKey: "prenom",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "u.mail",
+      queryKey: "mail",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "u.status_code",
+      queryKey: "statut",
+      sortEnabled: true,
+      type: "default",
+    },
+  ];
+  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
+    queryParams,
+    titles,
+    {
+      sortBy: "u.nom",
+      sortDirection: "DESC",
+    },
+  );
+  const filterParams = sanitizeFiltersParams(queryParams, titles);
+  const queryGet = query.getByOrganismeId();
+  const filterQuery = applyFilters(queryGet, [organismesId], filterParams);
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sortBy,
+    sortDirection,
+  );
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
 };
 
 module.exports.read = async ({
@@ -138,21 +273,37 @@ module.exports.read = async ({
   };
 };
 
-module.exports.readOne = async (id) => {
-  log.i("readOne - IN", { id });
-
-  if (!id) {
+module.exports.getIsUserSameOrganismeOtherUser = async (
+  userIdConnected,
+  userIdSearch,
+) => {
+  log.i("getIsUserSameOrganismeOtherUser - IN", {
+    userIdConnected,
+    userIdSearch,
+  });
+  if (!userIdConnected && !userIdSearch) {
     throw new AppError("Paramètre manquant", {
       statusCode: 500,
     });
   }
-
-  const { rowCount, rows: users } = await pool.query(
-    ...query.get({ "us.id": id }),
-  );
+  const total = await pool.query(query.getIsUserSameOrganismeOtherUser, [
+    userIdConnected,
+    userIdSearch,
+  ]);
+  log.i("getIsUserSameOrganismeOtherUser - DONE");
+  return total.rows[0].count >= 0 ? true : false;
+};
+module.exports.readOne = async (userId) => {
+  log.i("readOne - IN", { userId });
+  if (!userId) {
+    throw new AppError("Paramètre manquant", {
+      statusCode: 500,
+    });
+  }
+  const { rowCount, rows: users } = await pool.query(query.getOne, [userId]);
 
   if (rowCount === 0) {
-    log.d("readOne - DONE - Utilisateur BO inexistant");
+    log.d("readOne - DONE - Utilisateur FO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
       name: "UserNotFound",
     });
@@ -174,4 +325,14 @@ module.exports.getRolesByUserId = async (userId) => {
   log.d(response);
   log.i("getRolesByUserId - DONE");
   return response?.rows ?? null;
+};
+
+module.exports.updateRoles = async (userId, roles) => {
+  log.i("updateRoles - IN");
+  await pool.query(query.deleteRoles, [userId]);
+  for (const role of roles) {
+    await pool.query(...query.bindRole(userId, role));
+  }
+  log.i("update - DONE");
+  return { code: "MajCompte" };
 };
