@@ -9,6 +9,7 @@ const FOUserController = require("../controllers/fo-user");
 // Renvoie la liste des utilisateurs du BO
 router.get("/admin/list", BOcheckJWT, FOUserController.list);
 router.get("/admin/extract/", BOcheckJWT, FOUserController.getExtract);
+router.get("/get-roles/", checkJWT, FOUserController.getRoles);
 router.get("/list", checkJWT, FOUserController.list);
 
 module.exports = router;

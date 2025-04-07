@@ -6,7 +6,7 @@ export const useMenuNavItems = () => {
     if (!userStore.isConnected) {
       return [];
     }
-    const roles = userStore.user.roles ?? [];
+    const roles = userStore.user?.roles ?? [];
     const comptes = roles.includes("Compte")
       ? [
           {

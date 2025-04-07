@@ -182,11 +182,23 @@ WITH
     WHERE u.ter_code = $1
     GROUP BY mail
   )
-SELECT mail
-FROM
-  roles r,
-  users u
-WHERE u.ids && r.ids`,
+    SELECT mail
+    FROM
+      roles r,
+      users u
+    WHERE u.ids && r.ids`,
+  getIsUserAllowedOrganisme: `
+   SELECT
+        eig.id
+    FROM
+        front.user_organisme UO
+        INNER JOIN front.eig eig ON eig.user_id = uo.use_id
+    WHERE
+        UO.org_id IN ( SELECT uo.org_id 
+                      FROM front.user_organisme uo
+                      WHERE uo.USE_ID = $1)
+        AND eig.id = $2
+    `,
   getStatut: `
   SELECT S.STATUT as statut
   FROM FRONT.EIG
@@ -596,6 +608,14 @@ module.exports.getByUserId = async (
     sortBy,
     sortDirection,
   });
+};
+
+module.exports.getIsUserAllowedOrganisme = async (eigId, userId) => {
+  const { rowCount } = await pool.query(query.getIsUserAllowedOrganisme, [
+    eigId,
+    userId,
+  ]);
+  return rowCount === 0 ? false : true;
 };
 
 module.exports.getAdmin = async ({
