@@ -8,6 +8,7 @@ module.exports.getById = require("./getById");
 module.exports.getByIdBo = require("./getByIdBo");
 module.exports.getByDepartementCodes = require("./getByDepartementCodes");
 module.exports.getStats = require("./getStats");
+module.exports.getExtractFO = require("./getExtractFO");
 module.exports.post = require("./post");
 module.exports.update = require("./update");
 module.exports.depose = require("./depose");
