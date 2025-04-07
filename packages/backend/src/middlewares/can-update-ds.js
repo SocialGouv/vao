@@ -43,6 +43,8 @@ async function canUpdateDs(req, _res, next) {
         statuts.A_MODIFIER,
         statuts.ATTENTE_8_JOUR,
         statuts.A_MODIFIER_8J,
+        statuts.VALIDEE_8J,
+        statuts.SEJOUR_EN_COURS,
       ].includes(statut)
     ) {
       next();
