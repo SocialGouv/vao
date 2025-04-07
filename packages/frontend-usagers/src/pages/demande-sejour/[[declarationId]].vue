@@ -18,6 +18,19 @@
       "
       class="fr-grid-row fr-mb-5w fr-px-2w"
     >
+      <DsfrAlert
+        v-if="
+          organismeStore.isSiegeSocial &&
+          demandeCourante?.organisme?.typeOrganisme === 'personne_morale' &&
+          !demandeCourante.organisme?.personneMorale?.siegeSocial
+        "
+      >
+        <p>
+          Vous visualisez une déclaration effectuée par l'établissement
+          secondaire de {{ communeOrganisme }}
+        </p>
+      </DsfrAlert>
+
       <div class="fr-col-7">
         <div v-for="detail in demandeDetails" :key="detail.label">
           <strong>{{ detail.label }} : </strong>{{ detail.value }}
@@ -456,6 +469,10 @@ const canModify = computed(() => {
       organismeStore.organismeCourant?.organismeId ===
         demandeCourante.value.organisme?.organismeId)
   );
+});
+
+const communeOrganisme = computed(() => {
+  return DeclarationSejour.getOrganismeCommune(demandeCourante.value);
 });
 
 const demandeDetails = computed(() => {
