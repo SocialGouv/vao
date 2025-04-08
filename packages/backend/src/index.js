@@ -10,9 +10,6 @@ const server = app.listen(process.env.PORT ?? 3000, () => {
   log.i("Server started !");
 });
 
-const { start: startCrons, stop: stopCrons } = require("./crons");
-
-startCrons();
 function shutdown(signal) {
   return async (err) => {
     log.i(`shutdown - Got ${signal} signal`);
@@ -23,7 +20,6 @@ function shutdown(signal) {
       }
     }
 
-    stopCrons();
     log.d("shutdown - server closing");
     await new Promise((resolve) => {
       server.close(() => {
