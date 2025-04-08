@@ -6,7 +6,6 @@ const logger = require("../../utils/logger");
 const log = logger(module.filename);
 
 module.exports = async (req, res, next) => {
-  const { id: userId } = req.decoded;
   const { uuid } = req.params;
   if (!uuid) {
     return next(new AppError("fichier introuvable", { statusCode: 404 }));
@@ -15,7 +14,7 @@ module.exports = async (req, res, next) => {
   let metaData = null;
   try {
     metaData = await DocumentService.getFileMetaData(uuid);
-    if (!metaData || (metaData.userId !== null && metaData.userId !== userId)) {
+    if (!metaData && metaData.userId !== null) {
       return next(new AppError("fichier introuvable", { statusCode: 404 }));
     }
   } catch (error) {
