@@ -42,16 +42,7 @@ module.exports = async function login(req, res, next) {
       log.w("Compte non validé");
       return next(
         new AppError("Compte inactif", {
-          name: "NeedEmailValidation",
-          statusCode: 400,
-        }),
-      );
-    }
-    if (user.statusCode === status.NEED_SIRET_VALIDATION) {
-      log.w("Compte non validé");
-      return next(
-        new AppError("Compte inactif", {
-          name: "NeedSiretValidation",
+          name: "NotValidatedAccount",
           statusCode: 400,
         }),
       );

@@ -19,7 +19,6 @@ const schema = ({
   showFonction,
   showListeFonction,
   showTelephone,
-  showSiret,
 }) => {
   return {
     nom: nomSchema(),
@@ -64,12 +63,6 @@ const schema = ({
             "la valeur insérée ne fait pas partie de la liste des possibles",
           ),
         )
-        .required(),
-    }),
-    ...(showSiret && {
-      siret: yup
-        .string()
-        .matches(/^[0-9]{14}$/, "Le SIRET doit contenir 14 chiffres")
         .required(),
     }),
   };

@@ -41,41 +41,37 @@ const config = useRuntimeConfig();
 
 const classError = ref("");
 
-const isLoading = ref(false);
-
-const init = async () => {
-  isLoading.value = true;
-  const { data, error } = await useFetchBackend(
-    config.public.backendUrl + "/authentication/email/validate",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: { token: props.token },
+const { data, error, pending } = useFetchBackend(
+  "/authentication/email/validate",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
     },
-  );
-  isLoading.value = false;
-  if (error) {
-    const codeError = error.value.data.name;
-    classError.value = codeError;
+    body: { token: props.token },
+  },
+);
+
+watch(error, () => {
+  if (error.value == null) {
     return;
   }
-  const isNeedingSiretValidation =
-    data.value.status === "NEED_SIRET_VALIDATION";
-  const message = isNeedingSiretValidation
-    ? "Votre demande a bien été envoyée, votre inscription est en attente de validation"
-    : "Votre compte est maintenant activé. Vous allez être redirigé vers la page de connexion pour terminer votre inscription.";
+  log.w({ error });
+  const codeError = error.value.data.name;
+  classError.value = codeError;
+});
+
+watch(data, () => {
+  if (data.value == null) {
+    return;
+  }
   toaster.success({
     titleTag: "h2",
-    description: message,
+    description: `Votre compte est maintenant activé. Vous allez être redirigé vers la page de connexion pour terminer votre inscription.`,
   });
-  if (!isNeedingSiretValidation) {
-    return navigateTo("/connexion");
-  }
-};
 
-init();
+  return navigateTo("/connexion");
+});
 
 function parseJwt(token) {
   const base64Url = token.split(".")[1];
