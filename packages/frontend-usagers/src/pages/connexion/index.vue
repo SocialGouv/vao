@@ -159,9 +159,15 @@ const displayInfos = {
     description: "Vous allez être redirigé.",
     type: "success",
   },
-  NotValidatedAccount: {
+  NeedEmailValidation: {
     title: "Erreur d'authentification",
-    description: "Ce compte n'a pas été validé et n'est donc pas actif.",
+    description: "Ce compte n'a pas validé son email",
+    type: "error",
+  },
+  NeedSiretValidation: {
+    title: "Erreur d'authentification",
+    description:
+      "Votre demande est en cours de traitement, vous recevrez les prochaines étapes par e-mail très bientôt",
     type: "error",
   },
   WrongCredentials: {
@@ -228,8 +234,11 @@ async function login() {
       case "WrongCredentials":
         displayType.value = "WrongCredentials";
         break;
-      case "NotValidatedAccount":
-        displayType.value = "NotValidatedAccount";
+      case "NeedEmailValidation":
+        displayType.value = "NeedEmailValidation";
+        break;
+      case "NeedSiretValidation":
+        displayType.value = "NeedSiretValidation";
         break;
       default:
         displayType.value = "UnexpectedError";
