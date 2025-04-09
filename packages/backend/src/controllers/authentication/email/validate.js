@@ -64,10 +64,6 @@ module.exports = async (req, res, next) => {
       }),
     );
   }
-  if (user.statusCode === User.status.NEED_SIRET_VALIDATION) {
-    // TODO : Siret validation
-    return res.status(200).json({ user });
-  }
   try {
     await Send(MailUtils.usagers.authentication.sendAccountValided(email));
   } catch (error) {

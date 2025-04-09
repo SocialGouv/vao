@@ -6,13 +6,8 @@
         <h1
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          Demande de Création de compte organisateur
+          Créer mon compte
         </h1>
-        <p>
-          L´inscription n'est pas automatique. Vous devrez valider votre email,
-          puis votre demande sera prise en compte par les services compétents
-          pour valider la création de votre compte
-        </p>
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
@@ -170,24 +165,6 @@
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          <div class="fr-input-group">
-            <DsfrInputGroup
-              name="siret"
-              label="SIRET"
-              :label-visible="true"
-              :model-value="siretField.modelValue"
-              :is-valid="siretField.isValid"
-              :error-message="siretField.errorMessage"
-              placeholder=""
-              hint="Veuillez indiquer le siret de l´organisme que vous souhaitez rejoindre. Exemple: 1100007200014"
-              @update:model-value="checkValidSiret"
-            />
-          </div>
-        </div>
-
-        <div
-          class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-        >
           <ul role="list" class="fr-btns-group fr-btns-group--right">
             <li role="listitem">
               <p>
@@ -273,12 +250,6 @@ const telephoneField = reactive({
   isValid: false,
 });
 
-const siretField = reactive({
-  errorMessage: "",
-  modelValue: "",
-  isValid: false,
-});
-
 const isPwdLong = ref(false);
 const isPwdSpecial = ref(false);
 const isPwdNumber = ref(false);
@@ -340,15 +311,6 @@ function checkValidTelephone(p) {
       : "Le numéro de téléphone n'est pas au format attendu";
 }
 
-const checkValidSiret = (siret) => {
-  siretField.modelValue = siret;
-  siretField.isValid = !siret || regex.siretRegex.test(siret);
-  siretField.errorMessage =
-    !siret || siretField.isValid
-      ? ""
-      : "Le numéro SIRET n'est pas au format attendu";
-};
-
 watch(
   [() => passwordField.modelValue, () => confirmField.modelValue],
   function () {
@@ -381,7 +343,6 @@ async function register() {
   const nom = nomField.modelValue;
   const prenom = prenomField.modelValue;
   const telephone = telephoneField.modelValue;
-  const siret = siretField.modelValue;
   log.i("register - IN");
   try {
     await $fetch(config.public.backendUrl + "/authentication/email/register", {
@@ -395,7 +356,6 @@ async function register() {
         nom,
         prenom,
         telephone,
-        siret,
       }),
     })
       .then((response) => {
