@@ -14,7 +14,3 @@ jobs:
     name: "🇫🇷 SocialGouv"
     uses: socialgouv/workflows/.github/workflows/use-ks-gh-preproduction.yaml@v1
     secrets: inherit
-
-  e2e:
-    needs: socialgouv
-    uses: ./.github/workflows/reusable-e2e.yaml
