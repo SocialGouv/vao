@@ -1,10 +1,11 @@
-name: e2e tests
+name: 🧪 E2E Tests
 
 on:
-  workflow_call:
+  deployment_status:
 
 jobs:
   e2e:
+    if: ${{ github.event.deployment_status.state == 'success' }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
