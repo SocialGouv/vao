@@ -1,19 +1,8 @@
 const BoUser = require("../../services/BoUser");
+const { escapeCsvField } = require("../../utils/csv");
 const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
-
-const escapeCsvField = (field) => {
-  if (typeof field !== "string") {
-    return `${field}`;
-  }
-
-  if (field.includes('"') || field.includes(";") || field.includes("\n")) {
-    const fieldEscaped = field.replace(/"/g, '""');
-    return `"${fieldEscaped}"`;
-  }
-  return field;
-};
 
 module.exports = async function getExtract(req, res, next) {
   log.i("IN");

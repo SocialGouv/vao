@@ -6,7 +6,7 @@
 import Synthese from "~/components/eig/Synthese.vue";
 
 definePageMeta({
-  middleware: ["is-connected", "check-role"],
+  middleware: ["is-connected", "check-role", "check-eig-id-params"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
 });
 

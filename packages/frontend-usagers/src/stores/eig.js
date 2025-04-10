@@ -17,10 +17,11 @@ export const useEigStore = defineStore("eig", {
     canModify() {
       return (
         !this.currentEig ||
-        (this.currentEig?.statut === eigModel.Statuts.BROUILLON &&
+        (eig.allowEigReadWrite &&
+          this.currentEig?.statut === eigModel.Statuts.BROUILLON &&
           eig.isDeclarationligibleToEig({
             dateDebut: this.currentEig.dateDebut,
-            dateFIn: this.currentEig.dateFIn,
+            dateFin: this.currentEig.dateFin,
             statut: this.currentEig.dsStatut,
           }))
       );
@@ -69,7 +70,6 @@ export const useEigStore = defineStore("eig", {
     },
     async get({ limit, offset, sortBy, sortDirection, search } = {}) {
       log.i("fetchEig - IN");
-
       try {
         const { eig } = await $fetchBackend(`/eig/me`, {
           method: "GET",
@@ -82,7 +82,6 @@ export const useEigStore = defineStore("eig", {
             search,
           },
         });
-
         this.eigs = eig.eigs;
         this.total = eig.total;
         log.i("fetchEig - OUT");

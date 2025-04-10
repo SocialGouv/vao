@@ -79,6 +79,7 @@
       <div class="fr-fieldset">
         <FileUpload
           v-model="file"
+          :cdn-url="props.cdnUrl"
           :label="label"
           :modifiable="props.modifiable"
           hint="Format autorisé : PDF uniquement. Taille maximale : 5 Mo "
@@ -114,6 +115,7 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
   showButtons: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
+  cdnUrl: { type: String, required: true },
   message: { type: String, required: false, default: null },
 });
 

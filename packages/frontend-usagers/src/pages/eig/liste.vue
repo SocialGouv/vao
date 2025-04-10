@@ -91,7 +91,7 @@
       @update-current-page="updateCurrentPage"
     />
     <div class="fr-fieldset">
-      <DsfrButton>
+      <DsfrButton v-if="eig.allowEigReadWrite">
         <NuxtLink to="/eig"> Déclarer un EIG</NuxtLink>
       </DsfrButton>
     </div>
@@ -109,6 +109,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  middleware: ["is-connected", "check-roles"],
+});
+
 import dayjs from "dayjs";
 import EigStatusBadge from "@vao/shared/src/components/eig/EigStatusBadge.vue";
 import {
@@ -292,7 +296,7 @@ const headers = [
     text: "Actions",
     component: ({ statut, id }) => ({
       component: DsfrButton,
-      disabled: !eig.canDelete(statut),
+      disabled: !(eig.canDelete(statut) && eig.allowEigReadWrite),
       onClick: (event) => {
         event.stopPropagation();
         eigToDelete.value = id;
@@ -348,7 +352,7 @@ try {
     search: searchState,
   });
 } catch (error) {
-  toaster.error("Une erreur est survenue lors de la récupération des demandes");
+  toaster.error("Une erreur est survenue lors de la récupération des eigs");
   throw error;
 }
 </script>

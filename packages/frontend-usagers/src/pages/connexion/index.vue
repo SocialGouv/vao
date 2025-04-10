@@ -212,6 +212,7 @@ async function login() {
     formStatus.value = formStates.SUBMITTED;
     userStore.user = response.user;
     organismeStore.setMyOrganisme();
+    userStore.refreshProfile();
     toaster.success({
       titleTag: "h2",
       description: `Authentification réalisée avec succès`,

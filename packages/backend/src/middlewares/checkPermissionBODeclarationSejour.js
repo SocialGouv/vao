@@ -1,6 +1,6 @@
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
-const PersonneMorale = require("../services/organisme/PersonneMorale")
+const PersonneMorale = require("../services/organisme/PersonneMorale");
 const pool = require("../utils/pgpool").getPool();
 
 const log = logger(module.filename);

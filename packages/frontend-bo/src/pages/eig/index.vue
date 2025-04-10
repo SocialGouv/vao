@@ -181,7 +181,7 @@ try {
   });
   await departementStore.fetch();
 } catch (error) {
-  toaster.error("Une erreur est survenue lors de la récupération des demandes");
+  toaster.error("Une erreur est survenue lors de la récupération des EIG");
   throw error;
 }
 
