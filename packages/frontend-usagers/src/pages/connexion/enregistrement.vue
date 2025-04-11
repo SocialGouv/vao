@@ -384,7 +384,7 @@ async function register() {
   const siret = siretField.modelValue;
   log.i("register - IN");
   try {
-    await $fetch(config.public.backendUrl + "/authentication/email/register", {
+    await $fetch(`${config.public.backendUrl}/authentication/email/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -397,51 +397,47 @@ async function register() {
         telephone,
         siret,
       }),
-    })
-      .then((response) => {
-        log.d("register", { response });
-        toaster.success({
-          titleTag: "h2",
-          description:
-            "Félicitations, votre compte a bien été créé ! Veuillez le valider en cliquant sur le lien reçu par email",
-        });
-      })
-      .catch((error) => {
-        const body = error.data;
-        const codeError = body.name;
-        log.w("register", { body, codeError });
-        if (codeError === "UserAlreadyExists") {
-          toaster.error({
-            titleTag: "h2",
-            description: `Une erreur est survenue. Si vous pensez que cette adresse mail est déjà utilisée, cliquez sur “j'ai déjà un compte“ puis “Mot de passe oublié”`,
-          });
-        }
-        if (codeError === "ValidationError") {
-          toaster.error({
-            titleTag: "h2",
-            description:
-              "Une erreur technique est survenue, veuillez réessayer plus tard",
-          });
-        }
-        if (codeError === "UnexpectedError") {
-          toaster.error({
-            titleTag: "h2",
-            description:
-              "Une erreur est survenue, peut être un compte existe-t-il déjà avec cet email ...",
-          });
-        }
+    });
 
-        if (codeError === "MailError") {
-          toaster.error({
-            titleTag: "h2",
-            description:
-              "Une erreur est survenue, le mail d'activation n'a pu vous être envoyé. Veuillez utiliser la fonction 'mot de passe oublié'",
-          });
-        }
-      });
+    toaster.success({
+      titleTag: "h2",
+      description:
+        "Félicitations, votre compte a bien été créé ! Veuillez le valider en cliquant sur le lien reçu par email",
+    });
     return navigateTo("/");
   } catch (error) {
-    log.w("register", { error });
+    const statusCode = error.response?.status || error.statusCode || 0;
+    if (statusCode === 500) {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Une erreur technique est survenue, veuillez réessayer plus tard",
+      });
+    }
+    const body = error.data;
+    const codeError = body.name;
+    let description = "";
+    switch (codeError) {
+      case "UserAlreadyExists":
+        description =
+          "Cette adresse courriel semble déjà utilisée. Rendez-vous sur la page de connexion pour vous identifier.";
+        break;
+      case "ValidationError":
+        description =
+          "Une erreur technique est survenue, veuillez réessayer plus tard";
+        break;
+      case "UnexpectedError":
+        description =
+          "Une erreur est survenue, peut être un compte existe-t-il déjà avec cet email ...";
+        break;
+    }
+    if (description) {
+      toaster.error({
+        titleTag: "h2",
+        description,
+      });
+    }
+    throw error;
   }
 }
 </script>
