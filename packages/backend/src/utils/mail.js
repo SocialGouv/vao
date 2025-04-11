@@ -614,6 +614,54 @@ module.exports = {
         return params;
       },
     },
+    newVaoAccount: {
+      sendDretsNewAccountValidation: ({ email, user }) => {
+        const link = `https://annuaire-entreprises.data.gouv.fr/etablissement/${user.userSiret}`;
+        const html = sendTemplate.getBody(
+          "PORTAIL VAO ADMINISTRATION - VALIDATION DE COMPTE",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Un utilisateur souhaite inscrite un nouvel organisme OVA au sein de la plateforme SI VAO.",
+                "Voici les informations concernant l’utilisateur : ",
+                `- Nom : ${user.nom}`,
+                `- Prénom : ${user.prenom}`,
+                `- Email : ${user.email}`,
+                `- Téléphone : ${user.telephone}`,
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                `Cet utilisateur souhaite ajouter, au sein de la plateforme VAO, l’organisme SIRET : <a href="${link}" target="_blank">siret</a>`,
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Vous pouvez cliquer directement sur le lien hypertexte pour accéder aux détails de l’organisme.",
+                "Si vous avez un doute, vous pouvez prendre contact avec cette personne avant de traiter la demande.",
+              ],
+              type: "p",
+            },
+            {
+              // TODO LINK (lien vers l’interface de gestion des comptes, à venir)
+              link: "link",
+              text: "TRAITER LA DEMANDE",
+              type: "link",
+            },
+          ],
+        );
+        return {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "Portail VAO Administration - Validation de compte",
+          to: email,
+        };
+      },
+    },
   },
   usagers: {
     authentication: {

@@ -1,10 +1,15 @@
 const jwt = require("jsonwebtoken");
 const config = require("../../../config");
 const User = require("../../../services/User");
+const { status } = require("../../../helpers/users");
 
 const AppError = require("../../../utils/error");
 const MailUtils = require("../../../utils/mail");
 const Send = require("../../../services/mail").mailService.send;
+const insee = require("../../../services/Insee");
+const {
+  getFichesTerritoireForRegionByInseeCode,
+} = require("../../../services/Territoire");
 
 const logger = require("../../../utils/logger");
 
@@ -64,11 +69,38 @@ module.exports = async (req, res, next) => {
       }),
     );
   }
-  if (user.statusCode === User.status.NEED_SIRET_VALIDATION) {
-    // TODO : Siret validation
-    return res.status(200).json({ user });
+  if (user.statusCode === status.NEED_SIRET_VALIDATION) {
+    try {
+      const etablissement = await insee.getEtablissement(user.userSiret);
+      const codePostal =
+        etablissement.adresseEtablissement.codePostalEtablissement;
+      const fiche = await getFichesTerritoireForRegionByInseeCode(codePostal);
+      // check if mail is empty
+      log.w(codePostal);
+      log.w(fiche);
+      if (!fiche?.serviceMail) {
+        return res.status(200).json({ status: status.NEED_SIRET_VALIDATION });
+      }
+      await Send(
+        MailUtils.bo.newVaoAccount.sendDretsNewAccountValidation({
+          email: fiche.serviceMail,
+          user,
+        }),
+      );
+      return res.status(200).json({ status: status.NEED_SIRET_VALIDATION });
+    } catch (error) {
+      log.w(error);
+      return next(
+        new AppError("Erreur lors de la récupération de l'établissement", {
+          cause: error,
+          name: "InseeError",
+          statusCode: 500,
+        }),
+      );
+    }
   }
   try {
+    // if user has no siret, legacy way to create account
     await Send(MailUtils.usagers.authentication.sendAccountValided(email));
   } catch (error) {
     return next(
