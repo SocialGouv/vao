@@ -14,7 +14,8 @@
           nouveau lien »</span
         >
         <span v-if="classError === 'UserAlreadyVerified'">
-          L'adresse courriel semble déjà utilisée. Rendez-vous sur
+          L'adresse courriel semble déjà vérifiée. Votre inscription est en
+          attente de validation.
           <NuxtLink class="fr-link" to="/connexion/">
             la page de connexion
           </NuxtLink>
@@ -46,7 +47,7 @@ const isLoading = ref(false);
 const init = async () => {
   isLoading.value = true;
   const { data, error } = await useFetchBackend(
-    config.public.backendUrl + "/authentication/email/validate",
+    `${config.public.backendUrl}/authentication/email/validate`,
     {
       method: "POST",
       headers: {
@@ -65,11 +66,13 @@ const init = async () => {
     data.value.status === "NEED_SIRET_VALIDATION";
   const message = isNeedingSiretValidation
     ? "Votre demande a bien été envoyée, votre inscription est en attente de validation"
-    : "Votre compte est maintenant activé. Vous allez être redirigé vers la page de connexion pour terminer votre inscription.";
+    : // if user has no siret, legacy way to create account
+      "Votre compte est maintenant activé. Vous allez être redirigé vers la page de connexion pour terminer votre inscription.";
   toaster.success({
     titleTag: "h2",
     description: message,
   });
+  // legacy way to create account
   if (!isNeedingSiretValidation) {
     return navigateTo("/connexion");
   }

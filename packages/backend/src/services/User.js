@@ -36,7 +36,8 @@ const query = {
     $3,
     $4,
     $5,
-    $6
+    $6,
+    $7
   )
   RETURNING
     id,
@@ -108,7 +109,7 @@ const query = {
         us.telephone as "telephone",
         us.created_at as "createdAt",
         us.status_code as "statusCode",
-        us.siret as "userSiret"
+        us.siret as "userSiret",
         pm.siret as "siret",
         pm.raison_sociale as "raisonSociale",
         (
@@ -231,12 +232,13 @@ module.exports.activate = async (email) => {
     throw new AppError("Utilisateur non trouvé", { name: "UserNotFound" });
   }
   const user = response.rows[0];
-  log.d("activate", { user });
+  log.w("activate", { user });
   if (!user.sub && user.statusCode !== status.NEED_EMAIL_VALIDATION) {
     throw new AppError("Utilisateur déjà actif", {
       name: "UserAlreadyVerified",
     });
   }
+  // TODO handle siret already exists new status ?
   const newStatus = user.userSiret
     ? status.NEED_SIRET_VALIDATION
     : status.VALIDATED;
