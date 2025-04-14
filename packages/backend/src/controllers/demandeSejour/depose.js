@@ -24,6 +24,8 @@ const expectedStates = [
   statuts.A_MODIFIER,
   statuts.ATTENTE_8_JOUR,
   statuts.A_MODIFIER_8J,
+  statuts.VALIDEE_8J,
+  statuts.SEJOUR_EN_COURS,
 ];
 
 module.exports = async function post(req, res, next) {
@@ -116,6 +118,7 @@ module.exports = async function post(req, res, next) {
     const numSeq = await DemandeSejour.getNextIndex();
     idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
   }
+
 
   if (statut == statuts.ATTENTE_8_JOUR || statut == statuts.A_MODIFIER_8J) {
     log.d("Déclaration à 8 jours");
