@@ -20,6 +20,7 @@ import MultiSelectOption from "./MultiSelectOption.vue";
 import RangeDatePicker from "./RangeDatePicker.vue";
 import MessageHover from "./messages/MessageHover.vue";
 import MessageEtat from "./messages/MessageEtat.vue";
+import DisplayInput from "./DisplayInput.vue";
 export {
   FileUpload,
   Chat,
@@ -43,4 +44,5 @@ export {
   RangeDatePicker,
   MessageHover,
   MessageEtat,
+  DisplayInput,
 };
