@@ -24,6 +24,10 @@ export const useMenuNavItems = () => {
             text: "Ma fiche organisateur",
             to: "/organisme",
           },
+          {
+            text: "Liste des utilisateurs",
+            to: "/utilisateurs/liste",
+          },
         ],
       },
       ...(organismeStore.organismeCourant?.complet

@@ -13,6 +13,7 @@ const schema = () =>
       showEmail: true,
       showFonction: false,
       showListeFonction: false,
+      showSiret: true,
       showTelephone: true,
     }),
     password: passwordSchema(),

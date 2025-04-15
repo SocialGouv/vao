@@ -16,9 +16,9 @@ const log = logger(module.filename);
 
 module.exports = async function register(req, res, next) {
   log.i("IN");
-  const { email, password, nom, prenom, telephone } = req.body;
+  const { email, password, nom, prenom, siret, telephone } = req.body;
 
-  const part = { email, nom, password, prenom, telephone };
+  const part = { email, nom, password, prenom, siret, telephone };
   try {
     await registerSchema().validate(part, {
       abortEarly: false,
@@ -33,6 +33,7 @@ module.exports = async function register(req, res, next) {
       nom,
       password,
       prenom,
+      siret,
       telephone,
     });
 
