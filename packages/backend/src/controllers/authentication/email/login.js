@@ -38,20 +38,14 @@ module.exports = async function login(req, res, next) {
     }
 
     log.d({ user });
-    if (user.statusCode === status.NEED_EMAIL_VALIDATION) {
+    if (
+      user.statusCode === status.NEED_EMAIL_VALIDATION ||
+      user.statusCode === status.NEED_SIRET_VALIDATION
+    ) {
       log.w("Compte non validé");
       return next(
         new AppError("Compte inactif", {
           name: "NeedEmailValidation",
-          statusCode: 400,
-        }),
-      );
-    }
-    if (user.statusCode === status.NEED_SIRET_VALIDATION) {
-      log.w("Compte non validé");
-      return next(
-        new AppError("Compte inactif", {
-          name: "NeedSiretValidation",
           statusCode: 400,
         }),
       );
