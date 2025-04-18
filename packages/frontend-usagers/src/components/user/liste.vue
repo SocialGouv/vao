@@ -4,7 +4,7 @@
     v-model:nom="nom"
     v-model:prenom="prenom"
     v-model:statut="statut"
-    :status-actions="status"
+    :status-actions="statusUser.label"
     @filters-update="updateData"
   />
   <DsfrDataTableV2Wrapper
@@ -54,9 +54,9 @@ import {
   DsfrDataTableV2Wrapper,
   usePagination,
   isValidParams,
+  UserStatusBadge,
+  statusUser,
 } from "@vao/shared";
-
-import { STATES as statusUsers } from "../../helpers/users";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -128,26 +128,7 @@ const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],
 );
 
-const status = [
-  {
-    value: "",
-    text: "Tous",
-  },
-  {
-    value: statusUsers.VALIDATED,
-    text: "Validé",
-  },
-  {
-    value: statusUsers.NEED_EMAIL_VALIDATION,
-    text: "En attente de validation",
-  },
-  {
-    value: statusUsers.NEED_INFOS,
-    text: "En attente d'info",
-  },
-];
-
-const statusValue = status.map(({ value }) => value);
+const statusValue = statusUser.label.map(({ value }) => value);
 
 const nom = ref(query.nom ?? "");
 const prenom = ref(query.prenom ?? "");

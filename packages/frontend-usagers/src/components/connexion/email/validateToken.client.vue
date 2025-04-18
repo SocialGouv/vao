@@ -62,6 +62,7 @@ const init = async () => {
     classError.value = codeError;
     return;
   }
+
   const isNeedingSiretValidation =
     data.value.status === "NEED_SIRET_VALIDATION";
   const message = isNeedingSiretValidation

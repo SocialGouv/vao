@@ -10,9 +10,9 @@
 <script lang="ts" setup>
 import { computed } from "vue";
 import { DsfrBadge } from "@gouvminint/vue-dsfr";
-import { STATES as userStatut } from "../../helpers/users";
+import { statusUser } from "@vao/shared";
 
-type UserStatut = (typeof userStatut)[keyof typeof userStatut];
+type UserStatut = (typeof statusUser.status)[keyof typeof statusUser.status];
 
 const props = defineProps<{
   statut: UserStatut;
@@ -21,14 +21,16 @@ const props = defineProps<{
 
 const type = computed(() => {
   switch (props.statut) {
-    case userStatut.NEED_EMAIL_VALIDATION:
+    case statusUser.status.NEED_EMAIL_VALIDATION:
       return "new";
-    case userStatut.VALIDATED:
+    case statusUser.status.VALIDATED:
       return "success";
-    case userStatut.NEED_INFOS:
+    case statusUser.status.NEED_SIRET_VALIDATION:
       return "warning";
+    case statusUser.status.BLOCKED:
+      return "error";
     default:
-      return "union";
+      return "info";
   }
 });
 </script>

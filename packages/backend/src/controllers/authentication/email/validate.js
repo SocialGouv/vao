@@ -6,10 +6,10 @@ const { status } = require("../../../helpers/users");
 const AppError = require("../../../utils/error");
 const MailUtils = require("../../../utils/mail");
 const Send = require("../../../services/mail").mailService.send;
-const insee = require("../../../services/Insee");
-const {
-  getFichesTerritoireForRegionByInseeCode,
-} = require("../../../services/Territoire");
+const Organisme = require("../../../services/Organisme");
+const Territoire = require("../../../services/Territoire");
+
+const UserFo = require("../../../services/FoUser");
 
 const logger = require("../../../utils/logger");
 
@@ -71,45 +71,59 @@ module.exports = async (req, res, next) => {
   }
   if (user.statusCode === status.NEED_SIRET_VALIDATION) {
     try {
-      const etablissement = await insee.getEtablissement(user.userSiret);
-      const codePostal =
-        etablissement.adresseEtablissement.codePostalEtablissement;
-      const fiche = await getFichesTerritoireForRegionByInseeCode(codePostal);
-      // check if mail is empty
-      log.w(codePostal);
-      log.w(fiche);
-      if (!fiche?.serviceMail) {
-        return res.status(200).json({ status: status.NEED_SIRET_VALIDATION });
+      const rechercheSiren = user.userSiret.substr(0, 9);
+      const organisme = await Organisme.getSiege(rechercheSiren);
+      if (!organisme) {
+        const territoire = await Territoire.readFicheIdByTerCode(
+          user.userTerritoire,
+        );
+        const fiche = await Territoire.readOne(territoire.id);
+        await Send(
+          MailUtils.bo.newVaoAccount.sendDretsNewAccountValidation({
+            email: fiche.service_mail,
+            user,
+          }),
+        );
+      } else {
+        const mailUserOrganismeSiege = await UserFo.getMailUserOrganismeId(
+          organisme.organismeId,
+        );
+        mailUserOrganismeSiege.forEach((mailUser) => {
+          Send(
+            MailUtils.usagers.newVaoAccount.sendOrganismeNewAccountValidation({
+              email: mailUser.mail,
+              user,
+            }),
+          );
+        });
       }
-      await Send(
-        MailUtils.bo.newVaoAccount.sendDretsNewAccountValidation({
-          email: fiche.serviceMail,
-          user,
-        }),
-      );
       return res.status(200).json({ status: status.NEED_SIRET_VALIDATION });
     } catch (error) {
       log.w(error);
       return next(
-        new AppError("Erreur lors de la récupération de l'établissement", {
+        new AppError(
+          "Erreur lors de l'envoie du l'email à la Dreets ou à l'organisme",
+          {
+            cause: error,
+            name: "mailError",
+            statusCode: 500,
+          },
+        ),
+      );
+    }
+  } else {
+    try {
+      // if user has no siret, legacy way to create account
+      await Send(MailUtils.usagers.authentication.sendAccountValided(email));
+    } catch (error) {
+      return next(
+        new AppError("Erreur lors de l'envoi du mail", {
           cause: error,
-          name: "InseeError",
+          name: "MailError",
           statusCode: 500,
         }),
       );
     }
-  }
-  try {
-    // if user has no siret, legacy way to create account
-    await Send(MailUtils.usagers.authentication.sendAccountValided(email));
-  } catch (error) {
-    return next(
-      new AppError("Erreur lors de l'envoi du mail", {
-        cause: error,
-        name: "MailError",
-        statusCode: 500,
-      }),
-    );
   }
   return res.status(200).json({ user });
 };

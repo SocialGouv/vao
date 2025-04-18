@@ -51,7 +51,7 @@
                 label="Enregistrer"
                 @click.prevent="update"
               />
-              <DsfrButton label="Fermer" @click.prevent="close"/>
+              <DsfrButton label="Fermer" @click.prevent="close" />
             </div>
           </div>
         </div>
@@ -118,7 +118,7 @@ const initialValues = {
 
 const validationSchema = yup.object(FoUser.FoUserSchema);
 
-const { values } = useForm({
+useForm({
   validationSchema,
   initialValues,
   validateOnMount: false,
