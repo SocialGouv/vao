@@ -6,6 +6,16 @@ export const useMenuNavItems = () => {
     if (!userStore.isConnected) {
       return [];
     }
+    const serviceCompetent = userStore.user?.serviceCompetent ?? [];
+    const validationOva =
+      serviceCompetent === "REG"
+        ? [
+            {
+              text: "Validation des OVA",
+              to: "/utilisateurs-ova/liste",
+            },
+          ]
+        : [];
     const roles = userStore.user?.roles ?? [];
     const comptes = roles.includes("Compte")
       ? [
@@ -20,6 +30,7 @@ export const useMenuNavItems = () => {
                 text: "Organisateurs",
                 to: "/comptes/liste-organisme",
               },
+              ...validationOva,
             ],
           },
         ]
@@ -31,6 +42,7 @@ export const useMenuNavItems = () => {
                 text: "Organismes",
                 to: "/comptes/liste-organisme",
               },
+              ...validationOva,
             ],
           },
         ];
