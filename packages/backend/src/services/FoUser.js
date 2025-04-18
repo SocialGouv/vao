@@ -57,7 +57,6 @@ const query = {
     `,
     [...params],
   ],
-
   getByOrganismeId: () =>
     `SELECT
       u.id AS "userId",
@@ -80,6 +79,22 @@ const query = {
       LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
     WHERE o.id = ANY ($1)
     `,
+  getByToValidateByBo: `
+    SELECT
+      u.id AS "userId",
+      u.mail AS email,
+      u.nom AS nom,
+      u.prenom AS prenom,
+      u.telephone AS telephone,
+      u.status_code AS statut,
+      u.siret AS siret,
+      u.created_at AS "dateCreation",
+      u.lastconnection_at as "lastConnectionAt"
+    FROM front.users AS u
+    WHERE u.ter_code = $1
+    AND u.status_code = 'NEED_SIRET_VALIDATION'
+    AND u.siret not in (SELECT opme.siret FROM front.opm_etablissements opme WHERE opme.siret = u.siret)
+  `,
   // uc : User connected  / uu : User recherché
   getIsUserSameOrganismeOtherUser: `
     SELECT count(*)
@@ -89,6 +104,9 @@ const query = {
     INNER JOIN front.user_organisme uuo ON uuo.org_id = uupm.organisme_id
     WHERE uco.use_id = $1 AND uuo.use_id = $2
   `,
+  getMailUserOrganismeId: `
+    SELECT mail FROM front.users u
+    INNER JOIN front.user_organisme uo ON uo.use_id = $1 AND uo.use_id = u.id`,
   getOne: `
         SELECT
       u.id AS "userId",
@@ -124,20 +142,22 @@ const query = {
   `,
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
-SELECT
-  COUNT (DISTINCT us.id)
-FROM front.users AS us
-  LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
-  LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
-  LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id
-  LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
-  LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
-WHERE 1 = 1
-${additionalParamsQuery}
-`,
+      SELECT
+        COUNT (DISTINCT us.id)
+      FROM front.users AS us
+        LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
+        LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
+        LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
+        LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
+      WHERE 1 = 1
+    ${additionalParamsQuery}
+    `,
     additionalParams,
   ],
   getUserOragnisme: `SELECT org_id as "organismeId" FROM front.user_organisme WHERE use_id = $1`,
+  updateUserStatus:
+    "UPDATE front.users SET status_code = $2, motif_refus = $3, traite_compte_back_use_id = $4, treated_at = now() WHERE id = $1 RETURNING *",
 };
 module.exports.getByOrganismeId = async (organismesId, queryParams) => {
   const titles = [
@@ -273,6 +293,20 @@ module.exports.read = async ({
   };
 };
 
+module.exports.getByToValidateByBo = async (terCode) => {
+  log.i("getByToValidateByBo - IN", { terCode });
+  if (!terCode) {
+    throw new AppError("Paramètre manquant", {
+      statusCode: 500,
+    });
+  }
+  const { rowCount, rows } = await pool.query(query.getByToValidateByBo, [
+    terCode,
+  ]);
+  log.i("getByToValidateByBo - DONE");
+  return { total: rowCount, users: rows };
+};
+
 module.exports.getIsUserSameOrganismeOtherUser = async (
   userIdConnected,
   userIdSearch,
@@ -301,7 +335,6 @@ module.exports.readOne = async (userId) => {
     });
   }
   const { rowCount, rows: users } = await pool.query(query.getOne, [userId]);
-
   if (rowCount === 0) {
     log.d("readOne - DONE - Utilisateur FO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
@@ -316,6 +349,13 @@ module.exports.readOne = async (userId) => {
 module.exports.getUserOrganisme = async (userId) => {
   const { rows } = await pool.query(query.getUserOragnisme, [userId]);
   return rows[0]?.organismeId ?? null;
+};
+
+module.exports.getMailUserOrganismeId = async (organismeId) => {
+  const { rows } = await pool.query(query.getMailUserOrganismeId, [
+    organismeId,
+  ]);
+  return rows ?? null;
 };
 
 module.exports.getRolesByUserId = async (userId) => {
@@ -335,4 +375,16 @@ module.exports.updateRoles = async (userId, roles) => {
   }
   log.i("update - DONE");
   return { code: "MajCompte" };
+};
+
+module.exports.updateStatus = async (userId, status, motif, userBackId) => {
+  log.i("updateStatus - IN");
+  const response = await pool.query(query.updateUserStatus, [
+    userId,
+    status,
+    motif,
+    userBackId,
+  ]);
+  log.i("updateStatus - DONE");
+  return { user: response.rows[0] };
 };

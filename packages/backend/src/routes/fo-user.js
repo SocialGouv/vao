@@ -7,9 +7,21 @@ const BOcheckJWT = require("../middlewares/bo-check-JWT");
 const checkJWT = require("../middlewares/checkJWT");
 const FOUserController = require("../controllers/fo-user");
 const checkPermissionFoRole = require("../middlewares/checkPermissionFoRole");
+const checkPermissionBOForUpdateStatusFo = require("../middlewares/checkPermissionBOForUpdateStatusFo");
 
 // Renvoie la liste des utilisateurs du BO
 router.get("/admin/list", BOcheckJWT, FOUserController.list);
+router.get(
+  "/admin/list-to-validate",
+  BOcheckJWT,
+  FOUserController.listToValidate,
+);
+router.post(
+  "/admin/update-status/:userId",
+  BOcheckJWT,
+  checkPermissionBOForUpdateStatusFo,
+  FOUserController.updateStatus,
+);
 router.get("/admin/extract/", BOcheckJWT, FOUserController.getExtract);
 router.get("/get-roles/", checkJWT, FOUserController.getRoles);
 router.get(
