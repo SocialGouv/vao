@@ -15,7 +15,6 @@ module.exports = async function listToValidateParTerritoire(req, res, next) {
     const { total, users } = await FoUser.getByToValidateByBo(
       boUser.territoireCode,
     );
-    log.d(users);
     return res.status(200).json({
       total: total,
       users: users,

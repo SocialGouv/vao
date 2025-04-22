@@ -88,14 +88,21 @@ module.exports = async (req, res, next) => {
         const mailUserOrganismeSiege = await UserFo.getMailUserOrganismeId(
           organisme.organismeId,
         );
-        mailUserOrganismeSiege.forEach((mailUser) => {
-          Send(
-            MailUtils.usagers.newVaoAccount.sendOrganismeNewAccountValidation({
-              email: mailUser.mail,
-              user,
-            }),
-          );
-        });
+
+        // todo check with laurent if it's what he wanted to do (catch the else in try catch)
+        await Promise.all(
+          mailUserOrganismeSiege.map(
+            async (mail) =>
+              await Send(
+                MailUtils.usagers.newVaoAccount.sendOrganismeNewAccountValidation(
+                  {
+                    email: mail,
+                    user,
+                  },
+                ),
+              ),
+          ),
+        );
       }
       return res.status(200).json({ status: status.NEED_SIRET_VALIDATION });
     } catch (error) {

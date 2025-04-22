@@ -36,7 +36,6 @@ module.exports = async function register(req, res, next) {
     const codePostal =
       etablissement.adresseEtablissement.codePostalEtablissement;
     territoire = await getFichesTerritoireForRegionByInseeCode(codePostal);
-    log.w(codePostal);
   } catch (error) {
     log.w("DONE with error");
     return next(error);
