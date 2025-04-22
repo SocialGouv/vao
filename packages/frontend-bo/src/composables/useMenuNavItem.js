@@ -6,7 +6,8 @@ export const useMenuNavItems = () => {
     if (!userStore.isConnected) {
       return [];
     }
-    const serviceCompetent = userStore.user?.serviceCompetent ?? [];
+    console.log(userStore.user?.serviceCompetent);
+    const serviceCompetent = userStore.user?.serviceCompetent;
     const validationOva =
       serviceCompetent === "REG"
         ? [
