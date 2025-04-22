@@ -59,7 +59,9 @@ module.exports = async function updateStatus(req, res, next) {
       }
     }
 
-    return res.status(200).json({});
+    return res.status(200).json({
+      message: "Email sent",
+    });
   } catch (error) {
     log.w("DONE with error");
     return next(error);
