@@ -633,7 +633,7 @@ module.exports.update = async (type, parametre, organismeId) => {
   }
 };
 
-module.exports.finalize = async function (userId) {
+module.exports.finalize = async (userId) => {
   log.i("finalize - IN", { userId });
   const regions = await Regions.fetch();
 

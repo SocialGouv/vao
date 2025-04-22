@@ -102,7 +102,7 @@ export const useUserStore = defineStore("user", {
     async exportUsersOrganismes() {
       log.i("exportUsersOrganismes - IN");
       try {
-        return await $fetchBackend(`/fo-user/admin/extract/`, {
+        return await $fetchBackend("/fo-user/admin/extract/", {
           method: "GET",
           credentials: "include",
         });
@@ -111,7 +111,27 @@ export const useUserStore = defineStore("user", {
         throw err;
       }
     },
-
+    async fetchUsersFo(params = {}) {
+      log.i("fetchUsersFo - IN");
+      try {
+        const { users, total } = await $fetchBackend(
+          "/fo-user/admin/list-to-validate",
+          {
+            credentials: "include",
+            method: "GET",
+            params,
+          },
+        );
+        log.d("fetchUsersFo - réponse", { users, total });
+        this.usersFO = users;
+        this.totalUsersFO = Number.parseInt(total);
+        log.i("fetchUsersFo - DONE");
+      } catch (error) {
+        this.usersFO = [];
+        this.totalUsersFO = 0;
+        log.w("fetchUsersFo - Erreur", { error });
+      }
+    },
     async fetchUsersOrganisme({
       limit,
       offset,
@@ -121,7 +141,6 @@ export const useUserStore = defineStore("user", {
     } = {}) {
       log.i("fetchUsersOrganisme - IN");
       try {
-        // Appel du back pour la liste des utilisateurs
         const { users, total } = await $fetchBackend("/fo-user/admin/list", {
           credentials: "include",
           method: "GET",
@@ -138,20 +157,18 @@ export const useUserStore = defineStore("user", {
         });
         log.d("fetchUsersOrganisme - réponse", { users, total });
         this.usersFO = users;
-        this.totalUsersFO = parseInt(total);
+        this.totalUsersFO = Number.parseInt(total);
         log.i("fetchUsersOrganisme - DONE");
       } catch (error) {
-        // Retour vide en cas d'erreur
         this.usersFO = [];
         this.totalUsersFO = 0;
         log.w("fetchUsersOrganisme - Erreur", { error });
       }
     },
-
     async getUser(id) {
       log.i("getUser - IN", { id });
       try {
-        const user = await $fetchBackend("/bo-user/" + id, {
+        const user = await $fetchBackend(`/bo-user/${id}`, {
           credentials: "include",
           method: "GET",
           headers: {
@@ -162,9 +179,26 @@ export const useUserStore = defineStore("user", {
         this.userSelected = user;
         log.i("getUser - DONE");
       } catch (error) {
-        // Retour vide en cas d'erreur
         this.user = null;
         log.w("getUser - Erreur", { error });
+      }
+    },
+
+    async updateUserFoStatus(userId, params) {
+      log.i("updateUserFoStatut - IN");
+      try {
+        const response = await $fetchBackend(
+          `/fo-user/admin/update-status/${userId}`,
+          {
+            credentials: "include",
+            method: "POST",
+            params,
+          },
+        );
+        log.d("updateUserFoStatut - réponse", response);
+        log.i("updateUserFoStatut - DONE");
+      } catch (error) {
+        log.w("updateUserFoStatut - Erreur", { error });
       }
     },
   },
