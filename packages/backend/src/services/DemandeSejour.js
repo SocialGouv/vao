@@ -1229,7 +1229,7 @@ module.exports.get = async (organismesId, queryParams) => {
       type: "default",
     },
   ];
-  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
+  const { limit, offset, sort } = sanitizePaginationParams(
     queryParams,
     titles,
     {
@@ -1245,8 +1245,7 @@ module.exports.get = async (organismesId, queryParams) => {
     filterQuery.params,
     limit,
     offset,
-    sortBy,
-    sortDirection,
+    sort,
   );
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
@@ -1498,22 +1497,26 @@ module.exports.getDeclarationsMessages = async (
       sortEnabled: true,
       type: "default",
     },
+    {
+      customSort: (sortBy, sortDirection) => {
+        return `ORDER BY ${sortBy} ${sortDirection}, messageCreatedAt" DESC`;
+      },
+      key: "messageOrdreEtat",
+      queryKey: "messageOrdreEtat",
+      sortEnabled: true,
+    },
   ];
   const filterParams = sanitizeFiltersParams(queryParams, titles);
   const queryGet = query.getDeclarationsMessages();
   const params = [departementsCodes, territoireCode];
   const filterQuery = applyFilters(queryGet, params, filterParams);
-  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
-    queryParams,
-    titles,
-  );
+  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
   const paginatedQuery = applyPagination(
     filterQuery.query,
     filterQuery.params,
     limit,
     offset,
-    sortBy,
-    sortDirection,
+    sort,
   );
   log.w(queryParams);
   log.w({ params: paginatedQuery.params, query: paginatedQuery.query });
@@ -1626,17 +1629,13 @@ module.exports.getHebergementsByDepartementCode = async (
   const queryGet = query.getHebergementsByDepartementCodes();
   const params = [departementsCodes];
   const filterQuery = applyFilters(queryGet, params, filterParams);
-  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
-    queryParams,
-    titles,
-  );
+  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
   const paginatedQuery = applyPagination(
     filterQuery.query,
     filterQuery.params,
     limit,
     offset,
-    sortBy,
-    sortDirection,
+    sort,
   );
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),

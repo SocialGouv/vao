@@ -617,17 +617,13 @@ module.exports.getByDepartementCodes = async (
   const queryGet = query.getByDepartementCodes();
   const params = [departementsCodes];
   const filterQuery = applyFilters(queryGet, params, filterParams);
-  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
-    queryParams,
-    titles,
-  );
+  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
   const paginatedQuery = applyPagination(
     filterQuery.query,
     filterQuery.params,
     limit,
     offset,
-    sortBy,
-    sortDirection,
+    sort,
   );
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
@@ -672,7 +668,7 @@ module.exports.getByUserId = async (userId, queryParams) => {
   const filterParams = sanitizeFiltersParams(queryParamsWithUserId, titles);
   const queryGet = query.getListe();
   const filterQuery = applyFilters(queryGet, [], filterParams);
-  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
+  const { limit, offset, sort } = sanitizePaginationParams(
     queryParamsWithUserId,
     titles,
   );
@@ -681,8 +677,7 @@ module.exports.getByUserId = async (userId, queryParams) => {
     filterQuery.params,
     limit,
     offset,
-    sortBy,
-    sortDirection,
+    sort,
   );
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
