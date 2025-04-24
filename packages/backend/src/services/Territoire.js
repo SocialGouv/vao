@@ -86,10 +86,7 @@ module.exports.fetch = async (queryParams) => {
     },
   ];
 
-  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
-    queryParams,
-    titles,
-  );
+  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
   const filterParams = sanitizeFiltersParams(queryParams, titles);
 
   const queryGet = query.select();
@@ -99,8 +96,7 @@ module.exports.fetch = async (queryParams) => {
     filterQuery.params,
     limit,
     offset,
-    sortBy,
-    sortDirection,
+    sort,
   );
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),

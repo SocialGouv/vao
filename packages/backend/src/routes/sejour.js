@@ -29,6 +29,13 @@ router.get(
   demandeSejourController.getByDepartementCodes,
 );
 router.get(
+  "/admin/messages",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  demandeSejourController.getDeclarationsMessages,
+);
+router.get(
   "/admin/extract",
   boCheckJWT,
   boCheckRoleDS,
