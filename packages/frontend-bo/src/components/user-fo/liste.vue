@@ -1,6 +1,6 @@
 <template>
   <DsfrDataTableV2Wrapper
-    v-if="data.length !== 0"
+    v-if="isLoaded && data.length !== 0"
     v-model:limit="limit"
     v-model:offset="offset"
     :columns="columns"
@@ -85,7 +85,7 @@
     >Vous allez refuser la validation de ce compte indiquez le motif : <br />
   </RefusCompteModal>
 
-  <h1 v-if="data.length === 0" style="font-size: 1.5rem">
+  <h1 v-if="isLoaded && data.length === 0" style="font-size: 1.5rem">
     Il n’y a aucun compte OVA à valider aujourd’hui. <br />
     Vous serez averti par email en cas de nouvelle demande
   </h1>
@@ -222,7 +222,12 @@ const closeRefusModal = () => {
   showRefusModal.value = false;
 };
 
-updateData();
+const isLoaded = ref(false);
+
+(async () => {
+  await updateData();
+  isLoaded.value = true;
+})();
 
 onUnmounted(() => {
   if (timeout) {
