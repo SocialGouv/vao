@@ -58,26 +58,55 @@ const query = {
     [...params],
   ],
   getByOrganismeId: () =>
-    `SELECT
-      u.id AS "userId",
-      u.mail AS email,
-      u.nom AS nom,
-      u.prenom AS prenom,
-      u.telephone AS telephone,
-      u.status_code AS statut,
-      u.created_at AS "dateCreation",
-      u.lastconnection_at as "lastConnectionAt",
-      CASE 
-        WHEN o.type_organisme = 'personne_morale' THEN pm.siege_social 
-        ELSE true
-      END AS "siegeSocial",
-      COALESCE(pm.adresse, pp.adresse_siege_label) AS "Adresse"
-    FROM front.users AS u
-      LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = u.id
-      LEFT OUTER JOIN front.organismes AS o ON o.id = uo.org_id
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
-      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
-    WHERE o.id = ANY ($1)
+    ` SELECT * FROM (
+      (
+        SELECT
+          u.id AS "userId",
+          u.mail AS email,
+          u.nom AS nom,
+          u.prenom AS prenom,
+          u.telephone AS telephone,
+          u.status_code AS statut,
+          u.created_at AS "dateCreation",
+          u.lastconnection_at as "lastConnectionAt",
+          CASE 
+            WHEN o.type_organisme = 'personne_morale' THEN pm.siege_social 
+            ELSE true
+          END AS "siegeSocial",
+          COALESCE(pm.adresse, pp.adresse_siege_label) AS "Adresse"
+        FROM front.users AS u
+          LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = u.id
+          LEFT OUTER JOIN front.organismes AS o ON o.id = uo.org_id
+          LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+          LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+        WHERE o.id = ANY ($1)
+      )
+      UNION
+      (
+        SELECT
+          u.id AS "userId",
+          u.mail AS email,
+          u.nom AS nom,
+          u.prenom AS prenom,
+          u.telephone AS telephone,
+          u.status_code AS statut,
+          u.created_at AS "dateCreation",
+          u.lastconnection_at as "lastConnectionAt",
+          CASE 
+            WHEN pm.siret = u.siret THEN pm.siege_social 
+            ELSE false
+          END AS "siegeSocial",
+          COALESCE(CONCAT(etab.adresse,' ',etab.code_postal,' ',etab.commune), pm.adresse, pp.adresse_siege_label) AS "Adresse"
+        FROM front.users AS u
+          LEFT JOIN front.opm_etablissements etab ON etab.siret = u.siret
+          LEFT JOIN front.personne_morale pm ON pm.siege_social = true AND ((pm.siren = substr(u.siret,1,9) AND etab.siret = u.siret) OR pm.siret = u.siret) AND pm.organisme_id = ANY ($1)
+          LEFT JOIN front.personne_physique pp ON pp.siret = u.siret AND pp.organisme_id = ANY ($1)
+          INNER JOIN front.organismes AS o ON o.id = pm.organisme_id OR o.id = pp.organisme_id
+        WHERE u.id NOT IN (SELECT use_id FROM front.user_organisme uo WHERE uo.use_id = u.id)
+        GROUP BY 1,2,3,4,5,6,7,8,9,10
+      )
+    ) AS Resultat
+    WHERE 1 = 1
     `,
   getByToValidateByBo: `
     SELECT
@@ -97,12 +126,22 @@ const query = {
   `,
   // uc : User connected  / uu : User recherché
   getIsUserSameOrganismeOtherUser: `
-    SELECT count(*)
-    FROM front.user_organisme uco 
-    INNER JOIN front.personne_morale ucpm ON ucpm.organisme_id = uco.org_id
-    INNER JOIN front.personne_morale uupm ON uupm.siren = ucpm.siren
-    INNER JOIN front.user_organisme uuo ON uuo.org_id = uupm.organisme_id
-    WHERE uco.use_id = $1 AND uuo.use_id = $2
+    SELECT 
+      SUM(total_count) AS count
+    FROM (
+        SELECT count(*) AS total_count
+        FROM front.user_organisme uco 
+        INNER JOIN front.personne_morale ucpm ON ucpm.organisme_id = uco.org_id AND siege_social = true
+        INNER JOIN front.personne_morale uupm ON uupm.siren = ucpm.siren
+        INNER JOIN front.user_organisme uuo ON uuo.org_id = uupm.organisme_id
+        WHERE uco.use_id = $1 AND uuo.use_id = $2
+      UNION ALL
+        SELECT count(*) AS total_count
+        FROM front.user_organisme uco 
+        INNER JOIN front.personne_morale ucpm ON ucpm.organisme_id = uco.org_id AND siege_social = true
+        INNER JOIN front.users uu ON ucpm.siren = substr(uu.siret,1,9)
+        WHERE uco.use_id = $1 AND uu.id = $2
+    ) AS counts;
   `,
   getMailUserOrganismeId: `
     SELECT mail FROM front.users u
@@ -157,30 +196,30 @@ const query = {
   ],
   getUserOragnisme: `SELECT org_id as "organismeId" FROM front.user_organisme WHERE use_id = $1`,
   updateUserStatus:
-    "UPDATE front.users SET status_code = $2, motif_refus = $3, traite_compte_back_use_id = $4, treated_at = now() WHERE id = $1 RETURNING *",
+    "UPDATE front.users SET status_code = $2, motif_refus = $3, traite_compte_back_use_id = $4, traite_compte_front_use_id = $5, treated_at = now() WHERE id = $1 RETURNING *",
 };
 module.exports.getByOrganismeId = async (organismesId, queryParams) => {
   const titles = [
     {
-      key: "u.nom",
+      key: "nom",
       queryKey: "nom",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "u.prenom",
+      key: "prenom",
       queryKey: "prenom",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "u.mail",
+      key: "email",
       queryKey: "mail",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "u.status_code",
+      key: "statut",
       queryKey: "statut",
       sortEnabled: true,
       type: "default",
@@ -190,7 +229,7 @@ module.exports.getByOrganismeId = async (organismesId, queryParams) => {
     queryParams,
     titles,
     {
-      sortBy: "u.nom",
+      sortBy: "nom",
       sortDirection: "DESC",
     },
   );
@@ -377,13 +416,20 @@ module.exports.updateRoles = async (userId, roles) => {
   return { code: "MajCompte" };
 };
 
-module.exports.updateStatus = async (userId, status, motif, userBackId) => {
+module.exports.updateStatus = async (
+  userId,
+  status,
+  motif,
+  userBackId,
+  userFrontId,
+) => {
   log.i("updateStatus - IN");
   const response = await pool.query(query.updateUserStatus, [
     userId,
     status,
     motif,
     userBackId,
+    userFrontId,
   ]);
   log.i("updateStatus - DONE");
   return { user: response.rows[0] };
