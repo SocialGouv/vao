@@ -1205,7 +1205,7 @@ module.exports = {
       },
     },
     newVaoAccount: {
-      sendNewAccountBlocked: (email, motif, regionName) => {
+      sendNewAccountBlockedByDreets: (email, motif, regionName) => {
         const link = `${frontUsagersDomain}/connexion/`;
         const html = sendTemplate.getBody(
           "Refus d’inscription de votre organisme sur la plateforme VAO",
@@ -1216,6 +1216,45 @@ module.exports = {
                 `La DREETS de la région ${regionName} a traité votre demande d’inscription, qui n’a pas pu être validée pour la raison suivante`,
                 motif,
                 "Vous pouvez directement contacter la DREETS de votre région pour avoir plus de renseignements à ce propos.",
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
+              ],
+              type: "p",
+            },
+            {
+              link,
+              text: "Se connecter à VAO",
+              type: "link",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject:
+            "Refus d’inscription de votre organisme sur la plateforme VAO",
+          to: email,
+        };
+
+        return params;
+      },
+      sendNewAccountBlockedByOrganisme: (email, motif) => {
+        const link = `${frontUsagersDomain}/connexion/`;
+        const html = sendTemplate.getBody(
+          "Refus d’inscription au sein de l’organisme VAO",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "L’organisateur VAO que vous avez souhaité rejoindre lors de votre inscription a traité votre demande, et celle-ci n’a pas pu être validée pour la raison suivante",
+                motif,
+                "Pour en savoir plus, vous pouvez contacter directement l’organisateur qui vous donnera plus de renseignements à ce propos.",
               ],
               type: "p",
             },

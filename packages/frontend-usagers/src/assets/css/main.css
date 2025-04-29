@@ -36,3 +36,13 @@
 .read-only-value {
   color: black;
 }
+
+.button--danger:not(:disabled) {
+  color: var(--text-action-high-red-marianne);
+  box-shadow: inset 0 0 0 1px var(--border-action-high-red-marianne);
+}
+
+.button--success:not(:disabled) {
+  background-color: #18753c; /* vert Marianne */
+  box-shadow: inset 0 0 0 1px #18753c;
+}

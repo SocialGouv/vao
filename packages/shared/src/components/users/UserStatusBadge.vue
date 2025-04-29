@@ -1,10 +1,5 @@
 <template>
-  <DsfrBadge
-    :small="small"
-    :type="type"
-    :label="props.statut"
-    class="pointer"
-  />
+  <DsfrBadge :small="small" :type="type" :label="labelText" class="pointer" />
 </template>
 
 <script lang="ts" setup>
@@ -18,6 +13,13 @@ const props = defineProps<{
   statut: UserStatut;
   small?: boolean;
 }>();
+
+const labelText = computed(() => {
+  return (
+    statusUser.label.find((item) => item.value === props.statut)?.text ||
+    props.statut
+  );
+});
 
 const type = computed(() => {
   switch (props.statut) {
