@@ -1,7 +1,17 @@
 <template>
   <div class="fr-container">
-    <p v-if="pending">Validation en cours. Veuillez patienter.</p>
-    <div v-else-if="error">
+    <p v-if="isSuccess">
+      <DsfrAlert
+        role="alert"
+        class="fr-grid-row fr-my-3v"
+        type="success"
+        :closeable="false"
+      >
+        <h3>Votre adresse courielle est maintenant activé</h3>
+        Votre compte est en cours de validation.
+      </DsfrAlert>
+    </p>
+    <div v-else-if="classError">
       <DsfrAlert
         role="alert"
         class="fr-grid-row fr-my-3v"
@@ -42,10 +52,9 @@ const config = useRuntimeConfig();
 
 const classError = ref("");
 
-const isLoading = ref(false);
+const isSuccess = ref(false);
 
 const init = async () => {
-  isLoading.value = true;
   const { data, error } = await useFetchBackend(
     `${config.public.backendUrl}/authentication/email/validate`,
     {
@@ -56,10 +65,8 @@ const init = async () => {
       body: { token: props.token },
     },
   );
-  isLoading.value = false;
-  if (error) {
-    const codeError = error.value.data.name;
-    classError.value = codeError;
+  if (error?.value) {
+    classError.value = error.value.data.name;
     return;
   }
 
@@ -77,6 +84,7 @@ const init = async () => {
   if (!isNeedingSiretValidation) {
     return navigateTo("/connexion");
   }
+  isSuccess.value = true;
 };
 
 init();
