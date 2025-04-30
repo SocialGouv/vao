@@ -26,7 +26,9 @@
         :is-valid="siretMeta.valid"
         :error-message="siretErrorMessage"
         :disabled="
-          !props.modifiable || !!organismeStore.organismeCourant?.complet
+          !props.modifiable ||
+          !!organismeStore.organismeCourant?.complet ||
+          userStore.user.userSiret
         "
         placeholder=""
         hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
@@ -275,6 +277,7 @@ const emit = defineEmits(["previous", "next", "update"]);
 
 const organismeStore = useOrganismeStore();
 organismeStore.fetchUsersOrganisme();
+const userStore = useUserStore();
 
 const props = defineProps({
   initData: { type: Object, required: true },
@@ -315,7 +318,7 @@ const usersWithSiret = computed(() =>
 );
 
 const initialValues = {
-  siret: null,
+  siret: userStore.user.userSiret,
   siren: null,
   siegeSocial: null,
   porteurAgrement: null,
