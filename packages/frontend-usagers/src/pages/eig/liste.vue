@@ -123,6 +123,17 @@ import {
   ValidationModal,
 } from "@vao/shared";
 import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
+import { getEigPermissions, canDelete } from "../../utils/eig";
+
+const eig = reactive({
+  allowEigReadWrite: false,
+  allowEigReadOnly: false,
+  canDelete,
+});
+
+const { allowEigReadWrite, allowEigReadOnly } = getEigPermissions();
+eig.allowEigReadWrite = allowEigReadWrite;
+eig.allowEigReadOnly = allowEigReadOnly;
 
 const DsfrButton = resolveComponent("DsfrButton");
 
