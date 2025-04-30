@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { $fetchBackend, eig, logger } from "#imports";
+import { $fetchBackend, getEigPermissions, logger } from "#imports";
 import { eigModel } from "@vao/shared";
 import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
 
@@ -17,9 +17,9 @@ export const useEigStore = defineStore("eig", {
     canModify() {
       return (
         !this.currentEig ||
-        (eig.allowEigReadWrite &&
+        (getEigPermissions.allowEigReadWrite &&
           this.currentEig?.statut === eigModel.Statuts.BROUILLON &&
-          eig.isDeclarationligibleToEig({
+          getEigPermissions.isDeclarationligibleToEig({
             dateDebut: this.currentEig.dateDebut,
             dateFin: this.currentEig.dateFin,
             statut: this.currentEig.dsStatut,
@@ -71,7 +71,7 @@ export const useEigStore = defineStore("eig", {
     async get({ limit, offset, sortBy, sortDirection, search } = {}) {
       log.i("fetchEig - IN");
       try {
-        const { eig } = await $fetchBackend(`/eig/me`, {
+        const { eig } = await $fetchBackend("/eig/me", {
           method: "GET",
           credentials: "include",
           params: {
@@ -108,7 +108,7 @@ export const useEigStore = defineStore("eig", {
     },
     async create(data) {
       try {
-        return await $fetchBackend(`/eig`, {
+        return await $fetchBackend("/eig", {
           method: "POST",
           credentials: "include",
           body: {
@@ -145,7 +145,7 @@ export const useEigStore = defineStore("eig", {
     },
     async setAvailableDs(search = null) {
       try {
-        const res = await $fetchBackend(`/eig/available-ds`, {
+        const res = await $fetchBackend("/eig/available-ds", {
           method: "GET",
           credentials: "include",
           params: { search },
