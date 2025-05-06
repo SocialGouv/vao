@@ -18,6 +18,9 @@
     is-sortable
     @update-data="updateData"
   >
+    <template #cell-dateSejour="{ cell }">
+      {{ displayDate(cell) }}
+    </template>
     <template #cell-telephone="{ cell }">
       {{ displayPhone(cell) }}
     </template>
