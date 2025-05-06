@@ -1,3 +1,4 @@
+
 <template>
   <UserListeFilters
     v-model:email="email"
@@ -32,21 +33,53 @@
       </div>
     </template>
     <template #cell-custom:edit="{ row }">
-      <NuxtLink
-        :to="`/comptes/${row.userId}`"
-        title="Naviguer vers le compte"
-        class="no-background-image"
-      >
+      <div class="buttons-group">
+
         <DsfrButton
+        v-if="row.statut === statusUser.status.VALIDATED"
           icon="ri:arrow-right-s-line"
           icon-only
           primary
           size="small"
           type="button"
+          title="Naviguer vers le compte"
+          @click="openCompte(row.userId)"
         />
-      </NuxtLink>
+        <DsfrButton
+          v-if="row.statut === statusUser.status.NEED_SIRET_VALIDATION"
+          class="button--success"
+          icon="ri:check-line"
+          icon-only
+          primary
+          size="small"
+          type="button"
+          label="Valider le compte"
+          @click="validate(row.userId)"
+        />
+        <DsfrButton
+          v-if="row.statut === statusUser.status.NEED_SIRET_VALIDATION"
+          class="button--danger"
+          :icon="'ri:close-line'"
+          icon-only
+          secondary
+          size="small"
+          type="button"
+          :label="'Refuser le compte'"
+          @click="openRefusedModal(row)"
+        />
+      </div>
     </template>
   </DsfrDataTableV2Wrapper>
+  <RefusCompteModal
+    modal-ref="modal"
+    name="refus-compte"
+    :opened="showRefusModal"
+    title="Refus de validation d'un compte utilisateur"
+    :on-close="closeRefusModal"
+    :on-validate="refused"
+    validation-label="Valider la prise en charge"
+    >Vous allez refuser la validation de ce compte indiquez le motif : <br />
+  </RefusCompteModal>
 </template>
 
 <script setup>
@@ -56,10 +89,14 @@ import {
   isValidParams,
   UserStatusBadge,
   statusUser,
+  RefusCompteModal,
 } from "@vao/shared";
 
 const userStore = useUserStore();
 const route = useRoute();
+
+const utilisateurSelectionne = ref(null);
+const showRefusModal = ref(false);
 
 const data = computed(() => userStore.users);
 const total = computed(() => userStore.total);
@@ -148,6 +185,33 @@ const getSearchParams = () => ({
 
 let timeout = null;
 
+async function validate(userId) {
+  const params = { status: statusUser.status.VALIDATED };
+  await userStore.updateUserStatus(userId, params);
+  userStore.fetchUsersOrganisme(query);
+}
+
+async function openRefusedModal(state) {
+  utilisateurSelectionne.value = state;
+  showRefusModal.value = true;
+}
+const closeRefusModal = () => {
+  utilisateurSelectionne.value = null;
+  showRefusModal.value = false;
+};
+
+async function refused({ commentaire }) {
+  const params = { status: statusUser.status.BLOCKED, motif: commentaire };
+  await userStore.updateUserStatus(utilisateurSelectionne.value.userId, params);
+  userStore.fetchUsersOrganisme(query);
+  utilisateurSelectionne.value = null;
+  showRefusModal.value = false;
+}
+
+async function openCompte(userId) {
+  navigateTo(`/comptes/${userId}`);
+}
+
 const updateData = () => {
   if (timeout) {
     clearTimeout(timeout);
@@ -185,3 +249,9 @@ onUnmounted(() => {
   }
 });
 </script>
+<style lang="scss" scoped>
+.buttons-group {
+  display: flex;
+  gap: 0.3rem;
+}
+</style>

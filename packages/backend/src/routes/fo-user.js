@@ -9,6 +9,7 @@ const FOUserController = require("../controllers/fo-user");
 const checkPermissionFoRole = require("../middlewares/checkPermissionFoRole");
 const checkPermissionBOForUpdateStatusFo = require("../middlewares/checkPermissionBOForUpdateStatusFo");
 const checkPermissionBOForFoStatus = require("../middlewares/checkPermissionBoForFoStatus");
+const checkPermissionFOForUpdateStatusFo = require("../middlewares/checkPermissionFOForUpdateStatusFo");
 
 // Renvoie la liste des utilisateurs du BO
 router.get("/admin/list", BOcheckJWT, FOUserController.list);
@@ -22,7 +23,7 @@ router.post(
   "/admin/update-status/:userId",
   BOcheckJWT,
   checkPermissionBOForUpdateStatusFo,
-  FOUserController.updateStatus,
+  FOUserController.updateStatus({ source: "BO" }),
 );
 router.get("/admin/extract/", BOcheckJWT, FOUserController.getExtract);
 router.get("/get-roles/", checkJWT, FOUserController.getRoles);
@@ -40,5 +41,12 @@ router.post(
   checkPermissionFoRole({ role: roles.EIG_ECRITURE }),
   FOUserController.updateRoles,
 );
+router.post(
+  "/update-status/:userId",
+  checkJWT,
+  checkPermissionFOForUpdateStatusFo,
+  FOUserController.updateStatus({ source: "FO" }),
+);
+
 
 module.exports = router;

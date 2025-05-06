@@ -108,5 +108,22 @@ export const useUserStore = defineStore("user", {
         log.w("updateRole - Erreur", { error });
       }
     },
+    async updateUserStatus(userId, params) {
+      log.i("updateUserStatut - IN");
+      try {
+        const response = await $fetchBackend(
+          `/fo-user/update-status/${userId}`,
+          {
+            credentials: "include",
+            method: "POST",
+            params,
+          },
+        );
+        log.d("updateUserStatut - réponse", response);
+        log.i("updateUserStatut - DONE");
+      } catch (error) {
+        log.w("updateUserStatut - Erreur", { error });
+      }
+    },
   },
 });
