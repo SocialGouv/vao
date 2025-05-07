@@ -71,7 +71,7 @@ module.exports = async function get(req, res, next) {
     }
     const etablissements = isPersonnePhysique
       ? null
-      : sanitizeEtablissements(elements);
+      : sanitizeEtablissements(elements, uniteLegale);
     if (!isPersonnePhysique) {
       try {
         representantsLegaux = await getPersonnePhysique(siren);
