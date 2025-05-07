@@ -7,7 +7,7 @@ module.exports = async (req, res, next) => {
   try {
     const { name } = req.params;
     log.i("IN", { name });
-    const file = DocumentService.getStaticFile(name, "static");
+    const file = DocumentService.getStaticFile(name, "public");
     res.download(file);
     log.i("DONE");
   } catch (error) {
