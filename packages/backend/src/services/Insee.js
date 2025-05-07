@@ -68,33 +68,36 @@ module.exports.getListeEtablissements = async (siren) => {
 };
 
 module.exports.sanitizeEtablissements = (etablissements, uniteLegale) =>
-  etablissements
-    .filter(
-      (e) =>
-        e.uniteLegale.etatAdministratifUniteLegale === "A" &&
-        e.nic !== uniteLegale.nic,
-    )
-    .map((e) => {
-      const a = e.adresseEtablissement;
-      const etat = e.periodesEtablissement[0].etatAdministratifEtablissement;
-      return {
-        addresse: [
-          a.numeroVoieEtablissement,
-          a.typeVoieEtablissement,
-          a.libelleVoieEtablissement,
-        ]
-          .filter(Boolean)
-          .join(" "),
-        codePostal: a.codePostalEtablissement,
-        commune: a.libelleCommuneEtablissement,
-        denomination: uniteLegale.uniteLegale.denominationUniteLegale,
-        enabled: false,
-        etatAdministratif:
-          etat === "A" ? "En activité" : etat === "F" ? "Fermé" : "",
-        nic: e.nic,
-        siret: e.siret,
-      };
-    });
+  Object.keys(etablissements).length !== 0
+    ? etablissements
+        .filter(
+          (e) =>
+            e.uniteLegale.etatAdministratifUniteLegale === "A" &&
+            e.nic !== uniteLegale.nic,
+        )
+        .map((e) => {
+          const a = e.adresseEtablissement;
+          const etat =
+            e.periodesEtablissement[0].etatAdministratifEtablissement;
+          return {
+            addresse: [
+              a.numeroVoieEtablissement,
+              a.typeVoieEtablissement,
+              a.libelleVoieEtablissement,
+            ]
+              .filter(Boolean)
+              .join(" "),
+            codePostal: a.codePostalEtablissement,
+            commune: a.libelleCommuneEtablissement,
+            denomination: uniteLegale.uniteLegale.denominationUniteLegale,
+            enabled: false,
+            etatAdministratif:
+              etat === "A" ? "En activité" : etat === "F" ? "Fermé" : "",
+            nic: e.nic,
+            siret: e.siret,
+          };
+        })
+    : null;
 
 module.exports.getPersonnePhysique = async (siren) => {
   const { apiEntreprise } = config;

@@ -472,7 +472,7 @@ async function searchApiInsee() {
       pays:
         uniteLegale.adresseEtablissement.libellePaysEtrangerEtablissement ??
         "France",
-      representantsLegaux: representantsLegaux ?? [],
+      representantsLegaux: representantsLegaux.representantsLegaux ?? [],
       etablissementPrincipal,
     });
   } catch (error) {
