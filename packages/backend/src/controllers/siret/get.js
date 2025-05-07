@@ -69,7 +69,9 @@ module.exports = async function get(req, res, next) {
     } else {
       siege = await Organisme.getSiege(siren);
     }
-    const etablissements = sanitizeEtablissements(elements);
+    const etablissements = isPersonnePhysique
+      ? null
+      : sanitizeEtablissements(elements);
     if (!isPersonnePhysique) {
       try {
         representantsLegaux = await getPersonnePhysique(siren);
