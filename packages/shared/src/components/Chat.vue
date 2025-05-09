@@ -15,8 +15,14 @@
         :cdn-url="cdnUrl"
         :data="m"
       />
+      <DsfrAlert>
+        Il est interdit de saisir des données sensibles (personnelles,
+        identifiantes, ...) au sens du RGPD dans la messagerie. Le responsable
+        de traitement, non chargé du suivi individuel des vacanciers, se réserve
+        le droit de retirer ou faire retirer toute donnée non conforme, non
+        chargé du suivi individuel des vacanciers
+      </DsfrAlert>
     </div>
-
     <div class="answer">
       <div class="fr-input-group answer__form">
         <DsfrButton
