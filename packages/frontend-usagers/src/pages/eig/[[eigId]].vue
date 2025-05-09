@@ -6,6 +6,19 @@
         <EIGMenu :active-id="hash" :eig-id="eigId ? parseInt(eigId) : null" />
       </div>
       <div class="fr-col-xs-12 fr-col-md-9 fr-py-3w">
+        <div class="text-italic">
+          Il est strictement interdit de saisir dans ces champs des données
+          sensibles telles que des informations relatives à des données à
+          caractère personnel, de santé et des données identifiantes. Toute
+          saisie de ce type de données sera considérée comme non conforme aux
+          règles d'utilisation du service numérique VAO. Le responsable de
+          traitement collecte des données dans l’objectif de suivre
+          l’organisation des séjours et les EIG, en revanche toute donnée
+          nominative relative aux vacanciers ne saurait intéresser le
+          responsable de traitement qui n’est pas chargé du suivi individuel des
+          vacanciers. Le responsable de traitement se réserve le droit de
+          retirer ou faire retirer toute donnée non conforme. »
+        </div>
         <div class="fr-pb-6v">
           <EIGStepper :step="hash" />
           <EIGSelectionSejour
@@ -157,10 +170,18 @@ async function finalize(body) {
   } catch (error) {
     log.w("Finalisation de la declaration de sejour : ", { error });
     return toaster.error(
-      `Une erreur est survenue lors de la transmission de la déclaration de séjour`,
+      "Une erreur est survenue lors de la transmission de la déclaration de séjour",
     );
   } finally {
     resetApiStatut();
   }
 }
 </script>
+
+<style lang="css">
+.text-italic {
+  color: gray;
+  font-style: italic;
+  font-size: 1rem;
+}
+</style>
