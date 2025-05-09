@@ -8,14 +8,15 @@
         >
           Demande de Création de compte organisateur
         </h1>
-        <p>
-          L´inscription n'est pas automatique. Vous devrez valider votre email,
-          puis votre demande sera prise en compte par les services compétents
-          pour valider la création de votre compte
-        </p>
+
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
+          <p>
+            L'inscription n'est pas automatique. Vous devrez valider votre
+            email, puis votre demande sera prise en compte par les services
+            compétents pour valider la création de votre compte
+          </p>
           <div class="fr-input-group">
             <DsfrInputGroup
               :error-message="emailField.errorMessage"
@@ -402,7 +403,7 @@ async function register() {
     toaster.success({
       titleTag: "h2",
       description:
-        "Félicitations, votre compte a bien été créé ! Veuillez le valider en cliquant sur le lien reçu par email",
+        "Votre formulaire a été envoyé. Veuillez valider votre adresse mail en cliquant sur le lien reçu par mail.",
     });
     return navigateTo("/");
   } catch (error) {
