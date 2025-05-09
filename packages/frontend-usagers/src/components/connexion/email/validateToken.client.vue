@@ -7,8 +7,10 @@
         type="success"
         :closeable="false"
       >
-        <h3>Votre adresse courielle est maintenant activé</h3>
-        Votre compte est en cours de validation.
+        <h3>
+          <p>Votre adresse courriel est maintenant activée</p>
+          <p>Votre compte est en cours de validation.</p>
+        </h3>
       </DsfrAlert>
     </p>
     <div v-else-if="classError">
