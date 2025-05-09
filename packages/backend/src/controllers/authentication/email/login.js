@@ -50,6 +50,15 @@ module.exports = async function login(req, res, next) {
         }),
       );
     }
+    if (user.statusCode === status.BLOCKED) {
+      log.w("Compte bloqué");
+      return next(
+        new AppError("Compte bloqué", {
+          name: "EmailUnauthorized",
+          statusCode: 400,
+        }),
+      );
+    }
     const accessToken = jwt.sign(buildAccessToken(user), config.tokenSecret, {
       algorithm: "ES512",
       expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde

@@ -176,6 +176,12 @@ const displayInfos = {
       "Votre adresse courriel ou votre mot de passe sont incorrects.",
     type: "error",
   },
+  EmailUnauthorized: {
+    title: "Erreur d'authentification",
+    description:
+      "Ce compte est actuellement inaccessible en raison d'une restriction imposée par une autorité. Pour plus d’informations, veuillez consulter la personne auprès de laquelle vous avez sollicité une création de compte.",
+    type: "error",
+  },
   UnexpectedError: {
     title: "Une erreur est survenue",
     description:
@@ -239,6 +245,9 @@ async function login() {
         break;
       case "NeedSiretValidation":
         displayType.value = "NeedSiretValidation";
+        break;
+      case "EmailUnauthorized":
+        displayType.value = "EmailUnauthorized";
         break;
       default:
         displayType.value = "UnexpectedError";
