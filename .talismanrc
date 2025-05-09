@@ -1,22 +1,22 @@
 fileignoreconfig:
-  - filename: .kontinuous/env/preprod/templates/cron.configmap.yaml
-    checksum: 3a9a6accbc34b261130164b5325f1b506833da8b49bb8b4d781864ef4cb13acc
-  - filename: .kontinuous/env/preprod/templates/cron.sealed-secret.yaml
-    checksum: ae76d746526c6f82fc1ebc703c43288844186d6d84d96979c67d2c7029f5bd37
-  - filename: .kontinuous/env/prod/templates/cron.configmap.yaml
-    checksum: 7881befff126f5b7e2afaceda5d0244ca24483b22ad522fbddfb9b916deb92b9
-  - filename: .kontinuous/env/prod/templates/cron.sealed-secret.yaml
-    checksum: c38ee9c373a96625aa55061d6827c97e1dba3599d0d8b494cd3a57dd369db374
+  - filename: .kontinuous/env/preprod/templates/frontend.sealed-secret.yaml
+    checksum: 4e81a3d7794585727847fb5343790451927e73963dc9a163d88db22c47983cdd
+  - filename: .kontinuous/env/preprod/templates/smtp.sealed.secret.yaml
+    checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
+  - filename: .kontinuous/env/preprod/templates/smtp/deployment.yaml
+    checksum: e05745b618cdfe033bd27bb7baffa0c77024de76b79fcd346f2ab33c5530fac0
+  - filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
+    checksum: 2414a3f1746ccd11cbb12b86dd2bb4a16cbc5bd6fe1450c308579972128176e6
+  - filename: .kontinuous/env/preprod/templates/token.sealed.secret.yaml
+    checksum: 4aaab89fff588b5c4098042f6c8945a65eb30c6384d3b3aa35225611fa005b7e
+  - filename: .kontinuous/env/preprod/values.yaml
+    checksum: 7f8cc51232fab4856eb91c1027f9e15c2e640afb19b90ce4e063a9be7b8b227a
   - filename: .kontinuous/env/prod/templates/api-entreprise.sealed.secret.yaml
     checksum: 07c62e872bc95967cdc28800b92b8c9625efe9ad7ab2b43237ea3205e184858e
   - filename: .kontinuous/env/prod/templates/api-insee.sealed.secret.yaml
     checksum: b36249b2ef3f95e2bb1e6e10b82cd010d2e7526d72351ec1cb4a5cec2784248d
   - filename: .kontinuous/env/prod/templates/backend.configmap.yaml
     checksum: c995c3233807bd9c9c92f0cf5d2484a40daefd703edec194bf8b6123fbe5a56d
-  - filename: .kontinuous/env/prod/templates/cron.configmap.yaml
-    checksum: 7881befff126f5b7e2afaceda5d0244ca24483b22ad522fbddfb9b916deb92b9
-  - filename: .kontinuous/env/prod/templates/cron.sealed-secret.yaml
-    checksum: c38ee9c373a96625aa55061d6827c97e1dba3599d0d8b494cd3a57dd369db374
   - filename: .kontinuous/env/prod/templates/external-api.configmap.yaml
     checksum: fc2e7b0dfd60e4a0da76d17ee4f36cba61ca157bf0c64061b965292edf546020
   - filename: .kontinuous/env/prod/templates/frontend.sealed-secret.yaml
@@ -66,7 +66,7 @@ fileignoreconfig:
   - filename: packages/backend/src/controllers/authentication/email/login.js
     checksum: 7ac4c97b5d6c36b5f944c339e0411947d59b12ed2f653497ea4017d9992e1058
   - filename: packages/backend/src/controllers/authentication/email/register.js
-    checksum: 405b78b09927ec0c3feb4eec6aada0b4875e63f0065863962c446be5ce8ca5e7
+    checksum: ffe8f1a18fa67c4f00aed6f9ae5ccff003d55a30d9abffa3b66e178b3c0bb08a
   - filename: packages/backend/src/controllers/authentication/email/renew-password.js
     checksum: c0f7fb6010a8914d2b0c3270021d5f36a7ead1c99cde7ad09c94733f5172ba34
   - filename: packages/backend/src/controllers/authentication/email/renewPassword.js
@@ -94,7 +94,7 @@ fileignoreconfig:
   - filename: packages/backend/src/services/BoUser.js
     checksum: 90d8297092ecec904d6055564334cc7ffdbd9a74a1e9a985b1f7a17f8f98b126
   - filename: packages/backend/src/services/DemandeSejour.js
-    checksum: 7c6c88a0257045091d9081a29e173317a3cd0c01914742001bdb506ebcc847b9
+    checksum: ef62076c76735fb6430604f4002b5de411a944854852ede45f5bae72ecf827b1
   - filename: packages/backend/src/services/Document.js
     checksum: 1fbeae31395935da7b8daef1d3872151b793d433d1cde968d0607b4628ba50a8
   - filename: packages/backend/src/services/Organisme.js
@@ -109,8 +109,6 @@ fileignoreconfig:
     checksum: 224832f0b2175b2785a6d45d297e23e2018d068912682e73d411c390fd05a80a
   - filename: packages/backend/src/services/geo/Region.js
     checksum: 5c4d9a0edd3496c3b18663a1f330797b5fa89b541b4c9470e060d60c278f3fd7
-  - filename: packages/backend/src/services/hebergement/Hebergement.js
-    checksum: 7d2def26b8c8430eae65c85321dab700117ea28d73ad4259da3502513f76c30d
   - filename: packages/backend/src/sonar-project.properties
     checksum: 971c26e540505ee376587d3fbafb0efb226dbb3202ecf91b1f7820b279ecd28c
   - filename: packages/backend/src/utils/mail-service.js
@@ -123,16 +121,6 @@ fileignoreconfig:
     checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
   - filename: packages/backend/src/utils/regex.js
     checksum: 9e58840c352b67fb278a7409352b7afc6c8a628fb30d19d13f0d52993a5d9463
-  - filename: packages/cron/src/config.ts
-    checksum: b20a33667870ab857b06a68e213091e699daa41b88a40a2ff1520912c36814bd
-  - filename: packages/cron/src/db/index.ts
-    checksum: fffc688d8ab2c294af11a648ceebd2cc6c0381db030ffe8d4aba7ca66d60d787
-  - filename: packages/cron/src/environement.d.ts
-    checksum: 441e135084298f4bb17e7447ab30ac3438475a2f5b2ce8ffab8969a4633b3ba9
-  - filename: packages/cron/src/notifyRappelDs8j15j/notifyRappelDs8j15j.email.ts
-    checksum: 759318460907540756902c2eb72d89c67706ab6befe312937a4965b57e997078
-  - filename: packages/cron/src/utils/transporter.ts
-    checksum: c64db9c3cae2e99b5c4bde05624f6aef561ac54ca7b42cd34222fbba9ab7c433
   - filename: packages/external-api/README.md
     checksum: 680eb243a98d30c994c399c96eb91af0caadc06ee88d2bda4eaf27976cb5e1bb
   - filename: packages/external-api/environement.d.ts

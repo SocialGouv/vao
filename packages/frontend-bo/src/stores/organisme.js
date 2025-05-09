@@ -24,7 +24,7 @@ export const useOrganismeStore = defineStore("organisme", {
     async exportOrganismes() {
       log.i("exportOrganismes - IN");
       try {
-        const response = await $fetchBackend(`/organisme/bo/extract`, {
+        const response = await $fetchBackend("/organisme/bo/extract", {
           method: "GET",
           credentials: "include",
         });

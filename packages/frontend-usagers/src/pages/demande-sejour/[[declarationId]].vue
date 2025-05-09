@@ -496,7 +496,7 @@ const demandeDetails = computed(() => {
     },
     {
       label: "Date (début / fin)",
-      value: `${dayjs(demandeCourante.dateDebut).format("DD/MM/YYYY")} - ${dayjs(demandeCourante.dateFin).format("DD/MM/YYYY")}`,
+      value: `${dayjs(demandeCourante.value.dateDebut).format("DD/MM/YYYY")} - ${dayjs(demandeCourante.value.dateFin).format("DD/MM/YYYY")}`,
     },
     {
       label: "Saison",

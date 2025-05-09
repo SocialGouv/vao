@@ -67,10 +67,18 @@ const baseSchema = {
     .typeError("le libellé est requis")
     .required(),
   dateDebut: yup
-    .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
-    .typeError("date invalide")
-    .min(new Date(), "La date doit être supérieure à la date du jour.")
-    .required("La saisie de ce champ est obligatoire"),
+    .date()
+    .typeError("Vous devez saisir une date valide au format JJ/MM/AAAA")
+    .required("La saisie de ce champ est obligatoire")
+    .when("statut", {
+      is: (statut) => statut !== statusUtils.SEJOUR_EN_COURS,
+      then: (schema) =>
+        schema.min(
+          new Date(),
+          "La date doit être supérieure à la date du jour.",
+        ),
+      otherwise: (schema) => schema,
+    }),
   dateFin: yup
     .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
     .typeError("date invalide")

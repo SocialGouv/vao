@@ -1,20 +1,18 @@
-const axios = require("axios");
 const logger = require("../../utils/logger");
-const config = require("../../config");
-const dayjs = require("dayjs");
 const proj4 = require("proj4");
-const { getToken } = require("../../services/Insee");
+const {
+  getEtablissement,
+  sanitizeEtablissements,
+  getListeEtablissements,
+  getPersonnePhysique,
+} = require("../../services/Insee");
 const Organisme = require("../../services/Organisme");
 const Referentiel = require("../../services/Referentiel");
 const AppError = require("../../utils/error");
 
 const log = logger(module.filename);
 
-const NB_ELEMENTS_TO_GET = 1000;
-
 module.exports = async function get(req, res, next) {
-  const { apiInsee } = config;
-  const { apiEntreprise } = config;
   const { siret } = req.params;
   log.i("IN", siret);
   const siren = siret.length === 14 && siret.substring(0, 9);
@@ -28,21 +26,14 @@ module.exports = async function get(req, res, next) {
     );
   }
   try {
-    let token;
-    let nomCommercial;
-    const elements = [];
+    let elements = [];
     let representantsLegaux = [];
     let siege = {};
     let uniteLegale;
 
     try {
-      token = await getToken();
-      const dateDuJour = dayjs().format("YYYY-MM-DD");
-      const { data: reponse } = await axios.get(
-        `${apiInsee.URL}${apiInsee.URI}/siret/${siret}?date=${dateDuJour}`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      uniteLegale = reponse.etablissement;
+      const etablissement = await getEtablissement(siret);
+      uniteLegale = etablissement;
     } catch (e) {
       log.w("DONE with error");
       return next(
@@ -64,85 +55,26 @@ module.exports = async function get(req, res, next) {
     // https://entreprise.api.gouv.fr/catalogue/insee/unites_legales
     // Pour les personnes physique le code juridique est 1000
     const isPersonnePhysique =
-      uniteLegale.uniteLegale.categorieJuridiqueUniteLegale === "1000"
-        ? true
-        : false;
+      uniteLegale.uniteLegale.categorieJuridiqueUniteLegale === "1000";
     if (uniteLegale.uniteLegale.categorieJuridiqueUniteLegale) {
       uniteLegale.uniteLegale.categorieJuridiqueUniteLegale =
         (await Referentiel.getLibelle(
           uniteLegale.uniteLegale.categorieJuridiqueUniteLegale,
         )) ?? "statut indéterminé";
     }
-    nomCommercial =
+    const nomCommercial =
       uniteLegale.uniteLegale.denominationUsuelle1UniteLegale ?? null;
     if (uniteLegale.etablissementSiege) {
-      const { data: liste } = await axios.get(
-        `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=${NB_ELEMENTS_TO_GET}&tri=siret`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
-      elements.push(...(liste.etablissements ?? []));
-
-      const total = liste?.header?.total;
-      if (total) {
-        for (
-          let k = NB_ELEMENTS_TO_GET;
-          k < total;
-          k = k + NB_ELEMENTS_TO_GET
-        ) {
-          const { data: liste } = await axios.get(
-            `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=${NB_ELEMENTS_TO_GET}&debut=${k}&tri=siret`,
-            { headers: { Authorization: `Bearer ${token}` } },
-          );
-          elements.push(...(liste.etablissements ?? []));
-        }
-      }
+      elements = await getListeEtablissements(siren);
     } else {
       siege = await Organisme.getSiege(siren);
     }
-    const etablissements = elements
-      .filter((e) => e.uniteLegale.etatAdministratifUniteLegale === "A")
-      .filter((e) => e.nic !== uniteLegale.nic)
-      .map((e) => {
-        return {
-          adresse: `${e.adresseEtablissement.numeroVoieEtablissement ? e.adresseEtablissement.numeroVoieEtablissement : ""} ${e.adresseEtablissement.typeVoieEtablissement ? e.adresseEtablissement.typeVoieEtablissement : ""} ${e.adresseEtablissement.libelleVoieEtablissement ? e.adresseEtablissement.libelleVoieEtablissement : ""}`,
-          codePostal: e.adresseEtablissement.codePostalEtablissement ?? "",
-          commune: e.adresseEtablissement.libelleCommuneEtablissement ?? "",
-          denomination: uniteLegale.uniteLegale.denominationUniteLegale,
-          enabled: false,
-          etatAdministratif:
-            e.periodesEtablissement[0].etatAdministratifEtablissement === "A"
-              ? "En activité"
-              : e.periodesEtablissement[0].etatAdministratifEtablissement ===
-                  "F"
-                ? "Fermé"
-                : "",
-          nic: e.nic,
-          siret: e.siret,
-        };
-      });
+    const etablissements = isPersonnePhysique
+      ? null
+      : sanitizeEtablissements(elements, uniteLegale);
     if (!isPersonnePhysique) {
       try {
-        const url = `${apiEntreprise.uri}/infogreffe/rcs/unites_legales/${siren}/extrait_kbis?context=${apiEntreprise.context}&object=${apiEntreprise.object}&recipient=${apiEntreprise.recipient}`;
-        const { data: response } = await axios.get(url, {
-          headers: { Authorization: `Bearer ${config.apiEntreprise.token}` },
-        });
-        const mandatairesSociaux = response.data.mandataires_sociaux ?? [];
-        nomCommercial = response.data.nom_commercial ?? nomCommercial;
-        representantsLegaux = mandatairesSociaux.map((m) => {
-          if (m.type === "personne_physique") {
-            return {
-              fonction: m.fonction ?? "",
-              nom: m.nom ?? "",
-              prenom: m.prenom,
-            };
-          } else {
-            return {
-              fonction: m.fonction ?? "",
-              nom: m.raison_sociale ?? "",
-              prenom: "",
-            };
-          }
-        });
+        representantsLegaux = await getPersonnePhysique(siren);
       } catch (err) {
         log.w("erreur sur l'appel à l'API entreprise");
         log.d(err);
@@ -160,11 +92,11 @@ module.exports = async function get(req, res, next) {
         "EPSG:2154",
         "EPSG:4326",
         [
-          parseFloat(
+          Number.parseFloat(
             uniteLegale.adresseEtablissement
               .coordonneeLambertAbscisseEtablissement,
           ),
-          parseFloat(
+          Number.parseFloat(
             uniteLegale.adresseEtablissement
               .coordonneeLambertOrdonneeEtablissement,
           ),
