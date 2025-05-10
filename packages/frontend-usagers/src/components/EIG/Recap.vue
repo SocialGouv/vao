@@ -1,5 +1,13 @@
 <template>
-  <h5>Informations de séjour</h5>
+  <h5 class="stepper-title">
+    <div>Informations de séjour</div>
+
+    <UtilsDownloadFile
+      label="Enregistrer le formulaire EIG rempli"
+      :url="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
+      filename="eig.pdf"
+    />
+  </h5>
   <EIGError
     :is-error="
       Object.keys(errors ?? {}).some(
@@ -210,8 +218,11 @@ function finalizeDeclaration() {
 </script>
 
 <style scoped lang="scss">
-h5 {
-  margin-top: 1.5rem;
+.stepper-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 h6 {

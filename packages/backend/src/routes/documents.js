@@ -46,6 +46,7 @@ function uploadFile(req, res, next) {
 router.get("/:uuid", checkJWT, documentsController.download);
 router.get("/admin/:uuid", boCheckJWT, documentsController.adminDownload);
 router.get("/admin/static/:name", boCheckJWT, documentsController.getStatic);
+router.get("/public/:name", documentsController.getPublic);
 router.post("/", checkJWT, uploadFile, scanFile, documentsController.upload);
 
 module.exports = router;

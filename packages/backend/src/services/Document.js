@@ -2,6 +2,7 @@ const { encodeFilename, getFileNameAndExtension } = require("../utils/file");
 const logger = require("../utils/logger");
 const poolDoc = require("../utils/pgpoolDoc").getPool();
 const AppError = require("../utils/error");
+const path = require("node:path");
 
 const {
   S3Client,
@@ -135,9 +136,14 @@ module.exports.createFile = async (
   }
 };
 
-module.exports.getStatic = async (name) => {
-  log.i("getOrganisateurAvecUnRetrait - In");
-  return `${__dirname}/static/${name}`;
+module.exports.getStaticFile = (name, directory) => {
+  const publicDir = path.resolve(__dirname, directory);
+  const filePath = path.resolve(publicDir, name);
+
+  if (!filePath.startsWith(publicDir + path.sep)) {
+    throw new AppError("Invalid file path", { cause: "Invalid file path" });
+  }
+  return filePath;
 };
 
 async function uploadToS3(filename, category, mimetype, userid, data, uuid) {
