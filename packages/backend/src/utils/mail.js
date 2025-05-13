@@ -1319,7 +1319,6 @@ module.exports = {
     },
     newVaoAccount: {
       sendNewAccountBlockedByDreets: (email, motif, regionName) => {
-        const link = `${frontUsagersDomain}/connexion/`;
         const html = sendTemplate.getBody(
           "Refus d’inscription de votre organisme sur la plateforme VAO",
           [
@@ -1338,11 +1337,6 @@ module.exports = {
               ],
               type: "p",
             },
-            {
-              link,
-              text: "Se connecter à VAO",
-              type: "link",
-            },
           ],
           `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
@@ -1358,7 +1352,6 @@ module.exports = {
         return params;
       },
       sendNewAccountBlockedByOrganisme: (email, motif) => {
-        const link = `${frontUsagersDomain}/connexion/`;
         const html = sendTemplate.getBody(
           "Refus d’inscription au sein de l’organisme VAO",
           [
@@ -1376,11 +1369,6 @@ module.exports = {
                 "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
               ],
               type: "p",
-            },
-            {
-              link,
-              text: "Se connecter à VAO",
-              type: "link",
             },
           ],
           `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
