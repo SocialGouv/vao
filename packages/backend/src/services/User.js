@@ -27,7 +27,9 @@ const query = {
     status_code,
     nom,
     prenom,
-    telephone
+    telephone,
+    siret,
+    ter_code
   )
   VALUES (
     $1,
@@ -35,7 +37,9 @@ const query = {
     $3,
     $4,
     $5,
-    $6
+    $6,
+    $7,
+    $8
   )
   RETURNING
     id,
@@ -44,7 +48,9 @@ const query = {
     nom,
     prenom,
     telephone,
-    status_code as "statusCode"
+    status_code as "statusCode",
+    siret,
+    ter_code as "terCode"
   ;`,
   editPassword: (email, password) => [
     `
@@ -106,6 +112,8 @@ const query = {
         us.telephone as "telephone",
         us.created_at as "createdAt",
         us.status_code as "statusCode",
+        us.siret as "userSiret",
+        us.ter_code as "userTerritoire",
         pm.siret as "siret",
         pm.raison_sociale as "raisonSociale",
         (
@@ -168,6 +176,8 @@ module.exports.registerByEmail = async ({
   nom,
   prenom,
   telephone,
+  siret,
+  terCode,
 }) => {
   log.i("registerByEmail - IN", { email });
   let response = await pool.query(...query.select({ mail: normalize(email) }));
@@ -189,6 +199,8 @@ module.exports.registerByEmail = async ({
     nom,
     prenom,
     telephone,
+    siret,
+    terCode,
   ]);
   log.i("registerByEmail - DONE", { response });
   const [user] = response.rows;
@@ -226,24 +238,32 @@ module.exports.activate = async (email) => {
     throw new AppError("Utilisateur non trouvé", { name: "UserNotFound" });
   }
   const user = response.rows[0];
-  log.d("activate", { user });
-  if (!user.sub && user.statusCode !== status.NEED_EMAIL_VALIDATION) {
+  log.w("activate", { user });
+  // TODO voir avec Valère l'utilisation du user.sub qui semble indiquer que l'utilisateur
+  // est connecté mais on ne sait pas d'où ça vient
+  //if (!user.sub && user.statusCode !== status.NEED_EMAIL_VALIDATION) {
+  if (user.statusCode !== status.NEED_EMAIL_VALIDATION) {
     throw new AppError("Utilisateur déjà actif", {
       name: "UserAlreadyVerified",
     });
   }
-  if (!user.sub) {
-    await pool.query(...query.editStatus(user.id, status.VALIDATED));
-  }
+  // TODO handle siret already exists new status ?
+  const newStatus = user.userSiret
+    ? status.NEED_SIRET_VALIDATION
+    : status.VALIDATED;
+  // TODO idem pour le user.sub
+  //if (!user.sub) {
+  await pool.query(...query.editStatus(user.id, newStatus));
+  //}
   await pool.query(query.activate, [user.id]);
 
   const responseWithUpdate = await pool.query(
     ...query.select({ mail: normalize(email) }),
   );
-  const [userUpdated] = responseWithUpdate.rows;
 
+  const [userUpdated] = responseWithUpdate.rows;
   log.i("active - DONE", { user: userUpdated });
-  return user;
+  return userUpdated;
 };
 
 module.exports.read = async (criterias = {}) => {
