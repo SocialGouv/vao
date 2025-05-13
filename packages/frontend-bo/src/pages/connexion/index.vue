@@ -201,7 +201,13 @@ async function login() {
       },
     );
     formStatus.value = formStates.SUBMITTED;
-    userStore.user = response.user;
+    const serviceCompetent =
+      response.user.territoireCode === "FRA"
+        ? "NAT"
+        : /^\d+$/.test(response.user.territoireCode)
+          ? "DEP"
+          : "REG";
+    userStore.user = { ...response.user, serviceCompetent };
     toaster.success({
       titleTag: "h2",
       description: `Authentification réalisée avec succès`,
