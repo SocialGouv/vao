@@ -3,7 +3,7 @@
     <h5 class="stepper-title">
       <div>Sélectionner un séjour</div>
       <UtilsDownloadFile
-        label="Enregistrer le formulaire EIG rempli"
+        label="Télécharger Formulaire EIG"
         :url="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
         filename="eig.pdf"
       />

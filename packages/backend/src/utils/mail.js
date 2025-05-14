@@ -878,7 +878,7 @@ module.exports = {
           throw new AppError(message);
         }
         if (!token) {
-          const message = `Le paramètre token manque à la requête`;
+          const message = "Le paramètre token manque à la requête";
           log.w(`sendValidationMail - ${message}`);
           throw new AppError(message);
         }
@@ -891,8 +891,7 @@ module.exports = {
             {
               p: [
                 "Bonjour,",
-                "Pour finaliser la création de votre compte sur la plateforme VAO, confirmez votre adresse e-mail en cliquant sur le lien ci dessous",
-                "Afin de modifier votre mot de passe, veuillez cliquer sur le lien ci dessous qui vous redirigera vers le portail",
+                "Pour finaliser la création de votre compte sur la plateforme VAO, confirmez votre adresse e-mail en cliquant sur le lien ci-dessous",
               ],
               type: "p",
             },
