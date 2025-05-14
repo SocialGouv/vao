@@ -231,6 +231,9 @@ const columns = [
   {
     key: "custom:edit",
     label: "Action",
+    options: {
+      isFixedRight: true,
+    },
   },
 ];
 
