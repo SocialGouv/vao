@@ -3,7 +3,7 @@
     <div>Informations de séjour</div>
 
     <UtilsDownloadFile
-      label="Enregistrer le formulaire EIG rempli"
+      label="Télécharger Formulaire EIG"
       :url="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
       filename="eig.pdf"
     />
@@ -160,6 +160,7 @@ import { useField, useForm } from "vee-validate";
 import { eigSchema, Summary } from "@vao/shared";
 import IsDownloading from "~/components/utils/IsDownloading.vue";
 
+const config = useRuntimeConfig();
 const emit = defineEmits(["finalize", "previous"]);
 
 const props = defineProps({
