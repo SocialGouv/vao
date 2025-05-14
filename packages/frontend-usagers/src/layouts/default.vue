@@ -97,7 +97,7 @@ const navItems = useMenuNavItems();
     <DsfrHeader
       id="header"
       service-title="Vacances Adaptées Organisées (VAO)"
-      service-description="La plateforme de déclaration et suivi des séjours organisés pour les personnes handicapées majeures"
+      service-description="La plateforme de déclaration et suivi des séjours organisés pour les personnes handicapées majeures - TESTS INTRUSION"
       :home-to="homeTo"
       :quick-links="quickLinks"
       :show-search="false"
