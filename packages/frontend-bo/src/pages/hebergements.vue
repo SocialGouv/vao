@@ -46,7 +46,6 @@ const tabs = [
 ];
 
 const defaultTab = tabs.findIndex(({ href }) => route.name.includes(href));
-console.log(route.name);
 
 const activeTab = ref(defaultTab !== -1 ? defaultTab : 0);
 if (defaultTab === -1) {

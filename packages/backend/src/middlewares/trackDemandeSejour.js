@@ -6,8 +6,7 @@ function trackDemandeSejour({ action, userType }) {
     const { parametre } = req.body;
     const { declarationId } = req.params;
     const DS = await DemandeSejour.getOne({ "ds.id": declarationId });
-    console.log("parametre", parametre);
-    console.log("DS", DS);
+
     DemandeSejour.addAsyncDeclarationSejourHistoric({
       action,
       data: {
