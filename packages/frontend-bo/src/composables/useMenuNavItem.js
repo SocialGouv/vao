@@ -100,14 +100,14 @@ export const useMenuNavItems = () => {
             },
           ]
         : []),
-      /*      ...(roles.includes("eig")
-              ? [
-                  {
-                    text: "EIG",
-                    to: "/eig",
-                  },
-                ]
-              : []),*/
+      ...(roles.includes("eig")
+        ? [
+            {
+              text: "EIG",
+              to: "/eig",
+            },
+          ]
+        : []),
     ];
   });
 
