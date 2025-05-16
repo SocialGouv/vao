@@ -145,7 +145,7 @@ const query = {
   `,
   getMailUserOrganismeId: `
     SELECT mail FROM front.users u
-    INNER JOIN front.user_organisme uo ON uo.use_id = $1 AND uo.use_id = u.id`,
+    INNER JOIN front.user_organisme uo ON uo.org_id = $1 AND uo.use_id = u.id`,
   getOne: `
         SELECT
       u.id AS "userId",
@@ -393,7 +393,7 @@ module.exports.getMailUserOrganismeId = async (organismeId) => {
   const { rows } = await pool.query(query.getMailUserOrganismeId, [
     organismeId,
   ]);
-  return rows ?? null;
+  return rows ?? [];
 };
 
 module.exports.getRolesByUserId = async (userId) => {
