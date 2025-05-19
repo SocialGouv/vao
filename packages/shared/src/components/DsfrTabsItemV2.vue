@@ -48,7 +48,10 @@ function onKeyDown(event: KeyboardEvent) {
       :id="props.tabId"
       ref="button"
       :data-testid="`test-${props.tabId}`"
-      class="fr-tabs__tab"
+      :class="[
+        'fr-tabs__tab',
+        props.icon && `fr-icon-${props.icon} fr-tabs__tab--icon-left`,
+      ]"
       :tabindex="props.selected ? 0 : -1"
       role="tab"
       type="button"
