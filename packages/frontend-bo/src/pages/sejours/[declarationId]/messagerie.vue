@@ -17,8 +17,6 @@ const toaster = useToaster();
 
 const messages = computed(() => demandeSejourStore.messages);
 
-demandeSejourStore.fetchMessages(route.params.declarationId);
-
 const isSendingMessage = ref(false);
 const chatRef = ref(null);
 
