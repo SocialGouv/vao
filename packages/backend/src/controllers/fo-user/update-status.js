@@ -10,7 +10,7 @@ const AppError = require("../../utils/error");
 
 const log = logger(module.filename);
 
-module.exports = function updateStatus(source) {
+module.exports = function updateStatus({ source }) {
   return async (req, res, next) => {
     log.i("IN");
     const { status, motif } = req.query;
