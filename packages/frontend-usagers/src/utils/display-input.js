@@ -43,6 +43,11 @@ const IUser = {
     label: "Statut",
     formatter: (value) => value,
   },
+  organisme: {
+    inputType: InputTypes.TEXT,
+    label: "Organisme",
+    formatter: (value) => value,
+  },
 };
 
 export default {
