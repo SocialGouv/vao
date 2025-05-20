@@ -32,6 +32,9 @@
         <UserStatusBadge :statut="cell" />
       </div>
     </template>
+    <template #cell-dateCreation="{ cell }">
+      {{ getDateCreationLabel(cell) }}
+    </template>
     <template #cell-custom:edit="{ row }">
       <div class="buttons-group">
 
@@ -91,6 +94,7 @@ import {
   statusUser,
   RefusCompteModal,
 } from "@vao/shared";
+import dayjs from "dayjs";
 
 const userStore = useUserStore();
 const route = useRoute();
@@ -102,6 +106,7 @@ const data = computed(() => userStore.users);
 const total = computed(() => userStore.total);
 
 const title = computed(() => `Liste des utilisateurs (${total.value})`);
+const getDateCreationLabel = (date) => dayjs(date).format("DD/MM/YYYY");
 
 const columns = [
   {
@@ -143,12 +148,19 @@ const columns = [
     key: "Adresse",
     label: "Ville",
     options: {
-      isSortable: true,
+      isSortable: false,
     },
   },
   {
     key: "statut",
     label: "Statut",
+    options: {
+      isSortable: true,
+    },
+  },
+  {
+    key: "dateCreation",
+    label: "Date inscription",
     options: {
       isSortable: true,
     },

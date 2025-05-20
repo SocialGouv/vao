@@ -201,6 +201,12 @@ const query = {
 module.exports.getByOrganismeId = async (organismesId, queryParams) => {
   const titles = [
     {
+      key: '"siegeSocial"',
+      queryKey: "siegeSocial",
+      sortEnabled: true,
+      type: "boolean",
+    },
+    {
       key: "nom",
       queryKey: "nom",
       sortEnabled: true,
@@ -213,9 +219,16 @@ module.exports.getByOrganismeId = async (organismesId, queryParams) => {
       type: "default",
     },
     {
-      key: "email",
-      queryKey: "mail",
+      key: '"email"',
+      queryKey: "email",
       sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: '"dateCreation"',
+      queryKey: "dateCreation",
+      sortEnabled: true,
+      sortType: "date",
       type: "default",
     },
     {
@@ -243,6 +256,7 @@ module.exports.getByOrganismeId = async (organismesId, queryParams) => {
     offset,
     sort,
   );
+
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
     pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
