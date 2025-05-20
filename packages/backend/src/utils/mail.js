@@ -737,7 +737,7 @@ module.exports = {
             {
               p: [
                 "Bonjour,",
-                "Un utilisateur souhaite inscrite un nouvel organisme OVA au sein de la plateforme SI VAO.",
+                "Un utilisateur souhaite rejoindre un organisme au sein de la plateforme VAO.",
                 "Voici les informations concernant l’utilisateur : ",
                 `- Nom : ${user.nom}`,
                 `- Prénom : ${user.prenom}`,
@@ -1425,6 +1425,7 @@ module.exports = {
       },
       sendOrganismeNewAccountValidation: ({ email, user }) => {
         const link = `https://annuaire-entreprises.data.gouv.fr/etablissement/${user.userSiret}`;
+        const linkListeUsersOva = `${frontUsagersDomain}/utilisateurs/liste`;
         const html = sendTemplate.getBody(
           "PORTAIL VAO ORGANISME - VALIDATION DE COMPTE",
           [
@@ -1442,7 +1443,8 @@ module.exports = {
             },
             {
               p: [
-                `Cet utilisateur souhaite ajouter, au sein de la plateforme VAO, l’organisme SIRET : <a href="${link}" target="_blank">siret</a>`,
+                `Si vous connaissez cette personne et qu’elle appartient bien à l’organisme tel que répertorié sur <a href="${link}" target="_blank">l’annuaire des entreprises</a> qui organisme des séjours VAO, vous pouvez valider la demande dans l’interface dédiée.`, 
+                `Si vous ne souhaitez pas que cette personne rejoigne votre organisme, vous pouvez également refuser sa demande.`,
               ],
               type: "p",
             },
@@ -1454,12 +1456,13 @@ module.exports = {
               type: "p",
             },
             {
-              // TODO LINK (lien vers l’interface de gestion des comptes, à venir)
-              link: "link",
+              link: linkListeUsersOva,
               text: "TRAITER LA DEMANDE",
               type: "link",
             },
           ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+
         );
         return {
           from: senderEmail,
