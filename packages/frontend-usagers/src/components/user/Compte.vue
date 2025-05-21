@@ -19,6 +19,10 @@
             :input="displayInput.IUser['telephone']"
           />
           <DisplayInput
+            :value="organisme"
+            :input="displayInput.IUser['organisme']"
+          />
+          <DisplayInput
             :value="createdAt"
             :input="displayInput.IUser['createdAt']"
           />
@@ -62,7 +66,7 @@
 
 <script setup>
 import { DsfrButton } from "@gouvminint/vue-dsfr";
-import { DisplayInput } from "@vao/shared";
+import { DisplayInput, statusUser } from "@vao/shared";
 import { defineProps } from "vue";
 import { useField, useForm } from "vee-validate";
 import FoUser from "~/utils/fo-user";
@@ -109,6 +113,10 @@ const initialValues = {
   email: props.user?.email ?? "",
   nom: props.user?.nom ?? "",
   prenom: props.user?.prenom ?? "",
+  organisme: props.user?.siegeSocial ? "Principal" : "Secondaire",
+  statut: statusUser.label.find(
+    (item) => item.value === (props.user?.statut ?? ""),
+  )?.text,
   roleEig: getInitialRoleEig(props.user),
   telephone: props.user?.telephone,
   lastConnectionAt: props.user?.lastConnectionAt ?? "",
@@ -127,6 +135,8 @@ useForm({
 const { value: email } = useField("email");
 const { value: nom } = useField("nom");
 const { value: prenom } = useField("prenom");
+const { value: statut } = useField("statut");
+const { value: organisme } = useField("organisme");
 const { value: telephone } = useField("telephone");
 const { value: createdAt } = useField("createdAt");
 const { value: lastConnectionAt } = useField("lastConnectionAt");
