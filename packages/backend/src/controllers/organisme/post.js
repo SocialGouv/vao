@@ -1,6 +1,9 @@
 const Organisme = require("../../services/Organisme");
 const AppError = require("../../utils/error");
 
+const { updateRoles } = require("../../services/FoUser");
+const { roles } = require("../../helpers/users");
+
 const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
@@ -48,6 +51,10 @@ module.exports = async function post(req, res, next) {
     if (!organismeId) {
       log.d("organisme inexistant, à créer");
       organismeId = await Organisme.create(type, parametre);
+      // On attribue le droit EIG au premier compte pour un PP ou une PM siegesocial
+      if (type === "personne_physique" || parametre?.siegeSocial) {
+        await updateRoles(userId, [roles.EIG_ECRITURE]);
+      }
       if (
         organismeId &&
         type === "personne_morale" &&
