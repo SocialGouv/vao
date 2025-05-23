@@ -61,6 +61,9 @@ module.exports = async (req, res, next) => {
           departement: eig.departement,
         });
         break;
+      case UpdateTypes.FILE:
+        updatedEigId = await eigService.updateFile(eigId, eig);
+        break;
       case UpdateTypes.TYPE_EVENEMENT:
         updatedEigId = await eigService.updateType(eigId, eig);
         break;
