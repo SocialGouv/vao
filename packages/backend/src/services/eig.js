@@ -6,6 +6,7 @@ const logger = require("../utils/logger");
 const AppError = require("../utils/error");
 const pool = require("../utils/pgpool").getPool();
 const { addHistoric } = require("./Tracking");
+const { getFileMetaData } = require("./Document");
 
 const { entities, userTypes } = require("../helpers/tracking");
 
@@ -13,180 +14,188 @@ const log = logger(module.filename);
 
 const query = {
   create: `
-  INSERT INTO
-    FRONT.EIG (USER_ID, STATUT_ID, DEMANDE_SEJOUR_ID, DEPARTEMENT, DATE, IS_ATTESTE)
-  VALUES
-    (
-        $1,
-        (SELECT ID FROM FRONT.EIG_STATUT WHERE STATUT = '${statuts.BROUILLON}'),
-        $2,
-        $3,
-        $4,
-        FALSE
-    )
-  RETURNING id
+    INSERT INTO
+      FRONT.EIG (USER_ID, STATUT_ID, DEMANDE_SEJOUR_ID, DEPARTEMENT, DATE, IS_ATTESTE)
+    VALUES
+      (
+          $1,
+          (SELECT ID FROM FRONT.EIG_STATUT WHERE STATUT = '${statuts.BROUILLON}'),
+          $2,
+          $3,
+          $4,
+          FALSE
+      )
+    RETURNING id
   `,
   delete: `
-DELETE FROM FRONT.EIG
-WHERE
-    ID = $1
-`,
+    DELETE FROM FRONT.EIG
+    WHERE ID = $1
+  `,
   deleteEigToEigType: `
-DELETE FROM FRONT.EIG_TO_EIG_TYPE
-WHERE
-    EIG_ID = $1`,
+    DELETE FROM FRONT.EIG_TO_EIG_TYPE
+    WHERE
+      EIG_ID = $1`,
   depose: `
-  UPDATE FRONT.EIG
-  SET
-      STATUT_ID = (
-          SELECT
-          ID
-      FROM
-          FRONT.EIG_STATUT
-      WHERE
-          STATUT = 'ENVOYE'
-      ),
-      IS_ATTESTE = TRUE,
-      DATE_DEPOT = NOW()
-  WHERE
-      ID = $1
+    UPDATE FRONT.EIG
+    SET
+        STATUT_ID = (
+            SELECT
+            ID
+        FROM
+            FRONT.EIG_STATUT
+        WHERE
+            STATUT = 'ENVOYE'
+        ),
+        IS_ATTESTE = TRUE,
+        DATE_DEPOT = NOW()
+    WHERE
+        ID = $1
   `,
   get: (where, search) => `
-SELECT
-  EIG.ID,
-  EIG.created_at as "createdAt",
-  EIG.date as "date",
-  EIG.DEPARTEMENT as "departement",
-  EIG.READ_BY_DREETS as "readByDreets",
-  EIG.READ_BY_DDETS as "readByDdets",
-  S.STATUT AS "statut",
-  DS.ID_FONCTIONNELLE AS "idFonctionnelle",
-  DS.LIBELLE,
-  DS.DATE_DEBUT AS "dateDebut",
-  DS.DATE_FIN AS "dateFin",
-  EIG.DATE_DEPOT AS "dateDepot",
-  DS.ORGANISME -> 'personneMorale' ->> 'raisonSociale' AS "raisonSociale",
-  DS.ORGANISME -> 'personnePhysique' ->> 'prenom' AS "prenom",
-  DS.ORGANISME -> 'personnePhysique' ->> 'nomUsage' AS "nom",
-  ARRAY_AGG(ET.TYPE) as "types",
-  AGR.region_obtention as "agrementRegionObtention"
-FROM
-  FRONT.EIG EIG
-  INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
-  LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
-  LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
-  LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
-  LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
-  LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
-WHERE
-  ${where}
-  ${search}
-GROUP BY
-  EIG.ID,
-  S.ID,
-  DS.ID,
-  AGR.ID
-  `,
-  getAvailableDs: `
   SELECT
-    ds.id AS "id",
-    ds.id_fonctionnelle AS "idFonctionnelle",
-    ds.libelle AS "libelle",
-    ds.date_debut AS "dateDebut",
-    ds.date_fin AS "dateFin"
+    EIG.ID,
+    EIG.created_at as "createdAt",
+    EIG.date as "date",
+    EIG.DEPARTEMENT as "departement",
+    EIG.READ_BY_DREETS as "readByDreets",
+    EIG.READ_BY_DDETS as "readByDdets",
+    S.STATUT AS "statut",
+    DS.ID_FONCTIONNELLE AS "idFonctionnelle",
+    DS.LIBELLE,
+    DS.DATE_DEBUT AS "dateDebut",
+    DS.DATE_FIN AS "dateFin",
+    EIG.DATE_DEPOT AS "dateDepot",
+    pm.raison_sociale AS "raisonSociale",
+    pp.prenom AS "prenom",
+    pp.nom_usage AS "nom",
+    ARRAY_AGG(ET.TYPE) as "types",
+    AGR.region_obtention as "agrementRegionObtention",
+    EIG.file
   FROM
-    front.demande_sejour ds
-    JOIN front.organismes o ON o.id = ds.organisme_id
-  WHERE
-    (
-      UNACCENT (libelle) ILIKE '%' || UNACCENT ($1) || '%'
-      OR UNACCENT (id_fonctionnelle) ILIKE '%' || UNACCENT ($1) || '%'
-    )
-    -- ces regles implementent en sql la logique de isDeclarationligibleToEig
-    AND ds.statut IN ('VALIDEE 8J', 'SEJOUR EN COURS', 'TERMINEE')
-    AND ds.date_debut <= DATE_TRUNC('day', NOW())
-    AND DATE_TRUNC('day', NOW()) <= ds.date_fin + INTERVAL '1 week'
-    AND o.id = ANY ($2)
-  LIMIT
-    10
-  `,
-  getById: `
-SELECT
-EIG.ID,
-  EIG.USER_ID AS "userId",
-  S.STATUT AS "statut",
-  EIG.DEPARTEMENT AS "departement",
-  (SELECT LABEL FROM GEO.TERRITOIRES WHERE CODE = EIG.DEPARTEMENT) as "departementLibelle",
-  EIG.date as "date",
-  EIG.READ_BY_DREETS as "readByDreets",
-  EIG.READ_BY_DDETS as "readByDdets",
-  DS.ID AS "declarationId",
-  DS.ID_FONCTIONNELLE AS "idFonctionnelle",
-  DS.LIBELLE as "libelle",
-  DS.DATE_DEBUT AS "dateDebut",
-  DS.DATE_FIN AS "dateFin",
-  DS.ORGANISME_ID as "organismeId",
-  DS.ORGANISME -> 'personneMorale' ->> 'raisonSociale' AS "raisonSociale",
-  DS.ORGANISME -> 'personnePhysique' ->> 'prenom' AS "prenom",
-  DS.ORGANISME -> 'personnePhysique' ->> 'nomUsage' AS "nom",
-  DS.PERSONNEL -> 'encadrants' as "encadrants",
-  DS.PERSONNEL -> 'accompagnants' as "accompagnants",
-  DS.STATUT as "dsStatut",
-  (SELECT DISTINCT
-    ARRAY_AGG(A.LABEL) as "label"
-  FROM
-    FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
-    INNER JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
-    INNER JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-  WHERE
-    DEMANDE_SEJOUR_ID = DS.ID) as "adresses",
-  DS.PERIODE as "saison",
-  ARRAY_AGG(JSON_BUILD_OBJECT('type',ET.TYPE,'categorie',EC.CATEGORIE,'precision',E2ET.PRECISIONS)) as "types",
-  EIG.DEROULEMENT as "deroulement",
-  EIG.DISPOSITION_REMEDIATION as "dispositionRemediation",
-  EIG.DISPOSITION_VICTIMES as "dispositionVictimes",
-  EIG.DISPOSITION_INFORMATIONS as "dispositionInformations",
-  EIG.IS_ATTESTE as "isAtteste",
-  EIG.PERSONNEL as "personnel",
-  EIG.EMAIL_AUTRES_DESTINATAIRES as "emailAutresDestinataires",
-  AGR.region_obtention as "agrementRegionObtention"
-FROM FRONT.EIG EIG
+    FRONT.EIG EIG
     INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
     LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
     LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
     LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
-    LEFT JOIN FRONT.EIG_CATEGORIE EC ON EC.ID = ET.EIG_CATEGORIE_ID
     LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
     LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
-WHERE
-  EIG.ID = $1
-GROUP BY
-  EIG.ID,
-  S.ID,
-  DS.ID,
-  AGR.ID;
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id
+  WHERE
+    ${where}
+    ${search}
+  GROUP BY
+    EIG.ID,
+    S.ID,
+    DS.ID,
+    AGR.ID,
+    pm.id,
+    pp.id
+  `,
+  getAvailableDs: `
+    SELECT
+      ds.id AS "id",
+      ds.id_fonctionnelle AS "idFonctionnelle",
+      ds.libelle AS "libelle",
+      ds.date_debut AS "dateDebut",
+      ds.date_fin AS "dateFin"
+    FROM
+      front.demande_sejour ds
+      JOIN front.organismes o ON o.id = ds.organisme_id
+    WHERE
+      (
+        UNACCENT (libelle) ILIKE '%' || UNACCENT ($1) || '%'
+        OR UNACCENT (id_fonctionnelle) ILIKE '%' || UNACCENT ($1) || '%'
+      )
+      -- ces regles implementent en sql la logique de isDeclarationligibleToEig
+      AND ds.statut IN ('VALIDEE 8J', 'SEJOUR EN COURS', 'TERMINEE')
+      AND ds.date_debut <= DATE_TRUNC('day', NOW())
+      AND DATE_TRUNC('day', NOW()) <= ds.date_fin + INTERVAL '1 week'
+      AND o.id = ANY ($2)
+    LIMIT 10
+  `,
+  getById: `
+    SELECT
+    EIG.ID,
+      EIG.USER_ID AS "userId",
+      S.STATUT AS "statut",
+      EIG.DEPARTEMENT AS "departement",
+      (SELECT LABEL FROM GEO.TERRITOIRES WHERE CODE = EIG.DEPARTEMENT) as "departementLibelle",
+      EIG.date as "date",
+      EIG.READ_BY_DREETS as "readByDreets",
+      EIG.READ_BY_DDETS as "readByDdets",
+      eig.file as "uuid",
+      DS.ID AS "declarationId",
+      DS.ID_FONCTIONNELLE AS "idFonctionnelle",
+      DS.LIBELLE as "libelle",
+      DS.DATE_DEBUT AS "dateDebut",
+      DS.DATE_FIN AS "dateFin",
+      DS.ORGANISME_ID as "organismeId",
+      pm.raison_sociale AS "raisonSociale",
+      pp.prenom AS "prenom",
+      pp.nom_usage AS "nom",
+      DS.PERSONNEL -> 'encadrants' as "encadrants",
+      DS.PERSONNEL -> 'accompagnants' as "accompagnants",
+      DS.STATUT as "dsStatut",
+      (SELECT DISTINCT
+        ARRAY_AGG(A.LABEL) as "label"
+      FROM
+        FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
+        INNER JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+        INNER JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+      WHERE
+        DEMANDE_SEJOUR_ID = DS.ID) as "adresses",
+      DS.PERIODE as "saison",
+      ARRAY_AGG(JSON_BUILD_OBJECT('type',ET.TYPE,'categorie',EC.CATEGORIE,'precision',E2ET.PRECISIONS)) as "types",
+      EIG.DEROULEMENT as "deroulement",
+      EIG.DISPOSITION_REMEDIATION as "dispositionRemediation",
+      EIG.DISPOSITION_VICTIMES as "dispositionVictimes",
+      EIG.DISPOSITION_INFORMATIONS as "dispositionInformations",
+      EIG.IS_ATTESTE as "isAtteste",
+      EIG.PERSONNEL as "personnel",
+      EIG.EMAIL_AUTRES_DESTINATAIRES as "emailAutresDestinataires",
+      AGR.region_obtention as "agrementRegionObtention"
+    FROM FRONT.EIG EIG
+        INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+        LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
+        LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
+        LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
+        LEFT JOIN FRONT.EIG_CATEGORIE EC ON EC.ID = ET.EIG_CATEGORIE_ID
+        LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
+        LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
+        LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id
+    WHERE
+      EIG.ID = $1
+    GROUP BY
+      EIG.ID,
+      S.ID,
+      DS.ID,
+      AGR.ID,
+      pm.id,
+      pp.id
   `,
   getEmailByTerCode: `
-WITH
-  roles AS
-  (
-    SELECT array_agg(id) as ids
-    from back.roles
-    WHERE label IN ('eig')
-  ),
-  users AS
-  (
-    SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
-    FROM back.users u
-    JOIN back.user_roles ur ON u.id = ur.use_id
-    WHERE u.ter_code = $1
-    GROUP BY mail
-  )
-    SELECT mail
-    FROM
-      roles r,
-      users u
-    WHERE u.ids && r.ids`,
+    WITH
+      roles AS
+      (
+        SELECT array_agg(id) as ids
+        from back.roles
+        WHERE label IN ('eig')
+      ),
+      users AS
+      (
+        SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
+        FROM back.users u
+        JOIN back.user_roles ur ON u.id = ur.use_id
+        WHERE u.ter_code = $1
+        GROUP BY mail
+      )
+        SELECT mail
+        FROM
+          roles r,
+          users u
+        WHERE u.ids && r.ids`,
   getIsUserAllowedOrganisme: `
    SELECT
         eig.id
@@ -200,21 +209,21 @@ WITH
         AND eig.id = $2
     `,
   getStatut: `
-  SELECT S.STATUT as statut
-  FROM FRONT.EIG
-  LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
-  WHERE EIG.ID = $1
+    SELECT S.STATUT as statut
+    FROM FRONT.EIG
+    LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
+    WHERE EIG.ID = $1
   `,
   getTotal: (where, search) => `
-SELECT COUNT(DISTINCT EIG.ID)
-FROM
-  FRONT.EIG EIG
-  INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
-  LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
-  LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
-WHERE
-  ${where}
-  ${search.map((s) => ` AND ${s} `).join("")}
+    SELECT COUNT(DISTINCT EIG.ID)
+    FROM
+      FRONT.EIG EIG
+      INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+      LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
+      LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
+    WHERE
+    ${where}
+    ${search.map((s) => ` AND ${s} `).join("")}
   `,
   insertIntoEigToEigType: (values) => `
     INSERT INTO FRONT.EIG_TO_EIG_TYPE (EIG_ID, EIG_TYPE_ID, PRECISIONS)
@@ -222,75 +231,82 @@ WHERE
     ${values.join(",")}
   `,
   markAsReadDdets: `
-UPDATE FRONT.EIG
-SET
-  READ_BY_DDETS = TRUE,
-  STATUT_ID = CASE
-    WHEN READ_BY_DREETS THEN (
-      SELECT
-        ID
-      FROM
-        FRONT.EIG_STATUT
-      WHERE
-        STATUT = 'LU'
-    )
-    ELSE STATUT_ID
-  END,
-  EDITED_AT = NOW()
-WHERE
-  ID = $1
+    UPDATE FRONT.EIG
+    SET
+      READ_BY_DDETS = TRUE,
+      STATUT_ID = CASE
+        WHEN READ_BY_DREETS THEN (
+          SELECT
+            ID
+          FROM
+            FRONT.EIG_STATUT
+          WHERE
+            STATUT = 'LU'
+        )
+        ELSE STATUT_ID
+      END,
+      EDITED_AT = NOW()
+    WHERE ID = $1
   `,
   markAsReadDreets: `
-UPDATE FRONT.EIG
-SET
-  READ_BY_DREETS = TRUE,
-  STATUT_ID = CASE
-    WHEN READ_BY_DDETS THEN (
-      SELECT
-        ID
-      FROM
-        FRONT.EIG_STATUT
-      WHERE
-        STATUT = 'LU'
-    )
-    ELSE STATUT_ID
-  END,
-  EDITED_AT = NOW()
-WHERE
-  ID = $1
+    UPDATE FRONT.EIG
+    SET
+      READ_BY_DREETS = TRUE,
+      STATUT_ID = CASE
+        WHEN READ_BY_DDETS THEN (
+          SELECT
+            ID
+          FROM
+            FRONT.EIG_STATUT
+          WHERE
+            STATUT = 'LU'
+        )
+        ELSE STATUT_ID
+      END,
+      EDITED_AT = NOW()
+    WHERE ID = $1
  `,
   updateDs: `
-UPDATE FRONT.EIG
-SET
-  DEMANDE_SEJOUR_ID = $1,
-  DEPARTEMENT=$2,
-  DATE=$3,
-  EDITED_AT = NOW()
-WHERE
-  ID = $4
-RETURNING id
+    UPDATE FRONT.EIG
+    SET
+      DEMANDE_SEJOUR_ID = $1,
+      DEPARTEMENT=$2,
+      DATE=$3,
+      EDITED_AT = NOW()
+    WHERE
+      ID = $4
+    RETURNING id
   `,
   updateEmailAutresDestinataires: `
-UPDATE FRONT.EIG
-SET
-  EMAIL_AUTRES_DESTINATAIRES = $1,
-  EDITED_AT = NOW()
-WHERE
-  ID = $2
-RETURNING id
+    UPDATE FRONT.EIG
+    SET
+      EMAIL_AUTRES_DESTINATAIRES = $1,
+      EDITED_AT = NOW()
+    WHERE
+      ID = $2
+    RETURNING id
+  `,
+  updateFile: `
+    UPDATE front.eig
+    SET
+      file = $1,
+      edited_at = NOW()
+    WHERE
+      id = $2
+    RETURNING id
   `,
   updateRenseignementGeneraux: `
-UPDATE FRONT.EIG
-SET
-  PERSONNEL = $2,
-  DEROULEMENT = $3,
-  DISPOSITION_REMEDIATION = $4,
-  DISPOSITION_VICTIMES = $5,
-  DISPOSITION_INFORMATIONS = $6,
-  EDITED_AT = NOW()
-WHERE
-  ID = $1
-RETURNING id
+    UPDATE FRONT.EIG
+    SET
+      PERSONNEL = $2,
+      DEROULEMENT = $3,
+      DISPOSITION_REMEDIATION = $4,
+      DISPOSITION_VICTIMES = $5,
+      DISPOSITION_INFORMATIONS = $6,
+      EDITED_AT = NOW()
+    WHERE
+      ID = $1
+    RETURNING id
   `,
 };
 
@@ -315,7 +331,7 @@ module.exports.create = async ({
 };
 
 module.exports.getById = async ({ eigId }) => {
-  log.i("create - IN");
+  log.i("getById - IN");
 
   const response = await pool.query(query.getById, [eigId]);
   if (response.rows.length === 0) {
@@ -324,12 +340,15 @@ module.exports.getById = async ({ eigId }) => {
   if (response.rows.length >= 2) {
     throw new AppError("La requete retourne trop d'eig");
   }
+  const file = response.rows[0]?.uuid
+    ? await getFileMetaData(response.rows[0].uuid)
+    : {};
   const rawResult = response.rows[0];
-
   log.d(response);
-  log.i("create - DONE");
+  log.i("getById - DONE");
   return {
     ...rawResult,
+    file,
     types: (rawResult?.types ?? []).filter((t) => !!t.type),
   };
 };
@@ -398,6 +417,16 @@ module.exports.updateEmailAutresDestinataires = async (
   log.d(response);
   const { id } = response.rows[0];
   log.i("updateEmailAutresDestinataires - DONE", { eigId: id });
+  return id;
+};
+
+module.exports.updateFile = async (eigId, { file }) => {
+  log.i("updateFile - IN");
+
+  const response = await pool.query(query.updateFile, [file.uuid, eigId]);
+  log.d(response);
+  const { id } = response.rows[0];
+  log.i("updateFile - DONE", { eigId: id });
   return id;
 };
 
@@ -528,12 +557,8 @@ const getEigs = async (
 
   if (search?.organisme && search.organisme.length) {
     searchQuery.push(`
-    (CONCAT(
-		DS.ORGANISME -> 'personnePhysique' ->> 'prenom',
-		' ',
-		DS.ORGANISME -> 'personnePhysique' ->> 'nomUsage'
-	) ILIKE $${params.length + 1}
-	OR DS.ORGANISME -> 'personneMorale' ->> 'raisonSociale' ILIKE $${params.length + 1})`);
+      (CONCAT(pp.prenom,' ',pp.nom_usage) ILIKE $${params.length + 1}
+	    OR pm.raison_sociale' ILIKE $${params.length + 1})`);
     params.push(`%${search.organisme}%`);
   }
 

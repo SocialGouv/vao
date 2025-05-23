@@ -21,11 +21,21 @@
       légaux
     </h6>
     <article>{{ eig.dispositionInformations }}</article>
+    <div class="fr-fieldset">
+      <FileUpload
+        v-model="eig.file"
+        :cdn-url="`${config.public.backendUrl}/documents/`"
+        :modifiable="false"
+        :label="label"
+        hint="Télécharger le fichier Eig"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { Summary } from "@vao/shared";
+import { Summary, FileUpload } from "@vao/shared";
+const config = useRuntimeConfig();
 
 defineProps({
   eig: { type: Object, required: true },

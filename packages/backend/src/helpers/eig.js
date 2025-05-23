@@ -105,6 +105,7 @@ module.exports.mapEigToLabel = mapEigToLabel;
 module.exports.UpdateTypes = {
   DECLARATION_SEJOUR: "DECLARATION_SEJOUR",
   EMAIL_AUTRES_DESTINATAIRES: "EMAIL_AUTRES_DESTINATAIRES",
+  FILE: "FICHIER",
   RENSEIGNEMENT_GENERAUX: "RENSEIGNEMENT_GENERAUX",
   TYPE_EVENEMENT: "TYPE_EVENEMENT",
 };
@@ -133,6 +134,10 @@ module.exports.isUserDreetsWhoDeliveredAgrement =
 module.exports.isUserDdetsWhereEigHappened = isUserDdetsWhereEigHappened;
 
 module.exports.mustMarkAsRead = (territoireCode, eig) => {
+  console.log("eig.readByDdets", eig.readByDdets);
+  console.log("eig.readByDreets", eig.readByDreets);
+  console.log("eig.departement", eig.departement);
+  console.log("eig.agrementRegionObtention", eig.agrementRegionObtention);
   return (
     (!eig.readByDdets &&
       isUserDdetsWhereEigHappened(territoireCode, eig.departement)) ||

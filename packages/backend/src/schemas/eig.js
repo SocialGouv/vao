@@ -183,6 +183,18 @@ const informationsGeneralesSchema = {
     .required("Ce champ est obligatoire"),
 };
 
+const fileSchema = {
+  file: yup
+    .object({
+      createdAt: yup.date(),
+      name: yup.string(),
+      uuid: yup.string().uuid(),
+    })
+    .notRequired()
+    .default(undefined)
+    .nullable(),
+};
+
 const emailAutresDestinatairesSchema = {
   emailAutresDestinataires: yup
     .array()
@@ -210,6 +222,8 @@ module.exports.updateSchemaAdapteur = (type, dateRange) => {
       return eigTypesSchemaCRUD;
     case UpdateTypes.RENSEIGNEMENT_GENERAUX:
       return informationsGeneralesSchema;
+    case UpdateTypes.FILE:
+      return fileSchema;
     case UpdateTypes.EMAIL_AUTRES_DESTINATAIRES:
       return emailAutresDestinatairesSchema;
     default:
