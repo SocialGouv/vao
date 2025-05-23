@@ -9,7 +9,12 @@
       :key="eig.id"
       :title="getTitle(eig)"
     >
-      <EigSynthese v-if="eigStore.currentEig" :eig="eigStore.currentEig" />
+      <EigSynthese
+        v-if="eigStore.currentEig"
+        :eig="eigStore.currentEig"
+        :file="eigStore.currentEig?.file"
+        @update:file="file"
+      />
     </DsfrAccordion>
   </DsfrAccordionsGroup>
   <ValidationModal
