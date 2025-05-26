@@ -47,6 +47,7 @@
           <EIGRecap
             v-if="hash === 'eig-recap'"
             :is-downloading="apiStatus.isDownloading"
+            :cdn-url="`${config.public.backendUrl}/documents/`"
             :message="apiStatus.message"
             @finalize="finalize"
             @previous="previousHash"
@@ -93,6 +94,7 @@ const route = useRoute();
 const { apiStatus, setApiStatut, resetApiStatut } = useIsDownloading();
 const toaster = useToaster();
 const eigStore = useEigStore();
+const config = useRuntimeConfig();
 
 const log = logger("pages/eig/[[eigId]]");
 
@@ -157,7 +159,31 @@ const nextHash = () => {
 async function finalize(body) {
   log.i("finalize eig -IN");
   setApiStatut("Transmission de l'eig en cours");
+   const newFile = {};
+  if (body.file) {
+    try {
+      const uuid = await UploadFile("eig", body.file);
+      Object.assign(newFile, {
+        uuid,
+        name: body.name ?? "document_eig",
+        createdAt: new Date(),
+      });
+      toaster.info({
+        titleTag: "h2",
+        description: "Document déposé",
+      });
+    } catch (error) {
+      toaster.error({
+        titleTag: "h2",
+        description: `Une erreur est survenue lors du dépôt du document ${body.file.name}`,
+      });
+      throw error;
+    }
+  }
   try {
+    await eigStore.updateEig(eigId.value, eigModel.UpdateTypes.FILE, {
+      file: newFile,
+    });
     await eigStore.updateEig(
       eigId.value,
       eigModel.UpdateTypes.EMAIL_AUTRES_DESTINATAIRES,
