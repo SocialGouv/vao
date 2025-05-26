@@ -1432,7 +1432,7 @@ module.exports = {
             {
               p: [
                 "Bonjour,",
-                "Un utilisateur souhaite inscrite un nouvel organisme OVA au sein de la plateforme SI VAO.",
+                "Un utilisateur souhaite rejoindre un nouvel organisme OVA au sein de la plateforme SI VAO.",
                 "Voici les informations concernant l’utilisateur : ",
                 `- Nom : ${user.nom}`,
                 `- Prénom : ${user.prenom}`,
@@ -1471,6 +1471,37 @@ module.exports = {
           subject: "Portail VAO Administration - Validation de compte",
           to: email,
         };
+      },
+      sendWaitAccountValidation: (email) => {
+        const html = sendTemplate.getBody(
+          "VAO - confirmation de votre demande d’inscription",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Votre inscription a bien été prise en compte. Elle a été adressée à votre entité qui va traiter la demande sous peu.",
+                "En cas de question, merci de contacter votre organisme.",
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "VAO - confirmation de votre demande d’inscription",
+          to: email,
+        };
+
+        return params;
       },
     },
   },

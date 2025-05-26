@@ -71,6 +71,9 @@ module.exports = async (req, res, next) => {
   }
   if (user.statusCode === status.NEED_SIRET_VALIDATION) {
     try {
+      await Send(
+        MailUtils.usagers.newVaoAccount.sendWaitAccountValidation(user.email),
+      );
       const rechercheSiren = user.userSiret.substr(0, 9);
       const organisme = await Organisme.getSiege(rechercheSiren);
       if (!organisme) {
