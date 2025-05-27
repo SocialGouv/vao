@@ -2,6 +2,7 @@
   <Synthese
     :eig="eigStore.currentEig ?? {}"
     :file="eigStore.currentEig?.file"
+    :cdn-url="`${config.public.backendUrl}/documents/`"
     @update:file="file"
   />
 </template>
@@ -15,6 +16,7 @@ definePageMeta({
 });
 
 const eigStore = useEigStore();
+const config = useRuntimeConfig();
 
 const route = useRoute();
 

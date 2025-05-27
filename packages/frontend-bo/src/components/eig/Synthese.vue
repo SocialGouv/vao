@@ -24,9 +24,9 @@
     <div class="fr-fieldset">
       <FileUpload
         :model-value="localFile"
-        :cdn-url="`${config.public.backendUrl}/documents/`"
+        :cdn-url="props.cdnUrl"
         :modifiable="false"
-        :label="label"
+        label="Téléchargement de la déclaration EIG"
         hint="Télécharger le fichier Eig"
         @update:model-value="handleFileChange"
       />
@@ -37,12 +37,12 @@
 <script setup>
 import { ref } from "vue";
 import { Summary, FileUpload } from "@vao/shared";
-const config = useRuntimeConfig();
 const emit = defineEmits(["update:file"]);
 
 const props = defineProps({
   eig: { type: Object, required: true },
   file: { type: Object, required: true },
+  cdnUrl: { type: String, required: false, default: null },
 });
 
 const localFile = ref(props.file);
