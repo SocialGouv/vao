@@ -1,5 +1,9 @@
 <template>
-  <Synthese :eig="eigStore.currentEig ?? {}" />
+  <Synthese
+    :eig="eigStore.currentEig ?? {}"
+    :file="eigStore.currentEig?.file"
+    @update:file="file"
+  />
 </template>
 
 <script setup>
