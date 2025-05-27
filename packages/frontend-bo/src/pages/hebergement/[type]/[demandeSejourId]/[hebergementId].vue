@@ -3,7 +3,7 @@
     <Hebergement
       :init-hebergement="hebergement"
       is-disabled
-      :cdn-url="`${config.public.backendUrl}/documents/`"
+      :cdn-url="`${config.public.backendUrl}/documents/admin`"
       default-back-route="/hebergements"
     >
       <template #search="scope">

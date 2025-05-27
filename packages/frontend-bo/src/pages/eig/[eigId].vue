@@ -2,7 +2,7 @@
   <Synthese
     :eig="eigStore.currentEig ?? {}"
     :file="eigStore.currentEig?.file"
-    :cdn-url="`${config.public.backendUrl}/documents/`"
+    :cdn-url="`${config.public.backendUrl}/documents/admin`"
     @update:file="file"
   />
 </template>
