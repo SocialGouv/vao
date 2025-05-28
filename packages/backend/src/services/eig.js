@@ -225,6 +225,37 @@ const query = {
     ${where}
     ${search.map((s) => ` AND ${s} `).join("")}
   `,
+  getTotalToRead: `
+  SELECT COUNT(distinct(e.id))
+      FROM front.eig e
+      INNER JOIN front.eig_statut s ON s.id = e.STATUT_ID AND s.statut = 'ENVOYE'
+      INNER JOIN front.demande_sejour ds ON ds.id = e.demande_sejour_id
+      INNER JOIN front.organismes o ON o.id = ds.organisme_id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id 
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+      WHERE 
+      (
+        o.id IN (SELECT pm.organisme_id 
+                  FROM front.personne_morale pm 
+                   	INNER JOIN front.agrements a ON a.organisme_id = pm.organisme_id
+				            INNER JOIN geo.territoires t ON t.code = a.region_obtention
+				            INNER JOIN back.users u ON u.ter_code = t.code AND u.id = $1
+                    INNER JOIN front.personne_morale pms ON pms.siren = substr(pm.siret,1,9))
+     	  OR o.id IN (SELECT pm.organisme_id 
+                  FROM front.personne_physique pp 
+                   	INNER JOIN front.agrements a ON a.organisme_id = pp.organisme_id
+                    INNER JOIN geo.territoires t ON t.code = a.region_obtention
+                    INNER JOIN back.users u ON u.ter_code = t.code AND u.id = $1) 
+        AND e.read_by_dreets = false
+      )
+      OR 
+      (
+        ds.departement_suivi IN (SELECT ter_code 
+                                FROM back.users u 
+                                WHERE u.id = $1)
+        AND e.read_by_ddets = false
+      )
+  `,
   insertIntoEigToEigType: (values) => `
     INSERT INTO FRONT.EIG_TO_EIG_TYPE (EIG_ID, EIG_TYPE_ID, PRECISIONS)
     VALUES
@@ -641,6 +672,11 @@ module.exports.getIsUserAllowedOrganisme = async (eigId, userId) => {
     userId,
   ]);
   return rowCount === 0 ? false : true;
+};
+
+module.exports.getTotalToRead = async (userId) => {
+  const response = await pool.query(query.getTotalToRead, [userId]);
+  return response.rows[0].count;
 };
 
 module.exports.getAdmin = async ({

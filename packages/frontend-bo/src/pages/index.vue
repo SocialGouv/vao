@@ -24,7 +24,8 @@ const usersStore = useUserStore();
 const user = usersStore.user;
 const demandeSejourStore = useDemandeSejourStore();
 demandeSejourStore.getStats();
-
+const eigStore = useEigStore();
+eigStore.getTotalEigToRead();
 const stats = computed(() => demandeSejourStore.stats);
 
 const formatHtmlTitle = (elements) =>
