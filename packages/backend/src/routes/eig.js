@@ -42,6 +42,12 @@ router.get(
 router.get("/available-ds", checkJWT, eigController.getAvailableDs);
 router.get("/admin", boCheckJWT, boCheckRoleEig, eigController.getAdmin);
 router.get(
+  "/admin/total-to-read",
+  boCheckJWT,
+  boCheckRoleEig,
+  eigController.getTotalToRead,
+);
+router.get(
   "/:id",
   checkJWT,
   checkPermissionEIG({ action: actions.reading }),
