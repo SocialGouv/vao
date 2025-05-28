@@ -71,9 +71,6 @@ module.exports = async (req, res, next) => {
   }
   if (user.statusCode === status.NEED_SIRET_VALIDATION) {
     try {
-      await Send(
-        MailUtils.usagers.newVaoAccount.sendWaitAccountValidation(user.email),
-      );
       const rechercheSiren = user.userSiret.substr(0, 9);
       const organisme = await Organisme.getSiege(rechercheSiren);
       if (!organisme) {
@@ -81,18 +78,31 @@ module.exports = async (req, res, next) => {
           user.userTerritoire,
         );
         const fiche = await Territoire.readOne(territoire.id);
-        await Send(
-          MailUtils.bo.newVaoAccount.sendDretsNewAccountValidation({
-            email: fiche.service_mail,
-            user,
-          }),
-        );
+        await Promise.all([
+          await Send(
+            MailUtils.usagers.newVaoAccount.sendWaitAccountValidationDREETS(
+              user.email,
+              fiche.service_mail,
+            ),
+          ),
+          await Send(
+            MailUtils.bo.newVaoAccount.sendDretsNewAccountValidation({
+              email: fiche.service_mail,
+              user,
+            }),
+          ),
+        ]);
       } else {
         const mailUserOrganismeSiege = await UserFo.getMailUserOrganismeId(
           organisme.organismeId,
         );
-        await Promise.all(
-          mailUserOrganismeSiege.map(
+        await Promise.all([
+          await Send(
+            MailUtils.usagers.newVaoAccount.sendWaitAccountValidationOrganisme(
+              user.email,
+            ),
+          ),
+          ...mailUserOrganismeSiege.map(
             async ({ mail }) =>
               await Send(
                 MailUtils.usagers.newVaoAccount.sendOrganismeNewAccountValidation(
@@ -103,7 +113,7 @@ module.exports = async (req, res, next) => {
                 ),
               ),
           ),
-        );
+        ]);
       }
       return res.status(200).json({ status: status.NEED_SIRET_VALIDATION });
     } catch (error) {

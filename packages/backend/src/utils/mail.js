@@ -1472,7 +1472,7 @@ module.exports = {
           to: email,
         };
       },
-      sendWaitAccountValidation: (email) => {
+      sendWaitAccountValidationOrganisme: (email) => {
         const html = sendTemplate.getBody(
           "VAO - confirmation de votre demande d’inscription",
           [
@@ -1481,6 +1481,37 @@ module.exports = {
                 "Bonjour,",
                 "Votre inscription a bien été prise en compte. Elle a été adressée à votre entité qui va traiter la demande sous peu.",
                 "En cas de question, merci de contacter votre organisme.",
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "VAO - confirmation de votre demande d’inscription",
+          to: email,
+        };
+
+        return params;
+      },
+      sendWaitAccountValidationDREETS: (email, mailDreets) => {
+        const html = sendTemplate.getBody(
+          "VAO - confirmation de votre demande d’inscription",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Votre inscription a bien été prise en compte. Elle a été adressée à la DREETS de votre siège social, qui va traiter la demande sous peu.",
+                `L’adresse de contact de la DREETS est la suivante : ${mailDreets}`,
               ],
               type: "p",
             },
