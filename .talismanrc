@@ -1,6 +1,8 @@
 fileignoreconfig:
-- filename: packages/backend/src/controllers/authentication/email/renew-password.js
-  checksum: d0fa83bb7576124063c96cdc8489f1b46836f28f97a0ac2babe3a4441447c511
+- filename: packages/backend/src/config.js
+  checksum: cdf642f10e424d03923a3eae9bcef16bbff16adaa124f247b006b972e9a2e49c
+version: ""
+f28f97a0ac2babe3a4441447c511
 version: ""
 s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
