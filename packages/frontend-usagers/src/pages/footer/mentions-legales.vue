@@ -76,6 +76,24 @@
         </p>
       </div>
       <div class="fr-col-12">
+        <h2>Responsabilité de l’utilisateur dans la saisine des données</h2>
+        <p>
+          L'utilisateur du service numérique VAO s'engage à ne pas inscrire des
+          données à caractère personnel sauf si un champ le demande
+          explicitement, conformément à la définition de la Commission nationale
+          de l’informatique et des libertés (CNIL) et aux dispositions légales
+          et réglementaires en vigueur, notamment le Règlement Général sur la
+          Protection des Données (RGPD) et la loi Informatique et Libertés. Il
+          lui appartient de s'assurer de l'exactitude, de la légitimité, de la
+          proportionnalité et de la pertinence des données fournies.
+          L’utilisateur s’engage à assurer la sécurité des données, en
+          particulier leur confidentialité, en prenant toutes les précautions
+          nécessaires. Toute utilisation inappropriée, frauduleuse ou illicite
+          du service numérique VAO engage exclusivement la responsabilité de
+          l'utilisateur.
+        </p>
+      </div>
+      <div class="fr-col-12">
         <h2>Liens vers d'autres sites</h2>
         <p>
           Des liens vers d’autres sites sont proposés. Leur présence ne saurait

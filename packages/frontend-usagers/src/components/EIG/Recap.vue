@@ -1,5 +1,16 @@
 <template>
-  <h5>Informations de séjour</h5>
+  <h5 class="stepper-title">
+    <div>Informations de séjour</div>
+  </h5>
+  <div class="fr-fieldset">
+    <FileUpload
+      v-model="file"
+      :cdn-url="props.cdnUrl"
+      :modifiable="eigStore.canModify"
+      :label="label"
+      hint="Format autorisé : PDF uniquement. Taille maximale : 5 Mo "
+    />
+  </div>
   <EIGError
     :is-error="
       Object.keys(errors ?? {}).some(
@@ -149,7 +160,7 @@
 <script setup>
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
-import { eigSchema, Summary } from "@vao/shared";
+import { eigSchema, Summary, FileUpload } from "@vao/shared";
 import IsDownloading from "~/components/utils/IsDownloading.vue";
 
 const emit = defineEmits(["finalize", "previous"]);
@@ -157,6 +168,7 @@ const emit = defineEmits(["finalize", "previous"]);
 const props = defineProps({
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
+  cdnUrl: { type: String, required: false, default: null },
 });
 
 const eigStore = useEigStore();
@@ -165,6 +177,10 @@ const userStore = useUserStore();
 const validationSchema = yup.object(eigSchema.syntheseSchema);
 const initialValues = {
   ...eigStore.currentEig,
+  file:
+    Object.keys(eigStore.currentEig.file).length === 0
+      ? null
+      : eigStore.currentEig.file,
 };
 
 const { meta, errors } = useForm({
@@ -175,6 +191,7 @@ const { meta, errors } = useForm({
 
 const { value: isAtteste, handleChange: onIsAttesteChange } =
   useField("isAtteste");
+const { value: file } = useField("file");
 const {
   value: emailAutresDestinataires,
   /*handleChange: onEmailAutresDestinatairesChange,
@@ -205,13 +222,17 @@ const headers = [
 function finalizeDeclaration() {
   emit("finalize", {
     emailAutresDestinataires: emailAutresDestinataires.value,
+    file: file.value,
   });
 }
 </script>
 
 <style scoped lang="scss">
-h5 {
-  margin-top: 1.5rem;
+.stepper-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 h6 {

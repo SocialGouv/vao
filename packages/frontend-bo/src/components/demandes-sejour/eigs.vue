@@ -9,7 +9,13 @@
       :key="eig.id"
       :title="getTitle(eig)"
     >
-      <EigSynthese v-if="eigStore.currentEig" :eig="eigStore.currentEig" />
+      <EigSynthese
+        v-if="eigStore.currentEig"
+        :eig="eigStore.currentEig"
+        :file="eigStore.currentEig?.file"
+        :cdn-url="`${config.public.backendUrl}/documents/admin/`"
+        @update:file="file"
+      />
     </DsfrAccordion>
   </DsfrAccordionsGroup>
   <ValidationModal
@@ -38,6 +44,7 @@ const emits = defineEmits(["getEigs"]);
 
 const eigStore = useEigStore();
 const userStore = useUserStore();
+const config = useRuntimeConfig();
 
 const getTitle = (eig) =>
   `EIG ${eig.id} déposé le ${dayjs(eig.dateDepot).format("DD/MM/YYYY")} / statut : ${eig.readByDreets && eig.readByDdets ? "LU" : "NON LU"}`;

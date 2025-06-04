@@ -1,14 +1,16 @@
 fileignoreconfig:
-- filename: .kontinuous/env/preprod/templates/cron.configmap.yaml
-  checksum: 3a9a6accbc34b261130164b5325f1b506833da8b49bb8b4d781864ef4cb13acc
-- filename: .kontinuous/env/preprod/templates/cron.sealed-secret.yaml
-  checksum: ae76d746526c6f82fc1ebc703c43288844186d6d84d96979c67d2c7029f5bd37
-- filename: .kontinuous/env/prod/templates/cron.configmap.yaml
-  checksum: 7881befff126f5b7e2afaceda5d0244ca24483b22ad522fbddfb9b916deb92b9
-- filename: .kontinuous/env/prod/templates/cron.sealed-secret.yaml
-  checksum: c38ee9c373a96625aa55061d6827c97e1dba3599d0d8b494cd3a57dd369db374
+- filename: packages/backend/src/controllers/authentication/email/renew-password.js
+  checksum: d0fa83bb7576124063c96cdc8489f1b46836f28f97a0ac2babe3a4441447c511
 version: ""
-ame: .kontinuous/env/preprod/values.yaml
+s/env/preprod/templates/smtp.sealed.secret.yaml
+  checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
+- filename: .kontinuous/env/preprod/templates/smtp/deployment.yaml
+  checksum: e05745b618cdfe033bd27bb7baffa0c77024de76b79fcd346f2ab33c5530fac0
+- filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
+  checksum: 2414a3f1746ccd11cbb12b86dd2bb4a16cbc5bd6fe1450c308579972128176e6
+- filename: .kontinuous/env/preprod/templates/token.sealed.secret.yaml
+  checksum: 4aaab89fff588b5c4098042f6c8945a65eb30c6384d3b3aa35225611fa005b7e
+- filename: .kontinuous/env/preprod/values.yaml
   checksum: 7f8cc51232fab4856eb91c1027f9e15c2e640afb19b90ce4e063a9be7b8b227a
 - filename: .kontinuous/env/prod/templates/api-entreprise.sealed.secret.yaml
   checksum: 07c62e872bc95967cdc28800b92b8c9625efe9ad7ab2b43237ea3205e184858e
@@ -16,10 +18,6 @@ ame: .kontinuous/env/preprod/values.yaml
   checksum: b36249b2ef3f95e2bb1e6e10b82cd010d2e7526d72351ec1cb4a5cec2784248d
 - filename: .kontinuous/env/prod/templates/backend.configmap.yaml
   checksum: c995c3233807bd9c9c92f0cf5d2484a40daefd703edec194bf8b6123fbe5a56d
-- filename: .kontinuous/env/prod/templates/cron.configmap.yaml
-  checksum: 7881befff126f5b7e2afaceda5d0244ca24483b22ad522fbddfb9b916deb92b9
-- filename: .kontinuous/env/prod/templates/cron.sealed-secret.yaml
-  checksum: c38ee9c373a96625aa55061d6827c97e1dba3599d0d8b494cd3a57dd369db374
 - filename: .kontinuous/env/prod/templates/external-api.configmap.yaml
   checksum: fc2e7b0dfd60e4a0da76d17ee4f36cba61ca157bf0c64061b965292edf546020
 - filename: .kontinuous/env/prod/templates/frontend.sealed-secret.yaml
@@ -69,9 +67,9 @@ ame: .kontinuous/env/preprod/values.yaml
 - filename: packages/backend/src/controllers/authentication/email/login.js
   checksum: 7ac4c97b5d6c36b5f944c339e0411947d59b12ed2f653497ea4017d9992e1058
 - filename: packages/backend/src/controllers/authentication/email/register.js
-  checksum: 405b78b09927ec0c3feb4eec6aada0b4875e63f0065863962c446be5ce8ca5e7
+  checksum: ffe8f1a18fa67c4f00aed6f9ae5ccff003d55a30d9abffa3b66e178b3c0bb08a
 - filename: packages/backend/src/controllers/authentication/email/renew-password.js
-  checksum: c0f7fb6010a8914d2b0c3270021d5f36a7ead1c99cde7ad09c94733f5172ba34
+  checksum: d0fa83bb7576124063c96cdc8489f1b46836f28f97a0ac2babe3a4441447c511
 - filename: packages/backend/src/controllers/authentication/email/renewPassword.js
   checksum: 71c7f6afdca8903cb4ad4120ac93e5296cc5bac40dac63391722bb4c2079b422
 - filename: packages/backend/src/controllers/bo-authentication/email/forgotten-password.js
@@ -124,16 +122,6 @@ ame: .kontinuous/env/preprod/values.yaml
   checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
 - filename: packages/backend/src/utils/regex.js
   checksum: 9e58840c352b67fb278a7409352b7afc6c8a628fb30d19d13f0d52993a5d9463
-- filename: packages/cron/src/config.ts
-  checksum: b20a33667870ab857b06a68e213091e699daa41b88a40a2ff1520912c36814bd
-- filename: packages/cron/src/db/index.ts
-  checksum: fffc688d8ab2c294af11a648ceebd2cc6c0381db030ffe8d4aba7ca66d60d787
-- filename: packages/cron/src/environement.d.ts
-  checksum: 441e135084298f4bb17e7447ab30ac3438475a2f5b2ce8ffab8969a4633b3ba9
-- filename: packages/cron/src/notifyRappelDs8j15j/notifyRappelDs8j15j.email.ts
-  checksum: 759318460907540756902c2eb72d89c67706ab6befe312937a4965b57e997078
-- filename: packages/cron/src/utils/transporter.ts
-  checksum: c64db9c3cae2e99b5c4bde05624f6aef561ac54ca7b42cd34222fbba9ab7c433
 - filename: packages/external-api/README.md
   checksum: 680eb243a98d30c994c399c96eb91af0caadc06ee88d2bda4eaf27976cb5e1bb
 - filename: packages/external-api/environement.d.ts
@@ -333,22 +321,7 @@ ame: .kontinuous/env/preprod/values.yaml
 scopeconfig:
 - scope: node
 version: "1.0"
-d8a5cba561a
-  - filename: pg/scripts/03/03-3-ref-data.sql
-    checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
-  - filename: pg/seeds/BO-1-back-user.sql
-    checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
-  - filename: yarn.lock
-    checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
-  - filename: pg/scripts/02/02-3-back-init.sql
-    checksum: 35b8953e10879c5c02bca929e53b742c72266a45968cbe76c204d122a5379aca
-  - filename: pg/scripts/02/02-4-front-init.sql
-    checksum: 29473c56a8b7cbb8e1da8038a5a5135619f65a020581ed45573b49e4cd0fa486
-  - filename: pg/scripts/02/02-5-ref-init.sql
-    checksum: 62f3296591ae42eb87667ce1dbd7b20f130f7a7325338969fcffe86c3cc4d259
-  - filename: pg/scripts/03/03-1-geo-data.sql
-    checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
-  - filename: pg/scripts/03/03-2-back-data.sql
+name: pg/scripts/03/03-2-back-data.sql
     checksum: d65e191f22dd46a53fd07dd02856d505a01f38b6274ef1989536aa193faebb2d
   - filename: pg/scripts/03/03-3-front-data.sql
     checksum: 413817c8133c69f883087a7042258dcb75e4f75a45897ea830f86d8a5cba561a
@@ -358,50 +331,6 @@ d8a5cba561a
     checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
   - filename: yarn.lock
     checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
-  - filename: packages/shared/src/components/Table/DsfrDataTableV2.vue
-    checksum: b899add08d34e3d7bfc07e0cb97e91382775dbcdb72e47fd82fe208e2eec6e34
-  - filename: packages/shared/src/components/Table/DsfrDataTableV2Wrapper.vue
-    checksum: 14b3637d2b3a223610245b68b4b6ed62119e4344b632255c5cf2a6c77a396572
-  - filename: packages/shared/src/components/Table/dsfrDataTabeV2/DsfrPaginationV2.vue
-    checksum: c8d3e1442b00cb210ac0aeaea5a4cb9f40b7f1887d61604218d92c31ce9e2f49
-  - filename: packages/shared/src/type.ts
-    checksum: 8c75e8784ded25a61d6e14cd682bfe67e4ecdde5a6582fb83035fcae39a87b98
-  - filename: packages/shared/src/types/DsfrDataTableV2.type.ts
-    checksum: 1a97906b8d2d4c66febb1aceb3344696ef780480ab0711a93dd49780b66c20ab
-  - filename: packages/shared/src/utils/status.js
-    checksum: d018fcbd54951acae026f53229ee84c3edc2224bc087490a83666826f48b32b7
-  - filename: pg/scripts/01-init.sql
-    checksum: 20dd5b8d36b1b0517fe185d30003af7866ef5678eed4e7571a6d9797ec3b2a46
-  - filename: pg/scripts/02/02-1-geo-init.sql
-    checksum: 3d03be00c71cf0dc44ef9d7fb7856e49cdb1090f7077b143a36e67029b113381
-  - filename: pg/scripts/02/02-2-doc-init.sql
-    checksum: d7f7d690751612f69ddf181b98ff0d81025a43ca6f089932c47ec756ce700e45
-  - filename: pg/scripts/02/02-3-back-init.sql
-    checksum: 35b8953e10879c5c02bca929e53b742c72266a45968cbe76c204d122a5379aca
-  - filename: pg/scripts/02/02-4-front-init.sql
-    checksum: 29473c56a8b7cbb8e1da8038a5a5135619f65a020581ed45573b49e4cd0fa486
-  - filename: pg/scripts/02/02-5-ref-init.sql
-    checksum: 62f3296591ae42eb87667ce1dbd7b20f130f7a7325338969fcffe86c3cc4d259
-  - filename: pg/scripts/03/03-1-geo-data.sql
-    checksum: 72d509db1f64cd1e3b95f6696d7243aaa042da5dccff68663100f4d8483aa2d3
-  - filename: pg/scripts/03/03-2-back-data.sql
-    checksum: d65e191f22dd46a53fd07dd02856d505a01f38b6274ef1989536aa193faebb2d
-  - filename: pg/scripts/03/03-3-front-data.sql
-    checksum: 413817c8133c69f883087a7042258dcb75e4f75a45897ea830f86d8a5cba561a
-  - filename: pg/scripts/03/03-3-ref-data.sql
-    checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
-  - filename: pg/seeds/BO-1-back-user.sql
-    checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
-  - filename: yarn.lock
-    checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
-  - filename: pg/scripts/03/03-3-ref-data.sql
-    checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
-  - filename: pg/seeds/BO-1-back-user.sql
-    checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
-  - filename: yarn.lock
-    checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
-  - filename: pg/seeds/BO-1-back-user.sql
-    checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
 scopeconfig:
   - scope: node
 version: "1.0"

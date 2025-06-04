@@ -44,7 +44,7 @@ const caseBo = () => {
     case status.defaultStatus.REFUSEE_8J:
       return "error";
     default:
-      return "info";
+      return "union";
   }
 };
 

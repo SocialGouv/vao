@@ -6,11 +6,17 @@
         <h1
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
-          Créer mon compte
+          Demande de Création de compte organisateur
         </h1>
+
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
+          <p>
+            L'inscription n'est pas automatique. Vous devrez valider votre
+            email, puis votre demande sera prise en compte par les services
+            compétents pour valider la création de votre compte
+          </p>
           <div class="fr-input-group">
             <DsfrInputGroup
               :error-message="emailField.errorMessage"
@@ -165,6 +171,24 @@
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
+          <div class="fr-input-group">
+            <DsfrInputGroup
+              name="siret"
+              label="SIRET"
+              :label-visible="true"
+              :model-value="siretField.modelValue"
+              :is-valid="siretField.isValid"
+              :error-message="siretField.errorMessage"
+              placeholder=""
+              hint="Veuillez indiquer le siret de l´organisme que vous souhaitez rejoindre. Exemple: 1100007200014"
+              @update:model-value="checkValidSiret"
+            />
+          </div>
+        </div>
+
+        <div
+          class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+        >
           <ul role="list" class="fr-btns-group fr-btns-group--right">
             <li role="listitem">
               <p>
@@ -250,6 +274,12 @@ const telephoneField = reactive({
   isValid: false,
 });
 
+const siretField = reactive({
+  errorMessage: "",
+  modelValue: "",
+  isValid: false,
+});
+
 const isPwdLong = ref(false);
 const isPwdSpecial = ref(false);
 const isPwdNumber = ref(false);
@@ -311,6 +341,15 @@ function checkValidTelephone(p) {
       : "Le numéro de téléphone n'est pas au format attendu";
 }
 
+const checkValidSiret = (siret) => {
+  siretField.modelValue = siret;
+  siretField.isValid = !siret || regex.siretRegex.test(siret);
+  siretField.errorMessage =
+    !siret || siretField.isValid
+      ? ""
+      : "Le numéro SIRET n'est pas au format attendu";
+};
+
 watch(
   [() => passwordField.modelValue, () => confirmField.modelValue],
   function () {
@@ -343,9 +382,10 @@ async function register() {
   const nom = nomField.modelValue;
   const prenom = prenomField.modelValue;
   const telephone = telephoneField.modelValue;
+  const siret = siretField.modelValue;
   log.i("register - IN");
   try {
-    await $fetch(config.public.backendUrl + "/authentication/email/register", {
+    await $fetch(`${config.public.backendUrl}/authentication/email/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -356,52 +396,49 @@ async function register() {
         nom,
         prenom,
         telephone,
+        siret,
       }),
-    })
-      .then((response) => {
-        log.d("register", { response });
-        toaster.success({
-          titleTag: "h2",
-          description:
-            "Félicitations, votre compte a bien été créé ! Veuillez le valider en cliquant sur le lien reçu par email",
-        });
-      })
-      .catch((error) => {
-        const body = error.data;
-        const codeError = body.name;
-        log.w("register", { body, codeError });
-        if (codeError === "UserAlreadyExists") {
-          toaster.error({
-            titleTag: "h2",
-            description: `Une erreur est survenue. Si vous pensez que cette adresse mail est déjà utilisée, cliquez sur “j'ai déjà un compte“ puis “Mot de passe oublié”`,
-          });
-        }
-        if (codeError === "ValidationError") {
-          toaster.error({
-            titleTag: "h2",
-            description:
-              "Une erreur technique est survenue, veuillez réessayer plus tard",
-          });
-        }
-        if (codeError === "UnexpectedError") {
-          toaster.error({
-            titleTag: "h2",
-            description:
-              "Une erreur est survenue, peut être un compte existe-t-il déjà avec cet email ...",
-          });
-        }
+    });
 
-        if (codeError === "MailError") {
-          toaster.error({
-            titleTag: "h2",
-            description:
-              "Une erreur est survenue, le mail d'activation n'a pu vous être envoyé. Veuillez utiliser la fonction 'mot de passe oublié'",
-          });
-        }
-      });
+    toaster.success({
+      titleTag: "h2",
+      description:
+        "Votre formulaire a été envoyé. Veuillez valider votre adresse mail en cliquant sur le lien reçu par mail.",
+    });
     return navigateTo("/");
   } catch (error) {
-    log.w("register", { error });
+    const statusCode = error.response?.status || error.statusCode || 0;
+    if (statusCode === 500) {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Une erreur technique est survenue, veuillez réessayer plus tard",
+      });
+    }
+    const body = error.data;
+    const codeError = body.name;
+    let description = "";
+    switch (codeError) {
+      case "UserAlreadyExists":
+        description =
+          "Cette adresse courriel semble déjà utilisée. Rendez-vous sur la page de connexion pour vous identifier.";
+        break;
+      case "ValidationError":
+        description =
+          "Une erreur technique est survenue, veuillez réessayer plus tard";
+        break;
+      case "UnexpectedError":
+        description =
+          "Une erreur est survenue, peut être un compte existe-t-il déjà avec cet email ...";
+        break;
+    }
+    if (description) {
+      toaster.error({
+        titleTag: "h2",
+        description,
+      });
+    }
+    throw error;
   }
 }
 </script>

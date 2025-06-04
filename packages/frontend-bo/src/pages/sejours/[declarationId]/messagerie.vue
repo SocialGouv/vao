@@ -2,7 +2,7 @@
   <Chat
     ref="chatRef"
     :messages="messages"
-    :cdn-url="`${config.public.backendUrl}/documents/`"
+    :cdn-url="`${config.public.backendUrl}/documents/admin`"
     :is-loading="isSendingMessage"
     @send="sendMessage"
   />
@@ -16,8 +16,6 @@ const config = useRuntimeConfig();
 const toaster = useToaster();
 
 const messages = computed(() => demandeSejourStore.messages);
-
-demandeSejourStore.fetchMessages(route.params.declarationId);
 
 const isSendingMessage = ref(false);
 const chatRef = ref(null);

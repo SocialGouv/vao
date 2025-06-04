@@ -1,10 +1,15 @@
 const jwt = require("jsonwebtoken");
 const config = require("../../../config");
 const User = require("../../../services/User");
+const { status } = require("../../../helpers/users");
 
 const AppError = require("../../../utils/error");
 const MailUtils = require("../../../utils/mail");
 const Send = require("../../../services/mail").mailService.send;
+const Organisme = require("../../../services/Organisme");
+const Territoire = require("../../../services/Territoire");
+
+const UserFo = require("../../../services/FoUser");
 
 const logger = require("../../../utils/logger");
 
@@ -64,16 +69,79 @@ module.exports = async (req, res, next) => {
       }),
     );
   }
-  try {
-    await Send(MailUtils.usagers.authentication.sendAccountValided(email));
-  } catch (error) {
-    return next(
-      new AppError("Erreur lors de l'envoi du mail", {
-        cause: error,
-        name: "MailError",
-        statusCode: 500,
-      }),
-    );
+  if (user.statusCode === status.NEED_SIRET_VALIDATION) {
+    try {
+      const rechercheSiren = user.userSiret.substr(0, 9);
+      const organisme = await Organisme.getSiege(rechercheSiren);
+      if (!organisme) {
+        const territoire = await Territoire.readFicheIdByTerCode(
+          user.userTerritoire,
+        );
+        const fiche = await Territoire.readOne(territoire.id);
+        await Promise.all([
+          await Send(
+            MailUtils.usagers.newVaoAccount.sendWaitAccountValidationDREETS(
+              user.email,
+              fiche.service_mail,
+            ),
+          ),
+          await Send(
+            MailUtils.bo.newVaoAccount.sendDretsNewAccountValidation({
+              email: fiche.service_mail,
+              user,
+            }),
+          ),
+        ]);
+      } else {
+        const mailUserOrganismeSiege = await UserFo.getMailUserOrganismeId(
+          organisme.organismeId,
+        );
+        await Promise.all([
+          await Send(
+            MailUtils.usagers.newVaoAccount.sendWaitAccountValidationOrganisme(
+              user.email,
+            ),
+          ),
+          ...mailUserOrganismeSiege.map(
+            async ({ mail }) =>
+              await Send(
+                MailUtils.usagers.newVaoAccount.sendOrganismeNewAccountValidation(
+                  {
+                    email: mail,
+                    user,
+                  },
+                ),
+              ),
+          ),
+        ]);
+      }
+      return res.status(200).json({ status: status.NEED_SIRET_VALIDATION });
+    } catch (error) {
+      log.w(error);
+      return next(
+        new AppError(
+          "Erreur lors de l'envoie du l'email à la Dreets ou à l'organisme",
+          {
+            cause: error,
+            name: "mailError",
+            statusCode: 500,
+          },
+        ),
+      );
+    }
+  } else {
+    try {
+      // if user has no siret, legacy way to create account
+      await Send(MailUtils.usagers.authentication.sendAccountValided(email));
+    } catch (error) {
+      return next(
+        new AppError("Erreur lors de l'envoi du mail", {
+          cause: error,
+          name: "MailError",
+          statusCode: 500,
+        }),
+      );
+    }
   }
   return res.status(200).json({ user });
 };

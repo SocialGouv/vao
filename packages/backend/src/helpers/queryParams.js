@@ -63,17 +63,10 @@ module.exports = {
     return `${queryInitial} GROUP BY ${group}`;
   },
 
-  applyPagination: (
-    query,
-    params,
-    limit = 10,
-    offset = 0,
-    sortBy = "",
-    sortDirection = "ASC",
-  ) => {
+  applyPagination: (query, params, limit = 10, offset = 0, sort = "") => {
     const paginatedQuery = `
       ${query}
-      ${sortBy ? `ORDER BY ${sortBy} ${sortDirection}` : ""}
+      ${sort}
       LIMIT $${params.length + 1}
       OFFSET $${params.length + 2};
     `;
@@ -116,6 +109,11 @@ module.exports = {
   ) => {
     const defaultLimit = 10;
     const defaultOffset = 0;
+    const direction = getSortDirection(
+      sortDirection,
+      defaultParams.sortDirection,
+    );
+    const sort = getSort(sortBy, direction, titles, defaultParams.sortBy);
     return {
       limit: isNaN(parseInt(limit, 10))
         ? (defaultParams?.limit ?? defaultLimit)
@@ -123,25 +121,26 @@ module.exports = {
       offset: isNaN(parseInt(offset, 10))
         ? (defaultParams?.offset ?? defaultOffset)
         : parseInt(offset, 10),
-      sortBy: getSort(sortBy, titles, defaultParams.sortBy),
-      sortDirection: getSortDirection(
-        sortDirection,
-        defaultParams.sortDirection,
-      ),
+      sort,
     };
   },
 };
 
-const getSort = (sortBy, titles, defaultSort = "") => {
-  if (sortBy) {
+const getSort = (sortBy, direction, titles, defaultSort = "") => {
+  if (sortBy && direction) {
     const title = titles.find((t) => t.queryKey === sortBy && t.sortEnabled);
     if (title) {
-      return title?.sortType === "date"
-        ? (title.sortQuery ?? title.key)
-        : `LOWER(${title.sortQuery ?? title.key}::varchar)`;
+      if (title.customSort) {
+        return title.customSort(sortBy, direction);
+      }
+      if (title?.sortType === "date") {
+        return `ORDER BY ${title.sortQuery ?? title.key} ${direction}`;
+      }
+      return `ORDER BY LOWER(${title.sortQuery ?? title.key}::varchar) ${direction}`;
     }
+    return `ORDER BY LOWER(${defaultSort}::varchar) ${direction}`;
   }
-  return defaultSort;
+  return "";
 };
 
 const getSortDirection = (sortDirection, defaultSortDirection) => {

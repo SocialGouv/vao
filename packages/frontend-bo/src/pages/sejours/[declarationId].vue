@@ -41,7 +41,14 @@ const route = useRoute();
 const demandeSejourStore = useDemandeSejourStore();
 const organismeStore = useOrganismeStore();
 
-const tabs = [
+const unreadMessages = computed(() => {
+  const nb = demandeSejourStore.messages.filter(
+    (m) => !m.readAt && m.frontUserId != null,
+  ).length;
+  return nb && nb > 0 ? `(${nb})` : "";
+});
+
+const tabs = computed(() => [
   {
     label: "Formulaire",
     tabPanelId: "tabpanel-formulaire-panel",
@@ -61,10 +68,11 @@ const tabs = [
     href: "historique",
   },
   {
-    label: "Messagerie",
+    label: `Messagerie ${unreadMessages.value}`,
     tabPanelId: "tabpanel-messagerie-panel",
     tabId: "tabpanel-messagerie",
     href: "messagerie",
+    icon: `${unreadMessages.value ? "feedback-line" : ""}`,
   },
   /*{
     label: "EIG",
@@ -72,14 +80,16 @@ const tabs = [
     tabId: "tabpanel-eig",
     href: "eig",
   },*/
-];
+]);
 
-const defaultTab = tabs.findIndex(({ href }) => route.name.includes(href));
+const defaultTab = tabs.value.findIndex(({ href }) =>
+  route.name.includes(href),
+);
 
 const activeTab = ref(defaultTab !== -1 ? defaultTab : 0);
 if (defaultTab === -1) {
   navigateTo(
-    `/sejours/${route.params.declarationId}/${tabs[activeTab.value].href}`,
+    `/sejours/${route.params.declarationId}/${tabs.value[activeTab.value].href}`,
   );
 }
 
@@ -90,13 +100,20 @@ const isCurrentDemandeIsAvailable = computed(() => {
   );
 });
 
-const updatePage = (index) => {
-  navigateTo(`/sejours/${route.params.declarationId}/${tabs[index].href}`);
+const updatePage = async (index) => {
+  navigateTo(
+    `/sejours/${route.params.declarationId}/${tabs.value[index].href}`,
+  );
+  if (tabs.value[index].href === "messagerie") {
+    await demandeSejourStore.readMessages(route.params.declarationId);
+    demandeSejourStore.fetchMessages(route.params.declarationId);
+  }
 };
 
 const init = async () => {
   try {
     await demandeSejourStore.getCurrentDemande(route.params.declarationId);
+    await demandeSejourStore.fetchMessages(route.params.declarationId);
     const organismeId = demandeSejourStore.currentDemande?.organismeId;
     if (organismeId) {
       await organismeStore.getOrganisme(organismeId);

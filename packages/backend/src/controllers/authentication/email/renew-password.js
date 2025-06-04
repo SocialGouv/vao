@@ -39,7 +39,10 @@ module.exports = async function register(req, res, next) {
     });
     log.d({ email });
     let user = await User.editPassword({ email, password });
-    if (user.statusCode !== status.VALIDATED) {
+    if (
+      user.statusCode !== status.VALIDATED &&
+      user.statusCode !== status.NEED_SIRET_VALIDATION
+    ) {
       user = await User.activate(email);
     }
     log.d({ user });

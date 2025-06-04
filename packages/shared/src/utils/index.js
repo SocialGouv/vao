@@ -6,6 +6,7 @@ import messageUtils from "./messageUtils";
 import MessageHover from "../components/messages/MessageHover.vue";
 import MessageEtat from "../components/messages/MessageEtat.vue";
 import status from "./status";
+import statusUser from "./statusUser";
 
 export {
   createLogger,
@@ -16,4 +17,5 @@ export {
   MessageHover,
   MessageEtat,
   status,
+  statusUser,
 };

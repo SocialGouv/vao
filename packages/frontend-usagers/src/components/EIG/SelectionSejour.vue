@@ -1,6 +1,13 @@
 <template>
   <div>
-    <h5>Sélectionner un séjour</h5>
+    <h5 class="stepper-title">
+      <div>Sélectionner un séjour</div>
+      <UtilsDownloadFile
+        label="Télécharger Formulaire EIG"
+        :url="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
+        filename="eig.pdf"
+      />
+    </h5>
     <dsfr-alert v-if="eigStore.currentEig" class="fr-mb-6v">
       <Summary :eig="eigStore.currentEig" env="USAGER" />
     </dsfr-alert>
@@ -92,6 +99,8 @@ import { eigModel, eigSchema, Summary } from "@vao/shared";
 import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
 import dayjs from "dayjs";
 import { DsfrAlert } from "@gouvminint/vue-dsfr";
+
+const config = useRuntimeConfig();
 
 const toaster = useToaster();
 
@@ -220,4 +229,10 @@ onUnmounted(() => {
 });
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.stepper-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+</style>

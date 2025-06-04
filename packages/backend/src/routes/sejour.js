@@ -12,6 +12,8 @@ const checkPermissionBODeclarationSejourUpdate = require("../middlewares/checkPe
 const demandeSejourController = require("../controllers/demandeSejour");
 const getDepartements = require("../middlewares/getDepartements");
 const canUpdateDs = require("../middlewares/can-update-ds");
+const trackDemandeSejour = require("../middlewares/trackDemandeSejour");
+const { actions, userTypes } = require("../helpers/tracking");
 
 const boCheckRoleDS = boCheckRole([
   "DemandeSejour_Lecture",
@@ -25,6 +27,13 @@ router.get(
   boCheckRoleDS,
   getDepartements,
   demandeSejourController.getByDepartementCodes,
+);
+router.get(
+  "/admin/messages",
+  boCheckJWT,
+  boCheckRoleDS,
+  getDepartements,
+  demandeSejourController.getDeclarationsMessages,
 );
 router.get(
   "/admin/extract",
@@ -135,6 +144,10 @@ router.post(
   checkJWT,
   checkPermissionDeclarationSejour,
   canUpdateDs,
+  trackDemandeSejour({
+    action: actions.modification,
+    userType: userTypes.front,
+  }),
   demandeSejourController.update,
 );
 router.post("/", checkJWT, demandeSejourController.post);

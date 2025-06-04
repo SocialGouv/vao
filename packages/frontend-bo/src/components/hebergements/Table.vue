@@ -1,114 +1,108 @@
 <template>
-  <h1>Hebergements ({{ count }})</h1>
-  <div class="fr-col-12">
-    <div class="fr-fieldset">
-      <div
-        class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
-      >
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            v-model="search"
-            type="text"
-            name="libelle"
-            label="Recherche"
-            placeholder="Recherche"
-            :label-visible="true"
-            @update:model-value="handleSearch"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-  <TableWithBackendPagination
-    :headers="headers"
-    :data="data"
-    :total-items="count"
-    :current-page="page"
-    :sort-by="sortBy"
-    :sort-direction="sortDirection"
-    :items-by-page="limit"
-    :on-click-cell="(row) => emits('click-on-cell', row)"
-    @update-sort="handleHupdateSort"
-    @update-items-by-page="handleUpdateItemsByPage"
-    @update-current-page="handleUpdateCurrentPage"
+  <HebergementsFilters
+    v-model:search="search"
+    :is-export-available="props.total > 0"
+    @get-csv="emits('get-csv')"
+    @filters-update="updateData"
   />
+  <DsfrDataTableV2Wrapper
+    v-model:limit="limit"
+    v-model:offset="offset"
+    v-model:sort="sort"
+    v-model:sort-direction="sortDirection"
+    :columns="props.columns"
+    :table-title="props.title"
+    :data="props.data"
+    :total="props.total"
+    row-id="declarationId"
+    is-sortable
+    @update-data="updateData"
+  >
+    <template #cell-dateSejour="{ cell }">
+      {{ displayDate(cell) }}
+    </template>
+    <template #cell-telephone="{ cell }">
+      {{ displayPhone(cell) }}
+    </template>
+    <template #cell-dateVisite="{ cell }">
+      {{ displayDate(cell) }}
+    </template>
+    <template #cell-reglementationErp="{ cell }">
+      {{ cell ? "Oui" : "Non" }}
+    </template>
+    <template #cell-custom:edit="{ row }">
+      <NuxtLink
+        :to="props.redirection(row)"
+        title="Naviguer vers la demande séjour"
+        class="no-background-image"
+      >
+        <DsfrButton
+          class="link__dsfrButton"
+          icon="ri:arrow-right-s-line"
+          icon-only
+          primary
+          size="small"
+          type="button"
+        />
+      </NuxtLink>
+    </template>
+  </DsfrDataTableV2Wrapper>
 </template>
 
 <script setup>
-import { TableWithBackendPagination } from "@vao/shared";
+import dayjs from "dayjs";
+import {
+  DsfrDataTableV2Wrapper,
+  usePagination,
+  isValidParams,
+} from "@vao/shared";
 
 const props = defineProps({
-  headers: { type: Array, required: true },
+  title: { type: String, required: true },
+  columns: { type: Array, required: true },
   data: { type: Array, required: true },
-  count: { type: Number, required: true },
+  total: { type: Number, required: true },
   action: { type: Function, required: true },
-  isUrlUpdate: { type: Boolean, default: false },
+  redirection: { type: Function, required: true },
 });
 
-const emits = defineEmits(["click-on-cell"]);
+const emits = defineEmits(["get-csv"]);
 
 const route = useRoute();
 
 const search = ref(route.query.search ?? "");
-const sortBy = ref(route.query.sort?.replace("-", "") ?? "nom");
-const sortDirection = ref(route.query.sort?.includes("-") ? "DESC" : "ASC");
-const limit = ref(parseInt(route.query.limit, 10) || 10);
-const page = ref(Math.floor(route.query.offset / limit.value) || 0);
 
-const sort = computed(
-  () => `${sortDirection.value === "ASC" ? "" : "-"}${sortBy.value}`,
+const sortableColumns = props.columns.flatMap((column) =>
+  column.options?.isSortable ? [column.key] : [],
 );
 
-const refreshTable = () => {
-  props.action({
-    search: search.value,
-    sort: sort.value,
-    limit: limit.value,
-    offset: page.value * limit.value,
-  });
-};
+const { limit, offset, sort, sortDirection } = usePagination(
+  route.query,
+  sortableColumns,
+);
 
-const refresqueryParams = () => {
-  if (props.isUrlUpdate) {
-    navigateTo({
-      replace: true,
-      query: {
-        search: search.value,
-        sort: sort.value,
-        limit: limit.value,
-        offset: page.value * limit.value,
-      },
-    });
-  }
-  refreshTable();
-};
-
-const fetchDataandUrl = debounce(refresqueryParams, 300);
-
-const handleSearch = () => {
-  page.value = 0;
-  fetchDataandUrl();
-};
-
-const handleHupdateSort = (value) => {
-  sortBy.value = value.sortBy;
-  sortDirection.value = value.sortDirection;
-  fetchDataandUrl();
-};
-const handleUpdateItemsByPage = (val) => {
-  limit.value = val;
-  page.value = 1;
-  fetchDataandUrl();
-};
-
-const handleUpdateCurrentPage = (val) => {
-  page.value = val;
-  fetchDataandUrl();
-};
-
-defineExpose({
-  refreshTable,
+const getSearchParams = () => ({
+  ...(isValidParams(search.value) ? { search: search.value } : {}),
 });
 
-refreshTable();
+const fetchData = async () => {
+  const query = {
+    limit: limit.value,
+    offset: offset.value,
+    ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
+    ...(isValidParams(sortDirection.value)
+      ? { sortDirection: sortDirection.value.toUpperCase() }
+      : {}),
+    ...getSearchParams(),
+  };
+  await props.action(query);
+  navigateTo(query);
+};
+
+const updateData = useSetDebounce(fetchData, 300);
+
+fetchData();
+
+const displayPhone = (phone) => phone.replace(/(\d{2})(?=\d)/g, "$1 ");
+const displayDate = (date) => (date ? dayjs(date).format("DD/MM/YYYY") : "");
 </script>

@@ -1,10 +1,13 @@
-/* eslint-disable no-param-reassign */
+const Sentry = require("@sentry/node");
+const { sentry } = require("../config");
 const dayjs = require("dayjs");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const dsStatus = require("../helpers/ds-statuts");
 const PersonneMorale = require("./organisme/PersonneMorale");
 const PersonnePhysique = require("./organisme/PersonnePhysique");
+const { entities, userTypes } = require("../helpers/tracking");
+const { addHistoric } = require("./Tracking");
 const { getComplementOrganisme } = require("./Organisme");
 const {
   getByDSId: getHebergementsByDSIds,
@@ -468,6 +471,92 @@ WHERE
     WHERE ds.id = $1
     AND (u.id = $3 OR pm.siren = $2)
   `,
+  getDeclarationsMessages: () => `
+  SELECT
+    ds.id as "declarationId",
+    ds.statut as "statut",
+    ds.id_fonctionnelle as "idFonctionnelle",
+    ds.organisme_id as "organismeId",
+    ds.libelle as "libelle",
+    ds.date_debut::text as "dateDebut",
+    ds.date_fin::text as "dateFin",
+    ds.created_at as "createdAt",
+    ds.edited_at as "editedAt",
+    ds.organisme as "organisme",
+    CASE
+      WHEN o.type_organisme = 'personne_morale' THEN
+      JSON_BUILD_OBJECT(
+        'siret', pm.siret,
+        'adresse', pm.adresse,
+        'telephone', pm.telephone,
+        'nomCommercial', pm.etab_principal_nom_commercial,
+        'raisonSociale', pm.raison_sociale,
+        'pays', pm.pays,
+        'email', pm.email
+      )
+    ELSE
+      JSON_BUILD_OBJECT(
+        'adresse', pp.adresse_siege_label,
+        'nom', pp.nom_usage,
+        'prenom', pp.prenom,
+        'nomNaissance', pp.nom_naissance,
+        'telephone', pp.telephone,
+        'profession', pp.profession
+      )
+    END AS "organismeAgree",
+    o.type_organisme as "typeOrganisme",
+    (
+      SELECT
+        DEPARTEMENT = ANY ($1)
+      FROM
+        FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
+        LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+        LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+      WHERE DSTH.DEMANDE_SEJOUR_ID = DS.ID
+      ORDER BY DSTH.DATE_DEBUT
+      LIMIT 1
+    ) as "estInstructeurPrincipal",
+    dsm.message as "message",
+      CASE
+        WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 'NON LU'
+        WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 'LU'
+        WHEN (dsm.front_user_id IS NULL) THEN 'REPONDU'
+      END AS "messageEtat",
+      CASE
+        WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 -- NON LU
+        WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 2 -- LU
+        WHEN (dsm.front_user_id IS NULL) THEN 3 -- REPONDU
+      END AS "messageOrdreEtat",
+      dsm.read_at AS "messageReadAt",
+      dsm.created_at AS "messageCreatedAt",
+      COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
+  FROM front.demande_sejour ds
+  JOIN front.organismes o ON o.id = ds.organisme_id
+  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+  LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
+  LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
+      SELECT MAX(dsmax.id)
+      FROM front.demande_sejour_message  dsmax
+      WHERE dsmax.declaration_id = ds.id)
+  WHERE
+    ds.statut <> 'BROUILLON'
+    AND dsm.message is not null
+    AND (
+      EXISTS (
+        SELECT
+          1
+        FROM
+          FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
+          LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+          LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+        WHERE
+          DSTH.DEMANDE_SEJOUR_ID = DS.ID
+          AND A.DEPARTEMENT = ANY ($1)
+      )
+      OR a.region_obtention = $2
+    )
+  `,
   getDeprecated: (organismeIds) => [
     `SELECT
   ds.id as "declarationId",
@@ -675,61 +764,34 @@ WHERE uo.org_id = $1
       o.id = ANY ($1)
     ORDER BY date_debut
     `,
-  getHebergementsByDepartementCodes: (
-    departementCodes,
-    { search, limit, offset, order, sort },
-  ) => [
-    `
-  WITH filtered_hebergements AS (
+  getHebergementsByDepartementCodes: () => `
     SELECT
-        DS.ID AS "declarationId",
-        H.ID AS "hebergementId",
-        DS.DATE_DEBUT AS "dateSejour",
-        DS.DEPARTEMENT_SUIVI AS "departement",
-        H.NOM AS "nom",
-        DSTH.DATE_DEBUT AS "dateDebut",
-        DSTH.DATE_FIN AS "dateFin",
-        H.EMAIL AS EMAIL,
-        H.TELEPHONE_1 AS TELEPHONE,
-        H.NOM_GESTIONNAIRE AS "nomGestionnaire",
-        A.LABEL AS ADRESSE,
-        (SELECT VALUE FROM FRONT.HEBERGEMENT_TYPE WHERE ID = H.ID) AS "typeHebergement",
-        H.VISITE_LOCAUX_AT AS "dateVisite",
-        H.REGLEMENTATION_ERP AS "reglementationErp"
+      DS.ID AS "declarationId",
+      H.ID AS "hebergementId",
+      DS.DATE_DEBUT AS "dateSejour",
+      DS.DEPARTEMENT_SUIVI AS "departement",
+      H.NOM AS "nom",
+      DSTH.DATE_DEBUT AS "dateDebut",
+      DSTH.DATE_FIN AS "dateFin",
+      H.EMAIL AS EMAIL,
+      H.TELEPHONE_1 AS TELEPHONE,
+      H.NOM_GESTIONNAIRE AS "nomGestionnaire",
+      A.LABEL AS ADRESSE,
+      (SELECT VALUE FROM FRONT.HEBERGEMENT_TYPE WHERE ID = H.ID) AS "typeHebergement",
+      H.VISITE_LOCAUX_AT AS "dateVisite",
+      H.REGLEMENTATION_ERP AS "reglementationErp"
     FROM
-        FRONT.HEBERGEMENT H
-        LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-        INNER JOIN FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH ON DSTH.HEBERGEMENT_ID = H.ID
-        INNER JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = DSTH.DEMANDE_SEJOUR_ID
+      FRONT.HEBERGEMENT H
+      LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+      INNER JOIN FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH ON DSTH.HEBERGEMENT_ID = H.ID
+      INNER JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = DSTH.DEMANDE_SEJOUR_ID
     WHERE
-        DS.STATUT <> 'BROUILLON'
-        AND A.DEPARTEMENT = ANY($1)
-        AND (
-          unaccent(h.nom) ILIKE '%' || unaccent($2) || '%'
-          OR h.email ILIKE '%' || $2 || '%'
-          OR unaccent(a.label) ILIKE '%' || unaccent($2) || '%'
-        )
-    ORDER BY "${sort}" ${order}
-  ),
-  total_count AS (
-    SELECT COUNT(*) AS count FROM filtered_hebergements
-  ),
-  paged_hebergements AS (
-    SELECT * FROM filtered_hebergements
-    LIMIT $3 OFFSET $4
-  )
-  SELECT
-    jsonb_build_object(
-      'total_count', (SELECT count FROM total_count),
-      'hebergements', jsonb_agg(ph.*)
-    ) AS data
-  FROM paged_hebergements AS ph;
+      DS.STATUT <> 'BROUILLON'
+      AND A.DEPARTEMENT = ANY($1)
   `,
-    [departementCodes, search, limit, offset],
-  ],
   getNextIndex: `
-SELECT nextval('front.seq_declaration_sejour') AS index
-`,
+    SELECT nextval('front.seq_declaration_sejour') AS index
+  `,
 
   getOne: (criterias) => [
     `
@@ -1167,7 +1229,7 @@ module.exports.get = async (organismesId, queryParams) => {
       type: "default",
     },
   ];
-  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
+  const { limit, offset, sort } = sanitizePaginationParams(
     queryParams,
     titles,
     {
@@ -1183,8 +1245,7 @@ module.exports.get = async (organismesId, queryParams) => {
     filterQuery.params,
     limit,
     offset,
-    sortBy,
-    sortDirection,
+    sort,
   );
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
@@ -1386,6 +1447,89 @@ module.exports.getByDepartementCodes = async (
   };
 };
 
+module.exports.getDeclarationsMessages = async (
+  queryParams,
+  departementsCodes,
+  territoireCode,
+) => {
+  const titles = [
+    {
+      key: "ds.id_fonctionnelle",
+      queryKey: "idFonctionnelle",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "ds.libelle",
+      queryKey: "libelle",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "ds.statut",
+      queryKey: "statut",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "ds.organisme",
+      queryKey: "organisme",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "ds.date_debut",
+      queryKey: "dateDebut",
+      sortEnabled: true,
+      sortType: "date",
+      type: "default",
+    },
+    {
+      key: "ds.date_fin",
+      queryKey: "dateFin",
+      sortEnabled: true,
+      sortType: "date",
+      type: "default",
+    },
+    {
+      key: "dsm.message",
+      queryKey: "message",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      customSort: (sortBy, sortDirection) => {
+        return `ORDER BY ${sortBy} ${sortDirection}, messageCreatedAt" DESC`;
+      },
+      key: "messageOrdreEtat",
+      queryKey: "messageOrdreEtat",
+      sortEnabled: true,
+    },
+  ];
+  const filterParams = sanitizeFiltersParams(queryParams, titles);
+  const queryGet = query.getDeclarationsMessages();
+  const params = [departementsCodes, territoireCode];
+  const filterQuery = applyFilters(queryGet, params, filterParams);
+  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sort,
+  );
+  log.w(queryParams);
+  log.w({ params: paginatedQuery.params, query: paginatedQuery.query });
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
+};
+
 module.exports.getById = async (declarationId, departements) => {
   log.i("getById - IN", { declarationId });
 
@@ -1416,16 +1560,91 @@ module.exports.getById = async (declarationId, departements) => {
   };
 };
 
-module.exports.getHebergementsByDepartementCodes = async (
+module.exports.getHebergementsByDepartementCode = async (
+  queryParams,
   departementsCodes,
-  params,
 ) => {
-  log.i("getHebergementsByDepartementCodes - IN");
-  const { rows } = await pool.query(
-    ...query.getHebergementsByDepartementCodes(departementsCodes, params),
+  const titles = [
+    {
+      key: "h.nom",
+      queryKey: "nom",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "a.departement",
+      queryKey: "departement",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "a.label",
+      queryKey: "adresse",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: " h.telephone_1",
+      queryKey: "telephone",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: " h.email",
+      queryKey: "email",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "h.visite_locaux_at",
+      queryKey: "dateVisite",
+      sortEnabled: true,
+      sortType: "date",
+    },
+    {
+      key: "h.reglementation_erp",
+      queryKey: "reglementationErp",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      query: (index, value) => {
+        const query = `
+          (
+            unaccent(h.nom) ILIKE '%' || unaccent($${index}) || '%'
+            OR h.email ILIKE '%' || $${index} || '%'
+            OR unaccent(a.label) ILIKE '%' || unaccent($${index}) || '%'
+          )
+        `;
+        return {
+          query,
+          queryParams: [value],
+        };
+      },
+      queryKey: "search",
+      type: "custom",
+    },
+  ];
+  const filterParams = sanitizeFiltersParams(queryParams, titles);
+  const queryGet = query.getHebergementsByDepartementCodes();
+  const params = [departementsCodes];
+  const filterQuery = applyFilters(queryGet, params, filterParams);
+  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
+  const paginatedQuery = applyPagination(
+    filterQuery.query,
+    filterQuery.params,
+    limit,
+    offset,
+    sort,
   );
-  log.d("getHebergementsByDepartementCodes - DONE");
-  return rows[0];
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
+  return {
+    rows: result[0].rows,
+    total: parseInt(result[1].rows[0].total, 10),
+  };
 };
 
 module.exports.getAdminStats = async (departements, territoireCode) => {
@@ -1764,5 +1983,32 @@ module.exports.updateStatut = async (
     throw e;
   } finally {
     client.release();
+  }
+};
+
+module.exports.addAsyncDeclarationSejourHistoric = async ({
+  data: { oldData, newData },
+  declarationId,
+  userId,
+  action,
+  userType,
+}) => {
+  try {
+    addHistoric({
+      action,
+      data: {
+        after: newData,
+        before: oldData,
+      },
+      entity: entities.demandeSejour,
+      entityId: declarationId,
+      userId,
+      userType: userType ?? userTypes.front,
+    });
+  } catch (error) {
+    log.w("addAsyncHistoric - DONE with error", error);
+    if (sentry.enabled) {
+      Sentry.captureException(error);
+    }
   }
 };
