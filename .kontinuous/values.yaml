@@ -5,10 +5,10 @@ pg:
       size: "50Gi"
     resources:
       requests:
-        memory: 1Gi
+        memory: 2Gi
       limits:
         cpu: "1"
-        memory: 1Gi
+        memory: 2Gi
     clusterExtraLabels:
       oblik.socialgouv.io/enabled: "false"
 
