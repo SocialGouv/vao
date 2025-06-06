@@ -2,7 +2,7 @@
   <Chat
     ref="chatRef"
     :messages="messages"
-    :cdn-url="`${config.public.backendUrl}/documents/admin`"
+    :cdn-url="`${config.public.backendUrl}/documents/admin/`"
     :is-loading="isSendingMessage"
     @send="sendMessage"
   />
