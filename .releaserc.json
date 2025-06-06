@@ -1,6 +1,6 @@
 {
   "branches": [
-    { name: "preprod" },
-    { name: "next", channel: "next", prerelease: true }
+    { "name": "preprod" },
+    { "name": "next", "channel": "next", "prerelease": true }
   ]
 }
