@@ -7,7 +7,7 @@ pg:
       requests:
         memory: 2Gi
       limits:
-        cpu: "1.5"
+        cpu: 1500m
         memory: 2Gi
     clusterExtraLabels:
       oblik.socialgouv.io/enabled: "false"
