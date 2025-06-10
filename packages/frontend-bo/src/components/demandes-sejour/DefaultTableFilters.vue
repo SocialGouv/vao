@@ -1,53 +1,47 @@
 <template>
   <div>
-    <div class="fr-fieldset">
+    <div class="fr-fieldset default-table-filters-bar">
       <div
         v-if="filters.includes(availableFilters.idFonctionnelle)"
         :class="filedsetClass"
       >
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            v-model="idFonctionnelleSync"
-            type="text"
-            name="idFonctionnelle"
-            label="Numéro de déclaration"
-            placeholder="Numéro de déclaration"
-            :label-visible="true"
-            @update:model-value="filtersUpdate"
-          />
-        </div>
+        <DsfrInputGroup
+          v-model="idFonctionnelleSync"
+          type="text"
+          name="idFonctionnelle"
+          label="Numéro de déclaration"
+          placeholder="Numéro de déclaration"
+          :label-visible="true"
+          @update:model-value="filtersUpdate"
+        />
       </div>
       <div
         v-if="filters.includes(availableFilters.libelle)"
         :class="filedsetClass"
       >
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            v-model="libelleSync"
-            type="text"
-            name="libelle"
-            label="Nom du séjour"
-            placeholder="Nom du séjour"
-            :label-visible="true"
-            @update:model-value="filtersUpdate"
-          />
-        </div>
+        <DsfrInputGroup
+          v-model="libelleSync"
+          type="text"
+          name="libelle"
+          label="Nom du séjour"
+          placeholder="Nom du séjour"
+          :label-visible="true"
+          @update:model-value="filtersUpdate"
+        />
       </div>
       <div
         v-if="filters.includes(availableFilters.organisme)"
         :class="filedsetClass"
       >
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            v-model="organismeSync"
-            type="text"
-            name="organisme"
-            label="Organisme"
-            placeholder="Organisme"
-            :label-visible="true"
-            @update:model-value="filtersUpdate"
-          />
-        </div>
+        <DsfrInputGroup
+          v-model="organismeSync"
+          type="text"
+          name="organisme"
+          label="Organisme"
+          placeholder="Organisme"
+          :label-visible="true"
+          @update:model-value="filtersUpdate"
+        />
       </div>
       <div
         v-if="filters.includes(availableFilters.status)"
@@ -66,15 +60,13 @@
         v-if="filters.includes(availableFilters.action)"
         :class="filedsetClass"
       >
-        <div class="fr-input-group">
-          <DsfrSelect
-            label="Actions à faire"
-            name="action"
-            mode="tags"
-            :options="todoActions"
-            @update:model-value="handleTodoActionChange($event as string)"
-          />
-        </div>
+        <DsfrSelect
+          label="Actions à faire"
+          name="action"
+          mode="tags"
+          :options="todoActions"
+          @update:model-value="handleTodoActionChange($event as string)"
+        />
       </div>
       <div :class="filedsetClass">
         <ul class="fr-btns-group">
