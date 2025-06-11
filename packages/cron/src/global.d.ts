@@ -9,6 +9,7 @@ declare global {
       POSTGRES_DB: string;
       PG_VAO_DOCUMENT_PASSWORD: string;
       PG_VAO_DOCUMENT_USER: string;
+      PG_VAO_CIPHER_DATA: string;
       POSTGRES_HOST: string;
       PG_VAO_PASSWORD: string;
       POSTGRES_PORT: string;

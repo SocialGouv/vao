@@ -49,6 +49,7 @@ module.exports = {
   frontUsagersDomain: process.env.FRONTEND_USAGERS_URL,
 
   postgres: {
+    cipherData: process.env.PG_VAO_CIPHER_DATA,
     database: process.env.POSTGRES_DB,
     document: {
       password: process.env.PG_VAO_DOCUMENT_PASSWORD,
