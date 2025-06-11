@@ -12,12 +12,14 @@ export default defineNuxtConfig({
       link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
     },
   },
+
   css: [
     "@gouvfr/dsfr/dist/dsfr.min.css",
     "@gouvminint/vue-dsfr/styles",
     "@gouvfr/dsfr/dist/utility/icons/icons.min.css",
     "@/assets/css/main.css",
   ],
+
   modules: [
     "@pinia/nuxt",
     "@socialgouv/dsfr-toaster-nuxt-module",
@@ -26,6 +28,7 @@ export default defineNuxtConfig({
     "vue-dsfr-nuxt-module",
     "@samk-dev/nuxt-vcalendar",
   ],
+
   runtimeConfig: {
     public: {
       appVersion: undefined,
@@ -45,6 +48,7 @@ export default defineNuxtConfig({
       },
     },
   },
+
   security: {
     headers: {
       crossOriginEmbedderPolicy: "unsafe-none",
@@ -63,11 +67,14 @@ export default defineNuxtConfig({
     // required to get non empty sourcemaps https://github.com/Baroshem/nuxt-security/issues/501
     removeLoggers: false,
   },
+
   srcDir: "src",
   ssr: false,
+
   sourcemap: {
     client: true,
   },
+
   vite: {
     plugins: [
       sentryVitePlugin({
@@ -79,4 +86,6 @@ export default defineNuxtConfig({
       }),
     ],
   },
+
+  compatibilityDate: "2025-03-31",
 });

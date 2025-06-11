@@ -7,6 +7,7 @@ const props = defineProps<{
     label: string;
     tabPanelId: string;
     tabId: string;
+    icon?: string;
   }[];
   modelValue: number;
 }>();
@@ -126,6 +127,7 @@ const animationEnd = () => {
         :tab-id="tab.tabId"
         :panel-id="tab.tabPanelId"
         :selected="activeTab === index"
+        :icon="tab.icon"
         @click="selectTab(index)"
         @next="selectNext()"
         @previous="selectPrevious()"

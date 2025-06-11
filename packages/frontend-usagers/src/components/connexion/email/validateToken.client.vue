@@ -1,7 +1,19 @@
 <template>
   <div class="fr-container">
-    <p v-if="pending">Validation en cours. Veuillez patienter.</p>
-    <div v-else-if="error">
+    <p v-if="isSuccess">
+      <DsfrAlert
+        role="alert"
+        class="fr-grid-row fr-my-3v"
+        type="success"
+        :closeable="false"
+      >
+        <h3>
+          <p>Votre adresse courriel est maintenant activée</p>
+          <p>Votre compte est en cours de validation.</p>
+        </h3>
+      </DsfrAlert>
+    </p>
+    <div v-else-if="classError">
       <DsfrAlert
         role="alert"
         class="fr-grid-row fr-my-3v"
@@ -14,7 +26,8 @@
           nouveau lien »</span
         >
         <span v-if="classError === 'UserAlreadyVerified'">
-          L'adresse courriel semble déjà utilisée. Rendez-vous sur
+          L'adresse courriel semble déjà vérifiée. Votre inscription est en
+          attente de validation.
           <NuxtLink class="fr-link" to="/connexion/">
             la page de connexion
           </NuxtLink>
@@ -41,37 +54,42 @@ const config = useRuntimeConfig();
 
 const classError = ref("");
 
-const { data, error, pending } = useFetchBackend(
-  "/authentication/email/validate",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
+const isSuccess = ref(false);
+
+const init = async () => {
+  const { data, error } = await useFetchBackend(
+    `${config.public.backendUrl}/authentication/email/validate`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: { token: props.token },
     },
-    body: { token: props.token },
-  },
-);
-
-watch(error, () => {
-  if (error.value == null) {
+  );
+  if (error?.value) {
+    classError.value = error.value.data.name;
     return;
   }
-  log.w({ error });
-  const codeError = error.value.data.name;
-  classError.value = codeError;
-});
 
-watch(data, () => {
-  if (data.value == null) {
-    return;
-  }
+  const isNeedingSiretValidation =
+    data.value.status === "NEED_SIRET_VALIDATION";
+  const message = isNeedingSiretValidation
+    ? "Votre demande a bien été envoyée, votre inscription est en attente de validation"
+    : // if user has no siret, legacy way to create account
+      "Votre compte est maintenant activé. Vous allez être redirigé vers la page de connexion pour terminer votre inscription.";
   toaster.success({
     titleTag: "h2",
-    description: `Votre compte est maintenant activé. Vous allez être redirigé vers la page de connexion pour terminer votre inscription.`,
+    description: message,
   });
+  // legacy way to create account
+  if (!isNeedingSiretValidation) {
+    return navigateTo("/connexion");
+  }
+  isSuccess.value = true;
+};
 
-  return navigateTo("/connexion");
-});
+init();
 
 function parseJwt(token) {
   const base64Url = token.split(".")[1];

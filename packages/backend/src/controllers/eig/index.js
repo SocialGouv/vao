@@ -7,5 +7,6 @@ module.exports.update = require("./update");
 module.exports.depose = require("./depose");
 module.exports.delete = require("./delete");
 module.exports.getAdmin = require("./get-admin");
+module.exports.getTotalToRead = require("./get-total-to-read");
 module.exports.markAsRead = require("./mark-as-read");
 module.exports.getAvailableDs = require("./available-ds");

@@ -677,17 +677,13 @@ module.exports.getListe = async (queryParams, territoireCode) => {
     params.push(territoireCode);
   }
   const filterQuery = applyFilters(queryGet, params, filterParams);
-  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
-    queryParams,
-    titles,
-  );
+  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
   const paginatedQuery = applyPagination(
     filterQuery.query,
     filterQuery.params,
     limit,
     offset,
-    sortBy,
-    sortDirection,
+    sort,
   );
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),

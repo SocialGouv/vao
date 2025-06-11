@@ -9,7 +9,7 @@
           joindre des documents.</span
         >
       </div>
-      <div v-if="props.modifiable" class="fr-fieldset__element">
+      <div v-if="props.modifiableEnCours" class="fr-fieldset__element">
         <span class="fr-label">1. Ajouter le personnel manuellement</span>
         <span class="fr-hint-text"
           >Cliquer sur le bouton et renseigner les champs un par un. Faire ceci

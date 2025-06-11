@@ -189,7 +189,7 @@
               <DsfrToggleSwitch
                 id="toggle-valide"
                 :key="modalOpenCounter"
-                :label="isActive ? 'Désactivé' : 'Activé'"
+                :label="isActive ? 'Désactiver le compte' : 'Activer le compte'"
                 :model-value="isActive"
                 :disabled="
                   !usersStore.user.roles.includes('Desactivation') ||
@@ -208,12 +208,13 @@
                 id="toggle-valide"
                 class="fr-hint-text"
               >
-                Compte actif
+                {{ isActive ? "Compte actif" : "Compte désactivé" }}
               </p>
             </div>
             <DsfrButton
               v-if="props.user.editable && !isSameUser"
               :disabled="!meta.dirty || !meta.valid"
+              style="margin-top: 8px"
               @click.prevent="update"
               >Enregistrer les modifications
             </DsfrButton>

@@ -21,15 +21,36 @@
       légaux
     </h6>
     <article>{{ eig.dispositionInformations }}</article>
+    <div class="fr-fieldset">
+      <FileUpload
+        :model-value="localFile"
+        :cdn-url="props.cdnUrl"
+        :modifiable="false"
+        label="Téléchargement de la déclaration EIG"
+        hint="Télécharger le fichier Eig"
+        @update:model-value="handleFileChange"
+      />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { Summary } from "@vao/shared";
+import { ref } from "vue";
+import { Summary, FileUpload } from "@vao/shared";
+const emit = defineEmits(["update:file"]);
 
-defineProps({
+const props = defineProps({
   eig: { type: Object, required: true },
+  file: { type: Object, required: true },
+  cdnUrl: { type: String, required: false, default: null },
 });
+
+const localFile = ref(props.file);
+
+function handleFileChange(newFile) {
+  localFile.value = newFile;
+  emit("update:file", newFile);
+}
 </script>
 
 <style scoped>

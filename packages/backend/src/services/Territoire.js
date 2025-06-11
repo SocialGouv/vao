@@ -56,6 +56,23 @@ const query = {
     FROM geo.territoires ter
     INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
     WHERE ter.code <> 'FRA'`,
+  selectTerritoiresByInseeCode: (inseeCode) => [
+    `
+    SELECT
+      ft.id,
+      ft.ter_code AS "terCode",
+      ft.service_mail AS "serviceMail",
+      ft.service_telephone AS "serviceTelephone",
+      ft.corresp_vao_nom AS "correspVaoNom",
+      ft.corresp_vao_prenom AS "correspVaoPrenom",
+      ft.edited_at AS "editedAt"
+    FROM back.fiche_territoire ft
+    JOIN geo.territoires t ON ft.ter_code = t.parent_code
+    WHERE t.code = $1;
+    `,
+    [inseeCode],
+  ],
+
   update: `
       UPDATE back.fiche_territoire
       SET
@@ -86,10 +103,7 @@ module.exports.fetch = async (queryParams) => {
     },
   ];
 
-  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
-    queryParams,
-    titles,
-  );
+  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
   const filterParams = sanitizeFiltersParams(queryParams, titles);
 
   const queryGet = query.select();
@@ -99,8 +113,7 @@ module.exports.fetch = async (queryParams) => {
     filterQuery.params,
     limit,
     offset,
-    sortBy,
-    sortDirection,
+    sort,
   );
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
@@ -108,7 +121,7 @@ module.exports.fetch = async (queryParams) => {
   ]);
   return {
     rows: result[0].rows,
-    total: parseInt(result[1].rows[0].total, 10),
+    total: Number.parseInt(result[1].rows[0].total, 10),
   };
 };
 
@@ -148,4 +161,12 @@ module.exports.update = async (id, { nom, prenom, email, telephone }) => {
 
   log.i("update - DONE");
   return { territoire: response.rows[0] };
+};
+
+module.exports.getFichesTerritoireForRegionByInseeCode = async (InseeCode) => {
+  const code = InseeCode.substring(0, 2);
+  const { rows } = await pool.query(
+    ...query.selectTerritoiresByInseeCode(code),
+  );
+  return rows[0];
 };

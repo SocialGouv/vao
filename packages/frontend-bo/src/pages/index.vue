@@ -10,6 +10,7 @@
 
 <script setup>
 import { CardsNumber } from "@vao/shared";
+import { watchEffect } from "vue";
 
 definePageMeta({
   layout: "default",
@@ -24,6 +25,14 @@ const usersStore = useUserStore();
 const user = usersStore.user;
 const demandeSejourStore = useDemandeSejourStore();
 demandeSejourStore.getStats();
+
+watchEffect(() => {
+  const roles = usersStore.user?.roles ?? [];
+  if (roles.includes("eig")) {
+    const eigStore = useEigStore();
+    eigStore.getTotalEigToRead();
+  }
+});
 
 const stats = computed(() => demandeSejourStore.stats);
 

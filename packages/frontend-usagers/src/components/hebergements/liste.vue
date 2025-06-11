@@ -128,6 +128,9 @@ const columns = [
   {
     key: "custom:edit",
     label: "Action",
+    options: {
+      isFixedRight: true,
+    },
   },
 ];
 const title = "Liste des Hébergements";

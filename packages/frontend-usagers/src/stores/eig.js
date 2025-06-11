@@ -1,5 +1,10 @@
 import { defineStore } from "pinia";
-import { $fetchBackend, getEigPermissions, logger } from "#imports";
+import {
+  $fetchBackend,
+  getEigPermissions,
+  isDeclarationligibleToEig,
+  logger,
+} from "#imports";
 import { eigModel } from "@vao/shared";
 import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
 
@@ -15,11 +20,12 @@ export const useEigStore = defineStore("eig", {
   }),
   getters: {
     canModify() {
+      const allowEigReadWrite = getEigPermissions();
       return (
         !this.currentEig ||
-        (getEigPermissions.allowEigReadWrite &&
+        (allowEigReadWrite &&
           this.currentEig?.statut === eigModel.Statuts.BROUILLON &&
-          getEigPermissions.isDeclarationligibleToEig({
+          isDeclarationligibleToEig({
             dateDebut: this.currentEig.dateDebut,
             dateFin: this.currentEig.dateFin,
             statut: this.currentEig.dsStatut,

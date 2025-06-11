@@ -331,7 +331,7 @@ const query = {
 
     )
     SELECT o.id AS "organismeId", o.type_organisme AS "typeOrganisme", o.complet AS "complet",
-          pm.siren AS  "siren", 
+          pm.siren AS  "siren",
           COALESCE(pm.siret, pp.siret) AS  "siret",
           pm.email AS  "email", pm.raison_sociale AS  "raisonSociale",
           pp.telephone AS "telephone", pp.nom_naissance AS "nomPersonnePhysique",
@@ -633,7 +633,7 @@ module.exports.update = async (type, parametre, organismeId) => {
   }
 };
 
-module.exports.finalize = async function (userId) {
+module.exports.finalize = async (userId) => {
   log.i("finalize - IN", { userId });
   const regions = await Regions.fetch();
 
@@ -872,17 +872,13 @@ module.exports.getListe = async (queryParams) => {
   const filterParams = sanitizeFiltersParams(queryParams, titles);
   const queryGet = query.getListe();
   const filterQuery = applyFilters(queryGet, [], filterParams);
-  const { limit, offset, sortBy, sortDirection } = sanitizePaginationParams(
-    queryParams,
-    titles,
-  );
+  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
   const paginatedQuery = applyPagination(
     filterQuery.query,
     filterQuery.params,
     limit,
     offset,
-    sortBy,
-    sortDirection,
+    sort,
   );
 
   log.w(paginatedQuery.query, paginatedQuery.params);

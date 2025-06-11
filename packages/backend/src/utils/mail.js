@@ -7,6 +7,7 @@ const sendTemplate = require("../helpers/mail");
 const logger = require("./logger");
 const AppError = require("./error");
 const { generateTypes } = require("../helpers/eigMail");
+const { partOrganisme } = require("../helpers/org-part");
 
 const log = logger(module.filename);
 
@@ -321,6 +322,118 @@ module.exports = {
 
         return params;
       },
+      sendUpdateValide8jours: ({
+        declaration,
+        destinataires,
+        message,
+        dataUpdated,
+        type,
+      }) => {
+        log.i("sendMessageNotify - In", {
+          destinataires,
+        });
+        if (!destinataires) {
+          const messageErreur = `Le paramètre destinataires manque à la requête`;
+          log.w(`sendMessageNotify - ${messageErreur}`);
+          throw new AppError(messageErreur);
+        }
+        const content = [
+          "Bonjour",
+          `L’organisme ${declaration.organisme.typeOrganisme === partOrganisme.PERSONNE_MORALE ? declaration.organisme.personneMorale.raisonSociale : declaration.organisme.personnePhysique.nom} a apporté une modification au nombre de vacanciers présents lors du séjour ${declaration.libelle} qui se déroule à partir du ${dayjs(declaration.dateDebut).format("DD/MM/YYYY")} dans votre département.`,
+          `Les modifications apportées sont les suivantes : `,
+        ];
+        switch (type) {
+          case "informationsVacanciers": {
+            content.push(
+              `<ul><li>Ancien nombre de vacanciers participant au séjour = ${declaration.informationsVacanciers.effectifPrevisionnel} (Hommes = ${declaration.informationsVacanciers.effectifPrevisionnelHomme}, Femmes = ${declaration.informationsVacanciers.effectifPrevisionnelFemme})</li>`,
+              `<li>Nouveau nombre de vacanciers participant au séjour = ${dataUpdated.effectifPrevisionnel.apres} (Hommes = ${dataUpdated?.effectifPrevisionnelHomme?.apres ?? declaration.informationsVacanciers.effectifPrevisionnelHomme}, Femmes = ${dataUpdated?.effectifPrevisionnelFemme?.apres ?? declaration.informationsVacanciers.effectifPrevisionnelFemme})</li></ul>`,
+            );
+            break;
+          }
+          case "informationsPersonnel": {
+            Object.entries(dataUpdated).map(([key, value]) => {
+              const includesKeysPersonnel = [
+                { cle: "encadrants", valeur: "personnel d'encadrement" },
+                { cle: "accompagnants", valeur: "personnel d'accompagnement" },
+                {
+                  cle: "prestatairesMedicaments",
+                  valeur: "prestataire en charge des médicaments",
+                },
+                {
+                  cle: "prestatairesActivites",
+                  valeur: "prestataire en charge des activités",
+                },
+                {
+                  cle: "prestatairesEntretien",
+                  valeur: "prestataire en charge de l'entretien",
+                },
+                {
+                  cle: "prestatairesTransport",
+                  valeur: "prestataire en charge du transport",
+                },
+                {
+                  cle: "prestatairesRestauration",
+                  valeur: "prestataire de restauration",
+                },
+              ];
+              const parts = key.split(".");
+              const cleanKey = parts[0];
+              const personnelInfo = includesKeysPersonnel.find(
+                (item) => item.cle === cleanKey,
+              );
+              const label = personnelInfo ? personnelInfo.valeur : null;
+              message = "";
+              if (label) {
+                if (value?.avant == null && value?.apres != null) {
+                  message = `Ajout d'un ${label} : ${value.apres?.prenom} ${value.apres?.nom}`;
+                } else if (value?.avant != null && value?.apres == null) {
+                  message = `Suppression d'un ${label} : ${value.avant?.prenom} ${value.avant?.nom}`;
+                } else {
+                  message = `Modification d'un ${label} ${parts[2]}: ${value?.avant} en ${value.apres}`;
+                }
+              }
+              if (message) {
+                content.push(message);
+              }
+            });
+            break;
+          }
+          default:
+            log.d("wrong type");
+            throw new AppError(`Type inconnu : ${type}`);
+        }
+        content.push(
+          `Cette modification est inscrite dans l’historique de la déclaration.`,
+        );
+        const link = `${frontBODomain}/sejours/${declaration.id}/formulaire`;
+        const html = sendTemplate.getBody(
+          "Portail VAO - Nouveau message",
+          [
+            {
+              p: content,
+              type: "p",
+            },
+            {
+              link,
+              text: "Accéder à ma déclaration",
+              type: "link",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: `VAO - Modification ${type === "informationsVacanciers" ? " du nombre de vacanciers " : " de personnel "} de la déclaration ${declaration.idFonctionnelle}`,
+          to: destinataires,
+        };
+        log.d("sendMessageNotify post email", {
+          params,
+        });
+
+        return params;
+      },
     },
     eig: {
       sendMarkAsRead: ({
@@ -500,7 +613,7 @@ module.exports = {
           dest,
         });
         if (!dest) {
-          const message = `paramètre manquant à la requête`;
+          const message = "paramètre manquant à la requête";
           log.w(`sendToDREETS - ${message}`);
           throw new AppError(message);
         }
@@ -513,7 +626,7 @@ module.exports = {
           [
             {
               p: [
-                `Bonjour`,
+                "Bonjour",
                 `L’organisme ${orgName}, dont l’agrément vacances adaptées organisées (VAO) a été délivré dans votre région, a déclaré un évènement indésirable grave qui s’est produit le ${dayjs(eig.date).format("DD/MM/YYYY")}, lors d’un séjour organisé dans  la commune de ${communeName} dans le département de ${departementName}.`,
                 `Référence de la déclaration de séjour : ${declarationSejour.libelle} - ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
                 `Le type d'évènement déclaré est :`,
@@ -559,7 +672,7 @@ module.exports = {
           dest,
         });
         if (!dest) {
-          const message = `paramètre manquant à la requête`;
+          const message = "paramètre manquant à la requête";
           log.w(`sendToDREETS - ${message}`);
           throw new AppError(message);
         }
@@ -572,17 +685,17 @@ module.exports = {
           [
             {
               p: [
-                `Bonjour`,
+                "Bonjour",
                 `${userName} a déclaré un évènement indésirable grave survenu le ${dayjs(eig.date).format("DD/MM/YYYY")} lors du séjour ${eig.libelle}.`,
                 `Référence de la déclaration de séjour : ${declarationSejour.libelle} - ${eig.idFonctionnelle} du ${dayjs(declarationSejour.dateDebut).format("DD/MM/YYYY")} au ${dayjs(declarationSejour.dateFin).format("DD/MM/YYYY")}`,
-                `Le type de l’événement est :`,
+                "Le type de l’événement est :",
                 generateTypes(eig),
               ],
               type: "p",
             },
             {
               p: [
-                `Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en vous connectant avec votre compte utilisateur nominatif`,
+                "Vous pouvez retrouver les détails de cet EIG dans votre espace VAO en vous connectant avec votre compte utilisateur nominatif",
               ],
               type: "p",
             },
@@ -612,6 +725,54 @@ module.exports = {
         log.d("sendToDREETS post email", { params });
 
         return params;
+      },
+    },
+    newVaoAccount: {
+      sendDretsNewAccountValidation: ({ email, user }) => {
+        const link = `https://annuaire-entreprises.data.gouv.fr/etablissement/${user.userSiret}`;
+        const linkListeUsersOva = `${frontBODomain}/utilisateurs-ova/liste`;
+        const html = sendTemplate.getBody(
+          "PORTAIL VAO ADMINISTRATION - VALIDATION DE COMPTE",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Un utilisateur souhaite rejoindre un organisme au sein de la plateforme VAO.",
+                "Voici les informations concernant l’utilisateur : ",
+                `- Nom : ${user.nom}`,
+                `- Prénom : ${user.prenom}`,
+                `- Email : ${user.email}`,
+                `- Téléphone : ${user.telephone}`,
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                `Cet utilisateur souhaite ajouter, au sein de la plateforme VAO, l’organisme SIRET : <a href="${link}" target="_blank">siret</a>`,
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Vous pouvez cliquer directement sur le lien hypertexte pour accéder aux détails de l’organisme.",
+                "Si vous avez un doute, vous pouvez prendre contact avec cette personne avant de traiter la demande.",
+              ],
+              type: "p",
+            },
+            {
+              link: linkListeUsersOva,
+              text: "TRAITER LA DEMANDE",
+              type: "link",
+            },
+          ],
+        );
+        return {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "Portail VAO Administration - Validation de compte",
+          to: email,
+        };
       },
     },
   },
@@ -651,7 +812,7 @@ module.exports = {
           from: senderEmail,
           html,
           replyTo: senderEmail,
-          subject: `Portail VAO - Prochaines étapes`,
+          subject: "Portail VAO - Prochaines étapes",
           to: email,
         };
 
@@ -717,7 +878,7 @@ module.exports = {
           throw new AppError(message);
         }
         if (!token) {
-          const message = `Le paramètre token manque à la requête`;
+          const message = "Le paramètre token manque à la requête";
           log.w(`sendValidationMail - ${message}`);
           throw new AppError(message);
         }
@@ -730,8 +891,7 @@ module.exports = {
             {
               p: [
                 "Bonjour,",
-                "Pour finaliser la création de votre compte sur la plateforme VAO, confirmez votre adresse e-mail en cliquant sur le lien ci dessous",
-                "Afin de modifier votre mot de passe, veuillez cliquer sur le lien ci dessous qui vous redirigera vers le portail",
+                "Pour finaliser la création de votre compte sur la plateforme VAO, confirmez votre adresse e-mail en cliquant sur le lien ci-dessous",
               ],
               type: "p",
             },
@@ -1152,6 +1312,225 @@ module.exports = {
         log.d("sendRefusMail post email", {
           params,
         });
+
+        return params;
+      },
+    },
+    newVaoAccount: {
+      sendNewAccountBlockedByDreets: (email, motif, regionName) => {
+        const html = sendTemplate.getBody(
+          "Refus d’inscription de votre organisme sur la plateforme VAO",
+          [
+            {
+              p: [
+                "Bonjour,",
+                `La DREETS de la région ${regionName} a traité votre demande d’inscription, qui n’a pas pu être validée pour la raison suivante`,
+                motif,
+                "Vous pouvez directement contacter la DREETS de votre région pour avoir plus de renseignements à ce propos.",
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject:
+            "Refus d’inscription de votre organisme sur la plateforme VAO",
+          to: email,
+        };
+
+        return params;
+      },
+      sendNewAccountBlockedByOrganisme: (email, motif) => {
+        const html = sendTemplate.getBody(
+          "Refus d’inscription au sein de l’organisme VAO",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "L’organisateur VAO que vous avez souhaité rejoindre lors de votre inscription a traité votre demande, et celle-ci n’a pas pu être validée pour la raison suivante",
+                motif,
+                "Pour en savoir plus, vous pouvez contacter directement l’organisateur qui vous donnera plus de renseignements à ce propos.",
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject:
+            "Refus d’inscription de votre organisme sur la plateforme VAO",
+          to: email,
+        };
+
+        return params;
+      },
+      sendNewAccountValided: (email) => {
+        const link = `${frontUsagersDomain}/connexion/`;
+        const html = sendTemplate.getBody(
+          "VAO - Inscription validée, prochaines étapes pour votre compte",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Votre inscription au sein de VAO vient d'être validée en tant qu’organisateur de séjours VAO. Voici les étapes à compléter pour pouvoir déclarer vos premiers séjours : ",
+                "- Complétez votre fiche organisme avec les informations légales et nécessaires à la déclaration d’un séjour",
+                "- Ensuite vous pourrez créer les fiches des hébergements où vos vacanciers vont séjourner",
+                "- Et enfin faites vos premières déclarations de séjour",
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
+              ],
+              type: "p",
+            },
+            {
+              link,
+              text: "Se connecter à VAO",
+              type: "link",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject:
+            "VAO - Inscription validée, prochaines étapes pour votre compte",
+          to: email,
+        };
+
+        return params;
+      },
+      sendOrganismeNewAccountValidation: ({ email, user }) => {
+        const link = `https://annuaire-entreprises.data.gouv.fr/etablissement/${user.userSiret}`;
+        const linkListeUsersOva = `${frontUsagersDomain}/utilisateurs/liste`;
+        const html = sendTemplate.getBody(
+          "PORTAIL VAO ORGANISME - VALIDATION DE COMPTE",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Un utilisateur souhaite rejoindre un nouvel organisme OVA au sein de la plateforme SI VAO.",
+                "Voici les informations concernant l’utilisateur : ",
+                `- Nom : ${user.nom}`,
+                `- Prénom : ${user.prenom}`,
+                `- Email : ${user.email}`,
+                `- Téléphone : ${user.telephone}`,
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                `Si vous connaissez cette personne et qu’elle appartient bien à l’organisme tel que répertorié sur <a href="${link}" target="_blank">l’annuaire des entreprises</a> qui organisme des séjours VAO, vous pouvez valider la demande dans l’interface dédiée.`, 
+                `Si vous ne souhaitez pas que cette personne rejoigne votre organisme, vous pouvez également refuser sa demande.`,
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Vous pouvez cliquer directement sur le lien hypertexte pour accéder aux détails de l’organisme.",
+                "Si vous avez un doute, vous pouvez prendre contact avec cette personne avant de traiter la demande.",
+              ],
+              type: "p",
+            },
+            {
+              link: linkListeUsersOva,
+              text: "TRAITER LA DEMANDE",
+              type: "link",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+
+        );
+        return {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "Portail VAO Administration - Validation de compte",
+          to: email,
+        };
+      },
+      sendWaitAccountValidationOrganisme: (email) => {
+        const html = sendTemplate.getBody(
+          "VAO - confirmation de votre demande d’inscription",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Votre inscription a bien été prise en compte. Elle a été adressée à votre entité qui va traiter la demande sous peu.",
+                "En cas de question, merci de contacter votre organisme.",
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "VAO - confirmation de votre demande d’inscription",
+          to: email,
+        };
+
+        return params;
+      },
+      sendWaitAccountValidationDREETS: (email, mailDreets) => {
+        const html = sendTemplate.getBody(
+          "VAO - confirmation de votre demande d’inscription",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Votre inscription a bien été prise en compte. Elle a été adressée à la DREETS de votre siège social, qui va traiter la demande sous peu.",
+                `L’adresse de contact de la DREETS est la suivante : ${mailDreets}`,
+              ],
+              type: "p",
+            },
+            {
+              p: [
+                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "VAO - confirmation de votre demande d’inscription",
+          to: email,
+        };
 
         return params;
       },

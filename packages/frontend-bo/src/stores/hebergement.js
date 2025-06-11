@@ -32,17 +32,14 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("getHebergements - IN");
       this.isGetHebergementsLoading = true;
       try {
-        const { hebergements, count } = await $fetchBackend(
-          "hebergement/admin",
-          {
-            method: "GET",
-            credentials: "include",
-            params,
-          },
-        );
+        const { rows, total } = await $fetchBackend("hebergement/admin", {
+          method: "GET",
+          credentials: "include",
+          params,
+        });
         log.i("getHebergements - DONE");
-        this.hebergements = hebergements;
-        this.hebergementsCount = count;
+        this.hebergements = rows;
+        this.hebergementsCount = total;
       } catch (err) {
         log.w("getHebergements - DONE with error", err);
         this.hebergements = [];
@@ -56,10 +53,7 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("getHebergement - IN");
       this.isGetHebergementLoading = true;
       try {
-        // eslint-disable-next-line prettier/prettier
-        const data = await $fetchBackend(
-          `hebergement/admin/${hebergementId}`,
-          {
+        const data = await $fetchBackend(`hebergement/admin/${hebergementId}`, {
           method: "GET",
           credentials: "include",
         });
