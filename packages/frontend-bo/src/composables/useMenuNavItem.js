@@ -54,6 +54,10 @@ export const useMenuNavItems = () => {
         text: "Accueil",
         to: "/",
       },
+      {
+        text: "metabase boards",
+        to: "/metabase",
+      },
       ...comptes,
       ...(roles.includes("DemandeSejour_Lecture") ||
       roles.includes("DemandeSejour_Ecriture")
