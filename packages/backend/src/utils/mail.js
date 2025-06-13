@@ -778,6 +778,62 @@ module.exports = {
   },
   usagers: {
     authentication: {
+      sendAccountAlreadyExist: ({ email }) => {
+        log.i("sendAccountAlreadyExist - In", {
+          email,
+        });
+        if (!email) {
+          const message = `Le paramètre de l'adresse courriel manque à la requête`;
+          log.w(`sendAccountAlreadyExist - ${message}`);
+          throw new AppError(message);
+        }
+
+        const link = new URL(
+          "/connexion/mot-de-passe-oublie",
+          frontUsagersDomain,
+        ).toString();
+        const html = sendTemplate.getBody(
+          "Portail VAO - Votre compte existe déjà - Récupérez l'accès facilement",
+          [
+            {
+              p: [
+                "Bonjour",
+                "Une tentative de création de compte a été faite avec cette adresse e-mail sur VAO.",
+                "Nous vous rappelons que cette adresse e-mail est déjà associée à un compte existant.",
+                "Si vous avez oublié votre mot de passe, vous pouvez le réinitialiser ici :",
+              ],
+              type: "p",
+            },
+            {
+              link,
+              text: "Je réinitialise mon mot de passe",
+              type: "link",
+            },
+            {
+              p: [
+                "Si ce n'était pas vous, vous pouvez ignorer cet e-mail.",
+                "Aucune action n’est requise de votre part.",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        log.d("sendAccountAlreadyExist - sending validation mail");
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "Portail VAO - Votre compte existe déjà",
+          to: email,
+        };
+        log.d("sendAccountAlreadyExist post email", {
+          params,
+        });
+
+        return params;
+      },
       sendAccountValided: (email) => {
         const link = `${frontUsagersDomain}/connexion/`;
         const html = sendTemplate.getBody(
@@ -1443,7 +1499,7 @@ module.exports = {
             },
             {
               p: [
-                `Si vous connaissez cette personne et qu’elle appartient bien à l’organisme tel que répertorié sur <a href="${link}" target="_blank">l’annuaire des entreprises</a> qui organisme des séjours VAO, vous pouvez valider la demande dans l’interface dédiée.`, 
+                `Si vous connaissez cette personne et qu’elle appartient bien à l’organisme tel que répertorié sur <a href="${link}" target="_blank">l’annuaire des entreprises</a> qui organisme des séjours VAO, vous pouvez valider la demande dans l’interface dédiée.`,
                 `Si vous ne souhaitez pas que cette personne rejoigne votre organisme, vous pouvez également refuser sa demande.`,
               ],
               type: "p",
@@ -1462,7 +1518,6 @@ module.exports = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
-
         );
         return {
           from: senderEmail,

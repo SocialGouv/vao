@@ -30,6 +30,29 @@ module.exports = async function register(req, res, next) {
   } catch (error) {
     return next(new ValidationAppError(error));
   }
+
+  const checkUser = await User.read({ mail: email });
+  if (checkUser && checkUser.length !== 0) {
+    log.w("Utilisateur déjà existant");
+    try {
+      await Send(
+        MailUtils.usagers.authentication.sendAccountAlreadyExist({
+          email,
+        }),
+      );
+    } catch (error) {
+      log.w(error.name, error.message);
+
+      return next(
+        new AppError("Erreur lors de l'envoi du mail", {
+          cause: error,
+          name: "MailError",
+          statusCode: 500,
+        }),
+      );
+    }
+    return res.status(200).json({ code: "CreationCompte" });
+  }
   let territoire = "";
   try {
     const etablissement = await insee.getEtablissement(siret);
