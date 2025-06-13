@@ -4,7 +4,8 @@ const { sentry } = require("../config");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const normalize = require("../utils/normalize");
-
+const usersCommon = require("./common/Users");
+const { schema } = require("../helpers/schema");
 const {
   applyFilters,
   applyPagination,
@@ -214,14 +215,14 @@ ${Object.keys(criterias)
   `,
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
-SELECT
-  COUNT(*)
-FROM back.users AS us
-LEFT JOIN geo.territoires ter
-  on ter.code = us.ter_code
-WHERE 1 = 1
-${additionalParamsQuery}
-`,
+      SELECT
+        COUNT(*)
+      FROM back.users AS us
+      LEFT JOIN geo.territoires ter
+        on ter.code = us.ter_code
+      WHERE 1 = 1
+      ${additionalParamsQuery}
+      `,
     additionalParams,
   ],
   listUsersTerritoire: `
@@ -425,7 +426,7 @@ module.exports.editPassword = async (email, password) => {
       name: "UserNotFound",
     });
   }
-
+  usersCommon.resetLoginAttempt(email, schema.BACK);
   log.i("editPassword - DONE");
 };
 
@@ -771,9 +772,9 @@ module.exports.login = async ({ email, password }) => {
   const user = await pool.query(query.login, [normalize(email), password]);
   if (user.rowCount === 0) {
     return null;
-  } else {
-    await pool.query(query.connection, [user.rows[0].id]);
   }
+  pool.query(query.connection, [user.rows[0].id]);
+  usersCommon.resetLoginAttempt(email, schema.BACK);
   log.i("login - DONE");
   return user.rows[0];
 };
@@ -793,6 +794,7 @@ const getByUserId = async (userId) => {
     return null;
   }
 };
+
 
 module.exports.getByUserId = getByUserId;
 

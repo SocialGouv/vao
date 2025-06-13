@@ -25,6 +25,10 @@ module.exports = {
     expiresIn: 365 * 24 * 60 * 60 * 1000,
     tokenSecret: process.env.API_TOKEN_SECRET_PRIV,
   },
+  authentification: {
+    lockoutTime: 15,
+    maxLoginAttempts: 5,
+  },
   crons: {
     request: {
       notify: {
