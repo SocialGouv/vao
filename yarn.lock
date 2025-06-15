@@ -2139,6 +2139,17 @@
     vue "^3.5.13"
     vue-router "^4.5.0"
 
+"@gouvminint/vue-dsfr@^8.4.0":
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/@gouvminint/vue-dsfr/-/vue-dsfr-8.4.0.tgz#f1a965e8fa65e7df03c142d1916413c1ae0f5228"
+  integrity sha512-PyFnA9REL6ZYjPyxfF1kRw53nr8ANT/m67qPPG/lAExvbT7yq7xwHtGRALPJquDKHmb+QXUwpyWuaDD7IJnbKw==
+  dependencies:
+    "@gouvfr/dsfr" "~1.13.0"
+    focus-trap "^7.6.4"
+    focus-trap-vue "^4.0.3"
+    vue "^3.5.13"
+    vue-router "^4.5.0"
+
 "@humanfs/core@^0.19.1":
   version "0.19.1"
   resolved "https://registry.yarnpkg.com/@humanfs/core/-/core-0.19.1.tgz#17c55ca7d426733fe3c561906b8173c336b40a77"
