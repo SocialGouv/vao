@@ -32,3 +32,21 @@
   background-color: #18753c; /* vert Marianne */
   box-shadow: inset 0 0 0 1px #18753c;
 }
+
+
+/* //cette propriété surcharge le DSFR et permet d'harmoniser la hauteur des filtres dans la barre de filtres du composant DefaultTableFilters */
+@media screen and (min-width: 768px) {
+  .default-table-filters-bar .fr-input-group > input,
+  .default-table-filters-bar .fr-multiselect,
+  .default-table-filters-bar .fr-select {
+    height: 4rem;
+    min-height: 4rem;
+  }
+  .default-table-filters-bar .fr-fieldset__element:has(.fr-btns-group) {
+    align-self: flex-end;
+  }
+  .default-table-filters-bar .fr-fieldset__element:has(.fr-btns-group) button  {
+    height: 4rem;
+    min-height: 4rem;
+  }
+}
