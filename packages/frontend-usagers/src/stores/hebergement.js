@@ -131,88 +131,48 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("desactivate - Done", { id });
       return id ?? hebergementId;
     },
-    async updaloadFiles(hebergement) {
-      if (hebergement.informationsLocaux.reglementationErp) {
-        const fileDAS =
-          hebergement.informationsLocaux.fileDerniereAttestationSecurite;
-        // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
-        if (fileDAS && !fileDAS.uuid) {
+    async uploadAllFiles(hebergement) {
+      const { informationsLocaux } = hebergement;
+
+      const uploadFileIfNeeded = async (key, file, logLabel) => {
+        if (file && !file.uuid) {
           try {
-            // eslint-disable-next-line no-undef
-            const uuid = await UploadFile("attestation_securite", fileDAS);
-            // mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
-            hebergement.informationsLocaux.fileDerniereAttestationSecurite = {
+            const uuid = await UploadFile(key, file);
+            return {
               uuid,
-              name: fileDAS.name,
+              name: file.name,
               createdAt: new Date(),
             };
           } catch (error) {
-            log.w("fileDerniereAttestationSecurite", error);
-            if (error.response?.status === 413) {
-              throw new Error(
-                `Le fichier ${fileDAS.name} dépasse la taille maximale autorisée`,
-              );
-            } else {
-              throw new Error(
-                `Une erreur est survenue lors du dépôt du document ${fileDAS.name}`,
-              );
-            }
+            log.w(logLabel, error);
+            error.fileName = file?.name;
+            throw error;
           }
         }
+        return file;
+      };
 
-        const fileAAM =
-          hebergement.informationsLocaux.fileDernierArreteAutorisationMaire;
-        // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
-        if (fileAAM && !fileAAM.uuid) {
-          try {
-            const uuid = await UploadFile("arrete_autorisation_maire", fileAAM);
-            // mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
-            hebergement.informationsLocaux.fileDernierArreteAutorisationMaire =
-              {
-                uuid,
-                name: fileAAM.name,
-                createdAt: new Date(),
-              };
-          } catch (error) {
-            log.w("fileDernierArreteAutorisationMaire", error);
-            if (error.response.status === 413) {
-              throw new Error(
-                `Le fichier ${fileAAM.name} dépasse la taille maximale autorisée`,
-              );
-            } else {
-              throw new Error(
-                `Une erreur est survenue lors du dépôt du document ${fileAAM.name}`,
-              );
-            }
-          }
-        }
+      if (informationsLocaux.reglementationErp) {
+        informationsLocaux.fileDerniereAttestationSecurite =
+          await uploadFileIfNeeded(
+            "attestation_securite",
+            informationsLocaux.fileDerniereAttestationSecurite,
+            "fileDerniereAttestationSecurite",
+          );
+
+        informationsLocaux.fileDernierArreteAutorisationMaire =
+          await uploadFileIfNeeded(
+            "arrete_autorisation_maire",
+            informationsLocaux.fileDernierArreteAutorisationMaire,
+            "fileDernierArreteAutorisationMaire",
+          );
       } else {
-        const fileREP =
-          hebergement.informationsLocaux.fileReponseExploitantOuProprietaire;
-        // Sauvegarde de la pièce jointe si celle-ci ne comporte pas de uuid (donc pas déjà)
-        if (fileREP && !fileREP.uuid) {
-          try {
-            const uuid = await UploadFile("reponse_explouprop", fileREP);
-            // mise à jour des informations du fichier, remplacement du file par les informations uuid, name et date
-            hebergement.informationsLocaux.fileReponseExploitantOuProprietaire =
-              {
-                uuid,
-                name: fileREP.name,
-                createdAt: new Date(),
-              };
-          } catch (error) {
-            log.w("fileReponseExploitantOuProprietaire", error);
-            if (error.response.status === 413) {
-              throw new Error(
-                `Le fichier ${fileREP.name} dépasse la taille maximale autorisée`,
-              );
-            } else {
-              throw new Error(
-                `Une erreur est survenue lors du dépôt du document ${fileREP.name}`,
-              );
-            }
-          }
-        }
+        informationsLocaux.fileReponseExploitantOuProprietaire =
+          await uploadFileIfNeeded(
+            "reponse_explouprop",
+            informationsLocaux.fileReponseExploitantOuProprietaire,
+            "fileReponseExploitantOuProprietaire",
+          );
       }
     },
   },

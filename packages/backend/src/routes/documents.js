@@ -33,6 +33,7 @@ function uploadFile(req, res, next) {
         log.w("uploadSingle", "file is too big");
         return res.status(413).send({
           message: "Le fichier téléversé dépasse la taille maximale autorisée.",
+          name: "FileIsTooLargeError",
         });
       } else {
         log.w("uploadSingle", err);
