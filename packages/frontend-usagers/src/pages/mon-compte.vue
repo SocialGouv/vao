@@ -126,12 +126,12 @@ const handleOnClick = () => {
     userStore.patchProfile(params);
     toaster.success({
       titleTag: "h2",
-      description: "Le profile a été mis à jour",
+      description: "Le profil a été mis à jour",
     });
   } catch (error) {
     toaster.error({
       titleTag: "h2",
-      description: "Erreur lors de la mise à jour du profile",
+      description: "Erreur lors de la mise à jour du profil",
     });
     throw error;
   }
