@@ -3,10 +3,12 @@ const config = require("../../../config");
 
 const User = require("../../../services/User");
 const Session = require("../../../services/Session");
+const CommonUser = require("../../../services/common/Users");
 
 const logger = require("../../../utils/logger");
 
 const { status } = require("../../../helpers/users");
+const { schema } = require("../../../helpers/schema");
 const { buildAccessToken, buildRefreshToken } = require("../../../utils/token");
 const AppError = require("../../../utils/error");
 
@@ -25,10 +27,29 @@ module.exports = async function login(req, res, next) {
   }
 
   try {
+    const verifAttempt = await CommonUser.verifyLoginAttempt(
+      email,
+      schema.FRONT,
+    );
+    if (verifAttempt) {
+      log.w("Trop de tentatives de connexion");
+      return next(
+        new AppError("Trop de tentatives de connexion", {
+          name: "TooManyLoginAttempts",
+          statusCode: 429,
+        }),
+      );
+    }
+
     const user = await User.login({ email, password });
 
     if (!user) {
       log.w("Utilisateur inexistant");
+      const ip =
+        req.headers["x-forwarded-for"]?.split(",").shift() || // Si derrière un proxy
+        req.socket?.remoteAddress || // Sinon, l'IP directe
+        null;
+      await CommonUser.recordLoginAttempt(email, ip, schema.FRONT);
       return next(
         new AppError("Mauvais identifiants", {
           name: "WrongCredentials",
