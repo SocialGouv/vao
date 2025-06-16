@@ -282,7 +282,7 @@ module.exports.login = async ({ email, password }) => {
   if (user.rows.length === 0) {
     return null;
   }
-  CommonUser.recordLoginAttempt(normalize(email), schema.FRONT);
+  CommonUser.resetLoginAttempt(normalize(email), schema.FRONT);
   pool.query(query.updateLastConnection, [user.rows[0].id]);
   log.i("read - DONE", { user: user.rows[0] });
   return user.rows[0];
