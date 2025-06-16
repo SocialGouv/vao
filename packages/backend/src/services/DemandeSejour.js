@@ -658,7 +658,6 @@ WITH
     JOIN back.user_roles ur ON u.id = ur.use_id
     WHERE u.ter_code = ANY($1)
       OR u.ter_code = ANY(r.parent_code)
-      OR u.ter_code = 'FRA'
     GROUP BY mail
   )
 SELECT mail
