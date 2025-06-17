@@ -1,63 +1,61 @@
 <template>
   <div>
-    <div class="fr-fieldset">
+    <div class="fr-fieldset default-table-filters-bar">
       <div
         v-if="filters.includes(availableFilters.idFonctionnelle)"
         :class="filedsetClass"
       >
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            v-model="idFonctionnelleSync"
-            type="text"
-            name="idFonctionnelle"
-            label="Numéro de déclaration"
-            placeholder="Numéro de déclaration"
-            :label-visible="true"
-            @update:model-value="filtersUpdate"
-          />
-        </div>
+        <DsfrInputGroup
+          v-model="idFonctionnelleSync"
+          type="text"
+          name="idFonctionnelle"
+          label="Numéro de déclaration"
+          placeholder="Numéro de déclaration"
+          wrapper-class="filters-bar__input-group"
+          :label-visible="true"
+          @update:model-value="filtersUpdate"
+        />
       </div>
       <div
         v-if="filters.includes(availableFilters.libelle)"
         :class="filedsetClass"
       >
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            v-model="libelleSync"
-            type="text"
-            name="libelle"
-            label="Nom du séjour"
-            placeholder="Nom du séjour"
-            :label-visible="true"
-            @update:model-value="filtersUpdate"
-          />
-        </div>
+        <DsfrInputGroup
+          v-model="libelleSync"
+          type="text"
+          name="libelle"
+          label="Nom du séjour"
+          placeholder="Nom du séjour"
+          wrapper-class="filters-bar__input-group"
+          :label-visible="true"
+          @update:model-value="filtersUpdate"
+        />
       </div>
       <div
         v-if="filters.includes(availableFilters.organisme)"
         :class="filedsetClass"
       >
-        <div class="fr-input-group">
-          <DsfrInputGroup
-            v-model="organismeSync"
-            type="text"
-            name="organisme"
-            label="Organisme"
-            placeholder="Organisme"
-            :label-visible="true"
-            @update:model-value="filtersUpdate"
-          />
-        </div>
+        <DsfrInputGroup
+          v-model="organismeSync"
+          type="text"
+          name="organisme"
+          label="Organisme"
+          placeholder="Organisme"
+          wrapper-class="filters-bar__input-group"
+          :label-visible="true"
+          @update:model-value="filtersUpdate"
+        />
       </div>
       <div
         v-if="filters.includes(availableFilters.status)"
         :class="filedsetClass"
       >
-        <DsfrMultiselect
+        <DsfrMultiselectV2
           v-model="statusSync"
           label="Statut"
           search
           select-all
+          button-class-name="filters-bar__multiselect-button"
           :options="defaultStatus"
           @update:model-value="filtersUpdate"
         />
@@ -66,17 +64,16 @@
         v-if="filters.includes(availableFilters.action)"
         :class="filedsetClass"
       >
-        <div class="fr-input-group">
-          <DsfrSelect
-            label="Actions à faire"
-            name="action"
-            mode="tags"
-            :options="todoActions"
-            @update:model-value="handleTodoActionChange($event as string)"
-          />
-        </div>
+        <DsfrSelectV2
+          label="Actions à faire"
+          name="action"
+          mode="tags"
+          select-class-name="filters-bar__select"
+          :options="todoActions"
+          @update:model-value="handleTodoActionChange($event as string)"
+        />
       </div>
-      <div :class="filedsetClass">
+      <div :class="[filedsetClass, 'align-self-end']">
         <ul class="fr-btns-group">
           <li>
             <DsfrButton
@@ -93,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
+import { DsfrMultiselectV2, DsfrSelectV2 } from "@vao/shared";
 
 const demandeSejourStore = useDemandeSejourStore();
 const availableFilters = { ...demandesSejours.filters };
@@ -187,3 +184,9 @@ const getCsv = async () => {
   exportCsv(response, "sejours.csv");
 };
 </script>
+
+<style scoped>
+.align-self-end {
+  align-self: flex-end;
+}
+</style>
