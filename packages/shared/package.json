@@ -12,13 +12,13 @@
   "description": "",
   "dependencies": {
     "@gouvfr/dsfr": "^1.13.0",
-    "@gouvminint/vue-dsfr": "^8.2.1",
+    "@gouvminint/vue-dsfr": "^8.4.0",
     "@iconify/vue": "^4.3.0",
-    "@vao/shared": "^1.0.0",
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.5.0",
+    "@vao/shared": "^1.0.0",
     "@vueform/multiselect": "~2.6.7",
-    "debug": "~4.3.4",
     "dayjs": "^1.11.11",
+    "debug": "~4.3.4",
     "vee-validate": "~4.13.0",
     "vue": "latest",
     "yup": "~1.4.0"
