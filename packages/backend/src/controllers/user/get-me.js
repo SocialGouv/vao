@@ -1,5 +1,4 @@
 const User = require("../../services/User");
-// const Session = require("../../services/Session");
 
 const logger = require("../../utils/logger");
 const normalize = require("../../utils/normalize");
