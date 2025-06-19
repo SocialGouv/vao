@@ -286,7 +286,7 @@ module.exports = {
           log.w(`sendMessageNotify - ${message}`);
           throw new AppError(message);
         }
-        const link = `${frontBODomain}/sejour/${declaration.id}`;
+        const link = `${frontBODomain}/sejours/${declaration.id}`;
         const html = sendTemplate.getBody(
           "Portail VAO - Nouveau message",
           [
@@ -1443,7 +1443,7 @@ module.exports = {
             },
             {
               p: [
-                `Si vous connaissez cette personne et qu’elle appartient bien à l’organisme tel que répertorié sur <a href="${link}" target="_blank">l’annuaire des entreprises</a> qui organisme des séjours VAO, vous pouvez valider la demande dans l’interface dédiée.`, 
+                `Si vous connaissez cette personne et qu’elle appartient bien à l’organisme tel que répertorié sur <a href="${link}" target="_blank">l’annuaire des entreprises</a> qui organisme des séjours VAO, vous pouvez valider la demande dans l’interface dédiée.`,
                 `Si vous ne souhaitez pas que cette personne rejoigne votre organisme, vous pouvez également refuser sa demande.`,
               ],
               type: "p",
@@ -1462,7 +1462,6 @@ module.exports = {
             },
           ],
           `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
-
         );
         return {
           from: senderEmail,
@@ -1472,15 +1471,15 @@ module.exports = {
           to: email,
         };
       },
-      sendWaitAccountValidationOrganisme: (email) => {
+      sendWaitAccountValidationDREETS: (email, mailDreets) => {
         const html = sendTemplate.getBody(
           "VAO - confirmation de votre demande d’inscription",
           [
             {
               p: [
                 "Bonjour,",
-                "Votre inscription a bien été prise en compte. Elle a été adressée à votre entité qui va traiter la demande sous peu.",
-                "En cas de question, merci de contacter votre organisme.",
+                "Votre inscription a bien été prise en compte. Elle a été adressée à la DREETS de votre siège social, qui va traiter la demande sous peu.",
+                `L’adresse de contact de la DREETS est la suivante : ${mailDreets}`,
               ],
               type: "p",
             },
@@ -1503,15 +1502,15 @@ module.exports = {
 
         return params;
       },
-      sendWaitAccountValidationDREETS: (email, mailDreets) => {
+      sendWaitAccountValidationOrganisme: (email) => {
         const html = sendTemplate.getBody(
           "VAO - confirmation de votre demande d’inscription",
           [
             {
               p: [
                 "Bonjour,",
-                "Votre inscription a bien été prise en compte. Elle a été adressée à la DREETS de votre siège social, qui va traiter la demande sous peu.",
-                `L’adresse de contact de la DREETS est la suivante : ${mailDreets}`,
+                "Votre inscription a bien été prise en compte. Elle a été adressée à votre entité qui va traiter la demande sous peu.",
+                "En cas de question, merci de contacter votre organisme.",
               ],
               type: "p",
             },
