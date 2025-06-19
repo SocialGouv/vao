@@ -117,7 +117,7 @@ const uploadFiles = async (hebergement) => {
       description,
     });
     resetApiStatut();
-    throw error;
+    return;
   }
 };
 
