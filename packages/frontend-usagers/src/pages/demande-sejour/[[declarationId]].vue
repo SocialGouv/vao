@@ -240,6 +240,7 @@
 <script setup>
 import dayjs from "dayjs";
 import { Chat, DemandeStatusBadge } from "@vao/shared";
+import { getFileUploadErrorMessage } from "@vao/shared/src/utils/file.mjs";
 
 const route = useRoute();
 
@@ -526,10 +527,15 @@ const sendMessage = async ({ message, file }) => {
     } catch (error) {
       isSendingMessage.value = false;
       log.w(error);
-      return toaster.error({
+      const description = getFileUploadErrorMessage(
+        file?.name,
+        error?.data?.name,
+      );
+      toaster.error({
         titleTag: "h2",
-        description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+        description,
       });
+      throw error;
     }
   }
   try {
@@ -574,16 +580,15 @@ async function updateOrCreate(data, type) {
         };
         toaster.info({ titleTag: "h2", description: `Document déposé` });
       } catch (error) {
-        if (error.response.status === 413) {
-          return toaster.error({
-            titleTag: "h2",
-            description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
-          });
-        }
-        return toaster.error({
+        const description = getFileUploadErrorMessage(
+          file?.name,
+          error?.data?.name,
+        );
+        toaster.error({
           titleTag: "h2",
-          description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+          description,
         });
+        throw error;
       }
     }
   }
@@ -610,16 +615,15 @@ async function updateOrCreate(data, type) {
         });
         counter++;
       } catch (error) {
-        if (error.response.status === 413) {
-          return toaster.error({
-            titleTag: "h2",
-            description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
-          });
-        }
-        return toaster.error({
+        const description = getFileUploadErrorMessage(
+          file?.name,
+          error?.data?.name,
+        );
+        toaster.error({
           titleTag: "h2",
-          description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+          description,
         });
+        throw error;
       }
     }
     toaster.info({

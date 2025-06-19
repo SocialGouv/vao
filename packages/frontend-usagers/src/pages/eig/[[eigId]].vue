@@ -75,6 +75,7 @@
 
 <script setup>
 import { eigModel } from "@vao/shared";
+import { getFileUploadErrorMessage } from "@vao/shared/src/utils/file.mjs";
 
 definePageMeta({
   middleware: ["is-connected", "check-roles", "check-eig-id-param"],
@@ -159,7 +160,7 @@ const nextHash = () => {
 async function finalize(body) {
   log.i("finalize eig -IN");
   setApiStatut("Transmission de l'eig en cours");
-   const newFile = {};
+  const newFile = {};
   if (body.file) {
     try {
       const uuid = await UploadFile("eig", body.file);
@@ -173,9 +174,13 @@ async function finalize(body) {
         description: "Document déposé",
       });
     } catch (error) {
+      const description = getFileUploadErrorMessage(
+        body.file?.name,
+        error?.data?.name,
+      );
       toaster.error({
         titleTag: "h2",
-        description: `Une erreur est survenue lors du dépôt du document ${body.file.name}`,
+        description,
       });
       throw error;
     }

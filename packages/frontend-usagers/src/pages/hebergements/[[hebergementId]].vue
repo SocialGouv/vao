@@ -62,6 +62,7 @@ definePageMeta({
 });
 import hebergementUtils from "@vao/shared/src/utils/hebergement";
 import HebergementStatusBadge from "../../components/hebergements/HebergementStatusBadge.vue";
+import { getFileUploadErrorMessage } from "@vao/shared/src/utils/file.mjs";
 
 const config = useRuntimeConfig();
 
@@ -105,14 +106,18 @@ const links = [
 
 const uploadFiles = async (hebergement) => {
   try {
-    await hebergementStore.updaloadFiles(hebergement);
-  } catch (e) {
+    await hebergementStore.uploadAllFiles(hebergement);
+  } catch (error) {
+    const description = getFileUploadErrorMessage(
+      error?.fileName,
+      error?.data?.name,
+    );
     toaster.error({
       titleTag: "h2",
-      description: e.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+      description,
     });
     resetApiStatut();
-    throw e;
+    throw error;
   }
 };
 
