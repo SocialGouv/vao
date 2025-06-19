@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../../../config");
 
 const User = require("../../../services/User");
-const Session = require("../../../services/Session");
+const Session = require("../../../services/common/Session");
 const CommonUser = require("../../../services/common/Users");
 
 const logger = require("../../../utils/logger");
@@ -90,7 +90,7 @@ module.exports = async function login(req, res, next) {
       expiresIn: config.refreshToken.expiresIn / 1000,
     });
 
-    await Session.create(user.id, refreshToken);
+    await Session.create(user.id, refreshToken, schema.FRONT);
 
     res.cookie("VAO_access_token", accessToken, {
       httpOnly: true,

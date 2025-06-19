@@ -3,7 +3,7 @@ const config = require("../../../config");
 
 const User = require("../../../services/BoUser");
 const CommonUser = require("../../../services/common/Users");
-const Session = require("../../../services/BoSession");
+const Session = require("../../../services/common/Session");
 
 const logger = require("../../../utils/logger");
 
@@ -87,7 +87,7 @@ module.exports = async function login(req, res, next) {
       expiresIn: config.refreshToken.expiresIn / 1000,
     });
 
-    await Session.create(user.id, refreshToken);
+    await Session.create(user.id, refreshToken, schema.BACK);
 
     res.cookie("VAO_BO_access_token", accessToken, {
       httpOnly: true,
