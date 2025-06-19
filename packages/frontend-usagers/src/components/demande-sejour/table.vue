@@ -62,7 +62,10 @@
           size="small"
           type="button"
           :label="row.statut === draftStatus ? 'Supprimer' : 'Annuler'"
-          :disabled="!enabledDeleteCancelStatus.includes(row.statut)"
+          :disabled="
+            !enabledDeleteCancelStatus.includes(row.statut) ||
+            userStore.user?.siret !== row.siret
+          "
           @click="handleRemoveClose(row.declarationId, row.statut)"
         />
         <DsfrButton
@@ -111,6 +114,7 @@ const route = useRoute();
 const demandeSejourStore = useDemandeSejourStore();
 const departementStore = useDepartementStore();
 const toaster = useToaster();
+const userStore = useUserStore();
 
 const data = computed(() => demandeSejourStore.demandes);
 const total = computed(() => demandeSejourStore.totalDemandes);
