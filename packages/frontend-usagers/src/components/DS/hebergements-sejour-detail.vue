@@ -172,7 +172,7 @@
             type="date"
             label="Date de la dernière visite "
             :label-visible="true"
-            :model-value="visiteLocauxAt"
+            :model-value="dateVisiteAtFormated"
             disabled
             :is-valid="visiteLocauxAtMeta.valid"
             :error-message="visiteLocauxAtErrorMessage"
@@ -612,6 +612,14 @@ const markerLatLng = computed(() => {
   }
 
   return hebergementStore.hebergementCourant.coordonnees.adresse.coordinates;
+});
+
+const dateVisiteAtFormated = computed(() => {
+  return hebergementStore.hebergementCourant?.informationsLocaux?.visiteLocauxAt
+    ? dayjs(
+        hebergementStore.hebergementCourant.informationsLocaux.visiteLocauxAt,
+      ).format("YYYY-MM-DD")
+    : null;
 });
 
 const hebergementsFavoris = computed(() => {
