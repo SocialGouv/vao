@@ -47,7 +47,7 @@ const sendMessage = async ({ message, file }) => {
         titleTag: "h2",
         description,
       });
-      throw error;
+      return;
     }
   }
   try {

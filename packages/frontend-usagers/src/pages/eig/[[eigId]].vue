@@ -182,7 +182,7 @@ async function finalize(body) {
         titleTag: "h2",
         description,
       });
-      throw error;
+      return;
     }
   }
   try {

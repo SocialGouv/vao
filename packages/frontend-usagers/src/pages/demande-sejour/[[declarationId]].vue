@@ -535,7 +535,7 @@ const sendMessage = async ({ message, file }) => {
         titleTag: "h2",
         description,
       });
-      throw error;
+      return;
     }
   }
   try {
@@ -588,7 +588,7 @@ async function updateOrCreate(data, type) {
           titleTag: "h2",
           description,
         });
-        throw error;
+        return;
       }
     }
   }
@@ -623,7 +623,7 @@ async function updateOrCreate(data, type) {
           titleTag: "h2",
           description,
         });
-        throw error;
+        return;
       }
     }
     toaster.info({
