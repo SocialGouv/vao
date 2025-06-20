@@ -46,14 +46,14 @@ export const useUserStore = defineStore("user", {
       }
     },
     async patchProfile(params) {
-      const { user } = await $fetchBackend("/users/me", {
+      await $fetchBackend("/users/me", {
         method: "PATCH",
         credentials: "include",
         body: {
           ...params,
         },
       });
-      this.user = user;
+      this.refreshProfile();
     },
     async getApiToken() {
       const response = await $fetchBackend("/users/api-token", {
