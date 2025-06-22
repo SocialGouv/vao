@@ -42,7 +42,7 @@ Portail VAO
 
 <details>
 
-<summary>Confirmation de demande d’inscription</summary>
+<summary>OVA - Confirmation de demande d’inscription</summary>
 
 * **Déclencheur :** L'utilisateur qui a réalisé [la demande de création de compte](liste-des-emails-envoyees-par-le-si.md#demande-de-creation-de-compte) et qui valide sa demande avec le lien disponible dans le mail
 
@@ -74,6 +74,8 @@ Portail VAO
 <figure><img src=".gitbook/assets/Capture d’écran 2025-06-13 à 16.05.58.png" alt=""><figcaption></figcaption></figure>
 
 </details>
+
+{% include ".gitbook/includes/mail-agent-confirmation-de-creation-de-compte.md" %}
 
 <details>
 
@@ -108,7 +110,7 @@ L’équipe [Nom de l'application]
 
 <details>
 
-<summary>Validation de création de compte DREETS</summary>
+<summary>OVA - Validation de création de compte DREETS</summary>
 
 * **Déclencheur :** L'utilisateur qui a réalisé [la demande de création de compte](liste-des-emails-envoyees-par-le-si.md#demande-de-creation-de-compte) et qui valide sa demande avec le lien disponible dans le mail
 
