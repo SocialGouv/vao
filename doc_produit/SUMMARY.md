@@ -11,4 +11,5 @@
 
 ## Back (Agents)
 
-* [Création de compte agent](back-agents/creation-de-compte-agent.md)
+* [Création de compte agent](back-agents/creation-de-compte-agent/README.md)
+  * [Droits utilisateur agent - création de compte](back-agents/creation-de-compte-agent/droits-utilisateur-agent-creation-de-compte.md)
