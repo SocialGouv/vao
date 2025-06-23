@@ -14,7 +14,17 @@ Il est possible de créer un hébergement de manière indépendante et ensuite d
 
 </details>
 
+Si l'adresse est introuvable via le service en API, il est possible de renseigner une adresse à la main en cliquant sur le bouton "Adresse introuvable".&#x20;
 
+Au clic sur ce bouton, un pop-up s'affiche contenant un formulaire pour ajouter une adresse spécifique manuellement.&#x20;
+
+<details>
+
+<summary>Pop-up d'ajout d'une adresse manuellement</summary>
+
+{% include "../.gitbook/includes/formulaire_ajout_adresse_manuel.md" %}
+
+</details>
 
 
 
