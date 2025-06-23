@@ -16,10 +16,6 @@ L'utilisateur est invité par un message d'information à renseigner sa fiche or
 
 <figure><img src="../.gitbook/assets/Capture d’écran 2025-06-22 à 20.48.58.png" alt=""><figcaption></figcaption></figure>
 
-En clic
-
-
-
 
 
 
@@ -28,11 +24,33 @@ En clic
 {% step %}
 ### Etape 1 - Renseignements généraux sur l’organisateur VAO
 
-L'utilisateur renseigne un formulaire
+L'utilisateur renseigne une première étape de formulaire. Celui-ci est conditionnel selon les réponses sélectionnées.&#x20;
+
+<details>
+
+<summary>Formulaire fiche organisme étape 1</summary>
 
 {% include "../.gitbook/includes/formulaire-fiche-organisme-etape-1.md" %}
 
+</details>
 
+<details>
+
+<summary>Capture</summary>
+
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-23 à 17.17.25.png" alt=""><figcaption><p>Formulaire fiche organisme - étape 1</p></figcaption></figure>
+
+</details>
+
+Au clic sur le bouton `Récupérer les informations de la personne morale` , les informations de l'organisme sont récupérées par l'API entreprise et affichées en dessous dans un nouveau formulaire.&#x20;
+
+<details>
+
+<summary>Formulaire fiche organisme étape 1.bis</summary>
+
+
+
+</details>
 {% endstep %}
 
 {% step %}

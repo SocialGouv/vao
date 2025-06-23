@@ -26,7 +26,5 @@ Au clic sur ce bouton, un pop-up s'affiche contenant un formulaire pour ajouter 
 
 </details>
 
-
-
-
+À la soumission du formulaire, l'utilisateur est dirigé [vers la page de liste](./).&#x20;
 
