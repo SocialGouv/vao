@@ -1,6 +1,6 @@
 # Table of contents
 
-* [Intro](README.md)
+* [Bienvenue sur la documentation du SI VAO](README.md)
 
 ## FRONT (OVA)
 
