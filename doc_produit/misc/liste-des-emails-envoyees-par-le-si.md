@@ -6,7 +6,13 @@ Voici la liste de l'ensemble de ces notifications
 
 
 
-## Création de compte
+## Création de compte agent
+
+{% include "../.gitbook/includes/mail-agent-confirmation-de-creation-de-compte.md" %}
+
+{% include "../.gitbook/includes/agent-confirmation-de-creation-de-compte.md" %}
+
+## Création de compte OVA&#x20;
 
 <details>
 
@@ -36,7 +42,7 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-13 à 15.50.25.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-13 à 15.50.25.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -71,11 +77,9 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-13 à 16.05.58.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-13 à 16.05.58.png" alt=""><figcaption></figcaption></figure>
 
 </details>
-
-{% include ".gitbook/includes/mail-agent-confirmation-de-creation-de-compte.md" %}
 
 <details>
 
@@ -104,7 +108,7 @@ Merci,
 L’équipe [Nom de l'application]
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-20 à 14.18.30.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-20 à 14.18.30.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -144,7 +148,7 @@ Cordialement.
 undefined
 </code></pre>
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-13 à 16.11.46.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-13 à 16.11.46.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -179,7 +183,7 @@ L'équipe du SI VAO
 https://vao-preprod.ovh.fabrique.social.gouv.fr
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-16 à 11.40.12.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-16 à 11.40.12.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -211,7 +215,7 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-16 à 14.19.18.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-16 à 14.19.18.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -278,7 +282,7 @@ L'équipe du SI VAO
 Portail VAO
 </code></pre>
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-16 à 15.48.42.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-16 à 15.48.42.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -311,7 +315,7 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-16 à 15.54.12.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-16 à 15.54.12.png" alt=""><figcaption></figcaption></figure>
 
 
 
@@ -348,7 +352,7 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-18 à 11.21.39.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 11.21.39.png" alt=""><figcaption></figcaption></figure>
 
 
 
@@ -391,7 +395,7 @@ L'équipe du SI VAO
 Ce courriel est un message automatique, merci de ne pas répondre.
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-18 à 11.32.27.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 11.32.27.png" alt=""><figcaption></figcaption></figure>
 
 
 
@@ -424,7 +428,7 @@ L'équipe du SI VAO
 Ce courriel est un message automatique, merci de ne pas répondre.
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-18 à 11.37.07.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 11.37.07.png" alt=""><figcaption></figcaption></figure>
 
 
 
@@ -463,7 +467,7 @@ Date de début du séjour : [Date de début du séjour]
 Ce courriel est un message automatique, merci de ne pas répondre.
 </code></pre>
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-18 à 16.18.55.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 16.18.55.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -496,7 +500,7 @@ L'équipe du SI VAO
 https://vao-preprod.ovh.fabrique.social.gouv.fr
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-18 à 16.29.31.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 16.29.31.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -528,7 +532,7 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-18 à 17.18.19.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 17.18.19.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -561,7 +565,7 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-18 à 17.16.38.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 17.16.38.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -594,7 +598,7 @@ L'équipe du SI VAO
 Portail VAO
 </code></pre>
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-18 à 17.20.51.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 17.20.51.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -627,7 +631,7 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src=".gitbook/assets/Capture d’écran 2025-06-18 à 17.45.11.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 17.45.11.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 

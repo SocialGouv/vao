@@ -81,7 +81,7 @@ Une aide est affichée pour constituer un mot de passe fiable.&#x20;
 {% step %}
 ### Confirmation de création de mot de passe
 
-L'utilisateur arrive sur une page de confirmation
+L'utilisateur arrive sur une page de confirmation et il reçoit un mail de confirmation.&#x20;
 
 <details>
 
@@ -90,6 +90,8 @@ L'utilisateur arrive sur une page de confirmation
 <figure><img src="../../.gitbook/assets/psw_confirm_alert.png" alt=""><figcaption></figcaption></figure>
 
 </details>
+
+{% include "../../.gitbook/includes/agent-confirmation-de-creation-de-compte.md" %}
 {% endstep %}
 
 {% step %}

@@ -4,9 +4,9 @@ title: Mail - Agent - confirmation de création de compte
 
 <details>
 
-<summary>Agent - confirmation de création de compte</summary>
+<summary>Agent - validation de création de compte</summary>
 
-* **Déclencheur :**&#x20;
+* **Déclencheur :** L'agent qui créé un compte pour un autre agent
 
 - **Expéditeur :** nepasrepondre@vao.social.gouv.fr
 - **Destinataire** : Le futur utilisateur agent
