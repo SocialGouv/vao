@@ -29,11 +29,3 @@ Cette validation peut être effectuée selon **2 scénarios spécifiques** :
 
 
 <table data-view="cards"><thead><tr><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Scénario 1 - L’organisme n’existe pas sur la plateforme VAO</strong></td><td><a href="../../.gitbook/assets/sumner-mahaffey-7Y0NshQLohk-unsplash.jpg">sumner-mahaffey-7Y0NshQLohk-unsplash.jpg</a></td><td><a href="scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md">scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md</a></td></tr><tr><td><strong>Scénario 2 – L’organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO</strong></td><td><a href="../../.gitbook/assets/philip-oroni-5kvlRI_-eVA-unsplash.jpg">philip-oroni-5kvlRI_-eVA-unsplash.jpg</a></td><td></td></tr></tbody></table>
-
-<details>
-
-<summary>Capture</summary>
-
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-25 à 16.23.08.png" alt=""><figcaption></figcaption></figure>
-
-</details>
