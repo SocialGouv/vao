@@ -16,40 +16,9 @@ Voici la liste de l'ensemble de ces notifications
 
 {% include "../.gitbook/includes/notif-ova-demande-de-creation-de-compte.md" %}
 
-<details>
+{% include "../.gitbook/includes/ova-confirmation-de-demande-dinscription.md" %}
 
-<summary>OVA - Confirmation de demande d’inscription</summary>
-
-* **Déclencheur :** L'utilisateur qui a réalisé [la demande de création de compte](liste-des-emails-envoyes-par-le-si.md#demande-de-creation-de-compte) et qui valide sa demande avec le lien disponible dans le mail
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Lui-même
-
-* **Object du mail** : VAO - confirmation de votre demande d’inscription
-
-- **Contenu du mail** :&#x20;
-
-```
-Bonjour,
-
-
-Votre inscription a bien été prise en compte. Elle a été adressée à la DREETS de votre siège social, qui va traiter la demande sous peu.
-
-
-L’adresse de contact de la DREETS est la suivante : [EMAIL DREETS]
-
-
-Si vous avez besoin d’accompagnement, vous pouvez contacter notre équipe support
-
-
-Cordialement.
-L'équipe du SI VAO
-Portail VAO
-```
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-13 à 16.05.58.png" alt=""><figcaption></figcaption></figure>
-
-</details>
+{% include "../.gitbook/includes/ova-inscription-validee.md" %}
 
 <details>
 
@@ -82,45 +51,7 @@ L’équipe [Nom de l'application]
 
 </details>
 
-<details>
-
-<summary>OVA - Validation de création de compte DREETS</summary>
-
-* **Déclencheur :** L'utilisateur qui a réalisé [la demande de création de compte](liste-des-emails-envoyes-par-le-si.md#demande-de-creation-de-compte) et qui valide sa demande avec le lien disponible dans le mail
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Email de la DREETS défini dans la fiche territoire
-
-* **Object du mail** : VAO - confirmation de votre demande d’inscription
-
-- **Contenu du mail** :&#x20;
-
-<pre><code>Bonjour,
-
-Un utilisateur souhaite rejoindre un organisme au sein de la plateforme VAO.
-
-Voici les informations concernant l’utilisateur :
-
-- Nom : [Nom]
-- Prénom : [Prénom]
-- Email : [Email]
-- Téléphone : [Tel]
-
-Cet utilisateur souhaite ajouter, au sein de la plateforme VAO, l’organisme SIRET : [Lien siret]
-
-Vous pouvez cliquer directement sur le lien hypertexte pour accéder aux détails de l’organisme.
-
-Si vous avez un doute, vous pouvez prendre contact avec cette personne avant de traiter la demande.
-
-<strong>[BOUTON - TRAITER LA DEMANDE]
-</strong>
-Cordialement.
-undefined
-</code></pre>
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-13 à 16.11.46.png" alt=""><figcaption></figcaption></figure>
-
-</details>
+{% include "../.gitbook/includes/agent-dreets-validation-de-creation-de-compte-ova.md" %}
 
 ## Déclaration de séjour 2 mois
 

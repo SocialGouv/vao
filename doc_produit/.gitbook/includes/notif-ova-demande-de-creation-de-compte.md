@@ -4,7 +4,7 @@ title: Notif - OVA - Demande de création de compte
 
 <details>
 
-<summary>Demande de création de compte</summary>
+<summary>OVA - Demande de création de compte</summary>
 
 * **Déclencheur :** L'utilisateur OVA réalise une demande de création d'un nouveau compte&#x20;
 
