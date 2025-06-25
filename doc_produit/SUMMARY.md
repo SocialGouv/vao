@@ -20,6 +20,6 @@
 
 ## MISC
 
-* [Liste des emails envoyées par le SI](misc/liste-des-emails-envoyees-par-le-si.md)
+* [Liste des emails envoyés par le SI](misc/liste-des-emails-envoyes-par-le-si.md)
 * [Formulaire fiche organisme](misc/formulaire-fiche-organisme.md)
 * [Formulaire hébergement](misc/formulaire-hebergement.md)

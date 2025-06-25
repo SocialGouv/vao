@@ -1,4 +1,4 @@
-# Liste des emails envoyées par le SI
+# Liste des emails envoyés par le SI
 
 Plusieurs notifications par mails sont envoyées par la plateforme VAO.&#x20;
 
@@ -14,43 +14,13 @@ Voici la liste de l'ensemble de ces notifications
 
 ## Création de compte OVA&#x20;
 
-<details>
-
-<summary>Demande de création de compte</summary>
-
-* **Déclencheur :** L'utilisateur OVA réalise une demande de création d'un nouveau compte&#x20;
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Lui-même
-
-* **Object du mail** : Portail VAO - Validez votre adresse courriel
-
-- **Contenu du mail** :&#x20;
-
-```
-Bonjour,
-
-Pour finaliser la création de votre compte sur la plateforme VAO, confirmez votre adresse e-mail en cliquant sur le lien ci-dessous
-
-[BOUTON : Je valide mon adresse courriel]
-
-Attention, ce lien ne sera valide que pendant 60 minutes.
-
-
-Cordialement.
-L'équipe du SI VAO
-Portail VAO
-```
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-13 à 15.50.25.png" alt=""><figcaption></figcaption></figure>
-
-</details>
+{% include "../.gitbook/includes/notif-ova-demande-de-creation-de-compte.md" %}
 
 <details>
 
 <summary>OVA - Confirmation de demande d’inscription</summary>
 
-* **Déclencheur :** L'utilisateur qui a réalisé [la demande de création de compte](liste-des-emails-envoyees-par-le-si.md#demande-de-creation-de-compte) et qui valide sa demande avec le lien disponible dans le mail
+* **Déclencheur :** L'utilisateur qui a réalisé [la demande de création de compte](liste-des-emails-envoyes-par-le-si.md#demande-de-creation-de-compte) et qui valide sa demande avec le lien disponible dans le mail
 
 - **Expéditeur :** nepasrepondre@vao.social.gouv.fr
 - **Destinataire** : Lui-même
@@ -116,7 +86,7 @@ L’équipe [Nom de l'application]
 
 <summary>OVA - Validation de création de compte DREETS</summary>
 
-* **Déclencheur :** L'utilisateur qui a réalisé [la demande de création de compte](liste-des-emails-envoyees-par-le-si.md#demande-de-creation-de-compte) et qui valide sa demande avec le lien disponible dans le mail
+* **Déclencheur :** L'utilisateur qui a réalisé [la demande de création de compte](liste-des-emails-envoyes-par-le-si.md#demande-de-creation-de-compte) et qui valide sa demande avec le lien disponible dans le mail
 
 - **Expéditeur :** nepasrepondre@vao.social.gouv.fr
 - **Destinataire** : Email de la DREETS défini dans la fiche territoire
