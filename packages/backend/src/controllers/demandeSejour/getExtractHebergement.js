@@ -11,13 +11,13 @@ module.exports = async function get(req, res, next) {
   res.setHeader("Content-Disposition", 'attachment; filename="data.csv"');
   const departements = req.departements.map((d) => d.value);
   try {
-    const result = await DemandeSejour.getHebergementsByDepartementCodes(
-      departements,
+    const result = await DemandeSejour.getHebergementsByDepartementCode(
       {
         order: "ASC",
         search: "",
         sort: "nom",
       },
+      departements,
     );
     const titles = [
       { key: "nom", label: "Nom de l’hébergement" },
@@ -32,7 +32,7 @@ module.exports = async function get(req, res, next) {
     ];
     const csv = [
       titles.map(({ label }) => label).join(";"),
-      ...result.data.hebergements.map((item) => {
+      ...result.rows.map((item) => {
         const newItem = { ...item };
         newItem.reglementationErp = newItem.reglementationErp ? "Oui" : "Non";
         newItem.dateDebut = dayjs(newItem.dateDebut).format("DD/MM/YYYY");
