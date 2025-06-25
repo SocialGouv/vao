@@ -5,7 +5,8 @@
 ## FRONT (OVA)
 
 * [Accès au site VAO](front-ova/acces-au-site-vao.md)
-* [Création de compte](front-ova/creation-de-compte.md)
+* [Création de compte](front-ova/creation-de-compte/README.md)
+  * [Scénario 1 - L’organisme n’existe pas sur la plateforme VAO](front-ova/creation-de-compte/scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md)
 * [Création de la fiche organisateur](front-ova/creation-de-la-fiche-organisateur.md)
 
 ***
