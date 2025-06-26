@@ -4,7 +4,7 @@
     <Summary :eig="eigStore.currentEig" env="USAGER" />
   </dsfr-alert>
   <div class="fr-fieldset">
-    <h6>Personnel présent lors de événements</h6>
+    <h6>Personnel présent lors de l'événement</h6>
     <div class="fr-fieldset__element">
       <div class="wrapper">
         <div class="parent">
