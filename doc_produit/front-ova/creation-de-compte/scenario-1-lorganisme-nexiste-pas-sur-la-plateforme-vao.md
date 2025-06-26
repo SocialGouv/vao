@@ -1,6 +1,6 @@
 # Scénario 1 - L’organisme n’existe pas sur la plateforme VAO
 
-<figure><img src="../../.gitbook/assets/image.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/création de compte.png" alt=""><figcaption></figcaption></figure>
 
 {% stepper %}
 {% step %}
@@ -28,7 +28,7 @@ L’utilisateur OVA valide sa demande d’inscription via le bouton disponible d
 
 </details>
 
-L'utilisateur OVA reçoit une conformation de sa validation d'inscription
+L'utilisateur OVA reçoit une confirmation de sa demande d'inscription
 
 {% include "../../.gitbook/includes/ova-confirmation-de-demande-dinscription.md" %}
 {% endstep %}
@@ -119,11 +119,3 @@ Lors de la demande de création de compte via le formulaire d'inscription, si l'
 {% include "../../.gitbook/includes/ova-compte-deja-existant.md" %}
 {% endstep %}
 {% endstepper %}
-
-<details>
-
-<summary>Capture</summary>
-
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-25 à 16.23.08.png" alt=""><figcaption></figcaption></figure>
-
-</details>

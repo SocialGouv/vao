@@ -1,10 +1,10 @@
 ---
-title: Notif - OVA - Demande de création de compte
+title: OVA - Validation de l'adresse email
 ---
 
 <details>
 
-<summary>OVA - Demande de création de compte</summary>
+<summary>OVA - Validation de l'adresse email</summary>
 
 * **Déclencheur :** L'utilisateur OVA réalise une demande de création d'un nouveau compte&#x20;
 

@@ -4,9 +4,9 @@ title: OVA - Confirmation de demande d’inscription
 
 <details>
 
-<summary>OVA - Confirmation de demande d’inscription</summary>
+<summary>OVA - Confirmation de demande d’inscription par DREETS</summary>
 
-* **Déclencheur :** L'utilisateur qui a réalisé [la demande de création de compte](broken-reference) et qui valide sa demande avec le lien disponible dans le mail
+* **Déclencheur :** L'utilisateur qui a réalisé la demande de création de compte et qui valide sa demande avec le lien disponible dans le mail
 
 - **Expéditeur :** nepasrepondre@vao.social.gouv.fr
 - **Destinataire** : Lui-même

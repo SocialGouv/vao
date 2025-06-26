@@ -12,7 +12,9 @@ Voici la liste de l'ensemble de ces notifications
 
 {% include "../.gitbook/includes/agent-confirmation-de-creation-de-compte.md" %}
 
-## Création de compte OVA&#x20;
+## Création de compte OVA
+
+### Scénario 1 - L’organisme n’existe pas sur la plateforme VAO&#x20;
 
 {% include "../.gitbook/includes/notif-ova-demande-de-creation-de-compte.md" %}
 
@@ -25,6 +27,14 @@ Voici la liste de l'ensemble de ces notifications
 {% include "../.gitbook/includes/agent-dreets-validation-de-creation-de-compte-ova.md" %}
 
 {% include "../.gitbook/includes/ova-refus-dinscription.md" %}
+
+***
+
+### Scénario 2 – L’organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO
+
+{% include "../.gitbook/includes/ova-confirmation-de-demande-dinscription-par-ova.md" %}
+
+{% include "../.gitbook/includes/ova-validation-de-creation-de-compte-ova.md" %}
 
 ## Déclaration de séjour 2 mois
 
