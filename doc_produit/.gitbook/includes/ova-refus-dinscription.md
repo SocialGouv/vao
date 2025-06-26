@@ -4,7 +4,7 @@ title: OVA - Refus d'inscription
 
 <details>
 
-<summary>OVA - Refus d'inscription</summary>
+<summary>OVA - Refus d'inscription par la DREETS</summary>
 
 * **Déclencheur :** L'agent DREETS refuse la demande de création de compte de l'OVA
 * **Expéditeur :** nepasrepondre@vao.social.gouv.fr

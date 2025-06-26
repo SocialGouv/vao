@@ -6,7 +6,7 @@ title: OVA - Validation de création de compte OVA
 
 <summary>OVA - Validation de création de compte OVA</summary>
 
-* **Déclencheur :** L'utitlisateur souhaitant rejoindre son organisation au sein du SI-VAO, a validé son adresse email&#x20;
+* **Déclencheur :** L'utilisateur souhaitant rejoindre son organisation au sein du SI-VAO, a validé son adresse email&#x20;
 
 - **Expéditeur :** nepasrepondre@vao.social.gouv.fr
 - **Destinataire** : le 1er compte de l'organisme OVA créé historiquement

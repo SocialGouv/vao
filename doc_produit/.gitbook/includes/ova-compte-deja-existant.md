@@ -15,7 +15,7 @@ title: OVA - Compte déjà existant
 ```
 Bonjour,
 
-Une tentative de création de compte a été faite avec cette adresse e-mail sur [Nom de l'application].
+Une tentative de création de compte a été faite avec cette adresse e-mail sur VAO.
 
 Nous vous rappelons que cette adresse e-mail est déjà associée à un compte existant.  
 Si vous avez oublié votre mot de passe, vous pouvez le réinitialiser ici :

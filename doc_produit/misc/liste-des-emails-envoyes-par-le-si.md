@@ -36,6 +36,8 @@ Voici la liste de l'ensemble de ces notifications
 
 {% include "../.gitbook/includes/ova-validation-de-creation-de-compte-ova.md" %}
 
+{% include "../.gitbook/includes/ova-refus-dinscription-par-lova.md" %}
+
 ## Déclaration de séjour 2 mois
 
 <details>

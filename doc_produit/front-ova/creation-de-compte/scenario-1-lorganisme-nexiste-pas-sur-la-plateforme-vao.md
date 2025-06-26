@@ -93,7 +93,7 @@ Lors du clic sur le bouton refus, une popup d'affiche pour argumenter le refus v
 
 </details>
 
-Au clic sur le bouton, refus :&#x20;
+Au clic sur le bouton "Refuser" :&#x20;
 
 * La ligne de l’utilisateur disparait de la liste des comptes à valider
 * La ligne apparait dans la liste des comptes, avec l'état bloqué :&#x20;
@@ -106,7 +106,7 @@ Au clic sur le bouton, refus :&#x20;
 
 </details>
 
-L’utilisateur OVA reçoit un mail de confirmation avec le texte renseigné par l'agent dans le formulaire de refus.&#x20;
+L’utilisateur OVA reçoit un mail de refus avec le texte renseigné par l'agent dans le formulaire de refus.&#x20;
 
 {% include "../../.gitbook/includes/ova-refus-dinscription.md" %}
 {% endstep %}

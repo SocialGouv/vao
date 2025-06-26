@@ -6,7 +6,7 @@ title: OVA - Inscription validée
 
 <summary>OVA - Inscription validée</summary>
 
-* **Déclencheur :** La DREETS valide la demande de création de compte OVA
+* **Déclencheur :** La DREETS ou le compte OVA existant valide la demande de création de compte OVA
 * **Expéditeur :** nepasrepondre@vao.social.gouv.fr
 * **Destinataire** : Utilisateur OVA réalisant la demande de création de compte
 * **Object du mail** : Portail VAO - Inscription validée
