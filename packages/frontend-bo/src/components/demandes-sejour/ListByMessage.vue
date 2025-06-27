@@ -124,6 +124,9 @@ const columns = [
   {
     key: "messageEtat",
     label: "Message",
+    options: {
+      isSortable: true,
+    },
   },
   {
     key: "custom:edit",
@@ -169,10 +172,12 @@ const fetchData = () => {
   const query = {
     limit: limit.value,
     offset: offset.value,
-    ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
+    ...(isValidParams(sort.value)
+      ? { sortBy: sort.value }
+      : { sortBy: "messageEtat" }),
     ...(isValidParams(sortDirection.value)
       ? { sortDirection: sortDirection.value.toUpperCase() }
-      : {}),
+      : { sortDirection: "ASC" }),
     ...getSearchParams(),
     ...(isValidParams(organismeId.value)
       ? { organismeId: organismeId.value }

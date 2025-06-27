@@ -472,90 +472,93 @@ WHERE
     AND (u.id = $3 OR pm.siren = $2)
   `,
   getDeclarationsMessages: () => `
-  SELECT
-    ds.id as "declarationId",
-    ds.statut as "statut",
-    ds.id_fonctionnelle as "idFonctionnelle",
-    ds.organisme_id as "organismeId",
-    ds.libelle as "libelle",
-    ds.date_debut::text as "dateDebut",
-    ds.date_fin::text as "dateFin",
-    ds.created_at as "createdAt",
-    ds.edited_at as "editedAt",
-    ds.organisme as "organisme",
-    CASE
-      WHEN o.type_organisme = 'personne_morale' THEN
-      JSON_BUILD_OBJECT(
-        'siret', pm.siret,
-        'adresse', pm.adresse,
-        'telephone', pm.telephone,
-        'nomCommercial', pm.etab_principal_nom_commercial,
-        'raisonSociale', pm.raison_sociale,
-        'pays', pm.pays,
-        'email', pm.email
-      )
-    ELSE
-      JSON_BUILD_OBJECT(
-        'adresse', pp.adresse_siege_label,
-        'nom', pp.nom_usage,
-        'prenom', pp.prenom,
-        'nomNaissance', pp.nom_naissance,
-        'telephone', pp.telephone,
-        'profession', pp.profession
-      )
-    END AS "organismeAgree",
-    o.type_organisme as "typeOrganisme",
-    (
+    WITH demande_avec_message AS (
       SELECT
-        DEPARTEMENT = ANY ($1)
-      FROM
-        FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
-        LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
-        LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-      WHERE DSTH.DEMANDE_SEJOUR_ID = DS.ID
-      ORDER BY DSTH.DATE_DEBUT
-      LIMIT 1
-    ) as "estInstructeurPrincipal",
-    dsm.message as "message",
-      CASE
-        WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 'NON LU'
-        WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 'LU'
-        WHEN (dsm.front_user_id IS NULL) THEN 'REPONDU'
-      END AS "messageEtat",
-      CASE
-        WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 -- NON LU
-        WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 2 -- LU
-        WHEN (dsm.front_user_id IS NULL) THEN 3 -- REPONDU
-      END AS "messageOrdreEtat",
-      dsm.read_at AS "messageReadAt",
-      dsm.created_at AS "messageCreatedAt",
-      COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
-  FROM front.demande_sejour ds
-  JOIN front.organismes o ON o.id = ds.organisme_id
-  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
-  LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
-  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
-  LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
-      SELECT MAX(dsmax.id)
-      FROM front.demande_sejour_message  dsmax
-      WHERE dsmax.declaration_id = ds.id)
-  WHERE
-    ds.statut <> 'BROUILLON'
-    AND dsm.message is not null
-    AND (
-      EXISTS (
-        SELECT
-          1
-        FROM
-          FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
-          LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
-          LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-        WHERE
-          DSTH.DEMANDE_SEJOUR_ID = DS.ID
-          AND A.DEPARTEMENT = ANY ($1)
-      )
-      OR a.region_obtention = $2
+        ds.id as "declarationId",
+        ds.statut as "statut",
+        ds.id_fonctionnelle as "idFonctionnelle",
+        ds.organisme_id as "organismeId",
+        ds.libelle as "libelle",
+        ds.date_debut::text as "dateDebut",
+        ds.date_fin::text as "dateFin",
+        ds.created_at as "createdAt",
+        ds.edited_at as "editedAt",
+        ds.organisme as "organisme",
+        CASE
+          WHEN o.type_organisme = 'personne_morale' THEN
+            JSON_BUILD_OBJECT(
+              'siret', pm.siret,
+              'adresse', pm.adresse,
+              'telephone', pm.telephone,
+              'nomCommercial', pm.etab_principal_nom_commercial,
+              'raisonSociale', pm.raison_sociale,
+              'pays', pm.pays,
+              'email', pm.email
+            )
+          ELSE
+            JSON_BUILD_OBJECT(
+              'adresse', pp.adresse_siege_label,
+              'nom', pp.nom_usage,
+              'prenom', pp.prenom,
+              'nomNaissance', pp.nom_naissance,
+              'telephone', pp.telephone,
+              'profession', pp.profession
+            )
+        END AS "organismeAgree",
+        o.type_organisme as "typeOrganisme",
+
+        (
+          SELECT
+            A.departement = ANY (ARRAY['75', '77', '78','91', '92', '93','94', '95'])
+          FROM
+            FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
+            LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+            LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+          WHERE DSTH.DEMANDE_SEJOUR_ID = DS.ID
+          ORDER BY DSTH.DATE_DEBUT
+          LIMIT 1
+        ) as "estInstructeurPrincipal",
+        dsm.message as "message",
+        CASE
+          WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 'NON LU'
+          WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 'LU'
+          WHEN (dsm.front_user_id IS NULL) THEN 'REPONDU'
+        END AS "messageEtat",
+        CASE
+          WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1
+          WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 2
+          WHEN (dsm.front_user_id IS NULL) THEN 3
+        END AS "messageOrdreEtat",
+        dsm.read_at AS "messageReadAt",
+        dsm.created_at AS "messageCreatedAt",
+        COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
+      FROM front.demande_sejour ds
+      JOIN front.organismes o ON o.id = ds.organisme_id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+      LEFT JOIN front.agrements a ON a.organisme_id = ds.organisme_id
+      LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
+          SELECT MAX(dsmax.id)
+          FROM front.demande_sejour_message dsmax
+          WHERE dsmax.declaration_id = ds.id
+        )
+      WHERE
+        ds.statut <> 'BROUILLON'
+        AND dsm.message IS NOT NULL
+        AND (
+          EXISTS (
+            SELECT 1
+            FROM FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
+            LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+            LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+            WHERE DSTH.DEMANDE_SEJOUR_ID = DS.ID
+              AND A.DEPARTEMENT = ANY ($1)
+          )
+          OR a.region_obtention = $2
+        )
     )
+    SELECT *
+    FROM demande_avec_message
   `,
   getDeprecated: (organismeIds) => [
     `SELECT
@@ -1453,55 +1456,55 @@ module.exports.getDeclarationsMessages = async (
 ) => {
   const titles = [
     {
-      key: "ds.id_fonctionnelle",
+      key: '"idFonctionnelle"',
       queryKey: "idFonctionnelle",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "ds.libelle",
+      key: '"libelle"',
       queryKey: "libelle",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "ds.statut",
+      key: "statut",
       queryKey: "statut",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "ds.organisme",
+      key: '"organisme"',
       queryKey: "organisme",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "ds.date_debut",
+      key: '"dateDebut"',
       queryKey: "dateDebut",
       sortEnabled: true,
       sortType: "date",
       type: "default",
     },
     {
-      key: "ds.date_fin",
+      key: '"dateFin"',
       queryKey: "dateFin",
       sortEnabled: true,
       sortType: "date",
       type: "default",
     },
     {
-      key: "dsm.message",
+      key: '"message"',
       queryKey: "message",
       sortEnabled: true,
       type: "default",
     },
     {
       customSort: (sortBy, sortDirection) => {
-        return `ORDER BY ${sortBy} ${sortDirection}, messageCreatedAt" DESC`;
+        return `ORDER BY "messageOrdreEtat" ${sortDirection}, "messageCreatedAt" DESC`;
       },
       key: "messageOrdreEtat",
-      queryKey: "messageOrdreEtat",
+      queryKey: "messageEtat",
       sortEnabled: true,
     },
   ];
@@ -1517,8 +1520,8 @@ module.exports.getDeclarationsMessages = async (
     offset,
     sort,
   );
-  log.w(queryParams);
-  log.w({ params: paginatedQuery.params, query: paginatedQuery.query });
+  log.d(queryParams);
+  log.d({ params: paginatedQuery.params, query: paginatedQuery.query });
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
     pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
