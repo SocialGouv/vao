@@ -52,6 +52,11 @@ module.exports = {
 
   frontUsagersDomain: process.env.FRONTEND_USAGERS_URL,
 
+  metabase: {
+    secretKey: process.env.METABASE_SECRET_KEY,
+    siteUrl: process.env.METABASE_SITE_URL,
+  },
+
   postgres: {
     cipherData: process.env.PG_VAO_CIPHER_DATA,
     database: process.env.POSTGRES_DB,
@@ -69,7 +74,6 @@ module.exports = {
       : false,
     user: process.env.PG_VAO_USER,
   },
-
   refreshToken: {
     algorithm: "RS256",
     expiresIn: 4 * 60 * 60 * 1000, // 4h
