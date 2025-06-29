@@ -1,3 +1,17 @@
+---
+layout:
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: false
+---
+
 # Scénario 2 – L’organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO
 
 
@@ -92,9 +106,7 @@ Lors du clic sur le bouton refus, une popup d'affiche pour argumenter le refus v
 
 </details>
 
-Au clic sur le bouton "Refuser" :
-
-* La ligne de l’utilisateur change de statut "En attente validation compte" à "compte Bloqué"
+Au clic sur le bouton "Refuser", la ligne de l’utilisateur change de statut "En attente validation compte" à "compte Bloqué".
 
 <details>
 

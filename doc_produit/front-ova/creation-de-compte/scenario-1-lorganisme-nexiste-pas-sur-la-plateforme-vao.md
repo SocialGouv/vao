@@ -1,4 +1,20 @@
+---
+layout:
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: false
+---
+
 # Scénario 1 - L’organisme n’existe pas sur la plateforme VAO
+
+
 
 <figure><img src="../../.gitbook/assets/création de compte.png" alt=""><figcaption></figcaption></figure>
 
