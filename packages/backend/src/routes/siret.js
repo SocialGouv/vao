@@ -5,6 +5,7 @@ const router = express.Router();
 const checkJWT = require("../middlewares/checkJWT");
 const siretController = require("../controllers/siret");
 
-// Gère une connexion via mot de passe.
+router.get("/check-api-insee", siretController.checkApiInsee);
+router.get("/check-api-entreprise", siretController.checkApiEntreprise);
 router.get("/:siret", checkJWT, siretController.get);
 module.exports = router;

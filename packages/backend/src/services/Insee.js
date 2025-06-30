@@ -7,25 +7,40 @@ const log = logger(module.filename);
 
 const NB_ELEMENTS_TO_GET = 1000;
 
+module.exports.checkTokenApiEntreprise = async () => {
+  try {
+    const params = new URLSearchParams({ token: config.apiEntreprise.token });
+    const url = `${config.apiEntreprise.url}/privileges?${params}`;
+    const { data } = await axios.get(url);
+    return data;
+  } catch (error) {
+    throw new Error(`API Entreprise error: ${error.message}`);
+  }
+};
+
 const getToken = async () => {
   log.i("IN");
-  const { apiInsee } = config;
-  const cle = `${apiInsee.CLIENT_ID}:${apiInsee.CLIENT_SECRET}`;
-  const authHeader = `Basic ${Buffer.from(cle).toString("base64")}`;
-  const token = await axios.post(
-    `${apiInsee.URL}/token`,
-    {},
-    {
-      headers: {
-        Authorization: authHeader,
-        "Content-type": "application/x-www-form-urlencoded",
+  try {
+    const { apiInsee } = config;
+    const cle = `${apiInsee.CLIENT_ID}:${apiInsee.CLIENT_SECRET}`;
+    const authHeader = `Basic ${Buffer.from(cle).toString("base64")}`;
+    const token = await axios.post(
+      `${apiInsee.URL}/token`,
+      {},
+      {
+        headers: {
+          Authorization: authHeader,
+          "Content-type": "application/x-www-form-urlencoded",
+        },
+        params: {
+          grant_type: "client_credentials",
+        },
       },
-      params: {
-        grant_type: "client_credentials",
-      },
-    },
-  );
-  return token.data.access_token;
+    );
+    return token.data.access_token;
+  } catch (error) {
+    throw new Error(`API Entreprise error: ${error.message}`);
+  }
 };
 
 module.exports.getToken = getToken;

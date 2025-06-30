@@ -1,3 +1,4 @@
+import ApiUnavailable from "./api/ApiUnavailable.vue";
 import FileUpload from "./FileUpload.vue";
 import Chat from "./Chat.vue";
 import DemandeStatusBadge from "./DemandeStatusBadge.vue";
@@ -26,6 +27,7 @@ import DisplayInput from "./DisplayInput.vue";
 import UserStatusBadge from "./users/UserStatusBadge.vue";
 import RefusCompteModal from "./users/RefusCompteModal.vue";
 export {
+  ApiUnavailable,
   FileUpload,
   Chat,
   DemandeStatusBadge,

@@ -27,6 +27,7 @@
         :init-data="initData.personneMorale ?? {}"
         :is-downloading="props.isDownloading"
         :message="props.message"
+        :unavailable-api="useExternalApi.apisUnavailable"
         @next="next"
         @update="update"
       ></OrganismePersonneMorale>
@@ -36,6 +37,7 @@
         :init-data="initData.personnePhysique ?? {}"
         :is-downloading="props.isDownloading"
         :message="props.message"
+        :unavailable-api="useExternalApi.apisUnavailable"
         @next="next"
         @update="update"
       ></OrganismePersonnePhysique>
@@ -45,6 +47,13 @@
 
 <script setup>
 import { useField } from "vee-validate";
+
+const useExternalApi = useExternalApiStore();
+
+await Promise.all([
+  useExternalApi.checkApiInsee(),
+  useExternalApi.checkApiEntreprise(),
+]);
 
 const emit = defineEmits(["next", "update"]);
 const props = defineProps({
