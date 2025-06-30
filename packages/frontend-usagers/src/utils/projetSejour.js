@@ -78,7 +78,8 @@ yup.setLocale({
 const schema = {
   destination: yup
     .array()
-    .required()
+    .min(1, "Au moins une destination est requise")
+    .required("Le champ est obligatoire.")
     .default(() => []),
   activitesCulturelles: yup
     .array()
