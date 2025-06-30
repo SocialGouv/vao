@@ -11,11 +11,14 @@ module.exports = async function getExtract(req, res, next) {
   res.setHeader("Content-Disposition", 'attachment; filename="data.csv"');
   const departements = req.departements.map((d) => d.value);
   try {
-    const result = await Hebergement.getByDepartementCodes(departements, {
-      order: "ASC",
-      search: "",
-      sort: "nom",
-    });
+    const result = await Hebergement.getByDepartementCodes(
+      {
+        order: "ASC",
+        search: "",
+        sort: "nom",
+      },
+      departements,
+    );
     const titles = [
       { key: "nom", label: "Nom de l’hébergement" },
       { key: "departement", label: "Département" },
@@ -28,7 +31,7 @@ module.exports = async function getExtract(req, res, next) {
 
     const csv = [
       titles.map(({ label }) => label).join(";"),
-      ...result.data.hebergements.map((item) => {
+      ...result.rows.map((item) => {
         const newItem = { ...item };
         newItem.reglementationErp = newItem.reglementationErp ? "oui" : "non";
         newItem.adresse = newItem.adresse.label;
