@@ -10,9 +10,15 @@
   * [Scénario 1 - L’organisme n’existe pas sur la plateforme VAO](front-ova/creation-de-compte/scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md)
   * [Scénario 2 – L’organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO](front-ova/creation-de-compte/scenario-2-lorganisme-a-deja-un-ou-plusieurs-comptes-utilisateurs-sur-la-plateforme-vao.md)
 * [Fiche organisateur](front-ova/fiche-organisateur/README.md)
-  * [Étape 1 -  Renseignements généraux sur l’organisateur VAO](front-ova/fiche-organisateur/etape-1-renseignements-generaux-sur-lorganisateur-vao.md)
-  * [Étape 2 - Établissements secondaires](front-ova/fiche-organisateur/etape-2-etablissements-secondaires.md)
-  * [Étape 3 - Agrément](front-ova/fiche-organisateur/etape-3-agrement.md)
+  * [Création de la fiche organisateur](front-ova/fiche-organisateur/creation-de-la-fiche-organisateur/README.md)
+    * [Étape 1 -  Renseignements généraux sur l’organisateur VAO](front-ova/fiche-organisateur/creation-de-la-fiche-organisateur/etape-1-renseignements-generaux-sur-lorganisateur-vao.md)
+    * [Étape 2 - Établissements secondaires](front-ova/fiche-organisateur/creation-de-la-fiche-organisateur/etape-2-etablissements-secondaires.md)
+    * [Étape 3 - Agrément](front-ova/fiche-organisateur/creation-de-la-fiche-organisateur/etape-3-agrement.md)
+    * [Étape 4 - Informations sur le transport](front-ova/fiche-organisateur/creation-de-la-fiche-organisateur/etape-4-informations-sur-le-transport.md)
+    * [Étape 5 - Informations sanitaires](front-ova/fiche-organisateur/creation-de-la-fiche-organisateur/etape-5-informations-sanitaires.md)
+    * [Étape 6 - Synthèse](front-ova/fiche-organisateur/creation-de-la-fiche-organisateur/etape-6-synthese.md)
+  * [Modification de la fiche organisateur](front-ova/fiche-organisateur/modification-de-la-fiche-organisateur.md)
+  * [Règles et gestions](front-ova/fiche-organisateur/regles-et-gestions.md)
 
 ***
 

@@ -23,7 +23,7 @@ Lors de la création de la fiche organisateur, l'utilisateur peut visualiser un 
 
 <summary>Capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-29 à 13.42.50.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-06-29 à 13.42.50.png" alt=""><figcaption></figcaption></figure>
 
 
 
@@ -35,7 +35,7 @@ En choisissant "Personne morale", l'utilisateur affiche le reste du formulaire&#
 
 <summary>Formulaire fiche organisme - étape 1.0</summary>
 
-{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.md" %}
+{% include "../../../.gitbook/includes/formulaire-fiche-organisme-etape-1.md" %}
 
 </details>
 
@@ -43,7 +43,7 @@ En choisissant "Personne morale", l'utilisateur affiche le reste du formulaire&#
 
 <summary>capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-29 à 13.48.01.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-06-29 à 13.48.01.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -63,7 +63,7 @@ La partie du formulaire "Organisateur du séjour" est composée de plusieurs cha
 
 <summary>Formulaire fiche organisme - étape 1.1 - Organisateur du séjour</summary>
 
-{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.1.md" %}
+{% include "../../../.gitbook/includes/formulaire-fiche-organisme-etape-1.1.md" %}
 
 </details>
 
@@ -71,7 +71,7 @@ La partie du formulaire "Organisateur du séjour" est composée de plusieurs cha
 
 <summary>Capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-29 à 13.56.36.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-06-29 à 13.56.36.png" alt=""><figcaption></figcaption></figure>
 
 
 
@@ -87,7 +87,7 @@ Une fois le représentant légal créé, il s'affiche dans une liste dédiée.&#
 
 <summary>Formulaire fiche organisme - étape 1.2 - <strong>Représentant légaux</strong></summary>
 
-{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.2.md" %}
+{% include "../../../.gitbook/includes/formulaire-fiche-organisme-etape-1.2.md" %}
 
 </details>
 
@@ -95,9 +95,9 @@ Une fois le représentant légal créé, il s'affiche dans une liste dédiée.&#
 
 <summary>Capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-29 à 14.10.45.png" alt=""><figcaption><p>Formulaire d'ajout d'un représentant légal</p></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-06-29 à 14.10.45.png" alt=""><figcaption><p>Formulaire d'ajout d'un représentant légal</p></figcaption></figure>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-29 à 14.17.12.png" alt=""><figcaption><p>Liste des représentant légaux</p></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-06-29 à 14.17.12.png" alt=""><figcaption><p>Liste des représentant légaux</p></figcaption></figure>
 
 </details>
 
@@ -109,7 +109,7 @@ Pour ajouter le réponsable de l'organisateur du séjour, l'utilisateur rempli l
 
 <summary>Formulaire fiche organisme - étape 1.3 - <strong>Responsable de l'organisation du séjour</strong></summary>
 
-{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.3.md" %}
+{% include "../../../.gitbook/includes/formulaire-fiche-organisme-etape-1.3.md" %}
 
 </details>
 
@@ -117,7 +117,7 @@ Pour ajouter le réponsable de l'organisateur du séjour, l'utilisateur rempli l
 
 <summary>Capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-29 à 14.22.01.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-06-29 à 14.22.01.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
