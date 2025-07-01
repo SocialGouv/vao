@@ -12,8 +12,6 @@ layout:
     visible: false
 ---
 
-# Étape 2 - Établissements secondaires
-
 {% hint style="warning" %}
 **Condition d'affichage**
 
