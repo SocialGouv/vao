@@ -14,9 +14,9 @@ layout:
 
 # Étape 3 - Agrément
 
-#### Informations obligatoires
+L'agrément "Vacances adaptées organisées" est obligatoire.
 
-L'agrément "Vacances adaptées organisées" est obligatoire. Les informations à renseigner :
+Les informations à renseigner :
 
 * **Numéro d'agrément** : Numéro figurant sur l'arrêté portant décision d'agrément
 * **Date d'obtention** : Date d'obtention de l'agrément

@@ -40,14 +40,8 @@ Pour chaque établissement :
 * Statut (En activité, Fermé, etc.)
 * Autorisation à organiser des séjours
 
-***
+{% hint style="info" %}
+Pour la documentation sur la récupération en API des établissement secondaires
 
-Dans le cas où il n'y a pas d'établissement secondaire, cette étape ne remonte rien.&#x20;
-
-<details>
-
-<summary>Capture - aucun d'établissement secondaire</summary>
-
-<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-06-29 à 14.51.28.png" alt=""><figcaption><p>Aucun établissement secondaire rattaché au SIRET renseigné</p></figcaption></figure>
-
-</details>
+[recuperation-automatique-des-etablissements-secondaires.md](recuperation-automatique-des-etablissements-secondaires.md "mention")
+{% endhint %}

@@ -32,7 +32,7 @@ L'accès à la fiche organisateur s'effectue depuis le menu principal du SI VAO 
 La fiche organisateur est structurée en plusieurs étapes qui doivent être complétées dans l'ordre :
 
 1. [Étape 1 - Renseignements généraux sur l’organisateur VAO](creation-de-la-fiche-organisateur/etape-1-renseignements-generaux-sur-lorganisateur-vao.md)
-2. [Étape 2 - Etablissements secondaires](creation-de-la-fiche-organisateur/etape-2-etablissements-secondaires.md) (si applicable)
+2. [Étape 2 - Etablissements secondaires](creation-de-la-fiche-organisateur/etape-2-etablissements-secondaires/) (si applicable)
 3. [Étape 3 - Agrément](creation-de-la-fiche-organisateur/etape-3-agrement.md)
 4. [Étape 4 - Informations sur le transport](creation-de-la-fiche-organisateur/etape-4-informations-sur-le-transport.md)
 5. [Étape 5 - Informations sanitaires](creation-de-la-fiche-organisateur/etape-5-informations-sanitaires.md)
