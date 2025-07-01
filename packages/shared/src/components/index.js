@@ -25,6 +25,9 @@ import MessageEtat from "./messages/MessageEtat.vue";
 import DisplayInput from "./DisplayInput.vue";
 import UserStatusBadge from "./users/UserStatusBadge.vue";
 import RefusCompteModal from "./users/RefusCompteModal.vue";
+import Header from "./Header.vue";
+import Footer from "./Footer.vue";
+import ErrorPage from "./ErrorPage.vue";
 export {
   FileUpload,
   Chat,
@@ -53,4 +56,7 @@ export {
   DisplayInput,
   UserStatusBadge,
   RefusCompteModal,
+  Header,
+  Footer,
+  ErrorPage,
 };
