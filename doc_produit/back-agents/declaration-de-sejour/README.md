@@ -1,4 +1,5 @@
 ---
+icon: memo-circle-info
 layout:
   title:
     visible: true
@@ -12,7 +13,7 @@ layout:
     visible: false
 ---
 
-# Déclaration de séjour – Back (Agents)
+# Déclaration de séjour
 
 {% hint style="info" %}
 Cette section détaille le workflow d'instruction, la gestion des statuts, des rôles, des droits, et les cas particuliers rencontrés lors de l'instruction des dossiers.
@@ -30,20 +31,20 @@ Cette section détaille le workflow d'instruction, la gestion des statuts, des r
 
 > **À chaque étape clé, insérer une capture d'écran de l'interface agent pour illustrer le contexte d'instruction.**
 
----
+***
 
 ## Workflow agent
 
-- Présentation générale du parcours d'instruction d'un dossier
-- [CAPTURE - Tableau de bord agent ou liste des dossiers à instruire]
+* Présentation générale du parcours d'instruction d'un dossier
+* \[CAPTURE - Tableau de bord agent ou liste des dossiers à instruire]
 
----
+***
 
 ## Navigation dans l'interface agent
 
-- Description du menu, des filtres, des statuts
-- [CAPTURE - Menu agent, filtres, statuts]
+* Description du menu, des filtres, des statuts
+* \[CAPTURE - Menu agent, filtres, statuts]
 
----
+***
 
-## À compléter dans les chapitres suivants... 
+## À compléter dans les chapitres suivants...

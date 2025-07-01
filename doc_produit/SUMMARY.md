@@ -22,7 +22,8 @@
   * [Modification de la fiche organisateur](front-ova/fiche-organisateur/modification-de-la-fiche-organisateur.md)
   * [Règles et gestions](front-ova/fiche-organisateur/regles-et-gestions.md)
 * [Déclaration de séjour](front-ova/declaration-de-sejour/README.md)
-    - [Menu et étapes du formulaire](front-ova/declaration-de-sejour/menu-etapes-formulaire.md)
+  - [Étape 1 - Informations générales](front-ova/declaration-de-sejour/etape-1-informations-generales.md)
+  - [Menu et étapes du formulaire](front-ova/declaration-de-sejour/menu-etapes-formulaire.md)
 
 ***
 

@@ -1,4 +1,5 @@
 ---
+icon: memo-circle-info
 layout:
   title:
     visible: true
@@ -12,7 +13,7 @@ layout:
     visible: false
 ---
 
-# Déclaration de séjour – Front (Usagers)
+# Déclaration de séjour
 
 {% hint style="info" %}
 Cette section détaille le parcours utilisateur, les étapes du formulaire, la gestion des statuts, des rôles et des droits, ainsi que les cas particuliers.
@@ -29,20 +30,20 @@ Cette section détaille le parcours utilisateur, les étapes du formulaire, la g
 
 > **À chaque étape clé, insérer une capture d'écran de l'interface pour illustrer le contexte utilisateur.**
 
----
+***
 
 ## Parcours utilisateur
 
-- Présentation générale du parcours de déclaration de séjour
-- [CAPTURE - Page d'accueil ou tableau de bord des séjours]
+* Présentation générale du parcours de déclaration de séjour
+* \[CAPTURE - Page d'accueil ou tableau de bord des séjours]
 
----
+***
 
 ## Navigation dans le formulaire
 
-- Description du menu latéral et des étapes
-- [CAPTURE - Menu latéral avec étapes du formulaire]
+* Description du menu latéral et des étapes
+* \[CAPTURE - Menu latéral avec étapes du formulaire]
 
----
+***
 
-## À compléter dans les chapitres suivants... 
+## À compléter dans les chapitres suivants...
