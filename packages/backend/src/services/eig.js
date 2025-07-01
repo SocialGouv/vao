@@ -9,6 +9,7 @@ const { addHistoric } = require("./Tracking");
 const { getFileMetaData } = require("./Document");
 
 const { entities, userTypes } = require("../helpers/tracking");
+const { encrypt, decrypt } = require("../utils/cipher");
 
 const log = logger(module.filename);
 
@@ -374,13 +375,39 @@ module.exports.getById = async ({ eigId }) => {
   const file = response.rows[0]?.uuid
     ? await getFileMetaData(response.rows[0].uuid)
     : {};
+
   const rawResult = response.rows[0];
+
+  const decryptedTypes = rawResult?.types.map((type) => {
+    const updated = { ...type };
+    try {
+      // Si `precision` est une string JSON chiffrée
+      const precisionParsed = JSON.parse(type.precision);
+      updated.precision = decrypt(precisionParsed);
+    } catch (e) {
+      log.w("Erreur de déchiffrement:", e.message);
+      throw new AppError(
+        "Erreur de déchiffrement des types. Veuillez vérifier les données.",
+      );
+    }
+    return updated;
+  });
+
   log.d(response);
   log.i("getById - DONE");
   return {
     ...rawResult,
+    deroulement: decrypt(response.rows[0].deroulement ?? {}),
+    dispositionInformations: decrypt(
+      response.rows[0].dispositionInformations ?? {},
+    ),
+    dispositionRemediation: decrypt(
+      response.rows[0].dispositionRemediation ?? {},
+    ),
+    dispositionVictimes: decrypt(response.rows[0].dispositionVictimes ?? {}),
     file,
-    types: (rawResult?.types ?? []).filter((t) => !!t.type),
+    personnel: decrypt(response.rows[0].personnel ?? {}),
+    types: (decryptedTypes ?? []).filter((t) => !!t.type),
   };
 };
 
@@ -499,7 +526,7 @@ module.exports.updateType = async (
     params.push(eigId);
     params.push(et);
     if (precision) {
-      params.push(precision);
+      params.push(encrypt(precision));
     }
     return values;
   });
@@ -529,15 +556,13 @@ module.exports.updateRenseignementsGeneraux = async (
     dispositionInformations,
   },
 ) => {
-  log.i("updateRenseignementsGeneraux - IN");
-
   const response = await pool.query(query.updateRenseignementGeneraux, [
     eigId,
-    personnel,
-    deroulement,
-    dispositionRemediation,
-    dispositionVictimes,
-    dispositionInformations,
+    encrypt(personnel),
+    encrypt(deroulement),
+    encrypt(dispositionRemediation),
+    encrypt(dispositionVictimes),
+    encrypt(dispositionInformations),
   ]);
   log.d(response);
   const { id } = response.rows[0];

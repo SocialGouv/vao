@@ -39,20 +39,6 @@ frontend-bo:
 
 jobs:
   runs:
-    build-frontend-usagers:
-      with:
-        buildArgs:
-          NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
-          NUXT_PUBLIC_BACKEND_URL: "https://api-vao.social.gouv.fr"
-          NUXT_PUBLIC_ENVIRONMENT: "production"
-          NUXT_PUBLIC_SENTRY_ENABLED: "true"
-    build-frontend-bo:
-      with:
-        buildArgs:
-          NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
-          NUXT_PUBLIC_BACKEND_URL: "https://api-vao.social.gouv.fr"
-          NUXT_PUBLIC_ENVIRONMENT: "production"
-          NUXT_PUBLIC_SENTRY_ENABLED: "true"
     migrations-db:
       env:
         - name: PG_VAO_SUPERUSER
