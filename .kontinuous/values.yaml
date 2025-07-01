@@ -14,7 +14,7 @@ pg:
 
 external-api:
   ~chart: app
-  ~needs: [build-external-api, migrations-db, init-db]
+  ~needs: [migrations-db, init-db]
   imagePackage: external-api
   host: "external-api-{{ .Values.global.host }}"
   containerPort: 3000
@@ -68,7 +68,7 @@ external-api:
 
 backend:
   ~chart: app
-  ~needs: [build-backend, migrations-db, init-db]
+  ~needs: [migrations-db, init-db]
   imagePackage: backend
   host: "api-{{ .Values.global.host }}"
   containerPort: 3000
@@ -128,7 +128,7 @@ backend:
 
 cron:
   ~chart: app
-  ~needs: [build-cron, migrations-db, init-db]
+  ~needs: [migrations-db, init-db]
   imagePackage: cron
   labels:
     oblik.socialgouv.io/enabled: "false"
@@ -174,7 +174,6 @@ cron:
 
 frontend-usagers:
   ~chart: app
-  ~needs: [build-frontend-usagers]
   imagePackage: frontend-usagers
   host: "{{ .Values.global.host }}"
   containerPort: 8080
@@ -197,7 +196,6 @@ frontend-usagers:
 
 frontend-bo:
   ~chart: app
-  ~needs: [build-frontend-bo]
   imagePackage: frontend-bo
   host: "bo-{{ .Values.global.host }}"
   containerPort: 8080
@@ -220,93 +218,8 @@ frontend-bo:
 
 jobs:
   runs:
-    build-migrations:
-      use: build
-      with:
-        imagePackage: migrations
-        context: ./
-        dockerfile: packages/migrations/Dockerfile
-
-    build-external-api:
-      use: build
-      with:
-        imagePackage: external-api
-        context: ./
-        dockerfile: packages/external-api/Dockerfile
-
-    build-backend:
-      use: build
-      with:
-        imagePackage: backend
-        context: ./
-        dockerfile: packages/backend/Dockerfile
-    build-cron:
-      use: build
-      with:
-        imagePackage: cron
-        context: ./
-        dockerfile: packages/cron/Dockerfile
-        buildArgs:
-          SENTRY_URL: "https://sentry2.fabrique.social.gouv.fr"
-          SENTRY_ORG: incubateur
-          SENTRY_PROJECT: psn-vao-cron
-
-    build-frontend-usagers:
-      use: build
-      envFrom:
-        - secretRef:
-            name: "{{ or $.with.registrySecretRefName $.Values.global.registrySecretRefName }}"
-        - configMapRef:
-            name: matomo
-      with:
-        imagePackage: frontend-usagers
-        context: ./
-        dockerfile: packages/frontend-usagers/Dockerfile
-        buildArgs:
-          NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
-          NUXT_PUBLIC_MATOMO_ENABLED: "${FRONTEND_USAGERS_MATOMO_ENABLED}"
-          NUXT_PUBLIC_MATOMO_HOST: "${FRONTEND_USAGERS_MATOMO_HOST}"
-          NUXT_PUBLIC_MATOMO_SITE_ID: "${FRONTEND_USAGERS_MATOMO_SITE_ID}"
-          NUXT_PUBLIC_SENTRY_DSN: "https://7fba53b76194053e13ea55fed61b7e0d@sentry2.fabrique.social.gouv.fr/17"
-          NUXT_PUBLIC_SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
-          NUXT_PUBLIC_API_MAP_TILER: "g9IvoA8h0Ow8I9szhdzW"
-          SENTRY_URL: "https://sentry2.fabrique.social.gouv.fr"
-          SENTRY_ORG: incubateur
-          SENTRY_PROJECT: psn-vao-usagers
-        secrets:
-          sentry_auth_token:
-            secretName: frontend-secret
-            secretKey: SENTRY_AUTH_TOKEN
-
-    build-frontend-bo:
-      use: build
-      envFrom:
-        - secretRef:
-            name: "{{ or $.with.registrySecretRefName $.Values.global.registrySecretRefName }}"
-        - configMapRef:
-            name: matomo
-      with:
-        imagePackage: frontend-bo
-        context: ./
-        dockerfile: packages/frontend-bo/Dockerfile
-        buildArgs:
-          NUXT_PUBLIC_BACKEND_URL: "https://api-{{ .Values.global.host }}"
-          NUXT_PUBLIC_MATOMO_ENABLED: "${FRONTEND_BO_MATOMO_ENABLED}"
-          NUXT_PUBLIC_MATOMO_HOST: "${FRONTEND_BO_MATOMO_HOST}"
-          NUXT_PUBLIC_MATOMO_SITE_ID: "${FRONTEND_BO_MATOMO_SITE_ID}"
-          NUXT_PUBLIC_SENTRY_DSN: "https://65778f66439154c9e0321740d855ed80@sentry2.fabrique.social.gouv.fr/18"
-          NUXT_PUBLIC_SENTRY_RELEASE: "{{.Values.global.branchSlug32}}-{{.Values.global.shortSha}}"
-          NUXT_PUBLIC_API_MAP_TILER: "g9IvoA8h0Ow8I9szhdzW"
-          SENTRY_URL: "https://sentry2.fabrique.social.gouv.fr"
-          SENTRY_ORG: incubateur
-          SENTRY_PROJECT: psn-vao-admin
-        secrets:
-          sentry_auth_token:
-            secretName: frontend-secret
-            secretKey: SENTRY_AUTH_TOKEN
-
     migrations-db:
-      ~needs: [build-migrations, init-db]
+      ~needs: [init-db]
       retry: 3
       checkout: true
       image: "{{ .Values.global.registry }}/{{ .Values.global.projectName }}/{{ .Values.global.imageRepository }}/migrations:{{ .Values.global.imageTag }}"
@@ -430,7 +343,7 @@ jobs:
 
 migrate-s3:
   ~chart: app
-  ~needs: [build-migrations, init-db]
+  ~needs: [init-db]
   imagePackage: migrations
   entrypoint: ["tail", "-f", "/dev/null"]
   labels:

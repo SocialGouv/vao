@@ -44,18 +44,6 @@ pg:
 
 jobs:
   runs:
-    build-frontend-usagers:
-      with:
-        buildArgs:
-          NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
-          NUXT_PUBLIC_ENVIRONMENT: "preprod"
-          NUXT_PUBLIC_SENTRY_ENABLED: "true"
-    build-frontend-bo:
-      with:
-        buildArgs:
-          NUXT_PUBLIC_APP_VERSION: "{{ .Values.global.gitBranch }}"
-          NUXT_PUBLIC_ENVIRONMENT: "preprod"
-          NUXT_PUBLIC_SENTRY_ENABLED: "true"
     migrations-db:
       env:
         - name: PG_VAO_SUPERUSER
