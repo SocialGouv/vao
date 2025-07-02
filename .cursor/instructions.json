@@ -82,6 +82,11 @@
         "url": "https://dnum-ministeres-sociaux.gitbook.io/vao-documentation/t1eK0jUdXMliu8S6UWUr/llms-full.txt",
         "description": "Contenu rédactionnel de référence à suivre pour tout ce qui touche à la documentation produit."
       }
+      {
+        "name": "URL de la documentation produit (format LLM)",
+        "url": "https://dnum-ministeres-sociaux.gitbook.io/vao-documentation/t1eK0jUdXMliu8S6UWUr/llms.txt",
+        "description": "l'ensemble des url de la documentation produit"
+      }
     ],
     "instructions": [
       "Suis strictement le modèle de structuration utilisé dans la documentation officielle VAO (llms-full.txt).",
