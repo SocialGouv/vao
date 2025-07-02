@@ -18,6 +18,8 @@ layout:
 
 {% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.md" %}
 
+***
+
 ## Etape 1.1 - Renseignements généraux sur l’organisateur VAO
 
 {% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.1.md" %}
@@ -29,4 +31,10 @@ layout:
 
 
 {% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.3.md" %}
+
+***
+
+## Etape 4 - Informations sur le transport
+
+{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-4.md" %}
 

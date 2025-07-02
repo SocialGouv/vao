@@ -23,7 +23,13 @@ Les informations à renseigner :
 * **Région d'obtention** : Région qui a délivré l'agrément
 * **Document d'agrément** : Copie de l'agrément au format PDF (5 Mo max)
 
-\[CAPTURE - Formulaire agrément]
+<details>
+
+<summary>Capture</summary>
+
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-02 à 12.59.07.png" alt=""><figcaption><p>Étape 3 du formulaire de la fiche organisme : Agrément</p></figcaption></figure>
+
+</details>
 
 {% hint style="warning" %}
 **Important**
