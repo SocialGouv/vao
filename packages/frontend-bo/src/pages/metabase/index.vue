@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="isNational">
     <h1>Metabase</h1>
     <div
       v-for="(url, idx) in iframeUrls"
@@ -16,60 +16,40 @@
         style="display: block"
         @load="onIframeLoad(idx)"
       ></iframe>
-      <div
-        v-if="loadingStates[idx] && url"
-        style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 800px;
-          background: rgba(255, 255, 255, 0.8);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 2;
-        "
-      >
+      <div v-if="loadingStates[idx] && url" class="loading-overlay">
         <span>Chargement du tableau...</span>
       </div>
-      <div
-        v-if="errorStates[idx]"
-        style="
-          width: 100%;
-          height: 800px;
-          background: #ffe5e5;
-          color: #b00020;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px solid #ff0000;
-          padding: 1rem;
-          text-align: center;
-        "
-      >
-        Erreur lors du chargement du tableau Metabase (ID:
-        {{ boardIds[idx] }})
+
+      <div v-if="errorStates[idx]">
+        <DsfrAlert
+          role="alert"
+          class="fr-grid-row fr-my-3v"
+          :title="`Erreur lors du chargement du tableau Metabase (ID: ${boardIds[idx]})`"
+          :description="`${errorStates[idx]}`"
+          type="error"
+          :closeable="false"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-//todo: revoir le style (couleurs en dur)
 import { ref } from "vue";
 
-const toaster = useToaster();
+const userStore = useUserStore();
+
+const isNational = userStore.user?.territoireCode === "FRA";
 
 definePageMeta({
   middleware: ["is-connected"],
 });
 
-const boardIds = [30];
+const boardIds = [30, 31];
 
 const iframeUrls = ref(Array(boardIds.length).fill(null));
 const loadingStates = ref(Array(boardIds.length).fill(true));
-const errorStates = ref(Array(boardIds.length).fill(false));
+const errorStates = ref(Array(boardIds.length).fill(null));
 
 async function getIframe(boardId, idx) {
   try {
@@ -79,12 +59,8 @@ async function getIframe(boardId, idx) {
     });
     iframeUrls.value[idx] = response.url;
   } catch (err) {
-    errorStates.value[idx] = true;
-    toaster.error({
-      titleTag: "h2",
-      description: `Une erreur est survenue lors du chargement du tableau Metabase (ID: ${boardId})`,
-    });
-    console.error("Error fetching metabase board:", err);
+    console.error(`Failed to fetch Metabase board with ID ${boardId}:`, err);
+    errorStates.value[idx] = err?.message || String(err);
   }
 }
 
@@ -96,3 +72,18 @@ boardIds.forEach((id, idx) => {
   getIframe(id, idx);
 });
 </script>
+
+<style scoped>
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 800px;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+</style>
