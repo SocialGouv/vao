@@ -16,7 +16,7 @@ module.exports = function buildHeader() {
         stack: [
           {
             alignment: "right",
-            image: path.join(__dirname, "../../../images/cerfa-12672-03.png"),
+            image: path.join(__dirname, "../../../images/cerfa-12672-04.png"),
             width: 50,
           },
         ],
