@@ -4,6 +4,8 @@ const path = require("path");
 const logger = require("../../../utils/logger");
 const parts = require("../parts");
 
+const typeCerfaDS2M = "CERFA_12672_04";
+
 const log = logger(module.filename);
 
 const fonts = {
@@ -20,13 +22,13 @@ const build = async (declaration = {}, departementSuivi) => {
   log.i("build - IN");
   const docDefinition = {
     content: [
-      parts.Header(),
+      parts.Header(typeCerfaDS2M),
       parts.Titre(declaration, departementSuivi),
       await parts.Agrement(declaration.organisme.agrement),
       parts.InformationsGenerales(declaration),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(typeCerfaDS2M)],
       },
       parts.InformationsVacanciers(declaration.informationsVacanciers),
       parts.InformationsPersonnel(declaration.informationsPersonnel),
@@ -37,17 +39,17 @@ const build = async (declaration = {}, departementSuivi) => {
       ),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(typeCerfaDS2M)],
       },
       parts.InformationsSanitaires(declaration.informationsSanitaires),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(typeCerfaDS2M)],
       },
       ...(await parts.FicheAnnexe(declaration.hebergement)),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(typeCerfaDS2M)],
       },
       parts.Attestation(declaration.attestation),
     ],
