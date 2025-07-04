@@ -1,18 +1,4 @@
----
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
-# Scénario 2 – L’organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO
+# Scénario 2 – L'organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO
 
 
 

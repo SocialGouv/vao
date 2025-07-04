@@ -1,18 +1,4 @@
----
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
-# Menu et étapes du formulaire de déclaration de séjour
+# Menu et étapes du formulaire
 
 {% hint style="info" %}
 Ce chapitre présente la navigation, le menu latéral et le découpage en étapes du formulaire de déclaration de séjour côté usager.
@@ -22,7 +8,7 @@ Ce chapitre présente la navigation, le menu latéral et le découpage en étape
 
 Le formulaire de déclaration de séjour est découpé en plusieurs étapes accessibles via un menu latéral dynamique.
 
-- [CAPTURE - Menu latéral du formulaire de déclaration de séjour]
+* \[CAPTURE - Menu latéral du formulaire de déclaration de séjour]
 
 Chaque étape correspond à une section du dossier à compléter :
 
@@ -37,9 +23,9 @@ Chaque étape correspond à une section du dossier à compléter :
 
 ## Fonctionnement du menu
 
-- Le menu affiche uniquement les étapes accessibles selon le statut de la déclaration.
-- Certaines étapes peuvent être masquées ou rendues non modifiables selon l'avancement ou le rôle de l'utilisateur.
-- La navigation est possible entre les étapes déjà validées ou en cours de saisie.
+* Le menu affiche uniquement les étapes accessibles selon le statut de la déclaration.
+* Certaines étapes peuvent être masquées ou rendues non modifiables selon l'avancement ou le rôle de l'utilisateur.
+* La navigation est possible entre les étapes déjà validées ou en cours de saisie.
 
 {% hint style="warning" %}
 **Attention**
@@ -49,16 +35,16 @@ Certaines étapes ne sont accessibles qu'à partir d'un certain statut (ex : a
 
 ## Statuts et progression
 
-- Le statut de la déclaration (BROUILLON, TRANSMISE, EN COURS, VALIDEE, etc.) influe sur l'accessibilité des étapes.
-- Un badge de statut est affiché en haut du formulaire.
-- [CAPTURE - Badge de statut et progression]
+* Le statut de la déclaration (BROUILLON, TRANSMISE, EN COURS, VALIDEE, etc.) influe sur l'accessibilité des étapes.
+* Un badge de statut est affiché en haut du formulaire.
+* \[CAPTURE - Badge de statut et progression]
 
 ## Conseils d'utilisation
 
-- Sauvegarder régulièrement la saisie.
-- Vérifier les champs obligatoires avant de passer à l'étape suivante.
-- Utiliser les boutons de navigation pour avancer/reculer dans le formulaire.
+* Sauvegarder régulièrement la saisie.
+* Vérifier les champs obligatoires avant de passer à l'étape suivante.
+* Utiliser les boutons de navigation pour avancer/reculer dans le formulaire.
 
----
+***
 
-## À compléter dans les chapitres suivants... 
+## À compléter dans les chapitres suivants...

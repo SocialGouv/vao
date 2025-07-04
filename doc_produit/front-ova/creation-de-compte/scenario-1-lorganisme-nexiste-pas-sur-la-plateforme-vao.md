@@ -1,18 +1,4 @@
----
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
-# Scénario 1 - L’organisme n’existe pas sur la plateforme VAO
+# Scénario 1 - L'organisme n'existe pas sur la plateforme VAO
 
 
 

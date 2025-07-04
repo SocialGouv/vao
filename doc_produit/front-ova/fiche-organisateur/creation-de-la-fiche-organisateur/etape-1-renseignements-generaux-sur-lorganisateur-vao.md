@@ -1,18 +1,4 @@
----
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
-# Étape 1 -  Renseignements généraux sur l’organisateur VAO
+# Étape 1 - Renseignements généraux sur l'organisateur VAO
 
 Lors de la création de la fiche organisateur, l'utilisateur peut visualiser un formulaire avec 2 options :&#x20;
 
