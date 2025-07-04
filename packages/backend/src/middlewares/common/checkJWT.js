@@ -32,10 +32,6 @@ function getCookieNames(targetSchema) {
   };
 }
 
-function getUserService(targetSchema) {
-  return targetSchema === schema.BACK ? UserBo : UserFo;
-}
-
 function getTokenBuilders(targetSchema) {
   return targetSchema === schema.BACK
     ? {
@@ -64,6 +60,27 @@ async function handleSessionCheck(refreshToken, targetSchema) {
   }
 }
 
+async function getUserBySchema(targetSchema, userId) {
+  if (targetSchema === schema.BACK) {
+    return {
+      ...(await UserBo.readOne(userId)),
+      id: userId,
+    };
+  }
+
+  if (targetSchema === schema.FRONT) {
+    return {
+      ...(await UserFo.readOne(userId)),
+      id: userId,
+    };
+  }
+
+  throw new AppError("targetSchema is not valid", {
+    name: "InvalidTargetSchema",
+    statusCode: 400,
+  });
+}
+
 async function checkJWT(req, res, next, targetSchema) {
   log.i("IN");
 
@@ -86,9 +103,16 @@ async function checkJWT(req, res, next, targetSchema) {
     );
   }
 
+  const accessToken =
+    targetSchema === schema.BACK
+      ? cookies.VAO_BO_access_token
+      : cookies.VAO_access_token;
+  const refreshToken =
+    targetSchema === schema.BACK
+      ? cookies.VAO_BO_refresh_token
+      : cookies.VAO_refresh_token;
+
   const { accessTokenName, refreshTokenName } = getCookieNames(targetSchema);
-  const accessToken = cookies[accessTokenName];
-  const refreshToken = cookies[refreshTokenName];
 
   try {
     await handleSessionCheck(refreshToken, targetSchema);
@@ -141,9 +165,7 @@ async function checkJWT(req, res, next, targetSchema) {
       );
     }
 
-    const userService = getUserService(targetSchema);
-    const user = await userService.readOne(rtDecoded.userId);
-
+    const user = getUserBySchema(targetSchema, rtDecoded.userId);
     const { buildAccessToken, buildRefreshToken } =
       getTokenBuilders(targetSchema);
     const newAccessTokenPayload = buildAccessToken(user);
@@ -182,8 +204,8 @@ async function checkJWT(req, res, next, targetSchema) {
       );
     }
 
-    res.cookie(accessTokenName, newAccessToken, cookieOptions);
-    res.cookie(refreshTokenName, newRefreshToken, cookieOptions);
+    res.cookie(accessTokenName, newAccessToken, { cookieOptions });
+    res.cookie(refreshTokenName, newRefreshToken, { cookieOptions });
 
     req.decoded = newAccessTokenPayload;
     log.i("DONE", "access_token & refresh_token renewed");
