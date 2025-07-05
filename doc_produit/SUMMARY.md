@@ -30,6 +30,8 @@
     * [Étape 4 - Projet de séjour](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-4-projet-de-sejour.md)
     * [Étape 5 - Informations sur le transport](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-5-informations-sur-le-transport.md)
     * [Étape 6 - Informations sanitaires](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-6-informations-sanitaires.md)
+    * [Étape 7 - Sélection des hébergements](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-7-selection-des-hebergements.md)
+    * [Étape 8 - Synthèse](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-8-synthese.md)
     * [Menu et étapes du formulaire](front-ova/declaration-de-sejour/declaration-a-2-mois/menu-etapes-formulaire.md)
   * [Déclaration à 8 jours](front-ova/declaration-de-sejour/declaration-a-8-jours/README.md)
     * [Étape 1 - Informations générales](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-1-informations-generales.md)
