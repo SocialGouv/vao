@@ -28,6 +28,8 @@
     * [Étape 2 - Informations sur les vacanciers](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-2-informations-sur-les-vacanciers.md)
     * [Étape 3 - Informations sur le personnel](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-3-informations-sur-le-personnel.md)
     * [Étape 4 - Projet de séjour](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-4-projet-de-sejour.md)
+    * [Étape 5 - Informations sur le transport](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-5-informations-sur-le-transport.md)
+    * [Étape 6 - Informations sanitaires](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-6-informations-sanitaires.md)
     * [Menu et étapes du formulaire](front-ova/declaration-de-sejour/declaration-a-2-mois/menu-etapes-formulaire.md)
   * [Déclaration à 8 jours](front-ova/declaration-de-sejour/declaration-a-8-jours/README.md)
     * [Étape 1 - Informations générales](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-1-informations-generales.md)
