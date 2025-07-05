@@ -23,6 +23,8 @@
   * [Règles et gestions](front-ova/fiche-organisateur/regles-et-gestions.md)
 * [Déclaration de séjour](front-ova/declaration-de-sejour/README.md)
   * [Étape 1 - Informations générales](front-ova/declaration-de-sejour/etape-1-informations-generales.md)
+  * [Étape 2 - Informations sur les vacanciers](front-ova/declaration-de-sejour/etape-2-informations-sur-les-vacanciers.md)
+  * [Étape 3 - Informations sur le personnel](front-ova/declaration-de-sejour/etape-3-informations-sur-le-personnel.md)
   * [Menu et étapes du formulaire](front-ova/declaration-de-sejour/menu-etapes-formulaire.md)
 
 ***
