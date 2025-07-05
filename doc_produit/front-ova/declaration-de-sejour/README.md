@@ -8,54 +8,47 @@ icon: memo-circle-info
 Cette section détaille le parcours utilisateur, les étapes du formulaire, la gestion des statuts, des rôles et des droits, ainsi que les cas particuliers.
 {% endhint %}
 
-## Chapitrage
-
-1. Menu et étapes du formulaire
-2. Saisie et validation des informations
-3. Gestion des pièces jointes
-4. Suivi des statuts et notifications
-5. Gestion des rôles et droits
-6. Cas particuliers
-
-> **À chaque étape clé, insérer une capture d'écran de l'interface pour illustrer le contexte utilisateur.**
-
-***
-
-## Processus de déclaration de séjour
+## Vue d'ensemble
 
 Le processus de déclaration de séjour se déroule en **deux étapes distinctes** selon la réglementation :
 
-### **Étape 1 : Déclaration à 2 mois (obligatoire)**
+### **Déclaration à 2 mois (obligatoire)**
+Déclarer l'intention d'organiser un séjour au moins 2 mois avant le début du séjour.
 
-**Objectif** : Déclarer l'intention d'organiser un séjour au moins 2 mois avant le début du séjour.
+### **Déclaration à 8 jours (si validée à 2 mois)**
+Confirmer les informations définitives du séjour 8 jours avant le début.
 
-**Workflow** :
+## Chapitrage
+
+### Déclaration à 2 mois
+1. [Étape 1 - Informations générales](declaration-a-2-mois/etape-1-informations-generales.md)
+2. [Étape 2 - Informations sur les vacanciers](declaration-a-2-mois/etape-2-informations-sur-les-vacanciers.md)
+3. [Étape 3 - Informations sur le personnel](declaration-a-2-mois/etape-3-informations-sur-le-personnel.md)
+4. [Menu et étapes du formulaire](declaration-a-2-mois/menu-etapes-formulaire.md)
+
+### Déclaration à 8 jours
+1. [Étape 1 - Informations générales](declaration-a-8-jours/etape-1-informations-generales.md)
+2. [Étape 2 - Informations sur les vacanciers](declaration-a-8-jours/etape-2-informations-sur-les-vacanciers.md)
+3. [Étape 3 - Informations sur le personnel](declaration-a-8-jours/etape-3-informations-sur-le-personnel.md)
+4. [Menu et étapes du formulaire](declaration-a-8-jours/menu-etapes-formulaire.md)
+
+## Processus et statuts
+
+### **Workflow général**
+
+**Déclaration à 2 mois :**
 1. **Création** : L'organisateur crée une déclaration en statut `BROUILLON`
-2. **Saisie** : Remplissage complet du formulaire (informations générales, vacanciers, personnel, projet de séjour, transport, sanitaires, hébergements)
-3. **Transmission** : L'organisateur transmet la déclaration → statut `TRANSMISE`
+2. **Saisie** : Remplissage complet du formulaire
+3. **Transmission** : L'organisateur transmet → statut `TRANSMISE`
 4. **Instruction** : Les agents DDETS prennent en charge → statut `EN_COURS`
-5. **Décision** : Les agents peuvent :
-   - **Valider** → statut `ATTENTE_8_JOUR` (autorisation de procéder)
-   - **Demander des compléments** → statut `A_MODIFIER` (retour à l'organisateur)
-   - **Refuser** → statut `REFUSEE` (fin de processus)
+5. **Décision** : Les agents peuvent valider, demander des compléments ou refuser
 
-[Capture - Interface de saisie du formulaire à 2 mois]
-
-### **Étape 2 : Déclaration à 8 jours (si validée à 2 mois)**
-
-**Objectif** : Confirmer les informations définitives du séjour 8 jours avant le début.
-
-**Workflow** :
+**Déclaration à 8 jours :**
 1. **Déclenchement** : Seulement si la déclaration à 2 mois est validée (statut `ATTENTE_8_JOUR`)
-2. **Saisie** : Mise à jour des informations vacanciers et personnel avec données définitives
+2. **Saisie** : Mise à jour des informations définitives
 3. **Transmission** : L'organisateur transmet → statut `TRANSMISE_8J`
 4. **Instruction** : Les agents prennent en charge → statut `EN_COURS_8J`
-5. **Décision** : Les agents peuvent :
-   - **Valider définitivement** → statut `VALIDEE_8J` (autorisation finale)
-   - **Demander des compléments** → statut `A_MODIFIER_8J`
-   - **Refuser** → statut `REFUSEE_8J`
-
-[Capture - Interface de saisie du formulaire à 8 jours]
+5. **Décision** : Validation finale, compléments ou refus
 
 ### **Statuts du processus**
 

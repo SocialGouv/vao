@@ -22,10 +22,16 @@
   * [Modification de la fiche organisateur](front-ova/fiche-organisateur/modification-de-la-fiche-organisateur.md)
   * [Règles et gestions](front-ova/fiche-organisateur/regles-et-gestions.md)
 * [Déclaration de séjour](front-ova/declaration-de-sejour/README.md)
-  * [Étape 1 - Informations générales](front-ova/declaration-de-sejour/etape-1-informations-generales.md)
-  * [Étape 2 - Informations sur les vacanciers](front-ova/declaration-de-sejour/etape-2-informations-sur-les-vacanciers.md)
-  * [Étape 3 - Informations sur le personnel](front-ova/declaration-de-sejour/etape-3-informations-sur-le-personnel.md)
-  * [Menu et étapes du formulaire](front-ova/declaration-de-sejour/menu-etapes-formulaire.md)
+  * [Déclaration à 2 mois](front-ova/declaration-de-sejour/declaration-a-2-mois/README.md)
+    * [Étape 1 - Informations générales](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-1-informations-generales.md)
+    * [Étape 2 - Informations sur les vacanciers](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-2-informations-sur-les-vacanciers.md)
+    * [Étape 3 - Informations sur le personnel](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-3-informations-sur-le-personnel.md)
+    * [Menu et étapes du formulaire](front-ova/declaration-de-sejour/declaration-a-2-mois/menu-etapes-formulaire.md)
+  * [Déclaration à 8 jours](front-ova/declaration-de-sejour/declaration-a-8-jours/README.md)
+    * [Étape 1 - Informations générales](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-1-informations-generales.md)
+    * [Étape 2 - Informations sur les vacanciers](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-2-informations-sur-les-vacanciers.md)
+    * [Étape 3 - Informations sur le personnel](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-3-informations-sur-le-personnel.md)
+    * [Menu et étapes du formulaire](front-ova/declaration-de-sejour/declaration-a-8-jours/menu-etapes-formulaire.md)
 
 ***
 
