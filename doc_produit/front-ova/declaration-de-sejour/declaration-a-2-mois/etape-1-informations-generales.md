@@ -17,7 +17,7 @@ layout:
 
 Lors de la création d'une déclaration de séjour, l'utilisateur accède à un formulaire d'informations générales à compléter.
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-05 à 11.45.02.png" alt=""><figcaption><p>Création d'une déclaration de séjour - Étape 1 - Informations générales </p></figcaption></figure>
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-05 à 11.45.02.png" alt=""><figcaption><p>Création d'une déclaration de séjour - Étape 1 - Informations générales</p></figcaption></figure>
 
 En accédant à cette étape, l'utilisateur doit renseigner les informations suivantes :
 
@@ -25,7 +25,7 @@ En accédant à cette étape, l'utilisateur doit renseigner les informations sui
 
 <summary>Formulaire déclaration de séjour – étape 1</summary>
 
-{% include "../../.gitbook/includes/formulaire-declaration-de-sejour-etape-1.md" %}
+
 
 </details>
 
@@ -67,7 +67,7 @@ Tous les champs sont pré-remplis avec les données récupérées via l'API INSE
 
 <summary>Capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-05 à 11.59.36.png" alt=""><figcaption><p>Informations affichés lors de l'étape 1 de la création d'une déclaration de séjour</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/Capture%20d%E2%80%99e%CC%81cran%202025-07-05%20a%CC%80%2011.59.36.png" alt=""><figcaption><p>Informations affichés lors de l'étape 1 de la création d'une déclaration de séjour</p></figcaption></figure>
 
 </details>
 
@@ -81,7 +81,7 @@ Un tableau liste les utilisateurs du SI-VAO rattachés à l'organisme
 
 ### Etablissements secondaires
 
-Un tableau liste les établissements secondaires, si applicable.&#x20;
+Un tableau liste les établissements secondaires, si applicable.
 
 ## Règles métier
 
@@ -98,4 +98,3 @@ Un tableau liste les établissements secondaires, si applicable.&#x20;
 ## Statut associé
 
 * **BROUILLON** : La déclaration est en cours de saisie, non transmise.
-

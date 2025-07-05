@@ -21,7 +21,7 @@ layout:
 
 <details>
 
-<summary>Formulaire déclaration de séjour - étape 1</summary>
+<summary>Formulaire déclaration de séjour à 2 mois – étape 1</summary>
 
 {% include "../../.gitbook/includes/formulaire-declaration-de-sejour-etape-1.md" %}
 
@@ -33,7 +33,7 @@ layout:
 
 <details>
 
-<summary>Formulaire déclaration de séjour - étape 2</summary>
+<summary>Formulaire déclaration de séjour à 2 mois – étape 2</summary>
 
 {% include "../../.gitbook/includes/formulaire-declaration-de-sejour-etape-2.md" %}
 
@@ -45,9 +45,21 @@ layout:
 
 <details>
 
-<summary>Formulaire déclaration de séjour - étape 3</summary>
+<summary>Formulaire déclaration de séjour à 2 mois – étape 3</summary>
 
 {% include "../../.gitbook/includes/formulaire-declaration-de-sejour-etape-3.md" %}
+
+</details>
+
+***
+
+### Étape 4 - Projet de séjour
+
+<details>
+
+<summary>Formulaire déclaration de séjour à 2 mois – étape 4</summary>
+
+{% include "../../.gitbook/includes/formulaire-declaration-de-sejour-a-2-mois-etape-4.md" %}
 
 </details>
 
