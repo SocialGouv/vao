@@ -23,6 +23,8 @@
   * [Règles et gestions](front-ova/fiche-organisateur/regles-et-gestions.md)
 * [Déclaration de séjour](front-ova/declaration-de-sejour/README.md)
   * [Workflow des déclarations](front-ova/declaration-de-sejour/workflow-declarations.md)
+  * [Page de liste des déclarations](front-ova/declaration-de-sejour/page-liste-des-declarations.md)
+  * [Page détaillée d'une déclaration](front-ova/declaration-de-sejour/page-detaillee-declaration.md)
   * [Déclaration à 2 mois](front-ova/declaration-de-sejour/declaration-a-2-mois/README.md)
     * [Étape 1 - Informations générales](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-1-informations-generales.md)
     * [Étape 2 - Informations sur les vacanciers](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-2-informations-sur-les-vacanciers.md)
@@ -48,6 +50,7 @@
 * [Création de compte agent](back-agents/creation-de-compte-agent/README.md)
   * [Droits utilisateur agent - création de compte](back-agents/creation-de-compte-agent/droits-utilisateur-agent-creation-de-compte.md)
 * [Déclaration de séjour](back-agents/declaration-de-sejour/README.md)
+  * [Instruction des déclarations de séjour](back-agents/declaration-de-sejour/instruction-declaration-sejour.md)
 
 ## MISC
 
