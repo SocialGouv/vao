@@ -35,6 +35,7 @@ En accédant à cette étape, l'utilisateur peut consulter un récapitulatif com
 * Tous les champs de l'attestation doivent être renseignés.
 * La date de l'attestation doit être la date du jour.
 * Le numéro de déclaration est généré automatiquement au format : DS-YY-DEPARTEMENT-NNNN.
+* La génération du CERFA de la déclaration en PDF ([disponible dans la page détaillée](../page-detaillee-declaration.md))
 * Après dépôt, la déclaration passe en statut "EN COURS".
 * Un accusé de réception est envoyé par email à l'organisateur
 
@@ -43,6 +44,16 @@ En accédant à cette étape, l'utilisateur peut consulter un récapitulatif com
 * Un email est envoyé pour transmission de la déclaration aux services instructeurs
 
 {% include "../../../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois.md" %}
+
+Une fois la déclaration à 2 mois soumise, l'utilisateur est dirigé vers la page de liste des déclarations avec des alertes qui indique la bonne transmission au service départemental.&#x20;
+
+<details>
+
+<summary>Capture</summary>
+
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-05 à 18.21.49.png" alt=""><figcaption><p>Page de liste des déclarations de séjour</p></figcaption></figure>
+
+</details>
 
 ## Actions possibles
 

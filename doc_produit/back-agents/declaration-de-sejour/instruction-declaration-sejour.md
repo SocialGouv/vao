@@ -1,175 +1,120 @@
+---
+layout:
+  width: default
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: false
+---
+
 # Instruction des déclarations de séjour
 
 L'instruction des déclarations de séjour est effectuée par les agents des DDETS (Directions Départementales de l'Emploi, du Travail et des Solidarités) via l'interface back office.
 
-## Workflow d'instruction
+## Instruction déclaration à 2 mois
 
-### Statuts des déclarations
+Lorsqu'un OVA soumet une déclaration de séjour à 2 mois (statut "transmise"), l'agent de la DDETS reçois une notification par email pour l'informer.&#x20;
 
-Les déclarations de séjour passent par différents statuts lors de leur instruction :
+{% include "../../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois.md" %}
 
-- **TRANSMISE** : Déclaration à 2 mois transmise par l'organisateur
-- **TRANSMISE 8J** : Déclaration à 8 jours transmise par l'organisateur
-- **EN COURS** : Déclaration à 2 mois en cours d'instruction
-- **EN COURS 8J** : Déclaration à 8 jours en cours d'instruction
-- **A MODIFIER** : Demande de compléments pour déclaration à 2 mois
-- **A MODIFIER 8J** : Demande de compléments pour déclaration à 8 jours
-- **EN ATTENTE DECLARATION 8 JOURS** : Déclaration à 2 mois validée, en attente de la déclaration à 8 jours
-- **VALIDEE 8J** : Déclaration à 8 jours validée
-- **SEJOUR EN COURS** : Séjour en cours de réalisation
-- **TERMINEE** : Séjour terminé
-- **REFUSEE** : Déclaration refusée
-- **REFUSEE 8J** : Déclaration à 8 jours refusée
-- **ANNULEE** : Déclaration annulée
-- **ABANDONNEE** : Déclaration abandonnée
+Dans [la page de liste des déclarations](page-de-liste-des-declarations.md), l'agent doit cliquer sur le bouton "Action" d'une déclaration pour l'instruire.&#x20;
 
-### Actions possibles par l'agent
+Une pop-up s'ouvre pour confirmer la prise en charge de la déclaration.&#x20;
 
-#### 1. Prise en charge
+<details>
 
-**Endpoint** : `POST /admin/:declarationId/prise-en-charge`
+<summary>Capture</summary>
 
-L'agent peut prendre en charge une déclaration transmise pour commencer l'instruction.
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-05 à 19.32.44.png" alt=""><figcaption><p>Pop-up de prise en charge de la déclaration de séjour par un agent</p></figcaption></figure>
 
-**Conditions** :
-- Déclaration en statut `TRANSMISE` ou `TRANSMISE 8J`
-- L'agent doit être instructeur principal (département du premier hébergement)
+</details>
 
-**Résultat** :
-- Passage en statut `EN COURS` ou `EN COURS 8J`
-- Génération d'un accusé de réception automatique
+\
+Au clic sur le bouton "Valider la prise en charge" :&#x20;
 
-#### 2. Demande de compléments
+* L'agent est dirigé vers la page détaillé
+* Le statut de la déclaration passe en "En cours"
 
-**Endpoint** : `POST /admin/:declarationId/demande-complements`
+<details>
 
-L'agent peut demander des compléments à l'organisateur.
+<summary>Capture</summary>
 
-**Conditions** :
-- Déclaration en statut `EN COURS` ou `EN COURS 8J`
-- L'agent doit être instructeur principal
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-05 à 19.37.01.png" alt=""><figcaption><p>Page détaillé d'une déclaration de séjour pour l'instruction</p></figcaption></figure>
 
-**Paramètres** :
-- `commentaire` : Commentaire détaillé des compléments demandés
+</details>
 
-**Résultat** :
-- Passage en statut `A MODIFIER` ou `A MODIFIER 8J`
-- Envoi automatique d'un email à l'organisateur avec les détails des compléments
-- L'organisateur peut modifier sa déclaration et la retransmettre
+Dans cette étape d'instruction, l'agent peut :&#x20;
 
-#### 3. Enregistrement (validation)
+* Accéder à l'ensemble des informations de la déclarations via les différents onglets de la page détaillée
+* Réaliser 3 actions spécifique :
+  * Demander des compléments d'informations à l'organisateur
+  * Refuser
+  * Accepter
 
-**Endpoint** : `POST /admin/:declarationId/enregistrement-2-mois`
+### Demande de complément d'informations
 
-L'agent peut valider et enregistrer une déclaration.
+L'agent peut demander des compléments d'informations à l'organisateur pour valider la déclaration de séjour.
 
-**Conditions** :
-- Déclaration en statut `EN COURS` ou `EN COURS 8J`
-- L'agent doit être instructeur principal
+<details>
 
-**Résultat** :
-- Pour déclaration à 2 mois : Passage en statut `EN ATTENTE DECLARATION 8 JOURS`
-- Pour déclaration à 8 jours : Passage en statut `VALIDEE 8J`
-- Génération automatique d'un accusé de réception
-- Envoi automatique d'un email de validation à l'organisateur
+<summary>Capture</summary>
 
-## Interface de consultation
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-05 à 20.13.10.png" alt=""><figcaption><p>Pop-up de "Demander des compléments à l'organisateur"</p></figcaption></figure>
 
-### Liste des déclarations
+</details>
 
-L'agent peut consulter la liste des déclarations avec les informations suivantes :
+Pour cela, en cliquant sur le bouton "Demander des compléments à l'organisateur", une pop-up s'ouvre avec un formulaire à renseigner :&#x20;
 
-- **Numéro de déclaration** : Format DS-YY-DEPARTEMENT-NNNN
-- **Statut** : Statut actuel de la déclaration
-- **Organisme** : Informations sur l'organisateur
-- **Dates** : Date de début et de fin du séjour
-- **Département de suivi** : Département principal d'instruction
-- **Messages** : État des échanges (NON LU, LU, REPONDU)
-- **Date de création/modification**
+* Un champ unique de texte "Commentaires"
+* Il est obligatoire
+* Le bouton de validation n'apparait que si le champ texte est rempli d'à minima 5 catactères.&#x20;
+* Au clic sur le bouton "Valider" :&#x20;
+  * La déclaration passe au statut "À modifier"
+  * Les commentaires sont logués dans [l'historique de la déclaration](../../front-ova/declaration-de-sejour/page-detaillee-declaration.md#id-3.-historique-de-la-declaration)
+  * Une notification est envoyée, avec les commentaires, à l'organisateur pour qu'il modifie la déclaration
 
-### Filtres disponibles
+{% include "../../.gitbook/includes/demande-de-complement-dinformation-2-mois-et-8j.md" %}
 
-- **Par statut** : Filtrer par statut de déclaration
-- **Par département** : Filtrer par département d'instruction
-- **Par date** : Filtrer par période
-- **Par message** : Filtrer les déclarations avec des messages non lus
+### Refuser
 
-### Consultation détaillée
+L'agent peut refuser une déclaration de séjour&#x20;
 
-L'agent peut consulter le détail complet d'une déclaration :
+<details>
 
-- **Informations générales** : Libellé, dates, durée, responsable
-- **Informations sur les vacanciers** : Nombre, tranches d'âge, etc.
-- **Informations sur le personnel** : Accompagnants, encadrants, formation
-- **Projet de séjour** : Activités, destinations, etc.
-- **Informations sur le transport** : Protocole de transport
-- **Informations sanitaires** : Protocole sanitaire
-- **Hébergements** : Liste des hébergements sélectionnés
-- **Attestation** : Attestation sur l'honneur signée
-- **Historique** : Chronologie des événements et modifications
+<summary>Capture</summary>
 
-## Notifications et emails
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-05 à 21.39.51.png" alt=""><figcaption><p>Pop-up de "Refus"</p></figcaption></figure>
 
-### Emails automatiques
+</details>
 
-Le système envoie automatiquement des emails lors des actions d'instruction :
+Pour cela, en cliquant sur le bouton "Refuser", une pop-up s'ouvre avec un formulaire à renseigner :&#x20;
 
-1. **Accusé de réception** : Lors de la prise en charge
-2. **Demande de compléments** : Lors de la demande de compléments
-3. **Validation** : Lors de l'enregistrement/validation
-4. **Notifications** : Notifications aux autres départements concernés
+* Un champ unique de texte "Commentaires"
+* Il est obligatoire
+* Le bouton de validation n'apparait que si le champ texte est rempli d'à minima 5 catactères.&#x20;
+* Au clic sur le bouton "Valider" :&#x20;
+  * La déclaration passe au statut "Refusé"
+  * Les commentaires sont logués dans [l'historique de la déclaration](../../front-ova/declaration-de-sejour/page-detaillee-declaration.md#id-3.-historique-de-la-declaration)
+  * Une notification est envoyée, avec les commentaires, à l'organisateur pour le notifier du refus de la déclaration de séjour
+  * Il n'est plus possible, pour l'OVA et l'agent, de revenir sur cette déclaration
 
-### Destinataires
 
-- **Organisateur** : Emails de suivi et notifications
-- **DDETS principales** : Notifications pour instruction
-- **DDETS secondaires** : Informations pour coordination
 
-## Gestion des documents
+### Valider
 
-### Génération automatique
 
-Le système génère automatiquement des documents PDF :
 
-- **Déclaration à 2 mois** : Document complet de la déclaration
-- **Déclaration à 8 jours** : Document complémentaire
-- **Accusés de réception** : Documents officiels de validation
 
-### Stockage
 
-Les documents générés sont stockés et accessibles via l'interface back office pour consultation et téléchargement.
 
-## Permissions et sécurité
 
-### Contrôle d'accès
+***
 
-- **Instructeur principal** : Agent du département principal d'instruction
-- **Instructeurs secondaires** : Agents des autres départements concernés
-- **Rôles** : Contrôle des permissions par rôle utilisateur
+## Instruction déclaration à 8 jours
 
-### Traçabilité
-
-Toutes les actions d'instruction sont tracées avec :
-- **Utilisateur** : Agent ayant effectué l'action
-- **Date et heure** : Horodatage de l'action
-- **Type d'action** : Description de l'action effectuée
-- **Métadonnées** : Données associées à l'action
-
-## Statistiques et reporting
-
-### Tableau de bord
-
-L'agent dispose d'un tableau de bord avec les statistiques suivantes :
-
-- **En cours** : Nombre de déclarations en cours d'instruction
-- **Transmises** : Nombre de déclarations transmises en attente
-- **Validées** : Nombre de déclarations validées
-- **Terminées** : Nombre de séjours terminés
-- **Messages** : Nombre de messages non lus, lus, répondu
-
-### Extractions
-
-Possibilité d'extraire des données pour reporting :
-- **Liste des déclarations** : Export des déclarations filtrées
-- **Statistiques** : Export des statistiques par période
-- **Hébergements** : Export des données d'hébergement 

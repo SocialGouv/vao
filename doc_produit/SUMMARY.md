@@ -39,6 +39,7 @@
     * [Étape 2 - Informations sur les vacanciers](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-2-informations-sur-les-vacanciers.md)
     * [Étape 3 - Informations sur le personnel](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-3-informations-sur-le-personnel.md)
     * [Menu et étapes du formulaire](front-ova/declaration-de-sejour/declaration-a-8-jours/menu-etapes-formulaire.md)
+  * [Modification d'une déclaration](front-ova/declaration-de-sejour/modification-dune-declaration.md)
 
 ***
 
@@ -50,6 +51,7 @@
 * [Création de compte agent](back-agents/creation-de-compte-agent/README.md)
   * [Droits utilisateur agent - création de compte](back-agents/creation-de-compte-agent/droits-utilisateur-agent-creation-de-compte.md)
 * [Déclaration de séjour](back-agents/declaration-de-sejour/README.md)
+  * [Page de liste des déclarations](back-agents/declaration-de-sejour/page-de-liste-des-declarations.md)
   * [Instruction des déclarations de séjour](back-agents/declaration-de-sejour/instruction-declaration-sejour.md)
 
 ## MISC
@@ -59,3 +61,4 @@
   * [Formulaire hébergement](misc/les-formulaires/formulaire-hebergement.md)
   * [Formulaire déclaration de séjour](misc/les-formulaires/formulaire-declaration-de-sejour.md)
 * [Liste des emails envoyés par le SI](misc/liste-des-emails-envoyes-par-le-si.md)
+* [Les statuts des déclarations de séjours](misc/les-statuts-des-declarations-de-sejours.md)
