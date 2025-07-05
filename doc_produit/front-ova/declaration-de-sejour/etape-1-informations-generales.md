@@ -2,13 +2,7 @@
 
 Lors de la création d'une déclaration de séjour, l'utilisateur accède à un formulaire d'informations générales à compléter.
 
-<details>
-
-<summary>Capture</summary>
-
-<figure><img src="../../../.gitbook/assets/a-chosen-soul-radulW4SHhA-unsplash.jpg" alt=""><figcaption></figcaption></figure>
-
-</details>
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-05 à 11.45.02.png" alt=""><figcaption><p>Création d'une déclaration de séjour - Étape 1 - Informations générales </p></figcaption></figure>
 
 En accédant à cette étape, l'utilisateur doit renseigner les informations suivantes :
 
@@ -16,21 +10,13 @@ En accédant à cette étape, l'utilisateur doit renseigner les informations sui
 
 <summary>Formulaire déclaration de séjour – étape 1</summary>
 
-
-
-</details>
-
-<details>
-
-<summary>Capture</summary>
-
-<figure><img src="../../../.gitbook/assets/PLACEHOLDER_CAPTURE_2.png" alt=""><figcaption></figcaption></figure>
+{% include "../../.gitbook/includes/formulaire-declaration-de-sejour-etape-1.md" %}
 
 </details>
 
 ## Champs pré-remplis
 
-Certains champs sont automatiquement pré-remplis pour faciliter la saisie :
+Certains champs sont automatiquement pré-remplis pour faciliter la saisie.
 
 ### **Dates pré-remplies :**
 
@@ -41,18 +27,15 @@ Certains champs sont automatiquement pré-remplis pour faciliter la saisie :
 
 Le responsable est automatiquement pré-rempli selon le type d'organisme :
 
-**Pour une personne morale :**
-
-* Récupère les données du responsable de séjour de l'organisme
-
-**Pour une personne physique :**
-
-* **Nom** : Nom de naissance de la personne physique
-* **Prénom** : Prénom de la personne physique
-* **Fonction** : Pré-remplie avec "organisateur de séjour"
-* **Email** : Email de l'utilisateur connecté
-* **Téléphone** : Téléphone de la personne physique
-* **Adresse** : Adresse du siège de la personne physique
+* **Pour une personne morale :**
+  * Récupère les données du responsable de séjour de l'organisme
+* **Pour une personne physique :**
+  * **Nom** : Nom de naissance de la personne physique
+  * **Prénom** : Prénom de la personne physique
+  * **Fonction** : Pré-remplie avec "organisateur de séjour"
+  * **Email** : Email de l'utilisateur connecté
+  * **Téléphone** : Téléphone de la personne physique
+  * **Adresse** : Adresse du siège de la personne physique
 
 ### **Champs calculés automatiquement :**
 
@@ -62,6 +45,28 @@ Le responsable est automatiquement pré-rempli selon le type d'organisme :
 ### **Champs de l'organisme (si personne morale) :**
 
 Tous les champs sont pré-remplis avec les données récupérées via l'API INSEE lors de la création de la fiche organisme.
+
+## Les autres informations affichées à cette étapes
+
+<details>
+
+<summary>Capture</summary>
+
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-05 à 11.59.36.png" alt=""><figcaption><p>Informations affichés lors de l'étape 1 de la création d'une déclaration de séjour</p></figcaption></figure>
+
+</details>
+
+### Les représenant légaux
+
+Un tableau liste les représentant légaux de l'organisme
+
+### Liste des comptes utilisateurs avec le numéro de SIRET de l'organisme
+
+Un tableau liste les utilisateurs du SI-VAO rattachés à l'organisme
+
+### Etablissements secondaires
+
+Un tableau liste les établissements secondaires, si applicable.&#x20;
 
 ## Règles métier
 
@@ -79,10 +84,3 @@ Tous les champs sont pré-remplis avec les données récupérées via l'API INSE
 
 * **BROUILLON** : La déclaration est en cours de saisie, non transmise.
 
-## Mails envoyés
-
-* Aucun mail n'est envoyé à cette étape.
-
-***
-
-Une fois cette étape complétée et validée, l'utilisateur accède à l'étape suivante du formulaire : **Informations sur les vacanciers**.
