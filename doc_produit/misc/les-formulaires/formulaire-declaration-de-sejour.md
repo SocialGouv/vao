@@ -65,6 +65,16 @@ layout:
 
 ***
 
+### Étape 8 - Synthèse
+
+<details>
+
+<summary>Formulaire déclaration de séjour à 2 mois – étape 8</summary>
+
+{% include "../../.gitbook/includes/formulaire-declaration-de-sejour-a-2-mois-etape-8.md" %}
+
+</details>
+
 
 
 

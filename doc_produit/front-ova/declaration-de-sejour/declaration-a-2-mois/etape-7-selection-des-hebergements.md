@@ -1,33 +1,45 @@
+---
+layout:
+  width: default
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: false
+---
+
 # Étape 7 - Sélection des hébergements
 
 Lors de la création d'une déclaration de séjour à 2 mois, l'utilisateur accède à l'étape 7 du formulaire : la sélection des hébergements.
 
-[Capture]
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-05 à 16.46.47.png" alt=""><figcaption><p>Déclaration de séjour à 2 mois - Étape 7 - Sélection des hébergements</p></figcaption></figure>
 
-En accédant à cette étape, l'utilisateur doit sélectionner et configurer les hébergements qui seront utilisés pour le séjour. Il peut soit choisir parmi les hébergements existants de son organisme, soit créer un nouvel hébergement.
+En accédant à cette étape, l'utilisateur doit sélectionner les hébergements qui seront utilisés pour le séjour. Il peut soit choisir parmi les hébergements existants de son organisme, soit créer un nouvel hébergement.
 
-## Fonctionnalités principales
+<details>
 
-- Sélection parmi les hébergements existants de l'organisme (statut "actif")
-- Création d'un nouvel hébergement si nécessaire
-- Configuration des dates de début et fin pour chaque hébergement
-- Gestion des informations de transport spécifiques à chaque hébergement
-- Validation automatique de la continuité du séjour
-- Possibilité de joindre des documents
+<summary>Formulaire de création d'hébergement</summary>
 
-[Capture]
+{% hint style="info" %}
+Pour plus de détails sur les champs du formulaire de création d'hébergement, consultez la page [Création d'un hébergement](../../../liste-des-hebergements/creation-dun-hebergement.md).-
+{% endhint %}
 
-## Les autres informations affichées à cette étape
+{% include "../../../.gitbook/includes/formulaire_hebergement.md" %}
 
-- Liste des hébergements existants de l'organisme (nom, adresse, type)
-- Formulaire de création d'hébergement (si nouveau)
-- Configuration des dates pour chaque hébergement sélectionné
-- Champs d'informations de transport pour chaque hébergement
-- Messages d'erreur si les champs obligatoires ne sont pas renseignés
-- Indicateurs de progression du formulaire
-- Possibilité de sauvegarder en brouillon
+</details>
 
-[Capture]
+<details>
+
+<summary>Capture</summary>
+
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-05 à 17.03.55.png" alt=""><figcaption><p>Modale de création d'hébergement à partir de la déclaration de séjour</p></figcaption></figure>
+
+</details>
 
 ## Règles métier
 
@@ -42,21 +54,10 @@ En accédant à cette étape, l'utilisateur doit sélectionner et configurer les
 
 ## Actions possibles
 
-* **Sélectionner** un hébergement existant dans la liste
-* **Créer** un nouvel hébergement si nécessaire
-* **Configurer** les dates de début et fin pour chaque hébergement
-* **Renseigner** les informations de transport spécifiques à l'hébergement
-* **Modifier** les informations d'un hébergement existant
-* **Supprimer** un hébergement de la sélection
-* **Joindre** des documents (optionnel)
 * **Sauvegarder** la déclaration à tout moment (brouillon)
 * **Passer à l'étape suivante** si tous les champs sont valides
 * **Revenir aux étapes précédentes** pour modifier les informations
 
-## Formulaire d'hébergement
-
-Pour plus de détails sur les champs du formulaire de création d'hébergement, consultez la page [Création d'un hébergement](../../../liste-des-hebergements/creation-dun-hebergement.md).
-
 ## Statut associé
 
-* **BROUILLON** : La déclaration est en cours de saisie, non transmise. 
+* **BROUILLON** : La déclaration est en cours de saisie, non transmise.
