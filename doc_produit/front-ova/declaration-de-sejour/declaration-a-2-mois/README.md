@@ -22,7 +22,8 @@ Déclarer l'intention d'organiser un séjour au moins 2 mois avant le début du 
 1. [Étape 1 - Informations générales](etape-1-informations-generales.md)
 2. [Étape 2 - Informations sur les vacanciers](etape-2-informations-sur-les-vacanciers.md)
 3. [Étape 3 - Informations sur le personnel](etape-3-informations-sur-le-personnel.md)
-4. [Menu et étapes du formulaire](menu-etapes-formulaire.md)
+4. [Étape 4 - Projet de séjour](etape-4-projet-de-sejour.md)
+5. [Menu et étapes du formulaire](menu-etapes-formulaire.md)
 
 ## Statuts associés
 

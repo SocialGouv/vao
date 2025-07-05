@@ -1,3 +1,18 @@
+---
+layout:
+  width: default
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: false
+---
+
 # Étape 1 - Informations générales
 
 Lors de la création d'une déclaration de séjour, l'utilisateur accède à un formulaire d'informations générales à compléter.
