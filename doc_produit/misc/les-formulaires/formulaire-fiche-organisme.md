@@ -44,16 +44,6 @@
 
 ***
 
-## Étape 2 - Établissement secondaires
-
-<details>
-
-<summary>Tableau des établissement secondaire - étape 2</summary>
-
-{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-2.md" %}
-
-</details>
-
 ## Étape 4 - Informations sur le transport
 
 <details>
@@ -78,3 +68,12 @@
 
 </details>
 
+## Étape 6 - Synthèse
+
+<details>
+
+<summary>Formulaire fiche organisme - étape 6</summary>
+
+{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-6.md" %}
+
+</details>

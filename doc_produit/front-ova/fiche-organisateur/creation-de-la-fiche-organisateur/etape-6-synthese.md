@@ -1,27 +1,40 @@
+---
+layout:
+  width: default
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: false
+---
+
 # Étape 6 - Synthèse
 
-<table><thead><tr><th width="237.98828125">Nom du champ</th><th width="95.9296875">Type</th><th width="103.90625">Obligatoire</th><th>Précision</th></tr></thead><tbody><tr><td>Renseignements généraux</td><td>Accordéon</td><td>N</td><td>Récapitulatif des informations de l'étape 1 avec badge de statut (Complet/Incomplet)</td></tr><tr><td>Établissements secondaires</td><td>Accordéon</td><td>N</td><td>Affiché uniquement pour les personnes morales siège social. Récapitulatif des établissements avec badge de statut</td></tr><tr><td>Agrément</td><td>Accordéon</td><td>N</td><td>Récapitulatif des informations de l'étape 3 avec badge de statut</td></tr><tr><td>Informations sur le transport</td><td>Accordéon</td><td>N</td><td>Récapitulatif des informations de l'étape 4 avec badge de statut</td></tr><tr><td>Informations sanitaires</td><td>Accordéon</td><td>N</td><td>Récapitulatif des informations de l'étape 5 avec badge de statut</td></tr><tr><td>Badge de statut</td><td>Badge</td><td>N</td><td>Indicateur visuel : Vert (Complet) ou Orange (Incomplet) pour chaque section</td></tr><tr><td>Finaliser la fiche organisateur</td><td>Bouton</td><td>O</td><td>Actif uniquement si toutes les sections sont complètes. Valide et finalise la fiche</td></tr></tbody></table>
-
-### Étape 6 : Synthèse
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-05 à 11.02.00.png" alt=""><figcaption><p>Formulaire fiche organisme - étape 6 "Synthèse"</p></figcaption></figure>
 
 #### Vérification des informations
 
 La synthèse présente un récapitulatif de toutes les informations renseignées organisées en accordéons :
 
-* Renseignements généraux
-* Établissements secondaires (si applicable)
-* Agrément
-* Informations sur le transport
-* Informations sanitaires
+<details>
 
-\[CAPTURE - Page synthèse avec accordéons]
+<summary>Formulaire fiche organisme - étape 6</summary>
+
+{% include "../../../.gitbook/includes/formulaire-fiche-organisme-etape-6.md" %}
+
+</details>
 
 #### Statut de complétude
 
 Chaque section affiche un badge indiquant le statut :
 
 * **Complet** (vert) : Toutes les informations obligatoires sont renseignées
-* **Incomplet** (orange) : Des informations obligatoires manquent
+* **Incomplet** (rouge) : Des informations obligatoires manquent
 
 #### Finalisation
 
