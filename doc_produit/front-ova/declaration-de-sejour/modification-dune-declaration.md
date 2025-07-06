@@ -42,7 +42,7 @@ Lors de validation de la synthès :&#x20;
 * Un nouveau CERFA est disponible dans l'onglet "[Documents joints](page-detaillee-declaration.md#id-2.-documents-joints)"
 * Une notification est envoyée à la DDEETS
 
-{% include "../../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois.md" %}
+{% include "../../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois (1).md" %}
 
 * Une notification de confirmation est en à l'OVA&#x20;
 

@@ -21,7 +21,7 @@ L'instruction des déclarations de séjour est effectuée par les agents des DDE
 
 Lorsqu'un OVA soumet une déclaration de séjour à 2 mois (statut "transmise"), l'agent de la DDETS reçois une notification par email pour l'informer.&#x20;
 
-{% include "../../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois.md" %}
+{% include "../../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois (1).md" %}
 
 Dans [la page de liste des déclarations](page-de-liste-des-declarations.md), l'agent doit cliquer sur le bouton "Action" d'une déclaration pour l'instruire.&#x20;
 
@@ -75,11 +75,13 @@ Pour cela, en cliquant sur le bouton "Demander des compléments à l'organisateu
 * Il est obligatoire
 * Le bouton de validation n'apparait que si le champ texte est rempli d'à minima 5 catactères.&#x20;
 * Au clic sur le bouton "Valider" :&#x20;
-  * La déclaration passe au statut "À modifier"
+  * La déclaration passe au statut `À modifier`
   * Les commentaires sont logués dans [l'historique de la déclaration](../../front-ova/declaration-de-sejour/page-detaillee-declaration.md#id-3.-historique-de-la-declaration)
   * Une notification est envoyée, avec les commentaires, à l'organisateur pour qu'il modifie la déclaration
 
 {% include "../../.gitbook/includes/demande-de-complement-dinformation-2-mois-et-8j.md" %}
+
+***
 
 ### Refuser
 
@@ -99,20 +101,38 @@ Pour cela, en cliquant sur le bouton "Refuser", une pop-up s'ouvre avec un formu
 * Il est obligatoire
 * Le bouton de validation n'apparait que si le champ texte est rempli d'à minima 5 catactères.&#x20;
 * Au clic sur le bouton "Valider" :&#x20;
-  * La déclaration passe au statut "Refusé"
+  * La déclaration passe au statut `Refusé`
   * Les commentaires sont logués dans [l'historique de la déclaration](../../front-ova/declaration-de-sejour/page-detaillee-declaration.md#id-3.-historique-de-la-declaration)
   * Une notification est envoyée, avec les commentaires, à l'organisateur pour le notifier du refus de la déclaration de séjour
-  * Il n'est plus possible, pour l'OVA et l'agent, de revenir sur cette déclaration
 
+{% include "../../.gitbook/includes/refus-et-annulation-de-la-declaration-de-sejour-2-mois-et-8j.md" %}
 
+* Il n'est plus possible, pour l'OVA et l'agent, de revenir sur cette déclaration
+
+***
 
 ### Valider
 
+L'agent peut valider une déclaration de séjour&#x20;
 
+<details>
 
+<summary>Capture</summary>
 
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-06 à 14.29.12.png" alt=""><figcaption><p>Pop-up de validation</p></figcaption></figure>
 
+</details>
 
+Pour cela, en cliquant sur le bouton "Accepter", une pop-up s'ouvre avec un bouton de confirmation "Enregistrer la déclaration" :&#x20;
+
+* Au clic sur le bouton "Enregistrer la déclaration" :&#x20;
+  * La déclaration passe au statut `EN ATTENTE DECLARATION 8 JOURS`
+  * La validation est loguée dans [l'historique de la déclaration](../../front-ova/declaration-de-sejour/page-detaillee-declaration.md#id-3.-historique-de-la-declaration)
+  * Une notification est envoyée à l'organisateur pour le notifier du refus de la validation de la déclaration de séjour
+
+{% include "../../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois.md" %}
+
+* L'OVA devra prendre la main sur la déclaration pour passer à l'étape suivante : l'envoie de la déclaration à 8J.&#x20;
 
 ***
 
