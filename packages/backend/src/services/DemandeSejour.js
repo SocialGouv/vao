@@ -12,12 +12,7 @@ const { getComplementOrganisme } = require("./Organisme");
 const {
   getByDSId: getHebergementsByDSIds,
 } = require("./hebergement/Hebergement");
-const {
-  sanitizePaginationParams,
-  sanitizeFiltersParams,
-  applyFilters,
-  applyPagination,
-} = require("../helpers/queryParams");
+const { processQuery } = require("../helpers/queryParams");
 
 const log = logger(module.filename);
 
@@ -1231,24 +1226,17 @@ module.exports.get = async (organismesId, queryParams) => {
       type: "default",
     },
   ];
-  const { limit, offset, sort } = sanitizePaginationParams(
-    queryParams,
+  const paginatedQuery = processQuery(
+    query.get,
+    [organismesId],
     titles,
+    queryParams,
     {
       sortBy: "ds.edited_at",
       sortDirection: "DESC",
     },
   );
-  const filterParams = sanitizeFiltersParams(queryParams, titles);
-  const queryGet = query.get();
-  const filterQuery = applyFilters(queryGet, [organismesId], filterParams);
-  const paginatedQuery = applyPagination(
-    filterQuery.query,
-    filterQuery.params,
-    limit,
-    offset,
-    sort,
-  );
+
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
     pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
@@ -1508,18 +1496,13 @@ module.exports.getDeclarationsMessages = async (
       sortEnabled: true,
     },
   ];
-  const filterParams = sanitizeFiltersParams(queryParams, titles);
-  const queryGet = query.getDeclarationsMessages();
-  const params = [departementsCodes, territoireCode];
-  const filterQuery = applyFilters(queryGet, params, filterParams);
-  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
-  const paginatedQuery = applyPagination(
-    filterQuery.query,
-    filterQuery.params,
-    limit,
-    offset,
-    sort,
+  const paginatedQuery = processQuery(
+    query.getDeclarationsMessages,
+    [departementsCodes, territoireCode],
+    titles,
+    queryParams,
   );
+
   log.d(queryParams);
   log.d({ params: paginatedQuery.params, query: paginatedQuery.query });
   const result = await Promise.all([
@@ -1627,17 +1610,11 @@ module.exports.getHebergementsByDepartementCode = async (
       type: "custom",
     },
   ];
-  const filterParams = sanitizeFiltersParams(queryParams, titles);
-  const queryGet = query.getHebergementsByDepartementCodes();
-  const params = [departementsCodes];
-  const filterQuery = applyFilters(queryGet, params, filterParams);
-  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
-  const paginatedQuery = applyPagination(
-    filterQuery.query,
-    filterQuery.params,
-    limit,
-    offset,
-    sort,
+  const paginatedQuery = processQuery(
+    query.getHebergementsByDepartementCodes,
+    [departementsCodes],
+    titles,
+    queryParams,
   );
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
