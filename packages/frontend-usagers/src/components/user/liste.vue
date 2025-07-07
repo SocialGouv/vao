@@ -1,4 +1,3 @@
-
 <template>
   <UserListeFilters
     v-model:email="email"
@@ -37,9 +36,8 @@
     </template>
     <template #cell-custom:edit="{ row }">
       <div class="buttons-group">
-
         <DsfrButton
-        v-if="row.statut === statusUser.status.VALIDATED"
+          v-if="row.statut === statusUser.status.VALIDATED"
           icon="ri:arrow-right-s-line"
           icon-only
           primary
@@ -98,6 +96,7 @@ import dayjs from "dayjs";
 
 const userStore = useUserStore();
 const route = useRoute();
+const toaster = useToaster();
 
 const utilisateurSelectionne = ref(null);
 const showRefusModal = ref(false);
@@ -202,8 +201,22 @@ let timeout = null;
 
 async function validate(userId) {
   const params = { status: statusUser.status.VALIDATED };
-  await userStore.updateUserStatus(userId, params);
-  userStore.fetchUsersOrganisme(query);
+  try {
+    await userStore.updateUserStatus(userId, params);
+    toaster.success({
+      titleTag: "h2",
+      description:
+        "La demande de création de compte a été validée par vos soins. L’utilisateur va recevoir un mail pour le prévenir.",
+    });
+    userStore.fetchUsersOrganisme(query);
+  } catch {
+    toaster.error();
+    ({
+      titleTag: "h2",
+      description: "Erreur lors de la mise à jour du status de l'utilisateur.",
+    });
+    throw err;
+  }
 }
 
 async function openRefusedModal(state) {

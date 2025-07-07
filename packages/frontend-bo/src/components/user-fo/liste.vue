@@ -104,6 +104,7 @@ import dayjs from "dayjs";
 
 const userStore = useUserStore();
 const route = useRoute();
+const toaster = useToaster();
 
 const data = computed(() => userStore.usersFO);
 const total = computed(() => userStore.totalUsersFO);
@@ -201,8 +202,22 @@ const updateData = () => {
 
 async function validate(userId) {
   const params = { status: statusUser.status.VALIDATED };
-  await userStore.updateUserFoStatus(userId, params);
-  userStore.fetchUsersFo(query);
+  try {
+    await userStore.updateUserFoStatus(userId, params);
+    toaster.success({
+      titleTag: "h2",
+      description:
+        "La demande de création de compte a été validée par vos soins. L’utilisateur va recevoir un mail pour le prévenir.",
+    });
+    userStore.fetchUsersFo(query);
+  } catch {
+    toaster.error();
+    ({
+      titleTag: "h2",
+      description: "Erreur lors de la mise à jour du status de l'utilisateur.",
+    });
+    throw err;
+  }
 }
 
 async function refused({ commentaire }) {
