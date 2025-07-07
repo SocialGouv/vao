@@ -36,29 +36,49 @@ flowchart TD
     A[Organisateur] --> B{Prérequis vérifiés ?}
     B -->|Non| C[Impossible - Déclaration 2 mois non validée]
     B -->|Oui| D[ATTENTE_8_JOUR]
-    D --> E[Saisie formulaire définitif]
-    E --> F{Formulaire complet ?}
-    F -->|Non| E
-    F -->|Oui| G[Transmission]
-    G --> H[TRANSMISE_8J]
-    H --> I[Agent DDETS]
-    I --> J[EN_COURS_8J]
-    J --> K{Décision agent}
-    K -->|Valider définitivement| L[VALIDEE_8J]
-    K -->|Compléments| M[A_MODIFIER_8J]
-    K -->|Refuser| N[REFUSEE_8J]
-    M --> O[Organisateur]
-    O --> P[Modifications]
-    P --> G
-    L --> Q[Séjour autorisé]
-    N --> R[Fin processus - Refusé]
     
-    style A fill:#e1f5fe
-    style I fill:#fff3e0
-    style L fill:#e8f5e8
-    style N fill:#ffebee
-    style M fill:#fff8e1
-    style C fill:#ffebee
+    D --> E[Étape 1 - Informations générales définitives]
+    E --> F[Étape 2 - Informations vacanciers définitives]
+    F --> G[Étape 3 - Informations personnel définitives]
+    G --> H[Étape 4 - Sélection hébergements définitifs]
+    H --> I[Étape 5 - Synthèse & Attestation]
+    
+    I --> J{Formulaire complet ?}
+    J -->|Non| I
+    J -->|Oui| K[Transmission]
+    K --> L[TRANSMISE_8J]
+    
+    L --> M[Email notification agent DDETS]
+    M --> N[Agent DDETS]
+    
+    N --> O[Prise en charge]
+    O --> P[EN_COURS_8J]
+    
+    P --> Q{Décision agent}
+    
+    Q -->|Valider définitivement| R[VALIDEE_8J]
+    R --> S[Email notification organisateur]
+    S --> T[Séjour autorisé]
+    
+    Q -->|Compléments| U[A_MODIFIER_8J]
+    U --> V[Email notification organisateur]
+    V --> W[Organisateur]
+    W --> X[Modifications]
+    X --> I
+    
+    Q -->|Refuser| Y[REFUSEE_8J]
+    Y --> Z[Email notification organisateur]
+    Z --> AA[Fin processus - Refusé]
+    
+    style A fill:#6a6af4
+    style N fill:#ff6f61
+    style R fill:#3a7d44
+    style U fill:#ff9c41
+    style Y fill:#ce5a5a
+    style C fill:#ce5a5a
+    style L fill:#e8e8e8
+    style P fill:#e8e8e8
+    style D fill:#f5f5f5
 ```
 
 ## Différences avec la déclaration à 2 mois

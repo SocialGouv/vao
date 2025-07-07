@@ -28,39 +28,156 @@ Le processus de déclaration de séjour se déroule en **deux étapes distinctes
 
 ### **Workflow général**
 
-**Déclaration à 2 mois :**
-
-1. **Création** : L'organisateur crée une déclaration en statut `BROUILLON`
-2. **Saisie** : Remplissage complet du formulaire
-3. **Transmission** : L'organisateur transmet → statut `TRANSMISE`
-4. **Instruction** : Les agents DDETS prennent en charge → statut `EN_COURS`
-5. **Décision** : Les agents peuvent valider, demander des compléments ou refuser
-
-**Déclaration à 8 jours :**
-
-1. **Déclenchement** : Seulement si la déclaration à 2 mois est validée (statut `ATTENTE_8_JOUR`)
-2. **Saisie** : Mise à jour des informations définitives
-3. **Transmission** : L'organisateur transmet → statut `TRANSMISE_8J`
-4. **Instruction** : Les agents prennent en charge → statut `EN_COURS_8J`
-5. **Décision** : Validation finale, compléments ou refus
+```mermaid
+flowchart TD
+    %% Déclaration à 2 mois
+    A[Organisateur] --> B[Création déclaration 2 mois]
+    B --> C[BROUILLON]
+    C --> D[Saisie formulaire 2 mois]
+    D --> E{Formulaire complet ?}
+    E -->|Non| D
+    E -->|Oui| F[Transmission 2 mois]
+    F --> G[TRANSMISE]
+    
+    G --> H[Agent DDETS]
+    H --> I[EN_COURS]
+    I --> J{Décision agent 2 mois}
+    
+    J -->|Valider| K[ATTENTE_8_JOUR]
+    J -->|Compléments| L[A_MODIFIER]
+    J -->|Refuser| M[REFUSEE]
+    
+    L --> N[Organisateur]
+    N --> O[Modifications 2 mois]
+    O --> F
+    
+    %% Déclaration à 8 jours
+    K --> P[Organisateur]
+    P --> Q{Séjour validé à 2 mois ?}
+    Q -->|Non| R[Impossible - Déclaration 2 mois non validée]
+    Q -->|Oui| S[Saisie formulaire 8 jours]
+    
+    S --> T{Formulaire complet ?}
+    T -->|Non| S
+    T -->|Oui| U[Transmission 8 jours]
+    U --> V[TRANSMISE_8J]
+    
+    V --> W[Agent DDETS]
+    W --> X[EN_COURS_8J]
+    X --> Y{Décision agent 8 jours}
+    
+    Y -->|Valider définitivement| Z[VALIDEE_8J]
+    Y -->|Compléments| AA[A_MODIFIER_8J]
+    Y -->|Refuser| BB[REFUSEE_8J]
+    
+    AA --> CC[Organisateur]
+    CC --> DD[Modifications 8 jours]
+    DD --> U
+    
+    %% Fin de processus
+    Z --> EE[Séjour autorisé]
+    EE --> FF[SEJOUR_EN_COURS]
+    FF --> GG[TERMINEE]
+    
+    M --> HH[Fin processus - Refusé 2 mois]
+    BB --> II[Fin processus - Refusé 8 jours]
+    
+    %% Annulation
+    C --> JJ[Annulation organisateur]
+    JJ --> KK[ANNULEE]
+    KK --> LL[Fin processus - Annulé]
+    
+    %% Styles avec couleurs DSFR
+    style A fill:#6a6af4
+    style H fill:#ff6f61
+    style W fill:#ff6f61
+    style Z fill:#3a7d44
+    style L fill:#ff9c41
+    style AA fill:#ff9c41
+    style M fill:#ce5a5a
+    style BB fill:#ce5a5a
+    style KK fill:#8b5a9b
+    style G fill:#e8e8e8
+    style V fill:#e8e8e8
+    style C fill:#f5f5f5
+```
 
 ### **Les statuts du processus**
 
-| Statut                   | Signification                        | Actions possibles                      |
-| ------------------------ | ------------------------------------ | -------------------------------------- |
-| `BROUILLON`              | Déclaration en cours de saisie       | Saisie, transmission                   |
-| `TRANSMISE`              | Déclaration à 2 mois transmise       | Instruction par les agents             |
-| `EN_COURS`               | En instruction à 2 mois              | Validation, demande compléments, refus |
-| `A_MODIFIER`             | Compléments demandés à 2 mois        | Modification par l'organisateur        |
-| `ATTENTE_8_JOUR`         | Validée à 2 mois, en attente 8 jours | Saisie déclaration à 8 jours           |
-| `TRANSMISE_8J`           | Déclaration à 8 jours transmise      | Instruction par les agents             |
-| `EN_COURS_8J`            | En instruction à 8 jours             | Validation, demande compléments, refus |
-| `A_MODIFIER_8J`          | Compléments demandés à 8 jours       | Modification par l'organisateur        |
-| `VALIDEE_8J`             | Validée définitivement               | Séjour autorisé                        |
-| `SEJOUR_EN_COURS`        | Séjour en cours                      | Suivi                                  |
-| `TERMINEE`               | Séjour terminé                       | Archive                                |
-| `REFUSEE` / `REFUSEE_8J` | Refusée                              | Fin de processus                       |
-| `ANNULEE`                | Annulée par l'organisateur           | Fin de processus                       |
+#### **Les statuts du processus**
+
+| Statut                   | Signification                        | Actions possibles                      | Rôles autorisés       |
+| ------------------------ | ------------------------------------ | -------------------------------------- | --------------------- |
+| `BROUILLON`              | Déclaration en cours de saisie       | Saisie, transmission                   | Organisateur          |
+| `TRANSMISE`              | Déclaration à 2 mois transmise       | Instruction par les agents             | Agent DDETS           |
+| `EN_COURS`               | En instruction à 2 mois              | Validation, demande compléments, refus | Agent DDETS           |
+| `A_MODIFIER`             | Compléments demandés à 2 mois        | Modification par l'organisateur        | Organisateur          |
+| `ATTENTE_8_JOUR`         | Validée à 2 mois, en attente 8 jours | Saisie déclaration à 8 jours           | Organisateur          |
+| `TRANSMISE_8J`           | Déclaration à 8 jours transmise      | Instruction par les agents             | Agent DDETS           |
+| `EN_COURS_8J`            | En instruction à 8 jours             | Validation, demande compléments, refus | Agent DDETS           |
+| `A_MODIFIER_8J`          | Compléments demandés à 8 jours       | Modification par l'organisateur        | Organisateur          |
+| `VALIDEE_8J`             | Validée définitivement               | Séjour autorisé                        | Système (automatique) |
+| `SEJOUR_EN_COURS`        | Séjour en cours                      | Suivi                                  | Système (automatique) |
+| `TERMINEE`               | Séjour terminé                       | Archive                                | Système (automatique) |
+| `REFUSEE` / `REFUSEE_8J` | Refusée                              | Fin de processus                       | Agent DDETS           |
+| `ANNULEE`                | Annulée par l'organisateur           | Fin de processus                       | Organisateur          |
+| `ABANDONNEE`             | Abandonnée                           | Fin de processus                       | Organisateur          |
+
+```mermaid
+flowchart TD
+    %% États initiaux
+    A[BROUILLON] --> B[TRANSMISE]
+    A --> C[ANNULEE]
+    A --> D[ABANDONNEE]
+    
+    %% Déclaration à 2 mois
+    B --> E[EN_COURS]
+    E --> F[ATTENTE_8_JOUR]
+    E --> G[A_MODIFIER]
+    E --> H[REFUSEE]
+    
+    G --> B
+    
+    %% Déclaration à 8 jours
+    F --> I[TRANSMISE_8J]
+    I --> J[EN_COURS_8J]
+    J --> K[VALIDEE_8J]
+    J --> L[A_MODIFIER_8J]
+    J --> M[REFUSEE_8J]
+    
+    L --> I
+    
+    %% Fin de processus
+    K --> N[SEJOUR_EN_COURS]
+    N --> O[TERMINEE]
+    
+    %% Fins de traitement pour annulation et abandon
+    C --> P[Fin de traitement - Annulé]
+    D --> Q[Fin de traitement - Abandonné]
+    H --> R[Fin de traitement - Refusé 2 mois]
+    M --> S[Fin de traitement - Refusé 8 jours]
+    
+    %% Styles avec couleurs DSFR
+    style A fill:#f5f5f5
+    style B fill:#e8e8e8
+    style I fill:#e8e8e8
+    style E fill:#e8e8e8
+    style J fill:#e8e8e8
+    style F fill:#3a7d44
+    style K fill:#3a7d44
+    style G fill:#ff9c41
+    style L fill:#ff9c41
+    style H fill:#ce5a5a
+    style M fill:#ce5a5a
+    style C fill:#8b5a9b
+    style D fill:#8b5a9b
+    style N fill:#6a6af4
+    style O fill:#6a6af4
+    style P fill:#ce5a5a
+    style Q fill:#ce5a5a
+    style R fill:#ce5a5a
+    style S fill:#ce5a5a
+```
 
 ### **Règles métier importantes**
 
