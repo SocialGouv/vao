@@ -21,11 +21,13 @@ Lors de la création d'une déclaration de séjour, l'utilisateur accède à un 
 
 En accédant à cette étape, l'utilisateur doit renseigner les informations suivantes :
 
+
+
 <details>
 
 <summary>Formulaire déclaration de séjour – étape 1</summary>
 
-
+{% include "../../../.gitbook/includes/formulaire-declaration-de-sejour-etape-1.md" %}
 
 </details>
 
@@ -71,7 +73,7 @@ Tous les champs sont pré-remplis avec les données récupérées via l'API INSE
 
 </details>
 
-### Les représenant légaux
+### Les représentant légaux
 
 Un tableau liste les représentant légaux de l'organisme
 

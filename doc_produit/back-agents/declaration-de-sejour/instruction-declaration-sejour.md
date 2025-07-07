@@ -13,11 +13,7 @@ layout:
     visible: false
 ---
 
-# Instruction des déclarations de séjour
-
-L'instruction des déclarations de séjour est effectuée par les agents des DDETS (Directions Départementales de l'Emploi, du Travail et des Solidarités) via l'interface back office.
-
-## Instruction déclaration à 2 mois
+# Instruction déclaration à 2 mois
 
 Lorsqu'un OVA soumet une déclaration de séjour à 2 mois (statut "transmise"), l'agent de la DDETS reçois une notification par email pour l'informer.&#x20;
 
@@ -38,8 +34,8 @@ Une pop-up s'ouvre pour confirmer la prise en charge de la déclaration.&#x20;
 \
 Au clic sur le bouton "Valider la prise en charge" :&#x20;
 
-* L'agent est dirigé vers la page détaillé
-* Le statut de la déclaration passe en "En cours"
+* L'agent est dirigé vers la page détaillée
+* Le statut de la déclaration passe en `En cours`
 
 <details>
 
@@ -57,6 +53,8 @@ Dans cette étape d'instruction, l'agent peut :&#x20;
   * Refuser
   * Accepter
 
+***
+
 ### Demande de complément d'informations
 
 L'agent peut demander des compléments d'informations à l'organisateur pour valider la déclaration de séjour.
@@ -73,7 +71,7 @@ Pour cela, en cliquant sur le bouton "Demander des compléments à l'organisateu
 
 * Un champ unique de texte "Commentaires"
 * Il est obligatoire
-* Le bouton de validation n'apparait que si le champ texte est rempli d'à minima 5 catactères.&#x20;
+* Le bouton de validation n'apparait que si le champ texte est rempli d'à minima 5 caractères.&#x20;
 * Au clic sur le bouton "Valider" :&#x20;
   * La déclaration passe au statut `À modifier`
   * Les commentaires sont logués dans [l'historique de la déclaration](../../front-ova/declaration-de-sejour/page-detaillee-declaration.md#id-3.-historique-de-la-declaration)
@@ -128,13 +126,11 @@ Pour cela, en cliquant sur le bouton "Accepter", une pop-up s'ouvre avec un bout
 * Au clic sur le bouton "Enregistrer la déclaration" :&#x20;
   * La déclaration passe au statut `EN ATTENTE DECLARATION 8 JOURS`
   * La validation est loguée dans [l'historique de la déclaration](../../front-ova/declaration-de-sejour/page-detaillee-declaration.md#id-3.-historique-de-la-declaration)
-  * Une notification est envoyée à l'organisateur pour le notifier du refus de la validation de la déclaration de séjour
+  * Une notification est envoyée à l'organisateur pour le notifier de la validation de la déclaration de séjour
 
 {% include "../../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois.md" %}
 
 * L'OVA devra prendre la main sur la déclaration pour passer à l'étape suivante : l'envoie de la déclaration à 8J.&#x20;
 
-***
 
-## Instruction déclaration à 8 jours
 

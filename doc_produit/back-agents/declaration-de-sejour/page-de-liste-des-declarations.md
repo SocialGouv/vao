@@ -26,7 +26,7 @@ L'agent peut consulter la liste des déclarations avec les informations suivante
 * **Statut** : Statut actuel de la déclaration
 * **Date d'édition**
 
-Il peut également filtrer la liste&#x20;
+Il peut également filtrer la liste :&#x20;
 
 * **Par le numéro de déclaration**
 * **Par nom du séjour**
@@ -34,6 +34,6 @@ Il peut également filtrer la liste&#x20;
 * **Par statut**
 * **Par action à réaliser**
 
+**Colonne "Action"**
 
-
-En cliquant sur le bouton&#x20;
+* <i class="fa-greater-than">:greater-than:</i>  : permet d'accéder à la page détaillée de la déclaration

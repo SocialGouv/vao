@@ -22,9 +22,9 @@
   * [Modification de la fiche organisateur](front-ova/fiche-organisateur/modification-de-la-fiche-organisateur.md)
   * [Règles et gestions](front-ova/fiche-organisateur/regles-et-gestions.md)
 * [Déclaration de séjour](front-ova/declaration-de-sejour/README.md)
-  * [Workflow des déclarations](front-ova/declaration-de-sejour/workflow-declarations.md)
   * [Page de liste des déclarations](front-ova/declaration-de-sejour/page-liste-des-declarations.md)
   * [Page détaillée d'une déclaration](front-ova/declaration-de-sejour/page-detaillee-declaration.md)
+  * [Workflow des déclarations](front-ova/declaration-de-sejour/workflow-declarations.md)
   * [Déclaration à 2 mois](front-ova/declaration-de-sejour/declaration-a-2-mois/README.md)
     * [Étape 1 - Informations générales](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-1-informations-generales.md)
     * [Étape 2 - Informations sur les vacanciers](front-ova/declaration-de-sejour/declaration-a-2-mois/etape-2-informations-sur-les-vacanciers.md)
@@ -38,7 +38,8 @@
     * [Étape 1 - Informations générales](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-1-informations-generales.md)
     * [Étape 2 - Informations sur les vacanciers](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-2-informations-sur-les-vacanciers.md)
     * [Étape 3 - Informations sur le personnel](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-3-informations-sur-le-personnel.md)
-    * [Menu et étapes du formulaire](front-ova/declaration-de-sejour/declaration-a-8-jours/menu-etapes-formulaire.md)
+    * [Étape 4 - Sélection des hébergements](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-4-selection-des-hebergements.md)
+    * [Étape 5 - Synthèse](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-5-synthese.md)
   * [Modification d'une déclaration](front-ova/declaration-de-sejour/modification-dune-declaration.md)
 
 ***
@@ -52,7 +53,8 @@
   * [Droits utilisateur agent - création de compte](back-agents/creation-de-compte-agent/droits-utilisateur-agent-creation-de-compte.md)
 * [Déclaration de séjour](back-agents/declaration-de-sejour/README.md)
   * [Page de liste des déclarations](back-agents/declaration-de-sejour/page-de-liste-des-declarations.md)
-  * [Instruction des déclarations de séjour](back-agents/declaration-de-sejour/instruction-declaration-sejour.md)
+  * [Instruction déclaration à 2 mois](back-agents/declaration-de-sejour/instruction-declaration-sejour.md)
+  * [Instruction déclaration à 8 jours](back-agents/declaration-de-sejour/instruction-declaration-a-8-jours.md)
 
 ## MISC
 

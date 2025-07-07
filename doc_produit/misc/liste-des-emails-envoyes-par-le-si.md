@@ -1,3 +1,18 @@
+---
+layout:
+  width: default
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: false
+---
+
 # Liste des emails envoyés par le SI
 
 Plusieurs notifications par mails sont envoyées par la plateforme VAO.&#x20;
@@ -196,70 +211,9 @@ Ce courriel est un message automatique, merci de ne pas répondre.
 
 </details>
 
-<details>
+{% include "../.gitbook/includes/validation-de-la-declaration-de-sejour-8-jours.md" %}
 
-<summary>Validation de la déclaration de séjour - 8 jours</summary>
-
-* **Déclencheur :** L'utilisateur OVA qui a validé la déclaration de séjour à 8 jours
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Email de la DDEETS rattaché au lieu d'hébergement du séjour
-
-* **Object du mail** : Portail VAO - Déclaration à jours déposée : \[Numéro de DS]
-
-- **Contenu du mail** :&#x20;
-
-```
-PORTAIL VAO ADMINISTRATION - NOUVELLE DECLARATION DE SEJOUR
-
-Bonjour,
-
-La déclaration de séjour à 8 jours [Numéro de DS] vient d'être déposée sur le portail VAO.
-
-La DDETS du département [Numéro de département] est en charge de l'instruction de cette déclaration.
-
-[BOUTON] Accéder aux déclarations transmises
-
-Cordialement.
-L'équipe du SI VAO
-https://vao-preprod.ovh.fabrique.social.gouv.fr
-```
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 16.29.31.png" alt=""><figcaption></figcaption></figure>
-
-</details>
-
-<details>
-
-<summary>Validation de la déclaration de séjour -  8 jours - confirmation</summary>
-
-* **Déclencheur :** L'utilisateur OVA qui a validé la déclaration de séjour à 8 jours
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Lui-même
-
-* **Object du mail** : Portail VAO - "Transmission de la déclaration de séjour à 8 jours n°\[Numero de DS]
-
-- **Contenu du mail** :&#x20;
-
-```
-
-Portail VAO - Transmission de la déclaration de séjour à 8 jours
-
-Bonjour,
-
-Votre déclaration à 8 jours n°[numero de DS] a bien été transmise au(x) service(s) instructeur(s) le [Date du jour].
-
-[BOUTON] Accéder à ma déclaration
-
-Cordialement.
-L'équipe du SI VAO
-Portail VAO
-```
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 17.18.19.png" alt=""><figcaption></figcaption></figure>
-
-</details>
+{% include "../.gitbook/includes/validation-de-la-declaration-de-sejour-8-jours-confirmation.md" %}
 
 <details>
 
@@ -327,38 +281,7 @@ Portail VAO
 
 </details>
 
-<details>
-
-<summary>Validation et enregistrement de la déclartion de séjours </summary>
-
-* **Déclencheur :** L'agent en département valide une déclaration de séjour 8J
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : L'utilisateur OVA
-
-* **Object du mail** : Portail VAO - Enregistrement de la déclaration \[Numero de DS]
-
-- **Contenu du mail**&#x20;
-
-```
-Portail VAO - accusé de réception de déclaration complémentaire
-
-Bonjour,
-
-Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le [DATE DE LIVRANCE DE L'AGRÉMENT] et avez déposé en date du [DATE DU JOUR], une déclaration complémentaire pour le séjour « [Titre séjour] » que vous organisez du [DATE DEBUT] au [DATE FIN].
-
-Nous accusons ce jour, le [DATE DU JOUR], réception de votre déclaration [Numero de DS].
-
-[BOUTON - Accéder à ma déclaration]
-
-Cordialement.
-L'équipe du SI VAO
-Portail VAO
-```
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 17.45.11.png" alt=""><figcaption></figcaption></figure>
-
-</details>
+{% include "../.gitbook/includes/validation-et-enregistrement-de-la-declartion-de-sejours.md" %}
 
 
 

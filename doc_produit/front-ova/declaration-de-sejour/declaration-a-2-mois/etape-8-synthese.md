@@ -33,7 +33,7 @@ En accédant à cette étape, l'utilisateur peut consulter un récapitulatif com
 
 * L'attestation sur l'honneur est obligatoire pour finaliser le dépôt.
 * Tous les champs de l'attestation doivent être renseignés.
-* La date de l'attestation doit être la date du jour.
+* La date de l'attestation n'est pas éditable et affiche la date du jour
 * Le numéro de déclaration est généré automatiquement au format : DS-YY-DEPARTEMENT-NNNN.
 * La génération du CERFA de la déclaration en PDF ([disponible dans la page détaillée](../page-detaillee-declaration.md))
 * Après dépôt, la déclaration passe en statut "EN COURS".

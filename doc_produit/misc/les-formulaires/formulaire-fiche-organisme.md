@@ -1,46 +1,14 @@
 # Formulaire fiche organisme
 
-## Étape 1.0 - Renseignements généraux sur l’organisateur VAO
+## Étape 1 - Renseignements généraux sur l’organisateur VAO
 
-<details>
+{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.0-informations-generales.md" %}
 
-<summary>Formulaire fiche organisme - étape 1.0</summary>
+{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.1-organisateur-du-sejour.md" %}
 
-{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.md" %}
+{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.1-representant-legal.md" %}
 
-
-
-</details>
-
-***
-
-## Étape 1.1 - Renseignements généraux sur l’organisateur VAO
-
-<details>
-
-<summary>Formulaire fiche organisme - étape 1.1 - <strong>Organisateur du séjour</strong></summary>
-
-{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.1.md" %}
-
-
-
-</details>
-
-<details>
-
-<summary>Formulaire fiche organisme - étape 1.1 - <strong>Représentant légal</strong></summary>
-
-{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.2.md" %}
-
-</details>
-
-<details>
-
-<summary>Formulaire fiche organisme - étape 1.1 - <strong>Responsable de l'organisation du séjour</strong></summary>
-
-{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.3.md" %}
-
-</details>
+{% include "../../.gitbook/includes/formulaire-fiche-organisme-etape-1.1-responsable-de-lorganisation-du-sejour.md" %}
 
 ***
 

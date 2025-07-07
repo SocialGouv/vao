@@ -16,36 +16,13 @@ layout:
 
 # Déclaration de séjour
 
-{% hint style="info" %}
-Cette section détaille le parcours utilisateur, les étapes du formulaire, la gestion des statuts, des rôles et des droits, ainsi que les cas particuliers.
-{% endhint %}
-
 ## Vue d'ensemble
 
-Le processus de déclaration de séjour se déroule en **deux étapes distinctes** selon la réglementation :
+Le processus de déclaration de séjour se déroule en **deux étapes distinctes** selon la réglementation :&#x20;
 
-{% columns %}
-{% column width="50%" %}
-### Déclaration à 2 mois
+<table data-view="cards"><thead><tr><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Déclaration à 2 mois</strong></td><td><a href="../../.gitbook/assets/photo-1749371930388-50c782b0acea.jpeg">photo-1749371930388-50c782b0acea.jpeg</a></td><td><a href="declaration-a-2-mois/">declaration-a-2-mois</a></td></tr><tr><td><strong>Déclaration à 8 jours</strong></td><td><a href="../../.gitbook/assets/photo-1748164685130-db6d3752d9e2.jpeg">photo-1748164685130-db6d3752d9e2.jpeg</a></td><td><a href="declaration-a-8-jours/">declaration-a-8-jours</a></td></tr></tbody></table>
 
-Déclarer l'intention d'organiser un séjour au moins 2 mois avant le début du séjour.
-
-1. [Étape 1 - Informations générales](declaration-a-2-mois/etape-1-informations-generales.md)
-2. [Étape 2 - Informations sur les vacanciers](declaration-a-2-mois/etape-2-informations-sur-les-vacanciers.md)
-3. [Étape 3 - Informations sur le personnel](declaration-a-2-mois/etape-3-informations-sur-le-personnel.md)
-{% endcolumn %}
-
-{% column %}
-### Déclaration à 8 jours
-
-Confirmer les informations définitives du séjour 8 jours avant le début.
-
-1. [Étape 1 - Informations générales](declaration-a-8-jours/etape-1-informations-generales.md)
-2. [Étape 2 - Informations sur les vacanciers](declaration-a-8-jours/etape-2-informations-sur-les-vacanciers.md)
-3. [Étape 3 - Informations sur le personnel](declaration-a-8-jours/etape-3-informations-sur-le-personnel.md)
-4. [Menu et étapes du formulaire](declaration-a-8-jours/menu-etapes-formulaire.md)
-{% endcolumn %}
-{% endcolumns %}
+***
 
 ## Processus et statuts
 
@@ -67,7 +44,7 @@ Confirmer les informations définitives du séjour 8 jours avant le début.
 4. **Instruction** : Les agents prennent en charge → statut `EN_COURS_8J`
 5. **Décision** : Validation finale, compléments ou refus
 
-### **Statuts du processus**
+### **Les statuts du processus**
 
 | Statut                   | Signification                        | Actions possibles                      |
 | ------------------------ | ------------------------------------ | -------------------------------------- |
@@ -92,5 +69,4 @@ Confirmer les informations définitives du séjour 8 jours avant le début.
 * **Modifications** : Possibilité de modifier les informations jusqu'à la transmission
 * **Notifications** : Emails automatiques à chaque étape du processus
 * **Documents** : Génération automatique de PDF (déclarations et accusés de réception)
-
-\[Capture - Tableau de bord des déclarations avec statuts]
+* **Logs** : chaque étape et chaque message sont enregistrés dans [l'historique de la déclaration](page-detaillee-declaration.md#id-3.-historique-de-la-declaration)
