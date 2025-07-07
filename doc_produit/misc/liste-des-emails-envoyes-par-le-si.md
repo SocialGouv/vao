@@ -1,4 +1,5 @@
 ---
+icon: envelope-open-text
 layout:
   width: default
   title:

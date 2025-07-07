@@ -62,4 +62,3 @@
   * [Formulaire hébergement](misc/les-formulaires/formulaire-hebergement.md)
   * [Formulaire déclaration de séjour](misc/les-formulaires/formulaire-declaration-de-sejour.md)
 * [Liste des emails envoyés par le SI](misc/liste-des-emails-envoyes-par-le-si.md)
-* [Les statuts des déclarations de séjours](misc/les-statuts-des-declarations-de-sejours.md)
