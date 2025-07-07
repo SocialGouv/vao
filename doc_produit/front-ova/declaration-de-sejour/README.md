@@ -16,18 +16,25 @@ layout:
 
 # Déclaration de séjour
 
-## Vue d'ensemble
-
 Le processus de déclaration de séjour se déroule en **deux étapes distinctes** selon la réglementation :&#x20;
 
-<table data-view="cards"><thead><tr><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Déclaration à 2 mois</strong></td><td><a href="../../.gitbook/assets/photo-1749371930388-50c782b0acea.jpeg">photo-1749371930388-50c782b0acea.jpeg</a></td><td><a href="declaration-a-2-mois/">declaration-a-2-mois</a></td></tr><tr><td><strong>Déclaration à 8 jours</strong></td><td><a href="../../.gitbook/assets/photo-1748164685130-db6d3752d9e2.jpeg">photo-1748164685130-db6d3752d9e2.jpeg</a></td><td><a href="declaration-a-8-jours/">declaration-a-8-jours</a></td></tr></tbody></table>
+<table data-view="cards"><thead><tr><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Déclaration à 2 mois</strong></td><td><a href="broken-reference">Broken link</a></td><td><a href="declaration-a-2-mois/">declaration-a-2-mois</a></td></tr><tr><td><strong>Déclaration à 8 jours</strong></td><td><a href="broken-reference">Broken link</a></td><td><a href="declaration-a-8-jours/">declaration-a-8-jours</a></td></tr></tbody></table>
 
 ***
 
+## **Règles métier importantes**
+
+* **Obligation** : Toute déclaration à 2 mois doit être validée pour permettre la déclaration à 8 jours
+* **Délais** : Respect strict des délais (2 mois et 8 jours avant le séjour)
+* **Modifications** : Possibilité de modifier les informations jusqu'à la transmission
+* **Notifications** : Emails automatiques à chaque étape du processus
+* **Documents** : Génération automatique de PDF (déclarations et accusés de réception)
+* **Logs** : chaque étape et chaque message sont enregistrés dans [l'historique de la déclaration](page-detaillee-declaration.md#id-3.-historique-de-la-declaration)
+
 ## Processus et statuts
 
-### **Workflow général**
-
+{% tabs fullWidth="false" %}
+{% tab title="Workflow général" %}
 ```mermaid
 flowchart TD
     %% Déclaration à 2 mois
@@ -102,10 +109,10 @@ flowchart TD
     style C fill:#f5f5f5
 ```
 
-### **Les statuts du processus**
 
-#### **Les statuts du processus**
+{% endtab %}
 
+{% tab title="Statuts" %}
 | Statut                   | Signification                        | Actions possibles                      | Rôles autorisés       |
 | ------------------------ | ------------------------------------ | -------------------------------------- | --------------------- |
 | `BROUILLON`              | Déclaration en cours de saisie       | Saisie, transmission                   | Organisateur          |
@@ -179,11 +186,6 @@ flowchart TD
     style S fill:#ce5a5a
 ```
 
-### **Règles métier importantes**
 
-* **Obligation** : Toute déclaration à 2 mois doit être validée pour permettre la déclaration à 8 jours
-* **Délais** : Respect strict des délais (2 mois et 8 jours avant le séjour)
-* **Modifications** : Possibilité de modifier les informations jusqu'à la transmission
-* **Notifications** : Emails automatiques à chaque étape du processus
-* **Documents** : Génération automatique de PDF (déclarations et accusés de réception)
-* **Logs** : chaque étape et chaque message sont enregistrés dans [l'historique de la déclaration](page-detaillee-declaration.md#id-3.-historique-de-la-declaration)
+{% endtab %}
+{% endtabs %}
