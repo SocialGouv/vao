@@ -40,6 +40,12 @@
     * [Étape 4 - Sélection des hébergements](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-4-selection-des-hebergements.md)
     * [Étape 5 - Synthèse](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-5-synthese.md)
   * [Modification d'une déclaration](front-ova/declaration-de-sejour/modification-dune-declaration.md)
+* [EIG](front-ova/eig/README.md)
+  * [Liste des EIG](front-ova/eig/liste-des-eig.md)
+  * [Création d'un EIG](front-ova/eig/creation-dun-eig.md)
+  * [Consultation d'un EIG](front-ova/eig/consultation-dun-eig.md)
+  * [Types d'événements](front-ova/eig/types-devenements.md)
+  * [Workflow et statuts](front-ova/eig/workflow-et-statuts.md)
 
 ***
 
