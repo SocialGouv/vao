@@ -9,6 +9,7 @@ export const useMenuNavItems = () => {
     }
 
     const serviceCompetent = userStore.user?.serviceCompetent ?? [];
+    const territoireCode = userStore.user?.territoireCode;
     const validationOva =
       serviceCompetent === "REG"
         ? [
@@ -108,6 +109,14 @@ export const useMenuNavItems = () => {
             {
               text: `EIG (${eigStore.totalNonLus})`,
               to: "/eig",
+            },
+          ]
+        : []),
+      ...(territoireCode && territoireCode === "FRA"
+        ? [
+            {
+              text: "Indicateurs",
+              to: "/metabase",
             },
           ]
         : []),

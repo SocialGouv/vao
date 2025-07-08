@@ -11,3 +11,4 @@ module.exports.hebergementController = require("./hebergement");
 module.exports.eigController = require("./eig");
 module.exports.messageController = require("./message");
 module.exports.territoireController = require("./territoire");
+module.exports.metabaseController = require("./metabase");
