@@ -83,6 +83,56 @@ Les agents sont les utilisateurs du back office qui gèrent les EIG et ont des p
 | **EIG par déclaration** | ✅ Via `/eig/admin/ds/:declarationId` | `boCheckRoleDS` + `checkPermissionBODeclarationSejour` |
 | **Notifications** | ✅ Réception automatique | Selon le territoire de l'agent |
 
+## Règles spécifiques aux organismes OVA
+
+### Attribution automatique des rôles EIG
+
+Le système attribue automatiquement les rôles EIG selon le type d'organisme :
+
+| Type d'organisme | Attribution automatique | Conditions |
+|------------------|----------------------|------------|
+| **Personne Physique** | ✅ `EIG_ECRITURE` | • Premier utilisateur de l'organisme<br>• Attribution lors de la création |
+| **Personne Morale - Siège Social** | ✅ `EIG_ECRITURE` | • Premier utilisateur de l'organisme<br>• `siegeSocial = true` |
+| **Personne Morale - Établissement Secondaire** | ❌ Pas d'attribution automatique | • `siegeSocial = false`<br>• `porteurAgrement = false` |
+
+### Règles pour les établissements secondaires
+
+Les établissements secondaires (non porteurs d'agrément) ont des règles spécifiques :
+
+| Aspect | Règle | Implémentation |
+|--------|-------|----------------|
+| **Protocoles** | Héritage automatique | • `protocoleTransport` et `protocoleSanitaire` hérités de l'établissement principal |
+| **Agrément** | Pas d'agrément propre | • `porteurAgrement = false`<br>• Référence à l'établissement principal |
+| **Rôles EIG** | Attribution manuelle | • Pas d'attribution automatique<br>• Nécessite une attribution manuelle par un utilisateur `EIG_ECRITURE` |
+
+### Contrôles d'accès par organisme
+
+| Type d'utilisateur | Accès aux EIG | Contrôle |
+|-------------------|----------------|----------|
+| **Utilisateur organisme principal** | ✅ EIG de son organisme uniquement | `getIsUserAllowedOrganisme` |
+| **Utilisateur établissement secondaire** | ✅ EIG de son établissement uniquement | Vérification via `user_organisme` |
+| **Utilisateur sans organisme** | ❌ Accès bloqué | Redirection vers création d'organisme |
+
+### Logique de vérification des organismes
+
+```javascript
+// Dans checkPermissionEIG.js
+const isAllowedOrganisme = await Eig.getIsUserAllowedOrganisme(userId, eigId);
+if (!isAllowedOrganisme) {
+  throw new AppError("Vous n'êtes pas autorisé à accéder à cet EIG pour cet organisme");
+}
+```
+
+### Héritage des protocoles
+
+```javascript
+// Dans post.js (création organisme)
+if (type === "personne_morale" && !parametre.porteurAgrement) {
+  await Organisme.update("protocole_transport", organismeAgree.protocoleTransport, organismeId);
+  await Organisme.update("protocole_sanitaire", organismeAgree.protocoleSanitaire, organismeId);
+}
+```
+
 * **Modification** : Uniquement possible si statut = `BROUILLON`
 * **Suppression** : Uniquement possible si statut = `BROUILLON`
 * **Dépôt** : Nécessite le rôle `EIG_ECRITURE`
