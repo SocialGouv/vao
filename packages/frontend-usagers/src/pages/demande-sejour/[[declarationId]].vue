@@ -715,9 +715,17 @@ async function finalize(attestation) {
     return await navigateTo("/demande-sejour/liste");
   } catch (error) {
     log.w("Finalisation de la declaration de sejour : ", { error });
+    const codeError = error?.data?.name;
+    const displayMessage =
+      codeError === "SaveDeclarationError"
+        ? "Une erreur est survenue à l'enregistement de la déclaration. L'enregistrement a échoué."
+        : codeError === "MailError"
+          ? "Une erreur est survenue à l'envoie de la notification par mail. La déclaration a bien été enregistrée."
+          : `Une erreur inconnue est survenue lors de la transmission de la déclaration de séjour`;
+
     return toaster.error({
       titleTag: "h2",
-      description: `Une erreur est survenue lors de la transmission de la déclaration de séjour`,
+      description: displayMessage,
     });
   } finally {
     resetApiStatut();
