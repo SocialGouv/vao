@@ -41,11 +41,14 @@
     * [Étape 5 - Synthèse](front-ova/declaration-de-sejour/declaration-a-8-jours/etape-5-synthese.md)
   * [Modification d'une déclaration](front-ova/declaration-de-sejour/modification-dune-declaration.md)
 * [EIG](front-ova/eig/README.md)
-  * [Liste des EIG](front-ova/eig/liste-des-eig.md)
-  * [Création d'un EIG](front-ova/eig/creation-dun-eig.md)
+  * [Page de liste des EIG](front-ova/eig/liste-des-eig.md)
+  * [Création d'un EIG](front-ova/eig/creation-dun-eig/README.md)
+    * [Étape 1 - Sélection du séjour](front-ova/eig/creation-dun-eig/etape-1-selection-du-sejour.md)
+    * [Étape 2 - Type d'événement](front-ova/eig/creation-dun-eig/etape-2-type-devenement.md)
+    * [Étape 3 - Renseignements généraux](front-ova/eig/creation-dun-eig/etape-3-renseignements-generaux.md)
+    * [Étape 4 - Récapitulatif](front-ova/eig/creation-dun-eig/etape-4-recapitulatif.md)
   * [Consultation d'un EIG](front-ova/eig/consultation-dun-eig.md)
-  * [Types d'événements](front-ova/eig/types-devenements.md)
-  * [Workflow et statuts](front-ova/eig/workflow-et-statuts.md)
+  * [Rôle et droits utilisateurs](front-ova/eig/role-et-droits-utilisateurs.md)
 
 ***
 
@@ -60,6 +63,7 @@
   * [Page de liste des déclarations](back-agents/declaration-de-sejour/page-de-liste-des-declarations.md)
   * [Instruction déclaration à 2 mois](back-agents/declaration-de-sejour/instruction-declaration-sejour.md)
   * [Instruction déclaration à 8 jours](back-agents/declaration-de-sejour/instruction-declaration-a-8-jours.md)
+* [EIG](back-agents/eig.md)
 
 ## MISC
 
@@ -67,4 +71,5 @@
   * [Formulaire fiche organisme](misc/les-formulaires/formulaire-fiche-organisme.md)
   * [Formulaire hébergement](misc/les-formulaires/formulaire-hebergement.md)
   * [Formulaire déclaration de séjour](misc/les-formulaires/formulaire-declaration-de-sejour.md)
+  * [Formulaire EIG](misc/les-formulaires/formulaire-eig.md)
 * [Liste des emails envoyés par le SI](misc/liste-des-emails-envoyes-par-le-si.md)

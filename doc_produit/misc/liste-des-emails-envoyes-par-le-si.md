@@ -286,5 +286,10 @@ Portail VAO
 
 
 
+## EIG
 
+{% include "../.gitbook/includes/agent-region-declaration-dun-evenement-indesirable.md" %}
 
+{% include "../.gitbook/includes/agent-departement-declaration-dun-evenement-indesirable.md" %}
+
+{% include "../.gitbook/includes/ova-declaration-dun-evenement-indesirable.md" %}
