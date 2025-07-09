@@ -1,8 +1,8 @@
-import { computed } from "vue";
+import { computed, unref } from "vue";
 
 /**
  * @param {Object} options
- * @param {boolean} options.isConnected
+ * @param {import('vue').Ref<boolean>|boolean} options.isConnected
  * @param {Function} options.logout
  * @param {string} options.accountPath - chemin vers la page mon compte
  * @returns {import('vue').ComputedRef<Array>}
@@ -21,7 +21,7 @@ export function useQuickLinks({
       target: "_blank",
       rel: "noopener noreferrer",
     },
-    ...(isConnected
+    ...(unref(isConnected)
       ? [
           {
             label: "Mon compte",
@@ -31,7 +31,7 @@ export function useQuickLinks({
           },
         ]
       : []),
-    ...(isConnected
+    ...(unref(isConnected)
       ? [
           {
             label: "Se déconnecter",

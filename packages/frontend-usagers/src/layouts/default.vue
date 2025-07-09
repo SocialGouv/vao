@@ -1,19 +1,24 @@
 <script setup>
+import { computed } from "vue";
 import { Header, Footer, useLogout, useQuickLinks } from "@vao/shared";
 
 const userStore = useUserStore();
 
 const config = useRuntimeConfig();
 
+const isConnected = computed(() => userStore.isConnected);
+
+const user = computed(() => userStore.user);
+
 const { logout } = useLogout({
   apiUrl: "/authentication/disconnect",
   getUserId: (user) => user?.id,
-  user: userStore.user,
+  user,
   resetUserStore: () => userStore.$reset(),
 });
 
 const quickLinks = useQuickLinks({
-  isConnected: userStore.isConnected,
+  isConnected,
   logout,
   accountPath: "/mon-compte",
 });
@@ -55,6 +60,8 @@ const navItems = useMenuNavItems();
       :home-to="homeTo"
       :quick-links="quickLinks"
       :nav-items="navItems"
+      service-title="Vacances Adaptées Organisées"
+      service-description="La plateforme de déclaration et suivi des séjours organisés pour les personnes handicapées"
     ></Header>
 
     <main id="content" role="main">

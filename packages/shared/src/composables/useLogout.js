@@ -1,4 +1,5 @@
 import { logger, $fetchBackend, navigateTo } from "#imports";
+import { unref } from "vue";
 
 /**
  * @param {Object} options
@@ -11,7 +12,7 @@ export function useLogout({ apiUrl, getUserId, user, resetUserStore }) {
   const log = logger("logout");
 
   async function logout() {
-    const userId = getUserId(user);
+    const userId = getUserId(unref(user));
     if (!userId)
       throw new Error("Impossible de déconnecter: aucun utilisateur trouvé.");
     log.i("logout - IN");
