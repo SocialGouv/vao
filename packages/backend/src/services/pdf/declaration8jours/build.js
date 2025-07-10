@@ -6,6 +6,8 @@ const parts = require("../parts");
 
 const log = logger(module.filename);
 
+const typeCerfaDS8J = "CERFA_12672_03";
+
 const fonts = {
   Marianne: {
     bold: path.join(__dirname, "../../../fonts/Marianne-Bold.woff"),
@@ -22,12 +24,12 @@ const build = async (declaration = {}, departementSuivi, dateDeposeA2mois) => {
 
   const docDefinition = {
     content: [
-      parts.Header(),
+      parts.Header(typeCerfaDS8J),
       parts.Titre(declaration, departementSuivi, "8jours", dateDeposeA2mois),
       parts.InformationsGenerales(declaration, "8jours"),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(typeCerfaDS8J)],
       },
       parts.InformationsVacanciers(
         declaration.informationsVacanciers,
@@ -37,7 +39,7 @@ const build = async (declaration = {}, departementSuivi, dateDeposeA2mois) => {
       ...(await parts.FicheAnnexe(declaration.hebergement)),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(typeCerfaDS8J)],
       },
       parts.Attestation(declaration.attestation),
     ],

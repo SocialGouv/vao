@@ -3,6 +3,7 @@ const axios = require("axios");
 const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
+const config = require("../../config");
 
 module.exports = {
   fetch: async function fetch(req, res) {
@@ -11,7 +12,7 @@ module.exports = {
     const queryString = encodeURI(req.body.queryString);
     log.d(queryString);
     try {
-      const url = `https://api-adresse.data.gouv.fr/search/?q=${queryString}`;
+      const url = `${config.apiAdresse.url}/search/?q=${queryString}`;
       axios
         .get(url)
         .then((response) => {
