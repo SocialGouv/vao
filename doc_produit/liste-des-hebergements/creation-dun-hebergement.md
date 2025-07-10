@@ -1,3 +1,18 @@
+---
+layout:
+  width: default
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: false
+---
+
 # Création d'un hébergement
 
 Il est possible de créer un hébergement de manière indépendante et ensuite de le rattacher à une déclaration de séjour lors de sa édition.&#x20;
