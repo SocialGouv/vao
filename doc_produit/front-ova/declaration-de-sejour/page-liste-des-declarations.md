@@ -34,7 +34,7 @@ La page affiche un tableau avec les informations suivantes pour chaque déclarat
 * **Actions** : Boutons d'actions disponibles
   * <i class="fa-greater-than">:greater-than:</i>  : permet d'accéder à la page détaillée de la déclaration
   * <i class="fa-x">:x:</i> : permet d'annuler une déclaration. Impossible de revenir dessus une fois annulée
-  * <i class="fa-clone">:clone:</i> : permet de dupliquer une déclaration (si le statut l'autorise)
+  * <i class="fa-clone">:clone:</i> : permet de dupliquer une déclaration (si le statut l'autorise : `BROUILLON`, `TRANSMISE`, `EN_COURS`, `ANNULEE`, `ABANDONNEE`)
 
 <div align="left"><figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-06 à 14.43.02.png" alt="" width="166"><figcaption></figcaption></figure></div>
 
