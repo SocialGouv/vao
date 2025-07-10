@@ -31,56 +31,11 @@ de tout accident grave ainsi que de toute situation présentant ou ayant présen
 
 
 
-## Workflow des EIG
-
-```mermaid
-flowchart TD
-    A[Organisateur] --> B[Création EIG]
-    B --> C[BROUILLON]
-    C --> D[Sélection séjour éligible]
-    D --> E[Types d'événements]
-    E --> F[Renseignements généraux]
-    F --> G[Récapitulatif]
-    G --> H[Transmission EIG]
-    H --> I[ENVOYE]
-    
-    I --> J[DDETS du département]
-    I --> K[DREETS de la région]
-    
-    J --> L[Marquage comme lu]
-    K --> M[Marquage comme lu]
-    
-    L --> N[LU]
-    M --> O[LU]
-    
-    N --> P[Email notification à l'organisme]
-    O --> Q[Email notification à l'organisme]
-```
-
-## Statuts des EIG
-
-```mermaid
-stateDiagram-v2
-    [*] --> BROUILLON: Création
-    BROUILLON --> ENVOYE: Transmission
-    ENVOYE --> LU: Marquage comme lu par DDETS/DREETS
-    LU --> [*]: Traitement terminé
-    
-    note right of BROUILLON
-        EIG en cours de saisie
-        Modifiable par l'organisme
-    end note
-    
-    note right of ENVOYE
-        EIG transmis aux autorités
-        Plus modifiable
-        En attente de lecture
-    end note
-    
-    note right of LU
-        EIG lu par les autorités
-        Email de notification envoyé
-        Traitement terminé
-    end note
-```
-
+* [Page de liste des EIGS](liste-des-eig.md)
+* [Création d'un EIG](creation-dun-eig/)
+  * [Étape 1 - Sélection du séjour](creation-dun-eig/etape-1-selection-du-sejour.md)
+  * [Étape 2 - Type d'événement](creation-dun-eig/etape-2-type-devenement.md)
+  * [Étape 3 - Renseignement généraux](creation-dun-eig/etape-3-renseignements-generaux.md)
+  * [Étape 4 - Récapitulatif](creation-dun-eig/etape-4-recapitulatif.md)
+* [Consultation d'un EIG](consultation-dun-eig.md)
+* [Rôle et droits](role-et-droits-utilisateurs.md)

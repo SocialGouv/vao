@@ -56,42 +56,13 @@ Les agents sont les utilisateurs du back office qui gèrent les EIG et ont des p
 | **Agent avec rôle `eig`** | ✅ Accès complet | <p>• Consulter tous les EIG (tous organismes)<br>• Marquer un EIG comme lu (DDETS/DREETS)<br>• Accéder aux EIG par déclaration de séjour<br>• Voir les notifications et emails</p> |
 | **Agent sans rôle `eig`** | ❌ Accès bloqué  | • Aucun accès aux fonctionnalités EIG                                                                                                                                              |
 
-#### Permissions spécifiques des agents
-
-| Fonctionnalité          | Agent avec rôle `eig`                | Contrôle                                               |
-| ----------------------- | ------------------------------------ | ------------------------------------------------------ |
-| **Liste des EIG**       | ✅ Accès à tous les EIG               | `boCheckRoleEig`                                       |
-| **Consultation EIG**    | ✅ Accès détaillé                     | `checkPermissionBOEIG`                                 |
-| **Marquer comme lu**    | ✅ DDETS et DREETS                    | Vérification du territoire                             |
-| **EIG par déclaration** | ✅ Via `/eig/admin/ds/:declarationId` | `boCheckRoleDS` + `checkPermissionBODeclarationSejour` |
-| **Notifications**       | ✅ Réception automatique              | Selon le territoire de l'agent                         |
-
-## Règles spécifiques aux organismes OVA
-
-### Attribution automatique des rôles EIG
-
-Le système attribue automatiquement les rôles EIG selon le type d'organisme :
-
-| Type d'organisme                               | Attribution automatique         | Conditions                                                                          |
-| ---------------------------------------------- | ------------------------------- | ----------------------------------------------------------------------------------- |
-| **Personne Physique**                          | ✅ `EIG_ECRITURE`                | <p>• Premier utilisateur de l'organisme<br>• Attribution lors de la création</p>    |
-| **Personne Morale - Siège Social**             | ✅ `EIG_ECRITURE`                | <p>• Premier utilisateur de l'organisme<br>• <code>siegeSocial = true</code></p>    |
-| **Personne Morale - Établissement Secondaire** | ❌ Pas d'attribution automatique | <p>• <code>siegeSocial = false</code><br>• <code>porteurAgrement = false</code></p> |
-
-### Règles pour les établissements secondaires
-
-Les établissements secondaires (non porteurs d'agrément) ont des règles spécifiques :
-
-| Aspect         | Règle                 | Implémentation                                                                                                              |
-| -------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| **Protocoles** | Héritage automatique  | • `protocoleTransport` et `protocoleSanitaire` hérités de l'établissement principal                                         |
-| **Agrément**   | Pas d'agrément propre | <p>• <code>porteurAgrement = false</code><br>• Référence à l'établissement principal</p>                                    |
-| **Rôles EIG**  | Attribution manuelle  | <p>• Pas d'attribution automatique<br>• Nécessite une attribution manuelle par un utilisateur <code>EIG_ECRITURE</code></p> |
-
 ### Contrôles d'accès par organisme
 
 | Type d'utilisateur                       | Accès aux EIG                                                                                                                    |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | **Utilisateur organisme principal**      | <p>Peut accéder </p><ul><li>aux EIG de son organisme</li><li>aux EIG des établissements secondaires liés au même SIREN</li></ul> |
-| **Utilisateur établissement secondaire** | <p>Peut accéder </p><ul><li>aux EIG de son établissement (SIRET)</li></ul>                                                       |
+| **Utilisateur établissement secondaire** | <p>Peut accéder </p><ul><li>aux EIG de son établissement (SIRET) si délégation effectuée par l'organisme principal</li></ul>     |
 
+Pour donner accès aux EIG pour les utilisateurs des établissement secondaire, l'établissement principal peut donner les droits individuellement dans la page des comptes utilisateurs :&#x20;
+
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-10 à 10.41.13.png" alt=""><figcaption></figcaption></figure>
