@@ -216,7 +216,7 @@ async function login() {
         displayType.value = "NeedSiretValidation";
         break;
       case "EmailUnauthorized":
-        displayType.value = "EmailUnauthorized";
+        displayType.value = "WrongCredentials";
         break;
       default:
         displayType.value = "UnexpectedError";

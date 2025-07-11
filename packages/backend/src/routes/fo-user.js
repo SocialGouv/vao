@@ -47,6 +47,11 @@ router.post(
   checkPermissionFOForUpdateStatusFo,
   FOUserController.updateStatus({ source: "FO" }),
 );
-
+router.post(
+  "/change-status/:userId",
+  checkJWT,
+  checkPermissionFOForUpdateStatusFo,
+  FOUserController.changeStatus,
+);
 
 module.exports = router;

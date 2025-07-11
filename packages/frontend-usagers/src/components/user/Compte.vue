@@ -13,7 +13,10 @@
           <DisplayInput :value="email" :input="displayInput.IUser['email']" />
           <DisplayInput :value="nom" :input="displayInput.IUser['nom']" />
           <DisplayInput :value="prenom" :input="displayInput.IUser['prenom']" />
-          <DisplayInput :value="statut" :input="displayInput.IUser['statut']" />
+          <DisplayInput
+            :value="statutLabel"
+            :input="displayInput.IUser['statutLabel']"
+          />
           <DisplayInput
             :value="telephone"
             :input="displayInput.IUser['telephone']"
@@ -43,6 +46,23 @@
             :inline="true"
             @update:model-value="onRoleEigChange"
           />
+          <div class="fr-fieldset__element">
+            <DsfrToggleSwitch
+              id="toggle-valide"
+              :key="modalOpenCounter"
+              :label="!isActive ? 'Activer le compte' : 'Désactiver le compte'"
+              :model-value="isActive"
+              aria-describedby="toggle-valide"
+              @update:model-value="openModal"
+            />
+            <p v-if="true" id="toggle-valide" class="fr-hint-text">
+              {{
+                statut === statusUser.status.BLOCKED
+                  ? "Compte désactivé"
+                  : "Compte actif"
+              }}
+            </p>
+          </div>
         </div>
         <div
           class="fr-fieldset__element fr-col-8 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
@@ -50,7 +70,7 @@
           <div>
             <div class="buttons-group">
               <DsfrButton
-                v-if="canUpdateRole"
+                v-if="canUpdate"
                 :disabled="!roleEigMeta.valid"
                 label="Enregistrer"
                 @click.prevent="update"
@@ -61,12 +81,24 @@
         </div>
       </div>
     </form>
+    <ValidationModal
+      modal-ref="modal-toggle-bo-user-actif"
+      name="modal-toggle-bo-user-actif"
+      :opened="popUpParams != null"
+      :title="isActive ? 'Désactivation du compte ?' : 'Activation du compte'"
+      :on-close="closeModal"
+      :on-validate="popUpParams?.cb ?? (() => {})"
+      validation-label="Confirmer"
+    >
+      <p>{{ popUpParams?.msg }}</p>
+      <p>Souhaitez vous poursuivre?</p>
+    </ValidationModal>
   </div>
 </template>
 
 <script setup>
 import { DsfrButton } from "@gouvminint/vue-dsfr";
-import { DisplayInput, statusUser } from "@vao/shared";
+import { DisplayInput, statusUser, ValidationModal } from "@vao/shared";
 import { defineProps } from "vue";
 import { useField, useForm } from "vee-validate";
 import FoUser from "~/utils/fo-user";
@@ -83,9 +115,11 @@ const log = logger("pages/comptes/");
 const usersStore = useUserStore();
 const toaster = useToaster();
 
-const canUpdateRole = computed(() =>
+const canUpdate = computed(() =>
   usersStore.user.roles.includes(rolesUtil.EIG_ECRITURE),
 );
+
+const canUpdateRole = computed(() => canUpdate && isActive.value);
 
 const roleOptions = [
   {
@@ -109,20 +143,25 @@ const getInitialRoleEig = (user) => {
   return user.roles.find((r) => Object.values(rolesUtil).includes(r));
 };
 
+const getStatutLabel = (statutCode) => {
+  return statusUser.label.find((item) => item.value === (statutCode ?? ""))
+    ?.text;
+};
+
 const initialValues = {
   email: props.user?.email ?? "",
   nom: props.user?.nom ?? "",
   prenom: props.user?.prenom ?? "",
   organisme: props.user?.siegeSocial ? "Principal" : "Secondaire",
-  statut: statusUser.label.find(
-    (item) => item.value === (props.user?.statut ?? ""),
-  )?.text,
+  statutLabel: getStatutLabel(props.user?.statut),
+  statut: props.user?.statut ?? "",
   roleEig: getInitialRoleEig(props.user),
   telephone: props.user?.telephone,
   lastConnectionAt: props.user?.lastConnectionAt ?? "",
   createdAt: props.user?.dateCreation ?? "",
-  isActive: !props.user?.deleted ?? true,
 };
+
+const isActive = ref(props.user?.statut !== statusUser.status.BLOCKED);
 
 const validationSchema = yup.object(FoUser.FoUserSchema);
 
@@ -135,6 +174,7 @@ useForm({
 const { value: email } = useField("email");
 const { value: nom } = useField("nom");
 const { value: prenom } = useField("prenom");
+const { value: statutLabel } = useField("statutLabel");
 const { value: statut } = useField("statut");
 const { value: organisme } = useField("organisme");
 const { value: telephone } = useField("telephone");
@@ -148,6 +188,12 @@ const {
 } = useField("roleEig");
 
 const displayInfos = {
+  LastUserOrgansimeError: {
+    title: "Dernier compte actif",
+    description:
+      "Ce compte est unique au sein de cet organisme. Il n’est pas possible de supprimer ce compte en l’état.",
+    type: "error",
+  },
   UpdateDoneWithSucces: {
     title: "Le compte a été mis à jour avec succès",
     description:
@@ -167,28 +213,68 @@ async function close() {
 }
 
 async function update() {
-  log.i("update - IN");
   try {
-    const response = usersStore.updateRole({
-      roles: roleEig.value,
-      userId: props.user.userId,
-    });
+    if (props.user.status !== statut.value) {
+      log.d("update : update statut");
+      const params = { status: statut.value };
+      await usersStore.changeUserStatus(props.user.userId, params);
+    }
+    if (statut.value === statusUser.status.VALIDATED) {
+      log.d("update : update roles");
+      await usersStore.updateRole({
+        roles: roleEig.value,
+        userId: props.user.userId,
+      });
+    }
     toaster.success({
       titleTag: "h2",
       title: displayInfos.UpdateDoneWithSucces.title,
       description: displayInfos.UpdateDoneWithSucces.description,
     });
     close();
-    log.d("update", { response });
   } catch (error) {
     log.d("update - error", { error });
-    toaster.error({
-      titleTag: "h2",
-      title: displayInfos.UnexpectedError.title,
-      description: displayInfos.UnexpectedError.description,
-    });
+    if (error?.data?.name === "LastUserOrganisme") {
+      toaster.error({
+        titleTag: "h2",
+        title: displayInfos.LastUserOrgansimeError.title,
+        description: displayInfos.LastUserOrgansimeError.description,
+      });
+    } else {
+      toaster.error({
+        titleTag: "h2",
+        title: displayInfos.UnexpectedError.title,
+        description: displayInfos.UnexpectedError.description,
+      });
+      throw error;
+    }
   }
 }
+
+const popUpParams = ref(null);
+const closeModal = () => (popUpParams.value = null);
+const modalOpenCounter = ref(0);
+
+const openModal = (p) => {
+  modalOpenCounter.value++;
+  popUpParams.value = {
+    cb: () => {
+      isActive.value = p;
+      statutLabel.value = p
+        ? getStatutLabel(statusUser.status.VALIDATED)
+        : getStatutLabel(statusUser.status.BLOCKED);
+
+      statut.value = p
+        ? statusUser.status.VALIDATED
+        : statusUser.status.BLOCKED;
+
+      closeModal();
+    },
+    msg: p
+      ? "Attention, vous vous apprêtez à réactiver ce compte. Voulez-vous confirmer cette action ?"
+      : "Attention, vous vous apprêtez à désactiver ce compte. Voulez-vous confirmer cette action ?",
+  };
+};
 </script>
 
 <style lang="scss" scoped>

@@ -38,9 +38,9 @@ const IUser = {
     label: "Date de dernière connexion",
     formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
   },
-  statut: {
+  statutLabel: {
     inputType: InputTypes.TO_FORMAT,
-    label: "Statut",
+    label: "StatutLabel",
     formatter: (value) => value,
   },
   organisme: {
