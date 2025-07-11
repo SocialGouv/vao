@@ -359,6 +359,7 @@ async function finalizeOrganisme() {
       titleTag: "h2",
       description: "Fiche organisateur finalisée",
     });
+    await organismeStore.setMyOrganisme();
     return await navigateTo("/");
   } catch (error) {
     log.w("Creation/modification d'organisateur : ", { error });
