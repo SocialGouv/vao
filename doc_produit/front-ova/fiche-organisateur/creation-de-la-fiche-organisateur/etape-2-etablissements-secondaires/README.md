@@ -27,7 +27,17 @@ Pour chaque établissement :
 * Commune
 * Bouton "Action" :  Autorisation à organiser des séjours
 
-Pour mettre à jour le tableau, un bouton est disponible pour récupérer des dernières données depuis l'API INSEE.&#x20;
+Pour mettre à jour le tableau, un bouton est disponible pour récupérer des dernières données depuis l'API entreprise.&#x20;
+
+En cas d'indisponibilité de l'API Entreprise, un message d'erreur s'affiche&#x20;
+
+<details>
+
+<summary>Capture : Erreur API entreprise</summary>
+
+<figure><img src="../../../../.gitbook/assets/Capture d’écran 2025-07-11 à 15.21.35.png" alt=""><figcaption></figcaption></figure>
+
+</details>
 
 {% hint style="info" %}
 **Info**

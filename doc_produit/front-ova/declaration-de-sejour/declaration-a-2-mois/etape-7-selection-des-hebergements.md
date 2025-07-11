@@ -17,6 +17,12 @@ layout:
 
 Lors de la création d'une déclaration de séjour à 2 mois, l'utilisateur accède à l'étape 7 du formulaire : la sélection des hébergements.
 
+{% hint style="info" %}
+**Cas particulier séjour itinérant :**&#x20;
+
+Un séjour itinérant est un séjour qui comporte à minima 2 ou plusieurs hébergement durant la durée du séjour. C'est **la DDEETS du premier lieu de séjour** qui est en charge d’instruire les DS M-2 et J-8.
+{% endhint %}
+
 <figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-05 à 16.46.47.png" alt=""><figcaption><p>Déclaration de séjour à 2 mois - Étape 7 - Sélection des hébergements</p></figcaption></figure>
 
 En accédant à cette étape, l'utilisateur doit sélectionner les hébergements qui seront utilisés pour le séjour. Il peut soit choisir parmi les hébergements existants de son organisme, soit créer un nouvel hébergement.

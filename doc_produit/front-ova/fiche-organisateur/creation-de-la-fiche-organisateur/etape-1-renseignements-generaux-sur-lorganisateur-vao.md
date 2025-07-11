@@ -39,6 +39,16 @@ Une fois les informations récupérées via l'API (un message d'alerte indique q
 * Représentant légaux
 * Responsable de l'organisation du séjour
 
+En cas d'indisponibilité de l'API Entreprise, un message d'erreur s'affiche&#x20;
+
+<details>
+
+<summary>Capture : Erreur API entreprise</summary>
+
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-11 à 15.21.35.png" alt=""><figcaption></figcaption></figure>
+
+</details>
+
 ***
 
 **Organisateur du séjour**

@@ -55,6 +55,12 @@ Dans cette étape d'instruction, l'agent peut :&#x20;
 
 ***
 
+{% hint style="info" %}
+**Cas particulier séjour itinérant :**&#x20;
+
+Un séjour itinérant est un séjour qui comporte à minima 2 ou plusieurs hébergement durant la durée du séjour. C'est **la DDEETS du premier lieu de séjour** qui est en charge d’instruire les DS M-2 et J-8.
+{% endhint %}
+
 ### Demande de complément d'informations
 
 L'agent peut demander des compléments d'informations à l'organisateur pour valider la déclaration de séjour.
