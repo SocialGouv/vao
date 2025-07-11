@@ -1,8 +1,36 @@
 # Scénario 1 - L'organisme n'existe pas sur la plateforme VAO
 
+## Workflow de création de compte
 
-
-<figure><img src="../../.gitbook/assets/création de compte.png" alt=""><figcaption></figcaption></figure>
+```mermaid
+flowchart TD
+    A[OVA remplit formulaire de création] --> B{Email déjà existant ?}
+    B -->|Oui| C[Email de notification envoyé à l'utilisateur existant]
+    B -->|Non| D[Email de confirmation envoyé à l'OVA]
+    
+    D --> E[OVA clique sur le lien de validation]
+    E --> F[Demande confirmée - Email de confirmation envoyé]
+    
+    F --> G[DREETS reçoit notification]
+    G --> H[DREETS accède à la liste des comptes à valider]
+    
+    H --> I{Validation DREETS}
+    I -->|Valider| J[Compte activé]
+    I -->|Refuser| K[Formulaire de refus avec motif obligatoire]
+    
+    J --> L[OVA reçoit email de confirmation d'inscription]
+    K --> M[Compte bloqué]
+    M --> N[OVA reçoit email de refus avec motif]
+    
+    C --> O[Fin du processus]
+    L --> O
+    N --> O
+    
+    style A fill:#e1f5fe
+    style G fill:#fff3e0
+    style J fill:#e8f5e8
+    style M fill:#ffebee
+```
 
 {% stepper %}
 {% step %}
