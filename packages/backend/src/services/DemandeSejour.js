@@ -1528,7 +1528,7 @@ module.exports.getById = async (declarationId, departements) => {
   const personneMorale = await PersonneMorale.getByOrganismeId(
     declaration.organismeId,
   );
-  const personnePhysique = PersonnePhysique.getByOrganismeId(
+  const personnePhysique = await PersonnePhysique.getByOrganismeId(
     declaration.organismeId,
   );
 
