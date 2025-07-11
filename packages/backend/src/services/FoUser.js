@@ -124,6 +124,17 @@ const query = {
     AND u.status_code = 'NEED_SIRET_VALIDATION'
     AND u.siret not in (SELECT opme.siret FROM front.opm_etablissements opme WHERE opme.siret = u.siret)
   `,
+  getIsLastUserOrganisme: `
+    SELECT COUNT(*)
+    FROM front.users u
+    INNER JOIN front.user_organisme uo ON uo.use_id = u.id
+    WHERE uo.org_id= (
+        SELECT org_id 
+        FROM front.user_organisme 
+        WHERE use_id = $1
+    )
+    AND u.status_code = 'VALIDATED';  
+  `,
   // uc : User connected  / uu : User recherché
   getIsUserSameOrganismeOtherUser: `
     SELECT 
@@ -145,7 +156,8 @@ const query = {
   `,
   getMailUserOrganismeId: `
     SELECT mail FROM front.users u
-    INNER JOIN front.user_organisme uo ON uo.org_id = $1 AND uo.use_id = u.id`,
+    INNER JOIN front.user_organisme uo ON uo.org_id = $1 AND uo.use_id = u.id
+    WHERE u.status_code = 'VALIDATED'`,
   getOne: `
         SELECT
       u.id AS "userId",
@@ -358,7 +370,11 @@ module.exports.getByToValidateByBo = async (terCode) => {
   log.i("getByToValidateByBo - DONE");
   return { total: rowCount, users: rows };
 };
-
+module.exports.getIsLastUserOrganisme = async (userId) => {
+  const response = await pool.query(query.getIsLastUserOrganisme, [userId]);
+  log.i("getIsLastUserOrganisme - DONE");
+  return response.rows[0].count <= 1;
+};
 module.exports.getIsUserSameOrganismeOtherUser = async (
   userIdConnected,
   userIdSearch,

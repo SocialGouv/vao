@@ -37,7 +37,10 @@
     <template #cell-custom:edit="{ row }">
       <div class="buttons-group">
         <DsfrButton
-          v-if="row.statut === statusUser.status.VALIDATED"
+          v-if="
+            row.statut === statusUser.status.VALIDATED ||
+            row.statut === statusUser.status.BLOCKED
+          "
           icon="ri:arrow-right-s-line"
           icon-only
           primary

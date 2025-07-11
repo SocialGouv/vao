@@ -24,7 +24,7 @@ const label = [
   },
   {
     value: status.BLOCKED,
-    text: "Compte bloqué",
+    text: "Désactivé",
   },
 ];
 

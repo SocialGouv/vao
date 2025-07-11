@@ -106,24 +106,31 @@ export const useUserStore = defineStore("user", {
         return response;
       } catch (error) {
         log.w("updateRole - Erreur", { error });
+        throw error;
       }
     },
-    async updateUserStatus(userId, params) {
-      log.i("updateUserStatut - IN");
+    async handleUserStatus(action, userId, params) {
+      log.i(`${action} - IN`);
       try {
-        const response = await $fetchBackend(
-          `/fo-user/update-status/${userId}`,
-          {
-            credentials: "include",
-            method: "POST",
-            params,
-          },
-        );
-        log.d("updateUserStatut - réponse", response);
-        log.i("updateUserStatut - DONE");
+        const response = await $fetchBackend(`/fo-user/${action}/${userId}`, {
+          credentials: "include",
+          method: "POST",
+          params,
+        });
+        log.d(`${action} - réponse`, response);
+        log.i(`${action} - DONE`);
       } catch (error) {
-        log.w("updateUserStatut - Erreur", { error });
+        log.w(`${action} - Erreur`, { error });
+        throw error;
       }
+    },
+
+    async updateUserStatus(userId, params) {
+      return this.handleUserStatus("update-status", userId, params);
+    },
+
+    async changeUserStatus(userId, params) {
+      return this.handleUserStatus("change-status", userId, params);
     },
   },
 });
