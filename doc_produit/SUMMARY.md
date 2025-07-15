@@ -73,3 +73,4 @@
   * [Formulaire déclaration de séjour](misc/les-formulaires/formulaire-declaration-de-sejour.md)
   * [Formulaire EIG](misc/les-formulaires/formulaire-eig.md)
 * [Liste des emails envoyés par le SI](misc/liste-des-emails-envoyes-par-le-si.md)
+* [API](misc/api.md)
