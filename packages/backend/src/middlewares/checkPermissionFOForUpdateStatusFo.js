@@ -41,7 +41,7 @@ async function checkPermissionFOForUpdateStatusFo(req, _res, next) {
         getByOrganisme(userId),
         getByOrganisme(userIdUpdated),
       ]);
-      if (idOrganismeUpdated !== idOrganismeConnected) {
+      if (!idOrganismeConnected || !idOrganismeUpdated || idOrganismeUpdated !== idOrganismeConnected) {
         return next(
           new AppError(
             "Vous n'êtes pas autorisé à modifier le status de cet utilisateur",
