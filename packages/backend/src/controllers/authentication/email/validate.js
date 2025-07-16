@@ -71,49 +71,62 @@ module.exports = async (req, res, next) => {
   }
   if (user.statusCode === status.NEED_SIRET_VALIDATION) {
     try {
-      const rechercheSiren = user.userSiret.substr(0, 9);
-      const organisme = await Organisme.getSiege(rechercheSiren);
-      if (!organisme) {
-        const territoire = await Territoire.readFicheIdByTerCode(
-          user.userTerritoire,
+      let mailUserOrganisme = null;
+      // On recherche l'organisme à partir du SIRET
+      const organismeSecondaire = await Organisme.getBySiret(user.userSiret);
+      if (organismeSecondaire) {
+        // Si l'organisme secondaire existe, on envoie un mail à l'organisme secondaire
+        mailUserOrganisme = await UserFo.getMailUserOrganismeId(
+          organismeSecondaire.organismeId,
         );
-        const fiche = await Territoire.readOne(territoire.id);
-        await Promise.all([
-          await Send(
-            MailUtils.usagers.newVaoAccount.sendWaitAccountValidationDREETS(
-              user.email,
-              fiche.service_mail,
-            ),
-          ),
-          await Send(
-            MailUtils.bo.newVaoAccount.sendDretsNewAccountValidation({
-              email: fiche.service_mail,
-              user,
-            }),
-          ),
-        ]);
-      } else {
-        const mailUserOrganismeSiege = await UserFo.getMailUserOrganismeId(
-          organisme.organismeId,
-        );
-        await Promise.all([
-          await Send(
-            MailUtils.usagers.newVaoAccount.sendWaitAccountValidationOrganisme(
-              user.email,
-            ),
-          ),
-          ...mailUserOrganismeSiege.map(
-            async ({ mail }) =>
-              await Send(
-                MailUtils.usagers.newVaoAccount.sendOrganismeNewAccountValidation(
-                  {
-                    email: mail,
-                    user,
-                  },
-                ),
+      }
+      if (!organismeSecondaire || Object.keys(mailUserOrganisme).length === 0) {
+        const rechercheSiren = user.userSiret.substr(0, 9);
+        const organisme = await Organisme.getSiege(rechercheSiren);
+        if (!organisme) {
+          const territoire = await Territoire.readFicheIdByTerCode(
+            user.userTerritoire,
+          );
+          const fiche = await Territoire.readOne(territoire.id);
+          await Promise.all([
+            await Send(
+              MailUtils.usagers.newVaoAccount.sendWaitAccountValidationDREETS(
+                user.email,
+                fiche.service_mail,
               ),
-          ),
-        ]);
+            ),
+            await Send(
+              MailUtils.bo.newVaoAccount.sendDretsNewAccountValidation({
+                email: fiche.service_mail,
+                user,
+              }),
+            ),
+          ]);
+        } else {
+          // Récupération de l'email de l'organisme siège
+          mailUserOrganisme = await UserFo.getMailUserOrganismeId(
+            organisme.organismeId,
+          );
+
+          await Promise.all([
+            await Send(
+              MailUtils.usagers.newVaoAccount.sendWaitAccountValidationOrganisme(
+                user.email,
+              ),
+            ),
+            ...mailUserOrganisme.map(
+              async ({ mail }) =>
+                await Send(
+                  MailUtils.usagers.newVaoAccount.sendOrganismeNewAccountValidation(
+                    {
+                      email: mail,
+                      user,
+                    },
+                  ),
+                ),
+            ),
+          ]);
+        }
       }
       return res.status(200).json({ status: status.NEED_SIRET_VALIDATION });
     } catch (error) {

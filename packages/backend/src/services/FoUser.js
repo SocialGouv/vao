@@ -105,6 +105,29 @@ const query = {
         WHERE u.id NOT IN (SELECT use_id FROM front.user_organisme uo WHERE uo.use_id = u.id)
         GROUP BY 1,2,3,4,5,6,7,8,9,10
       )
+        UNION
+      (
+        SELECT
+          u.id AS "userId",
+          u.mail AS email,
+          u.nom AS nom,
+          u.prenom AS prenom,
+          u.telephone AS telephone,
+          u.status_code AS statut,
+          u.created_at AS "dateCreation",
+          u.lastconnection_at as "lastConnectionAt",
+          CASE 
+            WHEN pm.siret = u.siret THEN pm.siege_social 
+            ELSE false
+          END AS "siegeSocial",
+          COALESCE(CONCAT(etab.adresse,' ',etab.code_postal,' ',etab.commune), pm.adresse) AS "Adresse"
+        FROM front.users AS u
+          LEFT JOIN front.personne_morale pm ON pm.siege_social = false AND pm.siret = u.siret AND pm.organisme_id = ANY ($1)
+          LEFT JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm.id
+          INNER JOIN front.organismes AS o ON o.id = pm.organisme_id
+        WHERE u.id NOT IN (SELECT use_id FROM front.user_organisme uo WHERE uo.use_id = u.id)
+        GROUP BY 1,2,3,4,5,6,7,8,9,10
+      )
     ) AS Resultat
     WHERE 1 = 1
     `,
@@ -136,6 +159,9 @@ const query = {
     AND u.status_code = 'VALIDATED';  
   `,
   // uc : User connected  / uu : User recherché
+  // On vérifier que l'organisme de l'utilisateur connecté est le même que celui de l'utilisateur recherché
+  // l'utilisateur connecté doit être un utilisateur de l'organisme principal
+  // l'utilisateur recherché doit être un utilisateur de l'organisme principal ou un utilisateur de l'organisme secondaire
   getIsUserSameOrganismeOtherUser: `
     SELECT 
       SUM(total_count) AS count

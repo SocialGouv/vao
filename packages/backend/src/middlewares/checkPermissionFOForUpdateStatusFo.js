@@ -6,6 +6,7 @@ const {
 } = require("../services/FoUser");
 
 const { status } = require("../helpers/users");
+const getByOrganisme = require("../controllers/fo-user/getByOrganisme");
 
 const log = logger(module.filename);
 
@@ -29,16 +30,32 @@ async function checkPermissionFOForUpdateStatusFo(req, _res, next) {
     );
   }
   try {
+    // Cas d'un utilisateur qui est l'organisme principal
     const isAllowedOrganismeUser = await getIsUserSameOrganismeOtherUser(
       userId,
       userIdUpdated,
     );
+    if (!isAllowedOrganismeUser) {
+      // Cas d'un utilisateur qui est l'organisme secondaire
+      const [idOrganismeConnected, idOrganismeUpdated] = await Promise.all([
+        getByOrganisme(userId),
+        getByOrganisme(userIdUpdated),
+      ]);
+      if (idOrganismeUpdated !== idOrganismeConnected) {
+        return next(
+          new AppError(
+            "Vous n'êtes pas autorisé à modifier le status de cet utilisateur",
+            { statusCode: 403 },
+          ),
+        );
+      }
+    }
     const user = await readOne(userId);
     // On vérifie que l'utilisateur qui valide est bien un utilisateur lui même validé.
-    if (!isAllowedOrganismeUser && user.status !== status.VALIDATED) {
+    if (user.statut !== status.VALIDATED) {
       return next(
         new AppError(
-          "Vous n'êtes pas autorisé accéder à l'utilisateur de cet organisme",
+          "Vous n'êtes pas autorisé à accéder à l'utilisateur de cet organisme",
           { statusCode: 403 },
         ),
       );
