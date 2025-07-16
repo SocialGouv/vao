@@ -29,6 +29,7 @@ import RefusCompteModal from "./users/RefusCompteModal.vue";
 import Header from "./Header.vue";
 import Footer from "./Footer.vue";
 import ErrorPage from "./ErrorPage.vue";
+import Skiplinks from "./Skiplinks.vue";
 export {
   ApiUnavailable,
   FileUpload,
@@ -61,4 +62,5 @@ export {
   Header,
   Footer,
   ErrorPage,
+  Skiplinks,
 };
