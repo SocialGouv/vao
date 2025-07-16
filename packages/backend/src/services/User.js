@@ -4,10 +4,11 @@ const { sentry } = require("../config");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
 const normalize = require("../utils/normalize");
-
 const AppError = require("../utils/error");
 const { status } = require("../helpers/users");
 const { addHistoric } = require("./Tracking");
+const CommonUser = require("./common/Users");
+const { schema } = require("../helpers/schema");
 
 const { entities, userTypes } = require("../helpers/tracking");
 
@@ -75,31 +76,31 @@ const query = {
     [userId, statusCode],
   ],
   login: `
-  SELECT
-    us.id,
-    us.mail as email,
-    us.pwd is not null as "hasPwd",
-    us.nom,
-    us.prenom,
-    us.telephone,
-    us.status_code as "statusCode",
-    pm.siret as "siret",
-    pm.raison_sociale as "raisonSociale"
-  FROM front.users us
-  LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
-  LEFT JOIN front.organismes o ON uo.org_id = o.id
-  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
-  WHERE
-    mail = $1
-    AND pwd = crypt($2, CASE
-      WHEN pwd = ''
-      THEN
-        gen_salt('bf')
-      ELSE
-        pwd
-      END
-    )
-    AND deleted is False
+    SELECT
+      us.id,
+      us.mail as email,
+      us.pwd is not null as "hasPwd",
+      us.nom,
+      us.prenom,
+      us.telephone,
+      us.status_code as "statusCode",
+      pm.siret as "siret",
+      pm.raison_sociale as "raisonSociale"
+    FROM front.users us
+    LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
+    LEFT JOIN front.organismes o ON uo.org_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    WHERE
+      mail = $1
+      AND pwd = crypt($2, CASE
+        WHEN pwd = ''
+        THEN
+          gen_salt('bf')
+        ELSE
+          pwd
+        END
+      )
+      AND deleted is False
   `,
   select: (criterias) => [
     `
@@ -141,32 +142,14 @@ const query = {
       id = $1
   `,
   updateUser: `
-    WITH updated_user AS (
-      UPDATE front.users
-      SET
-        nom = $2,
-        prenom = $3,
-        edited_at = NOW()
-      WHERE
-        id = $1
-      RETURNING id
-    )
-    SELECT
-      us.id as "id",
-      us.mail as email,
-      us.pwd IS NOT NULL as "hasPwd",
-      us.nom as "nom",
-      us.prenom as "prenom",
-      us.telephone as "telephone",
-      us.created_at as "createdAt",
-      us.status_code as "statusCode",
-      pm.siret as "siret",
-      pm.raison_sociale as "raisonSociale"
-    FROM front.users us
-    INNER JOIN updated_user uu ON us.id = uu.id
-    INNER JOIN front.user_organisme uo ON us.id = uo.use_id
-    INNER JOIN front.organismes o ON uo.org_id = o.id;
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    UPDATE front.users
+    SET
+      nom = $2,
+      prenom = $3,
+      edited_at = NOW()
+    WHERE
+      id = $1
+    RETURNING id
   `,
 };
 
@@ -218,6 +201,7 @@ module.exports.editPassword = async ({ email, password }) => {
   const responseWithUpdate = await pool.query(
     ...query.select({ mail: normalize(email) }),
   );
+  CommonUser.recordLoginAttempt(normalize(email), schema.FRONT);
   const [userUpdated] = responseWithUpdate.rows;
   log.i("editPassword - DONE", { user: userUpdated });
   return userUpdated;
@@ -280,13 +264,16 @@ module.exports.login = async ({ email, password }) => {
   if (user.rows.length === 0) {
     return null;
   }
+  CommonUser.resetLoginAttempt(normalize(email), schema.FRONT);
   pool.query(query.updateLastConnection, [user.rows[0].id]);
   log.i("read - DONE", { user: user.rows[0] });
   return user.rows[0];
 };
 
 module.exports.updateUser = async ({ id, nom, prenom }) => {
+  log.i("updateUser - IN", { id, nom, prenom });
   const response = await pool.query(query.updateUser, [id, nom, prenom]);
+  log.i("updateUser - DONE");
   return response.rows[0];
 };
 

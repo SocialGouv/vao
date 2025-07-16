@@ -3,6 +3,10 @@
     <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
+          <ApiUnavailable
+            :api-unavailable-types="props.unavailableApi"
+            :display-types="[apiTypes.INSEE]"
+          ></ApiUnavailable>
           <DsfrInputGroup
             name="siret"
             label="Numéro SIRET du titulaire de l’agrément VAO"
@@ -25,6 +29,11 @@
         v-if="props.modifiable && !organismeStore.organismeCourant?.complet"
         class="fr-fieldset__element"
       >
+        <ApiUnavailable
+          :api-unavailable-types="props.unavailableApi"
+          :display-types="[apiTypes.ADRESSE]"
+        ></ApiUnavailable>
+
         <div class="fr-input-group fr-col-8">
           <DsfrButton
             id="chercherSiret"
@@ -171,7 +180,8 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading } from "@vao/shared";
+import { IsDownloading, ApiUnavailable } from "@vao/shared";
+import { apiTypes } from "@vao/shared/src/models";
 
 const toaster = useToaster();
 const log = logger("components/organisme/personne-physique");
@@ -183,6 +193,7 @@ const props = defineProps({
   validateOnMount: { type: Boolean, default: false },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
+  unavailableApi: { type: Object, required: false, default: () => ({}) },
 });
 
 const emit = defineEmits(["update", "next"]);

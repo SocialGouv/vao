@@ -114,6 +114,7 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
 import { PasswordInput } from "@vao/shared";
+import { connectionInfos } from "@vao/shared/src/models/messages";
 
 const toaster = useToaster();
 
@@ -145,29 +146,7 @@ const showPassword = ref(false);
 const editMail = (v) => (email.value = v);
 const editPwd = (v) => (password.value = v);
 
-const displayInfos = {
-  Success: {
-    title: "Authentification réussie",
-    description: "Vous allez être redirigé.",
-    type: "success",
-  },
-  NotValidatedAccount: {
-    title: "Erreur d'authentification",
-    description: "Ce compte n'a pas été validé et n'est donc pas actif.",
-    type: "error",
-  },
-  WrongCredentials: {
-    title: "Erreur d'authentification",
-    description: "Votre email ou votre mot de passe sont incorrects.",
-    type: "error",
-  },
-  UnexpectedError: {
-    title: "Une erreur est survenue",
-    description:
-      "Le service ne semble pas répondre. Veuillez réessayer ultérieurement",
-    type: "error",
-  },
-};
+const displayInfos = connectionInfos;
 const displayType = ref(null);
 
 const canLogin = computed(() => {
@@ -220,6 +199,9 @@ async function login() {
     log.w("login", { error: codeError ?? error?.data ?? error });
 
     switch (codeError) {
+      case "TooManyLoginAttempts":
+        displayType.value = "TooManyLoginAttempts";
+        break;
       case "WrongCredentials":
         displayType.value = "WrongCredentials";
         break;

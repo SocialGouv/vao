@@ -10,7 +10,260 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.ref }}
 
 jobs:
+  build-migrations:
+    environment: build-preproduction
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⏬ Checkout code repository
+        uses: actions/checkout@v4
+
+      - name: 📌 Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.REGISTRY_URL }}/${{ vars.PROJECT_NAME }}/${{ github.event.repository.name }}/migrations
+          tags: |
+            type=sha,prefix=preprod-,format=long,priority=850
+            type=sha,prefix=sha-,format=long,priority=890
+
+      - name: 📦 Build and push Docker image for migrations
+        uses: socialgouv/workflows/actions/buildkit@v1
+        with:
+          context: "./"
+          dockerfile: "packages/migrations/Dockerfile"
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          registry: "${{ vars.REGISTRY_URL }}"
+          registry-username: "${{ secrets.REGISTRY_USERNAME }}"
+          registry-password: "${{ secrets.REGISTRY_PASSWORD }}"
+          buildkit-cert-ca: "${{ secrets.BUILDKIT_CERT_CA }}"
+          buildkit-cert: "${{ secrets.BUILDKIT_CERT }}"
+          buildkit-cert-key: "${{ secrets.BUILDKIT_CERT_KEY }}"
+          buildkit-svc-count: ${{ vars.BUILDKIT_SVC_COUNT }}
+          buildkit-daemon-address: ${{ vars.BUILDKIT_DAEMON_ADDRESS }}
+
+  build-external-api:
+    environment: build-preproduction
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⏬ Checkout code repository
+        uses: actions/checkout@v4
+
+      - name: 📌 Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.REGISTRY_URL }}/${{ vars.PROJECT_NAME }}/${{ github.event.repository.name }}/external-api
+          tags: |
+            type=sha,prefix=preprod-,format=long,priority=850
+            type=sha,prefix=sha-,format=long,priority=890
+
+      - name: 📦 Build and push Docker image for external-api
+        uses: socialgouv/workflows/actions/buildkit@v1
+        with:
+          context: "./"
+          dockerfile: "packages/external-api/Dockerfile"
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          registry: "${{ vars.REGISTRY_URL }}"
+          registry-username: "${{ secrets.REGISTRY_USERNAME }}"
+          registry-password: "${{ secrets.REGISTRY_PASSWORD }}"
+          buildkit-cert-ca: "${{ secrets.BUILDKIT_CERT_CA }}"
+          buildkit-cert: "${{ secrets.BUILDKIT_CERT }}"
+          buildkit-cert-key: "${{ secrets.BUILDKIT_CERT_KEY }}"
+          buildkit-svc-count: ${{ vars.BUILDKIT_SVC_COUNT }}
+          buildkit-daemon-address: ${{ vars.BUILDKIT_DAEMON_ADDRESS }}
+
+  build-backend:
+    environment: build-preproduction
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⏬ Checkout code repository
+        uses: actions/checkout@v4
+
+      - name: 📌 Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.REGISTRY_URL }}/${{ vars.PROJECT_NAME }}/${{ github.event.repository.name }}/backend
+          tags: |
+            type=sha,prefix=preprod-,format=long,priority=850
+            type=sha,prefix=sha-,format=long,priority=890
+
+      - name: 📦 Build and push Docker image for backend
+        uses: socialgouv/workflows/actions/buildkit@v1
+        with:
+          context: "./"
+          dockerfile: "packages/backend/Dockerfile"
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          registry: "${{ vars.REGISTRY_URL }}"
+          registry-username: "${{ secrets.REGISTRY_USERNAME }}"
+          registry-password: "${{ secrets.REGISTRY_PASSWORD }}"
+          buildkit-cert-ca: "${{ secrets.BUILDKIT_CERT_CA }}"
+          buildkit-cert: "${{ secrets.BUILDKIT_CERT }}"
+          buildkit-cert-key: "${{ secrets.BUILDKIT_CERT_KEY }}"
+          buildkit-svc-count: ${{ vars.BUILDKIT_SVC_COUNT }}
+          buildkit-daemon-address: ${{ vars.BUILDKIT_DAEMON_ADDRESS }}
+
+  build-cron:
+    environment: build-preproduction
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⏬ Checkout code repository
+        uses: actions/checkout@v4
+
+      - name: 📌 Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.REGISTRY_URL }}/${{ vars.PROJECT_NAME }}/${{ github.event.repository.name }}/cron
+          tags: |
+            type=sha,prefix=preprod-,format=long,priority=850
+            type=sha,prefix=sha-,format=long,priority=890
+
+      - name: 📦 Build and push Docker image for cron
+        uses: socialgouv/workflows/actions/buildkit@v1
+        with:
+          context: "./"
+          dockerfile: "packages/cron/Dockerfile"
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          registry: "${{ vars.REGISTRY_URL }}"
+          registry-username: "${{ secrets.REGISTRY_USERNAME }}"
+          registry-password: "${{ secrets.REGISTRY_PASSWORD }}"
+          buildkit-cert-ca: "${{ secrets.BUILDKIT_CERT_CA }}"
+          buildkit-cert: "${{ secrets.BUILDKIT_CERT }}"
+          buildkit-cert-key: "${{ secrets.BUILDKIT_CERT_KEY }}"
+          buildkit-svc-count: ${{ vars.BUILDKIT_SVC_COUNT }}
+          buildkit-daemon-address: ${{ vars.BUILDKIT_DAEMON_ADDRESS }}
+          build-args: |
+            SENTRY_URL=https://sentry2.fabrique.social.gouv.fr
+            SENTRY_ORG=incubateur
+            SENTRY_PROJECT=psn-vao-cron
+
+  build-frontend-usagers:
+    environment: build-preproduction
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⏬ Checkout code repository
+        uses: actions/checkout@v4
+
+      - name: 📌 Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.REGISTRY_URL }}/${{ vars.PROJECT_NAME }}/${{ github.event.repository.name }}/frontend-usagers
+          tags: |
+            type=sha,prefix=preprod-,format=long,priority=850
+            type=sha,prefix=sha-,format=long,priority=890
+
+      - name: Env
+        id: env
+        uses: socialgouv/kontinuous/.github/actions/env@v1
+      - uses: benjlevesque/short-sha@v3.0
+        id: short-sha
+
+      - name: 📦 Build and push Docker image for frontend-usagers
+        uses: socialgouv/workflows/actions/buildkit@v1
+        with:
+          context: "./"
+          dockerfile: "packages/frontend-usagers/Dockerfile"
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          registry: "${{ vars.REGISTRY_URL }}"
+          registry-username: "${{ secrets.REGISTRY_USERNAME }}"
+          registry-password: "${{ secrets.REGISTRY_PASSWORD }}"
+          buildkit-cert-ca: "${{ secrets.BUILDKIT_CERT_CA }}"
+          buildkit-cert: "${{ secrets.BUILDKIT_CERT }}"
+          buildkit-cert-key: "${{ secrets.BUILDKIT_CERT_KEY }}"
+          buildkit-svc-count: ${{ vars.BUILDKIT_SVC_COUNT }}
+          buildkit-daemon-address: ${{ vars.BUILDKIT_DAEMON_ADDRESS }}
+          build-args: |
+            NUXT_PUBLIC_BACKEND_URL=https://api-vao-preprod.ovh.fabrique.social.gouv.fr
+            NUXT_PUBLIC_MATOMO_ENABLED=true
+            NUXT_PUBLIC_MATOMO_HOST=https://matomo.fabrique.social.gouv.fr
+            NUXT_PUBLIC_MATOMO_SITE_ID=114
+            NUXT_PUBLIC_SENTRY_DSN=https://7fba53b76194053e13ea55fed61b7e0d@sentry2.fabrique.social.gouv.fr/17
+            NUXT_PUBLIC_SENTRY_RELEASE=${{ steps.env.outputs.branchSlug32 }}-${{ steps.short-sha.outputs.sha }}
+            NUXT_PUBLIC_API_MAP_TILER=g9IvoA8h0Ow8I9szhdzW
+            SENTRY_URL=https://sentry2.fabrique.social.gouv.fr
+            SENTRY_ORG=incubateur
+            SENTRY_PROJECT=psn-vao-usagers
+            NUXT_PUBLIC_APP_VERSION=${{ steps.env.outputs.branch }}
+            NUXT_PUBLIC_ENVIRONMENT=preprod
+            NUXT_PUBLIC_SENTRY_ENABLED=true
+          secrets: |
+            sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
+
+  build-frontend-bo:
+    environment: build-preproduction
+    outputs:
+      tags: ${{ steps.meta.outputs.tags }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⏬ Checkout code repository
+        uses: actions/checkout@v4
+
+      - name: 📌 Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ vars.REGISTRY_URL }}/${{ vars.PROJECT_NAME }}/${{ github.event.repository.name }}/frontend-bo
+          tags: |
+            type=sha,prefix=preprod-,format=long,priority=850
+            type=sha,prefix=sha-,format=long,priority=890
+
+      - name: Env
+        id: env
+        uses: socialgouv/kontinuous/.github/actions/env@v1
+      - uses: benjlevesque/short-sha@v3.0
+        id: short-sha
+
+      - name: 📦 Build and push Docker image for frontend-bo
+        uses: socialgouv/workflows/actions/buildkit@v1
+        with:
+          context: "./"
+          dockerfile: "packages/frontend-bo/Dockerfile"
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          registry: "${{ vars.REGISTRY_URL }}"
+          registry-username: "${{ secrets.REGISTRY_USERNAME }}"
+          registry-password: "${{ secrets.REGISTRY_PASSWORD }}"
+          buildkit-cert-ca: "${{ secrets.BUILDKIT_CERT_CA }}"
+          buildkit-cert: "${{ secrets.BUILDKIT_CERT }}"
+          buildkit-cert-key: "${{ secrets.BUILDKIT_CERT_KEY }}"
+          buildkit-svc-count: ${{ vars.BUILDKIT_SVC_COUNT }}
+          buildkit-daemon-address: ${{ vars.BUILDKIT_DAEMON_ADDRESS }}
+          build-args: |
+            NUXT_PUBLIC_BACKEND_URL=https://api-vao-preprod.ovh.fabrique.social.gouv.fr
+            NUXT_PUBLIC_MATOMO_ENABLED=true
+            NUXT_PUBLIC_MATOMO_HOST=https://matomo.fabrique.social.gouv.fr
+            NUXT_PUBLIC_MATOMO_SITE_ID=115
+            NUXT_PUBLIC_SENTRY_DSN=https://65778f66439154c9e0321740d855ed80@sentry2.fabrique.social.gouv.fr/18
+            NUXT_PUBLIC_SENTRY_RELEASE=${{ steps.env.outputs.branchSlug32 }}-${{ steps.short-sha.outputs.sha }}
+            NUXT_PUBLIC_API_MAP_TILER=g9IvoA8h0Ow8I9szhdzW
+            SENTRY_URL=https://sentry2.fabrique.social.gouv.fr
+            SENTRY_ORG=incubateur
+            SENTRY_PROJECT=psn-vao-admin
+            NUXT_PUBLIC_APP_VERSION=${{ steps.env.outputs.branch }}
+            NUXT_PUBLIC_ENVIRONMENT=preprod
+            NUXT_PUBLIC_SENTRY_ENABLED=true
+          secrets: |
+            sentry_auth_token=${{ secrets.SENTRY_AUTH_TOKEN }}
+
   socialgouv:
+    needs: [build-migrations, build-external-api, build-backend, build-cron, build-frontend-usagers, build-frontend-bo]
     name: "🇫🇷 SocialGouv"
-    uses: socialgouv/workflows/.github/workflows/use-ks-gh-preproduction.yaml@v1
+    uses: socialgouv/workflows/.github/workflows/use-ks-gh-preproduction-atlas.yaml@v1
     secrets: inherit

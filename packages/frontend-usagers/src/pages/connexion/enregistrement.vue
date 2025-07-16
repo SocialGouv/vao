@@ -185,7 +185,14 @@
             />
           </div>
         </div>
-
+        <div
+          class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
+        >
+          <ApiUnavailable
+            :api-unavailable-types="useExternalApi.apisUnavailable"
+            :display-types="[apiTypes.INSEE, apiTypes.ENTREPRISE]"
+          ></ApiUnavailable>
+        </div>
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
@@ -210,10 +217,27 @@
 
 <script setup>
 import "@vueform/multiselect/themes/default.css";
+import { ApiUnavailable } from "@vao/shared";
+import { apiTypes } from "@vao/shared/src/models";
+
 const log = logger("pages/connexion/enregistrement");
 
 const toaster = useToaster();
 const config = useRuntimeConfig();
+const useExternalApi = useExternalApiStore();
+
+try {
+  await Promise.all([
+    useExternalApi.checkApiInsee(),
+    useExternalApi.checkApiEntreprise(),
+  ]);
+} catch {
+  toaster.info("La détection de la disponibilité des API a échoué.");
+}
+
+const isApiAvailable =
+  !useExternalApi.apisUnavailable.INSEE &&
+  !useExternalApi.apisUnavailable.ENTREPRISE;
 
 const links = [
   {
@@ -372,7 +396,9 @@ const canRegister = computed(() => {
     emailField.isValid &&
     nomField.isValid &&
     prenomField.isValid &&
-    telephoneField.isValid
+    telephoneField.isValid &&
+    siretField.isValid &&
+    isApiAvailable
   );
 });
 

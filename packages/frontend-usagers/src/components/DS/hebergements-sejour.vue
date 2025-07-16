@@ -85,6 +85,7 @@ import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
 import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
 import { hebergement as hebergementUtils } from "@vao/shared";
+import { getFileUploadErrorMessage } from "@vao/shared/src/utils/file.mjs";
 
 const toaster = useToaster();
 
@@ -253,11 +254,15 @@ async function addNuitee(hebergement) {
   let newHebergements;
 
   try {
-    await hebergementStore.updaloadFiles(hebergement);
-  } catch (e) {
+    await hebergementStore.uploadAllFiles(hebergement);
+  } catch (error) {
+    const description = getFileUploadErrorMessage(
+      error?.fileName,
+      error?.data?.name,
+    );
     toaster.error({
       titleTag: "h2",
-      description: e.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+      description,
     });
     return;
   }

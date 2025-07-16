@@ -1,8 +1,13 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
-import { MultiSelectOption } from "@vao/shared";
+import { MultiSelectOption, ApiUnavailable } from "@vao/shared";
 import { ref } from "vue";
+import { apiTypes } from "@vao/shared/src/models";
+
+const useExternalApi = useExternalApiStore();
+
+await useExternalApi.checkApiAdresse();
 
 const toaster = useToaster();
 
@@ -103,6 +108,13 @@ function onCloseModal() {
       </div>
     </div>
     <div v-if="props.modifiable" class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-col-12">
+        <ApiUnavailable
+          :api-unavailable-types="useExternalApi.apisUnavailable"
+          :display-types="[apiTypes.ADRESSE]"
+        ></ApiUnavailable>
+      </div>
+
       <div class="fr-input-group fr-col-12">
         <div
           class="fr-input-group"

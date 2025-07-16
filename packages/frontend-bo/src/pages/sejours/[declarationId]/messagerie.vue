@@ -10,6 +10,8 @@
 
 <script setup>
 import { Chat } from "@vao/shared";
+import { getFileUploadErrorMessage } from "@vao/shared/src/utils/file.mjs";
+
 const route = useRoute();
 const demandeSejourStore = useDemandeSejourStore();
 const config = useRuntimeConfig();
@@ -36,12 +38,16 @@ const sendMessage = async ({ message, file }) => {
         description: "Document déposé",
       });
     } catch (error) {
+      const description = getFileUploadErrorMessage(
+        file?.name,
+        error?.data?.name,
+      );
       isSendingMessage.value = false;
       toaster.error({
         titleTag: "h2",
-        description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+        description,
       });
-      throw error;
+      return;
     }
   }
   try {

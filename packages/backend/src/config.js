@@ -1,3 +1,5 @@
+const apiEntrepriseBaseUrl = "https://entreprise.api.gouv.fr";
+
 module.exports = {
   accessToken: {
     algorithm: "RS256",
@@ -7,12 +9,17 @@ module.exports = {
 
   antivirusUrl: process.env.ANTIVIRUS_URL,
 
+  apiAdresse: {
+    url: "https://api-adresse.data.gouv.fr",
+  },
+
   apiEntreprise: {
     context: "vacances_adaptees_organisees",
     object: "operateur_sejour_vao",
     recipient: "13000680200016",
     token: process.env.API_ENTREPRISE_TOKEN,
-    uri: "https://entreprise.api.gouv.fr/v3",
+    uri: `${apiEntrepriseBaseUrl}/v3`,
+    url: apiEntrepriseBaseUrl,
   },
 
   apiInsee: {
@@ -24,6 +31,10 @@ module.exports = {
   apiToken: {
     expiresIn: 365 * 24 * 60 * 60 * 1000,
     tokenSecret: process.env.API_TOKEN_SECRET_PRIV,
+  },
+  authentification: {
+    lockoutTime: 15,
+    maxLoginAttempts: 5,
   },
   crons: {
     request: {

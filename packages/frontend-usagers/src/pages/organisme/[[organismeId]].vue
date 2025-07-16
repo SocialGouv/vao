@@ -87,6 +87,7 @@
 </template>
 
 <script setup>
+import { getFileUploadErrorMessage } from "@vao/shared/src/utils/file.mjs";
 const route = useRoute();
 const toaster = useToaster();
 const log = logger("pages/organisme/[[organismeId]]");
@@ -185,15 +186,13 @@ async function updateOrCreate(organismeData, type) {
         toaster.info(`Document déposé`);
       } catch (error) {
         resetApiStatut();
-        if (error.response.status === 413) {
-          return toaster.error({
-            titleTag: "h2",
-            description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
-          });
-        }
+        const description = getFileUploadErrorMessage(
+          file?.name,
+          error?.data?.name,
+        );
         return toaster.error({
           titleTag: "h2",
-          description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+          description,
         });
       }
     }
@@ -360,6 +359,7 @@ async function finalizeOrganisme() {
       titleTag: "h2",
       description: "Fiche organisateur finalisée",
     });
+    await organismeStore.setMyOrganisme();
     return await navigateTo("/");
   } catch (error) {
     log.w("Creation/modification d'organisateur : ", { error });

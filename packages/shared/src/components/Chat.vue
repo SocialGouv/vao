@@ -19,8 +19,7 @@
         Il est interdit de saisir des données sensibles (personnelles,
         identifiantes, ...) au sens du RGPD dans la messagerie. Le responsable
         de traitement, non chargé du suivi individuel des vacanciers, se réserve
-        le droit de retirer ou faire retirer toute donnée non conforme, non
-        chargé du suivi individuel des vacanciers
+        le droit de retirer ou faire retirer toute donnée non conforme.
       </DsfrAlert>
     </div>
     <div class="answer">
@@ -40,6 +39,7 @@
           v-model="message"
           class="fr-input answer__form__textare"
           name="textarea"
+          :maxlength="MAX_MESSAGE_LENGTH"
           @keydown.enter.exact="sendMessage"
         ></textarea>
         <DsfrButton
@@ -70,6 +70,9 @@
           @click="file = null"
         />
       </div>
+      <p class="char-counter">
+        {{ message.length }} / {{ MAX_MESSAGE_LENGTH }} caractères
+      </p>
     </div>
   </div>
   <DsfrModal
@@ -92,6 +95,8 @@ import { ref } from "vue";
 import Message from "./Message.vue";
 import FileUpload from "./FileUpload.vue";
 
+const MAX_MESSAGE_LENGTH = 1000;
+
 const props = defineProps({
   messages: { type: Array, required: true },
   cdnUrl: { type: String, required: true },
@@ -104,9 +109,18 @@ const message = ref("");
 const file = ref(null);
 const isModalOpen = ref(false);
 
+const toaster = useToaster();
+
 const sendMessage = (event) => {
   event.preventDefault();
   if ((!message.value && !file.value) || props.isLoading) return;
+  if (message.value.length > MAX_MESSAGE_LENGTH) {
+    toaster.error({
+      titleTag: "h2",
+      description: `Le message dépasse la limite autorisée de ${MAX_MESSAGE_LENGTH} caractères.`,
+    });
+    return;
+  }
   emit("send", { file: file.value, message: message.value });
 };
 
@@ -166,6 +180,10 @@ defineExpose({
       }
     }
   }
+}
+
+.char-counter {
+  margin-top: 0.5rem;
 }
 
 @keyframes spin {

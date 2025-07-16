@@ -1,9 +1,4 @@
 fileignoreconfig:
-- filename: packages/backend/src/controllers/authentication/email/renew-password.js
-  checksum: d0fa83bb7576124063c96cdc8489f1b46836f28f97a0ac2babe3a4441447c511
-version: ""
-s/env/preprod/templates/smtp.sealed.secret.yaml
-  checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
 - filename: .kontinuous/env/preprod/templates/smtp/deployment.yaml
   checksum: e05745b618cdfe033bd27bb7baffa0c77024de76b79fcd346f2ab33c5530fac0
 - filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
@@ -280,6 +275,8 @@ s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: f15e94b54f77730bdfb4fd28006256ba861ff7c608cf53c85820d8589f4f6e57
 - filename: packages/shared/src/components/DsfrTabsV2.vue
   checksum: 960c18a7ad76a91c74e5535240ae6ac4f87bb8aff10155096cd35afe5609cff8
+- filename: packages/shared/src/components/Footer.vue
+  checksum: d7a792b9023dd76bdd1403752f2f819a688b86f1cfcaff0d216d2472660d2dcb
 - filename: packages/shared/src/components/PasswordInput.vue
   checksum: af4fe62dc455e943fcfacaa6ee0495e1ab20f9ed2094ad70c457b7a27ab46759
 - filename: packages/shared/src/components/Table/DsfrDataTableV2.vue
@@ -316,12 +313,15 @@ s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
 - filename: pg/seeds/BO-1-back-user.sql
   checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
+- filename: s/env/preprod/templates/smtp.sealed.secret.yaml
+  checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
 - filename: yarn.lock
   checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
 scopeconfig:
 - scope: node
 version: "1.0"
-name: pg/scripts/03/03-2-back-data.sql
+f68663100f4d8483aa2d3
+  - filename: pg/scripts/03/03-2-back-data.sql
     checksum: d65e191f22dd46a53fd07dd02856d505a01f38b6274ef1989536aa193faebb2d
   - filename: pg/scripts/03/03-3-front-data.sql
     checksum: 413817c8133c69f883087a7042258dcb75e4f75a45897ea830f86d8a5cba561a
@@ -331,6 +331,8 @@ name: pg/scripts/03/03-2-back-data.sql
     checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
   - filename: yarn.lock
     checksum: 534cd8eda123719511fa959602ed2c983e5feff0274ff19fbe012fb680a46efe
+
 scopeconfig:
   - scope: node
+
 version: "1.0"

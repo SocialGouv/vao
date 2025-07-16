@@ -2,11 +2,13 @@ const jwt = require("jsonwebtoken");
 const config = require("../../../config");
 
 const User = require("../../../services/BoUser");
-const Session = require("../../../services/BoSession");
+const CommonUser = require("../../../services/common/Users");
+const Session = require("../../../services/common/Session");
 
 const logger = require("../../../utils/logger");
 
 const { status } = require("../../../helpers/users");
+const { schema } = require("../../../helpers/schema");
 const {
   buildAccessToken,
   buildRefreshToken,
@@ -29,12 +31,31 @@ module.exports = async function login(req, res, next) {
 
   let user;
   try {
+    const verifAttempt = await CommonUser.verifyLoginAttempt(
+      email,
+      schema.BACK,
+    );
+    if (verifAttempt) {
+      log.w("Trop de tentatives de connexion");
+      return next(
+        new AppError("Trop de tentatives de connexion", {
+          name: "TooManyLoginAttempts",
+          statusCode: 429,
+        }),
+      );
+    }
+
     user = await User.login({ email, password });
   } catch (error) {
     return next(error);
   }
 
   if (!user) {
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",").shift() || // Si derrière un proxy
+      req.socket?.remoteAddress || // Sinon, l'IP directe
+      null;
+    await CommonUser.recordLoginAttempt(email, ip, schema.BACK);
     log.w("Utilisateur BO inexistant");
     return next(
       new AppError("Mauvais identifiants", {
@@ -66,7 +87,7 @@ module.exports = async function login(req, res, next) {
       expiresIn: config.refreshToken.expiresIn / 1000,
     });
 
-    await Session.create(user.id, refreshToken);
+    await Session.create(user.id, refreshToken, schema.BACK);
 
     res.cookie("VAO_BO_access_token", accessToken, {
       httpOnly: true,

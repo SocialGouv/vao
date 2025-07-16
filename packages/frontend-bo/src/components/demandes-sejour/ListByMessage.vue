@@ -30,8 +30,16 @@
     <template #cell-messageLastAt="{ cell }">
       {{ displayDateHours(cell) }}
     </template>
-    <template #cell-message="{ cell }">
-      <span> <MessageHover v-if="cell" :content="cell" /> </span>
+    <template #cell-message="{ cell, row }">
+      <NuxtLink
+        :to="`/sejours/${row.declarationId}/messagerie`"
+        title="Naviguer vers la messagerie"
+        class="no-background-image"
+      >
+        <span>
+          <MessageHover v-if="cell" :content="cell" />
+        </span>
+      </NuxtLink>
     </template>
     <template #cell-messageEtat="{ row, cell }">
       <MessageEtat :message="row.message" :etat="cell" />
@@ -39,7 +47,7 @@
     <template #cell-custom:edit="{ row }">
       <NuxtLink
         :to="`/sejours/${row.declarationId}/messagerie`"
-        title="Naviguer vers la demande séjour"
+        title="Naviguer vers la messagerie"
         class="no-background-image"
       >
         <DsfrButton
@@ -116,6 +124,9 @@ const columns = [
   {
     key: "messageEtat",
     label: "Message",
+    options: {
+      isSortable: true,
+    },
   },
   {
     key: "custom:edit",
@@ -161,10 +172,12 @@ const fetchData = () => {
   const query = {
     limit: limit.value,
     offset: offset.value,
-    ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
+    ...(isValidParams(sort.value)
+      ? { sortBy: sort.value }
+      : { sortBy: "messageEtat" }),
     ...(isValidParams(sortDirection.value)
       ? { sortDirection: sortDirection.value.toUpperCase() }
-      : {}),
+      : { sortDirection: "ASC" }),
     ...getSearchParams(),
     ...(isValidParams(organismeId.value)
       ? { organismeId: organismeId.value }

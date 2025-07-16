@@ -172,7 +172,7 @@
             type="date"
             label="Date de la dernière visite "
             :label-visible="true"
-            :model-value="visiteLocauxAt"
+            :model-value="dateVisiteAtFormated"
             disabled
             :is-valid="visiteLocauxAtMeta.valid"
             :error-message="visiteLocauxAtErrorMessage"
@@ -583,6 +583,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import { FileUpload, hebergement as hebergementUtils } from "@vao/shared";
+import { getFileUploadErrorMessage } from "@vao/shared/src/utils/file.mjs";
 
 const config = useRuntimeConfig();
 
@@ -612,6 +613,14 @@ const markerLatLng = computed(() => {
   }
 
   return hebergementStore.hebergementCourant.coordonnees.adresse.coordinates;
+});
+
+const dateVisiteAtFormated = computed(() => {
+  return hebergementStore.hebergementCourant?.informationsLocaux?.visiteLocauxAt
+    ? dayjs(
+        hebergementStore.hebergementCourant.informationsLocaux.visiteLocauxAt,
+      ).format("YYYY-MM-DD")
+    : null;
 });
 
 const hebergementsFavoris = computed(() => {
@@ -894,11 +903,15 @@ async function addHebergement(hebergement) {
   setApiStatut("Ajout de l'hébergement en cours");
   let id;
   try {
-    await hebergementStore.updaloadFiles(hebergement);
-  } catch (e) {
+    await hebergementStore.uploadAllFiles(hebergement);
+  } catch (error) {
+    const description = getFileUploadErrorMessage(
+      error?.fileName,
+      error?.data?.name,
+    );
     toaster.error({
       titleTag: "h2",
-      description: e.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+      description,
     });
     resetApiStatut();
     return;
