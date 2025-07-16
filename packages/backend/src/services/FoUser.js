@@ -120,7 +120,7 @@ const query = {
             WHEN pm.siret = u.siret THEN pm.siege_social 
             ELSE false
           END AS "siegeSocial",
-          COALESCE(CONCAT(etab.adresse,' ',etab.code_postal,' ',etab.commune), pm.adresse) AS "Adresse"
+          COALESCE(etab.adresse || ' ' || etab.code_postal || ' ' || etab.commune, pm.adresse) AS "Adresse"
         FROM front.users AS u
           LEFT JOIN front.personne_morale pm ON pm.siege_social = false AND pm.siret = u.siret AND pm.organisme_id = ANY ($1)
           LEFT JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm.id
