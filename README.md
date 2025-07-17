@@ -203,9 +203,21 @@ Les variables d'environnement du backend se divisent en deux types :
 Plus d'informations [ici](https://socialgouv.github.io/support/docs/standards/kubernetes#variable-denvironnement-dans-kubernetes).
 
 Hormis dans le cas d'un test à la volée, les changements de variables nécessitent de passer par une PR.
+Pas pas à dans [pas à pas WebSeal](./docs/webseal)
 
-### Backup
+## [Backup](./docs/backup)
 
 Les backup de postgres sont gérés par la Fabrique via Kubernetes.
+Mais il est possible de lancer un backup à la volée depuis le Rancher.
+Il est recommandé de le faire avant chaque déploiement en production.
+[Backup](./docs/backup)
 
-## [Déploiement](./docs/deploiement)
+## :rocket: [Déploiement](./docs/deploiement)
+
+Déploiement pas à pas d'un hotfix ou d'une release en production.
+
+:point_right: [Déploiement](./docs/deploiement)
+
+## :lock: [WebSeal](./docs/webseal)
+
+Sceller un secret avec WebSeal pour l'utiliser dans Kubernetes.
