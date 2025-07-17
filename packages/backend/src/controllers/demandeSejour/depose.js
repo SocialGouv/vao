@@ -7,6 +7,9 @@ const Send = require("../../services/mail").mailService.send;
 const PdfDeclaration2Mois = require("../../services/pdf/declaration2mois/generate");
 const PdfDeclaration8jours = require("../../services/pdf/declaration8jours/generate");
 
+const Sentry = require("@sentry/node");
+const { sentry } = require("../../config");
+
 const {
   schema: DeclarationSejourSchema,
 } = require("../../schemas/declaration-sejour");
@@ -119,20 +122,56 @@ module.exports = async function post(req, res, next) {
     idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
   }
 
-
   if (statut == statuts.ATTENTE_8_JOUR || statut == statuts.A_MODIFIER_8J) {
     log.d("Déclaration à 8 jours");
-    await DemandeSejour.finalize8jours(declarationId, declaration);
+    try {
+      await DemandeSejour.finalize8jours(declarationId, declaration);
+    } catch (error) {
+      log.w(error);
+      if (sentry.enabled) {
+        Sentry.captureException(error);
+      }
+      return next(
+        new AppError(
+          "Une erreur est survenue de l'enregistrement de la déclaration à 8 jours",
+          {
+            name: "SaveDeclarationError",
+            statusCode: error.statusCode || 500,
+          },
+        ),
+      );
+    }
     declaration = await DemandeSejour.getOne({ "ds.id": declarationId });
-    await DemandeSejour.insertEvent(
-      "Organisateur",
-      declarationId,
-      userId,
-      null,
-      "declaration_sejour",
-      "Dépôt DS Complémentaire à 8 jours",
-      declaration,
-    );
+    try {
+      await DemandeSejour.insertEvent(
+        "Organisateur",
+        declarationId,
+        userId,
+        null,
+        "declaration_sejour",
+        "Dépôt DS Complémentaire à 8 jours",
+        declaration,
+      );
+    } catch (error) {
+      log.w(error);
+      if (sentry.enabled) {
+        Sentry.captureException(error);
+      }
+    }
+    try {
+      DSuuid = await PdfDeclaration8jours(
+        declaration,
+        declaration.idFonctionnelle,
+        declaration.departementSuivi,
+        dateDeposeA2mois,
+      );
+    } catch (error) {
+      log.w(error);
+      if (sentry.enabled) {
+        Sentry.captureException(error);
+      }
+    }
+
     try {
       const destinataires = await DemandeSejour.getEmailToList(
         declaration.organismeId,
@@ -158,6 +197,7 @@ module.exports = async function post(req, res, next) {
       log.w("DONE with error");
       return next(
         new AppError("Une erreur est survenue lors de l'envoi de mails", {
+          name: "MailError",
           statusCode: 500,
         }),
       );
@@ -195,48 +235,72 @@ module.exports = async function post(req, res, next) {
         new AppError(
           "Une erreur est survenue lors de l'envoi de mails aux usagers back office",
           {
+            name: "MailError",
             statusCode: 500,
           },
         ),
       );
     }
 
-    try {
-      DSuuid = await PdfDeclaration8jours(
-        declaration,
-        declaration.idFonctionnelle,
-        declaration.departementSuivi,
-        dateDeposeA2mois,
-      );
-    } catch (error) {
-      log.w(error);
-    }
-
     log.i("DONE");
     return res.status(200).json({ ARuuid, DSuuid });
   } else {
     log.d("Déclaration à 2 mois");
-
-    await DemandeSejour.finalize(
-      declarationId,
-      departementSuivi,
-      idFonctionnelle,
-      declaration,
-    );
+    try {
+      await DemandeSejour.finalize(
+        declarationId,
+        departementSuivi,
+        idFonctionnelle,
+        declaration,
+      );
+    } catch (error) {
+      log.w(error);
+      if (sentry.enabled) {
+        Sentry.captureException(error);
+      }
+      return next(
+        new AppError(
+          "Une erreur est survenue de l'enregistrement de la déclaration à 2 mois",
+          {
+            name: "SaveDeclarationError",
+            statusCode: error.statusCode || 500,
+          },
+        ),
+      );
+    }
 
     declaration = await DemandeSejour.getOne({ "ds.id": declarationId });
 
-    await DemandeSejour.insertEvent(
-      "Organisateur",
-      declarationId,
-      userId,
-      null,
-      "declaration_sejour",
-      statut === statuts.BROUILLON
-        ? "Dépôt DS à 2 mois"
-        : "Ajout de compléments",
-      declaration,
-    );
+    try {
+      await DemandeSejour.insertEvent(
+        "Organisateur",
+        declarationId,
+        userId,
+        null,
+        "declaration_sejour",
+        statut === statuts.BROUILLON
+          ? "Dépôt DS à 2 mois"
+          : "Ajout de compléments",
+        declaration,
+      );
+    } catch (error) {
+      log.w(error);
+      if (sentry.enabled) {
+        Sentry.captureException(error);
+      }
+    }
+    try {
+      DSuuid = await PdfDeclaration2Mois(
+        declaration,
+        idFonctionnelle,
+        departementSuivi,
+      );
+    } catch (error) {
+      log.w(error);
+      if (sentry.enabled) {
+        Sentry.captureException(error);
+      }
+    }
 
     try {
       const destinataires = await DemandeSejour.getEmailToList(
@@ -263,6 +327,7 @@ module.exports = async function post(req, res, next) {
       log.w("DONE with error");
       return next(
         new AppError("Une erreur est survenue lors de l'envoi de mails", {
+          name: "MailError",
           statusCode: 500,
         }),
       );
@@ -299,20 +364,11 @@ module.exports = async function post(req, res, next) {
         new AppError(
           "Une erreur est survenue lors de l'envoi de mails aux usagers back office",
           {
-            statusCode: 500,
+            name: "SaveDeclarationError",
+            statusCode: error.statusCode || 500,
           },
         ),
       );
-    }
-
-    try {
-      DSuuid = await PdfDeclaration2Mois(
-        declaration,
-        idFonctionnelle,
-        departementSuivi,
-      );
-    } catch (error) {
-      log.w(error);
     }
 
     log.i("DONE");
