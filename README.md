@@ -179,7 +179,7 @@ Il est recommandé de filtrer sur le namespace souhaité avant de continuer dans
 
 Afin de suivre les logs d'un container, se rendre dans la sections Workloads > Pods puis cliquer sur le boutton 'View Logs'
 
-![Visualisation des logs](./docs/rancher-show-logs.png)
+![Visualisation des logs](./docs/assets/rancher-show-logs.png)
 
 Le niveau de logs du backend est décrit par la variable d'environnement DEBUG.
 
@@ -203,21 +203,18 @@ Les variables d'environnement du backend se divisent en deux types :
 Plus d'informations [ici](https://socialgouv.github.io/support/docs/standards/kubernetes#variable-denvironnement-dans-kubernetes).
 
 Hormis dans le cas d'un test à la volée, les changements de variables nécessitent de passer par une PR.
-Pas pas à dans [pas à pas WebSeal](./docs/webseal)
+Pas pas à dans [pas à pas WebSeal](./docs/sealed-secret) :lock:
 
 ## [Backup](./docs/backup)
 
 Les backup de postgres sont gérés par la Fabrique via Kubernetes.
 Mais il est possible de lancer un backup à la volée depuis le Rancher.
 Il est recommandé de le faire avant chaque déploiement en production.
-[Backup](./docs/backup)
+
+:point_right: [Backup](./docs/backup)
 
 ## :rocket: [Déploiement](./docs/deploiement)
 
 Déploiement pas à pas d'un hotfix ou d'une release en production.
 
 :point_right: [Déploiement](./docs/deploiement)
-
-## :lock: [WebSeal](./docs/webseal)
-
-Sceller un secret avec WebSeal pour l'utiliser dans Kubernetes.

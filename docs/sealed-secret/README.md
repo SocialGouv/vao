@@ -15,11 +15,11 @@ Choisir l'environnement <code>dev / preprod</code>
 Le secret name correspond à l'ID du secret que vous souhaitez sceller.
 S'il n'existe pas, il sera a créé.
 
-![WebSeal dev et preprod](./1-seal-dev.png)
+![WebSeal dev et preprod](../assets/sealed-secret/1-seal-dev.png)
 
 S'il existe, on peut le récupérer dans le yaml.
 
-![Secret Name](./2-secret-name.png)
+![Secret Name](../assets/sealed-secret/2-secret-name.png)
 
 Copier et coller le résultat dans le yaml de la template de kontinious ; dev/preprod
 
@@ -27,7 +27,7 @@ Copier et coller le résultat dans le yaml de la template de kontinious ; dev/pr
 
 Pour la Prod : indiquer le nom du workspace en plus
 
-![WebSeal prod](./3-seal-prod.png)
+![WebSeal prod](../assets/sealed-secret/3-seal-prod.png)
 
 Copier et coller le résultat dans le yaml de la template de kontinious ; prod
 Le namespace est celui que tu trouveras dans le fichier <code>.yaml</code>
