@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.5.7",
-    "@sentry/vite-plugin": "^2.21.1",
+    "@sentry/vite-plugin": "^3.0.0",
     "@socialgouv/eslint-config-recommended": "^1.131.0",
     "eslint": "^8.57.0",
     "eslint-plugin-prettier": "^5.1.3",
