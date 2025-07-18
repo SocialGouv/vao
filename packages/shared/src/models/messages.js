@@ -18,19 +18,13 @@ export const connectionInfos = {
   WrongCredentials: {
     title: "Erreur d'authentification",
     description:
-      "Votre adresse courriel ou votre mot de passe sont incorrects.",
+      "Votre adresse courriel ou votre mot de passe sont incorrects, ou votre compte a été désactivé par un tiers.",
     type: "error",
   },
   TooManyLoginAttempts: {
     title: "Trop de tentatives de connexion",
     description:
       "Vous avez dépassé le nombre maximal de tentatives de connexion. Veuillez réessayer ultérieurement.",
-    type: "error",
-  },
-  EmailUnauthorized: {
-    title: "Erreur d'authentification",
-    description:
-      "Ce compte est actuellement inaccessible en raison d'une restriction imposée par une autorité. Pour plus d’informations, veuillez consulter la personne auprès de laquelle vous avez sollicité une création de compte.",
     type: "error",
   },
   UnexpectedError: {

@@ -671,13 +671,14 @@ LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
 WHERE
   pm.siren = $1 AND
   pm.siege_social = 'true'
+  AND u.status_code = 'VALIDATED'
 `,
   getEmailToList: `
 SELECT DISTINCT u.mail AS mail
 FROM front.users u
 JOIN front.user_organisme uo
   ON u.id = uo.use_id
-WHERE uo.org_id = $1
+WHERE uo.org_id = $1 AND u.status_code = 'VALIDATED'
 `,
   getExtract: (territoireCode) => `
   SELECT
