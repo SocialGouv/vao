@@ -49,7 +49,6 @@
           <div class="fr-fieldset__element">
             <DsfrToggleSwitch
               id="toggle-valide"
-              :key="modalOpenCounter"
               :label="!isActive ? 'Activer le compte' : 'Désactiver le compte'"
               :model-value="isActive"
               aria-describedby="toggle-valide"
@@ -214,7 +213,7 @@ async function close() {
 
 async function update() {
   try {
-    if (props.user.status !== statut.value) {
+    if (props.user.statut !== statut.value) {
       log.d("update : update statut");
       const params = { status: statut.value };
       await usersStore.changeUserStatus(props.user.userId, params);
@@ -253,10 +252,8 @@ async function update() {
 
 const popUpParams = ref(null);
 const closeModal = () => (popUpParams.value = null);
-const modalOpenCounter = ref(0);
 
 const openModal = (p) => {
-  modalOpenCounter.value++;
   popUpParams.value = {
     cb: () => {
       isActive.value = p;
