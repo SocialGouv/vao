@@ -42,16 +42,16 @@ router.post(
   FOUserController.updateRoles,
 );
 router.post(
-  "/update-status/:userId",
-  checkJWT,
-  checkPermissionFOForUpdateStatusFo,
-  FOUserController.updateStatus({ source: "FO" }),
-);
-router.post(
   "/change-status/:userId",
   checkJWT,
   checkPermissionFOForUpdateStatusFo,
   FOUserController.changeStatus,
+);
+router.post(
+  "/update-status/:userId",
+  checkJWT,
+  checkPermissionFOForUpdateStatusFo,
+  FOUserController.updateStatus({ source: "FO" }),
 );
 
 module.exports = router;
