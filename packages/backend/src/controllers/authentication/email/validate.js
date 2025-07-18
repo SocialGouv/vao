@@ -87,7 +87,7 @@ async function handleSiretValidation(user) {
   let mailUserOrganisme = [];
   let organisme = await OrganismeService.getBySiret(user.userSiret);
 
-  if (organisme) {
+  if (organisme && organisme?.organismeId) {
     mailUserOrganisme =
       (await FoUserService.getMailUserOrganismeId(organisme.organismeId)) || [];
   }
@@ -95,7 +95,7 @@ async function handleSiretValidation(user) {
   if (!organisme || mailUserOrganisme.length === 0) {
     const siren = user.userSiret.substring(0, 9);
     organisme = await OrganismeService.getSiege(siren);
-    if (organisme) {
+    if (organisme && organisme?.organismeId) {
       mailUserOrganisme = await FoUserService.getMailUserOrganismeId(
         organisme.organismeId,
       );

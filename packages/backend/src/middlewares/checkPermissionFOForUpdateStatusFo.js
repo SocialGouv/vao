@@ -37,14 +37,15 @@ async function checkPermissionFOForUpdateStatusFo(req, _res, next) {
     );
     if (!isAllowedOrganismeUser) {
       // Cas d'un utilisateur qui est l'organisme secondaire
-      const [idOrganismeConnected, idOrganismeUpdated] = await Promise.all([
-        getByOrganisme(userId),
-        getByOrganisme(userIdUpdated),
-      ]);
+      const [organismeUserConnected, idorganismeUserUpdated] =
+        await Promise.all([
+          getByOrganisme(userId),
+          getByOrganisme(userIdUpdated),
+        ]);
       if (
-        !idOrganismeConnected ||
-        !idOrganismeUpdated ||
-        idOrganismeUpdated !== idOrganismeConnected
+        !organismeUserConnected ||
+        !idorganismeUserUpdated ||
+        idorganismeUserUpdated !== organismeUserConnected
       ) {
         return next(
           new AppError(
