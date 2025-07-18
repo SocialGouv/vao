@@ -313,9 +313,9 @@ module.exports.read = async ({
   }
   if (search?.organisme && search.organisme.length) {
     searchQuery += `AND (
-      pm.raisonSociale ILIKE $${searchParams.length + 1}
+      pm.raison_sociale ILIKE $${searchParams.length + 1}
       OR unaccent(pp.prenom) ILIKE unaccent($${searchParams.length + 1})
-      OR unaccent(pp.nomUsage) ILIKE unaccent($${searchParams.length + 1})
+      OR unaccent(pp.nom_usage) ILIKE unaccent($${searchParams.length + 1})
       )`;
     searchParams.push(`%${search.organisme}%`);
   }

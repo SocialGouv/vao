@@ -3,6 +3,10 @@
     <div class="fr-fieldset">
       <div class="fr-fieldset__element">
         <div class="fr-input-group fr-col-8">
+          <ApiUnavailable
+            :api-unavailable-types="props.unavailableApi"
+            :display-types="[apiTypes.INSEE]"
+          ></ApiUnavailable>
           <DsfrInputGroup
             name="siret"
             label="Numéro SIRET du titulaire de l’agrément VAO"
