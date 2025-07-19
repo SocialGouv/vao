@@ -190,7 +190,7 @@ module.exports.registerByEmail = async ({
   return { code: "CreationCompte", user };
 };
 
-module.exports.editPassword = async ({ email, password }) => {
+module.exports.editPassword = async ({ email, ip, password }) => {
   log.i("editPassword - IN", { email });
   const response = await pool.query(
     ...query.select({ mail: normalize(email) }),
@@ -201,7 +201,7 @@ module.exports.editPassword = async ({ email, password }) => {
   const responseWithUpdate = await pool.query(
     ...query.select({ mail: normalize(email) }),
   );
-  CommonUser.recordLoginAttempt(normalize(email), schema.FRONT);
+  CommonUser.recordLoginAttempt(normalize(email), ip, schema.FRONT);
   const [userUpdated] = responseWithUpdate.rows;
   log.i("editPassword - DONE", { user: userUpdated });
   return userUpdated;

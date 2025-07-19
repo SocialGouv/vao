@@ -83,4 +83,4 @@ module.exports.resetLoginAttempt = (email, userSchema) => {
   log.i("resetLoginAttempt - IN", { email });
   pool.query(query.resetLoginAttempt(userSchema), [normalize(email)]);
   log.i("resetLoginAttempt - DONE");
-}
+};

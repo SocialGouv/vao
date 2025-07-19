@@ -36,7 +36,11 @@ module.exports = async function renewPassword(req, res, next) {
       algorithm: "ES512",
     });
     log.d({ email });
-    await User.editPassword(email, password);
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",").shift() || // Si derrière un proxy
+      req.socket?.remoteAddress || // Sinon, l'IP directe
+      null;
+    await User.editPassword(email, ip, password);
     log.i("DONE");
     return res.status(200).json({ message: "Mot de passe mis à jour" });
   } catch (error) {

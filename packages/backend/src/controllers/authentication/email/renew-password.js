@@ -38,7 +38,11 @@ module.exports = async function register(req, res, next) {
       algorithm: "ES512",
     });
     log.d({ email });
-    let user = await User.editPassword({ email, password });
+    const ip =
+      req.headers["x-forwarded-for"]?.split(",").shift() || // Si derrière un proxy
+      req.socket?.remoteAddress || // Sinon, l'IP directe
+      null;
+    let user = await User.editPassword({ email, ip, password });
     if (
       user.statusCode !== status.VALIDATED &&
       user.statusCode !== status.NEED_SIRET_VALIDATION

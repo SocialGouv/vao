@@ -410,7 +410,7 @@ module.exports.update = async (
   return { code: "MajCompte" };
 };
 
-module.exports.editPassword = async (email, password) => {
+module.exports.editPassword = async (email, ip, password) => {
   log.i("editPassword - IN", { email });
 
   if (!email || !password) {
@@ -426,7 +426,7 @@ module.exports.editPassword = async (email, password) => {
       name: "UserNotFound",
     });
   }
-  usersCommon.resetLoginAttempt(email, schema.BACK);
+  usersCommon.resetLoginAttempt(email, ip, schema.BACK);
   log.i("editPassword - DONE");
 };
 
@@ -794,7 +794,6 @@ const getByUserId = async (userId) => {
     return null;
   }
 };
-
 
 module.exports.getByUserId = getByUserId;
 
