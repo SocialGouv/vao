@@ -7,10 +7,10 @@ pg:
       size: "200Gi"
     resources:
       requests:
-        cpu: "1"
+        cpu: 1500m
         memory: 2Gi
       limits:
-        cpu: "1"
+        cpu: 1500m
         memory: 2Gi
 
 backend:
