@@ -10,7 +10,7 @@ pg:
         cpu: "1"
         memory: 2Gi
       limits:
-        cpu: 1500m
+        cpu: "1"
         memory: 2Gi
 
 backend:
@@ -25,7 +25,7 @@ backend:
 external-api:
   resources:
     requests:
-      cpu: 500m
+      cpu: 750m
       memory: 2Gi
     limits:
       cpu: 750m
