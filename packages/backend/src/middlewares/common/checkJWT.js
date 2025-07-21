@@ -165,7 +165,7 @@ async function checkJWT(req, res, next, targetSchema) {
       );
     }
 
-    const user = getUserBySchema(targetSchema, rtDecoded.userId);
+    const user = await getUserBySchema(targetSchema, rtDecoded.userId);
     const { buildAccessToken, buildRefreshToken } =
       getTokenBuilders(targetSchema);
     const newAccessTokenPayload = buildAccessToken(user);
