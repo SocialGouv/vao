@@ -23,7 +23,7 @@ backend:
     S3_BUCKET_ROOT_DIR: prod/files
   resources:
     requests:
-      cpu: 1000m
+      cpu: 1500m
       memory: 2Gi
     limits:
       cpu: 1500m
