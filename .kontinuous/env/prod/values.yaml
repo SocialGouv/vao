@@ -7,11 +7,11 @@ pg:
       size: "200Gi"
     resources:
       requests:
-        cpu: 1500m
-        memory: 3Gi
+        cpu: 3000m
+        memory: 6Gi
       limits:
-        cpu: 1500m
-        memory: 3Gi
+        cpu: 3000m
+        memory: 6Gi
 
 backend:
   autoscale:
