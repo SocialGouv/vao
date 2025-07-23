@@ -7,11 +7,11 @@ pg:
       size: "200Gi"
     resources:
       requests:
-        cpu: 1500m
-        memory: 2Gi
+        cpu: 3000m
+        memory: 6Gi
       limits:
-        cpu: 1500m
-        memory: 2Gi
+        cpu: 3000m
+        memory: 6Gi
 
 backend:
   autoscale:
@@ -21,6 +21,13 @@ backend:
     - "api-{{ .Values.global.host }}"
   vars:
     S3_BUCKET_ROOT_DIR: prod/files
+  resources:
+    requests:
+      cpu: 1500m
+      memory: 2Gi
+    limits:
+      cpu: 1500m
+      memory: 2Gi
 
 external-api:
   resources:
