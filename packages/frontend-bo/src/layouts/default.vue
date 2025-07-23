@@ -1,5 +1,5 @@
 <script setup>
-import { Header, Footer, useLayoutHeader } from "@vao/shared";
+import { Header, Footer, Skiplinks, useLayoutHeader } from "@vao/shared";
 
 const navItems = useMenuNavItems();
 const userStore = useUserStore();
@@ -23,21 +23,7 @@ function acceptAll() {
 <template>
   <div>
     <DsfrToaster />
-    <div class="fr-skiplinks">
-      <nav class="fr-container" role="navigation" aria-label="Accès rapide">
-        <ul class="fr-skiplinks__list" role="list">
-          <li role="listitem">
-            <a class="fr-link" href="#menu">Menu</a>
-          </li>
-          <li role="listitem">
-            <a class="fr-link" href="#content">Contenu</a>
-          </li>
-          <li role="listitem">
-            <a class="fr-link" href="#footer">Pied de page</a>
-          </li>
-        </ul>
-      </nav>
-    </div>
+    <Skiplinks />
     <div class="fr-container">
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12">
