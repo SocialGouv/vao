@@ -12,7 +12,7 @@ module.exports = async (req, res, next) => {
   const expiresAt = new Date(new Date().getTime() + config.apiToken.expiresIn);
 
   const apiToken = jwt.sign({ userId }, config.apiToken.tokenSecret, {
-    algorithm: "ES512",
+    algorithm: config.algorithm,
     expiresIn: config.apiToken.expiresIn / 1000,
   });
 

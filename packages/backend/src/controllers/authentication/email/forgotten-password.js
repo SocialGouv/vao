@@ -24,8 +24,19 @@ module.exports = async function login(req, res, next) {
       }),
     );
   }
+  let token;
   try {
     const users = await User.read({ mail: normalize(email) });
+    token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
+      algorithm: config.algorithm,
+      expiresIn: config.resetPasswordToken.expiresIn / 1000,
+    });
+    await Send(
+      MailUtils.usagers.authentication.sendForgottenPassword({
+        email,
+        token,
+      }),
+    );
 
     if (users.length === 0) {
       log.w("Utilisateur inexistant");
@@ -41,7 +52,7 @@ module.exports = async function login(req, res, next) {
     ];
 
     if (eligibleStatuses.includes(user.statusCode)) {
-      const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
+      token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
         algorithm: "ES512",
         expiresIn: config.resetPasswordToken.expiresIn / 1000,
       });
