@@ -50,7 +50,7 @@ module.exports = async (req, res, next) => {
 async function verifyToken(token, next) {
   try {
     const { email } = await jwt.verify(token, config.tokenSecret, {
-      algorithm: "ES512",
+      algorithm: config.algorithm,
     });
     return email;
   } catch (err) {

@@ -33,7 +33,7 @@ module.exports = async function renewPassword(req, res, next) {
 
   try {
     const { email } = await jwt.verify(resetPasswordToken, config.tokenSecret, {
-      algorithm: "ES512",
+      algorithm: config.algorithm,
     });
     log.d({ email });
     await User.editPassword(email, password);

@@ -22,7 +22,7 @@ module.exports = async (req, res, next) => {
   }
   try {
     const { email } = await jwt.verify(validationToken, config.tokenSecret, {
-      algorithm: "ES512",
+      algorithm: config.algorithm,
     });
     log.d({ email });
     const user = await User.activate(email);

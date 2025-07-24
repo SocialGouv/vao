@@ -36,7 +36,7 @@ module.exports = async function login(req, res, next) {
 
   try {
     const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
-      algorithm: "ES512",
+      algorithm: config.algorithm,
       expiresIn: config.resetPasswordToken.expiresIn / 1000,
     });
     await Send(
