@@ -76,7 +76,7 @@ module.exports = async function register(req, res, next) {
 
     log.d({ user });
     const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
-      algorithm: "ES512",
+      algorithm: config.algorithm,
       expiresIn: config.validationToken.expiresIn / 1000,
     });
     try {

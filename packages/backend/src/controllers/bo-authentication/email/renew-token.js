@@ -27,7 +27,7 @@ module.exports = async function renewToken(req, res, next) {
     const user = await User.readOneByMail(email);
     log.d({ user });
     const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
-      algorithm: "ES512",
+      algorithm: config.algorithm,
       expiresIn: config.validationToken.expiresIn / 1000,
     });
     try {
