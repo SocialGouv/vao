@@ -505,7 +505,7 @@ const demandeDetails = computed(() => {
     },
     {
       label: "Déclaration",
-      value: demandeCourante.value.statut,
+      value: demandeCourante.value.idFonctionnelle,
     },
   ];
 });
