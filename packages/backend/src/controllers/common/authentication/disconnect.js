@@ -23,6 +23,14 @@ module.exports = async function disconnect(req, res, targetSchema) {
       ? req.cookies.VAO_refresh_token
       : req.cookies.VAO_BO_refresh_token;
   let rtDecoded;
+  if (!refreshToken) {
+    log.w("refresh_token manquant dans les cookies");
+    return res.status(400).json({
+      message:
+        "Le refresh_token est manquant, impossible de déconnecter la session.",
+      name: "MissingRefreshToken",
+    });
+  }
   try {
     rtDecoded = await jwt.verify(refreshToken, config.tokenSecret, {
       algorithm: "ES512",
