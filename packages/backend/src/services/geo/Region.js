@@ -1,44 +1,58 @@
 const AppError = require("../../utils/error");
 const logger = require("../../utils/logger");
 const pool = require("../../utils/pgpool").getPool();
+const config = require("../../config");
 
 const log = logger(module.filename);
 
 const query = {
   select: `
-  SELECT 
-    code as value,
-    label as text
-  FROM geo.territoires
-  WHERE parent_code = 'FRA' 
+    SELECT 
+      code as value,
+      label as text
+    FROM geo.territoires
+    WHERE parent_code = 'FRA'
   `,
 };
 
-let cache;
+let cache = {
+  data: null,
+  timestamp: 0,
+};
+
+async function loadCache() {
+  const now = Date.now();
+
+  if (!cache.data || now - cache.timestamp > config.cacheTTL) {
+    log.i("Chargement du cache des régions");
+    const { rows } = await pool.query(query.select);
+    cache = {
+      data: rows,
+      timestamp: now,
+    };
+  }
+}
 
 module.exports.fetch = async (criterias = {}) => {
   log.i("fetch - IN");
-  if (!cache) {
-    const { rows } = await pool.query(query.select);
-    cache = rows;
-  }
+
+  await loadCache();
+
   const filters = Object.entries(criterias);
-  const regions = cache.filter((region) => {
-    return filters.every(([key, value]) => region[key] == value);
-  });
+  const regions = cache.data.filter((region) =>
+    filters.every(([key, value]) => region[key] == value),
+  );
 
   log.i("fetch - DONE");
   return regions;
 };
 
 module.exports.fetchOne = async (code) => {
-  log.i("fetchOne - IN", { cache, code });
-  if (!cache) {
-    const { rows } = await pool.query(query.select);
-    cache = rows;
-  }
+  log.i("fetchOne - IN", { code });
 
-  const region = cache.find((region) => region.value === code);
+  await loadCache();
+
+  const region = cache.data.find((region) => region.value === code);
 
   if (!region) {
     throw new AppError(`Région ${code} non trouvée`);
