@@ -20,16 +20,22 @@ let cache = {
   timestamp: 0,
 };
 
+let loadingPromise = null;
+
 async function loadCache() {
   const now = Date.now();
+  const isExpired = now - cache.timestamp > config.cacheTTL;
 
-  if (!cache.data || now - cache.timestamp > config.cacheTTL) {
-    log.i("Chargement du cache des régions");
-    const { rows } = await pool.query(query.select);
-    cache = {
-      data: rows,
-      timestamp: now,
-    };
+  if ((!cache.data || isExpired) && !loadingPromise) {
+    loadingPromise = (async () => {
+      log.i("Chargement en arrière-plan du cache des régions");
+      const { rows } = await pool.query(query.select);
+      cache = {
+        data: rows,
+        timestamp: Date.now(),
+      };
+      loadingPromise = null;
+    })();
   }
 }
 
