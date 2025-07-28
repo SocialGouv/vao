@@ -69,7 +69,6 @@
           <div>
             <div class="buttons-group">
               <DsfrButton
-                v-if="canUpdate"
                 :disabled="!roleEigMeta.valid"
                 label="Enregistrer"
                 @click.prevent="update"
@@ -114,11 +113,11 @@ const log = logger("pages/comptes/");
 const usersStore = useUserStore();
 const toaster = useToaster();
 
-const canUpdate = computed(() =>
-  usersStore.user.roles.includes(rolesUtil.EIG_ECRITURE),
+const canUpdateRole = computed(() =>
+  usersStore.user?.roles?.includes(rolesUtil.EIG_ECRITURE)
+    ? isActive.value
+    : false,
 );
-
-const canUpdateRole = computed(() => canUpdate && isActive.value);
 
 const roleOptions = [
   {
@@ -218,7 +217,10 @@ async function update() {
       const params = { status: statut.value };
       await usersStore.changeUserStatus(props.user.userId, params);
     }
-    if (statut.value === statusUser.status.VALIDATED) {
+    if (
+      usersStore.user.roles.includes(rolesUtil.EIG_ECRITURE) &&
+      statut.value === statusUser.status.VALIDATED
+    ) {
       log.d("update : update roles");
       await usersStore.updateRole({
         roles: roleEig.value,
