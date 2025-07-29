@@ -14,11 +14,18 @@ module.exports = async function get(req, res, next) {
       eigId,
     });
 
-    const { emailsDDETS, emailsDREETS, emailsOrganisateur } = await getEmails(
-      eig.departement,
-      eig.userId,
-    );
-    Object.assign(eig, { emailsDDETS, emailsDREETS, emailsOrganisateur });
+    const {
+      emailsDDETS,
+      emailsDREETS,
+      emailsOrganisateur,
+      emailsOrganisateurSiegeSocial,
+    } = await getEmails(eig.departement, eig.userId);
+    Object.assign(eig, {
+      emailsDDETS,
+      emailsDREETS,
+      emailsOrganisateur,
+      emailsOrganisateurSiegeSocial,
+    });
 
     return res.status(200).json({ eig });
   } catch (error) {
