@@ -105,6 +105,29 @@ const query = {
         WHERE u.id NOT IN (SELECT use_id FROM front.user_organisme uo WHERE uo.use_id = u.id)
         GROUP BY 1,2,3,4,5,6,7,8,9,10
       )
+        UNION
+      (
+        SELECT
+          u.id AS "userId",
+          u.mail AS email,
+          u.nom AS nom,
+          u.prenom AS prenom,
+          u.telephone AS telephone,
+          u.status_code AS statut,
+          u.created_at AS "dateCreation",
+          u.lastconnection_at as "lastConnectionAt",
+          CASE 
+            WHEN pm.siret = u.siret THEN pm.siege_social 
+            ELSE false
+          END AS "siegeSocial",
+          COALESCE(CONCAT(etab.adresse, ' ', etab.code_postal, ' ', etab.commune), pm.adresse) AS "Adresse"
+        FROM front.users AS u
+          LEFT JOIN front.personne_morale pm ON pm.siege_social = false AND pm.siret = u.siret AND pm.organisme_id = ANY ($1)
+          LEFT JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm.id
+          INNER JOIN front.organismes AS o ON o.id = pm.organisme_id
+        WHERE u.id NOT IN (SELECT use_id FROM front.user_organisme uo WHERE uo.use_id = u.id)
+        GROUP BY 1,2,3,4,5,6,7,8,9,10
+      )
     ) AS Resultat
     WHERE 1 = 1
     `,
@@ -124,7 +147,21 @@ const query = {
     AND u.status_code = 'NEED_SIRET_VALIDATION'
     AND u.siret not in (SELECT opme.siret FROM front.opm_etablissements opme WHERE opme.siret = u.siret)
   `,
+  getIsLastUserOrganisme: `
+    SELECT COUNT(*)
+    FROM front.users u
+    INNER JOIN front.user_organisme uo ON uo.use_id = u.id
+    WHERE uo.org_id= (
+        SELECT org_id 
+        FROM front.user_organisme 
+        WHERE use_id = $1
+    )
+    AND u.status_code = 'VALIDATED';  
+  `,
   // uc : User connected  / uu : User recherché
+  // On vérifier que l'organisme de l'utilisateur connecté est le même que celui de l'utilisateur recherché
+  // l'utilisateur connecté doit être un utilisateur de l'organisme principal
+  // l'utilisateur recherché doit être un utilisateur de l'organisme principal ou un utilisateur de l'organisme secondaire
   getIsUserSameOrganismeOtherUser: `
     SELECT 
       SUM(total_count) AS count
@@ -145,7 +182,8 @@ const query = {
   `,
   getMailUserOrganismeId: `
     SELECT mail FROM front.users u
-    INNER JOIN front.user_organisme uo ON uo.org_id = $1 AND uo.use_id = u.id`,
+    INNER JOIN front.user_organisme uo ON uo.org_id = $1 AND uo.use_id = u.id
+    WHERE u.status_code = 'VALIDATED'`,
   getOne: `
         SELECT
       u.id AS "userId",
@@ -301,9 +339,9 @@ module.exports.read = async ({
   }
   if (search?.organisme && search.organisme.length) {
     searchQuery += `AND (
-      pm.raisonSociale ILIKE $${searchParams.length + 1}
+      pm.raison_sociale ILIKE $${searchParams.length + 1}
       OR unaccent(pp.prenom) ILIKE unaccent($${searchParams.length + 1})
-      OR unaccent(pp.nomUsage) ILIKE unaccent($${searchParams.length + 1})
+      OR unaccent(pp.nom_usage) ILIKE unaccent($${searchParams.length + 1})
       )`;
     searchParams.push(`%${search.organisme}%`);
   }
@@ -358,7 +396,11 @@ module.exports.getByToValidateByBo = async (terCode) => {
   log.i("getByToValidateByBo - DONE");
   return { total: rowCount, users: rows };
 };
-
+module.exports.getIsLastUserOrganisme = async (userId) => {
+  const response = await pool.query(query.getIsLastUserOrganisme, [userId]);
+  log.i("getIsLastUserOrganisme - DONE");
+  return response.rows[0].count <= 1;
+};
 module.exports.getIsUserSameOrganismeOtherUser = async (
   userIdConnected,
   userIdSearch,
