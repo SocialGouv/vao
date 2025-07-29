@@ -881,7 +881,7 @@ module.exports.getListe = async (queryParams) => {
     sort,
   );
 
-  log.w(paginatedQuery.query, paginatedQuery.params);
+  log.d(paginatedQuery.query, paginatedQuery.params);
 
   const result = await Promise.all([
     pool.query(paginatedQuery.query, paginatedQuery.params),
