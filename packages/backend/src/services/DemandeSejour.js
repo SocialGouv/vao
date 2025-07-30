@@ -554,6 +554,7 @@ WHERE
     )
     SELECT *
     FROM demande_avec_message
+    WHERE 1 = 1
   `,
   getDeprecated: (organismeIds) => [
     `SELECT
