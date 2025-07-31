@@ -106,16 +106,16 @@ const tiles = computed(() => [
     description:
       "Cette page vous permet de renseigner les informations sur l'organisme.",
   },
-  {
-    title: "Hébergements",
-    to: "/hebergements/liste",
-    imgSrc: House,
-    titleTag: "h2",
-    description:
-      "Cette page permet de gérer les informations sur les lieux d'hébergement de vos séjours.",
-  },
   ...(organismeStore.organismeCourant && organismeStore.organismeCourant.complet
     ? [
+        {
+          title: "Hébergements",
+          to: "/hebergements/liste",
+          imgSrc: House,
+          titleTag: "h2",
+          description:
+            "Cette page permet de gérer les informations sur les lieux d'hébergement de vos séjours.",
+        },
         {
           title: "Déclarations de séjour",
           to: "/demande-sejour/liste",
