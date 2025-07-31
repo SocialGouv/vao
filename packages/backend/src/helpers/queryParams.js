@@ -133,11 +133,12 @@ const applyGroupBy = (queryInitial, groupByParams = []) => {
 };
 
 const applyPagination = (query, params, limit = 10, offset = 0, sort = "") => {
+  const hasLimit = limit !== -1;
+
   const paginatedQuery = `
     ${query}
     ${sort}
-    LIMIT $${params.length + 1}
-    OFFSET $${params.length + 2};
+    ${hasLimit ? `LIMIT $${params.length + 1} OFFSET $${params.length + 2}` : ""}
   `;
 
   const countQuery = `
@@ -147,7 +148,7 @@ const applyPagination = (query, params, limit = 10, offset = 0, sort = "") => {
   return {
     countQuery,
     countQueryParams: params,
-    params: [...params, limit, offset],
+    params: hasLimit ? [...params, limit, offset] : params,
     query: paginatedQuery,
   };
 };
