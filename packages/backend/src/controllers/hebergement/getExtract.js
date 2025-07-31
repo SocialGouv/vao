@@ -13,6 +13,7 @@ module.exports = async function getExtract(req, res, next) {
   try {
     const result = await Hebergement.getByDepartementCodes(
       {
+        limit: -1,
         order: "ASC",
         search: "",
         sort: "nom",
