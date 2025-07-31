@@ -1,6 +1,7 @@
 const eigService = require("../services/eig");
 const Organisme = require("../services/Organisme");
 const User = require("../services/User");
+const UserFO = require("../services/FoUser");
 const Departement = require("../services/geo/Departement");
 const Region = require("../services/geo/Region");
 const { mapEigToLabel } = require("./eig");
@@ -23,6 +24,22 @@ module.exports.getEmails = async (departement, userId) => {
     emailsOrganisateur = users.map((u) => u.email);
   }
 
+  let emailsOrganisateurSiegeSocial = [];
+  if (
+    organisme.typeOrganisme === "personne_morale" &&
+    !organisme.personneMorale?.porteurAgrement
+  ) {
+    const organismeSiegeSocial = await Organisme.getSiege(
+      organisme.personneMorale.siret,
+    );
+    if (organismeSiegeSocial?.organismeId) {
+      const usersSiegeSocial = await UserFO.getMailUserOrganismeId(
+        organismeSiegeSocial.organismeId,
+      );
+      emailsOrganisateurSiegeSocial = usersSiegeSocial.map((u) => u.mail);
+    }
+  }
+
   const departementName = (await Departement.fetchOne(departement))?.text;
   const regionName = (
     await Region.fetchOne(organisme?.agrement?.regionObtention)
@@ -34,6 +51,7 @@ module.exports.getEmails = async (departement, userId) => {
     emailsDDETS,
     emailsDREETS,
     emailsOrganisateur,
+    emailsOrganisateurSiegeSocial,
     regionName,
     userName,
   };

@@ -668,12 +668,12 @@ module.exports = {
         return params;
       },
       sendToOrganisme: ({ dest, eig, userName, declarationSejour }) => {
-        log.i("sendToDREETS - In", {
+        log.i("sendToOrganisme - In", {
           dest,
         });
         if (!dest) {
           const message = "paramètre manquant à la requête";
-          log.w(`sendToDREETS - ${message}`);
+          log.w(`sendToOrganisme - ${message}`);
           throw new AppError(message);
         }
 
@@ -706,6 +706,7 @@ module.exports = {
             },
             {
               p: [
+                `Cette déclaration a été envoyée à l’ova principal titulaire de l'agrément.`,
                 `Cette déclaration a été envoyée à la direction départementale de l'emploi, du travail, des solidarités et de la protection des populations (DDETS-PP), ainsi qu’à la direction régionale de l’économie, de l’emploi, du travail et des solidarités (DREETS) ayant délivré l’agrément VAO.`,
               ],
               type: "p",
@@ -714,7 +715,7 @@ module.exports = {
           `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
 
-        log.d("sendToDREETS - sending sendToDDETS mail");
+        log.d("sendToOrganisme - sending sendToOrganisme mail");
         const params = {
           from: senderEmail,
           html,
@@ -722,7 +723,7 @@ module.exports = {
           subject: `Déclaration d’un Evènement indésirable grave par ${orgName}`,
           to: dest,
         };
-        log.d("sendToDREETS post email", { params });
+        log.d("sendToOrganisme post email", { params });
 
         return params;
       },

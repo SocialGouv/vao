@@ -95,6 +95,20 @@
         {{ email }}
       </li>
     </ul>
+    <h6
+      v-if="eigStore.currentEig?.emailsOrganisateurSiegeSocial.length > 0"
+      class="fr-mb-0"
+    >
+      L'organisme principal titulaire de l'agrément
+    </h6>
+    <ul class="fr-mt-0 fr-mb-4w">
+      <li
+        v-for="email in eigStore.currentEig.emailsOrganisateurSiegeSocial"
+        :key="email"
+      >
+        {{ email }}
+      </li>
+    </ul>
   </article>
   <!--  TODO: hise in a first time. We keep the logic for later
   <div class="fr-fieldset__element">
