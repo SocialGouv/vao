@@ -3,429 +3,270 @@ const {
   preparationPillulierss,
   responsableAdministrationMedicaments,
 } = require("../../../helpers/declaration/protocole-sanitaire");
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
+const { markAsUncloneable } = require("worker_threads");
 
 module.exports = function displayInfosSanitaires(info) {
   const liste = [];
-  liste.push({
-    columnGap: 10,
-    columns: [
-      {
-        text: "Dispositions d’ordre sanitaire spécifiques :",
-        width: 250,
-      },
-      {
-        bold: true,
-        text: `${info.dispositionsSpecifiques ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-  });
+  liste.push(
+    MiseEnPage.formatLine(
+      "Dispositions d’ordre sanitaire spécifiques :",
+      info.dispositionsSpecifiques ? "Oui" : "Non",
+      { columnGap: 10 },
+    ),
+  );
   if (info.dispositionsSpecifiques) {
-    liste.push({
-      columnGap: 10,
-      columns: [
-        {
-          text: "Précision :",
-          width: 250,
-        },
-        {
-          bold: true,
-          text: `${info.precisionDispositionsSpecifiques}`,
-          width: "*",
-        },
-      ],
-    });
+    liste.push(
+      MiseEnPage.formatLine(
+        "Précision :",
+        info.precisionDispositionsSpecifiques,
+        { columnGap: 10 },
+      ),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
-      {
-        text: "Composition de l'équipe :",
-        width: 250,
-      },
-      {
-        bold: true,
-        text: `${info.constitutionEquipe.map((e) => constitutionEquipes[e] ?? e).join(", ")}`,
-        width: "*",
-      },
-    ],
-  });
+  liste.push(
+    MiseEnPage.formatLine(
+      "Composition de l'équipe :",
+      info.constitutionEquipe
+        .map((e) => constitutionEquipes[e] ?? e)
+        .join(", "),
+      { columnGap: 10 },
+    ),
+  );
   if (info.constitutionEquipe.length > 0) {
-    liste.push({
-      columnGap: 10,
-      columns: [
-        {
-          text: "Précision :",
-          width: 250,
-        },
-        {
-          bold: true,
-          text: `${info.precisionConstitutionEquipe}`,
-          width: "*",
-        },
-      ],
-    });
+    liste.push(
+      MiseEnPage.formatLine("Précision :", info.precisionConstitutionEquipe, {
+        columnGap: 10,
+      }),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
+  liste.push(
+    MiseEnPage.formatLine(
+      "Existence d'un accord passé avec un cabinet médical ou paramédical à  proximité des lieux de séjour :",
+      info.accordCabinetMedical ? "Oui" : "Non",
       {
-        text: "Existence d'un accord passé avec un cabinet médical ou paramédical à  proximité des lieux de séjour :",
-        width: 250,
+        columnGap: 10,
       },
-      {
-        bold: true,
-        text: `${info.accordCabinetMedical ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-  });
+    ),
+  );
   if (info.accordCabinetMedical) {
-    liste.push({
-      columnGap: 10,
-      columns: [
-        {
-          text: "Précision :",
-          width: 250,
-        },
-        {
-          bold: true,
-          text: `${info.precisionAccordCabinetMedical}`,
-          width: "*",
-        },
-      ],
-    });
+    liste.push(
+      MiseEnPage.formatLine("Précision :", info.precisionAccordCabinetMedical, {
+        columnGap: 10,
+      }),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
+  liste.push(
+    MiseEnPage.formatLine(
+      "Présence d’une trousse à pharmacie de premier secours :",
+      info.troussePharmacie ? "Oui" : "Non",
       {
-        text: "Présence d’une trousse à pharmacie de premier secours :",
-        width: 250,
+        columnGap: 10,
       },
+    ),
+  );
+  liste.push(
+    MiseEnPage.formatLine(
+      "Personne désignée en charge de la distribution et de l’administration des médicaments et de l’enregistrement de l’administration :",
+      info.responsableAdministrationMedicament
+        .map((r) => responsableAdministrationMedicaments[r] ?? r)
+        .join(", "),
       {
-        bold: true,
-        text: `${info.troussePharmacie ? "Oui" : "Non"}`,
-        width: "*",
+        columnGap: 10,
       },
-    ],
-  });
-  liste.push({
-    columnGap: 10,
-    columns: [
-      {
-        text: "Personne désignée en charge de la distribution et de l’administration des médicaments et de l’enregistrement de l’administration :",
-        width: 250,
-      },
-      {
-        bold: true,
-        text: `${info.responsableAdministrationMedicament.map((r) => responsableAdministrationMedicaments[r] ?? r).join(", ")}`,
-        width: "*",
-      },
-    ],
-  });
+    ),
+  );
   if (info.responsableAdministrationMedicament.length > 0) {
-    liste.push({
-      columnGap: 10,
-      columns: [
+    liste.push(
+      MiseEnPage.formatLine(
+        "Précision :",
+        info.precisionResponsableAdministrationMedicament,
         {
-          text: "Précision :",
-          width: 250,
+          columnGap: 10,
         },
-        {
-          bold: true,
-          text: `${info.precisionResponsableAdministrationMedicament}`,
-          width: "*",
-        },
-      ],
-    });
+      ),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
+  liste.push(
+    MiseEnPage.formatLine(
+      "Stockage des médicaments dans un lieu sécurisé et garantissant leur parfaite conservation :",
+      info.stockageMedicamentSecurise ? "Oui" : "Non",
       {
-        text: "Stockage des médicaments dans un lieu sécurisé et garantissant leur parfaite conservation :",
-        width: 250,
+        columnGap: 10,
       },
-      {
-        bold: true,
-        text: `${info.stockageMedicamentSecurise ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-  });
+    ),
+  );
   if (info.stockageMedicamentSecurise) {
-    liste.push({
-      columnGap: 10,
-      columns: [
+    liste.push(
+      MiseEnPage.formatLine(
+        "Précision sur le protocole en vigueur concernant le stockage sécurisé des médicaments :",
+        info.precisionStockageMedicamentSecurise,
         {
-          text: "Précision sur le protocole en vigueur concernant le stockage sécurisé des médicaments :",
-          width: 250,
+          columnGap: 10,
         },
-        {
-          bold: true,
-          text: `${info.precisionStockageMedicamentSecurise}`,
-          width: "*",
-        },
-      ],
-    });
+      ),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
+  liste.push(
+    MiseEnPage.formatLine(
+      "Existence d'un dispositif pour la conservation des médicaments thermosensibles :",
+      info.conservationMedicamentThermosensible ? "Oui" : "Non",
       {
-        text: "Existence d'un dispositif pour la conservation des médicaments thermosensibles :",
-        width: 250,
+        columnGap: 10,
       },
+    ),
+  );
+  liste.push(
+    MiseEnPage.formatLine(
+      "Existence d'un dispositif pour individualiser les traitements de chaque vacancier :",
+      info.individualisationMedicaments ? "Oui" : "Non",
       {
-        bold: true,
-        text: `${info.conservationMedicamentThermosensible ? "Oui" : "Non"}`,
-        width: "*",
+        columnGap: 10,
       },
-    ],
-  });
-  liste.push({
-    columnGap: 10,
-    columns: [
-      {
-        text: "Existence d'un dispositif pour individualiser les traitements de chaque vacancier :",
-        width: 250,
-      },
-      {
-        bold: true,
-        text: `${info.individualisationMedicaments ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-  });
+    ),
+  );
   if (info.individualisationMedicaments) {
-    liste.push({
-      columnGap: 10,
-      columns: [
+    liste.push(
+      MiseEnPage.formatLine(
+        "Précision sur le protocole en vigueur concernant le stockage permettant l’individualisation des médicaments :",
+        info.precisionIndividualisationMedicaments,
         {
-          text: "Précision sur le protocole en vigueur concernant le stockage permettant l’individualisation des médicaments :",
-          width: 250,
+          columnGap: 10,
         },
-        {
-          bold: true,
-          text: `${info.precisionIndividualisationMedicaments}`,
-          width: "*",
-        },
-      ],
-    });
+      ),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
+  liste.push(
+    MiseEnPage.formatLine(
+      "Méthode retenue pour la préparation des piluliers :",
+      preparationPillulierss[info.preparationPilluliers] ??
+        info.preparationPilluliers,
       {
-        text: "Méthode retenue pour la préparation des piluliers :",
-        width: 250,
+        columnGap: 10,
       },
+    ),
+  );
+  liste.push(
+    MiseEnPage.formatLine(
+      "Prescription médicale jointe à chaque pilulier :",
+      info.prescriptionMedicaleJointe ? "Oui" : "Non",
       {
-        bold: true,
-        text: `${preparationPillulierss[info.preparationPilluliers] ?? info.preparationPilluliers}`,
-        width: "*",
+        columnGap: 10,
       },
-    ],
-  });
-  liste.push({
-    columnGap: 10,
-    columns: [
+    ),
+  );
+  liste.push(
+    MiseEnPage.formatLine(
+      "Protocole de modification de traitement en cours de séjour :",
+      info.protocoleModificationTraitement ? "Oui" : "Non",
       {
-        text: "Prescription médicale jointe à chaque pilulier :",
-        width: 250,
+        columnGap: 10,
       },
-      {
-        bold: true,
-        text: `${info.prescriptionMedicaleJointe ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-  });
-  liste.push({
-    columnGap: 10,
-    columns: [
-      {
-        text: "Protocole de modification de traitement en cours de séjour :",
-        width: 250,
-      },
-      {
-        bold: true,
-        text: `${info.protocoleModificationTraitement ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-  });
+    ),
+  );
 
   if (info.protocoleModificationTraitement) {
-    liste.push({
-      columnGap: 10,
-      columns: [
+    liste.push(
+      MiseEnPage.formatLine(
+        "Précision :",
+        info.precisionProtocoleModificationTraitement,
         {
-          text: "Précision :",
-          width: 250,
+          columnGap: 10,
         },
-        {
-          bold: true,
-          text: `${info.precisionProtocoleModificationTraitement}`,
-          width: "*",
-        },
-      ],
-    });
+      ),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
+  liste.push(
+    MiseEnPage.formatLine(
+      "Fiche de suivi de la distribution, de l’administration et de l’enregistrement des médicaments :",
+      info.ficheSuiviMedicaments ? "Oui" : "Non",
       {
-        text: "Fiche de suivi de la distribution, de l’administration et de l’enregistrement des médicaments :",
-        width: 250,
+        columnGap: 10,
       },
+    ),
+  );
+  liste.push(
+    MiseEnPage.formatLine(
+      "Existence d'un protocole d’évacuation et de rapatriement des vacanciers si nécessaire :",
+      info.protocoleEvacuation ? "Oui" : "Non",
       {
-        bold: true,
-        text: `${info.ficheSuiviMedicaments ? "Oui" : "Non"}`,
-        width: "*",
+        columnGap: 10,
+        marginUp: 10,
       },
-    ],
-  });
-  liste.push({
-    columnGap: 10,
-    columns: [
-      {
-        text: "Existence d'un protocole d’évacuation et de rapatriement des vacanciers si nécessaire :",
-        width: 250,
-      },
-      {
-        bold: true,
-        text: `${info.protocoleEvacuation ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-    margin: [0, 10, 0, 0],
-  });
+    ),
+  );
   if (info.protocoleEvacuation) {
-    liste.push({
-      columnGap: 10,
-      columns: [
-        {
-          text: "Précision :",
-          width: 250,
-        },
-        {
-          bold: true,
-          text: `${info.precisionProtocoleEvacuation}`,
-          width: "*",
-        },
-      ],
-    });
+    liste.push(
+      MiseEnPage.formatLine("Précision :", info.precisionProtocoleEvacuation, {
+        columnGap: 10,
+      }),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
+  liste.push(
+    MiseEnPage.formatLine(
+      "Existence d'un protocole en cas de chute, d’intoxication ou autre accident :",
+      info.protocoleAccident ? "Oui" : "Non",
       {
-        text: "Existence d'un protocole en cas de chute, d’intoxication ou autre accident :",
-        width: 250,
+        columnGap: 10,
+        marginUp: 10,
       },
-      {
-        bold: true,
-        text: `${info.protocoleAccident ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-    margin: [0, 10, 0, 0],
-  });
+    ),
+  );
   if (info.protocoleAccident) {
-    liste.push({
-      columnGap: 10,
-      columns: [
-        {
-          text: "Précision :",
-          width: 250,
-        },
-        {
-          bold: true,
-          text: `${info.precisionProtocoleAccident}`,
-          width: "*",
-        },
-      ],
-    });
+    liste.push(
+      MiseEnPage.formatLine("Précision :", info.precisionProtocoleAccident, {
+        columnGap: 10,
+      }),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
+  liste.push(
+    MiseEnPage.formatLine(
+      "Existence d'un protocole de réorientation des vacanciers :",
+      info.protocoleReorientation ? "Oui" : "Non",
       {
-        text: "Existence d'un protocole de réorientation des vacanciers :",
-        width: 250,
+        columnGap: 10,
+        marginUp: 10,
       },
-      {
-        bold: true,
-        text: `${info.protocoleReorientation ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-    margin: [0, 10, 0, 0],
-  });
+    ),
+  );
   if (info.protocoleReorientation) {
-    liste.push({
-      columnGap: 10,
-      columns: [
+    liste.push(
+      MiseEnPage.formatLine(
+        "Précision :",
+        info.precisionProtocoleReorientation,
         {
-          text: "Précision :",
-          width: 250,
+          columnGap: 10,
         },
-        {
-          bold: true,
-          text: `${info.precisionProtocoleReorientation}`,
-          width: "*",
-        },
-      ],
-    });
+      ),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
+  liste.push(
+    MiseEnPage.formatLine(
+      "Existence d'un protocole en cas d’alerte canicule :",
+      info.protocoleCanicule ? "Oui" : "Non",
       {
-        text: "Existence d'un protocole en cas d’alerte canicule :",
-        width: 250,
+        columnGap: 10,
+        marginUp: 10,
       },
-      {
-        bold: true,
-        text: `${info.protocoleCanicule ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-    margin: [0, 10, 0, 0],
-  });
+    ),
+  );
   if (info.protocoleCanicule) {
-    liste.push({
-      columnGap: 10,
-      columns: [
-        {
-          text: "Précision :",
-          width: 250,
-        },
-        {
-          bold: true,
-          text: `${info.precisionProtocoleCanicule}`,
-          width: "*",
-        },
-      ],
-    });
+    liste.push(
+      MiseEnPage.formatLine("Précision :", info.precisionProtocoleCanicule, {
+        columnGap: 10,
+      }),
+    );
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
+  liste.push(
+    MiseEnPage.formatLine(
+      "Précision sur les conditions prévues pour la gestion sur place du budget personnel des vacanciers :",
+      info.gestionBudgetPersonnel,
       {
-        text: "Précision sur les conditions prévues pour la gestion sur place du budget personnel des vacanciers :",
-        width: 250,
+        columnGap: 10,
+        marginUp: 10,
       },
-      {
-        bold: true,
-        text: `${info.gestionBudgetPersonnel}`,
-        width: "*",
-      },
-    ],
-    margin: [0, 10, 0, 0],
-  });
+    ),
+  );
 
   return liste;
 };

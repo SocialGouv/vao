@@ -1,3 +1,5 @@
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
+
 module.exports = function buildInformationsPersonnel(info) {
   return {
     stack: [
@@ -32,45 +34,18 @@ module.exports = function buildInformationsPersonnel(info) {
             alignment: "left",
             columnGap: 10,
             stack: [
-              {
-                columns: [
-                  {
-                    text: "Nombre de personnes responsables présentes :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.nombreResponsable}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Nombre d'accompagnants présents :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.nombreAccompagnant}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Procédure de recrutement supplémentaires durant le séjour :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.procedureRecrutementSupplementaire ? "Oui" : "Non"}`,
-                    width: "*",
-                  },
-                ],
-              },
+              MiseEnPage.formatLine(
+                "Nombre de personnes responsables présentes :",
+                info.nombreResponsable,
+              ),
+              MiseEnPage.formatLine(
+                "Nombre d'accompagnants présents :",
+                info.nombreAccompagnant,
+              ),
+              MiseEnPage.formatLine(
+                "Procédure de recrutement supplémentaires durant le séjour :",
+                info.procedureRecrutementSupplementaire ? "Oui" : "Non",
+              ),
             ],
           },
         ],
