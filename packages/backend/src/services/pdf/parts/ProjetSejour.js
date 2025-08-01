@@ -1,6 +1,24 @@
 const { destinations } = require("../../../helpers/declaration/projet-sejour");
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 
 module.exports = function buildProjetSejour(info) {
+  const lines = [
+    [
+      "Destination :",
+      info.destination.map((d) => destinations[d] ?? d).join(", "),
+    ],
+    [
+      "Activités sportives et loisirs proposés :",
+      info.activitesSportives.join(", "),
+    ],
+    ["Activités culturelles proposées :", info.activitesCulturelles.join(", ")],
+    ["Bien être :", info.activitesBienEtre.join(", ")],
+    [
+      "Personnel ou organisme prévu le cas échéant pour encadrer les activités spécifiques :",
+      info.activitesPersonnelPrevu ?? "",
+    ],
+  ];
+
   return {
     stack: [
       {
@@ -33,73 +51,7 @@ module.exports = function buildProjetSejour(info) {
           {
             alignment: "left",
             columnGap: 10,
-            stack: [
-              {
-                columns: [
-                  {
-                    text: "Destination :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.destination.map((d) => destinations[d] ?? d).join(", ")}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Activités sportives et loisirs proposés :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.activitesSportives.join(", ")}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Activités culturelles proposées :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.activitesCulturelles.join(", ")}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Bien être :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.activitesBienEtre.join(", ")}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Personnel ou organisme prévu le cas échéant pour encadrer les activités spécifiques :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.activitesPersonnelPrevu ?? ""}`,
-                    width: "*",
-                  },
-                ],
-              },
-            ],
+            stack: MiseEnPage.buildLines(lines),
           },
         ],
         margin: [0, 20, 0, 0],
