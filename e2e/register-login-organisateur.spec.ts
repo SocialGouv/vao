@@ -12,7 +12,6 @@ const password = "Pizza1234567;";
 test.describe.configure({ mode: "serial" });
 
 function getUrl(prefix?: string) {
-  console.log("getUrl", { runLocal, prefix, baseUrl });
   if (runLocal) {
     if (prefix === "maildev") {
       return `http://localhost:1080`;
@@ -38,7 +37,6 @@ async function login(page) {
 test("register_and_login", async ({ page }) => {
   // register
   await page.goto(`${getUrl()}/connexion`);
-  console.log("Visiting:", `${getUrl()}/connexion`);
   await expect(page.getByText("Connexion à VAO")).toBeVisible();
 
   await page.getByRole("button", { name: "Créer un compte" }).click();
