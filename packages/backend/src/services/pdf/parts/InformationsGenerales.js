@@ -1,11 +1,12 @@
 const dayjs = require("dayjs");
 const Organisme = require("./Organisme");
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 
 module.exports = function buildInformationsGenerales(declaration, type) {
   return {
     stack: [
       {
-        margin: [0, 30, 0, 0],
+        margin: MiseEnPage.MARGIN_UP_30,
         table: {
           body: [
             [
@@ -35,120 +36,40 @@ module.exports = function buildInformationsGenerales(declaration, type) {
             alignment: "left",
             columnGap: 10,
             stack: [
-              {
-                columns: [
-                  {
-                    text: "Libellé du séjour :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${declaration.libelle}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text:
-                      type === "8jours"
-                        ? "Date de début du séjour :"
-                        : "Date indicative de début du séjour :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${dayjs(declaration.dateDebut).format("DD/MM/YYYY")}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text:
-                      type === "8jours"
-                        ? "Date de fin du séjour :"
-                        : "Date indicative de fin du séjour :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${dayjs(declaration.dateFin).format("DD/MM/YYYY")}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Saison :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${declaration.periode}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Durée du séjour :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${declaration.duree} jours`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Séjour itinérant :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${declaration.hebergement.sejourItinerant ? "Oui" : "Non"}`,
-                    width: "*",
-                  },
-                ],
-              },
+              MiseEnPage.formatLine("Libellé du séjour :", declaration.libelle),
+              MiseEnPage.formatLine(
+                type === "8jours"
+                  ? "Date de début du séjour :"
+                  : "Date indicative de début du séjour :",
+                dayjs(declaration.dateDebut).format("DD/MM/YYYY"),
+              ),
+              MiseEnPage.formatLine(
+                type === "8jours"
+                  ? "Date de fin du séjour :"
+                  : "Date indicative de fin du séjour :",
+                dayjs(declaration.dateFin).format("DD/MM/YYYY"),
+              ),
+              MiseEnPage.formatLine("Saison :", declaration.periode),
+              MiseEnPage.formatLine(
+                "Durée du séjour :",
+                `${declaration.duree} jours`,
+              ),
+              MiseEnPage.formatLine(
+                "Séjour itinérant :",
+                declaration.hebergement.sejourItinerant ? "Oui" : "Non",
+              ),
               ...(declaration.hebergement.sejourItinerant
-                ? [
-                    {
-                      columns: [
-                        {
-                          text: "Séjour à l'étranger :",
-                          width: 250,
-                        },
-                        {
-                          bold: true,
-                          text: `${declaration.hebergement.sejourEtranger ? "Oui" : "Non"}`,
-                          width: "*",
-                        },
-                      ],
-                    },
-                  ]
+                ? MiseEnPage.formatLine(
+                    "Séjour à l'étranger :",
+                    declaration.hebergement.sejourEtranger ? "Oui" : "Non",
+                  )
                 : []),
-              {
-                columns: [
-                  {
-                    text: "Liste des départements de séjour :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${declaration.hebergement.hebergements.map((h) => h.coordonnees.adresse.departement).join(", ")}`,
-                    width: "*",
-                  },
-                ],
-              },
+              MiseEnPage.formatLine(
+                "Liste des départements de séjour :",
+                declaration.hebergement.hebergements
+                  .map((h) => h.coordonnees.adresse.departement)
+                  .join(", "),
+              ),
               Organisme(declaration.responsableSejour, declaration?.organisme),
             ],
           },

@@ -1,6 +1,8 @@
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
+
 module.exports = function displayResponsableOrganisation(resp) {
   return {
-    margin: [0, 20, 0, 0],
+    margin: MiseEnPage.MARGIN_UP_20,
     stack: [
       {
         columns: [
@@ -13,84 +15,12 @@ module.exports = function displayResponsableOrganisation(resp) {
         ],
         margin: [0, 0, 0, 10],
       },
-      {
-        columns: [
-          {
-            text: "Nom :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.nom}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Prénom :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.prenom}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Téléphone :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.telephone}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Fonction :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.fonction}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Email :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.email}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Adresse :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.adresse.label}`,
-            width: "*",
-          },
-        ],
-      },
+      MiseEnPage.formatLine("Nom :", resp.nom),
+      MiseEnPage.formatLine("Prénom :", resp.prenom),
+      MiseEnPage.formatLine("Téléphone :", resp.telephone),
+      MiseEnPage.formatLine("Fonction :", resp.fonction),
+      MiseEnPage.formatLine("Email :", resp.email),
+      MiseEnPage.formatLine("Adresse :", resp.adresse.label),
     ],
   };
 };
