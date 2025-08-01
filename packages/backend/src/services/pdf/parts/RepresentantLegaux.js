@@ -1,19 +1,14 @@
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
+
 module.exports = function displayRepresentantLegaux(rl) {
   const displayableRL = [];
   rl.forEach((e) => {
-    displayableRL.push({
-      columns: [
-        {
-          text: "Nom, prénom et fonction :",
-          width: 250,
-        },
-        {
-          bold: true,
-          text: `${e.nom} ${e.prenom}, ${e.fonction}`,
-          width: 120,
-        },
-      ],
-    });
+    displayableRL.push(
+      MiseEnPage.formatLine(
+        "Nom, prénom et fonction :",
+        `${e.nom} ${e.prenom}, ${e.fonction}`,
+      ),
+    );
   });
 
   return {

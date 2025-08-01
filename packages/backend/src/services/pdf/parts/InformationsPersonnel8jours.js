@@ -1,7 +1,21 @@
 const Personnel = require("./Personnel");
 const Prestataire = require("./Prestataire");
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 
 module.exports = function buildInformationsPersonnel(info) {
+  const lines = [
+    [
+      "Procédure de recrutement supplémentaires durant le séjour :",
+      info.procedureRecrutementSupplementaire ? "Oui" : "Non",
+      { columnGap: 10 },
+    ],
+    [
+      "Organisation, contenu et durée d’une session de formation en amont de l'arrivée des vacanciers en vue de la coordination des équipes :",
+      info.formation,
+      { columnGap: 10, marginRight: 10 },
+    ],
+  ];
+
   return [
     {
       margin: [0, 20, 0, 0],
@@ -31,85 +45,41 @@ module.exports = function buildInformationsPersonnel(info) {
             widths: ["*"],
           },
         },
+
+        // 🔹 Personnel encadrant
         {
           columns: [
             {
               alignment: "left",
               columnGap: 10,
-              stack: [
-                {
-                  columns: [
-                    {
-                      text: "Personnel encadrant présent :",
-                      width: 250,
-                    },
-                    {
-                      bold: true,
-                      text: `${info.nombreResponsable}`,
-                      width: "*",
-                    },
-                  ],
-                },
-              ],
+              stack: MiseEnPage.buildLines([
+                ["Personnel encadrant présent :", info.nombreResponsable],
+              ]),
             },
           ],
           margin: [0, 0, 0, 10],
         },
         Personnel(info.encadrants),
+
+        // 🔹 Personnel accompagnant
         {
           columns: [
             {
               alignment: "left",
               columnGap: 10,
-              stack: [
-                {
-                  columns: [
-                    {
-                      text: "Personnel accompagnant présent :",
-                      width: 250,
-                    },
-                    {
-                      bold: true,
-                      text: `${info.nombreAccompagnant}`,
-                      width: "*",
-                    },
-                  ],
-                },
-              ],
+              stack: MiseEnPage.buildLines([
+                ["Personnel accompagnant présent :", info.nombreAccompagnant],
+              ]),
             },
           ],
           margin: [0, 15, 0, 10],
         },
         Personnel(info.accompagnants),
-        {
-          columnGap: 10,
-          columns: [
-            {
-              text: "Procédure de recrutement supplémentaires durant le séjour :",
-              width: 250,
-            },
-            {
-              bold: true,
-              text: `${info.procedureRecrutementSupplementaire ? "Oui" : "Non"}`,
-              width: "*",
-            },
-          ],
-        },
-        {
-          columnGap: 10,
-          columns: [
-            {
-              text: "Organisation, contenu et durée d’une session de formation en amont de l'arrivée des vacanciers en vue de la coordination des équipes :",
-              width: 250,
-            },
-            {
-              bold: true,
-              text: `${info.formation}`,
-              width: "*",
-            },
-          ],
-          margin: [0, 0, 0, 10],
-        },
+
+        // 🔹 Autres lignes (procédure, formation…)
+        ...MiseEnPage.buildLines(lines),
+
+        // 🔹 Prestataires
         ...Prestataire(
           info.prestatairesMedicaments,
           "Prestataires extérieur en charges des médicaments",
