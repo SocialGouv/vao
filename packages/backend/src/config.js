@@ -36,6 +36,7 @@ module.exports = {
     lockoutTime: 15,
     maxLoginAttempts: 5,
   },
+  cacheTTL: 60 * 60 * 1000, // 1 heure
   crons: {
     request: {
       notify: {
