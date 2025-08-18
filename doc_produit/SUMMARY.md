@@ -75,3 +75,4 @@
 * [Liste des emails envoyés par le SI](misc/liste-des-emails-envoyes-par-le-si.md)
 * [API](misc/api.md)
 * [Pages d'erreurs](misc/pages-derreurs.md)
+* [Sécurité](misc/securite.md)

@@ -12,7 +12,7 @@ Une pop-up s'ouvre pour confirmer la prise en charge de la déclaration.&#x20;
 
 <summary>Capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-07 à 11.02.48.png" alt=""><figcaption><p>Pop-up de prise en charge de la déclaration de séjour par un agent</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/Capture d'écran 2025-07-07 à 11.02.48.png" alt=""><figcaption><p>Pop-up de prise en charge de la déclaration de séjour par un agent</p></figcaption></figure>
 
 </details>
 
@@ -25,7 +25,7 @@ Au clic sur le bouton "Valider la prise en charge" :&#x20;
 
 <summary>Capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-07 à 11.04.49.png" alt=""><figcaption><p>Page détaillé d'une déclaration de séjour pour l'instruction</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/Capture d'écran 2025-07-07 à 11.04.49.png" alt=""><figcaption><p>Page détaillé d'une déclaration de séjour pour l'instruction</p></figcaption></figure>
 
 </details>
 

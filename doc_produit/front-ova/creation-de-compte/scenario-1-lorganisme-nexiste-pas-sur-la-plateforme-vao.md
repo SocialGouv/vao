@@ -32,6 +32,20 @@ flowchart TD
     style M fill:#ffebee
 ```
 
+## Sécurité - Blocage temporaire des comptes
+
+- **Tentatives de connexion** : Après 5 tentatives infructueuses de connexion, le compte est temporairement bloqué
+- **Durée du blocage** : Le blocage dure 15 minutes
+- **Déblocage** : Le compte se débloque automatiquement après 15 minutes
+- **Notification** : L'utilisateur est informé du blocage et de la durée d'attente
+
+### Messages d'erreur
+
+Des messages d'erreur spécifiques sont affichés pour informer l'utilisateur :
+- Nombre de tentatives restantes avant blocage
+- Durée du blocage en cours
+- Actions possibles (attendre ou contacter le support)
+
 {% stepper %}
 {% step %}
 ### L’utilisateur OVA renseigne le formulaire de création de compte
@@ -96,6 +110,8 @@ La DREETS valide l’inscription
 L’utilisateur OVA reçoit un mail de confirmation.
 
 {% include "../../.gitbook/includes/ova-inscription-validee.md" %}
+
+> **Nouveau depuis la version 1.21.0** : Un message de confirmation s'affiche également directement dans l'interface lors de la validation du compte, offrant une meilleure expérience utilisateur.
 {% endstep %}
 
 {% step %}
