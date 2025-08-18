@@ -1,17 +1,5 @@
 ---
 icon: envelope-open-text
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
 ---
 
 # Liste des emails envoyés par le SI

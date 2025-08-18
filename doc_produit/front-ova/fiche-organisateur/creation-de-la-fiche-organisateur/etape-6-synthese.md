@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 6 - Synthèse
 
 <figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-05 à 11.02.00.png" alt=""><figcaption><p>Formulaire fiche organisme - étape 6 "Synthèse"</p></figcaption></figure>

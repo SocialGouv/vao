@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 8 - Synthèse
 
 Lors de la création d'une déclaration de séjour à 2 mois, l'utilisateur accède à l'étape 8 du formulaire : la synthèse et l'attestation sur l'honneur.

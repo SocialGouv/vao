@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 4 - Sélection des hébergements
 
 L'utilisateur accède à l'étape 5 du formulaire : les informations définitives sur l'hébergement.

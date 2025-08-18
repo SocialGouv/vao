@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Instruction déclaration à 2 mois
 
 Lorsqu'un OVA soumet une déclaration de séjour à 2 mois (statut "transmise"), l'agent de la DDETS reçois une notification par email pour l'informer.&#x20;

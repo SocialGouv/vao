@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 1 - Sélection du séjour
 
 Lors de la création d'un EIG, l'utilisateur accède à un formulaire d'informations générales à compléter.

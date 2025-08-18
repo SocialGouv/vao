@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 1 - Informations générales
 
 Lors de la création d'une déclaration de séjour à 8 jours, l'utilisateur accède à l'étape 1 du formulaire : les informations générales définitives.

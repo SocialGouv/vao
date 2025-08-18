@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Page de liste des EIG
 
 La page liste des EIG permet aux organisateurs de consulter et gérer tous leurs événements indésirables graves déclarés sur la plateforme VAO.

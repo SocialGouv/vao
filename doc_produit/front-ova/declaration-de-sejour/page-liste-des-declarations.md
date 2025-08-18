@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Page de liste des déclarations
 
 La page de liste des déclarations permet à l'utilisateur de consulter et gérer l'ensemble de ses déclarations de séjour.

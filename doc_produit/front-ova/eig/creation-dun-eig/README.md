@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Création d'un EIG
 
 La **création d'un EIG** se fait en plusieurs étapes via un formulaire guidé. Le processus permet de déclarer un événement indésirable grave survenu lors d'un séjour de vacances adaptées organisées.

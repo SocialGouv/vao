@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 7 - Sélection des hébergements
 
 Lors de la création d'une déclaration de séjour à 2 mois, l'utilisateur accède à l'étape 7 du formulaire : la sélection des hébergements.

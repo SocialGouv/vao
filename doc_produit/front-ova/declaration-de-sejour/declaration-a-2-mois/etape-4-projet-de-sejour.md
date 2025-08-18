@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 4 - Projet de séjour
 
 Lors de la création d'une déclaration de séjour à 2 mois, l'utilisateur accède à l'étape 4 du formulaire : le projet de séjour.

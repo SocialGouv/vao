@@ -1,3 +1,21 @@
+---
+icon: webhook
+layout:
+  width: default
+  title:
+    visible: true
+  description:
+    visible: true
+  tableOfContents:
+    visible: true
+  outline:
+    visible: true
+  pagination:
+    visible: false
+  metadata:
+    visible: true
+---
+
 # API
 
 L'API entreprise a une habilitation via DataPass.&#x20;

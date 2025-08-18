@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Déclaration à 2 mois
 
 La déclaration à 2 mois est la première étape obligatoire du processus de déclaration de séjour. Elle permet de déclarer l'intention d'organiser un séjour au moins 2 mois avant le début du séjour.

@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 5 - Synthèse
 
 L'utilisateur accède à l'étape 5 du formulaire : la synthèse de la déclaration à 8 jours et l'attestation sur l'honneur.

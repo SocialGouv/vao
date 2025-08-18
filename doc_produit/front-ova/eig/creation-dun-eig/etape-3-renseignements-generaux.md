@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 3 - Renseignements généraux
 
 <figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-09 à 14.59.18.png" alt=""><figcaption></figcaption></figure>

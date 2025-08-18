@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 5 - Informations sur le transport
 
 Lors de la création d'une déclaration de séjour à 2 mois, l'utilisateur accède à l'étape 5 du formulaire : les informations sur le transport.

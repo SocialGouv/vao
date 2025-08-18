@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 2 - Informations sur les vacanciers
 
 Lors de la création d'une déclaration de séjour, l'utilisateur accède à l'étape 2 du formulaire : les informations sur les vacanciers.

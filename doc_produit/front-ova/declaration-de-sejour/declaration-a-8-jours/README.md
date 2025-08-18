@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Déclaration à 8 jours
 
 La déclaration à 8 jours est la deuxième étape du processus de déclaration de séjour. Elle ne peut être effectuée que si la déclaration à 2 mois a été validée par les agents DDETS.

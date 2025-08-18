@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Page de liste des déclarations
 
 <figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-05 à 19.09.29.png" alt=""><figcaption><p>Page de liste des déclarations à instruire</p></figcaption></figure>

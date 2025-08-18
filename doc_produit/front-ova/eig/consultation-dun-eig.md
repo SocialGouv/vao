@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Consultation d'un EIG
 
 La **consultation d'un EIG** permet d'afficher les détails complets d'un événement indésirable grave déclaré sur la plateforme VAO. Cette page est accessible depuis la liste des EIG.

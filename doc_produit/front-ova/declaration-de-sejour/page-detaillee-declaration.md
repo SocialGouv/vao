@@ -1,18 +1,3 @@
----
-layout:
-  width: default
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Page détaillée d'une déclaration
 
 La page détaillée d'une déclaration permet à l'utilisateur de consulter, modifier et gérer une déclaration de séjour spécifique.
