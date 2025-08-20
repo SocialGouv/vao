@@ -19,6 +19,7 @@ const props = defineProps({
     cookies-link="/footer/gestion-cookies"
     a11y-compliance-link="/footer/accessibilite"
     home-title="Retour à l'accueil Vacances Adaptées Organisés, République Française"
+    a11y-compliance="partiellement conforme"
   >
     <template #description>
       <p
