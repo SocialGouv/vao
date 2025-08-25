@@ -1,5 +1,6 @@
 const dayjs = require("dayjs");
 const Regions = require("../../geo/Region");
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 
 module.exports = async function buildAgrement(agrement) {
   return {
@@ -33,58 +34,18 @@ module.exports = async function buildAgrement(agrement) {
         columnGap: 10,
         margin: [0, 20, 0, 0],
         stack: [
-          {
-            columns: [
-              {
-                text: "Numéro d'agrément :",
-                width: 250,
-              },
-              {
-                bold: true,
-                text: `${agrement.numero}`,
-                width: "*",
-              },
+          MiseEnPage.buildLines([
+            ["Numéro d'agrément :", agrement.numero],
+            [
+              "Date d'obtention de l'agrément :",
+              dayjs(agrement.dateObtention).format("DD/MM/YYYY"),
             ],
-          },
-          {
-            columns: [
-              {
-                text: "Date d'obtention de l'agrément :",
-                width: 250,
-              },
-              {
-                bold: true,
-                text: `${dayjs(agrement.dateObtention).format("DD/MM/YYYY")}`,
-                width: "*",
-              },
+            [
+              "Région d'obtention de l'agrément :",
+              await Regions.fetchOne(agrement.regionObtention),
             ],
-          },
-          {
-            columns: [
-              {
-                text: "Région d'obtention de l'agrément :",
-                width: 250,
-              },
-              {
-                bold: true,
-                text: await Regions.fetchOne(agrement.regionObtention),
-                width: "*",
-              },
-            ],
-          },
-          {
-            columns: [
-              {
-                text: "Nom du fichier téléversé :",
-                width: 250,
-              },
-              {
-                bold: true,
-                text: `${agrement.file.name}`,
-                width: "*",
-              },
-            ],
-          },
+            ["Nom du fichier téléversé :", agrement.file.name],
+          ]),
         ],
       },
     ],

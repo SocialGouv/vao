@@ -54,6 +54,10 @@ module.exports = module.exports = async (
   idFonctionnelle,
   departementSuivi,
 ) => {
+  console.log("IN services.pdf.declaration2mois.generate");
+  console.log(declaration);
+  console.log(idFonctionnelle);
+  console.log(departementSuivi);
   return await Sentry.startSpan(
     { name: "services.pdf.declaration2mois.generate" },
     async () => {
