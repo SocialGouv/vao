@@ -283,6 +283,11 @@
         >
       </li>
       <li>
+        Contacter le délégué du Défenseur des droits par téléphone :
+        <a href="tel:0969390000">09 69 39 00 00</a>, du lundi au vendredi de
+        8h30 à 19h30 (coût d’un appel local)
+      </li>
+      <li>
         Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre)
         à&nbsp;:<br /><span
           >Défenseur des droits<br />
