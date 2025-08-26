@@ -47,27 +47,23 @@ module.exports.getToken = getToken;
 
 module.exports.getEtablissement = async (siret) => {
   const { apiInsee } = config;
-  const token = await getToken();
   log.w("getEtablissement", { siret });
-  log.w(token);
   const dateDuJour = dayjs().format("YYYY-MM-DD");
   const { data } = await axios.get(
     `${apiInsee.URL}${apiInsee.URI}/siret/${siret}?date=${dateDuJour}`,
-    { headers: { Authorization: `Bearer ${token}` } },
+    { headers: { "X-INSEE-Api-Key-Integration": `${apiInsee.TOKEN}` } },
   );
   return data.etablissement;
 };
 
 module.exports.getListeEtablissements = async (siren) => {
   const { apiInsee } = config;
-  const token = await getToken();
 
   const fetchPage = async (start = 0, accumulated = []) => {
     const { data } = await axios.get(
       `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=${NB_ELEMENTS_TO_GET}&tri=siret&debut=${start}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      { headers: { "X-INSEE-Api-Key-Integration": `${apiInsee.TOKEN}` } },
     );
-
     const etablissements = data.etablissements ?? [];
     const total = data?.header?.total ?? 0;
     const nextAccumulated = [...accumulated, ...etablissements];
@@ -75,7 +71,6 @@ module.exports.getListeEtablissements = async (siren) => {
     if (nextAccumulated.length >= total) {
       return nextAccumulated;
     }
-
     return fetchPage(nextAccumulated.length, nextAccumulated);
   };
 
