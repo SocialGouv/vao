@@ -1,6 +1,5 @@
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
-const normalize = require("../utils/normalize");
 
 const {
   sanitizePaginationParams,
@@ -131,6 +130,7 @@ const query = {
     ) AS Resultat
     WHERE 1 = 1
     `,
+
   getByToValidateByBo: `
     SELECT
       u.id AS "userId",
@@ -147,6 +147,7 @@ const query = {
     AND u.status_code = 'NEED_SIRET_VALIDATION'
     AND u.siret not in (SELECT opme.siret FROM front.opm_etablissements opme WHERE opme.siret = u.siret)
   `,
+
   getIsLastUserOrganisme: `
     SELECT COUNT(*)
     FROM front.users u
@@ -158,6 +159,7 @@ const query = {
     )
     AND u.status_code = 'VALIDATED';  
   `,
+
   // uc : User connected  / uu : User recherché
   // On vérifier que l'organisme de l'utilisateur connecté est le même que celui de l'utilisateur recherché
   // l'utilisateur connecté doit être un utilisateur de l'organisme principal
@@ -179,6 +181,30 @@ const query = {
         INNER JOIN front.users uu ON ucpm.siren = substr(uu.siret,1,9)
         WHERE uco.use_id = $1 AND uu.id = $2
     ) AS counts;
+  `,
+
+  getList: () => `
+    SELECT
+      us.id AS id,
+      us.mail AS email,
+      us.nom AS nom,
+      us.prenom AS prenom,
+      us.status_code AS statut,
+      us.created_at AS "dateCreation",
+      us.lastconnection_at as "lastConnectionAt",
+      org.id AS "organismeId",
+      org.type_organisme AS "typeOrganisme",
+      STRING_AGG(DISTINCT COALESCE(pm.siret, pp.siret), ', ') AS siret,
+      pm.siren AS siren,
+      pm.raison_sociale AS "raisonSociale",
+      count(CASE WHEN ds.statut <> 'BROUILLON' THEN ds.id ELSE NULL END) AS "nombreDeclarations"
+    FROM front.users AS us
+      LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
+      LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
+      LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
+    WHERE 1 = 1
   `,
   getMailUserOrganismeId: `
     SELECT mail FROM front.users u
@@ -305,81 +331,117 @@ module.exports.getByOrganismeId = async (organismesId, queryParams) => {
   };
 };
 
-module.exports.read = async ({
-  limit,
-  offset,
-  sortBy,
-  sortDirection = "ASC",
-  search,
-} = {}) => {
-  log.i("read - IN", { search });
-  let searchQuery = "";
-  const searchParams = [];
+const userTitles = [
+  {
+    key: "org.id",
+    queryKey: "organisme_id",
+    sortEnabled: false,
+    type: "default",
+  },
+  {
+    key: "us.nom",
+    queryKey: "nom",
+    sortEnabled: true,
+    type: "default",
+  },
+  {
+    key: "us.prenom",
+    queryKey: "prenom",
+    sortEnabled: true,
+    type: "default",
+  },
+  {
+    key: "us.mail",
+    queryKey: "email",
+    sortEnabled: true,
+    type: "default",
+  },
+  {
+    key: "pm.siret",
+    queryKey: "siret",
+    sortEnabled: false,
+    type: "default",
+  },
+  {
+    key: "pm.raison_sociale",
+    queryKey: "organisme",
+    sortEnabled: false,
+    type: "default",
+  },
+  {
+    key: "us.status_code",
+    queryKey: "statut",
+    sortEnabled: true,
+    type: "default",
+  },
+  {
+    key: "us.created_at",
+    queryKey: "dateCreation",
+    sortEnabled: true,
+    sortType: "date",
+    type: "default",
+  },
+];
 
-  // Search management
-  if (search?.organisme_id && search.organisme_id.length) {
-    searchQuery += `   AND org.id = $${searchParams.length + 1}\n`;
-    searchParams.push(`${search.organisme_id}`);
+module.exports.read = async (queryParams = {}) => {
+  log.i("read - IN", queryParams);
+  if (queryParams.search && typeof queryParams.search === "object") {
+    queryParams = { ...queryParams, ...queryParams.search };
+    delete queryParams.search;
   }
-  if (search?.nom && search.nom.length) {
-    searchQuery += `   AND unaccent(us.nom) ILIKE unaccent($${searchParams.length + 1})\n`;
-    searchParams.push(`%${search.nom}%`);
-  }
-  if (search?.prenom && search.prenom.length) {
-    searchQuery += `   AND unaccent(us.prenom) ILIKE unaccent($${searchParams.length + 1})\n`;
-    searchParams.push(`%${search.prenom}%`);
-  }
-  if (search?.email && search.email.length) {
-    searchQuery += `   AND us.mail ILIKE $${searchParams.length + 1}\n`;
-    searchParams.push(`%${normalize(search.email)}%`);
-  }
-  if (search?.siret && search.siret.length) {
-    searchQuery += `   AND (pm.siret ILIKE $${searchParams.length + 1} OR pp.siret ILIKE $${searchParams.length + 1})\n`;
-    searchParams.push(`%${normalize(search.siret)}%`);
-  }
-  if (search?.organisme && search.organisme.length) {
-    searchQuery += `AND (
-      pm.raison_sociale ILIKE $${searchParams.length + 1}
-      OR unaccent(pp.prenom) ILIKE unaccent($${searchParams.length + 1})
-      OR unaccent(pp.nom_usage) ILIKE unaccent($${searchParams.length + 1})
-      )`;
-    searchParams.push(`%${search.organisme}%`);
-  }
-
-  let additionalQueryParts = "";
-  const additionalParams = [];
-
-  // Order management
-  if (sortBy && sortDirection) {
-    additionalQueryParts += `
-    ORDER BY "${sortBy}" ${sortDirection}
-    `;
-  } else {
-    additionalQueryParts += "\n ORDER BY nom, prenom";
-  }
-
-  // Pagination management
-  if (limit != null && offset != null) {
-    additionalQueryParts += `
-    OFFSET $${searchParams.length + additionalParams.length + 1}
-    LIMIT $${searchParams.length + additionalParams.length + 2}
-    `;
-    additionalParams.push(offset, limit);
-  }
-
-  const response = await pool.query(
-    ...query.get(searchQuery, additionalQueryParts, [
-      ...searchParams,
-      ...additionalParams,
-    ]),
+  const groupBy = `GROUP BY us.id,us.mail,us.nom,us.prenom,us.status_code,org.id,org.type_organisme,pm.siren,pm.raison_sociale,org.id`;
+  const processQueryWithGroupBy = (
+    queryBuilder,
+    baseParams,
+    titles,
+    queryParams,
+    defaultSort = {},
+  ) => {
+    const { applyFilters } = require("../helpers/queryParams");
+    const filterParams =
+      require("../helpers/queryParams").sanitizeFiltersParams(
+        queryParams,
+        titles,
+      );
+    const baseQuery = queryBuilder();
+    const filteredQuery = applyFilters(baseQuery, baseParams, filterParams);
+    const filteredQueryWithGroupBy = {
+      ...filteredQuery,
+      query: `${filteredQuery.query}\n${groupBy}`,
+    };
+    const { limit, offset, sort } =
+      require("../helpers/queryParams").sanitizePaginationParams(
+        queryParams,
+        titles,
+        defaultSort,
+      );
+    return require("../helpers/queryParams").applyPagination(
+      filteredQueryWithGroupBy.query,
+      filteredQueryWithGroupBy.params,
+      limit,
+      offset,
+      sort,
+    );
+  };
+  const paginatedQuery = processQueryWithGroupBy(
+    query.getList,
+    [],
+    userTitles,
+    queryParams,
+    {
+      sortBy: "nom",
+      sortDirection: "DESC",
+    },
   );
 
-  const total = await pool.query(...query.getTotal(searchQuery, searchParams));
-
+  const result = await Promise.all([
+    pool.query(paginatedQuery.query, paginatedQuery.params),
+    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+  ]);
   log.i("read - DONE");
   return {
-    total: total.rows[0].count,
-    users: response.rows,
+    total: parseInt(result[1].rows[0].total, 10),
+    users: result[0].rows,
   };
 };
 
