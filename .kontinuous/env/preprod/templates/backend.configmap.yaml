@@ -4,7 +4,7 @@ metadata:
   name: backend
 data:
   API_INSEE_URL: "https://api.insee.fr"
-  API_INSEE_URI: "/entreprises/sirene/V3.11"
+  API_INSEE_URI: "/api-sirene/3.11"
   ANTIVIRUS_URL: "https://antivirus.fabrique.social.gouv.fr/vao/api/v1/scan"
   BACKEND_URL: "https://api-{{ .Values.global.host }}"
   FRONTEND_USAGERS_URL: "https://{{ .Values.global.host }}"
