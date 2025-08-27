@@ -7,7 +7,14 @@ const log = logger(module.filename);
 module.exports = async function checkApiInsee(_req, res, next) {
   log.i("IN");
   try {
-    await getToken();
+    const data = await getToken();
+    if (data.etatService !== "UP") {
+      throw new AppError("Le service INSEE n'est pas UP", {
+        details: data,
+        name: "INSEE_DOWN",
+        statusCode: 503,
+      });
+    }
   } catch (e) {
     log.w("DONE with error");
     return next(
