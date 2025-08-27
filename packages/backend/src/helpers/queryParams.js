@@ -113,7 +113,7 @@ const applyFilters = (query, initialParams, filters, groupBy = "") => {
     .filter(Boolean)
     .join(" AND ");
 
-  let newQuery = `${query} AND ${filteringQuery}`;
+  let newQuery = filteringQuery ? `${query} AND ${filteringQuery}` : query;
   if (groupBy) {
     newQuery += `\n${groupBy}\n`;
   }
@@ -159,17 +159,22 @@ const processQuery = (
   titles,
   queryParams,
   defaultSort = {},
+  groupBy = null,
 ) => {
   const filterParams = sanitizeFiltersParams(queryParams, titles);
   const baseQuery = queryBuilder();
   const filteredQuery = applyFilters(baseQuery, baseParams, filterParams);
+  let queryWithGroupBy = filteredQuery.query;
+  if (groupBy) {
+    queryWithGroupBy += `\nGROUP BY ${groupBy}`;
+  }
   const { limit, offset, sort } = sanitizePaginationParams(
     queryParams,
     titles,
     defaultSort,
   );
   return applyPagination(
-    filteredQuery.query,
+    queryWithGroupBy,
     filteredQuery.params,
     limit,
     offset,

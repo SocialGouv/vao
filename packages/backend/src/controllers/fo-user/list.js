@@ -38,6 +38,10 @@ module.exports = async function list(req, res, next) {
         abortEarly: false,
       },
     );
+    if (typeof params.search === "object") {
+      params = { ...params, ...params.search };
+      delete params.search;
+    }
   } catch (error) {
     return next(new ValidationAppError(error));
   }

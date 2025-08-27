@@ -7,6 +7,7 @@ const {
   applyFilters,
   applyPagination,
 } = require("../helpers/queryParams");
+const { processQuery } = require("../helpers/queryParams");
 
 const AppError = require("../utils/error");
 
@@ -363,10 +364,20 @@ const userTitles = [
     type: "default",
   },
   {
-    key: "pm.raison_sociale",
+    key: "COALESCE(pm.raison_sociale, pp.nom_usage)",
+    query: (index, value) => {
+      if (value === undefined || value === null || value === "") {
+        return {};
+      }
+      return {
+        query: `((org.type_organisme = 'personne_morale' AND unaccent(pm.raison_sociale) ILIKE '%' || unaccent($${index}) || '%') OR (org.type_organisme = 'personne_physique' AND unaccent(pp.nom_usage) ILIKE '%' || unaccent($${index}) || '%'))`,
+        queryParams: [value],
+      };
+    },
     queryKey: "organisme",
-    sortEnabled: false,
-    type: "default",
+    sortEnabled: true,
+    sortQuery: "COALESCE(pm.raison_sociale, pp.nom_usage)",
+    type: "custom",
   },
   {
     key: "us.status_code",
@@ -385,45 +396,10 @@ const userTitles = [
 
 module.exports.read = async (queryParams = {}) => {
   log.i("read - IN", queryParams);
-  if (queryParams.search && typeof queryParams.search === "object") {
-    queryParams = { ...queryParams, ...queryParams.search };
-    delete queryParams.search;
-  }
-  const groupBy = `GROUP BY us.id,us.mail,us.nom,us.prenom,us.status_code,org.id,org.type_organisme,pm.siren,pm.raison_sociale,org.id`;
-  const processQueryWithGroupBy = (
-    queryBuilder,
-    baseParams,
-    titles,
-    queryParams,
-    defaultSort = {},
-  ) => {
-    const { applyFilters } = require("../helpers/queryParams");
-    const filterParams =
-      require("../helpers/queryParams").sanitizeFiltersParams(
-        queryParams,
-        titles,
-      );
-    const baseQuery = queryBuilder();
-    const filteredQuery = applyFilters(baseQuery, baseParams, filterParams);
-    const filteredQueryWithGroupBy = {
-      ...filteredQuery,
-      query: `${filteredQuery.query}\n${groupBy}`,
-    };
-    const { limit, offset, sort } =
-      require("../helpers/queryParams").sanitizePaginationParams(
-        queryParams,
-        titles,
-        defaultSort,
-      );
-    return require("../helpers/queryParams").applyPagination(
-      filteredQueryWithGroupBy.query,
-      filteredQueryWithGroupBy.params,
-      limit,
-      offset,
-      sort,
-    );
-  };
-  const paginatedQuery = processQueryWithGroupBy(
+
+  const groupBy =
+    "us.id,us.mail,us.nom,us.prenom,us.status_code,org.id,org.type_organisme,pm.siren,pm.raison_sociale,org.id";
+  const paginatedQuery = processQuery(
     query.getList,
     [],
     userTitles,
@@ -432,6 +408,7 @@ module.exports.read = async (queryParams = {}) => {
       sortBy: "nom",
       sortDirection: "DESC",
     },
+    groupBy,
   );
 
   const result = await Promise.all([
