@@ -1,4 +1,5 @@
 const apiEntrepriseBaseUrl = "https://entreprise.api.gouv.fr";
+const assistanceBaseUrl = "https://vao-assistance.atlassian.net";
 
 module.exports = {
   accessToken: {
@@ -30,6 +31,10 @@ module.exports = {
   apiToken: {
     expiresIn: 365 * 24 * 60 * 60 * 1000,
     tokenSecret: process.env.API_TOKEN_SECRET_PRIV,
+  },
+  assistance: {
+    uriFaq: `${assistanceBaseUrl}/servicedesk/customer/portals`,
+    uriNewRequest: `${assistanceBaseUrl}/servicedesk/customer/portal/1/group/2/create/10`,
   },
   authentification: {
     lockoutTime: 15,

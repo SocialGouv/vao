@@ -626,7 +626,7 @@ WITH
     SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
     FROM back.users u
     JOIN back.user_roles ur ON u.id = ur.use_id
-    WHERE u.ter_code = $1
+    WHERE u.ter_code = $1 AND u.deleted = false
     GROUP BY mail
   )
 SELECT mail
@@ -655,8 +655,9 @@ WITH
     SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
     FROM regions r, back.users u
     JOIN back.user_roles ur ON u.id = ur.use_id
-    WHERE u.ter_code = ANY($1)
-      OR u.ter_code = ANY(r.parent_code)
+    WHERE (u.ter_code = ANY($1)
+      OR u.ter_code = ANY(r.parent_code))
+      AND u.deleted = FALSE
     GROUP BY mail
   )
 SELECT mail
