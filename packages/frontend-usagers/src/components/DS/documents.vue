@@ -70,6 +70,7 @@ const headers = [
         component: NuxtLink,
         to: `${config.public.backendUrl}/documents/${file.uuid}`,
         class: "fr-icon-file-download-fill",
+        ariaLabel: `Télécharger le document ${file.name}`,
       };
     },
   },

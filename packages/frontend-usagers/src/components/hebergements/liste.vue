@@ -40,17 +40,13 @@
       <div class="buttons-group">
         <NuxtLink
           :to="`/hebergements/${row.id}`"
-          title="Naviguer vers l'hébergement"
-          class="no-background-image"
+          :title="`Naviguer vers l'hébergement: ${row.nom}`"
+          class="fr-btn fr-btn--sm inline-flex justify-center no-background-image"
         >
-          <DsfrButton
-            class="link__dsfrButton"
-            icon="ri:arrow-right-s-line"
-            icon-only
-            primary
-            size="small"
-            type="button"
-          />
+          <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+          <span class="fr-sr-only"
+            >Naviguer vers l'hébergement: {{ row.nom }}</span
+          >
         </NuxtLink>
         <DsfrButton
           v-if="
@@ -67,6 +63,11 @@
           secondary
           size="small"
           type="button"
+          :aria-label="
+            row.statut === statuts.DESACTIVE
+              ? `Réactiver l'hébergement: ${row.nom}`
+              : `Désactiver l'hébergement: ${row.nom}`
+          "
           :label="
             row.statut === statuts.DESACTIVE
               ? 'Réactiver l\'hébergement'
@@ -231,3 +232,13 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style scoped>
+.buttons-group {
+  display: flex;
+  gap: 0.5rem;
+}
+.buttons-group > .fr-btn {
+  height: 100%;
+}
+</style>
