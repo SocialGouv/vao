@@ -819,6 +819,45 @@ module.exports = {
     },
   },
   usagers: {
+    action: {
+      sendAccountDeletionMail: ({ email }) => {
+        log.i("sendAccountDeletionMail - In", {
+          email,
+        });
+        if (!email) {
+          const message = `Le paramètre de l'adresse courriel manque à la requête`;
+          log.w(`sendForgottenPassword - ${message}`);
+          throw new AppError(message);
+        }
+        log.d("sendAccountDeletionMail - sending mail on deletion");
+        const html = sendTemplate.getBody(
+          "Portail VAO - DESACTIVATION DE VOTRE COMPTE",
+          [
+            {
+              p: [
+                "Bonjour,",
+                `Nous vous informons que votre compte associé à l’adresse <strong>${email}</strong> a été <strong>désactivé</strong> par un administrateur sur le portail VAO.`,
+                "Si vous estimez qu’il s’agit d’une erreur ou si vous avez besoin d’un accès à nouveau, vous pouvez :",
+                `<ul><li>Contacter votre administrateur référent, ou</li><li>Contacter le support en <a href=${config.assistance.uriNewRequest}>cliquant ici</a>.</li></ul>`,
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "Portail VAO - DESACTIVATION DE VOTRE COMPTE",
+          to: email,
+        };
+        log.d("sendAccountDeletionMail post email", { params });
+
+        return params;
+      },
+    },
     authentication: {
       sendAccountAlreadyExist: ({ email }) => {
         log.i("sendAccountAlreadyExist - In", {
