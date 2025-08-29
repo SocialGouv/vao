@@ -130,7 +130,7 @@ describe("queryParams", () => {
     expect(result).toEqual({
       limit: 20,
       offset: 5,
-      sort: "ORDER BY LOWER(name::varchar) ASC",
+      sort: "ORDER BY LOWER(unaccent(name::varchar)) ASC",
     });
   });
 

@@ -1,16 +1,18 @@
 const getSort = (sortBy, direction, titles, defaultSort = "") => {
-  if (sortBy && direction) {
-    const title = titles.find((t) => t.queryKey === sortBy && t.sortEnabled);
+  const finalSortBy = sortBy || defaultSort;
+  if (finalSortBy && direction) {
+    const title = titles.find(
+      (t) => t.queryKey === finalSortBy && t.sortEnabled,
+    );
     if (title) {
       if (title.customSort) {
-        return title.customSort(sortBy, direction);
+        return title.customSort(finalSortBy, direction);
       }
       if (title?.sortType === "date") {
         return `ORDER BY ${title.sortQuery ?? title.key} ${direction}`;
       }
-      return `ORDER BY LOWER(${title.sortQuery ?? title.key}::varchar) ${direction}`;
+      return `ORDER BY LOWER(unaccent(${title.sortQuery ?? title.key}::varchar)) ${direction}`;
     }
-    return `ORDER BY LOWER(${defaultSort}::varchar) ${direction}`;
   }
   return "";
 };
