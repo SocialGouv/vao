@@ -190,6 +190,7 @@ const query = {
         FROM back.users u
         JOIN back.user_roles ur ON u.id = ur.use_id
         WHERE u.ter_code = $1
+        AND deleted = false
         GROUP BY mail
       )
         SELECT mail

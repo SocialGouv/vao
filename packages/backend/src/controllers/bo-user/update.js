@@ -2,7 +2,8 @@ const BoUser = require("../../services/BoUser");
 
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
-
+const Send = require("../../services/mail").mailService.send;
+const MailUtils = require("../../utils/mail");
 const BOUserSchema = require("../../schemas/bo-user");
 const serviceCompetence = require("./service-competence");
 const verifyCompetence = require("./service-competence");
@@ -35,13 +36,32 @@ module.exports = async function update(req, res, next) {
       serviceCompetentUtilisateurUpdate,
     )
   ) {
+    let userBeforeUpdate = null;
+    try {
+      userBeforeUpdate = await BoUser.getByUserId(userId);
+    } catch (error) {
+      log.w("Utilisateur inexistant");
+      return next(error);
+    }
     try {
       await BoUser.update(userId, user, req.decoded.id);
-      return res.status(200).json({ message: "Utilisateur mis à jour" });
     } catch (error) {
       log.w("DONE with error");
       return next(error);
     }
+    if (user.deleted && !userBeforeUpdate.deleted && userBeforeUpdate.email) {
+      try {
+        await Send(
+          MailUtils.bo.action.sendAccountDeletionMail({
+            email: userBeforeUpdate.email,
+          }),
+        );
+      } catch (error) {
+        log.w("Error sending account deletion mail", error);
+      }
+    }
+    log.i("DONE");
+    return res.status(200).json({ message: "Utilisateur mis à jour" });
   } else
     return res
       .status(403)

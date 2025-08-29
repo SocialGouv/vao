@@ -65,7 +65,7 @@ const queryRappelDSBo = () =>
     statutsArray: `'${status.TRANSMISE}','${status.EN_COURS}','${status.TRANSMISE_8J}','${status.EN_COURS_8J}'`,
     additionalColumns: "use.mail,",
     additionalJoins:
-      "INNER JOIN geo.territoires ter ON ter.code = ds.departement_suivi INNER JOIN back.users use ON ter.code = use.ter_code",
+      "INNER JOIN geo.territoires ter ON ter.code = ds.departement_suivi INNER JOIN back.users use ON ter.code = use.ter_code AND use.deleted = false",
     additionalGroupBy: "use.mail,",
     additionalOrderBy: "",
   });

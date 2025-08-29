@@ -293,10 +293,10 @@ const getByUserId = async (userId) => {
 module.exports.getByUserId = getByUserId;
 
 module.exports.addAsyncUserHistoric = async ({
-  data: { oldData, newData },
+  action,
+  data: { newData, oldData },
   foUserId,
   userId,
-  action,
   userType,
 }) => {
   try {

@@ -6,7 +6,6 @@ function trackFoUser({ action, userType, itself }) {
     const { id: userId } = req.decoded;
 
     const foUserId = itself ? userId : req.params.userId;
-
     let oldUser = null;
     if (action !== actions.creation) {
       oldUser = await foUser.getByUserId(foUserId);
@@ -21,9 +20,8 @@ function trackFoUser({ action, userType, itself }) {
       const id = action === actions.creation ? req.tracking.id : foUserId;
 
       if (action !== actions.deletion) {
-        newUser = foUser.getByUserId(id);
+        newUser = await foUser.getByUserId(id);
       }
-
       if (foUserId) {
         foUser.addAsyncUserHistoric({
           action,
