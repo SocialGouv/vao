@@ -40,7 +40,7 @@
       </div>
     </div>
     <div :class="filedsetClass">
-      <DsfrMultiselect
+      <DsfrMultiselectV2
         v-model="departementSuiviSync"
         label="Département d'instruction"
         search
@@ -87,7 +87,7 @@
 
 <script lang="ts" setup>
 import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
-import { status as statusUtils } from "@vao/shared";
+import { status as statusUtils, DsfrMultiselectV2 } from "@vao/shared";
 
 const departementStore = useDepartementStore();
 

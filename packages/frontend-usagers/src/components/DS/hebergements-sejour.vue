@@ -160,6 +160,7 @@ const syntheseRows = computed(() => {
           tertiary: true,
           noOutline: true,
           disabled: !props.modifiable,
+          ariaLabel: `Supprimer l'hébergement: ${hebergement.nom}`,
           onClick: (event) => {
             event.stopPropagation();
             removeHebergement(index);

@@ -92,6 +92,9 @@ const personnesToDisplay = computed(() => {
         class: "fr-icon-delete-fill",
         tertiary: true,
         noOutline: true,
+        tabIndex: 0,
+        ariaLabel: "Supprimer " + (p.prenom || "") + " " + (p.nom || ""),
+        role: "button",
         onClick: (event) => {
           event.stopPropagation();
           deleteItem(index);
