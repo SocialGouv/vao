@@ -1,6 +1,7 @@
 const AppError = require("../../utils/error");
 const logger = require("../../utils/logger");
 const pool = require("../../utils/pgpool").getPool();
+const config = require("../../config");
 
 const log = logger(module.filename);
 
@@ -16,18 +17,38 @@ const query = {
       ORDER BY code asc`,
 };
 
-let cache;
+let cache = {
+  data: null,
+  timestamp: 0,
+};
+
+let loadingPromise = null;
+
+async function loadCache() {
+  const now = Date.now();
+  const isExpired = now - cache.timestamp > config.cacheTTL;
+  if ((!cache.data || isExpired) && !loadingPromise) {
+    loadingPromise = (async () => {
+      log.i("Chargement en arrière-plan du cache des départements");
+      const { rows } = await pool.query(query.select);
+      cache = {
+        data: rows,
+        timestamp: Date.now(),
+      };
+      loadingPromise = null;
+    })();
+  }
+}
 
 module.exports.fetch = async (criterias = {}) => {
   log.i("fetch - IN");
-  if (!cache) {
-    const { rows } = await pool.query(query.select);
-    cache = rows;
-  }
+
+  await loadCache();
+
   const filters = Object.entries(criterias);
-  const departements = cache.filter((departement) => {
-    return filters.every(([key, value]) => departement[key] == value);
-  });
+  const departements = cache.data.filter((departement) =>
+    filters.every(([key, value]) => departement[key] == value),
+  );
 
   log.i("fetch - DONE");
   return departements;
@@ -35,11 +56,12 @@ module.exports.fetch = async (criterias = {}) => {
 
 module.exports.fetchOne = async (code) => {
   log.i("fetchOne - IN");
-  if (!cache) {
-    const { rows } = await pool.query(query.select);
-    cache = rows;
-  }
-  const departement = cache.find((departement) => departement.value === code);
+
+  await loadCache();
+
+  const departement = cache.data.find(
+    (departement) => departement.value === code,
+  );
 
   if (!departement) {
     throw new AppError(`Département ${code} non trouvé`);
