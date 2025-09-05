@@ -1,4 +1,15 @@
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
+
 module.exports = function buildInformationsPersonnel(info) {
+  const lines = [
+    ["Nombre de personnes responsables présentes :", info.nombreResponsable],
+    ["Nombre d'accompagnants présents :", info.nombreAccompagnant],
+    [
+      "Procédure de recrutement supplémentaires durant le séjour :",
+      info.procedureRecrutementSupplementaire ? "Oui" : "Non",
+    ],
+  ];
+
   return {
     stack: [
       {
@@ -31,47 +42,7 @@ module.exports = function buildInformationsPersonnel(info) {
           {
             alignment: "left",
             columnGap: 10,
-            stack: [
-              {
-                columns: [
-                  {
-                    text: "Nombre de personnes responsables présentes :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.nombreResponsable}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Nombre d'accompagnants présents :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.nombreAccompagnant}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Procédure de recrutement supplémentaires durant le séjour :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.procedureRecrutementSupplementaire ? "Oui" : "Non"}`,
-                    width: "*",
-                  },
-                ],
-              },
-            ],
+            stack: MiseEnPage.buildLines(lines),
           },
         ],
         margin: [0, 20, 0, 0],
