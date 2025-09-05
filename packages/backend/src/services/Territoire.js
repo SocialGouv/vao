@@ -102,8 +102,15 @@ module.exports.fetch = async (queryParams) => {
       type: "default",
     },
   ];
+  const { limit, offset, sort } = sanitizePaginationParams(
+    queryParams,
+    titles,
+    {
+      sortBy: "label",
+      sortDirection: "ASC",
+    },
+  );
 
-  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
   const filterParams = sanitizeFiltersParams(queryParams, titles);
 
   const queryGet = query.select();
