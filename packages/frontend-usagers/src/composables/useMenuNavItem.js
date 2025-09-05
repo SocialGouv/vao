@@ -49,25 +49,29 @@ export const useMenuNavItems = () => {
                 },
               ],
             },
-          ]
-        : []),
-      {
-        text: "Mes hébergements",
-        to: "/hebergements/liste",
-      },
-      ...(userStore.user?.roles?.some((role) =>
-        [userRolesRef.EIG_LECTURE, userRolesRef.EIG_ECRITURE].includes(role),
-      )
-        ? [
             {
-              title: "EIG",
-              links: [
-                { text: "Mes EIG", to: "/eig/liste" },
-                ...(userStore.user?.roles?.includes(userRolesRef.EIG_ECRITURE)
-                  ? [{ text: "Créer un EIG", to: "/eig" }]
-                  : []),
-              ],
+              text: "Mes hébergements",
+              to: "/hebergements/liste",
             },
+            ...(userStore.user?.roles?.some((role) =>
+              [userRolesRef.EIG_LECTURE, userRolesRef.EIG_ECRITURE].includes(
+                role,
+              ),
+            )
+              ? [
+                  {
+                    title: "EIG",
+                    links: [
+                      { text: "Mes EIG", to: "/eig/liste" },
+                      ...(userStore.user?.roles?.includes(
+                        userRolesRef.EIG_ECRITURE,
+                      )
+                        ? [{ text: "Créer un EIG", to: "/eig" }]
+                        : []),
+                    ],
+                  },
+                ]
+              : []),
           ]
         : []),
     ];

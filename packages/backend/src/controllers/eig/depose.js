@@ -75,6 +75,7 @@ module.exports = async (req, res, next) => {
       emailsDDETS,
       emailsDREETS,
       emailsOrganisateur,
+      emailsOrganisateurSiegeSocial,
       departementName,
       regionName,
       userName,
@@ -118,7 +119,11 @@ module.exports = async (req, res, next) => {
       (await Send(
         MailUtils.bo.eig.sendToOrganisme({
           declarationSejour: ds,
-          dest: [...emailsOrganisateur, ds.responsableSejour.email],
+          dest: [
+            ...emailsOrganisateur,
+            ds.responsableSejour.email,
+            ...emailsOrganisateurSiegeSocial,
+          ],
           eig,
           userName,
         }),

@@ -23,8 +23,7 @@ module.exports = {
   },
 
   apiInsee: {
-    CLIENT_ID: process.env.API_INSEE_CLIENT_ID,
-    CLIENT_SECRET: process.env.API_INSEE_CLIENT_SECRET,
+    TOKEN: process.env.API_INSEE_TOKEN,
     URI: process.env.API_INSEE_URI,
     URL: process.env.API_INSEE_URL,
   },

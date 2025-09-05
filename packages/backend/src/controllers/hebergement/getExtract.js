@@ -13,12 +13,14 @@ module.exports = async function getExtract(req, res, next) {
   try {
     const result = await Hebergement.getByDepartementCodes(
       {
+        limit: -1,
         order: "ASC",
         search: "",
         sort: "nom",
       },
       departements,
     );
+
     const titles = [
       { key: "nom", label: "Nom de l’hébergement" },
       { key: "departement", label: "Département" },
@@ -34,7 +36,6 @@ module.exports = async function getExtract(req, res, next) {
       ...result.rows.map((item) => {
         const newItem = { ...item };
         newItem.reglementationErp = newItem.reglementationErp ? "oui" : "non";
-        newItem.adresse = newItem.adresse.label;
         newItem.dateVisite = newItem.dateVisite
           ? dayjs(newItem.dateVisite).format("DD/MM/YYYY")
           : "";

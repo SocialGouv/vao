@@ -125,13 +125,13 @@
       </div>
     </DsfrAccordion>
     <DsfrAccordion
-      v-if="demandeStore.currentDemande?.informationsProjetSejour"
+      v-if="demandeStore.currentDemande?.projetSejour"
       :title="`Projet de séjour`"
     >
       <UtilsDisplayInput
         v-for="entry in Object.keys(displayInput.IProjetSejour)"
         :key="`projet-sejour-${entry}`"
-        :value="demandeStore.currentDemande.informationsProjetSejour[entry]"
+        :value="demandeStore.currentDemande.projetSejour[entry]"
         :input="displayInput.IProjetSejour[entry]"
       />
     </DsfrAccordion>

@@ -8,66 +8,56 @@ const log = logger(module.filename);
 const NB_ELEMENTS_TO_GET = 1000;
 
 module.exports.checkTokenApiEntreprise = async () => {
+  log.i("IN");
   try {
     const params = new URLSearchParams({ token: config.apiEntreprise.token });
     const url = `${config.apiEntreprise.url}/privileges?${params}`;
     const { data } = await axios.get(url);
+    log.i("DONE");
     return data;
   } catch (error) {
+    log.w("DONE with error");
     throw new Error(`API Entreprise error: ${error.message}`);
   }
 };
 
-const getToken = async () => {
+const getInformations = async () => {
   log.i("IN");
   try {
     const { apiInsee } = config;
-    const cle = `${apiInsee.CLIENT_ID}:${apiInsee.CLIENT_SECRET}`;
-    const authHeader = `Basic ${Buffer.from(cle).toString("base64")}`;
-    const token = await axios.post(
-      `${apiInsee.URL}/token`,
-      {},
-      {
-        headers: {
-          Authorization: authHeader,
-          "Content-type": "application/x-www-form-urlencoded",
-        },
-        params: {
-          grant_type: "client_credentials",
-        },
-      },
+    const { data } = await axios.get(
+      `${apiInsee.URL}${apiInsee.URI}/informations`,
+      { headers: { "X-INSEE-Api-Key-Integration": `${apiInsee.TOKEN}` } },
     );
-    return token.data.access_token;
+    log.i("DONE");
+    return data;
   } catch (error) {
-    throw new Error(`API Entreprise error: ${error.message}`);
+    log.w("DONE with error");
+    throw new Error(`API Insee error: ${error.message}`);
   }
 };
 
-module.exports.getToken = getToken;
+module.exports.getInformations = getInformations;
 
 module.exports.getEtablissement = async (siret) => {
   const { apiInsee } = config;
-  const token = await getToken();
-  log.w("getEtablissement", { siret });
-  log.w(token);
+  log.i("getEtablissement", { siret });
   const dateDuJour = dayjs().format("YYYY-MM-DD");
   const { data } = await axios.get(
     `${apiInsee.URL}${apiInsee.URI}/siret/${siret}?date=${dateDuJour}`,
-    { headers: { Authorization: `Bearer ${token}` } },
+    { headers: { "X-INSEE-Api-Key-Integration": `${apiInsee.TOKEN}` } },
   );
   return data.etablissement;
 };
 
 module.exports.getListeEtablissements = async (siren) => {
   const { apiInsee } = config;
-  const token = await getToken();
 
   const fetchPage = async (start = 0, accumulated = []) => {
     const { data } = await axios.get(
       `${apiInsee.URL}${apiInsee.URI}/siret?q=siren:${siren}&nombre=${NB_ELEMENTS_TO_GET}&tri=siret&debut=${start}`,
-      { headers: { Authorization: `Bearer ${token}` } },
+      { headers: { "X-INSEE-Api-Key-Integration": `${apiInsee.TOKEN}` } },
     );
-
     const etablissements = data.etablissements ?? [];
     const total = data?.header?.total ?? 0;
     const nextAccumulated = [...accumulated, ...etablissements];
@@ -75,7 +65,6 @@ module.exports.getListeEtablissements = async (siren) => {
     if (nextAccumulated.length >= total) {
       return nextAccumulated;
     }
-
     return fetchPage(nextAccumulated.length, nextAccumulated);
   };
 
