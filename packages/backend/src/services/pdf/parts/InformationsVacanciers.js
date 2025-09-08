@@ -3,11 +3,37 @@ const {
   typeDeficiences,
 } = require("../../../helpers/declaration/informations-vacanciers");
 
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
+
 module.exports = function buildInformationsVacanciers(info, type) {
+  const lines = [
+    [
+      type === "8jours"
+        ? "Effectif des vacanciers :"
+        : "Effectif prévisionnel des vacanciers :",
+      `${info.effectifPrevisionnel}`,
+      { widthValue: 40 },
+    ],
+    [
+      "Répartition Femmes / Hommes :",
+      `${info.effectifPrevisionnelFemme} / ${info.effectifPrevisionnelHomme}`,
+      { widthValue: 40 },
+    ],
+    [
+      "Tranches d'âge :",
+      info.trancheAge.map((t) => trancheAges[t] ?? t).join(", "),
+    ],
+    [
+      "Type de déficience :",
+      info.typeDeficiences.map((t) => typeDeficiences[t] ?? t).join(", "),
+    ],
+    ["Précision :", info.precisionDeficiences],
+  ];
+
   return {
     stack: [
       {
-        margin: [0, 30, 0, 0],
+        margin: MiseEnPage.MARGIN_UP_30,
         table: {
           body: [
             [
@@ -19,7 +45,10 @@ module.exports = function buildInformationsVacanciers(info, type) {
                     bold: true,
                     color: "#F5F5FE",
                     fontSize: 10,
-                    text: `${type === "8jours" ? "Informations sur les vacanciers" : "Informations prévisionnelles sur les vacanciers"}`,
+                    text:
+                      type === "8jours"
+                        ? "Informations sur les vacanciers"
+                        : "Informations prévisionnelles sur les vacanciers",
                     width: "300",
                   },
                 ],
@@ -36,77 +65,10 @@ module.exports = function buildInformationsVacanciers(info, type) {
           {
             alignment: "left",
             columnGap: 10,
-            stack: [
-              {
-                columns: [
-                  {
-                    text: `${type === "8jours" ? "Effectif des vacanciers :" : "Effectif prévisionnel des vacanciers :"}`,
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.effectifPrevisionnel}`,
-                    width: 40,
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Répartition Femmes / Hommes :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.effectifPrevisionnelFemme} / ${info.effectifPrevisionnelHomme}`,
-                    width: 40,
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Tranches d'âge :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.trancheAge.map((t) => trancheAges[t] ?? t).join(", ")}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columns: [
-                  {
-                    text: "Type de déficience :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.typeDeficiences.map((t) => typeDeficiences[t] ?? t).join(", ")}`,
-                    width: "*",
-                  },
-                ],
-              },
-              {
-                columnGap: 10,
-                columns: [
-                  {
-                    text: "Précision :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.precisionDeficiences}`,
-                    width: "*",
-                  },
-                ],
-              },
-            ],
+            stack: MiseEnPage.buildLines(lines),
           },
         ],
-        margin: [0, 20, 0, 0],
+        margin: MiseEnPage.MARGIN_UP_20,
       },
     ],
   };

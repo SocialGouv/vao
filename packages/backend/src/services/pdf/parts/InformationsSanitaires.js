@@ -1,4 +1,5 @@
 const Sanitaire = require("./Sanitaire");
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 
 module.exports = function buildInformationsSanitaire(info) {
   return {
@@ -35,19 +36,13 @@ module.exports = function buildInformationsSanitaire(info) {
             alignment: "left",
             columnGap: 10,
             stack: [
-              {
-                columns: [
-                  {
-                    text: "Fichiers téléversés :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.files.length > 0 ? info.files.map((f) => f.name).join(", ") : "Aucun"}`,
-                    width: "*",
-                  },
-                ],
-              },
+              MiseEnPage.formatLine(
+                "Fichiers téléversés :",
+                info.files.length > 0
+                  ? info.files.map((f) => f.name).join(", ")
+                  : "Aucun",
+                { marginUp: 0 },
+              ),
             ],
           },
         ],
