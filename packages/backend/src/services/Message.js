@@ -10,6 +10,11 @@ const query = {
     VALUES ($1,$2,$3,$4,$5, NOW() )
     RETURNING id as id;
     `,
+  getDsIdByUuid: `
+    SELECT m.declaration_id as "declarationId"
+    FROM front.demande_sejour_message m
+    WHERE file->>'uuid' = $1
+  `,
   markAsRead: `
       UPDATE front.demande_sejour_message
       SET read_at = current_timestamp
@@ -62,6 +67,15 @@ module.exports.post = async (declarationId, userId, message, file, sender) => {
   if (!id) throw new AppError("erreur sur l'insertion du message'");
   log.i("create - DONE");
   return id;
+};
+
+module.exports.getDsIdByUuid = async (uuid) => {
+  log.i("getDsIdByUuid - IN");
+  console.log("UUID", uuid);
+  const response = await pool.query(query.getDsIdByUuid, [uuid]);
+  console.log(response.rows);
+  log.d("getDsIdByUuid - DONE");
+  return response.rows[0];
 };
 
 module.exports.select = async (declarationId) => {
