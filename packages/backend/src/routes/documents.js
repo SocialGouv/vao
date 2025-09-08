@@ -3,6 +3,7 @@ const multer = require("multer");
 const config = require("../config");
 const checkJWT = require("../middlewares/checkJWT");
 const scanFile = require("../middlewares/scan-file");
+const checkPermissionBoToDownload = require("../middlewares/checkPermissionBoToDownload");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 const logger = require("../utils/logger");
 
@@ -45,7 +46,12 @@ function uploadFile(req, res, next) {
 }
 
 router.get("/:uuid", checkJWT, documentsController.download);
-router.get("/admin/:uuid", boCheckJWT, documentsController.adminDownload);
+router.get(
+  "/admin/:uuid",
+  boCheckJWT,
+  checkPermissionBoToDownload,
+  documentsController.adminDownload,
+);
 router.get("/admin/static/:name", boCheckJWT, documentsController.getStatic);
 router.get("/public/:name", documentsController.getPublic);
 router.post("/", checkJWT, uploadFile, scanFile, documentsController.upload);
