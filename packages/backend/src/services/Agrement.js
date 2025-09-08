@@ -66,6 +66,12 @@ const query = {
   WHERE pm.siret = $1
   AND a.supprime = false
   `,
+  getByUuid: `
+    SELECT o.id
+    FROM front.agrements a
+    INNER JOIN front.organismes o ON o.id = a.organisme_id
+    WHERE a.file->>'uuid' = $1
+  `,
   update: (
     organismeId,
     numero,
@@ -197,4 +203,13 @@ module.exports.getBySiret = async (siret) => {
     log.w(err);
     throw new AppError("getBySiret failed", { cause: err });
   }
+};
+
+module.exports.getByUuid = async (uuid) => {
+  log.i("getByUuid - IN");
+  console.log("UUID", uuid);
+  const response = await pool.query(query.getByUuid, [uuid]);
+  console.log(response.rows);
+  log.d("getByUuid - DONE");
+  return response.rows[0];
 };

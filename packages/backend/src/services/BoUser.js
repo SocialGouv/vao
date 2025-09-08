@@ -213,6 +213,79 @@ ${Object.keys(criterias)
     LEFT OUTER JOIN back.users ud on ud.id = us.deleted_use_id
     WHERE 1 = 1
   `,
+  getNbDemandeSejourAllowed: `
+  with all_counts as (
+  -- Pour les agents départementaux, régionaux et nationaux
+  -- Retourne les séjours dans lequel l'agent officie en département (incluant les itinérances)
+    select ds.id, ds.statut 
+    from front.demande_sejour ds
+    inner join front.demande_sejour_to_hebergement dsth on ds.id = dsth.demande_sejour_id
+    inner join front.hebergement h on dsth.hebergement_id = h.id
+    inner join front.adresse a on a.id = h.adresse_id
+    inner join back.users u on u.id = $1
+    left join geo.territoires ter on ter.code = u.ter_code
+    left join geo.territoires dep on dep.code = u.ter_code and dep.parent_code <> 'FRA'
+    left join geo.territoires reg on reg.parent_code = u.ter_code
+    where (a.departement = ter.code OR a.departement = dep.code OR a.departement = reg.code)
+    union all
+  -- Pour les agents régionaux : Demande de séjour de la région d'agrément
+  -- Cas organisme porteur de l'agrément
+  -- DS dont l'agrément dépend du siège social et dont le siège social est dans la région de l'utilisateur (Régional)
+    select ds.id, ds.statut 
+    from front.demande_sejour ds
+    inner join front.personne_morale pm on pm.organisme_id = ds.organisme_id and pm.porteur_agrement = true
+    inner join front.agrements a on a.organisme_id = pm.organisme_id
+    inner join back.users u on u.ter_code = a.region_obtention and u.id = $1
+    union all
+-- Cas organisme non porteur de l'agrément mais dépendant du siège social
+-- DS dont l'agrément dépend du siège social et dont le siège social est dans la région de l'utilisateur (Régional)
+    select ds.id, ds.statut 
+    from front.demande_sejour ds
+    inner join front.personne_morale pm on pm.organisme_id = ds.organisme_id and pm.porteur_agrement = false
+    inner join front.personne_morale pm_siege on pm.siren = pm_siege.siren and pm_siege.siege_social = true
+    inner join front.agrements a on a.organisme_id = pm_siege.organisme_id
+    inner join back.users u on u.ter_code = a.region_obtention and u.id = $1
+  )
+  select count(*)::integer as "TotalDSCount"
+  from all_counts ac
+  where ac.id = $2
+    and ac.statut <> 'BROUILLON';`,
+  getNbAgrementAllowed: `
+  with all_counts as (
+  -- Pour les agents nationaux
+    select a.id
+      from front.agrement a
+      inner join back.users u on u.id = $1 and u.ter_code = 'FRA'
+  union all
+  -- Pour les agents régionaux
+    select a.id
+      from front.agrement a
+      inner join back.users u on u.id = $1
+      -- Tous les agents nationaux ont accès à tous les agréments
+      -- Les agents régionaux ont accès aux agréments de leur région
+      where a.region_obtention = u.ter_code
+  union all
+  -- Pour les agents départementaux
+  -- Cas organisme porteur de l'agrément
+  -- DS dont l'agrément dépend du siège social et dont le siège social est dans la région de l'utilisateur (Régional)
+    select ds.id, ds.statut 
+    from front.demande_sejour ds
+    inner join front.personne_morale pm on pm.organisme_id = ds.organisme_id and pm.porteur_agrement = true
+    inner join front.agrements a on a.organisme_id = pm.organisme_id
+    inner join back.users u on u.ter_code = a.region_obtention and u.id = $1
+    union all
+-- Cas organisme non porteur de l'agrément mais dépendant du siège social
+-- DS dont l'agrément dépend du siège social et dont le siège social est dans la région de l'utilisateur (Régional)
+    select ds.id, ds.statut 
+    from front.demande_sejour ds
+    inner join front.personne_morale pm on pm.organisme_id = ds.organisme_id and pm.porteur_agrement = false
+    inner join front.personne_morale pm_siege on pm.siren = pm_siege.siren and pm_siege.siege_social = true
+    inner join front.agrements a on a.organisme_id = pm_siege.organisme_id
+    inner join back.users u on u.ter_code = a.region_obtention and u.id = $1
+  )
+  select count(*)::integer as "TotalAGRCount"
+  from all_counts ac
+  where ac.id = $2`,
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
       SELECT
@@ -225,6 +298,22 @@ ${Object.keys(criterias)
       `,
     additionalParams,
   ],
+  isAllowToAccessDemandeSejour: ` SELECT 1
+      FROM front.demande_sejour ds
+      LEFT JOIN front.agrements a ON a.organisme_id = ds.organisme_id
+      WHERE ds.statut <> 'BROUILLON'
+      AND (
+        EXISTS (
+          SELECT 1
+          FROM front.demande_sejour_to_hebergement dsth
+          LEFT JOIN front.hebergement h ON h.id = dsth.hebergement_id
+          LEFT JOIN front.adresse ad ON ad.id = h.adresse_id
+          WHERE dsth.demande_sejour_id = ds.id
+          AND ad.departement = ANY($1)
+        )
+        OR a.region_obtention = $2
+      )
+      LIMIT 1`,
   listUsersTerritoire: `
     SELECT
       us.mail as email,
@@ -795,7 +884,6 @@ const getByUserId = async (userId) => {
   }
 };
 
-
 module.exports.getByUserId = getByUserId;
 
 const addAsyncUserHistoric = async ({
@@ -826,3 +914,36 @@ const addAsyncUserHistoric = async ({
 };
 
 module.exports.addAsyncUserHistoric = addAsyncUserHistoric;
+
+module.exports.isAllowToAccessDemandeSejour = async (
+  userId,
+  demandeSejourId,
+) => {
+  console.log({ userId, demandeSejourId });
+  try {
+    const response = await pool.query(query.getNbDemandeSejourAllowed, [
+      userId,
+      demandeSejourId,
+    ]);
+    console.log("Réponse", response.rows[0].TotalDSCount);
+    return response.rows[0].TotalDSCount > 0;
+  } catch (error) {
+    log.w("isAllowToAccessDemandeSejour - DONE with error", error);
+    return null;
+  }
+};
+
+module.exports.isAllowToAccessAgrement = async (userId, agrementId) => {
+  console.log({ userId, agrementId });
+  try {
+    const response = await pool.query(query.getNbAgrementAllowed, [
+      userId,
+      agrementId,
+    ]);
+    console.log("Réponse", response.rows[0].TotalDSCount);
+    return response.rows[0].TotalDSCount > 0;
+  } catch (error) {
+    log.w("isAllowToAccessOrganisme - DONE with error", error);
+    return null;
+  }
+};
