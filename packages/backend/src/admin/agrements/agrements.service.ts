@@ -45,6 +45,9 @@ export const AgrementService = {
     const history = await AgrementsRepository.getHistory(agrementId);
     return history;
   },
+  async getIdByFileUuid(uuid: string): Promise<number | null> {
+    return AgrementsRepository.getIdByFileUuid(uuid);
+  },
   async getListAgrements({
     regionCode,
     queryParams,

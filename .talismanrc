@@ -75,6 +75,8 @@ fileignoreconfig:
   checksum: d6e5b48000a21797f60865b4c59c09c9860f55c72376b785a21777e1f31d9b40
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
   checksum: 1cd24bcc2b9ad1e9c238c3ad905b5b1a7114370d0c19dffad9475a6e443b3e94
+- filename: packages/backend/src/__tests__/middlewares/checkPermissionBoToDownload.test.ts
+  checksum: 6cf71624136b8128615f5bc131349b6e4abe046b33d01cac65c182a0688c77d6
 - filename: packages/backend/src/__tests__/usagers/accept-cgu.test.ts
   checksum: ab7a0f54777521ceb0cf4f2f253cc6f804e24ad7e27015eb9d66961366510a12
 - filename: packages/backend/src/__tests__/usagers/agrements.test.ts

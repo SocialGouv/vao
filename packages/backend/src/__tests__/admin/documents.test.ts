@@ -10,6 +10,18 @@ import {
 } from "../helpers/testContainer";
 import { createUsagersUser } from "../helpers/userHelper";
 
+// Contrôle de droits couvert par checkPermissionBoToDownload.test.ts.
+jest.mock(
+  "../../middlewares/checkPermissionBoToDownload",
+  () =>
+    (
+      _req: import("express").Request,
+      _res: import("express").Response,
+      next: import("express").NextFunction,
+    ) =>
+      next(),
+);
+
 jest.setTimeout(30000);
 
 beforeAll(async () => {
