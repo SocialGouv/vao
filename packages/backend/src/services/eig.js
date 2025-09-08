@@ -13,6 +13,32 @@ const { encrypt, decrypt } = require("../utils/cipher");
 
 const log = logger(module.filename);
 
+const commonQuery = {
+  agrementRegionObtention: `    
+    CASE
+      WHEN o.type_organisme = 'personne_morale' AND pm.porteur_agrement::boolean is False
+      THEN
+      (
+          SELECT
+            region_obtention
+          FROM front.agrements a
+          JOIN front.organismes o2 ON o2.id = a.organisme_id
+          INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+          INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
+          WHERE pm.siret = etab.siret
+          AND a.supprime = false
+          LIMIT 1
+      )
+      ELSE (
+        SELECT
+            region_obtention
+        FROM front.agrements a
+        WHERE organisme_id = o.id
+        AND a.supprime = false
+      )
+    END AS "agrementRegionObtention"`,
+};
+
 const query = {
   create: `
     INSERT INTO
@@ -70,11 +96,12 @@ const query = {
     pp.prenom AS "prenom",
     pp.nom_usage AS "nom",
     ARRAY_AGG(ET.TYPE) as "types",
-    AGR.region_obtention as "agrementRegionObtention",
+    ${commonQuery.agrementRegionObtention},
     EIG.file
   FROM
     FRONT.EIG EIG
     INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+    INNER JOIN FRONT.organismes o ON uo.org_id = o.id
     LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
     LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
     LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
@@ -87,6 +114,7 @@ const query = {
     ${search}
   GROUP BY
     EIG.ID,
+    o.id,
     S.ID,
     DS.ID,
     AGR.ID,
@@ -155,9 +183,10 @@ const query = {
       EIG.IS_ATTESTE as "isAtteste",
       EIG.PERSONNEL as "personnel",
       EIG.EMAIL_AUTRES_DESTINATAIRES as "emailAutresDestinataires",
-      AGR.region_obtention as "agrementRegionObtention"
+      ${commonQuery.agrementRegionObtention}
     FROM FRONT.EIG EIG
         INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+        INNER JOIN FRONT.organismes o ON uo.org_id = o.id
         LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
         LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
         LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
@@ -170,6 +199,7 @@ const query = {
       EIG.ID = $1
     GROUP BY
       EIG.ID,
+      o.id,
       S.ID,
       DS.ID,
       AGR.ID,
