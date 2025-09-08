@@ -13,6 +13,7 @@ module.exports = async (req, res, next) => {
   log.i("IN", { uuid });
   try {
     const file = await DocumentService.getFile(uuid);
+    console.log("file", file);
     if (!file) {
       return next(new AppError("fichier introuvable", { statusCode: 404 }));
     }

@@ -49,6 +49,7 @@ const query = {
     `
     SELECT
       uuid,
+      category,
       filename as "name",
       user_id as "userId",
       created_at as "createdAt"
