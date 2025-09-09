@@ -87,6 +87,9 @@ module.exports = async function get(_req, res, next) {
           newItem.typeOrganisme === "personne_morale"
             ? "personne morale"
             : "personne physique";
+
+        newItem.siret = formatSiret(newItem.siret);
+        newItem.siren = formatSiren(newItem.siren);
         newItem.dateObtentionAgrement = newItem.agrement?.dateObtention
           ? dayjs(newItem.agrement.dateObtention).format("DD/MM/YYYY")
           : "";
@@ -106,3 +109,27 @@ module.exports = async function get(_req, res, next) {
     return next(error);
   }
 };
+const separator = " ";
+
+function formatByPattern(input = "", pattern) {
+  if (typeof input !== "string") input = String(input ?? "");
+  const expectedLength = pattern.reduce((a, b) => a + b, 0);
+  if (input.length !== expectedLength) return input;
+
+  let i = 0;
+  return pattern
+    .map((len) => {
+      const part = input.slice(i, i + len);
+      i += len;
+      return part;
+    })
+    .join(separator);
+}
+
+function formatSiret(s) {
+  return formatByPattern(s, [3, 3, 3, 5]);
+}
+
+function formatSiren(s) {
+  return formatByPattern(s, [3, 3, 3]);
+}
