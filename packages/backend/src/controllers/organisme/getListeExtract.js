@@ -76,17 +76,18 @@ module.exports = async function get(_req, res, next) {
       label: `Déclarations en statut "Terminé"`,
     },
   ];
-
   try {
     const organismes = await Organisme.getListeExtract();
     const csv = [
-      titles.map(({ label }) => label).join(";"),
+      titles.map(({ label }) => `"${label}"`).join(";"),
       ...organismes.map((item) => {
         const newItem = { ...item };
         newItem.typeOrganisme =
           newItem.typeOrganisme === "personne_morale"
             ? "personne morale"
             : "personne physique";
+        newItem.siret = formatSiret(newItem.siret);
+        newItem.siren = formatSiren(newItem.siren);
         newItem.dateObtentionAgrement = newItem.agrement?.dateObtention
           ? dayjs(newItem.agrement.dateObtention).format("DD/MM/YYYY")
           : "";
@@ -95,9 +96,12 @@ module.exports = async function get(_req, res, next) {
           : "";
         newItem.complet = newItem.complet ? "oui" : "non";
         newItem.regionObtention = newItem.agrement?.regionObtention;
-        return [
-          ...titles.map(({ key }) => escapeCsvField(newItem[key] ?? "")),
-        ].join(";");
+        return titles
+          .map(({ key }) => {
+            const value = escapeCsvField(newItem[key] ?? "");
+            return `"${value}"`;
+          })
+          .join(";");
       }),
     ].join("\n");
     return res.status(200).send(csv);
@@ -106,3 +110,25 @@ module.exports = async function get(_req, res, next) {
     return next(error);
   }
 };
+function formatByPattern(pattern, input = "", separator = " ") {
+  if (typeof input !== "string") input = String(input ?? "");
+  const expectedLength = pattern.reduce((a, b) => a + b, 0);
+  if (input.length !== expectedLength || !/^\d+$/.test(input)) return input;
+
+  let i = 0;
+  return pattern
+    .map((len) => {
+      const part = input.slice(i, i + len);
+      i += len;
+      return part;
+    })
+    .join(separator);
+}
+
+function formatSiret(s) {
+  return formatByPattern([3, 3, 3, 5], s);
+}
+
+function formatSiren(s) {
+  return formatByPattern([3, 3, 3], s);
+}
