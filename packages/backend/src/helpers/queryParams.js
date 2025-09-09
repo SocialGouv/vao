@@ -4,6 +4,9 @@ const getSort = (sortBy, direction, titles, defaultSort = "") => {
     const title = titles.find(
       (t) => t.queryKey === finalSortBy && t.sortEnabled,
     );
+    if (!title) {
+      return "";
+    }
     if (title?.customSort) {
       return title.customSort(finalSortBy, direction);
     }
