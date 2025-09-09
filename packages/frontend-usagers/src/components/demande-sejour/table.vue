@@ -168,7 +168,7 @@ const columns = [
   },
   {
     key: "siret",
-    label: "Établissement déclarant",
+    label: "Siret",
     options: {
       isSortable: true,
     },
