@@ -6,7 +6,7 @@ metadata:
 data:
   ANTIVIRUS_URL: "https://antivirus.fabrique.social.gouv.fr/vao/api/v1/scan"
   API_INSEE_URL: "https://api.insee.fr"
-  API_INSEE_URI: "/entreprises/sirene/V3.11"
+  API_INSEE_URI: "/api-sirene/3.11"
   BACKEND_URL: "https://api-vao.social.gouv.fr"
   FRONTEND_USAGERS_URL: "https://vao.social.gouv.fr"
   FRONTEND_BO_URL: "https://admin-vao.social.gouv.fr"

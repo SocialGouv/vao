@@ -140,9 +140,7 @@ const columns = [
   },
 ];
 
-const title = computed(
-  () => `Liste des déclarations reçues (${demandeSejourStore.stats?.global})`,
-);
+const title = computed(() => `Liste des déclarations reçues (${total.value})`);
 
 const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],

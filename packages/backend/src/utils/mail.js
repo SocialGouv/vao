@@ -11,8 +11,49 @@ const { partOrganisme } = require("../helpers/org-part");
 
 const log = logger(module.filename);
 
+const assistanceText = `Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='${config.assistance.uriFaq}'>équipe support</a>`;
+
 module.exports = {
   bo: {
+    action: {
+      sendAccountDeletionMail: ({ email }) => {
+        log.i("sendAccountDeletionMail - In", {
+          email,
+        });
+        if (!email) {
+          const message = `Le paramètre de l'adresse courriel manque à la requête`;
+          log.w(`sendForgottenPassword - ${message}`);
+          throw new AppError(message);
+        }
+        log.d("sendAccountDeletionMail - sending mail on deletion");
+        const html = sendTemplate.getBody(
+          "PORTAIL VAO ADMINISTRATION - DESACTIVATION DE VOTRE COMPTE",
+          [
+            {
+              p: [
+                "Bonjour,",
+                `Nous vous informons que votre compte associé à l’adresse <strong>${email}</strong> a été <strong>désactivé</strong> par un administrateur sur le portail VAO.`,
+                "Si vous estimez qu’il s’agit d’une erreur ou si vous avez besoin d’un accès à nouveau, vous pouvez :",
+                `<ul><li>Contacter votre administrateur référent, ou</li><li>Contacter le support en <a href=${config.assistance.uriNewRequest}>cliquant ici</a>.</li></ul>`,
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+        );
+
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "PORTAIL VAO ADMINISTRATION - DESACTIVATION DE VOTRE COMPTE",
+          to: email,
+        };
+        log.d("sendAccountDeletionMail post email", { params });
+
+        return params;
+      },
+    },
     authentication: {
       sendForgottenPassword: ({ email, token }) => {
         log.i("sendForgottenPassword - In", {
@@ -668,12 +709,12 @@ module.exports = {
         return params;
       },
       sendToOrganisme: ({ dest, eig, userName, declarationSejour }) => {
-        log.i("sendToDREETS - In", {
+        log.i("sendToOrganisme - In", {
           dest,
         });
         if (!dest) {
           const message = "paramètre manquant à la requête";
-          log.w(`sendToDREETS - ${message}`);
+          log.w(`sendToOrganisme - ${message}`);
           throw new AppError(message);
         }
 
@@ -706,6 +747,7 @@ module.exports = {
             },
             {
               p: [
+                `Cette déclaration a été envoyée à l’ova principal titulaire de l'agrément.`,
                 `Cette déclaration a été envoyée à la direction départementale de l'emploi, du travail, des solidarités et de la protection des populations (DDETS-PP), ainsi qu’à la direction régionale de l’économie, de l’emploi, du travail et des solidarités (DREETS) ayant délivré l’agrément VAO.`,
               ],
               type: "p",
@@ -714,7 +756,7 @@ module.exports = {
           `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
         );
 
-        log.d("sendToDREETS - sending sendToDDETS mail");
+        log.d("sendToOrganisme - sending sendToOrganisme mail");
         const params = {
           from: senderEmail,
           html,
@@ -722,7 +764,7 @@ module.exports = {
           subject: `Déclaration d’un Evènement indésirable grave par ${orgName}`,
           to: dest,
         };
-        log.d("sendToDREETS post email", { params });
+        log.d("sendToOrganisme post email", { params });
 
         return params;
       },
@@ -777,6 +819,45 @@ module.exports = {
     },
   },
   usagers: {
+    action: {
+      sendAccountDeletionMail: ({ email }) => {
+        log.i("sendAccountDeletionMail - In", {
+          email,
+        });
+        if (!email) {
+          const message = `Le paramètre de l'adresse courriel manque à la requête`;
+          log.w(`sendForgottenPassword - ${message}`);
+          throw new AppError(message);
+        }
+        log.d("sendAccountDeletionMail - sending mail on deletion");
+        const html = sendTemplate.getBody(
+          "Portail VAO - DESACTIVATION DE VOTRE COMPTE",
+          [
+            {
+              p: [
+                "Bonjour,",
+                `Nous vous informons que votre compte associé à l’adresse <strong>${email}</strong> a été <strong>désactivé</strong> par un administrateur sur le portail VAO.`,
+                "Si vous estimez qu’il s’agit d’une erreur ou si vous avez besoin d’un accès à nouveau, vous pouvez :",
+                `<ul><li>Contacter votre administrateur référent, ou</li><li>Contacter le support en <a href=${config.assistance.uriNewRequest}>cliquant ici</a>.</li></ul>`,
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "Portail VAO - DESACTIVATION DE VOTRE COMPTE",
+          to: email,
+        };
+        log.d("sendAccountDeletionMail post email", { params });
+
+        return params;
+      },
+    },
     authentication: {
       sendAccountAlreadyExist: ({ email }) => {
         log.i("sendAccountAlreadyExist - In", {
@@ -851,9 +932,7 @@ module.exports = {
               type: "p",
             },
             {
-              p: [
-                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
-              ],
+              p: [assistanceText],
               type: "p",
             },
             {
@@ -1387,9 +1466,7 @@ module.exports = {
               type: "p",
             },
             {
-              p: [
-                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
-              ],
+              p: [assistanceText],
               type: "p",
             },
           ],
@@ -1420,9 +1497,7 @@ module.exports = {
               type: "p",
             },
             {
-              p: [
-                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
-              ],
+              p: [assistanceText],
               type: "p",
             },
           ],
@@ -1455,9 +1530,7 @@ module.exports = {
               type: "p",
             },
             {
-              p: [
-                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
-              ],
+              p: [assistanceText],
               type: "p",
             },
             {
@@ -1540,9 +1613,7 @@ module.exports = {
               type: "p",
             },
             {
-              p: [
-                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
-              ],
+              p: [assistanceText],
               type: "p",
             },
           ],
@@ -1571,9 +1642,7 @@ module.exports = {
               type: "p",
             },
             {
-              p: [
-                "Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='https://vao-assistance.atlassian.net/servicedesk/customer/portals'>équipe support</a>",
-              ],
+              p: [assistanceText],
               type: "p",
             },
           ],

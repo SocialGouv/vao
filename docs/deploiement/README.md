@@ -1,62 +1,131 @@
-# Déploiement
+# Déploiement d’une version ou hotfix
+
+## Prérequis :
 
 Le déploiement en preprod et prod se font manuellement via les github Actions :
 
-![Menu actions](<./menu-actions.png>)
+On s’assure avant tout qu’il ne subsiste pas de résidus sur la branche preprod qui ne devraient pas exister.
 
-Il est possible de déployer n'importe quoi (commit, branche, tag) sur n'importe quel environnement mais par bonne pratique, nous ne déploierons que des tags / releases.
+Pour cela faire un PR de <code>preprod -> main</code> et vérifier que le comparing ne renvoie aucun résultat.
 
-## Release 
+![prerequis PR](../assets/deploiement/1-prerequis-PR.png)
+![prerequis comparing](../assets/deploiement/1-prerequis-comparing.png)
 
-Ainsi, nous allons déclencler l'Action de release sur la branche main : 
+Le comparing changes ne doit renvoyer aucun résultat.
+Si ce n’est pas le cas alors se rapprocher de la dernière personne qui a laissé des résidus non mergés sur Main. 
 
-![Action release](<./action-release.png>)
+## Option A : Déploiement d'une Release
 
-![Lancement release](<./action-release-1-lancement.png>)
+### Phase 1 : Preprod
 
-![Déroulement](<./action-release-2-rafraichissement.png>)
+Faire une PR de main -> preprod 
 
-![Fin de la release](<./action-release-3-fin.png>)
+![PR main vers preprod](../assets/deploiement/2-phase1-pr-main-preprod.png)
 
-En cas de succès, la nouvelle Release sera visible sur le [repo](https://github.com/SocialGouv/vao/releases).
+Nommer la PR avec le numéro de version (prendre la dernière et faire +1 sur le 2eme digit)
 
-## Déploiement Préprod
+![Nom de la PR](../assets/deploiement/2-phase1-pr-main-naming.png)
 
-Une fois le tag créé, il suffit de lancer l'action PreProd : 
+Merger la branche sur preprod
 
-![Action PreProd](<./action-preprod.png>)
+![Merge de la PR](../assets/deploiement/2-phase1-pr-merge.png)
 
-Choisissez le tag souhaité :
+Si le déploiement se fait correctement, l'action PreProd visible dans .
 
-![Action PreProd - choix tag](<./action-preprod-1-choix.png>)
+En cas de succès, la nouvelle Release sera visible sur le [github actions](https://github.com/SocialGouv/vao/actions).
+![Merge réalisé de la PR](../assets/deploiement/2-phase1-pr-merge-ended.png)
 
-Lancez l'action :
+## Option B : Cas du déploiement d’un hotfix
 
-![Action PreProd - lancement](<./action-preprod-2-lancement.png>)
+### B.1 : Fixer l'anomalie
 
-Cliquer sur l'action apparue pour suivre le détail du déploiement : 
+#### Sur l’environnement de dev
 
-![Action PreProd - rafraichissement](<./action-preprod-3-rafraichissement.png>)
+Se positionner sur la branche preprod et la tirer.
 
-Une fois terminé, l'environnement sera mis à jour.
-Le tag déployé est visible sur les clients au niveau des footers.
+![Env dev pull preprod](../assets/deploiement/3-phase1-hotfix-pull.png)
 
-La préprod est accessible via les URLS suivantes : 
-* [Service backend](https://api-vao-preprod.ovh.fabrique.social.gouv.fr/)
-* [Service instructeur](https://bo-vao-preprod.ovh.fabrique.social.gouv.fr/)
-* [Service organisme](https://vao-preprod.ovh.fabrique.social.gouv.fr/)
-* [Intercepteur mails](https://maildev-vao-preprod.ovh.fabrique.social.gouv.fr/) le cas échéant
-  
-Les Urls des services ainsi que l'url menant à l'aggrégateur de logs Grafana peuvent être retrouvées dans la dernière partie de l'action.
+Créer sa branche à partir de preprod
 
-![Action PreProd - sumamry](<./action-preprod-summary.png>)
+![Env dev checkout nouvelle branche](../assets/deploiement/3-phase1-hotfix-checkout.png)
 
-## Déploiement Prod
+Ajouter, commiter et pousser son hotfix dans la branche fix/…
 
-Les actions sont identiques au déploiement de la preprod, à ceci près qu'il faut utiliser l'acvtion prod.
+![Env dev push nouvelle branche](../assets/deploiement/3-phase1-hotfix-push.png)
+
+#### B.2 : Merger le hotfix sur github
+
+Créer sa PR depuis sa <code>branche -> preprod</code>
+![Env dev push nouvelle branche](../assets/deploiement/3-phase1-hotfix-PR.png)
+
+<div style="display: flex; align-items: center; gap: 10px;">
+  <img src="./0-warning.png" alt="Warning" width="40" />
+  <span>La PR doit se faire de la branch <code>fix/ -> preprod</code></span>
+</div>
+
+![Env dev comparing PR](../assets/deploiement/3-phase1-hotfix-comparing.png)
+
+Merger la branche sur preprod
+
+En cas de succès, le fix sera visible sur le [github actions](https://github.com/SocialGouv/vao/actions).![Github actions](../assets/deploiement/0-github-actions.png)
+
+![Merge réalisé de la PR](../assets/deploiement/3-phase1-hotfix-merge-ended.png)
+Une fois l’anomalie fixée et testé (après merge) déployer
+
+## Environnement de Pré-production
+
+La préprod est accessible via les URLS suivantes :
+
+- [Backoffice Agent](https://bo-vao-preprod.ovh.fabrique.social.gouv.fr/)
+- [Front usagers OVA](https://vao-preprod.ovh.fabrique.social.gouv.fr/)
+- [Service de mails](https://maildev-vao-preprod.ovh.fabrique.social.gouv.fr/)
+- [Service backend](https://api-vao-preprod.ovh.fabrique.social.gouv.fr/)
+
+## Déploiement Production (Option B (hotfix) ou option A (déploiement d'une release))
+
+### Etape 1 : Création, d'un tag
+
+Dans le menu action et menu release : [github actions/release](https://github.com/SocialGouv/vao/actions/workflows/release.yml)
+![Déploiement release](../assets/deploiement/4-deploiement-release.png)
+
+Cliquer sur “Run workflow”
+
+<div style="display: flex; align-items: center; gap: 10px;">
+  <img src="./0-warning.png" alt="Warning" width="40" />
+  <span>La workflow doit se faire de la preprod</span>
+</div>
+
+![Déploiement tag preprod](../assets/deploiement/4-deploiement-release-on-preprod.png)![Déploiement run workflow](../assets/deploiement/4-deploiement-release-preprod-run.png)
+
+Le résultat du déploiement sera visible dans le bloc Release de l’action.[github actions/release](https://github.com/SocialGouv/vao/actions/workflows/release.yml)
+![Déploiement tag preprod](../assets/deploiement/4-deploiement-release-result.png)
+
+### Etape 2 : Déploiement en production
+
+![Production](../assets/deploiement/0-github-actions-production.png)
+
+Dans le sommaire de l'action, cliquer sur le bouton "Run workflow" du bloc [Production](https://github.com/SocialGouv/vao/actions/workflows/production.yaml).
+
+Cliquer sur Run Workflow, et se positionner sur l’onglet Tag
+
+![Run workflow production](../assets/deploiement/4-deploiement-run-workflow.png)
+
+Sélectionner le Tag correspondant à la version (normalement le premier proposé)
+
+![Run workflow production tag](../assets/deploiement/4-deploiement-run-workflow-tag.png)
+
+Suivez votre mise en production dans le bloc [Production](https://github.com/SocialGouv/vao/actions/workflows/production.yaml).
+![github actions/production](../assets/deploiement/4-deploiement-production-result.png)
+
+### Etape 3 : Rapatrier les données de préprod
+
+Cette action est à réaliser que l’on ai passé un hotfix ou une version complète en Production
+
+![PR preprod vers main](../assets/deploiement/5-postprod-1.png)
+![PR preprod vers main](../assets/deploiement/5-postprod-2.png)
 
 ## Autre déploiement
 
-Pour déployer un autre environnement, comme une branche par exemple, il suffit de pousser la branche sur le repo, qui déploiera automatique toute la stack via l'action review-auto ou review. 
+Pour déployer un autre environnement, comme une branche par exemple, il suffit de pousser la branche sur le repo, qui déploiera automatique toute la stack via l'action review-auto ou review.
 Pour connaître les Urls utilisées, consulter le dernier bloc dans le Summary.
 Un environnement est persisté une semaine par défaut et sera supprimé en même temps que la branche associées, sauf si celle-ci est préfixée par persist/.

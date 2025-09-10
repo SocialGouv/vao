@@ -1,104 +1,40 @@
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
+
 module.exports = function displayInfosTransport(info) {
-  const liste = [];
-  liste.push({
-    columnGap: 10,
-    columns: [
-      {
-        text: "Transport jusqu'au lieu de séjour :",
-        width: 250,
-      },
-      {
-        bold: true,
-        text: `${info.responsableTransportLieuSejour.join(", ")}`,
-        width: "*",
-      },
-    ],
-  });
+  const lines = [];
+
+  lines.push([
+    "Transport jusqu'au lieu de séjour :",
+    info.responsableTransportLieuSejour.join(", "),
+  ]);
+
   if (info.responsableTransportLieuSejour.includes("organisateur")) {
-    liste.push(
-      {
-        columnGap: 10,
-        columns: [
-          {
-            text: "Modes de transport utilisés par l'organisateur :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${info.modeTransport.join(", ")}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columnGap: 10,
-        columns: [
-          {
-            text: "Mode d’organisation retenu :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${info.precisionModeOrganisation}`,
-            width: "*",
-          },
-        ],
-      },
-    );
+    lines.push([
+      "Modes de transport utilisés par l'organisateur :",
+      info.modeTransport.join(", "),
+    ]);
+    lines.push([
+      "Mode d’organisation retenu :",
+      info.precisionModeOrganisation,
+    ]);
   }
-  liste.push({
-    columnGap: 10,
-    columns: [
-      {
-        text: "Déplacement durant le séjour :",
-        width: 250,
-      },
-      {
-        bold: true,
-        text: `${info.deplacementDurantSejour ? "Oui" : "Non"}`,
-        width: "*",
-      },
-    ],
-  });
+
+  lines.push([
+    "Déplacement durant le séjour :",
+    info.deplacementDurantSejour ? "Oui" : "Non",
+  ]);
+
   if (
     info.modeTransport?.includes("Automobile") ||
     info.modeTransport?.includes("Autobus, car") ||
     info.deplacementDurantSejour
   ) {
-    liste.push({
-      columnGap: 10,
-      columns: [
-        {
-          text: "Véhicules adaptés :",
-          width: 250,
-        },
-        {
-          bold: true,
-          text: `${info.vehiculesAdaptes ? "Oui" : "Non"}`,
-          width: "*",
-        },
-      ],
-    });
+    lines.push(["Véhicules adaptés :", info.vehiculesAdaptes ? "Oui" : "Non"]);
+    lines.push([
+      "Spécificités des véhicules :",
+      info.precisionVehiculesAdaptes,
+    ]);
   }
-  if (
-    info.modeTransport?.includes("Automobile") ||
-    info.modeTransport?.includes("Autobus, car") ||
-    info.deplacementDurantSejour
-  ) {
-    liste.push({
-      columnGap: 10,
-      columns: [
-        {
-          text: "Spécificités des véhicules :",
-          width: 250,
-        },
-        {
-          bold: true,
-          text: `${info.precisionVehiculesAdaptes}`,
-          width: "*",
-        },
-      ],
-    });
-  }
-  return liste;
+
+  return MiseEnPage.buildLines(lines);
 };

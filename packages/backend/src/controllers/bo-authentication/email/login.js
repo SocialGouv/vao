@@ -77,15 +77,23 @@ module.exports = async function login(req, res, next) {
   }
 
   try {
-    const accessToken = jwt.sign(buildAccessToken(user), config.tokenSecret, {
-      algorithm: "ES512",
-      expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde
-    });
+    const accessToken = jwt.sign(
+      buildAccessToken(user),
+      config.tokenSecret_BO,
+      {
+        algorithm: config.algorithm,
+        expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde
+      },
+    );
 
-    const refreshToken = jwt.sign(buildRefreshToken(user), config.tokenSecret, {
-      algorithm: "ES512",
-      expiresIn: config.refreshToken.expiresIn / 1000,
-    });
+    const refreshToken = jwt.sign(
+      buildRefreshToken(user),
+      config.tokenSecret_BO,
+      {
+        algorithm: config.algorithm,
+        expiresIn: config.refreshToken.expiresIn / 1000,
+      },
+    );
 
     await Session.create(user.id, refreshToken, schema.BACK);
 

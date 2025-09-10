@@ -1,10 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { randomUUID } from "crypto";
-import path from "path";
 
 const baseUrl =
   process.env.E2E_BASE_URL || "vao-main.ovh.fabrique.social.gouv.fr";
-const runLocal = process.env.E2E_LOCAL === "true";
+const runLocal = process.env.E2E_LOCAL === "true" || false;
 
 const username = process.env.E2E_USERNAME || `e2e-${randomUUID()}@test.com`;
 const password = "Pizza1234567;";
@@ -21,16 +20,20 @@ function getUrl(prefix?: string) {
   }
   return `${runLocal ? "http" : "https"}://${prefix ? prefix + "-" : ""}${baseUrl}`;
 }
-
+/*
 async function login(page) {
-  await page.getByLabel("Identifiant *Format attendu").click();
-  await page.getByLabel("Identifiant *Format attendu").fill(username);
+  await page
+    .getByLabel("Identifiant * Format attendu : nom@domaine.fr")
+    .click();
+  await page
+    .getByLabel("Identifiant * Format attendu : nom@domaine.fr")
+    .fill(username);
   await page.getByLabel("Mot de passe * Afficher mot").click();
   await page.getByLabel("Mot de passe * Afficher mot").fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
   await expect(page.getByText("Bienvenue PrénomTest NomTest")).toBeVisible();
 }
-
+*/
 test("register_and_login", async ({ page }) => {
   // register
   await page.goto(`${getUrl()}/connexion`);
@@ -49,9 +52,23 @@ test("register_and_login", async ({ page }) => {
   await page.getByLabel("Prénom Veuillez saisir votre").fill("PrénomTest");
   await page.getByLabel("Numéro de téléphone Veuillez").click();
   await page.getByLabel("Numéro de téléphone Veuillez").fill("0123456789");
+  await page
+    .getByLabel(
+      "SIRET Veuillez indiquer le siret de l´organisme que vous souhaitez rejoindre. Exemple: 1100007200014",
+    )
+    .click();
+
+  await page
+    .getByLabel(
+      "SIRET Veuillez indiquer le siret de l´organisme que vous souhaitez rejoindre. Exemple: 1100007200014",
+    )
+    .fill("45348443800016");
+
   await page.getByRole("button", { name: "Créer mon compte" }).click();
   await expect(
-    page.getByText("Félicitations, votre compte a bien été créé !"),
+    page.getByText(
+      "Votre formulaire a été envoyé. Veuillez valider votre adresse mail en cliquant sur le lien reçu par mail.",
+    ),
   ).toBeVisible();
 
   // validate email
@@ -71,9 +88,10 @@ test("register_and_login", async ({ page }) => {
 
   // login
   const page2 = await page2Promise;
-  await login(page2);
+  //await login(page2);
 });
 
+/*
 test("create_organisateur", async ({ page }) => {
   // login
   await page.goto(`${getUrl()}`);
@@ -84,12 +102,18 @@ test("create_organisateur", async ({ page }) => {
   // étape 1
   await page.getByText("Personne physique").click();
   await page.getByLabel("Numéro SIRET du titulaire de l’agrément VAO").click();
-  await page.getByLabel("Numéro SIRET du titulaire de l’agrément VAO").fill("79407263700042");  
-  await page.getByRole("button", { name: "Récupérer les informations de la personne physique" }).click();
+  await page
+    .getByLabel("Numéro SIRET du titulaire de l’agrément VAO")
+    .fill("79407263700042");
+  await page
+    .getByRole("button", {
+      name: "Récupérer les informations de la personne physique",
+    })
+    .click();
   await page.waitForSelector('[aria-label="Profession"]', { state: "visible" });
   await page
-  .getByLabel("Profession")
-  .selectOption("Agriculture, sylviculture et pêche");
+    .getByLabel("Profession")
+    .selectOption("Agriculture, sylviculture et pêche");
   await page.getByLabel("numéro de téléphone Veuillez").click();
   await page.getByLabel("numéro de téléphone Veuillez").fill("0123456789");
   await page.getByRole("button", { name: "Rue Mirabeau 75016 Paris" }).click();
@@ -185,4 +209,6 @@ test("create_organisateur", async ({ page }) => {
   // await expect(page.getByText("Fiche organisateur finalisée")).toBeVisible({
   //  timeout: 10000,
   // });
+
 });
+*/

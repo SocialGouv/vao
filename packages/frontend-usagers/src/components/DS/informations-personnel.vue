@@ -66,6 +66,7 @@
           label="Organisation, contenu  et durée d’une session de formation/information en amont de l’arrivée des vacanciers en vue de la coordination des équipes d’accompagnement"
           :label-visible="true"
           :model-value="formation"
+          :is-textarea="true"
           :readonly="!props.modifiable"
           :is-valid="formationMeta.valid"
           :error-message="formationErrorMessage"

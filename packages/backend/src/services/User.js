@@ -201,7 +201,7 @@ module.exports.editPassword = async ({ email, password }) => {
   const responseWithUpdate = await pool.query(
     ...query.select({ mail: normalize(email) }),
   );
-  CommonUser.recordLoginAttempt(normalize(email), schema.FRONT);
+  CommonUser.resetLoginAttempt(normalize(email), schema.FRONT);
   const [userUpdated] = responseWithUpdate.rows;
   log.i("editPassword - DONE", { user: userUpdated });
   return userUpdated;
@@ -293,10 +293,10 @@ const getByUserId = async (userId) => {
 module.exports.getByUserId = getByUserId;
 
 module.exports.addAsyncUserHistoric = async ({
-  data: { oldData, newData },
+  action,
+  data: { newData, oldData },
   foUserId,
   userId,
-  action,
   userType,
 }) => {
   try {

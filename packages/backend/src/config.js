@@ -1,11 +1,12 @@
 const apiEntrepriseBaseUrl = "https://entreprise.api.gouv.fr";
+const assistanceBaseUrl = "https://vao-assistance.atlassian.net";
 
 module.exports = {
   accessToken: {
-    algorithm: "RS256",
     expiresIn: 30 * 60 * 1000, // 30 min
-    secret: process.env.ACCESS_TOKEN_SECRET,
   },
+
+  algorithm: "HS256",
 
   antivirusUrl: process.env.ANTIVIRUS_URL,
 
@@ -23,14 +24,16 @@ module.exports = {
   },
 
   apiInsee: {
-    CLIENT_ID: process.env.API_INSEE_CLIENT_ID,
-    CLIENT_SECRET: process.env.API_INSEE_CLIENT_SECRET,
+    TOKEN: process.env.API_INSEE_TOKEN,
     URI: process.env.API_INSEE_URI,
     URL: process.env.API_INSEE_URL,
   },
   apiToken: {
     expiresIn: 365 * 24 * 60 * 60 * 1000,
-    tokenSecret: process.env.API_TOKEN_SECRET_PRIV,
+  },
+  assistance: {
+    uriFaq: `${assistanceBaseUrl}/servicedesk/customer/portals`,
+    uriNewRequest: `${assistanceBaseUrl}/servicedesk/customer/portal/1/group/2/create/10`,
   },
   authentification: {
     lockoutTime: 15,
@@ -78,13 +81,10 @@ module.exports = {
   },
 
   refreshToken: {
-    algorithm: "RS256",
     expiresIn: 4 * 60 * 60 * 1000, // 4h
-    secret: process.env.REFRESH_TOKEN_SECRET,
   },
   resetPasswordToken: {
     expiresIn: 30 * 60 * 1000, // 30 min
-    secret: process.env.RESET_PASSWORD_TOKEN_SECRET,
   },
   senderEmail: process.env.SENDER_EMAIL,
   sentry: {
@@ -104,9 +104,10 @@ module.exports = {
     secure: process.env.SMTP_IS_SECURE === "true",
   },
   tmpDirectory: process.env.TMP_DIRECTORY,
-  tokenSecret: process.env.TOKEN_SECRET,
+  tokenSecret: process.env.TOKEN_SECRET_LINK,
+  tokenSecret_BO: process.env.TOKEN_SECRET_BO,
+  tokenSecret_FO: process.env.TOKEN_SECRET_FO,
   validationToken: {
     expiresIn: 60 * 60 * 1000, // 1h
-    secret: process.env.VALIDATION_TOKEN_SECRET,
   },
 };
