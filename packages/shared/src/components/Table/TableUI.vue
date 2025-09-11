@@ -4,6 +4,7 @@
       <DsfrTable
         style="display: table"
         :title="title"
+        :no-caption="noCaption"
         :headers="headers"
         :rows="rows"
       />
@@ -42,6 +43,7 @@ const emit = defineEmits(["click-row"]);
 const props = defineProps({
   displayedData: { type: Array, required: true },
   title: { type: String, required: true },
+  noCaption: { type: Boolean, default: false },
   headers: { type: Array, required: true },
   totalItems: { type: Number, required: true },
   currentPage: { type: Number, default: 0 },
