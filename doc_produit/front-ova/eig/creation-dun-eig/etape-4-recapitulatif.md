@@ -28,3 +28,6 @@ Lors de la soumission du formulaire de cette dernière étape :&#x20;
 
 {% include "../../../.gitbook/includes/ova-declaration-dun-evenement-indesirable.md" %}
 
+* Un email est envoyé au porteur de l'agrément
+
+{% include "../../../.gitbook/includes/ova-porteur-agrement-declaration-dun-evenement-indesirable.md" %}

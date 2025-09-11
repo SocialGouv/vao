@@ -25,11 +25,11 @@ Pour chaque établissement :
 * Adresse
 * Code postal
 * Commune
-* Bouton "Action" :  Autorisation à organiser des séjours
+* Bouton "Action" : Autorisation à organiser des séjours
 
-Pour mettre à jour le tableau, un bouton est disponible pour récupérer des dernières données depuis l'API entreprise.&#x20;
+Pour mettre à jour le tableau, un bouton est disponible pour récupérer des dernières données depuis l'API entreprise.
 
-En cas d'indisponibilité de l'API Entreprise, un message d'erreur s'affiche&#x20;
+En cas d'indisponibilité de l'API Entreprise, un message d'erreur s'affiche
 
 <details>
 
@@ -48,17 +48,17 @@ En cas d'indisponibilité de l'API Entreprise, un message d'erreur s'affiche&#x2
   * [regles-metiers-etablissements.md](regles-metiers-etablissements.md "mention")
 {% endhint %}
 
-## Nouvelles fonctionnalités v1.22.0
-
 ### Validation par établissement secondaire
+
 Depuis la version v1.22.0, les établissements secondaires peuvent valider et organiser des séjours de manière autonome :
 
-- **Autonomie** : Chaque établissement secondaire peut gérer ses propres séjours
-- **Délégation** : L'établissement principal peut déléguer la gestion des séjours aux établissements secondaires
-- **Validation** : Les établissements secondaires peuvent valider les déclarations de séjour pour leurs propres activités
-- **Hébergements** : Chaque établissement secondaire peut avoir ses propres hébergements associés
+* **Autonomie** : Chaque établissement secondaire peut gérer ses propres séjours
+* **Délégation** : L'établissement principal peut déléguer la gestion des séjours aux établissements secondaires
+* **Validation** : Les établissements secondaires peuvent valider les déclarations de séjour pour leurs propres activités
+* **Hébergements** : Chaque établissement secondaire peut avoir ses propres hébergements associés
 
 ### Gestion des permissions
-- Les utilisateurs des établissements secondaires peuvent avoir des droits spécifiques
-- La gestion des rôles est décentralisée par établissement
-- Les permissions sont gérées individuellement pour chaque établissement secondaire
+
+* Les utilisateurs des établissements secondaires peuvent avoir des droits spécifiques
+* La gestion des rôles est décentralisée par établissement
+* Les permissions sont gérées individuellement pour chaque établissement secondaire

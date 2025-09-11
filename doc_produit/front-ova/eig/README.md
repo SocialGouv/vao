@@ -17,8 +17,6 @@ L'article R. 412-14-1 du code du tourisme prévoit que les personnes responsable
 de tout accident grave ainsi que de toute situation présentant ou ayant présenté des risques graves pour la santé, l'intégrité ou le bien-être physique et moral des personnes handicapées majeures.
 {% endhint %}
 
-
-
 * [Page de liste des EIGS](liste-des-eig.md)
 * [Création d'un EIG](creation-dun-eig/)
   * [Étape 1 - Sélection du séjour](creation-dun-eig/etape-1-selection-du-sejour.md)
@@ -27,4 +25,4 @@ de tout accident grave ainsi que de toute situation présentant ou ayant présen
   * [Étape 4 - Récapitulatif](creation-dun-eig/etape-4-recapitulatif.md)
 * [Consultation d'un EIG](consultation-dun-eig.md)
 * [Rôle et droits](role-et-droits-utilisateurs.md)
-* [Notifications porteur d'agrément](notifications-porteur-agrement.md)
+* [Notifications porteur d'agrément](broken-reference)

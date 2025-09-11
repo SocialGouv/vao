@@ -9,6 +9,7 @@
 * [Création de compte](front-ova/creation-de-compte/README.md)
   * [Scénario 1 - L'organisme n'existe pas sur la plateforme VAO](front-ova/creation-de-compte/scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md)
   * [Scénario 2 – L'organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO](front-ova/creation-de-compte/scenario-2-lorganisme-a-deja-un-ou-plusieurs-comptes-utilisateurs-sur-la-plateforme-vao.md)
+  * [Désactivation de compte OVA](front-ova/creation-de-compte/desactivation-de-compte-ova.md)
 * [Fiche organisateur](front-ova/fiche-organisateur/README.md)
   * [Création de la fiche organisateur](front-ova/fiche-organisateur/creation-de-la-fiche-organisateur/README.md)
     * [Étape 1 - Renseignements généraux sur l'organisateur VAO](front-ova/fiche-organisateur/creation-de-la-fiche-organisateur/etape-1-renseignements-generaux-sur-lorganisateur-vao.md)
@@ -49,7 +50,6 @@
     * [Étape 4 - Récapitulatif](front-ova/eig/creation-dun-eig/etape-4-recapitulatif.md)
   * [Consultation d'un EIG](front-ova/eig/consultation-dun-eig.md)
   * [Rôle et droits utilisateurs](front-ova/eig/role-et-droits-utilisateurs.md)
-  * [Notifications porteur d'agrément](front-ova/eig/notifications-porteur-agrement.md)
 
 ***
 
@@ -77,5 +77,3 @@
 * [API](misc/api.md)
 * [Pages d'erreurs](misc/pages-derreurs.md)
 * [Sécurité](misc/securite.md)
-* [Accessibilité](misc/accessibilite.md)
-* [Nouvelles fonctionnalités v1.22.0](misc/nouvelles-fonctionnalites-v1-22-0.md)

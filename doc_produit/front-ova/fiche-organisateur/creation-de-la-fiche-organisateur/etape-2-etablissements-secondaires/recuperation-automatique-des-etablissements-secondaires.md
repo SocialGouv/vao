@@ -20,25 +20,26 @@ L'utilisateur peut rafraîchir manuellement la liste des établissements seconda
 La récupération utilise l'API INSEE SIRENE qui fournit les données officielles des établissements français. Le système récupère jusqu'à 1000 établissements par page et peut traiter plusieurs pages si nécessaire.
 {% endhint %}
 
-## Mises à jour v1.22.0 - API INSEE
-
 Depuis la version v1.22.0, le système a été mis à jour pour utiliser les nouvelles URIs et méthodes d'authentification de l'API INSEE :
 
 ### Changements techniques
-- **Nouvelles URIs** : Mise à jour des endpoints de l'API INSEE pour les environnements de production et de préproduction
-- **Authentification** : Amélioration du système d'authentification avec l'API INSEE
-- **Gestion des erreurs** : Amélioration de la gestion des erreurs et des timeouts
-- **Performance** : Optimisation des appels API pour une meilleure réactivité
+
+* **Nouvelles URIs** : Mise à jour des endpoints de l'API INSEE pour les environnements de production et de préproduction
+* **Authentification** : Amélioration du système d'authentification avec l'API INSEE
+* **Gestion des erreurs** : Amélioration de la gestion des erreurs et des timeouts
+* **Performance** : Optimisation des appels API pour une meilleure réactivité
 
 ### Impact utilisateur
-- **Transparence** : Les utilisateurs ne perçoivent aucun changement dans l'interface
-- **Fiabilité** : Amélioration de la stabilité de la récupération des établissements
-- **Rapidité** : Temps de réponse optimisés pour la récupération des données
+
+* **Transparence** : Les utilisateurs ne perçoivent aucun changement dans l'interface
+* **Fiabilité** : Amélioration de la stabilité de la récupération des établissements
+* **Rapidité** : Temps de réponse optimisés pour la récupération des données
 
 ### Gestion des indisponibilités
-- **Détection automatique** : Le système détecte automatiquement les indisponibilités de l'API INSEE
-- **Messages d'erreur** : Affichage de messages clairs en cas d'indisponibilité
-- **Retry automatique** : Tentatives automatiques de reconnexion en cas d'échec temporaire
+
+* **Détection automatique** : Le système détecte automatiquement les indisponibilités de l'API INSEE
+* **Messages d'erreur** : Affichage de messages clairs en cas d'indisponibilité
+* **Retry automatique** : Tentatives automatiques de reconnexion en cas d'échec temporaire
 
 ### Gestion des autorisations
 

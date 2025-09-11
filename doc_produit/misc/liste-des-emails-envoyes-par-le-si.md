@@ -281,3 +281,5 @@ Portail VAO
 {% include "../.gitbook/includes/agent-departement-declaration-dun-evenement-indesirable.md" %}
 
 {% include "../.gitbook/includes/ova-declaration-dun-evenement-indesirable.md" %}
+
+{% include "../.gitbook/includes/ova-porteur-agrement-declaration-dun-evenement-indesirable.md" %}
