@@ -49,6 +49,7 @@
     * [Étape 4 - Récapitulatif](front-ova/eig/creation-dun-eig/etape-4-recapitulatif.md)
   * [Consultation d'un EIG](front-ova/eig/consultation-dun-eig.md)
   * [Rôle et droits utilisateurs](front-ova/eig/role-et-droits-utilisateurs.md)
+  * [Notifications porteur d'agrément](front-ova/eig/notifications-porteur-agrement.md)
 
 ***
 
@@ -76,3 +77,5 @@
 * [API](misc/api.md)
 * [Pages d'erreurs](misc/pages-derreurs.md)
 * [Sécurité](misc/securite.md)
+* [Accessibilité](misc/accessibilite.md)
+* [Nouvelles fonctionnalités v1.22.0](misc/nouvelles-fonctionnalites-v1-22-0.md)

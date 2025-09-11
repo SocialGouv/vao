@@ -25,3 +25,17 @@ L'utilisateur peut également filtrer les éléments du tableau :
 * Par adresse
 * Par statut
 
+## Nouvelles fonctionnalités v1.22.0
+
+### Masquage des hébergements
+Depuis la version v1.22.0, les hébergements sont automatiquement masqués si l'organisation n'est pas complète :
+
+- **Condition de masquage** : L'hébergement n'est pas visible si la fiche organisateur n'est pas entièrement renseignée
+- **Impact** : Les hébergements masqués n'apparaissent pas dans la liste de choix lors de la création d'une déclaration de séjour
+- **Objectif** : Assurer que seuls les organismes avec des informations complètes peuvent organiser des séjours
+
+### Validation par établissement secondaire
+- Les établissements secondaires peuvent maintenant valider et organiser des séjours de manière autonome
+- Chaque établissement secondaire peut avoir ses propres hébergements
+- La gestion des hébergements est décentralisée par établissement
+

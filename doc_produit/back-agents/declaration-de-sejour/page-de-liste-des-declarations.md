@@ -19,6 +19,22 @@ Il peut également filtrer la liste :&#x20;
 * **Par statut**
 * **Par action à réaliser**
 
+
+### Compteur de déclarations
+- Un compteur affiche le nombre total de déclarations dans la liste
+- Le compteur se met à jour automatiquement lors de l'application des filtres
+- Permet d'avoir une vue d'ensemble rapide du volume de déclarations
+
+### Amélioration des filtres
+- Les filtres sont plus performants et réactifs
+- Meilleure gestion des filtres multiples
+- Sauvegarde automatique des préférences de filtrage
+
+### Export CSV des hébergements
+- Nouvelle fonctionnalité d'export CSV pour les données d'hébergement
+- Export des informations complètes des hébergements liés aux séjours
+- Format CSV optimisé pour l'analyse et le traitement des données
+
 **Colonne "Action"**
 
 * <i class="fa-greater-than">:greater-than:</i>  : permet d'accéder à la page détaillée de la déclaration

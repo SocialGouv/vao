@@ -27,3 +27,4 @@ de tout accident grave ainsi que de toute situation présentant ou ayant présen
   * [Étape 4 - Récapitulatif](creation-dun-eig/etape-4-recapitulatif.md)
 * [Consultation d'un EIG](consultation-dun-eig.md)
 * [Rôle et droits](role-et-droits-utilisateurs.md)
+* [Notifications porteur d'agrément](notifications-porteur-agrement.md)
