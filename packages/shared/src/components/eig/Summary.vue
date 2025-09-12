@@ -1,17 +1,21 @@
 <template>
   <div class="fr-col-7">
-    <div v-for="detail in currentEigValues" :key="detail.label">
-      <strong>{{ detail.label }} : </strong>
-      <a v-if="!!detail.href" :href="detail.href">{{ detail.value }}</a>
-      <span v-else-if="typeof detail.value === 'string'">{{
-        detail.value
-      }}</span>
-      <div v-else-if="Array.isArray(detail.value)">
-        <ul>
-          <li v-for="item in detail.value" :key="item">{{ item }}</li>
-        </ul>
-      </div>
-    </div>
+    <dl>
+      <template v-for="detail in currentEigValues" :key="detail.label">
+        <dt>
+          <strong>{{ detail.label }} : </strong>
+        </dt>
+        <dd>
+          <a v-if="!!detail.href" :href="detail.href">{{ detail.value }}</a>
+          <span v-else-if="typeof detail.value === 'string'">{{
+            detail.value
+          }}</span>
+          <ul v-else-if="Array.isArray(detail.value)">
+            <li v-for="item in detail.value" :key="item">{{ item }}</li>
+          </ul>
+        </dd>
+      </template>
+    </dl>
   </div>
 </template>
 
@@ -81,4 +85,12 @@ const currentEigValues = computed(() => [
 ]);
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+dl {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  row-gap: 0.5rem;
+  column-gap: 1rem;
+  margin: 0;
+}
+</style>

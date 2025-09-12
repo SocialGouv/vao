@@ -1,9 +1,8 @@
 fileignoreconfig:
-- filename: packages/backend/src/services/FoUser.js
-  checksum: c772592923b313b62e6ae80354850ceab3bdbcdae5938556de3d1c0233582a09
+- filename: packages/shared/src/components/eig/Summary.vue
+  checksum: 36fe5c5e7e4bb9d156882a10a9e10810ab4544a71cbbbe90bd982cffa1efb045
 version: ""
-: ""
-filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
+lename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
   checksum: 2414a3f1746ccd11cbb12b86dd2bb4a16cbc5bd6fe1450c308579972128176e6
 - filename: .kontinuous/env/preprod/templates/token.sealed.secret.yaml
   checksum: 4aaab89fff588b5c4098042f6c8945a65eb30c6384d3b3aa35225611fa005b7e

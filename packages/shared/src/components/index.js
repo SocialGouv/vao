@@ -31,6 +31,7 @@ import Footer from "./Footer.vue";
 import ErrorPage from "./ErrorPage.vue";
 import Skiplinks from "./Skiplinks.vue";
 import Accessibilite from "./Accessibilite.vue";
+import TitleWithIcon from "./TitleWithIcon.vue";
 export {
   ApiUnavailable,
   FileUpload,
@@ -65,4 +66,5 @@ export {
   ErrorPage,
   Skiplinks,
   Accessibilite,
+  TitleWithIcon,
 };
