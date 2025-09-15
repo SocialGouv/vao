@@ -51,6 +51,7 @@
           no-outline
           type="button"
           class="answer__form__send"
+          aria-label="Envoyer un message"
           :disabled="isLoading"
           :class="{ 'answer__form__send--is-loading': isLoading }"
           @click="sendMessage"
@@ -67,6 +68,7 @@
           no-outline
           type="button"
           class="answer__form__file__remove-file"
+          :aria-label="`Supprimer le fichier importé : ${file.name}`"
           @click="file = null"
         />
       </div>
