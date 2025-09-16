@@ -58,6 +58,7 @@ const rows = computed(() => {
         tertiary: true,
         noOutline: true,
         onClick: removeFile,
+        ariaLabel: `Supprimer le document ${file.value.name}`,
       },
     ];
     const createdAt = file.value.createdAt
