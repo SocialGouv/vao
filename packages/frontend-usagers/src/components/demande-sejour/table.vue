@@ -141,6 +141,7 @@ const enabledDeleteCancelStatus = [
   statusUtils.defaultStatus.TRANSMISE_8J,
   statusUtils.defaultStatus.EN_COURS_8J,
   statusUtils.defaultStatus.A_MODIFIER_8J,
+  statusUtils.defaultStatus.VALIDEE_8J,
 ];
 
 const columns = [
@@ -167,7 +168,7 @@ const columns = [
   },
   {
     key: "siret",
-    label: "Établissement déclarant",
+    label: "Siret",
     options: {
       isSortable: true,
     },
