@@ -6,7 +6,7 @@
     v-model:status="status"
     v-model:departement-suivi="departementSuivi"
     v-model:season="season"
-    @filters-update="onFiltersUpdate"
+    @filters-update="() => updateDataDebounced(true)"
     @export-get="getCsv"
   />
   <DsfrDataTableV2Wrapper
@@ -20,7 +20,7 @@
     :total="total"
     row-id="declarationId"
     is-sortable
-    @update-data="updateDataDebounced"
+    @update-data="() => updateDataDebounced()"
   >
     <template #cell-dateDebut="{ row }">
       {{ displayDate(row.dateDebut) }} -<br />
@@ -107,6 +107,7 @@ import {
   ValidationModal,
   isValidParams,
   usePagination,
+  columnsTable,
 } from "@vao/shared";
 import { exportCsv } from "../../utils/csv";
 
@@ -118,6 +119,7 @@ const userStore = useUserStore();
 
 const data = computed(() => demandeSejourStore.demandes);
 const total = computed(() => demandeSejourStore.totalDemandes);
+const optionType = columnsTable.optionType;
 
 const { query } = route;
 
@@ -144,57 +146,17 @@ const enabledDeleteCancelStatus = [
   statusUtils.defaultStatus.VALIDEE_8J,
 ];
 
-const columns = [
-  {
-    key: "idFonctionnelle",
-    label: "Numéro de déclaration",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "libelle",
-    label: "Nom du séjour",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "departementSuivi",
-    label: "Dept",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "siret",
-    label: "Siret",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "dateDebut",
-    label: "Dates (Début-fin)",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "statut",
-    label: "Statut",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const defs = [
+  ["idFonctionnelle", "Numéro de déclaration", optionType.SORTABLE],
+  ["libelle", "Nom du séjour", optionType.SORTABLE],
+  ["departementSuivi", "Dept", optionType.SORTABLE],
+  ["siret", "Siret", optionType.SORTABLE],
+  ["dateDebut", "Dates (Début-fin)", optionType.SORTABLE],
+  ["statut", "Statut", optionType.SORTABLE],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
 
 const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],
@@ -247,11 +209,6 @@ const getSearchParams = () => ({
 
 let timeout = null;
 
-const onFiltersUpdate = () => {
-  offset.value = 0;
-  updateDataDebounced();
-};
-
 const generateApiQuery = () => ({
   limit: limit.value,
   offset: offset.value,
@@ -264,7 +221,10 @@ const generateApiQuery = () => ({
 
 const updateData = (query) => demandeSejourStore.fetchDemandes(query);
 
-const updateDataDebounced = () => {
+const updateDataDebounced = (resetOffset = false) => {
+  if (resetOffset) {
+    offset.value = 0;
+  }
   if (timeout) {
     clearTimeout(timeout);
   }

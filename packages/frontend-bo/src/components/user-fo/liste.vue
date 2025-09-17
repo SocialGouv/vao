@@ -99,6 +99,7 @@ import {
   UserStatusBadge,
   statusUser,
   RefusCompteModal,
+  columnsTable,
 } from "@vao/shared";
 import dayjs from "dayjs";
 
@@ -110,48 +111,25 @@ const data = computed(() => userStore.usersFO);
 const total = computed(() => userStore.totalUsersFO);
 const utilisateurSelectionne = ref(null);
 const showRefusModal = ref(false);
+const optionType = columnsTable.optionType;
 
 const title = computed(() => `Liste des utilisateurs (${total.value})`);
 function linkSiret(siret) {
   return `https://annuaire-entreprises.data.gouv.fr/etablissement/${siret}`;
 }
-const columns = [
-  {
-    key: "nom",
-    label: "Nom",
-  },
-  {
-    key: "prenom",
-    label: "Prénom",
-  },
-  {
-    key: "email",
-    label: "Adresse courriel",
-  },
-  {
-    key: "telephone",
-    label: "N° de téléphone",
-  },
-  {
-    key: "dateCreation",
-    label: "Date de création",
-  },
-  {
-    key: "siret",
-    label: "Siret",
-  },
-  {
-    key: "statut",
-    label: "Statut",
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+
+const defs = [
+  ["nom", "Nom"],
+  ["prenom", "Prénom"],
+  ["email", "Adresse courriel"],
+  ["telephone", "N° de téléphone"],
+  ["dateCreation", "Date de création"],
+  ["siret", "Siret"],
+  ["statut", "Statut"],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
 
 const { query } = route;
 

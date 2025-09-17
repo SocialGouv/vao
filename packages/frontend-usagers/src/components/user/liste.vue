@@ -5,7 +5,7 @@
     v-model:prenom="prenom"
     v-model:statut="statut"
     :status-actions="statusUser.label"
-    @filters-update="updateData"
+    @filters-update="() => updateData(true)"
   />
   <DsfrDataTableV2Wrapper
     v-model:limit="limit"
@@ -18,7 +18,7 @@
     :total="total"
     row-id="userId"
     is-sortable
-    @update-data="updateData"
+    @update-data="() => updateData()"
   >
     <template #cell-siegeSocial="{ cell }">
       {{ cell === true ? "Principal" : "Secondaire" }}
@@ -94,6 +94,7 @@ import {
   UserStatusBadge,
   statusUser,
   RefusCompteModal,
+  columnsTable,
 } from "@vao/shared";
 import dayjs from "dayjs";
 
@@ -110,71 +111,21 @@ const total = computed(() => userStore.total);
 const title = computed(() => `Liste des utilisateurs (${total.value})`);
 const getDateCreationLabel = (date) => dayjs(date).format("DD/MM/YYYY");
 
-const columns = [
-  {
-    key: "nom",
-    label: "Nom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "prenom",
-    label: "Prénom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "email",
-    label: "Adresse courriel",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "telephone",
-    label: "N° de téléphone",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "siegeSocial",
-    label: "Organisme",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "Adresse",
-    label: "Ville",
-    options: {
-      isSortable: false,
-    },
-  },
-  {
-    key: "statut",
-    label: "Statut",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "dateCreation",
-    label: "Date inscription",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const optionType = columnsTable.optionType;
+
+const defs = [
+  ["nom", "Nom", optionType.SORTABLE],
+  ["prenom", "Prénom", optionType.SORTABLE],
+  ["email", "Adresse courriel", optionType.SORTABLE],
+  ["telephone", "N° de téléphone", optionType.SORTABLE],
+  ["siegeSocial", "Organisme", optionType.SORTABLE],
+  ["Adresse", "Ville", optionType.SORTABLE],
+  ["statut", "Statut", optionType.SORTABLE],
+  ["dateCreation", "Date inscription", optionType.SORTABLE],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
 
 const { query } = route;
 
@@ -243,7 +194,10 @@ async function openCompte(userId) {
   navigateTo(`/comptes/${userId}`);
 }
 
-const updateData = () => {
+const updateData = (resetOffset = false) => {
+  if (resetOffset) {
+    offset.value = 0;
+  }
   if (timeout) {
     clearTimeout(timeout);
   }
