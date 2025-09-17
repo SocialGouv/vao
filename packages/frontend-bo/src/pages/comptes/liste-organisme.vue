@@ -78,7 +78,7 @@
       :table-title="`Liste des comptes organisateurs (${usersStore.totalUsersFO})`"
       :data="usersStore.usersFO"
       :total="usersStore.totalUsersFO"
-      row-id="organismeId"
+      row-id="id"
       is-sortable
       @update-data="updateDataImmediate"
     >
