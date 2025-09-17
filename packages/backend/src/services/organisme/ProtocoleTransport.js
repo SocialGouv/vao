@@ -76,6 +76,12 @@ const query = {
     FROM front.org_protocole_transport
     WHERE organisme_id = $1
   `,
+  getOrgIdByUuid: `
+      SELECT pt.organisme_id AS "organismeId"
+      FROM front.org_protocole_transport_files ptf
+      INNER JOIN front.org_protocole_transport pt ON pt.id = ptf.protocole_transport_id
+      WHERE files = $1
+    `,
   getPTFiles: `
     SELECT files AS "uuid"
     FROM front.org_protocole_transport_files ptf
@@ -187,6 +193,15 @@ module.exports.getByOrganismeId = async (organismeId) => {
   );
   log.i("getByOrganismeId - DONE");
   return rowCount === 0 ? {} : { ...protocoleTransport[0], files };
+};
+
+module.exports.getOrgIdByUuid = async (uuid) => {
+  log.i("getOrgIdByUuid - IN");
+  console.log("UUID", uuid);
+  const response = await pool.query(query.getOrgIdByUuid, [uuid]);
+  console.log(response.rows);
+  log.d("getOrgIdByUuid - DONE");
+  return response.rows[0];
 };
 
 const { create } = module.exports;
