@@ -18,6 +18,7 @@ jest.mock("../../../../services/mail", () => ({
     send: jest.fn(),
   },
 }));
+
 jest.mock("jsonwebtoken");
 jest.mock("../../../../utils/logger", () => () => ({
   i: jest.fn(),
