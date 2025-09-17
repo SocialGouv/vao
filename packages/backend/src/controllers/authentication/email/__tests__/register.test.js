@@ -6,7 +6,6 @@ const {
 } = require("../../../../services/Territoire");
 const { mailService } = require("../../../../services/mail");
 const jwt = require("jsonwebtoken");
-const config = require("../../../../config");
 const registerSchema = require("../../../../schemas/register");
 const ValidationAppError = require("../../../../utils/validation-error");
 const AppError = require("../../../../utils/error");
@@ -19,6 +18,7 @@ jest.mock("../../../../services/mail", () => ({
     send: jest.fn(),
   },
 }));
+
 jest.mock("jsonwebtoken");
 jest.mock("../../../../utils/logger", () => () => ({
   i: jest.fn(),
