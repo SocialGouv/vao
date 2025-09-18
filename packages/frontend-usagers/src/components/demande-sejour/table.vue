@@ -339,10 +339,16 @@ const copyDS = async (declarationId) => {
       displayToasterError("la copie");
     }
   } catch (error) {
-    displayToasterError("la copie");
-    throw error;
+    if (error?.data?.name === "LibelleTooLong") {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "La duplication a échoué: le libellé de la déclaration copiée dépasse la limite de 100 caractères.",
+      });
+    } else {
+      displayToasterError("la copie");
+    }
   } finally {
-    // closeModal
     popUpParams.value = null;
   }
   updateData();

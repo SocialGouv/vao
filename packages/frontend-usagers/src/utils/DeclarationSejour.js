@@ -68,7 +68,7 @@ function isSejourComplet(hebergements, dateDebut, dateFin) {
 const baseSchema = {
   libelle: yup
     .string()
-    .max(50, "Le libellé ne doit pas dépasser 50 caractères ")
+    .max(100, "Le libellé ne doit pas dépasser 100 caractères ")
     .typeError("le libellé est requis")
     .required(),
   dateDebut: yup
