@@ -331,6 +331,7 @@ const finalLabelClass = computed(() => [
       type="button"
       v-bind="$attrs"
       class="fr-select fr-multiselect"
+      :aria-label="defaultButtonLabel"
       :aria-expanded="expanded"
       :aria-controls="`${props.id}-collapse`"
       :class="{
