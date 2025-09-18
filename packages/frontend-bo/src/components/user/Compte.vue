@@ -102,6 +102,8 @@
                     onServiceCompetenceChange(e);
                     if (e === competence.NATIONALE) {
                       onTerritoireCodeChange('FRA');
+                    } else {
+                      onTerritoireCodeChange(null);
                     }
                   }
                 "
@@ -115,49 +117,68 @@
         >
           <div class="fr-fieldset">
             <div class="fr-fieldset__element">
-              <div class="fr-input-group fr-col-6">
-                <DsfrSelect
-                  v-if="serviceCompetence === competence.DEPARTEMENTALE"
-                  :model-value="territoireCode"
-                  name="departementTerritoire"
-                  :disabled="isFormDisabled || isSameUser"
-                  label="Département du service"
-                  :required="true"
-                  :options="userDepartements"
-                  :is-valid="territoireCodeMeta.valid"
-                  :error-message="territoireCodeErrorMessage"
-                  @update:model-value="onTerritoireCodeChange"
-                />
-                <DsfrSelect
-                  v-if="serviceCompetence === competence.REGIONALE"
-                  :model-value="territoireCode"
-                  name="regionTerritoire"
-                  :disabled="isFormDisabled || isSameUser"
-                  label="Région du service"
-                  :required="true"
-                  :options="userRegions"
-                  :is-valid="territoireCodeMeta.valid"
-                  :error-message="territoireCodeErrorMessage"
-                  @update:model-value="onTerritoireCodeChange"
-                />
+              <div class="fr-grid-row fr-grid-row--bottom">
+                <div class="fr-input-group fr-col-5 fr-mb-0">
+                  <DsfrSelect
+                    v-if="serviceCompetence === competence.DEPARTEMENTALE"
+                    :model-value="territoireCode"
+                    name="departementTerritoire"
+                    :disabled="isFormDisabled || isSameUser"
+                    label="Département du service"
+                    :required="true"
+                    :options="userDepartements"
+                    :is-valid="territoireCodeMeta.valid"
+                    :error-message="
+                      territoireCodeMeta.touched
+                        ? territoireCodeErrorMessage
+                        : ''
+                    "
+                    @update:model-value="onTerritoireCodeChange"
+                  />
+                  <DsfrSelect
+                    v-if="serviceCompetence === competence.REGIONALE"
+                    :model-value="territoireCode"
+                    name="regionTerritoire"
+                    :disabled="isFormDisabled || isSameUser"
+                    label="Région du service"
+                    :required="true"
+                    :options="userRegions"
+                    :is-valid="territoireCodeMeta.valid"
+                    :error-message="
+                      territoireCodeMeta.touched
+                        ? territoireCodeErrorMessage
+                        : ''
+                    "
+                    @update:model-value="onTerritoireCodeChange"
+                  />
+                </div>
+                <div
+                  v-if="
+                    territoireCode && serviceCompetence !== competence.NATIONALE
+                  "
+                  class="fr-col-7 fr-pl-6v"
+                >
+                  <div class="fr-input-group">
+                    <a
+                      href="#"
+                      class="fr-link"
+                      :aria-disabled="!territoireCode"
+                      :tabindex="!territoireCode ? -1 : 0"
+                      @click.prevent="navigateFicheTerritoire()"
+                    >
+                      Accéder à la fiche d’informations du territoire
+                      <span
+                        class="fr-icon-arrow-right-line fr-icon--sm"
+                        aria-hidden="true"
+                      ></span>
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div
-          v-if="serviceCompetence !== competence.NATIONALE"
-          class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
-        >
-          <div class="fr-input-group">
-            <DsfrButton
-              :disabled="!territoireCode"
-              type="button"
-              label="Accéder à la fiche d’informations du territoire"
-              primary
-              @click="navigateFicheTerritoire"
-            />
-          </div>
-        </div>
+
         <div
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
@@ -514,7 +535,11 @@ async function navigateFicheTerritoire() {
   const idTerritoire = await territoireStore.getFicheIdByTerritoireCode(
     territoireCode.value,
   );
-  navigateTo(`/territoires/${idTerritoire}`);
+  navigateTo(`/territoires/${idTerritoire}`, {
+    open: {
+      target: "_blank",
+    },
+  });
 }
 
 async function close() {
