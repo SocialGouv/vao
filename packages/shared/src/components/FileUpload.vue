@@ -8,6 +8,7 @@
         title="Fichier(s) téléversé(s)"
         :headers="headers"
         :rows="rows"
+        :no-caption="true"
       />
     </div>
 
@@ -30,7 +31,7 @@
 </template>
 
 <script setup>
-import { DsfrButtonGroup, DsfrFileUpload } from "@gouvminint/vue-dsfr";
+import { DsfrFileUpload } from "@gouvminint/vue-dsfr";
 import { computed } from "vue";
 import dayjs from "dayjs";
 const props = defineProps({
@@ -39,46 +40,37 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
   isDisabled: { type: Boolean, default: false },
 });
-const headers = ["Fichier", "Date de création", "Actions"];
+const headers = [
+  "Nom du fichier",
+  "Type de fichier",
+  "Date de création",
+  "Téléchargement",
+];
 const file = defineModel({ type: Object });
 const rows = computed(() => {
   if (file.value) {
-    const name = file.value.uuid
-      ? {
-          component: "a",
-          text: file.value.name,
-          href: `${props.cdnUrl}/${file.value.uuid}`,
-          download: true,
-        }
-      : file.value.name;
-    const buttons = [
-      {
-        icon: "ri:delete-bin-2-line",
-        iconOnly: true,
-        tertiary: true,
-        noOutline: true,
-        onClick: removeFile,
-        ariaLabel: `Supprimer le document ${file.value.name}`,
-      },
-    ];
+    const name = file.value.name;
+    const extension = name.split(".").pop()?.toLowerCase() || "-";
+    const type = extension;
     const createdAt = file.value.createdAt
       ? dayjs(file.value.createdAt).format("YYYY-MM-DD HH:mm")
       : "";
-    return [
-      [
-        name,
-        createdAt,
-        {
-          component: DsfrButtonGroup,
-          buttons: props.modifiable && buttons,
-        },
-      ],
-    ];
+    const download = file.value.uuid
+      ? {
+          component: "a",
+          innerHTML:
+            '<span class="fr-icon-file-download-fill" aria-hidden="true"></span>',
+          href: `${props.cdnUrl}/${file.value.uuid}`,
+          download: true,
+          "aria-label": `Télécharger le fichier ${file.value.name}`,
+          title: `Télécharger le fichier ${file.value.name}`,
+          style: "background: none;",
+        }
+      : "-";
+    return [[name, type, createdAt, download]];
   } else return [];
 });
-function removeFile() {
-  file.value = null;
-}
+
 function changeFile(fileList) {
   file.value = fileList.length > 0 ? fileList[0] : null;
 }
