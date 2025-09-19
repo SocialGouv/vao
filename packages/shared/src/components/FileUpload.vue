@@ -48,9 +48,9 @@ const headers = [
 ];
 const file = defineModel({ type: Object });
 const rows = computed(() => {
-  if (file.value) {
+  if (file.value && Object.keys(file.value).length > 0) {
     const name = file.value.name;
-    const extension = name.split(".").pop()?.toLowerCase() || "-";
+    const extension = name?.split(".").pop()?.toLowerCase() || "-";
     const type = extension;
     const createdAt = file.value.createdAt
       ? dayjs(file.value.createdAt).format("YYYY-MM-DD HH:mm")
