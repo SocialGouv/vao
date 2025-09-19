@@ -13,66 +13,23 @@
 </template>
 
 <script setup>
+import { columnsTable } from "@vao/shared";
+
+const optionType = columnsTable.optionType;
 const hebergementStore = useHebergementStore();
 
-const columns = [
-  {
-    key: "nom",
-    label: "Nom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "departement",
-    label: "Département",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "adresse",
-    label: "Adresse",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "telephone",
-    label: "Téléphone",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "email",
-    label: "Courriel",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "dateVisite",
-    label: "Date dernière visite",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "reglementationErp",
-    label: "Réglementation erp",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const defs = [
+  ["nom", "Nom", optionType.SORTABLE],
+  ["departement", "Département", optionType.SORTABLE],
+  ["adresse", "Adresse", optionType.SORTABLE],
+  ["telephone", "Téléphone", optionType.SORTABLE],
+  ["email", "Courriel", optionType.SORTABLE],
+  ["dateVisite", "Date dernière visite", optionType.SORTABLE],
+  ["reglementationErp", "Réglementation erp", optionType.SORTABLE],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
 
 const getCsv = async () => {
   const response = await hebergementStore.exportHebergements(true, {});

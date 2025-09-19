@@ -158,7 +158,9 @@ const statusSync = computed({
   },
 });
 
-const filtersUpdate = () => emits("filters-update");
+const filtersUpdate = () => {
+  emits("filters-update");
+};
 
 const handleTodoActionChange = (value: string) => {
   const options: Record<string, string[]> = {

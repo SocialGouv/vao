@@ -6,7 +6,7 @@
     v-model:statut="statut"
     v-model:territoire="territoire"
     :status-actions="status"
-    @filters-update="updateData"
+    @filters-update="() => updateData(true)"
   />
   <DsfrDataTableV2Wrapper
     v-model:limit="limit"
@@ -17,9 +17,9 @@
     :table-title="title"
     :data="data"
     :total="total"
-    row-id="organismeId"
+    row-id="id"
     is-sortable
-    @update-data="updateData"
+    @update-data="() => updateData()"
   >
     <template #cell-validated="{ cell }">
       {{ cell ? "Oui" : "Non" }}
@@ -50,8 +50,10 @@ import {
   DsfrDataTableV2Wrapper,
   usePagination,
   isValidParams,
+  columnsTable,
 } from "@vao/shared";
 
+const optionType = columnsTable.optionType;
 const userStore = useUserStore();
 const route = useRoute();
 
@@ -60,57 +62,17 @@ const total = computed(() => userStore.total);
 
 const title = computed(() => `Liste des agents de l’État (${total.value})`);
 
-const columns = [
-  {
-    key: "nom",
-    label: "Nom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "prenom",
-    label: "Prénom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "email",
-    label: "Adresse courriel",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "territoire",
-    label: "Territoire",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "validated",
-    label: "Compte validé",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "editable",
-    label: "Modifiable",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const defs = [
+  ["nom", "Nom", optionType.SORTABLE],
+  ["prenom", "Prénom", optionType.SORTABLE],
+  ["email", "Adresse courriel", optionType.SORTABLE],
+  ["territoire", "Territoire", optionType.SORTABLE],
+  ["validated", "Compte validé", optionType.SORTABLE],
+  ["editable", "Modifiable", optionType.SORTABLE],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
 
 const { query } = route;
 
@@ -159,7 +121,10 @@ const getSearchParams = () => ({
 
 let timeout = null;
 
-const updateData = () => {
+function updateData(resetOffset = false) {
+  if (resetOffset) {
+    offset.value = 0;
+  }
   if (timeout) {
     clearTimeout(timeout);
   }
@@ -177,7 +142,7 @@ const updateData = () => {
     userStore.fetchUsers(query);
     navigateTo({ query });
   }, 300);
-};
+}
 
 updateData();
 

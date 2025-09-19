@@ -4,7 +4,7 @@
     v-model:adresse="adresse"
     v-model:statut="statut"
     :status-filtre="status"
-    @filters-update="updateData"
+    @filters-update="() => updateData(true)"
   />
   <DsfrDataTableV2Wrapper
     v-model:limit="limit"
@@ -17,7 +17,7 @@
     :total="total"
     row-id="id"
     is-sortable
-    @update-data="updateData"
+    @update-data="() => updateData()"
   >
     <template #cell-custom:name="{ row }">
       {{ row.nom }}
@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { DsfrDataTableV2Wrapper } from "@vao/shared";
+import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared";
 import HebergementStatusBadge from "./HebergementStatusBadge.vue";
 const toaster = useToaster();
 
@@ -96,6 +96,7 @@ const { query } = route;
 
 const status = hebergements.statutsValues;
 const statuts = hebergements.statuts;
+const optionType = columnsTable.optionType;
 
 organismeStore.setMyOrganisme();
 
@@ -106,34 +107,16 @@ const canDesactivateOrReactivate = ref(() => {
   );
 });
 
-const columns = [
-  {
-    key: "nom",
-    label: "Nom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "departement:label",
-    label: "Département",
-  },
-  {
-    key: "adresse",
-    label: "Adresse",
-  },
-  {
-    key: "statut",
-    label: "Statut",
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const defs = [
+  ["nom", "Nom", optionType.SORTABLE],
+  ["departement:label", "Département"],
+  ["adresse", "Adresse"],
+  ["statut", "Statut"],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
+
 const title = "Liste des Hébergements";
 const sortablecolumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],
@@ -197,34 +180,31 @@ async function desactivateOrReactivate(row) {
   updateData();
 }
 
-const updateData = () => {
+const updateData = (resetOffset = false) => {
+  if (resetOffset) {
+    offset.value = 0;
+  }
   if (timeout) {
     clearTimeout(timeout);
   }
   timeout = setTimeout(() => {
-    const query = {
-      limit: limit.value,
-      offset: offset.value,
-      ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
-      ...(isValidParams(sortDirection.value)
-        ? { sortDirection: sortDirection.value.toUpperCase() }
-        : {}),
-      ...getSearchParams(),
-    };
-    hebergementStore.fetch(query);
+    const queryParam = buildQuery();
+    hebergementStore.fetch(queryParam);
     navigateTo({
-      query: {
-        limit: limit.value,
-        offset: offset.value,
-        ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
-        ...(isValidParams(sortDirection.value)
-          ? { sortDirection: sortDirection.value }
-          : {}),
-        ...getSearchParams(),
-      },
+      query: queryParam,
     });
   }, 300);
 };
+
+const buildQuery = () => ({
+  limit: limit.value,
+  offset: offset.value,
+  ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
+  ...(isValidParams(sortDirection.value)
+    ? { sortDirection: sortDirection.value.toUpperCase() }
+    : {}),
+  ...getSearchParams(),
+});
 updateData();
 onUnmounted(() => {
   if (timeout) {

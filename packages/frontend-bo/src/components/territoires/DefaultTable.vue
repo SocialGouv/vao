@@ -1,7 +1,7 @@
 <template>
   <TerritoiresDefaultTableFilters
     v-model:label="label"
-    @filters-update="updateData"
+    @filters-update="() => updateData(true)"
   />
   <DsfrDataTableV2Wrapper
     v-model:limit="limit"
@@ -14,7 +14,7 @@
     :total="total"
     row-id="territoireId"
     is-sortable
-    @update-data="updateData"
+    @update-data="() => updateData()"
   >
     <template #cell-typeTerritoire="{ row }">
       {{ row.type === "DEP" ? "Département" : "Région" }}
@@ -55,6 +55,7 @@ import {
   DsfrDataTableV2Wrapper,
   isValidParams,
   usePagination,
+  columnsTable,
 } from "@vao/shared";
 
 const territoireStore = useTerritoireStore();
@@ -62,65 +63,22 @@ const userStore = useUserStore();
 const route = useRoute();
 const data = computed(() => territoireStore.territoires);
 const total = computed(() => territoireStore.total);
+const optionType = columnsTable.optionType;
 
 const { query } = route;
 
-const columns = [
-  {
-    key: "label",
-    label: "Libellé",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "typeTerritoire",
-    label: "Département/Région",
-    options: {
-      isSortable: false,
-    },
-  },
-  {
-    key: "nbUsersBo",
-    label: "Contacts",
-    sort: false,
-  },
-  {
-    key: "code",
-    label: "Code",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "correspVaoNom",
-    label: "Référent VAO",
-    options: {
-      isSortable: false,
-    },
-  },
-  {
-    key: "serviceTelephone",
-    label: "Téléphone",
-    options: {
-      isSortable: false,
-    },
-  },
-  {
-    key: "serviceMail",
-    label: "Boite fonctionnelle",
-    options: {
-      isSortable: false,
-    },
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const defs = [
+  ["label", "Libellé", optionType.SORTABLE],
+  ["typeTerritoire", "Département/Région"],
+  ["nbUsersBo", "Contacts"],
+  ["code", "Code", optionType.SORTABLE],
+  ["correspVaoNom", "Référent VAO"],
+  ["serviceTelephone", "Téléphone"],
+  ["serviceMail", "Boite fonctionnelle"],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
 
 const title = computed(
   () => `Liste des territoires (${territoireStore.total})`,
@@ -139,7 +97,10 @@ const { limit, offset, sort, sortDirection } = usePagination(
 
 let timeout = null;
 
-const updateData = () => {
+const updateData = (resetOffset = false) => {
+  if (resetOffset) {
+    offset.value = 0;
+  }
   if (timeout) {
     clearTimeout(timeout);
   }
