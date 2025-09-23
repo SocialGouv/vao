@@ -170,6 +170,7 @@
           </li>
         </ul>
       </DsfrAccordionsGroup>
+      <SyntheseVerificationAlert />
     </div>
     <form>
       <div v-if="showAttestation" class="fr-fieldset" legend="Attestation">
