@@ -1,7 +1,7 @@
 <template>
   <div>
     <DsfrFieldset>
-      <div v-if="props.modifiable">
+      <div v-if="props.modifiable && !props.synthese">
         <span class="fr-hint-text fr-mb-2w"
           >Vous pouvez saisir les informations de chaque personne
           individuellement ou coller les données depuis un tableur. Les données
@@ -9,14 +9,20 @@
           joindre des documents.</span
         >
       </div>
-      <div v-if="props.modifiableEnCours" class="fr-fieldset__element">
+      <div
+        v-if="props.modifiableEnCours && !props.synthese"
+        class="fr-fieldset__element"
+      >
         <span class="fr-label">1. Ajouter le personnel manuellement</span>
         <span class="fr-hint-text"
           >Cliquer sur le bouton et renseigner les champs un par un. Faire ceci
           autant de fois que nécessaire</span
         >
       </div>
-      <div v-if="props.modifiable" class="fr-fieldset__element">
+      <div
+        v-if="props.modifiable && !props.synthese"
+        class="fr-fieldset__element"
+      >
         <DsfrButton
           ref="modalOrigin"
           :label="props.labelBoutonAjouter"
@@ -25,7 +31,10 @@
           @click.prevent="addPersonne"
         />
       </div>
-      <div v-if="props.modifiable" class="fr-fieldset__element">
+      <div
+        v-if="props.modifiable && !props.synthese"
+        class="fr-fieldset__element"
+      >
         <span class="fr-label"> 2. Coller des données depuis un tableur </span>
         <span class="fr-hint-text">
           Coller les cellules copiées directement depuis votre tableur (Excel,
@@ -95,7 +104,10 @@
           @update:model-value="handlePaste"
         />
       </div>
-      <div v-if="props.modifiable" class="fr-fieldset__element">
+      <div
+        v-if="props.modifiable && !props.synthese"
+        class="fr-fieldset__element"
+      >
         <span class="fr-label">3. Liste du personnel ajouté</span>
       </div>
     </DsfrFieldset>
@@ -117,7 +129,7 @@
               name="attestation"
               label="Je certifie sur l'honneur avoir vérifié que les personnes ci-dessus n’ont pas fait l’objet d’une condamnation inscrite au bulletin n°3 du casier judiciaire"
               :small="true"
-              :disabled="!props.modifiable"
+              :disabled="!(props.modifiable && !props.synthese)"
               @update:model-value="true"
             />
           </div>
@@ -145,6 +157,7 @@
       <Personne
         :modifiable="props.modifiable"
         :personne="personnel"
+        :synthese="props.synthese"
         :show-adresse="props.showAdresse"
         :show-attestation="props.showAttestation"
         :show-competence="props.showCompetence"
@@ -235,6 +248,7 @@ const dataExempleCsvPersonnel = [
 const DsfrBadge = resolveComponent("DsfrBadge");
 
 const props = defineProps({
+  meta: { type: Object, required: true },
   personnes: { type: Array, required: true },
   modifiable: { type: Boolean, default: true },
   showAdresse: { type: Boolean, default: false, required: false },
@@ -247,6 +261,7 @@ const props = defineProps({
   showEmail: { type: Boolean, default: false, required: false },
   titre: { type: String, default: null, required: false },
   labelBoutonAjouter: { type: String, required: true },
+  synthese: { type: Boolean, default: false, required: false },
 });
 
 const personnesWithId = computed(() =>
@@ -344,22 +359,26 @@ const headers = [
     },
   },
   {
-    column: "erreurs",
-    text: "Suppression",
-    format: (_item, index) =>
-      props.modifiable && {
-        component: "DsfrButton",
-        class: "fr-icon-delete-fill",
-        tertiary: true,
-        noOutline: true,
-        onClick: (event) => {
-          event.stopPropagation();
-          deleteItem(index);
-        },
-        headerAttrs: {
-          class: "suivi",
-        },
-      },
+    ...(!props.synthese
+      ? {
+          column: "erreurs",
+          text: "Suppression",
+          format: (_item, index) =>
+            props.modifiable && {
+              component: "DsfrButton",
+              class: "fr-icon-delete-fill",
+              tertiary: true,
+              noOutline: true,
+              onClick: (event) => {
+                event.stopPropagation();
+                deleteItem(index);
+              },
+              headerAttrs: {
+                class: "suivi",
+              },
+            },
+        }
+      : { column: "erreurs", text: " " }),
   },
 ];
 
