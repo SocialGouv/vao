@@ -47,6 +47,10 @@ module.exports = {
           process.env.BACKEND_CRON_REQUEST_DS8J15J_DEADLINE_REMIND,
         name: "REQUEST_DS8J15J",
       },
+      notifyCompteInactif2m: {
+        cron: process.env.BACKEND_CRON_REQUEST_ACCOUNT2M_NOTIFY_CRON,
+        name: "REQUEST_ACCOUNT2M",
+      },
       notifyactionsbo: {
         cron: process.env.BACKEND_CRON_REQUEST_ACTIONS_BO_CRON,
         name: "REQUEST_ACTIONS_BO",

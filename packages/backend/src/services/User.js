@@ -137,7 +137,8 @@ const query = {
   updateLastConnection: `
     UPDATE front.users
       SET
-      LASTCONNECTION_AT = NOW()
+        lastconnection_at = NOW(),
+        last_mail_inactivity_2m_at = NULL
     WHERE
       id = $1
   `,
