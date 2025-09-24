@@ -1,5 +1,6 @@
 const Transport = require("./Transport.js");
 const TransportHebergement = require("./TransportHebergement.js");
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 
 module.exports = function buildInformationsTransport(info, hebergement) {
   return {
@@ -41,19 +42,10 @@ module.exports = function buildInformationsTransport(info, hebergement) {
             columnGap: 10,
             margin: [0, 20, 0, 0],
             stack: [
-              {
-                columns: [
-                  {
-                    text: "Fichiers téléversés :",
-                    width: 250,
-                  },
-                  {
-                    bold: true,
-                    text: `${info.files.map((f) => f.name).join(", ")}`,
-                    width: "*",
-                  },
-                ],
-              },
+              MiseEnPage.formatLine(
+                "Fichiers téléversés :",
+                info.files.map((f) => f.name).join(", "),
+              ),
             ],
           },
         ],

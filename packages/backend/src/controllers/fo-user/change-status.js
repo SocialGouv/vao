@@ -1,6 +1,9 @@
 const FoUser = require("../../services/FoUser");
+const User = require("../../services/User");
 const logger = require("../../utils/logger");
-
+const { actions, userTypes } = require("../../helpers/tracking");
+const MailUtils = require("../../utils/mail");
+const Send = require("../../services/mail").mailService.send;
 const AppError = require("../../utils/error");
 const { status: userStatus } = require("../../helpers/users");
 
@@ -37,18 +40,58 @@ module.exports = async function changeStatus(req, res, next) {
       );
     }
   }
+  let userBeforeUpdate = null;
+  let motif = null;
   try {
-    await FoUser.updateStatus(
-      userId,
-      status,
-      "Désactivation",
-      null,
-      userConnectedId,
+    userBeforeUpdate = await FoUser.readOne(userId);
+  } catch (err) {
+    return next(
+      new AppError("Utilisateur inexistant", {
+        name: "UserNotFound",
+        statusCode: 400,
+      }),
     );
-
-    return res.status(200).json({ message: "Status updated" });
+  }
+  try {
+    motif =
+      status === userStatus.BLOCKED
+        ? "Désactivation"
+        : status === userStatus.VALIDATED
+          ? "Réactivation"
+          : "Changement de statut";
+    await FoUser.updateStatus(userId, status, motif, null, userConnectedId);
   } catch (error) {
     log.w("DONE with error");
     return next(error);
   }
+  if (
+    status === userStatus.BLOCKED &&
+    userBeforeUpdate &&
+    userBeforeUpdate.email
+  ) {
+    try {
+      await Send(
+        MailUtils.usagers.action.sendAccountDeletionMail({
+          email: userBeforeUpdate.email,
+        }),
+      );
+    } catch (error) {
+      log.w("Error sending account blocked mail", error);
+    }
+  }
+  try {
+    User.addAsyncUserHistoric({
+      action: actions.modification,
+      data: {
+        newData: { userId, motif, status, userConnectedId },
+        oldData: userBeforeUpdate,
+      },
+      foUserId: userId,
+      userId: userConnectedId,
+      userType: userTypes.front,
+    });
+  } catch (error) {
+    log.w("Error tracking user modification", error);
+  }
+  return res.status(200).json({ message: "Status updated" });
 };

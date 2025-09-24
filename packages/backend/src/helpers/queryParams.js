@@ -1,16 +1,19 @@
 const getSort = (sortBy, direction, titles, defaultSort = "") => {
-  if (sortBy && direction) {
-    const title = titles.find((t) => t.queryKey === sortBy && t.sortEnabled);
-    if (title) {
-      if (title.customSort) {
-        return title.customSort(sortBy, direction);
-      }
-      if (title?.sortType === "date") {
-        return `ORDER BY ${title.sortQuery ?? title.key} ${direction}`;
-      }
-      return `ORDER BY LOWER(${title.sortQuery ?? title.key}::varchar) ${direction}`;
+  const finalSortBy = sortBy || defaultSort;
+  if (finalSortBy && direction) {
+    const title = titles.find(
+      (t) => t.queryKey === finalSortBy && t.sortEnabled,
+    );
+    if (!title) {
+      return "";
     }
-    return `ORDER BY LOWER(${defaultSort}::varchar) ${direction}`;
+    if (title?.customSort) {
+      return title.customSort(finalSortBy, direction);
+    }
+    if (title?.sortType === "date") {
+      return `ORDER BY ${title.sortQuery ?? title.key} ${direction}`;
+    }
+    return `ORDER BY LOWER(unaccent(${title.sortQuery ?? title.key}::varchar)) ${direction}`;
   }
   return "";
 };
@@ -113,7 +116,7 @@ const applyFilters = (query, initialParams, filters, groupBy = "") => {
     .filter(Boolean)
     .join(" AND ");
 
-  let newQuery = `${query} AND ${filteringQuery}`;
+  let newQuery = filteringQuery ? `${query} AND ${filteringQuery}` : query;
   if (groupBy) {
     newQuery += `\n${groupBy}\n`;
   }
@@ -159,17 +162,22 @@ const processQuery = (
   titles,
   queryParams,
   defaultSort = {},
+  groupBy = null,
 ) => {
   const filterParams = sanitizeFiltersParams(queryParams, titles);
   const baseQuery = queryBuilder();
   const filteredQuery = applyFilters(baseQuery, baseParams, filterParams);
+  let queryWithGroupBy = filteredQuery.query;
+  if (groupBy) {
+    queryWithGroupBy += `\nGROUP BY ${groupBy}`;
+  }
   const { limit, offset, sort } = sanitizePaginationParams(
     queryParams,
     titles,
     defaultSort,
   );
   return applyPagination(
-    filteredQuery.query,
+    queryWithGroupBy,
     filteredQuery.params,
     limit,
     offset,

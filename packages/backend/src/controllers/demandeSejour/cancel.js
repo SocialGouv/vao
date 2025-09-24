@@ -36,6 +36,7 @@ module.exports = async function cancel(req, res, next) {
       statuts.TRANSMISE_8J,
       statuts.EN_COURS_8J,
       statuts.A_MODIFIER_8J,
+      statuts.VALIDEE_8J,
     ];
 
     if (!statutsCancellable.includes(declaration.statut)) {

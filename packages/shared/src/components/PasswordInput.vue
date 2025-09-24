@@ -28,6 +28,10 @@ const icon = computed(() => {
   return hidePassword.value ? "ri:eye-line" : "ri:eye-off-line";
 });
 
+const togglePasswordLabel = computed(() =>
+  hidePassword.value ? "Afficher le mot de passe" : "Masquer le mot de passe",
+);
+
 const finalLabelClass = computed(() => ["fr-label", props.labelClass]);
 
 function togglePasswordType() {
@@ -61,9 +65,10 @@ function togglePasswordType() {
         :icon="icon"
         :tertiary="true"
         :no-outline="true"
+        :aria-controls="id"
         @click.prevent="togglePasswordType"
       >
-        <span class="fr-sr-only">Afficher mot de passe</span>
+        <span class="fr-sr-only">{{ togglePasswordLabel }}</span>
       </DsfrButton>
 
       <span v-if="hint" class="fr-hint-text">{{ hint }}</span>

@@ -39,16 +39,12 @@
         <NuxtLink
           :to="`/demande-sejour/${row.declarationId}?defaultTabIndex=0`"
           title="Naviguer vers la demande séjour"
-          class="no-background-image"
+          class="fr-btn fr-btn--sm inline-flex justify-center no-background-image"
         >
-          <DsfrButton
-            class="link__dsfrButton"
-            icon="ri:arrow-right-s-line"
-            icon-only
-            primary
-            size="small"
-            type="button"
-          />
+          <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
+          <span class="fr-sr-only"
+            >Naviguer vers la demande séjour: {{ row.idFonctionnelle }}</span
+          >
         </NuxtLink>
         <DsfrButton
           class="button--danger"
@@ -141,6 +137,7 @@ const enabledDeleteCancelStatus = [
   statusUtils.defaultStatus.TRANSMISE_8J,
   statusUtils.defaultStatus.EN_COURS_8J,
   statusUtils.defaultStatus.A_MODIFIER_8J,
+  statusUtils.defaultStatus.VALIDEE_8J,
 ];
 
 const columns = [
@@ -167,7 +164,7 @@ const columns = [
   },
   {
     key: "siret",
-    label: "Établissement déclarant",
+    label: "Siret",
     options: {
       isSortable: true,
     },

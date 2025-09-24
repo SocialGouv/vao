@@ -7,6 +7,7 @@
       :total-items="filteredData?.length ?? 0"
       :headers="h"
       :title="title"
+      :no-caption="noCaption"
       :displayed-data="displayedData"
       :current-page="currentPage"
       @click-row="onClickRow"
@@ -31,6 +32,7 @@ const onClickRow = (item) => {
 const props = defineProps({
   headers: { type: Object, required: true },
   title: { type: String, required: true },
+  noCaption: { type: Boolean, default: false },
   search: {
     type: Object,
     default() {

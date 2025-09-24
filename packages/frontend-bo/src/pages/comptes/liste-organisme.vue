@@ -16,7 +16,7 @@
                   label="Nom"
                   placeholder="Nom"
                   :label-visible="true"
-                  @update:model-value="updateData"
+                  @update:model-value="updateDataDebounced"
                 />
               </div>
             </div>
@@ -31,7 +31,7 @@
                   label="Prénom"
                   placeholder="Prénom"
                   :label-visible="true"
-                  @update:model-value="updateData"
+                  @update:model-value="updateDataDebounced"
                 />
               </div>
             </div>
@@ -46,7 +46,7 @@
                   label="Adresse courriel"
                   placeholder="Adresse courriel"
                   :label-visible="true"
-                  @update:model-value="updateData"
+                  @update:model-value="updateDataDebounced"
                 />
               </div>
             </div>
@@ -61,7 +61,7 @@
                   label="Organisme"
                   placeholder="Organisme"
                   :label-visible="true"
-                  @update:model-value="updateData"
+                  @update:model-value="updateDataDebounced"
                 />
               </div>
             </div>
@@ -78,9 +78,9 @@
       :table-title="`Liste des comptes organisateurs (${usersStore.totalUsersFO})`"
       :data="usersStore.usersFO"
       :total="usersStore.totalUsersFO"
-      row-id="organismeId"
+      row-id="id"
       is-sortable
-      @update-data="updateData"
+      @update-data="updateDataImmediate"
     >
       <template #cell-statut="{ cell }">
         {{ mapStatutToLabel(cell) }}
@@ -231,34 +231,45 @@ const isValidParams = (params) =>
   (!Array.isArray(params) || params.length > 0);
 
 let timeout = null;
-const updateData = () => {
-  if (timeout) {
-    clearTimeout(timeout);
-  }
-  timeout = setTimeout(() => {
-    const query = {
+
+const fetchAndNavigate = () => {
+  const query = {
+    limit: limit.value,
+    offset: offset.value,
+    ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
+    ...(isValidParams(sortDirection.value)
+      ? { sortDirection: sortDirection.value.toUpperCase() }
+      : {}),
+    search: searchState,
+  };
+
+  usersStore.fetchUsersOrganisme(query);
+  navigateTo({
+    query: {
       limit: limit.value,
       offset: offset.value,
       ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
       ...(isValidParams(sortDirection.value)
-        ? { sortDirection: sortDirection.value.toUpperCase() }
+        ? { sortDirection: sortDirection.value }
         : {}),
-      search: searchState,
-    };
+      ...searchState,
+    },
+  });
+};
 
-    usersStore.fetchUsersOrganisme(query);
-    navigateTo({
-      query: {
-        limit: limit.value,
-        offset: offset.value,
-        ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
-        ...(isValidParams(sortDirection.value)
-          ? { sortDirection: sortDirection.value }
-          : {}),
-        ...searchState,
-      },
-    });
-  }, 300);
+const updateDataImmediate = () => {
+  if (timeout) {
+    clearTimeout(timeout);
+    timeout = null;
+  }
+  fetchAndNavigate();
+};
+
+const updateDataDebounced = () => {
+  if (timeout) {
+    clearTimeout(timeout);
+  }
+  timeout = setTimeout(fetchAndNavigate, 300);
 };
 
 onUnmounted(() => {

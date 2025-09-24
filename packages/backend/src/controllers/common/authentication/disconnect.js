@@ -22,6 +22,10 @@ module.exports = async function disconnect(req, res, targetSchema) {
     targetSchema === schema.FRONT
       ? req.cookies.VAO_refresh_token
       : req.cookies.VAO_BO_refresh_token;
+  const tokenSecret =
+    targetSchema === schema.FRONT
+      ? config.tokenSecret_FO
+      : config.tokenSecret_BO;
   let rtDecoded;
   if (!refreshToken) {
     log.w("refresh_token manquant dans les cookies");
@@ -32,8 +36,8 @@ module.exports = async function disconnect(req, res, targetSchema) {
     });
   }
   try {
-    rtDecoded = await jwt.verify(refreshToken, config.tokenSecret, {
-      algorithm: "ES512",
+    rtDecoded = await jwt.verify(refreshToken, tokenSecret, {
+      algorithm: config.algorithm,
     });
 
     await Session.clean({ id: rtDecoded.userId }, targetSchema);
