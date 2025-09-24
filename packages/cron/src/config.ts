@@ -4,6 +4,11 @@ export const notifyDs8jDs15 = {
   name: "REQUEST_DS8J15J",
 };
 
+export const notifyCompteInactif2m = {
+  cron: process.env.BACKEND_CRON_REQUEST_ACCOUNT2M_NOTIFY_CRON,
+  name: "REQUEST_ACCOUNT2M",
+};
+
 export const notifyRequestActionsBo = {
   cron: process.env.BACKEND_CRON_REQUEST_ACTIONS_BO_CRON,
   name: "REQUEST_ACTIONS_BO",
