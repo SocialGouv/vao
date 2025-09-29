@@ -80,6 +80,18 @@ module.exports = async function login(req, res, next) {
         }),
       );
     }
+     if (user.statusCode === status.TEMPORARY_BLOCKED) {
+      log.w("Compte temporairement bloqué");
+      return next(
+        new AppError(
+          "Votre compte est temporairement bloqué. Veuillez réinitialiser votre mot de passe pour le réactiver.",
+          {
+            name: "UserTemporarilyBlocked",
+            statusCode: 400,
+          }
+        ),
+      );
+    }
     const accessToken = jwt.sign(
       buildAccessToken(user),
       config.tokenSecret_FO,
