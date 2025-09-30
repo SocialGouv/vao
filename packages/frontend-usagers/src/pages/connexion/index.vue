@@ -218,7 +218,7 @@ async function login() {
       case "EmailUnauthorized":
         displayType.value = "WrongCredentials";
         break;
-      case "EmailTemporaryBlocked":
+      case "UserTemporarilyBlocked":
         displayType.value = "WrongCredentials";
         break;
       default:
