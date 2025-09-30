@@ -17,6 +17,12 @@
             email, puis votre demande sera prise en compte par les services
             compétents pour valider la création de votre compte
           </p>
+          <p>
+            Afin de respecter les meilleures pratiques et notamment les
+            recommandations de la CNIL, nous recommandons l’utilisation
+            d’adresses e-mail nominatives en lieu et place d’adresses génériques
+            ou utilisées par plusieurs utilisateurs
+          </p>
           <div class="fr-input-group">
             <DsfrInputGroup
               :error-message="emailField.errorMessage"
