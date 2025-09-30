@@ -3,7 +3,7 @@
     <dl>
       <template v-for="detail in currentEigValues" :key="detail.label">
         <dt>
-          <strong>{{ detail.label }} : </strong>
+          <strong>{{ detail.label }}: </strong>
         </dt>
         <dd>
           <a v-if="!!detail.href" :href="detail.href">{{ detail.value }}</a>
