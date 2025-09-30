@@ -25,7 +25,7 @@ const querySelectUsersToBlock = `
 const queryBlockUser = `
   UPDATE front.users
   SET status_code = '${statusUserFront.TEMPORARY_BLOCKED}',
-      temporary_blocked_at = current_timestamp
+      temporary_blocked_at = NOW()
   WHERE id = $1
 `;
 
