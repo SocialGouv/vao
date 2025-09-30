@@ -10,13 +10,7 @@ export const notifyCompteInactif2m = {
 };
 
 export const disableAccount3m = {
-  cron: (() => {
-    const value = process.env.BACKEND_CRON_DISABLE_ACCOUNT_3M_CRON;
-    if (!value) {
-      throw new Error("BACKEND_CRON_DISABLE_ACCOUNT_3M_CRON env variable is required");
-    }
-    return value;
-  })(),
+  cron: process.env.BACKEND_CRON_DISABLE_ACCOUNT_3M_CRON,
   name: "DISABLE_ACCOUNT_3M",
 };
 
