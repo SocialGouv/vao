@@ -17,7 +17,7 @@
         être transmise.
       </li>
       <li>
-        Si une étape apparaît comme « Incomplet »
+        Si une étape apparaît comme
         <DsfrBadge type="warning" label="Incomplet" /> , sélectionnez la
         catégorie correspondante dans le menu de gauche pour renseigner ou
         corriger les informations manquantes.
