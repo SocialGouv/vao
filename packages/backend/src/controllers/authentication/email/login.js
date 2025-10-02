@@ -80,7 +80,7 @@ module.exports = async function login(req, res, next) {
         }),
       );
     }
-     if (user.statusCode === status.TEMPORARY_BLOCKED) {
+    if (user.statusCode === status.TEMPORARY_BLOCKED) {
       log.w("Compte temporairement bloqué");
       return next(
         new AppError(
@@ -88,7 +88,7 @@ module.exports = async function login(req, res, next) {
           {
             name: "UserTemporarilyBlocked",
             statusCode: 400,
-          }
+          },
         ),
       );
     }

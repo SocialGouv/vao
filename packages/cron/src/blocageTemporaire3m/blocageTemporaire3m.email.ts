@@ -12,7 +12,7 @@ const generateEmail = ({ mail }: { mail: string }) => {
 		[
 			{
 				p: [
-					`Bonjour,<br><br>Votre compte VAO n’a pas été utilisé depuis 3 mois.<br>Pour des raisons de sécurité, il a été désactivé provisoirement.<br><br>Pour réactiver votre compte, vous devez réinitialiser votre mot de passe en cliquant sur le lien ci-dessous :<br><a href=\"${RESET_PASSWORD_URL}\">${RESET_PASSWORD_URL}</a>`
+					`Bonjour,<br><br>Votre compte VAO n’a pas été utilisé depuis 3 mois.<br>Pour des raisons de sécurité, il a été désactivé provisoirement.<br><br>Pour réactiver votre compte, vous devez réinitialiser votre mot de passe en cliquant sur le lien ci-dessous :<br><a href="${RESET_PASSWORD_URL}">${RESET_PASSWORD_URL}</a>`
 				],
 				type: "p",
 			},
@@ -29,8 +29,8 @@ const generateEmail = ({ mail }: { mail: string }) => {
 };
 
 export const sendBlocageTemporaire3mRow = async (
-	rows: (BlocageTemporaire3mRow & { mail: string })[]
+	row: (BlocageTemporaire3mRow)
 ) => {
-	const mails = rows.map(({ mail }) => generateEmail({ mail }));
-	return await transportEmails(mails);
+	const { mail } = row;
+	return await transportEmails([generateEmail({ mail })]);
 };

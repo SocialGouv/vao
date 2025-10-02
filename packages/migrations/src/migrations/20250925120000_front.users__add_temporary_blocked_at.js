@@ -25,7 +25,9 @@ exports.down = async function (knex) {
   });
 
   await knex.raw(`ALTER TYPE user_status RENAME TO user_status_old;`);
-  await knex.raw(`CREATE TYPE user_status AS ENUM ('NEED_EMAIL_VALIDATION', 'VALIDATED', 'BLOCKED');`);
+  await knex.raw(
+    `CREATE TYPE user_status AS ENUM ('NEED_EMAIL_VALIDATION', 'VALIDATED', 'BLOCKED');`,
+  );
   await knex.raw(`
     ALTER TABLE front.users
     ALTER COLUMN status_code TYPE user_status

@@ -1,5 +1,6 @@
 export type UpdateCompteInactif2mRow = {
   id: number;
+  mail: string;
 };
 
 export type NotifyCompteInactif2mRow = {

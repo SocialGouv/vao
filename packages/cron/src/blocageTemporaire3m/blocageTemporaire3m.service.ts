@@ -22,12 +22,21 @@ const querySelectUsersToBlock = `
     AND deleted = false
 `;
 
+
 const queryBlockUser = `
   UPDATE front.users
   SET status_code = '${statusUserFront.TEMPORARY_BLOCKED}',
       temporary_blocked_at = NOW()
   WHERE id = $1
 `;
+
+const queryUnblockUser = `
+  UPDATE front.users
+  SET status_code = '${statusUserFront.VALIDATED}',
+      temporary_blocked_at = NULL
+  WHERE id = $1
+`;
+
 
 export const blocageTemporaire3mActions = async () => {
   logger.info(`${disableAccount3m.name} - Start`);
@@ -40,15 +49,12 @@ export const blocageTemporaire3mActions = async () => {
     errors: [] as unknown[],
   };
   try {
-    const { rows }: { rows: (BlocageTemporaire3mRow & { mail: string })[] } = await pool.query(querySelectUsersToBlock);
+    const { rows }: { rows: BlocageTemporaire3mRow[] } = await pool.query(querySelectUsersToBlock);
     report.total = rows.length;
     for (const { id, mail } of rows) {
       try {
         await pool.query(queryBlockUser, [id]);
-        report.nbUpdate++;
-        report.success++;
-        logger.info(`User ${id} temporarily blocked`);
-        // Historique
+
         await addHistoric({
           action: Actions.Deactivation,
           data: { reason: "Blocage temporaire après 3 mois d'inactivité" },
@@ -57,6 +63,22 @@ export const blocageTemporaire3mActions = async () => {
           userId: id,
           userType: UserTypes.Front,
         });
+
+        try {
+          await sendBlocageTemporaire3mRow({ id, mail });
+          report.nbUpdate++;
+          report.success++;
+          logger.info(`User ${id} temporarily blocked and notified`);
+        } catch (emailErr) {
+          // rollback si mail fails
+          await pool.query(queryUnblockUser, [id]);
+          report.error++;
+          report.errors.push({ id, error: emailErr, rollback: true });
+          logger.error(`Email failed for user ${id}, rollback performed`, emailErr);
+          if (sentry && sentry.enabled) {
+            Sentry.captureException(emailErr);
+          }
+        }
       } catch (err) {
         report.error++;
         report.errors.push({ id, error: err });
@@ -66,7 +88,6 @@ export const blocageTemporaire3mActions = async () => {
         logger.error(`Erreur lors du blocage temporaire de l'utilisateur ${id}`, err);
       }
     }
-    await sendBlocageTemporaire3mRow(rows);
     const endDate = new Date();
     await insertCron({
       cronName: disableAccount3m.name,
