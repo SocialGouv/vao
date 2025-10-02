@@ -94,6 +94,7 @@ app.use(`/eig`, routes.eig);
 app.use(`/message`, routes.message);
 app.use(`/territoire`, routes.territoire);
 app.use(`/healthz`, routes.healthz);
+app.use(`/metabase`, routes.metabase);
 
 if (config.sentry.environment !== "production") {
   app.use("/", routes.debugSentry);
