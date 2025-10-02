@@ -77,3 +77,10 @@
 * [API](misc/api.md)
 * [Pages d'erreurs](misc/pages-derreurs.md)
 * [Sécurité](misc/securite.md)
+
+## Documentation technique et améliorations
+
+* [Changelog v1.23.0](CHANGELOG-v1-23-0.md)
+* [Nouvelles fonctionnalités v1.23.0](misc/nouvelles-fonctionnalites-v1-23-0.md)
+* [Corrections de bugs v1.23.0](misc/corrections-bugs-v1-23-0.md)
+* [Améliorations d'accessibilité v1.23.0](misc/ameliorations-accessibilite-v1-23-0.md)
