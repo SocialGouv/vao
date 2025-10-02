@@ -42,6 +42,37 @@ Voici la liste de l'ensemble de ces notifications
 
 {% include "../.gitbook/includes/ova-refus-dinscription-par-lova.md" %}
 
+## Notification compte bloqué
+
+<details>
+
+<summary>Notification compte bloqué</summary>
+
+* **Déclencheur :** Un compte utilisateur est bloqué (désactivé)
+
+- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
+- **Destinataire** : L'utilisateur dont le compte a été bloqué
+
+* **Object du mail** : Portail VAO - Votre compte a été bloqué
+
+- **Contenu du mail** :
+
+```
+Portail VAO - Compte bloqué
+
+Bonjour,
+
+Votre compte sur le portail VAO a été bloqué.
+
+Pour plus d'informations, veuillez contacter le support.
+
+Cordialement.
+L'équipe du SI VAO
+Portail VAO
+```
+
+</details>
+
 ## Déclaration de séjour 2 moi
 
 {% include "../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois (1).md" %}
