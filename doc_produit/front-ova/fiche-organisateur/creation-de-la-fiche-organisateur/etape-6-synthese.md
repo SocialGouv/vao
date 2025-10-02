@@ -6,12 +6,6 @@
 
 La synthèse présente un récapitulatif de toutes les informations renseignées organisées en accordéons :
 
-{% hint style="info" %}
-**Nouveauté v1.23.0**
-
-La page de synthèse a été refondue pour améliorer l'expérience utilisateur et la lisibilité des informations.
-{% endhint %}
-
 <details>
 
 <summary>Formulaire fiche organisme - étape 6</summary>
