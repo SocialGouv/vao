@@ -59,6 +59,10 @@ module.exports = {
         cron: process.env.BACKEND_CRON_UPDATE_STATUT_DS_CRON,
         name: "UPDATE_STATUT_DS",
       },
+      blocageTemporaire3m: {
+        cron: process.env.BACKEND_CRON_DISABLE_ACCOUNT_3M_CRON,
+        name: "DISABLE_ACCOUNT_3M",
+      },
     },
   },
   domain: process.env.BACKEND_URL,
