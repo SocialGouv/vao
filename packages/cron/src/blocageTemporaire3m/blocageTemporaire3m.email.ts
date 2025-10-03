@@ -6,7 +6,7 @@ import type { BlocageTemporaire3mRow } from "./blocageTemporaire3mtype";
 
 const RESET_PASSWORD_URL = `${domains.frontUsagersDomain}/connexion/mot-de-passe-oublie`;
 
-const generateEmail = ({ mail }: { mail: string }) => {
+const generateEmail = (mail: string) => {
 	const html = constructMail(
 		"Blocage temporaire de votre compte VAO",
 		[
@@ -29,8 +29,8 @@ const generateEmail = ({ mail }: { mail: string }) => {
 };
 
 export const sendBlocageTemporaire3mRow = async (
-	row: (BlocageTemporaire3mRow)
+	{ mail }: BlocageTemporaire3mRow
 ) => {
-	const { mail } = row;
-	return await transportEmails([generateEmail({ mail })]);
+	const mailPayload = generateEmail(mail);
+	return await transportEmails([mailPayload]);
 };

@@ -85,6 +85,7 @@ describe("login controller", () => {
 
     expect(next).toHaveBeenCalledWith(expect.any(AppError));
     expect(next.mock.calls[0][0].statusCode).toBe(400);
+    expect(next.mock.calls[0][0].name).toBe("EmailUnauthorized");
   });
 
   it("should return 400 if account is temporarily blocked", async () => {
@@ -97,6 +98,7 @@ describe("login controller", () => {
     expect(next).toHaveBeenCalledWith(expect.any(AppError));
     expect(next.mock.calls[0][0].statusCode).toBe(400);
     expect(next.mock.calls[0][0].message).toMatch(/temporairement bloqué/i);
+    expect(next.mock.calls[0][0].name).toBe("UserTemporarilyBlocked");
   });
 
   it("should login successfully and set cookies", async () => {

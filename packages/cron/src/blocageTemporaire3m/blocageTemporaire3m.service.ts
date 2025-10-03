@@ -52,40 +52,30 @@ export const blocageTemporaire3mActions = async () => {
     const { rows }: { rows: BlocageTemporaire3mRow[] } = await pool.query(querySelectUsersToBlock);
     report.total = rows.length;
     for (const { id, mail } of rows) {
+      await pool.query(queryBlockUser, [id]);
+      await addHistoric({
+        action: Actions.Deactivation,
+        data: { reason: "Blocage temporaire après 3 mois d'inactivité" },
+        entity: Entities.UserFront,
+        entityId: id,
+        userId: id,
+        userType: UserTypes.Front,
+      });
       try {
-        await pool.query(queryBlockUser, [id]);
-
-        await addHistoric({
-          action: Actions.Deactivation,
-          data: { reason: "Blocage temporaire après 3 mois d'inactivité" },
-          entity: Entities.UserFront,
-          entityId: id,
-          userId: id,
-          userType: UserTypes.Front,
-        });
-
-        try {
-          await sendBlocageTemporaire3mRow({ id, mail });
-          report.nbUpdate++;
-          report.success++;
-          logger.info(`User ${id} temporarily blocked and notified`);
-        } catch (emailErr) {
-          // rollback si mail fails
-          await pool.query(queryUnblockUser, [id]);
-          report.error++;
-          report.errors.push({ id, error: emailErr, rollback: true });
-          logger.error(`Email failed for user ${id}, rollback performed`, emailErr);
-          if (sentry && sentry.enabled) {
-            Sentry.captureException(emailErr);
-          }
-        }
-      } catch (err) {
+        await sendBlocageTemporaire3mRow({ id, mail });
+        report.nbUpdate++;
+        report.success++;
+        logger.info(`User ${id} temporarily blocked and notified`);
+      } catch (emailErr) {
+        // rollback si mail fails
+        await pool.query(queryUnblockUser, [id]);
         report.error++;
-        report.errors.push({ id, error: err });
+        report.errors.push({ id, error: emailErr, rollback: true });
+        logger.error(`Email failed for user ${id}, rollback performed`, emailErr);
         if (sentry && sentry.enabled) {
-          Sentry.captureException(err);
+          Sentry.captureException(emailErr);
         }
-        logger.error(`Erreur lors du blocage temporaire de l'utilisateur ${id}`, err);
+        throw emailErr;
       }
     }
     const endDate = new Date();
