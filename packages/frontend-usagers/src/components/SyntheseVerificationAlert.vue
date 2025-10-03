@@ -1,9 +1,9 @@
 <template>
   <DsfrAlert
-    role="alert"
     title="Vérification"
     class="fr-my-3v fr-col-12"
     type="info"
+    tabindex="0"
     :closeable="true"
     :closed="closed"
     @close="closed = true"
