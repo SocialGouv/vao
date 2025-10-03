@@ -127,16 +127,14 @@ async function downloadPDF() {
   const eigStore = useEigStore();
 
   const eigPdf = await eigStore.getPdf(props.eig.id);
-
-  const byteArray = new Uint8Array(eigPdf.file.data);
-
-  const blob = new Blob([byteArray], { type: "application/pdf" });
-  const url = URL.createObjectURL(blob);
+  const url = URL.createObjectURL(eigPdf);
 
   const a = document.createElement("a");
   a.href = url;
-  a.setAttribute("download", `synthese-eig-${props.eig.id}.pdf`);
+  a.download = `synthese-eig-${props.eig.id}.pdf`;
   a.click();
+
+  URL.revokeObjectURL(url);
 }
 </script>
 

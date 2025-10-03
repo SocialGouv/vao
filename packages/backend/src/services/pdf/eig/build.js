@@ -102,7 +102,7 @@ function buildSignaleA({ eig, serviceRegional }) {
     ],
     [
       "DREETS (qui a procédé à la délivrance de \nl’agrément VAO de l’organisateur) :",
-      `${serviceRegional} [${eig.readByDreets ? "Lu" : "Non lu"} pas la DREETS]`,
+      `${serviceRegional} [${eig.readByDreets ? "Lu" : "Non lu"} par la DREETS]`,
     ],
   ];
 

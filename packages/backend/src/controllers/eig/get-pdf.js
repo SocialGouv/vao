@@ -1,5 +1,5 @@
 const Eig = require("../../services/eig");
-const PdfEig = require("../../services/pdf/eig/generate");
+const generatePdfEig = require("../../services/pdf/eig/generate");
 const logger = require("../../utils/logger");
 const Region = require("../../services/geo/Region");
 const AppError = require("../../utils/error");
@@ -35,11 +35,16 @@ module.exports = async function getPdf(req, res, next) {
         }),
       );
     }
-    const file = await PdfEig({
+    const file = await generatePdfEig({
       eig,
       serviceRegional: serviceRegional?.text,
     });
-    return res.status(200).json({ file });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="synthese-eig-${eigId}.pdf"`,
+    );
+    return res.status(200).send(file);
   } catch (error) {
     log.w("DONE with error");
     return next(error);

@@ -18,12 +18,10 @@ export const useEigStore = defineStore("eig", {
     async getPdf(eigId) {
       log.i("getPdf - IN", eigId);
       try {
-        console.log("getPdf(eigId)", eigId);
         const file = await $fetchBackend(`/eig/admin/pdf/${eigId}`, {
           method: "GET",
           credentials: "include",
         });
-        console.log("File", file);
         return file;
       } catch (err) {
         log.w("getPdf - DONE with error", err);
