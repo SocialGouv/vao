@@ -15,6 +15,21 @@ export const useEigStore = defineStore("eig", {
     getById(eigId) {
       return this.eigs.find((eig) => eig.id === eigId);
     },
+    async getPdf(eigId) {
+      log.i("getPdf - IN", eigId);
+      try {
+        console.log("getPdf(eigId)", eigId);
+        const file = await $fetchBackend(`/eig/admin/pdf/${eigId}`, {
+          method: "GET",
+          credentials: "include",
+        });
+        console.log("File", file);
+        return file;
+      } catch (err) {
+        log.w("getPdf - DONE with error", err);
+        throw err;
+      }
+    },
     async getTotalEigToRead() {
       try {
         const { totalToRead } = await $fetchBackend(

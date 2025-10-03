@@ -1,3 +1,4 @@
+module.exports.getPdf = require("./get-pdf");
 module.exports.getMe = require("./get-me");
 module.exports.getByDsId = require("./get-by-ds-id");
 module.exports.getByDsIdAdmin = require("./get-by-ds-id-admin");
