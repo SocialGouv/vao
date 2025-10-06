@@ -182,8 +182,7 @@ function buildFaits(eig) {
     stack: [
       entete("Faits"),
       ...faits.flatMap((fait) => {
-        const data = buildBlockFait(fait[0], fait[1]);
-        return data;
+        return buildBlockFait(fait[0], fait[1]);
       }),
     ],
   };

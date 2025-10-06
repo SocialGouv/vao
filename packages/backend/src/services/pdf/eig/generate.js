@@ -7,11 +7,10 @@ const log = logger(module.filename);
 const generate = async ({ eig, serviceRegional }) => {
   log.i("IN");
   try {
-    const file = await build({
+    return await build({
       eig,
       serviceRegional,
     });
-    return file;
   } catch (error) {
     log.w("PDF generation failed", {
       error: error.message,
