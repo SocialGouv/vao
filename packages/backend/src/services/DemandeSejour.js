@@ -738,7 +738,7 @@ WHERE uo.org_id = $1 AND u.status_code = 'VALIDATED'
       ds.date_debut::text as "date_debut",
       ds.date_fin::text as "date_fin",
       pm.raison_sociale as "raison_sociale",
-      STRING_AGG(DISTINCT COALESCE(pm.siret, pp.siret), ', ') AS siret,
+      COALESCE(STRING_AGG(DISTINCT COALESCE(pm.siret, pp.siret), ', '),'') AS siret,
       (
           SELECT adr.departement
           FROM front.demande_sejour_to_hebergement dsth

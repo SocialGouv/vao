@@ -87,8 +87,8 @@ module.exports = async function get(_req, res, next) {
           newItem.typeOrganisme === "personne_morale"
             ? "personne morale"
             : "personne physique";
-        newItem.siret = formatSiret(newItem.siret);
-        newItem.siren = formatSiren(newItem.siren);
+        newItem.siret = formatSiret({ siret: newItem.siret });
+        newItem.siren = formatSiren({ siren: newItem.siren });
         newItem.dateObtentionAgrement = newItem.agrement?.dateObtention
           ? dayjs(newItem.agrement.dateObtention).format("DD/MM/YYYY")
           : "";
