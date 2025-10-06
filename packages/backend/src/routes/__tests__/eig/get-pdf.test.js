@@ -12,12 +12,20 @@ describe("getPdf controller", () => {
 
   beforeEach(() => {
     req = { params: {}, body: {} };
-    res = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+      setHeader: jest.fn(),
+      send: jest.fn(),
+    };
     next = jest.fn();
+
+    jest.clearAllMocks();
   });
 
   it("retourne 400 si id manquant", async () => {
     await getPdf(req, res, next);
+
     expect(next).toHaveBeenCalled();
     const error = next.mock.calls[0][0];
     expect(error.message).toBe("Paramètre incorrect");
@@ -30,6 +38,7 @@ describe("getPdf controller", () => {
 
     await getPdf(req, res, next);
 
+    expect(next).toHaveBeenCalled();
     const error = next.mock.calls[0][0];
     expect(error.message).toBe("Eig non trouvé");
     expect(error.statusCode).toBe(404);
@@ -50,8 +59,17 @@ describe("getPdf controller", () => {
 
     await getPdf(req, res, next);
 
+    expect(res.setHeader).toHaveBeenCalledWith(
+      "Content-Type",
+      "application/pdf",
+    );
+    expect(res.setHeader).toHaveBeenCalledWith(
+      "Content-Disposition",
+      `attachment; filename="synthese-eig-123.pdf"`,
+    );
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ file: fakeFile });
+    expect(res.send).toHaveBeenCalledWith(fakeFile);
+    expect(next).not.toHaveBeenCalled();
   });
 
   it("gère les erreurs inattendues", async () => {
@@ -62,6 +80,7 @@ describe("getPdf controller", () => {
 
     await getPdf(req, res, next);
 
+    expect(next).toHaveBeenCalled();
     const error = next.mock.calls[0][0];
     expect(error.message).toBe("Erreur inattendue");
   });
