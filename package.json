@@ -19,7 +19,8 @@
     "test:unit:api": "yarn workspace @vao/external-api test:cov",
     "test:unit:backend": "yarn workspace @vao/backend test:coverage",
     "tests:e2e": "E2E_LOCAL=true playwright test",
-    "tests:e2e:ui": "E2E_LOCAL=true playwright test --ui"
+    "tests:e2e:ui": "E2E_LOCAL=true playwright test --ui",
+    "clean": "yarn --cwd ./packages/frontend-usagers clean && yarn --cwd ./packages/frontend-bo clean && rm -rf node_modules packages/*/node_modules"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",

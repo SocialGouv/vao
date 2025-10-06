@@ -12,7 +12,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint --fix ./src",
-    "test": "vitest"
+    "test": "vitest",
+    "clean": "nuxt cleanup"
   },
   "dependencies": {
     "@gouvfr/dsfr": "^1.13.0",
