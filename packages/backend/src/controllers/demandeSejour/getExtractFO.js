@@ -16,9 +16,15 @@ module.exports = async function get(req, res, next) {
   log.d("userId", { userId });
 
   try {
-    const organisme = await Organisme.getOne({
-      use_id: userId,
-    });
+    const organisme = await Organisme.getOne({ use_id: userId });
+    if (!organisme) {
+      log.w("Organisme non trouvé pour cet utilisateur");
+      return next(
+        new AppError("Organisme non trouvé pour cet utilisateur", {
+          statusCode: 400,
+        }),
+      );
+    }
 
     res.setHeader("Content-Type", "text/csv");
     res.setHeader("Content-Disposition", 'attachment; filename="data.csv"');
