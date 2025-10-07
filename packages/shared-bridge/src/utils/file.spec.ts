@@ -137,7 +137,10 @@ describe("file utils", () => {
 
   describe("getFileUploadErrorMessage", () => {
     it("should return default message when fileName is not provided", () => {
-      const result = getFileUploadErrorMessage(null, "FileIsTooLargeError");
+      const result = getFileUploadErrorMessage(
+        undefined,
+        "FileIsTooLargeError",
+      );
       expect(result).toBe("Une erreur est survenue lors du dépôt du document");
     });
 
@@ -154,17 +157,9 @@ describe("file utils", () => {
       expect(result).toBe("Une erreur est survenue lors du dépôt du document");
     });
 
-    it("should return message with fileName when codeError is not provided", () => {
-      const fileName = "test.pdf";
-      const result = getFileUploadErrorMessage(fileName, null);
-      expect(result).toBe(
-        "Une erreur est survenue lors du dépôt du document test.pdf",
-      );
-    });
-
     it("should return message with fileName when codeError is undefined", () => {
       const fileName = "test.pdf";
-      const result = getFileUploadErrorMessage(fileName, undefined);
+      const result = getFileUploadErrorMessage(fileName);
       expect(result).toBe(
         "Une erreur est survenue lors du dépôt du document test.pdf",
       );

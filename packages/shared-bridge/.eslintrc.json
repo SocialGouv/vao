@@ -5,6 +5,7 @@
     "node": true,
     "es2021": true
   },
+  "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint/eslint-plugin"],
   "extends": [
     "@socialgouv/eslint-config-recommended",
@@ -17,7 +18,6 @@
     "ecmaVersion": "latest"
   },
   "rules": {
-    "prettier/prettier": ["error"],
-    "vue/multi-word-component-names": "off"
+    "prettier/prettier": ["error"]
   }
 }

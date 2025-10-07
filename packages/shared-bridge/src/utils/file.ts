@@ -1,10 +1,10 @@
-export const encodeFilename = (fileName) =>
+export const encodeFilename = (fileName: string) =>
   Buffer.from(fileName, "latin1").toString("base64");
 
-export const decodeFilename = (encodedFileName) =>
+export const decodeFilename = (encodedFileName: string) =>
   Buffer.from(encodedFileName, "base64").toString("latin1");
 
-export const getFileNameAndExtension = (fileName) => {
+export const getFileNameAndExtension = (fileName: string) => {
   const dotIndex = fileName.lastIndexOf(".");
 
   if (dotIndex === -1) {
@@ -17,7 +17,10 @@ export const getFileNameAndExtension = (fileName) => {
   return { extension, name };
 };
 
-export const getFileUploadErrorMessage = (fileName, codeError) => {
+export const getFileUploadErrorMessage = (
+  fileName?: string,
+  codeError?: string,
+) => {
   let description = "Une erreur est survenue lors du dépôt du document";
   if (!fileName) {
     return description;
