@@ -1,9 +1,9 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
-import { MultiSelectOption, ApiUnavailable } from "@vao/shared";
+import { MultiSelectOption, ApiUnavailable } from "@vao/shared-ui";
 import { ref } from "vue";
-import { apiTypes } from "@vao/shared/src/models";
+import { apiTypes } from "@vao/shared-ui/src/models";
 
 const useExternalApi = useExternalApiStore();
 

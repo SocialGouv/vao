@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { $fetchBackend } from "#imports";
-import { apiModel } from "@vao/shared";
+import { apiModel } from "@vao/shared-ui";
 
 export const useExternalApiStore = defineStore("externalApi", {
   state: () => ({

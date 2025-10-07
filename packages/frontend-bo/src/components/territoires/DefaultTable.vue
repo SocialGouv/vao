@@ -56,7 +56,7 @@ import {
   isValidParams,
   usePagination,
   columnsTable,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 
 const territoireStore = useTerritoireStore();
 const userStore = useUserStore();

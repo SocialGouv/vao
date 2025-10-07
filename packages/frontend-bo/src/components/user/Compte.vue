@@ -273,7 +273,7 @@
 <script setup>
 import dayjs from "dayjs";
 import { DsfrButton, DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
-import { ValidationModal } from "@vao/shared";
+import { ValidationModal } from "@vao/shared-ui";
 import { defineProps } from "vue";
 import { useField, useForm } from "vee-validate";
 import BoUser from "~/utils/bo-user";

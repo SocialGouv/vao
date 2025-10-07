@@ -1,5 +1,5 @@
 const DemandeSejour = require("../../services/DemandeSejour");
-const { statuts } = require("../../helpers/ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 
 const logger = require("../../utils/logger");
 const AppError = require("../../utils/error");
@@ -39,8 +39,8 @@ module.exports = async function post(req, res, next) {
   }
 
   if (
-    declaration.statut !== statuts.TRANSMISE &&
-    declaration.statut !== statuts.TRANSMISE_8J
+    declaration.statut !== DEMANDE_SEJOUR_STATUTS.TRANSMISE &&
+    declaration.statut !== DEMANDE_SEJOUR_STATUTS.TRANSMISE_8J
   ) {
     log.w("Declaration is already at least in progress");
     return next(
@@ -50,12 +50,14 @@ module.exports = async function post(req, res, next) {
     );
   }
   const enCoursTypeStatut =
-    declaration.statut === statuts.TRANSMISE
-      ? statuts.EN_COURS
-      : statuts.EN_COURS_8J;
+    declaration.statut === DEMANDE_SEJOUR_STATUTS.TRANSMISE
+      ? DEMANDE_SEJOUR_STATUTS.EN_COURS
+      : DEMANDE_SEJOUR_STATUTS.EN_COURS_8J;
   const textTypePrecision =
     "Prise en charge de la déclaration " +
-    (declaration.statut === statuts.TRANSMISE ? " 2 mois" : " 8 jours");
+    (declaration.statut === DEMANDE_SEJOUR_STATUTS.TRANSMISE
+      ? " 2 mois"
+      : " 8 jours");
 
   try {
     await DemandeSejour.updateStatut(declarationId, enCoursTypeStatut, {

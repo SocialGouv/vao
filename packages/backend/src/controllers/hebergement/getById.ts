@@ -1,6 +1,6 @@
+import { HebergementDto } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
 
-import type { HebergementDto } from "../../dto/HebergementDto";
 import Hebergement from "../../services/hebergement/Hebergement";
 import type { UserRequest } from "../../types/request";
 import AppError from "../../utils/error";

@@ -1,7 +1,7 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
 import regex from "./regex";
-import { adresseSchema } from "@vao/shared/src/schema/adresse";
+import { adresseSchema } from "@vao/shared-ui/src/schema/adresse";
 
 const typePrestataireOptions = [
   {

@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-import { status as statusUtils, DsfrMultiselectV2 } from "@vao/shared";
+import { status as statusUtils, DsfrMultiselectV2 } from "@vao/shared-ui";
 
 const departementStore = useDepartementStore();
 

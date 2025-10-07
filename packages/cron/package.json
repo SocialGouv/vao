@@ -5,8 +5,11 @@
   "author": "orgs/SocialGouv/teams/vao",
   "license": "MIT",
   "scripts": {
+    "dev": "tsx watch ./src",
     "lint": "eslint --fix ./src",
-    "dev": "tsx watch ./src"
+    "test": "jest --config=jest.config.js",
+    "test:watch": "yarn test --watch",
+    "test:coverage": "yarn test --coverage --passWithNoTests=true"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
@@ -22,7 +25,7 @@
   "dependencies": {
     "@sentry/cli": "^2.42.3",
     "@sentry/node": "^9.5.0",
-    "@vao/shared": "^1.0.0",
+    "@vao/shared-bridge": "^1.0.0",
     "cron": "^4.1.0",
     "nodemailer": "^6.10.0",
     "tsx": "^4.19.3",

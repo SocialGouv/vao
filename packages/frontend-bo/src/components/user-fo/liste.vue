@@ -100,7 +100,7 @@ import {
   statusUser,
   RefusCompteModal,
   columnsTable,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 import dayjs from "dayjs";
 
 const userStore = useUserStore();

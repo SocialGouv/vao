@@ -70,7 +70,7 @@ import {
   usePagination,
   isValidParams,
   columnsTable,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 import dayjs from "dayjs";
 
 const toaster = useToaster();

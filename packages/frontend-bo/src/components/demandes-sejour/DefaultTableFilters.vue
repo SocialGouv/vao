@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { DsfrMultiselectV2, DsfrSelectV2 } from "@vao/shared";
+import { DsfrMultiselectV2, DsfrSelectV2 } from "@vao/shared-ui";
 
 const demandeSejourStore = useDemandeSejourStore();
 const availableFilters = { ...demandesSejours.filters };
