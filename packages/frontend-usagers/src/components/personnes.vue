@@ -49,6 +49,8 @@
 </template>
 
 <script setup>
+import dayjs from "dayjs";
+
 const props = defineProps({
   personnes: { type: Array, required: true },
   modifiable: { type: Boolean, default: true },
@@ -75,7 +77,9 @@ const modalPersonne = reactive({
 
 const headersToDisplay = computed(() => {
   const columns = props.headers.map((h) => h.label);
-  columns.push("Actions");
+  if (props.modifiable) {
+    columns.push("Actions");
+  }
   return columns;
 });
 
@@ -84,7 +88,11 @@ const personnesToDisplay = computed(() => {
   return props.personnes.map((p, index) => {
     const row = [];
     displayedFields.forEach((f) => {
-      row.push(Array.isArray(p[f]) ? p[f].join(",") : p[f]);
+      let value = Array.isArray(p[f]) ? p[f].join(",") : p[f];
+      if (f === "dateNaissance" && value) {
+        value = dayjs(value).format("DD/MM/YYYY");
+      }
+      row.push(value);
     });
     if (props.modifiable) {
       row.push({

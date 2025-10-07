@@ -261,11 +261,11 @@ const {
 };*/
 
 const headers = [
-  {
-    label: "Nom",
-    value: "nom",
-  },
+  { label: "Nom", value: "nom" },
   { label: "Prénom", value: "prenom" },
+  { label: "Date de naissance", value: "dateNaissance" },
+  { label: "Téléphone", value: "telephone" },
+  { label: "Fonctions", value: "listeFonction" },
 ];
 
 function finalizeDeclaration() {
