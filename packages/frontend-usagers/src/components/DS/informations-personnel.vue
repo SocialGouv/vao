@@ -105,6 +105,7 @@
           <DSPersonnel
             :personnes="encadrants"
             :modifiable="props.modifiableEnCours"
+            :synthese="props.synthese"
             :show-adresse="false"
             :show-attestation="true"
             :show-competence="true"
@@ -144,6 +145,7 @@
           <DSPersonnel
             :personnes="accompagnants"
             :modifiable="props.modifiableEnCours"
+            :synthese="props.synthese"
             :show-adresse="false"
             :show-attestation="true"
             :show-competence="true"
@@ -250,6 +252,7 @@ const props = defineProps({
   showButtons: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
+  synthese: { type: Boolean, default: false },
 });
 const emit = defineEmits(["previous", "next", "update"]);
 
