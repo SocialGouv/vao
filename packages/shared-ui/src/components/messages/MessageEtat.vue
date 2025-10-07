@@ -27,7 +27,7 @@ const props = defineProps({
   },
 });
 
-import messageEtat from "@vao/shared/src/utils/messageUtils";
+import messageEtat from "@vao/shared-ui/src/utils/messageUtils";
 const etat = computed(() => props.etat);
 </script>
 

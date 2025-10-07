@@ -2,7 +2,7 @@
   <TableFull :title="title" :headers="headers" :data="personnel" />
 </template>
 <script setup>
-import { TableFull } from "@vao/shared";
+import { TableFull } from "@vao/shared-ui";
 import dayjs from "dayjs";
 
 defineProps({

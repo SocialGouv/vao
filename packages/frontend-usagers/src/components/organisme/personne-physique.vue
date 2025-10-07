@@ -180,8 +180,8 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading, ApiUnavailable } from "@vao/shared";
-import { apiTypes } from "@vao/shared/src/models";
+import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
+import { apiTypes } from "@vao/shared-ui/src/models";
 
 const toaster = useToaster();
 const log = logger("components/organisme/personne-physique");

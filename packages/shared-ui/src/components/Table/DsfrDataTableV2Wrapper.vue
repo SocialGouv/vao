@@ -46,7 +46,7 @@ import type {
   Row,
   Columns,
   Slots,
-} from "@vao/shared/src/types/DsfrDataTableV2.type";
+} from "@vao/shared-ui/src/types/DsfrDataTableV2.type";
 
 const props = withDefaults(
   defineProps<{

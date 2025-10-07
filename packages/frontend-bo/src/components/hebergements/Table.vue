@@ -55,7 +55,7 @@ import {
   DsfrDataTableV2Wrapper,
   usePagination,
   isValidParams,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 
 const props = defineProps({
   title: { type: String, required: true },

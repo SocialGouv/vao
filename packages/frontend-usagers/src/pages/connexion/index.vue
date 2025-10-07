@@ -120,8 +120,8 @@
 </template>
 
 <script setup>
-import { PasswordInput } from "@vao/shared";
-import { connectionInfos } from "@vao/shared/src/models/messages";
+import { PasswordInput } from "@vao/shared-ui";
+import { connectionInfos } from "@vao/shared-ui/src/models/messages";
 
 const toaster = useToaster();
 const organismeStore = useOrganismeStore();

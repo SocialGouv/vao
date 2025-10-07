@@ -1,6 +1,6 @@
 import { computed } from "vue";
-import { useLogout } from "@vao/shared";
-import { useQuickLinks } from "@vao/shared";
+import { useLogout } from "@vao/shared-ui";
+import { useQuickLinks } from "@vao/shared-ui";
 
 export function useLayoutHeader({ logoutUrl, accountPath, userStore }) {
   const isConnected = computed(() => userStore.isConnected);
