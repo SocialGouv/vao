@@ -2,7 +2,7 @@ const { number, object } = require("yup");
 
 const DemandeSejour = require("../../services/DemandeSejour");
 const AppError = require("../../utils/error");
-const { statuts } = require("../../helpers/ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const Send = require("../../services/mail").mailService.send;
 const MailUtils = require("../../utils/mail");
 
@@ -39,7 +39,8 @@ module.exports = async function post(req, res, next) {
   /* Mise à jour d'une déclaration 8J validée ou en cours */
   /* ==================================================== */
   if (
-    (statut == statuts.VALIDEE_8J || statut == statuts.SEJOUR_EN_COURS) &&
+    (statut == DEMANDE_SEJOUR_STATUTS.VALIDEE_8J ||
+      statut == DEMANDE_SEJOUR_STATUTS.SEJOUR_EN_COURS) &&
     (type === "informationsVacanciers" || type === "informationsPersonnel")
   ) {
     let differences = "";

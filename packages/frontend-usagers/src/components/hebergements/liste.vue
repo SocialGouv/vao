@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared";
+import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
 import HebergementStatusBadge from "./HebergementStatusBadge.vue";
 const toaster = useToaster();
 

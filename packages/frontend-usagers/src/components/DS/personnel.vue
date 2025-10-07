@@ -166,7 +166,7 @@
 </template>
 
 <script setup>
-import { TableFull } from "@vao/shared";
+import { TableFull } from "@vao/shared-ui";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";

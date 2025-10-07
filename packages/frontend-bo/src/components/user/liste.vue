@@ -51,7 +51,7 @@ import {
   usePagination,
   isValidParams,
   columnsTable,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 
 const optionType = columnsTable.optionType;
 const userStore = useUserStore();

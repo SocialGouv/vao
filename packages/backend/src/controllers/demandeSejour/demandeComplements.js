@@ -3,7 +3,7 @@ const { number } = require("yup");
 const DemandeSejour = require("../../services/DemandeSejour");
 
 const logger = require("../../utils/logger");
-const { statuts } = require("../../helpers/ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const MailUtils = require("../../utils/mail");
 const AppError = require("../../utils/error");
 const ValidationAppError = require("../../utils/validation-error");
@@ -39,8 +39,8 @@ module.exports = async function post(req, res, next) {
   }
 
   if (
-    declaration.statut !== statuts.EN_COURS &&
-    declaration.statut !== statuts.EN_COURS_8J
+    declaration.statut !== DEMANDE_SEJOUR_STATUTS.EN_COURS &&
+    declaration.statut !== DEMANDE_SEJOUR_STATUTS.EN_COURS_8J
   ) {
     log.w("Declaration should be in statut EN COURS");
     return res.status(400).json({
@@ -49,12 +49,14 @@ module.exports = async function post(req, res, next) {
   }
 
   const AModifierType =
-    declaration.statut === statuts.EN_COURS
-      ? statuts.A_MODIFIER
-      : statuts.A_MODIFIER_8J;
+    declaration.statut === DEMANDE_SEJOUR_STATUTS.EN_COURS
+      ? DEMANDE_SEJOUR_STATUTS.A_MODIFIER
+      : DEMANDE_SEJOUR_STATUTS.A_MODIFIER_8J;
   const textTypePrecision =
     "Demande de compléments " +
-    (declaration.statut === statuts.EN_COURS ? " 2 mois" : " 8 jours");
+    (declaration.statut === DEMANDE_SEJOUR_STATUTS.EN_COURS
+      ? " 2 mois"
+      : " 8 jours");
   try {
     const destinataires = await DemandeSejour.getEmailToList(
       declaration.organismeId,

@@ -171,9 +171,9 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { eigModel, eigSchema, Summary } from "@vao/shared";
-import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
-import { isTypeActive } from "@vao/shared/src/models";
+import { eigModel, eigSchema, Summary } from "@vao/shared-ui";
+import { mapEigToLabel } from "@vao/shared-ui/src/utils/eigUtils";
+import { isTypeActive } from "@vao/shared-ui/src/models";
 
 const emit = defineEmits(["previous", "next", "update"]);
 

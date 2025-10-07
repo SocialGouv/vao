@@ -1,5 +1,5 @@
 const { isDeclarationligibleToEig } = require("../eig");
-const { statuts: dsStatuts } = require("../ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const { expect } = require("@playwright/test");
 
 describe("isDeclarationligibleToEig", () => {
@@ -10,12 +10,12 @@ describe("isDeclarationligibleToEig", () => {
     libelle: "declaration1",
   };
 
-  const allStatuts = Object.values(dsStatuts);
+  const allStatuts = Object.values(DEMANDE_SEJOUR_STATUTS);
 
   const okStatuts = [
-    dsStatuts.SEJOUR_EN_COURS,
-    dsStatuts.VALIDEE_8J,
-    dsStatuts.TERMINEE,
+    DEMANDE_SEJOUR_STATUTS.SEJOUR_EN_COURS,
+    DEMANDE_SEJOUR_STATUTS.VALIDEE_8J,
+    DEMANDE_SEJOUR_STATUTS.TERMINEE,
   ];
 
   const badStatus = allStatuts.filter((s) => !okStatuts.includes(s));

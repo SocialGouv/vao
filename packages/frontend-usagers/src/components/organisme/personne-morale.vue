@@ -271,9 +271,9 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading, ApiUnavailable } from "@vao/shared";
+import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
 import dayjs from "dayjs";
-import { apiTypes } from "@vao/shared/src/models";
+import { apiTypes } from "@vao/shared-ui/src/models";
 
 const toaster = useToaster();
 

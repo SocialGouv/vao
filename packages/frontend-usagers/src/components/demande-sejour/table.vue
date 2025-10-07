@@ -104,7 +104,7 @@ import {
   isValidParams,
   usePagination,
   columnsTable,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 import { exportCsv } from "../../utils/csv";
 
 const route = useRoute();

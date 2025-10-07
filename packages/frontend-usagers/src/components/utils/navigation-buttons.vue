@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { IsDownloading } from "@vao/shared";
+import { IsDownloading } from "@vao/shared-ui";
 
 const emit = defineEmits(["previous", "next"]);
 
