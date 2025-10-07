@@ -1,7 +1,7 @@
 <template>
   <div>
     <DsfrFieldset>
-      <div v-if="props.modifiable && !props.synthese">
+      <div v-if="isModifiable">
         <span class="fr-hint-text fr-mb-2w"
           >Vous pouvez saisir les informations de chaque personne
           individuellement ou coller les données depuis un tableur. Les données
@@ -19,10 +19,7 @@
           autant de fois que nécessaire</span
         >
       </div>
-      <div
-        v-if="props.modifiable && !props.synthese"
-        class="fr-fieldset__element"
-      >
+      <div v-if="isModifiable" class="fr-fieldset__element">
         <DsfrButton
           ref="modalOrigin"
           :label="props.labelBoutonAjouter"
@@ -31,10 +28,7 @@
           @click.prevent="addPersonne"
         />
       </div>
-      <div
-        v-if="props.modifiable && !props.synthese"
-        class="fr-fieldset__element"
-      >
+      <div v-if="isModifiable" class="fr-fieldset__element">
         <span class="fr-label"> 2. Coller des données depuis un tableur </span>
         <span class="fr-hint-text">
           Coller les cellules copiées directement depuis votre tableur (Excel,
@@ -104,10 +98,7 @@
           @update:model-value="handlePaste"
         />
       </div>
-      <div
-        v-if="props.modifiable && !props.synthese"
-        class="fr-fieldset__element"
-      >
+      <div v-if="isModifiable" class="fr-fieldset__element">
         <span class="fr-label">3. Liste du personnel ajouté</span>
       </div>
     </DsfrFieldset>
@@ -129,7 +120,7 @@
               name="attestation"
               label="Je certifie sur l'honneur avoir vérifié que les personnes ci-dessus n’ont pas fait l’objet d’une condamnation inscrite au bulletin n°3 du casier judiciaire"
               :small="true"
-              :disabled="!(props.modifiable && !props.synthese)"
+              :disabled="!isModifiable"
               @update:model-value="true"
             />
           </div>
@@ -248,7 +239,6 @@ const dataExempleCsvPersonnel = [
 const DsfrBadge = resolveComponent("DsfrBadge");
 
 const props = defineProps({
-  meta: { type: Object, required: true },
   personnes: { type: Array, required: true },
   modifiable: { type: Boolean, default: true },
   showAdresse: { type: Boolean, default: false, required: false },
@@ -263,6 +253,8 @@ const props = defineProps({
   labelBoutonAjouter: { type: String, required: true },
   synthese: { type: Boolean, default: false, required: false },
 });
+
+const isModifiable = computed(() => props.modifiable && !props.synthese);
 
 const personnesWithId = computed(() =>
   [...(props.personnes ?? [])].map((p, index) => ({ ...p, id: index })),
@@ -359,9 +351,9 @@ const headers = [
     },
   },
   {
+    column: "erreurs",
     ...(!props.synthese
       ? {
-          column: "erreurs",
           text: "Suppression",
           format: (_item, index) =>
             props.modifiable && {
@@ -378,7 +370,7 @@ const headers = [
               },
             },
         }
-      : { column: "erreurs", text: " " }),
+      : { text: " " }),
   },
 ];
 
