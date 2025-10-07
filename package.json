@@ -13,7 +13,7 @@
     "lint:backend": "yarn --cwd ./packages/backend run lint",
     "lint:frontend-usagers": "yarn --cwd ./packages/frontend-usagers run lint",
     "lint:frontend-bo": "yarn --cwd ./packages/frontend-bo run lint",
-    "lint:shared": "yarn --cwd ./packages/shared run lint",
+    "lint:shared": "yarn --cwd ./packages/shared-ui run lint && yarn --cwd ./packages/shared-bridge run lint",
     "knex": "POSTGRES_HOST=localhost POSTGRES_PORT=5436 env-cmd --no-override knex --cwd ./packages/migrations/src",
     "test:unit:all": "yarn run test:unit:api && yarn run test:unit:backend",
     "test:unit:api": "yarn workspace @vao/external-api test:cov",

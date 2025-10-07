@@ -7,6 +7,7 @@ COPY package.json yarn.lock ./
 COPY packages/backend/package.json packages/backend/
 COPY packages/backend/tsconfig.json packages/backend/
 COPY packages/backend/src packages/backend/src
+COPY packages/shared-bridge packages/shared-bridge
 
 RUN yarn workspace @vao/backend install --frozen-lockfile
 RUN yarn workspace @vao/backend build
@@ -24,5 +25,6 @@ COPY --from=build /app/node_modules node_modules
 COPY --from=build /app/packages/backend/dist packages/backend/dist
 COPY package.json yarn.lock ./
 COPY packages/backend/package.json packages/backend/
+COPY packages/backend/dist packages/backend/dist
 
 CMD ["node", "packages/backend/dist/index.js"]
