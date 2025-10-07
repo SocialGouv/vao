@@ -10,7 +10,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src",
+    "clean": "nuxt cleanup"
   },
   "dependencies": {
     "@gouvfr/dsfr": "^1.13.0",
