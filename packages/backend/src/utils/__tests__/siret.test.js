@@ -13,6 +13,9 @@ describe("formatSiret", () => {
   it("should return empty response when input is wrong object", () => {
     expect(formatSiret({ siren: "12345678901234" })).toBe("");
   });
+  it("should format SIRET when input is a valid number", () => {
+    expect(formatSiret({ siret: 12345678901234 })).toBe("123 456 789 01234");
+  });
 });
 describe("formatSiren", () => {
   it("should format SIREN if it's valid", () => {
@@ -26,5 +29,8 @@ describe("formatSiren", () => {
   });
   it("should return empty response when input is wrong object", () => {
     expect(formatSiren({ siret: "12345678901234" })).toBe("");
+  });
+  it("should format SIREN when input is a valid number", () => {
+    expect(formatSiren({ siren: 123456789 })).toBe("123 456 789");
   });
 });
