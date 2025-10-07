@@ -1,15 +1,15 @@
-const express = require("express");
+import express from "express";
+
+import hebergementController from "../controllers/hebergement";
+import HebergementHelper from "../helpers/hebergement";
+import boCheckJWT from "../middlewares/bo-check-JWT";
+import checkJWT from "../middlewares/checkJWT";
+import checkPermissionHebergement from "../middlewares/checkPermissionHebergement";
+import checkPermissionHebergementUser from "../middlewares/checkPermissionHebergementUser";
+import checkStatutHebergement from "../middlewares/checkStatutHebergement";
+import getDepartements from "../middlewares/getDepartements";
 
 const router = express.Router();
-
-const checkJWT = require("../middlewares/checkJWT");
-const boCheckJWT = require("../middlewares/bo-check-JWT");
-const checkPermissionHebergement = require("../middlewares/checkPermissionHebergement");
-const checkPermissionHebergementUser = require("../middlewares/checkPermissionHebergementUser");
-const checkStatutHebergement = require("../middlewares/checkStatutHebergement");
-const getDepartements = require("../middlewares/getDepartements");
-const hebergementController = require("../controllers/hebergement");
-const HebergementHelper = require("../helpers/hebergement");
 
 router.get(
   "/admin/",
@@ -75,4 +75,4 @@ router.post(
   hebergementController.update,
 );
 
-module.exports = router;
+export default router;
