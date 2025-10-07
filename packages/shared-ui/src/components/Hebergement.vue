@@ -651,7 +651,7 @@ const props = defineProps({
   modeBrouillonActivated: { type: Boolean, default: false },
 });
 
-const logger = createLogger("vao-shared");
+const logger = createLogger("vao-shared-ui");
 const log = logger("components/hebergement");
 
 const validationSchema = yup.object(hebergementUtils.schema);

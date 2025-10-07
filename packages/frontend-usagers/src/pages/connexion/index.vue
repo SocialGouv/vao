@@ -120,8 +120,7 @@
 </template>
 
 <script setup>
-import { PasswordInput, ErrorCodes } from "@vao/shared";
-import { connectionInfos } from "@vao/shared/src/models/messages";
+import { PasswordInput, ErrorCodes, apiModel } from "@vao/shared-ui";
 
 const toaster = useToaster();
 const organismeStore = useOrganismeStore();
@@ -154,7 +153,7 @@ const showPassword = ref(false);
 const editMail = (v) => (email.value = v);
 const editPwd = (v) => (password.value = v);
 
-const displayInfos = connectionInfos;
+const displayInfos = apiModel.connectionInfos;
 const displayType = ref(null);
 
 const canLogin = computed(() => {

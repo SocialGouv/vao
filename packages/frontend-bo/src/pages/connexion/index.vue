@@ -113,8 +113,7 @@
 
 <script setup>
 import { useUserStore } from "@/stores/user";
-import { PasswordInput } from "@vao/shared";
-import { connectionInfos } from "@vao/shared/src/models/messages";
+import { PasswordInput, apiModel } from "@vao/shared-ui";
 
 const toaster = useToaster();
 
@@ -146,7 +145,7 @@ const showPassword = ref(false);
 const editMail = (v) => (email.value = v);
 const editPwd = (v) => (password.value = v);
 
-const displayInfos = connectionInfos;
+const displayInfos = apiModel.connectionInfos;
 const displayType = ref(null);
 
 const canLogin = computed(() => {

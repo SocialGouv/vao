@@ -3,7 +3,7 @@ const PdfARDeclaration2Mois = require("../../services/pdf/ARdeclaration2mois/gen
 const PdfARDeclaration8Jours = require("../../services/pdf/ARdeclaration8jours/generate");
 
 const logger = require("../../utils/logger");
-const { statuts } = require("../../helpers/ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const MailUtils = require("../../utils/mail");
 const AppError = require("../../utils/error");
 
@@ -36,8 +36,8 @@ module.exports = async function post(req, res, next) {
   }
 
   if (
-    declaration.statut !== statuts.EN_COURS &&
-    declaration.statut !== statuts.EN_COURS_8J
+    declaration.statut !== DEMANDE_SEJOUR_STATUTS.EN_COURS &&
+    declaration.statut !== DEMANDE_SEJOUR_STATUTS.EN_COURS_8J
   ) {
     return next(
       new AppError("Statut incompatible", {
@@ -46,15 +46,17 @@ module.exports = async function post(req, res, next) {
     );
   }
   const enCoursTypeStatut =
-    declaration.statut === statuts.EN_COURS
-      ? statuts.ATTENTE_8_JOUR
-      : statuts.VALIDEE_8J;
+    declaration.statut === DEMANDE_SEJOUR_STATUTS.EN_COURS
+      ? DEMANDE_SEJOUR_STATUTS.ATTENTE_8_JOUR
+      : DEMANDE_SEJOUR_STATUTS.VALIDEE_8J;
   const textTypePrecision =
     "Enregistrement de la déclaration à " +
-    (declaration.statut === statuts.EN_COURS ? " 2 mois" : " 8 jours");
+    (declaration.statut === DEMANDE_SEJOUR_STATUTS.EN_COURS
+      ? " 2 mois"
+      : " 8 jours");
 
   try {
-    if (declaration.statut === statuts.EN_COURS)
+    if (declaration.statut === DEMANDE_SEJOUR_STATUTS.EN_COURS)
       await PdfARDeclaration2Mois(declaration);
     else await PdfARDeclaration8Jours(declaration);
 
@@ -75,7 +77,7 @@ module.exports = async function post(req, res, next) {
         userId: null,
       },
       () =>
-        declaration.statut === statuts.EN_COURS
+        declaration.statut === DEMANDE_SEJOUR_STATUTS.EN_COURS
           ? Send(
               MailUtils.usagers.declarationSejour.sendAccuseReception2MoisMail({
                 declaration,
@@ -92,7 +94,7 @@ module.exports = async function post(req, res, next) {
             ),
     );
 
-    if (declaration.statut === statuts.EN_COURS)
+    if (declaration.statut === DEMANDE_SEJOUR_STATUTS.EN_COURS)
       await DemandeSejour.saveDS2M(declarationId, declaration);
 
     return res.status(200).end();

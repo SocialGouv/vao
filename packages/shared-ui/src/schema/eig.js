@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { eigModel } from "@vao/shared";
+import { eigModel } from "@vao/shared-ui";
 import { personneSchema } from "./personne";
 
 const { Types, Categorie } = eigModel;

@@ -4,7 +4,7 @@ import regex from "./regex";
 import personne from "./personne";
 import protocoleTransport from "./protocoleTransport";
 import protocoleSanitaire from "./protocoleSanitaire";
-import { adresseSchema } from "@vao/shared/src/schema/adresse";
+import { adresseSchema } from "@vao/shared-ui/src/schema/adresse";
 
 const types = [
   {

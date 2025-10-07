@@ -71,7 +71,7 @@ import {
   isValidParams,
   usePagination,
   columnsTable,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 import dayjs from "dayjs";
 
 const optionType = columnsTable.optionType;

@@ -21,7 +21,7 @@ import { computed, onMounted, ref } from "vue";
 import createLogger from "../../utils/createLogger";
 import TableUI from "./TableUI.vue";
 
-const logger = createLogger("vao-shared");
+const logger = createLogger("vao-shared-ui");
 const log = logger("components/TableFull");
 
 const emit = defineEmits(["click-row"]);

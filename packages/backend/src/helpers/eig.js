@@ -1,5 +1,5 @@
 const dayjs = require("dayjs");
-const dsStatuts = require("./ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 
 module.exports.statuts = {
   BROUILLON: "BROUILLON",
@@ -115,9 +115,9 @@ module.exports.isDeclarationligibleToEig = (d) =>
   dayjs(d.dateFin).add(1, "week").format("YYYY-MM-DD") >=
     dayjs().format("YYYY-MM-DD") &&
   [
-    dsStatuts.statuts.VALIDEE_8J,
-    dsStatuts.statuts.SEJOUR_EN_COURS,
-    dsStatuts.statuts.TERMINEE,
+    DEMANDE_SEJOUR_STATUTS.VALIDEE_8J,
+    DEMANDE_SEJOUR_STATUTS.SEJOUR_EN_COURS,
+    DEMANDE_SEJOUR_STATUTS.TERMINEE,
   ].includes(d.statut);
 
 const isUserDreetsWhoDeliveredAgrement = (

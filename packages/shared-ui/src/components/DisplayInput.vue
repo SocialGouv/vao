@@ -26,7 +26,7 @@
 </template>
 
 <script setup>
-import { TableFull } from "@vao/shared";
+import { TableFull } from "@vao/shared-ui";
 import displayInput from "~/utils/display-input";
 
 defineEmits(["emitComment"]);

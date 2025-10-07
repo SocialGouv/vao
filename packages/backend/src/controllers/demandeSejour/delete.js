@@ -1,4 +1,4 @@
-const { statuts } = require("../../helpers/ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const DemandeSejour = require("../../services/DemandeSejour");
 
 const logger = require("../../utils/logger");
@@ -26,7 +26,7 @@ module.exports = async function post(req, res, next) {
       );
     }
     log.i(declaration.statut);
-    if (declaration.statut !== statuts.BROUILLON) {
+    if (declaration.statut !== DEMANDE_SEJOUR_STATUTS.BROUILLON) {
       log.w("DONE with error");
       return next(
         new AppError(
