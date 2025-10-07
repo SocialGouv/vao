@@ -12,7 +12,7 @@ export const useHebergementStore = defineStore("hebergement", {
     isGetHebergementLoading: false,
   }),
   actions: {
-    async exportHebergements(params) {
+    async exportHebergements(params = {}) {
       log.i("exportHebergements - IN");
       try {
         const response = await $fetchBackend(`/hebergement/extract/`, {
@@ -49,7 +49,7 @@ export const useHebergementStore = defineStore("hebergement", {
         this.isGetHebergementsLoading = false;
       }
     },
-    async getHebergement(hebergementId) {
+    async getHebergement(hebergementId: number) {
       log.i("getHebergement - IN");
       this.isGetHebergementLoading = true;
       try {
