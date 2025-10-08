@@ -10,7 +10,7 @@ const getSort = (sortBy, direction, titles, defaultSort = "") => {
     if (title?.customSort) {
       return title.customSort(finalSortBy, direction);
     }
-    if (title?.sortType === "date") {
+    if (title?.sortType === "date" || title?.sortType === "number") {
       return `ORDER BY ${title.sortQuery ?? title.key} ${direction}`;
     }
     return `ORDER BY LOWER(unaccent(${title.sortQuery ?? title.key}::varchar)) ${direction}`;
