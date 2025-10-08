@@ -17,8 +17,7 @@ export const connectionInfos = {
   },
   WrongCredentials: {
     title: "Erreur d'authentification",
-    description:
-      "Votre adresse courriel ou votre mot de passe sont incorrects, ou votre compte a été désactivé par un tiers.",
+    description: `Votre identifiant ou votre mot de passe sont incorrects, ou votre compte a été désactivé par un tiers. Veuillez réessayer ou utiliser la fonction “Mot de passe oublié”`,
     type: "error",
   },
   TooManyLoginAttempts: {
