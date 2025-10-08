@@ -24,6 +24,11 @@ export const updateStatusDs = {
   name: "UPDATE_STATUT_DS",
 };
 
+export const notifySuppressionCompteInactif = {
+  cron: process.env.BACKEND_CRON_SUPPRESSION_COMPTE_INACTIF_CRON,
+  name: "SUPPRESSION_COMPTE_INACTIF",
+};
+
 export const postgres = {
   database: process.env.POSTGRES_DB,
   host: process.env.POSTGRES_HOST,
