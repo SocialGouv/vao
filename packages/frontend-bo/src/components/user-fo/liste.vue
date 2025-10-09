@@ -188,9 +188,8 @@ async function validate(userId) {
         "La demande de création de compte a été validée par vos soins. L’utilisateur va recevoir un mail pour le prévenir.",
     });
     userStore.fetchUsersFo(query);
-  } catch {
-    toaster.error();
-    ({
+  } catch (err) {
+    toaster.error({
       titleTag: "h2",
       description: "Erreur lors de la mise à jour du status de l'utilisateur.",
     });
