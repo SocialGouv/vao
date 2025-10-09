@@ -11704,10 +11704,10 @@ node-talisman@^1.29.11:
     mkdirp "^1.0.4"
     request "^2.88.2"
 
-nodemailer@^6.10.0, nodemailer@^6.9.13:
-  version "6.10.0"
-  resolved "https://registry.npmjs.org/nodemailer/-/nodemailer-6.10.0.tgz"
-  integrity sha512-SQ3wZCExjeSatLE/HBaXS5vqUOQk6GtBdIIKxiFdmm01mOQZX/POJkO3SUX1wDiYcwUOJwT23scFSC9fY2H8IA==
+nodemailer@^7.0.7:
+  version "7.0.7"
+  resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-7.0.7.tgz#91a16235c08abb7805a4ec1537ca63edca79687f"
+  integrity sha512-jGOaRznodf62TVzdyhKt/f1Q/c3kYynk8629sgJHpRzGZj01ezbgMMWJSAjHADcwTKxco3B68/R+KHJY2T5BaA==
 
 nodemon@^3.1.0:
   version "3.1.9"
