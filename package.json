@@ -31,9 +31,8 @@
     "eslint": "^8.56.0",
     "eslint-config-prettier": "~9.1.0",
     "husky": "^9.0.10",
-    "is-ci": "^4.0.0",
     "lint-staged": "^15.2.1",
-    "node-talisman": "^1.29.11",
+    "node-talisman": "^1.29.22",
     "prettier": "^3.2.5"
   },
   "workspaces": [
