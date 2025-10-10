@@ -1397,6 +1397,8 @@ module.exports.getByDepartementCodes = async (
   if (sortBy && sortDirection) {
     if (sortBy === "messageOrdreEtat")
       queryWithPagination += ` ORDER BY "${sortBy}" ${sortDirection}, "messageCreatedAt" DESC`;
+    else if (sortBy === "statut")
+      queryWithPagination += `ORDER BY ds.statut::text ${sortDirection}`;
     else
       queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, ds.edited_at DESC`;
   } else {
