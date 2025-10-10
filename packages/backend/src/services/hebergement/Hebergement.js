@@ -185,6 +185,13 @@ ${new Array(nbRows)
     LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
     WHERE pm.siren = $1
     `,
+  getByUuid: `
+    SELECT h.id
+    FROM front.hebergement h
+    WHERE file_reponse_exploitant_ou_proprietaire = $1
+    or file_dernier_arrete_autorisation_maire = $1
+    or file_derniere_attestation_securite = $1
+  `,
   getIsHebergementAutoriseForUserId: `
     SELECT h.organisme_id
     FROM
@@ -757,6 +764,14 @@ module.exports.getByDSId = async (dsId) => {
   );
 };
 
+module.exports.getByUuid = async (uuid) => {
+  log.i("getByUuid - IN");
+  console.log("UUID", uuid);
+  const response = await pool.query(query.getByUuid, [uuid]);
+  console.log(response.rows);
+  log.d("getByUuid - DONE");
+  return response.rows[0];
+};
 module.exports.getStatut = async (hebergementId) => {
   log.i("getStatut - IN");
   const response = await pool.query(query.getStatut, [hebergementId]);
