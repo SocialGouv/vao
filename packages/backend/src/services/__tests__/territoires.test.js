@@ -11,55 +11,23 @@ jest.mock("../../utils/pgpool", () => {
 
 describe("Service Territoire", () => {
   describe("getFichesTerritoireForRegionByInseeCode", () => {
-    it("should return a valid id", async () => {
+    it("should return a valid id for any valid inseeCode", async () => {
       const pool = pgpool.getPool();
 
       pool.query.mockImplementation((sql, params) => {
         expect(sql).toMatch(/SELECT/);
         expect(params).toEqual(["972"]);
-        return Promise.resolve({ rows: [{ id: 11 }] });
+        return Promise.resolve({ rows: [{ id: 12, terCode: "MAR" }] });
       });
 
       const ficheTerritoire = require("../Territoire");
       const result =
-        await ficheTerritoire.getFichesTerritoireForRegionByInseeCode("97200");
+        await ficheTerritoire.getFichesTerritoireForRegionByInseeCode({
+          inseeCode: "97200",
+        });
 
-      expect(result).toEqual({ id: 11 });
+      expect(result).toEqual({ id: 12, terCode: "MAR" });
       expect(pool.query).toHaveBeenCalledTimes(1);
-    });
-
-    it("should return a valid id when code insee is on of DROM", async () => {
-      const pool = pgpool.getPool();
-
-      pool.query.mockImplementation((sql, params) => {
-        expect(sql).toMatch(/SELECT/);
-        expect(params).toEqual(["972"]);
-        return Promise.resolve({ rows: [{ id: 11 }] });
-      });
-
-      const ficheTerritoire = require("../Territoire");
-      const result =
-        await ficheTerritoire.getFichesTerritoireForRegionByInseeCode("97200");
-
-      expect(result).toEqual({ id: 11 });
-      expect(pool.query).toHaveBeenCalledTimes(2);
-    });
-
-    it("should return id when code insee is Corse", async () => {
-      const pool = pgpool.getPool();
-
-      pool.query.mockImplementation((sql, params) => {
-        expect(sql).toMatch(/SELECT/);
-        expect(params).toEqual(["2A"]);
-        return Promise.resolve({ rows: [{ id: 11 }] });
-      });
-
-      const ficheTerritoire = require("../Territoire");
-      const result =
-        await ficheTerritoire.getFichesTerritoireForRegionByInseeCode("2A200");
-
-      expect(result).toEqual({ id: 11 });
-      expect(pool.query).toHaveBeenCalledTimes(3);
     });
   });
 });

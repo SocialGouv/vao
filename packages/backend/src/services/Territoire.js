@@ -1,6 +1,7 @@
 const AppError = require("../utils/error");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
+const getCodeTerritoireByInseeCode = require("../utils/geo");
 
 const log = logger(module.filename);
 const {
@@ -167,10 +168,12 @@ module.exports.update = async (id, { nom, prenom, email, telephone }) => {
   return { territoire: response.rows[0] };
 };
 
-module.exports.getFichesTerritoireForRegionByInseeCode = async (InseeCode) => {
-  const code = InseeCode.startsWith("97")
-    ? InseeCode.slice(0, 3)
-    : InseeCode.slice(0, 2);
-  const { rows } = await pool.query(query.selectTerritoiresByInseeCode, [code]);
+module.exports.getFichesTerritoireForRegionByInseeCode = async ({
+  inseeCode,
+}) => {
+  const terCode = getCodeTerritoireByInseeCode({ inseeCode });
+  const { rows } = await pool.query(query.selectTerritoiresByInseeCode, [
+    terCode,
+  ]);
   return rows[0];
 };

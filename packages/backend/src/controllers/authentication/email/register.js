@@ -56,9 +56,10 @@ module.exports = async function register(req, res, next) {
   let territoire = "";
   try {
     const etablissement = await insee.getEtablissement(siret);
-    const codeInsee =
-      etablissement.adresseEtablissement.codeCommuneEtablissement;
-    territoire = await getFichesTerritoireForRegionByInseeCode(codeInsee);
+    const inseeCode = String(
+      etablissement.adresseEtablissement.codeCommuneEtablissement,
+    );
+    territoire = await getFichesTerritoireForRegionByInseeCode({ inseeCode });
   } catch (error) {
     log.w("DONE with error");
     return next(error);

@@ -102,11 +102,11 @@ describe("register controller", () => {
     User.read.mockResolvedValue([]);
     insee.getEtablissement.mockResolvedValue({
       adresseEtablissement: {
-        codePostalEtablissement: "75001",
+        codeCommuneEtablissement: "75101",
       },
     });
     getFichesTerritoireForRegionByInseeCode.mockResolvedValue({
-      terCode: "TER123",
+      inseeCode: "75101",
     });
     User.registerByEmail.mockRejectedValue(new Error("DB failure"));
 
@@ -119,11 +119,11 @@ describe("register controller", () => {
     User.read.mockResolvedValue([]);
     insee.getEtablissement.mockResolvedValue({
       adresseEtablissement: {
-        codePostalEtablissement: "75001",
+        codeCommuneEtablissement: "75101",
       },
     });
     getFichesTerritoireForRegionByInseeCode.mockResolvedValue({
-      terCode: "TER123",
+      inseeCode: "75101",
     });
     User.registerByEmail.mockResolvedValue({
       user: { id: 1 },
@@ -142,11 +142,11 @@ describe("register controller", () => {
     User.read.mockResolvedValue([]);
     insee.getEtablissement.mockResolvedValue({
       adresseEtablissement: {
-        codePostalEtablissement: "75001",
+        codeCommuneEtablissement: "75101",
       },
     });
     getFichesTerritoireForRegionByInseeCode.mockResolvedValue({
-      terCode: "TER123",
+      inseeCode: "75101",
     });
     User.registerByEmail.mockResolvedValue({
       user: { id: 1 },
