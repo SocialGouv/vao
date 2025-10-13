@@ -41,9 +41,11 @@ module.exports = async function register(req, res, next) {
     let user = await User.editPassword({ email, password });
 
     if (
-      user.statusCode === status.TEMPORARY_BLOCKED ||
-      user.statusCode === status.NEED_EMAIL_VALIDATION ||
-      user.statusCode === status.NEED_SIRET_VALIDATION
+      [
+        // status.BLOCKED,
+        status.TEMPORARY_BLOCKED,
+        status.NEED_EMAIL_VALIDATION,
+      ].includes(user.statusCode)
     ) {
       user = await User.activate(email);
     }

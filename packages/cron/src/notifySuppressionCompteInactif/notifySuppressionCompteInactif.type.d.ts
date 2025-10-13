@@ -25,6 +25,6 @@ export type NotifyCompteInactif2mEmailType = "ALERTE_5M" | "RAPPEL_J7";
 
 export type NotifyCompteInactif2mEmailParams = {
 	mail: string;
-	dateSuppression: string;
+	dateSuppression: string | Date;
 	type: NotifyCompteInactif2mEmailType;
 };

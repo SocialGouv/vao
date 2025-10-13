@@ -199,17 +199,9 @@ module.exports.editPassword = async ({ email, password }) => {
   if (response.rows.length === 0) {
     throw new AppError("Utilisateur introuvable", { name: "UserNotFound" });
   }
-  const [user] = response.rows;
   await pool.query(...query.editPassword(email, password));
   CommonUser.resetLoginAttempt(normalize(email), schema.FRONT);
 
-  if (
-    user.statusCode === status.TEMPORARY_BLOCKED ||
-    user.statusCode === status.NEED_EMAIL_VALIDATION
-  ) {
-    log.i("editPassword - activation", { statusCode: user.statusCode });
-    await module.exports.activate(email);
-  }
   const responseWithUpdate = await pool.query(
     ...query.select({ mail: normalize(email) }),
   );

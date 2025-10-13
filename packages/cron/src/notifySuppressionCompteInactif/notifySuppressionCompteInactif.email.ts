@@ -6,9 +6,10 @@ import type {
   NotifySuppressionCompteInactifRow,
 } from "./notifySuppressionCompteInactif.type";
 import type {
-  NotifyCompteInactif2mEmailType,
   NotifyCompteInactif2mEmailParams
 } from "./notifySuppressionCompteInactif.type";
+
+type NotifyCompteInactif2mEmailParamsFixed = Omit<NotifyCompteInactif2mEmailParams, "dateSuppression"> & { dateSuppression: Date | string };
 
 
 
@@ -17,13 +18,17 @@ const RESET_PASSWORD_URL = `${domains.frontUsagersDomain}/connexion/mot-de-passe
 const generateEmail = ({ mail, dateSuppression, type }: NotifyCompteInactif2mEmailParams) => {
   let subject = "";
   let body = "";
+  
+  const formattedDateSuppression = (dateSuppression && typeof dateSuppression !== "string" && "toLocaleDateString" in dateSuppression)
+    ? (dateSuppression as Date).toLocaleDateString("fr-FR")
+    : dateSuppression;
 
   if (type === "ALERTE_5M") {
     subject = "Portail VAO - Suppression de votre compte dans 1 mois";
     body = `
       <p>Bonjour,</p>
       <p>Votre compte VAO n’a pas été utilisé depuis 5 mois.<br>
-      Pour des raisons de sécurité, il sera supprimé dans 1 mois si vous ne vous reconnectez pas d’ici le <strong>${dateSuppression}</strong>.</p>
+      Pour des raisons de sécurité, il sera supprimé dans 1 mois si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.</p>
       <p>Pour vous reconnecter à votre compte, vous devrez au préalable réinitialiser votre mot de passe en cliquant sur le lien suivant :</p>
       <p><a href="${RESET_PASSWORD_URL}">Réinitialiser mon mot de passe</a></p>
       <p>Cordialement.<br>L’équipe du SI VAO<br>Portail VAO</p>
@@ -34,7 +39,7 @@ const generateEmail = ({ mail, dateSuppression, type }: NotifyCompteInactif2mEma
     body = `
       <p>Bonjour,</p>
       <p>Votre compte VAO n’a pas été utilisé depuis plusieurs mois.<br>
-      Pour des raisons de sécurité, il sera supprimé dans 7 jours si vous ne vous reconnectez pas d’ici le <strong>${dateSuppression}</strong>.</p>
+      Pour des raisons de sécurité, il sera supprimé dans 7 jours si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.</p>
       <p>Pour vous reconnecter à votre compte, vous devrez au préalable réinitialiser votre mot de passe en cliquant sur le lien suivant :</p>
       <p><a href="${RESET_PASSWORD_URL}">Réinitialiser mon mot de passe</a></p>
       <p>Cordialement.<br>L’équipe du SI VAO<br>Portail VAO</p>
@@ -53,13 +58,31 @@ const generateEmail = ({ mail, dateSuppression, type }: NotifyCompteInactif2mEma
   };
 };
 
-export const sendNotifyCompteInactif2mEmails = async (
+
+export const sendAlerte5mEmails = async (
   rows: NotifySuppressionCompteInactifRow[],
-  dateSuppression: string,
-  type: NotifyCompteInactif2mEmailType
+  dateSuppression: Date | string
 ) => {
-  const mails = rows.map(({ mail }) =>
-    generateEmail({ mail, dateSuppression, type })
+  const mails = rows.map(row =>
+    generateEmail({
+      mail: row.mail,
+      dateSuppression: dateSuppression,
+      type: "ALERTE_5M"
+    } as NotifyCompteInactif2mEmailParamsFixed)
+  );
+  return await transportEmails(mails);
+};
+
+export const sendRappelJ7Emails = async (
+  rows: NotifySuppressionCompteInactifRow[],
+  dateSuppression: Date | string
+) => {
+  const mails = rows.map(row =>
+    generateEmail({
+      mail: row.mail,
+      dateSuppression,
+      type: "RAPPEL_J7"
+    } as NotifyCompteInactif2mEmailParamsFixed)
   );
   return await transportEmails(mails);
 };

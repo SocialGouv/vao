@@ -72,4 +72,36 @@ describe("renew-password controller", () => {
     await renewPassword(req, res, next);
     expect(next).toHaveBeenCalledWith(expect.any(AppError));
   });
+
+  it("should NOT activate user if status is VALIDATED", async () => {
+    jwt.verify.mockReturnValue({ email: "test@test.com" });
+    const userBefore = {
+      email: "test@test.com",
+      id: 2,
+      statusCode: "VALIDATED",
+    };
+    User.editPassword.mockResolvedValue(userBefore);
+
+    await renewPassword(req, res, next);
+
+    expect(User.activate).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ user: userBefore });
+  });
+
+  it("should NOT activate user if status is NEED_SIRET_VALIDATION", async () => {
+    jwt.verify.mockReturnValue({ email: "test@test.com" });
+    const userBefore = {
+      email: "test@test.com",
+      id: 3,
+      statusCode: "NEED_SIRET_VALIDATION",
+    };
+    User.editPassword.mockResolvedValue(userBefore);
+
+    await renewPassword(req, res, next);
+
+    expect(User.activate).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ user: userBefore });
+  });
 });
