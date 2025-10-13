@@ -85,14 +85,17 @@ const headersToDisplay = computed(() => {
 
 const personnesToDisplay = computed(() => {
   const displayedFields = props.headers.map((h) => h.value);
-  return props.personnes.map((p, index) => {
+  return props.personnes.map((personne, index) => {
     const row = [];
-    displayedFields.forEach((f) => {
-      let value = Array.isArray(p[f]) ? p[f].join(",") : p[f];
-      if (f === "dateNaissance" && value) {
-        value = dayjs(value).format("DD/MM/YYYY");
+    displayedFields.forEach((field) => {
+      const fieldValue = personne[field];
+      let valueFormatted = Array.isArray(fieldValue)
+        ? fieldValue.join(",")
+        : fieldValue;
+      if (field === "dateNaissance" && valueFormatted) {
+        valueFormatted = dayjs(valueFormatted).format("DD/MM/YYYY");
       }
-      row.push(value);
+      row.push(valueFormatted);
     });
     if (props.modifiable) {
       row.push({
