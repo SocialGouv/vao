@@ -56,22 +56,19 @@ const query = {
     FROM geo.territoires ter
     INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
     WHERE ter.code <> 'FRA'`,
-  selectTerritoiresByInseeCode: (inseeCode) => [
-    `
-    SELECT
-      ft.id,
-      ft.ter_code AS "terCode",
-      ft.service_mail AS "serviceMail",
-      ft.service_telephone AS "serviceTelephone",
-      ft.corresp_vao_nom AS "correspVaoNom",
-      ft.corresp_vao_prenom AS "correspVaoPrenom",
-      ft.edited_at AS "editedAt"
-    FROM back.fiche_territoire ft
-    JOIN geo.territoires t ON ft.ter_code = t.parent_code
-    WHERE t.code = $1;
-    `,
-    [inseeCode],
-  ],
+  selectTerritoiresByInseeCode: `
+  SELECT
+    ft.id,
+    ft.ter_code AS "terCode",
+    ft.service_mail AS "serviceMail",
+    ft.service_telephone AS "serviceTelephone",
+    ft.corresp_vao_nom AS "correspVaoNom",
+    ft.corresp_vao_prenom AS "correspVaoPrenom",
+    ft.edited_at AS "editedAt"
+  FROM back.fiche_territoire ft
+  JOIN geo.territoires t ON ft.ter_code = t.parent_code
+  WHERE t.code = $1;
+`,
 
   update: `
       UPDATE back.fiche_territoire
@@ -171,9 +168,9 @@ module.exports.update = async (id, { nom, prenom, email, telephone }) => {
 };
 
 module.exports.getFichesTerritoireForRegionByInseeCode = async (InseeCode) => {
-  const code = InseeCode.substring(0, 2);
-  const { rows } = await pool.query(
-    ...query.selectTerritoiresByInseeCode(code),
-  );
+  const code = InseeCode.startsWith("97")
+    ? InseeCode.slice(0, 3)
+    : InseeCode.slice(0, 2);
+  const { rows } = await pool.query(query.selectTerritoiresByInseeCode, [code]);
   return rows[0];
 };
