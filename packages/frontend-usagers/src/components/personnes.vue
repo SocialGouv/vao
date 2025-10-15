@@ -104,7 +104,8 @@ const personnesToDisplay = computed(() => {
         tertiary: true,
         noOutline: true,
         tabIndex: 0,
-        ariaLabel: "Supprimer " + (p.prenom || "") + " " + (p.nom || ""),
+        ariaLabel:
+          "Supprimer " + (personne.prenom || "") + " " + (personne.nom || ""),
         role: "button",
         onClick: (event) => {
           event.stopPropagation();
