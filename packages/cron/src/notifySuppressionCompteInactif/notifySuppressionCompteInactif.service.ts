@@ -103,7 +103,7 @@ async function processRappel5mois(
   if (alertRows.length > 0) {
     const dateSuppressionDate = addMonths(now, 1);
     await sendAlerte5mEmails(alertRows, dateSuppressionDate);
-    report.alertesEnvoyees = alertRows.length;
+    report.alertesEnvoyees += alertRows.length;
     // Mise à jour colonnes en base
     for (const row of alertRows) {
       await pool.query(

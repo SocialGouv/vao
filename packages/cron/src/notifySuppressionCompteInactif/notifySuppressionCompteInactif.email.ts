@@ -2,30 +2,23 @@ import { senderEmail, domains } from "../config";
 import constructMail from "../utils/mails";
 import { transportEmails } from "../utils/transporter";
 
-import type {
-  NotifySuppressionCompteInactifRow,
-} from "./notifySuppressionCompteInactif.type";
-import type {
-  NotifyCompteInactif2mEmailParams
-} from "./notifySuppressionCompteInactif.type";
-
-type NotifyCompteInactif2mEmailParamsFixed = Omit<NotifyCompteInactif2mEmailParams, "dateSuppression"> & { dateSuppression: Date | string };
-
-
+import type { NotifySuppressionCompteInactifRow } from "./notifySuppressionCompteInactif.type";
 
 const RESET_PASSWORD_URL = `${domains.frontUsagersDomain}/connexion/mot-de-passe-oublie`;
 
-const generateEmail = ({ mail, dateSuppression, type }: NotifyCompteInactif2mEmailParams) => {
-  let subject = "";
-  let body = "";
-  
-  const formattedDateSuppression = (dateSuppression && typeof dateSuppression !== "string" && "toLocaleDateString" in dateSuppression)
-    ? (dateSuppression as Date).toLocaleDateString("fr-FR")
-    : dateSuppression;
-
-  if (type === "ALERTE_5M") {
-    subject = "Portail VAO - Suppression de votre compte dans 1 mois";
-    body = `
+export const sendAlerte5mEmails = async (
+  rows: NotifySuppressionCompteInactifRow[],
+  dateSuppression: Date | string,
+) => {
+  const formattedDateSuppression =
+    dateSuppression &&
+    typeof dateSuppression !== "string" &&
+    "toLocaleDateString" in dateSuppression
+      ? (dateSuppression as Date).toLocaleDateString("fr-FR")
+      : dateSuppression;
+  const mails = rows.map((row) => {
+    const subject = "Portail VAO - Suppression de votre compte dans 1 mois";
+    const body = `
       <p>Bonjour,</p>
       <p>Votre compte VAO n’a pas été utilisé depuis 5 mois.<br>
       Pour des raisons de sécurité, il sera supprimé dans 1 mois si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.</p>
@@ -34,9 +27,31 @@ const generateEmail = ({ mail, dateSuppression, type }: NotifyCompteInactif2mEma
       <p>Cordialement.<br>L’équipe du SI VAO<br>Portail VAO</p>
       <br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>
     `;
-  } else if (type === "RAPPEL_J7") {
-    subject = "Portail VAO - Suppression de votre compte dans 7 jours";
-    body = `
+    const html = constructMail("", [{ p: [body], type: "p" }], "");
+    return {
+      from: senderEmail,
+      replyTo: senderEmail,
+      html,
+      subject,
+      to: [row.mail],
+    };
+  });
+  return await transportEmails(mails);
+};
+
+export const sendRappelJ7Emails = async (
+  rows: NotifySuppressionCompteInactifRow[],
+  dateSuppression: Date | string,
+) => {
+  const formattedDateSuppression =
+    dateSuppression &&
+    typeof dateSuppression !== "string" &&
+    "toLocaleDateString" in dateSuppression
+      ? (dateSuppression as Date).toLocaleDateString("fr-FR")
+      : dateSuppression;
+  const mails = rows.map((row) => {
+    const subject = "Portail VAO - Suppression de votre compte dans 7 jours";
+    const body = `
       <p>Bonjour,</p>
       <p>Votre compte VAO n’a pas été utilisé depuis plusieurs mois.<br>
       Pour des raisons de sécurité, il sera supprimé dans 7 jours si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.</p>
@@ -45,44 +60,14 @@ const generateEmail = ({ mail, dateSuppression, type }: NotifyCompteInactif2mEma
       <p>Cordialement.<br>L’équipe du SI VAO<br>Portail VAO</p>
       <br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>
     `;
-  }
-
-  const html = constructMail("", [{ p: [body], type: "p" }], "");
-
-  return {
-    from: senderEmail,
-    replyTo: senderEmail,
-    html,
-    subject,
-    to: [mail],
-  };
-};
-
-
-export const sendAlerte5mEmails = async (
-  rows: NotifySuppressionCompteInactifRow[],
-  dateSuppression: Date | string
-) => {
-  const mails = rows.map(row =>
-    generateEmail({
-      mail: row.mail,
-      dateSuppression: dateSuppression,
-      type: "ALERTE_5M"
-    } as NotifyCompteInactif2mEmailParamsFixed)
-  );
-  return await transportEmails(mails);
-};
-
-export const sendRappelJ7Emails = async (
-  rows: NotifySuppressionCompteInactifRow[],
-  dateSuppression: Date | string
-) => {
-  const mails = rows.map(row =>
-    generateEmail({
-      mail: row.mail,
-      dateSuppression,
-      type: "RAPPEL_J7"
-    } as NotifyCompteInactif2mEmailParamsFixed)
-  );
+    const html = constructMail("", [{ p: [body], type: "p" }], "");
+    return {
+      from: senderEmail,
+      replyTo: senderEmail,
+      html,
+      subject,
+      to: [row.mail],
+    };
+  });
   return await transportEmails(mails);
 };

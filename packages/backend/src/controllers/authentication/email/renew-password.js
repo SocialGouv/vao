@@ -8,7 +8,7 @@ const passwordSchema = require("../../../schemas/parts/password");
 const AppError = require("../../../utils/error");
 const ValidationAppError = require("../../../utils/validation-error");
 const logger = require("../../../utils/logger");
-const { status } = require("../../../helpers/users");
+const { canBeActivated } = require("../../../utils/canBeActivated");
 
 const log = logger(module.filename);
 
@@ -39,14 +39,7 @@ module.exports = async function register(req, res, next) {
     });
     log.d({ email });
     let user = await User.editPassword({ email, password });
-
-    if (
-      [
-        // status.BLOCKED,
-        status.TEMPORARY_BLOCKED,
-        status.NEED_EMAIL_VALIDATION,
-      ].includes(user.statusCode)
-    ) {
+    if (canBeActivated(user.statusCode)) {
       user = await User.activate(email);
     }
     log.d({ user });

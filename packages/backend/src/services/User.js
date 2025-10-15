@@ -7,6 +7,7 @@ const normalize = require("../utils/normalize");
 const AppError = require("../utils/error");
 const { status } = require("../helpers/users");
 const { addHistoric } = require("./Tracking");
+const { canBeActivated } = require("../utils/canBeActivated");
 const CommonUser = require("./common/Users");
 const { schema } = require("../helpers/schema");
 
@@ -224,11 +225,8 @@ module.exports.activate = async (email) => {
   }
   const user = response.rows[0];
   log.w("activate", { user });
-  // Seuls les statuts NEED_EMAIL_VALIDATION et TEMPORARY_BLOCKED sont autorisés à être réactivés
-  if (
-    user.statusCode !== status.NEED_EMAIL_VALIDATION &&
-    user.statusCode !== status.TEMPORARY_BLOCKED
-  ) {
+  // Seuls les statuts autorisés par canBeActivated sont activables
+  if (!canBeActivated(user.statusCode)) {
     throw new AppError("Utilisateur déjà actif", {
       name: "UserAlreadyVerified",
     });
