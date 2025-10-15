@@ -147,7 +147,7 @@
 <script setup>
 import * as yup from "yup";
 import { useForm } from "vee-validate";
-import { IsDownloading } from "@vao/shared";
+import { IsDownloading } from "@vao/shared-ui";
 const config = useRuntimeConfig();
 const organismeStore = useOrganismeStore();
 

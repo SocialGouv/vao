@@ -209,7 +209,7 @@
 <script setup>
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
-import { eigSchema, Summary, FileUpload, TitleWithIcon } from "@vao/shared";
+import { eigSchema, Summary, FileUpload, TitleWithIcon } from "@vao/shared-ui";
 import IsDownloading from "~/components/utils/IsDownloading.vue";
 
 const emit = defineEmits(["finalize", "previous"]);

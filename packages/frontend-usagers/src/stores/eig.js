@@ -5,8 +5,8 @@ import {
   isDeclarationligibleToEig,
   logger,
 } from "#imports";
-import { eigModel } from "@vao/shared";
-import { getTagSejourLibelle } from "@vao/shared/src/utils/eigUtils";
+import { eigModel } from "@vao/shared-ui";
+import { getTagSejourLibelle } from "@vao/shared-ui/src/utils/eigUtils";
 
 const log = logger("stores/hebergement");
 

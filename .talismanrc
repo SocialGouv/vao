@@ -1,7 +1,7 @@
 fileignoreconfig:
-  - filename: packages/shared/src/components/PasswordInput.vue
+  - filename: packages/shared-ui/src/components/PasswordInput.vue
     checksum: 14451e4018f6c0820e48ed7b31b73fa05b41a03f4902b8ae8e77326418cedf46
-  - filename: packages/shared/src/components/eig/Summary.vue
+  - filename: packages/shared-ui/src/components/eig/Summary.vue
     checksum: 36fe5c5e7e4bb9d156882a10a9e10810ab4544a71cbbbe90bd982cffa1efb045
   - filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
     checksum: 2414a3f1746ccd11cbb12b86dd2bb4a16cbc5bd6fe1450c308579972128176e6
@@ -269,29 +269,29 @@ fileignoreconfig:
     checksum: 0c60a5a9f3321ab3c36025bdeb35663395586d5bca3d21984fdbe5997b46c6eb
   - filename: packages/migrations/src/scripts/reset-s3.js
     checksum: 7b52636c4c49bf85a592f649f8fbf653e0203b390f4f9d220fe3ae4da06422a7
-  - filename: packages/shared/src/components/Chat.vue
+  - filename: packages/shared-ui/src/components/Chat.vue
     checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
-  - filename: packages/shared/src/components/DsfrMultiSelect.vue
+  - filename: packages/shared-ui/src/components/DsfrMultiSelect.vue
     checksum: 90a7d72295ca0fb55d312f9608cbbe5475183936d21286952357b3961d1bd6fb
-  - filename: packages/shared/src/components/DsfrTabsItemV2.vue
+  - filename: packages/shared-ui/src/components/DsfrTabsItemV2.vue
     checksum: f15e94b54f77730bdfb4fd28006256ba861ff7c608cf53c85820d8589f4f6e57
-  - filename: packages/shared/src/components/DsfrTabsV2.vue
+  - filename: packages/shared-ui/src/components/DsfrTabsV2.vue
     checksum: 960c18a7ad76a91c74e5535240ae6ac4f87bb8aff10155096cd35afe5609cff8
-  - filename: packages/shared/src/components/Footer.vue
+  - filename: packages/shared-ui/src/components/Footer.vue
     checksum: d7a792b9023dd76bdd1403752f2f819a688b86f1cfcaff0d216d2472660d2dcb
-  - filename: packages/shared/src/components/PasswordInput.vue
+  - filename: packages/shared-ui/src/components/PasswordInput.vue
     checksum: af4fe62dc455e943fcfacaa6ee0495e1ab20f9ed2094ad70c457b7a27ab46759
-  - filename: packages/shared/src/components/Table/DsfrDataTableV2.vue
+  - filename: packages/shared-ui/src/components/Table/DsfrDataTableV2.vue
     checksum: b899add08d34e3d7bfc07e0cb97e91382775dbcdb72e47fd82fe208e2eec6e34
-  - filename: packages/shared/src/components/Table/DsfrDataTableV2Wrapper.vue
+  - filename: packages/shared-ui/src/components/Table/DsfrDataTableV2Wrapper.vue
     checksum: 14b3637d2b3a223610245b68b4b6ed62119e4344b632255c5cf2a6c77a396572
-  - filename: packages/shared/src/components/Table/dsfrDataTabeV2/DsfrPaginationV2.vue
+  - filename: packages/shared-ui/src/components/Table/dsfrDataTabeV2/DsfrPaginationV2.vue
     checksum: c8d3e1442b00cb210ac0aeaea5a4cb9f40b7f1887d61604218d92c31ce9e2f49
-  - filename: packages/shared/src/type.ts
+  - filename: packages/shared-ui/src/type.ts
     checksum: 8c75e8784ded25a61d6e14cd682bfe67e4ecdde5a6582fb83035fcae39a87b98
-  - filename: packages/shared/src/types/DsfrDataTableV2.type.ts
+  - filename: packages/shared-ui/src/types/DsfrDataTableV2.type.ts
     checksum: 1a97906b8d2d4c66febb1aceb3344696ef780480ab0711a93dd49780b66c20ab
-  - filename: packages/shared/src/utils/status.js
+  - filename: packages/shared-ui/src/utils/status.js
     checksum: d018fcbd54951acae026f53229ee84c3edc2224bc087490a83666826f48b32b7
   - filename: pg/scripts/01-init.sql
     checksum: 20dd5b8d36b1b0517fe185d30003af7866ef5678eed4e7571a6d9797ec3b2a46
