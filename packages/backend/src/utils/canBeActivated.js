@@ -1,3 +1,5 @@
+const { status } = require("../helpers/users");
+
 function canBeActivated(statusCode) {
   return (
     statusCode === status.TEMPORARY_BLOCKED ||

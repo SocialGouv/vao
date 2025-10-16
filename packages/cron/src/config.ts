@@ -25,7 +25,12 @@ export const updateStatusDs = {
 };
 
 export const notifySuppressionCompteInactif = {
-  cron: process.env.BACKEND_CRON_SUPPRESSION_COMPTE_INACTIF_CRON,
+  cron: process.env.BACKEND_CRON_SUPPRESSION_COMPTE_INACTIF_NOTIFY,
+  name: "SUPPRESSION_COMPTE_INACTIF_NOTIFY",
+};
+
+export const suppressionCompteInactif = {
+  cron: process.env.BACKEND_CRON_SUPPRESSION_COMPTE_INACTIF,
   name: "SUPPRESSION_COMPTE_INACTIF",
 };
 
