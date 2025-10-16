@@ -1,7 +1,8 @@
 fileignoreconfig:
-- filename: packages/shared/src/components/PasswordInput.vue
-  checksum: 14451e4018f6c0820e48ed7b31b73fa05b41a03f4902b8ae8e77326418cedf46
-- filename: packages/shared/src/components/eig/Summary.vue
+- filename: packages/backend/src/controllers/authentication/email/renew-password.js
+  checksum: 68bd420b0d179a45126b168e3fede2f6127dbf42a76bc7f29dfc4365b7c7e86b
+version: ""
+ponents/eig/Summary.vue
   checksum: 36fe5c5e7e4bb9d156882a10a9e10810ab4544a71cbbbe90bd982cffa1efb045
 version: ""
 name: .kontinuous/env/preprod/templates/smtp/ingress.yaml
