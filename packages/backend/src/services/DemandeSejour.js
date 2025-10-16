@@ -1,3 +1,5 @@
+import { DemandeSejourRepository } from "../repositories/usagers/DemandeSejour";
+
 const Sentry = require("@sentry/node");
 const { sentry } = require("../config");
 const dayjs = require("dayjs");
@@ -280,48 +282,6 @@ LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm
 WHERE
   o.id = ANY ($1)
 `,
-  getAdminStats: (departements, territoireCode) => [
-    `
-SELECT
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN COURS')::integer AS "enCours",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TRANSMISE')::integer AS "transmis",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TRANSMISE 8J')::integer AS "transmis8J",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN COURS 8J')::integer AS "enCours8J",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN ATTENTE DECLARATION 8 JOURS')::integer AS "declaration8J",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'VALIDEE 8J')::integer AS "validee8J",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TERMINEE')::integer AS "terminee",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'ANNULEE')::integer AS "annulee",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'ABANDONNEE')::integer AS "abandonnee",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'REFUSEE')::integer AS "refusee",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'REFUSEE 8J')::integer AS "refuse8J",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut <> 'BROUILLON')::integer AS "global",
-  COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "nonlu",
-  COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "lu",
-  COUNT(CASE WHEN (dsm.message is not null AND dsm.front_user_id IS NULL) THEN 1 END)::integer AS "repondu"
-FROM
-  front.demande_sejour ds
-  JOIN front.organismes o ON o.id = ds.organisme_id
-  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
-  LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
-      SELECT MAX(dsmax.id)
-      FROM front.demande_sejour_message  dsmax
-      WHERE dsmax.declaration_id = ds.id)
-WHERE
-  EXISTS (
-    SELECT
-      1
-    FROM
-      FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
-      LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
-      LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-    WHERE
-      DSTH.DEMANDE_SEJOUR_ID = DS.ID
-      AND A.DEPARTEMENT = ANY ($1)
-  )
-  OR A.REGION_OBTENTION = '${territoireCode}'
-`,
-    [departements],
-  ],
   getByDepartementCodes: (search, territoireCode) => {
     return `
 SELECT
@@ -504,7 +464,7 @@ WHERE
 
         (
           SELECT
-            A.departement = ANY (ARRAY['75', '77', '78','91', '92', '93','94', '95'])
+            A.departement = ANY ($1)
           FROM
             FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
             LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
@@ -1312,8 +1272,38 @@ module.exports.getByIdOrUserSiren = async (id, siren, userId) => {
   return response.rows;
 };
 
+function reorgQueryParams(queryParams) {
+  const hasStatuts =
+    queryParams?.search?.statuts &&
+    Object.keys(queryParams.search.statuts).length > 0;
+
+  const hasOrganismeId =
+    queryParams?.search?.organismeId &&
+    Object.keys(queryParams.search.organismeId).length > 0;
+
+  const queryParamsNew = {
+    ...queryParams,
+    ...queryParams.search,
+    ...(hasOrganismeId
+      ? { organismeId: Number(queryParams.search.organismeId) }
+      : {}),
+  };
+
+  const queryParamsStatus = hasStatuts
+    ? {
+        ...queryParamsNew,
+        statuts: queryParamsNew?.statuts.split(","),
+      }
+    : queryParamsNew;
+  delete queryParamsStatus.search;
+
+  return queryParamsStatus;
+}
+
+//module.exports.reorgQueryParams = reorgQueryParams;
+
 module.exports.getByDepartementCodes = async (
-  { limit, offset, sortBy, sortDirection = "ASC", search } = {},
+  queryParams,
   territoireCode,
   departementCodes,
 ) => {
@@ -1335,119 +1325,137 @@ module.exports.getByDepartementCodes = async (
     };
   }
 
-  log.i("getByDepartementCodes - IN");
-  const params = [departementCodes];
-  const searchQuery = [];
-  // Search management
-  if (search?.siren && search.siren.length) {
-    searchQuery.push(`pm.siren = $${params.length + 1}`);
-    params.push(`${search.siren}`);
-  }
-  if (search?.siret && search.siret.length) {
-    searchQuery.push(`pm.siret = $${params.length + 1}`);
-    params.push(`${search.siret}`);
-  }
-  if (search?.organismeId && !search?.siret && !search?.siren) {
-    searchQuery.push(`o.id = $${params.length + 1}`);
-    params.push(`${search.organismeId}`);
-  }
-  if (search?.idFonctionnelle && search.idFonctionnelle.length) {
-    searchQuery.push(`id_fonctionnelle ILIKE $${params.length + 1}`);
-    params.push(`%${search.idFonctionnelle}%`);
-  }
-  if (search?.libelle && search.libelle.length) {
-    searchQuery.push(`unaccent(libelle) ILIKE unaccent($${params.length + 1})`);
-    params.push(`%${search.libelle}%`);
-  }
-  if (search?.organisme && search.organisme.length) {
-    searchQuery.push(`(
-      pm.raison_sociale ILIKE $${params.length + 1}
-      OR unaccent(pp.prenom) ILIKE unaccent($${params.length + 2})
-      OR unaccent(pp.nom_usage) ILIKE unaccent($${params.length + 3})
-      )`);
-    params.push(
-      `%${search.organisme}%`,
-      `%${search.organisme}%`,
-      `%${search.organisme}%`,
-    );
-  }
-  if (search?.statuts && search.statuts.length) {
-    searchQuery.push(`ds.statut = ANY($${params.length + 1})`);
-    params.push(search.statuts.split(","));
-  }
+  queryParams = reorgQueryParams(queryParams);
 
-  if (search?.action) {
-    searchQuery.push(
-      `ds.statut in ('${dsStatus.statuts.EN_COURS}', '${dsStatus.statuts.EN_COURS_8J}', '${dsStatus.statuts.TRANSMISE}', '${dsStatus.statuts.TRANSMISE_8J}')`,
-    );
-  }
-  if (search?.message) {
-    searchQuery.push(`dsm.message is not null`);
-  }
+  const titles = [
+    {
+      key: "pm.siren",
+      queryKey: "siren",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "pm.siret",
+      queryKey: "siret",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: '"dateDebut"',
+      queryKey: "dateDebut",
+      sortEnabled: true,
+      sortType: "date",
+    },
+    {
+      key: "o.id",
+      queryKey: "organismeId",
+      sortEnabled: true,
+      type: "number",
+    },
+    {
+      key: "id_fonctionnelle",
+      queryKey: "idFonctionnelle",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "libelle",
+      queryKey: "libelle",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      query: (index, value) => {
+        return {
+          query: `(
+            pm.raison_sociale ILIKE '%' || $${index} || '%'
+            OR unaccent(pp.prenom) ILIKE '%' || unaccent($${index}) || '%'
+            OR unaccent(pp.nom_usage) ILIKE '%' || unaccent($${index}) || '%'
+            )`,
+          queryParams: [value],
+        };
+      },
+      queryKey: "organisme",
+      sortEnabled: true,
+      sortQuery: "pm.raison_sociale, pp.prenom, pp.nom_usage",
+      type: "custom",
+    },
+    {
+      query: (index, value) => {
+        return {
+          query: `ds.statut = ANY($${index})`,
+          queryParams: [value],
+        };
+      },
+      queryKey: "statuts",
+      sortEnabled: true,
+      type: "custom",
+    },
+    {
+      query: (
+        index,
+        value = [
+          dsStatus.statuts.EN_COURS,
+          dsStatus.statuts.EN_COURS_8J,
+          dsStatus.statuts.TRANSMISE,
+          dsStatus.statuts.TRANSMISE_8J,
+        ],
+      ) => {
+        return {
+          query: `ds.statut IN ($${index}, $${index + 1}, $${index + 2}, $${index + 3})`,
+          queryParams: [value],
+        };
+      },
+      queryKey: "action",
+      sortEnabled: true,
+      type: "custom",
+    },
+    {
+      key: "ds.statut",
+      queryKey: "statut",
+      sortEnabled: true,
+    },
+    {
+      customSort: (sortBy, sortDirection) => {
+        return `ORDER BY "messageOrdreEtat" ${sortDirection}, "messageCreatedAt" DESC`;
+      },
+      key: "messageOrdreEtat",
+      queryKey: "messageEtat",
+      sortEnabled: true,
+    },
+  ];
 
-  let queryWithPagination = query.getByDepartementCodes(
-    searchQuery,
-    territoireCode,
+  const { result, count } = await DemandeSejourRepository.getByDepartementCodes(
+    {
+      departementCodes,
+      queryParams,
+      territoireCode,
+      titles,
+    },
   );
-  const stats = await pool.query(
-    ...query.getAdminStats(departementCodes, territoireCode),
-  );
-
-  // Order management
-  if (sortBy && sortDirection) {
-    if (sortBy === "messageOrdreEtat")
-      queryWithPagination += ` ORDER BY "${sortBy}" ${sortDirection}, "messageCreatedAt" DESC`;
-    else if (sortBy === "statut")
-      queryWithPagination += `ORDER BY ds.statut::text ${sortDirection}`;
-    else
-      queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, ds.edited_at DESC`;
-  } else {
-    queryWithPagination += "ORDER BY ds.edited_at DESC";
-  }
-
-  const paramsWithPagination = [...params];
-  // Pagination management
-  if (limit != null && offset != null) {
-    queryWithPagination += `
-    OFFSET $${params.length + 1}
-    LIMIT $${params.length + 2}
-    `;
-    paramsWithPagination.push(offset, limit);
-  }
-
-  log.d({ paramsWithPagination, queryWithPagination });
-  const response = await pool.query(queryWithPagination, paramsWithPagination);
-
   const responseWithComplements = await Promise.all(
-    response.rows.map((demandeSejour) => getComplementOrganisme(demandeSejour)),
+    result.map((demandeSejour) => getComplementOrganisme(demandeSejour)),
   );
+  const { stats } = await DemandeSejourRepository.getAdminStats({
+    departementCodes,
+    territoireCode,
+  });
 
-  if (limit === null || responseWithComplements.length < limit) {
+  if (
+    queryParams.limit === null ||
+    responseWithComplements.length < queryParams.limit
+  ) {
     return {
       demandes_sejour: responseWithComplements,
-      stats: Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
-        acc[key] = Number(value);
-        return acc;
-      }, {}),
-      total: responseWithComplements.length + parseInt(offset ?? 0),
+      stats,
+      total: responseWithComplements.length + parseInt(queryParams.offset ?? 0),
     };
   }
 
-  const total = await pool.query(
-    query.getByDepartementCodesTotal(searchQuery, territoireCode),
-    params,
-  );
-
-  log.i("getByDepartementCodes - DONE");
-  const totalValue = total.rows.find((t) => t.count)?.count;
-
   return {
     demandes_sejour: responseWithComplements,
-    stats: Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
-      acc[key] = Number(value);
-      return acc;
-    }, {}),
-    total: totalValue ? parseInt(totalValue) : 0,
+    stats,
+    total: count,
   };
 };
 
@@ -1638,16 +1646,6 @@ module.exports.getHebergementsByDepartementCode = async (
     rows: result[0].rows,
     total: parseInt(result[1].rows[0].total, 10),
   };
-};
-
-module.exports.getAdminStats = async (departements, territoireCode) => {
-  log.i("getAdminStats - IN");
-
-  const {
-    rows: [stats],
-  } = await pool.query(...query.getAdminStats(departements, territoireCode));
-  log.i("getAdminStats - DONE");
-  return stats;
 };
 
 module.exports.getStats = async (userId) => {
@@ -2005,3 +2003,8 @@ module.exports.addAsyncDeclarationSejourHistoric = async ({
     }
   }
 };
+
+// exporte la fonction interne seulement pour Jest
+if (process.env.NODE_ENV === "test") {
+  module.exports._test = { reorgQueryParams };
+}
