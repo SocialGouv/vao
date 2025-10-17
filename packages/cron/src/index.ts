@@ -6,6 +6,7 @@ import { cronNotifyRappelActionsBo } from "./notifyRappelActionsBo/notifyRappelA
 import { cronNotifyRappelDs8j15j } from "./notifyRappelDs8j15j/notifyRappelDs8j15j.cron";
 import { cronUpdateStatusDs } from "./updateStatutDs/updateStatusDs.cron";
 import { cronBlocageTemporaire3m } from "./blocageTemporaire3m/blocageTemporaire3m.cron";
+import { cronSuppressionCompteInactif } from "./suppressionCompteInactif/suppressionCompteInactif.cron";
 import { logger } from "./utils/logger";
 
 const startCrons = () => {
@@ -17,6 +18,7 @@ const startCrons = () => {
   cronNotifyRappelDs8j15j().start();
   cronUpdateStatusDs().start();
   cronBlocageTemporaire3m().start();
+  cronSuppressionCompteInactif().start();
 };
 
 const stopCrons = () => {
@@ -27,6 +29,7 @@ const stopCrons = () => {
   cronNotifyRappelDs8j15j().stop();
   cronUpdateStatusDs().stop();
   cronBlocageTemporaire3m().stop();
+  cronSuppressionCompteInactif().stop();
 };
 
 startCrons();

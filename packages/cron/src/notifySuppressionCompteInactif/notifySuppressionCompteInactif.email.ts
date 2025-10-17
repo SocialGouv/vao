@@ -23,7 +23,7 @@ export const sendAlerte5mEmails = async (
       <p>Votre compte VAO n’a pas été utilisé depuis 5 mois.<br>
       Pour des raisons de sécurité, il sera supprimé dans 1 mois si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.</p>
       <p>Pour vous reconnecter à votre compte, vous devrez au préalable réinitialiser votre mot de passe en cliquant sur le lien suivant :</p>
-      <p><a href="${RESET_PASSWORD_URL}">Réinitialiser mon mot de passe</a></p>
+      <p><a href="${RESET_PASSWORD_URL}" title="Réinitialiser mon mot de passe">Réinitialiser mon mot de passe</a></p>
       <p>Cordialement.<br>L’équipe du SI VAO<br>Portail VAO</p>
       <br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>
     `;
