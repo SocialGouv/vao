@@ -14,15 +14,13 @@ jest.mock("../Organisme", () => ({
   getComplementOrganisme: jest.fn(),
 }));
 
-const { getByDepartementCodes, _test } = require("../DemandeSejour");
+const { getByDepartementCodes, reorgQueryParams } = require("../DemandeSejour");
 const {
   DemandeSejourRepository,
 } = require("../../repositories/usagers/DemandeSejour");
 const { getComplementOrganisme } = require("../Organisme");
 
 describe("reorgQueryParams", () => {
-  const { reorgQueryParams } = _test; // export conditionnel dans le code source
-
   test("devrait fusionner correctement les queryParams avec search", () => {
     const input = {
       limit: 10,
@@ -89,7 +87,7 @@ describe("getByDepartementCodes", () => {
     });
 
     DemandeSejourRepository.getAdminStats.mockResolvedValue({
-      stats: { global: 5 },
+      result: { global: 5 },
     });
 
     getComplementOrganisme.mockResolvedValue({

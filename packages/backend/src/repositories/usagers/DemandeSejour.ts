@@ -5,7 +5,7 @@ import { getPool } from "../../utils/pgpool";
 const log = Logger(module.filename);
 
 const pool = getPool();
-// TODO : Déplacer les connexion postgres dans ce fichier
+
 export const DemandeSejourRepository = {
   getAdminStats: async ({
     departementCodes,
@@ -16,8 +16,7 @@ export const DemandeSejourRepository = {
   }) => {
     log.i("getAdminStats - IN");
 
-    const query = `
-
+    const query = () => `
         SELECT
         COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN COURS')::integer AS "enCours",
         COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TRANSMISE')::integer AS "transmis",
@@ -56,11 +55,14 @@ export const DemandeSejourRepository = {
         )
         OR A.REGION_OBTENTION = $2
         `;
-    const stats = await pool.query(query, [departementCodes, territoireCode]);
+    const response = await pool.query(query(), [
+      departementCodes,
+      territoireCode,
+    ]);
     log.i("getAdminStats - DONE");
 
     return {
-      stats: stats.rows[0],
+      result: response.rows[0],
     };
   },
 
@@ -152,9 +154,8 @@ export const DemandeSejourRepository = {
       pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
     ]);
     log.i("getByDepartementCodes - Done");
-
     return {
-      count: parseInt(response[1].rows[0].count, 10),
+      count: parseInt(response[1].rows[0].total, 10),
       result: response[0].rows,
     };
   },

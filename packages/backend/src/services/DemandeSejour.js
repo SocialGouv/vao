@@ -1272,7 +1272,7 @@ module.exports.getByIdOrUserSiren = async (id, siren, userId) => {
   return response.rows;
 };
 
-function reorgQueryParams(queryParams) {
+module.exports.reorgQueryParams = (queryParams) => {
   const hasStatuts =
     queryParams?.search?.statuts &&
     Object.keys(queryParams.search.statuts).length > 0;
@@ -1298,15 +1298,14 @@ function reorgQueryParams(queryParams) {
   delete queryParamsStatus.search;
 
   return queryParamsStatus;
-}
-
-//module.exports.reorgQueryParams = reorgQueryParams;
+};
 
 module.exports.getByDepartementCodes = async (
   queryParams,
   territoireCode,
   departementCodes,
 ) => {
+  const reorgQueryParams = module.exports.reorgQueryParams;
   if (departementCodes && departementCodes.length === 0) {
     return {
       demandes_sejour: [],
@@ -1436,7 +1435,7 @@ module.exports.getByDepartementCodes = async (
   const responseWithComplements = await Promise.all(
     result.map((demandeSejour) => getComplementOrganisme(demandeSejour)),
   );
-  const { stats } = await DemandeSejourRepository.getAdminStats({
+  const { result: stats } = await DemandeSejourRepository.getAdminStats({
     departementCodes,
     territoireCode,
   });
@@ -1646,6 +1645,19 @@ module.exports.getHebergementsByDepartementCode = async (
     rows: result[0].rows,
     total: parseInt(result[1].rows[0].total, 10),
   };
+};
+
+module.exports.getAdminStatss = async ({
+  departementCodes,
+  territoireCode,
+}) => {
+  log.i("getAdminStatss - IN");
+  const { result } = await DemandeSejourRepository.getAdminStats({
+    departementCodes,
+    territoireCode,
+  });
+  log.i("getAdminStatss - DONE");
+  return { stats: result };
 };
 
 module.exports.getStats = async (userId) => {
@@ -2003,8 +2015,3 @@ module.exports.addAsyncDeclarationSejourHistoric = async ({
     }
   }
 };
-
-// exporte la fonction interne seulement pour Jest
-if (process.env.NODE_ENV === "test") {
-  module.exports._test = { reorgQueryParams };
-}
