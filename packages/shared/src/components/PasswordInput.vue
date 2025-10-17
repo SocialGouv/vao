@@ -62,20 +62,20 @@ function togglePasswordType() {
           >
         </slot>
       </slot>
-      <DsfrButton
-        class="show-password"
-        type="button"
-        style="float: right"
-        :icon="icon"
-        :tertiary="true"
-        :no-outline="true"
-        :aria-controls="id"
-        :aria-label="togglePasswordLabel"
-        @click.prevent="togglePasswordType"
-      />
-
       <span v-if="hint" class="fr-hint-text">{{ hint }}</span>
     </label>
+
+    <DsfrButton
+      class="show-password"
+      type="button"
+      style="float: right"
+      :icon="icon"
+      :tertiary="true"
+      :no-outline="true"
+      :aria-controls="id"
+      :aria-label="togglePasswordLabel"
+      @click.prevent="togglePasswordType"
+    />
 
     <!-- Ajout de la phrase d'état pour les lecteurs d'écran -->
     <span aria-live="polite" class="fr-sr-only" role="status">
