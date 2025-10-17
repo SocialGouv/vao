@@ -22,7 +22,9 @@ export function reorgQueryParams(queryParams: QueryParams) {
   const queryParamsStatus = hasStatuts
     ? {
         ...queryParamsNew,
-        statuts: queryParamsNew?.statuts.split(","),
+        statuts: queryParamsNew?.statuts
+          ? queryParamsNew.statuts.split(",")
+          : [],
       }
     : queryParamsNew;
   delete queryParamsStatus.search;

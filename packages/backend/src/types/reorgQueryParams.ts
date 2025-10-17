@@ -13,7 +13,7 @@ interface QueryParamsSearch {
   idFonctionnelle?: string;
   libelle?: string;
   organisme?: string;
-  statuts?: string[];
+  statuts: string;
   action?: string[];
   statut?: string;
   messageEtat?: string;
