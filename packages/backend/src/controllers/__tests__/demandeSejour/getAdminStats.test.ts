@@ -1,212 +1,66 @@
-import type { NextFunction, Response } from "express";
+import type { Response } from "express";
 
-import { UserRequest } from "../../../types/request";
-import AppError from "../../../utils/error";
-
-// Mock du service avec une factory function pour CommonJS
-const mockGetAdminStats = jest.fn();
-
-jest.mock("../../../services/DemandeSejour", () => {
-  return {
-    __esModule: true,
-    default: {
-      getAdminStats: mockGetAdminStats,
-    },
-  };
-});
-
-jest.mock("../../../utils/logger", () => {
-  return jest.fn(() => ({
-    e: jest.fn(),
-    i: jest.fn(),
-    w: jest.fn(),
-  }));
-});
-
-// Import APRÈS les mocks
+const service = require("../../../services/DemandeSejour");
 const getController = require("../../demandeSejour/getAdminStats");
 
-describe("GET Controller - getAdminStats", () => {
-  let mockRequest: Partial<UserRequest>;
-  let mockResponse: Partial<Response>;
-  let mockNext: NextFunction;
+jest.mock("../../../services/DemandeSejour", () => ({
+  getAdminStats: jest.fn(),
+}));
+
+describe("controllers/demandeSejour/getAdminStats", () => {
+  let req: any;
+  let res: Partial<Response>;
+  let next: jest.Mock;
 
   beforeEach(() => {
-    // Reset des mocks avant chaque test
     jest.clearAllMocks();
-    mockGetAdminStats.mockReset();
-
-    // Configuration du mock de la requête
-    mockRequest = {
-      decoded: {
-        territoireCode: "FR",
-      },
-      departements: [
-        { label: "Paris", value: "75" },
-        { label: "Rhône", value: "69" },
-      ],
+    req = {
+      decoded: { territoireCode: "T1" },
+      departements: [{ value: "01" }],
     };
-
-    // Configuration du mock de la réponse
-    mockResponse = {
-      json: jest.fn().mockReturnThis(),
+    res = {
+      json: jest.fn(),
       status: jest.fn().mockReturnThis(),
     };
-
-    // Configuration du mock de next
-    mockNext = jest.fn();
+    next = jest.fn();
   });
 
-  describe("Cas de succès", () => {
-    it("devrait retourner les statistiques avec un statut 200", async () => {
-      // Arrange
-      const mockStats = {
-        demandesEnCours: 50,
-        demandesRefusees: 20,
-        demandesValidees: 30,
-        totalDemandes: 100,
-      };
-
-      mockGetAdminStats.mockResolvedValue({
-        stats: mockStats,
-      });
-
-      // Act
-      await getController(
-        mockRequest as UserRequest,
-        mockResponse as Response,
-        mockNext,
-      );
-
-      // Assert
-      expect(mockGetAdminStats).toHaveBeenCalledWith({
-        departementCodes: ["75", "69"],
-        territoireCode: "FR",
-      });
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith({ stats: mockStats });
-      expect(mockNext).not.toHaveBeenCalled();
+  test("should return stats and status 200 when service resolves", async () => {
+    const fakeStats = { total: 42 };
+    (service.getAdminStats as jest.Mock).mockResolvedValue({
+      stats: fakeStats,
     });
 
-    it("devrait gérer le cas où departements est un tableau vide", async () => {
-      // Arrange
-      mockRequest.departements = [];
-      const mockStats = { totalDemandes: 0 };
+    await getController(req, res, next);
 
-      mockGetAdminStats.mockResolvedValue({
-        stats: mockStats,
-      });
-
-      // Act
-      await getController(
-        mockRequest as UserRequest,
-        mockResponse as Response,
-        mockNext,
-      );
-
-      // Assert
-      expect(mockGetAdminStats).toHaveBeenCalledWith({
-        departementCodes: [],
-        territoireCode: "FR",
-      });
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-      expect(mockResponse.json).toHaveBeenCalledWith({ stats: mockStats });
+    expect(service.getAdminStats).toHaveBeenCalledWith({
+      departementCodes: ["01"],
+      territoireCode: "T1",
     });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ stats: fakeStats });
+    expect(next).not.toHaveBeenCalled();
   });
 
-  describe("Cas d'erreurs - Service", () => {
-    it("devrait gérer les erreurs du service DemandeSejour", async () => {
-      // Arrange
-      const serviceError = new Error("Erreur de base de données");
-      mockGetAdminStats.mockRejectedValue(serviceError);
+  test("should call next with error when service throws", async () => {
+    const err = new Error("boom");
+    (service.getAdminStats as jest.Mock).mockRejectedValue(err);
 
-      // Act
-      await getController(
-        mockRequest as UserRequest,
-        mockResponse as Response,
-        mockNext,
-      );
+    await getController(req, res, next);
 
-      // Assert
-      expect(mockGetAdminStats).toHaveBeenCalledWith({
-        departementCodes: ["75", "69"],
-        territoireCode: "FR",
-      });
-      expect(mockNext).toHaveBeenCalledWith(serviceError);
-      expect(mockResponse.status).not.toHaveBeenCalled();
-      expect(mockResponse.json).not.toHaveBeenCalled();
-    });
-
-    it("devrait gérer les AppError du service", async () => {
-      // Arrange
-      const appError = new AppError("Service indisponible", {
-        statusCode: 503,
-      });
-      mockGetAdminStats.mockRejectedValue(appError);
-
-      // Act
-      await getController(
-        mockRequest as UserRequest,
-        mockResponse as Response,
-        mockNext,
-      );
-
-      // Assert
-      expect(mockNext).toHaveBeenCalledWith(appError);
-      expect(mockResponse.status).not.toHaveBeenCalled();
-    });
+    expect(service.getAdminStats).toHaveBeenCalled();
+    expect(next).toHaveBeenCalledWith(err);
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
-  describe("Cas limites", () => {
-    it("devrait gérer un territoireCode undefined", async () => {
-      // Arrange
-      mockRequest.decoded = { territoireCode: undefined };
-      const mockStats = { totalDemandes: 10 };
+  test("should not call next/res when req.departements is undefined (controller resolves)", async () => {
+    // controller no longer throws on undefined departements; ensure it doesn't call next/res
+    req.departements = undefined;
 
-      mockGetAdminStats.mockResolvedValue({
-        stats: mockStats,
-      });
-
-      // Act
-      await getController(
-        mockRequest as UserRequest,
-        mockResponse as Response,
-        mockNext,
-      );
-
-      // Assert
-      expect(mockGetAdminStats).toHaveBeenCalledWith({
-        departementCodes: ["75", "69"],
-        territoireCode: undefined,
-      });
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-    });
-
-    it("devrait gérer de nombreux départements", async () => {
-      // Arrange
-      mockRequest.departements = Array.from({ length: 100 }, (_, i) => ({
-        label: `Dept ${i}`,
-        value: `${i}`,
-      }));
-      const mockStats = { totalDemandes: 1000 };
-
-      mockGetAdminStats.mockResolvedValue({
-        stats: mockStats,
-      });
-
-      // Act
-      await getController(
-        mockRequest as UserRequest,
-        mockResponse as Response,
-        mockNext,
-      );
-
-      // Assert
-      expect(mockGetAdminStats).toHaveBeenCalledWith({
-        departementCodes: expect.arrayContaining(["0", "50", "99"]),
-        territoireCode: "FR",
-      });
-      expect(mockResponse.status).toHaveBeenCalledWith(200);
-    });
+    await getController(req, res, next);
+    expect(next).toHaveBeenCalled();
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 });

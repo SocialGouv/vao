@@ -1647,10 +1647,7 @@ module.exports.getHebergementsByDepartementCode = async (
   };
 };
 
-module.exports.getAdminStatss = async ({
-  departementCodes,
-  territoireCode,
-}) => {
+module.exports.getAdminStats = async ({ departementCodes, territoireCode }) => {
   log.i("getAdminStatss - IN");
   const { result } = await DemandeSejourRepository.getAdminStats({
     departementCodes,

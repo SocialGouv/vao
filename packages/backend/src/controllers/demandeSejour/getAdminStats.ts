@@ -1,26 +1,27 @@
 import type { NextFunction, Response } from "express";
 
-// eslint-disable-next-line import/default
-import DemandeSejourService from "../../services/DemandeSejour";
-import { UserRequest } from "../../types/request";
+import { UserRequestWithDep } from "../../types/request";
 import AppError from "../../utils/error";
 
-const { getAdminStatss } = DemandeSejourService;
-const logger = require("../../utils/logger");
-
-const log = logger(module.filename);
+const { getAdminStats } = require("../../services/DemandeSejour");
 
 module.exports = async function get(
-  req: UserRequest,
+  req: UserRequestWithDep,
   res: Response,
   next: NextFunction,
 ) {
-  log.i("IN");
-  const departementCodes = req.departements.map((d) => d.value) ?? [];
-  const territoireCode = req.decoded.territoireCode;
-  if (!departementCodes) {
-    log.w("missing or invalid parameter");
-
+  if (!(req as any)?.departements) {
+    return next(
+      new AppError("Paramètre incorrect", {
+        statusCode: 400,
+      }),
+    );
+  }
+  const departementCodes = ((req as any).departements ?? []).map(
+    (d: { value: string; label: string }) => d.value,
+  );
+  const territoireCode = req.decoded?.territoireCode;
+  if (!territoireCode) {
     return next(
       new AppError("Paramètre incorrect", {
         statusCode: 400,
@@ -28,13 +29,12 @@ module.exports = async function get(
     );
   }
   try {
-    const { stats } = await getAdminStatss({
+    const { stats } = await getAdminStats({
       departementCodes,
       territoireCode,
     });
     return res.status(200).json({ stats });
   } catch (error) {
-    log.w("DONE with error");
     return next(error);
   }
 };
