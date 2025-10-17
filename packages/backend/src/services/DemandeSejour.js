@@ -15,6 +15,7 @@ const {
   getByDSId: getHebergementsByDSIds,
 } = require("./hebergement/Hebergement");
 const { processQuery } = require("../helpers/queryParams");
+const { reorgQueryParams } = require("../utils/query");
 
 const log = logger(module.filename);
 
@@ -1272,40 +1273,11 @@ module.exports.getByIdOrUserSiren = async (id, siren, userId) => {
   return response.rows;
 };
 
-module.exports.reorgQueryParams = (queryParams) => {
-  const hasStatuts =
-    queryParams?.search?.statuts &&
-    Object.keys(queryParams.search.statuts).length > 0;
-
-  const hasOrganismeId =
-    queryParams?.search?.organismeId &&
-    Object.keys(queryParams.search.organismeId).length > 0;
-
-  const queryParamsNew = {
-    ...queryParams,
-    ...queryParams.search,
-    ...(hasOrganismeId
-      ? { organismeId: Number(queryParams.search.organismeId) }
-      : {}),
-  };
-
-  const queryParamsStatus = hasStatuts
-    ? {
-        ...queryParamsNew,
-        statuts: queryParamsNew?.statuts.split(","),
-      }
-    : queryParamsNew;
-  delete queryParamsStatus.search;
-
-  return queryParamsStatus;
-};
-
 module.exports.getByDepartementCodes = async (
   queryParams,
   territoireCode,
   departementCodes,
 ) => {
-  const reorgQueryParams = module.exports.reorgQueryParams;
   if (departementCodes && departementCodes.length === 0) {
     return {
       demandes_sejour: [],
@@ -1326,7 +1298,7 @@ module.exports.getByDepartementCodes = async (
 
   queryParams = reorgQueryParams(queryParams);
 
-  const titles = [
+  const criterias = [
     {
       key: "pm.siren",
       queryKey: "siren",
@@ -1426,10 +1398,10 @@ module.exports.getByDepartementCodes = async (
 
   const { result, count } = await DemandeSejourRepository.getByDepartementCodes(
     {
+      criterias,
       departementCodes,
       queryParams,
       territoireCode,
-      titles,
     },
   );
   const responseWithComplements = await Promise.all(

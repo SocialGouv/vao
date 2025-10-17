@@ -1,17 +1,21 @@
-module.exports.reorgQueryParams = function reorgQueryParams(queryParams: any) {
+import { QueryParams } from "../types/reorgQueryParams";
+
+export function reorgQueryParams(queryParams: QueryParams) {
   const hasStatuts =
     queryParams?.search?.statuts &&
     Object.keys(queryParams.search.statuts).length > 0;
 
   const hasOrganismeId =
     queryParams?.search?.organismeId &&
-    Object.keys(queryParams.search.organismeId).length > 0;
+    Object.keys(queryParams.search?.organismeId ?? {}).length > 0;
 
   const queryParamsNew = {
     ...queryParams,
     ...queryParams.search,
     ...(hasOrganismeId
-      ? { organismeId: Number(queryParams.search.organismeId) }
+      ? {
+          organismeId: queryParams.search?.organismeId,
+        }
       : {}),
   };
 
@@ -24,4 +28,4 @@ module.exports.reorgQueryParams = function reorgQueryParams(queryParams: any) {
   delete queryParamsStatus.search;
 
   return queryParamsStatus;
-};
+}

@@ -69,12 +69,12 @@ export const DemandeSejourRepository = {
   getByDepartementCodes: async ({
     departementCodes,
     territoireCode,
-    titles,
+    criterias,
     queryParams,
   }: {
     departementCodes: string[];
     territoireCode: string;
-    titles: string[];
+    criterias: string[];
     queryParams: any;
   }) => {
     log.i("getByDepartementCodes - IN");
@@ -145,7 +145,7 @@ export const DemandeSejourRepository = {
     const paginatedQuery = processQuery(
       query,
       [departementCodes, territoireCode],
-      titles,
+      criterias,
       queryParams,
     );
 
