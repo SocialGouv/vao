@@ -17,7 +17,7 @@ const querySelectComptesASupprimer = `
   FROM front.users AS us
   LEFT JOIN front.user_organisme AS uo ON uo.use_id = us.id
   LEFT JOIN front.organismes AS org ON org.id = uo.org_id
-  WHERE us.status_code = '${statusUserFront.TEMPORARY_BLOCKED}'
+  WHERE us.status_code = $1
     AND us.lastconnection_at < NOW() - INTERVAL '180 days'
     AND us.planned_deletion_at IS NOT NULL
     AND us.planned_deletion_at <= NOW()
@@ -27,7 +27,9 @@ const querySelectComptesASupprimer = `
 `;
 
 export const selectComptesASupprimer = async () =>
-  await pool.query<SuppressionCompteInactifRow>(querySelectComptesASupprimer);
+  await pool.query<SuppressionCompteInactifRow>(querySelectComptesASupprimer, [
+    statusUserFront.TEMPORARY_BLOCKED,
+  ]);
 
 export const suppressionCompteInactifActions = async () => {
   logger.info("suppressionCompteInactifActions - Start");
@@ -47,14 +49,18 @@ export const suppressionCompteInactifActions = async () => {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
+      await client.query(
+        `SELECT id FROM front.users WHERE id = $1 FOR UPDATE`,
+        [user.id],
+      );
       await client.query(`DELETE FROM front.user_organisme WHERE use_id = $1`, [
         user.id,
       ]);
       await client.query(`DELETE FROM front.users WHERE id = $1`, [user.id]);
+      await sendSuppressionCompteInactifEmail({ to: user.mail });
       await client.query("COMMIT");
       logger.info(`Compte supprimé: ${user.mail}`);
       report.suppressionsEffectuees++;
-      await sendSuppressionCompteInactifEmail({ to: user.mail });
       report.emailsEnvoyes++;
     } catch (err) {
       await client.query("ROLLBACK");
