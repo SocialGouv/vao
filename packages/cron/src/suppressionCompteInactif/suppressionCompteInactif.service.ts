@@ -13,18 +13,17 @@ const querySelectComptesASupprimer = `
     us.id,
     us.mail,
     us.lastconnection_at,
-    us.status_code,
-    COUNT(ds.id) AS "nombreDemandes"
+    us.status_code
   FROM front.users AS us
   LEFT JOIN front.user_organisme AS uo ON uo.use_id = us.id
   LEFT JOIN front.organismes AS org ON org.id = uo.org_id
-  LEFT JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
   WHERE us.status_code = '${statusUserFront.TEMPORARY_BLOCKED}'
     AND us.lastconnection_at < NOW() - INTERVAL '180 days'
     AND us.planned_deletion_at IS NOT NULL
     AND us.planned_deletion_at <= NOW()
-  GROUP BY us.id, us.mail, us.lastconnection_at, us.status_code
-  HAVING COUNT(ds.id) = 0
+    AND NOT EXISTS (
+      SELECT 1 FROM front.demande_sejour ds WHERE ds.organisme_id = org.id
+    )
 `;
 
 export const selectComptesASupprimer = async () =>
@@ -45,21 +44,27 @@ export const suppressionCompteInactifActions = async () => {
   logger.info(`Comptes à supprimer: ${rows.length}`);
 
   for (const user of rows) {
+    const client = await pool.connect();
     try {
-      await pool.query(`DELETE FROM front.users WHERE id = $1`, [user.id]);
-      await pool.query(`DELETE FROM front.user_organisme WHERE use_id = $1`, [
+      await client.query("BEGIN");
+      await client.query(`DELETE FROM front.user_organisme WHERE use_id = $1`, [
         user.id,
       ]);
+      await client.query(`DELETE FROM front.users WHERE id = $1`, [user.id]);
+      await client.query("COMMIT");
       logger.info(`Compte supprimé: ${user.mail}`);
       report.suppressionsEffectuees++;
       await sendSuppressionCompteInactifEmail({ to: user.mail });
       report.emailsEnvoyes++;
     } catch (err) {
+      await client.query("ROLLBACK");
       report.erreurs.push(`User ${user.id}: ${String(err)}`);
       logger.error(
         `Suppression ou email échoué pour l'utilisateur ${user.id}`,
         err,
       );
+    } finally {
+      client.release();
     }
   }
 

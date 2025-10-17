@@ -3,7 +3,6 @@ export type SuppressionCompteInactifRow = {
   mail: string;
   lastconnection_at: string;
   status_code: string;
-  nombreDemandes: number;
 };
 
 export type SendSuppressionCompteInactifEmailParams = {
