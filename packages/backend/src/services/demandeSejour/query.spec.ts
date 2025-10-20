@@ -9,6 +9,8 @@ describe("mapQueryParams", () => {
         organismeId: 123,
         statuts: "EN_COURS,TERMINEE",
       },
+      sortBy: "statut",
+      sortDirection: "DESC",
     };
 
     const result = mapQueryParams(input);
@@ -17,6 +19,8 @@ describe("mapQueryParams", () => {
       limit: 10,
       offset: 0,
       organismeId: 123,
+      sortBy: "statut",
+      sortDirection: "DESC",
       statuts: ["EN_COURS", "TERMINEE"],
     });
   });
