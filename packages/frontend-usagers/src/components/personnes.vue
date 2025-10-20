@@ -50,6 +50,7 @@
 
 <script setup>
 import dayjs from "dayjs";
+import { nextTick } from "vue";
 
 const props = defineProps({
   personnes: { type: Array, required: true },
@@ -104,12 +105,20 @@ const personnesToDisplay = computed(() => {
         tertiary: true,
         noOutline: true,
         tabIndex: 0,
+        "data-delete-index": index,
         ariaLabel:
           "Supprimer " + (personne.prenom || "") + " " + (personne.nom || ""),
         role: "button",
         onClick: (event) => {
           event.stopPropagation();
           deleteItem(index);
+        },
+        onkeydown: (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            event.stopPropagation();
+            deleteItem(index);
+          }
         },
       });
     } else row.push("");
@@ -127,6 +136,20 @@ function deleteItem(i) {
     ...props.personnes.slice(i + 1),
   ];
   emit("valid", personnes);
+
+  nextTick(() => {
+    setTimeout(() => {
+      const buttons = document.querySelectorAll("[data-delete-index]");
+
+      if (buttons[i]) {
+        buttons[i].focus();
+      } else if (buttons[i - 1]) {
+        buttons[i - 1].focus();
+      } else if (modalOrigin.value?.$el) {
+        modalOrigin.value.$el.focus();
+      }
+    }, 50);
+  });
 }
 
 const indexCourant = ref();
