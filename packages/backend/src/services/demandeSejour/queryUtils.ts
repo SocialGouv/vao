@@ -3,6 +3,8 @@ import { QueryParams } from "../../types/queryParams";
 interface QueryParamsSearch {
   limit?: number;
   offset?: number;
+  sortBy?: string;
+  sortDirection?: string;
   siren?: string;
   siret?: string;
   dateDebut?: string | Date;
@@ -24,6 +26,9 @@ export function mapQueryParams(queryParams: QueryParams): QueryParamsSearch {
   const queryParamsNew: QueryParamsSearch = {
     limit: queryParams.limit as QueryParamsSearch["limit"],
     offset: queryParams.offset as QueryParamsSearch["offset"],
+    sortBy: queryParams?.sortBy as QueryParamsSearch["sortBy"],
+    sortDirection:
+      queryParams?.sortDirection as QueryParamsSearch["sortDirection"],
     ...queryParams.search,
   };
 
