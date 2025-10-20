@@ -19,6 +19,8 @@ const { addHistoric } = require("./Tracking");
 
 const { entities } = require("../helpers/tracking");
 
+const { roles } = require("../helpers/usersBo");
+
 const log = logger(module.filename);
 
 const query = {
@@ -213,6 +215,138 @@ ${Object.keys(criterias)
     LEFT OUTER JOIN back.users ud on ud.id = us.deleted_use_id
     WHERE 1 = 1
   `,
+  getNbDemandeSejourAllowed: `
+  with all_counts as (
+  -- Pour les agents départementaux, régionaux et nationaux
+  -- Retourne les séjours dans lequel l'agent officie en département (incluant les itinérances)
+    select ds.id, ds.statut, u.id as user_id
+      from front.demande_sejour ds
+      inner join front.demande_sejour_to_hebergement dsth on ds.id = dsth.demande_sejour_id
+      inner join front.hebergement h on dsth.hebergement_id = h.id
+      inner join front.adresse a on a.id = h.adresse_id
+      inner join back.users u on u.id = $2
+      left join geo.territoires ter on ter.code = u.ter_code
+      left join geo.territoires dep on dep.code = u.ter_code and dep.parent_code <> 'FRA'
+      left join geo.territoires reg on reg.parent_code = u.ter_code
+      where (a.departement = ter.code OR a.departement = dep.code OR a.departement = reg.code)
+    union all
+    -- Pour les agents régionaux : Demande de séjour de la région d'agrément
+    -- Cas organisme porteur de l'agrément
+    -- DS dont l'agrément dépend du siège social et dont le siège social est dans la région de l'utilisateur (Régional ou National)
+      select ds.id, ds.statut, u.id as user_id
+      from front.demande_sejour ds
+      inner join front.personne_morale pm on pm.organisme_id = ds.organisme_id and pm.porteur_agrement = true
+      inner join front.agrements a on a.organisme_id = pm.organisme_id
+      inner join back.users u on (u.ter_code = a.region_obtention or u.ter_code = 'FRA') and u.id = $2
+    union all
+    -- Cas organisme non porteur de l'agrément mais dépendant du siège social
+    -- DS dont l'agrément dépend du siège social et dont le siège social est dans la région de l'utilisateur (Régional ou National)
+      select ds.id, ds.statut, u.id as user_id
+      from front.demande_sejour ds
+      inner join front.personne_morale pm on pm.organisme_id = ds.organisme_id and pm.porteur_agrement = false
+      inner join front.personne_morale pm_siege on pm.siren = pm_siege.siren and pm_siege.siege_social = true
+      inner join front.agrements a on a.organisme_id = pm_siege.organisme_id
+      inner join back.users u on (u.ter_code = a.region_obtention or u.ter_code = 'FRA') and u.id = $2
+    union all
+    -- Cas organisme personnne physique
+      select ds.id, ds.statut, u.id as user_id
+      from front.demande_sejour ds
+      inner join front.personne_physique pp on pp.organisme_id = ds.organisme_id
+      inner join front.agrements a on a.organisme_id = pp.organisme_id
+      inner join back.users u on u.ter_code = a.region_obtention 
+  )
+  select count(*)::integer as "TotalDSCount"
+  from all_counts ac
+  inner join back.user_roles ur on ur.use_id = ac.user_id
+  inner join back.roles r on ur.rol_id = r.id and r.label in ('${roles.DS_ECRITURE}', '${roles.DS_LECTURE}')
+  where ac.id = $1
+    and ac.statut <> 'BROUILLON'
+    `,
+  getNbAgrementAllowed: `
+  with all_counts as (
+  -- REG
+  -- Pour les agents régionaux
+  -- Les agents régionaux ont accès aux agréments de leur région
+    select a.id as agrement_id, u.id as user_id
+      from front.agrements a
+      inner join back.users u on a.region_obtention = u.ter_code or u.ter_code = 'FRA'
+  union all
+  ------------------------------------------------------------------
+  -- Ensemble des agréments dont les agents ont accès aux séjours --
+  ------------------------------------------------------------------
+  -- DEP + REG
+  -- Pour les agents départementaux
+  -- Cas organisme porteur de l'agrément
+    select a.id as agrement_id, u.id as user_id
+    from front.agrements a
+    inner join front.personne_morale pm on pm.organisme_id = a.organisme_id and pm.porteur_agrement = true
+    inner join front.demande_sejour ds on ds.organisme_id = pm.id
+    inner join front.demande_sejour_to_hebergement dsth on dsth.demande_sejour_id = ds.id
+    inner join front.hebergement h on dsth.hebergement_id = h.id
+    inner join front.adresse ad on h.adresse_id = ad.id 
+    inner join geo.territoires ter on ad.departement = ter.code
+    inner join back.users u on (ter.code = u.ter_code or ter.parent_code = u.ter_code) or u.ter_code = 'FRA'
+  union all
+  -- DEP + REG
+  -- Pour les agents départementaux
+  -- Cas organisme non porteur de l'agrément
+    select a.id as agrement_id, u.id as user_id
+    from front.agrements a
+    inner join front.personne_morale pm_siege on pm_siege.organisme_id = a.organisme_id
+    inner join front.personne_morale pm on pm.siren = pm_siege.siren and pm.porteur_agrement = false
+    inner join front.demande_sejour ds on ds.organisme_id = pm.organisme_id
+    inner join front.demande_sejour_to_hebergement dsth on dsth.demande_sejour_id = ds.id
+    inner join front.hebergement h on dsth.hebergement_id = h.id
+    inner join front.adresse ad on h.adresse_id = ad.id 
+    inner join geo.territoires ter on ad.departement = ter.code
+    inner join back.users u on (ter.code = u.ter_code or ter.parent_code = u.ter_code) or u.ter_code = 'FRA'
+  union all
+  -- DEP + REG
+  -- Pour les agents départementaux et régionaux
+  -- Cas organisme personne physique porteur de l'agrément
+    select a.id as agrement_id, u.id as user_id
+    from front.agrements a
+    inner join front.personne_physique pp on pp.organisme_id = a.organisme_id
+    inner join front.demande_sejour ds on ds.organisme_id = pp.organisme_id
+    inner join front.demande_sejour_to_hebergement dsth on dsth.demande_sejour_id = ds.id
+    inner join front.hebergement h on dsth.hebergement_id = h.id
+    inner join front.adresse ad on h.adresse_id = ad.id 
+    inner join geo.territoires ter on ad.departement = ter.code
+    inner join back.users u on (ter.code = u.ter_code or ter.parent_code = u.ter_code) or u.ter_code = 'FRA'
+  )
+  select count(*)::integer as "TotalAGRCount"
+  from all_counts ac
+    inner join back.user_roles ur on ur.use_id = ac.user_id
+    inner join back.roles r on ur.rol_id = r.id and r.label in ('${roles.DS_ECRITURE}', '${roles.DS_LECTURE}')
+  where ac.agrement_id = $1 and ac.user_id = $2
+  `,
+  getNbHebergementAllowed: `
+    select count(h.id) AS "TotalHEBCount"
+    from front.hebergement h
+    where h.CURRENT IS TRUE
+      AND h.statut_id = (SELECT hs.id FROM front.hebergement_statut hs WHERE hs.value = 'actif')
+      and h.id = $1
+      and EXISTS (
+        select u.id from back.users u 
+          inner join back.user_roles ur on ur.use_id = u.id
+          inner join back.roles r on ur.rol_id = r.id and r.label in ('${roles.DS_ECRITURE}', '${roles.DS_LECTURE}')
+        where u.id = $2
+      )
+  `,
+  getNbOrganismeAllowed: ` 
+    with all_counts as (
+  -- REG
+  -- Pour les agents régionaux
+  -- Les agents régionaux ont accès aux agréments (et donc à l'organisme de leur région
+    select o.id as organisme_id, u.id as user_id
+      from front.organismes o
+      inner join front.agrements a on a.organisme_id = o.id
+      inner join back.users u on a.region_obtention = u.ter_code or u.ter_code = 'FRA'
+  )
+  select count(*)::integer as "TotalORGCount"
+  from all_counts ac
+  where ac.organisme_id = $1 and ac.user_id = $2
+  `,
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
       SELECT
@@ -225,6 +359,22 @@ ${Object.keys(criterias)
       `,
     additionalParams,
   ],
+  isAllowToAccessDemandeSejour: ` SELECT 1
+      FROM front.demande_sejour ds
+      LEFT JOIN front.agrements a ON a.organisme_id = ds.organisme_id
+      WHERE ds.statut <> 'BROUILLON'
+      AND (
+        EXISTS (
+          SELECT 1
+          FROM front.demande_sejour_to_hebergement dsth
+          LEFT JOIN front.hebergement h ON h.id = dsth.hebergement_id
+          LEFT JOIN front.adresse ad ON ad.id = h.adresse_id
+          WHERE dsth.demande_sejour_id = ds.id
+          AND ad.departement = ANY($1)
+        )
+        OR a.region_obtention = $2
+      )
+      LIMIT 1`,
   listUsersTerritoire: `
     SELECT
       us.mail as email,
@@ -795,7 +945,6 @@ const getByUserId = async (userId) => {
   }
 };
 
-
 module.exports.getByUserId = getByUserId;
 
 const addAsyncUserHistoric = async ({
@@ -826,3 +975,70 @@ const addAsyncUserHistoric = async ({
 };
 
 module.exports.addAsyncUserHistoric = addAsyncUserHistoric;
+
+module.exports.isAllowToAccessDemandeSejour = async (
+  demandeSejourId,
+  userId,
+) => {
+  console.log({ demandeSejourId, userId });
+  console.log("Query", query.getNbDemandeSejourAllowed);
+  try {
+    const response = await pool.query(query.getNbDemandeSejourAllowed, [
+      demandeSejourId,
+      userId,
+    ]);
+    console.log("Réponse", response.rows[0].TotalDSCount);
+    return response.rows[0].TotalDSCount > 0;
+  } catch (error) {
+    log.w("isAllowToAccessDemandeSejour - DONE with error", error);
+    return null;
+  }
+};
+
+module.exports.isAllowToAccessAgrement = async (agrementId, userId) => {
+  console.log({ agrementId, userId });
+  try {
+    console.log(query.getNbAgrementAllowed);
+    const response = await pool.query(query.getNbAgrementAllowed, [
+      agrementId,
+      userId,
+    ]);
+    console.log("Réponse", response.rows[0].TotalAGRCount);
+    return response.rows[0].TotalAGRCount > 0;
+  } catch (error) {
+    log.w("isAllowToAccessOrganisme - DONE with error", error);
+    return null;
+  }
+};
+
+module.exports.isAllowToAccessHebergement = async (herbergementId, userId) => {
+  console.log({ herbergementId, userId });
+  try {
+    console.log(query.getNbHebergementAllowed);
+    const response = await pool.query(query.getNbHebergementAllowed, [
+      herbergementId,
+      userId,
+    ]);
+    console.log("Réponse", response.rows[0]);
+    return response.rows[0].TotalHEBCount > 0;
+  } catch (error) {
+    log.w("isAllowToAccessHebergement - DONE with error", error);
+    return null;
+  }
+};
+
+module.exports.isAllowToAccessOrganisme = async (organismeId, userId) => {
+  console.log({ organismeId, userId });
+  try {
+    console.log(query.getNbOrganismeAllowed);
+    const response = await pool.query(query.getNbOrganismeAllowed, [
+      organismeId,
+      userId,
+    ]);
+    console.log("Réponse", response.rows[0]);
+    return response.rows[0].TotalORGCount > 0;
+  } catch (error) {
+    log.w("isAllowToAccessOrganisme - DONE with error", error);
+    return null;
+  }
+};

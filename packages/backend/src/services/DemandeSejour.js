@@ -466,6 +466,26 @@ WHERE
     WHERE ds.id = $1
     AND (u.id = $3 OR pm.siren = $2)
   `,
+  getByUuid: `
+    -- Cherche si un UUID précis est présent
+    SELECT ds.id
+    FROM front.demande_sejour ds
+    CROSS JOIN LATERAL jsonb_array_elements(ds.files->'files') file
+    WHERE file->>'uuid' = $1
+    UNION ALL
+    -- Cherche si un UUID dans le protocole sanitaire
+    SELECT ds.id
+    FROM front.demande_sejour ds
+    CROSS JOIN LATERAL jsonb_array_elements(ds.sanitaires->'files') file
+    WHERE file->>'uuid' = $1
+    UNION ALL
+    -- Cherche si un UUID dans le protocole transport
+    SELECT ds.id
+    FROM front.demande_sejour ds
+    CROSS JOIN LATERAL jsonb_array_elements(ds.transport->'files') file
+    WHERE file->>'uuid' = $1
+    LIMIT 1
+  `,
   getDeclarationsMessages: () => `
     WITH demande_avec_message AS (
       SELECT
@@ -504,7 +524,7 @@ WHERE
 
         (
           SELECT
-            A.departement = ANY (ARRAY['75', '77', '78','91', '92', '93','94', '95'])
+            A.departement = ANY ($1)
           FROM
             FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
             LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
@@ -1312,6 +1332,15 @@ module.exports.getByIdOrUserSiren = async (id, siren, userId) => {
   return response.rows;
 };
 
+module.exports.getByUuid = async (uuid) => {
+  log.i("getByUuid - IN");
+  console.log("UUID", uuid);
+  const response = await pool.query(query.getByUuid, [uuid]);
+  console.log(response.rows);
+  log.d("getByUuid - DONE");
+  return response.rows[0];
+};
+
 module.exports.getByDepartementCodes = async (
   { limit, offset, sortBy, sortDirection = "ASC", search } = {},
   territoireCode,
@@ -1389,6 +1418,8 @@ module.exports.getByDepartementCodes = async (
     searchQuery,
     territoireCode,
   );
+  console.log({ queryWithPagination, territoireCode });
+
   const stats = await pool.query(
     ...query.getAdminStats(departementCodes, territoireCode),
   );
