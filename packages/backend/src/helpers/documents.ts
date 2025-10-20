@@ -1,6 +1,6 @@
-// documents.js (CommonJS)
-const DroitsGroup = require("./droits").DroitsGroup;
-const Tables = require("./tables").Tables;
+import type { DocumentCategory } from "../types/document";
+import { DroitsGroup } from "./droits";
+import { Tables } from "./tables";
 
 const CategoryKeys = {
   AR_declaration_2_mois: "AR_declaration_2_mois",
@@ -22,7 +22,7 @@ const CategoryColumn = {
   files: "files",
 };
 
-const categories = [
+const categories: DocumentCategory[] = [
   {
     column: CategoryColumn.files,
     droit: DroitsGroup.demande_sejour,
@@ -99,10 +99,10 @@ const categories = [
 ];
 
 const categoriesByKey = Object.fromEntries(
-  categories.map((cat) => [cat.key, cat]),
+  categories.map((cat: DocumentCategory) => [cat.key, cat]),
 );
 
-function getCategory(key) {
+function getCategory(key: DocumentCategory["key"]) {
   console.log("categoriesByKey", key);
   return categoriesByKey[key] || null;
 }
@@ -111,7 +111,7 @@ function getTable(key) {
   return categoriesByKey[key]?.table || null;
 }
 */
-function getCategoriesByTable(table) {
+function getCategoriesByTable(table: DocumentCategory["table"]) {
   return categories.filter((cat) => cat.table === table);
 }
 
