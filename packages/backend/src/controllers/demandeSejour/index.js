@@ -1,7 +1,7 @@
 module.exports.get = require("./get");
 module.exports.getDeclarationsMessages = require("./getDeclarationsMessages");
 module.exports.getDeprecated = require("./getDeprecated");
-module.exports.getAdminStats = require("./getAdminStats");
+module.exports.getAdminStats = require("./getAdminStats").default;
 module.exports.getExtract = require("./getExtract");
 module.exports.getExtractHebergement = require("./getExtractHebergement");
 module.exports.getHebergementsByDepartementCodes = require("./getHebergementsByDepartementCodes");

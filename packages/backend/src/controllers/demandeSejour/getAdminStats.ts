@@ -1,23 +1,22 @@
 import type { NextFunction, Response } from "express";
 
-import { UserRequestWithDep } from "../../types/request";
+import { getAdminStats } from "../../services/DemandeSejour";
+import { UserRequest } from "../../types/request";
 import AppError from "../../utils/error";
 
-const { getAdminStats } = require("../../services/DemandeSejour");
-
-module.exports = async function get(
-  req: UserRequestWithDep,
+export default async function get(
+  req: UserRequest,
   res: Response,
   next: NextFunction,
 ) {
-  if (!(req as any)?.departements) {
+  if (!req?.departements) {
     return next(
       new AppError("Paramètre incorrect", {
         statusCode: 400,
       }),
     );
   }
-  const departementCodes = ((req as any).departements ?? []).map(
+  const departementCodes = (req.departements ?? []).map(
     (d: { value: string; label: string }) => d.value,
   );
   const territoireCode = req.decoded?.territoireCode;
@@ -37,4 +36,4 @@ module.exports = async function get(
   } catch (error) {
     return next(error);
   }
-};
+}

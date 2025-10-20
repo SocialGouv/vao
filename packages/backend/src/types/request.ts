@@ -9,8 +9,5 @@ export interface User {
 
 export interface UserRequest extends Request {
   decoded?: User;
-}
-
-export interface UserRequestWithDep extends UserRequest {
   departements?: { value: string; label: string }[];
 }

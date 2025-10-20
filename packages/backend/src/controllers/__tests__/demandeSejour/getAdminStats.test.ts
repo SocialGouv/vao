@@ -1,7 +1,7 @@
 import type { Response } from "express";
 
-const service = require("../../../services/DemandeSejour");
-const getController = require("../../demandeSejour/getAdminStats");
+import * as service from "../../../services/DemandeSejour";
+import getController from "../../demandeSejour/getAdminStats";
 
 jest.mock("../../../services/DemandeSejour", () => ({
   getAdminStats: jest.fn(),
@@ -9,7 +9,7 @@ jest.mock("../../../services/DemandeSejour", () => ({
 
 describe("controllers/demandeSejour/getAdminStats", () => {
   let req: any;
-  let res: Partial<Response>;
+  let res: Response;
   let next: jest.Mock;
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe("controllers/demandeSejour/getAdminStats", () => {
     res = {
       json: jest.fn(),
       status: jest.fn().mockReturnThis(),
-    };
+    } as unknown as Response;
     next = jest.fn();
   });
 

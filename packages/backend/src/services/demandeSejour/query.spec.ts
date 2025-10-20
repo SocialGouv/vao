@@ -1,6 +1,6 @@
-const { reorgQueryParams } = require("../query");
+import { mapQueryParams } from "./queryUtils";
 
-describe("reorgQueryParams", () => {
+describe("mapQueryParams", () => {
   test("devrait fusionner correctement les queryParams avec search", () => {
     const input = {
       limit: 10,
@@ -11,7 +11,7 @@ describe("reorgQueryParams", () => {
       },
     };
 
-    const result = reorgQueryParams(input);
+    const result = mapQueryParams(input);
 
     expect(result).toEqual({
       limit: 10,
@@ -23,13 +23,13 @@ describe("reorgQueryParams", () => {
 
   test("devrait gérer les queryParams sans search", () => {
     const input = { limit: 5 };
-    const result = reorgQueryParams(input);
+    const result = mapQueryParams(input);
     expect(result).toEqual({ limit: 5 });
   });
 
   test("devrait supprimer la clé 'search' du résultat final", () => {
     const input = { search: { organismeId: 42 } };
-    const result = reorgQueryParams(input);
-    expect(result.search).toBeUndefined();
+    const result = mapQueryParams(input);
+    expect((result as any).search).toBeUndefined();
   });
 });

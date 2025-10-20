@@ -1,4 +1,6 @@
-import { DemandeSejourRepository } from "../repositories/usagers/DemandeSejour";
+const {
+  DemandeSejourRepository,
+} = require("../repositories/usagers/DemandeSejour");
 
 const Sentry = require("@sentry/node");
 const { sentry } = require("../config");
@@ -15,7 +17,7 @@ const {
   getByDSId: getHebergementsByDSIds,
 } = require("./hebergement/Hebergement");
 const { processQuery } = require("../helpers/queryParams");
-const { reorgQueryParams } = require("../utils/query");
+const { mapQueryParams } = require("./demandeSejour/queryUtils");
 
 const log = logger(module.filename);
 
@@ -1296,8 +1298,6 @@ module.exports.getByDepartementCodes = async (
     };
   }
 
-  queryParams = reorgQueryParams(queryParams);
-
   const criterias = [
     {
       key: "pm.siren",
@@ -1400,7 +1400,7 @@ module.exports.getByDepartementCodes = async (
     {
       criterias,
       departementCodes,
-      queryParams,
+      queryParams: mapQueryParams(queryParams),
       territoireCode,
     },
   );
