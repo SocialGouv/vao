@@ -120,7 +120,7 @@
 </template>
 
 <script setup>
-import { PasswordInput } from "@vao/shared";
+import { PasswordInput, ErrorCodes } from "@vao/shared";
 import { connectionInfos } from "@vao/shared/src/models/messages";
 
 const toaster = useToaster();
@@ -203,23 +203,22 @@ async function login() {
     log.w("login", { error: codeError ?? error?.data ?? error });
 
     switch (codeError) {
-      case "TooManyLoginAttempts":
-        displayType.value = "TooManyLoginAttempts";
+      case ErrorCodes.TooManyLoginAttempts:
+        displayType.value = ErrorCodes.TooManyLoginAttempts;
         break;
-      case "WrongCredentials":
-        displayType.value = "WrongCredentials";
+      case ErrorCodes.WrongCredentials:
+      case ErrorCodes.EmailUnauthorized:
+      case ErrorCodes.UserTemporarilyBlocked:
+        displayType.value = ErrorCodes.WrongCredentials;
         break;
-      case "NeedEmailValidation":
-        displayType.value = "NeedEmailValidation";
+      case ErrorCodes.NeedEmailValidation:
+        displayType.value = ErrorCodes.NeedEmailValidation;
         break;
-      case "NeedSiretValidation":
-        displayType.value = "NeedSiretValidation";
-        break;
-      case "EmailUnauthorized":
-        displayType.value = "WrongCredentials";
+      case ErrorCodes.NeedSiretValidation:
+        displayType.value = ErrorCodes.NeedSiretValidation;
         break;
       default:
-        displayType.value = "UnexpectedError";
+        displayType.value = ErrorCodes.UnexpectedError;
         break;
     }
   }

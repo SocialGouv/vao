@@ -11,9 +11,9 @@ jest.mock("../../../../services/common/Users");
 jest.mock("../../../../services/common/Session");
 jest.mock("jsonwebtoken");
 jest.mock("../../../../utils/logger", () => () => ({
+  d: jest.fn(),
   i: jest.fn(),
   w: jest.fn(),
-  d: jest.fn(),
 }));
 
 describe("login controller", () => {
@@ -85,6 +85,20 @@ describe("login controller", () => {
 
     expect(next).toHaveBeenCalledWith(expect.any(AppError));
     expect(next.mock.calls[0][0].statusCode).toBe(400);
+    expect(next.mock.calls[0][0].name).toBe("EmailUnauthorized");
+  });
+
+  it("should return 400 if account is temporarily blocked", async () => {
+    req.body = { email: "test@test.com", password: "pass" };
+    CommonUser.verifyLoginAttempt.mockResolvedValue(false);
+    User.login.mockResolvedValue({ statusCode: status.TEMPORARY_BLOCKED });
+
+    await login(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(expect.any(AppError));
+    expect(next.mock.calls[0][0].statusCode).toBe(400);
+    expect(next.mock.calls[0][0].message).toMatch(/temporairement bloqué/i);
+    expect(next.mock.calls[0][0].name).toBe("UserTemporarilyBlocked");
   });
 
   it("should login successfully and set cookies", async () => {
