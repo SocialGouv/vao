@@ -58,6 +58,7 @@
                   props.declarationCourante.informationsPersonnel ?? {}
                 "
                 :modifiable="false"
+                :synthese="true"
                 :validate-on-mount="true"
                 :show-buttons="false"
               ></DSInformationsPersonnel>
@@ -170,6 +171,7 @@
           </li>
         </ul>
       </DsfrAccordionsGroup>
+      <SyntheseVerificationAlert />
     </div>
     <form>
       <div v-if="showAttestation" class="fr-fieldset" legend="Attestation">

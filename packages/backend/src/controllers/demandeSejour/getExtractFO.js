@@ -5,6 +5,7 @@ const { escapeCsvField } = require("../../utils/csv");
 const dayjs = require("dayjs");
 const logger = require("../../utils/logger");
 const AppError = require("../../utils/error");
+const { formatSiret } = require("../../utils/siret");
 
 const log = logger(module.filename);
 
@@ -15,9 +16,15 @@ module.exports = async function get(req, res, next) {
   log.d("userId", { userId });
 
   try {
-    const organisme = await Organisme.getOne({
-      use_id: userId,
-    });
+    const organisme = await Organisme.getOne({ use_id: userId });
+    if (!organisme) {
+      log.w("Organisme non trouvé pour cet utilisateur");
+      return next(
+        new AppError("Organisme non trouvé pour cet utilisateur", {
+          statusCode: 400,
+        }),
+      );
+    }
 
     res.setHeader("Content-Type", "text/csv");
     res.setHeader("Content-Disposition", 'attachment; filename="data.csv"');
@@ -46,6 +53,7 @@ module.exports = async function get(req, res, next) {
       "libelle",
       "departement",
       "etablissement",
+      "siret",
       "date_debut",
       "date_fin",
       "statut",
@@ -57,6 +65,9 @@ module.exports = async function get(req, res, next) {
         const newItem = { ...item };
         newItem.date_debut = dayjs(item.date_debut).format("DD/MM/YYYY");
         newItem.date_fin = dayjs(item.date_fin).format("DD/MM/YYYY");
+        newItem.siret = newItem?.siret
+          ? formatSiret({ siret: newItem.siret })
+          : "";
         newItem.etablissement =
           item.type_organisme === "personne_morale" ? item.raison_sociale : "";
         return [

@@ -16,16 +16,17 @@ const responsableTransportLieuSejourOptions = [
 ];
 
 const transportOptions = [
-  { text: "Avion", value: "Avion", id: "1" },
-  { text: "Train", value: "Train", id: "2" },
+  { label: "Avion", value: "Avion", id: "1", name: "avion" },
+  { label: "Train", value: "Train", id: "2", name: "train" },
   {
-    text: "Autobus, car",
+    label: "Autobus, car",
     value: "Autobus, car",
     id: "3",
+    name: "autobus_car",
   },
-  { text: "Automobile", value: "Automobile", id: "4" },
-  { text: "Bateau", value: "Bateau", id: "5" },
-  { text: "Autre", value: "Autre", id: "6" },
+  { label: "Automobile", value: "Automobile", id: "4", name: "automobile" },
+  { label: "Bateau", value: "Bateau", id: "5", name: "bateau" },
+  { label: "Autre", value: "Autre", id: "6", name: "autre" },
 ];
 
 yup.setLocale({

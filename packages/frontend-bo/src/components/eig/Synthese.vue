@@ -17,7 +17,13 @@
 
     <TitleWithIcon icon="fr-icon-information-fill" :level="2">
       <template #title>
-        <h2 class="title-with-icon">Informations de séjour</h2>
+        <div class="title-with-button">
+          <h2 class="title-with-icon">Informations de séjour</h2>
+          <DsfrButton
+            label="Télécharger le fichier"
+            @click.prevent="downloadPDF()"
+          />
+        </div>
       </template>
     </TitleWithIcon>
     <Summary :eig="eig" env="BO" />
@@ -102,6 +108,7 @@ import {
   EigStatusBadge,
   TitleWithIcon,
 } from "@vao/shared";
+
 const emit = defineEmits(["update:file"]);
 
 const props = defineProps({
@@ -115,6 +122,19 @@ const localFile = ref(props.file);
 function handleFileChange(newFile) {
   localFile.value = newFile;
   emit("update:file", newFile);
+}
+async function downloadPDF() {
+  const eigStore = useEigStore();
+
+  const eigPdf = await eigStore.getPdf(props.eig.id);
+  const url = URL.createObjectURL(eigPdf);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `synthese-eig-${props.eig.id}.pdf`;
+  a.click();
+
+  URL.revokeObjectURL(url);
 }
 </script>
 
@@ -169,5 +189,12 @@ hr {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+}
+.title-with-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
 }
 </style>

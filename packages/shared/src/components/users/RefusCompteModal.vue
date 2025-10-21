@@ -89,7 +89,6 @@ const {
   value: commentaire,
   errorMessage: commentaireErrorMessage,
   handleChange: onCommentaireChange,
-  meta: commentaireMeta,
 } = useField("commentaire");
 
 async function handleValidate() {

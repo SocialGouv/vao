@@ -49,6 +49,8 @@
 </template>
 
 <script setup>
+import dayjs from "dayjs";
+
 const props = defineProps({
   personnes: { type: Array, required: true },
   modifiable: { type: Boolean, default: true },
@@ -75,16 +77,25 @@ const modalPersonne = reactive({
 
 const headersToDisplay = computed(() => {
   const columns = props.headers.map((h) => h.label);
-  columns.push("Actions");
+  if (props.modifiable) {
+    columns.push("Actions");
+  }
   return columns;
 });
 
 const personnesToDisplay = computed(() => {
   const displayedFields = props.headers.map((h) => h.value);
-  return props.personnes.map((p, index) => {
+  return props.personnes.map((personne, index) => {
     const row = [];
-    displayedFields.forEach((f) => {
-      row.push(Array.isArray(p[f]) ? p[f].join(",") : p[f]);
+    displayedFields.forEach((field) => {
+      const fieldValue = personne[field];
+      let valueFormatted = Array.isArray(fieldValue)
+        ? fieldValue.join(",")
+        : fieldValue;
+      if (field === "dateNaissance" && valueFormatted) {
+        valueFormatted = dayjs(valueFormatted).format("DD/MM/YYYY");
+      }
+      row.push(valueFormatted);
     });
     if (props.modifiable) {
       row.push({
@@ -93,7 +104,8 @@ const personnesToDisplay = computed(() => {
         tertiary: true,
         noOutline: true,
         tabIndex: 0,
-        ariaLabel: "Supprimer " + (p.prenom || "") + " " + (p.nom || ""),
+        ariaLabel:
+          "Supprimer " + (personne.prenom || "") + " " + (personne.nom || ""),
         role: "button",
         onClick: (event) => {
           event.stopPropagation();
