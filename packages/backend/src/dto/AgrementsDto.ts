@@ -19,17 +19,17 @@ export enum ActiviteType {
 }
 
 export enum TypeHandicap {
-  AUDITIF = "AUDITIF",
+  SENSORIEL = "SENSORIEL",
+  COGNITIF = "COGNITIF",
   MENTAL_PSYCHIQUE = "MENTAL_PSYCHIQUE",
   MOTEUR = "MOTEUR",
-  MULTIPLE = "MULTIPLE",
   POLYHANDICAP = "POLYHANDICAP",
 }
 
 export enum TrancheAge {
   TA_18_39 = "18_39",
   TA_40_59 = "40_59",
-  TA_59_PLUS = "59_PLUS",
+  TA_PLUS_DE_59 = "PLUS_DE_59",
 }
 export enum FileCategory {
   PROCVERBAL = "AGR_PROCVERBAL",
@@ -48,7 +48,7 @@ export enum FileCategory {
 
 export interface AgrementsDto {
   statut: AgrementStatut | null;
-  update_at: Date | null;
+  updated_at: Date | null;
   date_obtention_certificat: Date | null;
   date_depot: Date | null;
   date_verif_completure: Date | null;
@@ -102,12 +102,15 @@ export interface AgrementAnimationDto {
 export interface AgrementFilesDto {
   agrement_id: number | null;
   category: FileCategory | null;
-  file_uuid: unknown | null;
+  file_uuid: string | null;
 }
 
 export interface AgrementSejoursDto {
   agrement_id: number | null;
+  nom_hebergement: string | null;
   adresse_id: number | null;
+  b_vacanciers: number | null;
+  mois: number[] | null;
 }
 
 export interface AgrementBilanAnnuelDto {
@@ -123,6 +126,7 @@ export interface AgrementBilanAnnuelDto {
 
 export interface BilanHebergementDto {
   agr_bilan_annuel_id: number | null;
+  nom_hebergement: string | null;
   adresse_id: number | null;
   nb_jours: number | null;
   mois: number[] | null;
