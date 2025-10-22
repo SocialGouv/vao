@@ -1,5 +1,5 @@
 const logger = require("../../utils/logger");
-const pool = require("../../utils/pgpool").getPool();
+const { getPool } = require("../../utils/pgpool");
 
 const log = logger(module.filename);
 
@@ -284,7 +284,7 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
 
 module.exports.getByOrganismeId = async (organismeId) => {
   log.i("getByOrganismeId - IN", organismeId);
-  const { rowCount, rows: personneMorales } = await pool.query(
+  const { rowCount, rows: personneMorales } = await getPool().query(
     query.getByOrganismeId,
     [organismeId],
   );

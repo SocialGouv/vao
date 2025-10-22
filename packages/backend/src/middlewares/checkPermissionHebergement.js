@@ -17,10 +17,18 @@ async function checkPermissionHebergement(req, res, next) {
       }),
     );
   }
-
-  const organisme = await Organisme.getOne({
-    use_id: userId,
-  });
+  let organisme = null;
+  try {
+    organisme = await Organisme.getOne({
+      use_id: userId,
+    });
+  } catch (error) {
+    return next(
+      new AppError("Vous n'êtes pas autorisé à accéder à cet hébergement", {
+        statusCode: 403,
+      }),
+    );
+  }
 
   const siren =
     organisme.typeOrganisme === "personne_morale"

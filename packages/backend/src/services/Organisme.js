@@ -14,7 +14,7 @@ const {
   sanitizeFiltersParams,
 } = require("../helpers/queryParams");
 
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 
 const Organisme = require("../schemas/organisme");
 const PersonnePhysique = require("./organisme/PersonnePhysique");
@@ -484,7 +484,7 @@ FROM back.organisme_non_agree ona
 
 module.exports.create = async (type, parametre) => {
   log.i("create - IN", { type });
-  const client = await pool.connect();
+  const client = await getPool().connect();
   try {
     await client.query("BEGIN");
     const response =
@@ -515,7 +515,7 @@ module.exports.create = async (type, parametre) => {
 
 module.exports.link = async (userId, organismeId) => {
   log.i("link - IN");
-  const { rowCount } = await pool.query(query.link, [userId, organismeId]);
+  const { rowCount } = await getPool().query(query.link, [userId, organismeId]);
 
   if (rowCount === 0) {
     throw new AppError(
@@ -532,12 +532,12 @@ module.exports.update = async (type, parametre, organismeId) => {
   log.i("update - IN", { type });
 
   const regions = await Regions.fetch();
-  const client = await pool.connect();
+  const client = await getPool().connect();
   try {
     await client.query("BEGIN");
     switch (type) {
       case partOrganisme.PERSONNE_MORALE: {
-        const { rows } = await pool.query(query.getPersonneMorale, [
+        const { rows } = await getPool().query(query.getPersonneMorale, [
           organismeId,
         ]);
         const etablissementsSecondaires =
@@ -643,7 +643,7 @@ module.exports.finalize = async (userId) => {
     "uo.use_id": userId,
   };
   log.d(...query.get(criterias));
-  const { rows, rowCount } = await pool.query(...query.get(criterias));
+  const { rows, rowCount } = await getPool().query(...query.get(criterias));
   if (rowCount !== 1) {
     throw new AppError("Organisme non trouvé", {
       name: "NOT_FOUND",
@@ -661,7 +661,7 @@ module.exports.finalize = async (userId) => {
     log.w(error);
     throw new ValidationAppError(error);
   }
-  const client = await pool.connect();
+  const client = await getPool().connect();
   try {
     await client.query("BEGIN");
     await client.query(...query.finalize(organisme));
@@ -726,7 +726,7 @@ module.exports.getComplementOrganisme = async (organismeACompleter) => {
 
 module.exports.getOne = async (criterias = {}) => {
   log.i("getOne - IN", { criterias });
-  const { rowCount, rows: organismes } = await pool.query(
+  const { rowCount, rows: organismes } = await getPool().query(
     ...query.get(criterias),
   );
   if (rowCount === 0) {
@@ -747,9 +747,10 @@ module.exports.getOne = async (criterias = {}) => {
 
 module.exports.getBySiren = async (siren) => {
   log.i("getBySiren - IN", { siren });
-  const { rowCount, rows: organismes } = await pool.query(query.getBySiren, [
-    siren,
-  ]);
+  const { rowCount, rows: organismes } = await getPool().query(
+    query.getBySiren,
+    [siren],
+  );
   if (rowCount === 0) {
     log.i("getBySiren - Aucune correspondance trouvée");
     return [];
@@ -762,9 +763,10 @@ module.exports.getBySiren = async (siren) => {
 };
 module.exports.getBySiret = async (siret) => {
   log.i(`getBySiret - IN ${siret}`);
-  const { rowCount, rows: organismes } = await pool.query(query.getBySiret, [
-    siret,
-  ]);
+  const { rowCount, rows: organismes } = await getPool().query(
+    query.getBySiret,
+    [siret],
+  );
   if (rowCount === 1) {
     log.i("getBySiret - DONE");
     const organisme = await getComplementOrganisme(organismes[0]);
@@ -778,7 +780,7 @@ module.exports.getSiege = async (siret) => {
   log.i("getSiege - IN", { siret });
   const siren = siret.substr(0, 9);
   log.d("getSiege", { siren });
-  const { rowCount, rows: organismes } = await pool.query(query.getSiege, [
+  const { rowCount, rows: organismes } = await getPool().query(query.getSiege, [
     siren,
   ]);
   if (rowCount === 1) {
@@ -884,8 +886,8 @@ module.exports.getListe = async (queryParams) => {
   log.w(paginatedQuery.query, paginatedQuery.params);
 
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -895,27 +897,30 @@ module.exports.getListe = async (queryParams) => {
 
 module.exports.getListeExtract = async () => {
   log.i("getListeExtract - IN");
-  const { rows: organismes } = await pool.query(query.getListeExtract(), []);
+  const { rows: organismes } = await getPool().query(
+    query.getListeExtract(),
+    [],
+  );
   log.i("getListeExtract - DONE");
   return organismes ?? [];
 };
 
 module.exports.getNonAgrees = async () => {
   log.i("getNonAgrees - IN");
-  const { rows: organismes } = await pool.query(query.getNonAgrees, []);
+  const { rows: organismes } = await getPool().query(query.getNonAgrees, []);
   log.i("getNonAgrees - DONE");
   return organismes ?? [];
 };
 
 module.exports.getIsComplet = async (organismeId) => {
-  const { rows: isComplet } = await pool.query(query.getIsComplet, [
+  const { rows: isComplet } = await getPool().query(query.getIsComplet, [
     organismeId,
   ]);
   return isComplet?.[0].complet ?? false;
 };
 
 module.exports.getSiret = async (organismeId) => {
-  const { rows: siret } = await pool.query(query.getSiret, [organismeId]);
+  const { rows: siret } = await getPool().query(query.getSiret, [organismeId]);
   return siret?.[0].siret ?? null;
 };
 

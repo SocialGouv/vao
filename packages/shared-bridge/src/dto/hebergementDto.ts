@@ -17,7 +17,7 @@ export interface CoordonneesDto {
 export interface InformationsLocauxDto {
   accessibilite: string | null;
   accessibilitePrecision: string | null;
-  amenagementsSpecifiques: string | null;
+  amenagementsSpecifiques: boolean | null;
   chambresDoubles: boolean | null;
   chambresUnisexes: boolean | null;
   couchageIndividuel: boolean | null;
@@ -25,7 +25,7 @@ export interface InformationsLocauxDto {
   fileDernierArreteAutorisationMaire: unknown | null;
   fileDerniereAttestationSecurite: unknown | null;
   fileReponseExploitantOuProprietaire: unknown | null;
-  litsDessus: number | null;
+  litsDessus: boolean | null;
   nombreLits: number | null;
   nombreLitsSuperposes: number | null;
   nombreMaxPersonnesCouchage: number | null;

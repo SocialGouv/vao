@@ -1,6 +1,3 @@
-version: "1.0"
-scopeconfig:
-  - scope: node
 fileignoreconfig:
 - filename: .env.dev.example.env
   checksum: 5592a600679ab6e7ea811a8a82401756d15128d7d09e3f27c06c06caaa15e1dd
@@ -54,6 +51,8 @@ fileignoreconfig:
   checksum: 1f161d556f83694bf1d4f728591667cdaeef494e6d24ea2b475b4d7cb054383f
 - filename: package.json
   checksum: 180654b4eb22710ddeba4331c45b63ed92542e989744f390182a90a563eb8e1b
+- filename: packages/backend/src/__tests__/helper/testContainer.ts
+  checksum: 9e05b5b350d7e13beb365c6a550dbb2f4d39a0a1d12b43e9fac815fd3c1fdc8d
 - filename: packages/backend/src/config.js
   checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
@@ -326,25 +325,6 @@ fileignoreconfig:
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
 - filename: yarn.lock
   checksum: bd0f1b4e3969844785dad9816963820f40637288fa15e094de0b4808aed339b5
-- filename: pg/scripts/03/03-3-front-data.sql
-  checksum: 413817c8133c69f883087a7042258dcb75e4f75a45897ea830f86d8a5cba561a
-- filename: pg/scripts/03/03-3-ref-data.sql
-  checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
-- filename: pg/seeds/BO-1-back-user.sql
-  checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
-- filename: s/env/preprod/templates/smtp.sealed.secret.yaml
-  checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-- filename: yarn.lock
-  checksum: bd0f1b4e3969844785dad9816963820f40637288fa15e094de0b4808aed339b5
-- filename: pg/scripts/03/03-2-back-data.sql
-  checksum: d65e191f22dd46a53fd07dd02856d505a01f38b6274ef1989536aa193faebb2d
-- filename: pg/scripts/03/03-3-front-data.sql
-  checksum: 413817c8133c69f883087a7042258dcb75e4f75a45897ea830f86d8a5cba561a
-- filename: pg/scripts/03/03-3-ref-data.sql
-  checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
-- filename: pg/seeds/BO-1-back-user.sql
-  checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
-- filename: s/env/preprod/templates/smtp.sealed.secret.yaml
-  checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-- filename: yarn.lock
-  checksum: bd0f1b4e3969844785dad9816963820f40637288fa15e094de0b4808aed339b5
+scopeconfig:
+- scope: node
+version: "1.0"
