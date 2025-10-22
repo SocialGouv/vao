@@ -1,5 +1,5 @@
 const logger = require("../utils/logger");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 
 const {
   sanitizePaginationParams,
@@ -328,8 +328,8 @@ module.exports.getByOrganismeId = async (organismesId, queryParams) => {
   );
 
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -417,8 +417,8 @@ module.exports.read = async (queryParams = {}) => {
     "",
   );
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   log.i("read - DONE");
   return {
@@ -434,14 +434,16 @@ module.exports.getByToValidateByBo = async (terCode) => {
       statusCode: 500,
     });
   }
-  const { rowCount, rows } = await pool.query(query.getByToValidateByBo, [
+  const { rowCount, rows } = await getPool().query(query.getByToValidateByBo, [
     terCode,
   ]);
   log.i("getByToValidateByBo - DONE");
   return { total: rowCount, users: rows };
 };
 module.exports.getIsLastUserOrganisme = async (userId) => {
-  const response = await pool.query(query.getIsLastUserOrganisme, [userId]);
+  const response = await getPool().query(query.getIsLastUserOrganisme, [
+    userId,
+  ]);
   log.i("getIsLastUserOrganisme - DONE");
   return response.rows[0].count <= 1;
 };
@@ -458,7 +460,7 @@ module.exports.getIsUserSameOrganismeOtherUser = async (
       statusCode: 500,
     });
   }
-  const total = await pool.query(query.getIsUserSameOrganismeOtherUser, [
+  const total = await getPool().query(query.getIsUserSameOrganismeOtherUser, [
     userIdConnected,
     userIdSearch,
   ]);
@@ -472,7 +474,9 @@ module.exports.readOne = async (userId) => {
       statusCode: 500,
     });
   }
-  const { rowCount, rows: users } = await pool.query(query.getOne, [userId]);
+  const { rowCount, rows: users } = await getPool().query(query.getOne, [
+    userId,
+  ]);
   if (rowCount === 0) {
     log.d("readOne - DONE - Utilisateur FO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
@@ -485,12 +489,12 @@ module.exports.readOne = async (userId) => {
 };
 
 module.exports.getUserOrganisme = async (userId) => {
-  const { rows } = await pool.query(query.getUserOragnisme, [userId]);
+  const { rows } = await getPool().query(query.getUserOragnisme, [userId]);
   return rows[0]?.organismeId ?? null;
 };
 
 module.exports.getMailUserOrganismeId = async (organismeId) => {
-  const { rows } = await pool.query(query.getMailUserOrganismeId, [
+  const { rows } = await getPool().query(query.getMailUserOrganismeId, [
     organismeId,
   ]);
   return rows ?? [];
@@ -499,7 +503,7 @@ module.exports.getMailUserOrganismeId = async (organismeId) => {
 module.exports.getRolesByUserId = async (userId) => {
   log.i("getRolesByUserId - IN");
 
-  const response = await pool.query(query.getRolesByUserId, [userId]);
+  const response = await getPool().query(query.getRolesByUserId, [userId]);
   log.d(response);
   log.i("getRolesByUserId - DONE");
   return response?.rows ?? null;
@@ -507,9 +511,9 @@ module.exports.getRolesByUserId = async (userId) => {
 
 module.exports.updateRoles = async (userId, roles) => {
   log.i("updateRoles - IN");
-  await pool.query(query.deleteRoles, [userId]);
+  await getPool().query(query.deleteRoles, [userId]);
   for (const role of roles) {
-    await pool.query(...query.bindRole(userId, role));
+    await getPool().query(...query.bindRole(userId, role));
   }
   log.i("update - DONE");
   return { code: "MajCompte" };
@@ -523,7 +527,7 @@ module.exports.updateStatus = async (
   userFrontId,
 ) => {
   log.i("updateStatus - IN");
-  const response = await pool.query(query.updateUserStatus, [
+  const response = await getPool().query(query.updateUserStatus, [
     userId,
     status,
     motif,

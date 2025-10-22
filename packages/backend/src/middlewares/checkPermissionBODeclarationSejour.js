@@ -1,7 +1,7 @@
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
 const PersonneMorale = require("../services/organisme/PersonneMorale");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 
 const log = logger(module.filename);
 
@@ -45,9 +45,9 @@ async function checkPermissionDeclarationSejour(req, res, next) {
   let sejour;
   let departementsHebergements;
   try {
-    const { rows } = await pool.query(query, [declarationId]);
+    const { rows } = await getPool().query(query, [declarationId]);
     departementsHebergements =
-      (await pool.query(queryHebegements, [declarationId]))?.rows.map(
+      (await getPool().query(queryHebegements, [declarationId]))?.rows.map(
         (r) => r.departement,
       ) ?? [];
 
@@ -94,7 +94,7 @@ async function checkPermissionDeclarationSejour(req, res, next) {
         INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id 
         WHERE pm.siret = $1
       `;
-      const { rows: agrements } = await pool.query(queryOrganismeAgre, [
+      const { rows: agrements } = await getPool().query(queryOrganismeAgre, [
         personneMorale.etablissementPrincipal?.siret,
       ]);
 

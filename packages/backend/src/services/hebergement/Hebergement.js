@@ -18,7 +18,7 @@ const {
   mapDBHebergement,
   mapDBHebergementToDSHebergement,
 } = require("./helpers");
-const pool = require("../../utils/pgpool").getPool();
+const { getPool } = require("../../utils/pgpool");
 
 const log = logger(module.filename);
 
@@ -385,7 +385,7 @@ const create = async (
 };
 
 module.exports.create = async (userId, organismeId, statut, hebergement) => {
-  const client = await pool.connect();
+  const client = await getPool().connect();
   let hebergementId;
 
   try {
@@ -423,7 +423,7 @@ module.exports.updateWithoutHistory = async (
   const { nom, coordonnees, informationsLocaux, informationsTransport } =
     hebergement;
 
-  const client = await pool.connect();
+  const client = await getPool().connect();
 
   try {
     await client.query("BEGIN");
@@ -491,8 +491,8 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
   log.i("update - IN");
   const {
     rows: [{ hebergementUuid, organismeId, createdBy, createdAt, current }],
-  } = await pool.query(query.getPreviousValueForHistory, [hebergementId]);
-  const client = await pool.connect();
+  } = await getPool().query(query.getPreviousValueForHistory, [hebergementId]);
+  const client = await getPool().connect();
 
   if (!current) {
     throw new Error("L'hebergement est archivé et ne peux pas etre modifié", {
@@ -530,7 +530,7 @@ module.exports.update = async (userId, hebergementId, hebergement, statut) => {
 
 module.exports.updateStatut = async (userId, hebergementId, statut) => {
   log.i("updateStatut - IN");
-  await pool.query(query.updateStatut, [hebergementId, userId, statut]);
+  await getPool().query(query.updateStatut, [hebergementId, userId, statut]);
   log.i("update - DONE");
   return hebergementId;
 };
@@ -540,7 +540,7 @@ module.exports.getIsHebergementAutoriseForUserId = async (
   hebergementId,
 ) => {
   log.i("getIsOrganismeAutoriseForUserId - IN", userId);
-  const { rowCount } = await pool.query(
+  const { rowCount } = await getPool().query(
     query.getIsHebergementAutoriseForUserId,
     [userId, hebergementId],
   );
@@ -626,8 +626,8 @@ module.exports.getByDepartementCodes = async (
     sort,
   );
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -680,8 +680,8 @@ module.exports.getByUserId = async (userId, queryParams) => {
     sort,
   );
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -702,14 +702,14 @@ module.exports.getBySiren = async (siren, search) => {
     params.push(search.statut);
   }
 
-  const response = await pool.query(queryGet, params);
+  const response = await getPool().query(queryGet, params);
   log.d("getBySiren - DONE");
   return response.rows;
 };
 
 module.exports.getByIdAndMySiren = async (id, userId, siren) => {
   log.i("getByIdAndSiren - IN");
-  const response = await pool.query(query.getByIdAndMySiren, [
+  const response = await getPool().query(query.getByIdAndMySiren, [
     id,
     userId,
     siren,
@@ -720,9 +720,10 @@ module.exports.getByIdAndMySiren = async (id, userId, siren) => {
 
 module.exports.getById = async (id) => {
   log.i("getById - IN", { id });
-  const { rows: hebergements, rowCount } = await pool.query(query.getById, [
-    id,
-  ]);
+  const { rows: hebergements, rowCount } = await getPool().query(
+    query.getById,
+    [id],
+  );
 
   if (rowCount === 0) {
     return null;
@@ -739,9 +740,10 @@ module.exports.getById = async (id) => {
 
 module.exports.getByDSId = async (dsId) => {
   log.i("getByDSId - IN", { dsId });
-  const { rows: hebergements, rowCount } = await pool.query(query.getByDSId, [
-    dsId,
-  ]);
+  const { rows: hebergements, rowCount } = await getPool().query(
+    query.getByDSId,
+    [dsId],
+  );
 
   if (rowCount === 0) {
     return [];
@@ -759,7 +761,7 @@ module.exports.getByDSId = async (dsId) => {
 
 module.exports.getStatut = async (hebergementId) => {
   log.i("getStatut - IN");
-  const response = await pool.query(query.getStatut, [hebergementId]);
+  const response = await getPool().query(query.getStatut, [hebergementId]);
   log.d(response);
   log.i("getStatut - DONE");
   return response.rows?.[0]?.statut ?? null;

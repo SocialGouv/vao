@@ -1,4 +1,4 @@
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 
 const query = {
   add: `
@@ -23,7 +23,7 @@ module.exports.addHistoric = async ({
     });
   }
 
-  await pool.query(query.add, [
+  await getPool().query(query.add, [
     entity,
     entityId,
     action,

@@ -1,6 +1,6 @@
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 
 const log = logger(module.filename);
 
@@ -28,7 +28,7 @@ async function checkPermissionDeclarationSejour(req, res, next) {
       WHERE ds.id = $1
       AND ds.departement_suivi = ANY($2)
     `;
-  const { rows } = await pool.query(query, [
+  const { rows } = await getPool().query(query, [
     declarationId,
     departements.map((d) => d.value),
   ]);

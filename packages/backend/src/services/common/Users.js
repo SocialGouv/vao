@@ -1,7 +1,7 @@
 const { authentification } = require("../../config");
 
 const logger = require("../../utils/logger");
-const pool = require("../../utils/pgpool").getPool();
+const { getPool } = require("../../utils/pgpool");
 const normalize = require("../../utils/normalize");
 
 const log = logger(module.filename);
@@ -36,7 +36,7 @@ const query = {
 
 module.exports.verifyLoginAttempt = async (email, userSchema) => {
   log.i("verifyLoginAttempt - IN", { email });
-  const response = await pool.query(query.getLoginAttempt(userSchema), [
+  const response = await getPool().query(query.getLoginAttempt(userSchema), [
     normalize(email),
   ]);
   if (response.rows.length === 0) {
@@ -48,7 +48,7 @@ module.exports.verifyLoginAttempt = async (email, userSchema) => {
   if (account.attempt_count >= authentification.maxLoginAttempts) {
     log.w("verifyLoginAttempt - DONE - Too many attempts");
     if (account.minutes_since_last_attempt > authentification.lockoutTime) {
-      pool.query(query.resetLoginAttempt(userSchema), [normalize(email)]);
+      getPool().query(query.resetLoginAttempt(userSchema), [normalize(email)]);
       log.i("verifyLoginAttempt - DONE - Resetting attempt count");
       return false;
     }
@@ -60,18 +60,18 @@ module.exports.verifyLoginAttempt = async (email, userSchema) => {
 
 module.exports.recordLoginAttempt = async (email, ipAddress, userSchema) => {
   log.i("recordLoginAttempt - IN", { email, ipAddress });
-  const response = await pool.query(query.getLoginAttempt(userSchema), [
+  const response = await getPool().query(query.getLoginAttempt(userSchema), [
     normalize(email),
   ]);
   if (response.rows.length === 0) {
     log.i("recordLoginAttempt - No previous attempt found, creating new one");
-    pool.query(query.insertLoginAttempt(userSchema), [
+    getPool().query(query.insertLoginAttempt(userSchema), [
       normalize(email),
       ipAddress,
     ]);
   } else {
     log.i("recordLoginAttempt - Incrementing attempt count");
-    pool.query(query.updateLoginAttempt(userSchema), [
+    getPool().query(query.updateLoginAttempt(userSchema), [
       normalize(email),
       ipAddress,
     ]);
@@ -81,6 +81,6 @@ module.exports.recordLoginAttempt = async (email, ipAddress, userSchema) => {
 
 module.exports.resetLoginAttempt = (email, userSchema) => {
   log.i("resetLoginAttempt - IN", { email });
-  pool.query(query.resetLoginAttempt(userSchema), [normalize(email)]);
+  getPool().query(query.resetLoginAttempt(userSchema), [normalize(email)]);
   log.i("resetLoginAttempt - DONE");
-}
+};

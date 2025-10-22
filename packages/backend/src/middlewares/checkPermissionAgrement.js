@@ -1,6 +1,6 @@
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 
 const log = logger(module.filename);
 
@@ -16,7 +16,7 @@ async function checkPermissionAgrement(req, res, next) {
       JOIN front.users u ON uo.use_id = u.id
       WHERE u.id = $1
     `;
-  const { rows } = await pool.query(query, [userId]);
+  const { rows } = await getPool().query(query, [userId]);
   if (!rows || rows.length !== 1 || rows[0].org_id.toString() !== organismeId) {
     log.w("Utilisateur non autorisé à modifier l'agrement");
     return next(
