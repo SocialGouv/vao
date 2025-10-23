@@ -2096,7 +2096,7 @@
     prompts "^2.4.2"
     semver "^7.7.2"
 
-"@nuxt/devtools@^2.0.0", "@nuxt/devtools@^2.6.5":
+"@nuxt/devtools@^2.6.5":
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/@nuxt/devtools/-/devtools-2.6.5.tgz#9a04be5de371f34ab9bb75c850ba533df3364725"
   integrity sha512-Xh9XF1SzCTL5Zj6EULqsN2UjiNj4zWuUpS69rGAy5C55UTaj+Wn46IkDc6Q0+EKkGI279zlG6SzPRFawqPPUEw==
