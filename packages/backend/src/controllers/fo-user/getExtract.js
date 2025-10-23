@@ -13,8 +13,10 @@ module.exports = async function getExtract(req, res, next) {
 
   try {
     const result = await FoUser.read({
+      limit: 10000,
       search: { organisme_id: req.params.organismeId },
     });
+
     const titles = [
       { key: "nom", label: "Nom" },
       { key: "prenom", label: "Prenom" },
