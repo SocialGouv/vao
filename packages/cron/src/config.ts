@@ -34,6 +34,11 @@ export const suppressionCompteInactif = {
   name: "SUPPRESSION_COMPTE_INACTIF",
 };
 
+export const notifyAgrementExpiration = {
+  cron: process.env.BACKEND_CRON_REQUEST_AGREMENT_NOTIFY_CRON,
+  name: "REQUEST_AGREMENT",
+};
+
 export const postgres = {
   database: process.env.POSTGRES_DB,
   host: process.env.POSTGRES_HOST,
