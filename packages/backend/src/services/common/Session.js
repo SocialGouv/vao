@@ -1,4 +1,4 @@
-const pool = require("../../utils/pgpool").getPool();
+const { getPool } = require("../../utils/pgpool");
 const logger = require("../../utils/logger");
 const AppError = require("../../utils/error");
 
@@ -49,7 +49,9 @@ const query = {
 
 module.exports.read = async (targetSchema, criterias = {}) => {
   log.i("read - IN");
-  const { rows } = await pool.query(...query.select(targetSchema, criterias));
+  const { rows } = await getPool().query(
+    ...query.select(targetSchema, criterias),
+  );
   return rows;
 };
 
@@ -61,7 +63,7 @@ module.exports.rotate = async (
   errorObject = null,
 ) => {
   log.i("rotate - IN");
-  const sessionDeleted = await pool.query(
+  const sessionDeleted = await getPool().query(
     ...query.delete(targetSchema, { refresh_token: oldToken }),
   );
   if (sessionDeleted.rowCount === 0) {
@@ -70,7 +72,9 @@ module.exports.rotate = async (
 
     throw new AppError("erreur sur la suppression de session");
   }
-  const session = await pool.query(...query.create(targetSchema, id, token));
+  const session = await getPool().query(
+    ...query.create(targetSchema, id, token),
+  );
   if (!session || session.rows.length !== 1) {
     log.w("error during session creation");
     throw new AppError("erreur sur la création de session");
@@ -81,7 +85,7 @@ module.exports.rotate = async (
 
 module.exports.clean = async ({ id }, targetSchema) => {
   log.i("clean - IN");
-  const sessionDeleted = await pool.query(
+  const sessionDeleted = await getPool().query(
     ...query.delete(targetSchema, { cle: id }),
   );
   if (!sessionDeleted)
@@ -92,7 +96,9 @@ module.exports.clean = async ({ id }, targetSchema) => {
 
 module.exports.create = async (id, token, targetSchema) => {
   log.w("create - IN");
-  const session = await pool.query(...query.create(targetSchema, id, token));
+  const session = await getPool().query(
+    ...query.create(targetSchema, id, token),
+  );
   if (!session) throw new AppError("erreur sur la création de session");
   log.i("create - DONE");
   return session.rows[0];

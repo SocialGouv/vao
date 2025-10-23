@@ -2,7 +2,7 @@ const Sentry = require("@sentry/node");
 
 const { sentry } = require("../config");
 const logger = require("../utils/logger");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 const normalize = require("../utils/normalize");
 const AppError = require("../utils/error");
 const { status } = require("../helpers/users");
@@ -165,7 +165,9 @@ module.exports.registerByEmail = async ({
   terCode,
 }) => {
   log.i("registerByEmail - IN", { email });
-  let response = await pool.query(...query.select({ mail: normalize(email) }));
+  let response = await getPool().query(
+    ...query.select({ mail: normalize(email) }),
+  );
   if (response.rows.length !== 0) {
     log.i("registerByEmail - DONE - Utilisateur déjà existant");
     throw new AppError("Utilisateur déjà existant", {
@@ -177,7 +179,7 @@ module.exports.registerByEmail = async ({
     password,
     status.NEED_EMAIL_VALIDATION,
   ]);
-  response = await pool.query(query.create, [
+  response = await getPool().query(query.create, [
     normalize(email),
     password,
     status.NEED_EMAIL_VALIDATION,
@@ -194,16 +196,16 @@ module.exports.registerByEmail = async ({
 
 module.exports.editPassword = async ({ email, password }) => {
   log.i("editPassword - IN", { email });
-  const response = await pool.query(
+  const response = await getPool().query(
     ...query.select({ mail: normalize(email) }),
   );
   if (response.rows.length === 0) {
     throw new AppError("Utilisateur introuvable", { name: "UserNotFound" });
   }
-  await pool.query(...query.editPassword(email, password));
+  await getPool().query(...query.editPassword(email, password));
   CommonUser.resetLoginAttempt(normalize(email), schema.FRONT);
 
-  const responseWithUpdate = await pool.query(
+  const responseWithUpdate = await getPool().query(
     ...query.select({ mail: normalize(email) }),
   );
   return responseWithUpdate.rows[0];
@@ -211,13 +213,13 @@ module.exports.editPassword = async ({ email, password }) => {
 
 module.exports.editStatus = async (userId, statusCode) => {
   log.i("editStatus - IN", { statusCode, userId });
-  await pool.query(...query.editStatus(userId, statusCode));
+  await getPool().query(...query.editStatus(userId, statusCode));
   log.i("editStatus - DONE");
 };
 
 module.exports.activate = async (email) => {
   log.i("activate - IN", { email });
-  const response = await pool.query(
+  const response = await getPool().query(
     ...query.select({ mail: normalize(email) }),
   );
   if (response.rows.length === 0) {
@@ -234,7 +236,7 @@ module.exports.activate = async (email) => {
 
   // Pour les users en "TEMPORARY_BLOCKED" on réinitialise tous les champs marqueurs d'inactivité en base
   if (user.statusCode === status.TEMPORARY_BLOCKED) {
-    await pool.query(
+    await getPool().query(
       `UPDATE front.users SET
         planned_deletion_at = NULL,
         temporary_blocked_at = NULL,
@@ -254,9 +256,9 @@ module.exports.activate = async (email) => {
       ? status.NEED_SIRET_VALIDATION
       : status.VALIDATED;
   }
-  await pool.query(...query.editStatus(user.id, newStatus));
-  await pool.query(query.activate, [user.id]);
-  const responseWithUpdate = await pool.query(
+  await getPool().query(...query.editStatus(user.id, newStatus));
+  await getPool().query(query.activate, [user.id]);
+  const responseWithUpdate = await getPool().query(
     ...query.select({ mail: normalize(email) }),
   );
   const [userUpdated] = responseWithUpdate.rows;
@@ -266,34 +268,34 @@ module.exports.activate = async (email) => {
 
 module.exports.read = async (criterias = {}) => {
   log.i("read - IN");
-  const user = await pool.query(...query.select(criterias));
+  const user = await getPool().query(...query.select(criterias));
   log.i("read - DONE");
   return user.rows;
 };
 
 module.exports.login = async ({ email, password }) => {
   log.i("read - IN", { email });
-  const user = await pool.query(query.login, [normalize(email), password]);
+  const user = await getPool().query(query.login, [normalize(email), password]);
   log.d(user.rows);
   if (user.rows.length === 0) {
     return null;
   }
   CommonUser.resetLoginAttempt(normalize(email), schema.FRONT);
-  pool.query(query.updateLastConnection, [user.rows[0].id]);
+  getPool().query(query.updateLastConnection, [user.rows[0].id]);
   log.i("read - DONE", { user: user.rows[0] });
   return user.rows[0];
 };
 
 module.exports.updateUser = async ({ id, nom, prenom }) => {
   log.i("updateUser - IN", { id, nom, prenom });
-  const response = await pool.query(query.updateUser, [id, nom, prenom]);
+  const response = await getPool().query(query.updateUser, [id, nom, prenom]);
   log.i("updateUser - DONE");
   return response.rows[0];
 };
 
 const getByUserId = async (userId) => {
   try {
-    const response = await pool.query(...query.select({ id: userId }));
+    const response = await getPool().query(...query.select({ id: userId }));
     return response.rows[0];
   } catch (error) {
     log.w("getByUserId - DONE with error", error);

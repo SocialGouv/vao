@@ -2,7 +2,7 @@ const Sentry = require("@sentry/node");
 
 const { sentry } = require("../config");
 const logger = require("../utils/logger");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 const normalize = require("../utils/normalize");
 const usersCommon = require("./common/Users");
 const { schema } = require("../helpers/schema");
@@ -320,7 +320,7 @@ module.exports.create = async ({
   log.i("create - IN", { email });
 
   // Test de l'existance d'un compte avec la même adresse mail non désactivé
-  const response = await pool.query(
+  const response = await getPool().query(
     ...query.get({ "us.mail": normalize(email) }),
   );
   if (response.rows.length !== 0) {
@@ -331,7 +331,7 @@ module.exports.create = async ({
   }
 
   // Création du compte en base de données
-  const userId = await pool.query(
+  const userId = await getPool().query(
     ...query.create(email, nom, prenom, territoireCode),
   );
 
@@ -339,10 +339,10 @@ module.exports.create = async ({
 
   // Création des rôles en base de données
   for (const role of roles) {
-    await pool.query(...query.bindRole(user.id, role));
+    await getPool().query(...query.bindRole(user.id, role));
   }
   // le role eig est attribué par default a tous les utilisateurs back
-  await pool.query(...query.bindRole(user.id, "eig"));
+  await getPool().query(...query.bindRole(user.id, "eig"));
 
   log.i("create - DONE", { userId });
 
@@ -356,7 +356,9 @@ module.exports.updateMe = async (id, { nom, prenom }) => {
       statusCode: 500,
     });
   }
-  const { rowCount } = await pool.query(...query.updateMe(id, nom, prenom));
+  const { rowCount } = await getPool().query(
+    ...query.updateMe(id, nom, prenom),
+  );
 
   if (rowCount === 0) {
     log.d("update - DONE - Utilisateur BO inexistant");
@@ -380,7 +382,7 @@ module.exports.update = async (
     });
   }
   // Mise à jour du compte en base de données
-  const { rowCount } = await pool.query(
+  const { rowCount } = await getPool().query(
     ...query.update(id, nom, prenom, territoireCode),
   );
 
@@ -391,19 +393,19 @@ module.exports.update = async (
     });
   }
   // Suppression logique du compte
-  if (deleted) await pool.query(...query.delete(id, deleted_use_id));
+  if (deleted) await getPool().query(...query.delete(id, deleted_use_id));
 
   // Suppression des roles de l'utilisateur
-  await pool.query(...query.deleteRole(id));
+  await getPool().query(...query.deleteRole(id));
 
   // Création des rôles en base de données
   for (const role of roles) {
-    await pool.query(...query.bindRole(id, role));
+    await getPool().query(...query.bindRole(id, role));
   }
 
   if (!roles.includes("eig")) {
     // le role eig est attribué par default a tous les utilisateurs back
-    await pool.query(...query.bindRole(id, "eig"));
+    await getPool().query(...query.bindRole(id, "eig"));
   }
 
   log.i("update - DONE");
@@ -419,7 +421,9 @@ module.exports.editPassword = async (email, password) => {
     });
   }
 
-  const { rowCount } = await pool.query(...query.editPassword(email, password));
+  const { rowCount } = await getPool().query(
+    ...query.editPassword(email, password),
+  );
   if (rowCount === 0) {
     log.d("editPassword - DONE - Utilisateur BO inexistant");
     throw new AppError("Utilisateur non trouvé", {
@@ -432,13 +436,13 @@ module.exports.editPassword = async (email, password) => {
 
 module.exports.editStatus = async (userId, isBlocked) => {
   log.i("editStatus - IN", { isBlocked, userId });
-  await pool.query(...query.editStatus(userId, isBlocked));
+  await getPool().query(...query.editStatus(userId, isBlocked));
   log.i("editStatus - DONE");
 };
 
 module.exports.activate = async (email) => {
   log.i("active - IN", { email });
-  const response = await pool.query(
+  const response = await getPool().query(
     ...query.get({ "us.mail": normalize(email) }),
   );
   if (response.rowCount === 0) {
@@ -452,10 +456,10 @@ module.exports.activate = async (email) => {
     });
   }
   // Activation du compte
-  await pool.query(query.activate, [user.id]);
+  await getPool().query(query.activate, [user.id]);
 
   // TODO: remove
-  const responseWithUpdate = await pool.query(
+  const responseWithUpdate = await getPool().query(
     ...query.get({ "us.mail": normalize(email) }),
   );
   const [userUpdated] = responseWithUpdate.rows;
@@ -578,14 +582,14 @@ module.exports.read = async (
       OR code ILIKE $${territoireSearchParamId}
     )\n`;
 
-  const response = await pool.query(
+  const response = await getPool().query(
     `${territoireSearchParamId ? territoirePreQuery : ""}
     ${queryPrepared[0]}`,
     queryPrepared[1],
   );
 
   const preparedTotalQuery = query.getTotal(searchQuery, searchParams);
-  const total = await pool.query(
+  const total = await getPool().query(
     `${territoireSearchParamId ? territoirePreQuery : ""}
     ${preparedTotalQuery[0]}`,
     preparedTotalQuery[1],
@@ -687,8 +691,8 @@ module.exports.getListe = async (queryParams, territoireCode) => {
     sort,
   );
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -698,7 +702,7 @@ module.exports.getListe = async (queryParams, territoireCode) => {
 
 module.exports.readTerritoires = async (territoireParent) => {
   log.i("readTerritoires - IN", territoireParent);
-  const userTerritoire = await pool.query(query.listUsersTerritoire, [
+  const userTerritoire = await getPool().query(query.listUsersTerritoire, [
     territoireParent,
   ]);
   log.i("readTerritoires - DONE");
@@ -728,7 +732,7 @@ module.exports.readOne = async (id, territoireCode) => {
   }
   selectQuery += ` AS "editable"`;
 
-  const { rowCount, rows: users } = await pool.query(
+  const { rowCount, rows: users } = await getPool().query(
     ...query.get({ "us.id": id }, selectQuery, undefined, selectParams),
   );
 
@@ -752,7 +756,7 @@ module.exports.readOneByMail = async (email) => {
     });
   }
 
-  const { rowCount, rows: users } = await pool.query(
+  const { rowCount, rows: users } = await getPool().query(
     ...query.get({ "us.mail": normalize(email) }),
   );
 
@@ -769,11 +773,11 @@ module.exports.readOneByMail = async (email) => {
 
 module.exports.login = async ({ email, password }) => {
   log.i("login - IN", { email });
-  const user = await pool.query(query.login, [normalize(email), password]);
+  const user = await getPool().query(query.login, [normalize(email), password]);
   if (user.rowCount === 0) {
     return null;
   }
-  pool.query(query.connection, [user.rows[0].id]);
+  getPool().query(query.connection, [user.rows[0].id]);
   usersCommon.resetLoginAttempt(email, schema.BACK);
   log.i("login - DONE");
   return user.rows[0];
@@ -784,7 +788,7 @@ const getByUserId = async (userId) => {
     const params = {
       "us.id": userId,
     };
-    const response = await pool.query(...query.get(params));
+    const response = await getPool().query(...query.get(params));
     return response.rows[0];
   } catch (error) {
     log.w("getByUserId - DONE with error", error);
@@ -794,7 +798,6 @@ const getByUserId = async (userId) => {
     return null;
   }
 };
-
 
 module.exports.getByUserId = getByUserId;
 

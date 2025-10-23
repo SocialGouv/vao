@@ -4,8 +4,6 @@ import { getPool } from "../../utils/pgpool";
 
 const log = Logger(module.filename);
 
-const pool = getPool();
-
 export const DemandeSejourRepository = {
   getAdminStats: async ({
     departementCodes,
@@ -55,7 +53,7 @@ export const DemandeSejourRepository = {
         )
         OR A.REGION_OBTENTION = $2
         `;
-    const response = await pool.query(query(), [
+    const response = await getPool().query(query(), [
       departementCodes,
       territoireCode,
     ]);
@@ -150,8 +148,11 @@ export const DemandeSejourRepository = {
     );
 
     const response = await Promise.all([
-      pool.query(paginatedQuery.query, paginatedQuery.params),
-      pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+      getPool().query(paginatedQuery.query, paginatedQuery.params),
+      getPool().query(
+        paginatedQuery.countQuery,
+        paginatedQuery.countQueryParams,
+      ),
     ]);
     log.i("getByDepartementCodes - Done");
     return {

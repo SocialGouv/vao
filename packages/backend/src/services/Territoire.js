@@ -1,6 +1,6 @@
 const AppError = require("../utils/error");
 const logger = require("../utils/logger");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 const getCodeTerritoireByInseeCode = require("../utils/geo");
 
 const log = logger(module.filename);
@@ -121,8 +121,8 @@ module.exports.fetch = async (queryParams) => {
     sort,
   );
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -132,7 +132,7 @@ module.exports.fetch = async (queryParams) => {
 
 module.exports.readFicheIdByTerCode = async (territoireCode) => {
   log.i("readFicheIdByTerCode - IN");
-  const { rows } = await pool.query(query.getFicheIdByTerCode, [
+  const { rows } = await getPool().query(query.getFicheIdByTerCode, [
     territoireCode,
   ]);
   log.i("readFicheIdByTerCode - DONE");
@@ -141,7 +141,7 @@ module.exports.readFicheIdByTerCode = async (territoireCode) => {
 
 module.exports.readOne = async (idTerritoire) => {
   log.i("fetch - IN");
-  const { rows } = await pool.query(query.getOne, [idTerritoire]);
+  const { rows } = await getPool().query(query.getOne, [idTerritoire]);
   log.i("fetch - DONE");
   return rows[0];
 };
@@ -149,7 +149,7 @@ module.exports.readOne = async (idTerritoire) => {
 module.exports.update = async (id, { nom, prenom, email, telephone }) => {
   log.i("update - IN", { id });
 
-  const response = await pool.query(query.update, [
+  const response = await getPool().query(query.update, [
     id,
     nom,
     prenom,
@@ -172,7 +172,7 @@ module.exports.getFichesTerritoireForRegionByInseeCode = async ({
   inseeCode,
 }) => {
   const terCode = getCodeTerritoireByInseeCode({ inseeCode });
-  const { rows } = await pool.query(query.selectTerritoiresByInseeCode, [
+  const { rows } = await getPool().query(query.selectTerritoiresByInseeCode, [
     terCode,
   ]);
   return rows[0];

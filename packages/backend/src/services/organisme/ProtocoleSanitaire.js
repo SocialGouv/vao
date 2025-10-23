@@ -1,5 +1,5 @@
 const logger = require("../../utils/logger");
-const pool = require("../../utils/pgpool").getPool();
+const { getPool } = require("../../utils/pgpool");
 const { getFileMetaData } = require("../Document");
 
 const log = logger(module.filename);
@@ -296,11 +296,13 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
 
 module.exports.getByOrganismeId = async (organismeId) => {
   log.i("getByOrganismeId - IN", organismeId);
-  const { rowCount, rows: protocoleSanitaire } = await pool.query(
+  const { rowCount, rows: protocoleSanitaire } = await getPool().query(
     query.getByOrganismeId,
     [organismeId],
   );
-  const { rows: uuids } = await pool.query(query.getPSFiles, [organismeId]);
+  const { rows: uuids } = await getPool().query(query.getPSFiles, [
+    organismeId,
+  ]);
   const files = await Promise.all(
     uuids.map(({ uuid }) => getFileMetaData(uuid) ?? null),
   );

@@ -30,7 +30,19 @@ module.exports = {
   getPool() {
     if (pool) return pool;
     log.i("getPool - connecting");
+
+    if (process.env.NODE_ENV === "test") {
+      if (!global.postgresContainer) {
+        throw new Error("No Postgres container found");
+      }
+      configPool.host = global.postgresContainer.getHost();
+      configPool.port = global.postgresContainer.getPort().toString();
+      configPool.user = global.postgresContainer.getUsername();
+      configPool.password = global.postgresContainer.getPassword();
+      configPool.database = global.postgresContainer.getDatabase();
+    }
     pool = new pg.Pool(configPool);
+
     log.i("getPool - connected");
     return pool;
   },
