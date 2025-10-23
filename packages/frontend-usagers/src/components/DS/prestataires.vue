@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { TableFull } from "@vao/shared";
+import { TableFull } from "@vao/shared-ui";
 import dayjs from "dayjs";
 
 const props = defineProps({

@@ -107,7 +107,7 @@ import {
   FileUpload,
   EigStatusBadge,
   TitleWithIcon,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 
 const emit = defineEmits(["update:file"]);
 

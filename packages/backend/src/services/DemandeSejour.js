@@ -7,7 +7,7 @@ const { sentry } = require("../config");
 const dayjs = require("dayjs");
 const logger = require("../utils/logger");
 const pool = require("../utils/pgpool").getPool();
-const dsStatus = require("../helpers/ds-statuts");
+const DEMANDE_SEJOUR_STATUTS = require("@vao/shared-bridge");
 const PersonneMorale = require("./organisme/PersonneMorale");
 const PersonnePhysique = require("./organisme/PersonnePhysique");
 const { entities, userTypes } = require("../helpers/tracking");
@@ -818,17 +818,17 @@ ${Object.keys(criterias)
     `,
     [
       userId, // countBrouillon
-      dsStatus.statuts.BROUILLON, // countDeclarationAcompleter
-      dsStatus.statuts.A_MODIFIER,
-      dsStatus.statuts.A_MODIFIER_8J,
-      dsStatus.statuts.ATTENTE_8_JOUR, // countDeclarationEnInstruction
-      dsStatus.statuts.TRANSMISE,
-      dsStatus.statuts.TRANSMISE_8J,
-      dsStatus.statuts.EN_COURS,
-      dsStatus.statuts.EN_COURS_8J, // countDeclarationFinalisee
-      dsStatus.statuts.VALIDEE_8J, // countSejourEnCours
-      dsStatus.statuts.SEJOUR_EN_COURS, // countTerminee
-      dsStatus.statuts.TERMINEE,
+      DEMANDE_SEJOUR_STATUTS.BROUILLON, // countDeclarationAcompleter
+      DEMANDE_SEJOUR_STATUTS.A_MODIFIER,
+      DEMANDE_SEJOUR_STATUTS.A_MODIFIER_8J,
+      DEMANDE_SEJOUR_STATUTS.ATTENTE_8_JOUR, // countDeclarationEnInstruction
+      DEMANDE_SEJOUR_STATUTS.TRANSMISE,
+      DEMANDE_SEJOUR_STATUTS.TRANSMISE_8J,
+      DEMANDE_SEJOUR_STATUTS.EN_COURS,
+      DEMANDE_SEJOUR_STATUTS.EN_COURS_8J, // countDeclarationFinalisee
+      DEMANDE_SEJOUR_STATUTS.VALIDEE_8J, // countSejourEnCours
+      DEMANDE_SEJOUR_STATUTS.SEJOUR_EN_COURS, // countTerminee
+      DEMANDE_SEJOUR_STATUTS.TERMINEE,
     ],
   ],
   getStatut: `
@@ -1366,10 +1366,10 @@ module.exports.getByDepartementCodes = async (
       query: (
         index,
         value = [
-          dsStatus.statuts.EN_COURS,
-          dsStatus.statuts.EN_COURS_8J,
-          dsStatus.statuts.TRANSMISE,
-          dsStatus.statuts.TRANSMISE_8J,
+          DEMANDE_SEJOUR_STATUTS.EN_COURS,
+          DEMANDE_SEJOUR_STATUTS.EN_COURS_8J,
+          DEMANDE_SEJOUR_STATUTS.TRANSMISE,
+          DEMANDE_SEJOUR_STATUTS.TRANSMISE_8J,
         ],
       ) => {
         return {

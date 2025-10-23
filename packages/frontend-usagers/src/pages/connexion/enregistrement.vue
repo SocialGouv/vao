@@ -223,8 +223,8 @@
 
 <script setup>
 import "@vueform/multiselect/themes/default.css";
-import { ApiUnavailable } from "@vao/shared";
-import { apiTypes } from "@vao/shared/src/models";
+import { ApiUnavailable } from "@vao/shared-ui";
+import { apiTypes } from "@vao/shared-ui/src/models";
 
 const log = logger("pages/connexion/enregistrement");
 

@@ -105,7 +105,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { FileUpload } from "@vao/shared";
+import { FileUpload } from "@vao/shared-ui";
 
 const toaster = useToaster();
 

@@ -17,18 +17,18 @@ const {
 const MailUtils = require("../../utils/mail");
 const logger = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error");
-const { statuts } = require("../../helpers/ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const AppError = require("../../utils/error");
 
 const log = logger(module.filename);
 
 const expectedStates = [
-  statuts.BROUILLON,
-  statuts.A_MODIFIER,
-  statuts.ATTENTE_8_JOUR,
-  statuts.A_MODIFIER_8J,
-  statuts.VALIDEE_8J,
-  statuts.SEJOUR_EN_COURS,
+  DEMANDE_SEJOUR_STATUTS.BROUILLON,
+  DEMANDE_SEJOUR_STATUTS.A_MODIFIER,
+  DEMANDE_SEJOUR_STATUTS.ATTENTE_8_JOUR,
+  DEMANDE_SEJOUR_STATUTS.A_MODIFIER_8J,
+  DEMANDE_SEJOUR_STATUTS.VALIDEE_8J,
+  DEMANDE_SEJOUR_STATUTS.SEJOUR_EN_COURS,
 ];
 
 module.exports = async function post(req, res, next) {
@@ -77,7 +77,7 @@ module.exports = async function post(req, res, next) {
   }
 
   const dateDeposeA2mois = declaration.declaration2mois?.attestation?.at ?? "";
-  const firstSubmit = statut === statuts.BROUILLON;
+  const firstSubmit = statut === DEMANDE_SEJOUR_STATUTS.BROUILLON;
 
   Object.assign(declaration, { attestation });
 
@@ -117,12 +117,15 @@ module.exports = async function post(req, res, next) {
 
   const departementSuivi = hebergement.coordonnees.adresse.departement;
   const currentYear = dayjs(declaration.dateDebut).format("YY");
-  if (statut == statuts.BROUILLON) {
+  if (statut == DEMANDE_SEJOUR_STATUTS.BROUILLON) {
     const numSeq = await DemandeSejour.getNextIndex();
     idFonctionnelle = `DS-${currentYear}-${departementSuivi}-${numSeq.padStart(4, "0")}`;
   }
 
-  if (statut == statuts.ATTENTE_8_JOUR || statut == statuts.A_MODIFIER_8J) {
+  if (
+    statut == DEMANDE_SEJOUR_STATUTS.ATTENTE_8_JOUR ||
+    statut == DEMANDE_SEJOUR_STATUTS.A_MODIFIER_8J
+  ) {
     log.d("Déclaration à 8 jours");
     try {
       await DemandeSejour.finalize8jours(declarationId, declaration);
@@ -278,7 +281,7 @@ module.exports = async function post(req, res, next) {
         userId,
         null,
         "declaration_sejour",
-        statut === statuts.BROUILLON
+        statut === DEMANDE_SEJOUR_STATUTS.BROUILLON
           ? "Dépôt DS à 2 mois"
           : "Ajout de compléments",
         declaration,

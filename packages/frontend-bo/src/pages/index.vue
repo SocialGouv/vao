@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { CardsNumber } from "@vao/shared";
+import { CardsNumber } from "@vao/shared-ui";
 import { watchEffect } from "vue";
 
 definePageMeta({
