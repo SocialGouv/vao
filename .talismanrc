@@ -1,6 +1,11 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 5592a600679ab6e7ea811a8a82401756d15128d7d09e3f27c06c06caaa15e1dd
+  checksum: 1a5c852defb527c358dba66691899cb1e3c358367b2891e8e341465950521807
+version: ""
+packages/cron/src/notifySuppressionCompteInactif/notifySuppressionCompteInactif.email.ts
+  checksum: de4794018b505faf0ca412917808158d1a5cd6b5a35a1430a3a2303e303585ce
+- filename: packages/backend/src/types/reorgQueryParams.ts
+  checksum: 48c16e791d844e7d30d14fec5fcf36798ecb4235b685a204ecf7456ca84364ac
 - filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
   checksum: 2414a3f1746ccd11cbb12b86dd2bb4a16cbc5bd6fe1450c308579972128176e6
 - filename: .kontinuous/env/preprod/templates/token.sealed.secret.yaml
