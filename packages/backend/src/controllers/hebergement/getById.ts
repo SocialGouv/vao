@@ -1,29 +1,19 @@
-import { HebergementDto } from "@vao/shared-bridge";
-import type { NextFunction, Response } from "express";
+import type { HebergementDto, HebergementRoutes } from "@vao/shared-bridge";
+import type { NextFunction } from "express";
 
 import Hebergement from "../../services/hebergement/Hebergement";
-import type { UserRequest } from "../../types/request";
-import AppError from "../../utils/error";
+import type { RouteRequest, RouteResponse } from "../../types/request";
 import logger from "../../utils/logger";
 
 const log = logger(module.filename);
 
 export default async function get(
-  req: UserRequest,
-  res: Response,
+  req: RouteRequest<HebergementRoutes["GetOne"]>,
+  res: RouteResponse<HebergementRoutes["GetOne"]>,
   next: NextFunction,
 ) {
   log.i("IN");
-  const hebergementId = req.params.id;
-  if (!hebergementId) {
-    log.w("missing or invalid parameter");
-
-    return next(
-      new AppError("Paramètre incorrect", {
-        statusCode: 400,
-      }),
-    );
-  }
+  const hebergementId = req.validatedParams!.id;
   try {
     const hebergement: HebergementDto | null =
       await Hebergement.getById(hebergementId);

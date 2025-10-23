@@ -9,7 +9,7 @@
     "lint": "eslint --fix ./src",
     "test": "jest --config=jest.config.js",
     "test:watch": "yarn test --watch",
-    "test:coverage": "yarn test --coverage --passWithNoTests=true"
+    "test:coverage": "yarn test --coverage --passWithNoTests"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

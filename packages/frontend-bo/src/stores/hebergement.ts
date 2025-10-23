@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
+import type { HebergementDto, HebergementRoutes } from "@vao/shared-bridge";
 import { logger, $fetchBackend } from "#imports";
-import type { HebergementDto } from "@vao/shared-bridge";
+import { buildRequest } from "~/utils/fetchBackend";
 
 const log = logger("stores/hebergement");
 
@@ -63,10 +64,13 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("getHebergement - IN");
       this.isGetHebergementLoading = true;
       try {
-        const data = await $fetchBackend(`hebergement/admin/${hebergementId}`, {
+        const data = await buildRequest<HebergementRoutes["GetOne"]>({
           method: "GET",
-          credentials: "include",
-        });
+          path: "/hebergement/{id}",
+          params: {
+            id: String(hebergementId),
+          },
+        })();
         this.hebergement = data.hebergement;
         log.i("getHebergement - DONE");
         return data;
