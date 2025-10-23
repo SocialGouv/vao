@@ -231,6 +231,7 @@ module.exports.activate = async (email) => {
       name: "UserAlreadyVerified",
     });
   }
+
   // Pour les users en "TEMPORARY_BLOCKED" on réinitialise tous les champs marqueurs d'inactivité en base
   if (user.statusCode === status.TEMPORARY_BLOCKED) {
     await pool.query(
@@ -245,7 +246,14 @@ module.exports.activate = async (email) => {
     );
   }
 
-  const newStatus = status.VALIDATED;
+  let newStatus;
+  if (user.statusCode === status.TEMPORARY_BLOCKED) {
+    newStatus = status.VALIDATED;
+  } else {
+    newStatus = user.userSiret
+      ? status.NEED_SIRET_VALIDATION
+      : status.VALIDATED;
+  }
   await pool.query(...query.editStatus(user.id, newStatus));
   await pool.query(query.activate, [user.id]);
   const responseWithUpdate = await pool.query(
