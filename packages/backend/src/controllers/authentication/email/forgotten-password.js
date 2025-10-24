@@ -24,19 +24,8 @@ module.exports = async function login(req, res, next) {
       }),
     );
   }
-  let token;
   try {
     const users = await User.read({ mail: normalize(email) });
-    token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
-      algorithm: config.algorithm,
-      expiresIn: config.resetPasswordToken.expiresIn / 1000,
-    });
-    await Send(
-      MailUtils.usagers.authentication.sendForgottenPassword({
-        email,
-        token,
-      }),
-    );
 
     if (users.length === 0) {
       log.w("Utilisateur inexistant");
@@ -49,11 +38,12 @@ module.exports = async function login(req, res, next) {
       status.VALIDATED,
       status.NEED_SIRET_VALIDATION,
       status.NEED_EMAIL_VALIDATION,
+      status.TEMPORARY_BLOCKED,
     ];
 
     if (eligibleStatuses.includes(user.statusCode)) {
-      token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
-        algorithm: "ES512",
+      const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
+        algorithm: config.algorithm,
         expiresIn: config.resetPasswordToken.expiresIn / 1000,
       });
       await Send(
