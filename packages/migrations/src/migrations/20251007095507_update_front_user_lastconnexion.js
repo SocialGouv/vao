@@ -33,20 +33,20 @@ exports.up = async (knex) => {
   await knex.raw(`
     UPDATE  front.users SET lastconnection_at = current_date - interval '2 month'  
     WHERE lastconnection_at > current_date - interval '3 month'  
-      AND lastconnection_at  <= current_date - interval '2 month'
-      AND status_code not in ('BLOCKED', 'NEED_SIRET_VALIDATION');
+      AND lastconnection_at <= current_date - interval '2 month'
+      AND status_code::text not in ('BLOCKED', 'NEED_SIRET_VALIDATION');
   `);
   await knex.raw(`
     UPDATE  front.users SET lastconnection_at = current_date - interval '3 month'  
     WHERE lastconnection_at > current_date - interval '5 month'  
-      AND lastconnection_at  <= current_date - interval '3 month'
-      AND status_code not in ('BLOCKED', 'NEED_SIRET_VALIDATION');
+      AND lastconnection_at <= current_date - interval '3 month'
+      AND status_code::text not in ('BLOCKED', 'NEED_SIRET_VALIDATION');
   `);
 
   await knex.raw(`
     UPDATE  front.users SET lastconnection_at = current_date - interval '5 month'  
-    WHERE lastconnection_at  <= current_date - interval '5 month'
-      AND status_code not in ('BLOCKED', 'NEED_SIRET_VALIDATION');
+    WHERE lastconnection_at <= current_date - interval '5 month'
+      AND status_code::text not in ('BLOCKED', 'NEED_SIRET_VALIDATION');
   `);
 };
 
