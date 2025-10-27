@@ -1,4 +1,5 @@
 import { senderEmail, domains } from "../config";
+import { formatDateFr } from "../utils/date";
 import constructMail from "../utils/mails";
 import { transportEmails } from "../utils/transporter";
 
@@ -7,21 +8,17 @@ import type {
   GenerateEmailParams,
 } from "./notifyAgrementExpiration.type";
 
-const generateEmail6m = ({
-  mail,
-  formattedDateFinValidite,
-}: GenerateEmailParams) => {
+const generateEmail6m = ({ mail, date_fin_validite }: GenerateEmailParams) => {
   const html = constructMail(
     "",
     [
       {
         p: [
           "Bonjour,",
-          `Il reste 120 jours avant l’expiration de votre agrément sur le portail VAO (le  ${formattedDateFinValidite}).`,
-          "En déposant dès maintenant votre demande de renouvellement d’agrément, vous éviterez toute interruption dans la déclaration et l’organisation de vos séjours adaptés.",
-          "En effet, la demande de renouvellement doit être formulée dans les quatre mois précédant la date d’expiration de l’agrément en cours.</br>",
-          "Sans renouvellement validé à cette date, vous ne pourrez plus déclarer de séjours dans le portail VAO.",
-          `<strong>Pour renouveler votre agrément, cliquez sur le lien suivant</strong> : <a href=${domains.frontUsagersDomain}>Portail VAO</a>`,
+          `Votre agrément sur le portail VAO expire le ${formatDateFr(date_fin_validite)}.`,
+          "Vous pouvez dès à présent préparer votre demande de renouvellement pour assurer la continuité de vos activités et éviter toute interruption dans la déclaration de vos séjours.",
+          "En effet, la demande de renouvellement doit être formulée dans les quatre mois précédant la date d’expiration de l’agrément en cours.</br></br>",
+          `Pour renouveler votre agrément, cliquez sur le lien suivant : <a href=${domains.frontUsagersDomain}>Portail VAO</a>`,
         ],
         type: "p",
       },
@@ -39,7 +36,7 @@ const generateEmail6m = ({
 
 const generateEmail120j = ({
   mail,
-  formattedDateFinValidite,
+  date_fin_validite,
 }: GenerateEmailParams) => {
   const html = constructMail(
     "",
@@ -47,10 +44,11 @@ const generateEmail120j = ({
       {
         p: [
           "Bonjour,",
-          `Votre agrément sur le portail VAO expire le ${formattedDateFinValidite}.`,
-          "Vous pouvez dès à présent préparer votre demande de renouvellement pour assurer la continuité de vos activités et éviter toute interruption dans la déclaration de vos séjours.",
-          "En effet, la demande de renouvellement doit être formulée dans les quatre mois précédant la date d’expiration de l’agrément en cours.</br></br>",
-          `Pour renouveler votre agrément, cliquez sur le lien suivant : <a href=${domains.frontUsagersDomain}>Portail VAO</a>`,
+          `Il reste <strong>120 jours</strong> avant l’expiration de votre agrément sur le portail VAO (le  ${formatDateFr(date_fin_validite)}).`,
+          "En déposant dès maintenant votre demande de renouvellement d’agrément, vous éviterez toute interruption dans la déclaration et l’organisation de vos séjours adaptés.",
+          "En effet, la demande de renouvellement doit être formulée dans les quatre mois précédant la date d’expiration de l’agrément en cours.</br>",
+          "Sans renouvellement validé à cette date, vous ne pourrez plus déclarer de séjours dans le portail VAO.",
+          `<strong>Pour renouveler votre agrément, cliquez sur le lien suivant</strong> : <a href=${domains.frontUsagersDomain}>Portail VAO</a>`,
         ],
         type: "p",
       },
@@ -66,21 +64,20 @@ const generateEmail120j = ({
   };
 };
 
-export const sendNotifyAgrementExpirationRow = async (
+export const sendNotifyAgrementExpiration6m = async (
   rows: NotifyAgrementExpirationRow[],
 ) => {
-  const mails = rows.map(({ mail, date_fin_validite, expiration_type }) => {
-    const formattedDateFinValidite = date_fin_validite.toLocaleDateString(
-      "fr-FR",
-      {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-      },
-    );
-    return expiration_type === "6m"
-      ? generateEmail6m({ mail, formattedDateFinValidite })
-      : generateEmail120j({ mail, formattedDateFinValidite });
-  });
+  const mails = rows.map(({ mail, date_fin_validite }) =>
+    generateEmail6m({ mail, date_fin_validite }),
+  );
+  return await transportEmails(mails);
+};
+
+export const sendNotifyAgrementExpiration120j = async (
+  rows: NotifyAgrementExpirationRow[],
+) => {
+  const mails = rows.map(({ mail, date_fin_validite }) =>
+    generateEmail120j({ mail, date_fin_validite }),
+  );
   return await transportEmails(mails);
 };

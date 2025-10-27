@@ -15,5 +15,5 @@ export type NotifyAgrementExpirationRow = {
 
 export type GenerateEmailParams = {
   mail: string;
-  formattedDateFinValidite: string;
+  date_fin_validite: date;
 };
