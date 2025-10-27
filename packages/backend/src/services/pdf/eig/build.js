@@ -6,13 +6,17 @@ const logger = require("../../../utils/logger");
 const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 const { mapEigToLabel } = require("../../../helpers/eig");
 
+const root = path.resolve(__dirname, "../../../");
+const IMAGE_PATH = path.join(root, "images");
+const FONT_PATH = path.join(root, "fonts");
+
 const log = logger(module.filename);
 
 const fonts = {
   Marianne: {
-    bold: path.join(__dirname, "../../../fonts/Marianne-Bold.woff"),
-    italics: path.join(__dirname, "../../../fonts/Marianne-Light_Italic.woff"),
-    normal: path.join(__dirname, "../../../fonts/Marianne-Regular.woff"),
+    bold: path.join(FONT_PATH, "Marianne-Bold.woff"),
+    italics: path.join(FONT_PATH, "Marianne-Light_Italic.woff"),
+    normal: path.join(FONT_PATH, "Marianne-Regular.woff"),
   },
 };
 
@@ -80,7 +84,7 @@ function Header() {
     columns: [
       {
         alignment: "left",
-        image: path.join(__dirname, "../../../images/logo.png"),
+        image: path.join(IMAGE_PATH, "logo.png"),
         width: 80,
       },
       {
@@ -243,10 +247,10 @@ function buildPersonnePresent({ personnel }) {
             return rowIndex === 0 ? "#CCCCCC" : null;
           },
         },
+        margin: [0, 10, 0, 0],
         style: {
           fontSize: 9,
         },
-        margin: [0, 10, 0, 0],
         table: {
           body: [
             ["Nom", "Prénom", "Date de naissance", "Fonctions", "Téléphone"],

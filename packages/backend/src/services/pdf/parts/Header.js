@@ -1,5 +1,8 @@
 const path = require("path");
 
+const root = path.resolve(__dirname, "../../../");
+const IMAGE_PATH = path.join(root, "images");
+
 const CERFA_TYPES = {
   CERFA_12672_03: "cerfa-12672-03.png",
   CERFA_12672_04: "cerfa-12672-04.png",
@@ -12,7 +15,7 @@ function Header(cerfaType) {
         stack: [
           {
             alignment: "left",
-            image: path.join(__dirname, "../../../images/logo.png"),
+            image: path.join(IMAGE_PATH, "logo.png"),
             width: 80,
           },
         ],
@@ -21,11 +24,7 @@ function Header(cerfaType) {
         stack: [
           {
             alignment: "right",
-            image: path.join(
-              __dirname,
-              "../../../images/",
-              CERFA_TYPES[cerfaType],
-            ),
+            image: path.join(IMAGE_PATH, CERFA_TYPES[cerfaType]),
             width: 50,
           },
         ],

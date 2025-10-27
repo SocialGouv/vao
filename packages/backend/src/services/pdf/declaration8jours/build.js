@@ -4,15 +4,18 @@ const path = require("path");
 const logger = require("../../../utils/logger");
 const parts = require("../parts");
 
+const root = path.resolve(__dirname, "../../../");
+const FONT_PATH = path.join(root, "fonts");
+
 const log = logger(module.filename);
 
 const typeCerfaDS8J = "CERFA_12672_03";
 
 const fonts = {
   Marianne: {
-    bold: path.join(__dirname, "../../../fonts/Marianne-Bold.woff"),
-    italics: path.join(__dirname, "../../../fonts/Marianne-Light_Italic.woff"),
-    normal: path.join(__dirname, "../../../fonts/Marianne-Regular.woff"),
+    bold: path.join(FONT_PATH, "Marianne-Bold.woff"),
+    italics: path.join(FONT_PATH, "Marianne-Light_Italic.woff"),
+    normal: path.join(FONT_PATH, "Marianne-Regular.woff"),
   },
 };
 
