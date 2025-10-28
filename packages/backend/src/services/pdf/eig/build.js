@@ -1,20 +1,13 @@
+const { fonts, images } = require("../../../utils/staticsFiles");
+
 const PdfPrinter = require("pdfmake");
 
 const dayjs = require("dayjs");
-const path = require("path");
 const logger = require("../../../utils/logger");
 const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 const { mapEigToLabel } = require("../../../helpers/eig");
 
 const log = logger(module.filename);
-
-const fonts = {
-  Marianne: {
-    bold: path.join(__dirname, "../../../fonts/Marianne-Bold.woff"),
-    italics: path.join(__dirname, "../../../fonts/Marianne-Light_Italic.woff"),
-    normal: path.join(__dirname, "../../../fonts/Marianne-Regular.woff"),
-  },
-};
 
 const printer = new PdfPrinter(fonts);
 
@@ -80,7 +73,7 @@ function Header() {
     columns: [
       {
         alignment: "left",
-        image: path.join(__dirname, "../../../images/logo.png"),
+        image: images.logo,
         width: 80,
       },
       {
@@ -243,10 +236,10 @@ function buildPersonnePresent({ personnel }) {
             return rowIndex === 0 ? "#CCCCCC" : null;
           },
         },
+        margin: [0, 10, 0, 0],
         style: {
           fontSize: 9,
         },
-        margin: [0, 10, 0, 0],
         table: {
           body: [
             ["Nom", "Prénom", "Date de naissance", "Fonctions", "Téléphone"],
