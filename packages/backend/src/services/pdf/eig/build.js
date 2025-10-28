@@ -1,24 +1,13 @@
+const { fonts, images } = require("../../../utils/staticsFiles");
+
 const PdfPrinter = require("pdfmake");
 
 const dayjs = require("dayjs");
-const path = require("path");
 const logger = require("../../../utils/logger");
 const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 const { mapEigToLabel } = require("../../../helpers/eig");
 
-const root = path.resolve(__dirname, "../../../");
-const IMAGE_PATH = path.join(root, "images");
-const FONT_PATH = path.join(root, "fonts");
-
 const log = logger(module.filename);
-
-const fonts = {
-  Marianne: {
-    bold: path.join(FONT_PATH, "Marianne-Bold.woff"),
-    italics: path.join(FONT_PATH, "Marianne-Light_Italic.woff"),
-    normal: path.join(FONT_PATH, "Marianne-Regular.woff"),
-  },
-};
 
 const printer = new PdfPrinter(fonts);
 
@@ -84,7 +73,7 @@ function Header() {
     columns: [
       {
         alignment: "left",
-        image: path.join(IMAGE_PATH, "logo.png"),
+        image: images.logo,
         width: 80,
       },
       {

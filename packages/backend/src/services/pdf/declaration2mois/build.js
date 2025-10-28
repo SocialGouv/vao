@@ -1,23 +1,11 @@
+const { fonts, images } = require("../../../utils/staticsFiles");
+
 const PdfPrinter = require("pdfmake");
 
-const path = require("path");
 const logger = require("../../../utils/logger");
 const parts = require("../parts");
 
-const root = path.resolve(__dirname, "../../../");
-const FONT_PATH = path.join(root, "fonts");
-
-const typeCerfaDS2M = "CERFA_12672_04";
-
 const log = logger(module.filename);
-
-const fonts = {
-  Marianne: {
-    bold: path.join(FONT_PATH, "Marianne-Bold.woff"),
-    italics: path.join(FONT_PATH, "Marianne-Light_Italic.woff"),
-    normal: path.join(FONT_PATH, "Marianne-Regular.woff"),
-  },
-};
 
 const printer = new PdfPrinter(fonts);
 
@@ -25,13 +13,13 @@ const build = async (declaration = {}, departementSuivi) => {
   log.i("build - IN");
   const docDefinition = {
     content: [
-      parts.Header(typeCerfaDS2M),
+      parts.Header(images.cerfaDS2M),
       parts.Titre(declaration, departementSuivi),
       await parts.Agrement(declaration.organisme.agrement),
       parts.InformationsGenerales(declaration),
       {
         headlineLevel: 1,
-        stack: [parts.Header(typeCerfaDS2M)],
+        stack: [parts.Header(images.cerfaDS2M)],
       },
       parts.InformationsVacanciers(declaration.informationsVacanciers),
       parts.InformationsPersonnel(declaration.informationsPersonnel),
@@ -42,17 +30,17 @@ const build = async (declaration = {}, departementSuivi) => {
       ),
       {
         headlineLevel: 1,
-        stack: [parts.Header(typeCerfaDS2M)],
+        stack: [parts.Header(images.cerfaDS2M)],
       },
       parts.InformationsSanitaires(declaration.informationsSanitaires),
       {
         headlineLevel: 1,
-        stack: [parts.Header(typeCerfaDS2M)],
+        stack: [parts.Header(images.cerfaDS2M)],
       },
       ...(await parts.FicheAnnexe(declaration.hebergement)),
       {
         headlineLevel: 1,
-        stack: [parts.Header(typeCerfaDS2M)],
+        stack: [parts.Header(images.cerfaDS2M)],
       },
       parts.Attestation(declaration.attestation),
     ],

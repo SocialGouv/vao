@@ -1,23 +1,11 @@
+const { fonts, images } = require("../../../utils/staticsFiles");
+
 const PdfPrinter = require("pdfmake");
 
-const path = require("path");
 const logger = require("../../../utils/logger");
 const parts = require("../parts");
 
-const root = path.resolve(__dirname, "../../../");
-const FONT_PATH = path.join(root, "fonts");
-
 const log = logger(module.filename);
-
-const typeCerfaDS8J = "CERFA_12672_03";
-
-const fonts = {
-  Marianne: {
-    bold: path.join(FONT_PATH, "Marianne-Bold.woff"),
-    italics: path.join(FONT_PATH, "Marianne-Light_Italic.woff"),
-    normal: path.join(FONT_PATH, "Marianne-Regular.woff"),
-  },
-};
 
 const printer = new PdfPrinter(fonts);
 
@@ -27,12 +15,12 @@ const build = async (declaration = {}, departementSuivi, dateDeposeA2mois) => {
 
   const docDefinition = {
     content: [
-      parts.Header(typeCerfaDS8J),
+      parts.Header(images.cerfaDS8J),
       parts.Titre(declaration, departementSuivi, "8jours", dateDeposeA2mois),
       parts.InformationsGenerales(declaration, "8jours"),
       {
         headlineLevel: 1,
-        stack: [parts.Header(typeCerfaDS8J)],
+        stack: [parts.Header(images.cerfaDS8J)],
       },
       parts.InformationsVacanciers(
         declaration.informationsVacanciers,
@@ -42,7 +30,7 @@ const build = async (declaration = {}, departementSuivi, dateDeposeA2mois) => {
       ...(await parts.FicheAnnexe(declaration.hebergement)),
       {
         headlineLevel: 1,
-        stack: [parts.Header(typeCerfaDS8J)],
+        stack: [parts.Header(images.cerfaDS8J)],
       },
       parts.Attestation(declaration.attestation),
     ],
