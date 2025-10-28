@@ -11,7 +11,7 @@
     "test": "jest --config=jest.config.js",
     "test:watch": "yarn test --watch",
     "test:coverage": "yarn test --coverage",
-    "build": "tsc -b ./tsconfig.json && cp -R src/images dist/ && cp -R src/fonts dist/"
+    "build": "tsc -b ./tsconfig.json && cp -R src/images dist/ && cp -R src/fonts dist/ && cp -R src/services/public dist/services/"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.649.0",
