@@ -35,3 +35,6 @@ exports.down = async function (knex) {
   `);
   await knex.raw(`DROP TYPE user_status_old;`);
 };
+
+// Exécute ce script dans une transaction à part afin que l'ENUM puisse être vu par les scripts suivants
+exports.config = { transaction: false };
