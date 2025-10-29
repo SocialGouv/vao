@@ -11,11 +11,16 @@ const generateEmail = (mail: string) => {
 		"Blocage temporaire de votre compte VAO",
 		[
 			{
-				p: [
-					`Bonjour,<br><br>Votre compte VAO n’a pas été utilisé depuis 3 mois.<br>Pour des raisons de sécurité, il a été désactivé provisoirement.<br><br>Pour réactiver votre compte, vous devez réinitialiser votre mot de passe en cliquant sur le lien ci-dessous :<br><a href="${RESET_PASSWORD_URL}">${RESET_PASSWORD_URL}</a>`
-				],
-				type: "p",
-			},
+                p: [
+                    `Bonjour,<br><br>Votre compte VAO n’a pas été utilisé depuis 3 mois.<br>Pour des raisons de sécurité, il a été désactivé provisoirement.<br><br>Pour réactiver votre compte, vous devez réinitialiser votre mot de passe en cliquant sur le bouton ci-dessous :`
+                ],
+                type: "p",
+            },
+            {
+                link: RESET_PASSWORD_URL,
+                text: "Réinitialiser mon mot de passe",
+                type: "link",
+            },
 		],
 		`L’équipe du SI VAO<BR><a href=${domains.frontUsagersDomain}>Portail VAO</a><br><br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>`
 	);

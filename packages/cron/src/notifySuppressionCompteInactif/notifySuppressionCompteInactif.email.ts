@@ -24,10 +24,9 @@ export const sendAlerte5mEmails = async (
       Pour des raisons de sécurité, il sera supprimé dans 1 mois si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.</p>
       <p>Pour vous reconnecter à votre compte, vous devrez au préalable réinitialiser votre mot de passe en cliquant sur le lien suivant :</p>
       <p><a href="${RESET_PASSWORD_URL}" title="Réinitialiser mon mot de passe">Réinitialiser mon mot de passe</a></p>
-      <p>Cordialement.<br>L’équipe du SI VAO<br>Portail VAO</p>
-      <br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>
     `;
-    const html = constructMail("", [{ p: [body], type: "p" }], "");
+    const signature = "L’équipe du SI VAO<br>Portail VAO<br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>";
+    const html = constructMail("", [{ p: [body], type: "p" }], signature);
     return {
       from: senderEmail,
       replyTo: senderEmail,
@@ -57,10 +56,9 @@ export const sendRappelJ7Emails = async (
       Pour des raisons de sécurité, il sera supprimé dans 7 jours si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.</p>
       <p>Pour vous reconnecter à votre compte, vous devrez au préalable réinitialiser votre mot de passe en cliquant sur le lien suivant :</p>
       <p><a href="${RESET_PASSWORD_URL}">Réinitialiser mon mot de passe</a></p>
-      <p>Cordialement.<br>L’équipe du SI VAO<br>Portail VAO</p>
-      <br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>
     `;
-    const html = constructMail("", [{ p: [body], type: "p" }], "");
+    const signature = "L’équipe du SI VAO<br>Portail VAO<br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>";
+    const html = constructMail("", [{ p: [body], type: "p" }], signature);
     return {
       from: senderEmail,
       replyTo: senderEmail,
