@@ -18,15 +18,21 @@ export const sendAlerte5mEmails = async (
       : dateSuppression;
   const mails = rows.map((row) => {
     const subject = "Portail VAO - Suppression de votre compte dans 1 mois";
-    const body = `
-      <p>Bonjour,</p>
-      <p>Votre compte VAO n’a pas été utilisé depuis 5 mois.<br>
-      Pour des raisons de sécurité, il sera supprimé dans 1 mois si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.</p>
-      <p>Pour vous reconnecter à votre compte, vous devrez au préalable réinitialiser votre mot de passe en cliquant sur le lien suivant :</p>
-      <p><a href="${RESET_PASSWORD_URL}" title="Réinitialiser mon mot de passe">Réinitialiser mon mot de passe</a></p>
-    `;
-    const signature = "L’équipe du SI VAO<br>Portail VAO<br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>";
-    const html = constructMail("", [{ p: [body], type: "p" }], signature);
+    const content = [
+      {
+        p: [
+          `Bonjour,<br><br>Votre compte VAO n’a pas été utilisé depuis 5 mois.<br>Pour des raisons de sécurité, il sera supprimé dans 1 mois si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.<br><br>Pour vous reconnecter à votre compte, vous devrez au préalable réinitialiser votre mot de passe en cliquant sur le bouton ci-dessous :`
+        ],
+        type: "p" as const,
+      },
+      {
+        link: RESET_PASSWORD_URL,
+        text: "Réinitialiser mon mot de passe",
+        type: "link" as const,
+      }
+    ];
+    const signature = `L’équipe du SI VAO<BR><a href=${domains.frontUsagersDomain}>Portail VAO</a><br><br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>`;
+    const html = constructMail("Suppression de votre compte VAO", content, signature);
     return {
       from: senderEmail,
       replyTo: senderEmail,
@@ -50,15 +56,21 @@ export const sendRappelJ7Emails = async (
       : dateSuppression;
   const mails = rows.map((row) => {
     const subject = "Portail VAO - Suppression de votre compte dans 7 jours";
-    const body = `
-      <p>Bonjour,</p>
-      <p>Votre compte VAO n’a pas été utilisé depuis plusieurs mois.<br>
-      Pour des raisons de sécurité, il sera supprimé dans 7 jours si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.</p>
-      <p>Pour vous reconnecter à votre compte, vous devrez au préalable réinitialiser votre mot de passe en cliquant sur le lien suivant :</p>
-      <p><a href="${RESET_PASSWORD_URL}">Réinitialiser mon mot de passe</a></p>
-    `;
-    const signature = "L’équipe du SI VAO<br>Portail VAO<br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>";
-    const html = constructMail("", [{ p: [body], type: "p" }], signature);
+    const content = [
+      {
+        p: [
+          `Bonjour,<br><br>Votre compte VAO n’a pas été utilisé depuis plusieurs mois.<br>Pour des raisons de sécurité, il sera supprimé dans 7 jours si vous ne vous reconnectez pas d’ici le <strong>${formattedDateSuppression}</strong>.<br><br>Pour vous reconnecter à votre compte, vous devrez au préalable réinitialiser votre mot de passe en cliquant sur le bouton ci-dessous :`
+        ],
+        type: "p" as const,
+      },
+      {
+        link: RESET_PASSWORD_URL,
+        text: "Réinitialiser mon mot de passe",
+        type: "link" as const,
+      }
+    ];
+    const signature = `L’équipe du SI VAO<BR><a href=${domains.frontUsagersDomain}>Portail VAO</a><br><br><i>Ce courriel est un message automatique, merci de ne pas répondre.</i>`;
+    const html = constructMail("Suppression de votre compte VAO", content, signature);
     return {
       from: senderEmail,
       replyTo: senderEmail,
