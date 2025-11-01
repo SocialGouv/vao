@@ -25,7 +25,7 @@ jobs:
       - name: Run backend tests
         run: yarn test:unit:all
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602
+        uses: SonarSource/sonarqube-scan-action@40f5b61913e891f9d316696628698051136015be
         if: ${{ !github.event.pull_request.draft && !contains(github.head_ref || github.ref, 'renovate/') }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
