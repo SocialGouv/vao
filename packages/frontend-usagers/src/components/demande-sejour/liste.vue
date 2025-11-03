@@ -147,7 +147,7 @@ import {
   MessageHover,
   TableFull,
   ValidationModal,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 import dayjs from "dayjs";
 import "@vueform/multiselect/themes/default.css";

@@ -582,8 +582,8 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { FileUpload, hebergement as hebergementUtils } from "@vao/shared";
-import { getFileUploadErrorMessage } from "@vao/shared/src/utils/file.mjs";
+import { FileUpload, hebergement as hebergementUtils } from "@vao/shared-ui";
+import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
 
 const config = useRuntimeConfig();
 
@@ -697,7 +697,6 @@ const {
   meta: visiteLocauxMeta,
 } = useField("informationsLocaux.visiteLocaux");
 const {
-  value: visiteLocauxAt,
   errorMessage: visiteLocauxAtErrorMessage,
   handleChange: onVisiteLocauxAtChange,
   meta: visiteLocauxAtMeta,

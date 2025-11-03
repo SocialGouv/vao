@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { CardsNumber } from "@vao/shared";
+import { CardsNumber } from "@vao/shared-ui";
 definePageMeta({
   middleware: ["is-connected", "check-role"],
   roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],

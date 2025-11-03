@@ -96,7 +96,7 @@
 
 <script setup>
 import { DsfrButton } from "@gouvminint/vue-dsfr";
-import { DisplayInput, statusUser, ValidationModal } from "@vao/shared";
+import { DisplayInput, statusUser, ValidationModal } from "@vao/shared-ui";
 import { defineProps } from "vue";
 import { useField, useForm } from "vee-validate";
 import FoUser from "~/utils/fo-user";

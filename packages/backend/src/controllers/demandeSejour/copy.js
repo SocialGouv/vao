@@ -1,6 +1,6 @@
 const DemandeSejour = require("../../services/DemandeSejour");
 const Organisme = require("../../services/Organisme");
-const { statuts } = require("../../helpers/ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 
 const logger = require("../../utils/logger");
 const AppError = require("../../utils/error");
@@ -32,11 +32,11 @@ module.exports = async function post(req, res, next) {
     }
 
     if (
-      sourceDeclaration.statut !== statuts.BROUILLON &&
-      sourceDeclaration.statut !== statuts.TRANSMISE &&
-      sourceDeclaration.statut !== statuts.EN_COURS &&
-      sourceDeclaration.statut !== statuts.ANNULEE &&
-      sourceDeclaration.statut !== statuts.ABANDONNEE
+      sourceDeclaration.statut !== DEMANDE_SEJOUR_STATUTS.BROUILLON &&
+      sourceDeclaration.statut !== DEMANDE_SEJOUR_STATUTS.TRANSMISE &&
+      sourceDeclaration.statut !== DEMANDE_SEJOUR_STATUTS.EN_COURS &&
+      sourceDeclaration.statut !== DEMANDE_SEJOUR_STATUTS.ANNULEE &&
+      sourceDeclaration.statut !== DEMANDE_SEJOUR_STATUTS.ABANDONNEE
     ) {
       log.w("DONE with error");
       return next(

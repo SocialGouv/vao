@@ -117,7 +117,7 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared";
+import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
 import { useUserStore } from "~/stores/user";
 
 definePageMeta({

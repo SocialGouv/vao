@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import { columnsTable } from "@vao/shared";
+import { columnsTable } from "@vao/shared-ui";
 
 const optionType = columnsTable.optionType;
 const hebergementStore = useHebergementStore();

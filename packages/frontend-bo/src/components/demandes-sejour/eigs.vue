@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ValidationModal } from "@vao/shared";
+import { ValidationModal } from "@vao/shared-ui";
 import dayjs from "dayjs";
 
 const toaster = useToaster();

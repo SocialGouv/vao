@@ -27,7 +27,7 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { TableFull } from "@vao/shared";
+import { TableFull } from "@vao/shared-ui";
 const config = useRuntimeConfig();
 const NuxtLink = resolveComponent("NuxtLink");
 const props = defineProps({

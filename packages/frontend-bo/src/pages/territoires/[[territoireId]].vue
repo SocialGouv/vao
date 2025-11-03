@@ -118,7 +118,7 @@
   </div>
 </template>
 <script setup>
-import { TableFull, TitleWithIcon } from "@vao/shared";
+import { TableFull, TitleWithIcon } from "@vao/shared-ui";
 import { useField, useForm } from "vee-validate";
 import Territoires from "~/utils/territoires";
 import * as yup from "yup";
