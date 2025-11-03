@@ -20,7 +20,7 @@ export function addMonths(date: Date, months: number) {
   return addDays(date, 30 * months);
 }
 
-export function formatDateFr(date: Date): string {
+export function formatShortDateFr(date: Date): string {
   return date
     ? new Date(date).toLocaleDateString("fr-FR", {
         day: "2-digit",
