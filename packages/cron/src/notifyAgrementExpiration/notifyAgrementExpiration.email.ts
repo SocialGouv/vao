@@ -1,5 +1,5 @@
 import { senderEmail, domains } from "../config";
-import { formatDateFr } from "../utils/date";
+import { formatShortDateFr } from "../utils/date";
 import constructMail from "../utils/mails";
 import { transportEmails } from "../utils/transporter";
 
@@ -15,7 +15,7 @@ const generateEmail6m = ({ mail, date_fin_validite }: GenerateEmailParams) => {
       {
         p: [
           "Bonjour,",
-          `Votre agrément sur le portail VAO expire le ${formatDateFr(date_fin_validite)}.`,
+          `Votre agrément sur le portail VAO expire le ${formatShortDateFr(date_fin_validite)}.`,
           "Vous pouvez dès à présent préparer votre demande de renouvellement pour assurer la continuité de vos activités et éviter toute interruption dans la déclaration de vos séjours.",
           "En effet, la demande de renouvellement doit être formulée dans les quatre mois précédant la date d’expiration de l’agrément en cours.</br></br>",
           `Pour renouveler votre agrément, cliquez sur le lien suivant : <a href=${domains.frontUsagersDomain}>Portail VAO</a>`,
@@ -44,7 +44,7 @@ const generateEmail120j = ({
       {
         p: [
           "Bonjour,",
-          `Il reste <strong>120 jours</strong> avant l’expiration de votre agrément sur le portail VAO (le  ${formatDateFr(date_fin_validite)}).`,
+          `Il reste <strong>120 jours</strong> avant l’expiration de votre agrément sur le portail VAO (le  ${formatShortDateFr(date_fin_validite)}).`,
           "En déposant dès maintenant votre demande de renouvellement d’agrément, vous éviterez toute interruption dans la déclaration et l’organisation de vos séjours adaptés.",
           "En effet, la demande de renouvellement doit être formulée dans les quatre mois précédant la date d’expiration de l’agrément en cours.</br>",
           "Sans renouvellement validé à cette date, vous ne pourrez plus déclarer de séjours dans le portail VAO.",
