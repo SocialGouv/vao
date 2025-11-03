@@ -83,5 +83,29 @@ export const useOrganismeStore = defineStore("organismes", {
         log.i("setOrganismeCourant - DONE with error");
       }
     },
+    async updatePersonneMorale(personneMorale) {
+      try {
+        this.organismeCourant = {
+          ...this.organismeCourant,
+          personneMorale: { ...personneMorale },
+        };
+        log.i("updatePersonneMorale - DONE");
+      } catch (err) {
+        log.w("updatePersonneMorale - ERROR", { err });
+      }
+    },
+    async updatePersonnePhysique(personnePhysique) {
+      //todo put backend
+      try {
+        this.organismeCourant = {
+          ...this.organismeCourant,
+          personnePhysique: { ...personnePhysique },
+        };
+        log.i("updatePersonnePhysique - DONE");
+      } catch (err) {
+        log.w("updatePersonnePhysique - ERROR", { err });
+      }
+    },
+    // todo: commit changements backend
   },
 });
