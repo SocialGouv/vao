@@ -99,7 +99,7 @@ export const useOrganismeStore = defineStore("organismes", {
     },
     async updatePersonne(parametre: any, type: any) {
       log.i(`updatePersonne - IN (${type})`, { parametre });
-      
+
       const organisme = this.organismeCourant;
       if (!organisme) {
         throw new Error("Aucun organisme courant sélectionné");
