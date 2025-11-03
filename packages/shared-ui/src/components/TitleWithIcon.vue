@@ -2,7 +2,7 @@
   <div class="title-with-icon" :class="[marginTopClass, marginBottomClass]">
     <span :class="iconClass" aria-hidden="true"></span>
     <slot name="title">
-      <component :is="headingTag" :class="titleClass">
+      <component :is="headingTag" :class="['title-with-icon', titleClass]">
         <slot />
       </component>
     </slot>
@@ -17,7 +17,7 @@ const props = defineProps({
   level: { type: [Number, String], default: 2 },
   marginTop: { type: String, default: "fr-mt-4v" },
   marginBottom: { type: String, default: "fr-mb-4v" },
-  titleClass: { type: [String, Array, Object], default: "" },
+  titleClass: { type: [String, Array, Object], default: "fr-mb-0" },
 });
 
 const headingTag = computed(() => `h${props.level}`);
