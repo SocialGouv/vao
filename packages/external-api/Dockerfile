@@ -1,4 +1,4 @@
-ARG NODE_VERSION=22.13-bullseye-slim
+ARG NODE_VERSION=22.20.0-bullseye-slim
 FROM node:$NODE_VERSION AS external-api-base
 
 USER root

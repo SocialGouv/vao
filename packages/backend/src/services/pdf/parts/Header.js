@@ -1,18 +1,13 @@
-const path = require("path");
+const { images } = require("../../../utils/staticsFiles");
 
-const CERFA_TYPES = {
-  CERFA_12672_03: "cerfa-12672-03.png",
-  CERFA_12672_04: "cerfa-12672-04.png",
-};
-
-function Header(cerfaType) {
+function Header(imageCerfa) {
   return {
     columns: [
       {
         stack: [
           {
             alignment: "left",
-            image: path.join(__dirname, "../../../images/logo.png"),
+            image: images.logo,
             width: 80,
           },
         ],
@@ -21,11 +16,7 @@ function Header(cerfaType) {
         stack: [
           {
             alignment: "right",
-            image: path.join(
-              __dirname,
-              "../../../images/",
-              CERFA_TYPES[cerfaType],
-            ),
+            image: imageCerfa,
             width: 50,
           },
         ],
@@ -34,8 +25,5 @@ function Header(cerfaType) {
     margin: [10, 10, 10, 10],
   };
 }
-
-// 👇 Attache l'objet CERFA_TYPES à la fonction
-Header.CERFA_TYPES = CERFA_TYPES;
 
 module.exports = Header;

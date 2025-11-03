@@ -7,6 +7,7 @@ const normalize = require("../utils/normalize");
 const AppError = require("../utils/error");
 const { status } = require("../helpers/users");
 const { addHistoric } = require("./Tracking");
+const { canBeActivated } = require("../utils/canBeActivated");
 const CommonUser = require("./common/Users");
 const { schema } = require("../helpers/schema");
 
@@ -137,7 +138,8 @@ const query = {
   updateLastConnection: `
     UPDATE front.users
       SET
-      LASTCONNECTION_AT = NOW()
+        lastconnection_at = NOW(),
+        last_mail_inactivity_2m_at = NULL
     WHERE
       id = $1
   `,
@@ -195,16 +197,16 @@ module.exports.editPassword = async ({ email, password }) => {
   const response = await pool.query(
     ...query.select({ mail: normalize(email) }),
   );
-  const [user] = response.rows;
-  log.d("editPassword", { user });
+  if (response.rows.length === 0) {
+    throw new AppError("Utilisateur introuvable", { name: "UserNotFound" });
+  }
   await pool.query(...query.editPassword(email, password));
+  CommonUser.resetLoginAttempt(normalize(email), schema.FRONT);
+
   const responseWithUpdate = await pool.query(
     ...query.select({ mail: normalize(email) }),
   );
-  CommonUser.resetLoginAttempt(normalize(email), schema.FRONT);
-  const [userUpdated] = responseWithUpdate.rows;
-  log.i("editPassword - DONE", { user: userUpdated });
-  return userUpdated;
+  return responseWithUpdate.rows[0];
 };
 
 module.exports.editStatus = async (userId, statusCode) => {
@@ -214,7 +216,7 @@ module.exports.editStatus = async (userId, statusCode) => {
 };
 
 module.exports.activate = async (email) => {
-  log.i("active - IN", { email });
+  log.i("activate - IN", { email });
   const response = await pool.query(
     ...query.select({ mail: normalize(email) }),
   );
@@ -223,30 +225,42 @@ module.exports.activate = async (email) => {
   }
   const user = response.rows[0];
   log.w("activate", { user });
-  // TODO voir avec Valère l'utilisation du user.sub qui semble indiquer que l'utilisateur
-  // est connecté mais on ne sait pas d'où ça vient
-  //if (!user.sub && user.statusCode !== status.NEED_EMAIL_VALIDATION) {
-  if (user.statusCode !== status.NEED_EMAIL_VALIDATION) {
+  // Seuls les statuts autorisés par canBeActivated sont activables
+  if (!canBeActivated(user.statusCode)) {
     throw new AppError("Utilisateur déjà actif", {
       name: "UserAlreadyVerified",
     });
   }
-  // TODO handle siret already exists new status ?
-  const newStatus = user.userSiret
-    ? status.NEED_SIRET_VALIDATION
-    : status.VALIDATED;
-  // TODO idem pour le user.sub
-  //if (!user.sub) {
-  await pool.query(...query.editStatus(user.id, newStatus));
-  //}
-  await pool.query(query.activate, [user.id]);
 
+  // Pour les users en "TEMPORARY_BLOCKED" on réinitialise tous les champs marqueurs d'inactivité en base
+  if (user.statusCode === status.TEMPORARY_BLOCKED) {
+    await pool.query(
+      `UPDATE front.users SET
+        planned_deletion_at = NULL,
+        temporary_blocked_at = NULL,
+        last_mail_inactivity_2m_at = NULL,
+        last_mail_inactivity_5m_at = NULL,
+        last_mail_inactivity_5m_reminder_at = NULL
+       WHERE id = $1`,
+      [user.id],
+    );
+  }
+
+  let newStatus;
+  if (user.statusCode === status.TEMPORARY_BLOCKED) {
+    newStatus = status.VALIDATED;
+  } else {
+    newStatus = user.userSiret
+      ? status.NEED_SIRET_VALIDATION
+      : status.VALIDATED;
+  }
+  await pool.query(...query.editStatus(user.id, newStatus));
+  await pool.query(query.activate, [user.id]);
   const responseWithUpdate = await pool.query(
     ...query.select({ mail: normalize(email) }),
   );
-
   const [userUpdated] = responseWithUpdate.rows;
-  log.i("active - DONE", { user: userUpdated });
+  log.i("activate - DONE", { user: userUpdated });
   return userUpdated;
 };
 

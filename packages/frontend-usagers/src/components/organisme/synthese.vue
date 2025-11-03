@@ -110,7 +110,7 @@
         </DsfrAccordion>
       </DsfrAccordionsGroup>
     </div>
-
+    <SyntheseVerificationAlert />
     <form>
       <DsfrFieldset>
         <DsfrButtonGroup

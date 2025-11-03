@@ -74,5 +74,18 @@ module.exports = async function post(req, res, next) {
     return res.status(200).json({ declarationId: newDeclarationId });
   } catch (err) {
     log.w(err);
+    if (err && err.code === "22001") {
+      return next(
+        new AppError(
+          "Le libellé de la déclaration copiée dépasse la limite de 100 caractères.",
+          { name: "LibelleTooLong", statusCode: 400 },
+        ),
+      );
+    }
+    return next(
+      new AppError("Erreur lors de la duplication de la déclaration", {
+        statusCode: 500,
+      }),
+    );
   }
 };

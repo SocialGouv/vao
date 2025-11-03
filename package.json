@@ -16,10 +16,11 @@
     "lint:shared": "yarn --cwd ./packages/shared run lint",
     "knex": "POSTGRES_HOST=localhost POSTGRES_PORT=5436 env-cmd --no-override knex --cwd ./packages/migrations/src",
     "test:unit:all": "yarn run test:unit:api && yarn run test:unit:backend",
-    "test:unit:api": "yarn workspace @vao/external-api test",
-    "test:unit:backend": "yarn workspace @vao/backend test",
+    "test:unit:api": "yarn workspace @vao/external-api test:cov",
+    "test:unit:backend": "yarn workspace @vao/backend test:coverage",
     "tests:e2e": "E2E_LOCAL=true playwright test",
-    "tests:e2e:ui": "E2E_LOCAL=true playwright test --ui"
+    "tests:e2e:ui": "E2E_LOCAL=true playwright test --ui",
+    "clean": "yarn --cwd ./packages/frontend-usagers clean && yarn --cwd ./packages/frontend-bo clean && rm -rf node_modules packages/*/node_modules"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
@@ -30,9 +31,8 @@
     "eslint": "^8.56.0",
     "eslint-config-prettier": "~9.1.0",
     "husky": "^9.0.10",
-    "is-ci": "^3.0.1",
     "lint-staged": "^15.2.1",
-    "node-talisman": "^1.29.11",
+    "node-talisman": "^1.29.22",
     "prettier": "^3.2.5"
   },
   "workspaces": [

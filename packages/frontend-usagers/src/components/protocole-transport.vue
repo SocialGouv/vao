@@ -23,17 +23,17 @@
         v-if="responsableTransportLieuSejour.includes('organisateur')"
         class="fr-fieldset__element"
       >
-        <div class="fr-input-group fr-col-12">
-          <UtilsMultiSelect
-            name="modeTransport"
-            label="Précisez le ou les modes de transport utilisés par l'organisateur"
-            :values="modeTransport"
-            :options="protocoleTransport.transportOptions"
-            :modifiable="props.modifiable"
-            :error-message="modeTransportErrorMessage"
-            @update="updateModeTransport"
-          ></UtilsMultiSelect>
-        </div>
+        <DsfrCheckboxSet
+          v-model="modeTransport"
+          name="modeTransport"
+          legend="Précisez le ou les modes de transport utilisés par l'organisateur"
+          :options="protocoleTransport.transportOptions"
+          :inline="true"
+          :small="true"
+          :error-message="modeTransportErrorMessage"
+          :disabled="!props.modifiable"
+        >
+        </DsfrCheckboxSet>
         <div class="fr-fieldset__element">
           <div class="fr-col-12">
             <DsfrInputGroup
@@ -195,10 +195,6 @@ const {
 const { value: modeTransport, errorMessage: modeTransportErrorMessage } =
   useField("modeTransport");
 const { value: files } = useField("files");
-
-function updateModeTransport(modes) {
-  modeTransport.value = modes;
-}
 
 function next() {
   log.d("next - IN", meta.value.dirty);

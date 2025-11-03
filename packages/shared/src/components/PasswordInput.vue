@@ -21,6 +21,7 @@ const isValid = computed(() => !!props.errorMessage);
 
 const descriptionId = computed(() => props.id + "-description");
 const hidePassword = ref(true);
+const liveMessage = ref("");
 const type = computed(() =>
   hidePassword.value === true ? "password" : "text",
 );
@@ -36,6 +37,9 @@ const finalLabelClass = computed(() => ["fr-label", props.labelClass]);
 
 function togglePasswordType() {
   hidePassword.value = !hidePassword.value;
+  liveMessage.value = hidePassword.value
+    ? "Mot de passe maintenant masqué"
+    : "Mot de passe maintenant affiché";
 }
 </script>
 
@@ -58,21 +62,25 @@ function togglePasswordType() {
           >
         </slot>
       </slot>
-      <DsfrButton
-        class="show-password"
-        type="button"
-        style="float: right"
-        :icon="icon"
-        :tertiary="true"
-        :no-outline="true"
-        :aria-controls="id"
-        @click.prevent="togglePasswordType"
-      >
-        <span class="fr-sr-only">{{ togglePasswordLabel }}</span>
-      </DsfrButton>
-
       <span v-if="hint" class="fr-hint-text">{{ hint }}</span>
     </label>
+
+    <DsfrButton
+      class="show-password"
+      type="button"
+      style="float: right"
+      :icon="icon"
+      :tertiary="true"
+      :no-outline="true"
+      :aria-controls="id"
+      :aria-label="togglePasswordLabel"
+      @click.prevent="togglePasswordType"
+    />
+
+    <!-- Ajout de la phrase d'état pour les lecteurs d'écran -->
+    <span aria-live="polite" class="fr-sr-only" role="status">
+      {{ liveMessage }}
+    </span>
 
     <input
       :id="id"

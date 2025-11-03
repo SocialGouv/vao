@@ -49,6 +49,9 @@
 </template>
 
 <script setup>
+import dayjs from "dayjs";
+import { nextTick } from "vue";
+
 const props = defineProps({
   personnes: { type: Array, required: true },
   modifiable: { type: Boolean, default: true },
@@ -75,16 +78,25 @@ const modalPersonne = reactive({
 
 const headersToDisplay = computed(() => {
   const columns = props.headers.map((h) => h.label);
-  columns.push("Actions");
+  if (props.modifiable) {
+    columns.push("Actions");
+  }
   return columns;
 });
 
 const personnesToDisplay = computed(() => {
   const displayedFields = props.headers.map((h) => h.value);
-  return props.personnes.map((p, index) => {
+  return props.personnes.map((personne, index) => {
     const row = [];
-    displayedFields.forEach((f) => {
-      row.push(Array.isArray(p[f]) ? p[f].join(",") : p[f]);
+    displayedFields.forEach((field) => {
+      const fieldValue = personne[field];
+      let valueFormatted = Array.isArray(fieldValue)
+        ? fieldValue.join(",")
+        : fieldValue;
+      if (field === "dateNaissance" && valueFormatted) {
+        valueFormatted = dayjs(valueFormatted).format("DD/MM/YYYY");
+      }
+      row.push(valueFormatted);
     });
     if (props.modifiable) {
       row.push({
@@ -93,11 +105,20 @@ const personnesToDisplay = computed(() => {
         tertiary: true,
         noOutline: true,
         tabIndex: 0,
-        ariaLabel: "Supprimer " + (p.prenom || "") + " " + (p.nom || ""),
+        "data-delete-index": index,
+        ariaLabel:
+          "Supprimer " + (personne.prenom || "") + " " + (personne.nom || ""),
         role: "button",
         onClick: (event) => {
           event.stopPropagation();
           deleteItem(index);
+        },
+        onkeydown: (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            event.stopPropagation();
+            deleteItem(index);
+          }
         },
       });
     } else row.push("");
@@ -115,6 +136,20 @@ function deleteItem(i) {
     ...props.personnes.slice(i + 1),
   ];
   emit("valid", personnes);
+
+  nextTick(() => {
+    setTimeout(() => {
+      const buttons = document.querySelectorAll("[data-delete-index]");
+
+      if (buttons[i]) {
+        buttons[i].focus();
+      } else if (buttons[i - 1]) {
+        buttons[i - 1].focus();
+      } else if (modalOrigin.value?.$el) {
+        modalOrigin.value.$el.focus();
+      }
+    }, 50);
+  });
 }
 
 const indexCourant = ref();

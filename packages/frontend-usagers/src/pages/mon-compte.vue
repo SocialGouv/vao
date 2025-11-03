@@ -1,6 +1,15 @@
 <template>
   <div class="fr-container">
     <h1>Modification de mon compte</h1>
+    <div class="fr-fieldset__element">
+      <p class="fr-hint-text" role="note">
+        Nous vous recommandons fortement de ne pas modifier les coordonnées
+        nominatives d'un utilisateur existant pour les remplacer par celles d'un
+        second utilisateur. Cette action entraînera des erreurs dans la gestion
+        des données et compromettra la traçabilité des informations précédentes.
+        La bonne pratique consiste à créer un nouveau compte nominatif
+      </p>
+    </div>
     <form>
       <DsfrInputGroup
         v-for="(input, key) in inputs"

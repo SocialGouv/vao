@@ -3,10 +3,10 @@ name: Lint, format and test
 on:
   push:
     branches:
-      - '*'
+      - "*"
   pull_request:
     branches:
-      - '*'
+      - "*"
 
 jobs:
   lint-format-test:
@@ -17,10 +17,15 @@ jobs:
         with:
           cache: yarn
           cache-dependency-path: ./yarn.lock
-          node-version: 20
+          node-version: 22.20.0
       - name: Install packages
         run: yarn --immutable
       - name: Run the linter
         run: yarn lint:all
       - name: Run backend tests
         run: yarn test:unit:all
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602
+        if: ${{ !github.event.pull_request.draft && !contains(github.head_ref || github.ref, 'renovate/') }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
