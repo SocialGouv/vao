@@ -35,6 +35,7 @@ import Accessibilite from "./Accessibilite.vue";
 import TitleWithIcon from "./TitleWithIcon.vue";
 import Toaster from "./Toaster.vue";
 import TwoFactorCodeVerification from "./auth/TwoFactorCodeVerification.vue";
+import DsfrLinkV2 from "./DsfrLinkV2.vue";
 export {
   CguValidation,
   ApiUnavailable,
@@ -73,4 +74,5 @@ export {
   TitleWithIcon,
   Toaster,
   TwoFactorCodeVerification,
+  DsfrLinkV2,
 };
