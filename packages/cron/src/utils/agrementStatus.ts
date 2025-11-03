@@ -1,6 +1,6 @@
 // TODO A supprimer et utiliser l'énum partagée une fois la PR de ach mergée
 // Ref: packages/backend/src/dto/AgrementsDto.ts
-export enum AgrementStatut {
+export enum AGREMENT_STATUT {
   BROUILLON = "BROUILLON",
   TRANSMIS = "TRANSMIS",
   DEPOSE = "DEPOSE",
