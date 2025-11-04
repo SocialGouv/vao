@@ -1,9 +1,9 @@
 import type { AgrementsDto } from "../../dto/AgrementsDto";
-import { AgrementsRepository } from "../../repositories/usagers/Agrements";
-import getByOrganismeId from "../agrements/Agrements";
+import { AgrementsRepository } from "./agrements.repository";
+import { AgrementService } from "./agrements.service";
 
 // On mocke le module repository
-jest.mock("../../repositories/usagers/Agrements", () => ({
+jest.mock("./agrements.repository", () => ({
   AgrementsRepository: {
     getByOrganismeId: jest.fn(),
   },
@@ -18,6 +18,8 @@ describe("Service: getByOrganismeId", () => {
     statut: "VALIDE",
   } as unknown as AgrementsDto;
 
+  const mockWithDetail: boolean = true;
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -25,14 +27,20 @@ describe("Service: getByOrganismeId", () => {
   it("devrait appeler AgrementsRepository.getByOrganismeId avec le bon id", async () => {
     (AgrementsRepository.getByOrganismeId as jest.Mock).mockResolvedValue({
       agrement: mockAgrement,
+      withDetail: mockWithDetail,
     });
 
     const organismeId = 42;
-    await getByOrganismeId({ organismeId });
+    const withDetails = true;
+    await AgrementService.getAgrement({
+      organismeId,
+      withDetails,
+    });
 
     expect(AgrementsRepository.getByOrganismeId).toHaveBeenCalledTimes(1);
     expect(AgrementsRepository.getByOrganismeId).toHaveBeenCalledWith({
       organismeId,
+      withDetails,
     });
   });
 
@@ -41,7 +49,10 @@ describe("Service: getByOrganismeId", () => {
       agrement: mockAgrement,
     });
 
-    const result = await getByOrganismeId({ organismeId: 99 });
+    const result = await AgrementService.getAgrement({
+      organismeId: 99,
+      withDetails: true,
+    });
 
     expect(result).toEqual({ agrement: mockAgrement });
   });
@@ -51,8 +62,8 @@ describe("Service: getByOrganismeId", () => {
       new Error("Erreur DB"),
     );
 
-    await expect(getByOrganismeId({ organismeId: 10 })).rejects.toThrow(
-      "Erreur DB",
-    );
+    await expect(
+      AgrementService.getAgrement({ organismeId: 10, withDetails: true }),
+    ).rejects.toThrow("Erreur DB");
   });
 });

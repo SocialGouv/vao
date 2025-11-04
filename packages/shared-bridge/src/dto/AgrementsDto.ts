@@ -47,6 +47,7 @@ export enum FileCategory {
 }
 
 export interface AgrementsDto {
+  id?: number | null;
   statut: AgrementStatut | null;
   updatedAt: Date | null;
   dateObtentionCertificat: Date | null;
@@ -86,6 +87,10 @@ export interface AgrementsDto {
   bilanFinancierComparatif: string | null;
   bilanFinancierRessourcesHumaines: string | null;
   bilanFinancierCommentaire: string | null;
+  agrementAnimation?: AgrementAnimationDto[];
+  agrementFiles?: AgrementFilesDto[];
+  agrementSejours?: AgrementSejoursDto[];
+  agrementBilanAnnuel?: AgrementBilanAnnuelDto[];
 }
 
 export interface ActiviteDto {
@@ -97,6 +102,7 @@ export interface ActiviteDto {
 export interface AgrementAnimationDto {
   activiteId: number | null;
   agrementId: number | null;
+  activite: ActiviteDto;
 }
 
 export interface AgrementFilesDto {
@@ -122,6 +128,7 @@ export interface AgrementBilanAnnuelDto {
   nbTotalJoursVacances: number | null;
   typeHandicap: string[] | null;
   trancheAge: string[] | null;
+  bilanHebergement: BilanHebergementDto | null;
 }
 
 export interface BilanHebergementDto {
