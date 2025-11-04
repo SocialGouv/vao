@@ -48,86 +48,86 @@ export enum FileCategory {
 
 export interface AgrementsDto {
   statut: AgrementStatut | null;
-  updated_at: Date | null;
-  date_obtention_certificat: Date | null;
-  date_depot: Date | null;
-  date_verif_completure: Date | null;
-  date_confirm_completude: Date | null;
+  updatedAt: Date | null;
+  dateObtentionCertificat: Date | null;
+  dateDepot: Date | null;
+  dateVerifCompleture: Date | null;
+  dateConfirmCompletude: Date | null;
   commentaire: string | null;
   motivations: string | null;
   immatriculation: string | null;
-  sejour_nb_envisage: number | null;
-  sejour_commentaire: string | null;
-  vacanciers_nb_envisage: number | null;
-  animation_autre: string | null;
-  accomp_resp_nb: number | null;
-  accomp_resp_comp_exp: string | null;
-  accomp_resp_recrute_urg: string | null;
-  accomp_resp_attest_hono: boolean | null;
-  transport_aller_retour: string | null;
-  transport_sejour: string | null;
-  suivi_med_distribution: string | null;
-  suivi_med_accord_sejour: string | null;
-  protocole_evac_urg: string | null;
-  protocole_rapat_urg: string | null;
-  protocole_rapat_etranger: string | null;
-  protocole_materiel: string | null;
-  protocole_info_famille: string | null;
-  protocole_remboursement: string | null;
-  budget_gestion_perso: string | null;
-  budget_paiement_securise: string | null;
-  budget_complement: string | null;
-  bilan_changement_evolution: boolean | null;
-  bilan_aucun_changement_evolution: boolean | null;
-  bilan_qual_perception_sensibilite: string | null;
-  bilan_qual_perspective_evol: string | null;
-  bilan_qual_elements_marquants: string | null;
-  bilan_financier_comptabilite: string | null;
-  bilan_financier_comparatif: string | null;
-  bilan_financier_ressources_humaines: string | null;
-  bilan_financier_commentaire: string | null;
+  sejourNbEnvisage: number | null;
+  sejourCommentaire: string | null;
+  vacanciersNbEnvisage: number | null;
+  animationAutre: string | null;
+  accompRespNb: number | null;
+  accompRespCompExp: string | null;
+  accompRespRecruteUrg: string | null;
+  accompRespAttestHono: boolean | null;
+  transportAllerRetour: string | null;
+  transportSejour: string | null;
+  suiviMedDistribution: string | null;
+  suiviMedAccordSejour: string | null;
+  protocoleEvacUrg: string | null;
+  protocoleRapatUrg: string | null;
+  protocoleRapatEtranger: string | null;
+  protocoleMateriel: string | null;
+  protocoleInfoFamille: string | null;
+  protocoleRemboursement: string | null;
+  budgetGestionPerso: string | null;
+  budgetPaiementSecurise: string | null;
+  budgetComplement: string | null;
+  bilanChangementEvolution: boolean | null;
+  bilanAucunChangementEvolution: boolean | null;
+  bilanQualPerceptionSensibilite: string | null;
+  bilanQualPerspectiveEvol: string | null;
+  bilanQualElementsMarquants: string | null;
+  bilanFinancierComptabilite: string | null;
+  bilanFinancierComparatif: string | null;
+  bilanFinancierRessourcesHumaines: string | null;
+  bilanFinancierCommentaire: string | null;
 }
 
 export interface ActiviteDto {
   code: string | null;
   libelle: string | null;
-  activite_type: ActiviteType | null;
+  activiteType: ActiviteType | null;
 }
 
 export interface AgrementAnimationDto {
-  activite_id: number | null;
-  agrement_id: number | null;
+  activiteId: number | null;
+  agrementId: number | null;
 }
 
 export interface AgrementFilesDto {
-  agrement_id: number | null;
+  agrementId: number | null;
   category: FileCategory | null;
-  file_uuid: string | null;
+  fileUuid: string | null;
 }
 
 export interface AgrementSejoursDto {
-  agrement_id: number | null;
-  nom_hebergement: string | null;
-  adresse_id: number | null;
-  b_vacanciers: number | null;
+  agrementId: number | null;
+  nomHebergement: string | null;
+  adresseId: number | null;
+  bVacanciers: number | null;
   mois: number[] | null;
 }
 
 export interface AgrementBilanAnnuelDto {
-  agrement_id: number | null;
+  agrementId: number | null;
   annee: number | null;
-  nb_global_vacanciers: number | null;
-  nb_hommes: number | null;
-  nb_femmes: number | null;
-  nb_total_jours_vacances: number | null;
-  type_handicap: string[] | null;
-  tranche_age: string[] | null;
+  nbGlobalVacanciers: number | null;
+  nbHommes: number | null;
+  nbFemmes: number | null;
+  nbTotalJoursVacances: number | null;
+  typeHandicap: string[] | null;
+  trancheAge: string[] | null;
 }
 
 export interface BilanHebergementDto {
-  agr_bilan_annuel_id: number | null;
-  nom_hebergement: string | null;
-  adresse_id: number | null;
-  nb_jours: number | null;
+  agrBilanAnnuelId: number | null;
+  nomHebergement: string | null;
+  adresseId: number | null;
+  nbJours: number | null;
   mois: number[] | null;
 }
