@@ -1,4 +1,5 @@
-import { AgrementsDto } from "../../dto/AgrementsDto";
+import { AgrementsDto } from "@vao/shared-bridge/";
+
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 

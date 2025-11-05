@@ -6,8 +6,9 @@ import {
   AgrementsDto,
   AgrementSejoursDto,
   BilanHebergementDto,
-} from "../dto/AgrementsDto";
-import { AgrementEntity } from "../entities/AgrementEntity";
+} from "@vao/shared-bridge";
+
+import { AgrementEntity } from "./agrements.entity";
 
 /**
  * Mapper to convert database rows (snake_case) to DTOs (camelCase)
