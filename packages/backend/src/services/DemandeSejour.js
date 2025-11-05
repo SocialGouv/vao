@@ -6,7 +6,7 @@ const Sentry = require("@sentry/node");
 const { sentry } = require("../config");
 const dayjs = require("dayjs");
 const logger = require("../utils/logger");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 const DEMANDE_SEJOUR_STATUTS = require("@vao/shared-bridge");
 const PersonneMorale = require("./organisme/PersonneMorale");
 const PersonnePhysique = require("./organisme/PersonnePhysique");
@@ -1066,7 +1066,7 @@ module.exports.create = async ({
     if (moisDebut < 12) return "automne";
   })();
 
-  const response = await pool.query(
+  const response = await getPool().query(
     ...query.create(
       organismeId,
       libelle,
@@ -1088,7 +1088,7 @@ module.exports.create = async ({
 
 module.exports.copy = async (declaration) => {
   log.i("copy - IN");
-  const client = await pool.connect();
+  const client = await getPool().connect();
   let declarationId;
   try {
     await client.query("BEGIN");
@@ -1133,14 +1133,18 @@ module.exports.copy = async (declaration) => {
 
 module.exports.delete = async (declarationId, userId) => {
   log.i("delete - IN");
-  await pool.query(query.unlinkToHebergement, [declarationId]);
-  const { rowCount } = await pool.query(...query.delete(declarationId, userId));
+  await getPool().query(query.unlinkToHebergement, [declarationId]);
+  const { rowCount } = await getPool().query(
+    ...query.delete(declarationId, userId),
+  );
   log.i("delete - DONE");
   return rowCount;
 };
 module.exports.cancel = async (declarationId, userId) => {
   log.i("cancel - IN");
-  const { rowCount } = await pool.query(...query.cancel(declarationId, userId));
+  const { rowCount } = await getPool().query(
+    ...query.cancel(declarationId, userId),
+  );
   log.i("cancel - DONE");
   return rowCount;
 };
@@ -1213,8 +1217,8 @@ module.exports.get = async (organismesId, queryParams) => {
   );
 
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -1234,7 +1238,7 @@ module.exports.getDeprecated = async ({ sortBy }, organismesId) => {
   }
   const finalQuery = queryGet[0] + querySorted;
   const queryParams = queryGet[1];
-  const response = await pool.query(finalQuery, [queryParams[0]]);
+  const response = await getPool().query(finalQuery, [queryParams[0]]);
   log.i("get - DONE");
   const demandes = response.rows;
   return demandes;
@@ -1242,7 +1246,7 @@ module.exports.getDeprecated = async ({ sortBy }, organismesId) => {
 
 module.exports.getOne = async (criterias = {}) => {
   log.i("getOne - IN", { criterias });
-  const { rows: declarations, rowCount } = await pool.query(
+  const { rows: declarations, rowCount } = await getPool().query(
     ...query.getOne(criterias),
   );
   if (rowCount !== 1) {
@@ -1266,7 +1270,7 @@ module.exports.getOne = async (criterias = {}) => {
 
 module.exports.getByIdOrUserSiren = async (id, siren, userId) => {
   log.i("getByIdOrUserSiren - IN");
-  const response = await pool.query(query.getByIdOrUserSiren, [
+  const response = await getPool().query(query.getByIdOrUserSiren, [
     id,
     siren,
     userId,
@@ -1499,8 +1503,8 @@ module.exports.getDeclarationsMessages = async (
   log.d(queryParams);
   log.d({ params: paginatedQuery.params, query: paginatedQuery.query });
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -1512,7 +1516,7 @@ module.exports.getById = async (declarationId, departements) => {
   log.i("getById - IN", { declarationId });
 
   const declaration =
-    (await pool.query(...query.getById(declarationId, departements)))
+    (await getPool().query(...query.getById(declarationId, departements)))
       .rows?.[0] ?? null;
   const hebergements = await getHebergementsByDSIds(declarationId);
   if (!declaration) {
@@ -1610,8 +1614,8 @@ module.exports.getHebergementsByDepartementCode = async (
     queryParams,
   );
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -1633,14 +1637,16 @@ module.exports.getStats = async (userId) => {
   log.i("getStatts - IN");
   const {
     rows: [stats],
-  } = await pool.query(...query.getStats(userId));
+  } = await getPool().query(...query.getStats(userId));
   log.i("getStatts - DONE");
   return stats;
 };
 
 module.exports.getStatut = async (declarationId) => {
   log.i("getStatut - IN");
-  const { rows: data } = await pool.query(query.getStatut, [declarationId]);
+  const { rows: data } = await getPool().query(query.getStatut, [
+    declarationId,
+  ]);
   log.d(data);
   log.i("getStatut - DONE");
   return data[0].statut ?? null;
@@ -1664,7 +1670,7 @@ module.exports.update = async (type, declarationId, parametre) => {
         if (moisDebut < 12) return "automne";
       })();
 
-      response = await pool.query(
+      response = await getPool().query(
         ...query.updateInformationsGenerales(
           libelle,
           dateDebut,
@@ -1679,7 +1685,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "informationsVacanciers": {
       log.d("informationsVacanciers", declarationId);
-      response = await pool.query(query.updateInformationsVacanciers, [
+      response = await getPool().query(query.updateInformationsVacanciers, [
         parametre,
         declarationId,
       ]);
@@ -1687,7 +1693,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "informationsPersonnel": {
       log.d("informationsPersonnel", declarationId);
-      response = await pool.query(query.updateInformationsPersonnel, [
+      response = await getPool().query(query.updateInformationsPersonnel, [
         parametre,
         declarationId,
       ]);
@@ -1695,7 +1701,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "projetSejour": {
       log.d("projetSejour", declarationId);
-      response = await pool.query(query.updateProjetSejour, [
+      response = await getPool().query(query.updateProjetSejour, [
         parametre,
         declarationId,
       ]);
@@ -1703,7 +1709,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "protocole_transport": {
       log.d("protocole_transport", declarationId);
-      response = await pool.query(query.updateInformationsTransport, [
+      response = await getPool().query(query.updateInformationsTransport, [
         parametre,
         declarationId,
       ]);
@@ -1711,7 +1717,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "protocole_sanitaire": {
       log.d("protocole_sanitaire", declarationId);
-      response = await pool.query(query.updateInformationsSanitaires, [
+      response = await getPool().query(query.updateInformationsSanitaires, [
         parametre,
         declarationId,
       ]);
@@ -1719,7 +1725,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "hebergements": {
       log.d("hebergements", declarationId);
-      const client = await pool.connect();
+      const client = await getPool().connect();
       try {
         await client.query("BEGIN");
         await linkToHebergements(client, declarationId, parametre.hebergements);
@@ -1761,7 +1767,7 @@ module.exports.finalize8jours = async (
     declarationId,
   });
 
-  await pool.query(
+  await getPool().query(
     ...query.finalize8jours(
       declarationId,
       informationsVacanciers,
@@ -1802,7 +1808,7 @@ module.exports.finalize = async (
     idFonctionnelle,
   });
 
-  await pool.query(
+  await getPool().query(
     ...query.finalize(
       declarationId,
       idFonctionnelle,
@@ -1821,33 +1827,39 @@ module.exports.finalize = async (
 
 module.exports.getNextIndex = async () => {
   log.i("getNextIndex - IN");
-  const { rows: data } = await pool.query(query.getNextIndex);
+  const { rows: data } = await getPool().query(query.getNextIndex);
   log.d(data[0].index);
   log.i("getNextIndex - DONE");
   return data[0].index ?? null;
 };
 module.exports.getEmailToList = async (organismeId) => {
   log.i("getEmailToList - IN", organismeId);
-  const { rows: data } = await pool.query(query.getEmailToList, [organismeId]);
+  const { rows: data } = await getPool().query(query.getEmailToList, [
+    organismeId,
+  ]);
   log.i("getEmailToList - DONE");
   return data.map((m) => m.mail);
 };
 
 module.exports.getEmailCcList = async (siren) => {
   log.i("getEmailCcList - IN", siren);
-  const { rows: data } = await pool.query(query.getEmailCcList, [siren]);
+  const { rows: data } = await getPool().query(query.getEmailCcList, [siren]);
   log.i("getEmailCcList - DONE");
   return data.map((m) => m.mail);
 };
 module.exports.getEmailBack = async (departement) => {
   log.i("getEmailBack - IN", departement);
-  const { rows: data } = await pool.query(query.getEmailBack, [departement]);
+  const { rows: data } = await getPool().query(query.getEmailBack, [
+    departement,
+  ]);
   log.i("getEmailBack - DONE");
   return data.map((m) => m.mail);
 };
 module.exports.getEmailBackCc = async (departements) => {
   log.i("getEmailBackCc - IN", departements);
-  const { rows: data } = await pool.query(query.getEmailBackCc, [departements]);
+  const { rows: data } = await getPool().query(query.getEmailBackCc, [
+    departements,
+  ]);
   log.i("getEmailBackCc - DONE");
   return data.map((m) => m.mail);
 };
@@ -1855,16 +1867,19 @@ module.exports.getEmailBackCc = async (departements) => {
 module.exports.getExtract = async (territoireCode, departementCodes) => {
   log.i("getExtract - IN");
 
-  const { rows: data } = await pool.query(query.getExtract(territoireCode), [
-    departementCodes,
-  ]);
+  const { rows: data } = await getPool().query(
+    query.getExtract(territoireCode),
+    [departementCodes],
+  );
   log.i("getExtract - DONE");
   return data;
 };
 
 module.exports.getExtractFO = async (organismeId) => {
   log.i("getExtractFO - IN");
-  const { rows: data } = await pool.query(query.getExtractFO, [organismeId]);
+  const { rows: data } = await getPool().query(query.getExtractFO, [
+    organismeId,
+  ]);
   log.i("getExtractFO - DONE");
   return data;
 };
@@ -1879,7 +1894,7 @@ module.exports.insertEvent = async (
   metaData,
 ) => {
   log.i("insertEvent - IN");
-  const { rows: response } = await pool.query(query.insertEvent, [
+  const { rows: response } = await getPool().query(query.insertEvent, [
     source,
     declarationId,
     userId,
@@ -1894,13 +1909,13 @@ module.exports.insertEvent = async (
 
 module.exports.saveDS2M = async (declarationId, declaration) => {
   log.i("saveDS2M - IN");
-  await pool.query(query.saveDS2M, [declarationId, declaration]);
+  await getPool().query(query.saveDS2M, [declarationId, declaration]);
   log.i("saveDS2M - DONE");
 };
 
 module.exports.addFile = async (declarationId, file) => {
   log.i("addFile - IN", { declarationId });
-  const { rows: response } = await pool.query(query.addFile, [
+  const { rows: response } = await getPool().query(query.addFile, [
     declarationId,
     file,
   ]);
@@ -1910,7 +1925,7 @@ module.exports.addFile = async (declarationId, file) => {
 
 module.exports.historique = async (declarationId) => {
   log.i("historique - IN", { declarationId });
-  const { rows: response } = await pool.query(query.historique, [
+  const { rows: response } = await getPool().query(query.historique, [
     declarationId,
   ]);
   log.i("historique - DONE");
@@ -1924,7 +1939,7 @@ module.exports.updateStatut = async (
   cb = null,
 ) => {
   log.i("updateStatut - IN", { declarationId, statut });
-  const client = await pool.connect();
+  const client = await getPool().connect();
 
   try {
     await client.query("BEGIN");

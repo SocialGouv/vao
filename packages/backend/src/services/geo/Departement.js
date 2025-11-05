@@ -1,6 +1,6 @@
 const AppError = require("../../utils/error");
 const logger = require("../../utils/logger");
-const pool = require("../../utils/pgpool").getPool();
+const { getPool } = require("../../utils/pgpool");
 
 const log = logger(module.filename);
 
@@ -21,7 +21,7 @@ let cache;
 module.exports.fetch = async (criterias = {}) => {
   log.i("fetch - IN");
   if (!cache) {
-    const { rows } = await pool.query(query.select);
+    const { rows } = await getPool().query(query.select);
     cache = rows;
   }
   const filters = Object.entries(criterias);
@@ -36,7 +36,7 @@ module.exports.fetch = async (criterias = {}) => {
 module.exports.fetchOne = async (code) => {
   log.i("fetchOne - IN");
   if (!cache) {
-    const { rows } = await pool.query(query.select);
+    const { rows } = await getPool().query(query.select);
     cache = rows;
   }
   const departement = cache.find((departement) => departement.value === code);
