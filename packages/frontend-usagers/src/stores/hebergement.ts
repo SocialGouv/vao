@@ -1,16 +1,26 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
 import UploadFile from "~/utils/UploadFile";
+import type { HebergementDto } from "@vao/shared-bridge";
+import { HebergementService } from "~/services/hebergementService";
 
 const log = logger("stores/hebergement");
 
+interface HebergementStoreState {
+  hebergements: HebergementDto[];
+  hebergementsTotal: number;
+  hebergementCourant: HebergementDto | null;
+}
+
 export const useHebergementStore = defineStore("hebergement", {
-  state: () => ({
-    hebergements: [],
-    hebergementCourant: null,
-  }),
+  state: () =>
+    ({
+      hebergements: [],
+      hebergementsTotal: 0,
+      hebergementCourant: null,
+    }) as HebergementStoreState,
   actions: {
-    async fetchBySiren(siren) {
+    async fetchBySiren(siren: string) {
       try {
         log.i("fetchBySiren - IN");
         const { hebergements } = await $fetchBackend(
@@ -23,12 +33,12 @@ export const useHebergementStore = defineStore("hebergement", {
           this.hebergements = hebergements;
         }
         log.d("fetchBySiren  - DONE");
-      } catch (err) {
+      } catch (err: unknown) {
         this.hebergements = [];
-        log.i("fetchBySiren - DONE with error");
+        log.i("fetchBySiren - DONE with error", err);
       }
     },
-    async fetch(params) {
+    async fetch(params = {}) {
       try {
         log.i("fetch - IN");
         const { rows, total } = await $fetchBackend("/hebergement", {
@@ -39,29 +49,27 @@ export const useHebergementStore = defineStore("hebergement", {
         this.hebergements = rows;
         this.hebergementsTotal = total;
         log.d("fetch  - DONE");
-      } catch (err) {
+      } catch (err: unknown) {
         this.hebergements = [];
-        log.i("fetch - DONE with error");
+        log.i("fetch - DONE with error", err);
       }
     },
-    async fetchById(id) {
+    async fetchById(id: number) {
       try {
         log.i("fetchById - IN", { id });
 
-        const { hebergement } = await $fetchBackend(`/hebergement/${id}`, {
-          credentials: "include",
-        });
+        const hebergement = await HebergementService.getHebergement(id);
         log.d(hebergement);
         if (hebergement) {
           this.hebergementCourant = hebergement;
         }
         log.d("fetchById - DONE");
-      } catch (err) {
+      } catch (err: unknown) {
         this.hebergementCourant = null;
-        log.i("fetchById - DONE with error");
+        log.i("fetchById - DONE with error", err);
       }
     },
-    async updateOrCreate(hebergement, hebergementId) {
+    async updateOrCreate(hebergement: any, hebergementId: number) {
       log.i("updateOrCreate - IN", { hebergement });
 
       const url = hebergementId
@@ -76,7 +84,7 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("updateOrCreate - Done", { id });
       return id ?? hebergementId;
     },
-    async updateOrCreateBrouillon(hebergement, hebergementId) {
+    async updateOrCreateBrouillon(hebergement: any, hebergementId: number) {
       log.i("updateOrCreate - IN", { hebergement });
 
       const url = hebergementId
@@ -91,7 +99,7 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("updateOrCreate - Done", { id });
       return id ?? hebergementId;
     },
-    async activate(hebergement, hebergementId) {
+    async activate(hebergement: any, hebergementId: number) {
       log.i("updateOrCreate - IN", { hebergement });
 
       const { id } = await $fetchBackend(
@@ -105,7 +113,7 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("updateOrCreate - Done", { id });
       return id ?? hebergementId;
     },
-    async desactivate(hebergementId) {
+    async desactivate(hebergementId: number) {
       log.i("desactivate - IN", { hebergementId });
 
       const { id } = await $fetchBackend(
@@ -118,7 +126,7 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("desactivate - Done", { id });
       return id ?? hebergementId;
     },
-    async reactivate(hebergementId) {
+    async reactivate(hebergementId: number) {
       log.i("reactivate - IN", { hebergementId });
 
       const { id } = await $fetchBackend(
@@ -131,10 +139,14 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("desactivate - Done", { id });
       return id ?? hebergementId;
     },
-    async uploadAllFiles(hebergement) {
+    async uploadAllFiles(hebergement: any) {
       const { informationsLocaux } = hebergement;
 
-      const uploadFileIfNeeded = async (key, file, logLabel) => {
+      const uploadFileIfNeeded = async (
+        key: string,
+        file: any,
+        logLabel: string,
+      ) => {
         if (file && !file.uuid) {
           try {
             const uuid = await UploadFile(key, file);
@@ -143,7 +155,7 @@ export const useHebergementStore = defineStore("hebergement", {
               name: file.name,
               createdAt: new Date(),
             };
-          } catch (error) {
+          } catch (error: any) {
             log.w(logLabel, error);
             error.fileName = file?.name;
             throw error;
