@@ -7,7 +7,7 @@
       <h2>Déposez votre dossier de renouvellement d’agrément</h2>
       <p>
         Votre agrément actuel expire le
-        {{ formatDateFr(organismeCourant?.agrement?.dateFinValidite) }}. Une
+        {{ formatLongDateFr(organismeCourant?.agrement?.dateFinValidite) }}. Une
         fois l’agrément renouvelé, vous pourrez déposer de nouvelles
         déclarations de séjours dans la continuité du précédent agrément.
       </p>
@@ -49,7 +49,8 @@
 
 <script setup>
 import { CardsNumber } from "@vao/shared-ui";
-import { formatDateFr } from "../utils/dateFormat";
+import { formatLongDateFr } from "@vao/shared-bridge";
+
 definePageMeta({
   middleware: ["is-connected"],
 });

@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import request from "supertest";
 
-import router from "./agrements.route";
+import router from "../../usagers/agrements/agrements.route";
 
 jest.mock("../../middlewares/checkJWT", () =>
   jest.fn((req, res, next) => next()),

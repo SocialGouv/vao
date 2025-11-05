@@ -1,54 +1,9 @@
-/* eslint-disable no-unused-vars */
-// TODO : Déplacer les énums dans la zone de constantes shared une fois la PR de ach mergée
-export enum AgrementStatut {
-  BROUILLON = "BROUILLON",
-  TRANSMIS = "TRANSMIS",
-  DEPOSE = "DEPOSE",
-  VERIF_EN_COURS = "VERIF_EN_COURS",
-  PRIS_EN_CHARGE = "PRIS_EN_CHARGE",
-  EN_COURS = "EN_COURS",
-  A_MODIFIER = "A_MODIFIER",
-  REFUSE = "REFUSE",
-  COMPLETUDE_CONFIRME = "COMPLETUDE_CONFIRME",
-  VALIDE = "VALIDE",
-}
-
-export enum ActiviteType {
-  SPORT = "SPORT",
-  CULTURE = "CULTURE",
-}
-
-export enum TypeHandicap {
-  SENSORIEL = "SENSORIEL",
-  COGNITIF = "COGNITIF",
-  MENTAL_PSYCHIQUE = "MENTAL_PSYCHIQUE",
-  MOTEUR = "MOTEUR",
-  POLYHANDICAP = "POLYHANDICAP",
-}
-
-export enum TrancheAge {
-  TA_18_39 = "18_39",
-  TA_40_59 = "40_59",
-  TA_PLUS_DE_59 = "PLUS_DE_59",
-}
-export enum FileCategory {
-  PROCVERBAL = "AGR_PROCVERBAL",
-  MOTIVATION = "AGR_MOTIVATION",
-  IMMATRICUL = "AGR_IMMATRICUL",
-  ASSURRESP = "AGR_ASSURRESP",
-  ASSURRAPAT = "AGR_ASSURRAPAT",
-  SEJOUR = "AGR_SEJOUR",
-  ACCOMPRESP = "AGR_ACCOMPRESP",
-  SUIVIMED = "AGR_SUIVIMED",
-  BUDGET = "AGR_BUDGET",
-  CHANGEEVOL = "AGR_CHANGEEVOL",
-  BILANQUALIT = "AGR_BILANQUALIT",
-  BILANFINANC = "AGR_BILANFINANC",
-}
+import { ACTIVITE_TYPE, AGREMENT_STATUT } from "../constantes/agrement";
+import { FILE_CATEGORY } from "../constantes/file";
 
 export interface AgrementsDto {
   id?: number | null;
-  statut: AgrementStatut | null;
+  statut: AGREMENT_STATUT | null;
   updatedAt: Date | null;
   dateObtentionCertificat: Date | null;
   dateDepot: Date | null;
@@ -96,7 +51,7 @@ export interface AgrementsDto {
 export interface ActiviteDto {
   code: string | null;
   libelle: string | null;
-  activiteType: ActiviteType | null;
+  activiteType: ACTIVITE_TYPE | null;
 }
 
 export interface AgrementAnimationDto {
@@ -107,7 +62,7 @@ export interface AgrementAnimationDto {
 
 export interface AgrementFilesDto {
   agrementId: number | null;
-  category: FileCategory | null;
+  category: FILE_CATEGORY | null;
   fileUuid: string | null;
 }
 

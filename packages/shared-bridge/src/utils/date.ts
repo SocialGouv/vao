@@ -29,3 +29,13 @@ export function formatShortDateFr(date: Date): string {
       })
     : "";
 }
+
+export const formatLongDateFr = (dateString: Date | undefined): string => {
+  return dateString
+    ? new Date(dateString).toLocaleDateString("fr-FR", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      })
+    : "";
+};
