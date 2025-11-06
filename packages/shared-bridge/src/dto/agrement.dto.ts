@@ -3,6 +3,7 @@ import { FILE_CATEGORY } from "../constantes/file";
 
 export interface AgrementsDto {
   id?: number | null;
+  organismeId: number;
   statut: AGREMENT_STATUT | null;
   updatedAt: Date | null;
   dateObtentionCertificat: Date | null;
@@ -70,7 +71,7 @@ export interface AgrementSejoursDto {
   agrementId: number | null;
   nomHebergement: string | null;
   adresseId: number | null;
-  bVacanciers: number | null;
+  nbVacanciers: number | null;
   mois: number[] | null;
 }
 

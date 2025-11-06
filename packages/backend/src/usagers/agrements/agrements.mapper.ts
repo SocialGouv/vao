@@ -163,8 +163,8 @@ export const AgrementSejoursMapper = {
     return {
       adresseId: entity.adresse_id,
       agrementId: entity.agrement_id,
-      bVacanciers: entity.b_vacanciers,
       mois: entity.mois,
+      nbVacanciers: entity.nb_vacanciers,
       nomHebergement: entity.nom_hebergement,
     };
   },

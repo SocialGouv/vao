@@ -23,6 +23,7 @@ export function requestValidatorMiddleware<T extends BasicRoute>(
     next: NextFunction,
   ) => {
     try {
+      //console.log("req.body", req.body);
       req.validatedParams = requestParamsValidator(
         validator.params,
         req.params,
@@ -30,6 +31,7 @@ export function requestValidatorMiddleware<T extends BasicRoute>(
       req.validatedQuery = requestQueryValidator(validator.query, req.query);
       req.validatedBody = requestBodyValidator(validator.body, req.body);
     } catch (error) {
+      //console.log("error", error);
       log.w("missing or invalid parameter", error);
       return next(
         new AppError("Paramètre incorrect", {
@@ -77,6 +79,9 @@ export function requestBodyValidator<T>(
     try {
       return validator.validateSync(body, { stripUnknown: true });
     } catch (error) {
+      console.error("❌ Validation error details:", error.errors);
+      console.error("❌ Invalid field paths:", error.path);
+      //console.error("❌ Full error object:", error);
       throw new Error(ERRORS.INVALID_BODY);
     }
   }

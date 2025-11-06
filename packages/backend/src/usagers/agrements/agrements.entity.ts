@@ -65,7 +65,7 @@ export interface ActiviteEntity {
 export interface AgrementAnimationEntity {
   id?: number | null;
   activite_id: number | null;
-  agrement_id: number | null;
+  //agrement_id: number | null;
 }
 
 /**
@@ -73,7 +73,7 @@ export interface AgrementAnimationEntity {
  */
 export interface AgrementFilesEntity {
   id?: number | null;
-  agrement_id: number | null;
+  //agrement_id: number | null;
   category: string | null;
   file_uuid: string | null;
 }
@@ -83,10 +83,10 @@ export interface AgrementFilesEntity {
  */
 export interface AgrementSejoursEntity {
   id?: number | null;
-  agrement_id: number | null;
+  //agrement_id: number | null;
   nom_hebergement: string | null;
   adresse_id: number | null;
-  b_vacanciers: number | null;
+  nb_vacanciers: number | null;
   mois: number[] | null;
 }
 
@@ -95,7 +95,7 @@ export interface AgrementSejoursEntity {
  */
 export interface AgrementBilanAnnuelEntity {
   id?: number | null;
-  agrement_id: number | null;
+  agrement_id?: number | null;
   annee: number | null;
   nb_global_vacanciers: number | null;
   nb_hommes: number | null;
@@ -111,7 +111,7 @@ export interface AgrementBilanAnnuelEntity {
  */
 export interface BilanHebergementEntity {
   id?: number | null;
-  agr_bilan_annuel_id: number | null;
+  agr_bilan_annuel_id?: number | null;
   nom_hebergement: string | null;
   adresse_id: number | null;
   nb_jours: number | null;

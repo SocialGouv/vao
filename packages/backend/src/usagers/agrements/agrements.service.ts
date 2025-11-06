@@ -1,3 +1,4 @@
+import { AgrementsDto } from "@vao/shared-bridge";
 import dayjs from "dayjs";
 
 import AgrementServiceDeprecated from "../../services/Agrement";
@@ -22,45 +23,23 @@ export const AgrementService = {
     return agrement;
   },
 
-  async save({
-    organismeId,
-    numero,
-    regionObtention,
-    dateObtention,
-    file,
-  }: {
-    organismeId: number;
-    numero: string;
-    regionObtention: string;
-    dateObtention: Date;
-    file: object;
-  }) {
-    const agrement = await AgrementsRepository.getByOrganismeId({
-      organismeId,
-      withDetails: false,
-    });
-    const dateFinValidite = dayjs(dateObtention).add(5, "year").toDate();
+  async save({ agrement }: { agrement: AgrementsDto }) {
+    // Calcul de la date de fin de validité
+    const dateFinValidite = agrement?.dateObtentionCertificat
+      ? dayjs(agrement.dateObtentionCertificat).add(5, "year").toDate()
+      : null;
 
     if (agrement && agrement?.id) {
-      const updatedAgrementId = await AgrementServiceDeprecated.update(
-        organismeId,
-        numero,
-        regionObtention,
-        dateObtention,
+      const updatedAgrementId = await AgrementServiceDeprecated.update({
+        agrement,
         dateFinValidite,
-        file,
-      );
+      });
       log.d("updated meta values - DONE", { updatedAgrementId });
       return updatedAgrementId;
     } else {
-      const createdAgrementId = await AgrementServiceDeprecated.create(
-        organismeId,
-        numero,
-        regionObtention,
-        dateObtention,
-        dateFinValidite,
-        file,
-      );
+      const createdAgrementId = await AgrementsRepository.create({
+        agrement,
+      });
       log.d("Add meta values - DONE", { createdAgrementId });
       return createdAgrementId;
     }

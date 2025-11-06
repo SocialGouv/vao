@@ -16,6 +16,12 @@ router.get(
   AgrementController.get,
 );
 
-router.post("/", checkJWT, checkPermissionAgrement, AgrementController.post);
+router.post(
+  "/",
+  checkJWT,
+  checkPermissionAgrement,
+  requestValidatorMiddleware(AgrementUsagersRoutesSchema["Save"]),
+  AgrementController.post,
+);
 
 export default router;

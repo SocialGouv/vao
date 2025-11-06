@@ -1,12 +1,7 @@
 import type { AgrementsDto, AgrementUsagersRoutes } from "@vao/shared-bridge";
-import type { NextFunction, Response } from "express";
+import type { NextFunction } from "express";
 
-import type {
-  RouteRequest,
-  RouteResponse,
-  UserRequest,
-} from "../../types/request";
-import AppError from "../../utils/error";
+import type { RouteRequest, RouteResponse } from "../../types/request";
 import logger from "../../utils/logger";
 import { AgrementService } from "./agrements.service";
 
@@ -33,43 +28,18 @@ export const AgrementController = {
       next(error);
     }
   },
-  async post(req: UserRequest, res: Response, next: NextFunction) {
+  async post(
+    req: RouteRequest<AgrementUsagersRoutes["Save"]>,
+    res: RouteResponse<AgrementUsagersRoutes["Save"]>,
+    next: NextFunction,
+  ) {
     log.i("IN");
-    if (!req.body) {
-      log.w("missing parameter");
-      return next(
-        new AppError("Paramètre incorrect", {
-          statusCode: 400,
-        }),
-      );
-    }
-    const { organismeId, numero, regionObtention, dateObtention, file } =
-      req.body;
-
-    if (
-      !organismeId ||
-      !numero ||
-      !regionObtention ||
-      !dateObtention ||
-      !file
-    ) {
-      log.w("options parameter is incorrect");
-      return next(
-        new AppError("Paramètre incorrect", {
-          statusCode: 400,
-        }),
-      );
-    }
-
+    const agrement = req.validatedBody!;
     try {
-      const agrementId = await AgrementService.save({
-        dateObtention,
-        file,
-        numero,
-        organismeId,
-        regionObtention,
+      const id = await AgrementService.save({
+        agrement,
       });
-      return res.json({ id: agrementId });
+      return res.json({ id });
     } catch (err) {
       log.w("DONE with error");
       return next(err);
