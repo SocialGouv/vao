@@ -1,6 +1,11 @@
+import type { AgrementsDto, AgrementUsagersRoutes } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
 
-import type { UserRequest } from "../../types/request";
+import type {
+  RouteRequest,
+  RouteResponse,
+  UserRequest,
+} from "../../types/request";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 import { AgrementService } from "./agrements.service";
@@ -8,22 +13,17 @@ import { AgrementService } from "./agrements.service";
 const log = logger(module.filename);
 
 export const AgrementController = {
-  async get(req: UserRequest, res: Response, next: NextFunction) {
+  async get(
+    req: RouteRequest<AgrementUsagersRoutes["GetOne"]>,
+    res: RouteResponse<AgrementUsagersRoutes["GetOne"]>,
+    next: NextFunction,
+  ) {
     log.i("IN");
-    const organismeId = Number(req.params.id);
-
-    if (Number.isNaN(organismeId)) {
-      log.w("missing or invalid parameter");
-      return next(
-        new AppError("Paramètre incorrect", {
-          statusCode: 400,
-        }),
-      );
-    }
+    const organismeId = req.validatedParams!.id;
 
     try {
-      const agrement = await AgrementService.getAgrement({
-        organismeId,
+      const agrement: AgrementsDto | null = await AgrementService.getAgrement({
+        organismeId: Number(organismeId),
         withDetails: true,
       });
       log.d(agrement);
@@ -43,6 +43,7 @@ export const AgrementController = {
         }),
       );
     }
+    console.log("agrement", req.body);
     const { organismeId, numero, regionObtention, dateObtention, file } =
       req.body;
 

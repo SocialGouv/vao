@@ -2,6 +2,7 @@
  * Database row type with snake_case columns for Agrement
  */
 export interface AgrementEntity {
+  id: number | null;
   statut: string | null;
   updated_at: Date | null;
   date_obtention_certificat: Date | null;
@@ -41,4 +42,78 @@ export interface AgrementEntity {
   bilan_financier_comparatif: string | null;
   bilan_financier_ressources_humaines: string | null;
   bilan_financier_commentaire: string | null;
+  activite: ActiviteEntity[] | null;
+  agrement_animation: AgrementAnimationEntity[] | null;
+  agrement_file: AgrementFilesEntity[] | null;
+  agrement_sejour: AgrementSejoursEntity[] | null;
+  agrement_bilan_annuel: AgrementBilanAnnuelEntity[] | null;
+}
+
+/**
+ * Database row type with snake_case columns for Activite
+ */
+export interface ActiviteEntity {
+  id: number | null;
+  code: string | null;
+  libelle: string | null;
+  activite_type: string | null;
+}
+
+/**
+ * Database row type with snake_case columns for AgrementAnimation
+ */
+export interface AgrementAnimationEntity {
+  id?: number | null;
+  activite_id: number | null;
+  agrement_id: number | null;
+}
+
+/**
+ * Database row type with snake_case columns for AgrementFiles
+ */
+export interface AgrementFilesEntity {
+  id?: number | null;
+  agrement_id: number | null;
+  category: string | null;
+  file_uuid: string | null;
+}
+
+/**
+ * Database row type with snake_case columns for AgrementSejours
+ */
+export interface AgrementSejoursEntity {
+  id?: number | null;
+  agrement_id: number | null;
+  nom_hebergement: string | null;
+  adresse_id: number | null;
+  b_vacanciers: number | null;
+  mois: number[] | null;
+}
+
+/**
+ * Database row type with snake_case columns for AgrementBilanAnnuel
+ */
+export interface AgrementBilanAnnuelEntity {
+  id?: number | null;
+  agrement_id: number | null;
+  annee: number | null;
+  nb_global_vacanciers: number | null;
+  nb_hommes: number | null;
+  nb_femmes: number | null;
+  nb_total_jours_vacances: number | null;
+  type_handicap: string[] | null;
+  tranche_age: string[] | null;
+  bilan_hebergement: BilanHebergementEntity[] | null;
+}
+
+/**
+ * Database row type with snake_case columns for BilanHebergement
+ */
+export interface BilanHebergementEntity {
+  id?: number | null;
+  agr_bilan_annuel_id: number | null;
+  nom_hebergement: string | null;
+  adresse_id: number | null;
+  nb_jours: number | null;
+  mois: number[] | null;
 }

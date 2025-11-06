@@ -1,52 +1,45 @@
-import express, { Request, Response } from "express";
 import request from "supertest";
 
-import router from "../../usagers/agrements/agrements.route";
+import app from "../../app";
+import { createAgrementDeprecated } from "../helper/fixtures/agrementsHelper";
+import { createOrganisme } from "../helper/fixtures/organismeHelper";
+import { createUsagersUser } from "../helper/fixtures/userHelper";
+import {
+  createTestContainer,
+  removeTestContainer,
+} from "../helper/testContainer";
 
-jest.mock("../../middlewares/checkJWT", () =>
-  jest.fn((req, res, next) => next()),
-);
-jest.mock("../../middlewares/checkPermissionAgrement", () =>
-  jest.fn((req, res, next) => next()),
-);
+let authUser = { id: 1, role: "admin" };
 
-const mockGet = jest.fn((req: Request, res: Response) =>
-  res.status(200).json({ ok: true }),
-);
+jest.mock("../../middlewares/common/checkJWT", () => {
+  return async (req, res, next) => {
+    req.decoded = authUser;
+    next();
+  };
+});
 
-const mockPost = jest.fn((req: Request, res: Response) =>
-  res.status(201).json({ created: true }),
-);
+beforeAll(async () => {
+  await createTestContainer();
+});
 
-jest.mock("./agrements.controller", () => ({
-  AgrementController: {
-    get: (req: Request, res: Response) => mockGet(req, res),
-    post: (req: Request, res: Response) => mockPost(req, res),
-  },
-}));
+afterAll(async () => {
+  await removeTestContainer();
+});
 
-const app = express();
-app.use(express.json());
-app.use("/agrements", router);
+describe("GET /agrements/organisme/:id", () => {
+  it("devrait retourner un agrément par ID de l'organisme avec succès", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    console.log("organismeId", organismeId);
+    const agrementId = await createAgrementDeprecated({ organismeId });
+    console.log("agrementId", agrementId);
+    const response = await request(app).get(
+      `/agrements/organisme/${organismeId}`,
+    );
 
-describe("Agrements routes", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("GET /agrements/organisme/:id appelle le controller get", async () => {
-    const res = await request(app).get("/agrements/organisme/123");
-
-    expect(mockGet).toHaveBeenCalledTimes(1);
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual({ ok: true });
-  });
-
-  it("POST /agrements appelle le controller post", async () => {
-    const res = await request(app).post("/agrements").send({ test: true });
-
-    expect(mockPost).toHaveBeenCalledTimes(1);
-    expect(res.status).toBe(201);
-    expect(res.body).toEqual({ created: true });
+    // Vérification des résultats
+    expect(response.status).toBe(200);
+    expect(response.body.agrement).not.toBeNull();
+    expect(response.body.agrement.id).toEqual(agrementId);
   });
 });

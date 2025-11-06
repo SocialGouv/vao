@@ -17,7 +17,9 @@ async function checkPermissionAgrement(req, res, next) {
       WHERE u.id = $1
     `;
   const { rows } = await getPool().query(query, [userId]);
+  console.log("rows", rows);
   if (!rows || rows.length !== 1 || rows[0].org_id.toString() !== organismeId) {
+    console.log("Je suis ici");
     log.w("Utilisateur non autorisé à modifier l'agrement");
     return next(
       new AppError("Vous n'êtes pas autorisé à modifier cet agrément", {

@@ -1,7 +1,9 @@
+import { AgrementUsagersRoutesSchema } from "@vao/shared-bridge";
 import express from "express";
 
 import checkJWT from "../../middlewares/checkJWT";
 import checkPermissionAgrement from "../../middlewares/checkPermissionAgrement";
+import { requestValidatorMiddleware } from "../../middlewares/requestValidatorMiddleware";
 import { AgrementController } from "./agrements.controller";
 
 const router = express.Router();
@@ -9,7 +11,8 @@ const router = express.Router();
 router.get(
   "/organisme/:id",
   checkJWT,
-  checkPermissionAgrement,
+  // Ajouter un check Persmission sur le params (organismeId)
+  requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetOne"]),
   AgrementController.get,
 );
 

@@ -1,6 +1,6 @@
 const { encodeFilename, getFileNameAndExtension } = require("../utils/file");
 const logger = require("../utils/logger");
-const { getPool: getPoolDoc } = require("../utils/pgpool");
+const { getPool: getPoolDoc } = require("../utils/pgpoolDoc");
 const AppError = require("../utils/error");
 const path = require("node:path");
 
@@ -97,6 +97,7 @@ module.exports.getFile = async (uuid) => {
 module.exports.getFileMetaData = async (uuid) => {
   log.i("IN");
   try {
+    console.log("getPoolDoc()", getPoolDoc());
     const { rows, rowCount } = await getPoolDoc().query(
       ...query.getFileMetaData(uuid),
     );

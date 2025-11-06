@@ -8,7 +8,15 @@ import {
   BilanHebergementDto,
 } from "@vao/shared-bridge";
 
-import { AgrementEntity } from "./agrements.entity";
+import {
+  ActiviteEntity,
+  AgrementAnimationEntity,
+  AgrementBilanAnnuelEntity,
+  AgrementEntity,
+  AgrementFilesEntity,
+  AgrementSejoursEntity,
+  BilanHebergementEntity,
+} from "./agrements.entity";
 
 /**
  * Mapper to convert database rows (snake_case) to DTOs (camelCase)
@@ -44,6 +52,7 @@ export const AgrementsMapper = {
       dateDepot: entity.date_depot,
       dateObtentionCertificat: entity.date_obtention_certificat,
       dateVerifCompleture: entity.date_verif_completure,
+      id: entity.id,
       immatriculation: entity.immatriculation,
       motivations: entity.motivations,
       protocoleEvacUrg: entity.protocole_evac_urg,
@@ -72,68 +81,6 @@ export const AgrementsMapper = {
     return entities.map((entity) => AgrementsMapper.toModel(entity));
   },
 };
-
-/**
- * Database row type with snake_case columns for Activite
- */
-interface ActiviteEntity {
-  code: string | null;
-  libelle: string | null;
-  activite_type: string | null;
-}
-
-/**
- * Database row type with snake_case columns for AgrementAnimation
- */
-interface AgrementAnimationEntity {
-  activite_id: number | null;
-  agrement_id: number | null;
-}
-
-/**
- * Database row type with snake_case columns for AgrementFiles
- */
-interface AgrementFilesEntity {
-  agrement_id: number | null;
-  category: string | null;
-  file_uuid: string | null;
-}
-
-/**
- * Database row type with snake_case columns for AgrementSejours
- */
-interface AgrementSejoursEntity {
-  agrement_id: number | null;
-  nom_hebergement: string | null;
-  adresse_id: number | null;
-  b_vacanciers: number | null;
-  mois: number[] | null;
-}
-
-/**
- * Database row type with snake_case columns for AgrementBilanAnnuel
- */
-interface AgrementBilanAnnuelEntity {
-  agrement_id: number | null;
-  annee: number | null;
-  nb_global_vacanciers: number | null;
-  nb_hommes: number | null;
-  nb_femmes: number | null;
-  nb_total_jours_vacances: number | null;
-  type_handicap: string[] | null;
-  tranche_age: string[] | null;
-}
-
-/**
- * Database row type with snake_case columns for BilanHebergement
- */
-interface BilanHebergementEntity {
-  agr_bilan_annuel_id: number | null;
-  nom_hebergement: string | null;
-  adresse_id: number | null;
-  nb_jours: number | null;
-  mois: number[] | null;
-}
 
 /**
  * Mappers to convert database rows (snake_case) to DTOs (camelCase)
