@@ -58,7 +58,6 @@ export const AgrementsRepository = {
     `;
 
     const response = await getPool().query(query, [organismeId]);
-    console.log("response", response);
     log.i("getByOrganismeId - DONE");
 
     if (!response.rows?.length) {

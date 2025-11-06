@@ -22,7 +22,6 @@ export const createAgrementDeprecated = async ({
     regionObtention: "IDF",
     ...agrement,
   };
-  console.log("fixture", fixture);
   const agrementId = await createAgrementService(
     fixture.organismeId,
     fixture.numero,

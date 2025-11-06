@@ -97,7 +97,6 @@ module.exports.getFile = async (uuid) => {
 module.exports.getFileMetaData = async (uuid) => {
   log.i("IN");
   try {
-    console.log("getPoolDoc()", getPoolDoc());
     const { rows, rowCount } = await getPoolDoc().query(
       ...query.getFileMetaData(uuid),
     );

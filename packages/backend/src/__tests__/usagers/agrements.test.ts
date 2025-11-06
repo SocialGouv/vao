@@ -30,9 +30,7 @@ describe("GET /agrements/organisme/:id", () => {
   it("devrait retourner un agrément par ID de l'organisme avec succès", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    console.log("organismeId", organismeId);
     const agrementId = await createAgrementDeprecated({ organismeId });
-    console.log("agrementId", agrementId);
     const response = await request(app).get(
       `/agrements/organisme/${organismeId}`,
     );

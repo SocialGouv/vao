@@ -106,30 +106,21 @@ module.exports.create = async (
   dateFinValidite,
   file,
 ) => {
-  console.log("create agrement deprecated organismeId", organismeId);
-  try {
-    const {
-      rows: [{ agrementId }],
-      ...data
-    } = await getPool().query(
-      ...query.create(
-        organismeId,
-        numero,
-        regionObtention,
-        dateObtention,
-        dateFinValidite,
-        file,
-      ),
-    );
-    console.log("data", data);
-    console.log("End agrement deprecated agrementId", agrementId);
+  const {
+    rows: [{ agrementId }],
+  } = await getPool().query(
+    ...query.create(
+      organismeId,
+      numero,
+      regionObtention,
+      dateObtention,
+      dateFinValidite,
+      file,
+    ),
+  );
 
-    log.d("create - DONE", { agrementId });
-    return agrementId;
-  } catch (error) {
-    console.log("Error", error);
-  }
-  return null;
+  log.d("create - DONE", { agrementId });
+  return agrementId;
 };
 
 module.exports.getByOrganismeId = async (organismeId) => {

@@ -43,7 +43,6 @@ export const AgrementController = {
         }),
       );
     }
-    console.log("agrement", req.body);
     const { organismeId, numero, regionObtention, dateObtention, file } =
       req.body;
 

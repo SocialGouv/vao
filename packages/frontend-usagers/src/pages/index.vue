@@ -70,7 +70,6 @@ const organismeCourant = computed(() => {
 
 const daysUntilExpiry = computed(() => {
   const organisme = organismeCourant.value;
-  console.log("organismeCourant", organisme);
 
   const expiry = organisme?.agrement?.dateFinValidite
     ? new Date(organisme.agrement.dateFinValidite)

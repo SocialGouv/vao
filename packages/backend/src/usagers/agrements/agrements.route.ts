@@ -11,7 +11,7 @@ const router = express.Router();
 router.get(
   "/organisme/:id",
   checkJWT,
-  // Ajouter un check Persmission sur le params (organismeId)
+  checkPermissionAgrement,
   requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetOne"]),
   AgrementController.get,
 );
