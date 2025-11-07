@@ -238,20 +238,40 @@ const handleCheckboxChange = (event: Event) => {
                   "
                 >
                   <div class="fr-table__header">
-                    {{ column.label }}
-                    <span
+                    <template
                       v-if="props.isSortable && column.options?.isSortable"
-                      :class="{
-                        [column.key === sort
-                          ? sortDirection === 'desc'
-                            ? 'fr-icon-arrow-down-line'
-                            : 'fr-icon-arrow-up-line'
-                          : 'fr-icon-arrow-up-down-line']: true,
-                        'fr-sort-icon': true,
-                        'fr-table--is-not-sorted': column.key !== sort,
-                      }"
-                      aria-hidden="true"
-                    />
+                    >
+                      <button
+                        type="button"
+                        class="fr-table__sort-btn"
+                        :aria-sort="
+                          column.key === sort
+                            ? sortDirection === 'desc'
+                              ? 'descending'
+                              : 'ascending'
+                            : 'none'
+                        "
+                        :aria-label="`Trier par ${column.label}`"
+                        @click="handleSort(column.key)"
+                      >
+                        {{ column.label }}
+                        <span
+                          :class="{
+                            [column.key === sort
+                              ? sortDirection === 'desc'
+                                ? 'fr-icon-arrow-down-line'
+                                : 'fr-icon-arrow-up-line'
+                              : 'fr-icon-arrow-up-down-line']: true,
+                            'fr-sort-icon': true,
+                            'fr-table--is-not-sorted': column.key !== sort,
+                          }"
+                          aria-hidden="true"
+                        />
+                      </button>
+                    </template>
+                    <template v-else>
+                      {{ column.label }}
+                    </template>
                   </div>
                 </th>
               </tr>
@@ -397,5 +417,8 @@ const handleCheckboxChange = (event: Event) => {
   position: sticky;
   right: 0;
   z-index: 1;
+}
+.fr-table__sort-btn:hover {
+  background-color: transparent;
 }
 </style>
