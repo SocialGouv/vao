@@ -17,7 +17,7 @@ jobs:
         with:
           cache: yarn
           cache-dependency-path: ./yarn.lock
-          node-version: 22.20.0
+          node-version: 22.21.1
       - name: Install packages
         run: yarn --immutable
       - name: Run the linter
