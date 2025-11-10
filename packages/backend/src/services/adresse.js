@@ -91,10 +91,8 @@ module.exports.saveAdresse = async (client, adresse) => {
       adresse.coordinates[1],
       adresse.departement,
     ]);
-
     return rows[0].id;
   }
-
   return existingAdresse.id;
 };
 

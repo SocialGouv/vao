@@ -2,7 +2,7 @@ import request from "supertest";
 
 import app from "../../app";
 import { createAdresse } from "../helper/fixtures/adresseHelper";
-import { buildAgrementData } from "../helper/fixtures/agrementsData";
+import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import {
   createAgrement,
   getAgrement,
@@ -31,7 +31,7 @@ describe("GET /agrements/organisme/:id", () => {
     authUser = await createUsagersUser();
     const adresseId = await createAdresse();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementData = await buildAgrementData({ adresseId, organismeId });
+    const agrementData = await buildAgrementFixture({ adresseId, organismeId });
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
@@ -45,13 +45,38 @@ describe("GET /agrements/organisme/:id", () => {
     expect(response.body.agrement).not.toBeNull();
     expect(response.body.agrement.id).toEqual(agrementId);
   });
+  it("devrait retourner une erreur", async () => {
+    authUser = await createUsagersUser();
+    const adresseId = await createAdresse();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ adresseId, organismeId });
+    await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    const response = await request(app).get(`/agrements/organisme/invalid`);
+
+    // Vérification des résultats
+    // TODO ACH Problème sur le params string
+    expect(response.status).toBe(403);
+  });
+  it("devrait retourner un agrement introuvable", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const response = await request(app).get(
+      `/agrements/organisme/${organismeId}`,
+    );
+
+    // Vérification des résultats
+    expect(response.status).toBe(404);
+  });
 });
 describe("POST /agrements", () => {
   it("devrait créer un agrément (POST /agrements)", async () => {
     authUser = await createUsagersUser();
     const adresseId = await createAdresse();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementData = await buildAgrementData({ adresseId, organismeId });
+    const agrementData = await buildAgrementFixture({ adresseId, organismeId });
 
     const response = await request(app).post(`/agrements/`).send(agrementData);
 
@@ -62,7 +87,7 @@ describe("POST /agrements", () => {
     authUser = await createUsagersUser();
     const adresseId = await createAdresse();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementData = await buildAgrementData({ adresseId, organismeId });
+    const agrementData = await buildAgrementFixture({ adresseId, organismeId });
     await createAgrement({ agrement: agrementData, organismeId });
     const { agrement } = await getAgrement(organismeId);
     const response = await request(app).post(`/agrements/`).send(agrement);

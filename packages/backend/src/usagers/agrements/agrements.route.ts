@@ -11,16 +11,16 @@ const router = express.Router();
 router.get(
   "/organisme/:id",
   checkJWT,
-  checkPermissionAgrement,
   requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetOne"]),
+  checkPermissionAgrement,
   AgrementController.get,
 );
 
 router.post(
   "/",
   checkJWT,
-  checkPermissionAgrement,
   requestValidatorMiddleware(AgrementUsagersRoutesSchema["PostAgrement"]),
+  checkPermissionAgrement,
   AgrementController.post,
 );
 

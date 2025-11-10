@@ -6,7 +6,7 @@ import {
 } from "@vao/shared-bridge";
 import { randomUUID } from "crypto";
 
-export async function buildAgrementData({
+export async function buildAgrementFixture({
   organismeId,
   adresseId,
   activiteId = Math.floor(Math.random() * 20) + 1,

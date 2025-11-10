@@ -283,11 +283,6 @@ export const AgrementsRepository = {
 
     const response = await getPool().query(query, [organismeId]);
     log.i("getByOrganismeId - DONE");
-    await getPool().query(
-      `SELECT bhe.*
-            FROM front.bilan_hebergement bhe
-            WHERE bhe.agr_bilan_annuel_id = ${response.rows[0].agrement_bilan_annuel[0].id}`,
-    );
     if (!response.rows?.length) return null;
     const row = response.rows[0] as AgrementEntity;
     const agrementDto = AgrementsMapper.toModel(row);

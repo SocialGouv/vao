@@ -9,8 +9,7 @@ module.exports.organisme = require("./organisme");
 module.exports.siret = require("./siret");
 module.exports.sejour = require("./sejour");
 module.exports.hebergement = require("./hebergement").default;
-module.exports.agrement =
-  require("../usagers/agrements/agrements.route").default;
+
 module.exports.message = require("./message");
 module.exports.territoire = require("./territoire");
 

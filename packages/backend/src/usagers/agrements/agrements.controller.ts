@@ -2,6 +2,7 @@ import type { AgrementDto, AgrementUsagersRoutes } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
 import type { RouteRequest, RouteResponse } from "../../types/request";
+import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 import { AgrementService } from "./agrements.service";
 
@@ -22,6 +23,7 @@ export const AgrementController = {
         withDetails: true,
       });
       log.d(agrement);
+      if (!agrement) throw new AppError("NotFound", { statusCode: 404 });
       res.json({ agrement });
     } catch (error) {
       log.w("DONE with error");
