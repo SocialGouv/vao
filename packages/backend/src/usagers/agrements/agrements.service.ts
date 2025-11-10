@@ -22,9 +22,9 @@ export const AgrementService = {
   },
 
   async save(agrement: AgrementDto): Promise<number> {
-    // Calcul de la date de fin de validité
     const dateFinValidite = addYears(agrement?.dateObtentionCertificat, 5);
     let agrementId = null;
+
     if (agrement && agrement?.id) {
       agrementId = await AgrementsRepository.update({
         agrement,

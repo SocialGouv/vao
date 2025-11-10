@@ -114,18 +114,6 @@ async function insertAgrementBilans(
 // 🏗️ Repository principal
 // ------------------------------------------------------------
 export const AgrementsRepository = {
-  async consoleSql({ query, values }: { query: unknown; values: unknown }) {
-    const interpolatedQuery = (query as string).replace(/\$(\d+)/g, (_, n) => {
-      const val = values[Number(n) - 1];
-      if (val === null || val === undefined) return "NULL";
-      if (typeof val === "string") return `'${val.replace(/'/g, "''")}'`;
-      if (val instanceof Date) return `'${val.toISOString()}'`;
-      return val.toString();
-    });
-    console.debug("agrementValues ", values);
-    console.debug("🧾 Executing SQL:\n", interpolatedQuery);
-  },
-
   /**
    * Crée un nouvel agrément et ses sous-éléments
    */
@@ -134,7 +122,7 @@ export const AgrementsRepository = {
     dateFinValidite,
   }: {
     agrement: AgrementDto;
-    dateFinValidite: Date;
+    dateFinValidite: Date | null;
   }): Promise<number> {
     const client = await getPool().connect();
     try {
@@ -330,11 +318,17 @@ export const AgrementsRepository = {
     dateFinValidite,
   }: {
     agrement: AgrementDto;
-    dateFinValidite: Date;
-  }): Promise<void> {
+    dateFinValidite: Date | null;
+  }): Promise<number> {
     const client = await getPool().connect();
+    const agrementId: number = agrement.id!;
+
     try {
-      const agrementId = agrement.id;
+      if (agrementId == null) {
+        throw new Error(
+          "Impossible de mettre à jour : l'ID de l'agrément est manquant",
+        );
+      }
       await client.query("BEGIN");
 
       // ✅ 1. Mise à jour du principal
@@ -474,5 +468,6 @@ export const AgrementsRepository = {
     } finally {
       client.release();
     }
+    return agrementId;
   },
 };

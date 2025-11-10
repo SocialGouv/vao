@@ -3,7 +3,7 @@ import { FILE_CATEGORY } from "../constantes/file";
 
 export interface AgrementDto {
   id?: number | null;
-  organismeId: number;
+  organismeId: number | null;
   statut: AGREMENT_STATUT | null;
   updatedAt: Date | null;
   dateObtentionCertificat: Date | null;

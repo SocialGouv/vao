@@ -78,8 +78,9 @@ export function requestBodyValidator<T>(
       console.debug("✅ Validation OK");
       return validator.validateSync(body, { stripUnknown: true });
     } catch (error) {
-      console.debug("🚨 Invalid field paths:", error.path);
-      console.debug("🚨 Validation error details:", error.errors);
+      const e = error as yup.ValidationError;
+      console.debug("🚨 Invalid field paths:", e.path);
+      console.debug("🚨 Validation error details:", e.errors);
       throw new Error(ERRORS.INVALID_BODY);
     }
   }

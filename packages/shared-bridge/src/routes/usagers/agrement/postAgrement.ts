@@ -9,7 +9,7 @@ export interface PostAgrementRoute extends BasicRoute {
   method: "POST";
   path: "/agrement/";
   body: AgrementDto;
-  response: RouteResponseBody<{ agrement: AgrementDto | null }>;
+  response: RouteResponseBody<{ id: number | null }>;
 }
 
 const requiredUnlessBrouillon = (field: yup.AnySchema) =>
@@ -184,5 +184,5 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     transportSejour: requiredUnlessBrouillon(yup.string().nullable()),
     updatedAt: requiredUnlessBrouillon(yup.date().nullable()),
     vacanciersNbEnvisage: requiredUnlessBrouillon(yup.number().nullable()),
-  }),
+  }) as yup.ObjectSchema<AgrementDto>,
 };

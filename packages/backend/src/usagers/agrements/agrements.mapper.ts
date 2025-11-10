@@ -92,13 +92,15 @@ export const ActiviteMapper = {
 export const AgrementAnimationMapper = {
   toModel: (entity: AgrementAnimationEntity): AgrementAnimationDto => {
     return {
-      activiteId: entity.activite_id,
-      agrementId: entity.agrement_id,
+      activite: entity.activite
+        ? ActiviteMapper.toModel(entity.activite)
+        : { activiteType: null, code: null, libelle: null },
+      activiteId: entity.activite_id ?? null,
+      agrementId: entity.agrement_id ?? null,
     };
   },
-  toModels: (entities: AgrementAnimationEntity[]): AgrementAnimationDto[] => {
-    return entities.map((entity) => AgrementAnimationMapper.toModel(entity));
-  },
+  toModels: (entities: AgrementAnimationEntity[]): AgrementAnimationDto[] =>
+    entities.map((entity) => AgrementAnimationMapper.toModel(entity)),
 };
 
 export const AgrementFilesMapper = {
@@ -131,7 +133,7 @@ export const AgrementSejoursMapper = {
 export const AgrementBilanAnnuelMapper = {
   toModel: (entity: AgrementBilanAnnuelEntity): AgrementBilanAnnuelDto => {
     return {
-      agrementId: entity.agrement_id,
+      agrementId: entity.agrement_id ?? null,
       annee: entity.annee,
       bilanHebergement: Array.isArray((entity as any).bilan_hebergement)
         ? BilanHebergementMapper.toModels(
@@ -158,7 +160,7 @@ export const BilanHebergementMapper = {
   toModel: (entity: BilanHebergementEntity): BilanHebergementDto => {
     return {
       adresseId: entity.adresse_id,
-      agrBilanAnnuelId: entity.agr_bilan_annuel_id,
+      agrBilanAnnuelId: entity.agr_bilan_annuel_id ?? null,
       mois: entity.mois,
       nbJours: entity.nb_jours,
       nomHebergement: entity.nom_hebergement,

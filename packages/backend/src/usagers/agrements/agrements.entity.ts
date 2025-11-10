@@ -66,7 +66,8 @@ export interface ActiviteEntity {
 export interface AgrementAnimationEntity {
   id?: number | null;
   activite_id: number | null;
-  //agrement_id: number | null;
+  agrement_id: number | null;
+  activite?: ActiviteEntity;
 }
 
 /**
@@ -74,7 +75,7 @@ export interface AgrementAnimationEntity {
  */
 export interface AgrementFilesEntity {
   id?: number | null;
-  //agrement_id: number | null;
+  agrement_id: number | null;
   category: string | null;
   file_uuid: string | null;
 }
@@ -84,7 +85,7 @@ export interface AgrementFilesEntity {
  */
 export interface AgrementSejoursEntity {
   id?: number | null;
-  //agrement_id: number | null;
+  agrement_id: number | null;
   nom_hebergement: string | null;
   adresse_id: number | null;
   nb_vacanciers: number | null;
