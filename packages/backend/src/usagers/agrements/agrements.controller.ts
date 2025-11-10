@@ -1,4 +1,4 @@
-import type { AgrementsDto, AgrementUsagersRoutes } from "@vao/shared-bridge";
+import type { AgrementDto, AgrementUsagersRoutes } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
 import type { RouteRequest, RouteResponse } from "../../types/request";
@@ -17,7 +17,7 @@ export const AgrementController = {
     const organismeId = req.validatedParams!.id;
 
     try {
-      const agrement: AgrementsDto | null = await AgrementService.getAgrement({
+      const agrement: AgrementDto | null = await AgrementService.getAgrement({
         organismeId: Number(organismeId),
         withDetails: true,
       });
@@ -29,20 +29,18 @@ export const AgrementController = {
     }
   },
   async post(
-    req: RouteRequest<AgrementUsagersRoutes["Save"]>,
-    res: RouteResponse<AgrementUsagersRoutes["Save"]>,
+    req: RouteRequest<AgrementUsagersRoutes["PostAgrement"]>,
+    res: RouteResponse<AgrementUsagersRoutes["PostAgrement"]>,
     next: NextFunction,
   ) {
     log.i("IN");
     const agrement = req.validatedBody!;
     try {
-      const id = await AgrementService.save({
-        agrement,
-      });
-      return res.json({ id });
+      const id = await AgrementService.save(agrement);
+      res.json({ id });
     } catch (err) {
       log.w("DONE with error");
-      return next(err);
+      next(err);
     }
   },
 };

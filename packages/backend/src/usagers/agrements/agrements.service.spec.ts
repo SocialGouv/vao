@@ -1,4 +1,5 @@
-import type { AgrementsDto } from "../../dto/AgrementsDto";
+import type { AgrementDto } from "@vao/shared-bridge";
+
 import { AgrementsRepository } from "./agrements.repository";
 import { AgrementService } from "./agrements.service";
 
@@ -10,13 +11,13 @@ jest.mock("./agrements.repository", () => ({
 }));
 
 describe("Service: getByOrganismeId", () => {
-  const mockAgrement: AgrementsDto = {
+  const mockAgrement: AgrementDto = {
     dateDebut: "2025-01-01",
     dateFin: "2025-12-31",
     id: 123,
     organismeId: 1,
     statut: "VALIDE",
-  } as unknown as AgrementsDto;
+  } as unknown as AgrementDto;
 
   const mockWithDetail: boolean = true;
 

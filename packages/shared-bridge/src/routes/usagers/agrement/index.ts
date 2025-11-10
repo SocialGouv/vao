@@ -1,15 +1,15 @@
 /* eslint-disable import/no-unresolved */
 import type { GetOneRoute } from "./getOne";
 import { GetOneRouteSchema } from "./getOne";
-import type { SaveRoute } from "./save";
-import { SaveRouteSchema } from "./save";
+import type { PostAgrementRoute } from "./postAgrement";
+import { PostAgrementRouteSchema } from "./postAgrement";
 
 export type AgrementUsagersRoutes = {
   GetOne: GetOneRoute;
-  Save: SaveRoute;
+  PostAgrement: PostAgrementRoute;
 };
 
 export const AgrementUsagersRoutesSchema = {
   GetOne: GetOneRouteSchema,
-  Save: SaveRouteSchema,
+  PostAgrement: PostAgrementRouteSchema,
 };

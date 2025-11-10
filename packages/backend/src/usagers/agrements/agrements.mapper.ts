@@ -2,8 +2,8 @@ import {
   ActiviteDto,
   AgrementAnimationDto,
   AgrementBilanAnnuelDto,
+  AgrementDto,
   AgrementFilesDto,
-  AgrementsDto,
   AgrementSejoursDto,
   BilanHebergementDto,
 } from "@vao/shared-bridge";
@@ -22,12 +22,7 @@ import {
  * Mapper to convert database rows (snake_case) to DTOs (camelCase)
  */
 export const AgrementsMapper = {
-  /**
-   * Convert a database row with snake_case to an AgrementsDto with camelCase
-   * @param entity - The database entity with snake_case properties
-   * @returns The AgrementsDto with camelCase properties
-   */
-  toModel: (entity: AgrementEntity): AgrementsDto => {
+  toModel: (entity: AgrementEntity): AgrementDto => {
     return {
       accompRespAttestHono: entity.accomp_resp_attest_hono,
       accompRespCompExp: entity.accomp_resp_comp_exp,
@@ -55,6 +50,7 @@ export const AgrementsMapper = {
       id: entity.id,
       immatriculation: entity.immatriculation,
       motivations: entity.motivations,
+      organismeId: entity.organisme_id,
       protocoleEvacUrg: entity.protocole_evac_urg,
       protocoleInfoFamille: entity.protocole_info_famille,
       protocoleMateriel: entity.protocole_materiel,
@@ -72,12 +68,7 @@ export const AgrementsMapper = {
       vacanciersNbEnvisage: entity.vacanciers_nb_envisage,
     };
   },
-  /**
-   * Convert an array of database rows with snake_case to an array of AgrementsDto with camelCase
-   * @param entities - The array of database entities with snake_case properties
-   * @returns The array of AgrementsDto with camelCase properties
-   */
-  toModels: (entities: AgrementEntity[]): AgrementsDto[] => {
+  toModels: (entities: AgrementEntity[]): AgrementDto[] => {
     return entities.map((entity) => AgrementsMapper.toModel(entity));
   },
 };
@@ -86,11 +77,6 @@ export const AgrementsMapper = {
  * Mappers to convert database rows (snake_case) to DTOs (camelCase)
  */
 export const ActiviteMapper = {
-  /**
-   * Convert a database row with snake_case to an ActiviteDto with camelCase
-   * @param entity - The database entity with snake_case properties
-   * @returns The ActiviteDto with camelCase properties
-   */
   toModel: (entity: ActiviteEntity): ActiviteDto => {
     return {
       activiteType: entity.activite_type as any,
@@ -98,44 +84,24 @@ export const ActiviteMapper = {
       libelle: entity.libelle,
     };
   },
-  /**
-   * Convert an array of database rows with snake_case to an array of ActiviteDto with camelCase
-   * @param entities - The array of database entities with snake_case properties
-   * @returns The array of ActiviteDto with camelCase properties
-   */
   toModels: (entities: ActiviteEntity[]): ActiviteDto[] => {
     return entities.map((entity) => ActiviteMapper.toModel(entity));
   },
 };
 
 export const AgrementAnimationMapper = {
-  /**
-   * Convert a database row with snake_case to an AgrementAnimationDto with camelCase
-   * @param entity - The database entity with snake_case properties
-   * @returns The AgrementAnimationDto with camelCase properties
-   */
   toModel: (entity: AgrementAnimationEntity): AgrementAnimationDto => {
     return {
       activiteId: entity.activite_id,
       agrementId: entity.agrement_id,
     };
   },
-  /**
-   * Convert an array of database rows with snake_case to an array of AgrementAnimationDto with camelCase
-   * @param entities - The array of database entities with snake_case properties
-   * @returns The array of AgrementAnimationDto with camelCase properties
-   */
   toModels: (entities: AgrementAnimationEntity[]): AgrementAnimationDto[] => {
     return entities.map((entity) => AgrementAnimationMapper.toModel(entity));
   },
 };
 
 export const AgrementFilesMapper = {
-  /**
-   * Convert a database row with snake_case to an AgrementFilesDto with camelCase
-   * @param entity - The database entity with snake_case properties
-   * @returns The AgrementFilesDto with camelCase properties
-   */
   toModel: (entity: AgrementFilesEntity): AgrementFilesDto => {
     return {
       agrementId: entity.agrement_id,
@@ -143,22 +109,12 @@ export const AgrementFilesMapper = {
       fileUuid: entity.file_uuid,
     };
   },
-  /**
-   * Convert an array of database rows with snake_case to an array of AgrementFilesDto with camelCase
-   * @param entities - The array of database entities with snake_case properties
-   * @returns The array of AgrementFilesDto with camelCase properties
-   */
   toModels: (entities: AgrementFilesEntity[]): AgrementFilesDto[] => {
     return entities.map((entity) => AgrementFilesMapper.toModel(entity));
   },
 };
 
 export const AgrementSejoursMapper = {
-  /**
-   * Convert a database row with snake_case to an AgrementSejoursDto with camelCase
-   * @param entity - The database entity with snake_case properties
-   * @returns The AgrementSejoursDto with camelCase properties
-   */
   toModel: (entity: AgrementSejoursEntity): AgrementSejoursDto => {
     return {
       adresseId: entity.adresse_id,
@@ -168,26 +124,20 @@ export const AgrementSejoursMapper = {
       nomHebergement: entity.nom_hebergement,
     };
   },
-  /**
-   * Convert an array of database rows with snake_case to an array of AgrementSejoursDto with camelCase
-   * @param entities - The array of database entities with snake_case properties
-   * @returns The array of AgrementSejoursDto with camelCase properties
-   */
   toModels: (entities: AgrementSejoursEntity[]): AgrementSejoursDto[] => {
     return entities.map((entity) => AgrementSejoursMapper.toModel(entity));
   },
 };
-
 export const AgrementBilanAnnuelMapper = {
-  /**
-   * Convert a database row with snake_case to an AgrementBilanAnnuelDto with camelCase
-   * @param entity - The database entity with snake_case properties
-   * @returns The AgrementBilanAnnuelDto with camelCase properties
-   */
   toModel: (entity: AgrementBilanAnnuelEntity): AgrementBilanAnnuelDto => {
     return {
       agrementId: entity.agrement_id,
       annee: entity.annee,
+      bilanHebergement: Array.isArray((entity as any).bilan_hebergement)
+        ? BilanHebergementMapper.toModels(
+            (entity as any).bilan_hebergement as BilanHebergementEntity[],
+          )
+        : [],
       nbFemmes: entity.nb_femmes,
       nbGlobalVacanciers: entity.nb_global_vacanciers,
       nbHommes: entity.nb_hommes,
@@ -196,11 +146,7 @@ export const AgrementBilanAnnuelMapper = {
       typeHandicap: entity.type_handicap,
     };
   },
-  /**
-   * Convert an array of database rows with snake_case to an array of AgrementBilanAnnuelDto with camelCase
-   * @param entities - The array of database entities with snake_case properties
-   * @returns The array of AgrementBilanAnnuelDto with camelCase properties
-   */
+
   toModels: (
     entities: AgrementBilanAnnuelEntity[],
   ): AgrementBilanAnnuelDto[] => {
@@ -209,11 +155,6 @@ export const AgrementBilanAnnuelMapper = {
 };
 
 export const BilanHebergementMapper = {
-  /**
-   * Convert a database row with snake_case to a BilanHebergementDto with camelCase
-   * @param entity - The database entity with snake_case properties
-   * @returns The BilanHebergementDto with camelCase properties
-   */
   toModel: (entity: BilanHebergementEntity): BilanHebergementDto => {
     return {
       adresseId: entity.adresse_id,
@@ -223,11 +164,6 @@ export const BilanHebergementMapper = {
       nomHebergement: entity.nom_hebergement,
     };
   },
-  /**
-   * Convert an array of database rows with snake_case to an array of BilanHebergementDto with camelCase
-   * @param entities - The array of database entities with snake_case properties
-   * @returns The array of BilanHebergementDto with camelCase properties
-   */
   toModels: (entities: BilanHebergementEntity[]): BilanHebergementDto[] => {
     return entities.map((entity) => BilanHebergementMapper.toModel(entity));
   },

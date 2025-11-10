@@ -1,7 +1,7 @@
 import { ACTIVITE_TYPE, AGREMENT_STATUT } from "../constantes/agrement";
 import { FILE_CATEGORY } from "../constantes/file";
 
-export interface AgrementsDto {
+export interface AgrementDto {
   id?: number | null;
   organismeId: number;
   statut: AGREMENT_STATUT | null;
@@ -84,7 +84,7 @@ export interface AgrementBilanAnnuelDto {
   nbTotalJoursVacances: number | null;
   typeHandicap: string[] | null;
   trancheAge: string[] | null;
-  bilanHebergement: BilanHebergementDto | null;
+  bilanHebergement: BilanHebergementDto[] | null;
 }
 
 export interface BilanHebergementDto {

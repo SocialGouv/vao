@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
-import type { AgrementsDto } from "../../../dto";
+import type { AgrementDto } from "../../../dto";
 
 export interface GetOneRoute extends BasicRoute {
   method: "GET";
@@ -9,7 +9,7 @@ export interface GetOneRoute extends BasicRoute {
   params: {
     id: string;
   };
-  response: RouteResponseBody<{ agrement: AgrementsDto | null }>;
+  response: RouteResponseBody<{ agrement: AgrementDto | null }>;
 }
 
 export const GetOneRouteSchema: RouteSchema<GetOneRoute> = {

@@ -3,28 +3,13 @@ import * as yup from "yup";
 import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
 import { AGREMENT_STATUT } from "../../../constantes/agrement";
 import { FILE_CATEGORY } from "../../../constantes/file";
-import type { AgrementsDto } from "../../../dto";
+import type { AgrementDto } from "../../../dto";
 
-export interface GetOneRoute extends BasicRoute {
-  method: "GET";
-  path: "/agrement/organisme/{id}";
-  body: {
-    id: string;
-  };
-  response: RouteResponseBody<{ agrement: AgrementsDto | null }>;
-}
-
-export const GetOneRouteSchema: RouteSchema<GetOneRoute> = {
-  body: yup.object({
-    id: yup.string().required(),
-  }),
-};
-
-export interface SaveRoute extends BasicRoute {
+export interface PostAgrementRoute extends BasicRoute {
   method: "POST";
   path: "/agrement/";
-  body: AgrementsDto;
-  response: RouteResponseBody<{ agrement: AgrementsDto | null }>;
+  body: AgrementDto;
+  response: RouteResponseBody<{ agrement: AgrementDto | null }>;
 }
 
 const requiredUnlessBrouillon = (field: yup.AnySchema) =>
@@ -36,7 +21,7 @@ const requiredUnlessBrouillon = (field: yup.AnySchema) =>
 
 const currentYear = new Date().getFullYear();
 
-export const SaveRouteSchema: RouteSchema<SaveRoute> = {
+export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
   body: yup.object({
     accompRespAttestHono: requiredUnlessBrouillon(yup.boolean().nullable()),
     accompRespCompExp: requiredUnlessBrouillon(yup.string().nullable()),
@@ -53,7 +38,8 @@ export const SaveRouteSchema: RouteSchema<SaveRoute> = {
     ),
     agrementBilanAnnuel: requiredUnlessBrouillon(
       yup
-        .array(
+        .array()
+        .of(
           yup.object({
             annee: requiredUnlessBrouillon(
               yup
@@ -62,29 +48,35 @@ export const SaveRouteSchema: RouteSchema<SaveRoute> = {
                 .integer("L'année doit être un entier")
                 .min(
                   currentYear - 5,
-                  `L'année doit être antérieure à ${currentYear - 5}`,
+                  `L'année ne doit pas être antérieure à ${currentYear - 5}`,
                 )
                 .max(
                   currentYear,
-                  `L'année doit être ultérieure à ${currentYear}`,
+                  `L'année ne doit pas être ultérieure à ${currentYear}`,
                 )
                 .nullable(),
             ),
+
+            // ✅ Correction ici : tableau d’objets
             bilanHebergement: requiredUnlessBrouillon(
               yup
-                .object({
-                  adresseId: requiredUnlessBrouillon(yup.number().nullable()),
-                  agrBilanAnnuelId: yup.number().nullable(),
-                  mois: requiredUnlessBrouillon(
-                    yup.array(yup.number()).nullable(),
-                  ),
-                  nbJours: requiredUnlessBrouillon(yup.number().nullable()),
-                  nomHebergement: requiredUnlessBrouillon(
-                    yup.string().nullable(),
-                  ),
-                })
+                .array()
+                .of(
+                  yup.object({
+                    adresseId: requiredUnlessBrouillon(yup.number().nullable()),
+                    agrBilanAnnuelId: yup.number().nullable(),
+                    mois: requiredUnlessBrouillon(
+                      yup.array(yup.number()).nullable(),
+                    ),
+                    nbJours: requiredUnlessBrouillon(yup.number().nullable()),
+                    nomHebergement: requiredUnlessBrouillon(
+                      yup.string().nullable(),
+                    ),
+                  }),
+                )
                 .nullable(),
             ),
+
             nbFemmes: requiredUnlessBrouillon(yup.number().nullable()),
             nbGlobalVacanciers: requiredUnlessBrouillon(
               yup.number().nullable(),

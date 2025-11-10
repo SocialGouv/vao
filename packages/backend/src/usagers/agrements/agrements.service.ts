@@ -1,7 +1,6 @@
-import { AgrementsDto } from "@vao/shared-bridge";
-import dayjs from "dayjs";
+import { AgrementDto } from "@vao/shared-bridge";
+import { addYears } from "@vao/shared-bridge/src/utils/date";
 
-import AgrementServiceDeprecated from "../../services/Agrement";
 import logger from "../../utils/logger";
 import { AgrementsRepository } from "./agrements.repository";
 
@@ -14,34 +13,31 @@ export const AgrementService = {
   }: {
     organismeId: number;
     withDetails: boolean;
-  }) {
+  }): Promise<AgrementDto | null> {
     const agrement = await AgrementsRepository.getByOrganismeId({
       organismeId,
       withDetails,
     });
-
     return agrement;
   },
 
-  async save({ agrement }: { agrement: AgrementsDto }) {
+  async save(agrement: AgrementDto): Promise<number> {
     // Calcul de la date de fin de validité
-    const dateFinValidite = agrement?.dateObtentionCertificat
-      ? dayjs(agrement.dateObtentionCertificat).add(5, "year").toDate()
-      : null;
-
+    const dateFinValidite = addYears(agrement?.dateObtentionCertificat, 5);
+    let agrementId = null;
     if (agrement && agrement?.id) {
-      const updatedAgrementId = await AgrementServiceDeprecated.update({
+      agrementId = await AgrementsRepository.update({
         agrement,
         dateFinValidite,
       });
-      log.d("updated meta values - DONE", { updatedAgrementId });
-      return updatedAgrementId;
+      log.d("updated meta values - DONE", { agrementId });
     } else {
-      const createdAgrementId = await AgrementsRepository.create({
+      agrementId = await AgrementsRepository.create({
         agrement,
+        dateFinValidite,
       });
-      log.d("Add meta values - DONE", { createdAgrementId });
-      return createdAgrementId;
+      log.d("Add meta values - DONE", { agrementId });
     }
+    return agrementId;
   },
 };

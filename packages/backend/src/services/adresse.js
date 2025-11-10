@@ -81,9 +81,6 @@ module.exports.saveAdresse = async (client, adresse) => {
     ]);
     return rows[0].id;
   }
-  console.log("adresse", adresse);
-  console.log("adresse", adresse.coordinates);
-  console.log("adresse", adresse.coordinates[0]);
   if (!existingAdresse) {
     const { rows } = await client.query(query.insert, [
       adresse.cleInsee,

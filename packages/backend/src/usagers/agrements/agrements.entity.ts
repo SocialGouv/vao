@@ -3,6 +3,7 @@
  */
 export interface AgrementEntity {
   id: number | null;
+  organisme_id: number | null;
   statut: string | null;
   updated_at: Date | null;
   date_obtention_certificat: Date | null;

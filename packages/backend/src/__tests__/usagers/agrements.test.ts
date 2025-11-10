@@ -1,17 +1,11 @@
-import {
-  AGREMENT_STATUT,
-  FILE_CATEGORY,
-  TRANCHE_AGE,
-  TYPE_HANDICAP,
-} from "@vao/shared-bridge";
-import { randomUUID } from "crypto";
 import request from "supertest";
 
 import app from "../../app";
 import { createAdresse } from "../helper/fixtures/adresseHelper";
+import { buildAgrementData } from "../helper/fixtures/agrementsData";
 import {
-  //createAgrement,
-  createAgrementDeprecated,
+  createAgrement,
+  getAgrement,
 } from "../helper/fixtures/agrementsHelper";
 import { createOrganisme } from "../helper/fixtures/organismeHelper";
 import { createUsagersUser } from "../helper/fixtures/userHelper";
@@ -29,19 +23,19 @@ jest.mock("../../middlewares/common/checkJWT", () => {
   };
 });
 
-beforeAll(async () => {
-  await createTestContainer();
-});
-
-afterAll(async () => {
-  await removeTestContainer();
-});
+beforeAll(async () => await createTestContainer());
+afterAll(async () => await removeTestContainer());
 
 describe("GET /agrements/organisme/:id", () => {
   it("devrait retourner un agrément par ID de l'organisme avec succès", async () => {
     authUser = await createUsagersUser();
+    const adresseId = await createAdresse();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementId = await createAgrementDeprecated({ organismeId });
+    const agrementData = await buildAgrementData({ adresseId, organismeId });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
     const response = await request(app).get(
       `/agrements/organisme/${organismeId}`,
     );
@@ -52,103 +46,28 @@ describe("GET /agrements/organisme/:id", () => {
     expect(response.body.agrement.id).toEqual(agrementId);
   });
 });
-
-describe("POST /agrements/", () => {
-  it("devrait créer un agrément", async () => {
+describe("POST /agrements", () => {
+  it("devrait créer un agrément (POST /agrements)", async () => {
     authUser = await createUsagersUser();
     const adresseId = await createAdresse();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    const activiteId = Math.floor(Math.random() * 20) + 1;
-    const agrementTest = {
-      accompRespAttestHono: true,
-      accompRespCompExp: "Oui",
-      accompRespNb: 1,
-      accompRespRecruteUrg: "Non",
-      agrementAnimation: [
-        {
-          activiteId: activiteId,
-        },
-        {
-          activiteId: `${21 - activiteId}`,
-        },
-      ],
-      agrementBilanAnnuel: [
-        {
-          annee: 2024,
-          bilanHebergement: {
-            adresseId: adresseId,
-            mois: [6, 7],
-            nbJours: 140,
-            nomHebergement: "Centre de vacances Test",
-          },
-          nbFemmes: 10,
-          nbGlobalVacanciers: 20,
-          nbHommes: 10,
-          nbTotalJoursVacances: 140,
-          trancheAge: [TRANCHE_AGE.TA_18_39, TRANCHE_AGE.TA_40_59],
-          typeHandicap: [TYPE_HANDICAP.MOTEUR, TYPE_HANDICAP.COGNITIF],
-        },
-      ],
-      agrementFiles: [
-        {
-          category: FILE_CATEGORY.MOTIVATION,
-          fileUuid: randomUUID(),
-        },
-        {
-          category: FILE_CATEGORY.IMMATRICUL,
-          fileUuid: randomUUID(),
-        },
-      ],
-      agrementSejours: [
-        {
-          adresseId: adresseId,
-          mois: [5, 11],
-          nbVacanciers: 10,
-          nomHebergement: "Centre de vacances Test",
-        },
-      ],
-      animationAutre: "Atelier peinture",
-      bilanAucunChangementEvolution: false,
-      bilanChangementEvolution: true,
-      bilanFinancierCommentaire: "Commentaire financier",
-      bilanFinancierComparatif: "Comparatif OK",
-      bilanFinancierComptabilite: "Comptabilité OK",
-      bilanFinancierRessourcesHumaines: "Ressources OK",
-      bilanQualElementsMarquants: "Éléments marquants",
-      bilanQualPerceptionSensibilite: "Sensibilité OK",
-      bilanQualPerspectiveEvol: "Perspectives OK",
-      budgetComplement: "Complément OK",
-      budgetGestionPerso: "Gestion perso OK",
-      budgetPaiementSecurise: "Paiement OK",
-      commentaire: "Commentaire de test",
-      dateConfirmCompletude: new Date("2024-12-07"),
-      dateDepot: new Date("2024-12-01"),
-      dateObtentionCertificat: new Date("2025-01-15"),
-      dateVerifCompleture: new Date("2024-12-05"),
-      immatriculation: "123-AB-456",
-      motivations: "Motivation de test",
-      organismeId,
-      protocoleEvacUrg: "Procédure OK",
-      protocoleInfoFamille: "Information envoyée",
-      protocoleMateriel: "Matériel complet",
-      protocoleRapatEtranger: "Procédure OK",
-      protocoleRapatUrg: "Procédure OK",
-      protocoleRemboursement: "Remboursement OK",
-      //sejourCommentaire: "Séjour test",
-      sejourNbEnvisage: 2,
-      statut: AGREMENT_STATUT.BROUILLON,
-      //statut: AGREMENT_STATUT.DEPOSE,
-      suiviMedAccordSejour: "Oui",
-      suiviMedDistribution: "Oui",
-      transportAllerRetour: "Bus",
-      transportSejour: "Train",
-      updatedAt: new Date(),
-      vacanciersNbEnvisage: 10,
-    };
+    const agrementData = await buildAgrementData({ adresseId, organismeId });
 
-    const response = await request(app).post(`/agrements/`).send(agrementTest);
+    const response = await request(app).post(`/agrements/`).send(agrementData);
 
-    // Vérification des résultats
     expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+  it("devrait mettre à jour un agrément (POST /agrements)", async () => {
+    authUser = await createUsagersUser();
+    const adresseId = await createAdresse();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementData({ adresseId, organismeId });
+    await createAgrement({ agrement: agrementData, organismeId });
+    const { agrement } = await getAgrement(organismeId);
+    const response = await request(app).post(`/agrements/`).send(agrement);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
   });
 });
