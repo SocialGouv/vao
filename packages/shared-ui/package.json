@@ -18,10 +18,10 @@
     "@vao/shared-bridge": "^1.0.0",
     "@vueform/multiselect": "~2.6.7",
     "dayjs": "^1.11.11",
-    "debug": "~4.3.4",
-    "vee-validate": "~4.13.0",
+    "debug": "~4.4.0",
+    "vee-validate": "~4.15.0",
     "vue": "latest",
-    "yup": "~1.4.0"
+    "yup": "~1.7.0"
   },
   "devDependencies": {
     "@nuxt/eslint-config": "^0.5.7",
