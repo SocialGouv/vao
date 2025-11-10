@@ -1,6 +1,6 @@
 import path from "path";
 
-const root = path.resolve(__dirname, "../");
+const root = path.resolve(__dirname, "../../assets");
 const IMAGE_PATH = path.join(root, "images");
 const FONT_PATH = path.join(root, "fonts");
 
