@@ -1,5 +1,4 @@
-import { AGREMENT_STATUT } from "../utils/agrementStatus";
-import { statusUserFront } from "../utils/status";
+import { AGREMENT_STATUT, STATUS_USER_FRONT } from "@vao/shared-bridge";
 import { pool } from "../db";
 import type {
   UpdateAgrementExpirationRow,
@@ -34,7 +33,7 @@ export const AgrementExpirationRepository = {
             OR
             (current_date = a.date_fin_validite - INTERVAL '120 days' AND a.last_mail_expiration_120j_at IS NULL)
           )
-          AND a.statut = '${AGREMENT_STATUT.VALIDE}' AND u.status_code = '${statusUserFront.VALIDATED}';
+          AND a.statut = '${AGREMENT_STATUT.VALIDE}' AND u.status_code = '${STATUS_USER_FRONT.VALIDATED}';
       `;
 
     const response = await pool.query<NotifyAgrementExpirationRow>(query);
