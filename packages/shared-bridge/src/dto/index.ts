@@ -1,2 +1,3 @@
 /* eslint-disable import/no-unresolved */
-export * from "./hebergementDto";
+export * from "./agrement.dto";
+export * from "./hebergement.dto";

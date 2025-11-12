@@ -1,5 +1,5 @@
 import { senderEmail, domains } from "../config";
-import { formatShortDateFr } from "../utils/date";
+import { formatShortDateFr } from "@vao/shared-bridge/src/utils/date";
 import constructMail from "../utils/mails";
 import { transportEmails } from "../utils/transporter";
 
