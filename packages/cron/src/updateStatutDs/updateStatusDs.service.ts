@@ -1,4 +1,4 @@
-import { status } from "../utils/status";
+import { DEMANDE_SEJOUR_STATUTS } from "@vao/shared-bridge";
 import { pool } from "../db";
 import { insertCron } from "../cron/cron.service";
 import type {
@@ -16,30 +16,30 @@ const querySelectAbandonDeclarations = `
   SELECT id, statut
   FROM front.demande_sejour
     WHERE (date_debut::date < now()::date)
-    AND statut in ('${status.ATTENTE_8_JOUR}','${status.A_MODIFIER}','${status.A_MODIFIER_8J}');
+    AND statut in ('${DEMANDE_SEJOUR_STATUTS.ATTENTE_8_JOUR}','${DEMANDE_SEJOUR_STATUTS.A_MODIFIER}','${DEMANDE_SEJOUR_STATUTS.A_MODIFIER_8J}');
 `;
 
 const queryUpdateEnCoursDeclarations = `
   UPDATE front.demande_sejour
-    SET statut = '${status.SEJOUR_EN_COURS}',
+    SET statut = '${DEMANDE_SEJOUR_STATUTS.SEJOUR_EN_COURS}',
     edited_at = NOW()
     WHERE (date_debut::date <= now()::date)
-    AND statut = '${status.VALIDEE_8J}'
+    AND statut = '${DEMANDE_SEJOUR_STATUTS.VALIDEE_8J}'
   RETURNING id;
 `;
 
 const queryUpdateTermineDeclarations = `
   UPDATE front.demande_sejour
-    SET statut = '${status.TERMINEE}',
+    SET statut = '${DEMANDE_SEJOUR_STATUTS.TERMINEE}',
     edited_at = NOW()
     WHERE (date_fin::date < now()::date)
-    AND statut in ('${status.VALIDEE_8J}', '${status.SEJOUR_EN_COURS}')
+    AND statut in ('${DEMANDE_SEJOUR_STATUTS.VALIDEE_8J}', '${DEMANDE_SEJOUR_STATUTS.SEJOUR_EN_COURS}')
   RETURNING id;
 `;
 
 const queryUpdateAbandonDeclaration = `
   UPDATE front.demande_sejour
-    SET statut = '${status.ABANDONNEE}',
+    SET statut = '${DEMANDE_SEJOUR_STATUTS.ABANDONNEE}',
     edited_at = NOW()
     WHERE id = $1
   RETURNING id;

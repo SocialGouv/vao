@@ -1,4 +1,4 @@
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 
 const query = {
   // simple query to check if the connexion to the db is up
@@ -6,5 +6,5 @@ const query = {
 };
 
 module.exports.healthz = async () => {
-  await pool.query(...query.healthz());
+  await getPool().query(...query.healthz());
 };

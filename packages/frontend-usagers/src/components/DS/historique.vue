@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import { TableFull } from "@vao/shared";
+import { TableFull } from "@vao/shared-ui";
 import dayjs from "dayjs";
 import DisplayTypePrecision from "~/components/DS/DisplayTypePrecision.vue";
 

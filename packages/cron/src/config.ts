@@ -4,6 +4,16 @@ export const notifyDs8jDs15 = {
   name: "REQUEST_DS8J15J",
 };
 
+export const notifyCompteInactif2m = {
+  cron: process.env.BACKEND_CRON_REQUEST_ACCOUNT2M_NOTIFY_CRON,
+  name: "REQUEST_ACCOUNT2M",
+};
+
+export const disableAccount3m = {
+  cron: process.env.BACKEND_CRON_DISABLE_ACCOUNT_3M_CRON,
+  name: "DISABLE_ACCOUNT_3M",
+};
+
 export const notifyRequestActionsBo = {
   cron: process.env.BACKEND_CRON_REQUEST_ACTIONS_BO_CRON,
   name: "REQUEST_ACTIONS_BO",
@@ -12,6 +22,16 @@ export const notifyRequestActionsBo = {
 export const updateStatusDs = {
   cron: process.env.BACKEND_CRON_UPDATE_STATUT_DS_CRON,
   name: "UPDATE_STATUT_DS",
+};
+
+export const notifySuppressionCompteInactif = {
+  cron: process.env.BACKEND_CRON_SUPPRESSION_COMPTE_INACTIF_NOTIFY,
+  name: "SUPPRESSION_COMPTE_INACTIF_NOTIFY",
+};
+
+export const suppressionCompteInactif = {
+  cron: process.env.BACKEND_CRON_SUPPRESSION_COMPTE_INACTIF,
+  name: "SUPPRESSION_COMPTE_INACTIF",
 };
 
 export const postgres = {

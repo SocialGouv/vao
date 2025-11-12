@@ -139,7 +139,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { IsDownloading } from "@vao/shared";
+import { IsDownloading } from "@vao/shared-ui";
 import { DsfrAlert } from "@gouvminint/vue-dsfr";
 
 const props = defineProps({

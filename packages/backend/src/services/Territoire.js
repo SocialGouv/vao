@@ -1,6 +1,7 @@
 const AppError = require("../utils/error");
 const logger = require("../utils/logger");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
+const getCodeTerritoireByInseeCode = require("../utils/geo");
 
 const log = logger(module.filename);
 const {
@@ -56,22 +57,19 @@ const query = {
     FROM geo.territoires ter
     INNER JOIN back.fiche_territoire fte ON fte.ter_code = ter.code
     WHERE ter.code <> 'FRA'`,
-  selectTerritoiresByInseeCode: (inseeCode) => [
-    `
-    SELECT
-      ft.id,
-      ft.ter_code AS "terCode",
-      ft.service_mail AS "serviceMail",
-      ft.service_telephone AS "serviceTelephone",
-      ft.corresp_vao_nom AS "correspVaoNom",
-      ft.corresp_vao_prenom AS "correspVaoPrenom",
-      ft.edited_at AS "editedAt"
-    FROM back.fiche_territoire ft
-    JOIN geo.territoires t ON ft.ter_code = t.parent_code
-    WHERE t.code = $1;
-    `,
-    [inseeCode],
-  ],
+  selectTerritoiresByInseeCode: `
+  SELECT
+    ft.id,
+    ft.ter_code AS "terCode",
+    ft.service_mail AS "serviceMail",
+    ft.service_telephone AS "serviceTelephone",
+    ft.corresp_vao_nom AS "correspVaoNom",
+    ft.corresp_vao_prenom AS "correspVaoPrenom",
+    ft.edited_at AS "editedAt"
+  FROM back.fiche_territoire ft
+  JOIN geo.territoires t ON ft.ter_code = t.parent_code
+  WHERE t.code = $1;
+`,
 
   update: `
       UPDATE back.fiche_territoire
@@ -123,8 +121,8 @@ module.exports.fetch = async (queryParams) => {
     sort,
   );
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -134,7 +132,7 @@ module.exports.fetch = async (queryParams) => {
 
 module.exports.readFicheIdByTerCode = async (territoireCode) => {
   log.i("readFicheIdByTerCode - IN");
-  const { rows } = await pool.query(query.getFicheIdByTerCode, [
+  const { rows } = await getPool().query(query.getFicheIdByTerCode, [
     territoireCode,
   ]);
   log.i("readFicheIdByTerCode - DONE");
@@ -143,7 +141,7 @@ module.exports.readFicheIdByTerCode = async (territoireCode) => {
 
 module.exports.readOne = async (idTerritoire) => {
   log.i("fetch - IN");
-  const { rows } = await pool.query(query.getOne, [idTerritoire]);
+  const { rows } = await getPool().query(query.getOne, [idTerritoire]);
   log.i("fetch - DONE");
   return rows[0];
 };
@@ -151,7 +149,7 @@ module.exports.readOne = async (idTerritoire) => {
 module.exports.update = async (id, { nom, prenom, email, telephone }) => {
   log.i("update - IN", { id });
 
-  const response = await pool.query(query.update, [
+  const response = await getPool().query(query.update, [
     id,
     nom,
     prenom,
@@ -170,10 +168,12 @@ module.exports.update = async (id, { nom, prenom, email, telephone }) => {
   return { territoire: response.rows[0] };
 };
 
-module.exports.getFichesTerritoireForRegionByInseeCode = async (InseeCode) => {
-  const code = InseeCode.substring(0, 2);
-  const { rows } = await pool.query(
-    ...query.selectTerritoiresByInseeCode(code),
-  );
+module.exports.getFichesTerritoireForRegionByInseeCode = async ({
+  inseeCode,
+}) => {
+  const terCode = getCodeTerritoireByInseeCode({ inseeCode });
+  const { rows } = await getPool().query(query.selectTerritoiresByInseeCode, [
+    terCode,
+  ]);
   return rows[0];
 };

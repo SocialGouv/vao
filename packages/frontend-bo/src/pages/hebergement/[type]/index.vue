@@ -1,4 +1,4 @@
-import { DsfrTabsV2 } from '@vao/shared';
+import { DsfrTabsV2 } from '@vao/shared-ui';
 <template>
   <div class="fr-container">
     <DsfrTabsV2
@@ -21,7 +21,7 @@ import { DsfrTabsV2 } from '@vao/shared';
 </template>
 
 <script setup>
-import { DsfrTabsV2 } from "@vao/shared";
+import { DsfrTabsV2 } from "@vao/shared-ui";
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],

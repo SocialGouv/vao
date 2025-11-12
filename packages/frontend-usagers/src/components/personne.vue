@@ -8,7 +8,7 @@
             label="Nom"
             :label-visible="true"
             :model-value="nom"
-            :readonly="!props.modifiable"
+            :readonly="!props.modifiable || props.synthese"
             :is-valid="nomMeta.valid"
             :error-message="nomErrorMessage"
             placeholder=""
@@ -24,7 +24,7 @@
             label="Prénom"
             :label-visible="true"
             :model-value="prenom"
-            :readonly="!props.modifiable"
+            :readonly="!props.modifiable || props.synthese"
             :is-valid="prenomMeta.valid"
             :error-message="prenomErrorMessage"
             placeholder=""
@@ -42,7 +42,7 @@
               label="Date de naissance"
               :label-visible="true"
               :model-value="dateNaissance"
-              :readonly="!props.modifiable"
+              :readonly="!props.modifiable || props.synthese"
               :is-valid="dateNaissanceMeta.valid"
               :error-message="dateNaissanceErrorMessage"
               hint=""
@@ -58,7 +58,7 @@
             label="Compétences"
             :label-visible="true"
             :model-value="competence"
-            :readonly="!props.modifiable"
+            :readonly="!props.modifiable || props.synthese"
             :is-textarea="true"
             :is-valid="competenceMeta.valid"
             :error-message="competenceErrorMessage"
@@ -75,7 +75,7 @@
             label="Fonction"
             :label-visible="true"
             :model-value="fonction"
-            :readonly="!props.modifiable"
+            :readonly="!props.modifiable || props.synthese"
             :is-valid="fonctionMeta.valid"
             :error-message="fonctionErrorMessage"
             placeholder=""
@@ -90,7 +90,7 @@
             label="Fonction"
             :options="informationsPersonnelListe.fonctionOptions"
             :values="listeFonction ?? []"
-            :modifiable="props.modifiable"
+            :modifiable="props.modifiable && !props.synthese"
             :is-valid="listeFonctionMeta.valid"
             :error-message="listeFonctionErrorMessage"
             @update="addListeFonction"
@@ -102,7 +102,7 @@
           <div class="fr-input-group fr-col-12">
             <AddressSearchAddress
               :initial-adress="props.personne.adresse?.label"
-              :modifiable="props.modifiable"
+              :modifiable="props.modifiable && !props.synthese"
               :value="adresse"
               :label="props.personne.adresse ? 'Nouvelle adresse' : 'Adresse'"
               :error-message="adresseErrorMessage"
@@ -119,7 +119,7 @@
               label="Téléphone"
               :label-visible="true"
               :model-value="telephone"
-              :readonly="!props.modifiable"
+              :readonly="!props.modifiable || props.synthese"
               :is-valid="telephoneMeta.valid"
               :error-message="telephoneErrorMessage"
               placeholder=""
@@ -137,7 +137,7 @@
               label="Adresse courriel"
               :label-visible="true"
               :model-value="email"
-              :readonly="!props.modifiable"
+              :readonly="!props.modifiable || props.synthese"
               :is-valid="emailMeta.valid"
               :error-message="emailErrorMessage"
               placeholder=""
@@ -179,6 +179,7 @@ const props = defineProps({
   showTelephone: { type: Boolean, default: false, required: false },
   showButton: { type: Boolean, default: true, required: false },
   validateOnMount: { type: Boolean, default: false },
+  synthese: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(["valid", "update:personne"]);

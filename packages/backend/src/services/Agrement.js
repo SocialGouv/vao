@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 const logger = require("../utils/logger");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 const AppError = require("../utils/error");
 
 const log = logger(module.filename);
@@ -108,7 +108,7 @@ module.exports.create = async (
 ) => {
   const {
     rows: [{ id: agrementId }],
-  } = await pool.query(
+  } = await getPool().query(
     ...query.create(
       organismeId,
       numero,
@@ -125,7 +125,9 @@ module.exports.create = async (
 module.exports.getByOrganismeId = async (organismeId) => {
   log.i("IN");
   try {
-    const response = await pool.query(...query.getByOrganismeId(organismeId));
+    const response = await getPool().query(
+      ...query.getByOrganismeId(organismeId),
+    );
     if (response.rows.length > 0) {
       log.i("DONE", response.rows[0]);
       return response.rows[0];
@@ -148,7 +150,7 @@ module.exports.update = async (
 ) => {
   log.i("update - In");
   try {
-    const { rows, rowCount } = await pool.query(
+    const { rows, rowCount } = await getPool().query(
       ...query.update(
         organismeId,
         numero,
@@ -173,7 +175,7 @@ module.exports.update = async (
 module.exports.deleteByOrganismeId = async (organismeId) => {
   log.i("deleteByOrganismeId - In");
   try {
-    const { rowCount: ndDeletedAgrements } = await pool.query(
+    const { rowCount: ndDeletedAgrements } = await getPool().query(
       ...query.deleteByOrganismeId(organismeId),
     );
     log.i("deleteByOrganismeId - Done");
@@ -187,7 +189,7 @@ module.exports.deleteByOrganismeId = async (organismeId) => {
 module.exports.getBySiret = async (siret) => {
   log.i("getBySiret - In");
   try {
-    const { rowCount, rows } = await pool.query(query.getBySiret, [siret]);
+    const { rowCount, rows } = await getPool().query(query.getBySiret, [siret]);
     if (rowCount === 0) {
       throw new AppError("Agrément non trouvé", { statusCode: 404 });
     }

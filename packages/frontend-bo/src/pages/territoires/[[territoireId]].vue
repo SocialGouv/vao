@@ -1,88 +1,114 @@
 <template>
-  <div>
+  <div class="fr-mt-4w">
     <h1>
       Fiche territoire
       {{ titleTerritoire }}
     </h1>
-    <div class="fr-fieldset__element fr-col-sm-8">
-      <h3>Référent VAO du territoire</h3>
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          :error-message="nomErrorMessage"
-          :model-value="nom"
-          type="text"
-          label="Nom"
-          name="nom"
-          :disabled="!isModifiable"
-          :required="true"
-          :label-visible="true"
-          placeholder=""
-          hint="Veuillez saisir le nom du correspondant VAO. Exemple Dupont"
-          :is-valid="nomMeta.valid"
-          @update:model-value="onNomChange"
-        />
-      </div>
-    </div>
-    <div class="fr-fieldset__element fr-col-sm-8">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          :error-message="prenomErrorMessage"
-          :model-value="prenom"
-          type="text"
-          label="Prénom"
-          name="prenom"
-          :disabled="!isModifiable"
-          :required="true"
-          :label-visible="true"
-          hint="Veuillez saisir le prénom du correspondant VAO. Exemple Céline"
-          placeholder=""
-          :is-valid="prenomMeta.valid"
-          @update:model-value="onPrenomChange"
-        />
-      </div>
-    </div>
-    <div class="fr-fieldset__element fr-col-sm-8">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          :error-message="emailErrorMessage"
-          :model-value="email"
-          type="text"
-          label="Boite fonctionnelle du service VAO"
-          name="email"
-          :disabled="!isModifiable"
-          :required="true"
-          :label-visible="true"
-          placeholder=""
-          hint="Veuillez saisir l’adresse email du service VAO. Exemple: nom@domaine.fr"
-          :is-valid="emailMeta.valid"
-          @update:model-value="onEmailChange"
-        />
-      </div>
-    </div>
-    <div class="fr-fieldset__element fr-col-sm-8">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          :error-message="telephoneErrorMessage"
-          :model-value="telephone"
-          type="text"
-          label="Numéro de téléphone"
-          name="telephone"
-          :disabled="!isModifiable"
-          :required="true"
-          :label-visible="true"
-          hint="Veuillez saisir le numéro de téléphone du service VAO. Exemple: 0612345678"
-          placeholder=""
-          :is-valid="telephoneMeta.valid"
-          @update:model-value="onTelephoneChange"
-        />
-      </div>
-      <DsfrButton
-        v-if="isModifiable"
-        :disabled="!canSubmit"
-        @click.prevent="update"
-        >Enregistrer
-      </DsfrButton>
+    <div class="fr-fieldset__element fr-col-sm-10">
+      <TitleWithIcon
+        class="fr-mt-4w fr-mb-4w"
+        icon="fr-icon-account-pin-circle-fill"
+        :level="2"
+      >
+        <template #title>
+          <h2 class="title-with-icon">Référent VAO du territoire</h2>
+        </template>
+      </TitleWithIcon>
+
+      <template v-if="isModifiable">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            :error-message="nomErrorMessage"
+            :model-value="nom"
+            type="text"
+            label="Nom"
+            name="nom"
+            :disabled="!isModifiable"
+            :required="true"
+            :label-visible="true"
+            placeholder=""
+            hint="Veuillez saisir le nom du correspondant VAO. Exemple Dupont"
+            :is-valid="nomMeta.valid"
+            @update:model-value="onNomChange"
+          />
+        </div>
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            :error-message="prenomErrorMessage"
+            :model-value="prenom"
+            type="text"
+            label="Prénom"
+            name="prenom"
+            :disabled="!isModifiable"
+            :required="true"
+            :label-visible="true"
+            hint="Veuillez saisir le prénom du correspondant VAO. Exemple Céline"
+            placeholder=""
+            :is-valid="prenomMeta.valid"
+            @update:model-value="onPrenomChange"
+          />
+        </div>
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            :error-message="emailErrorMessage"
+            :model-value="email"
+            type="text"
+            label="E-mail VAO"
+            name="email"
+            :disabled="!isModifiable"
+            :required="true"
+            :label-visible="true"
+            placeholder=""
+            hint="Veuillez saisir l’adresse email du service VAO. Exemple: nom@domaine.fr"
+            :is-valid="emailMeta.valid"
+            @update:model-value="onEmailChange"
+          />
+        </div>
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            :error-message="telephoneErrorMessage"
+            :model-value="telephone"
+            type="text"
+            label="Téléphone"
+            name="telephone"
+            :disabled="!isModifiable"
+            :required="true"
+            :label-visible="true"
+            hint="Veuillez saisir le numéro de téléphone du service VAO. Exemple: 0612345678"
+            placeholder=""
+            :is-valid="telephoneMeta.valid"
+            @update:model-value="onTelephoneChange"
+          />
+        </div>
+        <DsfrButton
+          v-if="isModifiable"
+          :disabled="!canSubmit"
+          @click.prevent="update"
+          >Enregistrer
+        </DsfrButton>
+      </template>
+      <template v-else>
+        <dl class="fr-mb-2w">
+          <dt><strong>Nom</strong></dt>
+          <dd>{{ nom }}</dd>
+          <dt><strong>Prénom</strong></dt>
+          <dd>{{ prenom }}</dd>
+          <dt><strong>E-mail VAO</strong></dt>
+          <dd>{{ email }}</dd>
+          <dt><strong>Téléphone</strong></dt>
+          <dd>{{ telephone }}</dd>
+        </dl>
+      </template>
+      <hr class="fr-mt-4w" />
+      <TitleWithIcon class="fr-mt-4w" icon="fr-icon-team-fill" :level="2">
+        <template #title>
+          <h2 class="title-with-icon">
+            Liste des comptes de la région et de ses départements
+          </h2>
+        </template>
+      </TitleWithIcon>
       <TableFull
+        :no-caption="true"
         :title="titleUser"
         :headers="headers"
         :data="userStore.users ?? []"
@@ -92,7 +118,7 @@
   </div>
 </template>
 <script setup>
-import { TableFull } from "@vao/shared";
+import { TableFull, TitleWithIcon } from "@vao/shared-ui";
 import { useField, useForm } from "vee-validate";
 import Territoires from "~/utils/territoires";
 import * as yup from "yup";
@@ -266,3 +292,21 @@ const close = () => {
   navigateTo(`/territoires/liste`);
 };
 </script>
+<style scoped lang="scss">
+.title-with-icon {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 700;
+  margin: 0;
+}
+dl {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  @media (min-width: 576px) {
+    grid-template-columns: 220px 1fr;
+  }
+  row-gap: 0.5rem;
+  column-gap: 1rem;
+  margin: 0;
+}
+</style>

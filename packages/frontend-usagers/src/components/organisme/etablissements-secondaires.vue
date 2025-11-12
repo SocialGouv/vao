@@ -118,7 +118,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
-import { DsfrDataTableV2Wrapper } from "@vao/shared";
+import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
 
 const emit = defineEmits(["previous", "next", "update"]);
 
@@ -206,36 +206,18 @@ const defaultLimit = 10;
 const defaultOffset = 0;
 const limit = ref(defaultLimit);
 const offset = ref(defaultOffset);
+const optionType = columnsTable.optionType;
 
-const columns = [
-  {
-    key: "siret",
-    label: "SIRET",
-  },
-  {
-    key: "denomination",
-    label: "Dénomination",
-  },
-  {
-    key: "adresse",
-    label: "Adresse",
-  },
-  {
-    key: "codePostal",
-    label: "Code postal",
-  },
-  {
-    key: "commune",
-    label: "Commune",
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const defs = [
+  ["siret", "SIRET"],
+  ["denomination", "Dénomination"],
+  ["adresse", "Adresse"],
+  ["codePostal", "Code postal"],
+  ["commune", "Commune"],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
 
 const enableEtablissements = (siret) => {
   setValues({

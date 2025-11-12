@@ -1,4 +1,4 @@
-const { statuts } = require("../../helpers/ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const DemandeSejour = require("../../services/DemandeSejour");
 const Send = require("../../services/mail").mailService.send;
 const MailUtils = require("../../utils/mail");
@@ -29,13 +29,14 @@ module.exports = async function cancel(req, res, next) {
     }
     log.i(declaration.statut);
     const statutsCancellable = [
-      statuts.TRANSMISE,
-      statuts.EN_COURS,
-      statuts.A_MODIFIER,
-      statuts.ATTENTE_8_JOUR,
-      statuts.TRANSMISE_8J,
-      statuts.EN_COURS_8J,
-      statuts.A_MODIFIER_8J,
+      DEMANDE_SEJOUR_STATUTS.TRANSMISE,
+      DEMANDE_SEJOUR_STATUTS.EN_COURS,
+      DEMANDE_SEJOUR_STATUTS.A_MODIFIER,
+      DEMANDE_SEJOUR_STATUTS.ATTENTE_8_JOUR,
+      DEMANDE_SEJOUR_STATUTS.TRANSMISE_8J,
+      DEMANDE_SEJOUR_STATUTS.EN_COURS_8J,
+      DEMANDE_SEJOUR_STATUTS.A_MODIFIER_8J,
+      DEMANDE_SEJOUR_STATUTS.VALIDEE_8J,
     ];
 
     if (!statutsCancellable.includes(declaration.statut)) {

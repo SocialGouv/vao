@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { eigModel } from "@vao/shared";
+import { eigModel } from "@vao/shared-ui";
 import { DeclarationSejour, useUserStore } from "#imports";
 import { ROLES as userRolesRef } from "../helpers/users";
 

@@ -1,5 +1,5 @@
 const logger = require("../utils/logger");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 
 const {
   sanitizePaginationParams,
@@ -185,27 +185,32 @@ const query = {
   `,
 
   getList: () => `
-    SELECT
-      us.id AS id,
-      us.mail AS email,
-      us.nom AS nom,
-      us.prenom AS prenom,
-      us.status_code AS statut,
-      us.created_at AS "dateCreation",
-      us.lastconnection_at as "lastConnectionAt",
-      org.id AS "organismeId",
-      org.type_organisme AS "typeOrganisme",
-      STRING_AGG(DISTINCT COALESCE(pm.siret, pp.siret), ', ') AS siret,
-      pm.siren AS siren,
-      pm.raison_sociale AS "raisonSociale",
-      count(CASE WHEN ds.statut <> 'BROUILLON' THEN ds.id ELSE NULL END) AS "nombreDeclarations"
-    FROM front.users AS us
-      LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
-      LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id
-      LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
-      LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
-    WHERE 1 = 1
+    WITH liste AS (
+      SELECT
+        us.id AS id,
+        us.mail AS email,
+        us.nom AS nom,
+        us.prenom AS prenom,
+        us.status_code AS statut,
+        us.created_at AS "dateCreation",
+        us.lastconnection_at AS "lastConnectionAt",
+        org.id AS "organismeId",
+        org.type_organisme AS "typeOrganisme",
+        STRING_AGG(DISTINCT COALESCE(pm.siret, pp.siret), ', ') AS siret,
+        pm.siren AS siren,
+        STRING_AGG(DISTINCT COALESCE(pm.raison_sociale, pp.nom_usage), ', ') AS "raisonSociale",
+        COUNT(CASE WHEN ds.statut <> 'BROUILLON' THEN ds.id END) AS "nombreDeclarations"
+      FROM front.users AS us
+        LEFT JOIN front.user_organisme AS uo ON uo.use_id = us.id
+        LEFT JOIN front.organismes AS org ON org.id = uo.org_id
+        LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
+        LEFT JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
+      GROUP BY us.id, us.mail, us.nom, us.prenom, us.status_code, org.id, org.type_organisme, pm.siren
+    )
+    SELECT *
+    FROM liste
+    WHERE 1=1
   `,
   getMailUserOrganismeId: `
     SELECT mail FROM front.users u
@@ -323,8 +328,8 @@ module.exports.getByOrganismeId = async (organismesId, queryParams) => {
   );
 
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -334,59 +339,62 @@ module.exports.getByOrganismeId = async (organismesId, queryParams) => {
 
 const userTitles = [
   {
-    key: "org.id",
+    key: `"organiseId"`,
     queryKey: "organisme_id",
     sortEnabled: false,
     type: "default",
   },
   {
-    key: "us.nom",
+    key: "nom",
     queryKey: "nom",
     sortEnabled: true,
     type: "default",
   },
   {
-    key: "us.prenom",
+    key: "prenom",
     queryKey: "prenom",
     sortEnabled: true,
     type: "default",
   },
   {
-    key: "us.mail",
+    key: "email",
     queryKey: "email",
     sortEnabled: true,
     type: "default",
   },
   {
-    key: "pm.siret",
+    key: "siret",
     queryKey: "siret",
     sortEnabled: false,
     type: "default",
   },
   {
-    key: "COALESCE(pm.raison_sociale, pp.nom_usage)",
-    query: (index, value) => {
-      if (value === undefined || value === null || value === "") {
-        return {};
-      }
-      return {
-        query: `((org.type_organisme = 'personne_morale' AND unaccent(pm.raison_sociale) ILIKE '%' || unaccent($${index}) || '%') OR (org.type_organisme = 'personne_physique' AND unaccent(pp.nom_usage) ILIKE '%' || unaccent($${index}) || '%'))`,
-        queryParams: [value],
-      };
-    },
+    key: `"raisonSociale"`,
     queryKey: "organisme",
     sortEnabled: true,
-    sortQuery: "COALESCE(pm.raison_sociale, pp.nom_usage)",
-    type: "custom",
+    type: "default",
   },
   {
-    key: "us.status_code",
+    key: `"raisonSociale"`,
+    queryKey: "raisonSociale",
+    sortEnabled: true,
+    type: "default",
+  },
+  {
+    key: `"nombreDeclarations"`,
+    queryKey: "nombreDeclarations",
+    sortEnabled: true,
+    sortType: "number",
+    type: "number",
+  },
+  {
+    key: "statut",
     queryKey: "statut",
     sortEnabled: true,
     type: "default",
   },
   {
-    key: "us.created_at",
+    key: `"dateCreation"`,
     queryKey: "dateCreation",
     sortEnabled: true,
     sortType: "date",
@@ -397,8 +405,6 @@ const userTitles = [
 module.exports.read = async (queryParams = {}) => {
   log.i("read - IN", queryParams);
 
-  const groupBy =
-    "us.id,us.mail,us.nom,us.prenom,us.status_code,org.id,org.type_organisme,pm.siren,pm.raison_sociale,org.id";
   const paginatedQuery = processQuery(
     query.getList,
     [],
@@ -406,14 +412,13 @@ module.exports.read = async (queryParams = {}) => {
     queryParams,
     {
       sortBy: "nom",
-      sortDirection: "DESC",
+      sortDirection: "ASC",
     },
-    groupBy,
+    "",
   );
-
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   log.i("read - DONE");
   return {
@@ -429,14 +434,16 @@ module.exports.getByToValidateByBo = async (terCode) => {
       statusCode: 500,
     });
   }
-  const { rowCount, rows } = await pool.query(query.getByToValidateByBo, [
+  const { rowCount, rows } = await getPool().query(query.getByToValidateByBo, [
     terCode,
   ]);
   log.i("getByToValidateByBo - DONE");
   return { total: rowCount, users: rows };
 };
 module.exports.getIsLastUserOrganisme = async (userId) => {
-  const response = await pool.query(query.getIsLastUserOrganisme, [userId]);
+  const response = await getPool().query(query.getIsLastUserOrganisme, [
+    userId,
+  ]);
   log.i("getIsLastUserOrganisme - DONE");
   return response.rows[0].count <= 1;
 };
@@ -453,7 +460,7 @@ module.exports.getIsUserSameOrganismeOtherUser = async (
       statusCode: 500,
     });
   }
-  const total = await pool.query(query.getIsUserSameOrganismeOtherUser, [
+  const total = await getPool().query(query.getIsUserSameOrganismeOtherUser, [
     userIdConnected,
     userIdSearch,
   ]);
@@ -467,7 +474,9 @@ module.exports.readOne = async (userId) => {
       statusCode: 500,
     });
   }
-  const { rowCount, rows: users } = await pool.query(query.getOne, [userId]);
+  const { rowCount, rows: users } = await getPool().query(query.getOne, [
+    userId,
+  ]);
   if (rowCount === 0) {
     log.d("readOne - DONE - Utilisateur FO inexistant");
     throw new AppError("Utilisateur déjà inexistant", {
@@ -480,12 +489,12 @@ module.exports.readOne = async (userId) => {
 };
 
 module.exports.getUserOrganisme = async (userId) => {
-  const { rows } = await pool.query(query.getUserOragnisme, [userId]);
+  const { rows } = await getPool().query(query.getUserOragnisme, [userId]);
   return rows[0]?.organismeId ?? null;
 };
 
 module.exports.getMailUserOrganismeId = async (organismeId) => {
-  const { rows } = await pool.query(query.getMailUserOrganismeId, [
+  const { rows } = await getPool().query(query.getMailUserOrganismeId, [
     organismeId,
   ]);
   return rows ?? [];
@@ -494,7 +503,7 @@ module.exports.getMailUserOrganismeId = async (organismeId) => {
 module.exports.getRolesByUserId = async (userId) => {
   log.i("getRolesByUserId - IN");
 
-  const response = await pool.query(query.getRolesByUserId, [userId]);
+  const response = await getPool().query(query.getRolesByUserId, [userId]);
   log.d(response);
   log.i("getRolesByUserId - DONE");
   return response?.rows ?? null;
@@ -502,9 +511,9 @@ module.exports.getRolesByUserId = async (userId) => {
 
 module.exports.updateRoles = async (userId, roles) => {
   log.i("updateRoles - IN");
-  await pool.query(query.deleteRoles, [userId]);
+  await getPool().query(query.deleteRoles, [userId]);
   for (const role of roles) {
-    await pool.query(...query.bindRole(userId, role));
+    await getPool().query(...query.bindRole(userId, role));
   }
   log.i("update - DONE");
   return { code: "MajCompte" };
@@ -518,7 +527,7 @@ module.exports.updateStatus = async (
   userFrontId,
 ) => {
   log.i("updateStatus - IN");
-  const response = await pool.query(query.updateUserStatus, [
+  const response = await getPool().query(query.updateUserStatus, [
     userId,
     status,
     motif,

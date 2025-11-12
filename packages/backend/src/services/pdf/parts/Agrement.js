@@ -3,6 +3,16 @@ const Regions = require("../../geo/Region");
 const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
 
 module.exports = async function buildAgrement(agrement) {
+  let region = "";
+  try {
+    const result = await Regions.fetchOne(agrement.regionObtention);
+    if (result && result.text) {
+      region = result.text;
+    }
+  } catch (e) {
+    console.error("Erreur lors de la récupération de la région :", e);
+  }
+
   return {
     stack: [
       {
@@ -41,10 +51,7 @@ module.exports = async function buildAgrement(agrement) {
                 "Date d'obtention de l'agrément :",
                 dayjs(agrement.dateObtention).format("DD/MM/YYYY"),
               ],
-              [
-                "Région d'obtention de l'agrément :",
-                await Regions.fetchOne(agrement.regionObtention),
-              ],
+              ["Région d'obtention de l'agrément :", region],
               ["Nom du fichier téléversé :", agrement.file.name],
             ],
             { marginUp: 0 },

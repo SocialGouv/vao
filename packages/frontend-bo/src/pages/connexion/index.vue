@@ -113,8 +113,8 @@
 
 <script setup>
 import { useUserStore } from "@/stores/user";
-import { PasswordInput } from "@vao/shared";
-import { connectionInfos } from "@vao/shared/src/models/messages";
+import { ERRORS } from "@vao/shared-bridge";
+import { PasswordInput, apiModel } from "@vao/shared-ui";
 
 const toaster = useToaster();
 
@@ -146,7 +146,7 @@ const showPassword = ref(false);
 const editMail = (v) => (email.value = v);
 const editPwd = (v) => (password.value = v);
 
-const displayInfos = connectionInfos;
+const displayInfos = apiModel.connectionInfos;
 const displayType = ref(null);
 
 const canLogin = computed(() => {
@@ -199,17 +199,13 @@ async function login() {
     log.w("login", { error: codeError ?? error?.data ?? error });
 
     switch (codeError) {
-      case "TooManyLoginAttempts":
-        displayType.value = "TooManyLoginAttempts";
-        break;
-      case "WrongCredentials":
-        displayType.value = "WrongCredentials";
-        break;
-      case "NotValidatedAccount":
-        displayType.value = "NotValidatedAccount";
+      case ERRORS.TooManyLoginAttempts:
+      case ERRORS.WrongCredentials:
+      case ERRORS.NeedEmailValidation:
+        displayType.value = codeError;
         break;
       default:
-        displayType.value = "UnexpectedError";
+        displayType.value = ERRORS.UnexpectedError;
         break;
     }
   }

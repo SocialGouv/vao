@@ -1,7 +1,7 @@
 import * as yup from "yup";
-import { emailSchema } from "@vao/shared/src/schema/email";
-import { prenomSchema } from "@vao/shared/src/schema/prenom";
-import { nomSchema } from "@vao/shared/src/schema/nom";
+import { emailSchema } from "@vao/shared-ui/src/schema/email";
+import { prenomSchema } from "@vao/shared-ui/src/schema/prenom";
+import { nomSchema } from "@vao/shared-ui/src/schema/nom";
 
 const FoUserSchema = {
   isActive: yup.boolean().required(),

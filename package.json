@@ -7,19 +7,23 @@
   "private": true,
   "scripts": {
     "prepare": "husky install",
-    "lint:all": "yarn run lint:backend && yarn run lint:frontend-usagers && yarn run lint:frontend-bo && yarn run lint:shared && yarn run lint:api",
+    "lint:all": "yarn run lint:backend && yarn run lint:frontend-usagers && yarn run lint:frontend-bo && yarn run lint:shared && yarn run lint:api && yarn run lint:cron",
     "lint:all:fix": "yarn run lint:backend --fix && yarn run lint:frontend-usagers --fix && yarn run lint:frontend-bo --fix && run lint:shared --fix && run lint:api --fix",
     "lint:api": "yarn --cwd ./packages/external-api run lint",
     "lint:backend": "yarn --cwd ./packages/backend run lint",
+    "lint:cron": "yarn --cwd ./packages/cron run lint",
     "lint:frontend-usagers": "yarn --cwd ./packages/frontend-usagers run lint",
     "lint:frontend-bo": "yarn --cwd ./packages/frontend-bo run lint",
-    "lint:shared": "yarn --cwd ./packages/shared run lint",
+    "lint:shared": "yarn --cwd ./packages/shared-ui run lint && yarn --cwd ./packages/shared-bridge run lint",
     "knex": "POSTGRES_HOST=localhost POSTGRES_PORT=5436 env-cmd --no-override knex --cwd ./packages/migrations/src",
-    "test:unit:all": "yarn run test:unit:api && yarn run test:unit:backend",
-    "test:unit:api": "yarn workspace @vao/external-api test",
-    "test:unit:backend": "yarn workspace @vao/backend test",
+    "test:unit:all": "yarn run test:unit:api && yarn run test:unit:backend && yarn run test:unit:shared-bridge && yarn run test:unit:cron",
+    "test:unit:api": "yarn workspace @vao/external-api test:cov",
+    "test:unit:backend": "yarn workspace @vao/backend test:coverage",
+    "test:unit:cron": "yarn workspace @vao/cron test:coverage",
+    "test:unit:shared-bridge": "yarn workspace @vao/shared-bridge test:coverage",
     "tests:e2e": "E2E_LOCAL=true playwright test",
-    "tests:e2e:ui": "E2E_LOCAL=true playwright test --ui"
+    "tests:e2e:ui": "E2E_LOCAL=true playwright test --ui",
+    "clean": "yarn --cwd ./packages/frontend-usagers clean && yarn --cwd ./packages/frontend-bo clean && rm -rf node_modules packages/*/node_modules"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
@@ -30,9 +34,8 @@
     "eslint": "^8.56.0",
     "eslint-config-prettier": "~9.1.0",
     "husky": "^9.0.10",
-    "is-ci": "^3.0.1",
     "lint-staged": "^15.2.1",
-    "node-talisman": "^1.29.11",
+    "node-talisman": "^1.29.22",
     "prettier": "^3.2.5"
   },
   "workspaces": [

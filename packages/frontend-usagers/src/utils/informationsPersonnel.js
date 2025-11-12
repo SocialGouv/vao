@@ -48,6 +48,7 @@ const schema = (statut) => {
               showEmail: false,
               showListeFonction: true,
               showTelephone: true,
+              showAttestation: true,
             }),
           ),
         )
@@ -67,6 +68,7 @@ const schema = (statut) => {
               showEmail: false,
               showListeFonction: true,
               showTelephone: true,
+              showAttestation: true,
             }),
           ),
         )

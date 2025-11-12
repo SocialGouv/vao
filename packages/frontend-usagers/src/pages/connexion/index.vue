@@ -120,8 +120,8 @@
 </template>
 
 <script setup>
-import { PasswordInput } from "@vao/shared";
-import { connectionInfos } from "@vao/shared/src/models/messages";
+import { PasswordInput, apiModel } from "@vao/shared-ui";
+import { ERRORS } from "@vao/shared-bridge";
 
 const toaster = useToaster();
 const organismeStore = useOrganismeStore();
@@ -154,7 +154,7 @@ const showPassword = ref(false);
 const editMail = (v) => (email.value = v);
 const editPwd = (v) => (password.value = v);
 
-const displayInfos = connectionInfos;
+const displayInfos = apiModel.connectionInfos;
 const displayType = ref(null);
 
 const canLogin = computed(() => {
@@ -203,23 +203,22 @@ async function login() {
     log.w("login", { error: codeError ?? error?.data ?? error });
 
     switch (codeError) {
-      case "TooManyLoginAttempts":
-        displayType.value = "TooManyLoginAttempts";
+      case ERRORS.TooManyLoginAttempts:
+        displayType.value = ERRORS.TooManyLoginAttempts;
         break;
-      case "WrongCredentials":
-        displayType.value = "WrongCredentials";
+      case ERRORS.WrongCredentials:
+      case ERRORS.EmailUnauthorized:
+      case ERRORS.UserTemporarilyBlocked:
+        displayType.value = ERRORS.WrongCredentials;
         break;
-      case "NeedEmailValidation":
-        displayType.value = "NeedEmailValidation";
+      case ERRORS.NeedEmailValidation:
+        displayType.value = ERRORS.NeedEmailValidation;
         break;
-      case "NeedSiretValidation":
-        displayType.value = "NeedSiretValidation";
-        break;
-      case "EmailUnauthorized":
-        displayType.value = "WrongCredentials";
+      case ERRORS.NeedSiretValidation:
+        displayType.value = ERRORS.NeedSiretValidation;
         break;
       default:
-        displayType.value = "UnexpectedError";
+        displayType.value = ERRORS.UnexpectedError;
         break;
     }
   }

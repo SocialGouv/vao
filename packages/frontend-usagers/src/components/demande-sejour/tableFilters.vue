@@ -40,7 +40,7 @@
       </div>
     </div>
     <div :class="filedsetClass">
-      <DsfrMultiselect
+      <DsfrMultiselectV2
         v-model="departementSuiviSync"
         label="Département d'instruction"
         search
@@ -51,7 +51,7 @@
       />
     </div>
     <div :class="filedsetClass">
-      <DsfrMultiselect
+      <DsfrMultiselectV2
         v-model="seasonSync"
         label="Saison"
         search
@@ -62,10 +62,10 @@
         <template #checkbox-label="{ option }">
           {{ option.charAt(0).toUpperCase() + option.slice(1) }}
         </template>
-      </DsfrMultiselect>
+      </DsfrMultiselectV2>
     </div>
     <div :class="filedsetClass">
-      <DsfrMultiselect
+      <DsfrMultiselectV2
         v-model="statusSync"
         label="Statut"
         search
@@ -86,8 +86,7 @@
 </template>
 
 <script lang="ts" setup>
-import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
-import { status as statusUtils } from "@vao/shared";
+import { status as statusUtils, DsfrMultiselectV2 } from "@vao/shared-ui";
 
 const departementStore = useDepartementStore();
 

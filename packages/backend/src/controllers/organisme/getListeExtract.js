@@ -3,6 +3,7 @@ const Organisme = require("../../services/Organisme");
 
 const logger = require("../../utils/logger");
 const dayjs = require("dayjs");
+const { formatSiren, formatSiret } = require("../../utils/siret");
 
 const log = logger(module.filename);
 
@@ -76,17 +77,18 @@ module.exports = async function get(_req, res, next) {
       label: `Déclarations en statut "Terminé"`,
     },
   ];
-
   try {
     const organismes = await Organisme.getListeExtract();
     const csv = [
-      titles.map(({ label }) => label).join(";"),
+      titles.map(({ label }) => `"${label}"`).join(";"),
       ...organismes.map((item) => {
         const newItem = { ...item };
         newItem.typeOrganisme =
           newItem.typeOrganisme === "personne_morale"
             ? "personne morale"
             : "personne physique";
+        newItem.siret = formatSiret({ siret: newItem.siret });
+        newItem.siren = formatSiren({ siren: newItem.siren });
         newItem.dateObtentionAgrement = newItem.agrement?.dateObtention
           ? dayjs(newItem.agrement.dateObtention).format("DD/MM/YYYY")
           : "";
@@ -95,9 +97,12 @@ module.exports = async function get(_req, res, next) {
           : "";
         newItem.complet = newItem.complet ? "oui" : "non";
         newItem.regionObtention = newItem.agrement?.regionObtention;
-        return [
-          ...titles.map(({ key }) => escapeCsvField(newItem[key] ?? "")),
-        ].join(";");
+        return titles
+          .map(({ key }) => {
+            const value = escapeCsvField(newItem[key] ?? "");
+            return `"${value}"`;
+          })
+          .join(";");
       }),
     ].join("\n");
     return res.status(200).send(csv);

@@ -78,7 +78,7 @@
       :table-title="`Liste des comptes organisateurs (${usersStore.totalUsersFO})`"
       :data="usersStore.usersFO"
       :total="usersStore.totalUsersFO"
-      row-id="organismeId"
+      row-id="id"
       is-sortable
       @update-data="updateDataImmediate"
     >
@@ -117,7 +117,7 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { DsfrDataTableV2Wrapper } from "@vao/shared";
+import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
 import { useUserStore } from "~/stores/user";
 
 definePageMeta({
@@ -126,70 +126,25 @@ definePageMeta({
 const usersStore = useUserStore();
 const route = useRoute();
 const { query } = route;
+const optionType = columnsTable.optionType;
 
 const getCsvUtilisateurs = async () => {
   const response = await usersStore.exportUsersOrganismes();
   exportCsv(response, "UtilisateursOrganismes.csv");
 };
-
-const columns = [
-  {
-    key: "nom",
-    label: "Nom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "prenom",
-    label: "Prenom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "email",
-    label: "Adresse courriel",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "statut",
-    label: "Statut",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "dateCreation",
-    label: "Date de création",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "raisonSociale",
-    label: "Raison sociale",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "nombreDeclarations",
-    label: "Déclarations de séjour",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "custom-edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const defs = [
+  ["nom", "Nom", optionType.SORTABLE],
+  ["prenom", "Prenom", optionType.SORTABLE],
+  ["email", "Adresse courriel", optionType.SORTABLE],
+  ["statut", "Statut", optionType.SORTABLE],
+  ["dateCreation", "Date de création", optionType.SORTABLE],
+  ["raisonSociale", "Raison sociale", optionType.SORTABLE],
+  ["nombreDeclarations", "Déclarations de séjour", optionType.SORTABLE],
+  ["custom-edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
+
 const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],
 );
@@ -266,6 +221,7 @@ const updateDataImmediate = () => {
 };
 
 const updateDataDebounced = () => {
+  offset.value = 0;
   if (timeout) {
     clearTimeout(timeout);
   }

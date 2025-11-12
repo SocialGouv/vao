@@ -1,4 +1,4 @@
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 
 const query = {
   editCleInsee: `
@@ -100,11 +100,11 @@ module.exports.saveAdresse = async (client, adresse) => {
 };
 
 module.exports.getById = async (id) => {
-  const { rows } = await pool.query(query.getById, [id]);
+  const { rows } = await getPool().query(query.getById, [id]);
   return rows?.[0] ?? null;
 };
 
 module.exports.getByIds = async (ids) => {
-  const { rows } = await pool.query(query.getByIds, [ids]);
+  const { rows } = await getPool().query(query.getByIds, [ids]);
   return rows ?? [];
 };

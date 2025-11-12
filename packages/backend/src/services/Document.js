@@ -1,6 +1,6 @@
 const { encodeFilename, getFileNameAndExtension } = require("../utils/file");
 const logger = require("../utils/logger");
-const poolDoc = require("../utils/pgpoolDoc").getPool();
+const { getPool: getPoolDoc } = require("../utils/pgpool");
 const AppError = require("../utils/error");
 const path = require("node:path");
 
@@ -61,7 +61,9 @@ const query = {
 module.exports.getFile = async (uuid) => {
   log.i("IN");
   try {
-    const { rows, rowCount } = await poolDoc.query(...query.getByUuid(uuid));
+    const { rows, rowCount } = await getPoolDoc().query(
+      ...query.getByUuid(uuid),
+    );
     if (rowCount > 0) {
       log.i("DONE", rows[0]);
       return rows[0];
@@ -95,7 +97,7 @@ module.exports.getFile = async (uuid) => {
 module.exports.getFileMetaData = async (uuid) => {
   log.i("IN");
   try {
-    const { rows, rowCount } = await poolDoc.query(
+    const { rows, rowCount } = await getPoolDoc().query(
       ...query.getFileMetaData(uuid),
     );
     if (rowCount > 0) {
@@ -122,7 +124,7 @@ module.exports.createFile = async (
     log.i("createFile pg", { category, filename, mimetype });
     const {
       rows: [{ uuid }],
-    } = await poolDoc.query(
+    } = await getPoolDoc().query(
       ...query.create(category, filename, mimetype, userid, data),
     );
     log.i("createFile pg - Done");

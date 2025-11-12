@@ -10,7 +10,7 @@ const protocoleTransportSchema = require("./parts/protocoleTransport");
 const protocoleSanitaireSchema = require("./parts/protocoleSanitaire");
 const personne = require("./parts/personne.js");
 const prestataire = require("./parts/prestataire.js");
-const { statuts } = require("../helpers/ds-statuts.js");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);
 
@@ -39,7 +39,10 @@ function isSejourComplet(hebergements, dateDebut, dateFin) {
 }
 
 function isUpdateFUsager8Jour(statut) {
-  return statut === statuts.ATTENTE_8_JOUR || statut === statuts.A_MODIFIER_8J;
+  return (
+    statut === DEMANDE_SEJOUR_STATUTS.ATTENTE_8_JOUR ||
+    statut === DEMANDE_SEJOUR_STATUTS.A_MODIFIER_8J
+  );
 }
 
 const baseSchema = {
@@ -60,7 +63,7 @@ const baseSchema = {
     .required("La saisie de ce champ est obligatoire"),
   libelle: yup
     .string()
-    .max(50, "Le libellé ne doit pas dépasser 50 caractères ")
+    .max(100, "Le libellé ne doit pas dépasser 100 caractères ")
     .typeError("le libellé est requis")
     .required(),
   responsableSejour: yup

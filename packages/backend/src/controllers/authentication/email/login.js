@@ -1,3 +1,5 @@
+const { ERRORS } = require("@vao/shared-bridge");
+
 const jwt = require("jsonwebtoken");
 const config = require("../../../config");
 
@@ -35,7 +37,7 @@ module.exports = async function login(req, res, next) {
       log.w("Trop de tentatives de connexion");
       return next(
         new AppError("Trop de tentatives de connexion", {
-          name: "TooManyLoginAttempts",
+          name: ERRORS.TooManyLoginAttempts,
           statusCode: 429,
         }),
       );
@@ -78,6 +80,18 @@ module.exports = async function login(req, res, next) {
           name: "EmailUnauthorized",
           statusCode: 400,
         }),
+      );
+    }
+    if (user.statusCode === status.TEMPORARY_BLOCKED) {
+      log.w("Compte temporairement bloqué");
+      return next(
+        new AppError(
+          "Votre compte est temporairement bloqué. Veuillez réinitialiser votre mot de passe pour le réactiver.",
+          {
+            name: "UserTemporarilyBlocked",
+            statusCode: 400,
+          },
+        ),
       );
     }
     const accessToken = jwt.sign(

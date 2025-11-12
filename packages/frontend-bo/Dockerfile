@@ -1,4 +1,4 @@
-ARG NODE_VERSION=20.15.1-bullseye-slim
+ARG NODE_VERSION=22.20.0-bullseye-slim
 FROM node:${NODE_VERSION} AS builder
 
 RUN apt-get update \
@@ -8,7 +8,8 @@ RUN apt-get update \
 WORKDIR /app
 
 COPY package.json yarn.lock ./
-COPY packages/shared/package.json packages/shared/
+COPY packages/shared-bridge/package.json packages/shared-bridge/
+COPY packages/shared-ui/package.json packages/shared-ui/
 COPY packages/frontend-bo/package.json packages/frontend-bo/
 RUN yarn workspace @vao/frontend-bo install --frozen-lockfile
 
@@ -42,7 +43,8 @@ ENV SENTRY_ORG=$SENTRY_ORG
 ENV SENTRY_PROJECT=$SENTRY_PROJECT
 ENV SENTRY_URL=$SENTRY_URL
 
-COPY packages/shared packages/shared
+COPY packages/shared-bridge packages/shared-bridge
+COPY packages/shared-ui packages/shared-ui
 COPY packages/frontend-bo packages/frontend-bo
 
 RUN --mount=type=secret,id=sentry_auth_token \

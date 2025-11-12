@@ -3,7 +3,7 @@
     v-model:search="search"
     :is-export-available="props.total > 0"
     @get-csv="emits('get-csv')"
-    @filters-update="updateData"
+    @filters-update="() => updateData(true)"
   />
   <DsfrDataTableV2Wrapper
     v-model:limit="limit"
@@ -16,7 +16,7 @@
     :total="props.total"
     row-id="declarationId"
     is-sortable
-    @update-data="updateData"
+    @update-data="() => updateData()"
   >
     <template #cell-dateSejour="{ cell }">
       {{ displayDate(cell) }}
@@ -55,7 +55,7 @@ import {
   DsfrDataTableV2Wrapper,
   usePagination,
   isValidParams,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 
 const props = defineProps({
   title: { type: String, required: true },
@@ -98,8 +98,14 @@ const fetchData = async () => {
   await props.action(query);
   navigateTo(query);
 };
+const debouncedFetchData = useSetDebounce(fetchData, 300);
 
-const updateData = useSetDebounce(fetchData, 300);
+const updateData = (resetOffset = false) => {
+  if (resetOffset) {
+    offset.value = 0;
+  }
+  debouncedFetchData();
+};
 
 fetchData();
 

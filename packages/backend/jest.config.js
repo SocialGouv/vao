@@ -13,5 +13,9 @@ module.exports = {
   roots: ["<rootDir>/src"],
   setupFiles: ["<rootDir>/jest.setup.js"],
   testEnvironment: "node",
-  testMatch: ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[tj]s?(x)"],
+  testMatch: ["**/?(*.)+(spec|test).[tj]s"],
+  testTimeout: 30000,
+  transform: {
+    "^.+\\.(t|j)s$": "ts-jest",
+  },
 };

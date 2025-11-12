@@ -32,7 +32,7 @@
 </template>
 
 <script setup>
-import { CardsNumber } from "@vao/shared";
+import { CardsNumber } from "@vao/shared-ui";
 definePageMeta({
   middleware: ["is-connected"],
 });

@@ -122,7 +122,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { DsfrAlert, DsfrSelect } from "@gouvminint/vue-dsfr";
 import Error from "~/components/EIG/Error.vue";
-import { eigModel, eigSchema, Summary } from "@vao/shared";
+import { eigModel, eigSchema, Summary } from "@vao/shared-ui";
 
 const emit = defineEmits(["next", "update", "previous"]);
 

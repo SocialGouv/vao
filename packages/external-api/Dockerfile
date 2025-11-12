@@ -1,4 +1,4 @@
-ARG NODE_VERSION=22.13-bullseye-slim
+ARG NODE_VERSION=22.20.0-bullseye-slim
 FROM node:$NODE_VERSION AS external-api-base
 
 USER root
@@ -12,7 +12,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 COPY packages/external-api/package.json ./packages/external-api/
 COPY packages/external-api/src ./packages/external-api/src
-COPY packages/shared packages/shared
+COPY packages/shared-bridge packages/shared-bridge
 RUN yarn workspace @vao/external-api install --frozen-lockfile
 
 FROM external-api-deps AS external-api-build
@@ -23,8 +23,7 @@ COPY --from=external-api-deps /app/node_modules ./node_modules
 COPY package.json yarn.lock ./
 COPY packages/external-api/package.json ./packages/external-api/
 COPY packages/external-api/ ./packages/external-api/
-COPY packages/shared packages/shared
-
+COPY packages/shared-bridge packages/shared-bridge
 ENV NODE_ENV=production
 
 RUN yarn workspace @vao/external-api build
