@@ -78,9 +78,13 @@ export function requestBodyValidator<T>(
 ) {
   if (body && validator) {
     try {
+      log.d("✅ Validation OK");
       return validator.validateSync(body, { stripUnknown: true });
     } catch (error) {
       log.d("INVALID_BODY", error);
+      const e = error as yup.ValidationError;
+      log.d("🚨 Invalid field paths:", e.path);
+      log.d("🚨 Validation error details:", e.errors);
       throw new Error(ERRORS.INVALID_BODY);
     }
   }

@@ -7,7 +7,7 @@
       <h2>Déposez votre dossier de renouvellement d’agrément</h2>
       <p>
         Votre agrément actuel expire le
-        {{ formatDateFr(organismeCourant?.agrement?.dateFinValidite) }}. Une
+        {{ formatLongDateFr(organismeCourant?.agrement?.dateFinValidite) }}. Une
         fois l’agrément renouvelé, vous pourrez déposer de nouvelles
         déclarations de séjours dans la continuité du précédent agrément.
       </p>
@@ -53,7 +53,8 @@ import NationalIdentityCard from "@gouvfr/dsfr/dist/artwork/pictograms/document/
 import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
 import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
 
-import { formatDateFr } from "../utils/dateFormat";
+import { formatLongDateFr } from "@vao/shared-bridge";
+
 definePageMeta({
   middleware: ["is-connected"],
 });
@@ -73,7 +74,6 @@ const organismeCourant = computed(() => {
 
 const daysUntilExpiry = computed(() => {
   const organisme = organismeCourant.value;
-  console.log("organismeCourant", organisme);
 
   const expiry = organisme?.agrement?.dateFinValidite
     ? new Date(organisme.agrement.dateFinValidite)
