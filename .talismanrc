@@ -350,5 +350,6 @@ fileignoreconfig:
 - filename: yarn.lock
   checksum: bd0f1b4e3969844785dad9816963820f40637288fa15e094de0b4808aed339b5
 scopeconfig:
-- scope: node
+  - scope: node
+
 version: "1.0"
