@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
-import type { HebergementDto } from "../../dto";
-import type { BasicRoute, RouteResponseBody, RouteSchema } from "..";
+import type { HebergementDto } from "../../../dto";
+import type { BasicRoute, RouteResponseBody, RouteSchema } from "../..";
 
 export interface GetOneAdminRoute extends BasicRoute {
   method: "GET";
