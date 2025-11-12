@@ -38,5 +38,5 @@ fileignoreconfig:
   - filename: package.json
     checksum: 180654b4eb22710ddeba4331c45b63ed92542e989744f390182a90a563eb8e1b
 scopeconfig:
-- scope: node
+  - scope: node
 version: "1.0"
