@@ -19,6 +19,12 @@ Il peut également filtrer la liste :&#x20;
 * **Par statut**
 * **Par action à réaliser**
 
+{% hint style="info" %}
+**Amélioration v1.24.0**
+
+La fonctionnalité de tri a été améliorée dans les listes du Back Office. Les agents peuvent désormais trier les déclarations de manière plus efficace, notamment par statut avec un tri optimisé.
+{% endhint %}
+
 
 ### Compteur de déclarations
 - Un compteur affiche le nombre total de déclarations dans la liste

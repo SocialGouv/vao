@@ -314,3 +314,106 @@ Portail VAO
 {% include "../.gitbook/includes/ova-declaration-dun-evenement-indesirable.md" %}
 
 {% include "../.gitbook/includes/ova-porteur-agrement-declaration-dun-evenement-indesirable.md" %}
+
+## Gestion des comptes (v1.24.0)
+
+### Notification de désactivation imminente (2 mois)
+
+<details>
+
+<summary>OVA - Notification compte inactif (2 mois avant suppression)</summary>
+
+* **Déclencheur :** Un compte utilisateur n'a pas été utilisé depuis une période prolongée (2 mois avant la date de suppression prévue)
+
+- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
+- **Destinataire** : L'utilisateur dont le compte est inactif
+
+* **Object du mail** : Portail VAO - Votre compte sera désactivé
+
+- **Contenu du mail** :
+
+```
+Portail VAO - Notification compte inactif
+
+Bonjour,
+
+Votre compte sur le portail VAO n'a pas été utilisé depuis une période prolongée.
+
+Pour éviter la désactivation de votre compte, veuillez vous connecter dans les 2 mois.
+
+Si vous ne vous connectez pas, votre compte sera automatiquement désactivé.
+
+[BOUTON - Se connecter]
+
+Cordialement.
+L'équipe du SI VAO
+Portail VAO
+```
+
+</details>
+
+### Notification de gestion avant suppression
+
+<details>
+
+<summary>OVA - Notification gestion compte avant suppression</summary>
+
+* **Déclencheur :** Un compte utilisateur est sur le point d'être supprimé, le système vérifie s'il peut être réactivé
+
+- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
+- **Destinataire** : L'utilisateur dont le compte est concerné
+
+* **Object du mail** : Portail VAO - Réactivation de votre compte
+
+- **Contenu du mail** :
+
+```
+Portail VAO - Réactivation de compte
+
+Bonjour,
+
+Votre compte sur le portail VAO peut être réactivé.
+
+Si vous souhaitez continuer à utiliser la plateforme, veuillez vous connecter pour réactiver votre compte.
+
+[BOUTON - Se connecter]
+
+Cordialement.
+L'équipe du SI VAO
+Portail VAO
+```
+
+</details>
+
+### Notification de suppression de compte inactif
+
+<details>
+
+<summary>OVA - Notification suppression compte inactif</summary>
+
+* **Déclencheur :** Un compte utilisateur inactif a été automatiquement supprimé
+
+- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
+- **Destinataire** : L'utilisateur dont le compte a été supprimé
+
+* **Object du mail** : Portail VAO - Votre compte a été supprimé
+
+- **Contenu du mail** :
+
+```
+Portail VAO - Suppression de compte
+
+Bonjour,
+
+Votre compte sur le portail VAO a été supprimé en raison d'une inactivité prolongée.
+
+Si vous souhaitez continuer à utiliser la plateforme, vous devrez créer un nouveau compte.
+
+Pour plus d'informations, veuillez contacter le support.
+
+Cordialement.
+L'équipe du SI VAO
+Portail VAO
+```
+
+</details>

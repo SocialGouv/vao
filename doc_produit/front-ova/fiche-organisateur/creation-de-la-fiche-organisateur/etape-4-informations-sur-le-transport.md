@@ -17,3 +17,9 @@ L'utilisateur renseigner le formulaire spécifique à cette étape :
 {% include "../../../.gitbook/includes/formulaire-fiche-organisme-etape-4.md" %}
 
 </details>
+
+{% hint style="info" %}
+**Amélioration v1.24.0**
+
+Les informations sur le transport ont été améliorées avec une meilleure présentation des choix disponibles. L'interface utilise désormais des cases à cocher pour une sélection plus intuitive des modes de transport.
+{% endhint %}

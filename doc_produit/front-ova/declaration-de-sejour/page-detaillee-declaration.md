@@ -33,7 +33,7 @@ Onglet dédié à la gestion des documents :
 
 **Documents générés par l'application** :
 
-* CERFA
+* CERFA (inclut la région depuis v1.24.0)
 * Accusé de réception
 * Autres documents officiels
 

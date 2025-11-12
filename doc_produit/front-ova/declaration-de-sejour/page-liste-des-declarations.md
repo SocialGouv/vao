@@ -41,3 +41,17 @@ L'utilisateur peut filtrer les déclarations selon plusieurs critères :
 ### **Export CSV**
 
 Il est possible de télécharger l'ensemble des déclarations de séjours du tableau en cliquant sur le bouton "Extraire en CSV".&#x20;
+
+{% hint style="info" %}
+**Amélioration v1.24.0**
+
+L'export CSV inclut désormais le SIRET de l'organisme pour faciliter l'identification et le traitement des données.
+{% endhint %}
+
+### Filtres et tri
+
+{% hint style="info" %}
+**Amélioration v1.24.0**
+
+Lors d'un changement de filtre, l'offset (position dans la liste) est automatiquement réinitialisé pour améliorer la navigation et éviter les problèmes d'affichage.
+{% endhint %}

@@ -36,3 +36,11 @@ flowchart TD
 ```
 
 <table data-view="cards"><thead><tr><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Scénario 1 - L'organisme n'existe pas sur la plateforme VAO</strong></td><td><a href="../../.gitbook/assets/wesley-tingey-ZdOW9Qd8mQo-unsplash.jpg">wesley-tingey-ZdOW9Qd8mQo-unsplash.jpg</a></td><td><a href="scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md">scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md</a></td></tr><tr><td><strong>Scénario 2 – L'organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO</strong></td><td><a href="../../.gitbook/assets/sumner-mahaffey-7Y0NshQLohk-unsplash.jpg">sumner-mahaffey-7Y0NshQLohk-unsplash.jpg</a></td><td><a href="scenario-2-lorganisme-a-deja-un-ou-plusieurs-comptes-utilisateurs-sur-la-plateforme-vao.md">scenario-2-lorganisme-a-deja-un-ou-plusieurs-comptes-utilisateurs-sur-la-plateforme-vao.md</a></td></tr></tbody></table>
+
+{% hint style="info" %}
+**Nouvelles fonctionnalités v1.24.0**
+
+* **Mention informative** : Une mention a été ajoutée sur le formulaire de création de compte pour guider l'utilisateur dans le processus d'inscription.
+* **Section "Mon compte"** : Les utilisateurs OVA peuvent désormais accéder à une section "Mon compte" pour consulter et gérer leurs informations personnelles.
+* **Support DROM et Corse** : La création de compte est désormais disponible pour les utilisateurs des départements et régions d'outre-mer (DROM) et de Corse.
+{% endhint %}

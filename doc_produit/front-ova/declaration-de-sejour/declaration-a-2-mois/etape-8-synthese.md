@@ -6,6 +6,12 @@ Lors de la création d'une déclaration de séjour à 2 mois, l'utilisateur acc�
 
 En accédant à cette étape, l'utilisateur peut consulter un récapitulatif complet de sa déclaration et doit signer l'attestation sur l'honneur pour finaliser le dépôt.
 
+{% hint style="info" %}
+**Amélioration v1.24.0**
+
+Les indications dans la synthèse ont été améliorées pour une meilleure accessibilité (conformité RGAA). Les informations sont désormais plus claires et mieux structurées pour faciliter la compréhension et la navigation.
+{% endhint %}
+
 <details>
 
 <summary>Formulaire "Attestation sur l'honneur"</summary>
