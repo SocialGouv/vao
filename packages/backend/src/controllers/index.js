@@ -4,7 +4,6 @@ module.exports.BOUserController = require("./bo-user");
 module.exports.userController = require("./user");
 module.exports.organismeController = require("./organisme");
 module.exports.siretController = require("./siret");
-module.exports.agrementController = require("./agrement");
 module.exports.documentsController = require("./documents");
 module.exports.demandeSejourController = require("./demandeSejour");
 module.exports.hebergementController = require("./hebergement");

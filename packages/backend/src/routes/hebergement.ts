@@ -1,4 +1,7 @@
-import { HebergementRoutesSchema } from "@vao/shared-bridge";
+import {
+  HebergementAdminRoutesSchema,
+  HebergementUsagersRoutesSchema,
+} from "@vao/shared-bridge";
 import express from "express";
 
 import hebergementController from "../controllers/hebergement";
@@ -30,14 +33,14 @@ router.get(
   "/:id",
   checkJWT,
   checkPermissionHebergement,
-  requestValidatorMiddleware(HebergementRoutesSchema["GetOne"]),
+  requestValidatorMiddleware(HebergementUsagersRoutesSchema["GetOne"]),
   hebergementController.getById,
 );
 router.get(
   "/admin/:id",
   boCheckJWT,
   checkStatutHebergement(HebergementHelper.statuts.ACTIF),
-  requestValidatorMiddleware(HebergementRoutesSchema["GetOneAdmin"]),
+  requestValidatorMiddleware(HebergementAdminRoutesSchema["GetOne"]),
   hebergementController.getById,
 );
 router.get("/siren/:siren", checkJWT, hebergementController.getBySiren);
