@@ -1,53 +1,10 @@
-/* eslint-disable no-unused-vars */
-// TODO : Déplacer les énums dans la zone de constantes shared une fois la PR de ach mergée
-export enum AgrementStatut {
-  BROUILLON = "BROUILLON",
-  TRANSMIS = "TRANSMIS",
-  DEPOSE = "DEPOSE",
-  VERIF_EN_COURS = "VERIF_EN_COURS",
-  PRIS_EN_CHARGE = "PRIS_EN_CHARGE",
-  EN_COURS = "EN_COURS",
-  A_MODIFIER = "A_MODIFIER",
-  REFUSE = "REFUSE",
-  COMPLETUDE_CONFIRME = "COMPLETUDE_CONFIRME",
-  VALIDE = "VALIDE",
-}
-
-export enum ActiviteType {
-  SPORT = "SPORT",
-  CULTURE = "CULTURE",
-}
-
-export enum TypeHandicap {
-  SENSORIEL = "SENSORIEL",
-  COGNITIF = "COGNITIF",
-  MENTAL_PSYCHIQUE = "MENTAL_PSYCHIQUE",
-  MOTEUR = "MOTEUR",
-  POLYHANDICAP = "POLYHANDICAP",
-}
-
-export enum TrancheAge {
-  TA_18_39 = "18_39",
-  TA_40_59 = "40_59",
-  TA_PLUS_DE_59 = "PLUS_DE_59",
-}
-export enum FileCategory {
-  PROCVERBAL = "AGR_PROCVERBAL",
-  MOTIVATION = "AGR_MOTIVATION",
-  IMMATRICUL = "AGR_IMMATRICUL",
-  ASSURRESP = "AGR_ASSURRESP",
-  ASSURRAPAT = "AGR_ASSURRAPAT",
-  SEJOUR = "AGR_SEJOUR",
-  ACCOMPRESP = "AGR_ACCOMPRESP",
-  SUIVIMED = "AGR_SUIVIMED",
-  BUDGET = "AGR_BUDGET",
-  CHANGEEVOL = "AGR_CHANGEEVOL",
-  BILANQUALIT = "AGR_BILANQUALIT",
-  BILANFINANC = "AGR_BILANFINANC",
-}
-
-export interface AgrementsDto {
-  statut: AgrementStatut | null;
+/**
+ * Database row type with snake_case columns for Agrement
+ */
+export interface AgrementEntity {
+  id: number | null;
+  organisme_id: number | null;
+  statut: string | null;
   updated_at: Date | null;
   date_obtention_certificat: Date | null;
   date_depot: Date | null;
@@ -86,35 +43,61 @@ export interface AgrementsDto {
   bilan_financier_comparatif: string | null;
   bilan_financier_ressources_humaines: string | null;
   bilan_financier_commentaire: string | null;
+  activite: ActiviteEntity[] | null;
+  agrement_animation: AgrementAnimationEntity[] | null;
+  agrement_file: AgrementFilesEntity[] | null;
+  agrement_sejour: AgrementSejoursEntity[] | null;
+  agrement_bilan_annuel: AgrementBilanAnnuelEntity[] | null;
 }
 
-export interface ActiviteDto {
+/**
+ * Database row type with snake_case columns for Activite
+ */
+export interface ActiviteEntity {
+  id: number | null;
   code: string | null;
   libelle: string | null;
-  activite_type: ActiviteType | null;
+  activite_type: string | null;
 }
 
-export interface AgrementAnimationDto {
+/**
+ * Database row type with snake_case columns for AgrementAnimation
+ */
+export interface AgrementAnimationEntity {
+  id?: number | null;
   activite_id: number | null;
   agrement_id: number | null;
+  activite?: ActiviteEntity;
 }
 
-export interface AgrementFilesDto {
+/**
+ * Database row type with snake_case columns for AgrementFiles
+ */
+export interface AgrementFilesEntity {
+  id?: number | null;
   agrement_id: number | null;
-  category: FileCategory | null;
+  category: string | null;
   file_uuid: string | null;
 }
 
-export interface AgrementSejoursDto {
+/**
+ * Database row type with snake_case columns for AgrementSejours
+ */
+export interface AgrementSejoursEntity {
+  id?: number | null;
   agrement_id: number | null;
   nom_hebergement: string | null;
   adresse_id: number | null;
-  b_vacanciers: number | null;
+  nb_vacanciers: number | null;
   mois: number[] | null;
 }
 
-export interface AgrementBilanAnnuelDto {
-  agrement_id: number | null;
+/**
+ * Database row type with snake_case columns for AgrementBilanAnnuel
+ */
+export interface AgrementBilanAnnuelEntity {
+  id?: number | null;
+  agrement_id?: number | null;
   annee: number | null;
   nb_global_vacanciers: number | null;
   nb_hommes: number | null;
@@ -122,10 +105,15 @@ export interface AgrementBilanAnnuelDto {
   nb_total_jours_vacances: number | null;
   type_handicap: string[] | null;
   tranche_age: string[] | null;
+  bilan_hebergement: BilanHebergementEntity[] | null;
 }
 
-export interface BilanHebergementDto {
-  agr_bilan_annuel_id: number | null;
+/**
+ * Database row type with snake_case columns for BilanHebergement
+ */
+export interface BilanHebergementEntity {
+  id?: number | null;
+  agr_bilan_annuel_id?: number | null;
   nom_hebergement: string | null;
   adresse_id: number | null;
   nb_jours: number | null;
