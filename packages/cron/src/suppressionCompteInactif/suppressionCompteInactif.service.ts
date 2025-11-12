@@ -1,5 +1,5 @@
 import { pool } from "../db";
-import { statusUserFront } from "@vao/shared-bridge";
+import { STATUS_USER_FRONT } from "@vao/shared-bridge";
 import { sendSuppressionCompteInactifEmail } from "./suppressionCompteInactif.email";
 import { insertCron } from "../cron/cron.service";
 import { logger } from "../utils/logger";
@@ -28,7 +28,7 @@ const querySelectComptesASupprimer = `
 
 export const selectComptesASupprimer = async () =>
   await pool.query<SuppressionCompteInactifRow>(querySelectComptesASupprimer, [
-    statusUserFront.TEMPORARY_BLOCKED,
+    STATUS_USER_FRONT.TEMPORARY_BLOCKED,
   ]);
 
 export const suppressionCompteInactifActions = async () => {

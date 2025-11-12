@@ -9,8 +9,8 @@ import logger from "../../utils/logger";
 const log = logger(module.filename);
 
 export default async function get(
-  req: RouteRequest<HebergementRoutes["GetOne"]>,
-  res: RouteResponse<HebergementRoutes["GetOne"]>,
+  req: RouteRequest<HebergementUsagersRoutes["GetOne"]>,
+  res: RouteResponse<HebergementUsagersRoutes["GetOne"]>,
   next: NextFunction,
 ) {
   log.i("IN");

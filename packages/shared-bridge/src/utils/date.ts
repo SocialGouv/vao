@@ -14,6 +14,9 @@ export function isAfter(
   return new Date(date).getTime() > new Date(dateToCompare).getTime();
 }
 
+export function addYears(date: Date | null, years: number) {
+  return date ? dayjs(date).add(years, "year").toDate() : null;
+}
 export function addDays(date: Date, days: number) {
   return new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
 }
