@@ -7,7 +7,7 @@
       <h2>Déposez votre dossier de renouvellement d’agrément</h2>
       <p>
         Votre agrément actuel expire le
-        {{ formatDateFr(organismeCourant?.agrement?.dateFinValidite) }}. Une
+        {{ formatLongDateFr(organismeCourant?.agrement?.dateFinValidite) }}. Une
         fois l’agrément renouvelé, vous pourrez déposer de nouvelles
         déclarations de séjours dans la continuité du précédent agrément.
       </p>
@@ -73,7 +73,6 @@ const organismeCourant = computed(() => {
 
 const daysUntilExpiry = computed(() => {
   const organisme = organismeCourant.value;
-  console.log("organismeCourant", organisme);
 
   const expiry = organisme?.agrement?.dateFinValidite
     ? new Date(organisme.agrement.dateFinValidite)

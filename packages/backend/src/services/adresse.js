@@ -81,7 +81,6 @@ module.exports.saveAdresse = async (client, adresse) => {
     ]);
     return rows[0].id;
   }
-
   if (!existingAdresse) {
     const { rows } = await client.query(query.insert, [
       adresse.cleInsee,
@@ -92,10 +91,8 @@ module.exports.saveAdresse = async (client, adresse) => {
       adresse.coordinates[1],
       adresse.departement,
     ]);
-
     return rows[0].id;
   }
-
   return existingAdresse.id;
 };
 
