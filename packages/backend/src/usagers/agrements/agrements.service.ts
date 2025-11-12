@@ -1,5 +1,4 @@
-import { AgrementDto } from "@vao/shared-bridge";
-import { addYears } from "@vao/shared-bridge/src/utils/date";
+import { addYears, AgrementDto } from "@vao/shared-bridge";
 
 import logger from "../../utils/logger";
 import { AgrementsRepository } from "./agrements.repository";

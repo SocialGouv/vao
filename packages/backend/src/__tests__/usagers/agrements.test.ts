@@ -57,7 +57,7 @@ describe("GET /agrements/organisme/:id", () => {
     const response = await request(app).get(`/agrements/organisme/invalid`);
 
     // Vérification des résultats
-    // TODO ACH Problème sur le params string
+    // TODO ACH Problème sur le params string. Devrait retourner une 400
     expect(response.status).toBe(403);
   });
   it("devrait retourner un agrement introuvable", async () => {
