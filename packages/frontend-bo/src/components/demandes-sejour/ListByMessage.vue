@@ -3,7 +3,7 @@
     v-model:id-fonctionnelle="idFonctionnelle"
     v-model:organisme="organisme"
     v-model:libelle="libelle"
-    @filters-update="updateData"
+    @filters-update="() => updateData(true)"
   />
   <DsfrDataTableV2Wrapper
     v-model:limit="limit"
@@ -16,7 +16,7 @@
     :total="total"
     row-id="declarationId"
     is-sortable
-    @update-data="updateData"
+    @update-data="() => updateData()"
   >
     <template #cell-organisme="{ row }">
       {{ row.organismeAgree?.raisonSociale }}
@@ -71,68 +71,30 @@ import {
   DsfrDataTableV2Wrapper,
   usePagination,
   isValidParams,
-} from "@vao/shared";
+  columnsTable,
+} from "@vao/shared-ui";
 import dayjs from "dayjs";
 
+const optionType = columnsTable.optionType;
 const demandeSejourStore = useDemandeSejourStore();
 const route = useRoute();
 const { query } = route;
 const data = computed(() => demandeSejourStore.declarationsMessages);
 const total = computed(() => demandeSejourStore.declarationsMessagesTotal);
 
-const columns = [
-  {
-    key: "idFonctionnelle",
-    label: "Numéro de déclaration",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "libelle",
-    label: "Nom du séjour",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "statut",
-    label: "Statut",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "organisme",
-    label: "Organisme",
-  },
-  {
-    key: "dateDebut",
-    label: "Dates (Début-fin)",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "messageLastAt",
-    label: "Date dernier message",
-  },
-  {
-    key: "message",
-    label: "Dernier message",
-  },
-  {
-    key: "messageEtat",
-    label: "Message",
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const defs = [
+  ["idFonctionnelle", "Numéro de déclaration", optionType.SORTABLE],
+  ["libelle", "Nom du séjour", optionType.SORTABLE],
+  ["statut", "Statut", optionType.SORTABLE],
+  ["organisme", "Organisme", optionType.NONE],
+  ["dateDebut", "Dates (Début-fin)", optionType.SORTABLE],
+  ["messageLastAt", "Date dernier message", optionType.NONE],
+  ["message", "Dernier message", optionType.NONE],
+  ["messageEtat", "Message", optionType.SORTABLE],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
 
 const title = computed(
   () =>
@@ -169,10 +131,12 @@ const fetchData = () => {
   const query = {
     limit: limit.value,
     offset: offset.value,
-    ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
+    ...(isValidParams(sort.value)
+      ? { sortBy: sort.value }
+      : { sortBy: "messageEtat" }),
     ...(isValidParams(sortDirection.value)
       ? { sortDirection: sortDirection.value.toUpperCase() }
-      : {}),
+      : { sortDirection: "ASC" }),
     ...getSearchParams(),
     ...(isValidParams(organismeId.value)
       ? { organismeId: organismeId.value }
@@ -192,7 +156,14 @@ const fetchData = () => {
   });
 };
 
-const updateData = useSetDebounce(fetchData, 300);
+const debouncedFetchData = useSetDebounce(fetchData, 300);
+
+const updateData = (resetOffset = false) => {
+  if (resetOffset) {
+    offset.value = 0;
+  }
+  debouncedFetchData();
+};
 
 fetchData();
 </script>

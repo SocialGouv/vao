@@ -1,20 +1,59 @@
+const yup = require("yup");
 const DemandeSejour = require("../../services/DemandeSejour");
 const Organisme = require("../../services/Organisme");
+const AppError = require("../../utils/error");
 
 const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
+
+const querySchema = yup.object({
+  sortBy: yup
+    .string()
+    .oneOf([
+      "declarationId",
+      "statut",
+      "idFonctionnelle",
+      "departementSuivi",
+      "organismeId",
+      "libelle",
+      "periode",
+      "dateDebut",
+      "dateFin",
+      "createdAt",
+      "editedAt",
+      "duree",
+      "vacanciers",
+      "personnel",
+      "transport",
+      "messageOrdreEtat",
+      "messageCreatedAt",
+      "messageReadAt",
+      "messageLastAt",
+    ])
+    .nullable(),
+});
 
 module.exports = async function get(req, res, next) {
   log.i("IN");
   const { decoded } = req;
   const { id: userId } = decoded;
   log.d("userId", { userId });
-  const { sortBy } = req.query;
 
-  const params = {
-    sortBy,
-  };
+  let params;
+  try {
+    params = await querySchema.validate(req.query, {
+      abortEarly: false,
+      stripUnknown: true,
+    });
+  } catch (error) {
+    log.w("Query validation failed", {
+      error: error.message,
+      query: req.query,
+    });
+    return next(new AppError("Paramètre incorrect", { statusCode: 400 }));
+  }
+
   try {
     const organisme = await Organisme.getOne({
       use_id: userId,

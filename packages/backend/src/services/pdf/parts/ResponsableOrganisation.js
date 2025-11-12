@@ -1,6 +1,17 @@
+const MiseEnPage = require("../../../helpers/declaration/mise-en-page");
+
 module.exports = function displayResponsableOrganisation(resp) {
+  const lines = [
+    ["Nom :", resp.nom],
+    ["Prénom :", resp.prenom],
+    ["Téléphone :", resp.telephone],
+    ["Fonction :", resp.fonction],
+    ["Email :", resp.email],
+    ["Adresse :", resp.adresse.label],
+  ];
+
   return {
-    margin: [0, 20, 0, 0],
+    margin: MiseEnPage.MARGIN_UP_20,
     stack: [
       {
         columns: [
@@ -13,84 +24,7 @@ module.exports = function displayResponsableOrganisation(resp) {
         ],
         margin: [0, 0, 0, 10],
       },
-      {
-        columns: [
-          {
-            text: "Nom :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.nom}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Prénom :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.prenom}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Téléphone :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.telephone}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Fonction :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.fonction}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Email :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.email}`,
-            width: "*",
-          },
-        ],
-      },
-      {
-        columns: [
-          {
-            text: "Adresse :",
-            width: 250,
-          },
-          {
-            bold: true,
-            text: `${resp.adresse.label}`,
-            width: "*",
-          },
-        ],
-      },
+      ...MiseEnPage.buildLines(lines, { marginUp: 0 }),
     ],
   };
 };

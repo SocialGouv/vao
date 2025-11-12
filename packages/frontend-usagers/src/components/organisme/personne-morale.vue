@@ -14,6 +14,11 @@
           @update:model-value="onPorteurAgrementChange"
         />
       </div>
+      <ApiUnavailable
+        :api-unavailable-types="props.unavailableApi"
+        :display-types="[apiTypes.INSEE, apiTypes.ENTREPRISE]"
+      ></ApiUnavailable>
+
       <DsfrInputGroup
         name="siret"
         :label="
@@ -266,8 +271,9 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading } from "@vao/shared";
+import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
 import dayjs from "dayjs";
+import { apiTypes } from "@vao/shared-ui/src/models";
 
 const toaster = useToaster();
 
@@ -287,6 +293,7 @@ const props = defineProps({
   validateOnMount: { type: Boolean, default: false },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
+  unavailableApi: { type: Object, required: false, default: () => ({}) },
 });
 
 const headers = [

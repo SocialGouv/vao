@@ -1,4 +1,4 @@
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 const logger = require("../utils/logger");
 
 const AppError = require("../utils/error");
@@ -44,14 +44,14 @@ module.exports.post = async (declarationId, userId, message, file, sender) => {
   log.i("create - IN");
   const response =
     sender === "back"
-      ? await pool.query(query.create, [
+      ? await getPool().query(query.create, [
           declarationId,
           null,
           userId,
           message,
           file,
         ])
-      : await pool.query(query.create, [
+      : await getPool().query(query.create, [
           declarationId,
           userId,
           null,
@@ -66,7 +66,7 @@ module.exports.post = async (declarationId, userId, message, file, sender) => {
 
 module.exports.select = async (declarationId) => {
   log.i("select - IN");
-  const messages = await pool.query(query.select, [declarationId]);
+  const messages = await getPool().query(query.select, [declarationId]);
   if (!messages) throw new AppError("erreur sur la récupération des messages'");
   log.i("select - DONE");
   return messages.rows;
@@ -74,7 +74,10 @@ module.exports.select = async (declarationId) => {
 
 module.exports.markAsRead = async (declarationId, origin) => {
   log.i("markAsRead - IN");
-  const messages = await pool.query(query.markAsRead, [declarationId, origin]);
+  const messages = await getPool().query(query.markAsRead, [
+    declarationId,
+    origin,
+  ]);
   if (!messages) throw new AppError("erreur sur la lecture des messages'");
   log.i(messages.rowCount);
   log.i("markAsRead - DONE");

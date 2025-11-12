@@ -1,4 +1,3 @@
-
 <template>
   <UserListeFilters
     v-model:email="email"
@@ -6,7 +5,7 @@
     v-model:prenom="prenom"
     v-model:statut="statut"
     :status-actions="statusUser.label"
-    @filters-update="updateData"
+    @filters-update="() => updateData(true)"
   />
   <DsfrDataTableV2Wrapper
     v-model:limit="limit"
@@ -19,7 +18,7 @@
     :total="total"
     row-id="userId"
     is-sortable
-    @update-data="updateData"
+    @update-data="() => updateData()"
   >
     <template #cell-siegeSocial="{ cell }">
       {{ cell === true ? "Principal" : "Secondaire" }}
@@ -37,9 +36,11 @@
     </template>
     <template #cell-custom:edit="{ row }">
       <div class="buttons-group">
-
         <DsfrButton
-        v-if="row.statut === statusUser.status.VALIDATED"
+          v-if="
+            row.statut === statusUser.status.VALIDATED ||
+            row.statut === statusUser.status.BLOCKED
+          "
           icon="ri:arrow-right-s-line"
           icon-only
           primary
@@ -93,11 +94,13 @@ import {
   UserStatusBadge,
   statusUser,
   RefusCompteModal,
-} from "@vao/shared";
+  columnsTable,
+} from "@vao/shared-ui";
 import dayjs from "dayjs";
 
 const userStore = useUserStore();
 const route = useRoute();
+const toaster = useToaster();
 
 const utilisateurSelectionne = ref(null);
 const showRefusModal = ref(false);
@@ -108,71 +111,21 @@ const total = computed(() => userStore.total);
 const title = computed(() => `Liste des utilisateurs (${total.value})`);
 const getDateCreationLabel = (date) => dayjs(date).format("DD/MM/YYYY");
 
-const columns = [
-  {
-    key: "nom",
-    label: "Nom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "prenom",
-    label: "Prénom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "email",
-    label: "Adresse courriel",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "telephone",
-    label: "N° de téléphone",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "siegeSocial",
-    label: "Organisme",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "Adresse",
-    label: "Ville",
-    options: {
-      isSortable: false,
-    },
-  },
-  {
-    key: "statut",
-    label: "Statut",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "dateCreation",
-    label: "Date inscription",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const optionType = columnsTable.optionType;
+
+const defs = [
+  ["nom", "Nom", optionType.SORTABLE],
+  ["prenom", "Prénom", optionType.SORTABLE],
+  ["email", "Adresse courriel", optionType.SORTABLE],
+  ["telephone", "N° de téléphone", optionType.SORTABLE],
+  ["siegeSocial", "Organisme", optionType.SORTABLE],
+  ["Adresse", "Ville", optionType.SORTABLE],
+  ["statut", "Statut", optionType.SORTABLE],
+  ["dateCreation", "Date inscription", optionType.SORTABLE],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
 
 const { query } = route;
 
@@ -202,8 +155,21 @@ let timeout = null;
 
 async function validate(userId) {
   const params = { status: statusUser.status.VALIDATED };
-  await userStore.updateUserStatus(userId, params);
-  userStore.fetchUsersOrganisme(query);
+  try {
+    await userStore.updateUserStatus(userId, params);
+    toaster.success({
+      titleTag: "h2",
+      description:
+        "La demande de création de compte a été validée par vos soins. L’utilisateur va recevoir un mail pour le prévenir.",
+    });
+    userStore.fetchUsersOrganisme(query);
+  } catch (err) {
+    toaster.error({
+      titleTag: "h2",
+      description: "Erreur lors de la mise à jour du status de l'utilisateur.",
+    });
+    throw err;
+  }
 }
 
 async function openRefusedModal(state) {
@@ -227,7 +193,10 @@ async function openCompte(userId) {
   navigateTo(`/comptes/${userId}`);
 }
 
-const updateData = () => {
+const updateData = (resetOffset = false) => {
+  if (resetOffset) {
+    offset.value = 0;
+  }
   if (timeout) {
     clearTimeout(timeout);
   }

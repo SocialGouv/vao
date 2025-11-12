@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { DsfrTabsV2 } from "@vao/shared";
+import { DsfrTabsV2 } from "@vao/shared-ui";
 
 definePageMeta({
   layout: "default",

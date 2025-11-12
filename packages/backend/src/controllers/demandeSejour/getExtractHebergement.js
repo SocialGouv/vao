@@ -13,6 +13,7 @@ module.exports = async function get(req, res, next) {
   try {
     const result = await DemandeSejour.getHebergementsByDepartementCode(
       {
+        limit: -1,
         order: "ASC",
         search: "",
         sort: "nom",
@@ -37,7 +38,6 @@ module.exports = async function get(req, res, next) {
         newItem.reglementationErp = newItem.reglementationErp ? "Oui" : "Non";
         newItem.dateDebut = dayjs(newItem.dateDebut).format("DD/MM/YYYY");
         newItem.dateFin = dayjs(newItem.dateFin).format("DD/MM/YYYY");
-        newItem.adresse = newItem.adresse.label;
         newItem.dateVisite = newItem.dateVisite
           ? dayjs(newItem.dateVisite).format("DD/MM/YYYY")
           : "";

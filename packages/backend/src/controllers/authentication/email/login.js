@@ -1,3 +1,5 @@
+const { ERRORS } = require("@vao/shared-bridge");
+
 const jwt = require("jsonwebtoken");
 const config = require("../../../config");
 
@@ -35,7 +37,7 @@ module.exports = async function login(req, res, next) {
       log.w("Trop de tentatives de connexion");
       return next(
         new AppError("Trop de tentatives de connexion", {
-          name: "TooManyLoginAttempts",
+          name: ERRORS.TooManyLoginAttempts,
           statusCode: 429,
         }),
       );
@@ -80,15 +82,35 @@ module.exports = async function login(req, res, next) {
         }),
       );
     }
-    const accessToken = jwt.sign(buildAccessToken(user), config.tokenSecret, {
-      algorithm: "ES512",
-      expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde
-    });
+    if (user.statusCode === status.TEMPORARY_BLOCKED) {
+      log.w("Compte temporairement bloqué");
+      return next(
+        new AppError(
+          "Votre compte est temporairement bloqué. Veuillez réinitialiser votre mot de passe pour le réactiver.",
+          {
+            name: "UserTemporarilyBlocked",
+            statusCode: 400,
+          },
+        ),
+      );
+    }
+    const accessToken = jwt.sign(
+      buildAccessToken(user),
+      config.tokenSecret_FO,
+      {
+        algorithm: config.algorithm,
+        expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde
+      },
+    );
 
-    const refreshToken = jwt.sign(buildRefreshToken(user), config.tokenSecret, {
-      algorithm: "ES512",
-      expiresIn: config.refreshToken.expiresIn / 1000,
-    });
+    const refreshToken = jwt.sign(
+      buildRefreshToken(user),
+      config.tokenSecret_FO,
+      {
+        algorithm: config.algorithm,
+        expiresIn: config.refreshToken.expiresIn / 1000,
+      },
+    );
 
     await Session.create(user.id, refreshToken, schema.FRONT);
 

@@ -1,6 +1,18 @@
 global:
   s3SecretName: vao-prod-app-access-key
 
+pg:
+  cnpg-cluster:
+    persistence:
+      size: "200Gi"
+    resources:
+      requests:
+        cpu: 3000m
+        memory: 6Gi
+      limits:
+        cpu: 3000m
+        memory: 6Gi
+
 backend:
   autoscale:
     enabled: true
@@ -9,10 +21,22 @@ backend:
     - "api-{{ .Values.global.host }}"
   vars:
     S3_BUCKET_ROOT_DIR: prod/files
+  resources:
+    requests:
+      cpu: 1500m
+      memory: 2Gi
+    limits:
+      cpu: 1500m
+      memory: 2Gi
 
 external-api:
-  autoscale:
-    enabled: true
+  resources:
+    requests:
+      cpu: 750m
+      memory: 2Gi
+    limits:
+      cpu: 750m
+      memory: 2Gi
   host: external-api-vao.fabrique.social.gouv.fr
   redirectFrom:
     - "external-api-{{ .Values.global.host }}"

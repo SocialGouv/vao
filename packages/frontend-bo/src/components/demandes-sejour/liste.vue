@@ -167,7 +167,7 @@ import {
   MessageHover,
   TableWithBackendPagination,
   ValidationModal,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 import dayjs from "dayjs";
 import DemandeStatusBadge from "~/components/demandes-sejour/DemandeStatusBadge.vue";

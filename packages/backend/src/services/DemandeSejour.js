@@ -1,9 +1,13 @@
+const {
+  DemandeSejourRepository,
+} = require("../repositories/usagers/DemandeSejour");
+
 const Sentry = require("@sentry/node");
 const { sentry } = require("../config");
 const dayjs = require("dayjs");
 const logger = require("../utils/logger");
-const pool = require("../utils/pgpool").getPool();
-const dsStatus = require("../helpers/ds-statuts");
+const { getPool } = require("../utils/pgpool");
+const DEMANDE_SEJOUR_STATUTS = require("@vao/shared-bridge");
 const PersonneMorale = require("./organisme/PersonneMorale");
 const PersonnePhysique = require("./organisme/PersonnePhysique");
 const { entities, userTypes } = require("../helpers/tracking");
@@ -12,12 +16,8 @@ const { getComplementOrganisme } = require("./Organisme");
 const {
   getByDSId: getHebergementsByDSIds,
 } = require("./hebergement/Hebergement");
-const {
-  sanitizePaginationParams,
-  sanitizeFiltersParams,
-  applyFilters,
-  applyPagination,
-} = require("../helpers/queryParams");
+const { processQuery } = require("../helpers/queryParams");
+const { mapQueryParams } = require("./demandeSejour/queryUtils");
 
 const log = logger(module.filename);
 
@@ -285,48 +285,6 @@ LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm
 WHERE
   o.id = ANY ($1)
 `,
-  getAdminStats: (departements, territoireCode) => [
-    `
-SELECT
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN COURS')::integer AS "enCours",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TRANSMISE')::integer AS "transmis",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TRANSMISE 8J')::integer AS "transmis8J",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN COURS 8J')::integer AS "enCours8J",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN ATTENTE DECLARATION 8 JOURS')::integer AS "declaration8J",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'VALIDEE 8J')::integer AS "validee8J",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TERMINEE')::integer AS "terminee",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'ANNULEE')::integer AS "annulee",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'ABANDONNEE')::integer AS "abandonnee",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'REFUSEE')::integer AS "refusee",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'REFUSEE 8J')::integer AS "refuse8J",
-  COUNT(DISTINCT ds.id) FILTER (WHERE statut <> 'BROUILLON')::integer AS "global",
-  COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "nonlu",
-  COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "lu",
-  COUNT(CASE WHEN (dsm.message is not null AND dsm.front_user_id IS NULL) THEN 1 END)::integer AS "repondu"
-FROM
-  front.demande_sejour ds
-  JOIN front.organismes o ON o.id = ds.organisme_id
-  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
-  LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
-      SELECT MAX(dsmax.id)
-      FROM front.demande_sejour_message  dsmax
-      WHERE dsmax.declaration_id = ds.id)
-WHERE
-  EXISTS (
-    SELECT
-      1
-    FROM
-      FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
-      LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
-      LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-    WHERE
-      DSTH.DEMANDE_SEJOUR_ID = DS.ID
-      AND A.DEPARTEMENT = ANY ($1)
-  )
-  OR A.REGION_OBTENTION = '${territoireCode}'
-`,
-    [departements],
-  ],
   getByDepartementCodes: (search, territoireCode) => {
     return `
 SELECT
@@ -472,90 +430,94 @@ WHERE
     AND (u.id = $3 OR pm.siren = $2)
   `,
   getDeclarationsMessages: () => `
-  SELECT
-    ds.id as "declarationId",
-    ds.statut as "statut",
-    ds.id_fonctionnelle as "idFonctionnelle",
-    ds.organisme_id as "organismeId",
-    ds.libelle as "libelle",
-    ds.date_debut::text as "dateDebut",
-    ds.date_fin::text as "dateFin",
-    ds.created_at as "createdAt",
-    ds.edited_at as "editedAt",
-    ds.organisme as "organisme",
-    CASE
-      WHEN o.type_organisme = 'personne_morale' THEN
-      JSON_BUILD_OBJECT(
-        'siret', pm.siret,
-        'adresse', pm.adresse,
-        'telephone', pm.telephone,
-        'nomCommercial', pm.etab_principal_nom_commercial,
-        'raisonSociale', pm.raison_sociale,
-        'pays', pm.pays,
-        'email', pm.email
-      )
-    ELSE
-      JSON_BUILD_OBJECT(
-        'adresse', pp.adresse_siege_label,
-        'nom', pp.nom_usage,
-        'prenom', pp.prenom,
-        'nomNaissance', pp.nom_naissance,
-        'telephone', pp.telephone,
-        'profession', pp.profession
-      )
-    END AS "organismeAgree",
-    o.type_organisme as "typeOrganisme",
-    (
+    WITH demande_avec_message AS (
       SELECT
-        DEPARTEMENT = ANY ($1)
-      FROM
-        FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
-        LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
-        LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-      WHERE DSTH.DEMANDE_SEJOUR_ID = DS.ID
-      ORDER BY DSTH.DATE_DEBUT
-      LIMIT 1
-    ) as "estInstructeurPrincipal",
-    dsm.message as "message",
-      CASE
-        WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 'NON LU'
-        WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 'LU'
-        WHEN (dsm.front_user_id IS NULL) THEN 'REPONDU'
-      END AS "messageEtat",
-      CASE
-        WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 -- NON LU
-        WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 2 -- LU
-        WHEN (dsm.front_user_id IS NULL) THEN 3 -- REPONDU
-      END AS "messageOrdreEtat",
-      dsm.read_at AS "messageReadAt",
-      dsm.created_at AS "messageCreatedAt",
-      COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
-  FROM front.demande_sejour ds
-  JOIN front.organismes o ON o.id = ds.organisme_id
-  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
-  LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
-  LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
-  LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
-      SELECT MAX(dsmax.id)
-      FROM front.demande_sejour_message  dsmax
-      WHERE dsmax.declaration_id = ds.id)
-  WHERE
-    ds.statut <> 'BROUILLON'
-    AND dsm.message is not null
-    AND (
-      EXISTS (
-        SELECT
-          1
-        FROM
-          FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
-          LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
-          LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
-        WHERE
-          DSTH.DEMANDE_SEJOUR_ID = DS.ID
-          AND A.DEPARTEMENT = ANY ($1)
-      )
-      OR a.region_obtention = $2
+        ds.id as "declarationId",
+        ds.statut as "statut",
+        ds.id_fonctionnelle as "idFonctionnelle",
+        ds.organisme_id as "organismeId",
+        ds.libelle as "libelle",
+        ds.date_debut::text as "dateDebut",
+        ds.date_fin::text as "dateFin",
+        ds.created_at as "createdAt",
+        ds.edited_at as "editedAt",
+        ds.organisme as "organisme",
+        CASE
+          WHEN o.type_organisme = 'personne_morale' THEN
+            JSON_BUILD_OBJECT(
+              'siret', pm.siret,
+              'adresse', pm.adresse,
+              'telephone', pm.telephone,
+              'nomCommercial', pm.etab_principal_nom_commercial,
+              'raisonSociale', pm.raison_sociale,
+              'pays', pm.pays,
+              'email', pm.email
+            )
+          ELSE
+            JSON_BUILD_OBJECT(
+              'adresse', pp.adresse_siege_label,
+              'nom', pp.nom_usage,
+              'prenom', pp.prenom,
+              'nomNaissance', pp.nom_naissance,
+              'telephone', pp.telephone,
+              'profession', pp.profession
+            )
+        END AS "organismeAgree",
+        o.type_organisme as "typeOrganisme",
+
+        (
+          SELECT
+            A.departement = ANY ($1)
+          FROM
+            FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
+            LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+            LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+          WHERE DSTH.DEMANDE_SEJOUR_ID = DS.ID
+          ORDER BY DSTH.DATE_DEBUT
+          LIMIT 1
+        ) as "estInstructeurPrincipal",
+        dsm.message as "message",
+        CASE
+          WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 'NON LU'
+          WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 'LU'
+          WHEN (dsm.front_user_id IS NULL) THEN 'REPONDU'
+        END AS "messageEtat",
+        CASE
+          WHEN (dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1
+          WHEN (dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 2
+          WHEN (dsm.front_user_id IS NULL) THEN 3
+        END AS "messageOrdreEtat",
+        dsm.read_at AS "messageReadAt",
+        dsm.created_at AS "messageCreatedAt",
+        COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
+      FROM front.demande_sejour ds
+      JOIN front.organismes o ON o.id = ds.organisme_id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+      LEFT JOIN front.agrements a ON a.organisme_id = ds.organisme_id
+      LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
+          SELECT MAX(dsmax.id)
+          FROM front.demande_sejour_message dsmax
+          WHERE dsmax.declaration_id = ds.id
+        )
+      WHERE
+        ds.statut <> 'BROUILLON'
+        AND dsm.message IS NOT NULL
+        AND (
+          EXISTS (
+            SELECT 1
+            FROM FRONT.DEMANDE_SEJOUR_TO_HEBERGEMENT DSTH
+            LEFT JOIN FRONT.HEBERGEMENT H ON H.ID = DSTH.HEBERGEMENT_ID
+            LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
+            WHERE DSTH.DEMANDE_SEJOUR_ID = DS.ID
+              AND A.DEPARTEMENT = ANY ($1)
+          )
+          OR a.region_obtention = $2
+        )
     )
+    SELECT *
+    FROM demande_avec_message
+    WHERE 1 = 1
   `,
   getDeprecated: (organismeIds) => [
     `SELECT
@@ -627,7 +589,7 @@ WITH
     SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
     FROM back.users u
     JOIN back.user_roles ur ON u.id = ur.use_id
-    WHERE u.ter_code = $1
+    WHERE u.ter_code = $1 AND u.deleted = false
     GROUP BY mail
   )
 SELECT mail
@@ -656,8 +618,9 @@ WITH
     SELECT u.mail AS mail, array_agg(ur.rol_id) as ids
     FROM regions r, back.users u
     JOIN back.user_roles ur ON u.id = ur.use_id
-    WHERE u.ter_code = ANY($1)
-      OR u.ter_code = ANY(r.parent_code)
+    WHERE (u.ter_code = ANY($1)
+      OR u.ter_code = ANY(r.parent_code))
+      AND u.deleted = FALSE
     GROUP BY mail
   )
 SELECT mail
@@ -673,13 +636,14 @@ LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
 WHERE
   pm.siren = $1 AND
   pm.siege_social = 'true'
+  AND u.status_code = 'VALIDATED'
 `,
   getEmailToList: `
 SELECT DISTINCT u.mail AS mail
 FROM front.users u
 JOIN front.user_organisme uo
   ON u.id = uo.use_id
-WHERE uo.org_id = $1
+WHERE uo.org_id = $1 AND u.status_code = 'VALIDATED'
 `,
   getExtract: (territoireCode) => `
   SELECT
@@ -737,6 +701,7 @@ WHERE uo.org_id = $1
       ds.date_debut::text as "date_debut",
       ds.date_fin::text as "date_fin",
       pm.raison_sociale as "raison_sociale",
+      COALESCE(STRING_AGG(DISTINCT COALESCE(pm.siret, pp.siret), ', '),'') AS siret,
       (
           SELECT adr.departement
           FROM front.demande_sejour_to_hebergement dsth
@@ -761,6 +726,14 @@ WHERE uo.org_id = $1
     LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
     WHERE
       o.id = ANY ($1)
+    GROUP BY ds.id,
+      ds.statut,
+      ds.id_fonctionnelle,
+      o.type_organisme ,
+      ds.libelle ,
+      ds.date_debut,
+      ds.date_fin,
+      pm.raison_sociale
     ORDER BY date_debut
     `,
   getHebergementsByDepartementCodes: () => `
@@ -845,17 +818,17 @@ ${Object.keys(criterias)
     `,
     [
       userId, // countBrouillon
-      dsStatus.statuts.BROUILLON, // countDeclarationAcompleter
-      dsStatus.statuts.A_MODIFIER,
-      dsStatus.statuts.A_MODIFIER_8J,
-      dsStatus.statuts.ATTENTE_8_JOUR, // countDeclarationEnInstruction
-      dsStatus.statuts.TRANSMISE,
-      dsStatus.statuts.TRANSMISE_8J,
-      dsStatus.statuts.EN_COURS,
-      dsStatus.statuts.EN_COURS_8J, // countDeclarationFinalisee
-      dsStatus.statuts.VALIDEE_8J, // countSejourEnCours
-      dsStatus.statuts.SEJOUR_EN_COURS, // countTerminee
-      dsStatus.statuts.TERMINEE,
+      DEMANDE_SEJOUR_STATUTS.BROUILLON, // countDeclarationAcompleter
+      DEMANDE_SEJOUR_STATUTS.A_MODIFIER,
+      DEMANDE_SEJOUR_STATUTS.A_MODIFIER_8J,
+      DEMANDE_SEJOUR_STATUTS.ATTENTE_8_JOUR, // countDeclarationEnInstruction
+      DEMANDE_SEJOUR_STATUTS.TRANSMISE,
+      DEMANDE_SEJOUR_STATUTS.TRANSMISE_8J,
+      DEMANDE_SEJOUR_STATUTS.EN_COURS,
+      DEMANDE_SEJOUR_STATUTS.EN_COURS_8J, // countDeclarationFinalisee
+      DEMANDE_SEJOUR_STATUTS.VALIDEE_8J, // countSejourEnCours
+      DEMANDE_SEJOUR_STATUTS.SEJOUR_EN_COURS, // countTerminee
+      DEMANDE_SEJOUR_STATUTS.TERMINEE,
     ],
   ],
   getStatut: `
@@ -1093,7 +1066,7 @@ module.exports.create = async ({
     if (moisDebut < 12) return "automne";
   })();
 
-  const response = await pool.query(
+  const response = await getPool().query(
     ...query.create(
       organismeId,
       libelle,
@@ -1115,7 +1088,7 @@ module.exports.create = async ({
 
 module.exports.copy = async (declaration) => {
   log.i("copy - IN");
-  const client = await pool.connect();
+  const client = await getPool().connect();
   let declarationId;
   try {
     await client.query("BEGIN");
@@ -1160,14 +1133,18 @@ module.exports.copy = async (declaration) => {
 
 module.exports.delete = async (declarationId, userId) => {
   log.i("delete - IN");
-  await pool.query(query.unlinkToHebergement, [declarationId]);
-  const { rowCount } = await pool.query(...query.delete(declarationId, userId));
+  await getPool().query(query.unlinkToHebergement, [declarationId]);
+  const { rowCount } = await getPool().query(
+    ...query.delete(declarationId, userId),
+  );
   log.i("delete - DONE");
   return rowCount;
 };
 module.exports.cancel = async (declarationId, userId) => {
   log.i("cancel - IN");
-  const { rowCount } = await pool.query(...query.cancel(declarationId, userId));
+  const { rowCount } = await getPool().query(
+    ...query.cancel(declarationId, userId),
+  );
   log.i("cancel - DONE");
   return rowCount;
 };
@@ -1228,27 +1205,20 @@ module.exports.get = async (organismesId, queryParams) => {
       type: "default",
     },
   ];
-  const { limit, offset, sort } = sanitizePaginationParams(
-    queryParams,
+  const paginatedQuery = processQuery(
+    query.get,
+    [organismesId],
     titles,
+    queryParams,
     {
       sortBy: "ds.edited_at",
       sortDirection: "DESC",
     },
   );
-  const filterParams = sanitizeFiltersParams(queryParams, titles);
-  const queryGet = query.get();
-  const filterQuery = applyFilters(queryGet, [organismesId], filterParams);
-  const paginatedQuery = applyPagination(
-    filterQuery.query,
-    filterQuery.params,
-    limit,
-    offset,
-    sort,
-  );
+
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -1268,7 +1238,7 @@ module.exports.getDeprecated = async ({ sortBy }, organismesId) => {
   }
   const finalQuery = queryGet[0] + querySorted;
   const queryParams = queryGet[1];
-  const response = await pool.query(finalQuery, [queryParams[0]]);
+  const response = await getPool().query(finalQuery, [queryParams[0]]);
   log.i("get - DONE");
   const demandes = response.rows;
   return demandes;
@@ -1276,7 +1246,7 @@ module.exports.getDeprecated = async ({ sortBy }, organismesId) => {
 
 module.exports.getOne = async (criterias = {}) => {
   log.i("getOne - IN", { criterias });
-  const { rows: declarations, rowCount } = await pool.query(
+  const { rows: declarations, rowCount } = await getPool().query(
     ...query.getOne(criterias),
   );
   if (rowCount !== 1) {
@@ -1300,7 +1270,7 @@ module.exports.getOne = async (criterias = {}) => {
 
 module.exports.getByIdOrUserSiren = async (id, siren, userId) => {
   log.i("getByIdOrUserSiren - IN");
-  const response = await pool.query(query.getByIdOrUserSiren, [
+  const response = await getPool().query(query.getByIdOrUserSiren, [
     id,
     siren,
     userId,
@@ -1310,7 +1280,7 @@ module.exports.getByIdOrUserSiren = async (id, siren, userId) => {
 };
 
 module.exports.getByDepartementCodes = async (
-  { limit, offset, sortBy, sortDirection = "ASC", search } = {},
+  queryParams,
   territoireCode,
   departementCodes,
 ) => {
@@ -1332,117 +1302,135 @@ module.exports.getByDepartementCodes = async (
     };
   }
 
-  log.i("getByDepartementCodes - IN");
-  const params = [departementCodes];
-  const searchQuery = [];
-  // Search management
-  if (search?.siren && search.siren.length) {
-    searchQuery.push(`pm.siren = $${params.length + 1}`);
-    params.push(`${search.siren}`);
-  }
-  if (search?.siret && search.siret.length) {
-    searchQuery.push(`pm.siret = $${params.length + 1}`);
-    params.push(`${search.siret}`);
-  }
-  if (search?.organismeId && !search?.siret && !search?.siren) {
-    searchQuery.push(`o.id = $${params.length + 1}`);
-    params.push(`${search.organismeId}`);
-  }
-  if (search?.idFonctionnelle && search.idFonctionnelle.length) {
-    searchQuery.push(`id_fonctionnelle ILIKE $${params.length + 1}`);
-    params.push(`%${search.idFonctionnelle}%`);
-  }
-  if (search?.libelle && search.libelle.length) {
-    searchQuery.push(`unaccent(libelle) ILIKE unaccent($${params.length + 1})`);
-    params.push(`%${search.libelle}%`);
-  }
-  if (search?.organisme && search.organisme.length) {
-    searchQuery.push(`(
-      pm.raison_sociale ILIKE $${params.length + 1}
-      OR unaccent(pp.prenom) ILIKE unaccent($${params.length + 2})
-      OR unaccent(pp.nom_usage) ILIKE unaccent($${params.length + 3})
-      )`);
-    params.push(
-      `%${search.organisme}%`,
-      `%${search.organisme}%`,
-      `%${search.organisme}%`,
-    );
-  }
-  if (search?.statuts && search.statuts.length) {
-    searchQuery.push(`ds.statut = ANY($${params.length + 1})`);
-    params.push(search.statuts.split(","));
-  }
+  const criterias = [
+    {
+      key: "pm.siren",
+      queryKey: "siren",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "pm.siret",
+      queryKey: "siret",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: '"dateDebut"',
+      queryKey: "dateDebut",
+      sortEnabled: true,
+      sortType: "date",
+    },
+    {
+      key: "o.id",
+      queryKey: "organismeId",
+      sortEnabled: true,
+      type: "number",
+    },
+    {
+      key: "id_fonctionnelle",
+      queryKey: "idFonctionnelle",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      key: "libelle",
+      queryKey: "libelle",
+      sortEnabled: true,
+      type: "default",
+    },
+    {
+      query: (index, value) => {
+        return {
+          query: `(
+            pm.raison_sociale ILIKE '%' || $${index} || '%'
+            OR unaccent(pp.prenom) ILIKE '%' || unaccent($${index}) || '%'
+            OR unaccent(pp.nom_usage) ILIKE '%' || unaccent($${index}) || '%'
+            )`,
+          queryParams: [value],
+        };
+      },
+      queryKey: "organisme",
+      sortEnabled: true,
+      sortQuery: "pm.raison_sociale, pp.prenom, pp.nom_usage",
+      type: "custom",
+    },
+    {
+      query: (index, value) => {
+        return {
+          query: `ds.statut = ANY($${index})`,
+          queryParams: [value],
+        };
+      },
+      queryKey: "statuts",
+      sortEnabled: true,
+      type: "custom",
+    },
+    {
+      query: (
+        index,
+        value = [
+          DEMANDE_SEJOUR_STATUTS.EN_COURS,
+          DEMANDE_SEJOUR_STATUTS.EN_COURS_8J,
+          DEMANDE_SEJOUR_STATUTS.TRANSMISE,
+          DEMANDE_SEJOUR_STATUTS.TRANSMISE_8J,
+        ],
+      ) => {
+        return {
+          query: `ds.statut IN ($${index}, $${index + 1}, $${index + 2}, $${index + 3})`,
+          queryParams: [value],
+        };
+      },
+      queryKey: "action",
+      sortEnabled: true,
+      type: "custom",
+    },
+    {
+      key: "ds.statut",
+      queryKey: "statut",
+      sortEnabled: true,
+    },
+    {
+      customSort: (sortBy, sortDirection) => {
+        return `ORDER BY "messageOrdreEtat" ${sortDirection}, "messageCreatedAt" DESC`;
+      },
+      key: "messageOrdreEtat",
+      queryKey: "messageEtat",
+      sortEnabled: true,
+    },
+  ];
 
-  if (search?.action) {
-    searchQuery.push(
-      `ds.statut in ('${dsStatus.statuts.EN_COURS}', '${dsStatus.statuts.EN_COURS_8J}', '${dsStatus.statuts.TRANSMISE}', '${dsStatus.statuts.TRANSMISE_8J}')`,
-    );
-  }
-  if (search?.message) {
-    searchQuery.push(`dsm.message is not null`);
-  }
-
-  let queryWithPagination = query.getByDepartementCodes(
-    searchQuery,
-    territoireCode,
+  const { result, count } = await DemandeSejourRepository.getByDepartementCodes(
+    {
+      criterias,
+      departementCodes,
+      queryParams: mapQueryParams(queryParams),
+      territoireCode,
+    },
   );
-  const stats = await pool.query(
-    ...query.getAdminStats(departementCodes, territoireCode),
-  );
-
-  // Order management
-  if (sortBy && sortDirection) {
-    if (sortBy === "messageOrdreEtat")
-      queryWithPagination += ` ORDER BY "${sortBy}" ${sortDirection}, "messageCreatedAt" DESC`;
-    else
-      queryWithPagination += `ORDER BY "${sortBy}" ${sortDirection}, ds.edited_at DESC`;
-  } else {
-    queryWithPagination += "ORDER BY ds.edited_at DESC";
-  }
-
-  const paramsWithPagination = [...params];
-  // Pagination management
-  if (limit != null && offset != null) {
-    queryWithPagination += `
-    OFFSET $${params.length + 1}
-    LIMIT $${params.length + 2}
-    `;
-    paramsWithPagination.push(offset, limit);
-  }
-
-  log.d({ paramsWithPagination, queryWithPagination });
-  const response = await pool.query(queryWithPagination, paramsWithPagination);
-
   const responseWithComplements = await Promise.all(
-    response.rows.map((demandeSejour) => getComplementOrganisme(demandeSejour)),
+    result.map((demandeSejour) => getComplementOrganisme(demandeSejour)),
   );
+  const { result: stats } = await DemandeSejourRepository.getAdminStats({
+    departementCodes,
+    territoireCode,
+  });
 
-  if (limit === null || responseWithComplements.length < limit) {
+  if (
+    queryParams.limit === null ||
+    responseWithComplements.length < queryParams.limit
+  ) {
     return {
       demandes_sejour: responseWithComplements,
-      stats: Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
-        acc[key] = Number(value);
-        return acc;
-      }, {}),
-      total: responseWithComplements.length + parseInt(offset ?? 0),
+      stats,
+      total: responseWithComplements.length + parseInt(queryParams.offset ?? 0),
     };
   }
 
-  const total = await pool.query(
-    query.getByDepartementCodesTotal(searchQuery, territoireCode),
-    params,
-  );
-
-  log.i("getByDepartementCodes - DONE");
-  const totalValue = total.rows.find((t) => t.count)?.count;
-
   return {
     demandes_sejour: responseWithComplements,
-    stats: Object.entries(stats.rows[0]).reduce((acc, [key, value]) => {
-      acc[key] = Number(value);
-      return acc;
-    }, {}),
-    total: totalValue ? parseInt(totalValue) : 0,
+    stats,
+    total: count,
   };
 };
 
@@ -1453,75 +1441,70 @@ module.exports.getDeclarationsMessages = async (
 ) => {
   const titles = [
     {
-      key: "ds.id_fonctionnelle",
+      key: '"idFonctionnelle"',
       queryKey: "idFonctionnelle",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "ds.libelle",
+      key: '"libelle"',
       queryKey: "libelle",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "ds.statut",
+      key: "statut",
       queryKey: "statut",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "ds.organisme",
+      key: '"organisme"',
       queryKey: "organisme",
       sortEnabled: true,
       type: "default",
     },
     {
-      key: "ds.date_debut",
+      key: '"dateDebut"',
       queryKey: "dateDebut",
       sortEnabled: true,
       sortType: "date",
       type: "default",
     },
     {
-      key: "ds.date_fin",
+      key: '"dateFin"',
       queryKey: "dateFin",
       sortEnabled: true,
       sortType: "date",
       type: "default",
     },
     {
-      key: "dsm.message",
+      key: '"message"',
       queryKey: "message",
       sortEnabled: true,
       type: "default",
     },
     {
       customSort: (sortBy, sortDirection) => {
-        return `ORDER BY ${sortBy} ${sortDirection}, messageCreatedAt" DESC`;
+        return `ORDER BY "messageOrdreEtat" ${sortDirection}, "messageCreatedAt" DESC`;
       },
       key: "messageOrdreEtat",
-      queryKey: "messageOrdreEtat",
+      queryKey: "messageEtat",
       sortEnabled: true,
     },
   ];
-  const filterParams = sanitizeFiltersParams(queryParams, titles);
-  const queryGet = query.getDeclarationsMessages();
-  const params = [departementsCodes, territoireCode];
-  const filterQuery = applyFilters(queryGet, params, filterParams);
-  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
-  const paginatedQuery = applyPagination(
-    filterQuery.query,
-    filterQuery.params,
-    limit,
-    offset,
-    sort,
+  const paginatedQuery = processQuery(
+    query.getDeclarationsMessages,
+    [departementsCodes, territoireCode],
+    titles,
+    queryParams,
   );
-  log.w(queryParams);
-  log.w({ params: paginatedQuery.params, query: paginatedQuery.query });
+
+  log.d(queryParams);
+  log.d({ params: paginatedQuery.params, query: paginatedQuery.query });
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -1533,7 +1516,7 @@ module.exports.getById = async (declarationId, departements) => {
   log.i("getById - IN", { declarationId });
 
   const declaration =
-    (await pool.query(...query.getById(declarationId, departements)))
+    (await getPool().query(...query.getById(declarationId, departements)))
       .rows?.[0] ?? null;
   const hebergements = await getHebergementsByDSIds(declarationId);
   if (!declaration) {
@@ -1542,7 +1525,7 @@ module.exports.getById = async (declarationId, departements) => {
   const personneMorale = await PersonneMorale.getByOrganismeId(
     declaration.organismeId,
   );
-  const personnePhysique = PersonnePhysique.getByOrganismeId(
+  const personnePhysique = await PersonnePhysique.getByOrganismeId(
     declaration.organismeId,
   );
 
@@ -1624,21 +1607,15 @@ module.exports.getHebergementsByDepartementCode = async (
       type: "custom",
     },
   ];
-  const filterParams = sanitizeFiltersParams(queryParams, titles);
-  const queryGet = query.getHebergementsByDepartementCodes();
-  const params = [departementsCodes];
-  const filterQuery = applyFilters(queryGet, params, filterParams);
-  const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
-  const paginatedQuery = applyPagination(
-    filterQuery.query,
-    filterQuery.params,
-    limit,
-    offset,
-    sort,
+  const paginatedQuery = processQuery(
+    query.getHebergementsByDepartementCodes,
+    [departementsCodes],
+    titles,
+    queryParams,
   );
   const result = await Promise.all([
-    pool.query(paginatedQuery.query, paginatedQuery.params),
-    pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+    getPool().query(paginatedQuery.query, paginatedQuery.params),
+    getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
   ]);
   return {
     rows: result[0].rows,
@@ -1646,28 +1623,30 @@ module.exports.getHebergementsByDepartementCode = async (
   };
 };
 
-module.exports.getAdminStats = async (departements, territoireCode) => {
-  log.i("getAdminStats - IN");
-
-  const {
-    rows: [stats],
-  } = await pool.query(...query.getAdminStats(departements, territoireCode));
-  log.i("getAdminStats - DONE");
-  return stats;
+module.exports.getAdminStats = async ({ departementCodes, territoireCode }) => {
+  log.i("getAdminStatss - IN");
+  const { result } = await DemandeSejourRepository.getAdminStats({
+    departementCodes,
+    territoireCode,
+  });
+  log.i("getAdminStatss - DONE");
+  return { stats: result };
 };
 
 module.exports.getStats = async (userId) => {
   log.i("getStatts - IN");
   const {
     rows: [stats],
-  } = await pool.query(...query.getStats(userId));
+  } = await getPool().query(...query.getStats(userId));
   log.i("getStatts - DONE");
   return stats;
 };
 
 module.exports.getStatut = async (declarationId) => {
   log.i("getStatut - IN");
-  const { rows: data } = await pool.query(query.getStatut, [declarationId]);
+  const { rows: data } = await getPool().query(query.getStatut, [
+    declarationId,
+  ]);
   log.d(data);
   log.i("getStatut - DONE");
   return data[0].statut ?? null;
@@ -1691,7 +1670,7 @@ module.exports.update = async (type, declarationId, parametre) => {
         if (moisDebut < 12) return "automne";
       })();
 
-      response = await pool.query(
+      response = await getPool().query(
         ...query.updateInformationsGenerales(
           libelle,
           dateDebut,
@@ -1706,7 +1685,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "informationsVacanciers": {
       log.d("informationsVacanciers", declarationId);
-      response = await pool.query(query.updateInformationsVacanciers, [
+      response = await getPool().query(query.updateInformationsVacanciers, [
         parametre,
         declarationId,
       ]);
@@ -1714,7 +1693,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "informationsPersonnel": {
       log.d("informationsPersonnel", declarationId);
-      response = await pool.query(query.updateInformationsPersonnel, [
+      response = await getPool().query(query.updateInformationsPersonnel, [
         parametre,
         declarationId,
       ]);
@@ -1722,7 +1701,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "projetSejour": {
       log.d("projetSejour", declarationId);
-      response = await pool.query(query.updateProjetSejour, [
+      response = await getPool().query(query.updateProjetSejour, [
         parametre,
         declarationId,
       ]);
@@ -1730,7 +1709,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "protocole_transport": {
       log.d("protocole_transport", declarationId);
-      response = await pool.query(query.updateInformationsTransport, [
+      response = await getPool().query(query.updateInformationsTransport, [
         parametre,
         declarationId,
       ]);
@@ -1738,7 +1717,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "protocole_sanitaire": {
       log.d("protocole_sanitaire", declarationId);
-      response = await pool.query(query.updateInformationsSanitaires, [
+      response = await getPool().query(query.updateInformationsSanitaires, [
         parametre,
         declarationId,
       ]);
@@ -1746,7 +1725,7 @@ module.exports.update = async (type, declarationId, parametre) => {
     }
     case "hebergements": {
       log.d("hebergements", declarationId);
-      const client = await pool.connect();
+      const client = await getPool().connect();
       try {
         await client.query("BEGIN");
         await linkToHebergements(client, declarationId, parametre.hebergements);
@@ -1788,7 +1767,7 @@ module.exports.finalize8jours = async (
     declarationId,
   });
 
-  await pool.query(
+  await getPool().query(
     ...query.finalize8jours(
       declarationId,
       informationsVacanciers,
@@ -1829,7 +1808,7 @@ module.exports.finalize = async (
     idFonctionnelle,
   });
 
-  await pool.query(
+  await getPool().query(
     ...query.finalize(
       declarationId,
       idFonctionnelle,
@@ -1848,33 +1827,39 @@ module.exports.finalize = async (
 
 module.exports.getNextIndex = async () => {
   log.i("getNextIndex - IN");
-  const { rows: data } = await pool.query(query.getNextIndex);
+  const { rows: data } = await getPool().query(query.getNextIndex);
   log.d(data[0].index);
   log.i("getNextIndex - DONE");
   return data[0].index ?? null;
 };
 module.exports.getEmailToList = async (organismeId) => {
   log.i("getEmailToList - IN", organismeId);
-  const { rows: data } = await pool.query(query.getEmailToList, [organismeId]);
+  const { rows: data } = await getPool().query(query.getEmailToList, [
+    organismeId,
+  ]);
   log.i("getEmailToList - DONE");
   return data.map((m) => m.mail);
 };
 
 module.exports.getEmailCcList = async (siren) => {
   log.i("getEmailCcList - IN", siren);
-  const { rows: data } = await pool.query(query.getEmailCcList, [siren]);
+  const { rows: data } = await getPool().query(query.getEmailCcList, [siren]);
   log.i("getEmailCcList - DONE");
   return data.map((m) => m.mail);
 };
 module.exports.getEmailBack = async (departement) => {
   log.i("getEmailBack - IN", departement);
-  const { rows: data } = await pool.query(query.getEmailBack, [departement]);
+  const { rows: data } = await getPool().query(query.getEmailBack, [
+    departement,
+  ]);
   log.i("getEmailBack - DONE");
   return data.map((m) => m.mail);
 };
 module.exports.getEmailBackCc = async (departements) => {
   log.i("getEmailBackCc - IN", departements);
-  const { rows: data } = await pool.query(query.getEmailBackCc, [departements]);
+  const { rows: data } = await getPool().query(query.getEmailBackCc, [
+    departements,
+  ]);
   log.i("getEmailBackCc - DONE");
   return data.map((m) => m.mail);
 };
@@ -1882,16 +1867,19 @@ module.exports.getEmailBackCc = async (departements) => {
 module.exports.getExtract = async (territoireCode, departementCodes) => {
   log.i("getExtract - IN");
 
-  const { rows: data } = await pool.query(query.getExtract(territoireCode), [
-    departementCodes,
-  ]);
+  const { rows: data } = await getPool().query(
+    query.getExtract(territoireCode),
+    [departementCodes],
+  );
   log.i("getExtract - DONE");
   return data;
 };
 
 module.exports.getExtractFO = async (organismeId) => {
   log.i("getExtractFO - IN");
-  const { rows: data } = await pool.query(query.getExtractFO, [organismeId]);
+  const { rows: data } = await getPool().query(query.getExtractFO, [
+    organismeId,
+  ]);
   log.i("getExtractFO - DONE");
   return data;
 };
@@ -1906,7 +1894,7 @@ module.exports.insertEvent = async (
   metaData,
 ) => {
   log.i("insertEvent - IN");
-  const { rows: response } = await pool.query(query.insertEvent, [
+  const { rows: response } = await getPool().query(query.insertEvent, [
     source,
     declarationId,
     userId,
@@ -1921,13 +1909,13 @@ module.exports.insertEvent = async (
 
 module.exports.saveDS2M = async (declarationId, declaration) => {
   log.i("saveDS2M - IN");
-  await pool.query(query.saveDS2M, [declarationId, declaration]);
+  await getPool().query(query.saveDS2M, [declarationId, declaration]);
   log.i("saveDS2M - DONE");
 };
 
 module.exports.addFile = async (declarationId, file) => {
   log.i("addFile - IN", { declarationId });
-  const { rows: response } = await pool.query(query.addFile, [
+  const { rows: response } = await getPool().query(query.addFile, [
     declarationId,
     file,
   ]);
@@ -1937,7 +1925,7 @@ module.exports.addFile = async (declarationId, file) => {
 
 module.exports.historique = async (declarationId) => {
   log.i("historique - IN", { declarationId });
-  const { rows: response } = await pool.query(query.historique, [
+  const { rows: response } = await getPool().query(query.historique, [
     declarationId,
   ]);
   log.i("historique - DONE");
@@ -1951,7 +1939,7 @@ module.exports.updateStatut = async (
   cb = null,
 ) => {
   log.i("updateStatut - IN", { declarationId, statut });
-  const client = await pool.connect();
+  const client = await getPool().connect();
 
   try {
     await client.query("BEGIN");

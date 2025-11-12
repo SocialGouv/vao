@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { getFileUploadErrorMessage } from "@vao/shared/src/utils/file.mjs";
+import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
 const route = useRoute();
 const toaster = useToaster();
 const log = logger("pages/organisme/[[organismeId]]");
@@ -359,6 +359,7 @@ async function finalizeOrganisme() {
       titleTag: "h2",
       description: "Fiche organisateur finalisée",
     });
+    await organismeStore.setMyOrganisme();
     return await navigateTo("/");
   } catch (error) {
     log.w("Creation/modification d'organisateur : ", { error });

@@ -56,9 +56,10 @@ module.exports = async function register(req, res, next) {
   let territoire = "";
   try {
     const etablissement = await insee.getEtablissement(siret);
-    const codePostal =
-      etablissement.adresseEtablissement.codePostalEtablissement;
-    territoire = await getFichesTerritoireForRegionByInseeCode(codePostal);
+    const inseeCode = String(
+      etablissement.adresseEtablissement.codeCommuneEtablissement,
+    );
+    territoire = await getFichesTerritoireForRegionByInseeCode({ inseeCode });
   } catch (error) {
     log.w("DONE with error");
     return next(error);
@@ -76,7 +77,7 @@ module.exports = async function register(req, res, next) {
 
     log.d({ user });
     const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
-      algorithm: "ES512",
+      algorithm: config.algorithm,
       expiresIn: config.validationToken.expiresIn / 1000,
     });
     try {

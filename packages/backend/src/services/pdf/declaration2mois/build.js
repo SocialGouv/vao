@@ -1,18 +1,11 @@
+const { fonts, images } = require("../../../utils/staticsFiles");
+
 const PdfPrinter = require("pdfmake");
 
-const path = require("path");
 const logger = require("../../../utils/logger");
 const parts = require("../parts");
 
 const log = logger(module.filename);
-
-const fonts = {
-  Marianne: {
-    bold: path.join(__dirname, "../../../fonts/Marianne-Bold.woff"),
-    italics: path.join(__dirname, "../../../fonts/Marianne-Light_Italic.woff"),
-    normal: path.join(__dirname, "../../../fonts/Marianne-Regular.woff"),
-  },
-};
 
 const printer = new PdfPrinter(fonts);
 
@@ -20,13 +13,13 @@ const build = async (declaration = {}, departementSuivi) => {
   log.i("build - IN");
   const docDefinition = {
     content: [
-      parts.Header(),
+      parts.Header(images.cerfaDS2M),
       parts.Titre(declaration, departementSuivi),
       await parts.Agrement(declaration.organisme.agrement),
       parts.InformationsGenerales(declaration),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(images.cerfaDS2M)],
       },
       parts.InformationsVacanciers(declaration.informationsVacanciers),
       parts.InformationsPersonnel(declaration.informationsPersonnel),
@@ -37,17 +30,17 @@ const build = async (declaration = {}, departementSuivi) => {
       ),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(images.cerfaDS2M)],
       },
       parts.InformationsSanitaires(declaration.informationsSanitaires),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(images.cerfaDS2M)],
       },
       ...(await parts.FicheAnnexe(declaration.hebergement)),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(images.cerfaDS2M)],
       },
       parts.Attestation(declaration.attestation),
     ],

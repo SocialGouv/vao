@@ -1,13 +1,13 @@
-const path = require("path");
+const { images } = require("../../../utils/staticsFiles");
 
-module.exports = function buildHeader() {
+function Header(imageCerfa) {
   return {
     columns: [
       {
         stack: [
           {
             alignment: "left",
-            image: path.join(__dirname, "../../../images/logo.png"),
+            image: images.logo,
             width: 80,
           },
         ],
@@ -16,7 +16,7 @@ module.exports = function buildHeader() {
         stack: [
           {
             alignment: "right",
-            image: path.join(__dirname, "../../../images/cerfa-12672-03.png"),
+            image: imageCerfa,
             width: 50,
           },
         ],
@@ -24,4 +24,6 @@ module.exports = function buildHeader() {
     ],
     margin: [10, 10, 10, 10],
   };
-};
+}
+
+module.exports = Header;

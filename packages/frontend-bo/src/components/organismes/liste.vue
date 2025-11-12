@@ -4,7 +4,7 @@
     v-model:region-obtention="regionObtention"
     v-model:siret="siret"
     v-model:year-obtention="yearObtention"
-    @filters-update="updateData"
+    @filters-update="() => updateData(true)"
   />
   <DsfrDataTableV2Wrapper
     v-model:limit="limit"
@@ -17,7 +17,7 @@
     :total="total"
     row-id="organismeId"
     is-sortable
-    @update-data="updateData"
+    @update-data="() => updateData()"
   >
     <template #cell-name="{ row }">
       {{
@@ -70,9 +70,11 @@ import {
   DsfrDataTableV2Wrapper,
   isValidParams,
   usePagination,
-} from "@vao/shared";
+  columnsTable,
+} from "@vao/shared-ui";
 import dayjs from "dayjs";
 
+const optionType = columnsTable.optionType;
 const organismeStore = useOrganismeStore();
 const route = useRoute();
 
@@ -81,71 +83,19 @@ const total = computed(() => organismeStore.organismesTotal);
 
 const { query } = route;
 
-const columns = [
-  {
-    key: "name",
-    label: "Nom",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "typeOrganisme",
-    label: "Type",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "editedAt",
-    label: "Date de modification",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "complet",
-    label: "Complet",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "siret",
-    label: "Siret",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "agrement:regionObtention",
-    label: "Région agrément",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "agrement:dateObtention",
-    label: "Date agrément",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "sejourCount",
-    label: "séjours",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const defs = [
+  ["name", "Nom", optionType.SORTABLE],
+  ["typeOrganisme", "Type", optionType.SORTABLE],
+  ["editedAt", "Date de modification", optionType.SORTABLE],
+  ["complet", "Complet", optionType.SORTABLE],
+  ["siret", "Siret", optionType.SORTABLE],
+  ["agrement:regionObtention", "Région agrément", optionType.SORTABLE],
+  ["agrement:dateObtention", "Date agrément", optionType.SORTABLE],
+  ["sejourCount", "Séjours", optionType.SORTABLE],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+
+const columns = columnsTable.buildColumns(defs);
 
 const title = "Liste des Organismes";
 
@@ -176,7 +126,10 @@ const getSearchParams = () => ({
 
 let timeout = null;
 
-const updateData = () => {
+const updateData = (resetOffset = false) => {
+  if (resetOffset) {
+    offset.value = 0;
+  }
   if (timeout) {
     clearTimeout(timeout);
   }

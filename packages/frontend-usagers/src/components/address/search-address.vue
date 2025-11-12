@@ -1,8 +1,13 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
-import { MultiSelectOption } from "@vao/shared";
+import { MultiSelectOption, ApiUnavailable } from "@vao/shared-ui";
 import { ref } from "vue";
+import { apiTypes } from "@vao/shared-ui/src/models";
+
+const useExternalApi = useExternalApiStore();
+
+await useExternalApi.checkApiAdresse();
 
 const toaster = useToaster();
 
@@ -25,15 +30,29 @@ const options = ref([]);
 const isLoading = ref(false);
 
 const isModalOpen = ref(false);
+const multiselectRef = ref(null);
+
+const canShowClear = ref(false);
 
 const message = computed(() => props.errorMessage || props.validMessage);
 const messageClass = computed(() =>
   props.errorMessage ? "fr-error-text" : "fr-valid-text",
 );
 
+function clearSelection() {
+  multiselectRef.value?.clear();
+  nextTick(() => {
+    multiselectRef.value?.input?.focus();
+  });
+}
+
 async function searchAddress(queryString) {
   if (queryString.length > NB_CAR_ADDRESSE_MIN && isLoading.value === false) {
     await searchAddressDebounced(queryString);
+    canShowClear.value = true;
+  }
+  if (multiselectRef.value?.input.value.length === 0) {
+    canShowClear.value = false;
   }
 }
 
@@ -75,6 +94,7 @@ const searchAddressDebounced = debounce(async function (queryString) {
 function select(_value, option) {
   log.i("select", unref(option));
   emits("select", unref(option));
+  canShowClear.value = true;
 }
 
 function onManualChooseAddress(adresse) {
@@ -103,6 +123,13 @@ function onCloseModal() {
       </div>
     </div>
     <div v-if="props.modifiable" class="fr-fieldset__element">
+      <div class="fr-fieldset__element fr-col-12">
+        <ApiUnavailable
+          :api-unavailable-types="useExternalApi.apisUnavailable"
+          :display-types="[apiTypes.ADRESSE]"
+        ></ApiUnavailable>
+      </div>
+
       <div class="fr-input-group fr-col-12">
         <div
           class="fr-input-group"
@@ -114,30 +141,46 @@ function onCloseModal() {
           <label class="fr-label">
             {{ label }}
           </label>
-          <Multiselect
-            :value="props.value?.label"
-            value-prop="label"
-            track-by="label"
-            mode="single"
-            :close-on-select="true"
-            :searchable="true"
-            :internal-search="true"
-            :loading="isLoading"
-            no-options-text="Rechercher une adresse"
-            :options="options"
-            autocomplete="off"
-            :filter-results="false"
-            @search-change="searchAddress"
-            @select="select"
-          >
-            <template #option="{ option, isPointed }">
-              <MultiSelectOption
-                :label="option.label"
-                :is-pointed="isPointed(option)"
-              />
-            </template>
-            <template #no-result> Pas de résultat</template>
-          </Multiselect>
+          <div class="fr-multiselect-adress">
+            <Multiselect
+              ref="multiselectRef"
+              :value="props.value?.label"
+              value-prop="label"
+              track-by="label"
+              mode="single"
+              :close-on-select="true"
+              :searchable="true"
+              :internal-search="true"
+              :loading="isLoading"
+              no-options-text="Rechercher une adresse"
+              :options="options"
+              autocomplete="off"
+              :can-clear="true"
+              :filter-results="false"
+              @search-change="searchAddress"
+              @select="select"
+              @clear="() => (canShowClear = false)"
+            >
+              <template #option="{ option, isPointed }">
+                <MultiSelectOption
+                  :label="option.label"
+                  :is-pointed="isPointed(option)"
+                />
+              </template>
+              <template #no-result> Pas de résultat</template>
+            </Multiselect>
+            <button
+              v-if="canShowClear"
+              class="btn-multiselect-clear"
+              aria-label="Effacer la sélection"
+              @click="clearSelection"
+              @keydown.enter.prevent="clearSelection"
+              @keydown.space.prevent="clearSelection"
+            >
+              <span aria-hidden="true" class="fr-icon-close-line"></span>
+            </button>
+            <span v-else aria-hidden="true"></span>
+          </div>
           <div class="container">
             <DsfrButton type="button" size="sm" @click="isModalOpen = true"
               >Adresse introuvable
@@ -174,5 +217,16 @@ function onCloseModal() {
   justify-content: flex-end;
   margin-top: 1rem;
   width: 100%;
+}
+.fr-multiselect-adress {
+  position: relative;
+}
+.btn-multiselect-clear {
+  position: absolute;
+  display: block;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: transparent;
 }
 </style>

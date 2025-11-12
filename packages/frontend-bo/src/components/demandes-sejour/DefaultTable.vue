@@ -5,7 +5,7 @@
     v-model:libelle="libelle"
     v-model:status="status"
     :filters="filters"
-    @filters-update="updateData"
+    @filters-update="() => updateData(true)"
   />
   <DsfrDataTableV2Wrapper
     v-model:limit="limit"
@@ -18,7 +18,7 @@
     :total="total"
     row-id="declarationId"
     is-sortable
-    @update-data="updateData"
+    @update-data="() => updateData()"
   >
     <template #cell-dateDebut="{ row }">
       {{ displayDate(row.dateDebut) }} -<br />{{ displayDate(row.dateFin) }}
@@ -69,7 +69,8 @@ import {
   ValidationModal,
   usePagination,
   isValidParams,
-} from "@vao/shared";
+  columnsTable,
+} from "@vao/shared-ui";
 import dayjs from "dayjs";
 
 const toaster = useToaster();
@@ -79,6 +80,7 @@ const userStore = useUserStore();
 const route = useRoute();
 const data = computed(() => demandeSejourStore.demandes);
 const total = computed(() => demandeSejourStore.total);
+const optionType = columnsTable.optionType;
 
 const { query } = route;
 
@@ -94,55 +96,18 @@ const filters = [
   demandesSejours.filters.action,
 ];
 
-const columns = [
-  {
-    key: "idFonctionnelle",
-    label: "Numéro de déclaration",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "libelle",
-    label: "Nom du séjour",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "dateDebut",
-    label: "Dates (Début-fin)",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "organisme",
-    label: "Organisme",
-  },
-  {
-    key: "statut",
-    label: "Statut",
-    options: {
-      isSortable: true,
-    },
-  },
-  {
-    key: "editedAt",
-    label: "Date édition",
-  },
-  {
-    key: "custom:edit",
-    label: "Action",
-    options: {
-      isFixedRight: true,
-    },
-  },
+const defs = [
+  ["idFonctionnelle", "Numéro de déclaration", optionType.SORTABLE],
+  ["libelle", "Nom du séjour", optionType.SORTABLE],
+  ["dateDebut", "Dates (Début-fin)", optionType.SORTABLE],
+  ["organisme", "Organisme", optionType.NONE],
+  ["statut", "Statut", optionType.SORTABLE],
+  ["editedAt", "Date édition", optionType.NONE],
+  ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
+const columns = columnsTable.buildColumns(defs);
 
-const title = computed(
-  () => `Liste des déclarations reçues (${demandeSejourStore.stats?.global})`,
-);
+const title = computed(() => `Liste des déclarations reçues (${total.value})`);
 
 const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],
@@ -177,7 +142,10 @@ const getSearchParams = () => ({
 
 let timeout = null;
 
-const updateData = () => {
+const updateData = (resetOffset = false) => {
+  if (resetOffset) {
+    offset.value = 0;
+  }
   if (timeout) {
     clearTimeout(timeout);
   }

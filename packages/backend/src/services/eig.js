@@ -4,7 +4,7 @@ const { sentry } = require("../config");
 const { statuts, Types, Categorie } = require("../helpers/eig");
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 const { addHistoric } = require("./Tracking");
 const { getFileMetaData } = require("./Document");
 
@@ -12,6 +12,32 @@ const { entities, userTypes } = require("../helpers/tracking");
 const { encrypt, decrypt } = require("../utils/cipher");
 
 const log = logger(module.filename);
+
+const commonQuery = {
+  agrementRegionObtention: `    
+    CASE
+      WHEN o.type_organisme = 'personne_morale' AND pm.porteur_agrement::boolean is False
+      THEN
+      (
+          SELECT
+            region_obtention
+          FROM front.agrements a
+          JOIN front.organismes o2 ON o2.id = a.organisme_id
+          INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+          INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
+          WHERE pm.siret = etab.siret
+          AND a.supprime = false
+          LIMIT 1
+      )
+      ELSE (
+        SELECT
+            region_obtention
+        FROM front.agrements a
+        WHERE organisme_id = o.id
+        AND a.supprime = false
+      )
+    END AS "agrementRegionObtention"`,
+};
 
 const query = {
   create: `
@@ -70,11 +96,12 @@ const query = {
     pp.prenom AS "prenom",
     pp.nom_usage AS "nom",
     ARRAY_AGG(ET.TYPE) as "types",
-    AGR.region_obtention as "agrementRegionObtention",
+    ${commonQuery.agrementRegionObtention},
     EIG.file
   FROM
     FRONT.EIG EIG
     INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+    INNER JOIN FRONT.organismes o ON uo.org_id = o.id
     LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
     LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
     LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
@@ -87,6 +114,7 @@ const query = {
     ${search}
   GROUP BY
     EIG.ID,
+    o.id,
     S.ID,
     DS.ID,
     AGR.ID,
@@ -155,9 +183,10 @@ const query = {
       EIG.IS_ATTESTE as "isAtteste",
       EIG.PERSONNEL as "personnel",
       EIG.EMAIL_AUTRES_DESTINATAIRES as "emailAutresDestinataires",
-      AGR.region_obtention as "agrementRegionObtention"
+      ${commonQuery.agrementRegionObtention}
     FROM FRONT.EIG EIG
         INNER JOIN FRONT.USER_ORGANISME UO ON EIG.USER_ID = UO.USE_ID
+        INNER JOIN FRONT.organismes o ON uo.org_id = o.id
         LEFT JOIN FRONT.AGREMENTS AGR on AGR.ORGANISME_ID = UO.ORG_ID
         LEFT JOIN FRONT.EIG_TO_EIG_TYPE E2ET ON E2ET.EIG_ID = EIG.ID
         LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
@@ -170,6 +199,7 @@ const query = {
       EIG.ID = $1
     GROUP BY
       EIG.ID,
+      o.id,
       S.ID,
       DS.ID,
       AGR.ID,
@@ -190,6 +220,7 @@ const query = {
         FROM back.users u
         JOIN back.user_roles ur ON u.id = ur.use_id
         WHERE u.ter_code = $1
+        AND deleted = false
         GROUP BY mail
       )
         SELECT mail
@@ -350,7 +381,7 @@ module.exports.create = async ({
 }) => {
   log.i("create - IN");
 
-  const response = await pool.query(query.create, [
+  const response = await getPool().query(query.create, [
     userId,
     declarationId,
     departement,
@@ -365,7 +396,7 @@ module.exports.create = async ({
 module.exports.getById = async ({ eigId }) => {
   log.i("getById - IN");
 
-  const response = await pool.query(query.getById, [eigId]);
+  const response = await getPool().query(query.getById, [eigId]);
   if (response.rows.length === 0) {
     throw new AppError("EIG non trouvé");
   }
@@ -414,7 +445,7 @@ module.exports.getById = async ({ eigId }) => {
 module.exports.getByDsId = async (dsId) => {
   log.i("create - IN");
 
-  const response = await pool.query(query.get("DS.ID = $1", ""), [dsId]);
+  const response = await getPool().query(query.get("DS.ID = $1", ""), [dsId]);
 
   log.d(response);
   log.i("create - DONE");
@@ -424,7 +455,7 @@ module.exports.getByDsId = async (dsId) => {
 module.exports.getByDsIdAdmin = async (dsId) => {
   log.i("create - IN");
 
-  const response = await pool.query(
+  const response = await getPool().query(
     query.get("DS.ID = $1 AND S.STATUT <> 'BROUILLON'", "") +
       "ORDER BY EIG.ID DESC",
     [dsId],
@@ -438,7 +469,7 @@ module.exports.getByDsIdAdmin = async (dsId) => {
 module.exports.getStatut = async (eigId) => {
   log.i("getStatut - IN");
 
-  const response = await pool.query(query.getStatut, [eigId]);
+  const response = await getPool().query(query.getStatut, [eigId]);
   log.d(response);
   log.i("getStatut - DONE");
   return response.rows?.[0]?.statut ?? null;
@@ -450,7 +481,7 @@ module.exports.updateDS = async (
 ) => {
   log.i("updateDS - IN");
 
-  const response = await pool.query(query.updateDs, [
+  const response = await getPool().query(query.updateDs, [
     declarationId,
     departement,
     date,
@@ -468,7 +499,7 @@ module.exports.updateEmailAutresDestinataires = async (
 ) => {
   log.i("updateEmailAutresDestinataires - IN");
 
-  const response = await pool.query(query.updateEmailAutresDestinataires, [
+  const response = await getPool().query(query.updateEmailAutresDestinataires, [
     emailAutresDestinataires,
     eigId,
   ]);
@@ -481,7 +512,7 @@ module.exports.updateEmailAutresDestinataires = async (
 module.exports.updateFile = async (eigId, { file }) => {
   log.i("updateFile - IN");
 
-  const response = await pool.query(query.updateFile, [file.uuid, eigId]);
+  const response = await getPool().query(query.updateFile, [file.uuid, eigId]);
   log.d(response);
   const { id } = response.rows[0];
   log.i("updateFile - DONE", { eigId: id });
@@ -500,7 +531,7 @@ module.exports.updateType = async (
 ) => {
   log.i("updateType - IN");
   log.i("updateType - DONE", { eigId });
-  const client = await pool.connect();
+  const client = await getPool().connect();
 
   const params = [];
 
@@ -556,7 +587,7 @@ module.exports.updateRenseignementsGeneraux = async (
     dispositionInformations,
   },
 ) => {
-  const response = await pool.query(query.updateRenseignementGeneraux, [
+  const response = await getPool().query(query.updateRenseignementGeneraux, [
     eigId,
     encrypt(personnel),
     encrypt(deroulement),
@@ -652,7 +683,10 @@ const getEigs = async (
     paramsWithPagination.push(offset, limit);
   }
 
-  const response = await pool.query(queryWithPagination, paramsWithPagination);
+  const response = await getPool().query(
+    queryWithPagination,
+    paramsWithPagination,
+  );
 
   if (limit === null || response.rowCount < limit) {
     log.d(response);
@@ -664,7 +698,7 @@ const getEigs = async (
   }
 
   const total = (
-    await pool.query(query.getTotal(where, searchQuery), params)
+    await getPool().query(query.getTotal(where, searchQuery), params)
   ).rows.find((t) => t.count)?.count;
 
   log.d(response);
@@ -692,7 +726,7 @@ module.exports.getByUserId = async (
 };
 
 module.exports.getIsUserAllowedOrganisme = async (eigId, userId) => {
-  const { rowCount } = await pool.query(query.getIsUserAllowedOrganisme, [
+  const { rowCount } = await getPool().query(query.getIsUserAllowedOrganisme, [
     eigId,
     userId,
   ]);
@@ -700,7 +734,7 @@ module.exports.getIsUserAllowedOrganisme = async (eigId, userId) => {
 };
 
 module.exports.getTotalToRead = async (userId) => {
-  const response = await pool.query(query.getTotalToRead, [userId]);
+  const response = await getPool().query(query.getTotalToRead, [userId]);
   return response.rows[0].count;
 };
 
@@ -724,7 +758,9 @@ module.exports.getAdmin = async ({
 
 module.exports.getEmailByTerCode = async (terCode) => {
   log.i("getEmailByTerCode - IN", terCode);
-  const { rows: data } = await pool.query(query.getEmailByTerCode, [terCode]);
+  const { rows: data } = await getPool().query(query.getEmailByTerCode, [
+    terCode,
+  ]);
   log.i("getEmailByTerCode - DONE");
   return data.map((m) => m.mail);
 };
@@ -732,14 +768,14 @@ module.exports.getEmailByTerCode = async (terCode) => {
 module.exports.depose = async (eigId) => {
   log.i("depose - IN", eigId);
 
-  await pool.query(query.depose, [eigId]);
+  await getPool().query(query.depose, [eigId]);
   log.i("getEmailByTerCode - DONE");
   return eigId;
 };
 
 module.exports.delete = async ({ eigId }) => {
   log.i("delete EIG - IN");
-  const client = await pool.connect();
+  const client = await getPool().connect();
 
   try {
     await client.query("BEGIN");
@@ -761,17 +797,17 @@ module.exports.delete = async ({ eigId }) => {
 module.exports.markAsRead = async (eigId, type) => {
   log.i("markAsReadDdets - IN", { eigId });
   if (type === "DREETS") {
-    await pool.query(query.markAsReadDreets, [eigId]);
+    await getPool().query(query.markAsReadDreets, [eigId]);
   }
   if (type === "DDETS") {
-    await pool.query(query.markAsReadDdets, [eigId]);
+    await getPool().query(query.markAsReadDdets, [eigId]);
   }
   log.i("markAsReadDdets - DONE");
   return eigId;
 };
 
 module.exports.getAvailableDs = async (organismeId, search) => {
-  const { rows: data } = await pool.query(query.getAvailableDs, [
+  const { rows: data } = await getPool().query(query.getAvailableDs, [
     search,
     organismeId,
   ]);
@@ -780,7 +816,7 @@ module.exports.getAvailableDs = async (organismeId, search) => {
 
 const getByEigId = async (eigId) => {
   try {
-    const response = await pool.query(query.getById, [eigId]);
+    const response = await getPool().query(query.getById, [eigId]);
     return response.rows[0];
   } catch (error) {
     log.w("getByEigId - DONE with error", error);

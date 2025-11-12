@@ -1,7 +1,7 @@
 const DemandeSejour = require("../../services/DemandeSejour");
 
 const logger = require("../../utils/logger");
-const { statuts } = require("../../helpers/ds-statuts");
+const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const MailUtils = require("../../utils/mail");
 const AppError = require("../../utils/error");
 
@@ -36,8 +36,8 @@ module.exports = async function post(req, res, next) {
   }
 
   if (
-    declaration.statut !== statuts.EN_COURS &&
-    declaration.statut !== statuts.EN_COURS_8J
+    declaration.statut !== DEMANDE_SEJOUR_STATUTS.EN_COURS &&
+    declaration.statut !== DEMANDE_SEJOUR_STATUTS.EN_COURS_8J
   ) {
     log.w("Delaration should be in statut EN COURS");
     return next(
@@ -48,12 +48,14 @@ module.exports = async function post(req, res, next) {
   }
 
   const RefuseType =
-    declaration.statut === statuts.EN_COURS
-      ? statuts.REFUSEE
-      : statuts.REFUSEE_8J;
+    declaration.statut === DEMANDE_SEJOUR_STATUTS.EN_COURS
+      ? DEMANDE_SEJOUR_STATUTS.REFUSEE
+      : DEMANDE_SEJOUR_STATUTS.REFUSEE_8J;
   const textTypePrecision =
     "Refus de la demande " +
-    (declaration.statut === statuts.EN_COURS ? " 2 mois" : " 8 jours");
+    (declaration.statut === DEMANDE_SEJOUR_STATUTS.EN_COURS
+      ? " 2 mois"
+      : " 8 jours");
   try {
     const destinataires = await DemandeSejour.getEmailToList(
       declaration.organismeId,

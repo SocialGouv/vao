@@ -1,7 +1,7 @@
 /* eslint-disable no-param-reassign */
 const format = require("pg-format");
 const logger = require("../../utils/logger");
-const pool = require("../../utils/pgpool").getPool();
+const { getPool } = require("../../utils/pgpool");
 
 const log = logger(module.filename);
 
@@ -103,7 +103,7 @@ module.exports.fetch = async (criterias = {}) => {
 
   const tFilters = transpose(criterias);
 
-  const { rows } = await pool.query(query.select(tFilters));
+  const { rows } = await getPool().query(query.select(tFilters));
   log.i("fetch - DONE");
   return rows;
 };
@@ -112,7 +112,7 @@ module.exports.get = async (criterias) => {
   log.i("get - IN");
   const tFilters = transpose(criterias);
 
-  const { rows, rowCount } = await pool.query(query.select(tFilters));
+  const { rows, rowCount } = await getPool().query(query.select(tFilters));
   log.i("get - DONE");
   if (rowCount === 1) {
     return rows[0];
@@ -122,7 +122,7 @@ module.exports.get = async (criterias) => {
 
 module.exports.fetchWithDep = async (criterias = {}) => {
   log.i("fetchWithDep - IN");
-  const fetch = await pool.query(...query.selectWithDep(criterias));
+  const fetch = await getPool().query(...query.selectWithDep(criterias));
   log.i("fetchWithDep - DONE");
   return fetch.rows;
 };

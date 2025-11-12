@@ -1,11 +1,11 @@
-ARG NODE_VERSION=23.5-bullseye-slim
+ARG NODE_VERSION=22.20.0-bullseye-slim
 FROM node:$NODE_VERSION AS build
 
 WORKDIR /app
 
 COPY ./package.json ./yarn.lock ./
 COPY packages/migrations/package.json packages/migrations/
-COPY packages/shared/package.json packages/shared/
+COPY packages/shared-bridge/package.json packages/shared-bridge/
 RUN yarn workspace @vao/migrations install --frozen-lockfile
 
 #--- Run stage
@@ -21,6 +21,6 @@ COPY package.json yarn.lock ./
 COPY packages/migrations/package.json packages/migrations/
 COPY packages/migrations/src packages/migrations/src
 
-COPY packages/shared packages/shared
+COPY packages/shared-bridge/package.json packages/shared-bridge/
 
 CMD ["./node_modules/.bin/knex", "--cwd", "packages/migrations/src", "migrate:latest"]

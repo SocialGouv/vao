@@ -8,6 +8,7 @@ const logger = require("../../../utils/logger");
 const normalize = require("../../../utils/normalize");
 const MailUtils = require("../../../utils/mail");
 const { buildEmailToken } = require("../../../utils/token");
+const { status } = require("../../../helpers/users");
 const AppError = require("../../../utils/error");
 
 const log = logger(module.filename);
@@ -23,34 +24,39 @@ module.exports = async function login(req, res, next) {
       }),
     );
   }
-
-  const users = await User.read({ mail: normalize(email) });
-
-  if (users.length === 0) {
-    log.w("Utilisateur inexistant");
-    return res.json({ message: "Mail envoyé" });
-  }
-  const [user] = users;
-
-  log.d({ user });
-
   try {
-    const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
-      algorithm: "ES512",
-      expiresIn: config.resetPasswordToken.expiresIn / 1000,
-    });
-    await Send(
-      MailUtils.usagers.authentication.sendForgottenPassword({
-        email,
-        token,
-      }),
-    );
+    const users = await User.read({ mail: normalize(email) });
 
-    log.i("DONE");
+    if (users.length === 0) {
+      log.w("Utilisateur inexistant");
+      return res.json({ message: "Mail envoyé" });
+    }
+    const [user] = users;
 
-    return res.json({ message: "Mail envoyé" });
+    log.d({ user });
+    const eligibleStatuses = [
+      status.VALIDATED,
+      status.NEED_SIRET_VALIDATION,
+      status.NEED_EMAIL_VALIDATION,
+      status.TEMPORARY_BLOCKED,
+    ];
+
+    if (eligibleStatuses.includes(user.statusCode)) {
+      const token = jwt.sign(buildEmailToken(email), config.tokenSecret, {
+        algorithm: config.algorithm,
+        expiresIn: config.resetPasswordToken.expiresIn / 1000,
+      });
+      await Send(
+        MailUtils.usagers.authentication.sendForgottenPassword({
+          email,
+          token,
+        }),
+      );
+    }
   } catch (error) {
     log.w("DONE with error");
     return next(error);
   }
+  log.i("DONE");
+  return res.json({ message: "Mail envoyé" });
 };

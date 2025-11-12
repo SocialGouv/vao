@@ -142,8 +142,8 @@ import {
   RangeDatePicker,
   TableWithBackendPagination,
   ValidationModal,
-} from "@vao/shared";
-import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
+} from "@vao/shared-ui";
+import { mapEigToLabel } from "@vao/shared-ui/src/utils/eigUtils";
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],

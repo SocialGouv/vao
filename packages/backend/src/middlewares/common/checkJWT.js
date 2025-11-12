@@ -32,10 +32,6 @@ function getCookieNames(targetSchema) {
   };
 }
 
-function getUserService(targetSchema) {
-  return targetSchema === schema.BACK ? UserBo : UserFo;
-}
-
 function getTokenBuilders(targetSchema) {
   return targetSchema === schema.BACK
     ? {
@@ -48,8 +44,8 @@ function getTokenBuilders(targetSchema) {
       };
 }
 
-async function verifyToken(token) {
-  return jwt.verify(token, config.tokenSecret, { algorithm: "ES512" });
+async function verifyToken(token, tokenSecret) {
+  return jwt.verify(token, tokenSecret, { algorithm: config.algorithm });
 }
 
 async function handleSessionCheck(refreshToken, targetSchema) {
@@ -62,6 +58,27 @@ async function handleSessionCheck(refreshToken, targetSchema) {
       statusCode: 409,
     });
   }
+}
+
+async function getUserBySchema(targetSchema, userId) {
+  if (targetSchema === schema.BACK) {
+    return {
+      ...(await UserBo.readOne(userId)),
+      id: userId,
+    };
+  }
+
+  if (targetSchema === schema.FRONT) {
+    return {
+      ...(await UserFo.readOne(userId)),
+      id: userId,
+    };
+  }
+
+  throw new AppError("targetSchema is not valid", {
+    name: "InvalidTargetSchema",
+    statusCode: 400,
+  });
 }
 
 async function checkJWT(req, res, next, targetSchema) {
@@ -85,16 +102,26 @@ async function checkJWT(req, res, next, targetSchema) {
       }),
     );
   }
+  const tokenSecret =
+    targetSchema === schema.BACK
+      ? config.tokenSecret_BO
+      : config.tokenSecret_FO;
+  const accessToken =
+    targetSchema === schema.BACK
+      ? cookies.VAO_BO_access_token
+      : cookies.VAO_access_token;
+  const refreshToken =
+    targetSchema === schema.BACK
+      ? cookies.VAO_BO_refresh_token
+      : cookies.VAO_refresh_token;
 
   const { accessTokenName, refreshTokenName } = getCookieNames(targetSchema);
-  const accessToken = cookies[accessTokenName];
-  const refreshToken = cookies[refreshTokenName];
 
   try {
     await handleSessionCheck(refreshToken, targetSchema);
     if (accessToken) {
       try {
-        const decoded = await verifyToken(accessToken);
+        const decoded = await verifyToken(accessToken, tokenSecret);
         req.decoded = decoded;
         return next();
       } catch (error) {
@@ -125,7 +152,7 @@ async function checkJWT(req, res, next, targetSchema) {
 
     let rtDecoded;
     try {
-      rtDecoded = await verifyToken(refreshToken);
+      rtDecoded = await verifyToken(refreshToken, tokenSecret);
     } catch (error) {
       res.clearCookie(refreshTokenName, clearCookieOptions);
       const name =
@@ -141,27 +168,21 @@ async function checkJWT(req, res, next, targetSchema) {
       );
     }
 
-    const userService = getUserService(targetSchema);
-    const user = await userService.readOne(rtDecoded.userId);
-
+    const user = await getUserBySchema(targetSchema, rtDecoded.userId);
     const { buildAccessToken, buildRefreshToken } =
       getTokenBuilders(targetSchema);
     const newAccessTokenPayload = buildAccessToken(user);
     const newRefreshTokenPayload = buildRefreshToken(user);
 
-    const newAccessToken = jwt.sign(newAccessTokenPayload, config.tokenSecret, {
-      algorithm: "ES512",
+    const newAccessToken = jwt.sign(newAccessTokenPayload, tokenSecret, {
+      algorithm: config.algorithm,
       expiresIn: config.accessToken.expiresIn / 1000,
     });
 
-    const newRefreshToken = jwt.sign(
-      newRefreshTokenPayload,
-      config.tokenSecret,
-      {
-        algorithm: "ES512",
-        expiresIn: config.refreshToken.expiresIn / 1000,
-      },
-    );
+    const newRefreshToken = jwt.sign(newRefreshTokenPayload, tokenSecret, {
+      algorithm: config.algorithm,
+      expiresIn: config.refreshToken.expiresIn / 1000,
+    });
 
     const rotated = await Session.rotate(
       user.id,
@@ -182,8 +203,8 @@ async function checkJWT(req, res, next, targetSchema) {
       );
     }
 
-    res.cookie(accessTokenName, newAccessToken, cookieOptions);
-    res.cookie(refreshTokenName, newRefreshToken, cookieOptions);
+    res.cookie(accessTokenName, newAccessToken, { cookieOptions });
+    res.cookie(refreshTokenName, newRefreshToken, { cookieOptions });
 
     req.decoded = newAccessTokenPayload;
     log.i("DONE", "access_token & refresh_token renewed");

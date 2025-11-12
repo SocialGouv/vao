@@ -66,6 +66,7 @@
           label="Organisation, contenu  et durée d’une session de formation/information en amont de l’arrivée des vacanciers en vue de la coordination des équipes d’accompagnement"
           :label-visible="true"
           :model-value="formation"
+          :is-textarea="true"
           :readonly="!props.modifiable"
           :is-valid="formationMeta.valid"
           :error-message="formationErrorMessage"
@@ -104,6 +105,7 @@
           <DSPersonnel
             :personnes="encadrants"
             :modifiable="props.modifiableEnCours"
+            :synthese="props.synthese"
             :show-adresse="false"
             :show-attestation="true"
             :show-competence="true"
@@ -143,6 +145,7 @@
           <DSPersonnel
             :personnes="accompagnants"
             :modifiable="props.modifiableEnCours"
+            :synthese="props.synthese"
             :show-adresse="false"
             :show-attestation="true"
             :show-competence="true"
@@ -249,6 +252,7 @@ const props = defineProps({
   showButtons: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
+  synthese: { type: Boolean, default: false },
 });
 const emit = defineEmits(["previous", "next", "update"]);
 

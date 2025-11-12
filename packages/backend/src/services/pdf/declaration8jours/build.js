@@ -1,18 +1,11 @@
+const { fonts, images } = require("../../../utils/staticsFiles");
+
 const PdfPrinter = require("pdfmake");
 
-const path = require("path");
 const logger = require("../../../utils/logger");
 const parts = require("../parts");
 
 const log = logger(module.filename);
-
-const fonts = {
-  Marianne: {
-    bold: path.join(__dirname, "../../../fonts/Marianne-Bold.woff"),
-    italics: path.join(__dirname, "../../../fonts/Marianne-Light_Italic.woff"),
-    normal: path.join(__dirname, "../../../fonts/Marianne-Regular.woff"),
-  },
-};
 
 const printer = new PdfPrinter(fonts);
 
@@ -22,12 +15,12 @@ const build = async (declaration = {}, departementSuivi, dateDeposeA2mois) => {
 
   const docDefinition = {
     content: [
-      parts.Header(),
+      parts.Header(images.cerfaDS8J),
       parts.Titre(declaration, departementSuivi, "8jours", dateDeposeA2mois),
       parts.InformationsGenerales(declaration, "8jours"),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(images.cerfaDS8J)],
       },
       parts.InformationsVacanciers(
         declaration.informationsVacanciers,
@@ -37,7 +30,7 @@ const build = async (declaration = {}, departementSuivi, dateDeposeA2mois) => {
       ...(await parts.FicheAnnexe(declaration.hebergement)),
       {
         headlineLevel: 1,
-        stack: [parts.Header()],
+        stack: [parts.Header(images.cerfaDS8J)],
       },
       parts.Attestation(declaration.attestation),
     ],
