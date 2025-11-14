@@ -6,7 +6,7 @@ import {
   sendAlerte5mEmails,
   sendRappelJ7Emails,
 } from "./notifySuppressionCompteInactif.email";
-import { statusUserFront } from "../utils/status";
+import { statusUserFront } from "@vao/shared-bridge";
 import { notifySuppressionCompteInactif, sentry } from "../config";
 import { isAfter, addDays, addMonths } from "../utils/date";
 import type {

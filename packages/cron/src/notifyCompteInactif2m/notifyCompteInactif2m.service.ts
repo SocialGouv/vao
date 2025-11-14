@@ -1,4 +1,4 @@
-import { statusUserFront } from "../utils/status";
+import { statusUserFront } from "@vao/shared-bridge";
 import { typeNotification } from "../helpers/notifications";
 import * as Sentry from "@sentry/node";
 import { notifyCompteInactif2m, sentry } from "../config";

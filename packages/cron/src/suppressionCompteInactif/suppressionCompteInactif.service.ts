@@ -1,5 +1,5 @@
 import { pool } from "../db";
-import { statusUserFront } from "../utils/status";
+import { statusUserFront } from "@vao/shared-bridge";
 import { sendSuppressionCompteInactifEmail } from "./suppressionCompteInactif.email";
 import { insertCron } from "../cron/cron.service";
 import { logger } from "../utils/logger";
