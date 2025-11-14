@@ -1,18 +1,4 @@
----
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
-# Étape 1 -  Renseignements généraux sur l’organisateur VAO
+# Étape 1 - Renseignements généraux sur l'organisateur VAO
 
 Lors de la création de la fiche organisateur, l'utilisateur peut visualiser un formulaire avec 2 options :&#x20;
 
@@ -52,6 +38,16 @@ Une fois les informations récupérées via l'API (un message d'alerte indique q
 * Organisateur du séjour
 * Représentant légaux
 * Responsable de l'organisation du séjour
+
+En cas d'indisponibilité de l'API Entreprise, un message d'erreur s'affiche&#x20;
+
+<details>
+
+<summary>Capture : Erreur API entreprise</summary>
+
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-11 à 15.21.35.png" alt=""><figcaption></figcaption></figure>
+
+</details>
 
 ***
 

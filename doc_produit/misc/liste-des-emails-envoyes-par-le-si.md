@@ -1,3 +1,7 @@
+---
+icon: envelope-open-text
+---
+
 # Liste des emails envoyés par le SI
 
 Plusieurs notifications par mails sont envoyées par la plateforme VAO.&#x20;
@@ -38,72 +42,42 @@ Voici la liste de l'ensemble de ces notifications
 
 {% include "../.gitbook/includes/ova-refus-dinscription-par-lova.md" %}
 
-## Déclaration de séjour 2 mois
+## Notification compte bloqué
 
 <details>
 
-<summary>Validation de la déclaration de séjour - 2 mois</summary>
+<summary>Notification compte bloqué</summary>
 
-* **Déclencheur :** L'utilisateur OVA qui a validé la déclaration de séjour à 2 mois
+* **Déclencheur :** Un compte utilisateur est bloqué (désactivé)
 
 - **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Email de la DDEETS rattaché au lieu d'hébergement du séjour
+- **Destinataire** : L'utilisateur dont le compte a été bloqué
 
-* **Object du mail** : Portail VAO - Nouvelle déclaration déposée : \[Numéro de DS]
+* **Object du mail** : Portail VAO - Votre compte a été bloqué
 
-- **Contenu du mail** :&#x20;
+- **Contenu du mail** :
 
 ```
-PORTAIL VAO ADMINISTRATION - NOUVELLE DECLARATION DE SEJOUR
+Portail VAO - Compte bloqué
 
 Bonjour,
 
-La déclaration de séjour [Numéro de DS] vient d'être déposée sur le portail VAO.
+Votre compte sur le portail VAO a été bloqué.
 
-La DDETS du département [Numéro de département] est en charge de l'instruction de cette déclaration.
-
-[BOUTON] Accéder aux déclarations transmises
-
-Cordialement.
-L'équipe du SI VAO
-https://vao-preprod.ovh.fabrique.social.gouv.fr
-```
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-16 à 11.40.12.png" alt=""><figcaption></figcaption></figure>
-
-</details>
-
-<details>
-
-<summary>Validation de la déclaration de séjour -  2 mois - confirmation</summary>
-
-* **Déclencheur :** L'utilisateur OVA qui a validé la déclaration de séjour à 2 mois
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Lui-même
-
-* **Object du mail** : Portail VAO - Transmission de la déclaration de séjour VAO n°\[Numero de DS]
-
-- **Contenu du mail** :&#x20;
-
-```
-
-Portail VAO - Transmission de la déclaration de séjour
-
-Bonjour,
-
-Votre déclaration de séjour n°[numero de DS] a bien été transmise au(x) service(s) instructeur(s) le [Date du jour]].
-
-[BOUTON] Accéder à ma déclaration
+Pour plus d'informations, veuillez contacter le support.
 
 Cordialement.
 L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-16 à 14.19.18.png" alt=""><figcaption></figcaption></figure>
-
 </details>
+
+## Déclaration de séjour 2 moi
+
+{% include "../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois (1).md" %}
+
+{% include "../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois-confirmation.md" %}
 
 <details>
 
@@ -138,111 +112,11 @@ Portail VAO
 
 </details>
 
-<details>
+{% include "../.gitbook/includes/demande-de-complement-dinformation-2-mois-et-8j.md" %}
 
-<summary>Demande de complément d'information - 2 mois et 8J</summary>
+{% include "../.gitbook/includes/refus-et-annulation-de-la-declaration-de-sejour-2-mois-et-8j.md" %}
 
-* **Déclencheur :** L'agent qui instruit une déclaration de séjour 2 mois, demande un complément d'information pour valider la déclaration.&#x20;
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : l'utilisateur OVA qui a réalisé la déclaration de séjour 2 mois&#x20;
-
-* **Object du mail** : Portail VAO - Demande de compléments sur la déclaration \[N° de la DS]
-
-- **Contenu du mail** :&#x20;
-
-<pre><code>Portail VAO - demande de complément
-<strong>
-</strong><strong>Bonjour,
-</strong>
-Vous avez reçu des demandes de complément pour votre déclaration [N° de la DS]
-
-Vous trouverez ci-joint le message de la DDETS [Nom du département]
-
-> [Texte du message]
-
-[BOUTON - Accéder à ma déclaration]
-
-Cordialement.
-L'équipe du SI VAO
-Portail VAO
-</code></pre>
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-16 à 15.48.42.png" alt=""><figcaption></figcaption></figure>
-
-</details>
-
-<details>
-
-<summary>Refus et annulation de la déclaration de séjour - 2 mois et 8J</summary>
-
-* **Déclencheur :** L'agent qui instruit une déclaration de séjour 2 mois, refuse la déclaration de séjour.&#x20;
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : l'utilisateur OVA qui a réalisé la déclaration de séjour 2 mois&#x20;
-
-* **Object du mail** : Refus la déclaration \[N° de la DS]
-
-- **Contenu du mail** :&#x20;
-
-```
-Portail VAO - Déclaration annulée
-
-Bonjour,
-
-Votre déclaration [N° de la DS] a été refusée pour les raisons indiquées ci dessous.
-
-> [TEXTE RENSEIGNÉ PAR L'AGENT]
-
-[BOUTON - Accéder à mes déclarations]
-
-Cordialement.
-L'équipe du SI VAO
-Portail VAO
-```
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-16 à 15.54.12.png" alt=""><figcaption></figcaption></figure>
-
-
-
-</details>
-
-<details>
-
-<summary>Validation de la déclaration de séjour - 2 mois</summary>
-
-* **Déclencheur :** L'agent qui instruit une déclaration de séjour 2 mois, valide la déclaration de séjour.&#x20;
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : l'utilisateur OVA qui a réalisé la déclaration de séjour 2 mois&#x20;
-
-* **Object du mail** : Portail VAO - Enregistrement de la déclaration \[N° de la DS]
-
-- **Contenu du mail** :&#x20;
-
-```
-Portail VAO - accusé de réception de déclaration de séjour
-
-Bonjour,
-
-Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le [Date du jour] et avez déposé en date du [Date de l'envoie de la DS], une déclaration pour le séjour « [Titre de la DS] » que vous organisez du [Date début] au [Date fin].
-
-Nous accusons ce jour, le [Date du jour], réception de votre déclaration [N° de la DS].
-
-Vous devrez, huit jours avant le déroulement de ce séjour, réaliser la déclaration complémentaire prévue à l’article R. 412-14 du code du tourisme.
-
-[BOUTON - Accéder à ma déclaration]
-
-Cordialement.
-L'équipe du SI VAO
-Portail VAO
-```
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 11.21.39.png" alt=""><figcaption></figcaption></figure>
-
-
-
-</details>
+{% include "../.gitbook/includes/validation-de-la-declaration-de-sejour-2-mois.md" %}
 
 <details>
 
@@ -357,70 +231,9 @@ Ce courriel est un message automatique, merci de ne pas répondre.
 
 </details>
 
-<details>
+{% include "../.gitbook/includes/validation-de-la-declaration-de-sejour-8-jours.md" %}
 
-<summary>Validation de la déclaration de séjour - 8 jours</summary>
-
-* **Déclencheur :** L'utilisateur OVA qui a validé la déclaration de séjour à 8 jours
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Email de la DDEETS rattaché au lieu d'hébergement du séjour
-
-* **Object du mail** : Portail VAO - Déclaration à jours déposée : \[Numéro de DS]
-
-- **Contenu du mail** :&#x20;
-
-```
-PORTAIL VAO ADMINISTRATION - NOUVELLE DECLARATION DE SEJOUR
-
-Bonjour,
-
-La déclaration de séjour à 8 jours [Numéro de DS] vient d'être déposée sur le portail VAO.
-
-La DDETS du département [Numéro de département] est en charge de l'instruction de cette déclaration.
-
-[BOUTON] Accéder aux déclarations transmises
-
-Cordialement.
-L'équipe du SI VAO
-https://vao-preprod.ovh.fabrique.social.gouv.fr
-```
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 16.29.31.png" alt=""><figcaption></figcaption></figure>
-
-</details>
-
-<details>
-
-<summary>Validation de la déclaration de séjour -  8 jours - confirmation</summary>
-
-* **Déclencheur :** L'utilisateur OVA qui a validé la déclaration de séjour à 8 jours
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Lui-même
-
-* **Object du mail** : Portail VAO - "Transmission de la déclaration de séjour à 8 jours n°\[Numero de DS]
-
-- **Contenu du mail** :&#x20;
-
-```
-
-Portail VAO - Transmission de la déclaration de séjour à 8 jours
-
-Bonjour,
-
-Votre déclaration à 8 jours n°[numero de DS] a bien été transmise au(x) service(s) instructeur(s) le [Date du jour].
-
-[BOUTON] Accéder à ma déclaration
-
-Cordialement.
-L'équipe du SI VAO
-Portail VAO
-```
-
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 17.18.19.png" alt=""><figcaption></figcaption></figure>
-
-</details>
+{% include "../.gitbook/includes/validation-de-la-declaration-de-sejour-8-jours-confirmation.md" %}
 
 <details>
 
@@ -488,40 +301,119 @@ Portail VAO
 
 </details>
 
+{% include "../.gitbook/includes/validation-et-enregistrement-de-la-declartion-de-sejours.md" %}
+
+
+
+## EIG
+
+{% include "../.gitbook/includes/agent-region-declaration-dun-evenement-indesirable.md" %}
+
+{% include "../.gitbook/includes/agent-departement-declaration-dun-evenement-indesirable.md" %}
+
+{% include "../.gitbook/includes/ova-declaration-dun-evenement-indesirable.md" %}
+
+{% include "../.gitbook/includes/ova-porteur-agrement-declaration-dun-evenement-indesirable.md" %}
+
+## Gestion des comptes (v1.24.0)
+
+### Notification de désactivation imminente (2 mois)
+
 <details>
 
-<summary>Validation et enregistrement de la déclartion de séjours </summary>
+<summary>OVA - Notification compte inactif (2 mois avant suppression)</summary>
 
-* **Déclencheur :** L'agent en département valide une déclaration de séjour 8J
+* **Déclencheur :** Un compte utilisateur n'a pas été utilisé depuis une période prolongée (2 mois avant la date de suppression prévue)
 
 - **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : L'utilisateur OVA
+- **Destinataire** : L'utilisateur dont le compte est inactif
 
-* **Object du mail** : Portail VAO - Enregistrement de la déclaration \[Numero de DS]
+* **Object du mail** : Portail VAO - Votre compte sera désactivé
 
-- **Contenu du mail**&#x20;
+- **Contenu du mail** :
 
 ```
-Portail VAO - accusé de réception de déclaration complémentaire
+Portail VAO - Notification compte inactif
 
 Bonjour,
 
-Vous êtes titulaire de l’agrément « Vacances adaptées organisées » délivré le [DATE DE LIVRANCE DE L'AGRÉMENT] et avez déposé en date du [DATE DU JOUR], une déclaration complémentaire pour le séjour « [Titre séjour] » que vous organisez du [DATE DEBUT] au [DATE FIN].
+Votre compte sur le portail VAO n'a pas été utilisé depuis une période prolongée.
 
-Nous accusons ce jour, le [DATE DU JOUR], réception de votre déclaration [Numero de DS].
+Pour éviter la désactivation de votre compte, veuillez vous connecter dans les 2 mois.
 
-[BOUTON - Accéder à ma déclaration]
+Si vous ne vous connectez pas, votre compte sera automatiquement désactivé.
+
+[BOUTON - Se connecter]
 
 Cordialement.
 L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src="../.gitbook/assets/Capture d’écran 2025-06-18 à 17.45.11.png" alt=""><figcaption></figcaption></figure>
+</details>
+
+### Notification de gestion avant suppression
+
+<details>
+
+<summary>OVA - Notification gestion compte avant suppression</summary>
+
+* **Déclencheur :** Un compte utilisateur est sur le point d'être supprimé, le système vérifie s'il peut être réactivé
+
+- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
+- **Destinataire** : L'utilisateur dont le compte est concerné
+
+* **Object du mail** : Portail VAO - Réactivation de votre compte
+
+- **Contenu du mail** :
+
+```
+Portail VAO - Réactivation de compte
+
+Bonjour,
+
+Votre compte sur le portail VAO peut être réactivé.
+
+Si vous souhaitez continuer à utiliser la plateforme, veuillez vous connecter pour réactiver votre compte.
+
+[BOUTON - Se connecter]
+
+Cordialement.
+L'équipe du SI VAO
+Portail VAO
+```
 
 </details>
 
+### Notification de suppression de compte inactif
 
+<details>
 
+<summary>OVA - Notification suppression compte inactif</summary>
 
+* **Déclencheur :** Un compte utilisateur inactif a été automatiquement supprimé
 
+- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
+- **Destinataire** : L'utilisateur dont le compte a été supprimé
+
+* **Object du mail** : Portail VAO - Votre compte a été supprimé
+
+- **Contenu du mail** :
+
+```
+Portail VAO - Suppression de compte
+
+Bonjour,
+
+Votre compte sur le portail VAO a été supprimé en raison d'une inactivité prolongée.
+
+Si vous souhaitez continuer à utiliser la plateforme, vous devrez créer un nouveau compte.
+
+Pour plus d'informations, veuillez contacter le support.
+
+Cordialement.
+L'équipe du SI VAO
+Portail VAO
+```
+
+</details>

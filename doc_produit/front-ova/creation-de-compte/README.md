@@ -1,16 +1,5 @@
 ---
 icon: circle-user
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
 ---
 
 # Création de compte
@@ -26,6 +15,32 @@ Cette validation peut être effectuée selon **2 scénarios spécifiques** :
 2. L’organisme a déjà un compte utilisateur sur la plateforme VAO (SIRET déjà renseigné sur la plateforme) : c’est **un utilisateur déjà inscrit** dont le compte est lié à l’organisme qui validera la demande de création de compte
 {% endhint %}
 
+```mermaid
+flowchart TD
+    A[Demande de création de compte] --> B{Organisme existe déjà ?}
+    
+    B -->|Non - Scénario 1| C[Validation DREETS]
+    B -->|Oui - Scénario 2| D[Validation interne OVA]
+    
+    C --> E[Compte activé par DREETS]
+    D --> F[Compte activé par 1er utilisateur OVA]
+    
+    E --> G[OVA peut utiliser le SI]
+    F --> G
+    
+    style A fill:#e1f5fe
+    style C fill:#fff3e0
+    style D fill:#fff3e0
+    style E fill:#e8f5e8
+    style F fill:#e8f5e8
+```
 
+<table data-view="cards"><thead><tr><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Scénario 1 - L'organisme n'existe pas sur la plateforme VAO</strong></td><td><a href="../../.gitbook/assets/wesley-tingey-ZdOW9Qd8mQo-unsplash.jpg">wesley-tingey-ZdOW9Qd8mQo-unsplash.jpg</a></td><td><a href="scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md">scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md</a></td></tr><tr><td><strong>Scénario 2 – L'organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO</strong></td><td><a href="../../.gitbook/assets/sumner-mahaffey-7Y0NshQLohk-unsplash.jpg">sumner-mahaffey-7Y0NshQLohk-unsplash.jpg</a></td><td><a href="scenario-2-lorganisme-a-deja-un-ou-plusieurs-comptes-utilisateurs-sur-la-plateforme-vao.md">scenario-2-lorganisme-a-deja-un-ou-plusieurs-comptes-utilisateurs-sur-la-plateforme-vao.md</a></td></tr></tbody></table>
 
-<table data-view="cards"><thead><tr><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Scénario 1 - L’organisme n’existe pas sur la plateforme VAO</strong></td><td><a href="../../.gitbook/assets/sumner-mahaffey-7Y0NshQLohk-unsplash.jpg">sumner-mahaffey-7Y0NshQLohk-unsplash.jpg</a></td><td><a href="scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md">scenario-1-lorganisme-nexiste-pas-sur-la-plateforme-vao.md</a></td></tr><tr><td><strong>Scénario 2 – L’organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO</strong></td><td><a href="../../.gitbook/assets/philip-oroni-5kvlRI_-eVA-unsplash.jpg">philip-oroni-5kvlRI_-eVA-unsplash.jpg</a></td><td><a href="scenario-2-lorganisme-a-deja-un-ou-plusieurs-comptes-utilisateurs-sur-la-plateforme-vao.md">scenario-2-lorganisme-a-deja-un-ou-plusieurs-comptes-utilisateurs-sur-la-plateforme-vao.md</a></td></tr></tbody></table>
+{% hint style="info" %}
+**Nouvelles fonctionnalités v1.24.0**
+
+* **Mention informative** : Une mention a été ajoutée sur le formulaire de création de compte pour guider l'utilisateur dans le processus d'inscription.
+* **Section "Mon compte"** : Les utilisateurs OVA peuvent désormais accéder à une section "Mon compte" pour consulter et gérer leurs informations personnelles.
+* **Support DROM et Corse** : La création de compte est désormais disponible pour les utilisateurs des départements et régions d'outre-mer (DROM) et de Corse.
+{% endhint %}
