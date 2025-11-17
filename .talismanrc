@@ -357,5 +357,4 @@ fileignoreconfig:
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
 scopeconfig:
   - scope: node
-
 version: "1.0"
