@@ -107,7 +107,7 @@
 <script setup>
 import { ref } from "vue";
 import * as yup from "yup";
-import { DsfrLinkV2 } from "@vao/shared";
+import { DsfrLinkV2 } from "@vao/shared-ui";
 import SearchAddress from "@/components/address/search-address.vue";
 import { useOrganismeStore } from "@/stores/organisme";
 
