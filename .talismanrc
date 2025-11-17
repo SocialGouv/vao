@@ -275,6 +275,8 @@ fileignoreconfig:
   checksum: 0c60a5a9f3321ab3c36025bdeb35663395586d5bca3d21984fdbe5997b46c6eb
 - filename: packages/migrations/src/scripts/reset-s3.js
   checksum: 7b52636c4c49bf85a592f649f8fbf653e0203b390f4f9d220fe3ae4da06422a7
+- filename: packages/shared-ui/src/components/Table/DsfrDataTableV2.vue
+  checksum: 0333a8dd3d87ab118f5896b079f89423f9e465208c68bebed045a83350ce24d6
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/DsfrMultiSelect.vue
