@@ -139,7 +139,7 @@ module.exports.createFile = async (
 };
 
 module.exports.getStaticFile = (name, directory) => {
-  const publicDir = path.resolve(__dirname, directory);
+  const publicDir = path.resolve(__dirname, "../../assets", directory);
   const filePath = path.resolve(publicDir, name);
 
   if (!filePath.startsWith(publicDir + path.sep)) {
