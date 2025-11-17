@@ -172,7 +172,7 @@ function onCloseModal() {
             <button
               v-if="canShowClear"
               class="btn-multiselect-clear"
-              aria-label="Effacer la sélection"
+              aria-label="Supprimer l’adresse"
               @click="clearSelection"
               @keydown.enter.prevent="clearSelection"
               @keydown.space.prevent="clearSelection"
