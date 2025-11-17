@@ -51,6 +51,6 @@ RUN --mount=type=secret,id=sentry_auth_token \
     export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \
     && yarn workspace @vao/frontend-bo generate
 
-FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.3
+FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.4
 
 COPY --from=builder --chown=101:101 /app/packages/frontend-bo/.output/public /usr/share/nginx/html
