@@ -37,6 +37,8 @@ fileignoreconfig:
     checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
   - filename: docker-compose.yaml
     checksum: 4c29834d1782647485b51852dc7921ff87bd72bbe55134f21830f226ed9bc06d
+  - filename: packages/backend/src/config.js
+    checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 
 scopeconfig:
   - scope: node
