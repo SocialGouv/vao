@@ -10,7 +10,9 @@
     <dl class="fr-text--sm fr-pl-0">
       <dt><strong>Dénomination sociale:</strong></dt>
       <dd>{{ personneMorale.raisonSociale || "-" }}</dd>
-      <dt><strong>Statut, forme juridique:</strong></dt>
+      <dt><strong>Forme juridique:</strong></dt>
+      <dd>{{ personneMorale.statut || "-" }}</dd>
+      <dt><strong>Statut de l'association:</strong></dt>
       <dd>{{ personneMorale.statut || "-" }}</dd>
 
       <template v-if="!isEditingTelephone">
