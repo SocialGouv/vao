@@ -3,7 +3,14 @@
   lang="ts"
   generic="Data extends Row, RowId extends keyof Data & string"
 >
-import { type Component, computed, type StyleValue, type VNode } from "vue";
+import {
+  type Component,
+  computed,
+  type StyleValue,
+  type VNode,
+  ref,
+  watch,
+} from "vue";
 
 export type Row = {
   [key: PropertyKey]: Primitive | Row;
@@ -115,6 +122,24 @@ const emits = defineEmits<{
 
 defineSlots<Slots<Data>>();
 
+const sortAnnouncement = ref("");
+
+watch(
+  () => [props.sort, props.sortDirection],
+  ([sortKey, direction]) => {
+    if (!sortKey || !direction) {
+      sortAnnouncement.value = "";
+      return;
+    }
+    const column = props.columns.find((col) => col.key === sortKey);
+    if (column) {
+      const dirLabel =
+        direction === "asc" ? "ordre croissant" : "ordre décroissant";
+      sortAnnouncement.value = `Trié par ${column.label}, ${dirLabel}`;
+    }
+  },
+);
+
 const handleSort = (key: Columns<Data>[number]["key"]) => {
   if (props.sort === key) {
     const direction = props.sortDirection === "asc" ? "desc" : "";
@@ -193,6 +218,9 @@ const handleCheckboxChange = (event: Event) => {
     data-fr-js-table="true"
     data-fr-js-table-actionee="true"
   >
+    <div aria-live="polite" aria-atomic="true" class="fr-sr-only">
+      {{ sortAnnouncement }}
+    </div>
     <div
       class="fr-table__wrapper"
       data-fr-js-table-wrapper="true"
@@ -228,6 +256,13 @@ const handleCheckboxChange = (event: Event) => {
                     'fr-cell--fixed-right': column?.options?.isFixedRight,
                     'fr-th--is-selectable': column?.options?.isSortable,
                   }"
+                  :aria-sort="
+                    column.key === sort
+                      ? sortDirection === 'desc'
+                        ? 'descending'
+                        : 'ascending'
+                      : 'none'
+                  "
                   :style="column?.style"
                   v-on="
                     props.isSortable && column.options?.isSortable
@@ -244,13 +279,6 @@ const handleCheckboxChange = (event: Event) => {
                       <button
                         type="button"
                         class="fr-table__sort-btn"
-                        :aria-sort="
-                          column.key === sort
-                            ? sortDirection === 'desc'
-                              ? 'descending'
-                              : 'ascending'
-                            : 'none'
-                        "
                         :aria-label="`Trier par ${column.label}`"
                         @click="handleSort(column.key)"
                       >
