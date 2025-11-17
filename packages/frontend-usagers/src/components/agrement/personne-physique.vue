@@ -94,7 +94,7 @@
 
 <script setup>
 import { ref, reactive } from "vue";
-import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared";
+import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
 import { useOrganismeStore } from "../../stores/organisme";
 import * as yup from "yup";
 
