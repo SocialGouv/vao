@@ -112,7 +112,7 @@ import * as yup from "yup";
 import {
   AGREMENT_STATUT,
   formatShortDateFr,
-  transformToISODate,
+  parseToISODate,
 } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
 
@@ -191,15 +191,15 @@ const fileAttestationsRespCivile = ref([]);
 const fileAttestationsRapatriement = ref([]);
 
 const update = handleSubmit((values) => {
-  const payload = {
+  const formValues = {
     ...values,
-    dateObtentionCertificat: transformToISODate(values.dateObtentionCertificat),
+    dateObtentionCertificat: parseToISODate(values.dateObtentionCertificat),
     filesMotivation: filesMotivation.value,
     fileImmatriculation: fileImmatriculation.value,
     fileAttestationsRespCivile: fileAttestationsRespCivile.value,
     fileAttestationsRapatriement: fileAttestationsRapatriement.value,
   };
-  emit("update", payload);
+  emit("update", formValues);
   emit("next");
 });
 </script>

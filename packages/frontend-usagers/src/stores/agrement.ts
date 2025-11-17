@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
-import { $fetchBackend, logger } from "#imports";
 import type { AgrementDto } from "@vao/shared-bridge";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
-
+import { AgrementService } from "~/services/agrementService";
 const log = logger("stores/agrement");
 
 export const useAgrementStore = defineStore("agrement", {
@@ -14,15 +13,9 @@ export const useAgrementStore = defineStore("agrement", {
     async getByOrganismeId(organismeId: number) {
       log.i("getByOrganismeId - IN");
       try {
-        const result = await $fetchBackend(
-          `/agrements/organisme/${organismeId}`,
-          {
-            method: "GET",
-            credentials: "include",
-          },
-        );
+        const agrement = await AgrementService.getByOrganismeId(organismeId);
         log.i("getByOrganismeId - DONE");
-        this.agrementCourant = result.agrement;
+        this.agrementCourant = agrement;
       } catch (err) {
         log.w("getByOrganismeId - DONE with error", err);
         throw err;
@@ -42,14 +35,7 @@ export const useAgrementStore = defineStore("agrement", {
       if (!agrement.id) {
         agrement.statut = AGREMENT_STATUT.BROUILLON;
       }
-
-      const url = "/agrements/";
-
-      const { agrementId } = await $fetchBackend(url, {
-        method: "POST",
-        body: agrement,
-        credentials: "include",
-      });
+      const agrementId = await AgrementService.postAgrement(agrement);
 
       this.agrementCourant = {
         id: agrement.id ?? null,

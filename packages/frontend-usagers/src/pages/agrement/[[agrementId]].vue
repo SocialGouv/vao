@@ -52,7 +52,7 @@
               class="fr-my-2w"
               :init-agrement="agrementStore.agrementCourant ?? {}"
               :modifiable="canModify"
-              @update="(payload) => updateOrCreate(payload)"
+              @update="(formValues) => updateOrCreate(formValues)"
               @next="nextHash"
               @previous="previousHash"
             />
@@ -74,8 +74,8 @@ const agrementStore = useAgrementStore();
 const organismeStore = useOrganismeStore();
 
 const canModify = true;
-async function updateOrCreate(payload) {
-  const updatedData = payload;
+async function updateOrCreate(formValues) {
+  const updatedData = formValues;
   try {
     const newAgrement = {
       ...agrementStore.agrementCourant,
