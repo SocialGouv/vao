@@ -63,6 +63,7 @@ useHead({
 const userStore = useUserStore();
 const demandeSejourStore = useDemandeSejourStore();
 const organismeStore = useOrganismeStore();
+const agrementStore = useAgrementStore();
 
 const organismeCourant = computed(() => {
   return organismeStore.organismeCourant;
@@ -165,6 +166,17 @@ const tiles = computed(() => [
     description:
       "Cette page vous permet de renseigner les informations sur l'organisme.",
   },
+  {
+    title: "Agrément",
+    to: organismeStore.agrement
+      ? `/agrement/${agrementStore.agrement?.id}`
+      : "/agrement/",
+    imgSrc: NationalIdentityCard,
+    titleTag: "h2",
+    description:
+      "Cette page vous permet de renseigner les informations sur l'agrément.",
+  },
+
   ...(organismeStore.organismeCourant && organismeStore.organismeCourant.complet
     ? [
         {
