@@ -10,29 +10,37 @@
 
 <script setup>
 const props = defineProps({
-  activeId: { type: String, default: "coordonnees", required: false },
+  activeId: { type: String, default: "agrement-coordonnees", required: false },
 });
 
 const emit = defineEmits(["select"]);
 
 const menus = [
   {
-    id: "coordonnees",
+    id: "agrement-coordonnees",
     text: "Coordonnées à vérifier",
-    to: { hash: "#coordonnees" },
+    to: { hash: "#agrement-coordonnees" },
   },
-  { id: "dossier", text: "Dossier de candidature", to: { hash: "#dossier" } },
   {
-    id: "bilan",
+    id: "agrement-dossier",
+    text: "Dossier de candidature",
+    to: { hash: "#agrement-dossier" },
+  },
+  {
+    id: "agrement-bilan",
     text: "Bilan des 4 années précédentes",
-    to: { hash: "#bilan" },
+    to: { hash: "#agrement-bilan" },
   },
   {
     id: "projets",
     text: "Projets de séjours envisagés pour les 12 prochains mois",
-    to: { hash: "#projets" },
+    to: { hash: "#agrement-projets" },
   },
-  { id: "synthese", text: "Synthèse", to: { hash: "#synthese" } },
+  {
+    id: "agrement-synthese",
+    text: "Synthèse",
+    to: { hash: "#agrement-synthese" },
+  },
 ];
 
 const sommaireOptionsToDisplay = computed(() =>
