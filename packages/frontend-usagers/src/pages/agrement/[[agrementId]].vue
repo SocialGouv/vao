@@ -134,6 +134,7 @@ async function updateOrCreate(formValues) {
       ...agrementStore.agrementCourant,
       ...updatedData,
     };
+
     agrementStore.agrementCourant = newAgrement;
 
     await agrementStore.postAgrement({

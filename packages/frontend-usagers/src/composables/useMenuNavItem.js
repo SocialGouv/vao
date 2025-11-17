@@ -46,6 +46,15 @@ export const useMenuNavItems = () => {
             : []),
         ],
       },
+      {
+        title: "Agrément",
+        links: [
+          {
+            text: "Renouvellements d'agrément",
+            to: "/agrement",
+          },
+        ],
+      },
       ...(organismeStore.organismeCourant?.complet
         ? [
             {
