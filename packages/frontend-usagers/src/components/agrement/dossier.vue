@@ -40,7 +40,7 @@
 
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
-      <DsfrFileUpload
+      <FileUpload
         v-model="fileImmatriculation"
         label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
         :modifiable="true"
@@ -73,25 +73,22 @@
   >
     Attestations
   </TitleWithIcon>
-
   <div class="fr-fieldset__element">
-    <DsfrFileUpload
+    <FileUpload
       v-model="fileAttestationsRespCivile"
       label="Attestation d’assurance responsabilité civile"
       hint="Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
       :modifiable="true"
     />
   </div>
-
   <div class="fr-fieldset__element">
-    <DsfrFileUpload
+    <FileUpload
       v-model="fileAttestationsRapatriement"
       label="Attestation d’assurance en cas de rapatriement"
       hint="Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
       :modifiable="true"
     />
   </div>
-
   <div v-if="props.showButtons">
     <div class="fr-fieldset__element">
       <UtilsNavigationButtons
@@ -108,6 +105,7 @@
 <script setup>
 import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
+import { FileUpload } from "@vao/shared-ui";
 import * as yup from "yup";
 import {
   AGREMENT_STATUT,
@@ -187,8 +185,8 @@ const {
 
 const filesMotivation = ref([]);
 const fileImmatriculation = ref(null);
-const fileAttestationsRespCivile = ref([]);
-const fileAttestationsRapatriement = ref([]);
+const fileAttestationsRespCivile = ref(null);
+const fileAttestationsRapatriement = ref(null);
 
 const update = handleSubmit((values) => {
   const formValues = {

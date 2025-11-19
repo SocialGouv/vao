@@ -72,11 +72,49 @@ const toaster = useToaster();
 
 const agrementStore = useAgrementStore();
 const organismeStore = useOrganismeStore();
+const documentStore = useDocumentStore();
+import { FILE_CATEGORY } from "@vao/shared-bridge";
 
 const canModify = true;
+
 async function updateOrCreate(formValues) {
-  const updatedData = formValues;
+  const updatedData = { ...formValues };
   try {
+    updatedData.agrementFiles = [];
+    const fileMappings = [
+      {
+        key: "filesMotivation",
+        multiple: true,
+        category: FILE_CATEGORY.MOTIVATION,
+      },
+      {
+        key: "fileImmatriculation",
+        multiple: false,
+        category: FILE_CATEGORY.IMMATRICUL,
+      },
+      {
+        key: "fileAttestationsRespCivile",
+        multiple: false,
+        category: FILE_CATEGORY.ASSURRESP,
+      },
+      {
+        key: "fileAttestationsRapatriement",
+        multiple: false,
+        category: FILE_CATEGORY.ASSURRAPAT,
+      },
+    ];
+
+    for (const { key, multiple, category } of fileMappings) {
+      const value = updatedData[key];
+      if (multiple) {
+        const docs = await createDocuments({ documents: value, category });
+        updatedData.agrementFiles.push(...docs);
+      } else {
+        const doc = await createDocument({ document: value, category });
+        if (doc) updatedData.agrementFiles.push(doc);
+      }
+    }
+
     const newAgrement = {
       ...agrementStore.agrementCourant,
       ...updatedData,
@@ -94,6 +132,51 @@ async function updateOrCreate(formValues) {
     console.error(error);
     toaster.error("Erreur lors de l'enregistrement de l'agrément");
   }
+}
+
+async function createDocuments({ documents, category }) {
+  const result = [];
+
+  for (const document of documents) {
+    const docInfo = await createDocument({ document, category });
+    if (docInfo) result.push(docInfo);
+  }
+
+  return result;
+}
+
+async function createDocument({ document, category }) {
+  // Nouveau fichier (pas encore envoyé)
+  if (document && !document.uuid) {
+    try {
+      const uuid = await documentStore.postDocument({
+        document,
+        category,
+      });
+      toaster.info(`Fichier ${document.name} déposé`);
+
+      return {
+        fileUuid: uuid,
+        category,
+      };
+    } catch (error) {
+      toaster.error({
+        titleTag: "h2",
+        description: error?.data?.name,
+      });
+      return null;
+    }
+  }
+
+  // Fichier déjà existant → on le garde
+  if (document && document.uuid) {
+    return {
+      fileUuid: document.uuid,
+      category,
+    };
+  }
+
+  return null;
 }
 
 const hash = computed(() => {
