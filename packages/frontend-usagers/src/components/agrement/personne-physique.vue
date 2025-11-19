@@ -41,11 +41,11 @@
             name="telephone"
             label="Téléphone"
             :label-visible="true"
-            :model-value="formValues.telephone"
-            :is-valid="!errors.telephone"
-            :error-message="errors.telephone"
+            :model-value="telephone"
+            :is-valid="telephoneMeta.valid"
+            :error-message="telephoneError"
             hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
-            @update:model-value="(val) => (formValues.telephone = val)"
+            @update:model-value="onTelephoneChange"
           />
         </dd>
       </template>
@@ -56,7 +56,7 @@
           <strong>Email: </strong>
         </dt>
         <dd>
-          {{ personnePhysique.email }}
+          {{ personnePhysique.email || "-" }}
           <DsfrLinkV2
             as="button"
             icon-name="icon-edit-line"
@@ -71,11 +71,11 @@
             name="email"
             label="Adresse courriel"
             :label-visible="true"
-            :model-value="formValues.email"
-            :is-valid="!errors.email"
-            :error-message="errors.email"
+            :model-value="email"
+            :is-valid="emailMeta.valid"
+            :error-message="emailError"
             hint="Adresse courriel de la personne. Exemple: nom@domaine.fr"
-            @update:model-value="(val) => (formValues.email = val)"
+            @update:model-value="onEmailChange"
           />
         </dd>
       </template>
@@ -93,67 +93,104 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
-import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
-import { useOrganismeStore } from "../../stores/organisme";
+import { ref, computed } from "vue";
+import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
+import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { telephoneYupNullable } from "@/utils/telephoneValidators";
 
-const organismeStore = useOrganismeStore();
+const props = defineProps({
+  initOrganisme: { type: Object, required: true },
+  initAgrement: { type: Object, required: true },
+});
 
 const isEditingEmail = ref(false);
 const isEditingTelephone = ref(false);
 
-const personnePhysique = computed(
-  () => organismeStore.organismeCourant?.personnePhysique || {},
-);
-
-const formValues = reactive({
-  telephone: personnePhysique.value.telephone || "",
-  email: personnePhysique.value.email || "",
+const personnePhysique = computed(() => {
+  return props.initOrganisme?.personnePhysique || {};
 });
 
-const errors = reactive({
-  telephone: "",
-  email: "",
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
+
+const validationSchema = yup.object({
+  telephone: requiredUnlessBrouillon(telephoneYupNullable()),
+  email: requiredUnlessBrouillon(
+    yup.string().email("Format d'email invalide").nullable(),
+  ),
+  prenom: requiredUnlessBrouillon(yup.string().nullable()),
+  nom: requiredUnlessBrouillon(yup.string().nullable()),
+  profession: requiredUnlessBrouillon(yup.string().nullable()),
+  adresseDomicile: requiredUnlessBrouillon(yup.string().nullable()),
+  adresseSiege: requiredUnlessBrouillon(yup.string().nullable()),
 });
+
+const initialValues = {
+  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+  telephone: props.initOrganisme?.personnePhysique?.telephone || "",
+  email: props.initOrganisme?.personnePhysique?.email || "",
+  prenom: props.initOrganisme?.personnePhysique?.prenom || "",
+  nom: props.initOrganisme?.personnePhysique?.nomUsage || "",
+  profession: props.initOrganisme?.personnePhysique?.profession || "",
+  adresseDomicile: props.initOrganisme?.personnePhysique?.adresseDomicile || "",
+  adresseSiege: props.initOrganisme?.personnePhysique?.adresseSiege || "",
+};
+
+const { handleSubmit, setValues } = useForm({
+  validationSchema,
+  initialValues,
+  validateOnMount: false,
+});
+
+const {
+  value: telephone,
+  errorMessage: telephoneError,
+  handleChange: onTelephoneChange,
+  meta: telephoneMeta,
+} = useField("telephone");
+
+const {
+  value: email,
+  errorMessage: emailError,
+  handleChange: onEmailChange,
+  meta: emailMeta,
+} = useField("email");
 
 function startEditTelephone() {
   isEditingTelephone.value = true;
+  setValues({
+    ...initialValues.value,
+    telephone: personnePhysique.value.telephone || "",
+  });
 }
 function startEditEmail() {
   isEditingEmail.value = true;
+  setValues({
+    ...initialValues.value,
+    email: personnePhysique.value.email || "",
+  });
 }
 
-const schema = yup.object({
-  telephone: yup.string().matches(
-    /^(\+33|0|0033)[1-9][0-9]{8}$/i, //todo: recup la regex du back ?
-    "Format de téléphone invalide (ex: +33122334455 ou 0612345678)",
-  ),
-  email: yup.string().email("Format d'email invalide"),
-});
-
-async function validateAndSave() {
-  errors.telephone = "";
-  errors.email = "";
-
-  try {
-    await schema.validate(formValues, { abortEarly: false });
-    await organismeStore.updatePersonnePhysique({
+async function savePersonnePhysique() {
+  let result = null;
+  await handleSubmit((values) => {
+    result = {
       ...personnePhysique.value,
-      ...formValues,
-    });
-    return true;
-  } catch (err) {
-    if (err.inner) {
-      err.inner.forEach((e) => {
-        if (errors[e.path] !== undefined) errors[e.path] = e.message;
-      });
-    }
-    return false;
-  }
+      ...values,
+    };
+    isEditingTelephone.value = false;
+    isEditingEmail.value = false;
+  })();
+  return result;
 }
 
-defineExpose({ validateAndSave });
+defineExpose({ savePersonnePhysique });
 </script>
 
 <style scoped>
