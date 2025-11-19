@@ -38,6 +38,8 @@
           <div v-if="hash === 'agrement-coordonnees'" id="agrement-coordonnees">
             <AgrementCoordonnees
               v-if="hash === 'agrement-coordonnees'"
+              :init-organisme="organismeStore.organismeCourant ?? {}"
+              :init-agrement="agrementStore.agrementCourant ?? {}"
               :modifiable="canModify"
               @update="updateOrCreate"
               @next="nextHash"
@@ -84,10 +86,10 @@ async function updateOrCreate(formValues) {
 
     agrementStore.agrementCourant = newAgrement;
 
-    await agrementStore.postAgrement({
-      agrement: newAgrement,
-      organismeId: organismeStore.organismeCourant?.organismeId,
-    });
+    // await agrementStore.postAgrement({
+    //   agrement: newAgrement,
+    //   organismeId: organismeStore.organismeCourant?.organismeId,
+    // });
 
     toaster.success("Données enregistrées avec succès !");
   } catch (error) {
