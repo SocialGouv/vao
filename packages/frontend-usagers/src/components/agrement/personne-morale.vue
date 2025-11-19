@@ -18,7 +18,7 @@
       <template v-if="!isEditingTelephone">
         <dt><strong>Téléphone:</strong></dt>
         <dd>
-          {{ personneMorale.telephone }}
+          {{ personneMorale.telephone || "-" }}
           <DsfrLinkV2
             as="button"
             icon-name="icon-edit-line"
@@ -33,11 +33,11 @@
             name="telephone"
             label="Téléphone"
             :label-visible="true"
-            :model-value="formValues.telephone"
-            :is-valid="!errors.telephone"
-            :error-message="errors.telephone"
+            :model-value="telephone"
+            :is-valid="telephoneMeta.valid"
+            :error-message="telephoneError"
             hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
-            @update:model-value="(val) => (formValues.telephone = val)"
+            @update:model-value="onTelephoneChange"
           />
         </dd>
       </template>
@@ -45,7 +45,7 @@
       <template v-if="!isEditingEmail">
         <dt><strong>Email:</strong></dt>
         <dd>
-          {{ personneMorale.email }}
+          {{ personneMorale.email || "-" }}
           <DsfrLinkV2
             as="button"
             icon-name="icon-edit-line"
@@ -60,11 +60,11 @@
             name="email"
             label="Adresse courriel"
             :label-visible="true"
-            :model-value="formValues.email"
-            :is-valid="!errors.email"
-            :error-message="errors.email"
+            :model-value="email"
+            :is-valid="emailMeta.valid"
+            :error-message="emailError"
             hint="Adresse courriel de la personne. Exemple: nom@domaine.fr"
-            @update:model-value="(val) => (formValues.email = val)"
+            @update:model-value="onEmailChange"
           />
         </dd>
       </template>
@@ -83,138 +83,114 @@
 </template>
 
 <script setup>
-import { ref, reactive } from "vue";
-import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
-import { useOrganismeStore } from "../../stores/organisme";
-
+import { ref } from "vue";
+import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
+import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { telephoneYupNullable } from "@/utils/telephoneValidators";
+
+const props = defineProps({
+  initOrganisme: { type: Object, required: true },
+  initAgrement: { type: Object, required: true },
+});
 
 const representantsRef = ref();
-
 const isEditingTelephone = ref(false);
 const isEditingEmail = ref(false);
 const file = ref(null);
 
-const organismeStore = useOrganismeStore();
+const toaster = useToaster();
 
-const personneMorale = computed(
-  () => organismeStore.organismeCourant?.personneMorale || {},
-);
+const personneMorale = computed(() => {
+  return props.initOrganisme?.personneMorale || {};
+});
 
-const representants = computed(
-  () =>
-    organismeStore.organismeCourant?.personneMorale?.representantsLegaux || [],
-);
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable().notRequired(),
+  });
+
+const validationSchema = yup.object({
+  telephone: requiredUnlessBrouillon(telephoneYupNullable()),
+  email: requiredUnlessBrouillon(
+    yup.string().email("Format d'email invalide").nullable(),
+  ),
+  adresse: requiredUnlessBrouillon(yup.string().nullable()),
+  prenom: requiredUnlessBrouillon(yup.string().nullable()),
+  nom: requiredUnlessBrouillon(yup.string().nullable()),
+});
+
+const initialValues = {
+  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+  telephone: props.initOrganisme?.personneMorale?.telephone || "",
+  email: props.initOrganisme?.personneMorale?.email || "",
+  adresse: props.initOrganisme?.personneMorale?.adresse || "",
+  prenom: props.initOrganisme?.personneMorale?.prenom || "",
+  nom: props.initOrganisme?.personneMorale?.nom || "",
+};
+
+const { handleSubmit, setValues } = useForm({
+  validationSchema,
+  initialValues,
+  validateOnMount: false,
+});
+
+const {
+  value: telephone,
+  errorMessage: telephoneError,
+  handleChange: onTelephoneChange,
+  meta: telephoneMeta,
+} = useField("telephone");
+
+const {
+  value: email,
+  errorMessage: emailError,
+  handleChange: onEmailChange,
+  meta: emailMeta,
+} = useField("email");
 
 function startEditTelephone() {
   isEditingTelephone.value = true;
+  setValues({
+    ...initialValues,
+    telephone: personneMorale.value.telephone || "",
+  });
 }
 function startEditEmail() {
   isEditingEmail.value = true;
-}
-
-async function validateAndSave() {
-  errors.telephone = "";
-  errors.email = "";
-  errors.adresse = "";
-  errors.prenom = "";
-  errors.nom = "";
-
-  let valid = true;
-
-  try {
-    await schema.validate(formValues, { abortEarly: false });
-  } catch (err) {
-    valid = false;
-    if (err.inner) {
-      err.inner.forEach((e) => {
-        if (errors[e.path] !== undefined) errors[e.path] = e.message;
-      });
-    }
-  }
-
-  let representantsValid = true;
-  let newRepresentantsForms = [];
-  if (representantsRef.value?.validateAndSave) {
-    newRepresentantsForms = representantsRef.value.addRepresentantForms;
-    for (const form of newRepresentantsForms) {
-      if (
-        typeof form.adresseDomicile !== "object" ||
-        !form.adresseDomicile.label ||
-        !form.adresseDomicile.code_insee ||
-        !form.adresseDomicile.code_postal ||
-        !form.adresseDomicile.long ||
-        !form.adresseDomicile.lat ||
-        !form.adresseDomicile.departement
-      ) {
-        valid = false;
-        form.errors.adresseDomicile = "L'adresse du domicile est incomplète.";
-      }
-    }
-    representantsValid = await representantsRef.value.validateAndSave();
-    if (!representantsValid) valid = false;
-  }
-
-  if (!valid) return false;
-
-  const newRepresentants = [
-    ...representants.value,
-    ...newRepresentantsForms.map((form) => ({
-      prenom: form.prenom,
-      nom: form.nom,
-      telephoneRepresentant: form.telephoneRepresentant,
-      emailRepresentant: form.emailRepresentant,
-      adresseDomicile: form.adresseDomicile,
-    })),
-  ];
-
-  if (representantsRef.value) {
-    representantsRef.value.addRepresentantForms = [];
-  }
-
-  await organismeStore.updatePersonneMorale({
-    ...personneMorale.value,
-    ...formValues,
-    representantsLegaux: newRepresentants,
-    procesVerbal: file.value,
+  setValues({
+    ...initialValues,
+    email: personneMorale.value.email || "",
   });
-  return true;
 }
 
-defineExpose({ validateAndSave });
+async function savePersonneMorale() {
+  let result = null;
+  const representantsLegaux = await representantsRef.value?.validateAndSave();
 
-const schema = yup.object({
-  telephone: yup.string().matches(
-    /^(\+33|0|0033)[1-9][0-9]{8}$/i, //todo: recup la regex du back ?
-    "Format de téléphone invalide (ex: +33122334455 ou 0612345678)",
-  ),
-  email: yup.string().email("Format d'email invalide"),
-  adresse: yup.string(),
-  prenom: yup.string(),
-  nom: yup.string(),
-});
+  if (!representantsLegaux) {
+    toaster.error({
+      titleTag: "h2",
+      description: "Erreur de validation des représentants légaux",
+    });
+    return null;
+  }
+  await handleSubmit((values) => {
+    result = {
+      ...personneMorale.value,
+      ...values,
+      representantsLegaux,
+    };
+    isEditingTelephone.value = false;
+    isEditingEmail.value = false;
+  })();
+  return result;
+}
 
-const formValues = reactive({
-  telephone: personneMorale.value.telephone || "",
-  email: personneMorale.value.email || "",
-  adresse: personneMorale.value.adresse || "",
-  prenom: personneMorale.value.prenom || "",
-  nom: personneMorale.value.nom || "",
-  telephoneRepresentant: personneMorale.value.telephoneRepresentant || "",
-  emailRepresentant: personneMorale.value.emailRepresentant || "",
-  adresseDomicile: personneMorale.value.adresseDomicile || "",
-});
-
-const errors = reactive({
-  telephone: "",
-  email: "",
-  adresse: "",
-  prenom: "",
-  nom: "",
-  telephoneRepresentant: "",
-  emailRepresentant: "",
-  adresseDomicile: "",
-});
+defineExpose({ savePersonneMorale });
 </script>
 
 <style scoped>
