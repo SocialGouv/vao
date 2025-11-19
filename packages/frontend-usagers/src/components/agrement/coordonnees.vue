@@ -6,6 +6,8 @@
           organismeStore.organismeCourant.typeOrganisme === 'personne_physique'
         "
         ref="personnePhysiqueRef"
+        :init-organisme="props.initOrganisme"
+        :init-agrement="props.initAgrement"
       />
       <hr class="fr-my-2w" />
       <AgrementPersonneMorale
@@ -13,12 +15,26 @@
           organismeStore.organismeCourant.typeOrganisme === 'personne_morale'
         "
         ref="personneMoraleRef"
+        :init-organisme="props.initOrganisme"
+        :init-agrement="props.initAgrement"
       />
     </div>
 
     <hr class="fr-mt-4w" />
 
-    <AgrementCommentaire ref="commentaireRef" class="fr-my-2w" />
+    <AgrementCommentaire
+      ref="commentaireRef"
+      :init-commentaire="props.initAgrement.commentaire"
+      class="fr-my-2w"
+    />
+
+    <DsfrFileUpload
+      v-model="fileProcesVerbal"
+      label="Dernier procès verbal d'assemblée générale"
+      :modifiable="true"
+    />
+
+    <hr class="fr-mt-4w" />
 
     <DsfrAlert
       v-if="personnePhysiqueError"
@@ -40,12 +56,7 @@
       {{ personneMoraleError }}
     </DsfrAlert>
 
-    <div v-if="props.showButtons">
-      <UtilsNavigationButtons
-        :show-buttons="props.showButtons"
-        @next="onNext"
-      />
-    </div>
+    <DsfrButton @click.prevent="onNext">Suivant</DsfrButton>
   </div>
 </template>
 
@@ -53,13 +64,13 @@
 import { ref } from "vue";
 
 const props = defineProps({
+  initAgrement: { type: Object, required: true },
+  initOrganisme: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
-  showButtons: { type: Boolean, default: true },
 });
-const emit = defineEmits(["next"]);
+const emit = defineEmits(["next", "update"]);
 
 const toaster = useToaster();
-const agrementStore = useAgrementStore();
 const organismeStore = useOrganismeStore();
 
 const personnePhysiqueRef = ref();
@@ -67,38 +78,81 @@ const personneMoraleRef = ref();
 const commentaireRef = ref();
 const personnePhysiqueError = ref("");
 const personneMoraleError = ref("");
+const fileProcesVerbal = ref(null);
 
-// Validation et sauvegarde de l’étape
 async function saveAgrement() {
+  let commentaire;
+  if (commentaireRef.value?.getComment) {
+    commentaire = await commentaireRef.value.getComment();
+  }
+
+  const agrementValues = {
+    ...(fileProcesVerbal.value ? { procesVerbal: fileProcesVerbal.value } : {}),
+    ...(commentaire ? { commentaire } : {}),
+  };
+
+  emit("update", agrementValues);
+}
+
+async function validatePersonne(ref, saveMethod, errorRef, errorMsg) {
+  if (ref.value?.[saveMethod]) {
+    const data = await ref.value[saveMethod]();
+    if (!data) {
+      errorRef.value = errorMsg;
+      return null;
+    } else {
+      try {
+        if (saveMethod === "savePersonneMorale") {
+          await organismeStore.updatePersonneMorale({
+            ...organismeStore.organismeCourant.personneMorale,
+            ...data,
+          });
+        } else if (saveMethod === "savePersonnePhysique") {
+          await organismeStore.updatePersonnePhysique({
+            ...organismeStore.organismeCourant.personnePhysique,
+            ...data,
+          });
+        }
+        return data;
+      } catch (err) {
+        errorRef.value =
+          "Erreur lors de la sauvegarde : " +
+          (err?.message || "Erreur inconnue.");
+        return null;
+      }
+    }
+  }
+  return null;
+}
+
+async function saveCoordonneesStep() {
   personnePhysiqueError.value = "";
   personneMoraleError.value = "";
   let valid = true;
 
-  if (personnePhysiqueRef.value?.validateAndSave) {
-    const ok = await personnePhysiqueRef.value.validateAndSave();
-    if (!ok) {
-      personnePhysiqueError.value =
-        "Veuillez corriger les erreurs dans le formulaire de la personne physique.";
-      valid = false;
-    }
+  const personnePhysiqueData = await validatePersonne(
+    personnePhysiqueRef,
+    "savePersonnePhysique",
+    personnePhysiqueError,
+    "Veuillez corriger les erreurs dans le formulaire de la personne physique.",
+  );
+  if (personnePhysiqueRef.value && !personnePhysiqueData) {
+    valid = false;
+    return;
   }
 
-  if (personneMoraleRef.value?.validateAndSave) {
-    const ok = await personneMoraleRef.value.validateAndSave();
-    if (!ok) {
-      personneMoraleError.value =
-        "Veuillez corriger les erreurs dans le formulaire de la personne morale.";
-      valid = false;
-    }
+  const personneMoraleData = await validatePersonne(
+    personneMoraleRef,
+    "savePersonneMorale",
+    personneMoraleError,
+    "Veuillez corriger les erreurs dans le formulaire de la personne morale.",
+  );
+  if (personneMoraleRef.value && !personneMoraleData) {
+    valid = false;
+    return;
   }
 
-  if (commentaireRef.value?.getComment()) {
-    const commentaire = commentaireRef.value.getComment();
-    await agrementStore.postAgrement({
-      agrement: { commentaire: commentaire || "" },
-      organismeId: organismeStore.organismeCourant?.organismeId,
-    });
-  }
+  saveAgrement();
 
   if (!valid) {
     return toaster.error({
@@ -108,16 +162,12 @@ async function saveAgrement() {
     });
   }
 
-  toaster.success({
-    titleTag: "h2",
-    description: "Les informations ont été enregistrées avec succès.",
-  });
   emit("next");
 }
 
 function onNext() {
-  saveAgrement();
+  saveCoordonneesStep();
 }
 
-defineExpose({ saveAgrement });
+defineExpose({ saveCoordonneesStep });
 </script>
