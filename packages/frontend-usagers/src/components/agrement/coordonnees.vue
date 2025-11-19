@@ -35,6 +35,14 @@
       class="fr-my-2w"
     />
 
+    <<<<<<< HEAD =======
+    <DsfrFileUpload
+      v-model="fileProcesVerbal"
+      label="Dernier procès verbal d'assemblée générale"
+      :modifiable="true"
+    />
+
+    >>>>>>> f5cc5fc0 (feat: front usager etape 1 sur 4 (#1084))
     <hr class="fr-mt-4w" />
 
     <DsfrAlert
@@ -143,6 +151,7 @@ async function saveCoordonneesStep() {
   personnePhysiqueError.value = "";
   personneMoraleError.value = "";
   let valid = true;
+
   const personnePhysiqueData = await validatePersonne(
     personnePhysiqueRef,
     "savePersonnePhysique",
