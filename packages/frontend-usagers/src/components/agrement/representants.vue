@@ -52,7 +52,12 @@
         :is-valid="!form.errors.prenom"
         :error-message="form.errors.prenom"
         hint="Saisissez le premier prénom. Exemple: Pierre"
-        @update:model-value="(val) => (form.prenom = val)"
+        @update:model-value="
+          (val) => {
+            form.prenom = val;
+            validateField(form, 'prenom');
+          }
+        "
       />
       <DsfrInputGroup
         name="nom"
@@ -62,7 +67,12 @@
         :is-valid="!form.errors.nom"
         :error-message="form.errors.nom"
         hint="Saisissez le nom d'usage. Exemple: Dupont"
-        @update:model-value="(val) => (form.nom = val)"
+        @update:model-value="
+          (val) => {
+            form.nom = val;
+            validateField(form, 'nom');
+          }
+        "
       />
       <DsfrInputGroup
         name="telephoneRepresentant"
@@ -72,7 +82,12 @@
         :is-valid="!form.errors.telephoneRepresentant"
         :error-message="form.errors.telephoneRepresentant"
         hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
-        @update:model-value="(val) => (form.telephoneRepresentant = val)"
+        @update:model-value="
+          (val) => {
+            form.telephoneRepresentant = val;
+            validateField(form, 'telephoneRepresentant');
+          }
+        "
       />
       <DsfrInputGroup
         name="emailRepresentant"
@@ -82,13 +97,23 @@
         :is-valid="!form.errors.emailRepresentant"
         :error-message="form.errors.emailRepresentant"
         hint="Adresse courriel de la personne. Exemple: nom@domaine.fr"
-        @update:model-value="(val) => (form.emailRepresentant = val)"
+        @update:model-value="
+          (val) => {
+            form.emailRepresentant = val;
+            validateField(form, 'emailRepresentant');
+          }
+        "
       />
       <SearchAddress
         label="Adresse du domicile"
         :model-value="form.adresseDomicile"
         :error-message="form.errors.adresseDomicile"
-        @select="(selected) => onAdresseSelect(form, selected)"
+        @select="
+          (selected) => {
+            onAdresseSelect(form, selected);
+            validateField(form, 'adresseDomicile');
+          }
+        "
       />
     </form>
   </div>
@@ -110,6 +135,7 @@ import * as yup from "yup";
 import { DsfrLinkV2 } from "@vao/shared-ui";
 import SearchAddress from "@/components/address/search-address.vue";
 import { useOrganismeStore } from "@/stores/organisme";
+import { telephoneYup } from "@/utils/telephoneValidators";
 
 const organismeStore = useOrganismeStore();
 
@@ -155,13 +181,7 @@ function removeNewRepresentant(idx) {
 const representantSchema = yup.object({
   prenom: yup.string().required("Le prénom est requis"),
   nom: yup.string().required("Le nom est requis"),
-  telephoneRepresentant: yup
-    .string()
-    .required("Le téléphone est requis")
-    .matches(
-      /^(\+33|0|0033)[1-9][0-9]{8}$/i, //todo: recup la regex du back ?
-      "Format de téléphone invalide (ex: +33122334455 ou 0612345678)",
-    ),
+  telephoneRepresentant: telephoneYup(),
   emailRepresentant: yup
     .string()
     .required("L'email est requis")
@@ -178,6 +198,15 @@ const representantSchema = yup.object({
     .typeError("Veuillez renseigner une adresse valide")
     .required("L'adresse du domicile est requise"),
 });
+
+async function validateField(form, field) {
+  try {
+    await representantSchema.validateAt(field, form);
+    form.errors[field] = "";
+  } catch (err) {
+    form.errors[field] = err.message;
+  }
+}
 
 async function validateAndSave() {
   let valid = true;
@@ -198,11 +227,22 @@ async function validateAndSave() {
   }
   if (!valid) return false;
 
+  const allRepresentants = [
+    ...representants.value,
+    ...addRepresentantForms.value,
+  ];
+
   addRepresentantForms.value = [];
-  return true;
+  return allRepresentants;
 }
 
-defineExpose({ validateAndSave, addRepresentantForms });
+defineExpose({
+  getRepresentants: () => [
+    ...representants.value,
+    ...addRepresentantForms.value,
+  ],
+  validateAndSave,
+});
 </script>
 
 <style scoped>
