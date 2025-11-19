@@ -148,7 +148,7 @@ function deleteItem(i) {
       } else if (modalOrigin.value?.$el) {
         modalOrigin.value.$el.focus();
       }
-    }, 50);
+    }, 300);
   });
 }
 
