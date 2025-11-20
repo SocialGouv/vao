@@ -42,6 +42,7 @@
     <div class="fr-col-12">
       <FileUpload
         v-model="fileImmatriculation"
+        :cdn-url="props.cdnUrl"
         label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
         :modifiable="true"
       />
@@ -76,6 +77,7 @@
   <div class="fr-fieldset__element">
     <FileUpload
       v-model="fileAttestationsRespCivile"
+      :cdn-url="props.cdnUrl"
       label="Attestation d’assurance responsabilité civile"
       hint="Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
       :modifiable="true"
@@ -84,6 +86,7 @@
   <div class="fr-fieldset__element">
     <FileUpload
       v-model="fileAttestationsRapatriement"
+      :cdn-url="props.cdnUrl"
       label="Attestation d’assurance en cas de rapatriement"
       hint="Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
       :modifiable="true"
@@ -109,6 +112,7 @@ import { FileUpload } from "@vao/shared-ui";
 import * as yup from "yup";
 import {
   AGREMENT_STATUT,
+  FILE_CATEGORY,
   formatShortDateFr,
   parseToISODate,
 } from "@vao/shared-bridge";
@@ -118,6 +122,7 @@ import { TitleWithIcon } from "@vao/shared-ui";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   showButtons: { type: Boolean, default: true },
+  cdnUrl: { type: String, required: true },
   isDownloading: { type: Boolean, default: false },
   message: { type: String, default: null },
 });
@@ -183,10 +188,27 @@ const {
   meta: dateObtentionCertificatMeta,
 } = useField("dateObtentionCertificat");
 
-const filesMotivation = ref([]);
-const fileImmatriculation = ref(null);
-const fileAttestationsRespCivile = ref(null);
-const fileAttestationsRapatriement = ref(null);
+const getFileByCategory = (category) => {
+  return (
+    props.initAgrement?.agrementFiles.find(
+      (file) => file.category === category,
+    ) || null
+  );
+};
+const filesMotivation = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.MOTIVATION,
+  ) || [],
+);
+const fileImmatriculation = ref(getFileByCategory(FILE_CATEGORY.IMMATRICUL));
+
+const fileAttestationsRespCivile = ref(
+  getFileByCategory(FILE_CATEGORY.ASSURRESP),
+);
+
+const fileAttestationsRapatriement = ref(
+  getFileByCategory(FILE_CATEGORY.ASSURRAPAT),
+);
 
 const update = handleSubmit((values) => {
   const formValues = {

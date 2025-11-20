@@ -4,17 +4,6 @@ const log = logger("stores/agrement");
 
 export const useDocumentStore = defineStore("document", {
   actions: {
-    async getByUuid(uuid: string) {
-      log.i("getByUuid - IN");
-      try {
-        const document = await DocumentService.getDocument(uuid);
-        log.i("getByUuid - DONE");
-        return document;
-      } catch (err) {
-        log.w("getByUuid - DONE with error", err);
-        throw err;
-      }
-    },
     async postDocument({
       document,
       category,

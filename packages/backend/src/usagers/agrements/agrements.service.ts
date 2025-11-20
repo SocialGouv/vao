@@ -1,5 +1,6 @@
 import { addYears, AgrementDto } from "@vao/shared-bridge";
 
+import { getFileMetaData } from "../../services/Document";
 import logger from "../../utils/logger";
 import { AgrementsRepository } from "./agrements.repository";
 
@@ -17,6 +18,10 @@ export const AgrementService = {
       organismeId,
       withDetails,
     });
+    for (const doc of agrement?.agrementFiles || []) {
+      const meta = await getFileMetaData(doc.fileUuid);
+      Object.assign(doc, meta);
+    }
     return agrement;
   },
 

@@ -1,24 +1,12 @@
 import type { DocumentUsagersRoutes } from "@vao/shared-bridge";
-import { buildRequest } from "~/utils/fetchBackend";
+import { buildRequestFile } from "~/utils/fetchBackend";
 
 const DocumentService = {
-  getDocument: async (uuid: string) => {
-    const { file } = await buildRequest<DocumentUsagersRoutes["GetOne"]>({
-      path: "/documents/{uuid}",
-      method: "GET",
-      params: { uuid },
-    })();
-    return file;
-  },
   postDocument: async ({
     document,
     category,
-  }: {
-    document: File;
-    category: string;
-  }) => {
+  }: DocumentUsagersRoutes["PostDocument"]["body"]) => {
     const body = new FormData();
-    //    console.log("DocumentService.postDocument - IN", document);
     body.append("category", category);
     body.append("file", document);
     const { uuid } = await buildRequestFile<
