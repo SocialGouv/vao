@@ -61,6 +61,19 @@
               @previous="previousHash"
             />
           </div>
+          <div
+            v-if="hash === 'agrement-bilan'"
+            id="agrement-bilan"
+            :read-only="readOnly"
+          >
+            <AgrementBilan
+              :init-agrement="agrementStore.agrementCourant ?? {}"
+              :modifiable="canModify"
+              @update="(formValues) => updateOrCreate(formValues)"
+              @next="nextHash"
+              @previous="previousHash"
+            />
+          </div>
         </div>
       </div>
     </div>
