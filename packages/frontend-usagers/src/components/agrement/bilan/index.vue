@@ -1,12 +1,21 @@
 <template>
   <div>
-    <AgrementBilanChangement
-      ref="changementRef"
+    <AgrementBilanChangements
+      ref="changementsRef"
       :init-agrement="props.initAgrement ?? {}"
     />
-    <!-- <AgrementBilanSejours @update-bilan="saveBilans" />
-    <AgrementBilanQualitatif @update-bilan="saveBilans" />
-    <AgrementBilanFinancier @update-bilan="saveBilans" /> -->
+    <AgrementBilanSejours
+      ref="sejoursRef"
+      :init-agrement="props.initAgrement ?? {}"
+    />
+    <AgrementBilanQualitatif
+      ref="qualitatifRef"
+      :init-agrement="props.initAgrement ?? {}"
+    />
+    <AgrementBilanFinancier
+      ref="financierRef"
+      :init-agrement="props.initAgrement ?? {}"
+    />
     <div v-if="props.showButtons">
       <div class="fr-fieldset__element">
         <UtilsNavigationButtons
@@ -23,9 +32,6 @@
 
 <script setup>
 import { ref } from "vue";
-
-const changementRef = ref(null);
-
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   showButtons: { type: Boolean, default: true },
@@ -34,19 +40,99 @@ const props = defineProps({
 
 const emit = defineEmits(["previous", "next", "update"]);
 
-const handleSuivant = async () => {
-  // Validation finale avant de passer à l'étape suivante
-  const validatedData = await changementRef.value.validateForm();
-  console.log("Données validées du bilan des changements :", validatedData);
+const changementsRef = ref(null);
+const financierRef = ref(null);
+const sejoursRef = ref(null);
+const qualitatifRef = ref(null);
+const validationErrors = ref([]);
 
-  if (validatedData) {
-    // ou emit("update", validatedData);
-    // emit("next");
+/**
+ * Valide et agrège les données de tous les formulaires enfants
+ * @param {Array} formulaires - Liste des formulaires à valider
+ * @returns {Object} { donnees, erreurs, allFormsAreValid }
+ */
+const validateAllForms = async (formulaires) => {
+  const formsErrors = [];
+  const formsData = {};
+
+  const resultats = await Promise.allSettled(
+    formulaires.map(async (form) => {
+      const data = await form.ref.value.validateForm();
+      console.log(`Données validées pour ${form.nom}:`, data);
+      return { cle: form.cle, nom: form.nom, data };
+    }),
+  );
+
+  console.log("Résultats de la validation :", resultats);
+
+  resultats.forEach((result, index) => {
+    if (result.status === "fulfilled" && result.value.data) {
+      // Validation réussie, on agrège les données
+      formsData[result.value.cle] = result.value.data;
+    } else {
+      // Validation échouée ou rejetée
+      const nomFormulaire = formulaires[index].nom;
+      formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
+
+      // Log pour debug
+      if (result.status === "rejected") {
+        console.error(`Erreur dans ${nomFormulaire}:`, result.reason);
+      }
+    }
+  });
+
+  return {
+    formsData,
+    formsErrors,
+    allFormsAreValid: formsErrors.length === 0,
+  };
+};
+
+const handleSuivant = async () => {
+  // Réinitialiser les erreurs
+  validationErrors.value = [];
+
+  // Configuration des formulaires à valider
+  const forms = [
+    {
+      ref: changementsRef,
+      nom: "Changements et évolutions",
+      cle: "changements",
+    },
+    {
+      ref: financierRef,
+      nom: "Bilan financier",
+      cle: "financier",
+    },
+    {
+      ref: sejoursRef,
+      nom: "Bilan des séjours",
+      cle: "sejours",
+    },
+    {
+      ref: qualitatifRef,
+      nom: "Bilan qualitatif",
+      cle: "qualitatif",
+    },
+  ];
+
+  // Valider et agréger tous les formulaires
+  const { formsData, formsErrors, allFormsAreValid } =
+    await validateAllForms(forms);
+
+  validationErrors.value = formsErrors;
+
+  if (allFormsAreValid) {
+    console.log("Toutes les données validées :", formsData);
+
+    // Émettre les données agrégées vers le composant grand-parent
+    // emit("next", formsData);
+
+    // Ou si vous voulez aussi mettre à jour en temps réel :
+    // emit("update", formsData);
   } else {
-    //traitement en cas d'erreur de validation
-    console.log(
-      "Le formulaire n'est pas valide. Veuillez corriger les erreurs.",
-    );
+    console.warn("Erreurs de validation :", validationErrors.value);
+    // gestion erreurs
   }
 };
 </script>
