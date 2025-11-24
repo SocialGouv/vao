@@ -136,10 +136,10 @@ async function updateOrCreate(formValues) {
     };
     agrementStore.agrementCourant = newAgrement;
 
-    // await agrementStore.postAgrement({
-    //   agrement: newAgrement,
-    //   organismeId: organismeStore.organismeCourant?.organismeId,
-    // });
+    await agrementStore.postAgrement({
+      agrement: newAgrement,
+      organismeId: organismeStore.organismeCourant?.organismeId,
+    });
 
     toaster.success("Données enregistrées avec succès !");
   } catch (error) {
