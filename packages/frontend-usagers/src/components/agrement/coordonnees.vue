@@ -20,18 +20,19 @@
       />
     </div>
 
+    <h4 class="fr-text--lg fr-mt-4w">Procès verbal</h4>
+    <FileUpload
+      v-model="fileProcesVerbal"
+      :cdn-url="props.cdnUrl"
+      label="Dernier procès verbal d'assemblée générale"
+      :modifiable="true"
+    />
     <hr class="fr-mt-4w" />
 
     <AgrementCommentaire
       ref="commentaireRef"
       :init-commentaire="props.initAgrement.commentaire"
       class="fr-my-2w"
-    />
-
-    <DsfrFileUpload
-      v-model="fileProcesVerbal"
-      label="Dernier procès verbal d'assemblée générale"
-      :modifiable="true"
     />
 
     <hr class="fr-mt-4w" />
@@ -62,23 +63,33 @@
 
 <script setup>
 import { ref } from "vue";
+import { FileUpload } from "@vao/shared-ui";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   initOrganisme: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
+  cdnUrl: { type: String, required: true },
 });
 const emit = defineEmits(["next", "update"]);
 
 const toaster = useToaster();
 const organismeStore = useOrganismeStore();
 
+const getFileByCategory = (category) => {
+  return (
+    props.initAgrement?.agrementFiles.find(
+      (file) => file.category === category,
+    ) || null
+  );
+};
+
 const personnePhysiqueRef = ref();
 const personneMoraleRef = ref();
-const commentaireRef = ref();
+const commentaireRef = ref("");
 const personnePhysiqueError = ref("");
 const personneMoraleError = ref("");
-const fileProcesVerbal = ref(null);
+const fileProcesVerbal = ref(getFileByCategory("PROCVERBAL"));
 
 async function saveAgrement() {
   let commentaire;
@@ -87,7 +98,9 @@ async function saveAgrement() {
   }
 
   const agrementValues = {
-    ...(fileProcesVerbal.value ? { procesVerbal: fileProcesVerbal.value } : {}),
+    ...(fileProcesVerbal.value
+      ? { fileProcesVerbal: fileProcesVerbal.value }
+      : {}),
     ...(commentaire ? { commentaire } : {}),
   };
 
