@@ -50,36 +50,6 @@
         </dd>
       </template>
 
-      <!-- Email -->
-      <template v-if="!isEditingEmail">
-        <dt>
-          <strong>Email: </strong>
-        </dt>
-        <dd>
-          {{ personnePhysique.email || "-" }}
-          <DsfrLinkV2
-            as="button"
-            icon-name="icon-edit-line"
-            @click="startEditEmail"
-            >modifier</DsfrLinkV2
-          >
-        </dd>
-      </template>
-      <template v-else>
-        <dd class="full-width">
-          <DsfrInputGroup
-            name="email"
-            label="Adresse courriel"
-            :label-visible="true"
-            :model-value="email"
-            :is-valid="emailMeta.valid"
-            :error-message="emailError"
-            hint="Adresse courriel de la personne. Exemple: nom@domaine.fr"
-            @update:model-value="onEmailChange"
-          />
-        </dd>
-      </template>
-
       <dt>
         <strong>Adresse du siège de ses activité: </strong>
       </dt>
@@ -105,7 +75,6 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
 });
 
-const isEditingEmail = ref(false);
 const isEditingTelephone = ref(false);
 
 const personnePhysique = computed(() => {
@@ -121,9 +90,6 @@ const requiredUnlessBrouillon = (schema) =>
 
 const validationSchema = yup.object({
   telephone: requiredUnlessBrouillon(telephoneYupNullable()),
-  email: requiredUnlessBrouillon(
-    yup.string().email("Format d'email invalide").nullable(),
-  ),
   prenom: requiredUnlessBrouillon(yup.string().nullable()),
   nom: requiredUnlessBrouillon(yup.string().nullable()),
   profession: requiredUnlessBrouillon(yup.string().nullable()),
@@ -134,12 +100,13 @@ const validationSchema = yup.object({
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
   telephone: props.initOrganisme?.personnePhysique?.telephone || "",
-  email: props.initOrganisme?.personnePhysique?.email || "",
   prenom: props.initOrganisme?.personnePhysique?.prenom || "",
   nom: props.initOrganisme?.personnePhysique?.nomUsage || "",
   profession: props.initOrganisme?.personnePhysique?.profession || "",
-  adresseDomicile: props.initOrganisme?.personnePhysique?.adresseDomicile || "",
-  adresseSiege: props.initOrganisme?.personnePhysique?.adresseSiege || "",
+  adresseDomicile:
+    props.initOrganisme?.personnePhysique?.adresseDomicile?.label || "",
+  adresseSiege:
+    props.initOrganisme?.personnePhysique?.adresseSiege?.label || "",
 };
 
 const { handleSubmit, setValues } = useForm({
@@ -155,25 +122,11 @@ const {
   meta: telephoneMeta,
 } = useField("telephone");
 
-const {
-  value: email,
-  errorMessage: emailError,
-  handleChange: onEmailChange,
-  meta: emailMeta,
-} = useField("email");
-
 function startEditTelephone() {
   isEditingTelephone.value = true;
   setValues({
-    ...initialValues.value,
+    ...initialValues,
     telephone: personnePhysique.value.telephone || "",
-  });
-}
-function startEditEmail() {
-  isEditingEmail.value = true;
-  setValues({
-    ...initialValues.value,
-    email: personnePhysique.value.email || "",
   });
 }
 
@@ -185,7 +138,6 @@ async function savePersonnePhysique() {
       ...values,
     };
     isEditingTelephone.value = false;
-    isEditingEmail.value = false;
   })();
   return result;
 }
