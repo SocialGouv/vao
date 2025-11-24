@@ -66,3 +66,24 @@ export function buildRequest<Route extends BasicRoute>({
       throw new Error("Method not supported");
   }
 }
+
+export function buildRequestFile<Route extends BasicRoute>({
+  params,
+  body,
+  path,
+  method,
+}: Omit<Route, "response">): () => Promise<Route["response"]> {
+  const url = buildRequestPath(path, params);
+  switch (method) {
+    case "POST":
+      return async () =>
+        $fetchBackend(url, {
+          ...OPTIONS_DEFAULT,
+          headers: {},
+          method: "POST",
+          body,
+        });
+    default:
+      throw new Error("Method not supported");
+  }
+}
