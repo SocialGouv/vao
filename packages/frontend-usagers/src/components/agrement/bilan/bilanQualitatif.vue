@@ -91,7 +91,7 @@
     </h4>
     <div class="fr-fieldset__element">
       <p
-        id="bilanQualPerspectiveEvol-desc"
+        id="bilanQualElementsMarquants-desc"
         class="light-decisions-text-text-mention-grey"
       >
         Objectif : mettre en avant les faits saillants, réussites, incidents, ou
@@ -144,18 +144,20 @@ const fileBilanQualPerspectiveEvol = ref([]);
 const fileBilanQualElementsMarquants = ref([]);
 const fileBilanQualFichiersComplementaires = ref([]);
 
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
-
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  bilanQualPerceptionSensibilite: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
-  ),
+  bilanQualPerceptionSensibilite: yup
+    .string()
+    .min(20, "Merci de décrire au moins 20 caractères.")
+    .nullable(),
+  bilanQualPerspectiveEvol: yup
+    .string()
+    .min(20, "Merci de décrire au moins 20 caractères.")
+    .nullable(),
+  bilanQualElementsMarquants: yup
+    .string()
+    .min(20, "Merci de décrire au moins 20 caractères.")
+    .nullable(),
 });
 
 const initialValues = {
