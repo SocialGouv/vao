@@ -31,26 +31,12 @@ fileignoreconfig:
     checksum: 930f9289c37f13b2424b8c6ee0e7895689e922539f1c6fba8b2dd4c0ad45ba1e
   - filename: .kontinuous/env/prod/values.yaml
     checksum: bfed13458f5604fee5d4c30446f2afb24328766b5099f992fd63b55eeafd38dd
-  - filename: .kontinuous/preprod/templates/apientreprise.sealed.secret.yaml
-    checksum: 6e1a0def42dc791767f353c6676e385b21eb2c9c9637a2b3cae3e7a33505c76a
-  - filename: .kontinuous/preprod/templates/pg.sealed.secret.yaml
-    checksum: 5354d0d1e893e4686236c0baf6bed232be947d3de6df7c6421ade38d123fb985
-  - filename: .kontinuous/preprod/templates/smtp.sealed.secret.yaml
-    checksum: 894689d5e141fb8c4f8e43a8b86a5ae32cf111b3fc97503bd27a762444ce9563
-  - filename: .kontinuous/prod/templates/apientreprise.sealed.secret.yaml
-    checksum: b09f2e1a45019dcf540b75a81fa1c254756e78356d3cbea8ffb196960da2af25
-  - filename: .kontinuous/prod/templates/pg.sealed.secret.yaml
-    checksum: ebaeaef58dff99ed0a70ace0cb1cfceb31c0656d921999e19ce183e2adc9431f
-  - filename: .kontinuous/values.yaml
-    checksum: 5500f51a969877fcd8752914257b42067328bf8c9c7e84bb55849ef91b4ae44c
-  - filename: README.md
-    checksum: 3627cd363d1cfc640df689ce74d5467e13707a2cc9c44b0bffaba14f217296e2
-  - filename: _scripts/dev/local-node.dockerfile
-    checksum: e18bef015dc55696295aefdd6610b20447e690cced1214ccf126842b7f1315db
-  - filename: docker-compose.prod.yaml
-    checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
-  - filename: docker-compose.yaml
-    checksum: 4c29834d1782647485b51852dc7921ff87bd72bbe55134f21830f226ed9bc06d
+  - filename: e2e/register-login-organisateur.spec.ts
+    checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
+  - filename: package-lock.json
+    checksum: 1f161d556f83694bf1d4f728591667cdaeef494e6d24ea2b475b4d7cb054383f
+  - filename: package.json
+    checksum: 180654b4eb22710ddeba4331c45b63ed92542e989744f390182a90a563eb8e1b
 scopeconfig:
 - scope: node
 version: "1.0"
