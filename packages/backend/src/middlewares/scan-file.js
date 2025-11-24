@@ -10,10 +10,9 @@ const logger = require("../utils/logger");
 const log = logger(module.filename);
 
 module.exports = async (req, res, next) => {
-  const { path, originalname } = req.file;
-  log.i("IN", { originalname, path });
-
   try {
+    const { path, originalname } = req.file;
+    log.i("IN", { originalname, path });
     const form = new FormData();
 
     form.append("FILES", createReadStream(path));
