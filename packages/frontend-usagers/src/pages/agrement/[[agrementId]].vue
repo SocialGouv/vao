@@ -41,6 +41,7 @@
               :init-organisme="organismeStore.organismeCourant ?? {}"
               :init-agrement="agrementStore.agrementCourant ?? {}"
               :modifiable="canModify"
+              :cdn-url="`${config.public.backendUrl}/documents/`"
               @update="updateOrCreate"
               @next="nextHash"
             />
@@ -92,6 +93,11 @@ async function updateOrCreate(formValues) {
         category: FILE_CATEGORY.MOTIVATION,
       },
       {
+        key: "fileProcesVerbal",
+        multiple: false,
+        category: FILE_CATEGORY.PROCVERBAL,
+      },
+      {
         key: "fileImmatriculation",
         multiple: false,
         category: FILE_CATEGORY.IMMATRICUL,
@@ -130,10 +136,10 @@ async function updateOrCreate(formValues) {
     };
     agrementStore.agrementCourant = newAgrement;
 
-    // await agrementStore.postAgrement({
-    //   agrement: newAgrement,
-    //   organismeId: organismeStore.organismeCourant?.organismeId,
-    // });
+    await agrementStore.postAgrement({
+      agrement: newAgrement,
+      organismeId: organismeStore.organismeCourant?.organismeId,
+    });
 
     toaster.success("Données enregistrées avec succès !");
   } catch (error) {

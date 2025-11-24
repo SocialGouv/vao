@@ -73,12 +73,6 @@
     </dl>
 
     <AgrementRepresentants ref="representantsRef" />
-    <h4 class="fr-text--lg fr-mt-4w">Procès verbal</h4>
-    <DsfrFileUpload
-      v-model="file"
-      label="Dernier procès verbal d'assemblée générale "
-      :modifiable="true"
-    />
   </div>
 </template>
 
@@ -98,7 +92,6 @@ const props = defineProps({
 const representantsRef = ref();
 const isEditingTelephone = ref(false);
 const isEditingEmail = ref(false);
-const file = ref(null);
 
 const toaster = useToaster();
 
