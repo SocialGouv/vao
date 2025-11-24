@@ -12,11 +12,11 @@ export const useDocumentStore = defineStore("document", {
       category?: string;
     }) {
       log.i("postDocument - IN", { document });
-      if (document) {
-        const uuid = await DocumentService.postDocument({ document, category });
-        return uuid;
+      if (!document) {
+        throw new Error("Un document est requis pour le chargement");
       }
-      return null;
+      const uuid = await DocumentService.postDocument({ document, category });
+      return uuid;
     },
   },
 });
