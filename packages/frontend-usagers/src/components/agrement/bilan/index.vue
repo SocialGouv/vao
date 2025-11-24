@@ -12,6 +12,7 @@
       ref="qualitatifRef"
       :init-agrement="props.initAgrement ?? {}"
     />
+    <hr class="fr-mt-4w" />
     <AgrementBilanFinancier
       ref="financierRef"
       :init-agrement="props.initAgrement ?? {}"
