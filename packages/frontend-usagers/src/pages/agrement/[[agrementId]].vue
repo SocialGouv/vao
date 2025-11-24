@@ -54,6 +54,7 @@
               class="fr-my-2w"
               :init-agrement="agrementStore.agrementCourant ?? {}"
               :modifiable="canModify"
+              :cdn-url="`${config.public.backendUrl}/documents/`"
               @update="(formValues) => updateOrCreate(formValues)"
               @next="nextHash"
               @previous="previousHash"
@@ -74,16 +75,59 @@ const toaster = useToaster();
 
 const agrementStore = useAgrementStore();
 const organismeStore = useOrganismeStore();
+const documentStore = useDocumentStore();
+const config = useRuntimeConfig();
+import { FILE_CATEGORY } from "@vao/shared-bridge";
 
 const canModify = true;
+
 async function updateOrCreate(formValues) {
-  const updatedData = formValues;
+  const updatedData = { ...formValues };
   try {
+    updatedData.agrementFiles = [];
+    const fileMappings = [
+      {
+        key: "filesMotivation",
+        multiple: true,
+        category: FILE_CATEGORY.MOTIVATION,
+      },
+      {
+        key: "fileImmatriculation",
+        multiple: false,
+        category: FILE_CATEGORY.IMMATRICUL,
+      },
+      {
+        key: "fileAttestationsRespCivile",
+        multiple: false,
+        category: FILE_CATEGORY.ASSURRESP,
+      },
+      {
+        key: "fileAttestationsRapatriement",
+        multiple: false,
+        category: FILE_CATEGORY.ASSURRAPAT,
+      },
+    ];
+
+    for (const { key, multiple, category } of fileMappings) {
+      const value = updatedData[key];
+
+      if (!value) continue;
+      if (multiple) {
+        const docs = await createDocuments({ documents: value, category });
+        updatedData.agrementFiles.push(...docs);
+      } else {
+        const doc = await createDocument({
+          document: value,
+          category,
+        });
+        if (doc) updatedData.agrementFiles.push(doc);
+      }
+    }
+
     const newAgrement = {
       ...agrementStore.agrementCourant,
       ...updatedData,
     };
-
     agrementStore.agrementCourant = newAgrement;
 
     // await agrementStore.postAgrement({
@@ -93,9 +137,63 @@ async function updateOrCreate(formValues) {
 
     toaster.success("Données enregistrées avec succès !");
   } catch (error) {
-    console.error(error);
-    toaster.error("Erreur lors de l'enregistrement de l'agrément");
+    toaster.error({
+      titleTag: "h2",
+      title: "Erreur lors de l'enregistrement de l'agrément",
+      description: error?.message,
+    });
   }
+}
+
+async function createDocuments({ documents, category }) {
+  const result = [];
+
+  for (const document of documents) {
+    const docInfo = await createDocument({ document, category });
+    if (docInfo) result.push(docInfo);
+  }
+
+  return result;
+}
+
+async function createDocument({ document, category }) {
+  if (document && Object.keys(document?.uuid ?? {}).length === 0) {
+    try {
+      const uuid = await documentStore.postDocument({
+        document,
+        category,
+      });
+      toaster.info({
+        titleTag: "h2",
+        description: `Fichier ${document.name} déposé`,
+      });
+
+      return {
+        name: document.name,
+        uuid: uuid,
+        fileUuid: uuid,
+        category,
+      };
+    } catch (error) {
+      toaster.error({
+        titleTag: "h2",
+        description: error?.message,
+      });
+      return null;
+    }
+  }
+
+  // Fichier déjà existant - on le garde
+  if (document && document.uuid) {
+    return {
+      name: document?.name,
+      uuid: document?.uuid,
+      fileUuid: document.uuid,
+      category,
+    };
+  }
+
+  return null;
 }
 
 const hash = computed(() => {
@@ -142,7 +240,11 @@ try {
     organismeStore.organismeCourant?.organismeId,
   );
 } catch (error) {
-  toaster.error("Erreur lors du chargement de l'agrément", error.message);
+  toaster.error({
+    titleTag: "h2",
+    title: "Erreur lors du chargement de l'agrément",
+    description: error?.message,
+  });
 }
 
 function previousHash() {
