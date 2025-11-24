@@ -119,6 +119,14 @@
       />
     </div>
   </div>
+  <hr class="fr-mt-4w" />
+  <div class="fr-fieldset__element">
+    <DsfrFileUpload
+      v-model="fileBilanQualFichiersComplementaires"
+      label="Ajouter des fichiers complémentaires (optionnel)"
+      :modifiable="true"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -134,6 +142,7 @@ const props = defineProps({
 const fileBilanQualPerceptionSensibilite = ref([]);
 const fileBilanQualPerspectiveEvol = ref([]);
 const fileBilanQualElementsMarquants = ref([]);
+const fileBilanQualFichiersComplementaires = ref([]);
 
 const requiredUnlessBrouillon = (schema) =>
   schema.when("statut", {
@@ -197,6 +206,10 @@ const validateForm = async () => {
       }),
       ...(fileBilanQualElementsMarquants.value.length > 0 && {
         fileBilanQualElementsMarquants: fileBilanQualElementsMarquants.value,
+      }),
+      ...(fileBilanQualFichiersComplementaires.value.length > 0 && {
+        fileBilanQualFichiersComplementaires:
+          fileBilanQualFichiersComplementaires.value,
       }),
     };
   }
