@@ -44,3 +44,14 @@ export const formatLongDateFr = (dateString: Date | undefined): string => {
       })
     : "";
 };
+
+/**
+ *
+ * @param Date au format JJ/MM/AAAA
+ * @returns Date au format JS (AAAA-MM-JJ) ou null si la valeur est vide
+ */
+export const parseToISODate = (dateString: string | null): string | null => {
+  if (!dateString) return null;
+  const [day, month, year] = dateString.split("/");
+  return `${year}-${month}-${day}`;
+};

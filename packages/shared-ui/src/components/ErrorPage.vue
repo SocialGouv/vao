@@ -34,7 +34,7 @@ const errorDescription = computed(() => {
       <DsfrErrorPage
         :title="errorTitle"
         :subtitle="`Erreur ${error?.statusCode}`"
-        :description="errorDescription"
+        :description="props.error?.message || errorDescription"
       >
         <template #default>
           <div class="links">
