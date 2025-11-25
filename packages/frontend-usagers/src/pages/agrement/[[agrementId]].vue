@@ -232,6 +232,7 @@ async function updateOrCreate(formValues) {
 
 async function createDocuments({ documents, category }) {
   const result = [];
+  console.log("Création documents :", documents);
 
   for (const document of documents) {
     const docInfo = await createDocument({ document, category });
