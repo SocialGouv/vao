@@ -1,13 +1,12 @@
 <template>
   <DsfrInputGroup
     name="commentaire"
-    label="Commentaire"
+    label="Ajouter un commentaire (optionnel)"
     :model-value="commentaireValue"
     :label-visible="true"
     :is-textarea="true"
     :is-valid="commentaireMeta.valid"
     :error-message="commentaireErrorMessage"
-    hint="Votre commentaire..."
     @update:model-value="onCommentaireChange"
   />
 </template>

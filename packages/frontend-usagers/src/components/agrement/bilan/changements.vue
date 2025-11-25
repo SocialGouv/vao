@@ -23,10 +23,9 @@
     </div>
   </div>
   <div class="fr-fieldset__element">
-    <DsfrFileUpload
-      v-model="fileAttestationsRapatriement"
+    <UtilsMultiFilesUpload
+      v-model="filesChangeEvol"
       label="Ajouter des fichiers (optionnel)"
-      :modifiable="true"
     />
   </div>
   <div class="fr-fieldset__element">
@@ -44,21 +43,33 @@
 import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
 });
 
-const fileAttestationsRapatriement = ref([]);
+const filesChangeEvol = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.CHANGEEVOL,
+  ) || [],
+);
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
   noteInformation: yup
     .string()
     .min(20, "Merci de décrire au moins 20 caractères.")
-    .nullable(),
+    .nullable()
+    .notRequired()
+    .test(
+      "min-if-filled",
+      "Merci de décrire au moins 20 caractères.",
+      (value) => !value || value.length >= 20,
+    ),
+
   bilanAucunChangementEvolution: yup.boolean().required(),
 });
 
@@ -93,8 +104,8 @@ const validateForm = async () => {
   if (result) {
     return {
       ...result,
-      ...(fileAttestationsRapatriement.value.length > 0 && {
-        fileAttestationsRapatriement: fileAttestationsRapatriement.value,
+      ...(filesChangeEvol.value.length > 0 && {
+        filesChangeEvol: filesChangeEvol.value,
       }),
     };
   }
