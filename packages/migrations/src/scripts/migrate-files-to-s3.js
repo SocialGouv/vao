@@ -2,7 +2,7 @@ const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const {
   getFileNameAndExtension,
   encodeFilename,
-} = require("@vao/shared/src/utils/file.mjs");
+} = require("@vao/shared-bridge");
 
 const knex = require("knex")({
   client: "pg",

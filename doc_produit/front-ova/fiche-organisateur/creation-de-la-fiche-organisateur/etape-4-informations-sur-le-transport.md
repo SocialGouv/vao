@@ -1,48 +1,25 @@
 # Étape 4 - Informations sur le transport
 
-## Responsabilité du transport
-
 {% hint style="info" %}
 **Note**
 
 Pour les personnes morales, si l'organisme n'est pas le siège social, les protocoles transport et sanitaire seront hérités du siège social.
 {% endhint %}
 
-L'utilisateur doit indiquer qui assure le transport vers le lieu de séjour :
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-04 à 18.03.21.png" alt=""><figcaption><p>Étape 4 du formulaire de la fiche organisme : Informations sur le transport</p></figcaption></figure>
 
-* **Les vacanciers viennent par leurs propres moyens**
-* **Le transport vers le lieu de séjour est assuré par l'organisateur**
+L'utilisateur renseigner le formulaire spécifique à cette étape :
 
-\[CAPTURE - Sélection responsable transport]
+<details>
 
-#### Modes de transport (si organisateur responsable)
+<summary>Formulaire fiche organisme - étape 4</summary>
 
-Si l'organisateur assure le transport, il doit préciser les modes utilisés :
+{% include "../../../.gitbook/includes/formulaire-fiche-organisme-etape-4.md" %}
 
-* Avion
-* Train
-* Autobus, car
-* Automobile
-* Bateau
-* Autre
+</details>
 
-#### Précisions organisationnelles
+{% hint style="info" %}
+**Amélioration v1.24.0**
 
-Si l'organisateur assure le transport, il doit détailler le mode d'organisation du transport.
-
-#### Déplacements durant le séjour
-
-L'utilisateur indique si des déplacements sont prévus durant le séjour.
-
-#### Véhicules adaptés
-
-Si des déplacements sont prévus ou si les modes de transport incluent autobus/car ou automobile, l'utilisateur doit préciser :
-
-* Si des véhicules adaptés sont utilisés
-* Les spécificités des véhicules adaptés
-
-#### Documents relatifs au transport
-
-Possibilité d'ajouter des documents relatifs à l'organisation des transports (format PDF, PNG ou JPG).
-
-\[CAPTURE - Formulaire transport]
+Les informations sur le transport ont été améliorées avec une meilleure présentation des choix disponibles. L'interface utilise désormais des cases à cocher pour une sélection plus intuitive des modes de transport.
+{% endhint %}

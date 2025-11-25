@@ -1,5 +1,5 @@
 const logger = require("../../utils/logger");
-const pool = require("../../utils/pgpool").getPool();
+const { getPool } = require("../../utils/pgpool");
 
 const log = logger(module.filename);
 
@@ -21,14 +21,14 @@ const query = {
 
 module.exports.fetch = async (criterias = {}) => {
   log.i("fetch - IN");
-  const fetch = await pool.query(...query.select(criterias));
+  const fetch = await getPool().query(...query.select(criterias));
   log.i("fetch - DONE");
   return fetch.rows;
 };
 
 module.exports.get = async (paysCode) => {
   log.i("get - IN");
-  const { rows, rowCount } = await pool.query(
+  const { rows, rowCount } = await getPool().query(
     ...query.select({ geo_pay_code: paysCode }),
   );
   log.i("get - DONE");

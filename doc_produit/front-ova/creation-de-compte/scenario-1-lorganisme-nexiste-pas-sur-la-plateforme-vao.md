@@ -1,26 +1,55 @@
----
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
+# Scénario 1 - L'organisme n'existe pas sur la plateforme VAO
 
-# Scénario 1 - L’organisme n’existe pas sur la plateforme VAO
+## Workflow de création de compte
 
+```mermaid
+flowchart TD
+    A[OVA remplit formulaire de création] --> B{Email déjà existant ?}
+    B -->|Oui| C[Email de notification envoyé à l'utilisateur existant]
+    B -->|Non| D[Email de confirmation envoyé à l'OVA]
+    
+    D --> E[OVA clique sur le lien de validation]
+    E --> F[Demande confirmée - Email de confirmation envoyé]
+    
+    F --> G[DREETS reçoit notification]
+    G --> H[DREETS accède à la liste des comptes à valider]
+    
+    H --> I{Validation DREETS}
+    I -->|Valider| J[Compte activé]
+    I -->|Refuser| K[Formulaire de refus avec motif obligatoire]
+    
+    J --> L[OVA reçoit email de confirmation d'inscription]
+    K --> M[Compte bloqué]
+    M --> N[OVA reçoit email de refus avec motif]
+    
+    C --> O[Fin du processus]
+    L --> O
+    N --> O
+    
+    style A fill:#e1f5fe
+    style G fill:#fff3e0
+    style J fill:#e8f5e8
+    style M fill:#ffebee
+```
 
+## Sécurité - Blocage temporaire des comptes
 
-<figure><img src="../../.gitbook/assets/création de compte.png" alt=""><figcaption></figcaption></figure>
+* **Tentatives de connexion** : Après 5 tentatives infructueuses de connexion, le compte est temporairement bloqué
+* **Durée du blocage** : Le blocage dure 15 minutes
+* **Déblocage** : Le compte se débloque automatiquement après 15 minutes
+* **Notification** : L'utilisateur est informé du blocage et de la durée d'attente
+
+### Messages d'erreur
+
+Des messages d'erreur spécifiques sont affichés pour informer l'utilisateur :
+
+* Nombre de tentatives restantes avant blocage
+* Durée du blocage en cours
+* Actions possibles (attendre ou contacter le support)
 
 {% stepper %}
 {% step %}
-### L’utilisateur OVA renseigne le formulaire de création de compte
+#### L’utilisateur OVA renseigne le formulaire de création de compte
 
 <details>
 
@@ -50,7 +79,7 @@ L'utilisateur OVA reçoit une confirmation de sa demande d'inscription
 {% endstep %}
 
 {% step %}
-### La DREETS valide le compte de l'OVA
+#### La DREETS valide le compte de l'OVA
 
 Suite à la confirmation de la demande de création de compte, la DREETS de la région où est situé l’OVA reçoit une notification pour alerter qu’un nouvel utilisateur OVA souhaite créer un compte sur le SI-VAO
 
@@ -82,14 +111,16 @@ La DREETS valide l’inscription
 L’utilisateur OVA reçoit un mail de confirmation.
 
 {% include "../../.gitbook/includes/ova-inscription-validee.md" %}
+
+> **Nouveau depuis la version 1.21.0** : Un message de confirmation s'affiche également directement dans l'interface lors de la validation du compte, offrant une meilleure expérience utilisateur.
 {% endstep %}
 
 {% step %}
-### La DREETS refuse la création de compte de l'OVA
+#### La DREETS refuse la création de compte de l'OVA
 
-Suite à la demande d'inscription d'un OVA et comme dans la démarche de validation, la DREETS reçoit une notification pour valider / refuser l'inscription d'un nouvel OVA.&#x20;
+Suite à la demande d'inscription d'un OVA et comme dans la démarche de validation, la DREETS reçoit une notification pour valider / refuser l'inscription d'un nouvel OVA.
 
-Dans le cas d'un refus, dans la page de liste des demandes en cours, il est possible de cliquer sur le bouton refus.&#x20;
+Dans le cas d'un refus, dans la page de liste des demandes en cours, il est possible de cliquer sur le bouton refus.
 
 <details>
 
@@ -99,7 +130,7 @@ Dans le cas d'un refus, dans la page de liste des demandes en cours, il est poss
 
 </details>
 
-Lors du clic sur le bouton refus, une popup d'affiche pour argumenter le refus via un formulaire. Le champ "Motif de refus" est obligatoire.&#x20;
+Lors du clic sur le bouton refus, une popup d'affiche pour argumenter le refus via un formulaire. Le champ "Motif de refus" est obligatoire.
 
 <details>
 
@@ -109,10 +140,10 @@ Lors du clic sur le bouton refus, une popup d'affiche pour argumenter le refus v
 
 </details>
 
-Au clic sur le bouton "Refuser" :&#x20;
+Au clic sur le bouton "Refuser" :
 
 * La ligne de l’utilisateur disparait de la liste des comptes à valider
-* La ligne apparait dans la liste des comptes, avec l'état bloqué :&#x20;
+* La ligne apparait dans la liste des comptes, avec l'état bloqué :
 
 <details>
 
@@ -122,13 +153,13 @@ Au clic sur le bouton "Refuser" :&#x20;
 
 </details>
 
-L’utilisateur OVA reçoit un mail de refus avec le texte renseigné par l'agent dans le formulaire de refus.&#x20;
+L’utilisateur OVA reçoit un mail de refus avec le texte renseigné par l'agent dans le formulaire de refus.
 
 {% include "../../.gitbook/includes/ova-refus-dinscription.md" %}
 {% endstep %}
 
 {% step %}
-### Le compte existe déjà ?
+#### Le compte existe déjà ?
 
 Lors de la demande de création de compte via le formulaire d'inscription, si l'OVA renseigne un email déjà enregistré dans le SI VAO, l'utilisateur dont le mail est renseigne reçoit une notification par email :
 

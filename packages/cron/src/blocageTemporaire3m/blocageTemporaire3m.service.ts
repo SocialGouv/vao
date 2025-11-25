@@ -1,6 +1,5 @@
-
 import { pool } from "../db";
-import { statusUserFront } from "../utils/status";
+import { statusUserFront } from "@vao/shared-bridge";
 import { logger } from "../utils/logger";
 import * as Sentry from "@sentry/node";
 import { disableAccount3m, sentry } from "../config";
@@ -9,8 +8,6 @@ import { addHistoric } from "../services/Tracking";
 import { Actions, Entities, UserTypes } from "../helpers/tracking";
 import type { BlocageTemporaire3mRow } from "./blocageTemporaire3mtype";
 import { sendBlocageTemporaire3mRow } from "./blocageTemporaire3m.email";
-
-
 
 const querySelectUsersToBlock = `
   SELECT id, mail
@@ -21,7 +18,6 @@ const querySelectUsersToBlock = `
     AND temporary_blocked_at IS NULL
     AND deleted = false
 `;
-
 
 const queryBlockUser = `
   UPDATE front.users
@@ -37,7 +33,6 @@ const queryUnblockUser = `
   WHERE id = $1
 `;
 
-
 export const blocageTemporaire3mActions = async () => {
   logger.info(`${disableAccount3m.name} - Start`);
   const startDate = new Date();
@@ -49,7 +44,9 @@ export const blocageTemporaire3mActions = async () => {
     errors: [] as unknown[],
   };
   try {
-    const { rows }: { rows: BlocageTemporaire3mRow[] } = await pool.query(querySelectUsersToBlock);
+    const { rows }: { rows: BlocageTemporaire3mRow[] } = await pool.query(
+      querySelectUsersToBlock,
+    );
     report.total = rows.length;
     for (const { id, mail } of rows) {
       await pool.query(queryBlockUser, [id]);
@@ -71,7 +68,10 @@ export const blocageTemporaire3mActions = async () => {
         await pool.query(queryUnblockUser, [id]);
         report.error++;
         report.errors.push({ id, error: emailErr, rollback: true });
-        logger.error(`Email failed for user ${id}, rollback performed`, emailErr);
+        logger.error(
+          `Email failed for user ${id}, rollback performed`,
+          emailErr,
+        );
         if (sentry && sentry.enabled) {
           Sentry.captureException(emailErr);
         }

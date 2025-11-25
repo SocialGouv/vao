@@ -1,3 +1,4 @@
+import { HebergementRoutesSchema } from "@vao/shared-bridge";
 import express from "express";
 
 import hebergementController from "../controllers/hebergement";
@@ -8,6 +9,7 @@ import checkPermissionHebergement from "../middlewares/checkPermissionHebergemen
 import checkPermissionHebergementUser from "../middlewares/checkPermissionHebergementUser";
 import checkStatutHebergement from "../middlewares/checkStatutHebergement";
 import getDepartements from "../middlewares/getDepartements";
+import { requestValidatorMiddleware } from "../middlewares/requestValidatorMiddleware";
 
 const router = express.Router();
 
@@ -28,12 +30,14 @@ router.get(
   "/:id",
   checkJWT,
   checkPermissionHebergement,
+  requestValidatorMiddleware(HebergementRoutesSchema["GetOne"]),
   hebergementController.getById,
 );
 router.get(
   "/admin/:id",
   boCheckJWT,
   checkStatutHebergement(HebergementHelper.statuts.ACTIF),
+  requestValidatorMiddleware(HebergementRoutesSchema["GetOneAdmin"]),
   hebergementController.getById,
 );
 router.get("/siren/:siren", checkJWT, hebergementController.getBySiren);

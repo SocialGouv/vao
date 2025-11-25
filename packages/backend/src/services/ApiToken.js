@@ -1,4 +1,4 @@
-const pool = require("../utils/pgpool").getPool();
+const { getPool } = require("../utils/pgpool");
 
 const getApiTokenQuery = `
   SELECT
@@ -19,7 +19,7 @@ const createOrUpdateApiTokenQuery = `
 `;
 
 module.exports.getApiToken = async (userId) => {
-  const result = await pool.query(getApiTokenQuery, [userId]);
+  const result = await getPool().query(getApiTokenQuery, [userId]);
   if (result.rows.length === 0) {
     return { apiToken: null, expiresAt: null };
   }
@@ -31,6 +31,10 @@ module.exports.createOrUpdateApiToken = async ({
   expiresAt,
   userId,
 }) => {
-  await pool.query(createOrUpdateApiTokenQuery, [userId, apiToken, expiresAt]);
+  await getPool().query(createOrUpdateApiTokenQuery, [
+    userId,
+    apiToken,
+    expiresAt,
+  ]);
   return { apiToken, expiresAt };
 };

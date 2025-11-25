@@ -1,62 +1,19 @@
 ---
 icon: landmark
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
 ---
 
 # Fiche organisateur
 
-{% hint style="info" %}
-**Objectif**
-
 La fiche organisateur permet aux organisateurs de vacances adaptées (OVA) de renseigner et maintenir à jour leurs informations dans le système VAO. Cette fiche est obligatoire pour pouvoir déclarer des séjours.
-{% endhint %}
 
 ### Accès à la fiche organisateur
 
 L'accès à la fiche organisateur s'effectue depuis le menu principal du SI VAO via l'onglet **"Ma fiche organisateur"** dans la section **"Organisateur"**.
 
-\[CAPTURE - Menu principal avec section Organisateur]
+Lorsqu'un nouvel organisme créé un compte sur le SI-VAO, l'utilisateur est invité, dès la page d'accueil, à compléter la fiche organisateur afin de pouvoir déclarer des séjours.&#x20;
 
-### Structure de la fiche organisateur
-
-La fiche organisateur est structurée en plusieurs étapes qui doivent être complétées dans l'ordre :
-
-1. [Étape 1 - Renseignements généraux sur l’organisateur VAO](creation-de-la-fiche-organisateur/etape-1-renseignements-generaux-sur-lorganisateur-vao.md)
-2. [Étape 2 - Etablissements secondaires](creation-de-la-fiche-organisateur/etape-2-etablissements-secondaires.md) (si applicable)
-3. [Étape 3 - Agrément](creation-de-la-fiche-organisateur/etape-3-agrement.md)
-4. [Étape 4 - Informations sur le transport](creation-de-la-fiche-organisateur/etape-4-informations-sur-le-transport.md)
-5. [Étape 5 - Informations sanitaires](creation-de-la-fiche-organisateur/etape-5-informations-sanitaires.md)
-6. [Étape 6 - Synthèse](creation-de-la-fiche-organisateur/etape-6-synthese.md)
-
-\[CAPTURE - Menu latéral de la fiche organisateur avec les étapes]
-
-
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-07-05 à 11.25.45.png" alt=""><figcaption><p>Page d'accueil lorsque la fiche organisme n'est pas renseignée</p></figcaption></figure>
 
 ***
 
-
-
-
-
-L'utilisateur est invité par un message d'information à renseigner sa fiche organisateur.&#x20;
-
-<details>
-
-<summary>Capture</summary>
-
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-22 à 20.48.58.png" alt=""><figcaption><p>Page d'accueil lorsque la fiche organisme n'est pas renseignée</p></figcaption></figure>
-
-</details>
-
-
-
+<table data-view="cards"><thead><tr><th></th><th data-hidden data-card-cover data-type="files"></th><th data-hidden data-card-target data-type="content-ref"></th></tr></thead><tbody><tr><td><strong>Création de la fiche organisateur</strong></td><td><a href="../../.gitbook/assets/photo-1748164685130-db6d3752d9e2.jpeg">photo-1748164685130-db6d3752d9e2.jpeg</a></td><td><a href="creation-de-la-fiche-organisateur/">creation-de-la-fiche-organisateur</a></td></tr><tr><td><strong>Modification de la fiche organisateur</strong></td><td><a href="../../.gitbook/assets/photo-1749371930388-50c782b0acea.jpeg">photo-1749371930388-50c782b0acea.jpeg</a></td><td><a href="modification-de-la-fiche-organisateur.md">modification-de-la-fiche-organisateur.md</a></td></tr><tr><td><strong>Règles et gestions</strong></td><td><a href="../../.gitbook/assets/nasa-fDSqEWLRNFE-unsplash.jpg">nasa-fDSqEWLRNFE-unsplash.jpg</a></td><td><a href="regles-et-gestions.md">regles-et-gestions.md</a></td></tr></tbody></table>

@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { Hebergement } from "@vao/shared";
+import { Hebergement } from "@vao/shared-ui";
 
 definePageMeta({
   middleware: ["is-connected"],

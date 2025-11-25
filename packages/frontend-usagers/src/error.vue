@@ -1,5 +1,5 @@
 <script setup>
-import { Header, Footer, ErrorPage, useLayoutHeader } from "@vao/shared";
+import { Header, Footer, ErrorPage, useLayoutHeader } from "@vao/shared-ui";
 
 const props = defineProps({
   error: {

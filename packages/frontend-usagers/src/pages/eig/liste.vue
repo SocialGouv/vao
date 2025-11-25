@@ -114,15 +114,15 @@ definePageMeta({
 });
 
 import dayjs from "dayjs";
-import EigStatusBadge from "@vao/shared/src/components/eig/EigStatusBadge.vue";
+import EigStatusBadge from "@vao/shared-ui/src/components/eig/EigStatusBadge.vue";
 import {
   eigModel,
   EigTypeListe,
   RangeDatePicker,
   TableWithBackendPagination,
   ValidationModal,
-} from "@vao/shared";
-import { mapEigToLabel } from "@vao/shared/src/utils/eigUtils";
+} from "@vao/shared-ui";
+import { mapEigToLabel } from "@vao/shared-ui/src/utils/eigUtils";
 import { getEigPermissions, canDelete } from "../../utils/eig";
 
 const eig = reactive({

@@ -1,20 +1,36 @@
----
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
+# Scénario 2 – L'organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO
 
-# Scénario 2 – L’organisme a déjà un ou plusieurs comptes utilisateurs sur la plateforme VAO
+## Workflow de création de compte
 
-
+```mermaid
+flowchart TD
+    A["OVA remplit formulaire de création"] --> B{"Email déjà existant ?"}
+    B -->|Oui| C["Email de notification envoyé à l'utilisateur existant"]
+    B -->|Non| D["Email de confirmation envoyé à l'OVA"]
+    
+    D --> E["OVA clique sur le lien de validation"]
+    E --> F["Demande confirmée - Email de confirmation envoyé"]
+    
+    F --> G["1er utilisateur OVA reçoit notification"]
+    G --> H["1er utilisateur accède à la liste des utilisateurs"]
+    
+    H --> I{"Validation OVA existant"}
+    I -->|Valider| J["Compte activé - Statut Validé"]
+    I -->|Refuser| K["Formulaire de refus avec motif obligatoire"]
+    
+    J --> L["Nouvel utilisateur reçoit email de confirmation"]
+    K --> M["Compte bloqué - Statut Compte Bloqué"]
+    M --> N["Nouvel utilisateur reçoit email de refus avec motif"]
+    
+    C --> O["Fin du processus"]
+    L --> O
+    N --> O
+    
+    style A fill:#e1f5fe
+    style G fill:#fff3e0
+    style J fill:#e8f5e8
+    style M fill:#ffebee
+```
 
 {% stepper %}
 {% step %}

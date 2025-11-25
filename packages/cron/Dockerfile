@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 COPY packages/cron/package.json ./packages/cron/
 COPY packages/cron ./packages/cron
-COPY packages/shared packages/shared
+COPY packages/shared-bridge packages/shared-bridge
 RUN yarn workspace @vao/cron install --frozen-lockfile
 
 FROM cron-deps AS cron-production
@@ -23,7 +23,7 @@ COPY --chown=1000:1000 --from=cron-deps /app/node_modules ./node_modules
 COPY package.json yarn.lock ./
 COPY packages/cron/package.json ./packages/cron/
 COPY packages/cron ./packages/cron
-COPY packages/shared packages/shared
+COPY packages/shared-bridge packages/shared-bridge
 
 ENV NODE_ENV=production
 

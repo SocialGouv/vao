@@ -1,16 +1,27 @@
 import { defineStore } from "pinia";
+import type { HebergementDto } from "@vao/shared-bridge";
 import { logger, $fetchBackend } from "#imports";
+import { HebergementService } from "~/services/hebergementService";
 
 const log = logger("stores/hebergement");
 
+interface HebergementStoreState {
+  hebergements: HebergementDto[];
+  hebergementsCount: number;
+  isGetHebergementsLoading: boolean;
+  hebergement: HebergementDto | null;
+  isGetHebergementLoading: boolean;
+}
+
 export const useHebergementStore = defineStore("hebergement", {
-  state: () => ({
-    hebergements: [],
-    hebergementsCount: 0,
-    isGetHebergementsLoading: false,
-    hebergement: null,
-    isGetHebergementLoading: false,
-  }),
+  state: () =>
+    ({
+      hebergements: [],
+      hebergementsCount: 0,
+      isGetHebergementsLoading: false,
+      hebergement: null,
+      isGetHebergementLoading: false,
+    }) as HebergementStoreState,
   actions: {
     async exportHebergements(params = {}) {
       log.i("exportHebergements - IN");
@@ -53,13 +64,11 @@ export const useHebergementStore = defineStore("hebergement", {
       log.i("getHebergement - IN");
       this.isGetHebergementLoading = true;
       try {
-        const data = await $fetchBackend(`hebergement/admin/${hebergementId}`, {
-          method: "GET",
-          credentials: "include",
-        });
-        this.hebergement = data.hebergement;
+        const hebergement =
+          await HebergementService.getHebergement(hebergementId);
+        this.hebergement = hebergement;
         log.i("getHebergement - DONE");
-        return data;
+        return hebergement;
       } catch (err) {
         log.w("getHebergement - DONE with error", err);
         throw err;

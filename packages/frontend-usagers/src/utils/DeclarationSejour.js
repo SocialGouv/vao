@@ -13,7 +13,7 @@ import {
 import {
   hebergement as hebergementUtils,
   status as statusUtils,
-} from "@vao/shared";
+} from "@vao/shared-ui";
 
 import regex from "./regex";
 

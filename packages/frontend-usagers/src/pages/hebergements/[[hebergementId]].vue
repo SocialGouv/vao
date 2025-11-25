@@ -60,9 +60,9 @@
 definePageMeta({
   middleware: ["is-connected", "check-hebergement-id-param"],
 });
-import hebergementUtils from "@vao/shared/src/utils/hebergement";
+import hebergementUtils from "@vao/shared-ui/src/utils/hebergement";
 import HebergementStatusBadge from "../../components/hebergements/HebergementStatusBadge.vue";
-import { getFileUploadErrorMessage } from "@vao/shared/src/utils/file.mjs";
+import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
 
 const config = useRuntimeConfig();
 

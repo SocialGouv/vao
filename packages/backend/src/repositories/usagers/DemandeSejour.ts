@@ -4,8 +4,6 @@ import { getPool } from "../../utils/pgpool";
 
 const log = Logger(module.filename);
 
-const pool = getPool();
-
 export const DemandeSejourRepository = {
   getAdminStats: async ({
     departementCodes,
@@ -18,18 +16,18 @@ export const DemandeSejourRepository = {
 
     const query = () => `
         SELECT
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN COURS')::integer AS "enCours",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TRANSMISE')::integer AS "transmis",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TRANSMISE 8J')::integer AS "transmis8J",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN COURS 8J')::integer AS "enCours8J",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN ATTENTE DECLARATION 8 JOURS')::integer AS "declaration8J",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'VALIDEE 8J')::integer AS "validee8J",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TERMINEE')::integer AS "terminee",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'ANNULEE')::integer AS "annulee",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'ABANDONNEE')::integer AS "abandonnee",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'REFUSEE')::integer AS "refusee",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'REFUSEE 8J')::integer AS "refuse8J",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut <> 'BROUILLON')::integer AS "global",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'EN COURS')::integer AS "enCours",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'TRANSMISE')::integer AS "transmis",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'TRANSMISE 8J')::integer AS "transmis8J",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'EN COURS 8J')::integer AS "enCours8J",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'EN ATTENTE DECLARATION 8 JOURS')::integer AS "declaration8J",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'VALIDEE 8J')::integer AS "validee8J",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'TERMINEE')::integer AS "terminee",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'ANNULEE')::integer AS "annulee",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'ABANDONNEE')::integer AS "abandonnee",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'REFUSEE')::integer AS "refusee",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'REFUSEE 8J')::integer AS "refuse8J",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut <> 'BROUILLON')::integer AS "global",
         COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "nonlu",
         COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "lu",
         COUNT(CASE WHEN (dsm.message is not null AND dsm.front_user_id IS NULL) THEN 1 END)::integer AS "repondu"
@@ -55,7 +53,7 @@ export const DemandeSejourRepository = {
         )
         OR A.REGION_OBTENTION = $2
         `;
-    const response = await pool.query(query(), [
+    const response = await getPool().query(query(), [
       departementCodes,
       territoireCode,
     ]);
@@ -150,8 +148,11 @@ export const DemandeSejourRepository = {
     );
 
     const response = await Promise.all([
-      pool.query(paginatedQuery.query, paginatedQuery.params),
-      pool.query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
+      getPool().query(paginatedQuery.query, paginatedQuery.params),
+      getPool().query(
+        paginatedQuery.countQuery,
+        paginatedQuery.countQueryParams,
+      ),
     ]);
     log.i("getByDepartementCodes - Done");
     return {

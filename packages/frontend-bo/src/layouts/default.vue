@@ -1,5 +1,5 @@
 <script setup>
-import { Header, Footer, Skiplinks, useLayoutHeader } from "@vao/shared";
+import { Header, Footer, Skiplinks, useLayoutHeader } from "@vao/shared-ui";
 
 const navItems = useMenuNavItems();
 const userStore = useUserStore();

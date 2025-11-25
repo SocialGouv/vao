@@ -1,0 +1,5 @@
+---
+title: Formulaire déclaration de séjour – étape 2
+---
+
+<table><thead><tr><th width="237.98828125">Nom du champ</th><th width="95.9296875">Type</th><th width="103.90625">Obligatoire</th><th>Précision</th></tr></thead><tbody><tr><td>Effectif prévisionnel - Femmes</td><td>Nombre</td><td>O</td><td>Nombre de femmes prévues pour le séjour</td></tr><tr><td>Effectif prévisionnel - Hommes</td><td>Nombre</td><td>O</td><td>Nombre d'hommes prévus pour le séjour</td></tr><tr><td>Effectif prévisionnel</td><td>Nombre</td><td>O</td><td>Nombre total de vacanciers prévus pour le séjour<br><br>Calculé automatiquement. </td></tr><tr><td>Tranches d'âge</td><td>Cases à cocher</td><td>O</td><td>Choix multiples : <br>- 18-39 ans<br>- 40-59 ans<br>- Plus de 59 ans</td></tr><tr><td>Types de déficiences</td><td>Cases à cocher</td><td>O</td><td>Choix multiples : <br>- Auditif<br>- Mental/Psychique<br>- Moteur<br>- Polyhandicap<br>- Visuel</td></tr><tr><td>Précisions sur les déficiences</td><td>Zone de texte</td><td>O</td><td>Précisions obligatoires sur les types de déficiences sélectionnés</td></tr></tbody></table>

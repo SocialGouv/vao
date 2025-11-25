@@ -1,40 +1,15 @@
----
-layout:
-  title:
-    visible: true
-  description:
-    visible: true
-  tableOfContents:
-    visible: true
-  outline:
-    visible: true
-  pagination:
-    visible: false
----
-
 # Étape 3 - Agrément
 
-#### Informations obligatoires
+L'agrément "Vacances adaptées organisées" est obligatoire.
 
-L'agrément "Vacances adaptées organisées" est obligatoire. Les informations à renseigner :
+<figure><img src="../../../.gitbook/assets/Capture d’écran 2025-07-04 à 18.02.26.png" alt=""><figcaption><p>Étape 3 du formulaire de la fiche organisme : Agrément</p></figcaption></figure>
 
-* **Numéro d'agrément** : Numéro figurant sur l'arrêté portant décision d'agrément
-* **Date d'obtention** : Date d'obtention de l'agrément
-* **Région d'obtention** : Région qui a délivré l'agrément
-* **Document d'agrément** : Copie de l'agrément au format PDF (5 Mo max)
+Les informations à renseigner :
 
-\[CAPTURE - Formulaire agrément]
+<details>
 
-{% hint style="warning" %}
-**Important**
+<summary>Formulaire fiche organisme - étape 3</summary>
 
-* Le document d'agrément doit être au format PDF
-* La taille maximale autorisée est de 5 Mo
-* L'agrément est obligatoire pour finaliser la fiche organisateur
-{% endhint %}
+{% include "../../../.gitbook/includes/formulaire-fiche-organisme-etape-3.md" %}
 
-#### Gestion du document
-
-* **Ajout** : Cliquer sur "Choisir un fichier" pour sélectionner le document
-* **Remplacement** : Cliquer sur "Choisir un fichier" pour remplacer le document existant
-* **Téléchargement** : Le document peut être téléchargé depuis la fiche
+</details>
