@@ -57,36 +57,85 @@
       </div>
     </div>
   </div>
+  <div class="fr-mt-8v">
+    <div class="fr-fieldset__element">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          name="bilanFinancierCommentaire"
+          label="Ajouter un commentaire (optionnel)"
+          :model-value="bilanFinancierCommentaire"
+          :label-visible="true"
+          :is-textarea="true"
+          :is-valid="bilanFinancierCommentaireMeta.valid"
+          :error-message="bilanFinancierCommentaireErrorMessage"
+          @update:model-value="onBilanFinancierCommentaireChange"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="fr-fieldset__element fr-mt-6v">
+    <UtilsMultiFilesUpload
+      v-model="filesBilanFinancier"
+      label="Ajouter des fichiers complémentaires (optionnel)"
+    />
+  </div>
 </template>
 
 <script setup>
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
 });
 
+const filesBilanFinancier = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.BILANFINANC,
+  ) || [],
+);
+
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
+
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  bilanFinancierComptabilite: yup
+  bilanFinancierComptabilite: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  bilanFinancierComparatif: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  bilanFinancierRessourcesHumaines: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  bilanFinancierCommentaire: yup
     .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .nullable(),
-  bilanFinancierComparatif: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .nullable(),
-  bilanFinancierRessourcesHumaines: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .nullable(),
+    .nullable()
+    .when([], {
+      is: (val) => val && val.length > 0,
+      then: (schema) =>
+        schema.min(20, "Merci de décrire au moins 20 caractères."),
+      otherwise: (schema) => schema,
+    }),
 });
 
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+  bilanFinancierComptabilite:
+    props.initAgrement.bilan?.bilanFinancierComptabilite || "",
+  bilanFinancierComparatif:
+    props.initAgrement.bilan?.bilanFinancierComparatif || "",
+  bilanFinancierRessourcesHumaines:
+    props.initAgrement.bilan?.bilanFinancierRessourcesHumaines || "",
+  bilanFinancierCommentaire:
+    props.initAgrement.bilan?.bilanFinancierCommentaire || "",
 };
 
 // const { handleSubmit, meta } = useForm({
@@ -116,8 +165,24 @@ const {
   handleChange: onBilanFinancierRessourcesHumainesChange,
   meta: bilanFinancierRessourcesHumainesMeta,
 } = useField("bilanFinancierRessourcesHumaines");
+
+const {
+  value: bilanFinancierCommentaire,
+  errorMessage: bilanFinancierCommentaireErrorMessage,
+  handleChange: onBilanFinancierCommentaireChange,
+  meta: bilanFinancierCommentaireMeta,
+} = useField("bilanFinancierCommentaire");
+
 const validateForm = async () => {
   const result = await handleSubmit((values) => values)();
+  if (result) {
+    return {
+      ...result,
+      ...(filesBilanFinancier.value.length > 0 && {
+        filesBilanFinancier: filesBilanFinancier.value,
+      }),
+    };
+  }
   return result;
 };
 

@@ -41,10 +41,9 @@
       </div>
     </div>
     <div class="fr-fieldset__element">
-      <DsfrFileUpload
-        v-model="fileBilanQualPerceptionSensibilite"
+      <UtilsMultiFilesUpload
+        v-model="filesBilanQualitPerception"
         label="Ajouter des fichiers"
-        :modifiable="true"
       />
     </div>
   </div>
@@ -78,10 +77,9 @@
       </div>
     </div>
     <div class="fr-fieldset__element">
-      <DsfrFileUpload
-        v-model="fileBilanQualPerspectiveEvol"
+      <UtilsMultiFilesUpload
+        v-model="filesBilanQualitPerspectives"
         label="Ajouter des fichiers"
-        :modifiable="true"
       />
     </div>
   </div>
@@ -112,19 +110,16 @@
       </div>
     </div>
     <div class="fr-fieldset__element">
-      <DsfrFileUpload
-        v-model="fileBilanQualElementsMarquants"
+      <UtilsMultiFilesUpload
+        v-model="filesBilanQualitElementsMarquants"
         label="Ajouter des fichiers"
-        :modifiable="true"
       />
     </div>
   </div>
-  <hr class="fr-mt-4w" />
-  <div class="fr-fieldset__element">
-    <DsfrFileUpload
-      v-model="fileBilanQualFichiersComplementaires"
+  <div class="fr-fieldset__element fr-mt-6v">
+    <UtilsMultiFilesUpload
+      v-model="filesBilanQualitComplementaires"
       label="Ajouter des fichiers complémentaires (optionnel)"
-      :modifiable="true"
     />
   </div>
 </template>
@@ -137,33 +132,42 @@ import { TitleWithIcon } from "@vao/shared-ui";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
 });
 
-const fileBilanQualPerceptionSensibilite = ref([]);
-const fileBilanQualPerspectiveEvol = ref([]);
-const fileBilanQualElementsMarquants = ref([]);
-const fileBilanQualFichiersComplementaires = ref([]);
+const filesBilanQualitPerception = ref([]);
+const filesBilanQualitPerspectives = ref([]);
+const filesBilanQualitElementsMarquants = ref([]);
+const filesBilanQualitComplementaires = ref([]);
+
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  bilanQualPerceptionSensibilite: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .nullable(),
-  bilanQualPerspectiveEvol: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .nullable(),
-  bilanQualElementsMarquants: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .nullable(),
+  bilanQualPerceptionSensibilite: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  bilanQualPerspectiveEvol: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  bilanQualElementsMarquants: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
 });
 
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
   bilanQualPerceptionSensibilite:
     props.initAgrement.bilan?.bilanQualPerceptionSensibilite || "",
+  bilanQualPerspectiveEvol:
+    props.initAgrement.bilan?.bilanQualPerspectiveEvol || "",
+  bilanQualElementsMarquants:
+    props.initAgrement.bilan?.bilanQualElementsMarquants || "",
 };
 
 // const { handleSubmit, meta } = useForm({
@@ -195,23 +199,28 @@ const {
 } = useField("bilanQualElementsMarquants");
 
 const validateForm = async () => {
+  const allBilanStepFiles = [
+    ...(filesBilanQualitPerception.value?.length
+      ? filesBilanQualitPerception.value
+      : []),
+    ...(filesBilanQualitPerspectives.value?.length
+      ? filesBilanQualitPerspectives.value
+      : []),
+    ...(filesBilanQualitElementsMarquants.value?.length
+      ? filesBilanQualitElementsMarquants.value
+      : []),
+    ...(filesBilanQualitComplementaires.value?.length
+      ? filesBilanQualitComplementaires.value
+      : []),
+  ];
+
+  console.log("All bilan files to upload:", allBilanStepFiles);
   const result = await handleSubmit((values) => values)();
   if (result) {
     return {
       ...result,
-      ...(fileBilanQualPerceptionSensibilite.value.length > 0 && {
-        fileBilanQualPerceptionSensibilite:
-          fileBilanQualPerceptionSensibilite.value,
-      }),
-      ...(fileBilanQualPerspectiveEvol.value.length > 0 && {
-        fileBilanQualPerspectiveEvol: fileBilanQualPerspectiveEvol.value,
-      }),
-      ...(fileBilanQualElementsMarquants.value.length > 0 && {
-        fileBilanQualElementsMarquants: fileBilanQualElementsMarquants.value,
-      }),
-      ...(fileBilanQualFichiersComplementaires.value.length > 0 && {
-        fileBilanQualFichiersComplementaires:
-          fileBilanQualFichiersComplementaires.value,
+      ...(allBilanStepFiles.length > 0 && {
+        filesBilanQualit: allBilanStepFiles,
       }),
     };
   }

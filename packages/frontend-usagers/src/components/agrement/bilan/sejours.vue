@@ -4,75 +4,167 @@
     :level="3"
     title-class="fr-text--lead fr-mb-0"
   >
-    Séjours par années
+    Séjours (par années)
   </TitleWithIcon>
-  <div class="fr-fieldset__element">
-    <div class="fr-col-12">
-      <DsfrInputGroup
-        name="changements"
-        label="Note d'information présentant les éventuelles améliorations ou changements apportés aux séjours (optionnel)"
-        :model-value="changements"
-        :label-visible="true"
-        :is-textarea="true"
-        :is-valid="changementsMeta.valid"
-        :error-message="changementsErrorMessage"
-        hint="De votre propre initiative ou suite aux observations des inspecteurs de l'action sanitaire et sociale, les médecins inspecteurs de santé publique ou les inspecteurs des agences régionales de santé ayant la qualité de médecin à l'issue des contrôles effectués au cours de l'agrément."
-        @update:model-value="onChangementsChange"
+  <p class="light-decisions-text-text-default-info fr-text--xs">
+    <span class="fr-icon-info-fill" aria-hidden="true"></span>
+    Ces informations ont été automatiquement remplies à partir de vos
+    déclarations de séjour. Veuillez les vérifier et les corriger si nécessaire.
+  </p>
+  <p>Sélectionner les années</p>
+  <p class="fr-hint-text">Toutes les années doivent être renseignées</p>
+  <DsfrTabs
+    v-model="selectedTabIndex"
+    tab-list-name="display-sejours-tabs"
+    :tab-titles="tabTitles"
+    :initial-selected-index="initialSelectedIndex"
+    @update:model-value="selectTab"
+  >
+    <DsfrTabContent
+      v-for="(tab, idx) in tabTitles"
+      :key="tab.tabId"
+      :panel-id="tab.panelId"
+      :tab-id="tab.tabId"
+      :selected="selectedTabIndex === idx"
+      :asc="asc"
+    >
+      <AgrementBilanSejourDetails
+        :ref="(el) => setSejourDetailsRef(el, idx)"
+        :year="parseInt(tab.title)"
+        :bilan-annuel="bilanAnnuelByYear[parseInt(tab.title)]"
+        :agrement-status="props.initAgrement?.statut"
       />
-    </div>
-  </div>
+    </DsfrTabContent>
+  </DsfrTabs>
 </template>
 
 <script setup>
-import { useForm, useField } from "vee-validate";
-import * as yup from "yup";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
 });
 
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
+const initialSelectedIndex = 0;
+
+const selectedTabIndex = ref(initialSelectedIndex);
+const asc = ref(true);
+const sejourDetailsRefs = ref([]);
+
+function setSejourDetailsRef(el, idx) {
+  sejourDetailsRefs.value[idx] = el;
+}
+
+const currentYear = new Date().getFullYear();
+const startYear = 2021;
+const tabTitles = computed(() => {
+  const years = [];
+  for (let year = currentYear - 1; year >= startYear; year--) {
+    years.push({
+      title: `${year}`,
+      tabId: `declaration-sejour-tab-${year}`,
+      panelId: `declaration-sejour-content-${year}`,
+    });
+  }
+  return years;
+});
+
+// const selectedYear = computed(() => {
+//   return tabTitles.value[selectedTabIndex.value]?.title;
+// });
+
+// const sejoursForSelectedYear = computed(() => {
+//   if (!props.initAgrement?.agrementSejours) return [];
+//   return props.initAgrement.agrementSejours.filter((sejour) =>
+//     sejour.mois?.some((mois) => Math.floor(mois / 100) === selectedYear.value),
+//   );
+// });
+// console.log("initAgrement", props.initAgrement);
+// console.log(
+//   "Séjours pour l'année",
+//   selectedYear.value,
+//   ":",
+//   sejoursForSelectedYear.value,
+// );
+
+const bilanAnnuelByYear = computed(() => {
+  const result = {};
+  const data = props.initAgrement?.agrementBilanAnnuel || [];
+  data.forEach((bilan) => {
+    const year = bilan.annee;
+    if (!result[year]) {
+      // Initialise avec une copie du premier bilan
+      result[year] = {
+        ...bilan,
+        bilanHebergement: [...bilan.bilanHebergement],
+        trancheAge: [...bilan.trancheAge],
+        typeHandicap: [...bilan.typeHandicap],
+        nbFemmes: bilan.nbFemmes,
+        nbHommes: bilan.nbHommes,
+        nbGlobalVacanciers: bilan.nbGlobalVacanciers,
+        nbTotalJoursVacances: bilan.nbTotalJoursVacances,
+      };
+    } else {
+      // Fusionne les propriétés
+      result[year].bilanHebergement.push(...bilan.bilanHebergement);
+      result[year].trancheAge = Array.from(
+        new Set([...result[year].trancheAge, ...bilan.trancheAge]),
+      );
+      result[year].typeHandicap = Array.from(
+        new Set([...result[year].typeHandicap, ...bilan.typeHandicap]),
+      );
+      result[year].nbFemmes += bilan.nbFemmes;
+      result[year].nbHommes += bilan.nbHommes;
+      result[year].nbGlobalVacanciers += bilan.nbGlobalVacanciers;
+      result[year].nbTotalJoursVacances += bilan.nbTotalJoursVacances;
+    }
   });
-
-const validationSchema = yup.object({
-  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  changements: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
-  ),
-});
-
-const initialValues = {
-  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
-  changements: props.initAgrement.bilan?.changements || "",
-};
-
-// const { handleSubmit, meta } = useForm({
-const { handleSubmit } = useForm({
-  validationSchema,
-  initialValues,
-  validateOnMount: false,
-});
-
-const {
-  value: changements,
-  errorMessage: changementsErrorMessage,
-  handleChange: onChangementsChange,
-  meta: changementsMeta,
-} = useField("changements");
-
-const validateForm = async () => {
-  const result = await handleSubmit((values) => values)();
   return result;
+});
+
+const selectTab = async (idx) => {
+  asc.value = selectedTabIndex.value < idx;
+  console.log("selectedTabIndex:", selectedTabIndex.value);
+  // load data
+
+  // if (idx === 0 && !historique.value) {
+  //   executeHistorique();
+  // }
+
+  // if (idx === 3) {
+  //   await demandeSejourStore.readMessages(route.params.declarationId);
+  //   demandeSejourStore.fetchMessages(route.params.declarationId);
+  // }
 };
+
+async function validateAllYears() {
+  let allValid = true;
+  const allResults = [];
+
+  for (const ref of sejourDetailsRefs.value) {
+    if (ref && ref.validateForm) {
+      const result = await ref.validateForm();
+      if (!result || result === false) {
+        allValid = false;
+      }
+      allResults.push(result);
+    } else {
+      allValid = false;
+    }
+  }
+
+  if (!allValid) {
+    toaster.error({
+      titleTag: "h2",
+      description: "Toutes les années doivent être renseignées et valides.",
+    });
+    return false;
+  }
+
+  return allResults;
+}
 
 defineExpose({
-  validateForm,
-  // isValid: () => meta.value.valid, // Optionnel : pour vérifier la validité
+  validateForm: validateAllYears,
 });
 </script>
