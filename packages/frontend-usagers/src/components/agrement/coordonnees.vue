@@ -35,8 +35,6 @@
       class="fr-my-2w"
     />
 
-    <hr class="fr-mt-4w" />
-
     <DsfrAlert
       v-if="personnePhysiqueError"
       role="alert"

@@ -3,6 +3,7 @@
     <AgrementBilanChangements
       ref="changementsRef"
       :init-agrement="props.initAgrement ?? {}"
+      :cdn-url="props.cdnUrl"
     />
     <AgrementBilanSejours
       ref="sejoursRef"
@@ -11,6 +12,7 @@
     <AgrementBilanQualitatif
       ref="qualitatifRef"
       :init-agrement="props.initAgrement ?? {}"
+      :cdn-url="props.cdnUrl"
     />
     <hr class="fr-mt-4w" />
     <AgrementBilanFinancier
@@ -36,6 +38,7 @@ import { ref } from "vue";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   showButtons: { type: Boolean, default: true },
+  cdnUrl: { type: String, required: true },
   message: { type: String, default: null },
 });
 
