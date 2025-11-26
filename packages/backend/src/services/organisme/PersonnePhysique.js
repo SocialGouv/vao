@@ -4,6 +4,14 @@ const { getPool } = require("../../utils/pgpool");
 const log = logger(module.filename);
 
 const query = {
+  changeCurrent: `
+    UPDATE front.personne_physique
+    SET
+      current = false,
+      edited_at = NOW()
+    WHERE
+      id = $1;
+  `,
   create: `
     INSERT INTO front.personne_physique (
       organisme_id,
@@ -62,14 +70,13 @@ const query = {
       adresse_identique AS "adresseIdentique",
       siret AS "siret"
     FROM front.personne_physique
-    WHERE organisme_id = $1
+    WHERE organisme_id = $1 AND current = true
   `,
   getIdByOrganiseId: `
-    SELECT id
+    SELECT id, siret
     FROM front.personne_physique
-    WHERE organisme_id = $1
+    WHERE organisme_id = $1 AND current = TRUE;
   `,
-
   update: `
     UPDATE front.personne_physique
     SET
@@ -95,7 +102,7 @@ const query = {
       adresse_identique = $21,
       siret = $22
   WHERE
-    organisme_id = $1
+    organisme_id = $1 AND current = true
   `,
 };
 
@@ -136,35 +143,39 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
   if (Object.keys(parametre).length === 0) {
     return null;
   }
-  const { rowCount } = await client.query(query.getIdByOrganiseId, [
+  const { rows: personnePhysique, rowCount } = await client.query(
+    query.getIdByOrganiseId,
+    [organismeId],
+  );
+  if (rowCount === 0 || parametre?.siret !== personnePhysique[0]?.siret) {
+    if (rowCount !== 0)
+      await client.query(query.changeCurrent, [personnePhysique[0].id]);
+    await create(client, organismeId, parametre);
+  }
+  await client.query(query.update, [
     organismeId,
+    parametre?.prenom ?? null,
+    parametre?.nomUsage ?? null,
+    parametre?.nomNaissance ?? null,
+    parametre?.telephone ?? null,
+    parametre?.profession ?? null,
+    parametre?.adresseSiege?.label ?? null,
+    parametre?.adresseSiege?.cleInsee ?? null,
+    parametre?.adresseSiege?.codeInsee ?? null,
+    parametre?.adresseSiege?.codePostal ?? null,
+    parametre?.adresseSiege?.coordinates?.[0] ?? null,
+    parametre?.adresseSiege?.coordinates?.[1] ?? null,
+    parametre?.adresseSiege?.departement ?? null,
+    parametre?.adresseDomicile?.label ?? null,
+    parametre?.adresseDomicile?.cleInsee ?? null,
+    parametre?.adresseDomicile?.codeInsee ?? null,
+    parametre?.adresseDomicile?.codePostal ?? null,
+    parametre?.adresseDomicile?.coordinates?.[0] ?? null,
+    parametre?.adresseDomicile?.coordinates?.[1] ?? null,
+    parametre?.adresseDomicile?.departement ?? null,
+    parametre?.adresseIdentique ?? null,
+    parametre?.siret ?? null,
   ]);
-  rowCount === 0
-    ? await create(client, organismeId, parametre)
-    : await client.query(query.update, [
-        organismeId,
-        parametre?.prenom ?? null,
-        parametre?.nomUsage ?? null,
-        parametre?.nomNaissance ?? null,
-        parametre?.telephone ?? null,
-        parametre?.profession ?? null,
-        parametre?.adresseSiege?.label ?? null,
-        parametre?.adresseSiege?.cleInsee ?? null,
-        parametre?.adresseSiege?.codeInsee ?? null,
-        parametre?.adresseSiege?.codePostal ?? null,
-        parametre?.adresseSiege?.coordinates?.[0] ?? null,
-        parametre?.adresseSiege?.coordinates?.[1] ?? null,
-        parametre?.adresseSiege?.departement ?? null,
-        parametre?.adresseDomicile?.label ?? null,
-        parametre?.adresseDomicile?.cleInsee ?? null,
-        parametre?.adresseDomicile?.codeInsee ?? null,
-        parametre?.adresseDomicile?.codePostal ?? null,
-        parametre?.adresseDomicile?.coordinates?.[0] ?? null,
-        parametre?.adresseDomicile?.coordinates?.[1] ?? null,
-        parametre?.adresseDomicile?.departement ?? null,
-        parametre?.adresseIdentique ?? null,
-        parametre?.siret ?? null,
-      ]);
 
   log.i("createOrUpdate - DONE");
 };

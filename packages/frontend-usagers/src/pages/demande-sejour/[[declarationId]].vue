@@ -65,7 +65,6 @@
             <div class="fr-col-xs-12 fr-col-md-9 fr-py-3w">
               <DSStepper :step="hash"></DSStepper>
               <div>
-                <pre>{{ demandeCourante }}</pre>
                 <div id="info-generales">
                   <DSInformationsGenerales
                     v-if="hash === 'info-generales'"

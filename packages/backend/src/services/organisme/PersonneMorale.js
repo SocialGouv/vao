@@ -189,7 +189,7 @@ const query = {
       etab_principal_pays = $30,
       etab_principal_email = $31
   WHERE
-    organisme_id = $1 and personne_morale.current = TRUE
+    organisme_id = $1 and current = TRUE
   `,
 };
 

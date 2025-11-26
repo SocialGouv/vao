@@ -48,7 +48,7 @@ const query = {
       LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
       LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
       LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id AND pm.current = TRUE
-      LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id AND pp.current = TRUE
       LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
     WHERE 1 = 1
     ${searchQuery}
@@ -78,7 +78,7 @@ const query = {
           LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = u.id
           LEFT OUTER JOIN front.organismes AS o ON o.id = uo.org_id
           LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
-          LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+          LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
         WHERE o.id = ANY ($1)
       )
       UNION
@@ -100,7 +100,7 @@ const query = {
         FROM front.users AS u
           LEFT JOIN front.opm_etablissements etab ON etab.siret = u.siret
           LEFT JOIN front.personne_morale pm ON pm.siege_social = true AND ((pm.siren = substr(u.siret,1,9) AND etab.siret = u.siret) OR pm.siret = u.siret) AND pm.organisme_id = ANY ($1) AND pm.current = TRUE
-          LEFT JOIN front.personne_physique pp ON pp.siret = u.siret AND pp.organisme_id = ANY ($1)
+          LEFT JOIN front.personne_physique pp ON pp.siret = u.siret AND pp.organisme_id = ANY ($1) AND pp.current = TRUE
           INNER JOIN front.organismes AS o ON o.id = pm.organisme_id OR o.id = pp.organisme_id
         WHERE u.id NOT IN (SELECT use_id FROM front.user_organisme uo WHERE uo.use_id = u.id)
         GROUP BY 1,2,3,4,5,6,7,8,9,10
@@ -204,7 +204,7 @@ const query = {
         LEFT JOIN front.user_organisme AS uo ON uo.use_id = us.id
         LEFT JOIN front.organismes AS org ON org.id = uo.org_id
         LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id AND pm.current = TRUE
-        LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id AND pp.current = TRUE
         LEFT JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
       GROUP BY us.id, us.mail, us.nom, us.prenom, us.status_code, org.id, org.type_organisme, pm.siren
     )
@@ -257,7 +257,7 @@ const query = {
         LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
         LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
         LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id AND pm.current = TRUE
-        LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id AND pp.current = TRUE
         LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
       WHERE 1 = 1
     ${additionalParamsQuery}

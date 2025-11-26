@@ -109,7 +109,7 @@ const query = {
       o.edited_at as "editedAt"
     FROM front.organismes o
     LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
-    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
     JOIN front.user_organisme uo ON o.id = uo.org_id
     WHERE 1 = 1
     ${Object.keys(criterias)
@@ -206,7 +206,7 @@ const query = {
       o.edited_at as "editedAt"
     FROM front.organismes o
     LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
-    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
     WHERE pm.siret = $1 OR pp.siret = $1
 `,
   getIsComplet: `
@@ -279,7 +279,7 @@ const query = {
       o.edited_at as "editedAt"
     FROM front.organismes o
     LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
-    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
     LEFT JOIN stat ON stat.organisme_id = o.id
     LEFT JOIN agrement_data ad ON ad."organismeId" = o.id
     WHERE o.supprime = FALSE
@@ -327,7 +327,7 @@ const query = {
             END AS "agrement"
       FROM front.organismes o
       LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
-      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
 
     )
     SELECT o.id AS "organismeId", o.type_organisme AS "typeOrganisme", o.complet AS "complet",
@@ -347,7 +347,7 @@ const query = {
           ad."agrement", o.edited_at AS "editedAt"
     FROM front.organismes o
     LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
-    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
     LEFT JOIN stat ON stat.organisme_id = o.id
     LEFT JOIN agrement_data ad ON ad."organismeId" = o.id
     WHERE o.supprime = FALSE
@@ -415,12 +415,12 @@ FROM back.organisme_non_agree ona
     SELECT
         siret as siret
     FROM front.personne_morale
-    WHERE organisme_id = $1
+    WHERE organisme_id = $1 AND current = TRUE
     UNION
     SELECT
         siret as siret
     FROM front.personne_physique
-    WHERE organisme_id = $1
+    WHERE organisme_id = $1 AND current = TRUE
   `,
 
   link: `
@@ -724,7 +724,6 @@ module.exports.getOne = async (criterias = {}) => {
   const { rowCount, rows: organismes } = await getPool().query(
     ...query.get(criterias),
   );
-  console.log("organismes", organismes);
   if (rowCount === 0) {
     throw new AppError("Organisme non trouvé", {
       name: "NOT_FOUND",
@@ -732,7 +731,6 @@ module.exports.getOne = async (criterias = {}) => {
     });
   }
   const organisme = await getComplementOrganisme(organismes[0]);
-  console.log("organisme getComplementOrganisme", organisme);
   // Initialisation d'une valeur vide pour permettre l'affichage au niveau front BO
   if (organisme?.personnePhysique) {
     organisme.personnePhysique.nomUsage =
