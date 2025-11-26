@@ -118,7 +118,7 @@ export const DemandeSejourRepository = {
         FROM front.demande_sejour ds
         JOIN front.organismes o ON o.id = ds.organisme_id
         LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
-        LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
         LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
         LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
                 SELECT MAX(dsmax.id)

@@ -461,7 +461,7 @@ async function updateSiret() {
 }
 
 async function searchNewSiret() {
-  log.i("searchApiInsee - IN");
+  log.i("searchNewSiret - IN");
   const url = `/siret/${siret.value}`;
   try {
     const response = await $fetchBackend(url, {
@@ -480,27 +480,17 @@ async function searchNewSiret() {
       await searchOrganisme();
     }
   } catch (error) {
-    if (error.response?.status === 403) {
-      toaster.error({
-        titleTag: "h2",
-        description:
-          "Le SIRET renseigné n’est plus valide. Veuillez utiliser le nouveau SIRET de votre établissement",
-      });
-    } else {
-      toaster.error({
-        titleTag: "h2",
-        description:
-          "erreur lors de la récupération des données à partir du SIRET",
-      });
-    }
-    log.w("searchApiInsee - erreur:", { error });
-    setEmptyValues();
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "erreur lors de la récupération des données à partir du SIRET",
+    });
+    log.w("searchNewSiret - erreur:", { error });
   }
 }
 
 async function searchApiInsee() {
   log.i("searchApiInsee - IN");
-  return;
   const url = `/siret/${siret.value}`;
   try {
     const { uniteLegale, representantsLegaux, nomCommercial, siege } =
@@ -508,8 +498,6 @@ async function searchApiInsee() {
         method: "GET",
         credentials: "include",
       });
-    console.log("Récupération du siege", siege);
-    console.log("Récupération du uniteLegale", uniteLegale);
 
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
