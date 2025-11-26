@@ -50,7 +50,6 @@ module.exports = async function update(req, res, next) {
     }
   }
   try {
-    //const currentSiret = await Organisme.getSiret(organismeId);
     await Organisme.update(type, parametre, organismeId);
     return res.status(200).json({
       message: "sauvegarde organisme OK",

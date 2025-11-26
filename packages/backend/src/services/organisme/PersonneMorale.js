@@ -116,16 +116,6 @@ const query = {
         WHERE pm.siren = pm_siege.siren AND pm_siege.current = true AND pm_siege.siege_social = true), '{}'
       ) AS 
        "etablissementPrincipal",
-       /*
-      JSON_BUILD_OBJECT(
-          'siret', etab_principal_siret,
-          'adresse', etab_principal_adresse,
-          'telephone', etab_principal_telephone,
-          'nomCommercial', etab_principal_nom_commercial,
-          'raisonSociale', etab_principal_raison_sociale,
-          'pays', etab_principal_pays,
-          'email', etab_principal_email
-      ) AS "etablissementPrincipal",*/
       JSON_BUILD_OBJECT(
           'nom', resp_sejour_nom,
           'prenom', resp_sejour_prenom,
