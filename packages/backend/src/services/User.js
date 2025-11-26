@@ -90,7 +90,7 @@ const query = {
     FROM front.users us
     LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
     LEFT JOIN front.organismes o ON uo.org_id = o.id
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
     WHERE
       mail = $1
       AND pwd = crypt($2, CASE
@@ -127,7 +127,7 @@ const query = {
       FROM front.users us
       LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
       LEFT JOIN front.organismes o ON uo.org_id = o.id
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
       WHERE 1=1
       ${Object.keys(criterias)
         .map((criteria, i) => ` AND us.${criteria} = $${i + 1}`)

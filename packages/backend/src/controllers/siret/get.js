@@ -44,14 +44,7 @@ module.exports = async function get(req, res, next) {
         }),
       );
     }
-    if (
-      uniteLegale?.periodesEtablissement[0]?.etatAdministratifEtablissement ===
-      "F"
-    ) {
-      return res
-        .status(403)
-        .json({ message: "Etablissement fermé, opération non autorisée" });
-    }
+
     // https://entreprise.api.gouv.fr/catalogue/insee/unites_legales
     // Pour les personnes physique le code juridique est 1000
     const isPersonnePhysique =

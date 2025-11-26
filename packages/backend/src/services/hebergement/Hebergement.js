@@ -147,7 +147,7 @@ ${new Array(nbRows)
       LEFT JOIN FRONT.ADRESSE A ON A.ID = H.ADRESSE_ID
     WHERE
       A.DEPARTEMENT = ANY($1)
-      AND CURRENT IS TRUE
+      AND h.CURRENT IS TRUE
       AND h.statut_id = (SELECT id FROM front.hebergement_statut WHERE value = 'actif')
   `,
   getById: `
@@ -164,7 +164,7 @@ ${new Array(nbRows)
       front.hebergement h
       JOIN front.user_organisme uo ON uo.org_id = h.organisme_id
       JOIN front.organismes o ON o.id = uo.org_id
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
       WHERE h.id = $1
       AND (uo.use_id = $2 OR pm.siren = $3)
   `,
@@ -182,15 +182,15 @@ ${new Array(nbRows)
     JOIN front.organismes o ON h.organisme_id = o.id
     LEFT JOIN front.adresse a on a.id = h.adresse_id
     LEFT JOIN front.hebergement_statut hs on hs.id = h.statut_id
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
     WHERE pm.siren = $1
     `,
   getIsHebergementAutoriseForUserId: `
     SELECT h.organisme_id
     FROM
       front.hebergement h
-    LEFT JOIN front.personne_morale pmh ON pmh.organisme_id = h.organisme_id
-    LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren
+    LEFT JOIN front.personne_morale pmh ON pmh.organisme_id = h.organisme_id AND pmh.current = true
+    LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren AND pmu.current = true
     LEFT JOIN front.personne_physique pph ON pph.organisme_id = h.organisme_id
     LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id)
     WHERE uo.use_id = $1 AND h.id = $2
@@ -221,12 +221,12 @@ ${new Array(nbRows)
     	LEFT JOIN agrement_data ad ON ad."id" = h.id
       LEFT JOIN front.adresse a ON a.id = h.adresse_id
       LEFT JOIN front.hebergement_statut hs on hs.id = h.statut_id
-	    LEFT JOIN front.personne_morale pmh ON pmh.organisme_id = h.organisme_id
-	    LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren
+	    LEFT JOIN front.personne_morale pmh ON pmh.organisme_id = h.organisme_id AND pmh.current = true
+	    LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren AND pmu.current = true
 	    LEFT JOIN front.personne_physique pph ON pph.organisme_id = h.organisme_id
 	    LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id)
       LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp.organisme_id = h.organisme_id
-      WHERE CURRENT IS TRUE AND (pmh.siren = pmu.siren OR o.type_organisme = 'personne_physique') `,
+      WHERE h.CURRENT IS TRUE AND (pmh.siren = pmu.siren OR o.type_organisme = 'personne_physique') `,
   getPreviousValueForHistory: `
   SELECT
     h.hebergement_id AS "hebergementUuid",
@@ -638,7 +638,6 @@ module.exports.getByDepartementCodes = async (
 module.exports.getByUserId = async (userId, queryParams) => {
   log.i("getByUserId - IN", { userId });
   const queryParamsWithUserId = { ...queryParams, userId };
-
   const titles = [
     {
       key: "h.nom",

@@ -22,25 +22,12 @@ module.exports = async function update(req, res, next) {
   }
   if (parametre.siret) {
     try {
-      const [organismeWithTheSiret, isComplet, currentSiret] =
-        await Promise.all([
-          Organisme.getBySiret(parametre.siret),
-          Organisme.getIsComplet(organismeId),
-          Organisme.getSiret(organismeId),
-        ]);
+      const [organismeWithTheSiret, isComplet] = await Promise.all([
+        Organisme.getBySiret(parametre.siret),
+        Organisme.getIsComplet(organismeId),
+        Organisme.getSiret(organismeId),
+      ]);
 
-      if (isComplet && currentSiret !== parametre.siret) {
-        log.w(
-          "DONE with error : Le siret ne peux pas etre modifié car l'organisme est complet",
-        );
-        throw new AppError(
-          "Le siret ne peux pas etre modifié car l'organisme est complet",
-          {
-            name: "Forbidden - siret update - organisme complete",
-            statusCode: 403,
-          },
-        );
-      }
       if (
         !isComplet &&
         organismeWithTheSiret &&
@@ -63,6 +50,7 @@ module.exports = async function update(req, res, next) {
     }
   }
   try {
+    //const currentSiret = await Organisme.getSiret(organismeId);
     await Organisme.update(type, parametre, organismeId);
     return res.status(200).json({
       message: "sauvegarde organisme OK",
