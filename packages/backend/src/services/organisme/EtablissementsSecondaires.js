@@ -23,7 +23,7 @@ const query = {
   FROM
     front.personne_morale
   WHERE
-    organisme_id = $1;
+    organisme_id = $1 and current = true;
   `,
   removeEtablissements: `
     DELETE FROM front.opm_etablissements

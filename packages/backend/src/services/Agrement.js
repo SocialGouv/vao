@@ -62,7 +62,7 @@ const query = {
     ) as "agrement"
   FROM front.agrements a            
   JOIN front.organismes o ON o.id = a.organisme_id 
-  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
   WHERE pm.siret = $1
   AND a.supprime = false
   `,

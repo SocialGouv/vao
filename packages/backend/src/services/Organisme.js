@@ -85,7 +85,7 @@ const query = {
               ) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
-            INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+            INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
             WHERE pm.siret = etab.siret
             AND a.supprime = false
@@ -108,7 +108,7 @@ const query = {
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
     LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
     JOIN front.user_organisme uo ON o.id = uo.org_id
     WHERE 1 = 1
@@ -138,7 +138,7 @@ const query = {
               )) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
-            INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+            INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
             WHERE pm.siret = etab.siret
             AND a.supprime = false
@@ -160,7 +160,7 @@ const query = {
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
     WHERE pm.siren = $1
 `,
   getBySiret: `
@@ -183,7 +183,7 @@ const query = {
               )) as "agrement"
             FROM front.agrements a
             JOIN front.organismes o2 ON o2.id = a.organisme_id
-            INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+            INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
             WHERE pm.siret = etab.siret
             AND a.supprime = false
@@ -205,7 +205,7 @@ const query = {
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
     LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
     WHERE pm.siret = $1 OR pp.siret = $1
 `,
@@ -235,7 +235,7 @@ const query = {
                 ))
                 FROM front.agrements a
                 JOIN front.organismes o2 ON o2.id = a.organisme_id
-                INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+                INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
                 INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
                 WHERE pm.siret = etab.siret
                   AND a.supprime = FALSE
@@ -251,7 +251,7 @@ const query = {
               )
             END AS "agrement"
       FROM front.organismes o
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
     )
     SELECT
       o.id as "organismeId",
@@ -278,7 +278,7 @@ const query = {
       o.created_at as "createdAt",
       o.edited_at as "editedAt"
     FROM front.organismes o
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
     LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
     LEFT JOIN stat ON stat.organisme_id = o.id
     LEFT JOIN agrement_data ad ON ad."organismeId" = o.id
@@ -313,7 +313,7 @@ const query = {
                                           'file', file, 'yearObtention', EXTRACT(YEAR FROM a.date_obtention))) AS "agrement"
                 FROM front.agrements a
                 JOIN front.organismes o2 ON o2.id = a.organisme_id
-                INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+                INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
                 INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
                 WHERE pm.siret = etab.siret
                   AND a.supprime = FALSE
@@ -326,7 +326,7 @@ const query = {
               )
             END AS "agrement"
       FROM front.organismes o
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
       LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
 
     )
@@ -346,7 +346,7 @@ const query = {
           COALESCE(stat."sejourCountValide8j", 0) AS "sejourCountValide8j",
           ad."agrement", o.edited_at AS "editedAt"
     FROM front.organismes o
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
     LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
     LEFT JOIN stat ON stat.organisme_id = o.id
     LEFT JOIN agrement_data ad ON ad."organismeId" = o.id
@@ -364,17 +364,6 @@ SELECT
   ona.edited_at AS "editedAt"
 FROM back.organisme_non_agree ona
 `,
-  // TODO : A SUPPRIMER APRES lE REFACTO ORGANNISME :
-  // Utilisé uniquement pour mettre a jour les json personnes_morale
-  // lors de l'ajout des etablissement secondaire.
-  getPersonneMorale: `
-  SELECT
-    personne_morale AS "personneMorale"
-  FROM
-    front.organismes
-  Where id = $1
-  `,
-
   getSiege: `
     SELECT
       o.id as "organismeId",
@@ -530,18 +519,16 @@ module.exports.link = async (userId, organismeId) => {
 
 module.exports.update = async (type, parametre, organismeId) => {
   log.i("update - IN", { type });
-
   const regions = await Regions.fetch();
   const client = await getPool().connect();
   try {
     await client.query("BEGIN");
     switch (type) {
       case partOrganisme.PERSONNE_MORALE: {
-        const { rows } = await getPool().query(query.getPersonneMorale, [
-          organismeId,
-        ]);
-        const etablissementsSecondaires =
-          rows[0].personneMorale.etablissements ?? [];
+        const personneMorale =
+          await PersonneMorale.getByOrganismeId(organismeId);
+        const etablissementsSecondaires = personneMorale.etablissements ?? [];
+
         const parametreWithPersonneMorale = {
           ...parametre,
           etablissements: etablissementsSecondaires,
@@ -556,6 +543,15 @@ module.exports.update = async (type, parametre, organismeId) => {
           complet,
         ]);
         await PersonneMorale.createOrUpdate(client, organismeId, parametre);
+        // Détection de changement de Siret. On récupère alors les anciens établissements
+        if (personneMorale.id !== parametre.personneMoraleId) {
+          await EtablissementsSecondaires.createOrUpdate(
+            client,
+            organismeId,
+            parametre,
+          );
+        }
+
         break;
       }
       case partOrganisme.PERSONNE_PHYSIQUE: {
@@ -572,10 +568,9 @@ module.exports.update = async (type, parametre, organismeId) => {
         break;
       }
       case partOrganisme.ETABLISSEMENTS_SECONDAIRES: {
-        const { rows } = await client.query(query.getPersonneMorale, [
-          organismeId,
-        ]);
-        const personneMorale = rows[0].personneMorale ?? {};
+        const personneMorale =
+          await PersonneMorale.getByOrganismeId(organismeId);
+
         const parametreWithPersonneMorale = {
           ...personneMorale,
           etablissements: parametre.etablissements,
@@ -729,6 +724,7 @@ module.exports.getOne = async (criterias = {}) => {
   const { rowCount, rows: organismes } = await getPool().query(
     ...query.get(criterias),
   );
+  console.log("organismes", organismes);
   if (rowCount === 0) {
     throw new AppError("Organisme non trouvé", {
       name: "NOT_FOUND",
@@ -736,6 +732,7 @@ module.exports.getOne = async (criterias = {}) => {
     });
   }
   const organisme = await getComplementOrganisme(organismes[0]);
+  console.log("organisme getComplementOrganisme", organisme);
   // Initialisation d'une valeur vide pour permettre l'affichage au niveau front BO
   if (organisme?.personnePhysique) {
     organisme.personnePhysique.nomUsage =

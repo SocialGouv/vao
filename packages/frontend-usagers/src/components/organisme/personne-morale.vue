@@ -18,7 +18,7 @@
         :api-unavailable-types="props.unavailableApi"
         :display-types="[apiTypes.INSEE, apiTypes.ENTREPRISE]"
       ></ApiUnavailable>
-
+      {{ etablissementPrincipal }}
       <DsfrInputGroup
         name="siret"
         :label="
@@ -39,7 +39,10 @@
         hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
         @update:model-value="trimSiret"
       />
-      <div v-if="props.modifiable" class="fr-fieldset__element">
+      <div
+        v-if="props.modifiable && !organismeStore.organismeCourant?.complet"
+        class="fr-fieldset__element"
+      >
         <div class="fr-input-group fr-col-8">
           <DsfrButton
             id="chercherSiret"
@@ -48,6 +51,26 @@
             >Récupérer les informations de la personne morale
           </DsfrButton>
         </div>
+      </div>
+      <div
+        v-if="props.modifiable && organismeStore.organismeCourant?.complet"
+        class="fr-input-group fr-col-8"
+      >
+        <DsfrButton
+          id="chercherSiret"
+          :disabled="!siretMeta.valid"
+          @click.prevent="searchNewSiret"
+          >Mettre à jour le SIRET et/ou les informations
+        </DsfrButton>
+      </div>
+      <div class="fr-input-group fr-col-8">
+        <OrganismeConfirmUpdateSiret
+          :opened="confirmUpdatingSiret"
+          :ancien-siret="siret"
+          :nouveau-siret="siretToUpdate"
+          @close="confirmUpdatingSiret = false"
+          @confirm="updateSiret"
+        />
       </div>
     </DsfrFieldset>
     <div v-if="siren">
@@ -285,6 +308,9 @@ const organismeStore = useOrganismeStore();
 organismeStore.fetchUsersOrganisme();
 const userStore = useUserStore();
 
+const confirmUpdatingSiret = ref(false);
+const siretToUpdate = ref(null);
+
 const props = defineProps({
   initData: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
@@ -422,8 +448,55 @@ function trimSiret(s) {
   return onSiretChange(s.replace(/ /g, ""));
 }
 
+async function updateSiret() {
+  confirmUpdatingSiret.value = false;
+  siret.value = siretToUpdate.value;
+  await searchOrganisme();
+
+  return true;
+}
+
+async function searchNewSiret() {
+  log.i("searchApiInsee - IN");
+  const url = `/siret/${siret.value}`;
+  try {
+    const response = await $fetchBackend(url, {
+      method: "GET",
+      credentials: "include",
+    });
+    const siretFromResponse = `${siren.value}${response?.uniteLegale?.uniteLegale?.nicSiegeUniteLegale ?? ""}`;
+    if (siretFromResponse !== siret.value && siegeSocial.value) {
+      siretToUpdate.value = `${siren.value}${response?.uniteLegale?.uniteLegale?.nicSiegeUniteLegale}`;
+      confirmUpdatingSiret.value = true;
+    } else {
+      toaster.info({
+        titleTag: "h2",
+        description: "Le numéro SIRET est déjà à jour",
+      });
+      await searchOrganisme();
+    }
+  } catch (error) {
+    if (error.response?.status === 403) {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Le SIRET renseigné n’est plus valide. Veuillez utiliser le nouveau SIRET de votre établissement",
+      });
+    } else {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "erreur lors de la récupération des données à partir du SIRET",
+      });
+    }
+    log.w("searchApiInsee - erreur:", { error });
+    setEmptyValues();
+  }
+}
+
 async function searchApiInsee() {
   log.i("searchApiInsee - IN");
+  return;
   const url = `/siret/${siret.value}`;
   try {
     const { uniteLegale, representantsLegaux, nomCommercial, siege } =
@@ -431,6 +504,9 @@ async function searchApiInsee() {
         method: "GET",
         credentials: "include",
       });
+    console.log("Récupération du siege", siege);
+    console.log("Récupération du uniteLegale", uniteLegale);
+
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
 
@@ -450,6 +526,7 @@ async function searchApiInsee() {
         return false;
       }
     }
+
     const etablissementPrincipal =
       siege &&
       siege.complet &&
@@ -545,6 +622,7 @@ async function searchOrganismeBySiret() {
 async function searchOrganisme() {
   log.i("searchOrganisme - In");
   const organismeFound = await searchOrganismeBySiret();
+
   if (!organismeFound || !organismeFound?.personneMorale?.siren) {
     log.d("appel API INSEE");
     await searchApiInsee();

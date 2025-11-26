@@ -16,18 +16,18 @@ export const DemandeSejourRepository = {
 
     const query = () => `
         SELECT
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN COURS')::integer AS "enCours",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TRANSMISE')::integer AS "transmis",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TRANSMISE 8J')::integer AS "transmis8J",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN COURS 8J')::integer AS "enCours8J",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'EN ATTENTE DECLARATION 8 JOURS')::integer AS "declaration8J",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'VALIDEE 8J')::integer AS "validee8J",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'TERMINEE')::integer AS "terminee",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'ANNULEE')::integer AS "annulee",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'ABANDONNEE')::integer AS "abandonnee",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'REFUSEE')::integer AS "refusee",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut = 'REFUSEE 8J')::integer AS "refuse8J",
-        COUNT(DISTINCT ds.id) FILTER (WHERE statut <> 'BROUILLON')::integer AS "global",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'EN COURS')::integer AS "enCours",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'TRANSMISE')::integer AS "transmis",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'TRANSMISE 8J')::integer AS "transmis8J",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'EN COURS 8J')::integer AS "enCours8J",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'EN ATTENTE DECLARATION 8 JOURS')::integer AS "declaration8J",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'VALIDEE 8J')::integer AS "validee8J",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'TERMINEE')::integer AS "terminee",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'ANNULEE')::integer AS "annulee",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'ABANDONNEE')::integer AS "abandonnee",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'REFUSEE')::integer AS "refusee",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut = 'REFUSEE 8J')::integer AS "refuse8J",
+        COUNT(DISTINCT ds.id) FILTER (WHERE ds.statut <> 'BROUILLON')::integer AS "global",
         COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "nonlu",
         COUNT(CASE WHEN (dsm.message is not null AND dsm.read_at IS NOT NULL AND dsm.back_user_id IS NULL) THEN 1 END)::integer AS "lu",
         COUNT(CASE WHEN (dsm.message is not null AND dsm.front_user_id IS NULL) THEN 1 END)::integer AS "repondu"
@@ -117,7 +117,7 @@ export const DemandeSejourRepository = {
                 COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
         FROM front.demande_sejour ds
         JOIN front.organismes o ON o.id = ds.organisme_id
-        LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+        LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
         LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
         LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
         LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
