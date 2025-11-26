@@ -499,6 +499,9 @@ async function searchApiInsee() {
         method: "GET",
         credentials: "include",
       });
+    console.log("Récupération du siege", siege);
+    console.log("Récupération du uniteLegale", uniteLegale);
+
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
 
