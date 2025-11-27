@@ -1,0 +1,195 @@
+<template>
+  <div class="fr-container">
+    <h2>Détails des séjours pour l'année {{ year }}</h2>
+    <p class="fr-text fr-text--lg">
+      <b>Informations sur les vacanciers</b>
+    </p>
+    <div class="flex-inputs">
+      <div class="fr-col-4">
+        <DsfrInput
+          name="nbVacanciers"
+          label="Nombre global de vacanciers"
+          type="number"
+          :model-value="nbVacanciers"
+          :label-visible="true"
+          :is-valid="nbVacanciersMeta.valid"
+          :error-message="nbVacanciersErrorMessage"
+          @update:model-value="onNbVacanciersChange"
+        />
+      </div>
+      <div class="fr-col-4">
+        <DsfrInput
+          name="nbHommes"
+          label="Nombre d'hommes"
+          type="number"
+          :model-value="nbHommes"
+          :label-visible="true"
+          :is-valid="nbHommesMeta.valid"
+          :error-message="nbHommesErrorMessage"
+          @update:model-value="onNbHommesChange"
+        />
+      </div>
+      <div class="fr-col-4">
+        <DsfrInput
+          name="nbFemmes"
+          label="Nombre de femmes"
+          type="number"
+          :model-value="nbFemmes"
+          :label-visible="true"
+          :is-valid="nbFemmesMeta.valid"
+          :error-message="nbFemmesErrorMessage"
+          @update:model-value="onNbFemmesChange"
+        />
+      </div>
+    </div>
+    <AgrementBilanTranchesAge ref="tranchesAgeRef" class="fr-mt-8v" />
+    <AgrementBilanTypeDeficiences ref="typeDeficiencesRef" />
+  </div>
+  <button @click="onValidateClick">Valider le formulaire</button>
+</template>
+
+<script setup>
+import { ref } from "vue";
+import { useForm, useField } from "vee-validate";
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import * as yup from "yup";
+
+const toaster = useToaster();
+
+const props = defineProps({
+  year: { type: Number, required: true },
+  sejours: { type: Array, default: () => [] },
+  agrementStatus: { type: String, required: true },
+});
+console.log("Séjours pour l'année", props.year, ":", props.sejours);
+
+const tranchesAgeRef = ref(null);
+const typeDeficiencesRef = ref(null);
+
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
+
+const validationSchema = yup.object({
+  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
+  nbVacanciers: requiredUnlessBrouillon(
+    yup
+      .number()
+      .typeError("Merci de saisir un nombre valide.")
+      .min(0, "Le nombre de vacanciers ne peut pas être négatif.")
+      .required("Ce champ est obligatoire."),
+  ),
+  nbHommes: requiredUnlessBrouillon(
+    yup
+      .number()
+      .typeError("Merci de saisir un nombre valide.")
+      .min(0, "Le nombre d'hommes ne peut pas être négatif.")
+      .required("Ce champ est obligatoire."),
+  ),
+  nbFemmes: requiredUnlessBrouillon(
+    yup
+      .number()
+      .typeError("Merci de saisir un nombre valide.")
+      .min(0, "Le nombre de femmes ne peut pas être négatif.")
+      .required("Ce champ est obligatoire."),
+  ),
+});
+
+const initialValues = {
+  statut: props.agrementStatus || AGREMENT_STATUT.BROUILLON,
+  nbVacanciers: props.sejours?.nombreVacanciers || 0,
+  nbHommes: props.sejours?.nombreHommes || 0,
+  nbFemmes: props.sejours?.nombreFemmes || 0,
+};
+
+console.log("Initial values:", initialValues);
+
+const { handleSubmit } = useForm({
+  validationSchema,
+  initialValues,
+  validateOnMount: false,
+});
+
+const {
+  value: nbVacanciers,
+  errorMessage: nbVacanciersErrorMessage,
+  handleChange: onNbVacanciersChange,
+  meta: nbVacanciersMeta,
+} = useField("nbVacanciers");
+const {
+  value: nbHommes,
+  errorMessage: nbHommesErrorMessage,
+  handleChange: onNbHommesChange,
+  meta: nbHommesMeta,
+} = useField("nbHommes");
+
+const {
+  value: nbFemmes,
+  errorMessage: nbFemmesErrorMessage,
+  handleChange: onNbFemmesChange,
+  meta: nbFemmesMeta,
+} = useField("nbFemmes");
+
+const validateForm = async () => {
+  let formValid = true;
+  const result = await handleSubmit((values) => values)();
+
+  // Validation des tranches d'âge
+  const tranchesAgeValidation =
+    await tranchesAgeRef.value?.validateTranchesAge();
+
+  if (!tranchesAgeValidation?.valid) {
+    console.error("Les tranches d'âge ne sont pas valides.");
+    formValid = false;
+  }
+
+  // Validation du type de déficiences
+  const typeDeficiencesValidation =
+    await typeDeficiencesRef.value?.validateTypeDeficiences();
+
+  if (!typeDeficiencesValidation?.valid) {
+    console.error("Le type de déficiences n'est pas valide.");
+    formValid = false;
+  }
+
+  if (!formValid) {
+    return toaster.error({
+      titleTag: "h2",
+      description:
+        "La partie Séjours (par années) contient des erreurs. Veuillez les corriger avant de continuer.",
+    });
+  }
+
+  if (result) {
+    return {
+      ...result,
+      trancheAge: tranchesAgeValidation.value,
+      typeDeficiences: typeDeficiencesValidation.value,
+    };
+  }
+  console.log("Validation result:", result);
+  return result;
+};
+
+async function onValidateClick() {
+  const result = await validateForm();
+  console.log("Données du formulaire :", result);
+}
+
+defineExpose({
+  validateForm,
+  // isValid: () => meta.value.valid, // Optionnel : pour vérifier la validité
+});
+</script>
+
+<style scoped>
+.flex-inputs {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+</style>

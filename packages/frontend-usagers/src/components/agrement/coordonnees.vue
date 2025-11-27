@@ -55,7 +55,7 @@
       {{ personneMoraleError }}
     </DsfrAlert>
 
-    <DsfrButton @click.prevent="onNext">Suivant</DsfrButton>
+    <DsfrButton class="fr-mb-6v" @click.prevent="onNext">Suivant</DsfrButton>
   </div>
 </template>
 
