@@ -43,6 +43,8 @@
     </div>
     <AgrementBilanTranchesAge ref="tranchesAgeRef" class="fr-mt-8v" />
     <AgrementBilanTypeDeficiences ref="typeDeficiencesRef" />
+    <hr class="fr-mt-8v fr-mb-0v" />
+    <AgrementBilanHebergements ref="hebergementsRef" :sejours="sejours" />
   </div>
 </template>
 
@@ -63,6 +65,7 @@ console.log("Séjours pour l'année", props.year, ":", props.sejours);
 
 const tranchesAgeRef = ref(null);
 const typeDeficiencesRef = ref(null);
+const hebergementsRef = ref(null);
 
 const requiredUnlessBrouillon = (schema) =>
   schema.when("statut", {
