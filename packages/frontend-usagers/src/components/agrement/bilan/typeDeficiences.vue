@@ -21,6 +21,11 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+
+const props = defineProps({
+  statut: { type: String, required: true },
+});
 
 const handicapOptions = [
   { label: "Sensoriel", value: "auditif" },
@@ -30,13 +35,21 @@ const handicapOptions = [
   { label: "Polyhandicap", value: "polyhandicap" },
 ];
 
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
+
 const validationSchema = yup.object({
-  typeDeficiences: yup
-    .array()
-    .min(1, "Veuillez sélectionner au moins un type de déficience."),
+  typeDeficiences: requiredUnlessBrouillon(
+    yup.array().min(1, "Veuillez sélectionner au moins un type de déficience."),
+  ),
 });
 
 const initialValues = {
+  statut: props.statut,
   typeDeficiences: [],
 };
 
