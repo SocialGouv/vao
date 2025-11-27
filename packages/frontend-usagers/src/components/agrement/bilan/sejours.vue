@@ -29,6 +29,7 @@
       :asc="asc"
     >
       <AgrementBilanSejourDetails
+        :ref="(el) => setSejourDetailsRef(el, idx)"
         :year="parseInt(tab.title)"
         :sejours="sejoursForSelectedYear"
         :agrement-status="props.initAgrement?.statut"
@@ -48,6 +49,11 @@ const initialSelectedIndex = 0;
 
 const selectedTabIndex = ref(initialSelectedIndex);
 const asc = ref(true);
+const sejourDetailsRefs = ref([]);
+
+function setSejourDetailsRef(el, idx) {
+  sejourDetailsRefs.value[idx] = el;
+}
 
 const currentYear = new Date().getFullYear();
 const startYear = 2021;
@@ -95,4 +101,35 @@ const selectTab = async (idx) => {
   //   demandeSejourStore.fetchMessages(route.params.declarationId);
   // }
 };
+
+async function validateAllYears() {
+  let allValid = true;
+  const allResults = [];
+
+  for (const ref of sejourDetailsRefs.value) {
+    if (ref && ref.validateForm) {
+      const result = await ref.validateForm();
+      if (!result || result === false) {
+        allValid = false;
+      }
+      allResults.push(result);
+    } else {
+      allValid = false;
+    }
+  }
+
+  if (!allValid) {
+    toaster.error({
+      titleTag: "h2",
+      description: "Toutes les années doivent être renseignées et valides.",
+    });
+    return false;
+  }
+
+  return allResults;
+}
+
+defineExpose({
+  validateForm: validateAllYears,
+});
 </script>

@@ -113,8 +113,13 @@ const validationSchema = yup.object({
     .nullable(),
   bilanFinancierCommentaire: yup
     .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .nullable(),
+    .nullable()
+    .when([], {
+      is: (val) => val && val.length > 0,
+      then: (schema) =>
+        schema.min(20, "Merci de décrire au moins 20 caractères."),
+      otherwise: (schema) => schema,
+    }),
 });
 
 const initialValues = {

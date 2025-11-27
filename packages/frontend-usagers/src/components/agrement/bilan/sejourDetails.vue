@@ -1,6 +1,5 @@
 <template>
   <div class="fr-container">
-    <h2>Détails des séjours pour l'année {{ year }}</h2>
     <p class="fr-text fr-text--lg">
       <b>Informations sur les vacanciers</b>
     </p>
@@ -45,7 +44,6 @@
     <AgrementBilanTranchesAge ref="tranchesAgeRef" class="fr-mt-8v" />
     <AgrementBilanTypeDeficiences ref="typeDeficiencesRef" />
   </div>
-  <button @click="onValidateClick">Valider le formulaire</button>
 </template>
 
 <script setup>
@@ -158,14 +156,16 @@ const validateForm = async () => {
   if (!formValid) {
     return toaster.error({
       titleTag: "h2",
-      description:
-        "La partie Séjours (par années) contient des erreurs. Veuillez les corriger avant de continuer.",
+      description: `La partie séjour ${props.year} contient des erreurs. Veuillez les corriger avant de continuer.`,
     });
   }
 
   if (result) {
+    const data = { ...result };
+    delete data.statut;
     return {
-      ...result,
+      ...data,
+      annee: props.year,
       trancheAge: tranchesAgeValidation.value,
       typeDeficiences: typeDeficiencesValidation.value,
     };
@@ -173,11 +173,6 @@ const validateForm = async () => {
   console.log("Validation result:", result);
   return result;
 };
-
-async function onValidateClick() {
-  const result = await validateForm();
-  console.log("Données du formulaire :", result);
-}
 
 defineExpose({
   validateForm,
