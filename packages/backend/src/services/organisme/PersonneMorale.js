@@ -308,4 +308,14 @@ module.exports.getByOrganismeId = async (organismeId) => {
   return rowCount === 0 ? {} : personneMorales[0];
 };
 
+module.exports.getIdByOrganismeId = async (organismeId) => {
+  log.i("getIdByOrganismeId - IN", organismeId);
+  const { rows: personneMorale, rowCount } = await getPool().query(
+    query.getIdByOrganiseId,
+    [organismeId],
+  );
+  log.i("getIdByOrganismeId - DONE");
+  return rowCount === 0 ? {} : { id: personneMorale[0].id };
+};
+
 const { create } = module.exports;
