@@ -48,7 +48,7 @@
         class="fr-input-group fr-col-8"
       >
         <DsfrButton
-          id="chercherSiret"
+          id="chercherNouveauSiret"
           :disabled="!siretMeta.valid"
           @click.prevent="searchNewSiret"
           >Mettre à jour le SIRET et/ou les informations
@@ -203,6 +203,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
 import { apiTypes } from "@vao/shared-ui/src/models";
+import { SiretService } from "~/services/siretService";
 
 const toaster = useToaster();
 const log = logger("components/organisme/personne-physique");
@@ -314,14 +315,10 @@ const formatedSiret = computed(() => {
 
 async function searchNewSiret() {
   log.i("searchNewSiret - IN");
-  const url = `/siret/${siret.value}`;
   try {
-    const { uniteLegale } = await $fetchBackend(url, {
-      method: "GET",
-      credentials: "include",
-    });
-
-    const siretFromResponse = `${siret.value.substring(0, 9)}${uniteLegale?.uniteLegale?.nicSiegeUniteLegale ?? ""}`;
+    const siretFromResponse = await SiretService.getSiretSiegeSocial(
+      siret.value,
+    );
     if (siretFromResponse !== siret.value) {
       siretToUpdate.value = siretFromResponse;
       confirmUpdatingSiret.value = true;

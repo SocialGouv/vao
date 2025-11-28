@@ -56,7 +56,7 @@
         class="fr-input-group fr-col-8"
       >
         <DsfrButton
-          id="chercherSiret"
+          id="chercherNouveauSiret"
           :disabled="!siretMeta.valid"
           @click.prevent="searchNewSiret"
           >Mettre à jour le SIRET et/ou les informations
@@ -461,13 +461,10 @@ async function updateSiret() {
 
 async function searchNewSiret() {
   log.i("searchNewSiret - IN");
-  const url = `/siret/${siret.value}`;
   try {
-    const response = await $fetchBackend(url, {
-      method: "GET",
-      credentials: "include",
-    });
-    const siretFromResponse = `${siren.value}${response?.uniteLegale?.uniteLegale?.nicSiegeUniteLegale ?? ""}`;
+    const siretFromResponse = await SiretService.getSiretSiegeSocial(
+      siret.value,
+    );
     if (siretFromResponse !== siret.value && siegeSocial.value) {
       siretToUpdate.value = `${siren.value}${response?.uniteLegale?.uniteLegale?.nicSiegeUniteLegale}`;
       confirmUpdatingSiret.value = true;
