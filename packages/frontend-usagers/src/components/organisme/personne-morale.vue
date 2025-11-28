@@ -18,7 +18,6 @@
         :api-unavailable-types="props.unavailableApi"
         :display-types="[apiTypes.INSEE, apiTypes.ENTREPRISE]"
       ></ApiUnavailable>
-      {{ etablissementPrincipal }}
       <DsfrInputGroup
         name="siret"
         :label="

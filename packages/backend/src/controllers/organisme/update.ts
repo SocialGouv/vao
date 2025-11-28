@@ -1,3 +1,7 @@
+import type { NextFunction, Response } from "express";
+
+import { UserRequest } from "../../types/request";
+
 const Organisme = require("../../services/Organisme");
 const AppError = require("../../utils/error");
 
@@ -5,7 +9,11 @@ const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
 
-module.exports = async function update(req, res, next) {
+module.exports = async function update(
+  req: UserRequest,
+  res: Response,
+  next: NextFunction,
+) {
   log.i("IN", req.body);
   const { body } = req;
   const organismeId = req.params.organismeId;
@@ -25,7 +33,6 @@ module.exports = async function update(req, res, next) {
       const [organismeWithTheSiret, isComplet] = await Promise.all([
         Organisme.getBySiret(parametre.siret),
         Organisme.getIsComplet(organismeId),
-        Organisme.getSiret(organismeId),
       ]);
 
       if (
