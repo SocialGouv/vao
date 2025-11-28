@@ -1,16 +1,37 @@
-const logger = require("../../utils/logger");
-const { getPool } = require("../../utils/pgpool");
+import type { PoolClient } from "pg";
+
+import logger from "../../utils/logger";
+import { getPool } from "../../utils/pgpool";
 
 const log = logger(module.filename);
+
+export interface Adresse {
+  label?: string | null;
+  cleInsee?: string | null;
+  codeInsee?: string | null;
+  codePostal?: string | null;
+  coordinates?: [number | null, number | null] | null;
+  departement?: string | null;
+}
+
+export interface PersonnePhysiqueParams {
+  prenom?: string | null;
+  nomUsage?: string | null;
+  nomNaissance?: string | null;
+  telephone?: string | null;
+  profession?: string | null;
+  adresseSiege?: Adresse | null;
+  adresseDomicile?: Adresse | null;
+  adresseIdentique?: boolean | null;
+  siret?: string | null;
+}
 
 const query = {
   changeCurrent: `
     UPDATE front.personne_physique
-    SET
-      current = false,
-      edited_at = NOW()
-    WHERE
-      id = $1;
+    SET current = false,
+        edited_at = NOW()
+    WHERE id = $1;
   `,
   create: `
     INSERT INTO front.personne_physique (
@@ -37,11 +58,9 @@ const query = {
       adresse_identique,
       siret
     )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22)
-    RETURNING
-      id as "personnePhysiqueId"
-    ;
-    `,
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)
+    RETURNING id AS "personnePhysiqueId";
+  `,
   getByOrganismeId: `
     SELECT 
       prenom AS "prenom",
@@ -70,7 +89,7 @@ const query = {
       adresse_identique AS "adresseIdentique",
       siret AS "siret"
     FROM front.personne_physique
-    WHERE organisme_id = $1 AND current = true
+    WHERE organisme_id = $1 AND current = true;
   `,
   getIdByOrganiseId: `
     SELECT id, siret
@@ -101,12 +120,15 @@ const query = {
       adresse_domicile_departement = $20,
       adresse_identique = $21,
       siret = $22
-  WHERE
-    organisme_id = $1 AND current = true
+    WHERE organisme_id = $1 AND current = true;
   `,
 };
 
-module.exports.create = async (client, organismeId, parametre) => {
+export const create = async (
+  client: PoolClient,
+  organismeId: number,
+  parametre: PersonnePhysiqueParams,
+) => {
   log.i("create - IN", parametre);
 
   const response = await client.query(query.create, [
@@ -134,24 +156,32 @@ module.exports.create = async (client, organismeId, parametre) => {
     parametre?.siret ?? null,
   ]);
 
-  log.d("create - DONE");
   return response.rows[0];
 };
 
-module.exports.createOrUpdate = async (client, organismeId, parametre) => {
+export const createOrUpdate = async (
+  client: PoolClient,
+  organismeId: number,
+  parametre: PersonnePhysiqueParams,
+) => {
   log.i("createOrUpdate - IN");
+
   if (Object.keys(parametre).length === 0) {
     return null;
   }
+
   const { rows: personnePhysique, rowCount } = await client.query(
     query.getIdByOrganiseId,
     [organismeId],
   );
-  if (rowCount === 0 || parametre?.siret !== personnePhysique[0]?.siret) {
-    if (rowCount !== 0)
+
+  if (rowCount === 0 || parametre.siret !== personnePhysique[0]?.siret) {
+    if (rowCount !== 0) {
       await client.query(query.changeCurrent, [personnePhysique[0].id]);
+    }
     await create(client, organismeId, parametre);
   }
+
   await client.query(query.update, [
     organismeId,
     parametre?.prenom ?? null,
@@ -180,14 +210,12 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
   log.i("createOrUpdate - DONE");
 };
 
-module.exports.getByOrganismeId = async (organismeId) => {
+export const getByOrganismeId = async (organismeId: number) => {
   log.i("getByOrganismeId - IN", organismeId);
-  const { rowCount, rows: personnePhysiques } = await getPool().query(
-    query.getByOrganismeId,
-    [organismeId],
-  );
 
-  return rowCount === 0 ? {} : personnePhysiques[0];
+  const { rowCount, rows } = await getPool().query(query.getByOrganismeId, [
+    organismeId,
+  ]);
+
+  return rowCount === 0 ? {} : rows[0];
 };
-
-const { create } = module.exports;

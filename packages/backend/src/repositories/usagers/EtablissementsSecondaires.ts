@@ -1,10 +1,12 @@
+import type { PoolClient } from "pg";
+
 export const EtablissementsSecondairesRepository = {
   associateEtablissement: async ({
     client,
     etablissements,
     personneMoraleId,
   }: {
-    client: any;
+    client: PoolClient;
     etablissements: {
       nic?: string;
       siret?: string;
@@ -57,7 +59,7 @@ export const EtablissementsSecondairesRepository = {
     client,
     personneMoraleId,
   }: {
-    client: any;
+    client: PoolClient;
     personneMoraleId: Number;
   }) => {
     const query = `
