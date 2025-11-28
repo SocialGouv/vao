@@ -324,12 +324,14 @@ async function searchNewSiret() {
       await searchOrganisme();
     }
   } catch (error) {
+    log.w("searchNewSiret - erreur:", { error });
+    const body = error.data;
+    const codeError = body.name;
+    const description = await SiretService.getDescriptionError(codeError);
     toaster.error({
       titleTag: "h2",
-      description:
-        "erreur lors de la récupération des données à partir du SIRET",
+      description,
     });
-    log.w("searchNewSiret - erreur:", { error });
   }
 }
 

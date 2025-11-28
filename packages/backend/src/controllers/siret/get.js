@@ -37,11 +37,14 @@ module.exports = async function get(req, res, next) {
     } catch (e) {
       log.w("DONE with error");
       return next(
-        new AppError("Ce numéro SIRET semble ne pas exister", {
-          cause: e,
-          name: "SIRET_NOT_FOUND",
-          statusCode: 404,
-        }),
+        new AppError(
+          "Problème lors de la récupération des informations sur le siret",
+          {
+            cause: e,
+            name: "SIRET_ERROR",
+            statusCode: 404,
+          },
+        ),
       );
     }
 
@@ -58,7 +61,18 @@ module.exports = async function get(req, res, next) {
     const nomCommercial =
       uniteLegale.uniteLegale.denominationUsuelle1UniteLegale ?? null;
     if (uniteLegale.etablissementSiege) {
-      elements = await getListeEtablissements(siren);
+      try {
+        elements = await getListeEtablissements(siren);
+      } catch (e) {
+        log.w("DONE with error");
+        return next(
+          new AppError("Ce numéro SIRET semble ne pas exister", {
+            cause: e,
+            name: "ETABLISSEMENTS_ERROR",
+            statusCode: 404,
+          }),
+        );
+      }
     } else {
       siege = await Organisme.getSiege(siren);
     }
@@ -68,9 +82,15 @@ module.exports = async function get(req, res, next) {
     if (!isPersonnePhysique) {
       try {
         representantsLegaux = await getPersonnePhysique(siren);
-      } catch (err) {
-        log.w("erreur sur l'appel à l'API entreprise");
-        log.d(err);
+      } catch (e) {
+        log.w("DONE with error");
+        return next(
+          new AppError("Ce numéro SIRET semble ne pas exister", {
+            cause: e,
+            name: "REPRESENTANTS_LEGAUX_ERROR",
+            statusCode: 404,
+          }),
+        );
       }
     }
 
