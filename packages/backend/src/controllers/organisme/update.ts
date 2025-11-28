@@ -1,15 +1,13 @@
 import type { NextFunction, Response } from "express";
 
+import Organisme from "../../services/Organisme";
 import { UserRequest } from "../../types/request";
-
-const Organisme = require("../../services/Organisme");
-const AppError = require("../../utils/error");
-
-const logger = require("../../utils/logger");
+import AppError from "../../utils/error";
+import logger from "../../utils/logger";
 
 const log = logger(module.filename);
 
-module.exports = async function update(
+export default async function update(
   req: UserRequest,
   res: Response,
   next: NextFunction,
@@ -66,4 +64,4 @@ module.exports = async function update(
     log.w("DONE with error");
     return next(error);
   }
-};
+}

@@ -6,24 +6,24 @@ import { getPool } from "../../utils/pgpool";
 const log = logger(module.filename);
 
 export interface Adresse {
-  label?: string | null;
-  cleInsee?: string | null;
-  codeInsee?: string | null;
-  codePostal?: string | null;
-  coordinates?: [number | null, number | null] | null;
-  departement?: string | null;
+  label: string | null;
+  cleInsee: string | null;
+  codeInsee: string | null;
+  codePostal: string | null;
+  coordinates: [number | null, number | null] | null;
+  departement: string | null;
 }
 
 export interface PersonnePhysiqueParams {
-  prenom?: string | null;
-  nomUsage?: string | null;
-  nomNaissance?: string | null;
-  telephone?: string | null;
-  profession?: string | null;
-  adresseSiege?: Adresse | null;
-  adresseDomicile?: Adresse | null;
-  adresseIdentique?: boolean | null;
-  siret?: string | null;
+  prenom: string | null;
+  nomUsage: string | null;
+  nomNaissance: string | null;
+  telephone: string | null;
+  profession: string | null;
+  adresseSiege: Adresse | null;
+  adresseDomicile: Adresse | null;
+  adresseIdentique: boolean | null;
+  siret: string | null;
 }
 
 const query = {
