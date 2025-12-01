@@ -5,7 +5,7 @@ import type { AgrementDto } from "../../../dto";
 
 export interface GetOneRoute extends BasicRoute {
   method: "GET";
-  path: "/agrement/organisme/{id}";
+  path: "/agrements/organisme/{id}";
   params: {
     id: string;
   };

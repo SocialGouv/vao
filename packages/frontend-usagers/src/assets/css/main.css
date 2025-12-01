@@ -46,3 +46,16 @@
   background-color: #18753c; /* vert Marianne */
   box-shadow: inset 0 0 0 1px #18753c;
 }
+
+/* DSFR couleurs */
+.light-decisions-text-text-default-info {
+  color: var(--light-decisions-text-text-default-info, #0063CB);
+}
+.light-decisions-text-text-mention-grey {
+  color: var(--light-decisions-text-text-mention-grey, #666);
+}
+
+.border {
+  border: 1px solid var(--light-decisions-border-border-default-grey, #DDD);
+  border-radius: 4px;
+}
