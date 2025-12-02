@@ -26,7 +26,7 @@
     "cron": "~3.1.7",
     "dayjs": "^1.11.10",
     "debug": "~4.3.4",
-    "express": "~4.21.0",
+    "express": "~5.1.0",
     "file-type": "^19.6.0",
     "helmet": "~8.0.0",
     "jsonwebtoken": "^9.0.2",
@@ -43,7 +43,7 @@
   "devDependencies": {
     "@socialgouv/eslint-config-recommended": "^1.131.0",
     "@testcontainers/postgresql": "^11.7.1",
-    "@types/express": "^4.17.21",
+    "@types/express": "^5.0.5",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.12",
     "@types/pg": "^8.15.5",
