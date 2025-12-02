@@ -1928,10 +1928,10 @@
   resolved "https://registry.npmjs.org/@nest-zod/z/-/z-2.0.0.tgz"
   integrity sha512-OqmJUZlpcx9ECzPYSIjaR/q/xLKrm9FkV+0FIWLEb9MVc9YeP21GmnQJBxE1dPRlLJ1kybNFBlt4D/PB8YAPkA==
 
-"@nestjs/axios@^3.1.2":
-  version "3.1.3"
-  resolved "https://registry.npmjs.org/@nestjs/axios/-/axios-3.1.3.tgz"
-  integrity sha512-RZ/63c1tMxGLqyG3iOCVt7A72oy4x1eM6QEhd4KzCYpaVWW0igq0WSREeRoEZhIxRcZfDfIIkvsOMiM7yfVGZQ==
+"@nestjs/axios@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/axios/-/axios-4.0.1.tgz#7ff73f47727b67dc04410ac6e9b3329401ebbb65"
+  integrity sha512-68pFJgu+/AZbWkGu65Z3r55bTsCPlgyKaV4BSG8yUAD72q1PPuyVRgUwFv6BxdnibTUHlyxm06FmYWNC+bjN7A==
 
 "@nestjs/cli@^10.0.0":
   version "10.4.9"
