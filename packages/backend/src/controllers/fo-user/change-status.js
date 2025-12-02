@@ -1,7 +1,7 @@
 const FoUser = require("../../services/FoUser");
 const User = require("../../services/User");
 const logger = require("../../utils/logger");
-const { actions, userTypes } = require("../../helpers/tracking");
+const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 const MailUtils = require("../../utils/mail");
 const Send = require("../../services/mail").mailService.send;
 const AppError = require("../../utils/error");
@@ -81,14 +81,14 @@ module.exports = async function changeStatus(req, res, next) {
   }
   try {
     User.addAsyncUserHistoric({
-      action: actions.modification,
+      action: TRACKING_ACTIONS.modification,
       data: {
-        newData: { userId, motif, status, userConnectedId },
+        newData: { motif, status, userConnectedId, userId },
         oldData: userBeforeUpdate,
       },
       foUserId: userId,
       userId: userConnectedId,
-      userType: userTypes.front,
+      userType: TRACKING_USER_TYPE.front,
     });
   } catch (error) {
     log.w("Error tracking user modification", error);

@@ -13,9 +13,10 @@ export default async function update(
   next: NextFunction,
 ) {
   log.i("IN", req.body);
-  const { body } = req;
+  const { body, decoded } = req;
   const organismeId = req.params.organismeId;
   const { type, parametre } = body;
+  const userId = decoded.id;
 
   if (!type || !parametre || !organismeId) {
     log.w("missing or invalid parameter");
@@ -55,7 +56,7 @@ export default async function update(
     }
   }
   try {
-    await Organisme.update(type, parametre, organismeId);
+    await Organisme.update(type, parametre, organismeId, userId);
     return res.status(200).json({
       message: "sauvegarde organisme OK",
       organismeId,

@@ -1,6 +1,6 @@
 const logger = require("../utils/logger");
 const AppError = require("../utils/error");
-const { actions } = require("../helpers/tracking");
+const { TRACKING_ACTIONS } = require("@vao/shared-bridge");
 const { roles } = require("../helpers/users");
 
 const log = logger(module.filename);
@@ -9,10 +9,10 @@ const Eig = require("../services/eig");
 const User = require("../services/FoUser");
 
 const ecriture = new Set([
-  actions.creation,
-  actions.modification,
-  actions.deletion,
-  actions.reading,
+  TRACKING_ACTIONS.creation,
+  TRACKING_ACTIONS.modification,
+  TRACKING_ACTIONS.deletion,
+  TRACKING_ACTIONS.reading,
 ]);
 
 async function hasPermission(userId, action) {
@@ -23,7 +23,7 @@ async function hasPermission(userId, action) {
     return (
       (ecriture.has(action) &&
         droits.some((d) => d.label === roles.EIG_ECRITURE)) ||
-      (action === actions.reading &&
+      (action === TRACKING_ACTIONS.reading &&
         droits.some((d) => d.label === roles.EIG_LECTURE))
     );
   } catch (err) {
@@ -78,7 +78,10 @@ function checkPermissionEIG({ action }) {
         );
       }
 
-      if (action === actions.modification || action === actions.deletion) {
+      if (
+        action === TRACKING_ACTIONS.modification ||
+        action === TRACKING_ACTIONS.deletion
+      ) {
         await checkOrganismePermission(userId, eigId);
       }
       log.i("IN", { eigId, userId });

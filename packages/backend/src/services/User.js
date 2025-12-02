@@ -11,7 +11,10 @@ const { canBeActivated } = require("../utils/canBeActivated");
 const CommonUser = require("./common/Users");
 const { schema } = require("../helpers/schema");
 
-const { entities, userTypes } = require("../helpers/tracking");
+const {
+  entities,
+  userTypes,
+} = require("@vao/shared-bridge/src/constantes/tracking");
 
 const log = logger(module.filename);
 
