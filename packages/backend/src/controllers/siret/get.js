@@ -9,6 +9,7 @@ const {
 const Organisme = require("../../services/Organisme");
 const Referentiel = require("../../services/Referentiel");
 const AppError = require("../../utils/error");
+const { ERRORS_SIRET } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);
 
@@ -41,7 +42,7 @@ module.exports = async function get(req, res, next) {
           "Problème lors de la récupération des informations sur le siret",
           {
             cause: e,
-            name: "SIRET_ERROR",
+            name: ERRORS_SIRET.SiretError,
             statusCode: 404,
           },
         ),
@@ -68,7 +69,7 @@ module.exports = async function get(req, res, next) {
         return next(
           new AppError("Ce numéro SIRET semble ne pas exister", {
             cause: e,
-            name: "ETABLISSEMENTS_ERROR",
+            name: ERRORS_SIRET.EtablissementsError,
             statusCode: 404,
           }),
         );
@@ -84,13 +85,16 @@ module.exports = async function get(req, res, next) {
         representantsLegaux = await getPersonnePhysique(siren);
       } catch (e) {
         log.w("DONE with error");
-        return next(
-          new AppError("Ce numéro SIRET semble ne pas exister", {
-            cause: e,
-            name: "REPRESENTANTS_LEGAUX_ERROR",
-            statusCode: 404,
-          }),
-        );
+        // Aucune données fournie pas l'extrait de KBIS dans ce cas.
+        // Retourné comme une erreur.
+        if (e.response.data.errors[0].code !== "02003")
+          return next(
+            new AppError("Ce numéro SIRET semble ne pas exister", {
+              cause: e,
+              name: ERRORS_SIRET.RepresentantsLegauxError,
+              statusCode: 404,
+            }),
+          );
       }
     }
 
