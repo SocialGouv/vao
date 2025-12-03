@@ -121,7 +121,7 @@
 
 <script setup>
 import { PasswordInput, apiModel } from "@vao/shared-ui";
-import { ERRORS } from "@vao/shared-bridge";
+import { ERRORS_LOGIN } from "@vao/shared-bridge";
 
 const toaster = useToaster();
 const organismeStore = useOrganismeStore();
@@ -203,22 +203,22 @@ async function login() {
     log.w("login", { error: codeError ?? error?.data ?? error });
 
     switch (codeError) {
-      case ERRORS.TooManyLoginAttempts:
-        displayType.value = ERRORS.TooManyLoginAttempts;
+      case ERRORS_LOGIN.TooManyLoginAttempts:
+        displayType.value = ERRORS_LOGIN.TooManyLoginAttempts;
         break;
-      case ERRORS.WrongCredentials:
-      case ERRORS.EmailUnauthorized:
-      case ERRORS.UserTemporarilyBlocked:
-        displayType.value = ERRORS.WrongCredentials;
+      case ERRORS_LOGIN.WrongCredentials:
+      case ERRORS_LOGIN.EmailUnauthorized:
+      case ERRORS_LOGIN.UserTemporarilyBlocked:
+        displayType.value = ERRORS_LOGIN.WrongCredentials;
         break;
-      case ERRORS.NeedEmailValidation:
-        displayType.value = ERRORS.NeedEmailValidation;
+      case ERRORS_LOGIN.NeedEmailValidation:
+        displayType.value = ERRORS_LOGIN.NeedEmailValidation;
         break;
-      case ERRORS.NeedSiretValidation:
-        displayType.value = ERRORS.NeedSiretValidation;
+      case ERRORS_LOGIN.NeedSiretValidation:
+        displayType.value = ERRORS_LOGIN.NeedSiretValidation;
         break;
       default:
-        displayType.value = ERRORS.UnexpectedError;
+        displayType.value = ERRORS_LOGIN.UnexpectedError;
         break;
     }
   }

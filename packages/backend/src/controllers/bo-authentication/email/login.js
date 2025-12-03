@@ -1,4 +1,4 @@
-const { ERRORS } = require("@vao/shared-bridge");
+const { ERRORS_LOGIN } = require("@vao/shared-bridge");
 
 const jwt = require("jsonwebtoken");
 const config = require("../../../config");
@@ -41,7 +41,7 @@ module.exports = async function login(req, res, next) {
       log.w("Trop de tentatives de connexion");
       return next(
         new AppError("Trop de tentatives de connexion", {
-          name: ERRORS.TooManyLoginAttempts,
+          name: ERRORS_LOGIN.TooManyLoginAttempts,
           statusCode: 429,
         }),
       );
@@ -61,7 +61,7 @@ module.exports = async function login(req, res, next) {
     log.w("Utilisateur BO inexistant");
     return next(
       new AppError("Mauvais identifiants", {
-        name: ERRORS.WrongCredentials,
+        name: ERRORS_LOGIN.WrongCredentials,
         statusCode: 404,
       }),
     );
@@ -72,7 +72,7 @@ module.exports = async function login(req, res, next) {
     log.w("Compte non validé");
     return next(
       new AppError("Compte non validé", {
-        name: ERRORS.NeedEmailValidation,
+        name: ERRORS_LOGIN.NeedEmailValidation,
         statusCode: 400,
       }),
     );
