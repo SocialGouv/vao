@@ -300,7 +300,8 @@ import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
 import { ERRORS_SIRET_MESSAGES, ERRORS_SIRET } from "@vao/shared-bridge";
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
-import { SiretService } from "~/services/siretService";
+import { SiretService } from "../../services/siretService";
+import { getErrorMessage } from "@vao/shared-bridge";
 
 const toaster = useToaster();
 
