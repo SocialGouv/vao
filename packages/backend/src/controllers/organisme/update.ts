@@ -1,6 +1,10 @@
-import type { NextFunction, Response } from "express";
+import { type NextFunction, type Response } from "express";
 
+import MailUtils = require("../../utils/mail");
+import UserFoService from "../../services/FoUser";
+import { mailService } from "../../services/mail";
 import Organisme from "../../services/Organisme";
+import TerritoireService from "../../services/Territoire";
 import { UserRequest } from "../../types/request";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
@@ -15,8 +19,8 @@ export default async function update(
   log.i("IN", req.body);
   const { body } = req;
   const organismeId = req.params.organismeId;
+  const userId = req.decoded?.id;
   const { type, parametre } = body;
-
   if (!type || !parametre || !organismeId) {
     log.w("missing or invalid parameter");
 
@@ -26,13 +30,17 @@ export default async function update(
       }),
     );
   }
+  let currentSiret, organismeWithTheSiret, isComplet, isChangementSiret;
   if (parametre.siret) {
     try {
-      const [organismeWithTheSiret, isComplet] = await Promise.all([
-        Organisme.getBySiret(parametre.siret),
+      [isComplet, currentSiret] = await Promise.all([
         Organisme.getIsComplet(organismeId),
+        Organisme.getSiret(organismeId),
       ]);
-
+      isChangementSiret = parametre.siret && parametre.siret !== currentSiret;
+      organismeWithTheSiret = await Organisme.getBySiret(
+        isChangementSiret ? currentSiret : parametre.siret,
+      );
       if (
         !isComplet &&
         organismeWithTheSiret &&
@@ -56,6 +64,23 @@ export default async function update(
   }
   try {
     await Organisme.update(type, parametre, organismeId);
+    if (isChangementSiret) {
+      const territoire = await TerritoireService.readFicheIdByTerCode(
+        organismeWithTheSiret.agrement.regionObtention,
+      );
+      const fiche = await TerritoireService.readOne(territoire.id);
+      const userUpdating = await UserFoService.readOne(userId);
+      await mailService.send(
+        MailUtils.bo.organisme.sendDreetsChangeSiret({
+          ancienSiret: currentSiret,
+          mailDreets: fiche.service_mail,
+          nouveauSiret: parametre.siret,
+          organisme: organismeWithTheSiret,
+          user: userUpdating,
+        }),
+      );
+    }
+
     return res.status(200).json({
       message: "sauvegarde organisme OK",
       organismeId,

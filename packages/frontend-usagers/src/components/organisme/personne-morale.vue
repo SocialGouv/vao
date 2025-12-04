@@ -464,7 +464,7 @@ async function searchNewSiret() {
       siret.value,
     );
     if (siretFromResponse !== siret.value && siegeSocial.value) {
-      siretToUpdate.value = `${siren.value}${response?.uniteLegale?.uniteLegale?.nicSiegeUniteLegale}`;
+      siretToUpdate.value = siretFromResponse;
       confirmUpdatingSiret.value = true;
     } else {
       toaster.info({
