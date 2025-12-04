@@ -64,6 +64,11 @@ export default async function update(
   }
   try {
     await Organisme.update(type, parametre, organismeId);
+  } catch (error) {
+    log.w("DONE with error");
+    return next(error);
+  }
+  try {
     if (isChangementSiret) {
       const territoire = await TerritoireService.readFicheIdByTerCode(
         organismeWithTheSiret.agrement.regionObtention,
@@ -80,13 +85,13 @@ export default async function update(
         }),
       );
     }
-
-    return res.status(200).json({
-      message: "sauvegarde organisme OK",
-      organismeId,
-    });
   } catch (error) {
-    log.w("DONE with error");
-    return next(error);
+    // On n'interromp pas le retour, le mail n'étant pas critique
+    log.w("MAIL SEND FAILED", error);
   }
+
+  return res.status(200).json({
+    message: "sauvegarde organisme OK",
+    organismeId,
+  });
 }
