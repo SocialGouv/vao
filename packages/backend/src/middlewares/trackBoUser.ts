@@ -3,7 +3,15 @@ import { TRACKING_ACTIONS } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
 
 import boUser from "../services/BoUser";
-import { TrackingRequest, UserRequest } from "../types/request";
+import { UserRequest } from "../types/request";
+
+interface Tracking {
+  id: number;
+}
+
+interface TrackingRequest extends UserRequest {
+  tracking?: Tracking;
+}
 
 function trackFoUser({
   action,
@@ -14,11 +22,7 @@ function trackFoUser({
   userType: UserType;
   itself: boolean;
 }) {
-  return async (
-    req: UserRequest | TrackingRequest,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  return async (req: TrackingRequest, res: Response, next: NextFunction) => {
     const { id: userId } = req.decoded;
 
     const boUserId = itself ? userId : req.params.userId;
