@@ -8,9 +8,17 @@ export interface User {
   territoireCode: string;
 }
 
+export interface Tracking {
+  id: number;
+}
+
 export interface UserRequest extends Request {
   decoded?: User;
   departements?: { value: string; label: string }[];
+}
+
+export interface TrackingRequest extends Request {
+  tracking?: Tracking;
 }
 
 export interface RouteRequest<T extends BasicRoute>

@@ -1,8 +1,24 @@
-const { TRACKING_ACTIONS } = require("@vao/shared-bridge");
-const boUser = require("../services/BoUser");
+import type { Action, UserType } from "@vao/shared-bridge";
+import { TRACKING_ACTIONS } from "@vao/shared-bridge";
+import type { NextFunction, Response } from "express";
 
-function trackFoUser({ action, userType, itself }) {
-  return async (req, res, next) => {
+import boUser from "../services/BoUser";
+import { TrackingRequest, UserRequest } from "../types/request";
+
+function trackFoUser({
+  action,
+  userType,
+  itself,
+}: {
+  action: Action;
+  userType: UserType;
+  itself: boolean;
+}) {
+  return async (
+    req: UserRequest | TrackingRequest,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const { id: userId } = req.decoded;
 
     const boUserId = itself ? userId : req.params.userId;
