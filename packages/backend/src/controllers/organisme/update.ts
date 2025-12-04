@@ -30,13 +30,13 @@ export default async function update(
       }),
     );
   }
-  let currentSiret, organismeWithTheSiret, isComplet, isChangementSiret;
+  let currentSiret,
+    organismeWithTheSiret,
+    isChangementSiret = false;
   if (parametre.siret) {
     try {
-      [isComplet, currentSiret] = await Promise.all([
-        Organisme.getIsComplet(organismeId),
-        Organisme.getSiret(organismeId),
-      ]);
+      const isComplet = await Organisme.getIsComplet(organismeId);
+      currentSiret = await Organisme.getSiret(organismeId);
       isChangementSiret = parametre.siret && parametre.siret !== currentSiret;
       organismeWithTheSiret = await Organisme.getBySiret(
         isChangementSiret ? currentSiret : parametre.siret,
