@@ -1,7 +1,13 @@
+import {
+  TRACKING_ACTIONS,
+  TRACKING_ENTITIES,
+  TRACKING_USER_TYPE,
+} from "@vao/shared-bridge";
 import type { PoolClient } from "pg";
 
 import logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
+import { addHistoric } from "../Tracking";
 
 const log = logger(module.filename);
 
@@ -92,7 +98,7 @@ const query = {
     WHERE organisme_id = $1 AND current = true;
   `,
   getIdByOrganiseId: `
-    SELECT id, siret
+    SELECT *
     FROM front.personne_physique
     WHERE organisme_id = $1 AND current = TRUE;
   `,
@@ -128,6 +134,7 @@ export const create = async (
   client: PoolClient,
   organismeId: number,
   parametre: PersonnePhysiqueParams,
+  userId: number,
 ) => {
   log.i("create - IN", parametre);
 
@@ -155,6 +162,14 @@ export const create = async (
     parametre?.adresseIdentique ?? null,
     parametre?.siret ?? null,
   ]);
+  addHistoric({
+    action: TRACKING_ACTIONS.creation,
+    data: { newData: { ...parametre, organismeId } },
+    entity: TRACKING_ENTITIES.personnePhysique,
+    entityId: response.rows[0].personnePhysiqueId,
+    userId: userId,
+    userType: TRACKING_USER_TYPE.front,
+  });
 
   return response.rows[0];
 };
@@ -163,6 +178,7 @@ export const createOrUpdate = async (
   client: PoolClient,
   organismeId: number,
   parametre: PersonnePhysiqueParams,
+  userId: number,
 ) => {
   log.i("createOrUpdate - IN");
 
@@ -178,8 +194,16 @@ export const createOrUpdate = async (
   if (rowCount === 0 || parametre.siret !== personnePhysique[0]?.siret) {
     if (rowCount !== 0) {
       await client.query(query.changeCurrent, [personnePhysique[0].id]);
+      addHistoric({
+        action: TRACKING_ACTIONS.deletion,
+        data: { newData: parametre, oldData: personnePhysique[0] },
+        entity: TRACKING_ENTITIES.personnePhysique,
+        entityId: personnePhysique[0].id,
+        userId: userId,
+        userType: TRACKING_USER_TYPE.front,
+      });
     }
-    await create(client, organismeId, parametre);
+    await create(client, organismeId, parametre, userId);
   }
 
   await client.query(query.update, [
@@ -206,7 +230,14 @@ export const createOrUpdate = async (
     parametre?.adresseIdentique ?? null,
     parametre?.siret ?? null,
   ]);
-
+  addHistoric({
+    action: TRACKING_ACTIONS.modification,
+    data: { newData: parametre, oldData: personnePhysique[0] },
+    entity: TRACKING_ENTITIES.personnePhysique,
+    entityId: personnePhysique[0].id,
+    userId: userId,
+    userType: TRACKING_USER_TYPE.front,
+  });
   log.i("createOrUpdate - DONE");
 };
 

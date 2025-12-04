@@ -3,6 +3,13 @@ const { getPool } = require("../../utils/pgpool");
 
 const log = logger(module.filename);
 
+const { addHistoric } = require("../Tracking");
+const {
+  TRACKING_ACTIONS,
+  TRACKING_ENTITIES,
+  TRACKING_USER_TYPE,
+} = require("@vao/shared-bridge");
+
 const query = {
   associateRepresentantsLegaux: (valueParams) => `
     INSERT INTO front.opm_representants_legaux (
@@ -136,7 +143,7 @@ const query = {
     WHERE organisme_id = $1 AND current = TRUE;
   `,
   getIdByOrganiseId: `
-    SELECT id, siret
+    SELECT *
     FROM front.personne_morale
     WHERE organisme_id = $1 AND current = TRUE;
   `,
@@ -183,7 +190,7 @@ const query = {
   `,
 };
 
-module.exports.create = async (client, organismeId, parametre) => {
+module.exports.create = async (client, organismeId, parametre, userId) => {
   log.i("create - IN", parametre);
 
   const response = await client.query(query.create, [
@@ -219,11 +226,25 @@ module.exports.create = async (client, organismeId, parametre) => {
     parametre?.etablissementPrincipal?.pays ?? null,
     parametre?.etablissementPrincipal?.email ?? null,
   ]);
+
+  addHistoric({
+    action: TRACKING_ACTIONS.creation,
+    data: { newData: { ...parametre, organismeId } },
+    entity: TRACKING_ENTITIES.personneMorale,
+    entityId: response.rows[0].personneMoraleId,
+    userId: userId,
+    userType: TRACKING_USER_TYPE.front,
+  });
   log.d("create - DONE");
   return response.rows[0].personneMoraleId;
 };
 
-module.exports.createOrUpdate = async (client, organismeId, parametre) => {
+module.exports.createOrUpdate = async (
+  client,
+  organismeId,
+  parametre,
+  userId,
+) => {
   log.i("createOrUpdate - IN");
   const { rows: personneMorale, rowCount } = await client.query(
     query.getIdByOrganiseId,
@@ -231,10 +252,19 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
   );
   let personneMoraleId;
   if (rowCount === 0 || parametre?.siret !== personneMorale[0]?.siret) {
-    if (rowCount !== 0)
+    if (rowCount !== 0) {
       await client.query(query.changeCurrent, [personneMorale[0].id]);
+      addHistoric({
+        action: TRACKING_ACTIONS.deletion,
+        data: { newData: parametre, oldData: personneMorale[0] },
+        entity: TRACKING_ENTITIES.personneMorale,
+        entityId: personneMorale[0].id,
+        userId: userId,
+        userType: TRACKING_USER_TYPE.front,
+      });
+    }
 
-    personneMoraleId = await create(client, organismeId, parametre);
+    personneMoraleId = await create(client, organismeId, parametre, userId);
   } else {
     personneMoraleId = personneMorale[0].id;
   }
@@ -271,6 +301,14 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
     parametre?.etablissementPrincipal?.pays ?? null,
     parametre?.etablissementPrincipal?.email ?? null,
   ]);
+  addHistoric({
+    action: TRACKING_ACTIONS.modification,
+    data: { newData: parametre, oldData: personneMorale[0] },
+    entity: TRACKING_ENTITIES.personneMorale,
+    entityId: personneMorale[0].id,
+    userId: userId,
+    userType: TRACKING_USER_TYPE.front,
+  });
   await client.query(query.removeRepresentantsLegaux, [personneMoraleId]);
   const representantsLegaux = parametre.representantsLegaux;
   if (representantsLegaux && Object.keys(representantsLegaux).length !== 0) {

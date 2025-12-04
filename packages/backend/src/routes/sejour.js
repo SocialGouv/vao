@@ -13,7 +13,7 @@ const demandeSejourController = require("../controllers/demandeSejour");
 const getDepartements = require("../middlewares/getDepartements");
 const canUpdateDs = require("../middlewares/can-update-ds");
 const trackDemandeSejour = require("../middlewares/trackDemandeSejour");
-const { actions, userTypes } = require("../helpers/tracking");
+const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 
 const boCheckRoleDS = boCheckRole([
   "DemandeSejour_Lecture",
@@ -145,8 +145,8 @@ router.post(
   checkPermissionDeclarationSejour,
   canUpdateDs,
   trackDemandeSejour({
-    action: actions.modification,
-    userType: userTypes.front,
+    action: TRACKING_ACTIONS.modification,
+    userType: TRACKING_USER_TYPE.front,
   }),
   demandeSejourController.update,
 );

@@ -1,4 +1,4 @@
-const { actions } = require("../helpers/tracking");
+const { TRACKING_ACTIONS } = require("@vao/shared-bridge");
 const foUser = require("../services/User");
 
 function trackFoUser({ action, userType, itself }) {
@@ -7,7 +7,7 @@ function trackFoUser({ action, userType, itself }) {
 
     const foUserId = itself ? userId : req.params.userId;
     let oldUser = null;
-    if (action !== actions.creation) {
+    if (action !== TRACKING_ACTIONS.creation) {
       oldUser = await foUser.getByUserId(foUserId);
     }
 
@@ -17,9 +17,10 @@ function trackFoUser({ action, userType, itself }) {
       }
 
       let newUser = null;
-      const id = action === actions.creation ? req.tracking.id : foUserId;
+      const id =
+        action === TRACKING_ACTIONS.creation ? req.tracking.id : foUserId;
 
-      if (action !== actions.deletion) {
+      if (action !== TRACKING_ACTIONS.deletion) {
         newUser = await foUser.getByUserId(id);
       }
       if (foUserId) {
