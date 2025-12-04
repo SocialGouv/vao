@@ -10,6 +10,8 @@ export enum Actions {
 export enum Entities {
   DemandeSejour = "DEMANDE_SEJOUR",
   Eig = "EIG",
+  PersonneMorale = "PERSONNE_MORALE",
+  PersonnePhysique = "PERSONNE_PHYSIQUE",
   UserBack = "USER_BACK",
   UserFront = "USER_FRONT",
 }

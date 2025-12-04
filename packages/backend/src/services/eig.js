@@ -8,7 +8,7 @@ const { getPool } = require("../utils/pgpool");
 const { addHistoric } = require("./Tracking");
 const { getFileMetaData } = require("./Document");
 
-const { entities, userTypes } = require("../helpers/tracking");
+const { TRACKING_ENTITIES, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 const { encrypt, decrypt } = require("../utils/cipher");
 
 const log = logger(module.filename);
@@ -843,10 +843,10 @@ module.exports.addAsyncEigHistoric = async ({
         after: newData,
         before: oldData,
       },
-      entity: entities.eig,
+      entity: TRACKING_ENTITIES.eig,
       entityId: eigId,
       userId,
-      userType: userType ?? userTypes.front,
+      userType: userType ?? TRACKING_USER_TYPE.front,
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);

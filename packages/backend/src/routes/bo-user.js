@@ -9,7 +9,7 @@ const checkTerrForAccountCreation = require("../middlewares/bo-check-terr-for-ac
 const getDepartements = require("../middlewares/getDepartements");
 const trackBoUser = require("../middlewares/trackBoUser");
 
-const { actions, userTypes } = require("../helpers/tracking");
+const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 
 const BOcheckRoleCompte = BOcheckRole(["Compte"]);
 
@@ -36,9 +36,9 @@ router.post(
   "/me",
   BOcheckJWT,
   trackBoUser({
-    action: actions.modification,
+    action: TRACKING_ACTIONS.modification,
     itself: true,
-    userType: userTypes.back,
+    userType: TRACKING_USER_TYPE.back,
   }),
   BOUserController.updateMe,
 );
@@ -49,7 +49,10 @@ router.post(
   BOcheckRoleCompte,
   getDepartements,
   checkTerrForAccountCreation,
-  trackBoUser({ action: actions.creation, userType: userTypes.back }),
+  trackBoUser({
+    action: TRACKING_ACTIONS.creation,
+    userType: TRACKING_USER_TYPE.back,
+  }),
   BOUserController.create,
 );
 // Mise à jour d'un utilisateur
@@ -59,7 +62,10 @@ router.post(
   BOcheckRoleCompte,
   getDepartements,
   checkTerrForAccountCreation,
-  trackBoUser({ action: actions.modification, userType: userTypes.back }),
+  trackBoUser({
+    action: TRACKING_ACTIONS.modification,
+    userType: TRACKING_USER_TYPE.back,
+  }),
   BOUserController.update,
 );
 // Fonctione transverse de recherche du service compétent

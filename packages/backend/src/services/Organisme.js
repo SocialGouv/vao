@@ -471,7 +471,7 @@ FROM back.organisme_non_agree ona
 `,
 };
 
-module.exports.create = async (type, parametre) => {
+module.exports.create = async (type, parametre, userId) => {
   log.i("create - IN", { type });
   const client = await getPool().connect();
   try {
@@ -487,8 +487,18 @@ module.exports.create = async (type, parametre) => {
     const { organismeId } = response && response.rows[0];
     const responseNew =
       type === partOrganisme.PERSONNE_MORALE
-        ? await PersonneMorale.createOrUpdate(client, organismeId, parametre)
-        : await PersonnePhysique.createOrUpdate(client, organismeId, parametre);
+        ? await PersonneMorale.createOrUpdate(
+            client,
+            organismeId,
+            parametre,
+            userId,
+          )
+        : await PersonnePhysique.createOrUpdate(
+            client,
+            organismeId,
+            parametre,
+            userId,
+          );
     log.d("create - ", { responseNew });
 
     await client.query("COMMIT");
@@ -517,7 +527,7 @@ module.exports.link = async (userId, organismeId) => {
   }
 };
 
-module.exports.update = async (type, parametre, organismeId) => {
+module.exports.update = async (type, parametre, organismeId, userId) => {
   log.i("update - IN", { type });
   const regions = await Regions.fetch();
   const client = await getPool().connect();
@@ -542,7 +552,12 @@ module.exports.update = async (type, parametre, organismeId) => {
           {},
           complet,
         ]);
-        await PersonneMorale.createOrUpdate(client, organismeId, parametre);
+        await PersonneMorale.createOrUpdate(
+          client,
+          organismeId,
+          parametre,
+          userId,
+        );
         // Détection de changement de Siret. On récupère alors les anciens établissements
         if (personneMorale.id !== parametre.personneMoraleId) {
           await EtablissementsSecondaires.createOrUpdate(
@@ -564,7 +579,12 @@ module.exports.update = async (type, parametre, organismeId) => {
           parametre,
           complet,
         ]);
-        await PersonnePhysique.createOrUpdate(client, organismeId, parametre);
+        await PersonnePhysique.createOrUpdate(
+          client,
+          organismeId,
+          parametre,
+          userId,
+        );
         break;
       }
       case partOrganisme.ETABLISSEMENTS_SECONDAIRES: {
@@ -665,11 +685,13 @@ module.exports.finalize = async (userId) => {
           client,
           organisme.organismeId,
           organisme.personneMorale,
+          userId,
         )
       : await PersonnePhysique.createOrUpdate(
           client,
           organisme.organismeId,
           organisme.personnePhysique,
+          userId,
         );
     await ProtocoleTransport.createOrUpdate(
       client,
