@@ -343,6 +343,7 @@ module.exports.getByOrganismeId = async (organismeId) => {
     [organismeId],
   );
 
+  log.i("getByOrganismeId - DONE");
   return rowCount === 0 ? {} : personneMorales[0];
 };
 
