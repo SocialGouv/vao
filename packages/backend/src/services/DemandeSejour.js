@@ -10,7 +10,7 @@ const { getPool } = require("../utils/pgpool");
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const PersonneMorale = require("./organisme/PersonneMorale");
 const PersonnePhysique = require("./organisme/PersonnePhysique");
-const { entities, userTypes } = require("../helpers/tracking");
+const { TRACKING_ENTITIES, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 const { addHistoric } = require("./Tracking");
 const { getComplementOrganisme } = require("./Organisme");
 const {
@@ -1986,10 +1986,10 @@ module.exports.addAsyncDeclarationSejourHistoric = async ({
         after: newData,
         before: oldData,
       },
-      entity: entities.demandeSejour,
+      entity: TRACKING_ENTITIES.demandeSejour,
       entityId: declarationId,
       userId,
-      userType: userType ?? userTypes.front,
+      userType: userType ?? TRACKING_USER_TYPE.front,
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);
