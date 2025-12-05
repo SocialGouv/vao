@@ -17,11 +17,10 @@ export default async function update(
   next: NextFunction,
 ) {
   log.i("IN", req.body);
-  const { body, decoded } = req;
+  const { body } = req;
   const organismeId = req.params.organismeId;
   const userId = req.decoded?.id;
   const { type, parametre } = body;
-  const userId = decoded.id;
 
   if (!type || !parametre || !organismeId) {
     log.w("missing or invalid parameter");
