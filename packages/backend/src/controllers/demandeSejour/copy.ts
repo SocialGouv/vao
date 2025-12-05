@@ -9,7 +9,7 @@ import logger from "../../utils/logger";
 
 const log = logger(module.filename);
 
-module.exports = async function post(
+export default async function post(
   req: UserRequest,
   res: Response,
   next: NextFunction,
@@ -96,4 +96,4 @@ module.exports = async function post(
       }),
     );
   }
-};
+}
