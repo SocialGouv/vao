@@ -1086,7 +1086,7 @@ module.exports.create = async ({
   return declarationId;
 };
 
-module.exports.copy = async (declaration) => {
+module.exports.copy = async ({ declaration, organisme }) => {
   log.i("copy - IN");
   const client = await getPool().connect();
   let declarationId;
@@ -1101,7 +1101,7 @@ module.exports.copy = async (declaration) => {
         declaration.duree,
         declaration.periode,
         declaration.responsableSejour,
-        declaration.organisme,
+        organisme,
         declaration.hebergement,
         declaration.informationsVacanciers,
         declaration.informationsPersonnel,

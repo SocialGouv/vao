@@ -1,13 +1,19 @@
-const DemandeSejour = require("../../services/DemandeSejour");
-const Organisme = require("../../services/Organisme");
-const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
+import { DEMANDE_SEJOUR_STATUTS } from "@vao/shared-bridge";
+import type { NextFunction, Response } from "express";
 
-const logger = require("../../utils/logger");
-const AppError = require("../../utils/error");
+import DemandeSejour from "../../services/DemandeSejour";
+import Organisme from "../../services/Organisme";
+import { UserRequest } from "../../types/request";
+import AppError from "../../utils/error";
+import logger from "../../utils/logger";
 
 const log = logger(module.filename);
 
-module.exports = async function post(req, res, next) {
+export default async function post(
+  req: UserRequest,
+  res: Response,
+  next: NextFunction,
+) {
   const { declarationId } = req.params;
   const { id: userId } = req.decoded;
 
@@ -50,8 +56,10 @@ module.exports = async function post(req, res, next) {
       (f) =>
         f.type !== "declaration_2_mois" && f.type !== "AR_declaration_2_mois",
     );
-
-    const newDeclarationId = await DemandeSejour.copy(sourceDeclaration);
+    const newDeclarationId = await DemandeSejour.copy({
+      declaration: sourceDeclaration,
+      organisme,
+    });
     if (!newDeclarationId) {
       log.w("DONE with error");
       return next(
@@ -88,4 +96,4 @@ module.exports = async function post(req, res, next) {
       }),
     );
   }
-};
+}
