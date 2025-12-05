@@ -535,6 +535,7 @@ module.exports.update = async (type, parametre, organismeId, userId) => {
     await client.query("BEGIN");
     switch (type) {
       case partOrganisme.PERSONNE_MORALE: {
+        // En cas de changement de Siret Ici c'est l'ancien PersonneMoraleId
         const personneMorale =
           await PersonneMorale.getByOrganismeId(organismeId);
         const etablissementsSecondaires = personneMorale.etablissements ?? [];
@@ -552,17 +553,18 @@ module.exports.update = async (type, parametre, organismeId, userId) => {
           {},
           complet,
         ]);
-        await PersonneMorale.createOrUpdate(
+        // En cas de Changement de Siret ici c'est le nouveau personneMoraleId
+        const personneMoraleId = await PersonneMorale.createOrUpdate(
           client,
           organismeId,
           parametre,
           userId,
         );
         // Détection de changement de Siret. On récupère alors les anciens établissements
-        if (personneMorale.id !== parametre.personneMoraleId) {
+        if (personneMorale.id !== personneMoraleId) {
           await EtablissementsSecondaires.createOrUpdate(
             client,
-            organismeId,
+            personneMoraleId,
             parametre,
           );
         }
@@ -605,7 +607,7 @@ module.exports.update = async (type, parametre, organismeId, userId) => {
         ]);
         await EtablissementsSecondaires.createOrUpdate(
           client,
-          organismeId,
+          personneMorale.id,
           parametre,
         );
         break;
