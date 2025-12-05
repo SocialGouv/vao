@@ -23,7 +23,11 @@
     "outDir": "./dist",
     "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
   },
-  "include": ["src/**/*.ts", "src/**/*.js"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js",
+    "../shared-bridge/src/constantes/tracking.ts"
+  ],
   "exclude": ["node_modules", "src/**/__tests__/*"],
   "references": [{ "path": "../shared-bridge" }]
 }

@@ -17,7 +17,7 @@ const AppError = require("../utils/error");
 
 const { addHistoric } = require("./Tracking");
 
-const { entities } = require("../helpers/tracking");
+const { TRACKING_ENTITIES } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);
 
@@ -815,7 +815,7 @@ const addAsyncUserHistoric = async ({
         after: newData,
         before: oldData,
       },
-      entity: entities.userBack,
+      entity: TRACKING_ENTITIES.userBack,
       entityId: boUserId,
       userId,
       userType,

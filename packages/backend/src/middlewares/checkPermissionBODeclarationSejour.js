@@ -91,7 +91,7 @@ async function checkPermissionDeclarationSejour(req, res, next) {
         SELECT agr.region_obtention
         FROM front.organismes o
         INNER JOIN front.agrements agr ON agr.organisme_id = o.id
-        INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id 
+        INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
         WHERE pm.siret = $1
       `;
       const { rows: agrements } = await getPool().query(queryOrganismeAgre, [

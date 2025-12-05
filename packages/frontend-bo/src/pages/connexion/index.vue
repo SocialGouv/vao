@@ -113,7 +113,7 @@
 
 <script setup>
 import { useUserStore } from "@/stores/user";
-import { ERRORS } from "@vao/shared-bridge";
+import { ERRORS_LOGIN } from "@vao/shared-bridge";
 import { PasswordInput, apiModel } from "@vao/shared-ui";
 
 const toaster = useToaster();
@@ -199,13 +199,13 @@ async function login() {
     log.w("login", { error: codeError ?? error?.data ?? error });
 
     switch (codeError) {
-      case ERRORS.TooManyLoginAttempts:
-      case ERRORS.WrongCredentials:
-      case ERRORS.NeedEmailValidation:
+      case ERRORS_LOGIN.TooManyLoginAttempts:
+      case ERRORS_LOGIN.WrongCredentials:
+      case ERRORS_LOGIN.NeedEmailValidation:
         displayType.value = codeError;
         break;
       default:
-        displayType.value = ERRORS.UnexpectedError;
+        displayType.value = ERRORS_LOGIN.UnexpectedError;
         break;
     }
   }

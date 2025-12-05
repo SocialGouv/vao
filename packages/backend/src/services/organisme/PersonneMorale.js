@@ -3,6 +3,13 @@ const { getPool } = require("../../utils/pgpool");
 
 const log = logger(module.filename);
 
+const { addHistoric } = require("../Tracking");
+const {
+  TRACKING_ACTIONS,
+  TRACKING_ENTITIES,
+  TRACKING_USER_TYPE,
+} = require("@vao/shared-bridge");
+
 const query = {
   associateRepresentantsLegaux: (valueParams) => `
     INSERT INTO front.opm_representants_legaux (
@@ -12,6 +19,14 @@ const query = {
       fonction
       )
     VALUES ${valueParams}
+  `,
+  changeCurrent: `
+    UPDATE front.personne_morale
+    SET
+      current = false,
+      edited_at = NOW()
+    WHERE
+      id = $1;
   `,
   create: `
     INSERT INTO front.personne_morale (
@@ -90,18 +105,24 @@ const query = {
           )
         ) 
         FROM front.opm_representants_legaux oprepleg
-        WHERE oprepleg.personne_morale_id = pm.id), '[]'
+        WHERE oprepleg.personne_morale_id = pm.id AND pm.current = true), '[]'
       ) AS 
        "representantsLegaux",
-      JSON_BUILD_OBJECT(
-          'siret', etab_principal_siret,
-          'adresse', etab_principal_adresse,
-          'telephone', etab_principal_telephone,
-          'nomCommercial', etab_principal_nom_commercial,
-          'raisonSociale', etab_principal_raison_sociale,
-          'pays', etab_principal_pays,
-          'email', etab_principal_email
-      ) AS "etablissementPrincipal",
+       COALESCE(
+        (SELECT
+          JSON_BUILD_OBJECT(
+            'siret', siret,
+            'adresse', adresse,
+            'telephone', telephone,
+            'nomCommercial', nom_commercial,
+            'raisonSociale', raison_sociale,
+            'pays', pays,
+            'email', email
+          )
+        FROM front.personne_morale pm_siege
+        WHERE pm.siren = pm_siege.siren AND pm_siege.current = true AND pm_siege.siege_social = true), '{}'
+      ) AS 
+       "etablissementPrincipal",
       JSON_BUILD_OBJECT(
           'nom', resp_sejour_nom,
           'prenom', resp_sejour_prenom,
@@ -119,12 +140,12 @@ const query = {
           'telephone', resp_sejour_telephone
       ) AS "responsableSejour"
     FROM front.personne_morale pm
-    WHERE organisme_id = $1
+    WHERE organisme_id = $1 AND current = TRUE;
   `,
   getIdByOrganiseId: `
-    SELECT id
+    SELECT *
     FROM front.personne_morale
-    WHERE organisme_id = $1
+    WHERE organisme_id = $1 AND current = TRUE;
   `,
   removeRepresentantsLegaux: `
     DELETE FROM front.opm_representants_legaux
@@ -165,11 +186,11 @@ const query = {
       etab_principal_pays = $30,
       etab_principal_email = $31
   WHERE
-    organisme_id = $1
+    organisme_id = $1 and current = TRUE
   `,
 };
 
-module.exports.create = async (client, organismeId, parametre) => {
+module.exports.create = async (client, organismeId, parametre, userId) => {
   log.i("create - IN", parametre);
 
   const response = await client.query(query.create, [
@@ -205,22 +226,48 @@ module.exports.create = async (client, organismeId, parametre) => {
     parametre?.etablissementPrincipal?.pays ?? null,
     parametre?.etablissementPrincipal?.email ?? null,
   ]);
+
+  addHistoric({
+    action: TRACKING_ACTIONS.creation,
+    data: { newData: { ...parametre, organismeId } },
+    entity: TRACKING_ENTITIES.personneMorale,
+    entityId: response.rows[0].personneMoraleId,
+    userId: userId,
+    userType: TRACKING_USER_TYPE.front,
+  });
   log.d("create - DONE");
   return response.rows[0].personneMoraleId;
 };
 
-module.exports.createOrUpdate = async (client, organismeId, parametre) => {
+module.exports.createOrUpdate = async (
+  client,
+  organismeId,
+  parametre,
+  userId,
+) => {
   log.i("createOrUpdate - IN");
-
   const { rows: personneMorale, rowCount } = await client.query(
     query.getIdByOrganiseId,
     [organismeId],
   );
-  const personneMoraleId =
-    rowCount === 0
-      ? await create(client, organismeId, parametre)
-      : personneMorale[0].id;
+  let personneMoraleId;
+  if (rowCount === 0 || parametre?.siret !== personneMorale[0]?.siret) {
+    if (rowCount !== 0) {
+      await client.query(query.changeCurrent, [personneMorale[0].id]);
+      addHistoric({
+        action: TRACKING_ACTIONS.deletion,
+        data: { newData: parametre, oldData: personneMorale[0] },
+        entity: TRACKING_ENTITIES.personneMorale,
+        entityId: personneMorale[0].id,
+        userId: userId,
+        userType: TRACKING_USER_TYPE.front,
+      });
+    }
 
+    personneMoraleId = await create(client, organismeId, parametre, userId);
+  } else {
+    personneMoraleId = personneMorale[0].id;
+  }
   await client.query(query.update, [
     organismeId,
     parametre?.pays ?? null,
@@ -254,7 +301,14 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
     parametre?.etablissementPrincipal?.pays ?? null,
     parametre?.etablissementPrincipal?.email ?? null,
   ]);
-
+  addHistoric({
+    action: TRACKING_ACTIONS.modification,
+    data: { newData: parametre, oldData: personneMorale[0] },
+    entity: TRACKING_ENTITIES.personneMorale,
+    entityId: personneMorale[0].id,
+    userId: userId,
+    userType: TRACKING_USER_TYPE.front,
+  });
   await client.query(query.removeRepresentantsLegaux, [personneMoraleId]);
   const representantsLegaux = parametre.representantsLegaux;
   if (representantsLegaux && Object.keys(representantsLegaux).length !== 0) {
@@ -273,13 +327,13 @@ module.exports.createOrUpdate = async (client, organismeId, parametre) => {
           `($${index * 4 + 1}, $${index * 4 + 2}, $${index * 4 + 3}, $${index * 4 + 4})`,
       )
       .join(", ");
-
     await client.query(
       query.associateRepresentantsLegaux(valuesParamsRepLegaux),
       valuesRepreLegaux,
     );
   }
   log.i("createOrUpdate - DONE");
+  return personneMoraleId;
 };
 
 module.exports.getByOrganismeId = async (organismeId) => {
@@ -289,7 +343,18 @@ module.exports.getByOrganismeId = async (organismeId) => {
     [organismeId],
   );
 
+  log.i("getByOrganismeId - DONE");
   return rowCount === 0 ? {} : personneMorales[0];
+};
+
+module.exports.getIdByOrganismeId = async (organismeId) => {
+  log.i("getIdByOrganismeId - IN", organismeId);
+  const { rows: personneMorale, rowCount } = await getPool().query(
+    query.getIdByOrganiseId,
+    [organismeId],
+  );
+  log.i("getIdByOrganismeId - DONE");
+  return rowCount === 0 ? {} : { id: personneMorale[0].id };
 };
 
 const { create } = module.exports;

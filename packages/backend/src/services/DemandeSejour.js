@@ -10,7 +10,7 @@ const { getPool } = require("../utils/pgpool");
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const PersonneMorale = require("./organisme/PersonneMorale");
 const PersonnePhysique = require("./organisme/PersonnePhysique");
-const { entities, userTypes } = require("../helpers/tracking");
+const { TRACKING_ENTITIES, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 const { addHistoric } = require("./Tracking");
 const { getComplementOrganisme } = require("./Organisme");
 const {
@@ -277,7 +277,7 @@ RETURNING
   COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
-LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
 LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
       SELECT MAX(dsmax.id)
       FROM front.demande_sejour_message  dsmax
@@ -326,8 +326,8 @@ SELECT
     COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
 FROM front.demande_sejour ds
   JOIN front.organismes o ON o.id = ds.organisme_id
-  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
-  LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+  LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
+  LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
   LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
   LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
       SELECT MAX(dsmax.id)
@@ -357,8 +357,8 @@ WHERE
 SELECT COUNT(DISTINCT ds.id)
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
-LEFT JOIN front.personne_morale pm ON pm.organisme_id  = ds.organisme_id
-LEFT JOIN front.personne_physique pp ON pp.organisme_id  = ds.organisme_id
+LEFT JOIN front.personne_morale pm ON pm.organisme_id  = ds.organisme_id AND pm.current = true
+LEFT JOIN front.personne_physique pp ON pp.organisme_id  = ds.organisme_id AND pp.current = TRUE
 LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
 LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id
 WHERE
@@ -411,8 +411,8 @@ WHERE
       ds.edited_at as "editedAt"
     FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
-      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
       LEFT JOIN front.agrements a ON a.organisme_id  = ds.organisme_id
     where ds.id = $1`,
       [declarationId, departements],
@@ -425,7 +425,7 @@ WHERE
     JOIN front.user_organisme uo ON uo.org_id = ds.organisme_id
     JOIN front.users u ON uo.use_id = u.id
     JOIN front.organismes o ON o.id = ds.organisme_id
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
     WHERE ds.id = $1
     AND (u.id = $3 OR pm.siren = $2)
   `,
@@ -492,8 +492,8 @@ WHERE
         COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
       FROM front.demande_sejour ds
       JOIN front.organismes o ON o.id = ds.organisme_id
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
-      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
       LEFT JOIN front.agrements a ON a.organisme_id = ds.organisme_id
       LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
           SELECT MAX(dsmax.id)
@@ -566,7 +566,7 @@ WHERE
   COALESCE(dsm.read_at, dsm.created_at) AS "messageLastAt"
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
-LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
 LEFT JOIN front.demande_sejour_message dsm ON dsm.declaration_id = ds.id AND dsm.id = (
       SELECT MAX(dsmax.id)
       FROM front.demande_sejour_message  dsmax
@@ -632,7 +632,7 @@ SELECT DISTINCT u.mail AS mail
 FROM front.users u
 JOIN front.user_organisme uo ON u.id = uo.use_id
 JOIN front.organismes o ON uo.org_id = o.id
-LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
 WHERE
   pm.siren = $1 AND
   pm.siege_social = 'true'
@@ -722,8 +722,8 @@ WHERE uo.org_id = $1 AND u.status_code = 'VALIDATED'
       ) AS hebergement_nom
     FROM front.demande_sejour ds
     JOIN front.organismes o ON o.id = ds.organisme_id
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
-    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
     WHERE
       o.id = ANY ($1)
     GROUP BY ds.id,
@@ -794,7 +794,7 @@ SELECT
   sejour_itinerant as "sejourItinerant"
 FROM front.demande_sejour ds
 JOIN front.organismes o ON o.id = ds.organisme_id
-LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id and pm.current = true
 WHERE 1=1
 ${Object.keys(criterias)
   .map((criteria, i) => ` AND ${criteria} = $${i + 1}`)
@@ -1256,7 +1256,6 @@ module.exports.getOne = async (criterias = {}) => {
   const declaration = declarations[0];
 
   const hebergements = await getHebergementsByDSIds(declaration.id);
-
   log.i("getOne - DONE");
   return {
     ...declaration,
@@ -1987,10 +1986,10 @@ module.exports.addAsyncDeclarationSejourHistoric = async ({
         after: newData,
         before: oldData,
       },
-      entity: entities.demandeSejour,
+      entity: TRACKING_ENTITIES.demandeSejour,
       entityId: declarationId,
       userId,
-      userType: userType ?? userTypes.front,
+      userType: userType ?? TRACKING_USER_TYPE.front,
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);

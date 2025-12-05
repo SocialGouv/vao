@@ -6,4 +6,4 @@ module.exports.getBySiret = require("./getBySiret");
 module.exports.getMine = require("./getMine");
 module.exports.finalize = require("./finalize");
 module.exports.post = require("./post");
-module.exports.update = require("./update");
+module.exports.update = require("./update").default;

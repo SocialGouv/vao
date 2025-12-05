@@ -19,7 +19,7 @@ const errorDescription = computed(() => {
     return "La page demandée n'existe pas ou a été déplacée.";
   }
   if (props.error?.statusCode === 500) {
-    return "Une erreur interne est survenue. Veuillez réessayer plus tard.";
+    return `Une erreur interne est survenue. Veuillez réessayer plus tard. ${props.error.message}`;
   }
   return "Cette page n'existe pas ou une erreur s'est produite.";
 });
