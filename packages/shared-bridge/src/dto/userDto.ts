@@ -7,4 +7,5 @@ export interface UserDto {
   roles: string[];
   territoireCode: string;
   userSiret: string;
+  serviceCompetent: string;
 }

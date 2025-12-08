@@ -1,17 +1,24 @@
 import { defineStore } from "pinia";
 import { logger, $fetchBackend } from "#imports";
+import type { OrganismeDto } from "@vao/shared-bridge";
 
 const log = logger("stores/organisme");
 
+interface OrganismeStoreState {
+  organisme: OrganismeDto | null;
+  organismes: OrganismeDto[];
+  organismesTotal: number;
+  organismesNonAgrees: OrganismeDto[];
+}
+
 export const useOrganismeStore = defineStore("organisme", {
-  state: () => ({
+  state: (): OrganismeStoreState => ({
     organisme: null,
     organismes: [],
     organismesTotal: 0,
     organismesNonAgrees: [],
   }),
   getters: {
-    isConnected: (state) => !!state.user,
     libelle: (state) =>
       state.organisme?.personneMorale?.raisonSociale ??
       `${state.organisme?.personnePhysique?.nomNaissance ?? ""} ${state.organisme?.personnePhysique?.prenom ?? ""}`,
@@ -35,7 +42,7 @@ export const useOrganismeStore = defineStore("organisme", {
         throw err;
       }
     },
-    async fetchOrganismes(params) {
+    async fetchOrganismes(params: any) {
       try {
         // Appel du back pour la liste des utilisateurs
         const { rows, total } = await $fetchBackend("/organisme/bo/liste", {
@@ -54,7 +61,7 @@ export const useOrganismeStore = defineStore("organisme", {
         throw error;
       }
     },
-    async fetchOrganismesNonAgrees({ search } = {}) {
+    async fetchOrganismesNonAgrees({ search }: { search?: string } = {}) {
       log.i("fetchOrganismesNonAgrees - IN");
       try {
         // Appel du back pour la liste des utilisateurs
@@ -78,7 +85,7 @@ export const useOrganismeStore = defineStore("organisme", {
       }
     },
 
-    async getOrganisme(id) {
+    async getOrganisme(id: string) {
       log.i("getOrganisme - IN", { id });
       try {
         // Appel du back pour la liste des utilisateurs

@@ -10,4 +10,8 @@ export interface OrganismeDto {
   typeOrganisme: string;
   personneMorale: PersonneMoraleDto;
   personnePhysique: PersonnePhysiqueDto;
+  agrement: {
+    numero: string;
+    dateFinValidite: string;
+  };
 }
