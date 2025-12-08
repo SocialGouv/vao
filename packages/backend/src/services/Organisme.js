@@ -409,6 +409,7 @@ FROM back.organisme_non_agree ona
     INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id
     WHERE pm.siren = $1
       AND pm.siege_social = 'true'
+      AND pm.current = true
 `,
 
   getSiret: `
