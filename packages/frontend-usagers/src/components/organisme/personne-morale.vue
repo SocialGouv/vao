@@ -460,10 +460,10 @@ async function updateSiret() {
 async function searchNewSiret() {
   log.i("searchNewSiret - IN");
   try {
-    const siretFromResponse = await SiretService.getSiretSiegeSocial(
-      siret.value,
-    );
-    if (siretFromResponse !== siret.value && siegeSocial.value) {
+    const siretFromResponse = siegeSocial.value
+      ? await SiretService.getSiretSiegeSocial(siret.value)
+      : await SiretService.getSiretEtablissementSuccesseur(siret.value);
+    if (siretFromResponse !== "" && siretFromResponse !== siret.value) {
       siretToUpdate.value = siretFromResponse;
       confirmUpdatingSiret.value = true;
     } else {
@@ -493,11 +493,10 @@ async function searchApiInsee() {
         method: "GET",
         credentials: "include",
       });
-
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
 
-    if (Object.keys(siege).length !== 0) {
+    if (siege && Object.keys(siege).length !== 0) {
       const isEstablishmentEnabled = siege?.personneMorale?.etablissements
         .filter((e) => e.siret === siret.value)
         .map((e) => {

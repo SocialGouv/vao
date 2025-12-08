@@ -204,6 +204,7 @@ import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
 import { apiTypes } from "@vao/shared-ui/src/models";
 import { SiretService } from "~/services/siretService";
+import { getErrorMessage } from "@vao/shared-bridge";
 
 const toaster = useToaster();
 const log = logger("components/organisme/personne-physique");
@@ -327,7 +328,7 @@ async function searchNewSiret() {
     log.w("searchNewSiret - erreur:", { error });
     const body = error.data;
     const codeError = body.name;
-    const description = await SiretService.getDescriptionError(codeError);
+    const description = await getErrorMessage(codeError);
     toaster.error({
       titleTag: "h2",
       description,

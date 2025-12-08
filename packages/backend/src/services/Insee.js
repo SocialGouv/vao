@@ -71,6 +71,15 @@ module.exports.getListeEtablissements = async (siren) => {
   return fetchPage();
 };
 
+module.exports.getEtablissementSuccesseur = async ({ siret }) => {
+  const { apiInsee } = config;
+  const { data } = await axios.get(
+    `${apiInsee.URL}${apiInsee.URI}/siret/liensSuccession?q=siretEtablissementPredecesseur:${siret}&nombre:1&tri:successeur`,
+    { headers: { "X-INSEE-Api-Key-Integration": `${apiInsee.TOKEN}` } },
+  );
+  return { data };
+};
+
 module.exports.sanitizeEtablissements = (etablissements, uniteLegale) =>
   Object.keys(etablissements).length !== 0
     ? etablissements
