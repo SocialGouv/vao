@@ -33,7 +33,7 @@
         :disabled="
           !props.modifiable ||
           !!organismeStore.organismeCourant?.complet ||
-          userStore.user.userSiret
+          userStore.user?.userSiret
         "
         placeholder=""
         hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
@@ -268,12 +268,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
 import dayjs from "dayjs";
 import { apiTypes } from "@vao/shared-ui/src/models";
+import type { PersonneMoraleDto } from "@vao/shared-bridge";
 
 const toaster = useToaster();
 
@@ -324,8 +325,8 @@ const usersWithSiret = computed(() =>
   ]),
 );
 
-const initialValues = {
-  siret: userStore.user.userSiret,
+const initialValues: Partial<PersonneMoraleDto> = {
+  siret: userStore.user?.userSiret,
   siren: null,
   siegeSocial: null,
   porteurAgrement: null,
@@ -353,45 +354,48 @@ const {
   errorMessage: porteurAgrementErrorMessage,
   handleChange: onPorteurAgrementChange,
   meta: porteurAgrementMeta,
-} = useField("porteurAgrement");
+} = useField<string | boolean>("porteurAgrement");
 const {
   value: siret,
   errorMessage: siretErrorMessage,
   handleChange: onSiretChange,
   meta: siretMeta,
-} = useField("siret");
-const { value: siren } = useField("siren");
-const { value: siegeSocial } = useField("siegeSocial");
-const { value: raisonSociale } = useField("raisonSociale");
-const { value: statut } = useField("statut");
-const { value: adresse } = useField("adresse");
-const { value: pays } = useField("pays");
+} = useField<string | null>("siret");
+const { value: siren } = useField<string | null>("siren");
+const { value: siegeSocial } = useField<boolean | null>("siegeSocial");
+const { value: raisonSociale } = useField<string | null>("raisonSociale");
+const { value: statut } = useField<string | null>("statut");
+const { value: adresse } = useField<string | null>("adresse");
+const { value: pays } = useField<string | null>("pays");
 const {
   value: email,
   errorMessage: emailErrorMessage,
   handleChange: onEmailChange,
   meta: emailMeta,
-} = useField("email");
+} = useField<string | null>("email");
 const {
   value: telephone,
   errorMessage: telephoneErrorMessage,
+  // @ts-expect-error validMessage does not exist in the type ?
   validMessage: telephoneValidMessage,
   handleChange: onTelephoneChange,
   meta: telephoneMeta,
-} = useField("telephone");
+} = useField<string | null>("telephone");
 const {
   value: nomCommercial,
   errorMessage: nomCommercialErrorMessage,
   handleChange: onNomCommercialChange,
   meta: nomCommercialMeta,
-} = useField("nomCommercial");
+} = useField<string | null>("nomCommercial");
 const {
   value: representantsLegaux,
   handleChange: onRepresentantsLegauxChange,
-} = useField("representantsLegaux");
-const { value: etablissementPrincipal } = useField("etablissementPrincipal");
+} = useField<Record<string, any>[]>("representantsLegaux");
+const { value: etablissementPrincipal } = useField<Record<string, any>>(
+  "etablissementPrincipal",
+);
 const { value: responsableSejour, handleChange: onResponsableSejourChange } =
-  useField("responsableSejour");
+  useField<Record<string, any>>("responsableSejour");
 
 const formatedSiret = computed(() => {
   if (!siret.value) {
@@ -418,7 +422,7 @@ const formatedSiret = computed(() => {
   return formatedSiret;
 });
 
-function trimSiret(s) {
+function trimSiret(s: string) {
   return onSiretChange(s.replace(/ /g, ""));
 }
 
@@ -435,11 +439,11 @@ async function searchApiInsee() {
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
 
     if (Object.keys(siege).length !== 0) {
-      const isEstablishmentEnabled = siege?.personneMorale?.etablissements
-        .filter((e) => e.siret === siret.value)
-        .map((e) => {
-          return e.enabled;
-        });
+      const isEstablishmentEnabled = (
+        siege?.personneMorale as PersonneMoraleDto
+      )?.etablissements
+        .filter((etablissement) => etablissement.siret === siret.value)
+        .map((etablissement) => etablissement.enabled);
       if (!isEstablishmentEnabled[0] && !porteurAgrement.value) {
         toaster.error({
           titleTag: "h2",
@@ -453,9 +457,11 @@ async function searchApiInsee() {
     const etablissementPrincipal =
       siege &&
       siege.complet &&
-      siege.personneMorale?.etablissements?.find((e) => {
-        return e.nic === siret.value.slice(9);
-      })
+      (siege.personneMorale as PersonneMoraleDto)?.etablissements?.find(
+        (etablissement) => {
+          return etablissement.nic === siret.value?.slice(9);
+        },
+      )
         ? {
             siret: siege.personneMorale.siret ?? "",
             raisonSociale: siege.personneMorale.raisonSociale ?? "",
@@ -482,7 +488,7 @@ async function searchApiInsee() {
       representantsLegaux: representantsLegaux.representantsLegaux ?? [],
       etablissementPrincipal,
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error.response?.status === 403) {
       toaster.error({
         titleTag: "h2",
@@ -531,7 +537,7 @@ async function searchOrganismeBySiret() {
       });
       return data.organisme;
     }
-  } catch (error) {
+  } catch (error: any) {
     toaster.error({
       titleTag: "h2",
       description:
@@ -588,14 +594,17 @@ async function searchOrganisme() {
       });
       return false;
     }
-    if (siren)
+    if (siren.value) {
       toaster.success({ titleTag: "h2", description: "Données récupérées" });
+    }
     randomId.value = random.getRandomId();
     keyRepresentantLegaux.value += 1;
   }
 }
 
-const onRepresentantsLegauxChangeWithKeyChange = (event) => {
+const onRepresentantsLegauxChangeWithKeyChange = (
+  event: Record<string, any>[],
+) => {
   onRepresentantsLegauxChange(event);
   /* Le fait de changer la clé rernder le composant. Il semble que
   la cloture de la popup rentre en conflit avec ce rerender ce qui casse le scroll.

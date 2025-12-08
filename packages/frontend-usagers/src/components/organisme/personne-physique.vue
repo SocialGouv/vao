@@ -17,7 +17,7 @@
             :disabled="
               !props.modifiable ||
               !!organismeStore.organismeCourant?.complet ||
-              userStore.user.userSiret
+              userStore.user?.userSiret
             "
             placeholder=""
             hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
@@ -153,7 +153,7 @@
                     ? 'Nouvelle adresse du lieu d’exercice des activités VAO'
                     : 'Adresse du lieu d’exercice des activités VAO'
                 "
-                :value="adresseSiege"
+                :value="adresseSiege ?? undefined"
                 @select="onAdressSiegeChange"
               />
             </div>
@@ -177,7 +177,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
@@ -227,41 +227,47 @@ const {
   errorMessage: siretErrorMessage,
   handleChange: onSiretChange,
   meta: siretMeta,
-} = useField("siret");
-const { value: nomNaissance } = useField("nomNaissance");
+} = useField<string | null>("siret");
+const { value: nomNaissance } = useField<string | null>("nomNaissance");
 const {
   value: nomUsage,
   errorMessage: nomUsageErrorMessage,
   handleChange: onNomUsageChange,
   meta: nomUsageMeta,
-} = useField("nomUsage");
-const { value: prenom } = useField("prenom");
+} = useField<string | null>("nomUsage");
+const { value: prenom } = useField<string | null>("prenom");
 const {
   value: profession,
   errorMessage: professionErrorMessage,
   handleChange: onProfessionChange,
   meta: professionMeta,
-} = useField("profession");
-const { value: adresseDomicile } = useField("adresseDomicile");
+} = useField<string | null>("profession");
+const { value: adresseDomicile } = useField<{
+  label: string;
+  codeInsee: string;
+  codePostal: string;
+  coordinates: { lat: number; lng: number };
+  departement: string;
+}>("adresseDomicile");
 const {
   value: adresseIdentique,
   errorMessage: adresseIdentiqueErrorMessage,
   meta: adresseIdentiqueMeta,
-} = useField("adresseIdentique");
+} = useField<boolean>("adresseIdentique");
 const {
   value: adresseSiege,
   errorMessage: adresseSiegeErrorMessage,
   resetField: resetAdressSiegeField,
   handleChange: onAdressSiegeChange,
-} = useField("adresseSiege");
+} = useField<Record<string, any> | null>("adresseSiege");
 const {
   value: telephone,
   errorMessage: telephoneErrorMessage,
   handleChange: onTelephoneChange,
   meta: telephoneMeta,
-} = useField("telephone");
+} = useField<string | null>("telephone");
 
-function trimSiret(s) {
+function trimSiret(s: string) {
   return onSiretChange(s.replace(/ /g, ""));
 }
 
@@ -352,7 +358,7 @@ async function searchApiInsee() {
         departement: uniteLegale.adresseEtablissement.departement,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error.response?.status === 403) {
       toaster.error({
         titleTag: "h2",
@@ -370,12 +376,12 @@ async function searchApiInsee() {
   }
 }
 
-function setAdresseIdentique(v) {
+function setAdresseIdentique(checked: string | number | boolean) {
   log.d("setAdresseIdentique - IN");
   resetAdressSiegeField({
-    value: v ? adresseDomicile.value : null,
+    value: checked ? adresseDomicile.value : null,
   });
-  adresseIdentique.value = v;
+  adresseIdentique.value = !!checked;
   log.d("setAdresseIdentique - Done");
 }
 

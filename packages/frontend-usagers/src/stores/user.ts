@@ -1,10 +1,19 @@
 import { defineStore } from "pinia";
 import { logger, $fetchBackend } from "#imports";
+import type { UserDto } from "@vao/shared-bridge";
 
 const log = logger("stores/user");
 
+interface UserStoreState {
+  user: UserDto | null;
+  apiToken: string | null;
+  users: UserDto[];
+  total: number;
+  userSelected: UserDto | null;
+}
+
 export const useUserStore = defineStore("user", {
-  state: () => ({
+  state: (): UserStoreState => ({
     user: null,
     apiToken: null,
     users: [],
@@ -15,7 +24,7 @@ export const useUserStore = defineStore("user", {
     isConnected: (state) => !!state.user,
   },
   actions: {
-    async getUserSelected(userId) {
+    async getUserSelected(userId: string) {
       log.i("refreshProfile - IN");
       try {
         const { user } = await $fetchBackend(`/fo-user/get-one/${userId}`, {
@@ -45,7 +54,7 @@ export const useUserStore = defineStore("user", {
         this.user = null;
       }
     },
-    async patchProfile(params) {
+    async patchProfile(params: Partial<UserDto>) {
       await $fetchBackend("/users/me", {
         method: "PATCH",
         credentials: "include",
@@ -90,7 +99,7 @@ export const useUserStore = defineStore("user", {
         log.w("fetchUsersOrganisme - Erreur", { error });
       }
     },
-    async updateRole({ roles, userId }) {
+    async updateRole({ roles, userId }: { roles: string[]; userId: string }) {
       log.i("updateRole - IN");
       try {
         const response = await $fetchBackend(`/fo-user/roles/${userId}`, {
@@ -109,7 +118,11 @@ export const useUserStore = defineStore("user", {
         throw error;
       }
     },
-    async handleUserStatus(action, userId, params) {
+    async handleUserStatus(
+      action: string,
+      userId: string,
+      params: Partial<UserDto>,
+    ) {
       log.i(`${action} - IN`);
       try {
         const response = await $fetchBackend(`/fo-user/${action}/${userId}`, {
@@ -125,11 +138,11 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async updateUserStatus(userId, params) {
+    async updateUserStatus(userId: string, params: Partial<UserDto>) {
       return this.handleUserStatus("update-status", userId, params);
     },
 
-    async changeUserStatus(userId, params) {
+    async changeUserStatus(userId: string, params: Partial<UserDto>) {
       return this.handleUserStatus("change-status", userId, params);
     },
   },
