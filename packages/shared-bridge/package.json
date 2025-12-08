@@ -13,7 +13,7 @@
   "license": "Apache-2.0",
   "description": "",
   "dependencies": {
-    "debug": "~4.3.4",
+    "debug": "~4.4.3",
     "yup": "~1.4.0"
   },
   "devDependencies": {
