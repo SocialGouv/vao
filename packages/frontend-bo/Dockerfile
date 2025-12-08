@@ -1,4 +1,4 @@
-ARG NODE_VERSION=22.20.0-bullseye-slim
+ARG NODE_VERSION=22.21.1-bullseye-slim
 FROM node:${NODE_VERSION} AS builder
 
 RUN apt-get update \
