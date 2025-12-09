@@ -10,8 +10,16 @@ import { getTagSejourLibelle } from "@vao/shared-ui/src/utils/eigUtils";
 
 const log = logger("stores/hebergement");
 
+interface EigStoreState {
+  eigs: any[];
+  availableDs: any[];
+  selectedDemande: any | null;
+  currentEig: any | null;
+  total: number;
+}
+
 export const useEigStore = defineStore("eig", {
-  state: () => ({
+  state: (): EigStoreState => ({
     eigs: [],
     availableDs: [],
     selectedDemande: null,
@@ -19,7 +27,7 @@ export const useEigStore = defineStore("eig", {
     total: 0,
   }),
   getters: {
-    canModify() {
+    canModify(): boolean {
       const allowEigReadWrite = getEigPermissions();
       return (
         !this.currentEig ||
@@ -32,28 +40,31 @@ export const useEigStore = defineStore("eig", {
           }))
       );
     },
-    selectedDemandeLabel() {
+    selectedDemandeLabel(): string | null {
       if (!this.selectedDemande) {
         return null;
       }
       return getTagSejourLibelle(this.selectedDemande);
     },
-    selectedDemandeDateRange() {
+    selectedDemandeDateRange(): [string, string] | null {
       if (!this.selectedDemande) {
         return null;
       }
       return [this.selectedDemande.dateDebut, this.selectedDemande.dateFin];
     },
-    departementsOptions() {
+    departementsOptions(): string[] {
       return (
         this.selectedDemande?.hebergement?.hebergements
-          ?.map((h) => h?.coordonnees?.adresse?.departement)
-          .filter((d) => !!d) ?? []
+          ?.map(
+            (hebergement: any) =>
+              hebergement?.coordonnees?.adresse?.departement,
+          )
+          .filter((departement: any) => !!departement) ?? []
       );
     },
   },
   actions: {
-    async setCurrentEig(eigId) {
+    async setCurrentEig(eigId: string) {
       if (!eigId) {
         this.currentEig = null;
       } else {
@@ -74,7 +85,19 @@ export const useEigStore = defineStore("eig", {
         }
       }
     },
-    async get({ limit, offset, sortBy, sortDirection, search } = {}) {
+    async get({
+      limit,
+      offset,
+      sortBy,
+      sortDirection,
+      search,
+    }: {
+      limit?: number;
+      offset?: number;
+      sortBy?: string;
+      sortDirection?: string;
+      search?: any;
+    } = {}) {
       log.i("fetchEig - IN");
       try {
         const { eig } = await $fetchBackend("/eig/me", {
@@ -97,7 +120,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async updateEig(eigId, type, data) {
+    async updateEig(eigId: string, type: string, data: any) {
       try {
         return await $fetchBackend(`/eig/${eigId}`, {
           method: "PUT",
@@ -112,7 +135,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async create(data) {
+    async create(data: any) {
       try {
         return await $fetchBackend("/eig", {
           method: "POST",
@@ -126,7 +149,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async depose(eigId, body) {
+    async depose(eigId: string, body: any) {
       try {
         return await $fetchBackend(`/eig/depose/${eigId}`, {
           method: "POST",
@@ -138,7 +161,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async delete(eigId) {
+    async delete(eigId: string) {
       try {
         await $fetchBackend(`/eig/${eigId}`, {
           method: "DELETE",
@@ -164,7 +187,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async setSelectedDemande(id) {
+    async setSelectedDemande(id: number) {
       log.i("setSelectedDemande - IN");
       if (!id) {
         this.selectedDemande = null;

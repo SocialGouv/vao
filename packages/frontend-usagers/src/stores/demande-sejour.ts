@@ -3,6 +3,16 @@ import { $fetchBackend, logger } from "#imports";
 
 const log = logger("stores/demande-sejour");
 
+interface DemandeSejourStoreState {
+  demandes: any[];
+  totalDemandes: number;
+  demandeCourante: any;
+  messages: any[] | null;
+  demandesDeprecated: any[];
+  totalDemandesDeprecated: number;
+  stats: any | null;
+}
+
 const resetDemandeCourante = () => ({
   informationsOrganisme: {},
   informationsVacanciers: {},
@@ -15,13 +25,14 @@ const resetDemandeCourante = () => ({
 });
 
 export const useDemandeSejourStore = defineStore("demandeSejour", {
-  state: () => ({
+  state: (): DemandeSejourStoreState => ({
     demandes: [],
     totalDemandes: 0,
     demandeCourante: resetDemandeCourante(),
     messages: [],
     demandesDeprecated: [],
     totalDemandesDeprecated: 0,
+    stats: null,
   }),
   actions: {
     async exportSejours() {
@@ -36,7 +47,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
-    async fetchDemandesDeprecated({ sortBy } = {}) {
+    async fetchDemandesDeprecated({ sortBy }: { sortBy?: string } = {}) {
       log.i("fetchDemandes - IN");
       try {
         const { demandes, total } = await $fetchBackend("/sejour/deprecated", {
@@ -58,7 +69,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
-    async fetchDemandes(params) {
+    async fetchDemandes(params: any) {
       log.i("fetchDemandes - IN");
       try {
         const { demandes, total } = await $fetchBackend("/sejour", {
@@ -78,7 +89,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
-    async setDemandeCourante(id) {
+    async setDemandeCourante(id: number) {
       log.i("setDemandeCourante - IN");
       try {
         const { demande } = await $fetchBackend(`/sejour/${id}`, {
@@ -98,7 +109,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       log.i("resetDemandeCourante - IN");
       this.demandeCourante = resetDemandeCourante();
     },
-    async postDemande(demande) {
+    async postDemande(demande: any) {
       log.i("postDemande - IN", { demande });
       try {
         await $fetchBackend(`/demandes-sejour`, {
@@ -111,7 +122,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         log.w("postDemande - DONE with error", err);
       }
     },
-    async fetchMessages(declarationId) {
+    async fetchMessages(declarationId: string) {
       log.i("fetchMessages - IN", { declarationId });
       try {
         const messages = await $fetchBackend(`/message/${declarationId}`, {
@@ -131,7 +142,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
-    async readMessages(declarationId) {
+    async readMessages(declarationId: string) {
       log.i("readMessages - In");
       try {
         const { readMessages } = await $fetchBackend(
@@ -166,21 +177,21 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
-    async copyDemandeSejour(declarationId) {
+    async copyDemandeSejour(declarationId: string) {
       const response = await $fetchBackend(`/sejour/${declarationId}/copy`, {
         method: "POST",
         credentials: "include",
       });
       return response;
     },
-    async deleteDemandeSejour(declarationId) {
+    async deleteDemandeSejour(declarationId: string) {
       const response = await $fetchBackend(`/sejour/${declarationId}`, {
         method: "DELETE",
         credentials: "include",
       });
       return response;
     },
-    async cancelDemandeSejour(declarationId) {
+    async cancelDemandeSejour(declarationId: string) {
       const response = await $fetchBackend(`/sejour/cancel/${declarationId}`, {
         method: "POST",
         credentials: "include",

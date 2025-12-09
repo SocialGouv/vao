@@ -1,10 +1,34 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
+import type { HebergementDto } from "@vao/shared-bridge";
 
 const log = logger("stores/demande-sejour");
 
+interface DemandeSejourStoreState {
+  demandes: any[];
+  messages: any[] | null;
+  history: any[];
+  currentDemande: any | null;
+  total: number;
+  stats: any | null;
+  hebergements: any[];
+  hebergementsCount: number;
+  isGetHebergementsLoading: boolean;
+  hebergement: HebergementDto | null;
+  isGetHebergementLoading: boolean;
+  eigs: {
+    id: number;
+    dateDepot: string;
+    readByDreets: boolean;
+    readByDdets: boolean;
+    file: string;
+  }[];
+  declarationsMessages: any[];
+  declarationsMessagesTotal: number;
+}
+
 export const useDemandeSejourStore = defineStore("demandeSejour", {
-  state: () => ({
+  state: (): DemandeSejourStoreState => ({
     demandes: [],
     messages: [],
     history: [],
@@ -21,7 +45,19 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     declarationsMessagesTotal: 0,
   }),
   actions: {
-    async fetchDemandes({ limit, offset, sortBy, sortDirection, search } = {}) {
+    async fetchDemandes({
+      limit,
+      offset,
+      sortBy,
+      sortDirection,
+      search,
+    }: {
+      limit?: number;
+      offset?: number;
+      sortBy?: string;
+      sortDirection?: string;
+      search?: string;
+    } = {}) {
       log.i("fetchDemandes - IN");
       try {
         const { demandesWithPagination } = await $fetchBackend(
@@ -65,7 +101,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
-    async getCurrentDemande(id) {
+    async getCurrentDemande(id: number) {
       try {
         const { demande } = await $fetchBackend(`/sejour/admin/${id}`, {
           method: "GET",
@@ -114,7 +150,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       }
     },
 
-    async fetchMessages(declarationId) {
+    async fetchMessages(declarationId: string) {
       try {
         const messages = await $fetchBackend(
           `/message/admin/${declarationId}`,
@@ -137,7 +173,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       }
     },
 
-    async fetchDeclarationsMessages(params) {
+    async fetchDeclarationsMessages(params: any) {
       try {
         const { rows, total } = await $fetchBackend("/sejour/admin/messages/", {
           method: "GET",
@@ -153,7 +189,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       }
     },
 
-    async prendreEnCharge(declarationId) {
+    async prendreEnCharge(declarationId: string) {
       const response = await $fetchBackend(
         `/sejour/admin/${declarationId}/prise-en-charge`,
         {
@@ -164,7 +200,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       return response;
     },
 
-    async postMessage(declarationId, body) {
+    async postMessage(declarationId: string, body: any) {
       const response = await $fetchBackend(`/message/admin/${declarationId}`, {
         method: "POST",
         credentials: "include",
@@ -197,7 +233,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         this.isGetHebergementsLoading = false;
       }
     },
-    async getHebergement(demandeSejourId, hebergementId) {
+    async getHebergement(demandeSejourId: string, hebergementId: string) {
       log.i("getHebergement - IN");
       this.isGetHebergementLoading = true;
       try {
@@ -218,7 +254,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         this.isGetHebergementLoading = false;
       }
     },
-    async readMessages(declarationId) {
+    async readMessages(declarationId: string) {
       try {
         const { readMessages } = await $fetchBackend(
           `/message/admin/read/${declarationId}`,
@@ -239,7 +275,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       }
     },
 
-    async getHistory(declarationId) {
+    async getHistory(declarationId: string) {
       const response = await $fetchBackend(
         `/sejour/admin/historique/${declarationId}`,
         {
@@ -251,7 +287,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       return response;
     },
 
-    async setAdditionalRequest(declarationId, commentaires) {
+    async setAdditionalRequest(declarationId: string, commentaires: any) {
       const response = await $fetchBackend(
         `/sejour/admin/${declarationId}/demande-complements`,
         {
@@ -263,7 +299,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       return response;
     },
 
-    async setDenial(declarationId, commentaires) {
+    async setDenial(declarationId: string, commentaires: any) {
       const response = await $fetchBackend(
         `/sejour/admin/${declarationId}/refus`,
         {
@@ -275,7 +311,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       return response;
     },
 
-    async setRegistration2Months(declarationId) {
+    async setRegistration2Months(declarationId: string) {
       const response = await $fetchBackend(
         `/sejour/admin/${declarationId}/enregistrement-2-mois`,
         {
@@ -286,7 +322,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       return response;
     },
 
-    async getEigs(declarationId) {
+    async getEigs(declarationId: string) {
       const response = await $fetchBackend(`/eig/admin/ds/${declarationId}`, {
         method: "GET",
         credentials: "include",

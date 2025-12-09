@@ -1,10 +1,17 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
+import type { OrganismeDto, UserDto } from "@vao/shared-bridge";
+
+interface OrganismeStoreState {
+  organismes: OrganismeDto[];
+  organismeCourant: OrganismeDto | null;
+  usersFO: UserDto[];
+}
 
 const log = logger("stores/organismes");
 
 export const useOrganismeStore = defineStore("organismes", {
-  state: () => ({
+  state: (): OrganismeStoreState => ({
     organismes: [],
     organismeCourant: null,
     usersFO: [],
@@ -26,7 +33,7 @@ export const useOrganismeStore = defineStore("organismes", {
           this.organismes = organismes;
         }
         log.d("fetchOrganismes - DONE");
-      } catch (err) {
+      } catch {
         this.organismes = [];
         log.i("fetchOrganismes - DONE with error");
       }
@@ -43,14 +50,14 @@ export const useOrganismeStore = defineStore("organismes", {
           },
           params: {
             search: {
-              siret: this.organismeCourant.personneMorale.siret,
+              siret: this.organismeCourant?.personneMorale?.siret,
             },
           },
         });
         log.d("fetchUsersOrganisme - réponse", { users });
         this.usersFO = users;
         log.i("fetchUsersOrganisme - DONE");
-      } catch (error) {
+      } catch (error: unknown) {
         // Retour vide en cas d'erreur
         this.usersFO = [];
         log.w("fetchUsersOrganisme - Erreur", { error });
@@ -71,7 +78,7 @@ export const useOrganismeStore = defineStore("organismes", {
           this.organismeCourant = organisme;
         }
         log.d("setOrganismeCourant - DONE");
-      } catch (err) {
+      } catch {
         this.organismeCourant = null;
         log.i("setOrganismeCourant - DONE with error");
       }

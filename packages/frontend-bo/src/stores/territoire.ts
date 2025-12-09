@@ -3,14 +3,31 @@ import { $fetchBackend, logger } from "#imports";
 
 const log = logger("/store/territoire");
 
+interface TerritoireDto {
+  id?: string;
+  code?: string;
+  label?: string;
+  parent?: string;
+  serviceMail?: string;
+  serviceTelephone?: string;
+  correspVaoNom?: string;
+  correspVaoPrenom?: string;
+}
+
+interface TerritoireStoreState {
+  territoires: TerritoireDto[];
+  territoire: TerritoireDto | null;
+  total: number;
+}
+
 export const useTerritoireStore = defineStore("territoire", {
-  state: () => ({
+  state: (): TerritoireStoreState => ({
     territoires: [],
     territoire: {},
     total: 0,
   }),
   actions: {
-    async fetch(params) {
+    async fetch(params: any) {
       log.i("fetch - IN");
       try {
         const { territoires, total } = await $fetchBackend("/territoire/list", {
@@ -30,7 +47,7 @@ export const useTerritoireStore = defineStore("territoire", {
         throw err;
       }
     },
-    async get(idTerritoire) {
+    async get(idTerritoire: string) {
       log.i("get - IN");
       try {
         const row = await $fetchBackend(`/territoire/get-one/${idTerritoire}`, {
@@ -44,11 +61,11 @@ export const useTerritoireStore = defineStore("territoire", {
         throw err;
       }
     },
-    async getFicheIdByTerritoireCode(TerritoireCode) {
+    async getFicheIdByTerritoireCode(territoireCode: string) {
       log.i("get - IN");
       try {
         const row = await $fetchBackend(
-          `/territoire/get-fiche-id-by-ter-code/${TerritoireCode}`,
+          `/territoire/get-fiche-id-by-ter-code/${territoireCode}`,
           {
             method: "GET",
             credentials: "include",
@@ -61,7 +78,7 @@ export const useTerritoireStore = defineStore("territoire", {
         throw err;
       }
     },
-    async update(idTerritoire, params) {
+    async update(idTerritoire: string, params: any) {
       log.i("update - IN");
       try {
         const response = await $fetchBackend(`/territoire/${idTerritoire}`, {

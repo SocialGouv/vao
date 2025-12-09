@@ -2,16 +2,20 @@ import { defineStore } from "pinia";
 import { $fetchBackend } from "#imports";
 import { apiModel } from "@vao/shared-ui";
 
+interface ExternalApiStoreState {
+  apisUnavailable: Record<string, boolean>;
+}
+
 export const useExternalApiStore = defineStore("externalApi", {
-  state: () => ({
+  state: (): ExternalApiStoreState => ({
     apisUnavailable: {},
   }),
   actions: {
-    async checkApi(apiType, path) {
+    async checkApi(apiType: string, path: string) {
       try {
         await $fetchBackend(path);
         this.setApiUnavailable(apiType, false);
-      } catch (err) {
+      } catch {
         this.setApiUnavailable(apiType, true);
       }
     },
@@ -27,7 +31,7 @@ export const useExternalApiStore = defineStore("externalApi", {
     async checkApiAdresse() {
       this.checkApi(apiModel.apiTypes.ADRESSE, "/geo/check-api-adresse");
     },
-    setApiUnavailable(apiType, isUnavailable) {
+    setApiUnavailable(apiType: string, isUnavailable: boolean) {
       this.apisUnavailable[apiType] = isUnavailable;
     },
   },

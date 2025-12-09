@@ -13,12 +13,11 @@ interface HebergementStoreState {
 }
 
 export const useHebergementStore = defineStore("hebergement", {
-  state: () =>
-    ({
-      hebergements: [],
-      hebergementsTotal: 0,
-      hebergementCourant: null,
-    }) as HebergementStoreState,
+  state: (): HebergementStoreState => ({
+    hebergements: [],
+    hebergementsTotal: 0,
+    hebergementCourant: null,
+  }),
   actions: {
     async fetchBySiren(siren: string) {
       try {
