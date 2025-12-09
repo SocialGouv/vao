@@ -89,7 +89,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
-    async setDemandeCourante(id: string) {
+    async setDemandeCourante(id: number) {
       log.i("setDemandeCourante - IN");
       try {
         const { demande } = await $fetchBackend(`/sejour/${id}`, {

@@ -1,10 +1,23 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
+import type { UserDto } from "@vao/shared-bridge";
 
 const log = logger("stores/user");
 
+interface UserStoreState {
+  user: UserDto | null;
+  userFO: UserDto | null;
+  users: UserDto[];
+  usersTerritoire: UserDto[];
+  usersFO: UserDto[];
+  total: number;
+  totalUsersFO: number;
+  userSelected: UserDto | null;
+  rows: UserDto[];
+}
+
 export const useUserStore = defineStore("user", {
-  state: () => ({
+  state: (): UserStoreState => ({
     user: null,
     userFO: null,
     users: [],
@@ -13,6 +26,7 @@ export const useUserStore = defineStore("user", {
     total: 0,
     totalUsersFO: 0,
     userSelected: null,
+    rows: [],
   }),
   getters: {
     isConnected: (state) => !!state.user,
@@ -27,19 +41,23 @@ export const useUserStore = defineStore("user", {
         if (user) {
           log.i("refreshProfile - DONE");
           this.user = user;
-          this.user.serviceCompetent =
-            this.user.territoireCode === "FRA"
-              ? "NAT"
-              : /^\d+$/.test(this.user.territoireCode)
-                ? "DEP"
-                : "REG";
+          if (this.user) {
+            this.user.serviceCompetent =
+              this.user.territoireCode === "FRA"
+                ? "NAT"
+                : /^\d+$/.test(this.user.territoireCode)
+                  ? "DEP"
+                  : "REG";
+          } else {
+            this.user = null;
+          }
         }
       } catch (err) {
         log.w("refreshProfile - DONE with error", err);
         this.user = null;
       }
     },
-    async fetchUsers(queryParams) {
+    async fetchUsers(queryParams: any) {
       try {
         const { rows, total } = await $fetchBackend("/bo-user", {
           credentials: "include",
@@ -58,7 +76,7 @@ export const useUserStore = defineStore("user", {
         throw error;
       }
     },
-    async fetchUsersTerritoire(territoireCode) {
+    async fetchUsersTerritoire(territoireCode: string) {
       log.i("fetchUsers - IN");
 
       try {
@@ -138,6 +156,12 @@ export const useUserStore = defineStore("user", {
       sortBy,
       sortDirection,
       search,
+    }: {
+      limit?: number;
+      offset?: number;
+      sortBy?: string;
+      sortDirection?: string;
+      search?: any;
     } = {}) {
       log.i("fetchUsersOrganisme - IN");
       try {
@@ -165,7 +189,7 @@ export const useUserStore = defineStore("user", {
         log.w("fetchUsersOrganisme - Erreur", { error });
       }
     },
-    async getUser(id) {
+    async getUser(id: number) {
       log.i("getUser - IN", { id });
       try {
         const user = await $fetchBackend(`/bo-user/${id}`, {
@@ -184,7 +208,7 @@ export const useUserStore = defineStore("user", {
       }
     },
 
-    async updateUserFoStatus(userId, params) {
+    async updateUserFoStatus(userId: string, params: any) {
       log.i("updateUserFoStatut - IN");
       try {
         const response = await $fetchBackend(

@@ -187,7 +187,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async setSelectedDemande(id: string) {
+    async setSelectedDemande(id: number) {
       log.i("setSelectedDemande - IN");
       if (!id) {
         this.selectedDemande = null;

@@ -3,8 +3,23 @@ import { $fetchBackend, logger } from "#imports";
 
 const log = logger("stores/hebergement");
 
+interface EigDto {
+  id: number;
+  dateDepot: string;
+  readByDreets: boolean;
+  readByDdets: boolean;
+  file: string;
+}
+
+interface EigStoreState {
+  eigs: EigDto[];
+  currentEig: EigDto | null;
+  total: number;
+  totalNonLus: number;
+}
+
 export const useEigStore = defineStore("eig", {
-  state: () => ({
+  state: (): EigStoreState => ({
     eigs: [],
     currentEig: null,
     total: 0,
@@ -12,10 +27,10 @@ export const useEigStore = defineStore("eig", {
   }),
 
   actions: {
-    getById(eigId) {
+    getById(eigId: string) {
       return this.eigs.find((eig) => eig.id === eigId);
     },
-    async getPdf(eigId) {
+    async getPdf(eigId: string) {
       log.i("getPdf - IN", eigId);
       try {
         return await $fetchBackend(`/eig/admin/pdf/${eigId}`, {
@@ -45,7 +60,7 @@ export const useEigStore = defineStore("eig", {
       }
     },
 
-    async setCurrentEig(eigId) {
+    async setCurrentEig(eigId: string) {
       if (!eigId) {
         this.currentEig = null;
       } else {
@@ -66,7 +81,19 @@ export const useEigStore = defineStore("eig", {
         }
       }
     },
-    async get({ limit, offset, sortBy, sortDirection, search } = {}) {
+    async get({
+      limit,
+      offset,
+      sortBy,
+      sortDirection,
+      search,
+    }: {
+      limit?: number;
+      offset?: number;
+      sortBy?: string;
+      sortDirection?: string;
+      search?: string;
+    } = {}) {
       log.i("fetchEig - IN");
 
       try {
@@ -91,7 +118,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async markAsRead(eigId) {
+    async markAsRead(eigId: string) {
       log.i("markAsRead - IN");
 
       try {
