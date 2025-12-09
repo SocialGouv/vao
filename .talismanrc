@@ -123,6 +123,8 @@ fileignoreconfig:
   checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
 - filename: packages/backend/src/utils/regex.js
   checksum: 9e58840c352b67fb278a7409352b7afc6c8a628fb30d19d13f0d52993a5d9463
+- filename: packages/backend/src/utils/validation-error.ts
+  checksum: 4bec11a784b24d563235f78e271db6c1a9a7f2ebd0bf06544899c3da4f15b533
 - filename: packages/cron/src/notifySuppressionCompteInactif/notifySuppressionCompteInactif.email.ts
   checksum: de4794018b505faf0ca412917808158d1a5cd6b5a35a1430a3a2303e303585ce
 - filename: packages/external-api/README.md
