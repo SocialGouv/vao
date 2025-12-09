@@ -1,5 +1,6 @@
 import { addYears, AgrementDto } from "@vao/shared-bridge";
 
+import { getById } from "../../services/adresse";
 import { getFileMetaData } from "../../services/Document";
 import logger from "../../utils/logger";
 import { AgrementsRepository } from "./agrements.repository";
@@ -21,6 +22,18 @@ export const AgrementService = {
     for (const doc of agrement?.agrementFiles || []) {
       const meta = await getFileMetaData(doc.fileUuid);
       Object.assign(doc, meta);
+    }
+    for (const bilanAnnuel of agrement?.agrementBilanAnnuel || []) {
+      if (Array.isArray(bilanAnnuel.bilanHebergement)) {
+        for (const bilanHebergement of bilanAnnuel.bilanHebergement) {
+          const adresse = await getById(bilanHebergement?.adresse?.id);
+          bilanHebergement.adresse = adresse;
+        }
+      }
+    }
+    for (const sejours of agrement?.agrementSejours || []) {
+      const adresse = await getById(sejours?.adresse?.id);
+      sejours.adresse = adresse;
     }
     return agrement;
   },

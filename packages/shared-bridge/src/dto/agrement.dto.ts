@@ -1,5 +1,6 @@
 import { ACTIVITE_TYPE, AGREMENT_STATUT } from "../constantes/agrement";
 import { FILE_CATEGORY } from "../constantes/file";
+import { AdresseDto } from "./adresse.dto";
 
 export interface AgrementDto {
   id?: number | null;
@@ -70,7 +71,7 @@ export interface AgrementFilesDto {
 export interface AgrementSejoursDto {
   agrementId: number | null;
   nomHebergement: string | null;
-  adresseId: number | null;
+  adresse: AdresseDto;
   nbVacanciers: number | null;
   mois: number[] | null;
 }
@@ -90,7 +91,7 @@ export interface AgrementBilanAnnuelDto {
 export interface BilanHebergementDto {
   agrBilanAnnuelId: number | null;
   nomHebergement: string | null;
-  adresseId: number | null;
+  adresse: AdresseDto;
   nbJours: number | null;
   mois: number[] | null;
 }

@@ -119,7 +119,7 @@ export const AgrementFilesMapper = {
 export const AgrementSejoursMapper = {
   toModel: (entity: AgrementSejoursEntity): AgrementSejoursDto => {
     return {
-      adresseId: entity.adresse_id,
+      adresse: { id: entity.adresse_id },
       agrementId: entity.agrement_id,
       mois: entity.mois,
       nbVacanciers: entity.nb_vacanciers,
@@ -159,7 +159,9 @@ export const AgrementBilanAnnuelMapper = {
 export const BilanHebergementMapper = {
   toModel: (entity: BilanHebergementEntity): BilanHebergementDto => {
     return {
-      adresseId: entity.adresse_id,
+      adresse: {
+        id: entity.adresse_id,
+      },
       agrBilanAnnuelId: entity.agr_bilan_annuel_id ?? null,
       mois: entity.mois,
       nbJours: entity.nb_jours,

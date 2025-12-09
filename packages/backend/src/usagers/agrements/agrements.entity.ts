@@ -1,3 +1,5 @@
+import { AdresseDto } from "@vao/shared-bridge";
+
 /**
  * Database row type with snake_case columns for Agrement
  */
@@ -86,6 +88,7 @@ export interface AgrementFilesEntity {
 export interface AgrementSejoursEntity {
   id?: number | null;
   agrement_id: number | null;
+  adresse: AdresseDto | null;
   nom_hebergement: string | null;
   adresse_id: number | null;
   nb_vacanciers: number | null;
@@ -113,6 +116,7 @@ export interface AgrementBilanAnnuelEntity {
  */
 export interface BilanHebergementEntity {
   id?: number | null;
+  adresse: AdresseDto | null;
   agr_bilan_annuel_id?: number | null;
   nom_hebergement: string | null;
   adresse_id: number | null;
