@@ -23,7 +23,7 @@ function trackFoUser({
   itself: boolean;
 }) {
   return async (req: TrackingRequest, res: Response, next: NextFunction) => {
-    const { id: userId } = req.decoded;
+    const userId = req.decoded?.id;
 
     const boUserId = itself ? userId : req.params.userId;
 
@@ -38,7 +38,7 @@ function trackFoUser({
 
       let newUser = null;
       const id =
-        action === TRACKING_ACTIONS.creation ? req.tracking.id : boUserId;
+        action === TRACKING_ACTIONS.creation ? req?.tracking?.id : boUserId;
 
       if (action !== TRACKING_ACTIONS.deletion) {
         newUser = await boUser.getByUserId(id);
@@ -47,7 +47,7 @@ function trackFoUser({
       boUser.addAsyncUserHistoric({
         action,
         boUserId: id,
-        data: { newData: newUser, olData: oldUser },
+        data: { newData: newUser, oldData: oldUser },
         userId,
         userType,
       });

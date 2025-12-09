@@ -101,7 +101,9 @@ export default async function update(
           const usersSiegeSocial = await UserFoService.getMailUserOrganismeId(
             organismeSiegeSocial.organismeId,
           );
-          emailsOrganisateurSiegeSocial = usersSiegeSocial.map((u) => u.mail);
+          emailsOrganisateurSiegeSocial = usersSiegeSocial.map(
+            (u: { mail: string }) => u.mail,
+          );
           await mailService.send(
             MailUtils.usagers.organisme.sendOvaPrincipalChangeSiret({
               ancienSiret: currentSiret,

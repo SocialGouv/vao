@@ -30,7 +30,7 @@ export default async function get(
     return res.status(200).json({ data });
   } catch (e) {
     log.w("DONE with error");
-    if (e.response.status == 404) {
+    if ((e as any).response.status === 404) {
       return next(
         new AppError("Aucun successeur pour ce numéro de siret", {
           cause: e,
