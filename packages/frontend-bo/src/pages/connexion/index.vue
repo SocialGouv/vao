@@ -21,7 +21,7 @@
                       id="login-1760-fieldset-legend"
                       class="fr-fieldset__legend"
                     >
-                      <h2>Se connecter avec son compte</h2>
+                      <h2>Se connecter avec son compte agent de l'Etat</h2>
                     </legend>
 
                     <div v-if="displayType" class="fr-grid-row">
