@@ -26,7 +26,6 @@ export function buildRequest<Route extends BasicRoute>({
   query,
 }: Omit<Route, "response">): () => Promise<Route["response"]> {
   const url = buildRequestPath(path, params);
-
   switch (method) {
     case "GET":
       return async () =>
@@ -56,6 +55,27 @@ export function buildRequest<Route extends BasicRoute>({
         $fetchBackend(url, {
           ...OPTIONS_DEFAULT,
           method: "DELETE",
+          body,
+        });
+    default:
+      throw new Error("Method not supported");
+  }
+}
+
+export function buildRequestFile<Route extends BasicRoute>({
+  params,
+  body,
+  path,
+  method,
+}: Omit<Route, "response">): () => Promise<Route["response"]> {
+  const url = buildRequestPath(path, params);
+  switch (method) {
+    case "POST":
+      return async () =>
+        $fetchBackend(url, {
+          ...OPTIONS_DEFAULT,
+          headers: {},
+          method: "POST",
           body,
         });
     default:
