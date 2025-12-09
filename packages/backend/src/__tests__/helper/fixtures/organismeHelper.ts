@@ -43,6 +43,7 @@ export const createOrganisme = async ({
   const organismeId = await createOrganismeService(
     partOrganisme.PERSONNE_PHYSIQUE,
     fixture,
+    userId,
   );
   if (userId) {
     await linkOrganisme(userId, organismeId);
