@@ -77,6 +77,8 @@ fileignoreconfig:
   checksum: 9c7a31b3ba790969c6f469bbfd69d3b32200783f3f7d044215cbdeef6611141b
 - filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
   checksum: b2cfd04d94c5131c43cb80f0d9f210784da4c61fd42f6defd16f2ef93e83c913
+- filename: packages/backend/src/controllers/siret/getLienSuccession.spec.ts
+  checksum: 5c6862263cb7030aac2429eb09b35ab9a54e13c15e633944cdfac95747ec768f
 - filename: packages/backend/src/helpers/__tests__/queryParams.test.js
   checksum: e14945664e13711d468fa39da07ed23f5eddba041fc49566c094717193af3d96
 - filename: packages/backend/src/helpers/queryParams.js
