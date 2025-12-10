@@ -46,7 +46,7 @@
       :tranche-age="props.bilanAnnuel?.trancheAge"
       class="fr-mt-8v"
     />
-    <AgrementBilanTypeDeficiences
+    <AgrementTypeDeficiences
       ref="typeDeficiencesRef"
       :type-deficiences="props.bilanAnnuel?.typeHandicap"
     />
