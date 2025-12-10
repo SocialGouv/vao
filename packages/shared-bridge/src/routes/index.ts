@@ -21,3 +21,5 @@ export type RouteSchema<T extends BasicRoute> = {
 
 export type { HebergementRoutes } from "./hebergement";
 export { HebergementRoutesSchema } from "./hebergement";
+export type { SiretRoutes } from "./usagers/siret";
+export { SiretRoutesSchema } from "./usagers/siret";

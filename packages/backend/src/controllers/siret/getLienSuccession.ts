@@ -1,33 +1,33 @@
+import type { SiretRoutes, SiretSuccesseurDto } from "@vao/shared-bridge";
 import { ERRORS_SIRET } from "@vao/shared-bridge";
-import type { NextFunction, Response } from "express";
+import type { NextFunction } from "express";
 
 import { getEtablissementSuccesseur } from "../../services/Insee";
-import { UserRequest } from "../../types/request";
+import type { RouteRequest, RouteResponse } from "../../types/request";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 
 const log = logger(module.filename);
 
 export default async function get(
-  req: UserRequest,
-  res: Response,
+  req: RouteRequest<SiretRoutes["GetSuccesseur"]>,
+  res: RouteResponse<SiretRoutes["GetSuccesseur"]>,
   next: NextFunction,
 ) {
   const { siret } = req.params;
   log.i("IN", siret);
-  if (!siret) {
-    log.w("Le siret est manquant");
-
-    return next(
-      new AppError("Paramètre incorrect", {
-        statusCode: 400,
-      }),
-    );
-  }
 
   try {
-    const { data } = await getEtablissementSuccesseur({ siret });
-    return res.status(200).json({ data });
+    const {
+      siretEtablissementSuccesseur,
+    }: {
+      siretEtablissementSuccesseur: SiretSuccesseurDto | null;
+    } = await getEtablissementSuccesseur({
+      siret,
+    });
+    return res.status(200).json({
+      siretEtablissementSuccesseur,
+    });
   } catch (e) {
     log.w("DONE with error");
     if ((e as any).response.status === 404) {

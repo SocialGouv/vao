@@ -12,11 +12,11 @@ const SiretService = {
   getSiretEtablissementSuccesseur: async (siret: string) => {
     const url = `/siret/get-lien-succession/${siret}`;
     try {
-      const { data } = await $fetchBackend(url, {
+      const { siretEtablissementSuccesseur } = await $fetchBackend(url, {
         method: "GET",
         credentials: "include",
       });
-      return data.liensSuccession[0].siretEtablissementSuccesseur;
+      return siretEtablissementSuccesseur;
     } catch (error) {
       if (error?.data?.name === ERRORS_SIRET.EtablissementNoSuccesseur) {
         return "";

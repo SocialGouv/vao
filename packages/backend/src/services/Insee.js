@@ -77,7 +77,10 @@ module.exports.getEtablissementSuccesseur = async ({ siret }) => {
     `${apiInsee.URL}${apiInsee.URI}/siret/liensSuccession?q=siretEtablissementPredecesseur:${siret}&nombre:1&tri:successeur`,
     { headers: { "X-INSEE-Api-Key-Integration": `${apiInsee.TOKEN}` } },
   );
-  return { data };
+  return {
+    siretEtablissementSuccesseur:
+      data.liensSuccession[0].siretEtablissementSuccesseur,
+  };
 };
 
 module.exports.sanitizeEtablissements = (etablissements, uniteLegale) =>

@@ -297,7 +297,7 @@ import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
 import dayjs from "dayjs";
 import { apiTypes } from "@vao/shared-ui/src/models";
 import { SiretService } from "../../services/siretService";
-import { getErrorMessage } from "@vao/shared-bridge";
+import { ERRORS_SIRET_MESSAGES, ERRORS_SIRET } from "@vao/shared-bridge";
 
 const toaster = useToaster();
 
@@ -476,7 +476,8 @@ async function searchNewSiret() {
   } catch (error) {
     const body = error.data;
     const codeError = body?.name ?? null;
-    const description = await getErrorMessage(codeError);
+    const description =
+      (await ERRORS_SIRET_MESSAGES(codeError)) || ERRORS_SIRET.UnknownError;
     toaster.error({
       titleTag: "h2",
       description,
