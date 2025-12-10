@@ -4,7 +4,7 @@ const logger = require("../../utils/logger");
 const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 const MailUtils = require("../../utils/mail");
 const Send = require("../../services/mail").mailService.send;
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 const { status: userStatus } = require("../../helpers/users");
 
 const log = logger(module.filename);

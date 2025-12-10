@@ -1,5 +1,5 @@
 const logger = require("../utils/logger");
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 const { getById } = require("../services/eig");
 const { statuts, mustMarkAsRead } = require("../helpers/eig");
 

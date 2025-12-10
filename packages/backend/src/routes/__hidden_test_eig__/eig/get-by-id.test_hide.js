@@ -1,6 +1,6 @@
 const checkJWT = require("../../../middlewares/checkJWT");
 const checkPermissionEIG = require("../../../middlewares/checkPermissionEIG");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 const request = require("supertest");
 const app = require("../../../app");
 const eigService = require("../../../services/eig");

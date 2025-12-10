@@ -1,4 +1,4 @@
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 const logger = require("../utils/logger");
 const Departement = require("../services/geo/Departement");
 

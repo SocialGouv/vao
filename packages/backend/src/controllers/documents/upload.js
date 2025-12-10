@@ -4,7 +4,7 @@ const { sentry } = require("../../config");
 const fs = require("node:fs/promises");
 const { PDFDocument } = require("pdf-lib");
 const DocumentService = require("../../services/Document");
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 
 const logger = require("../../utils/logger");
 

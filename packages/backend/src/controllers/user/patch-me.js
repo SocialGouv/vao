@@ -1,6 +1,6 @@
 const yup = require("yup");
 const User = require("../../services/User");
-const ValidationAppError = require("../../utils/validation-error");
+const ValidationAppError = require("../../utils/validation-error").default;
 
 module.exports = async function patchMe(req, res, next) {
   const { decoded, body } = req;

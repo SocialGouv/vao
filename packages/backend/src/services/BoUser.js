@@ -13,7 +13,7 @@ const {
   sanitizeFiltersParams,
 } = require("../helpers/queryParams");
 
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 
 const { addHistoric } = require("./Tracking");
 

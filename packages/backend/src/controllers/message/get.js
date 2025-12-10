@@ -1,5 +1,5 @@
 const Message = require("../../services/Message");
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 
 const logger = require("../../utils/logger");
 

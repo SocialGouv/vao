@@ -8,7 +8,7 @@ const {
 } = require("../../services/Insee");
 const Organisme = require("../../services/Organisme");
 const Referentiel = require("../../services/Referentiel");
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 const { ERRORS_SIRET } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);

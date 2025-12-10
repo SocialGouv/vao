@@ -2,8 +2,8 @@
 const yup = require("yup");
 const Regions = require("./geo/Region");
 
-const AppError = require("../utils/error");
-const ValidationAppError = require("../utils/validation-error");
+const AppError = require("../utils/error").default;
+const ValidationAppError = require("../utils/validation-error").default;
 const logger = require("../utils/logger");
 const { partOrganisme } = require("../helpers/org-part");
 

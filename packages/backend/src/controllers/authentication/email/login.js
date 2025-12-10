@@ -12,7 +12,7 @@ const logger = require("../../../utils/logger");
 const { status } = require("../../../helpers/users");
 const { schema } = require("../../../helpers/schema");
 const { buildAccessToken, buildRefreshToken } = require("../../../utils/token");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 
 const log = logger(module.filename);
 

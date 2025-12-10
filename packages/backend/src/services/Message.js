@@ -1,7 +1,7 @@
 const { getPool } = require("../utils/pgpool");
 const logger = require("../utils/logger");
 
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 
 const log = logger(module.filename);
 

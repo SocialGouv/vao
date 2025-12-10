@@ -1,13 +1,13 @@
 const { number, object } = require("yup");
 
 const DemandeSejour = require("../../services/DemandeSejour");
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const Send = require("../../services/mail").mailService.send;
 const MailUtils = require("../../utils/mail");
 
 const logger = require("../../utils/logger");
-const ValidationAppError = require("../../utils/validation-error");
+const ValidationAppError = require("../../utils/validation-error").default;
 
 const log = logger(module.filename);
 

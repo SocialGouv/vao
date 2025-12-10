@@ -1,5 +1,5 @@
 const logger = require("../utils/logger");
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 const PersonneMorale = require("../services/organisme/PersonneMorale");
 const { getPool } = require("../utils/pgpool");
 
