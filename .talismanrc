@@ -96,7 +96,7 @@ fileignoreconfig:
 - filename: packages/backend/src/services/ApiToken.js
   checksum: 1be2f39bdf814196b35376f6682bf2a4879168e06c3acbb65eb229bcc2068c28
 - filename: packages/backend/src/services/BoUser.js
-  checksum: 90d8297092ecec904d6055564334cc7ffdbd9a74a1e9a985b1f7a17f8f98b126
+  checksum: 70f7cbea6fe746ab19ceb6b6874e3d6fb90465371877a8e7a3408b7f11f91c36
 - filename: packages/backend/src/services/DemandeSejour.js
   checksum: 84d16fbf7cf0433f833c790f360cda6c8d23c30fe580eec4a0e3851a2d0311b0
 - filename: packages/backend/src/services/Document.js

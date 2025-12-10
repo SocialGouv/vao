@@ -623,7 +623,7 @@ module.exports.getListe = async (queryParams, territoireCode) => {
       type: "default",
     },
     {
-      key: "us.territoire",
+      key: "ter.label",
       query: (index, value) => {
         if (value === "FRA") {
           return {
@@ -690,6 +690,7 @@ module.exports.getListe = async (queryParams, territoireCode) => {
     offset,
     sort,
   );
+
   const result = await Promise.all([
     getPool().query(paginatedQuery.query, paginatedQuery.params),
     getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
