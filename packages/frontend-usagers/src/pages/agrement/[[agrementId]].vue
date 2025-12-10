@@ -33,7 +33,7 @@
       </div>
 
       <div class="fr-col-xs-12 fr-col-md-9">
-        <AgrementStepper />
+        <AgrementStepper :step="hash" />
         <div>
           <div v-if="hash === 'agrement-coordonnees'" id="agrement-coordonnees">
             <AgrementCoordonnees
@@ -74,6 +74,13 @@
               @next="nextHash"
               @previous="previousHash"
             />
+          </div>
+          <div
+            v-if="hash === 'agrement-projets'"
+            id="agrement-projets"
+            :read-only="readOnly"
+          >
+            <AgrementProjets @next="nextHash" @previous="previousHash" />
           </div>
         </div>
       </div>

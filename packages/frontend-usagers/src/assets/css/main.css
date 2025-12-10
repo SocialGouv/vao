@@ -52,3 +52,7 @@
   display: none;
   visibility: hidden;
 }
+
+.light-decisions-text-text-default-info {
+  color: var(--light-decisions-text-text-default-info, #0063CB);
+}
