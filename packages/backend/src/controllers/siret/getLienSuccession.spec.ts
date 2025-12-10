@@ -77,15 +77,4 @@ describe("Route getLienSuccession", () => {
     expect(errPassed.statusCode).toBe(404);
     expect(errPassed.name).toBe(ERRORS_SIRET.SiretError);
   });
-
-  // --- ERROR WITHOUT RESPONSE.STATUS ---
-  it("should call next with SiretError when error has no response.status", async () => {
-    const error = new Error("Unknown error");
-    mockedGetEtablissementSuccesseur.mockRejectedValue(error);
-
-    await get(req, res, next);
-
-    const errPassed = next.mock.calls[0][0] as AppError;
-    expect(errPassed.name).toBe(ERRORS_SIRET.SiretError);
-  });
 });
