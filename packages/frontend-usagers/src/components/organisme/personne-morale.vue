@@ -300,8 +300,6 @@ import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
 import { ERRORS_SIRET_MESSAGES, ERRORS_SIRET } from "@vao/shared-bridge";
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
-import { SiretService } from "../../services/siretService";
-import { getErrorMessage } from "@vao/shared-bridge";
 
 const toaster = useToaster();
 
@@ -501,8 +499,6 @@ async function searchApiInsee() {
         method: "GET",
         credentials: "include",
       });
-    console.log("Récupération du siege", siege);
-    console.log("Récupération du uniteLegale", uniteLegale);
 
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();

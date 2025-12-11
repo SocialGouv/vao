@@ -749,7 +749,6 @@ module.exports.getOne = async (criterias = {}) => {
   const { rowCount, rows: organismes } = await getPool().query(
     ...query.get(criterias),
   );
-  console.log("organismes", organismes);
   if (rowCount === 0) {
     throw new AppError("Organisme non trouvé", {
       name: "NOT_FOUND",
@@ -757,7 +756,6 @@ module.exports.getOne = async (criterias = {}) => {
     });
   }
   const organisme = await getComplementOrganisme(organismes[0]);
-  console.log("organisme getComplementOrganisme", organisme);
   // Initialisation d'une valeur vide pour permettre l'affichage au niveau front BO
   if (organisme?.personnePhysique) {
     organisme.personnePhysique.nomUsage =
