@@ -6,13 +6,13 @@ import {
 } from "@vao/shared-bridge";
 import { randomUUID } from "crypto";
 
+import { buildAdresseFixture } from "./adresseFixture";
+
 export async function buildAgrementFixture({
   organismeId,
-  adresseId,
   activiteId = Math.floor(Math.random() * 20) + 1,
 }: {
   organismeId: number;
-  adresseId: number;
   activiteId?: number;
 }) {
   return {
@@ -26,7 +26,7 @@ export async function buildAgrementFixture({
         annee: 2024,
         bilanHebergement: [
           {
-            adresseId,
+            adresse: await buildAdresseFixture(),
             mois: [6, 7],
             nbJours: 140,
             nomHebergement: "Centre de vacances Test",
@@ -46,7 +46,7 @@ export async function buildAgrementFixture({
     ],
     agrementSejours: [
       {
-        adresseId,
+        adresse: await buildAdresseFixture(),
         mois: [5, 11],
         nbVacanciers: 10,
         nomHebergement: "Centre de vacances Test",
