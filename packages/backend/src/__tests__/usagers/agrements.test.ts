@@ -1,7 +1,6 @@
 import request from "supertest";
 
 import app from "../../app";
-import { createAdresse } from "../helper/fixtures/adresseHelper";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import {
   createAgrement,
@@ -29,9 +28,8 @@ afterAll(async () => await removeTestContainer());
 describe("GET /agrements/organisme/:id", () => {
   it("devrait retourner un agrément par ID de l'organisme avec succès", async () => {
     authUser = await createUsagersUser();
-    const adresseId = await createAdresse();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementData = await buildAgrementFixture({ adresseId, organismeId });
+    const agrementData = await buildAgrementFixture({ organismeId });
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
@@ -47,9 +45,8 @@ describe("GET /agrements/organisme/:id", () => {
   });
   it("devrait retourner une erreur", async () => {
     authUser = await createUsagersUser();
-    const adresseId = await createAdresse();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementData = await buildAgrementFixture({ adresseId, organismeId });
+    const agrementData = await buildAgrementFixture({ organismeId });
     await createAgrement({
       agrement: agrementData,
       organismeId,
@@ -74,9 +71,8 @@ describe("GET /agrements/organisme/:id", () => {
 describe("POST /agrements", () => {
   it("devrait créer un agrément (POST /agrements)", async () => {
     authUser = await createUsagersUser();
-    const adresseId = await createAdresse();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementData = await buildAgrementFixture({ adresseId, organismeId });
+    const agrementData = await buildAgrementFixture({ organismeId });
 
     const response = await request(app).post(`/agrements/`).send(agrementData);
 
@@ -85,9 +81,8 @@ describe("POST /agrements", () => {
   });
   it("devrait mettre à jour un agrément (POST /agrements)", async () => {
     authUser = await createUsagersUser();
-    const adresseId = await createAdresse();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementData = await buildAgrementFixture({ adresseId, organismeId });
+    const agrementData = await buildAgrementFixture({ organismeId });
     await createAgrement({ agrement: agrementData, organismeId });
     const { agrement } = await getAgrement(organismeId);
     const response = await request(app).post(`/agrements/`).send(agrement);
