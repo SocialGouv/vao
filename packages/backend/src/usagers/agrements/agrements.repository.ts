@@ -1,5 +1,6 @@
 import { AgrementDto } from "@vao/shared-bridge";
 
+import { saveAdresse } from "../../services/adresse";
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 import { AgrementEntity } from "./agrements.entity";
@@ -38,14 +39,17 @@ async function insertAgrementSejours(
   agrement: AgrementDto,
 ) {
   if (!agrement.agrementSejours?.length) return;
-
   for (const s of agrement.agrementSejours) {
+    let adresseId = s?.adresse?.id || null;
+    if (!adresseId && s?.adresse) {
+      adresseId = await saveAdresse(client, s.adresse);
+    }
     await client.query(
       `INSERT INTO front.agrement_sejours (
         agrement_id, nom_hebergement, adresse_id, nb_vacanciers, mois
       )
       VALUES ($1, $2, $3, $4, $5);`,
-      [agrementId, s.nomHebergement, s.adresseId, s.nbVacanciers, s.mois],
+      [agrementId, s.nomHebergement, adresseId, s.nbVacanciers, s.mois],
     );
   }
 }
@@ -97,13 +101,17 @@ async function insertAgrementBilans(
 
     if (bil.bilanHebergement) {
       for (const bhe of bil.bilanHebergement) {
+        let adresseId = bhe?.adresse?.id || null;
+        if (!adresseId && bhe?.adresse) {
+          adresseId = await saveAdresse(client, bhe.adresse);
+        }
         await client.query(
           `INSERT INTO front.bilan_hebergement (
             agr_bilan_annuel_id, nom_hebergement, adresse_id, nb_jours, mois
           )
           VALUES ($1, $2, $3, $4, $5)
           RETURNING id;`,
-          [bilanId, bhe.nomHebergement, bhe.adresseId, bhe.nbJours, bhe.mois],
+          [bilanId, bhe.nomHebergement, adresseId, bhe.nbJours, bhe.mois],
         );
       }
     }

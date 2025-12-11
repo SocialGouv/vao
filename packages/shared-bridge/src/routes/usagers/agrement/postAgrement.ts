@@ -21,6 +21,15 @@ const requiredUnlessBrouillon = (field: yup.AnySchema) =>
 
 const currentYear = new Date().getFullYear();
 
+const adresseSchema = yup.object({
+  cleInsee: yup.string().nullable(),
+  codeInsee: yup.string().nullable(),
+  codePostal: yup.string().nullable(),
+  coordinates: yup.array(yup.number().nullable()),
+  departement: yup.string().nullable(),
+  id: yup.number().nullable(),
+  label: yup.string().nullable(),
+});
 export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
   body: yup.object({
     accompRespAttestHono: requiredUnlessBrouillon(yup.boolean().nullable()),
@@ -63,7 +72,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
                 .array()
                 .of(
                   yup.object({
-                    adresseId: requiredUnlessBrouillon(yup.number().nullable()),
+                    adresse: requiredUnlessBrouillon(adresseSchema),
                     agrBilanAnnuelId: yup.number().nullable(),
                     mois: requiredUnlessBrouillon(
                       yup.array(yup.number()).nullable(),
@@ -114,7 +123,8 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
       yup
         .array(
           yup.object({
-            adresseId: requiredUnlessBrouillon(yup.number().nullable()),
+            //adresseId: requiredUnlessBrouillon(yup.number().nullable()),
+            adresse: requiredUnlessBrouillon(adresseSchema),
             mois: requiredUnlessBrouillon(
               yup
                 .array()
