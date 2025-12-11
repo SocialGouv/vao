@@ -71,7 +71,7 @@ export const saveAdresse = async (
   adresse: AdresseDto,
 ): Promise<number> => {
   const existing = await getByCleInseeOrLabel(client, {
-    cleInsee: adresse.cleInsee,
+    cleInsee: adresse.cleInsee ?? null,
     label: adresse.label,
   });
 
