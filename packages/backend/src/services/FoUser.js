@@ -9,7 +9,7 @@ const {
 } = require("../helpers/queryParams");
 const { processQuery } = require("../helpers/queryParams");
 
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 
 const log = logger(module.filename);
 

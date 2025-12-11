@@ -55,8 +55,12 @@ fileignoreconfig:
   checksum: 9e05b5b350d7e13beb365c6a550dbb2f4d39a0a1d12b43e9fac815fd3c1fdc8d
 - filename: packages/backend/src/config.js
   checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
+- filename: packages/backend/src/controllers/authentication/email/__tests__/register.test.js
+  checksum: 61e6150f8c247506f5a67901fe427b681dc8ec9d259e123beefa0fa4971e01b8
+- filename: packages/backend/src/controllers/authentication/email/__tests__/renew-password.test.js
+  checksum: 83ed8fdaec5e47e65e05fc8586202a8e2637ebc995fc326a79322cccaac25555
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
-  checksum: fb3a38d8e95b904eded1030703ac45dc15bfd6794119fad5c6e823562fa05ce6
+  checksum: 6d0565ac2c741533e6ee3347a1aa2a6c11544dd081907d63bf817d89a2ec1668
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
   checksum: d66401c29c51850346868ff2d7c097fbd572bbfd8cfae77c87ae5274a7cc8409
 - filename: packages/backend/src/controllers/authentication/email/index.js
@@ -66,13 +70,15 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/authentication/email/register.js
   checksum: ffe8f1a18fa67c4f00aed6f9ae5ccff003d55a30d9abffa3b66e178b3c0bb08a
 - filename: packages/backend/src/controllers/authentication/email/renew-password.js
-  checksum: d0fa83bb7576124063c96cdc8489f1b46836f28f97a0ac2babe3a4441447c511
+  checksum: b55b974f043ff109c9f8c617c41fb58d40f24391a0c2eb9195d37c4126f38b31
 - filename: packages/backend/src/controllers/authentication/email/renewPassword.js
   checksum: 71c7f6afdca8903cb4ad4120ac93e5296cc5bac40dac63391722bb4c2079b422
 - filename: packages/backend/src/controllers/bo-authentication/email/forgotten-password.js
-  checksum: bfeae9adde26b42e23b228d733bc5b1c21e982d98f730277ff68fb12d34123d7
+  checksum: 9c7a31b3ba790969c6f469bbfd69d3b32200783f3f7d044215cbdeef6611141b
 - filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
-  checksum: bda4c09e0af6e4c0d6b0976413b29e386148965d5c3f3eaf39fe6d9cba08e3ad
+  checksum: b2cfd04d94c5131c43cb80f0d9f210784da4c61fd42f6defd16f2ef93e83c913
+- filename: packages/backend/src/controllers/siret/getLienSuccession.spec.ts
+  checksum: 5c6862263cb7030aac2429eb09b35ab9a54e13c15e633944cdfac95747ec768f
 - filename: packages/backend/src/helpers/__tests__/queryParams.test.js
   checksum: e14945664e13711d468fa39da07ed23f5eddba041fc49566c094717193af3d96
 - filename: packages/backend/src/helpers/queryParams.js
@@ -95,6 +101,8 @@ fileignoreconfig:
   checksum: 84d16fbf7cf0433f833c790f360cda6c8d23c30fe580eec4a0e3851a2d0311b0
 - filename: packages/backend/src/services/Document.js
   checksum: 1fbeae31395935da7b8daef1d3872151b793d433d1cde968d0607b4628ba50a8
+- filename: packages/backend/src/services/Insee.js
+  checksum: 56f1881f4f97498ce67fb3113015197b58f44ccf4c2e3b39e8b97f635e217af4
 - filename: packages/backend/src/services/Organisme.js
   checksum: 380a1a8859259026f36e77b17308658e9554df253c2c54790559fd8c0014e89a
 - filename: packages/backend/src/services/Territoire.js
@@ -121,6 +129,8 @@ fileignoreconfig:
   checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
 - filename: packages/backend/src/utils/regex.js
   checksum: 9e58840c352b67fb278a7409352b7afc6c8a628fb30d19d13f0d52993a5d9463
+- filename: packages/backend/src/utils/validation-error.ts
+  checksum: 4bec11a784b24d563235f78e271db6c1a9a7f2ebd0bf06544899c3da4f15b533
 - filename: packages/cron/src/notifySuppressionCompteInactif/notifySuppressionCompteInactif.email.ts
   checksum: de4794018b505faf0ca412917808158d1a5cd6b5a35a1430a3a2303e303585ce
 - filename: packages/external-api/README.md

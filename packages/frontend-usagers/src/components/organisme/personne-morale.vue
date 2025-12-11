@@ -298,7 +298,7 @@ import dayjs from "dayjs";
 import { apiTypes } from "@vao/shared-ui/src/models";
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
-import { getErrorMessage } from "@vao/shared-bridge";
+import { ERRORS_SIRET_MESSAGES, ERRORS_SIRET } from "@vao/shared-bridge";
 
 const toaster = useToaster();
 
@@ -464,10 +464,10 @@ async function updateSiret() {
 async function searchNewSiret() {
   log.i("searchNewSiret - IN");
   try {
-    const siretFromResponse = await SiretService.getSiretSiegeSocial(
-      siret.value,
-    );
-    if (siretFromResponse !== siret.value && siegeSocial.value) {
+    const siretFromResponse = siegeSocial.value
+      ? await SiretService.getSiretSiegeSocial(siret.value)
+      : await SiretService.getSiretEtablissementSuccesseur(siret.value);
+    if (siretFromResponse !== "" && siretFromResponse !== siret.value) {
       siretToUpdate.value = siretFromResponse;
       confirmUpdatingSiret.value = true;
     } else {
@@ -480,7 +480,8 @@ async function searchNewSiret() {
   } catch (error) {
     const body = error.data;
     const codeError = body?.name ?? null;
-    const description = await getErrorMessage(codeError);
+    const description =
+      (await ERRORS_SIRET_MESSAGES(codeError)) || ERRORS_SIRET.UnknownError;
     toaster.error({
       titleTag: "h2",
       description,
@@ -497,7 +498,6 @@ async function searchApiInsee() {
         method: "GET",
         credentials: "include",
       });
-
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
 

@@ -190,7 +190,7 @@ export const createOrUpdate = async (
     query.getIdByOrganiseId,
     [organismeId],
   );
-
+  let personnePhysiqueId;
   if (rowCount === 0 || parametre.siret !== personnePhysique[0]?.siret) {
     if (rowCount !== 0) {
       await client.query(query.changeCurrent, [personnePhysique[0].id]);
@@ -203,7 +203,15 @@ export const createOrUpdate = async (
         userType: TRACKING_USER_TYPE.front,
       });
     }
-    await create(client, organismeId, parametre, userId);
+    const newPersonnePhysique = await create(
+      client,
+      organismeId,
+      parametre,
+      userId,
+    );
+    personnePhysiqueId = newPersonnePhysique.personnePhysiqueId;
+  } else {
+    personnePhysiqueId = personnePhysique[0].id;
   }
 
   await client.query(query.update, [
@@ -234,7 +242,7 @@ export const createOrUpdate = async (
     action: TRACKING_ACTIONS.modification,
     data: { newData: parametre, oldData: personnePhysique[0] },
     entity: TRACKING_ENTITIES.personnePhysique,
-    entityId: personnePhysique[0].id,
+    entityId: personnePhysiqueId,
     userId: userId,
     userType: TRACKING_USER_TYPE.front,
   });

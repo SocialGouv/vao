@@ -1,8 +1,8 @@
 const yup = require("yup");
 const logger = require("../../utils/logger");
-const ValidationAppError = require("../../utils/validation-error");
+const ValidationAppError = require("../../utils/validation-error").default;
 const HebergementSchema = require("../../schemas/hebergement");
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 const Hebergement = require("../../services/hebergement/Hebergement");
 const HebergementHelper = require("../../helpers/hebergement");
 

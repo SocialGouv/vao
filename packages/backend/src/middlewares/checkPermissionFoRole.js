@@ -1,5 +1,5 @@
 const logger = require("../utils/logger");
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 const { roles } = require("../helpers/users");
 
 const log = logger(module.filename);

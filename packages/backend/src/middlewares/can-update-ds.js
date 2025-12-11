@@ -1,10 +1,10 @@
 const { number } = require("yup");
-const ValidationAppError = require("../utils/validation-error");
+const ValidationAppError = require("../utils/validation-error").default;
 const DemandeSejour = require("../services/DemandeSejour");
 const Organisme = require("../services/Organisme");
 
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 
 async function canUpdateDs(req, _res, next) {
   let { declarationId } = req.params;

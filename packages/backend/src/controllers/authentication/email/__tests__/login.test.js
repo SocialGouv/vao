@@ -2,7 +2,7 @@ const login = require("../login");
 const User = require("../../../../services/User");
 const Session = require("../../../../services/common/Session");
 const CommonUser = require("../../../../services/common/Users");
-const AppError = require("../../../../utils/error");
+const AppError = require("../../../../utils/error").default;
 const { status } = require("../../../../helpers/users");
 const jwt = require("jsonwebtoken");
 

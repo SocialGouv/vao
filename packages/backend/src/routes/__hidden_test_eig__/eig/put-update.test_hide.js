@@ -6,7 +6,7 @@ const DemandeSejour = require("../../../services/DemandeSejour");
 const request = require("supertest");
 const app = require("../../../app");
 const eigService = require("../../../services/eig");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 const {
   isDeclarationligibleToEig,
   UpdateTypes,

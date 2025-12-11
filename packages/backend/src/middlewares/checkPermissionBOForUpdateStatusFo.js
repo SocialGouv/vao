@@ -1,5 +1,5 @@
 const logger = require("../utils/logger");
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 const { getByUserId } = require("../services/BoUser");
 
 const { status } = require("../helpers/users");

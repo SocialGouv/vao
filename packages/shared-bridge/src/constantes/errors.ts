@@ -9,12 +9,18 @@ export enum ERRORS_LOGIN {
 
 export enum ERRORS_SIRET {
   EtablissementsError = "EtablissementsError",
+  EtablissementSuccesseurError = "EtablissementSuccesseurError",
+  EtablissementNoSuccesseur = "EtablissementNoSuccesseur",
   SiretError = "SiretError",
   RepresentantsLegauxError = "RepresentantsLegauxError",
   UnknownError = "UnknownError",
 }
 
 export const ERRORS_SIRET_MESSAGES: Record<ERRORS_SIRET, string> = {
+  [ERRORS_SIRET.EtablissementNoSuccesseur]:
+    "Aucun successeur pour cet établissement (siret).",
+  [ERRORS_SIRET.EtablissementSuccesseurError]:
+    "Erreur lors de la récupération de l'établissements successeur.",
   [ERRORS_SIRET.EtablissementsError]:
     "Erreur lors de la récupération des établissements.",
   [ERRORS_SIRET.SiretError]:

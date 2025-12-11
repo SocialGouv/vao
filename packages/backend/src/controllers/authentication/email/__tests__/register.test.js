@@ -7,8 +7,9 @@ const {
 const { mailService } = require("../../../../services/mail");
 const jwt = require("jsonwebtoken");
 const registerSchema = require("../../../../schemas/register");
-const ValidationAppError = require("../../../../utils/validation-error");
-const AppError = require("../../../../utils/error");
+const ValidationAppError =
+  require("../../../../utils/validation-error").default;
+const AppError = require("../../../../utils/error").default;
 
 jest.mock("../../../../services/User");
 jest.mock("../../../../services/Insee");
@@ -21,8 +22,8 @@ jest.mock("../../../../services/mail", () => ({
 
 jest.mock("jsonwebtoken");
 jest.mock("../../../../utils/logger", () => () => ({
-  i: jest.fn(),
   d: jest.fn(),
+  i: jest.fn(),
   w: jest.fn(),
 }));
 jest.mock("../../../../schemas/register");
@@ -34,16 +35,16 @@ describe("register controller", () => {
     req = {
       body: {
         email: "test@example.com",
-        password: "securePass123!",
         nom: "Doe",
+        password: "securePass123!",
         prenom: "John",
         siret: "12345678900011",
         telephone: "0102030405",
       },
     };
     res = {
-      status: jest.fn(() => res),
       json: jest.fn(),
+      status: jest.fn(() => res),
     };
     next = jest.fn();
 
@@ -66,19 +67,6 @@ describe("register controller", () => {
     expect(next).toHaveBeenCalledWith(expect.any(ValidationAppError));
   });
 
-  // TODO Test KO alors qu'il devrait être OK ??!!??
-  /*
-  it("should return 200 and not send mail if user already exists", async () => {
-    User.read.mockResolvedValue([{ id: 1 }]);
-    mailService.send.mockResolvedValue();
-
-    await register(req, res, next);
-
-    expect(mailService.send).not.toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({ code: "CreationCompte" });
-  });
-*/
   it("should return 500 if mail sending fails for existing user", async () => {
     User.read.mockResolvedValue([{ id: 1 }]);
     mailService.send.mockRejectedValue(new Error("SMTP error"));
@@ -126,8 +114,8 @@ describe("register controller", () => {
       inseeCode: "75101",
     });
     User.registerByEmail.mockResolvedValue({
-      user: { id: 1 },
       code: "MailEnvoye",
+      user: { id: 1 },
     });
     jwt.sign.mockReturnValue("token123");
     mailService.send.mockRejectedValue(new Error("SMTP error"));
@@ -149,8 +137,8 @@ describe("register controller", () => {
       inseeCode: "75101",
     });
     User.registerByEmail.mockResolvedValue({
-      user: { id: 1 },
       code: "MailEnvoye",
+      user: { id: 1 },
     });
     jwt.sign.mockReturnValue("token123");
     mailService.send.mockResolvedValue();

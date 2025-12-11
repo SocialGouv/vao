@@ -1,7 +1,7 @@
 const BoUser = require("../../services/BoUser");
 
 const logger = require("../../utils/logger");
-const ValidationAppError = require("../../utils/validation-error");
+const ValidationAppError = require("../../utils/validation-error").default;
 
 const BOUserSchema = require("../../schemas/bo-user");
 

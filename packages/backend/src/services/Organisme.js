@@ -2,8 +2,8 @@
 const yup = require("yup");
 const Regions = require("./geo/Region");
 
-const AppError = require("../utils/error");
-const ValidationAppError = require("../utils/validation-error");
+const AppError = require("../utils/error").default;
+const ValidationAppError = require("../utils/validation-error").default;
 const logger = require("../utils/logger");
 const { partOrganisme } = require("../helpers/org-part");
 
@@ -409,6 +409,7 @@ FROM back.organisme_non_agree ona
     INNER JOIN front.personne_morale pm ON pm.organisme_id = o.id
     WHERE pm.siren = $1
       AND pm.siege_social = 'true'
+      AND pm.current = true
 `,
 
   getSiret: `

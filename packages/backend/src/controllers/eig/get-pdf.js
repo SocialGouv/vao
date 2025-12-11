@@ -2,7 +2,7 @@ const Eig = require("../../services/eig");
 const generatePdfEig = require("../../services/pdf/eig/generate");
 const logger = require("../../utils/logger");
 const Region = require("../../services/geo/Region");
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 
 const log = logger(module.filename);
 

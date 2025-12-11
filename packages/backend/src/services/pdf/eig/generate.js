@@ -1,6 +1,6 @@
 const logger = require("../../../utils/logger");
 const build = require("./build");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 
 const log = logger(module.filename);
 

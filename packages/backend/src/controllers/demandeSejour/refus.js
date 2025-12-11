@@ -3,7 +3,7 @@ const DemandeSejour = require("../../services/DemandeSejour");
 const logger = require("../../utils/logger");
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const MailUtils = require("../../utils/mail");
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 
 const Send = require("../../services/mail").mailService.send;
 

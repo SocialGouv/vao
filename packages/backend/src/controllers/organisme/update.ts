@@ -1,6 +1,7 @@
 import { type NextFunction, type Response } from "express";
 
 import MailUtils = require("../../utils/mail");
+import { partOrganisme } from "../../helpers/org-part";
 import UserFoService from "../../services/FoUser";
 import { mailService } from "../../services/mail";
 import Organisme from "../../services/Organisme";
@@ -71,20 +72,49 @@ export default async function update(
   }
   try {
     if (isChangementSiret) {
-      const territoire = await TerritoireService.readFicheIdByTerCode(
-        organismeWithTheSiret.agrement.regionObtention,
-      );
-      const fiche = await TerritoireService.readOne(territoire.id);
       const userUpdating = await UserFoService.readOne(userId);
-      await mailService.send(
-        MailUtils.bo.organisme.sendDreetsChangeSiret({
-          ancienSiret: currentSiret,
-          mailDreets: fiche.service_mail,
-          nouveauSiret: parametre.siret,
-          organisme: organismeWithTheSiret,
-          user: userUpdating,
-        }),
-      );
+      if (
+        organismeWithTheSiret.typeOrganisme ===
+          partOrganisme.PERSONNE_PHYSIQUE ||
+        (organismeWithTheSiret.typeOrganisme ===
+          partOrganisme.PERSONNE_MORALE &&
+          organismeWithTheSiret.siegeSocial)
+      ) {
+        const territoire = await TerritoireService.readFicheIdByTerCode(
+          organismeWithTheSiret.agrement.regionObtention,
+        );
+        const fiche = await TerritoireService.readOne(territoire.id);
+        await mailService.send(
+          MailUtils.bo.organisme.sendDreetsChangeSiret({
+            ancienSiret: currentSiret,
+            mailDreets: fiche.service_mail,
+            nouveauSiret: parametre.siret,
+            organisme: organismeWithTheSiret,
+            user: userUpdating,
+          }),
+        );
+      } else {
+        let emailsOrganisateurSiegeSocial = [];
+        const organismeSiegeSocial = await Organisme.getSiege(parametre.siret);
+
+        if (organismeSiegeSocial?.organismeId) {
+          const usersSiegeSocial = await UserFoService.getMailUserOrganismeId(
+            organismeSiegeSocial.organismeId,
+          );
+          emailsOrganisateurSiegeSocial = usersSiegeSocial.map(
+            (u: { mail: string }) => u.mail,
+          );
+          await mailService.send(
+            MailUtils.usagers.organisme.sendOvaPrincipalChangeSiret({
+              ancienSiret: currentSiret,
+              mailOVA: emailsOrganisateurSiegeSocial,
+              nouveauSiret: parametre.siret,
+              organisme: organismeWithTheSiret,
+              user: userUpdating,
+            }),
+          );
+        }
+      }
     }
   } catch (error) {
     // On n'interromp pas le retour, le mail n'étant pas critique

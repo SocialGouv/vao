@@ -9,8 +9,8 @@ const registerSchema = require("../../../schemas/register");
 const logger = require("../../../utils/logger");
 const MailUtils = require("../../../utils/mail");
 const { buildEmailToken } = require("../../../utils/token");
-const ValidationAppError = require("../../../utils/validation-error");
-const AppError = require("../../../utils/error");
+const ValidationAppError = require("../../../utils/validation-error").default;
+const AppError = require("../../../utils/error").default;
 const {
   getFichesTerritoireForRegionByInseeCode,
 } = require("../../../services/Territoire");
