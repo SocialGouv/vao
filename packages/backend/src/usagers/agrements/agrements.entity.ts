@@ -90,7 +90,6 @@ export interface AgrementSejoursEntity {
   agrement_id: number | null;
   adresse: AdresseDto | null;
   nom_hebergement: string | null;
-  adresse_id: number | null;
   nb_vacanciers: number | null;
   mois: number[] | null;
 }

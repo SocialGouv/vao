@@ -39,5 +39,5 @@ function randomLabel() {
   ];
   const num = randomInt(1, 300);
   const street = streets[randomInt(0, streets.length)];
-  return `${num} x${street}`;
+  return `${num} ${street}`;
 }
