@@ -4,14 +4,14 @@ const { sentry } = require("../config");
 const logger = require("../utils/logger");
 const { getPool } = require("../utils/pgpool");
 const normalize = require("../utils/normalize");
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 const { status } = require("../helpers/users");
 const { addHistoric } = require("./Tracking");
 const { canBeActivated } = require("../utils/canBeActivated");
 const CommonUser = require("./common/Users");
 const { schema } = require("../helpers/schema");
 
-const { entities, userTypes } = require("../helpers/tracking");
+const { entities, userTypes } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);
 
@@ -90,7 +90,7 @@ const query = {
     FROM front.users us
     LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
     LEFT JOIN front.organismes o ON uo.org_id = o.id
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
     WHERE
       mail = $1
       AND pwd = crypt($2, CASE
@@ -127,7 +127,7 @@ const query = {
       FROM front.users us
       LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
       LEFT JOIN front.organismes o ON uo.org_id = o.id
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
       WHERE 1=1
       ${Object.keys(criterias)
         .map((criteria, i) => ` AND us.${criteria} = $${i + 1}`)

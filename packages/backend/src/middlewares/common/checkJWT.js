@@ -6,7 +6,7 @@ const UserFo = require("../../services/FoUser");
 const Session = require("../../services/common/Session");
 const { schema } = require("../../helpers/schema");
 
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 const logger = require("../../utils/logger");
 const {
   buildAccessToken: buildAccessTokenBo,

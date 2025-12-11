@@ -2,7 +2,7 @@ const FoUser = require("../../services/FoUser");
 const { object, number, string } = require("yup");
 
 const logger = require("../../utils/logger");
-const ValidationAppError = require("../../utils/validation-error");
+const ValidationAppError = require("../../utils/validation-error").default;
 
 const log = logger(module.filename);
 

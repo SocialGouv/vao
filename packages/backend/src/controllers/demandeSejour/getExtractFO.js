@@ -4,7 +4,7 @@ const Organisme = require("../../services/Organisme");
 const { escapeCsvField } = require("../../utils/csv");
 const dayjs = require("dayjs");
 const logger = require("../../utils/logger");
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 const { formatSiret } = require("../../utils/siret");
 
 const log = logger(module.filename);

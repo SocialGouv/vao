@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const config = require("../../../config");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 const logger = require("../../../utils/logger")(module.filename);
 
 const MailUtils = require("../../../utils/mail");

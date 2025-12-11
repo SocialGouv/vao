@@ -3,7 +3,7 @@ const DemandeSejour = require("../../services/DemandeSejour");
 const Send = require("../../services/mail").mailService.send;
 const MailUtils = require("../../utils/mail");
 const logger = require("../../utils/logger");
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 
 const log = logger(module.filename);
 

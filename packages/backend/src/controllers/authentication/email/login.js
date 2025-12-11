@@ -1,4 +1,4 @@
-const { ERRORS } = require("@vao/shared-bridge");
+const { ERRORS_LOGIN } = require("@vao/shared-bridge");
 
 const jwt = require("jsonwebtoken");
 const config = require("../../../config");
@@ -12,7 +12,7 @@ const logger = require("../../../utils/logger");
 const { status } = require("../../../helpers/users");
 const { schema } = require("../../../helpers/schema");
 const { buildAccessToken, buildRefreshToken } = require("../../../utils/token");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 
 const log = logger(module.filename);
 
@@ -37,7 +37,7 @@ module.exports = async function login(req, res, next) {
       log.w("Trop de tentatives de connexion");
       return next(
         new AppError("Trop de tentatives de connexion", {
-          name: ERRORS.TooManyLoginAttempts,
+          name: ERRORS_LOGIN.TooManyLoginAttempts,
           statusCode: 429,
         }),
       );

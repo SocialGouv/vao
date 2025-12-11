@@ -817,6 +817,51 @@ module.exports = {
         };
       },
     },
+    organisme: {
+      sendDreetsChangeSiret: ({
+        mailDreets,
+        user,
+        organisme,
+        ancienSiret,
+        nouveauSiret,
+      }) => {
+        const html = sendTemplate.getBody(
+          "PORTAIL VAO - CHANGEMENT DE SIRET D'UN OVA",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Nous vous informons qu’un changement de numéro de SIRET a été enregistré pour un organisateur titulaire d’un agrément VAO rattaché à votre DREETS.",
+                "<strong>Détails de la mise à jour : </strong>",
+                `<strong>- Nom de l'OVA : </strong>${
+                  organisme.typeOrganisme === "personne_morale"
+                    ? organisme.personneMorale.raisonSociale
+                    : `${organisme.personnePhysique.prenom} ${
+                        organisme.personnePhysique.nomUsage ??
+                        organisme.personnePhysique.nomNaissance
+                      }`
+                }<br>
+                <strong>- Ancien siret : </strong>${ancienSiret}<br>
+                <strong>- Nouveau siret : </strong>${nouveauSiret}<br>
+                <strong>- Date de mise à jour : </strong>${new Date().toLocaleDateString("fr-FR")}<br>
+                <strong>- Mise à jour effectuée par : </strong>${user.prenom} ${user.nom} - ${user.email}`,
+                "Les informations du nouveau SIRET sont désormais actives dans VAO.",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        return {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "Portail VAO - Changement de SIRET d’un OVA",
+          to: mailDreets,
+        };
+      },
+    },
   },
   usagers: {
     action: {
@@ -1657,6 +1702,46 @@ module.exports = {
         };
 
         return params;
+      },
+    },
+    organisme: {
+      sendOvaPrincipalChangeSiret: ({
+        mailOVA,
+        user,
+        organisme,
+        ancienSiret,
+        nouveauSiret,
+      }) => {
+        const html = sendTemplate.getBody(
+          "PORTAIL VAO - MISE A JOUR DU SIRET D'UN ETABLISSEMENT SECONDAIRE",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Nous vous informons qu’un de vos établissements secondaires rattachés à votre compte VAO a mis à jour son numéro de SIRET.",
+                "<strong>Détails de la mise à jour : </strong>",
+                `<strong>- Nom de l'OVA : </strong>${organisme.personneMorale.raisonSociale}<br>
+                <strong>- Ancien siret : </strong>${ancienSiret}<br>
+                <strong>- Nouveau siret : </strong>${nouveauSiret}<br>
+                <strong>- Date de mise à jour : </strong>${new Date().toLocaleDateString("fr-FR")}<br>
+                <strong>- Mise à jour effectuée par : </strong>${user.prenom} ${user.nom} - ${user.email}`,
+                "Le nouveau SIRET est désormais actif dans le compte VAO de cet établissement.",
+                "Nous vous invitons à vérifier que l’ensemble de vos établissements rattachés disposent bien de SIRET à jour.",
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        return {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject:
+            "Portail VAO - Mise à jour du SIRET d’un établissement secondaire",
+          to: mailOVA,
+        };
       },
     },
   },

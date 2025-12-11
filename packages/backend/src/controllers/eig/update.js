@@ -2,7 +2,7 @@ const logger = require("../../utils/logger");
 const yup = require("yup");
 const { updateSchemaAdapteur } = require("../../schemas/eig");
 const { UpdateTypes, isDeclarationligibleToEig } = require("../../helpers/eig");
-const ValidationAppError = require("../../utils/validation-error");
+const ValidationAppError = require("../../utils/validation-error").default;
 const eigService = require("../../services/eig");
 const DemandeSejour = require("../../services/DemandeSejour");
 

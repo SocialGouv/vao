@@ -9,7 +9,7 @@ const boCheckRole = require("../middlewares/bo-check-role");
 const boCheckJWT = require("../middlewares/bo-check-JWT");
 const trackEig = require("../middlewares/trackEig");
 
-const { actions, userTypes } = require("../helpers/tracking");
+const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 
 const { eigController } = require("../controllers");
 const getDepartements = require("../middlewares/getDepartements");
@@ -58,7 +58,7 @@ router.get(
 router.get(
   "/:id",
   checkJWT,
-  checkPermissionEIG({ action: actions.reading }),
+  checkPermissionEIG({ action: TRACKING_ACTIONS.reading }),
   eigController.getById,
 );
 router.get(
@@ -71,35 +71,47 @@ router.get(
 router.post(
   "/",
   checkJWT,
-  checkPermissionEIG({ action: actions.creation }),
+  checkPermissionEIG({ action: TRACKING_ACTIONS.creation }),
   checkPermissionDeclarationSejourForEig,
-  trackEig({ action: actions.creation, userType: userTypes.front }),
+  trackEig({
+    action: TRACKING_ACTIONS.creation,
+    userType: TRACKING_USER_TYPE.front,
+  }),
   eigController.create,
 );
 router.put(
   "/:id",
   checkJWT,
-  checkPermissionEIG({ action: actions.modification }),
+  checkPermissionEIG({ action: TRACKING_ACTIONS.modification }),
   checkPermissionDeclarationSejourForEig,
   canUpdateEig,
-  trackEig({ action: actions.modification, userType: userTypes.front }),
+  trackEig({
+    action: TRACKING_ACTIONS.modification,
+    userType: TRACKING_USER_TYPE.front,
+  }),
   eigController.update,
 );
 router.post(
   "/depose/:id",
   checkJWT,
-  checkPermissionEIG({ action: actions.modification }),
+  checkPermissionEIG({ action: TRACKING_ACTIONS.modification }),
   canUpdateEig,
-  trackEig({ action: actions.modification, userType: userTypes.front }),
+  trackEig({
+    action: TRACKING_ACTIONS.modification,
+    userType: TRACKING_USER_TYPE.front,
+  }),
   eigController.depose,
 );
 
 router.delete(
   "/:id",
   checkJWT,
-  checkPermissionEIG({ action: actions.deletion }),
+  checkPermissionEIG({ action: TRACKING_ACTIONS.deletion }),
   canUpdateEig,
-  trackEig({ action: actions.deletion, userType: userTypes.front }),
+  trackEig({
+    action: TRACKING_ACTIONS.deletion,
+    userType: TRACKING_USER_TYPE.front,
+  }),
   eigController.delete,
 );
 
@@ -107,7 +119,10 @@ router.post(
   "/admin/:id/mark-as-read",
   boCheckJWT,
   boCheckRoleEig,
-  trackEig({ action: actions.modification, userType: userTypes.back }),
+  trackEig({
+    action: TRACKING_ACTIONS.modification,
+    userType: TRACKING_USER_TYPE.back,
+  }),
   eigController.markAsRead,
 );
 

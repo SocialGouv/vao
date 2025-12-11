@@ -3,12 +3,12 @@ const Sentry = require("@sentry/node");
 const { sentry } = require("../config");
 const { statuts, Types, Categorie } = require("../helpers/eig");
 const logger = require("../utils/logger");
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 const { getPool } = require("../utils/pgpool");
 const { addHistoric } = require("./Tracking");
 const { getFileMetaData } = require("./Document");
 
-const { entities, userTypes } = require("../helpers/tracking");
+const { TRACKING_ENTITIES, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 const { encrypt, decrypt } = require("../utils/cipher");
 
 const log = logger(module.filename);
@@ -23,7 +23,7 @@ const commonQuery = {
             region_obtention
           FROM front.agrements a
           JOIN front.organismes o2 ON o2.id = a.organisme_id
-          INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
+          INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = TRUE
           INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
           WHERE pm.siret = etab.siret
           AND a.supprime = false
@@ -107,8 +107,8 @@ const query = {
     LEFT JOIN FRONT.EIG_TYPE ET ON ET.ID = E2ET.EIG_TYPE_ID
     LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
     LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id
-    LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id AND pm.current = TRUE
+    LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp.current = TRUE
   WHERE
     ${where}
     ${search}
@@ -193,8 +193,8 @@ const query = {
         LEFT JOIN FRONT.EIG_CATEGORIE EC ON EC.ID = ET.EIG_CATEGORIE_ID
         LEFT JOIN FRONT.DEMANDE_SEJOUR DS ON DS.ID = EIG.DEMANDE_SEJOUR_ID
         LEFT JOIN FRONT.EIG_STATUT S ON S.ID = EIG.STATUT_ID
-        LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id
-        LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id
+        LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id AND pm.current = TRUE
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp.current = TRUE
     WHERE
       EIG.ID = $1
     GROUP BY
@@ -263,8 +263,8 @@ const query = {
       INNER JOIN front.eig_statut s ON s.id = e.STATUT_ID AND s.statut = 'ENVOYE'
       INNER JOIN front.demande_sejour ds ON ds.id = e.demande_sejour_id
       INNER JOIN front.organismes o ON o.id = ds.organisme_id
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id 
-      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = TRUE
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
       WHERE 
       (
         o.id IN (SELECT pm.organisme_id 
@@ -272,10 +272,10 @@ const query = {
                    	INNER JOIN front.agrements a ON a.organisme_id = pm.organisme_id
 				            INNER JOIN geo.territoires t ON t.code = a.region_obtention
 				            INNER JOIN back.users u ON u.ter_code = t.code AND u.id = $1
-                    INNER JOIN front.personne_morale pms ON pms.siren = substr(pm.siret,1,9))
+                    INNER JOIN front.personne_morale pms ON pms.siren = substr(pm.siret,1,9)) AND pm.current = TRUE
      	  OR o.id IN (SELECT pm.organisme_id 
                   FROM front.personne_physique pp 
-                   	INNER JOIN front.agrements a ON a.organisme_id = pp.organisme_id
+                   	INNER JOIN front.agrements a ON a.organisme_id = pp.organisme_id AND pp.current = TRUE
                     INNER JOIN geo.territoires t ON t.code = a.region_obtention
                     INNER JOIN back.users u ON u.ter_code = t.code AND u.id = $1) 
         AND e.read_by_dreets = false
@@ -843,10 +843,10 @@ module.exports.addAsyncEigHistoric = async ({
         after: newData,
         before: oldData,
       },
-      entity: entities.eig,
+      entity: TRACKING_ENTITIES.eig,
       entityId: eigId,
       userId,
-      userType: userType ?? userTypes.front,
+      userType: userType ?? TRACKING_USER_TYPE.front,
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);

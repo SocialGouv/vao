@@ -43,6 +43,27 @@
           </DsfrButton>
         </div>
       </div>
+      <div
+        v-if="props.modifiable && organismeStore.organismeCourant?.complet"
+        class="fr-input-group fr-col-8"
+      >
+        <DsfrButton
+          id="chercherNouveauSiret"
+          :disabled="!siretMeta.valid"
+          @click.prevent="searchNewSiret"
+          >Mettre à jour le SIRET et/ou les informations
+        </DsfrButton>
+        <div class="fr-input-group fr-col-8">
+          <OrganismeConfirmUpdateSiret
+            :opened="confirmUpdatingSiret"
+            :ancien-siret="siret"
+            :nouveau-siret="siretToUpdate"
+            @close="confirmUpdatingSiret = false"
+            @confirm="updateSiret"
+          />
+        </div>
+      </div>
+
       <div v-if="nomNaissance">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-8">
@@ -182,6 +203,8 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
 import { apiTypes } from "@vao/shared-ui/src/models";
+import { SiretService } from "~/services/siretService";
+import { ERRORS_SIRET_MESSAGES, ERRORS_SIRET } from "@vao/shared-bridge";
 
 const toaster = useToaster();
 const log = logger("components/organisme/personne-physique");
@@ -200,6 +223,9 @@ const emit = defineEmits(["update", "next"]);
 const organismeStore = useOrganismeStore();
 organismeStore.fetchUsersOrganisme();
 const userStore = useUserStore();
+
+const confirmUpdatingSiret = ref(false);
+const siretToUpdate = ref(null);
 
 const validationSchema = computed(() => {
   return yup.object(organisme.personnePhysiqueSchema);
@@ -287,6 +313,47 @@ const formatedSiret = computed(() => {
 
   return formatSiret;
 });
+
+async function searchNewSiret() {
+  log.i("searchNewSiret - IN");
+  try {
+    const siretFromResponse = await SiretService.getSiretSiegeSocial(
+      siret.value,
+    );
+    if (siretFromResponse !== siret.value) {
+      siretToUpdate.value = siretFromResponse;
+      confirmUpdatingSiret.value = true;
+    } else {
+      toaster.info({
+        titleTag: "h2",
+        description: "Le numéro SIRET est déjà à jour",
+      });
+      await searchOrganisme();
+    }
+  } catch (error) {
+    log.w("searchNewSiret - erreur:", { error });
+    const body = error.data;
+    const codeError = body.name;
+    const description =
+      (await ERRORS_SIRET_MESSAGES(codeError)) || ERRORS_SIRET.UnknownError;
+    toaster.error({
+      titleTag: "h2",
+      description,
+    });
+  }
+}
+
+async function updateSiret() {
+  confirmUpdatingSiret.value = false;
+  siret.value = siretToUpdate.value;
+
+  await searchOrganisme();
+  resetAdressSiegeField({
+    value: adresseDomicile.value,
+  });
+
+  return true;
+}
 
 async function searchOrganisme() {
   log.i("searchOrganisme - In");
