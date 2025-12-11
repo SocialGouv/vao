@@ -24,15 +24,13 @@ export const AgrementService = {
       Object.assign(doc, meta);
     }
     for (const bilanAnnuel of agrement?.agrementBilanAnnuel || []) {
-      if (Array.isArray(bilanAnnuel.bilanHebergement)) {
-        for (const bilanHebergement of bilanAnnuel.bilanHebergement) {
-          const adresse = await getById(bilanHebergement?.adresse?.id);
-          bilanHebergement.adresse = adresse;
-        }
+      for (const bilanHebergement of bilanAnnuel.bilanHebergement || []) {
+        const adresse = await getById(bilanHebergement.adresse.id);
+        bilanHebergement.adresse = adresse;
       }
     }
     for (const sejours of agrement?.agrementSejours || []) {
-      const adresse = await getById(sejours?.adresse?.id);
+      const adresse = await getById(sejours.adresse.id);
       sejours.adresse = adresse;
     }
     return agrement;

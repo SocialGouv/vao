@@ -40,11 +40,10 @@ async function insertAgrementSejours(
 ) {
   if (!agrement.agrementSejours?.length) return;
   for (const s of agrement.agrementSejours) {
-    const adresseId = s?.adresse?.id
-      ? s.adresse.id
-      : s?.adresse
-        ? await saveAdresse(client, s.adresse)
-        : null;
+    let adresseId = s?.adresse?.id || null;
+    if (!adresseId && s?.adresse) {
+      adresseId = await saveAdresse(client, s.adresse);
+    }
     await client.query(
       `INSERT INTO front.agrement_sejours (
         agrement_id, nom_hebergement, adresse_id, nb_vacanciers, mois
@@ -102,11 +101,10 @@ async function insertAgrementBilans(
 
     if (bil.bilanHebergement) {
       for (const bhe of bil.bilanHebergement) {
-        const adresseId = bhe?.adresse?.id
-          ? bhe.adresse.id
-          : bhe?.adresse
-            ? await saveAdresse(client, bhe.adresse)
-            : null;
+        let adresseId = bhe?.adresse?.id || null;
+        if (!adresseId && bhe?.adresse) {
+          adresseId = await saveAdresse(client, bhe.adresse);
+        }
         await client.query(
           `INSERT INTO front.bilan_hebergement (
             agr_bilan_annuel_id, nom_hebergement, adresse_id, nb_jours, mois
