@@ -668,8 +668,12 @@ async function searchOrganisme() {
   }
 }
 
+const ITEMS_PER_PAGE = 10;
+
 const onRepresentantsLegauxChangeWithKeyChange = (
   event: Record<string, any>[],
+  action: "add" | "delete" = "add",
+  personneIndex?: number,
 ) => {
   onRepresentantsLegauxChange(event);
   /* Le fait de changer la clé rernder le composant. Il semble que
@@ -681,9 +685,21 @@ const onRepresentantsLegauxChangeWithKeyChange = (
   Dans ce cas, comme le tableau est rerender avec 10 colonnes par defaut (ce le composant DsfrTable de Personnes),
   on peut choisir la page a affichée qui est celle du nouvel ajout via la formule suivante.*/
   setTimeout(() => {
+    // Force le re-render du composant Personnes
     keyRepresentantLegaux.value += 1;
-    currentPersonnesPage.value =
-      Math.floor(((representantsLegaux.value ?? []).length - 1) / 10) + 1;
+    // Après suppression, on reste sur la page où était la personne supprimée
+    if (action === "delete" && typeof personneIndex === "number") {
+      const page = Math.floor(personneIndex / ITEMS_PER_PAGE) + 1;
+      currentPersonnesPage.value = page;
+      return;
+    }
+    // Après ajout, on affiche la page du nouvel élément (souvent la dernière page)
+    if (action === "add") {
+      currentPersonnesPage.value =
+        Math.floor(
+          ((representantsLegaux.value ?? []).length - 1) / ITEMS_PER_PAGE,
+        ) + 1;
+    }
   }, 10);
 };
 
