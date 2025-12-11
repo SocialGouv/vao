@@ -1,3 +1,4 @@
+export * from "./adresse.dto";
 export * from "./agrement.dto";
 export * from "./document.dto";
 export * from "./featureFlagDto";
