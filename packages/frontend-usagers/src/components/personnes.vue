@@ -51,6 +51,7 @@
 <script setup>
 import dayjs from "dayjs";
 import { nextTick } from "vue";
+const modalOrigin = ref(null);
 
 const props = defineProps({
   personnes: { type: Array, required: true },
@@ -135,7 +136,7 @@ function deleteItem(i) {
     ...props.personnes.slice(0, i),
     ...props.personnes.slice(i + 1),
   ];
-  emit("valid", personnes);
+  emit("valid", personnes, "delete", i);
 
   nextTick(() => {
     setTimeout(() => {
