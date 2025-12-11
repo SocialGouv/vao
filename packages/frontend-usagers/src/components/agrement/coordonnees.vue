@@ -35,12 +35,6 @@
       class="fr-my-2w"
     />
 
-    <DsfrFileUpload
-      v-model="fileProcesVerbal"
-      label="Dernier procès verbal d'assemblée générale"
-      :modifiable="true"
-    />
-
     <hr class="fr-mt-4w" />
 
     <DsfrAlert
