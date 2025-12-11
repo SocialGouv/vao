@@ -99,12 +99,12 @@ export const saveAdresse = async (
   return existing.id;
 };
 
-export const getById = async (id: number) => {
+export const getById = async (id?: number | null) => {
   const { rows } = await getPool().query(query.getById, [id]);
   return rows?.[0] ?? null;
 };
 
-export const getByIds = async (ids: number[]) => {
+export const getByIds = async (ids?: (number | null)[]) => {
   const { rows } = await getPool().query(query.getByIds, [ids]);
   return rows ?? [];
 };

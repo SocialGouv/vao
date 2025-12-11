@@ -1,6 +1,6 @@
 export interface AdresseDto {
-  id: number | null;
-  cleInsee: string | null;
+  id?: number | null;
+  cleInsee?: string | null;
   label: string | null;
   codeInsee: string | null;
   codePostal: string | null;
