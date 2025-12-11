@@ -18,6 +18,7 @@ const query = {
   `,
   getById: `
     SELECT
+      ID as "id",
       LABEL as "label",
       CODE_INSEE as "codeInsee",
       CODE_POSTAL as "codePostal",
