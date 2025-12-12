@@ -1,5 +1,6 @@
 import { DEMANDE_SEJOUR_STATUTS } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
+import { DatabaseError } from "pg";
 
 import DemandeSejour from "../../services/DemandeSejour";
 import Organisme from "../../services/Organisme";
@@ -15,7 +16,15 @@ export default async function post(
   next: NextFunction,
 ) {
   const { declarationId } = req.params;
-  const { id: userId } = req.decoded;
+  const userId = req.decoded?.id;
+  if (!userId) {
+    log.w("DONE with error: utilisateur non authentifié");
+    return next(
+      new AppError("Utilisateur non authentifié", {
+        statusCode: 401,
+      }),
+    );
+  }
 
   log.i("IN", { declarationId });
 
@@ -53,7 +62,7 @@ export default async function post(
     }
 
     sourceDeclaration.files = sourceDeclaration.files?.files?.filter(
-      (f) =>
+      (f: any) =>
         f.type !== "declaration_2_mois" && f.type !== "AR_declaration_2_mois",
     );
     const newDeclarationId = await DemandeSejour.copy({
@@ -82,7 +91,7 @@ export default async function post(
     return res.status(200).json({ declarationId: newDeclarationId });
   } catch (err) {
     log.w(err);
-    if (err && err.code === "22001") {
+    if (err instanceof DatabaseError && err.code === "22001") {
       return next(
         new AppError(
           "Le libellé de la déclaration copiée dépasse la limite de 100 caractères.",
