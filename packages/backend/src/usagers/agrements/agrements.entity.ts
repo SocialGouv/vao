@@ -88,6 +88,7 @@ export interface AgrementFilesEntity {
 export interface AgrementSejoursEntity {
   id?: number | null;
   agrement_id: number | null;
+  adresse_id: number | null;
   adresse: AdresseDto | null;
   nom_hebergement: string | null;
   nb_vacanciers: number | null;
@@ -99,7 +100,7 @@ export interface AgrementSejoursEntity {
  */
 export interface AgrementBilanAnnuelEntity {
   id?: number | null;
-  agrement_id?: number | null;
+  agrement_id: number | null;
   annee: number | null;
   nb_global_vacanciers: number | null;
   nb_hommes: number | null;
