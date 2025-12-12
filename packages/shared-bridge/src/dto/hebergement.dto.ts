@@ -1,10 +1,4 @@
-export interface AdresseDto {
-  codeInsee: string | null;
-  codePostal: string | null;
-  coordinates: [number | null, number | null] | number[] | null;
-  departement: string | null;
-  label: string | null;
-}
+import { AdresseDto } from "./adresse.dto";
 
 export interface CoordonneesDto {
   adresse: AdresseDto | null;
