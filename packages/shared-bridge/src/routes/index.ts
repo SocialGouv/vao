@@ -27,3 +27,5 @@ export type { DocumentUsagersRoutes } from "./usagers/document";
 export { DocumentUsagersRoutesSchema } from "./usagers/document";
 export type { HebergementUsagersRoutes } from "./usagers/hebergement";
 export { HebergementUsagersRoutesSchema } from "./usagers/hebergement";
+export type { SiretRoutes } from "./usagers/siret";
+export { SiretRoutesSchema } from "./usagers/siret";
