@@ -1,5 +1,6 @@
 import { DEMANDE_SEJOUR_STATUTS } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
+import { DatabaseError } from "pg";
 
 import DemandeSejour from "../../services/DemandeSejour";
 import Organisme from "../../services/Organisme";
@@ -90,7 +91,7 @@ export default async function post(
     return res.status(200).json({ declarationId: newDeclarationId });
   } catch (err) {
     log.w(err);
-    if (err && (err as { code?: unknown }).code === "22001") {
+    if (err instanceof DatabaseError && err.code === "22001") {
       return next(
         new AppError(
           "Le libellé de la déclaration copiée dépasse la limite de 100 caractères.",
