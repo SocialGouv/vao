@@ -74,9 +74,3 @@ const buttonLabel = computed(() => {
   return `${truncate(firstMonth)}-${truncate(lastMonth)}`;
 });
 </script>
-<!-- 
-<style scoped>
-.select-months > button {
-  outline: 3px solid red;
-}
-</style> -->

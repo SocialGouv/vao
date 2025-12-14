@@ -19,7 +19,7 @@
         icon="fr-icon-search-line"
         label="Adresse de l'hébergement"
         :label-visible="false"
-        :model-value="adresse"
+        :model-value="adresseLabel"
         :is-valid="adresseMeta.valid"
         :error-message="adresseErrorMessage"
         @update:model-value="onAdresseChange"
@@ -51,7 +51,7 @@
         secondary
         icon="fr-icon-delete-line"
         icon-only
-        @click="() => console.log('Valider hebergement')"
+        @click="() => console.log('supprimer hebergement')"
       />
     </div>
   </div>
@@ -124,6 +124,10 @@ const {
   handleChange: onAdresseChange,
   meta: adresseMeta,
 } = useField("adresse");
+
+const adresseLabel = computed(
+  () => (adresse.value && adresse.value.label) || "",
+);
 
 const validateForm = async () => {
   const result = await handleSubmit((values) => values)();

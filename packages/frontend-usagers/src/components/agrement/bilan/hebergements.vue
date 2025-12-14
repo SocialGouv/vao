@@ -27,7 +27,7 @@
       @click="toggleForm"
     />
     <div v-if="showForm" class="fr-mt-2v">
-      <!-- Formulaire d'ajout de séjour (placeholder) -->
+      <!-- Formulaire d'ajout de séjour -->
       <div class="fr-mt-6v">
         <DsfrInput
           name="nomHebergement"
@@ -41,21 +41,22 @@
         />
       </div>
       <div class="fr-mt-6v">
-        <DsfrInputGroup
-          name="adresse"
-          type="recherche"
-          icon="fr-icon-search-line"
+        <SearchAddress
           label="Adresse de l'hébergement"
-          :label-visible="true"
-          :model-value="adresse"
-          :is-valid="adresseMeta.valid"
+          :value="adresse"
           :error-message="adresseErrorMessage"
-          @update:model-value="onAdresseChange"
+          @select="onAdresseSelect"
         />
       </div>
       <div class="fr-mt-6v">
         <p class="fr-mb-0">Période</p>
         <AgrementBilanSelectMonths @update:selected="handleMonths" />
+        <p
+          v-if="periodeMeta.touched && periodeErrorMessage"
+          class="fr-error-text"
+        >
+          {{ periodeErrorMessage }}
+        </p>
       </div>
       <div class="fr-mt-6v">
         <DsfrInput
@@ -72,8 +73,7 @@
       <DsfrButton
         class="fr-mt-2v fr-col-12 add-btn"
         type="button"
-        label="Ajouter le séjour"
-        icon="fr-icon-add-line"
+        label="Ajouter ce séjour"
         @click="onSubmitAddSejour"
       />
     </div>
@@ -95,12 +95,11 @@
 
 <script setup>
 import { computed, ref } from "vue";
+import SearchAddress from "@/components/address/search-address.vue";
 import { useField, useForm } from "vee-validate";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import * as yup from "yup";
 
 const props = defineProps({
-  statut: { type: String, required: true },
   bilanHebergement: {
     type: Array,
     required: true,
@@ -108,12 +107,7 @@ const props = defineProps({
   },
 });
 
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
+const toaster = useToaster();
 
 // Configuration de la pagination
 const ITEMS_PER_PAGE = 10;
@@ -150,25 +144,18 @@ const paginatedHebergements = computed(() => {
   return props.bilanHebergement.slice(start, end);
 });
 
-console.log("Total pages:", totalPages.value);
-console.log("Pages:", pages.value);
-console.log("Hébergements paginés:", paginatedHebergements.value);
-
 const validationSchema = yup.object({
-  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  nBtotalJoursVacances: requiredUnlessBrouillon(
-    yup
-      .number()
-      .typeError("Merci de saisir un nombre valide.")
-      .min(0, "Le nombre total de jours de vacances ne peut pas être négatif.")
-      .required("Ce champ est obligatoire."),
-  ),
   nomHebergement: yup.string().required("Champ obligatoire"),
-  adresse: yup.string().required("Champ obligatoire"),
+  adresse: yup.string().required("L'adresse est obligatoire"),
   nbJours: yup.number().required("Champ obligatoire"),
+  periode: yup
+    .array()
+    .of(yup.string())
+    .min(1, "Vous devez sélectionner au moins un mois.")
+    .required("Veuillez sélectionner une période."),
 });
 
-const { handleSubmit } = useForm({
+const { handleSubmit, resetForm } = useForm({
   validationSchema,
   validateOnMount: false,
 });
@@ -187,28 +174,52 @@ const {
   meta: nbJoursMeta,
 } = useField("nbJours");
 
+const { value: adresse, errorMessage: adresseErrorMessage } =
+  useField("adresse");
+
 const {
-  value: adresse,
-  errorMessage: adresseErrorMessage,
-  handleChange: onAdresseChange,
-  meta: adresseMeta,
-} = useField("adresse");
+  value: periode,
+  errorMessage: periodeErrorMessage,
+  meta: periodeMeta,
+} = useField("periode");
 
 function handleMonths(monthsArray) {
+  periode.value = monthsArray; // Met à jour la période
   console.log("Mois sélectionnés :", monthsArray);
 }
 
-const onSubmit = handleSubmit((values) => {
-  // Ici tu ajoutes le séjour (à compléter plus tard)
-  console.log("Séjour validé :", values);
-  showForm.value = false; // Masque le formulaire après ajout
-});
+function onAdresseSelect(selectedAddress) {
+  adresse.value = selectedAddress.label;
+  console.log("Adresse sélectionnée :", selectedAddress);
+}
 
-const onSubmitAddSejour = () => {
-  onSubmit();
-};
+// const onSubmitAddSejour = handleSubmit((values) => {
+//   console.log("Séjour validé :", values);
+//   showForm.value = false; // Masque le formulaire après ajout
+// });
 
-console.log("handleSubmit:", handleSubmit);
+const onSubmitAddSejour = handleSubmit(
+  (values) => {
+    console.log("Séjour validé :", values);
+    // Ici, émettez un événement vers le parent ou faites votre traitement
+    // emit('add-sejour', values);
+
+    // Réinitialise le formulaire
+    resetForm();
+
+    // Masque le formulaire après ajout
+    showForm.value = false;
+
+    toaster.success({
+      titleTag: "h2",
+      description: "Le séjour a été ajouté avec succès.",
+    });
+  },
+  (errors) => {
+    // Cette fonction est appelée si la validation échoue
+    console.log("Erreurs de validation :", errors);
+  },
+);
 </script>
 
 <style scoped>
