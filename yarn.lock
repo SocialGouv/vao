@@ -4382,12 +4382,12 @@
     estraverse "^5.3.0"
     picomatch "^4.0.2"
 
-"@testcontainers/postgresql@^11.7.1":
-  version "11.7.1"
-  resolved "https://registry.yarnpkg.com/@testcontainers/postgresql/-/postgresql-11.7.1.tgz#707a39f618528da7c5eb96ea899c538d56e1ec97"
-  integrity sha512-8PfGNqwdyoMPQuubZM0wd07/tfi4vhLAjXP791tM105vSCmzCOhLfYu2CIq04GKVlmW1J5z5nOZWLNlU9WrUuQ==
+"@testcontainers/postgresql@^11.9.0":
+  version "11.9.0"
+  resolved "https://registry.yarnpkg.com/@testcontainers/postgresql/-/postgresql-11.9.0.tgz#9009e28208c4134c4cd6614827fa98614ea1d494"
+  integrity sha512-beLyLdLygFllktviM132Xd6tQ4i5FnuyZP+4BQEjUb5sJYHYnIrV/ZBzRRflIlF8gugt1GXgudkmr/HxM9vtKw==
   dependencies:
-    testcontainers "^11.7.1"
+    testcontainers "^11.9.0"
 
 "@tokenizer/inflate@^0.2.6":
   version "0.2.7"
@@ -4524,10 +4524,10 @@
     "@types/node" "*"
     "@types/ssh2" "*"
 
-"@types/dockerode@^3.3.44":
-  version "3.3.44"
-  resolved "https://registry.yarnpkg.com/@types/dockerode/-/dockerode-3.3.44.tgz#1e6d5b291646820e9daabfa132cdb33c9d535b56"
-  integrity sha512-fUpIHlsbYpxAJb285xx3vp7q5wf5mjqSn3cYwl/MhiM+DB99OdO5sOCPlO0PjO+TyOtphPs7tMVLU/RtOo/JjA==
+"@types/dockerode@^3.3.47":
+  version "3.3.47"
+  resolved "https://registry.yarnpkg.com/@types/dockerode/-/dockerode-3.3.47.tgz#cf8c6b4efcd0bb28b0e6009e613e7faab1b96e75"
+  integrity sha512-ShM1mz7rCjdssXt7Xz0u1/R2BJC7piWa3SJpUBiVjCf2A3XNn4cP6pUVaD8bLanpPVVn4IKzJuw3dOvkJ8IbYw==
   dependencies:
     "@types/docker-modem" "*"
     "@types/node" "*"
@@ -7505,7 +7505,7 @@ docker-modem@^5.0.6:
     split-ca "^1.0.1"
     ssh2 "^1.15.0"
 
-dockerode@^4.0.8:
+dockerode@^4.0.9:
   version "4.0.9"
   resolved "https://registry.yarnpkg.com/dockerode/-/dockerode-4.0.9.tgz#15b32000edad25520be6fafa9ad6bc4529b06be7"
   integrity sha512-iND4mcOWhPaCNh54WmK/KoSb35AFqPAUWFMffTQcp52uQt36b5uNwEJTSXntJZBbeGad72Crbi/hvDIv6us/6Q==
@@ -14427,19 +14427,19 @@ test-exclude@^6.0.0:
     glob "^7.1.4"
     minimatch "^3.0.4"
 
-testcontainers@^11.7.1:
-  version "11.7.1"
-  resolved "https://registry.yarnpkg.com/testcontainers/-/testcontainers-11.7.1.tgz#4ee8595f02b594012fae10433e059608a4aaa565"
-  integrity sha512-fjut+07G4Avp6Lly/6hQePpUpQFv9ZyQd+7JC5iCDKg+dWa2Sw7fXD3pBrkzslYFfKqGx9M6kyIaLpg9VeMsjw==
+testcontainers@^11.9.0:
+  version "11.10.0"
+  resolved "https://registry.yarnpkg.com/testcontainers/-/testcontainers-11.10.0.tgz#879b445b763aa357a862770334943d75f2a60159"
+  integrity sha512-8hwK2EnrOZfrHPpDC7CPe03q7H8Vv8j3aXdcmFFyNV8dzpBzgZYmqyDtduJ8YQ5kbzj+A+jUXMQ6zI8B5U3z+g==
   dependencies:
     "@balena/dockerignore" "^1.0.2"
-    "@types/dockerode" "^3.3.44"
+    "@types/dockerode" "^3.3.47"
     archiver "^7.0.1"
     async-lock "^1.4.1"
     byline "^5.0.0"
     debug "^4.4.3"
     docker-compose "^1.3.0"
-    dockerode "^4.0.8"
+    dockerode "^4.0.9"
     get-port "^7.1.0"
     proper-lockfile "^4.1.2"
     properties-reader "^2.3.0"
