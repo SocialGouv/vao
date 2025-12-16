@@ -10,15 +10,15 @@
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
       <DsfrInputGroup
-        name="noteInformation"
+        name="bilanChangementEvolution"
         label="Note d'information présentant les éventuelles améliorations ou changements apportés aux séjours (optionnel)"
-        :model-value="noteInformation"
+        :model-value="bilanChangementEvolution"
         :label-visible="true"
         :is-textarea="true"
-        :is-valid="noteInformationMeta.valid"
-        :error-message="noteInformationErrorMessage"
+        :is-valid="bilanChangementEvolutionMeta.valid"
+        :error-message="bilanChangementEvolutionErrorMessage"
         hint="De votre propre initiative ou suite aux observations des inspecteurs de l'action sanitaire et sociale, les médecins inspecteurs de santé publique ou les inspecteurs des agences régionales de santé ayant la qualité de médecin à l'issue des contrôles effectués au cours de l'agrément."
-        @update:model-value="onNoteInformationChange"
+        @update:model-value="onBilanChangementEvolutionChange"
       />
     </div>
   </div>
@@ -59,7 +59,7 @@ const filesChangeEvol = ref(
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  noteInformation: yup
+  bilanChangementEvolution: yup
     .string()
     .min(20, "Merci de décrire au moins 20 caractères.")
     .nullable()
@@ -75,7 +75,8 @@ const validationSchema = yup.object({
 
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
-  noteInformation: props.initAgrement.bilan?.noteInformation || "",
+  bilanChangementEvolution:
+    props.initAgrement.bilan?.bilanChangementEvolution || "",
   bilanAucunChangementEvolution:
     props.initAgrement.bilan?.bilanAucunChangementEvolution || false,
 };
@@ -88,11 +89,11 @@ const { handleSubmit } = useForm({
 });
 
 const {
-  value: noteInformation,
-  errorMessage: noteInformationErrorMessage,
-  handleChange: onNoteInformationChange,
-  meta: noteInformationMeta,
-} = useField("noteInformation");
+  value: bilanChangementEvolution,
+  errorMessage: bilanChangementEvolutionErrorMessage,
+  handleChange: onBilanChangementEvolutionChange,
+  meta: bilanChangementEvolutionMeta,
+} = useField("bilanChangementEvolution");
 
 const {
   value: bilanAucunChangementEvolution,
