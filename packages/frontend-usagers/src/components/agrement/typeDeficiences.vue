@@ -30,7 +30,7 @@ const props = defineProps({
 
 const handicapOptions = [
   { label: "Sensoriel", value: "auditif" },
-  { label: "Cognitif", value: "visuel" },
+  { label: "Cognitif", value: "cognitif" },
   { label: "Mental/Psychique", value: "mental" },
   { label: "Moteur", value: "moteur" },
   { label: "Polyhandicap", value: "polyhandicap" },

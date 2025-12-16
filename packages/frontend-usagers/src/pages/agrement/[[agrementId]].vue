@@ -80,7 +80,12 @@
             id="agrement-projets"
             :read-only="readOnly"
           >
-            <AgrementProjets @next="nextHash" @previous="previousHash" />
+            <AgrementProjets
+              :init-agrement="agrementStore.agrementCourant ?? {}"
+              :cdn-url="`${config.public.backendUrl}/documents/`"
+              @next="nextHash"
+              @previous="previousHash"
+            />
           </div>
         </div>
       </div>

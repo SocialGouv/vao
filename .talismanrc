@@ -80,7 +80,7 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/siret/getLienSuccession.spec.ts
   checksum: 5c6862263cb7030aac2429eb09b35ab9a54e13c15e633944cdfac95747ec768f
 - filename: packages/backend/src/helpers/__tests__/queryParams.test.js
-  checksum: e14945664e13711d468fa39da07ed23f5eddba041fc49566c094717193af3d96
+  checksum: c8b87f647822d4193d521e1d5630de0afbedc9f5273741bb5b419008e059b3fa
 - filename: packages/backend/src/helpers/queryParams.js
   checksum: 5c840a9346e912b48660122bb3fd206d4cbedb6f0cb73972724ba95be6f4043b
 - filename: packages/backend/src/pgpool.js
@@ -96,7 +96,7 @@ fileignoreconfig:
 - filename: packages/backend/src/services/ApiToken.js
   checksum: 1be2f39bdf814196b35376f6682bf2a4879168e06c3acbb65eb229bcc2068c28
 - filename: packages/backend/src/services/BoUser.js
-  checksum: 90d8297092ecec904d6055564334cc7ffdbd9a74a1e9a985b1f7a17f8f98b126
+  checksum: 8081d89640c4a0704ceb4078b2dbe4d52a097ca2b7db99e0f9955065cec20885
 - filename: packages/backend/src/services/DemandeSejour.js
   checksum: 84d16fbf7cf0433f833c790f360cda6c8d23c30fe580eec4a0e3851a2d0311b0
 - filename: packages/backend/src/services/Document.js
@@ -227,10 +227,8 @@ fileignoreconfig:
   checksum: 59d65c7e15f215c9bcb33eed7919c8a63a77b6fe9b83eb3b043e936310ca12f3
 - filename: packages/frontend-usagers/src/components/PasswordInput.vue
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
-- filename: packages/frontend-usagers/src/components/agrement/personne-morale.vue
-  checksum: 76de358518d21d7cf5b522e31979b676147585540098a1419976d0120edaac93
-- filename: packages/frontend-usagers/src/components/agrement/representants.vue
-  checksum: e1944c26baf528554fbfb052068ccbdf9ac9b158b5152760fae9b2bc0858b4e9
+- filename: packages/frontend-usagers/src/components/address/search-address.vue
+  checksum: e22412a54064dea24f7e200e9887726a4ef110f13570feea628c70c4fe2886a9
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/demande-sejour/table.vue
@@ -253,8 +251,6 @@ fileignoreconfig:
   checksum: 846543dfd36589a6fe10859c28fe0ca4e3a4f084f58ea56b42fce695d30b31c8
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue
   checksum: 05743cc5c3dfd946e8ee41cb11571b1e505bbdb5260e9c59a53e4ca16cb11f08
-- filename: packages/frontend-usagers/src/pages/agrement/[[agrementId]].vue
-  checksum: c132de8273a16f6228b082b99328371fc3fe8987c603218c8f6777cf86144bd9
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
   checksum: dd393d7c31566dfa3864bb9a63fe98f9bf040cc8321e8cad0f74e8634e8365f8
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue

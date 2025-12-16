@@ -65,3 +65,8 @@
 .pagination-center .fr-pagination__list {
   justify-content: center;
 }
+
+.border {
+  border-radius: 4px;
+  border: 1px solid var(--light-decisions-border-border-default-grey, #DDD);
+}

@@ -8,7 +8,7 @@
   </TitleWithIcon>
   <p class="light-decisions-text-text-default-info fr-text--xs">
     <span class="fr-icon-info-fill" aria-hidden="true"></span>
-    Ces informations sont recueillies à titre indicatif et n’ont pas de valeur
+    Ces informations sont recueillies à titre indicatif et n'ont pas de valeur
     contractuelles. <br />
     <span class="fr-ml-6v"
       >Seuls les séjours accueillant plus de 3 vacanciers et ayant une durée
@@ -21,29 +21,73 @@
   <AgrementTypeDeficiences ref="typeDeficiencesRef" />
   <hr />
   <p class="fr-mb-1v"><b>Informations complémentaires</b></p>
-  <p class="fr-hint-text fr-mb-0">
-    Nombre de séjours envisagés l’année suivante (optionnel)
-  </p>
-  <div class="fr-col-6">
+  <div class="fr-col-6 fr-mb-4v">
     <DsfrInput
-      name="nbTotalJoursVacances"
-      label="Nombre total de jours de vacances"
+      name="sejourNbEnvisage"
+      label="Nombre de séjours envisagés l'année suivante (optionnel)"
       type="number"
-      :model-value="nbTotalJoursVacances"
+      :model-value="sejourNbEnvisage"
       :label-visible="true"
-      :is-valid="nbTotalJoursVacancesMeta.valid"
-      :error-message="nbTotalJoursVacancesErrorMessage"
-      @update:model-value="onNbTotalJoursVacancesChange"
+      :is-valid="sejourNbEnvisageMeta.valid"
+      :error-message="sejourNbEnvisageErrorMessage"
+      @update:model-value="onsejourNbEnvisageChange"
+    />
+  </div>
+  <DsfrInputGroup
+    name="sejourCommentaire"
+    label="Ajouter un commentaire (optionnel)"
+    :model-value="sejourCommentaire"
+    :label-visible="true"
+    :is-textarea="true"
+    :is-valid="commentaireMeta.valid"
+    :error-message="commentaireErrorMessage"
+    @update:model-value="onCommentaireChange"
+  />
+  <div class="fr-fieldset__element">
+    <UtilsMultiFilesUpload
+      v-model="filesMotivation"
+      label="Ajouter des fichiers (optionnel)"
+    />
+  </div>
+  <div class="fr-p-4v bg-light-blue">
+    <p>
+      <b>Veuillez trouver le modèle de questionnaire à adresser</b>
+      préalablement à la tenue du séjour à la personne accueillie, ou à son
+      représentant légal, afin de connaître ses besoins ou ses problèmes de
+      santé
+    </p>
+    <!-- todo: link to download file -->
+    <DsfrFileDownload
+      format="pdf"
+      size="61.88 Ko"
+      :href="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
+      download=""
+      title="questionnaire-vacanciers.pdf"
     />
   </div>
 </template>
+
 <script setup>
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { useForm, useField } from "vee-validate";
+import { ref } from "vue";
+
+//ajouter props init
+
+const config = useRuntimeConfig();
 
 const typeDeficiencesRef = ref(null);
+
+// todo: gerer file
+// const filesMotivation = ref(
+//   props.initAgrement?.agrementFiles.filter(
+//     (file) => file.category === FILE_CATEGORY.SEJOUR,
+//   ) || [],
+// );
+
+const filesMotivation = ref([]);
 
 const requiredUnlessBrouillon = (schema) =>
   schema.when("statut", {
@@ -54,67 +98,96 @@ const requiredUnlessBrouillon = (schema) =>
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  nbTotalJoursVacances: requiredUnlessBrouillon(
+  sejourNbEnvisage: requiredUnlessBrouillon(
     yup
       .number()
       .typeError("Merci de saisir un nombre valide.")
       .min(0, "Le nombre de jours de vacances ne peut pas être négatif.")
       .required("Ce champ est obligatoire."),
   ),
+  sejourCommentaire: yup
+    .string()
+    .max(1000, "Le commentaire ne doit pas dépasser 1000 caractères.")
+    .nullable(),
 });
-
-const {
-  value: nbTotalJoursVacances,
-  errorMessage: nbTotalJoursVacancesErrorMessage,
-  handleChange: onNbTotalJoursVacancesChange,
-  meta: nbTotalJoursVacancesMeta,
-} = useField("nbTotalJoursVacances");
 
 const initialValues = {
   statut: AGREMENT_STATUT.BROUILLON,
-  nbTotalJoursVacances: 0,
+  sejourNbEnvisage: 0,
+  sejourCommentaire: "",
 };
 
-const validateForm = async () => {
-  let formValid = true;
-  const result = await handleSubmit((values) => values)();
-
-  // Validation du type de déficiences
-  const typeDeficiencesValidation =
-    await typeDeficiencesRef.value?.validateTypeDeficiences();
-
-  if (!typeDeficiencesValidation?.valid) {
-    console.error("Le type de déficiences n'est pas valide.");
-    formValid = false;
-  }
-
-  if (!formValid) {
-    return toaster.error({
-      titleTag: "h2",
-      description: `La partie séjour contient des erreurs. Veuillez les corriger avant de continuer.`,
-    });
-  }
-
-  if (result) {
-    const data = { ...result };
-    delete data.statut;
-    return {
-      ...data,
-      typeDeficiences: typeDeficiencesValidation.value,
-    };
-  }
-  console.log("Validation result:", result);
-  return result;
-};
-
+// CORRECTION PRINCIPALE : Récupérer `values` de useForm
 const { handleSubmit } = useForm({
   validationSchema,
   initialValues,
   validateOnMount: false,
 });
 
+// Définir les champs APRÈS useForm
+const {
+  value: sejourNbEnvisage,
+  errorMessage: sejourNbEnvisageErrorMessage,
+  handleChange: onsejourNbEnvisageChange,
+  meta: sejourNbEnvisageMeta,
+} = useField("sejourNbEnvisage");
+
+const {
+  value: sejourCommentaire,
+  errorMessage: commentaireErrorMessage,
+  handleChange: onCommentaireChange,
+  meta: commentaireMeta,
+} = useField("sejourCommentaire");
+
+const validateForm = async () => {
+  let formValid = true;
+
+  try {
+    // CORRECTION : handleSubmit retourne maintenant les valeurs actuelles
+    const result = await handleSubmit((values) => {
+      // Log des valeurs ACTUELLES du formulaire
+      console.log("Valeurs du formulaire:", values);
+      return values;
+    })();
+
+    // Validation du type de déficiences
+    const typeDeficiencesValidation =
+      await typeDeficiencesRef.value?.validateTypeDeficiences();
+
+    if (!typeDeficiencesValidation?.valid) {
+      console.error("Le type de déficiences n'est pas valide.");
+      formValid = false;
+    }
+
+    if (!formValid) {
+      console.error("Le formulaire n'est pas valide.");
+    }
+
+    if (result) {
+      const data = { ...result };
+      delete data.statut;
+      const finalData = {
+        ...data,
+        typeDeficiences: typeDeficiencesValidation.value,
+        ...(filesMotivation.value.length > 0 && {
+          filesAgrementSejour: filesMotivation.value,
+        }),
+      };
+      console.log("Données finales:", finalData);
+      return finalData;
+    }
+  } catch (error) {
+    console.error("Erreur lors de la validation du formulaire :", error);
+  }
+};
+
 defineExpose({
   validateForm,
-  // isValid: () => meta.value.valid, // Optionnel : pour vérifier la validité
 });
 </script>
+
+<style scoped>
+.bg-light-blue {
+  background: rgba(227, 227, 253, 0.4);
+}
+</style>
