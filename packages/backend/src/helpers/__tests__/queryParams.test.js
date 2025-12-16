@@ -53,12 +53,12 @@ describe("queryParams", () => {
     const filters = [
       {
         key: "created_at",
-        type: "custom",
-        value: "2024-01-01",
         query: (index, value) => ({
           query: `created_at > $${index}`,
           queryParams: [value],
         }),
+        type: "custom",
+        value: "2024-01-01",
       },
     ];
     const result = applyFilters(query, [], filters);
@@ -226,10 +226,32 @@ describe("queryParams", () => {
       { key: "name", queryKey: "name", sortEnabled: true },
       { key: "age", queryKey: "age", sortEnabled: true, sortType: "number" },
     ];
-    const queryParams = { sortBy: "age", sortDirection: "ASC", limit: "5" };
+    const queryParams = { limit: "5", sortBy: "age", sortDirection: "ASC" };
 
     const result = processQuery(queryBuilder, [], titles, queryParams);
-    expect(result.query).toContain("ORDER BY");
+    expect(result.query).toContain("ORDER BY age ASC");
+    expect(result.params).toEqual(expect.any(Array));
+    expect(result.countQuery).toContain("COUNT(*)");
+  });
+
+  it("should process query with sorting by boolean", () => {
+    const queryBuilder = () => "SELECT * FROM users";
+    const titles = [
+      {
+        key: "editable",
+        queryKey: "editable",
+        sortEnabled: true,
+        sortType: "boolean",
+      },
+    ];
+    const queryParams = {
+      limit: "5",
+      sortBy: "editable",
+      sortDirection: "ASC",
+    };
+
+    const result = processQuery(queryBuilder, [], titles, queryParams);
+    expect(result.query).toContain("ORDER BY editable ASC");
     expect(result.params).toEqual(expect.any(Array));
     expect(result.countQuery).toContain("COUNT(*)");
   });
@@ -245,6 +267,7 @@ describe("queryParams", () => {
     const queryBuilder = () => "SELECT * FROM users";
     const titles = [];
     const result = processQuery(queryBuilder, [], titles, {});
+
     expect(result.query).toContain("SELECT * FROM users");
     expect(result.params).toEqual(expect.any(Array));
   });
