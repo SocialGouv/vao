@@ -52,3 +52,16 @@
   display: none;
   visibility: hidden;
 }
+
+.light-decisions-text-text-default-info {
+  color: var(--light-decisions-text-text-default-info, #0063CB);
+}
+
+/* select months style fix */
+.select-months .fr-multiselect {
+  padding: .5rem 1rem;
+}
+
+.pagination-center .fr-pagination__list {
+  justify-content: center;
+}

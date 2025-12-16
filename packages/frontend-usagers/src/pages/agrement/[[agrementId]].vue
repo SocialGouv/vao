@@ -33,7 +33,7 @@
       </div>
 
       <div class="fr-col-xs-12 fr-col-md-9">
-        <AgrementStepper />
+        <AgrementStepper :step="hash" />
         <div>
           <div v-if="hash === 'agrement-coordonnees'" id="agrement-coordonnees">
             <AgrementCoordonnees
@@ -61,6 +61,27 @@
               @previous="previousHash"
             />
           </div>
+          <div
+            v-if="hash === 'agrement-bilan'"
+            id="agrement-bilan"
+            :read-only="readOnly"
+          >
+            <AgrementBilan
+              :init-agrement="agrementStore.agrementCourant ?? {}"
+              :modifiable="canModify"
+              :cdn-url="`${config.public.backendUrl}/documents/`"
+              @update="(formValues) => updateOrCreate(formValues)"
+              @next="nextHash"
+              @previous="previousHash"
+            />
+          </div>
+          <div
+            v-if="hash === 'agrement-projets'"
+            id="agrement-projets"
+            :read-only="readOnly"
+          >
+            <AgrementProjets @next="nextHash" @previous="previousHash" />
+          </div>
         </div>
       </div>
     </div>
@@ -84,6 +105,7 @@ const canModify = true;
 
 async function updateOrCreate(formValues) {
   const updatedData = { ...formValues };
+  console.log("Données à enregistrer :", updatedData);
   try {
     updatedData.agrementFiles = [];
     const fileMappings = [
@@ -112,6 +134,21 @@ async function updateOrCreate(formValues) {
         multiple: false,
         category: FILE_CATEGORY.ASSURRAPAT,
       },
+      {
+        key: "filesChangeEvol",
+        multiple: true,
+        category: FILE_CATEGORY.CHANGEEVOL,
+      },
+      {
+        key: "filesBilanQualit",
+        multiple: true,
+        category: FILE_CATEGORY.BILANQUALIT,
+      },
+      {
+        key: "filesBilanFinancier",
+        multiple: true,
+        category: FILE_CATEGORY.BILANFINANC,
+      },
     ];
 
     for (const { key, multiple, category } of fileMappings) {
@@ -136,10 +173,12 @@ async function updateOrCreate(formValues) {
     };
     agrementStore.agrementCourant = newAgrement;
 
-    await agrementStore.postAgrement({
-      agrement: newAgrement,
-      organismeId: organismeStore.organismeCourant?.organismeId,
-    });
+    console.log("New agrement to save:", newAgrement);
+
+    // await agrementStore.postAgrement({
+    //   agrement: newAgrement,
+    //   organismeId: organismeStore.organismeCourant?.organismeId,
+    // });
 
     toaster.success("Données enregistrées avec succès !");
   } catch (error) {
@@ -153,6 +192,7 @@ async function updateOrCreate(formValues) {
 
 async function createDocuments({ documents, category }) {
   const result = [];
+  console.log("Création documents :", documents);
 
   for (const document of documents) {
     const docInfo = await createDocument({ document, category });
