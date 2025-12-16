@@ -212,7 +212,7 @@ ${Object.keys(criterias)
     LEFT OUTER JOIN geo.territoires dep ON dep.code = us.ter_code AND dep.parent_code <> 'FRA'
     LEFT OUTER JOIN geo.territoires reg ON ((reg.code = ter.code AND ter.parent_code = 'FRA') or (dep.parent_code = reg.code))
     LEFT OUTER JOIN back.users ud on ud.id = us.deleted_use_id
-    WHERE AND ((ter.code = $1 OR ter.parent_code = $1) OR $1 = 'FRA')
+    WHERE ((ter.code = $1 OR ter.parent_code = $1) OR $1 = 'FRA')
   `,
   getTotal: (additionalParamsQuery, additionalParams) => [
     `

@@ -80,7 +80,7 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/siret/getLienSuccession.spec.ts
   checksum: 5c6862263cb7030aac2429eb09b35ab9a54e13c15e633944cdfac95747ec768f
 - filename: packages/backend/src/helpers/__tests__/queryParams.test.js
-  checksum: e14945664e13711d468fa39da07ed23f5eddba041fc49566c094717193af3d96
+  checksum: c8b87f647822d4193d521e1d5630de0afbedc9f5273741bb5b419008e059b3fa
 - filename: packages/backend/src/helpers/queryParams.js
   checksum: 5c840a9346e912b48660122bb3fd206d4cbedb6f0cb73972724ba95be6f4043b
 - filename: packages/backend/src/pgpool.js

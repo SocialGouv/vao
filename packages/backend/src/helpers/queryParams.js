@@ -11,9 +11,8 @@ const getSort = (sortBy, direction, titles, defaultSort = "") => {
       return title.customSort(finalSortBy, direction);
     }
     if (
-      title?.sortType === "date" ||
-      title?.sortType === "number" ||
-      title?.sortType === "boolean"
+      title?.sortType &&
+      ["date", "number", "boolean"].includes(title.sortType)
     ) {
       return `ORDER BY ${title.sortQuery ?? title.key} ${direction}`;
     }
