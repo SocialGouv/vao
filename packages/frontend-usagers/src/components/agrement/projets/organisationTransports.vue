@@ -66,7 +66,7 @@ const getFileByCategory = () => {
   return null;
 };
 
-const filesAccompResp = ref(getFileByCategory(FILE_CATEGORY.ASSURRAPAT));
+const filesAccompResp = ref(getFileByCategory(FILE_CATEGORY.ASSURRAPAT) || []);
 
 const validationSchema = yup.object({
   transportAllerRetour: yup
@@ -106,6 +106,14 @@ const validateForm = async () => {
   const formValid = true;
 
   try {
+    console.log(
+      "Début de la validation du formulaire Organisation des transports",
+    );
+
+    // Log des valeurs actuelles des champs
+    console.log("Valeur de transportAllerRetour :", transportAllerRetour.value);
+    console.log("Valeur de transportSejour :", transportSejour.value);
+    console.log("Valeur de filesAccompResp :", filesAccompResp.value);
     // CORRECTION : handleSubmit retourne maintenant les valeurs actuelles
     const result = await handleSubmit((values) => {
       // Log des valeurs ACTUELLES du formulaire
@@ -124,16 +132,18 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesAccompResp.value.length > 0 && {
-          filesAccompResp: filesAccompResp.value,
-        }),
+        ...(filesAccompResp.value &&
+          filesAccompResp.value.length > 0 && {
+            filesAccompResp: filesAccompResp.value,
+          }),
       };
-      console.log("Données finales:", finalData);
+      console.log("Données finales transports:", finalData);
       return finalData;
     }
   } catch (error) {
     console.error("Erreur lors de la validation du formulaire :", error);
   }
+  console.error("Erreur lors de la validation du formulaire transports");
 };
 
 defineExpose({

@@ -77,6 +77,7 @@ const validateAllForms = async (formulaires) => {
       // Validation échouée ou rejetée
       const nomFormulaire = formulaires[index].nom;
       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
+      console.log("formsErrors:", formsErrors);
 
       // Log pour debug
       if (result.status === "rejected") {
