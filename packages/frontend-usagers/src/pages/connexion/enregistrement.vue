@@ -225,6 +225,7 @@
 import "@vueform/multiselect/themes/default.css";
 import { ApiUnavailable } from "@vao/shared-ui";
 import { apiTypes } from "@vao/shared-ui/src/models";
+import { ERRORS_LOGIN } from "@vao/shared-bridge";
 
 const log = logger("pages/connexion/enregistrement");
 
@@ -463,8 +464,9 @@ async function register() {
         description =
           "Une erreur est survenue, peut être un compte existe-t-il déjà avec cet email ...";
         break;
-      case "SiretNotFound":
+      case ERRORS_LOGIN.SiretNotFound:
         description =
+          body.message ||
           "Le SIRET fourni est inconnu. Veuillez vérifier et réessayer.";
         break;
     }
