@@ -43,11 +43,34 @@ module.exports.getEtablissement = async (siret) => {
   const { apiInsee } = config;
   log.i("getEtablissement", { siret });
   const dateDuJour = dayjs().format("YYYY-MM-DD");
-  const { data } = await axios.get(
-    `${apiInsee.URL}${apiInsee.URI}/siret/${siret}?date=${dateDuJour}`,
-    { headers: { "X-INSEE-Api-Key-Integration": `${apiInsee.TOKEN}` } },
-  );
-  return data.etablissement;
+
+  try {
+    const { data } = await axios.get(
+      `${apiInsee.URL}${apiInsee.URI}/siret/${siret}?date=${dateDuJour}`,
+      { headers: { "X-INSEE-Api-Key-Integration": `${apiInsee.TOKEN}` } },
+    );
+
+    if (!data || !data.etablissement) {
+      throw new Error("SIRET inconnu ou établissement non trouvé.");
+    }
+
+    return data.etablissement;
+  } catch (error) {
+    if (error.response && error.response.status === 404) {
+      log.w("SIRET inconnu", { siret });
+      throw new Error(
+        "L'établissement correspondant au SIRET fourni est introuvable.",
+      );
+    }
+
+    log.e("Erreur lors de la récupération de l'établissement", {
+      error: error.message,
+      siret,
+    });
+    throw new Error(
+      `Erreur lors de la récupération de l'établissement : ${error.message}`,
+    );
+  }
 };
 
 module.exports.getListeEtablissements = async (siren) => {
