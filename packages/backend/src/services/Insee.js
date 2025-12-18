@@ -39,6 +39,14 @@ const getInformations = async () => {
 
 module.exports.getInformations = getInformations;
 
+class SiretNotFoundError extends Error {
+  constructor(siret) {
+    super(`L'établissement correspondant au SIRET fourni est introuvable.`);
+    this.name = "SiretNotFoundError";
+    this.siret = siret;
+  }
+}
+
 module.exports.getEtablissement = async (siret) => {
   const { apiInsee } = config;
   log.i("getEtablissement", { siret });
@@ -51,28 +59,23 @@ module.exports.getEtablissement = async (siret) => {
     );
 
     if (!data?.etablissement) {
-      throw new Error("Données invalides : établissement non trouvé.");
+      throw new SiretNotFoundError(siret);
     }
 
     return data.etablissement;
   } catch (error) {
     if (error.response && error.response.status === 404) {
       log.w("SIRET inconnu", { siret });
-      throw new Error(
-        "L'établissement correspondant au SIRET fourni est introuvable.",
-      );
+      throw new SiretNotFoundError(siret);
     }
 
     log.e("Erreur lors de la récupération de l'établissement", {
       error: error.message,
       siret,
+      status: error.response?.status,
     });
-
-    const wrappedError = new Error(
-      `Erreur lors de la récupération de l'établissement : ${error.message}`,
-    );
-    wrappedError.cause = error;
-    throw wrappedError;
+    error.siret = siret;
+    throw error;
   }
 };
 

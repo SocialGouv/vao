@@ -15,6 +15,7 @@ const {
   getFichesTerritoireForRegionByInseeCode,
 } = require("../../../services/Territoire");
 const insee = require("../../../services/Insee");
+const { ERRORS_LOGIN } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);
 
@@ -62,15 +63,12 @@ module.exports = async function register(req, res, next) {
     territoire = await getFichesTerritoireForRegionByInseeCode({ inseeCode });
   } catch (error) {
     log.w("DONE with error");
-    if (
-      error.message ===
-      "L'établissement correspondant au SIRET fourni est introuvable."
-    ) {
+    if (error.name === "SiretNotFoundError") {
       return next(
         new AppError(
           "Le SIRET fourni est inconnu. Veuillez vérifier et réessayer.",
           {
-            name: "SiretNotFound",
+            name: ERRORS_LOGIN.SiretNotFound,
             statusCode: 400,
           },
         ),

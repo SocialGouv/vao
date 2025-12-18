@@ -9,6 +9,7 @@ export enum ERRORS_LOGIN {
   EmailUnauthorized = "EmailUnauthorized",
   UserTemporarilyBlocked = "UserTemporarilyBlocked",
   UnexpectedError = "UnexpectedError",
+  SiretNotFound = "SiretNotFound",
 }
 
 export enum ERRORS_SIRET {
