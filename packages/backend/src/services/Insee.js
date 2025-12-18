@@ -50,8 +50,8 @@ module.exports.getEtablissement = async (siret) => {
       { headers: { "X-INSEE-Api-Key-Integration": `${apiInsee.TOKEN}` } },
     );
 
-    if (!data || !data.etablissement) {
-      throw new Error("SIRET inconnu ou établissement non trouvé.");
+    if (!data?.etablissement) {
+      throw new Error("Données invalides : établissement non trouvé.");
     }
 
     return data.etablissement;
@@ -67,9 +67,12 @@ module.exports.getEtablissement = async (siret) => {
       error: error.message,
       siret,
     });
-    throw new Error(
+
+    const wrappedError = new Error(
       `Erreur lors de la récupération de l'établissement : ${error.message}`,
     );
+    wrappedError.cause = error;
+    throw wrappedError;
   }
 };
 
