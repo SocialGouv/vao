@@ -106,7 +106,7 @@ fileignoreconfig:
 - filename: packages/backend/src/services/Document.js
   checksum: 1fbeae31395935da7b8daef1d3872151b793d433d1cde968d0607b4628ba50a8
 - filename: packages/backend/src/services/Insee.js
-  checksum: 56f1881f4f97498ce67fb3113015197b58f44ccf4c2e3b39e8b97f635e217af4
+  checksum: 8c067dbdd0a587b46905003d34a13df176fe03192253e881287c21577311f564
 - filename: packages/backend/src/services/Organisme.js
   checksum: 380a1a8859259026f36e77b17308658e9554df253c2c54790559fd8c0014e89a
 - filename: packages/backend/src/services/Territoire.js

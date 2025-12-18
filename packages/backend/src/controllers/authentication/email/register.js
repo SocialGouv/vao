@@ -62,6 +62,20 @@ module.exports = async function register(req, res, next) {
     territoire = await getFichesTerritoireForRegionByInseeCode({ inseeCode });
   } catch (error) {
     log.w("DONE with error");
+    if (
+      error.message ===
+      "L'établissement correspondant au SIRET fourni est introuvable."
+    ) {
+      return next(
+        new AppError(
+          "Le SIRET fourni est inconnu. Veuillez vérifier et réessayer.",
+          {
+            name: "SiretNotFound",
+            statusCode: 400,
+          },
+        ),
+      );
+    }
     return next(error);
   }
   try {

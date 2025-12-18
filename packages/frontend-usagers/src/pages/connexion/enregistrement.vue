@@ -463,6 +463,10 @@ async function register() {
         description =
           "Une erreur est survenue, peut être un compte existe-t-il déjà avec cet email ...";
         break;
+      case "SiretNotFound":
+        description =
+          "Le SIRET fourni est inconnu. Veuillez vérifier et réessayer.";
+        break;
     }
     if (description) {
       toaster.error({
