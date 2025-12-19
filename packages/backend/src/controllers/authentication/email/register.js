@@ -15,6 +15,7 @@ const {
   getFichesTerritoireForRegionByInseeCode,
 } = require("../../../services/Territoire");
 const insee = require("../../../services/Insee");
+const { ERRORS_LOGIN } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);
 
@@ -56,12 +57,24 @@ module.exports = async function register(req, res, next) {
   let territoire = "";
   try {
     const etablissement = await insee.getEtablissement(siret);
+    if (!etablissement) {
+      return next(
+        new AppError(
+          "Le SIRET fourni est inconnu. Veuillez vérifier et réessayer.",
+          {
+            name: ERRORS_LOGIN.SiretNotFound,
+            statusCode: 400,
+          },
+        ),
+      );
+    }
+
     const inseeCode = String(
       etablissement.adresseEtablissement.codeCommuneEtablissement,
     );
     territoire = await getFichesTerritoireForRegionByInseeCode({ inseeCode });
   } catch (error) {
-    log.w("DONE with error");
+    log.w("Erreur lors de la récupération de l'établissement", error.message);
     return next(error);
   }
   try {
