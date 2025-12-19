@@ -57,13 +57,7 @@ module.exports = async function register(req, res, next) {
   let territoire = "";
   try {
     const etablissement = await insee.getEtablissement(siret);
-    const inseeCode = String(
-      etablissement.adresseEtablissement.codeCommuneEtablissement,
-    );
-    territoire = await getFichesTerritoireForRegionByInseeCode({ inseeCode });
-  } catch (error) {
-    log.w("DONE with error");
-    if (error.name === "SiretNotFoundError") {
+    if (!etablissement) {
       return next(
         new AppError(
           "Le SIRET fourni est inconnu. Veuillez vérifier et réessayer.",
@@ -74,6 +68,13 @@ module.exports = async function register(req, res, next) {
         ),
       );
     }
+
+    const inseeCode = String(
+      etablissement.adresseEtablissement.codeCommuneEtablissement,
+    );
+    territoire = await getFichesTerritoireForRegionByInseeCode({ inseeCode });
+  } catch (error) {
+    log.w("Erreur lors de la récupération de l'établissement", error.message);
     return next(error);
   }
   try {
