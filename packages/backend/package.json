@@ -20,7 +20,7 @@
     "@sentry/profiling-node": "^8.49.0",
     "@vao/shared-bridge": "^1.0.0",
     "axios": "^1.7.4",
-    "body-parser": "~1.20.3",
+    "body-parser": "~2.2.0",
     "cookie-parser": "^1.4.6",
     "cors": "~2.8.5",
     "cron": "~3.1.7",
