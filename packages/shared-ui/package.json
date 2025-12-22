@@ -17,7 +17,7 @@
     "@socialgouv/dsfr-toaster-nuxt-module": "~1.5.0",
     "@vao/shared-bridge": "^1.0.0",
     "@vueform/multiselect": "~2.6.7",
-    "dayjs": "^1.11.11",
+    "dayjs": "^1.11.19",
     "debug": "~4.3.4",
     "vee-validate": "~4.13.0",
     "vue": "latest",

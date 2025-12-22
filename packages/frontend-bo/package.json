@@ -28,7 +28,7 @@
     "@vee-validate/i18n": "~4.13.0",
     "@vee-validate/rules": "~4.13.0",
     "@vueform/multiselect": "~2.6.7",
-    "dayjs": "^1.11.11",
+    "dayjs": "^1.11.19",
     "debug": "~4.3.4",
     "nuxt": "~3.19.0",
     "nuxt-maplibre": "^1.0.0",
