@@ -75,7 +75,7 @@
   </div>
   <div class="fr-fieldset__element fr-mt-6v">
     <UtilsMultiFilesUpload
-      v-model="filesBilanFinancier"
+      v-model="filesBilanFinancierQuatreAnnees"
       label="Ajouter des fichiers complémentaires (optionnel)"
     />
   </div>
@@ -91,12 +91,11 @@ const props = defineProps({
   initAgrement: { type: Object, required: true },
 });
 
-const filesBilanFinancier = ref(
+const filesBilanFinancierQuatreAnnees = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.BILANFINANC,
+    (file) => file.category === FILE_CATEGORY.BILANFINANCIERQUATREANNEES,
   ) || [],
 );
-
 const requiredUnlessBrouillon = (schema) =>
   schema.when("statut", {
     is: (val) => val !== AGREMENT_STATUT.BROUILLON,
@@ -178,8 +177,8 @@ const validateForm = async () => {
   if (result) {
     return {
       ...result,
-      ...(filesBilanFinancier.value.length > 0 && {
-        filesBilanFinancier: filesBilanFinancier.value,
+      ...(filesBilanFinancierQuatreAnnees.value.length > 0 && {
+        filesBilanFinancierQuatreAnnees: filesBilanFinancierQuatreAnnees.value,
       }),
     };
   }

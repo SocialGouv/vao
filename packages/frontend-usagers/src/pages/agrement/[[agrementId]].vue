@@ -149,6 +149,46 @@ async function updateOrCreate(formValues) {
         multiple: true,
         category: FILE_CATEGORY.BILANFINANC,
       },
+      {
+        key: "filesAgrementSejour",
+        multiple: true,
+        category: FILE_CATEGORY.SEJOUR,
+      },
+      {
+        key: "filesAccompResp",
+        multiple: true,
+        category: FILE_CATEGORY.ACCOMPRESP,
+      },
+      {
+        key: "filesSuiviMed",
+        multiple: true,
+        category: FILE_CATEGORY.SUIVIMED,
+      },
+      {
+        key: "filesBilanQualitPerception",
+        multiple: true,
+        category: FILE_CATEGORY.BILANQUALITPERCEPTION,
+      },
+      {
+        key: "filesBilanQualitPerspectives",
+        multiple: true,
+        category: FILE_CATEGORY.BILANQUALITPERSPECTIVE,
+      },
+      {
+        key: "filesBilanQualitelementsMarquants",
+        multiple: true,
+        category: FILE_CATEGORY.BILANQUALITELEMENTSMARQUANTS,
+      },
+      {
+        key: "filesBilanQualitComplementaires",
+        multiple: true,
+        category: FILE_CATEGORY.BILANQUALITCOMPLEMENTAIRES,
+      },
+      {
+        key: "filesBilanFinancierQuatreAnnees",
+        multiple: true,
+        category: FILE_CATEGORY.BILANFINANCIERQUATREANNEES,
+      },
     ];
 
     for (const { key, multiple, category } of fileMappings) {

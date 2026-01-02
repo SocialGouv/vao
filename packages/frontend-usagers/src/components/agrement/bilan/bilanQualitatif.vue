@@ -112,7 +112,7 @@
     <div class="fr-fieldset__element">
       <UtilsMultiFilesUpload
         v-model="filesBilanQualitElementsMarquants"
-        label="Ajouter des fichiers"
+        label="Ajouter des fichiers complémentaires"
       />
     </div>
   </div>
