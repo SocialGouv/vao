@@ -2,6 +2,10 @@
 
 ## Workflow de création de compte
 
+
+
+
+
 ```mermaid
 flowchart TD
     A[OVA remplit formulaire de création] --> B{Email déjà existant ?}
@@ -49,13 +53,13 @@ Des messages d'erreur spécifiques sont affichés pour informer l'utilisateur :
 
 {% stepper %}
 {% step %}
-#### L’utilisateur OVA renseigne le formulaire de création de compte
+**L’utilisateur OVA renseigne le formulaire de création de compte**
 
 <details>
 
 <summary>Capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-20 à 21.31.37.png" alt=""><figcaption><p>Page de création de compte pour les OVA</p></figcaption></figure>
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-20 à 21.31.37.png" alt=""><figcaption><p>Page de création de compte pour les OVA</p></figcaption></figure>
 
 </details>
 
@@ -79,7 +83,7 @@ L'utilisateur OVA reçoit une confirmation de sa demande d'inscription
 {% endstep %}
 
 {% step %}
-#### La DREETS valide le compte de l'OVA
+**La DREETS valide le compte de l'OVA**
 
 Suite à la confirmation de la demande de création de compte, la DREETS de la région où est situé l’OVA reçoit une notification pour alerter qu’un nouvel utilisateur OVA souhaite créer un compte sur le SI-VAO
 
@@ -116,7 +120,7 @@ L’utilisateur OVA reçoit un mail de confirmation.
 {% endstep %}
 
 {% step %}
-#### La DREETS refuse la création de compte de l'OVA
+**La DREETS refuse la création de compte de l'OVA**
 
 Suite à la demande d'inscription d'un OVA et comme dans la démarche de validation, la DREETS reçoit une notification pour valider / refuser l'inscription d'un nouvel OVA.
 
@@ -136,7 +140,7 @@ Lors du clic sur le bouton refus, une popup d'affiche pour argumenter le refus v
 
 <summary>Capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-25 à 16.13.51.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-25 à 16.13.51.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -149,7 +153,7 @@ Au clic sur le bouton "Refuser" :
 
 <summary>Capture</summary>
 
-<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-25 à 16.23.08.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../../.gitbook/assets/Capture d’écran 2025-06-25 à 16.23.08.png" alt=""><figcaption></figcaption></figure>
 
 </details>
 
@@ -159,7 +163,7 @@ L’utilisateur OVA reçoit un mail de refus avec le texte renseigné par l'agen
 {% endstep %}
 
 {% step %}
-#### Le compte existe déjà ?
+**Le compte existe déjà ?**
 
 Lors de la demande de création de compte via le formulaire d'inscription, si l'OVA renseigne un email déjà enregistré dans le SI VAO, l'utilisateur dont le mail est renseigne reçoit une notification par email :
 

@@ -6,14 +6,11 @@ title: OVA - Validation de l'adresse email
 
 <summary>OVA - Validation de l'adresse email</summary>
 
-* **Déclencheur :** L'utilisateur OVA réalise une demande de création d'un nouveau compte&#x20;
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Lui-même
-
+* **Déclencheur :** L'utilisateur OVA réalise une demande de création d'un nouveau compte
+* **Expéditeur :** nepasrepondre@vao.social.gouv.fr
+* **Destinataire** : Lui-même
 * **Object du mail** : Portail VAO - Validez votre adresse courriel
-
-- **Contenu du mail** :&#x20;
+* **Contenu du mail** :
 
 ```
 Bonjour,
@@ -30,6 +27,6 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src="../assets/Capture d’écran 2025-06-13 à 15.50.25.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../assets/Capture d’écran 2025-06-13 à 15.50.25.png" alt=""><figcaption></figcaption></figure>
 
 </details>

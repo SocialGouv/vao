@@ -10,7 +10,7 @@ title: OVA - Compte déjà existant
 * **Expéditeur :** nepasrepondre@vao.social.gouv.fr
 * **Destinataire** : Utilisateur ayant déjà le compte associé à l'adresse email
 * **Object du mail** : Portail VAO - Votre compte existe déjà
-* **Contenu du mail** :&#x20;
+* **Contenu du mail** :
 
 ```
 Bonjour,
@@ -29,6 +29,6 @@ Merci,
 L’équipe [Nom de l'application]
 ```
 
-<figure><img src="../assets/Capture d’écran 2025-06-20 à 14.18.30.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../assets/Capture d’écran 2025-06-20 à 14.18.30.png" alt=""><figcaption></figcaption></figure>
 
 </details>

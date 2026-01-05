@@ -7,13 +7,10 @@ title: OVA - Confirmation de demande d’inscription
 <summary>OVA - Confirmation de demande d’inscription par DREETS</summary>
 
 * **Déclencheur :** L'utilisateur qui a réalisé la demande de création de compte et qui valide sa demande avec le lien disponible dans le mail
-
-- **Expéditeur :** nepasrepondre@vao.social.gouv.fr
-- **Destinataire** : Lui-même
-
+* **Expéditeur :** nepasrepondre@vao.social.gouv.fr
+* **Destinataire** : Lui-même
 * **Object du mail** : VAO - confirmation de votre demande d’inscription
-
-- **Contenu du mail** :&#x20;
+* **Contenu du mail** :
 
 ```
 Bonjour,
@@ -33,6 +30,6 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src="../assets/Capture d’écran 2025-06-13 à 16.05.58.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../assets/Capture d’écran 2025-06-13 à 16.05.58.png" alt=""><figcaption></figcaption></figure>
 
 </details>

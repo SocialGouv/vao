@@ -10,7 +10,7 @@ title: OVA - Refus d'inscription
 * **Expéditeur :** nepasrepondre@vao.social.gouv.fr
 * **Destinataire** : L'utilisateur OVA souhaitant créer son compte
 * **Object du mail** : Refus d’inscription de votre organisme sur la plateforme VAO
-* **Contenu du mail** :&#x20;
+* **Contenu du mail** :
 
 ```
 Refus d’inscription de votre organisme sur la plateforme VAO
@@ -31,6 +31,6 @@ L'équipe du SI VAO
 Portail VAO
 ```
 
-<figure><img src="../assets/Capture d’écran 2025-06-25 à 16.24.07.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../assets/Capture d’écran 2025-06-25 à 16.24.07.png" alt=""><figcaption></figcaption></figure>
 
 </details>
