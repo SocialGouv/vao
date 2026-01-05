@@ -42,7 +42,7 @@
 
   <div class="fr-fieldset__element">
     <UtilsMultiFilesUpload
-      v-model="filesSuiviMed"
+      v-model="filesProjetsSejoursProtocoleReorientation"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -80,7 +80,7 @@
   </div>
   <div class="fr-fieldset__element fr-mt-8v">
     <UtilsMultiFilesUpload
-      v-model="filesSuiviMed2"
+      v-model="filesProjetsSejoursProtocoleRapatriement"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -91,23 +91,13 @@ import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 
-const props = defineProps({
-  initAgrement: { type: Object, required: true },
-  cdnUrl: { type: String, required: true },
-});
+// const props = defineProps({
+//   initAgrement: { type: Object, required: true },
+//   cdnUrl: { type: String, required: true },
+// });
 
-// todo: gerer file
-const filesSuiviMed = ref(
-  props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.SUIVIMED,
-  ) || [],
-);
-
-const filesSuiviMed2 = ref(
-  props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.SUIVIMED,
-  ) || [],
-);
+const filesProjetsSejoursProtocoleReorientation = ref([]);
+const filesProjetsSejoursProtocoleRapatriement = ref([]);
 
 const validationSchema = yup.object({
   protocoleEvacUrg: yup
@@ -189,11 +179,13 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesSuiviMed.value.length > 0 && {
-          filesSuiviMed: filesSuiviMed.value,
+        ...(filesProjetsSejoursProtocoleReorientation.value.length > 0 && {
+          filesProjetsSejoursProtocoleReorientation:
+            filesProjetsSejoursProtocoleReorientation.value,
         }),
-        ...(filesSuiviMed2.value.length > 0 && {
-          filesSuiviMed2: filesSuiviMed2.value,
+        ...(filesProjetsSejoursProtocoleRapatriement.value.length > 0 && {
+          filesProjetsSejoursProtocoleRapatriement:
+            filesProjetsSejoursProtocoleRapatriement.value,
         }),
       };
       console.log("Données finales:", finalData);

@@ -40,7 +40,7 @@
 
   <div class="fr-fieldset__element fr-mt-8v">
     <UtilsMultiFilesUpload
-      v-model="filesSuiviMed"
+      v-model="filesProjetsSejoursBudgetPersonnes"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -51,17 +51,13 @@ import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 
-const props = defineProps({
-  initAgrement: { type: Object, required: true },
-  cdnUrl: { type: String, required: true },
-});
+// const props = defineProps({
+//   initAgrement: { type: Object, required: true },
+//   cdnUrl: { type: String, required: true },
+// });
 
 // todo: gerer file
-const filesSuiviMed = ref(
-  props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.SUIVIMED,
-  ) || [],
-);
+const filesProjetsSejoursBudgetPersonnes = ref([]);
 
 const validationSchema = yup.object({
   budgetGestionPerso: yup
@@ -116,8 +112,9 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesSuiviMed.value.length > 0 && {
-          filesSuiviMed: filesSuiviMed.value,
+        ...(filesProjetsSejoursBudgetPersonnes.value.length > 0 && {
+          filesProjetsSejoursBudgetPersonnes:
+            filesProjetsSejoursBudgetPersonnes.value,
         }),
       };
       console.log("Données finales:", finalData);

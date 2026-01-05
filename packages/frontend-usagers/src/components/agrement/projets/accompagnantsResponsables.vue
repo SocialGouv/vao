@@ -48,7 +48,7 @@
     </div>
     <div class="fr-fieldset__element">
       <UtilsMultiFilesUpload
-        v-model="filesAccompResp"
+        v-model="filesProjetsSejoursCompetencesExperience"
         label="Ajouter des fichiers"
       />
     </div>
@@ -76,14 +76,14 @@
     </div>
     <div class="fr-fieldset__element">
       <UtilsMultiFilesUpload
-        v-model="filesAccompResp"
+        v-model="filesProjetsSejoursMesures"
         label="Ajouter des fichiers"
       />
     </div>
   </div>
   <div class="fr-fieldset__element fr-mt-6v">
     <UtilsMultiFilesUpload
-      v-model="filesAccompResp"
+      v-model="filesProjetsSejoursComplementaires"
       label="Ajouter des fichiers complémentaires (optionnel)"
     />
   </div>
@@ -111,7 +111,9 @@ const validationSchema = yup.object({
     .required("Ce champ est obligatoire."),
 });
 
-const filesAccompResp = ref([]);
+const filesProjetsSejoursCompetencesExperience = ref([]);
+const filesProjetsSejoursMesures = ref([]);
+const filesProjetsSejoursComplementaires = ref([]);
 
 const initialValues = {
   accompRespNb: 0,
@@ -166,8 +168,16 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesAccompResp.value.length > 0 && {
-          filesAccompResp: filesAccompResp.value,
+        ...(filesProjetsSejoursCompetencesExperience.value.length > 0 && {
+          filesProjetsSejoursCompetencesExperience:
+            filesProjetsSejoursCompetencesExperience.value,
+        }),
+        ...(filesProjetsSejoursMesures.value.length > 0 && {
+          filesProjetsSejoursMesures: filesProjetsSejoursMesures.value,
+        }),
+        ...(filesProjetsSejoursComplementaires.value.length > 0 && {
+          filesProjetsSejoursComplementaires:
+            filesProjetsSejoursComplementaires.value,
         }),
       };
       console.log("Données finales:", finalData);

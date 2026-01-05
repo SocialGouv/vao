@@ -194,6 +194,56 @@ async function updateOrCreate(formValues) {
         multiple: true,
         category: FILE_CATEGORY.BILANFINANCIERQUATREANNEES,
       },
+      {
+        key: "filesProjetsSejoursPrevus",
+        multiple: true,
+        category: FILE_CATEGORY.PROJETSSEJOURSPREVUS,
+      },
+      {
+        key: "filesProjetsSejoursCompetencesExperience",
+        multiple: true,
+        category: FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
+      },
+      {
+        key: "filesProjetsSejoursMesures",
+        multiple: true,
+        category: FILE_CATEGORY.PROJETSSEJOURSMESURES,
+      },
+      {
+        key: "filesProjetsSejoursComplementaires",
+        multiple: true,
+        category: FILE_CATEGORY.PROJETSSEJOURSCOMPLEMENTAIRES,
+      },
+      {
+        key: "fileProjetsSejoursCasier",
+        multiple: false,
+        category: FILE_CATEGORY.PROJETSSEJOURSCASIER,
+      },
+      {
+        key: "filesProjetsSejoursOrgaTransports",
+        multiple: true,
+        category: FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT,
+      },
+      {
+        key: "filesProjetsSejoursSuiviMed",
+        multiple: true,
+        category: FILE_CATEGORY.PROJETSSEJOURSSUIVIMED,
+      },
+      {
+        key: "filesProjetsSejoursProtocoleReorientation",
+        multiple: true,
+        category: FILE_CATEGORY.PROJETSSEJOURSPROTCOLEREORIENTATION,
+      },
+      {
+        key: "filesProjetsSejoursProtocoleRapatriement",
+        multiple: true,
+        category: FILE_CATEGORY.PROJETSSEJOURSPROTCOLERAPATRIEMENT,
+      },
+      {
+        key: "filesProjetsSejoursBudgetPersonnes",
+        multiple: true,
+        category: FILE_CATEGORY.PROJETSSEJOURSBUDGETPERSONNES,
+      },
     ];
 
     for (const { key, multiple, category } of fileMappings) {

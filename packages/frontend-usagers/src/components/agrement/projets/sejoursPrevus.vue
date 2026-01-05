@@ -45,7 +45,7 @@
   />
   <div class="fr-fieldset__element">
     <UtilsMultiFilesUpload
-      v-model="filesMotivation"
+      v-model="filesProjetsSejoursPrevus"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -87,7 +87,7 @@ const typeDeficiencesRef = ref(null);
 //   ) || [],
 // );
 
-const filesMotivation = ref([]);
+const filesProjetsSejoursPrevus = ref([]);
 
 const requiredUnlessBrouillon = (schema) =>
   schema.when("statut", {
@@ -169,8 +169,8 @@ const validateForm = async () => {
       const finalData = {
         ...data,
         typeDeficiences: typeDeficiencesValidation.value,
-        ...(filesMotivation.value.length > 0 && {
-          filesAgrementSejour: filesMotivation.value,
+        ...(filesProjetsSejoursPrevus.value.length > 0 && {
+          filesProjetsSejoursPrevus: filesProjetsSejoursPrevus.value,
         }),
       };
       console.log("Données finales:", finalData);

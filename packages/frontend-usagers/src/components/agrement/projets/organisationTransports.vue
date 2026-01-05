@@ -34,7 +34,7 @@
 
   <div class="fr-fieldset__element fr-mt-6v">
     <FileUpload
-      v-model="filesAccompResp"
+      v-model="filesProjetsSejoursOrgaTransports"
       :cdn-url="props.cdnUrl"
       label="Ajouter un fichier (optionnel)"
       :modifiable="true"
@@ -47,26 +47,14 @@ import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { FileUpload } from "@vao/shared-ui";
-import { FILE_CATEGORY } from "@vao/shared-bridge";
 
 const props = defineProps({
   cdnUrl: { type: String, required: true },
 });
 
 // todo fichier
-// const getFileByCategory = (category) => {
-//   return (
-//     props.initAgrement?.agrementFiles.find(
-//       (file) => file.category === category,
-//     ) || null
-//   );
-// };
 
-const getFileByCategory = () => {
-  return null;
-};
-
-const filesAccompResp = ref(getFileByCategory(FILE_CATEGORY.ASSURRAPAT) || []);
+const filesProjetsSejoursOrgaTransports = ref([]);
 
 const validationSchema = yup.object({
   transportAllerRetour: yup
@@ -113,7 +101,10 @@ const validateForm = async () => {
     // Log des valeurs actuelles des champs
     console.log("Valeur de transportAllerRetour :", transportAllerRetour.value);
     console.log("Valeur de transportSejour :", transportSejour.value);
-    console.log("Valeur de filesAccompResp :", filesAccompResp.value);
+    console.log(
+      "Valeur de filesProjetsSejoursOrgaTransports :",
+      filesProjetsSejoursOrgaTransports.value,
+    );
     // CORRECTION : handleSubmit retourne maintenant les valeurs actuelles
     const result = await handleSubmit((values) => {
       // Log des valeurs ACTUELLES du formulaire
@@ -132,9 +123,10 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesAccompResp.value &&
-          filesAccompResp.value.length > 0 && {
-            filesAccompResp: filesAccompResp.value,
+        ...(filesProjetsSejoursOrgaTransports.value &&
+          filesProjetsSejoursOrgaTransports.value.length > 0 && {
+            filesProjetsSejoursOrgaTransports:
+              filesProjetsSejoursOrgaTransports.value,
           }),
       };
       console.log("Données finales transports:", finalData);
