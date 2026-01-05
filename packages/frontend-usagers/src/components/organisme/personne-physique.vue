@@ -221,7 +221,6 @@ const props = defineProps({
 
 const emit = defineEmits(["update", "next"]);
 const organismeStore = useOrganismeStore();
-organismeStore.fetchUsersOrganisme();
 const userStore = useUserStore();
 
 const confirmUpdatingSiret = ref(false);

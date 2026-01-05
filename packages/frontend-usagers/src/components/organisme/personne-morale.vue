@@ -307,8 +307,15 @@ const log = logger("components/organisme/personne-morale");
 const emit = defineEmits(["previous", "next", "update"]);
 
 const organismeStore = useOrganismeStore();
-organismeStore.fetchUsersOrganisme();
 const userStore = useUserStore();
+userStore.fetchUsersOrganisme();
+organismeStore.fetchUsersOrganisme({
+  search: {
+    siret:
+      userStore.user?.userSiret ??
+      organismeStore.organismeCourant?.personneMorale?.siret,
+  },
+});
 
 const confirmUpdatingSiret = ref(false);
 const siretToUpdate = ref(null);
