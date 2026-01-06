@@ -51,7 +51,7 @@
         secondary
         icon="fr-icon-delete-line"
         icon-only
-        @click="() => console.log('supprimer hebergement')"
+        @click="emitDelete"
       />
     </div>
   </div>
@@ -60,8 +60,11 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { defineEmits } from "vue";
 import * as yup from "yup";
 // import Agrement from "~/components/organisme/agrement.vue";
+
+const emits = defineEmits(["delete"]);
 
 const props = defineProps({
   statut: {
@@ -73,6 +76,10 @@ const props = defineProps({
     required: true,
   },
 });
+
+function emitDelete() {
+  emits("delete");
+}
 
 function handleMonths(monthsArray) {
   console.log("Mois sélectionnés :", monthsArray);
