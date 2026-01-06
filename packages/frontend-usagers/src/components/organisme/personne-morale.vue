@@ -308,14 +308,6 @@ const emit = defineEmits(["previous", "next", "update"]);
 
 const organismeStore = useOrganismeStore();
 const userStore = useUserStore();
-userStore.fetchUsersOrganisme();
-organismeStore.fetchUsersOrganisme({
-  search: {
-    siret:
-      userStore.user?.userSiret ??
-      organismeStore.organismeCourant?.personneMorale?.siret,
-  },
-});
 
 const confirmUpdatingSiret = ref(false);
 const siretToUpdate = ref(null);
@@ -723,6 +715,18 @@ function next() {
     "personne_morale",
   );
 }
+
+onMounted(() => {
+  log.i("Mounted - IN");
+  organismeStore.fetchUsersOrganisme({
+    search: {
+      siret:
+        userStore.user?.userSiret ??
+        organismeStore.organismeCourant?.personneMorale?.siret,
+    },
+  });
+  log.i("Mounted - DONE");
+});
 </script>
 
 <style scoped>

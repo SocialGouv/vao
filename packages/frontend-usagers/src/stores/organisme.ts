@@ -38,7 +38,19 @@ export const useOrganismeStore = defineStore("organismes", {
         log.i("fetchOrganismes - DONE with error");
       }
     },
-    async fetchUsersOrganisme() {
+    async fetchUsersOrganisme({
+      limit,
+      offset,
+      sortBy,
+      sortDirection,
+      search,
+    }: {
+      limit?: number;
+      offset?: number;
+      sortBy?: string;
+      sortDirection?: string;
+      search?: any;
+    } = {}) {
       log.i("fetchUsersOrganisme - IN");
       try {
         // Appel du back pour la liste des utilisateurs de liés à l'organisme
@@ -49,9 +61,11 @@ export const useOrganismeStore = defineStore("organismes", {
             "Content-Type": "application/json",
           },
           params: {
-            search: {
-              siret: this.organismeCourant?.personneMorale?.siret,
-            },
+            limit,
+            offset,
+            sortBy,
+            sortDirection,
+            search,
           },
         });
         log.d("fetchUsersOrganisme - réponse", { users });
