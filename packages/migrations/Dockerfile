@@ -26,10 +26,11 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 COPY --from=build /app/node_modules node_modules
+COPY --from=build /app/packages/migrations/node_modules packages/migrations/node_modules
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/migrations/package.json packages/migrations/
 COPY packages/migrations/src packages/migrations/src
 
 COPY packages/shared-bridge/package.json packages/shared-bridge/
 
-CMD ["./node_modules/.bin/knex", "--cwd", "packages/migrations/src", "migrate:latest"]
+CMD ["./packages/migrations/node_modules/.bin/knex", "--cwd", "packages/migrations/src", "migrate:latest"]
