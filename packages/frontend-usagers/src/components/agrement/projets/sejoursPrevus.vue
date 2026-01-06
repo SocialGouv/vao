@@ -173,13 +173,27 @@ const onSubmitAddSejour = handleSubmit(
 );
 
 function updateSejour(index, updatedSejour) {
-  console.log("Mise à jour du séjour à l'index", index, ":", updatedSejour);
-  sejours.value[index] = updatedSejour; // Met à jour le séjour à l'index donné
+  sejours.value[index] = updatedSejour;
 }
 
 function deleteSejour(index) {
   sejours.value.splice(index, 1);
 }
+
+const validateForm = async () => {
+  try {
+    return {
+      sejours: sejours.value,
+    };
+  } catch (error) {
+    console.error("Erreur lors de la validation des séjours :", error);
+    throw error;
+  }
+};
+
+defineExpose({
+  validateForm,
+});
 </script>
 
 <style scoped>
