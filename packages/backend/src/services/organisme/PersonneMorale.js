@@ -303,9 +303,9 @@ module.exports.createOrUpdate = async (
   ]);
   addHistoric({
     action: TRACKING_ACTIONS.modification,
-    data: { newData: parametre, oldData: personneMorale[0] },
+    data: { newData: parametre, oldData: personneMorale[0] ?? {} },
     entity: TRACKING_ENTITIES.personneMorale,
-    entityId: personneMorale[0].id,
+    entityId: personneMoraleId,
     userId: userId,
     userType: TRACKING_USER_TYPE.front,
   });
