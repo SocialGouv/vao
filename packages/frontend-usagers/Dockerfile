@@ -10,9 +10,12 @@ WORKDIR /app
 # pnpm via corepack (respect root packageManager)
 RUN corepack enable
 
+# Non-interactive pnpm behavior during Docker builds
+ENV CI=true
+
 # --- deps fetch layer (cache keyed by lockfile + config only)
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
-RUN pnpm fetch --prod
+RUN pnpm fetch --prod --ignore-scripts
 
 # --- install layer (package.json changes should not bust fetch cache)
 COPY package.json ./

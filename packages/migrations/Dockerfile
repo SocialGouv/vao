@@ -5,12 +5,15 @@ WORKDIR /app
 
 RUN corepack enable
 
+# Non-interactive pnpm behavior during Docker builds
+ENV CI=true
+
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
 COPY packages/migrations/package.json packages/migrations/
 COPY packages/shared-bridge/package.json packages/shared-bridge/
 
 # prefetch to leverage cache
-RUN pnpm fetch --prod
+RUN pnpm fetch --prod --ignore-scripts
 
 RUN pnpm install --frozen-lockfile
 
@@ -20,7 +23,7 @@ FROM node:$NODE_VERSION
 USER 1000
 WORKDIR /app
 
-ENV NODE_ENV: production
+ENV NODE_ENV=production
 
 COPY --from=build /app/node_modules node_modules
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./

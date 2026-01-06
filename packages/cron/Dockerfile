@@ -8,11 +8,14 @@ WORKDIR /app
 
 RUN corepack enable
 
+# Non-interactive pnpm behavior during Docker builds
+ENV CI=true
+
 COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
 COPY packages/cron/package.json ./packages/cron/
 COPY packages/shared-bridge/package.json packages/shared-bridge/
 
-RUN pnpm fetch --prod
+RUN pnpm fetch --prod --ignore-scripts
 
 COPY package.json ./
 COPY packages/cron/package.json ./packages/cron/
