@@ -18,6 +18,7 @@
         type="recherche"
         icon="fr-icon-search-line"
         label="Adresse de l'hébergement"
+        :readonly="true"
         :label-visible="false"
         :model-value="adresseLabel"
         :is-valid="adresseMeta.valid"
@@ -60,11 +61,11 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
-import { defineEmits } from "vue";
+import { defineEmits, watch } from "vue";
 import * as yup from "yup";
 // import Agrement from "~/components/organisme/agrement.vue";
 
-const emits = defineEmits(["delete"]);
+const emits = defineEmits(["delete", "update"]);
 
 const props = defineProps({
   statut: {
@@ -82,7 +83,19 @@ function emitDelete() {
 }
 
 function handleMonths(monthsArray) {
-  console.log("Mois sélectionnés :", monthsArray);
+  emits("update", { ...props.hebergement, mois: monthsArray });
+}
+
+function emitNomHebergementUpdate(value) {
+  emits("update", { ...props.hebergement, nomHebergement: value });
+}
+
+function emitNbJoursUpdate(value) {
+  emits("update", { ...props.hebergement, nbJours: value });
+}
+
+function emitAdresseUpdate(value) {
+  emits("update", { ...props.hebergement, adresse: value });
 }
 
 const requiredUnlessBrouillon = (schema) =>
@@ -135,6 +148,18 @@ const {
 const adresseLabel = computed(
   () => (adresse.value && adresse.value.label) || "",
 );
+
+watch(nomHebergement, (newValue) => {
+  emitNomHebergementUpdate(newValue);
+});
+
+watch(nbJours, (newValue) => {
+  emitNbJoursUpdate(newValue);
+});
+
+watch(adresse, (newValue) => {
+  emitAdresseUpdate(newValue);
+});
 
 const validateForm = async () => {
   const result = await handleSubmit((values) => values)();

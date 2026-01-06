@@ -173,7 +173,8 @@ const onSubmitAddSejour = handleSubmit(
 );
 
 function updateSejour(index, updatedSejour) {
-  sejours.value[index] = updatedSejour;
+  console.log("Mise à jour du séjour à l'index", index, ":", updatedSejour);
+  sejours.value[index] = updatedSejour; // Met à jour le séjour à l'index donné
 }
 
 function deleteSejour(index) {
