@@ -11,7 +11,7 @@ RUN corepack enable
 # Non-interactive pnpm behavior during Docker builds
 ENV CI=true
 
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
+COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/cron/package.json ./packages/cron/
 COPY packages/shared-bridge/package.json packages/shared-bridge/
 
@@ -35,6 +35,8 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/cron/package.json ./packages/cron/
 COPY packages/cron ./packages/cron
 COPY packages/shared-bridge packages/shared-bridge
+
+RUN corepack install
 
 ENV NODE_ENV=production
 

@@ -43,7 +43,11 @@ USER 1000
 WORKDIR /app
 
 COPY --chown=1000:1000 --from=external-api-build /app/node_modules ./node_modules
+COPY --chown=1000:1000 --from=external-api-build /app/packages/external-api/node_modules ./packages/external-api/node_modules
 COPY --chown=1000:1000 --from=external-api-build /app/packages/external-api/dist ./packages/external-api/dist
+
+# Ensure workspace dependency symlinks (e.g. @vao/shared-bridge) can resolve at runtime
+COPY --chown=1000:1000 --from=external-api-build /app/packages/shared-bridge ./packages/shared-bridge
 
 ENV NODE_ENV=production
 
