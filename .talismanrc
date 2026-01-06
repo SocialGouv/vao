@@ -1,4 +1,8 @@
 fileignoreconfig:
+- filename: .github/workflows/e2e.yaml
+  checksum: d28e325635cc8d77cbf5b260c67cb9721b58578ac86ddd39ec691e753e4d0412
+- filename: .github/workflows/lint-format-tests.yaml
+  checksum: eeca39face10741f484b738a467b8a5d7dd8da4b8306cae058bb0fbf2ff4cf3c
 - filename: .env.dev.example.env
   checksum: 5592a600679ab6e7ea811a8a82401756d15128d7d09e3f27c06c06caaa15e1dd
 - filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
@@ -349,8 +353,6 @@ fileignoreconfig:
   checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-- filename: yarn.lock
-  checksum: bd0f1b4e3969844785dad9816963820f40637288fa15e094de0b4808aed339b5
 scopeconfig:
 - scope: node
 version: "1.0"

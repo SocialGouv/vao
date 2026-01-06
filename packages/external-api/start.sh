@@ -1,3 +1,3 @@
 
-yarn workspace @vao/external-api install --ignore-scripts
-exec yarn workspace @vao/external-api start:dev
+corepack pnpm --filter @vao/external-api install
+exec corepack pnpm --filter @vao/external-api start:dev

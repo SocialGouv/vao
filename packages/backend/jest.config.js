@@ -14,7 +14,9 @@ module.exports = {
   setupFiles: ["<rootDir>/jest.setup.js"],
   testEnvironment: "node",
   testMatch: ["**/?(*.)+(spec|test).[tj]s"],
-  testTimeout: 30000,
+  // Some suites start a Postgres testcontainer and run multiple SQL init scripts.
+  // On CI (or cold Docker) this can exceed 30s.
+  testTimeout: 120000,
   transform: {
     "^.+\\.(t|j)s$": "ts-jest",
   },

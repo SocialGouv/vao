@@ -6,8 +6,6 @@ node_modules
 .local
 .cache
 
-yarn-error.log
-.yarn
 coverage
 notes.txt
 

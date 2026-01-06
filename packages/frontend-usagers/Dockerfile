@@ -7,11 +7,19 @@ RUN apt-get update \
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+# pnpm via corepack (respect root packageManager)
+RUN corepack enable
+
+# --- deps fetch layer (cache keyed by lockfile + config only)
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
+RUN pnpm fetch --prod
+
+# --- install layer (package.json changes should not bust fetch cache)
+COPY package.json ./
 COPY packages/shared-bridge/package.json packages/shared-bridge/
 COPY packages/shared-ui/package.json packages/shared-ui/
 COPY packages/frontend-usagers/package.json packages/frontend-usagers/
-RUN yarn workspace @vao/frontend-usagers install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 # these variables are needed at build time because we produce a *static* app
 ARG NUXT_PUBLIC_APP_VERSION=development
@@ -49,7 +57,7 @@ COPY packages/frontend-usagers packages/frontend-usagers
 
 RUN --mount=type=secret,id=sentry_auth_token \
     export SENTRY_AUTH_TOKEN=$(cat /run/secrets/sentry_auth_token) \
-    && yarn workspace @vao/frontend-usagers generate
+    && pnpm --filter @vao/frontend-usagers generate
 
 
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.4

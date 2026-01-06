@@ -3,10 +3,16 @@ FROM node:$NODE_VERSION AS build
 
 WORKDIR /app
 
-COPY ./package.json ./yarn.lock ./
+RUN corepack enable
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
 COPY packages/migrations/package.json packages/migrations/
 COPY packages/shared-bridge/package.json packages/shared-bridge/
-RUN yarn workspace @vao/migrations install --frozen-lockfile
+
+# prefetch to leverage cache
+RUN pnpm fetch --prod
+
+RUN pnpm install --frozen-lockfile
 
 #--- Run stage
 FROM node:$NODE_VERSION
@@ -17,7 +23,7 @@ WORKDIR /app
 ENV NODE_ENV: production
 
 COPY --from=build /app/node_modules node_modules
-COPY package.json yarn.lock ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/migrations/package.json packages/migrations/
 COPY packages/migrations/src packages/migrations/src
 

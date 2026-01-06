@@ -1,4 +1,4 @@
 #!/bin/bash
 
-yarn workspace @vao/frontend-usagers install
-exec yarn workspace @vao/frontend-usagers dev
+corepack pnpm --filter @vao/frontend-usagers install
+exec corepack pnpm --filter @vao/frontend-usagers dev

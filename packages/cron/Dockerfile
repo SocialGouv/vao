@@ -6,11 +6,19 @@ FROM cron-base AS cron-deps
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+RUN corepack enable
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
+COPY packages/cron/package.json ./packages/cron/
+COPY packages/shared-bridge/package.json packages/shared-bridge/
+
+RUN pnpm fetch --prod
+
+COPY package.json ./
 COPY packages/cron/package.json ./packages/cron/
 COPY packages/cron ./packages/cron
 COPY packages/shared-bridge packages/shared-bridge
-RUN yarn workspace @vao/cron install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 FROM cron-deps AS cron-production
 
@@ -20,12 +28,11 @@ USER 1000
 WORKDIR /app
 
 COPY --chown=1000:1000 --from=cron-deps /app/node_modules ./node_modules
-COPY package.json yarn.lock ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/cron/package.json ./packages/cron/
 COPY packages/cron ./packages/cron
 COPY packages/shared-bridge packages/shared-bridge
 
 ENV NODE_ENV=production
 
-CMD ["yarn", "workspace", "@vao/cron", "dev"]
-
+CMD ["pnpm", "--filter", "@vao/cron", "dev"]

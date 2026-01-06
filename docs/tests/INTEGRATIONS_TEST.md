@@ -103,8 +103,8 @@ Voir `packages/backend/src/__tests__/admin/herbergement.test.ts` pour un exemple
 ```bash
 # Lancer tous les tests d'intégration (depuis le package backend)
 cd packages/backend
-yarn test --testPathPattern=__tests__
+pnpm test --testPathPattern=__tests__
 
 # Mode debug avec inspecteur Node.js et détection des handles ouverts
-yarn test:debug --testPathPattern=__tests__
+pnpm test:debug --testPathPattern=__tests__
 ```

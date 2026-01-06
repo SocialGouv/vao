@@ -1,4 +1,4 @@
 #!/bin/bash
 
-yarn workspace @vao/backend install
-exec yarn workspace @vao/backend dev
+corepack pnpm --filter @vao/backend install
+exec corepack pnpm --filter @vao/backend dev

@@ -29,6 +29,7 @@ import { UserModule } from "./user/user.module";
     LoggerModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
+      providers: undefined,
       useFactory: (config: ConfigService) => {
         const env = config.get<string>("nodeEnv") || "development";
         const logLevel =
@@ -53,7 +54,6 @@ import { UserModule } from "./user/user.module";
           },
         };
       },
-      providers: undefined,
     }),
     DatabaseModule,
     S3Module,
