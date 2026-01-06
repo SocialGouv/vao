@@ -21,7 +21,7 @@ jobs:
         with:
           cache: true
       - name: Install packages
-        run: pnpm -w install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Run the linter
         run: pnpm -w lint:all
       - name: Run backend tests

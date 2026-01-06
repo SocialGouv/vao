@@ -20,7 +20,7 @@ jobs:
       - name: Enable pnpm (corepack)
         run: corepack enable
       - name: Install dependencies
-        run: pnpm -w install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
       - name: Env
         id: env
         uses: socialgouv/kontinuous/.github/actions/env@v1
