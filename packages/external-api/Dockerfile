@@ -49,6 +49,9 @@ COPY --chown=1000:1000 --from=external-api-build /app/packages/external-api/dist
 # Ensure workspace dependency symlinks (e.g. @vao/shared-bridge) can resolve at runtime
 COPY --chown=1000:1000 --from=external-api-build /app/packages/shared-bridge ./packages/shared-bridge
 
+# Ensure shared-bridge runtime deps (e.g. `yup`) are resolvable when shared-bridge JS is executed.
+COPY --chown=1000:1000 --from=external-api-build /app/packages/shared-bridge/node_modules ./packages/shared-bridge/node_modules
+
 ENV NODE_ENV=production
 
 CMD [ "node", "/app/packages/external-api/dist/main.js" ]

@@ -33,6 +33,7 @@ ENV NODE_ENV=production
 
 COPY --from=build /app/node_modules node_modules
 COPY --from=build /app/packages/backend/node_modules packages/backend/node_modules
+COPY --from=build /app/packages/shared-bridge/node_modules packages/shared-bridge/node_modules
 COPY --from=build /app/packages/backend/dist packages/backend/dist
 COPY --from=build /app/packages/shared-bridge/dist/ packages/shared-bridge
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
