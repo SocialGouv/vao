@@ -74,7 +74,12 @@ const validateTypeDeficiences = async () => {
   };
 };
 
+const getCurrentValue = () => {
+  return typeDeficiencesField.value || [];
+};
+
 defineExpose({
   validateTypeDeficiences,
+  getCurrentValue,
 });
 </script>

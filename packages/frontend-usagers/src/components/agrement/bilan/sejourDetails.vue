@@ -44,10 +44,12 @@
     <AgrementBilanTranchesAge
       ref="tranchesAgeRef"
       :tranche-age="props.bilanAnnuel?.trancheAge"
+      :statut="props.agrementStatus"
       class="fr-mt-8v"
     />
     <AgrementTypeDeficiences
       ref="typeDeficiencesRef"
+      :statut="props.agrementStatus"
       :type-deficiences="props.bilanAnnuel?.typeHandicap"
     />
     <hr class="fr-mt-8v fr-mb-0v" />
@@ -143,6 +145,7 @@ const {
   handleChange: onNbGlobalVacanciersChange,
   meta: nbGlobalVacanciersMeta,
 } = useField("nbGlobalVacanciers");
+
 const {
   value: nbHommes,
   errorMessage: nbHommesErrorMessage,
@@ -168,25 +171,51 @@ const validateForm = async () => {
   let formValid = true;
   const result = await handleSubmit((values) => values)();
 
-  // Validation des tranches d'âge
-  const tranchesAgeValidation =
-    await tranchesAgeRef.value?.validateTranchesAge();
-
-  if (!tranchesAgeValidation?.valid) {
-    console.error("Les tranches d'âge ne sont pas valides.");
-    formValid = false;
-  }
-
-  // Validation du type de déficiences
-  const typeDeficiencesValidation =
-    await typeDeficiencesRef.value?.validateTypeDeficiences();
-
-  if (!typeDeficiencesValidation?.valid) {
-    console.error("Le type de déficiences n'est pas valide.");
-    formValid = false;
-  }
-
   const hebergements = hebergementsRef.value?.getHebergements() || [];
+  const hasSejoursPourAnnee = hebergements.length > 0;
+
+  // Validation conditionnelle des tranches d'âge
+  let trancheAgeValue = [];
+  if (hasSejoursPourAnnee) {
+    const tranchesAgeValidation =
+      await tranchesAgeRef.value?.validateTranchesAge();
+
+    if (!tranchesAgeValidation?.valid) {
+      console.error("Les tranches d'âge ne sont pas valides.");
+      formValid = false;
+    } else {
+      trancheAgeValue = tranchesAgeValidation.value;
+    }
+  } else {
+    // Si pas de séjours, on récupère la valeur sans valider
+    trancheAgeValue = tranchesAgeRef.value?.getCurrentValue() || [];
+  }
+
+  // Validation conditionnelle du type de déficiences
+  let typeDeficiencesValue = [];
+  if (hasSejoursPourAnnee) {
+    const typeDeficiencesValidation =
+      await typeDeficiencesRef.value?.validateTypeDeficiences();
+
+    if (!typeDeficiencesValidation?.valid) {
+      console.error("Le type de déficiences n'est pas valide.");
+      formValid = false;
+    } else {
+      typeDeficiencesValue = typeDeficiencesValidation.value;
+    }
+  } else {
+    // Si pas de séjours, on récupère la valeur sans valider
+    typeDeficiencesValue = typeDeficiencesRef.value?.getCurrentValue() || [];
+  }
+
+  // Validation des hébergements
+  if (hasSejoursPourAnnee) {
+    const hebergementsValid = hebergementsRef.value?.validateHebergements();
+    if (!hebergementsValid) {
+      console.error("Les hébergements ne sont pas valides.");
+      formValid = false;
+    }
+  }
 
   if (!formValid) {
     return toaster.error({
@@ -201,17 +230,17 @@ const validateForm = async () => {
     return {
       ...data,
       annee: props.year,
-      trancheAge: tranchesAgeValidation.value,
-      typeDeficiences: typeDeficiencesValidation.value,
+      trancheAge: trancheAgeValue,
+      typeDeficiences: typeDeficiencesValue,
       bilanHebergement: hebergements,
     };
   }
+
   return result;
 };
 
 defineExpose({
   validateForm,
-  // isValid: () => meta.value.valid, // Optionnel : pour vérifier la validité
 });
 </script>
 

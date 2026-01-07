@@ -75,7 +75,12 @@ const validateTranchesAge = async () => {
   };
 };
 
+const getCurrentValue = () => {
+  return trancheAgeField.value || [];
+};
+
 defineExpose({
   validateTranchesAge,
+  getCurrentValue,
 });
 </script>

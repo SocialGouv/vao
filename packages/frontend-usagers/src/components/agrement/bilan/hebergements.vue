@@ -122,12 +122,18 @@ const toaster = useToaster();
 
 const localHebergements = ref([...props.bilanHebergement]);
 
+// Si les props changent vraiment (changement d'année), on met à jour
+const isFirstLoad = ref(true);
+
 watch(
   () => props.bilanHebergement,
   (newBilanHebergement) => {
-    localHebergements.value = [...newBilanHebergement];
+    if (isFirstLoad.value) {
+      localHebergements.value = [...newBilanHebergement];
+      isFirstLoad.value = false;
+    }
   },
-  { deep: true },
+  { immediate: true, deep: true },
 );
 
 // Configuration de la pagination
@@ -225,8 +231,7 @@ const {
 } = useField("periode");
 
 function handleMonths(monthsArray) {
-  periode.value = monthsArray; // Met à jour la période
-  console.log("Mois sélectionnés :", monthsArray);
+  periode.value = monthsArray;
 }
 
 const selectedAdresseObject = ref(null);
@@ -234,18 +239,10 @@ const selectedAdresseObject = ref(null);
 function onAdresseSelect(selectedAddress) {
   adresse.value = selectedAddress.label;
   selectedAdresseObject.value = selectedAddress;
-  console.log("Adresse sélectionnée :", selectedAddress);
 }
-
-// const onSubmitAddSejour = handleSubmit((values) => {
-//   console.log("Séjour validé :", values);
-//   showForm.value = false; // Masque le formulaire après ajout
-// });
 
 const onSubmitAddSejour = handleSubmit(
   (values) => {
-    console.log("Séjour validé :", values);
-
     const adresseObject = selectedAdresseObject.value
       ? {
           label: selectedAdresseObject.value.label,
@@ -260,14 +257,14 @@ const onSubmitAddSejour = handleSubmit(
     const newHebergement = {
       nomHebergement: values.nomHebergement,
       adresse: adresseObject,
-      nbJours: values.nbJours,
+      nbJours: parseInt(values.nbJours),
       mois: values.periode.map((m) => parseInt(m)),
     };
 
     localHebergements.value.push(newHebergement);
 
     resetForm();
-
+    selectedAdresseObject.value = null;
     showForm.value = false;
 
     toaster.success({
@@ -280,12 +277,63 @@ const onSubmitAddSejour = handleSubmit(
   },
 );
 
+function validateHebergements() {
+  let isValid = true;
+  const errors = [];
+
+  localHebergements.value.forEach((hebergement, index) => {
+    if (
+      !hebergement.nomHebergement ||
+      hebergement.nomHebergement.trim() === ""
+    ) {
+      errors.push(`Hébergement ${index + 1}: Le nom est obligatoire`);
+      isValid = false;
+    }
+
+    if (!hebergement.nbJours || hebergement.nbJours <= 0) {
+      errors.push(
+        `Hébergement ${index + 1}: Le nombre de jours doit être supérieur à 0`,
+      );
+      isValid = false;
+    }
+
+    if (!hebergement.mois || hebergement.mois.length === 0) {
+      errors.push(
+        `Hébergement ${index + 1}: Au moins un mois doit être sélectionné`,
+      );
+      isValid = false;
+    }
+
+    if (
+      !hebergement.adresse ||
+      (typeof hebergement.adresse === "object" && !hebergement.adresse.label)
+    ) {
+      errors.push(`Hébergement ${index + 1}: L'adresse est obligatoire`);
+      isValid = false;
+    }
+  });
+
+  if (!isValid) {
+    errors.forEach((error) => {
+      console.error(error);
+    });
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Certains hébergements contiennent des erreurs. Veuillez les corriger.",
+    });
+  }
+
+  return isValid;
+}
+
 function getHebergements() {
   return localHebergements.value;
 }
 
 defineExpose({
   getHebergements,
+  validateHebergements,
 });
 </script>
 
