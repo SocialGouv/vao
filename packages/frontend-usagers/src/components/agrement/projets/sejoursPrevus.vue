@@ -15,80 +15,41 @@
       supérieure à 5 jours doivent être déclarés dans ce formulaire.</span
     >
   </p>
-  <div>
-    <div class="headings">
-      <p class="fr-mb-0">Nom de l'hébergement</p>
-      <p class="fr-mb-0">Adresse de l'hébergement</p>
-      <p class="fr-mb-0">Période</p>
-      <p class="fr-mb-0">Nombre de jours</p>
-      <p></p>
-    </div>
-    <div v-for="(sejour, index) in sejours" :key="index">
-      <HebergementDetail
-        :hebergement="sejour"
-        :statut="statut"
-        @update="updateSejour(index, $event)"
-        @delete="deleteSejour(index)"
-      />
-    </div>
-    <DsfrButton
-      class="fr-mt-2v fr-col-12 add-btn"
-      type="button"
-      label="Ajouter un séjour"
-      secondary
-      icon="fr-icon-add-line"
-      @click="toggleForm"
+  <AgrementProjetsListeSejours ref="listeSejoursRef" />
+  <hr />
+  <p><b>Informations sur les vacanciers</b></p>
+  <AgrementTypeDeficiences ref="typeDeficiencesRef" />
+  <hr />
+  <p class="fr-mb-1v"><b>Informations complémentaires</b></p>
+  <div class="fr-col-6 fr-mb-4v">
+    <DsfrInput
+      name="sejourNbEnvisage"
+      label="Nombre de séjours envisagés l'année suivante (optionnel)"
+      type="number"
+      :model-value="sejourNbEnvisage"
+      :label-visible="true"
+      :is-valid="sejourNbEnvisageMeta.valid"
+      :error-message="sejourNbEnvisageErrorMessage"
+      @update:model-value="onsejourNbEnvisageChange"
     />
-    <div v-if="showForm" class="fr-mt-2v">
-      <!-- Formulaire d'ajout de séjour -->
-      <div class="fr-mt-6v">
-        <DsfrInput
-          name="nomSejour"
-          type="text"
-          label="Nom de l'hébergement"
-          :model-value="nomSejour"
-          :label-visible="true"
-          :is-valid="nomSejourMeta.valid"
-          :error-message="nomSejourErrorMessage"
-          @update:model-value="onNomSejourChange"
-        />
-      </div>
-      <div class="fr-mt-6v">
-        <SearchAddress
-          label="Adresse de l'hébergement"
-          :value="adresse"
-          :error-message="adresseErrorMessage"
-          @select="onAdresseSelect"
-        />
-      </div>
-      <div class="fr-mt-6v">
-        <p class="fr-mb-0">Période</p>
-        <AgrementBilanSelectMonths @update:selected="handleMonths" />
-        <p v-if="moisMeta.touched && moisErrorMessage" class="fr-error-text">
-          {{ moisErrorMessage }}
-        </p>
-      </div>
-      <div class="fr-mt-6v">
-        <DsfrInput
-          name="nbJours"
-          type="number"
-          label="Nombre de jours"
-          :model-value="nbJours"
-          :label-visible="true"
-          :is-valid="nbJoursMeta.valid"
-          :error-message="nbJoursErrorMessage"
-          @update:model-value="onNbJoursChange"
-        />
-      </div>
-      <DsfrButton
-        class="fr-mt-2v fr-col-12 add-btn"
-        type="button"
-        label="Ajouter ce séjour"
-        @click="onSubmitAddSejour"
-      />
-    </div>
   </div>
-  <div class="fr-p-4v bg-light-blue">
+  <DsfrInputGroup
+    name="sejourCommentaire"
+    label="Ajouter un commentaire (optionnel)"
+    :model-value="sejourCommentaire"
+    :label-visible="true"
+    :is-textarea="true"
+    :is-valid="commentaireMeta.valid"
+    :error-message="commentaireErrorMessage"
+    @update:model-value="onCommentaireChange"
+  />
+  <div class="fr-fieldset__element">
+    <UtilsMultiFilesUpload
+      v-model="filesProjetsSejoursPrevus"
+      label="Ajouter des fichiers (optionnel)"
+    />
+  </div>
+  <div class="fr-p-4v fr-mt-6v bg-light-blue">
     <p>
       <b>Veuillez trouver le modèle de questionnaire à adresser</b>
       préalablement à la tenue du séjour à la personne accueillie, ou à son
@@ -98,7 +59,7 @@
     <DsfrFileDownload
       format="pdf"
       size="61.88 Ko"
-      :href="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
+      :href="`${config.public.backendUrl}/documents/public/annexe-5-questionaire-vacanciers.pdf`"
       download=""
       title="questionnaire-vacanciers.pdf"
     />
@@ -106,122 +67,121 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useField, useForm } from "vee-validate";
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
-import SearchAddress from "@/components/address/search-address.vue";
-import HebergementDetail from "@/components/agrement/bilan/hebergementDetail.vue";
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { useForm, useField } from "vee-validate";
+import { ref } from "vue";
 
-const props = defineProps({
-  initialSejours: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  statut: {
-    type: String,
-    required: true,
-    default: "BROUILLON",
-  },
-});
+//ajouter props init
 
 const config = useRuntimeConfig();
 
-const sejours = ref([...props.initialSejours]);
-const showForm = ref(false);
+const typeDeficiencesRef = ref(null);
+const listeSejoursRef = ref(null);
 
-function toggleForm() {
-  showForm.value = !showForm.value;
-}
+// todo: gerer file
+// const filesMotivation = ref(
+//   props.initAgrement?.agrementFiles.filter(
+//     (file) => file.category === FILE_CATEGORY.SEJOUR,
+//   ) || [],
+// );
+
+const filesProjetsSejoursPrevus = ref([]);
+
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
 
 const validationSchema = yup.object({
-  nomSejour: yup.string().required("Champ obligatoire"),
-  adresse: yup
-    .object({
-      label: yup.string().required("L'adresse est obligatoire"),
-    })
-    .required("L'adresse est obligatoire"),
-  nbJours: yup
-    .number()
-    .typeError("Merci de saisir un nombre valide.")
-    .required("Champ obligatoire"),
-  mois: yup
-    .array()
-    .of(yup.string())
-    .min(1, "Vous devez sélectionner au moins un mois.")
-    .required("Veuillez sélectionner une période."),
+  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
+  sejourNbEnvisage: requiredUnlessBrouillon(
+    yup
+      .number()
+      .typeError("Merci de saisir un nombre valide.")
+      .min(0, "Le nombre de jours de vacances ne peut pas être négatif.")
+      .required("Ce champ est obligatoire."),
+  ),
+  sejourCommentaire: yup
+    .string()
+    .max(1000, "Le commentaire ne doit pas dépasser 1000 caractères.")
+    .nullable(),
 });
 
-const { handleSubmit, resetForm } = useForm({
+const initialValues = {
+  statut: AGREMENT_STATUT.BROUILLON,
+  sejourNbEnvisage: 0,
+  sejourCommentaire: "",
+};
+
+// CORRECTION PRINCIPALE : Récupérer `values` de useForm
+const { handleSubmit } = useForm({
   validationSchema,
+  initialValues,
   validateOnMount: false,
 });
 
+// Définir les champs APRÈS useForm
 const {
-  value: nomSejour,
-  errorMessage: nomSejourErrorMessage,
-  handleChange: onNomSejourChange,
-  meta: nomSejourMeta,
-} = useField("nomSejour");
-
-const {
-  value: nbJours,
-  errorMessage: nbJoursErrorMessage,
-  handleChange: onNbJoursChange,
-  meta: nbJoursMeta,
-} = useField("nbJours");
-
-const { value: adresse, errorMessage: adresseErrorMessage } =
-  useField("adresse");
+  value: sejourNbEnvisage,
+  errorMessage: sejourNbEnvisageErrorMessage,
+  handleChange: onsejourNbEnvisageChange,
+  meta: sejourNbEnvisageMeta,
+} = useField("sejourNbEnvisage");
 
 const {
-  value: mois,
-  errorMessage: moisErrorMessage,
-  meta: moisMeta,
-} = useField("mois");
-
-function handleMonths(monthsArray) {
-  mois.value = monthsArray;
-}
-
-function onAdresseSelect(selectedAddress) {
-  adresse.value = selectedAddress;
-}
-
-const onSubmitAddSejour = handleSubmit(
-  (values) => {
-    sejours.value.push({
-      nomHebergement: values.nomSejour,
-      adresse: adresse.value,
-      mois: values.mois,
-      nbJours: values.nbJours,
-    });
-
-    resetForm();
-    showForm.value = false;
-  },
-  (errors) => {
-    console.log("Erreurs de validation :", errors);
-  },
-);
-
-function updateSejour(index, updatedSejour) {
-  sejours.value[index] = updatedSejour;
-}
-
-function deleteSejour(index) {
-  sejours.value.splice(index, 1);
-}
+  value: sejourCommentaire,
+  errorMessage: commentaireErrorMessage,
+  handleChange: onCommentaireChange,
+  meta: commentaireMeta,
+} = useField("sejourCommentaire");
 
 const validateForm = async () => {
+  let formValid = true;
+
   try {
-    return {
-      sejours: sejours.value,
-    };
+    // Appeler la méthode validateForm du composant enfant
+    const sejoursData = await listeSejoursRef.value?.validateForm();
+
+    // CORRECTION : handleSubmit retourne maintenant les valeurs actuelles
+    const result = await handleSubmit((values) => {
+      // Log des valeurs ACTUELLES du formulaire
+      console.log("Valeurs du formulaire:", values);
+      return values;
+    })();
+
+    // Validation du type de déficiences
+    const typeDeficiencesValidation =
+      await typeDeficiencesRef.value?.validateTypeDeficiences();
+
+    if (!typeDeficiencesValidation?.valid) {
+      console.error("Le type de déficiences n'est pas valide.");
+      formValid = false;
+    }
+
+    if (!formValid) {
+      console.error("Le formulaire n'est pas valide.");
+    }
+
+    if (result) {
+      const data = { ...result };
+      delete data.statut;
+      const finalData = {
+        ...data,
+        sejours: sejoursData?.sejours || [],
+        typeDeficiences: typeDeficiencesValidation.value,
+        ...(filesProjetsSejoursPrevus.value.length > 0 && {
+          filesProjetsSejoursPrevus: filesProjetsSejoursPrevus.value,
+        }),
+      };
+      console.log("Données finales:", finalData);
+      return finalData;
+    }
   } catch (error) {
-    console.error("Erreur lors de la validation des séjours :", error);
-    throw error;
+    console.error("Erreur lors de la validation du formulaire :", error);
   }
 };
 
@@ -231,16 +191,6 @@ defineExpose({
 </script>
 
 <style scoped>
-.headings {
-  display: grid;
-  grid-template-columns: 2fr 3fr 2fr 1fr 40px;
-  gap: 0 0.5rem;
-  margin-bottom: 1rem;
-}
-.add-btn {
-  width: 100%;
-  justify-content: center;
-}
 .bg-light-blue {
   background: rgba(227, 227, 253, 0.4);
 }
