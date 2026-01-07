@@ -13,6 +13,7 @@ notes.txt
 
 playwright-report/
 test-results/
+.pnpm-store
 
 # macOS
 .DS_Store
