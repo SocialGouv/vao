@@ -10,7 +10,7 @@
   "extends": ["@nuxt/eslint-config", "prettier"],
   "plugins": ["prettier"],
   "rules": {
-    "prettier/prettier": ["warn"],
+    "prettier/prettier": ["error"],
     "vue/multi-word-component-names": "off"
   },
   "ignorePatterns": ["src/public"]

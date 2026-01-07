@@ -12,7 +12,9 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint --ext .vue,.js,.ts ./src",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "corepack pnpm lint --fix",
+    "typecheck": "nuxi typecheck",
+    "typecheck:staged": "node ../../scripts/typecheck-staged.cjs",
     "test": "vitest",
     "clean": "nuxt cleanup"
   },
@@ -52,10 +54,7 @@
     "sass": "~1.79.3",
     "sass-loader": "~16.0.2",
     "typescript": "~5.6.2",
-    "vue-dsfr-nuxt-module": "^2.0.0",
-    "vue-tsc": "^3.2.2"
-  },
-  "lint-staged": {
-    "src/**/*.{js,vue,ts}": "npx eslint --cache --max-warnings=0"
+    "vue-tsc": "^2.2.12",
+    "vue-dsfr-nuxt-module": "^2.0.0"
   }
 }

@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "private": true,
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky",
     "lint:all": "corepack pnpm run lint:backend && corepack pnpm run lint:frontend-usagers && corepack pnpm run lint:frontend-bo && corepack pnpm run lint:shared && corepack pnpm run lint:api && corepack pnpm run lint:cron",
     "lint:all:fix": "corepack pnpm run lint:backend --fix && corepack pnpm run lint:frontend-usagers --fix && corepack pnpm run lint:frontend-bo --fix && corepack pnpm run lint:shared --fix && corepack pnpm run lint:api --fix && corepack pnpm run lint:cron --fix",
     "lint:api": "corepack pnpm --dir ./packages/external-api run lint",
