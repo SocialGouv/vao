@@ -1,4 +1,20 @@
 <template>
+  <TitleWithIcon
+    icon="fr-icon-map-pin-2-fill"
+    :level="3"
+    title-class="fr-text--lead fr-mb-0"
+  >
+    Séjours prévus
+  </TitleWithIcon>
+  <p class="light-decisions-text-text-default-info fr-text--xs">
+    <span class="fr-icon-info-fill" aria-hidden="true"></span>
+    Ces informations sont recueillies à titre indicatif et n'ont pas de valeur
+    contractuelles. <br />
+    <span class="fr-ml-6v"
+      >Seuls les séjours accueillant plus de 3 vacanciers et ayant une durée
+      supérieure à 5 jours doivent être déclarés dans ce formulaire.</span
+    >
+  </p>
   <div>
     <div class="headings">
       <p class="fr-mb-0">Nom de l'hébergement</p>
@@ -72,11 +88,27 @@
       />
     </div>
   </div>
+  <div class="fr-p-4v bg-light-blue">
+    <p>
+      <b>Veuillez trouver le modèle de questionnaire à adresser</b>
+      préalablement à la tenue du séjour à la personne accueillie, ou à son
+      représentant légal, afin de connaître ses besoins ou ses problèmes de
+      santé
+    </p>
+    <DsfrFileDownload
+      format="pdf"
+      size="61.88 Ko"
+      :href="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
+      download=""
+      title="questionnaire-vacanciers.pdf"
+    />
+  </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import { useField, useForm } from "vee-validate";
+import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import SearchAddress from "@/components/address/search-address.vue";
 import HebergementDetail from "@/components/agrement/bilan/hebergementDetail.vue";
@@ -93,6 +125,8 @@ const props = defineProps({
     default: "BROUILLON",
   },
 });
+
+const config = useRuntimeConfig();
 
 const sejours = ref([...props.initialSejours]);
 const showForm = ref(false);
@@ -206,5 +240,8 @@ defineExpose({
 .add-btn {
   width: 100%;
   justify-content: center;
+}
+.bg-light-blue {
+  background: rgba(227, 227, 253, 0.4);
 }
 </style>
