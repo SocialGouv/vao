@@ -86,8 +86,6 @@ const props = defineProps({
   bilanAnnuel: { type: Object, default: () => ({}) },
   agrementStatus: { type: String, required: true },
 });
-// console.log("Séjours pour l'année", props.year, ":", props.sejours);
-console.log("Bilan annuel pour l'année", props.year, ":", props.bilanAnnuel);
 
 const tranchesAgeRef = ref(null);
 const typeDeficiencesRef = ref(null);
@@ -132,8 +130,6 @@ const initialValues = {
   nbFemmes: props.bilanAnnuel?.nbFemmes || 0,
   nbTotalJoursVacances: props.bilanAnnuel?.nbTotalJoursVacances || 0,
 };
-
-console.log("Initial values:", initialValues);
 
 const { handleSubmit } = useForm({
   validationSchema,
@@ -190,6 +186,8 @@ const validateForm = async () => {
     formValid = false;
   }
 
+  const hebergements = hebergementsRef.value?.getHebergements() || [];
+
   if (!formValid) {
     return toaster.error({
       titleTag: "h2",
@@ -205,9 +203,9 @@ const validateForm = async () => {
       annee: props.year,
       trancheAge: tranchesAgeValidation.value,
       typeDeficiences: typeDeficiencesValidation.value,
+      bilanHebergement: hebergements,
     };
   }
-  console.log("Validation result:", result);
   return result;
 };
 

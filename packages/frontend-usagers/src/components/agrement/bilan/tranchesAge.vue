@@ -70,7 +70,7 @@ const validateTranchesAge = async () => {
   const result = await validate();
   return {
     valid: result.valid,
-    value: trancheAge.value,
+    value: trancheAgeField.value,
     errors: trancheAgeErrorMessage.value,
   };
 };

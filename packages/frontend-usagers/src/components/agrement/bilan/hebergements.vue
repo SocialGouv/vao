@@ -17,6 +17,12 @@
       v-for="(hebergement, index) in paginatedHebergements"
       :key="`${hebergement.agrBilanAnnuelId}-${hebergement.adresseId}-${index}`"
       :hebergement="hebergement"
+      :statut="props.statut"
+      @update="
+        (updatedHebergement) =>
+          handleHebergementUpdate(index, updatedHebergement)
+      "
+      @delete="() => handleHebergementDelete(index)"
     />
     <DsfrButton
       class="fr-mt-2v fr-col-12 add-btn"
@@ -94,7 +100,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import SearchAddress from "@/components/address/search-address.vue";
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
@@ -105,9 +111,24 @@ const props = defineProps({
     required: true,
     default: () => [],
   },
+  statut: {
+    type: String,
+    required: true,
+    default: "BROUILLON",
+  },
 });
 
 const toaster = useToaster();
+
+const localHebergements = ref([...props.bilanHebergement]);
+
+watch(
+  () => props.bilanHebergement,
+  (newBilanHebergement) => {
+    localHebergements.value = [...newBilanHebergement];
+  },
+  { deep: true },
+);
 
 // Configuration de la pagination
 const ITEMS_PER_PAGE = 10;
@@ -121,7 +142,7 @@ function toggleForm() {
 
 // Calcul du nombre total de pages
 const totalPages = computed(() => {
-  return Math.ceil(props.bilanHebergement.length / ITEMS_PER_PAGE);
+  return Math.ceil(localHebergements.value.length / ITEMS_PER_PAGE);
 });
 
 // Génération des pages pour le composant DsfrPagination
@@ -141,8 +162,28 @@ const pages = computed(() => {
 const paginatedHebergements = computed(() => {
   const start = currentPage.value * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE;
-  return props.bilanHebergement.slice(start, end);
+  return localHebergements.value.slice(start, end);
 });
+
+function handleHebergementUpdate(index, updatedHebergement) {
+  const actualIndex = currentPage.value * ITEMS_PER_PAGE + index;
+  localHebergements.value[actualIndex] = { ...updatedHebergement };
+}
+
+function handleHebergementDelete(index) {
+  const actualIndex = currentPage.value * ITEMS_PER_PAGE + index;
+  localHebergements.value.splice(actualIndex, 1);
+
+  // Ajuster la page courante si nécessaire
+  if (currentPage.value >= totalPages.value && currentPage.value > 0) {
+    currentPage.value = totalPages.value - 1;
+  }
+
+  toaster.success({
+    titleTag: "h2",
+    description: "L'hébergement a été supprimé avec succès.",
+  });
+}
 
 const validationSchema = yup.object({
   nomHebergement: yup.string().required("Champ obligatoire"),
@@ -188,8 +229,11 @@ function handleMonths(monthsArray) {
   console.log("Mois sélectionnés :", monthsArray);
 }
 
+const selectedAdresseObject = ref(null);
+
 function onAdresseSelect(selectedAddress) {
   adresse.value = selectedAddress.label;
+  selectedAdresseObject.value = selectedAddress;
   console.log("Adresse sélectionnée :", selectedAddress);
 }
 
@@ -201,13 +245,29 @@ function onAdresseSelect(selectedAddress) {
 const onSubmitAddSejour = handleSubmit(
   (values) => {
     console.log("Séjour validé :", values);
-    // Ici, émettez un événement vers le parent ou faites votre traitement
-    // emit('add-sejour', values);
 
-    // Réinitialise le formulaire
+    const adresseObject = selectedAdresseObject.value
+      ? {
+          label: selectedAdresseObject.value.label,
+          codeInsee: selectedAdresseObject.value.codeInsee || null,
+          codePostal: selectedAdresseObject.value.codePostal || null,
+          long: selectedAdresseObject.value.long || null,
+          lat: selectedAdresseObject.value.lat || null,
+          departement: selectedAdresseObject.value.departement || null,
+        }
+      : { label: values.adresse };
+
+    const newHebergement = {
+      nomHebergement: values.nomHebergement,
+      adresse: adresseObject,
+      nbJours: values.nbJours,
+      mois: values.periode.map((m) => parseInt(m)),
+    };
+
+    localHebergements.value.push(newHebergement);
+
     resetForm();
 
-    // Masque le formulaire après ajout
     showForm.value = false;
 
     toaster.success({
@@ -216,10 +276,17 @@ const onSubmitAddSejour = handleSubmit(
     });
   },
   (errors) => {
-    // Cette fonction est appelée si la validation échoue
     console.log("Erreurs de validation :", errors);
   },
 );
+
+function getHebergements() {
+  return localHebergements.value;
+}
+
+defineExpose({
+  getHebergements,
+});
 </script>
 
 <style scoped>

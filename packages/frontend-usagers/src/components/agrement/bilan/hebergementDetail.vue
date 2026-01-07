@@ -63,7 +63,6 @@ import { useField, useForm } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { defineEmits, watch } from "vue";
 import * as yup from "yup";
-// import Agrement from "~/components/organisme/agrement.vue";
 
 const emits = defineEmits(["delete", "update"]);
 
@@ -145,9 +144,19 @@ const {
   meta: adresseMeta,
 } = useField("adresse");
 
-const adresseLabel = computed(
-  () => (adresse.value && adresse.value.label) || "",
-);
+const adresseLabel = computed(() => {
+  if (!adresse.value) return "";
+
+  if (typeof adresse.value === "object" && adresse.value.label) {
+    return adresse.value.label;
+  }
+
+  if (typeof adresse.value === "string") {
+    return adresse.value;
+  }
+
+  return "";
+});
 
 watch(nomHebergement, (newValue) => {
   emitNomHebergementUpdate(newValue);
