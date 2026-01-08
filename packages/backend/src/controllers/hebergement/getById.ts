@@ -18,10 +18,7 @@ export default async function get(
     const hebergement: HebergementDto | null =
       await Hebergement.getById(hebergementId);
     if (!hebergement) {
-      return res.status(400).json({
-        message:
-          "une erreur est survenue durant la récupération de l'hébergement",
-      });
+      return res.status(400).json({ hebergement: null });
     }
     log.d(hebergement);
     res.json({ hebergement });
