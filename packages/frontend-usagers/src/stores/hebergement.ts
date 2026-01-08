@@ -1,10 +1,14 @@
 import { defineStore } from "pinia";
 import { $fetchBackend, logger } from "#imports";
-import UploadFile from "~/utils/UploadFile";
+import uploadFile from "~/utils/UploadFile";
 import type { HebergementDto } from "@vao/shared-bridge";
 import { HebergementService } from "~/services/hebergementService";
 
 const log = logger("stores/hebergement");
+
+type IdResponse = { id?: number };
+type HebergementsBySirenResponse = { hebergements?: HebergementDto[] };
+type HebergementsListResponse = { rows: HebergementDto[]; total: number };
 
 interface HebergementStoreState {
   hebergements: HebergementDto[];
@@ -22,12 +26,12 @@ export const useHebergementStore = defineStore("hebergement", {
     async fetchBySiren(siren: string) {
       try {
         log.i("fetchBySiren - IN");
-        const { hebergements } = await $fetchBackend(
+        const { hebergements } = (await $fetchBackend(
           `/hebergement/siren/${siren}`,
           {
             credentials: "include",
           },
-        );
+        )) as HebergementsBySirenResponse;
         if (hebergements) {
           this.hebergements = hebergements;
         }
@@ -40,10 +44,10 @@ export const useHebergementStore = defineStore("hebergement", {
     async fetch(params = {}) {
       try {
         log.i("fetch - IN");
-        const { rows, total } = await $fetchBackend("/hebergement", {
+        const { rows, total } = (await $fetchBackend("/hebergement", {
           credentials: "include",
           params,
-        });
+        })) as HebergementsListResponse;
 
         this.hebergements = rows;
         this.hebergementsTotal = total;
@@ -68,122 +72,144 @@ export const useHebergementStore = defineStore("hebergement", {
         log.i("fetchById - DONE with error", err);
       }
     },
-    async updateOrCreate(hebergement: any, hebergementId: number) {
+    async updateOrCreate(
+      hebergement: Record<string, unknown>,
+      hebergementId: number,
+    ) {
       log.i("updateOrCreate - IN", { hebergement });
 
       const url = hebergementId
         ? `/hebergement/${hebergementId}`
         : `/hebergement`;
 
-      const { id } = await $fetchBackend(url, {
+      const { id } = (await $fetchBackend(url, {
         method: "POST",
         body: hebergement,
         credentials: "include",
-      });
+      })) as IdResponse;
       log.i("updateOrCreate - Done", { id });
       return id ?? hebergementId;
     },
-    async updateOrCreateBrouillon(hebergement: any, hebergementId: number) {
+    async updateOrCreateBrouillon(
+      hebergement: Record<string, unknown>,
+      hebergementId: number,
+    ) {
       log.i("updateOrCreate - IN", { hebergement });
 
       const url = hebergementId
         ? `/hebergement/${hebergementId}/brouillon`
         : `/hebergement/brouillon`;
 
-      const { id } = await $fetchBackend(url, {
+      const { id } = (await $fetchBackend(url, {
         method: hebergementId ? "PUT" : "POST",
         body: hebergement,
         credentials: "include",
-      });
+      })) as IdResponse;
       log.i("updateOrCreate - Done", { id });
       return id ?? hebergementId;
     },
-    async activate(hebergement: any, hebergementId: number) {
+    async activate(
+      hebergement: Record<string, unknown>,
+      hebergementId: number,
+    ) {
       log.i("updateOrCreate - IN", { hebergement });
 
-      const { id } = await $fetchBackend(
+      const { id } = (await $fetchBackend(
         `/hebergement/${hebergementId}/activate`,
         {
           method: "PUT",
           body: hebergement,
           credentials: "include",
         },
-      );
+      )) as IdResponse;
       log.i("updateOrCreate - Done", { id });
       return id ?? hebergementId;
     },
     async desactivate(hebergementId: number) {
       log.i("desactivate - IN", { hebergementId });
 
-      const { id } = await $fetchBackend(
+      const { id } = (await $fetchBackend(
         `/hebergement/${hebergementId}/desactivate`,
         {
           method: "PUT",
           credentials: "include",
         },
-      );
+      )) as IdResponse;
       log.i("desactivate - Done", { id });
       return id ?? hebergementId;
     },
     async reactivate(hebergementId: number) {
       log.i("reactivate - IN", { hebergementId });
 
-      const { id } = await $fetchBackend(
+      const { id } = (await $fetchBackend(
         `/hebergement/${hebergementId}/reactivate`,
         {
           method: "PUT",
           credentials: "include",
         },
-      );
+      )) as IdResponse;
       log.i("desactivate - Done", { id });
       return id ?? hebergementId;
     },
-    async uploadAllFiles(hebergement: any) {
+    async uploadAllFiles(hebergement: Record<string, unknown>) {
       const { informationsLocaux } = hebergement;
 
+      if (!informationsLocaux || typeof informationsLocaux !== "object") {
+        return;
+      }
+
       const uploadFileIfNeeded = async (
-        key: string,
-        file: any,
+        fieldName: string,
+        file: Record<string, unknown> | null,
         logLabel: string,
       ) => {
         if (file && !file.uuid) {
           try {
-            const uuid = await UploadFile(key, file);
+            const uploadedFileId = await uploadFile(
+              fieldName,
+              file as unknown as File,
+            );
             return {
-              uuid,
+              uuid: uploadedFileId,
               name: file.name,
               createdAt: new Date(),
             };
-          } catch (error: any) {
+          } catch (error: unknown) {
             log.w(logLabel, error);
-            error.fileName = file?.name;
             throw error;
           }
         }
         return file;
       };
 
-      if (informationsLocaux.reglementationErp) {
-        informationsLocaux.fileDerniereAttestationSecurite =
-          await uploadFileIfNeeded(
-            "attestation_securite",
-            informationsLocaux.fileDerniereAttestationSecurite,
-            "fileDerniereAttestationSecurite",
-          );
+      const locaux = informationsLocaux as Record<string, unknown>;
+      if (locaux.reglementationErp) {
+        locaux.fileDerniereAttestationSecurite = await uploadFileIfNeeded(
+          "attestation_securite",
+          (locaux.fileDerniereAttestationSecurite as Record<
+            string,
+            unknown
+          > | null) ?? null,
+          "fileDerniereAttestationSecurite",
+        );
 
-        informationsLocaux.fileDernierArreteAutorisationMaire =
-          await uploadFileIfNeeded(
-            "arrete_autorisation_maire",
-            informationsLocaux.fileDernierArreteAutorisationMaire,
-            "fileDernierArreteAutorisationMaire",
-          );
+        locaux.fileDernierArreteAutorisationMaire = await uploadFileIfNeeded(
+          "arrete_autorisation_maire",
+          (locaux.fileDernierArreteAutorisationMaire as Record<
+            string,
+            unknown
+          > | null) ?? null,
+          "fileDernierArreteAutorisationMaire",
+        );
       } else {
-        informationsLocaux.fileReponseExploitantOuProprietaire =
-          await uploadFileIfNeeded(
-            "reponse_explouprop",
-            informationsLocaux.fileReponseExploitantOuProprietaire,
-            "fileReponseExploitantOuProprietaire",
-          );
+        locaux.fileReponseExploitantOuProprietaire = await uploadFileIfNeeded(
+          "reponse_explouprop",
+          (locaux.fileReponseExploitantOuProprietaire as Record<
+            string,
+            unknown
+          > | null) ?? null,
+          "fileReponseExploitantOuProprietaire",
+        );
       }
     },
   },

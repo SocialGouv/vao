@@ -9,6 +9,15 @@ import logger from "../../utils/logger";
 
 const log = logger(module.filename);
 
+function isAxiosLikeError(e: unknown): e is { response?: { status?: number } } {
+  return (
+    typeof e === "object" &&
+    e !== null &&
+    "response" in e &&
+    typeof (e as { response?: unknown }).response === "object"
+  );
+}
+
 export default async function get(
   req: RouteRequest<SiretRoutes["GetSuccesseur"]>,
   res: RouteResponse<SiretRoutes["GetSuccesseur"]>,
@@ -30,7 +39,8 @@ export default async function get(
     });
   } catch (e) {
     log.w("DONE with error");
-    if ((e as any).response.status === 404) {
+    const status = isAxiosLikeError(e) ? e.response?.status : undefined;
+    if (status === 404) {
       return next(
         new AppError("Aucun successeur pour ce numéro de siret", {
           cause: e,
