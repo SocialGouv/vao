@@ -1,4 +1,5 @@
 import { HebergementDto } from "@vao/shared-bridge";
+import { NextFunction, Request, Response } from "express";
 import request from "supertest";
 
 import app from "../../../app"; // Chemin vers ton application Express
@@ -12,7 +13,7 @@ jest.mock("../../../middlewares/checkJWT");
 jest.mock("../../../middlewares/checkPermissionHebergement");
 jest.mock(
   "../../../middlewares/checkStatutHebergement",
-  () => () => (req, res, next) => {
+  () => () => (req: Request, res: Response, next: NextFunction) => {
     next();
   },
 );

@@ -18,8 +18,10 @@ export default async function get(
     const hebergement: HebergementDto | null =
       await Hebergement.getById(hebergementId);
     if (!hebergement) {
-      res.status(404);
-      return next(new Error("Aucun hébergement trouvé pour l'ID fourni"));
+      return res.status(400).json({
+        message:
+          "une erreur est survenue durant la récupération de l'hébergement",
+      });
     }
     log.d(hebergement);
     res.json({ hebergement });
