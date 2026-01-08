@@ -30,6 +30,8 @@
     "@commitlint/config-conventional": "^19.0.0",
     "@playwright/test": "^1.47.0",
     "@socialgouv/eslint-config-recommended": "^1.131.0",
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "@typescript-eslint/parser": "^8.46.0",
     "@types/node": "^22.5.4",
     "env-cmd": "~10.1.0",
     "eslint": "^8.56.0",
@@ -40,7 +42,8 @@
     "lint-staged": "^15.2.1",
     "node-talisman": "^1.29.22",
     "npm": "10.9.2",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "typescript": "^5.9.3"
   },
   "workspaces": [
     "packages/*"
