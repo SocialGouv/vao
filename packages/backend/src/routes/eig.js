@@ -23,10 +23,10 @@ const boCheckRoleDS = boCheckRole([
   "DemandeSejour_Ecriture",
 ]);
 
-router.get("/me", checkJWT, eigController.getMe);
+router.get("/me", checkJWT(), eigController.getMe);
 router.get(
   "/admin/ds/:declarationId",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleEig,
   boCheckRoleDS,
   getDepartements,
@@ -35,15 +35,15 @@ router.get(
 );
 router.get(
   "/ds/:declarationId",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   eigController.getByDsId,
 );
-router.get("/available-ds", checkJWT, eigController.getAvailableDs);
-router.get("/admin", boCheckJWT, boCheckRoleEig, eigController.getAdmin);
+router.get("/available-ds", checkJWT(), eigController.getAvailableDs);
+router.get("/admin", boCheckJWT(), boCheckRoleEig, eigController.getAdmin);
 router.get(
   "/admin/pdf/:id",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleEig,
   checkPermissionBOEIG,
   eigController.getPdf,
@@ -51,26 +51,26 @@ router.get(
 
 router.get(
   "/admin/total-to-read",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleEig,
   eigController.getTotalToRead,
 );
 router.get(
   "/:id",
-  checkJWT,
+  checkJWT(),
   checkPermissionEIG({ action: TRACKING_ACTIONS.reading }),
   eigController.getById,
 );
 router.get(
   "/admin/:id",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleEig,
   checkPermissionBOEIG,
   eigController.getById,
 );
 router.post(
   "/",
-  checkJWT,
+  checkJWT(),
   checkPermissionEIG({ action: TRACKING_ACTIONS.creation }),
   checkPermissionDeclarationSejourForEig,
   trackEig({
@@ -81,7 +81,7 @@ router.post(
 );
 router.put(
   "/:id",
-  checkJWT,
+  checkJWT(),
   checkPermissionEIG({ action: TRACKING_ACTIONS.modification }),
   checkPermissionDeclarationSejourForEig,
   canUpdateEig,
@@ -93,7 +93,7 @@ router.put(
 );
 router.post(
   "/depose/:id",
-  checkJWT,
+  checkJWT(),
   checkPermissionEIG({ action: TRACKING_ACTIONS.modification }),
   canUpdateEig,
   trackEig({
@@ -105,7 +105,7 @@ router.post(
 
 router.delete(
   "/:id",
-  checkJWT,
+  checkJWT(),
   checkPermissionEIG({ action: TRACKING_ACTIONS.deletion }),
   canUpdateEig,
   trackEig({
@@ -117,7 +117,7 @@ router.delete(
 
 router.post(
   "/admin/:id/mark-as-read",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleEig,
   trackEig({
     action: TRACKING_ACTIONS.modification,

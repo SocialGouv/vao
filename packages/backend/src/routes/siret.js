@@ -7,10 +7,10 @@ const siretController = require("../controllers/siret");
 
 router.get("/check-api-insee", siretController.checkApiInsee);
 router.get("/check-api-entreprise", siretController.checkApiEntreprise);
-router.get("/:siret", checkJWT, siretController.get);
+router.get("/:siret", checkJWT(), siretController.get);
 router.get(
   "/get-lien-succession/:siret",
-  checkJWT,
+  checkJWT(),
   siretController.getLienSuccession,
 );
 

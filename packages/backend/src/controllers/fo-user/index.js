@@ -1,3 +1,4 @@
+module.exports.acceptCgu = require("./accept-cgu").default;
 module.exports.list = require("./list");
 module.exports.updateStatus = require("./update-status");
 module.exports.changeStatus = require("./change-status");

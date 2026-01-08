@@ -51,10 +51,9 @@ describe("GET /hebergement/admin/:id", () => {
   it("devrait retourner une erreur 400 si l'ID est manquant ou invalide", async () => {
     boCheckJWT.mockImplementationOnce((req, res, next) => {
       req.decoded = { ...user };
-      req.params = {};
       next();
     });
-
+    Hebergement.getById.mockResolvedValueOnce(null);
     const response = await request(app).get("/hebergement/admin/2");
     expect(response.status).toBe(400);
   });

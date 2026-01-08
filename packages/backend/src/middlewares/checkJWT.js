@@ -1,8 +1,10 @@
 const { schema } = require("../helpers/schema");
 const commonCheckJWT = require("./common/checkJWT");
 
-async function checkJWT(req, res, next) {
-  return commonCheckJWT(req, res, next, schema.FRONT);
+function checkJWT({ checkCgu = true } = {}) {
+  return (req, res, next) => {
+    return commonCheckJWT(req, res, next, schema.FRONT, checkCgu);
+  };
 }
 
 module.exports = checkJWT;

@@ -9,7 +9,7 @@ const router = express.Router();
 const authenticationController = require("../controllers/authentication");
 
 // Gère une connexion via mot de passe.
-router.get("/check-token", checkJWT, (req, res) => {
+router.get("/check-token", checkJWT(), (req, res) => {
   log.d("check token is OK! ");
   res.send("OK");
 });

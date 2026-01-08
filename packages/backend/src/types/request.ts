@@ -6,6 +6,7 @@ export interface User {
   email: string;
   roles: string[];
   territoireCode: string;
+  cguAccepted: boolean;
 }
 
 export interface UserRequest extends Request {

@@ -19,7 +19,7 @@ const boCheckRoleDS = boCheckRole([
 
 router.post(
   "/admin/:declarationId",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   checkPermissionBODeclarationSejourUpdate,
@@ -27,13 +27,13 @@ router.post(
 );
 router.post(
   "/:declarationId",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   messageController.postByFO,
 );
 router.get(
   "/admin/read/:declarationId",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   checkComingFrom,
@@ -42,7 +42,7 @@ router.get(
 );
 router.get(
   "/admin/:declarationId",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   checkPermissionBODeclarationSejour,
@@ -50,14 +50,14 @@ router.get(
 );
 router.get(
   "/read/:declarationId",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   checkComingFrom,
   messageController.read,
 );
 router.get(
   "/:declarationId",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   messageController.get,
 );

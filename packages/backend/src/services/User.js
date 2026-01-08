@@ -86,7 +86,8 @@ const query = {
       us.telephone,
       us.status_code as "statusCode",
       pm.siret as "siret",
-      pm.raison_sociale as "raisonSociale"
+      pm.raison_sociale as "raisonSociale",
+      us.cgu_accepted as "cguAccepted"
     FROM front.users us
     LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
     LEFT JOIN front.organismes o ON uo.org_id = o.id

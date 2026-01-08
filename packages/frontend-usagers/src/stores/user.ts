@@ -45,6 +45,7 @@ export const useUserStore = defineStore("user", {
         const { user } = await $fetchBackend("/users/me", {
           credentials: "include",
         });
+        console.log("Fetched user profile:", user);
         if (user) {
           log.i("refreshProfile - DONE");
           this.user = user;

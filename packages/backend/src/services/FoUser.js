@@ -236,7 +236,8 @@ const query = {
       CASE 
         WHEN o.type_organisme = 'personne_morale' THEN pm.siege_social 
         ELSE true
-      END AS "siegeSocial"
+      END AS "siegeSocial",
+      u.cgu_accepted as "cguAccepted"
     FROM front.users AS u
     INNER JOIN front.user_organisme uo ON uo.use_id = u.id
     INNER JOIN front.organismes o ON o.id = uo.org_id

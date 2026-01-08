@@ -23,42 +23,42 @@ const boCheckRoleDS = boCheckRole([
 // Gère une connexion via mot de passe.
 router.get(
   "/admin",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   demandeSejourController.getByDepartementCodes,
 );
 router.get(
   "/admin/messages",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   demandeSejourController.getDeclarationsMessages,
 );
 router.get(
   "/admin/extract",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   demandeSejourController.getExtract,
 );
 router.get(
   "/admin/extract-hebergement",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   demandeSejourController.getExtractHebergement,
 );
 router.get(
   "/admin/hebergements",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   demandeSejourController.getHebergementsByDepartementCodes,
 );
 router.get(
   "/admin/historique/:declarationId",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   checkPermissionBODeclarationSejour,
@@ -66,13 +66,13 @@ router.get(
 );
 router.get(
   "/admin/stats",
-  boCheckJWT,
+  boCheckJWT(),
   getDepartements,
   demandeSejourController.getAdminStats,
 );
 router.get(
   "/admin/:declarationId",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   checkPermissionBODeclarationSejour,
@@ -80,7 +80,7 @@ router.get(
 );
 router.post(
   "/admin/:declarationId/prise-en-charge",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   checkPermissionBODeclarationSejourUpdate,
@@ -88,7 +88,7 @@ router.post(
 );
 router.post(
   "/admin/:declarationId/demande-complements",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   checkPermissionBODeclarationSejourUpdate,
@@ -96,7 +96,7 @@ router.post(
 );
 router.post(
   "/admin/:declarationId/refus",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   checkPermissionBODeclarationSejourUpdate,
@@ -104,44 +104,44 @@ router.post(
 );
 router.post(
   "/admin/:declarationId/enregistrement-2-mois",
-  boCheckJWT,
+  boCheckJWT(),
   boCheckRoleDS,
   getDepartements,
   checkPermissionBODeclarationSejourUpdate,
   demandeSejourController.enregistrementDemande2Mois,
 );
-router.get("/stats", checkJWT, demandeSejourController.getStats);
-router.get("/extract", checkJWT, demandeSejourController.getExtractFO);
-router.get("/deprecated", checkJWT, demandeSejourController.getDeprecated);
+router.get("/stats", checkJWT(), demandeSejourController.getStats);
+router.get("/extract", checkJWT(), demandeSejourController.getExtractFO);
+router.get("/deprecated", checkJWT(), demandeSejourController.getDeprecated);
 router.get(
   "/:declarationId",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   demandeSejourController.getById,
 );
 router.get(
   "/historique/:declarationId",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   demandeSejourController.historique,
 );
 
-router.get("/", checkJWT, demandeSejourController.get);
+router.get("/", checkJWT(), demandeSejourController.get);
 router.post(
   "/depose/:declarationId",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   demandeSejourController.depose,
 );
 router.post(
   "/:declarationId/copy",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   demandeSejourController.copy,
 );
 router.post(
   "/:declarationId",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   canUpdateDs,
   trackDemandeSejour({
@@ -150,16 +150,16 @@ router.post(
   }),
   demandeSejourController.update,
 );
-router.post("/", checkJWT, demandeSejourController.post);
+router.post("/", checkJWT(), demandeSejourController.post);
 router.delete(
   "/:declarationId",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   demandeSejourController.delete,
 );
 router.post(
   "/cancel/:declarationId",
-  checkJWT,
+  checkJWT(),
   checkPermissionDeclarationSejour,
   demandeSejourController.cancel,
 );

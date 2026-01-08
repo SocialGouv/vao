@@ -44,7 +44,6 @@ module.exports = async function login(req, res, next) {
     }
 
     const user = await User.login({ email, password });
-
     if (!user) {
       log.w("Utilisateur inexistant");
       const ip =
@@ -94,6 +93,7 @@ module.exports = async function login(req, res, next) {
         ),
       );
     }
+
     const accessToken = jwt.sign(
       buildAccessToken(user),
       config.tokenSecret_FO,

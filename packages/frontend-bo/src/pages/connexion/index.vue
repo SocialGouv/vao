@@ -99,6 +99,17 @@
                         </li>
                       </ul>
                     </div>
+                    <DsfrModal
+                      modal-ref="cgu-modal"
+                      name="cgu-modal"
+                      :opened="openCgu"
+                      @close="refuseCgu"
+                      ><CguValidation
+                        :allow-validation="true"
+                        @refuse="refuseCgu"
+                        @validate="validateCgu"
+                      />
+                    </DsfrModal>
                   </div>
                 </form>
               </div>
@@ -114,13 +125,15 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
 import { ERRORS_LOGIN } from "@vao/shared-bridge";
-import { PasswordInput, apiModel } from "@vao/shared-ui";
+import { PasswordInput, apiModel, CguValidation } from "@vao/shared-ui";
 
 const toaster = useToaster();
 
 const config = useRuntimeConfig();
 
 const log = logger("pages/connexion/email");
+
+const openCgu = ref(false);
 
 useHead({
   title: "VAO - connexion",
@@ -179,6 +192,7 @@ async function login() {
         body: { email: email.value, password: password.value },
       },
     );
+    openCgu.value = response.user?.cguAccepted === false;
     formStatus.value = formStates.SUBMITTED;
     const serviceCompetent =
       response.user.territoireCode === "FRA"
@@ -192,7 +206,9 @@ async function login() {
       description: `Authentification réalisée avec succès`,
     });
     displayType.value = "Success";
-    return navigateTo("/");
+    if (!openCgu.value) {
+      return navigateTo("/");
+    }
   } catch (error) {
     formStatus.value = formStates.SUBMITTED;
     const codeError = error?.data?.name;
@@ -209,6 +225,25 @@ async function login() {
         break;
     }
   }
+}
+
+async function refuseCgu() {
+  log.i("refuseCgu");
+  openCgu.value = false;
+  navigateTo("/connexion");
+}
+
+async function validateCgu() {
+  log.i("validateCgu");
+  openCgu.value = false;
+  await $fetch(config.public.backendUrl + "/bo-user/accept-cgu", {
+    credentials: "include",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  navigateTo("/");
 }
 </script>
 

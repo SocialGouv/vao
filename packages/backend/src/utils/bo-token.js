@@ -1,4 +1,11 @@
-const buildAccessToken = ({ id, email, territoireCode, roles }) => ({
+const buildAccessToken = ({
+  id,
+  email,
+  territoireCode,
+  roles,
+  cguAccepted,
+}) => ({
+  cguAccepted,
   email,
   id,
   roles,
