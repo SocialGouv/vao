@@ -14,7 +14,7 @@
     "lint": "eslint --ext .vue,.js,.ts ./src",
     "lint:fix": "corepack pnpm lint --fix",
     "typecheck": "nuxi typecheck",
-    "typecheck:staged": "node ../../scripts/typecheck-staged.cjs",
+    "typecheck:staged": "node ../../scripts/typecheck-staged.cjs --",
     "test": "vitest",
     "clean": "nuxt cleanup"
   },

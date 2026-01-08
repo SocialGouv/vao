@@ -13,6 +13,7 @@
     "test:debug": "corepack pnpm rebuild @sentry/profiling-node && jest --config=jest.config.js --debug --detectOpenHandles",
     "test:watch": "corepack pnpm rebuild @sentry/profiling-node && jest --config=jest.config.js --watch",
     "test:coverage": "corepack pnpm rebuild @sentry/profiling-node && jest --config=jest.config.js --coverage",
+    "typecheck:staged": "node ../../scripts/typecheck-staged-tsc.cjs -- tsc -b ./tsconfig.json --",
     "build": "tsc -b ./tsconfig.json"
   },
   "dependencies": {

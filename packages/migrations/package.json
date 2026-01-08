@@ -4,6 +4,7 @@
   "description": "Migrations du projet VAO",
   "main": "src/index.js",
   "scripts": {
+    "typecheck:staged": "node ../../scripts/typecheck-staged-noop.cjs",
     "lint": "eslint ./src",
     "s3:migrate": "node ./src/scripts/migrate-files-to-s3.js",
     "s3:reset": "node ./src/scripts/reset-s3.js",

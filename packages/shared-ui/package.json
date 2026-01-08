@@ -4,7 +4,8 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint --ext .js,.vue,.ts ./src",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "corepack pnpm lint --fix",
+    "typecheck:staged": "node ../../scripts/typecheck-staged-noop.cjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "sourceType": "module",

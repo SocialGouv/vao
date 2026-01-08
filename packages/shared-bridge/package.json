@@ -5,7 +5,8 @@
   "scripts": {
     "build": "tsc -b ./tsconfig.json",
     "lint": "eslint --ext .js,.ts ./src",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "corepack pnpm lint --fix",
+    "typecheck:staged": "node ../../scripts/typecheck-staged-tsc.cjs -- tsc -b ./tsconfig.json --",
     "test": "jest --config=jest.config.js",
     "test:watch": "jest --config=jest.config.js --watch",
     "test:coverage": "jest --config=jest.config.js --coverage"

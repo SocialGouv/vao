@@ -37,16 +37,9 @@ function readJson(jsonPath) {
   return JSON.parse(fs.readFileSync(jsonPath, "utf8"));
 }
 
-function isTypecheckRelevant(file) {
-  return /\.(ts|tsx|vue)$/i.test(file);
-}
-
-function shouldRunBuildAsTypecheck(buildScript) {
-  if (!buildScript) return false;
-
-  // Heuristics for packages that don't have a dedicated typecheck script.
-  return /(\btsc\b|\bvue-tsc\b|\bnest\s+build\b)/.test(buildScript);
-}
+ function isTypecheckRelevant(file) {
+   return /\.(ts|tsx|vue)$/i.test(file);
+ }
 
 function unique(list) {
   return Array.from(new Set(list));
@@ -117,25 +110,21 @@ config[SOURCE_GLOB] = function (files) {
     if (relevant.length === 0) return;
 
     var pkgJsonPath = path.join("packages", pkgName, "package.json");
-    var pkgJson = readJson(pkgJsonPath);
-    var scripts = pkgJson.scripts || {};
+     var pkgJson = readJson(pkgJsonPath);
+     var scripts = pkgJson.scripts || {};
 
-    // Precedence: typecheck:staged > typecheck > build (if it looks like TS build)
-    if (scripts["typecheck:staged"]) {
-      var typecheckCmdParts = [];
-      typecheckCmdParts.push(
-        "corepack pnpm --dir packages/" + pkgName + " run typecheck:staged --",
-      );
-      for (var k = 0; k < relevant.length; k++) {
-        typecheckCmdParts.push(quoteForShell(relevant[k]));
-      }
-      commands.push(typecheckCmdParts.join(" "));
-    } else if (scripts.typecheck) {
-      commands.push("corepack pnpm --dir packages/" + pkgName + " run typecheck");
-    } else if (shouldRunBuildAsTypecheck(scripts.build)) {
-      commands.push("corepack pnpm --dir packages/" + pkgName + " run build");
-    }
-  });
+     // Only run the dedicated staged typecheck script.
+     if (scripts["typecheck:staged"]) {
+       var typecheckCmdParts = [];
+       typecheckCmdParts.push(
+         "corepack pnpm --dir packages/" + pkgName + " run typecheck:staged --",
+       );
+       for (var k = 0; k < relevant.length; k++) {
+         typecheckCmdParts.push(quoteForShell(relevant[k]));
+       }
+       commands.push(typecheckCmdParts.join(" "));
+     }
+   });
 
   // 3) Root-scoped ESLint (e2e/, scripts/, repo root, etc.)
   var uniqueRootFiles = unique(rootFiles);

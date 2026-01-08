@@ -8,6 +8,7 @@
     "dev": "tsx watch ./src",
     "lint": "eslint --ext .js,.ts ./src",
     "lint:fix": "corepack pnpm lint --fix",
+    "typecheck:staged": "node ../../scripts/typecheck-staged-noop.cjs",
     "test": "jest --config=jest.config.js",
     "test:watch": "corepack pnpm test --watch",
     "test:coverage": "corepack pnpm test --coverage --passWithNoTests"
