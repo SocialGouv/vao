@@ -1,4 +1,4 @@
-const { formatSiren, formatSiret } = require("../siret");
+import { formatSiren, formatSiret } from "./siret";
 
 describe("formatSiret", () => {
   it("should format SIRET if it's valid", () => {

@@ -5,7 +5,7 @@ const { escapeCsvField } = require("../../utils/csv");
 const dayjs = require("dayjs");
 const logger = require("../../utils/logger");
 const AppError = require("../../utils/error").default;
-const { formatSiret } = require("../../utils/siret");
+const { formatSiret } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);
 

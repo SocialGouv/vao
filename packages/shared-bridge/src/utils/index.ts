@@ -2,3 +2,4 @@
 export * from "./errors";
 export * from "./file";
 export * from "./request";
+export * from "./siret";

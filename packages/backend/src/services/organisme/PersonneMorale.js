@@ -142,6 +142,19 @@ const query = {
     FROM front.personne_morale pm
     WHERE organisme_id = $1 AND current = TRUE;
   `,
+  getHistoricByOrganismeId: `
+    SELECT pm.id AS "id",
+      pm.siret AS "siret",
+      u.nom AS "nom",
+      u.prenom AS "prenom",
+      th.timestamp AS "updatedAt"
+    FROM front.personne_morale pm
+    JOIN tracking_actions th ON th.entity_id::integer = pm.id AND th.entity = 'PERSONNE_MORALE' AND th.action = 'DELETION' 
+    JOIN front.users u ON u.id = th.user_id
+    WHERE pm.organisme_id = $1
+    AND pm.current = FALSE
+    ORDER BY th.timestamp DESC;
+  `,
   getIdByOrganiseId: `
     SELECT *
     FROM front.personne_morale
@@ -342,9 +355,15 @@ module.exports.getByOrganismeId = async (organismeId) => {
     query.getByOrganismeId,
     [organismeId],
   );
+  const { rows: personneMoralesHistoric } = await getPool().query(
+    query.getHistoricByOrganismeId,
+    [organismeId],
+  );
 
   log.i("getByOrganismeId - DONE");
-  return rowCount === 0 ? {} : personneMorales[0];
+  return rowCount === 0
+    ? {}
+    : { ...personneMorales[0], historic: personneMoralesHistoric };
 };
 
 module.exports.getIdByOrganismeId = async (organismeId) => {

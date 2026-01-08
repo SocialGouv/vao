@@ -97,6 +97,20 @@ const query = {
     FROM front.personne_physique
     WHERE organisme_id = $1 AND current = true;
   `,
+  getHistoricByOrganismeId: `
+    SELECT pp.id AS "id",
+      pp.siret AS "siret",
+      u.nom AS "nom",
+      u.prenom AS "prenom",
+      pp.edited_at  AS "updatedAt"
+    FROM front.personne_physique pp
+    JOIN front.user_organisme uo ON pp.organisme_id = uo.org_id 
+    JOIN front.users u ON u.id = uo.use_id
+    WHERE pp.organisme_id = $1
+    AND pp.current = FALSE
+    ORDER BY pp.edited_at DESC
+    ;
+  `,
   getIdByOrganiseId: `
     SELECT *
     FROM front.personne_physique
@@ -251,10 +265,25 @@ export const createOrUpdate = async (
 
 export const getByOrganismeId = async (organismeId: number) => {
   log.i("getByOrganismeId - IN", organismeId);
-
   const { rowCount, rows } = await getPool().query(query.getByOrganismeId, [
     organismeId,
   ]);
+  const { rows: personnePhysiqueHistoric } = await getPool().query(
+    query.getHistoricByOrganismeId,
+    [organismeId],
+  );
+  return rowCount === 0
+    ? {}
+    : { ...rows[0], historic: personnePhysiqueHistoric };
+};
 
-  return rowCount === 0 ? {} : rows[0];
+module.exports.getHistoricByOrganismeId = async (organismeId: number) => {
+  log.i("getHistoricByOrganismeId - IN", organismeId);
+  const { rowCount, rows: historic } = await getPool().query(
+    query.getHistoricByOrganismeId,
+    [organismeId],
+  );
+
+  log.i("getHistoricByOrganismeId - DONE");
+  return rowCount === 0 ? [] : historic;
 };
