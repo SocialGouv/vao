@@ -26,3 +26,13 @@ Run lint-staged in debug mode:
 corepack pnpm exec lint-staged --config lint-staged.config.cjs --debug
 ```
 
+## pnpm workspace filtering note (Docker dev)
+
+If you run `pnpm install` with a `--filter` on a workspace, you often also want its workspace dependencies.
+pnpm supports this via the trailing `...` syntax:
+
+```sh
+corepack pnpm --filter @vao/frontend-usagers... install
+```
+
+This is similar to Yarn workspaces focus: it installs the selected workspace and its dependency graph.

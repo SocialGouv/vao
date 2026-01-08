@@ -1,4 +1,3 @@
 #!/bin/bash
-corepack enable
-corepack pnpm --filter @vao/external-api install
+corepack pnpm --filter @vao/external-api... install
 exec corepack pnpm --filter @vao/external-api start:dev
