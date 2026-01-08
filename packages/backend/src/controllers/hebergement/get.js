@@ -17,7 +17,6 @@ module.exports = async function get(req, res) {
     const searchByUserId =
       !search?.organismeId ||
       organismeUserConnected?.organismeId === search.organismeId;
-    console.log("searchByUserId:", searchByUserId);
     if (!searchByUserId) {
       const organismeSiege = await Organisme.getSiege(
         organismeUserConnected.personneMorale.siret,
