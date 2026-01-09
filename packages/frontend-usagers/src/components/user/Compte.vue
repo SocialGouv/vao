@@ -1,7 +1,27 @@
 <template>
   <div class="fr-container">
     <form>
-      <div class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v">
+      <div v-if="!props.user" class="fr-my-5w">
+        <h1>Gestion du compte utilisateur</h1>
+
+        <DsfrAlert>
+          <p>
+            Le compte de cet utilisateur a bien été validé, toutefois celui-ci
+            n'a pas encore finalisé son affiliation à l'organisme auquel il a
+            été validé ; il n'est donc pas possible de modifier les informations
+            de ce compte avant cette étape.<br />
+            Rapprochez-vous de l'utilisateur afin qu'il finalise son
+            affiliation.
+          </p>
+        </DsfrAlert>
+
+        <div
+          class="fr-fieldset__element fr-col-8 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8 fr-mt-4w"
+        >
+          <DsfrButton label="Retour" @click.prevent="close" />
+        </div>
+      </div>
+      <div v-else class="fr-fieldset fr-grid-row fr-grid-row--center fr-my-5v">
         <h1
           class="fr-fieldset__element fr-col-12 fr-col-sm-8 fr-col-md-8 fr-col-lg-8 fr-col-xl-8"
         >
