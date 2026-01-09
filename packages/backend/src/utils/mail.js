@@ -807,6 +807,7 @@ module.exports = {
               type: "link",
             },
           ],
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
         );
         return {
           from: senderEmail,
