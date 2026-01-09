@@ -450,7 +450,8 @@ const initialValues = {
   email: props.user?.email ?? "",
   nom: props.user?.nom ?? "",
   prenom: props.user?.prenom ?? "",
-  serviceCompetence: getInitialTerritoireCode(props.user),
+  serviceCompetence:
+    props.user?.serviceCompetent ?? getInitialTerritoireCode(props.user),
   territoireCode: props.user?.territoireCode ?? null,
   roles: [...(props.user?.roles ?? [])],
   isActive: !props.user?.deleted ?? true,
