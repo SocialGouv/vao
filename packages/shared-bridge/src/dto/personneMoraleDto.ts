@@ -1,9 +1,9 @@
 export interface PersonneMoraleDto {
   historic: {
-    nom?: string | null;
-    prenom?: string | null;
-    updatedAt?: Date | null;
-    siret?: string | null;
+    nom: string | null;
+    prenom: string | null;
+    siret: string | null;
+    updatedAt: Date | null;
   }[];
   raisonSociale: string | null;
   siegeSocial: boolean | null;

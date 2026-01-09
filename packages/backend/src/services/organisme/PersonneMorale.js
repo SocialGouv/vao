@@ -149,8 +149,9 @@ const query = {
       u.prenom AS "prenom",
       th.timestamp AS "updatedAt"
     FROM front.personne_morale pm
-    JOIN tracking_actions th ON th.entity_id::integer = pm.id AND th.entity = 'PERSONNE_MORALE' AND th.action = 'DELETION' 
-    JOIN front.users u ON u.id = th.user_id
+    INNER JOIN tracking_actions th ON th.entity_id = pm.id::text 
+      AND th.entity = 'PERSONNE_MORALE' AND th.action = 'DELETION' 
+    INNER JOIN front.users u ON u.id = th.user_id
     WHERE pm.organisme_id = $1
     AND pm.current = FALSE
     ORDER BY th.timestamp DESC;

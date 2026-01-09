@@ -102,14 +102,14 @@ const query = {
       pp.siret AS "siret",
       u.nom AS "nom",
       u.prenom AS "prenom",
-      pp.edited_at  AS "updatedAt"
+      th.timestamp AS "updatedAt"
     FROM front.personne_physique pp
-    JOIN front.user_organisme uo ON pp.organisme_id = uo.org_id 
-    JOIN front.users u ON u.id = uo.use_id
+    INNER JOIN tracking_actions th ON th.entity_id = pp.id::text 
+      AND th.entity = 'PERSONNE_PHYSIQUE' AND th.action = 'DELETION' 
+    INNER JOIN front.users u ON u.id = th.user_id
     WHERE pp.organisme_id = $1
     AND pp.current = FALSE
-    ORDER BY pp.edited_at DESC
-    ;
+    ORDER BY th.timestamp DESC;
   `,
   getIdByOrganiseId: `
     SELECT *
@@ -275,15 +275,4 @@ export const getByOrganismeId = async (organismeId: number) => {
   return rowCount === 0
     ? {}
     : { ...rows[0], historic: personnePhysiqueHistoric };
-};
-
-module.exports.getHistoricByOrganismeId = async (organismeId: number) => {
-  log.i("getHistoricByOrganismeId - IN", organismeId);
-  const { rowCount, rows: historic } = await getPool().query(
-    query.getHistoricByOrganismeId,
-    [organismeId],
-  );
-
-  log.i("getHistoricByOrganismeId - DONE");
-  return rowCount === 0 ? [] : historic;
 };
