@@ -61,7 +61,6 @@ const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
   bilanChangementEvolution: yup
     .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
     .nullable()
     .notRequired()
     .test(
@@ -69,16 +68,13 @@ const validationSchema = yup.object({
       "Merci de décrire au moins 20 caractères.",
       (value) => !value || value.length >= 20,
     ),
-
-  bilanAucunChangementEvolution: yup.boolean().required(),
 });
 
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
-  bilanChangementEvolution:
-    props.initAgrement.bilan?.bilanChangementEvolution || "",
+  bilanChangementEvolution: props.initAgrement.bilanChangementEvolution || null,
   bilanAucunChangementEvolution:
-    props.initAgrement.bilan?.bilanAucunChangementEvolution || false,
+    props.initAgrement.bilanAucunChangementEvolution || false,
 };
 
 // const { handleSubmit, meta } = useForm({

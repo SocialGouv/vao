@@ -138,16 +138,9 @@ const handleSuivant = async () => {
     };
 
     delete transformedData.statut;
-    delete transformedData.filesBilanFinancierQuatreAnnees;
-    delete transformedData.filesBilanQualit;
-    // delete transformedData.bilanAucunChangementEvolution;
-    delete transformedData.filesChangeEvol;
 
     console.log("Données transformées à émettre :", transformedData);
 
-    // Émettre les données agrégées vers le composant grand-parent
-
-    // Ou si vous voulez aussi mettre à jour en temps réel :
     emit("update", transformedData);
     // emit("next");
   } else {

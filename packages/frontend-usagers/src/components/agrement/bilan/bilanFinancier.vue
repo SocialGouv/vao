@@ -128,13 +128,11 @@ const validationSchema = yup.object({
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
   bilanFinancierComptabilite:
-    props.initAgrement.bilan?.bilanFinancierComptabilite || "",
-  bilanFinancierComparatif:
-    props.initAgrement.bilan?.bilanFinancierComparatif || "",
+    props.initAgrement.bilanFinancierComptabilite || "",
+  bilanFinancierComparatif: props.initAgrement.bilanFinancierComparatif || "",
   bilanFinancierRessourcesHumaines:
-    props.initAgrement.bilan?.bilanFinancierRessourcesHumaines || "",
-  bilanFinancierCommentaire:
-    props.initAgrement.bilan?.bilanFinancierCommentaire || "",
+    props.initAgrement.bilanFinancierRessourcesHumaines || "",
+  bilanFinancierCommentaire: props.initAgrement.bilanFinancierCommentaire || "",
 };
 
 // const { handleSubmit, meta } = useForm({

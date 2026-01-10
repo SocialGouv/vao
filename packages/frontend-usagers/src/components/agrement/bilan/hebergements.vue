@@ -77,7 +77,7 @@
         />
       </div>
       <DsfrButton
-        class="fr-mt-2v fr-col-12 add-btn"
+        class="fr-mt-4v fr-col-12 add-btn"
         type="button"
         label="Ajouter ce séjour"
         @click="onSubmitAddSejour"

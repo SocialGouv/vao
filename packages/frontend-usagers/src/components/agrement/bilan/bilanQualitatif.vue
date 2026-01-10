@@ -29,7 +29,7 @@
       <div class="fr-col-12">
         <DsfrInputGroup
           name="bilanQualPerceptionSensibilite"
-          label="description"
+          label="Description"
           :model-value="bilanQualPerceptionSensibilite"
           :label-visible="true"
           :is-textarea="true"
@@ -127,7 +127,7 @@
 <script setup>
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
 
 const props = defineProps({
@@ -135,10 +135,26 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
 });
 
-const filesBilanQualitPerception = ref([]);
-const filesBilanQualitPerspectives = ref([]);
-const filesBilanQualitElementsMarquants = ref([]);
-const filesBilanQualitComplementaires = ref([]);
+const filesBilanQualitPerception = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.BILANQUALITPERCEPTION,
+  ) || [],
+);
+const filesBilanQualitPerspectives = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.BILANQUALITPERSPECTIVE,
+  ) || [],
+);
+const filesBilanQualitElementsMarquants = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.BILANQUALITELEMENTSMARQUANTS,
+  ) || [],
+);
+const filesBilanQualitComplementaires = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.BILANQUALITCOMPLEMENTAIRES,
+  ) || [],
+);
 
 const requiredUnlessBrouillon = (schema) =>
   schema.when("statut", {
@@ -163,11 +179,10 @@ const validationSchema = yup.object({
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
   bilanQualPerceptionSensibilite:
-    props.initAgrement.bilan?.bilanQualPerceptionSensibilite || "",
-  bilanQualPerspectiveEvol:
-    props.initAgrement.bilan?.bilanQualPerspectiveEvol || "",
+    props.initAgrement.bilanQualPerceptionSensibilite || "",
+  bilanQualPerspectiveEvol: props.initAgrement.bilanQualPerspectiveEvol || "",
   bilanQualElementsMarquants:
-    props.initAgrement.bilan?.bilanQualElementsMarquants || "",
+    props.initAgrement.bilanQualElementsMarquants || "",
 };
 
 // const { handleSubmit, meta } = useForm({
@@ -199,28 +214,22 @@ const {
 } = useField("bilanQualElementsMarquants");
 
 const validateForm = async () => {
-  const allBilanStepFiles = [
-    ...(filesBilanQualitPerception.value?.length
-      ? filesBilanQualitPerception.value
-      : []),
-    ...(filesBilanQualitPerspectives.value?.length
-      ? filesBilanQualitPerspectives.value
-      : []),
-    ...(filesBilanQualitElementsMarquants.value?.length
-      ? filesBilanQualitElementsMarquants.value
-      : []),
-    ...(filesBilanQualitComplementaires.value?.length
-      ? filesBilanQualitComplementaires.value
-      : []),
-  ];
-
-  console.log("All bilan files to upload:", allBilanStepFiles);
   const result = await handleSubmit((values) => values)();
   if (result) {
     return {
       ...result,
-      ...(allBilanStepFiles.length > 0 && {
-        filesBilanQualit: allBilanStepFiles,
+      ...(filesBilanQualitPerception.value.length > 0 && {
+        filesBilanQualitPerception: filesBilanQualitPerception.value,
+      }),
+      ...(filesBilanQualitPerspectives.value.length > 0 && {
+        filesBilanQualitPerspectives: filesBilanQualitPerspectives.value,
+      }),
+      ...(filesBilanQualitElementsMarquants.value.length > 0 && {
+        filesBilanQualitElementsMarquants:
+          filesBilanQualitElementsMarquants.value,
+      }),
+      ...(filesBilanQualitComplementaires.value.length > 0 && {
+        filesBilanQualitComplementaires: filesBilanQualitComplementaires.value,
       }),
     };
   }
