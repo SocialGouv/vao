@@ -33,6 +33,7 @@
         :year="parseInt(tab.title)"
         :bilan-annuel="bilanAnnuelByYear[parseInt(tab.title)]"
         :agrement-status="props.initAgrement?.statut"
+        :agrement-id="props.initAgrement?.id"
       />
     </DsfrTabContent>
   </DsfrTabs>
@@ -92,13 +93,14 @@ const bilanAnnuelByYear = computed(() => {
   const data = props.initAgrement?.agrementBilanAnnuel || [];
   data.forEach((bilan) => {
     const year = bilan.annee;
+    console.log("Traitement du bilan pour l'année :", year, bilan);
     if (!result[year]) {
       // Initialise avec une copie du premier bilan
       result[year] = {
         ...bilan,
         bilanHebergement: [...bilan.bilanHebergement],
-        trancheAge: [...bilan.trancheAge],
-        typeHandicap: [...bilan.typeHandicap],
+        trancheAge: [...bilan.trancheAge] || [],
+        typeHandicap: [...bilan.typeHandicap] || [],
         nbFemmes: bilan.nbFemmes,
         nbHommes: bilan.nbHommes,
         nbGlobalVacanciers: bilan.nbGlobalVacanciers,
@@ -108,10 +110,10 @@ const bilanAnnuelByYear = computed(() => {
       // Fusionne les propriétés
       result[year].bilanHebergement.push(...bilan.bilanHebergement);
       result[year].trancheAge = Array.from(
-        new Set([...result[year].trancheAge, ...bilan.trancheAge]),
+        new Set([...result[year].trancheAge, ...bilan.trancheAge] || []),
       );
       result[year].typeHandicap = Array.from(
-        new Set([...result[year].typeHandicap, ...bilan.typeHandicap]),
+        new Set([...result[year].typeHandicap, ...bilan.typeHandicap] || []),
       );
       result[year].nbFemmes += bilan.nbFemmes;
       result[year].nbHommes += bilan.nbHommes;
@@ -119,6 +121,7 @@ const bilanAnnuelByYear = computed(() => {
       result[year].nbTotalJoursVacances += bilan.nbTotalJoursVacances;
     }
   });
+  console.log("Bilan annuel par année :", result);
   return result;
 });
 
@@ -160,6 +163,8 @@ async function validateAllYears() {
     });
     return false;
   }
+
+  console.log("Données validées pour toutes les années :", allResults);
 
   return allResults;
 }

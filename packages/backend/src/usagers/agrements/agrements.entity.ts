@@ -36,7 +36,7 @@ export interface AgrementEntity {
   budget_gestion_perso: string | null;
   budget_paiement_securise: string | null;
   budget_complement: string | null;
-  bilan_changement_evolution: boolean | null;
+  bilan_changement_evolution: string | null;
   bilan_aucun_changement_evolution: boolean | null;
   bilan_qual_perception_sensibilite: string | null;
   bilan_qual_perspective_evol: string | null;

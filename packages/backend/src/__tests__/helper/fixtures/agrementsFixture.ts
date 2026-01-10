@@ -54,7 +54,7 @@ export async function buildAgrementFixture({
     ],
     animationAutre: "Atelier peinture",
     bilanAucunChangementEvolution: false,
-    bilanChangementEvolution: true,
+    bilanChangementEvolution: "Ajout de nouvelles activités",
     bilanFinancierCommentaire: "Commentaire financier",
     bilanFinancierComparatif: "Comparatif OK",
     bilanFinancierComptabilite: "Comptabilité OK",

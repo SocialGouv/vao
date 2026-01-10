@@ -35,6 +35,7 @@ export interface AgrementDto {
   budgetGestionPerso: string | null;
   budgetPaiementSecurise: string | null;
   budgetComplement: string | null;
+  bilanAucunChangementEvolution: boolean | null;
   bilanChangementEvolution: string | null;
   bilanAucunEvolutChangemention: boolean | null;
   bilanQualPerceptionSensibilite: string | null;

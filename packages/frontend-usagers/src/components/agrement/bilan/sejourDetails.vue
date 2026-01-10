@@ -59,7 +59,7 @@
       :bilan-hebergement="props.bilanAnnuel?.bilanHebergement || []"
       :statut="props.agrementStatus"
     />
-    <div class="fr-col-6">
+    <div class="fr-col-6 fr-mt-4v">
       <DsfrInput
         name="nbTotalJoursVacances"
         label="Nombre total de jours de vacances"
@@ -87,11 +87,16 @@ const props = defineProps({
   sejours: { type: Array, default: () => [] },
   bilanAnnuel: { type: Object, default: () => ({}) },
   agrementStatus: { type: String, required: true },
+  agrementId: { type: String, required: true },
 });
 
 const tranchesAgeRef = ref(null);
 const typeDeficiencesRef = ref(null);
 const hebergementsRef = ref(null);
+
+const agrementId = props.agrementId;
+
+console.log("Agrement ID dans sejourDetails:", agrementId);
 
 const requiredUnlessBrouillon = (schema) =>
   schema.when("statut", {
@@ -229,9 +234,10 @@ const validateForm = async () => {
     delete data.statut;
     return {
       ...data,
+      agrementId,
       annee: props.year,
       trancheAge: trancheAgeValue,
-      typeDeficiences: typeDeficiencesValue,
+      typeHandicap: typeDeficiencesValue,
       bilanHebergement: hebergements,
     };
   }

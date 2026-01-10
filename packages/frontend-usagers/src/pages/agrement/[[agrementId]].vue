@@ -270,10 +270,12 @@ async function updateOrCreate(formValues) {
 
     console.log("New agrement to save:", newAgrement);
 
-    // await agrementStore.postAgrement({
-    //   agrement: newAgrement,
-    //   organismeId: organismeStore.organismeCourant?.organismeId,
-    // });
+    await agrementStore.postAgrement({
+      agrement: newAgrement,
+      organismeId: organismeStore.organismeCourant?.organismeId,
+    });
+
+    console.log("Agrement enregistré avec succès :", newAgrement);
 
     toaster.success("Données enregistrées avec succès !");
   } catch (error) {

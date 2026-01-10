@@ -130,11 +130,26 @@ const handleSuivant = async () => {
   if (allFormsAreValid) {
     console.log("Toutes les données validées :", formsData);
 
+    const transformedData = {
+      ...formsData.changements, // Décomposer les propriétés de "changements"
+      ...formsData.financier, // Décomposer les propriétés de "financier"
+      agrementBilanAnnuel: formsData.sejours, // Inclure directement le tableau "sejours"
+      ...formsData.qualitatif, // Décomposer les propriétés de "qualitatif"
+    };
+
+    delete transformedData.statut;
+    delete transformedData.filesBilanFinancierQuatreAnnees;
+    delete transformedData.filesBilanQualit;
+    // delete transformedData.bilanAucunChangementEvolution;
+    delete transformedData.filesChangeEvol;
+
+    console.log("Données transformées à émettre :", transformedData);
+
     // Émettre les données agrégées vers le composant grand-parent
-    // emit("next", formsData);
 
     // Ou si vous voulez aussi mettre à jour en temps réel :
-    // emit("update", formsData);
+    emit("update", transformedData);
+    // emit("next");
   } else {
     console.warn("Erreurs de validation :", validationErrors.value);
     // gestion erreurs

@@ -147,7 +147,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     bilanAucunChangementEvolution: requiredUnlessBrouillon(
       yup.boolean().nullable(),
     ),
-    bilanChangementEvolution: requiredUnlessBrouillon(yup.boolean().nullable()),
+    bilanChangementEvolution: requiredUnlessBrouillon(yup.string().nullable()),
     bilanFinancierCommentaire: requiredUnlessBrouillon(yup.string().nullable()),
     bilanFinancierComparatif: requiredUnlessBrouillon(yup.string().nullable()),
     bilanFinancierComptabilite: requiredUnlessBrouillon(
