@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@gouvfr/dsfr": "^1.13.0",
-    "@gouvminint/vue-dsfr": "^8.4.0",
+    "@gouvminint/vue-dsfr": "^8.13.1",
     "@iconify/vue": "^4.3.0",
     "@pinia/nuxt": "~0.5.4",
     "@samk-dev/nuxt-vcalendar": "^1.0.4",
