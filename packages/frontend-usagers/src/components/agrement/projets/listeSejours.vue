@@ -4,7 +4,7 @@
       <p class="fr-mb-0">Nom de l'hébergement</p>
       <p class="fr-mb-0">Adresse de l'hébergement</p>
       <p class="fr-mb-0">Période</p>
-      <p class="fr-mb-0">Nombre de jours</p>
+      <p class="fr-mb-0">Nombre de vacanciers</p>
       <p></p>
     </div>
     <div v-for="(sejour, index) in sejours" :key="index">
@@ -54,14 +54,14 @@
       </div>
       <div class="fr-mt-6v">
         <DsfrInput
-          name="nbJours"
+          name="nbVacanciers"
           type="number"
-          label="Nombre de jours"
-          :model-value="nbJours"
+          label="Nombre de vacanciers"
+          :model-value="nbVacanciers"
           :label-visible="true"
-          :is-valid="nbJoursMeta.valid"
-          :error-message="nbJoursErrorMessage"
-          @update:model-value="onNbJoursChange"
+          :is-valid="nbVacanciersMeta.valid"
+          :error-message="nbVacanciersErrorMessage"
+          @update:model-value="onNbVacanciersChange"
         />
       </div>
       <DsfrButton
@@ -82,6 +82,7 @@ import SearchAddress from "@/components/address/search-address.vue";
 import HebergementDetail from "@/components/agrement/bilan/hebergementDetail.vue";
 
 const props = defineProps({
+  agrementId: { type: String, required: true },
   initialSejours: {
     type: Array,
     required: true,
@@ -94,7 +95,7 @@ const props = defineProps({
   },
 });
 
-const sejours = ref([...props.initialSejours]);
+const sejours = ref([...props.initialSejours] || []);
 const showForm = ref(false);
 
 function toggleForm() {
@@ -108,7 +109,7 @@ const validationSchema = yup.object({
       label: yup.string().required("L'adresse est obligatoire"),
     })
     .required("L'adresse est obligatoire"),
-  nbJours: yup
+  nbVacanciers: yup
     .number()
     .typeError("Merci de saisir un nombre valide.")
     .required("Champ obligatoire"),
@@ -132,12 +133,11 @@ const {
 } = useField("nomSejour");
 
 const {
-  value: nbJours,
-  errorMessage: nbJoursErrorMessage,
-  handleChange: onNbJoursChange,
-  meta: nbJoursMeta,
-} = useField("nbJours");
-
+  value: nbVacanciers,
+  errorMessage: nbVacanciersErrorMessage,
+  handleChange: onNbVacanciersChange,
+  meta: nbVacanciersMeta,
+} = useField("nbVacanciers");
 const { value: adresse, errorMessage: adresseErrorMessage } =
   useField("adresse");
 
@@ -161,7 +161,8 @@ const onSubmitAddSejour = handleSubmit(
       nomHebergement: values.nomSejour,
       adresse: adresse.value,
       mois: values.mois,
-      nbJours: values.nbJours,
+      nbVacanciers: values.nbVacanciers,
+      agrementId: props.agrementId,
     });
 
     resetForm();

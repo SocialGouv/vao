@@ -94,31 +94,57 @@ import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { ref } from "vue";
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 
-const validationSchema = yup.object({
-  accompRespNb: yup
-    .number()
-    .typeError("Merci de saisir un nombre valide.")
-    .min(0, "Le nombre d'accompagnants ne peut pas être négatif.")
-    .required("Ce champ est obligatoire."),
-  accompRespCompExp: yup
-    .string()
-    .max(1000, "Le texte ne doit pas dépasser 1000 caractères.")
-    .required("Ce champ est obligatoire."),
-  accompRespRecruteUrg: yup
-    .string()
-    .max(1000, "Le texte ne doit pas dépasser 1000 caractères.")
-    .required("Ce champ est obligatoire."),
+const props = defineProps({
+  initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
 });
 
-const filesProjetsSejoursCompetencesExperience = ref([]);
-const filesProjetsSejoursMesures = ref([]);
-const filesProjetsSejoursComplementaires = ref([]);
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
+
+const validationSchema = yup.object({
+  accompRespNb: requiredUnlessBrouillon(
+    yup
+      .number()
+      .typeError("Merci de saisir un nombre valide.")
+      .min(0, "Le nombre d'accompagnants ne peut pas être négatif."),
+  ),
+  accompRespCompExp: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  accompRespRecruteUrg: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+});
+
+const filesProjetsSejoursCompetencesExperience = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) =>
+      file.category === FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
+  ) || [],
+);
+const filesProjetsSejoursMesures = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSMESURES,
+  ) || [],
+);
+const filesProjetsSejoursComplementaires = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSCOMPLEMENTAIRES,
+  ) || [],
+);
 
 const initialValues = {
-  accompRespNb: 0,
-  accompRespCompExp: "",
-  accompRespRecruteUrg: "",
+  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+  accompRespNb: props.initAgrement.accompRespNb || 0,
+  accompRespCompExp: props.initAgrement.accompRespCompExp || "",
+  accompRespRecruteUrg: props.initAgrement.accompRespRecruteUrg || "",
 };
 
 const { handleSubmit } = useForm({

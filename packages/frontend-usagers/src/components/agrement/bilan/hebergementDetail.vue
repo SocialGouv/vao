@@ -32,7 +32,7 @@
         @update:selected="handleMonths"
       />
     </div>
-    <div class="cell">
+    <div v-if="showNbJours" class="cell">
       <DsfrInput
         name="nbJours"
         type="number"
@@ -42,6 +42,18 @@
         :is-valid="nbJoursMeta.valid"
         :error-message="nbJoursErrorMessage"
         @update:model-value="onNbJoursChange"
+      />
+    </div>
+    <div v-if="showNbVacanciers" class="cell">
+      <DsfrInput
+        name="nbVacanciers"
+        type="number"
+        label="nombre de vacanciers"
+        :model-value="nbVacanciers"
+        :label-visible="false"
+        :is-valid="nbVacanciersMeta.valid"
+        :error-message="nbVacanciersErrorMessage"
+        @update:model-value="onNbVacanciersChange"
       />
     </div>
     <div class="cell">
@@ -61,7 +73,7 @@
 <script setup>
 import { useField, useForm } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
-import { defineEmits, watch } from "vue";
+import { defineEmits, watch, computed } from "vue";
 import * as yup from "yup";
 
 const emits = defineEmits(["delete", "update"]);
@@ -76,6 +88,15 @@ const props = defineProps({
     required: true,
   },
 });
+
+// Détection du mode d'affichage
+const showNbJours = computed(() =>
+  Object.prototype.hasOwnProperty.call(props.hebergement, "nbJours"),
+);
+
+const showNbVacanciers = computed(() =>
+  Object.prototype.hasOwnProperty.call(props.hebergement, "nbVacanciers"),
+);
 
 function emitDelete() {
   emits("delete");
@@ -93,6 +114,10 @@ function emitNbJoursUpdate(value) {
   emits("update", { ...props.hebergement, nbJours: value });
 }
 
+function emitNbVacanciersUpdate(value) {
+  emits("update", { ...props.hebergement, nbVacanciers: value });
+}
+
 function emitAdresseUpdate(value) {
   emits("update", { ...props.hebergement, adresse: value });
 }
@@ -104,18 +129,47 @@ const requiredUnlessBrouillon = (schema) =>
     otherwise: (schema) => schema.nullable(),
   });
 
-const validationSchema = yup.object({
-  nomHebergement: requiredUnlessBrouillon(yup.string()),
-  nbJours: requiredUnlessBrouillon(yup.number().min(1, "Doit être au moins 1")),
-  adresse: requiredUnlessBrouillon(yup.string()),
+// Schéma de validation dynamique
+const validationSchema = computed(() => {
+  const schema = {
+    nomHebergement: requiredUnlessBrouillon(yup.string()),
+    adresse: requiredUnlessBrouillon(yup.string()),
+    statut: yup.string(),
+  };
+
+  if (showNbJours.value) {
+    schema.nbJours = requiredUnlessBrouillon(
+      yup.number().min(1, "Doit être au moins 1"),
+    );
+  }
+
+  if (showNbVacanciers.value) {
+    schema.nbVacanciers = requiredUnlessBrouillon(
+      yup.number().min(1, "Doit être au moins 1"),
+    );
+  }
+
+  return yup.object(schema);
 });
 
-const initialValues = {
-  nomHebergement: props.hebergement.nomHebergement || "",
-  nbJours: props.hebergement.nbJours || 0,
-  adresse: props.hebergement.adresse || "",
-  statut: props.statut,
-};
+// Valeurs initiales dynamiques
+const initialValues = computed(() => {
+  const values = {
+    nomHebergement: props.hebergement.nomHebergement || "",
+    adresse: props.hebergement.adresse || "",
+    statut: props.statut,
+  };
+
+  if (showNbJours.value) {
+    values.nbJours = props.hebergement.nbJours || 0;
+  }
+
+  if (showNbVacanciers.value) {
+    values.nbVacanciers = props.hebergement.nbVacanciers || 0;
+  }
+
+  return values;
+});
 
 const { handleSubmit } = useForm({
   validationSchema,
@@ -131,18 +185,41 @@ const {
 } = useField("nomHebergement");
 
 const {
-  value: nbJours,
-  errorMessage: nbJoursErrorMessage,
-  handleChange: onNbJoursChange,
-  meta: nbJoursMeta,
-} = useField("nbJours");
-
-const {
   value: adresse,
   errorMessage: adresseErrorMessage,
   handleChange: onAdresseChange,
   meta: adresseMeta,
 } = useField("adresse");
+
+// Champs conditionnels pour nbJours
+const {
+  value: nbJours,
+  errorMessage: nbJoursErrorMessage,
+  handleChange: onNbJoursChange,
+  meta: nbJoursMeta,
+} = showNbJours.value
+  ? useField("nbJours")
+  : {
+      value: null,
+      errorMessage: null,
+      handleChange: null,
+      meta: { valid: true },
+    };
+
+// Champs conditionnels pour nbVacanciers
+const {
+  value: nbVacanciers,
+  errorMessage: nbVacanciersErrorMessage,
+  handleChange: onNbVacanciersChange,
+  meta: nbVacanciersMeta,
+} = showNbVacanciers.value
+  ? useField("nbVacanciers")
+  : {
+      value: null,
+      errorMessage: null,
+      handleChange: null,
+      meta: { valid: true },
+    };
 
 const adresseLabel = computed(() => {
   if (!adresse.value) return "";
@@ -162,9 +239,17 @@ watch(nomHebergement, (newValue) => {
   emitNomHebergementUpdate(newValue);
 });
 
-watch(nbJours, (newValue) => {
-  emitNbJoursUpdate(newValue);
-});
+if (showNbJours.value) {
+  watch(nbJours, (newValue) => {
+    emitNbJoursUpdate(newValue);
+  });
+}
+
+if (showNbVacanciers.value) {
+  watch(nbVacanciers, (newValue) => {
+    emitNbVacanciersUpdate(newValue);
+  });
+}
 
 watch(adresse, (newValue) => {
   emitAdresseUpdate(newValue);
@@ -177,9 +262,9 @@ const validateForm = async () => {
 
 defineExpose({
   validateForm,
-  // isValid: () => meta.value.valid, // Optionnel : pour vérifier la validité
 });
 </script>
+
 <style scoped>
 .cells {
   display: grid;

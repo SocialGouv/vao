@@ -254,11 +254,15 @@ const onSubmitAddSejour = handleSubmit(
         }
       : { label: values.adresse };
 
+    const agrBilanAnnuelId =
+      props.bilanHebergement[0]?.agrBilanAnnuelId || null;
+
     const newHebergement = {
       nomHebergement: values.nomHebergement,
       adresse: adresseObject,
       nbJours: parseInt(values.nbJours),
       mois: values.periode.map((m) => parseInt(m)),
+      agrBilanAnnuelId,
     };
 
     localHebergements.value.push(newHebergement);

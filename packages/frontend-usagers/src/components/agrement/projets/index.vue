@@ -1,20 +1,32 @@
 <template>
-  <AgrementProjetsSejoursPrevus ref="sejoursPrevusRef" />
+  <AgrementProjetsSejoursPrevus
+    ref="sejoursPrevusRef"
+    :cdn-url="props.cdnUrl"
+    :init-agrement="props.initAgrement"
+  />
   <hr class="fr-mt-8v" />
-  <AgrementProjetsAnimationsActivites ref="animationsActivitesRef" />
+  <AgrementProjetsAnimationsActivites
+    ref="animationsActivitesRef"
+    :cdn-url="props.cdnUrl"
+    :init-agrement="props.initAgrement"
+  />
   <hr class="fr-mt-8v" />
   <AgrementProjetsAccompagnantsResponsables
     ref="accompagnantsResponsablesRef"
+    :cdn-url="props.cdnUrl"
+    :init-agrement="props.initAgrement"
   />
   <hr class="fr-mt-8v" />
   <AgrementProjetsCasierJudiciaire
     ref="casierJudiciaireRef"
     :cdn-url="props.cdnUrl"
+    :init-agrement="props.initAgrement"
   />
   <hr class="fr-mt-8v" />
   <AgrementProjetsOrganisationTransports
     ref="organisationTransportsRef"
     :cdn-url="props.cdnUrl"
+    :init-agrement="props.initAgrement"
   />
   <hr class="fr-mt-8v" />
   <AgrementProjetsSuiviMedical
@@ -54,6 +66,8 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
   message: { type: String, default: null },
 });
+
+const toaster = useToaster();
 
 const emit = defineEmits(["previous", "next", "update"]);
 
@@ -163,16 +177,34 @@ const handleSuivant = async () => {
     await validateAllForms(forms);
 
   validationErrors.value = formsErrors;
+  console.log("Toutes les données etape 4 :", formsData);
 
   if (allFormsAreValid) {
-    console.log("Toutes les données validées :", formsData);
+    const transformedData = {
+      ...formsData.sejoursPrevus,
+      ...formsData.animationsActivites,
+      ...formsData.accompagnantsResponsables,
+      ...formsData.casierJudiciaire,
+      ...formsData.organisationTransports,
+      ...formsData.suiviMedical,
+      ...formsData.protocole,
+      ...formsData.budget,
+    };
+
+    delete transformedData.statut;
 
     // Émettre les données agrégées vers le composant grand-parent
     // emit("next", formsData);
 
     // Ou si vous voulez aussi mettre à jour en temps réel :
-    // emit("update", formsData);
+    console.log("Données transformées à émettre etape 4 :", transformedData);
+    emit("update", transformedData);
+    // emit("next");
   } else {
+    toaster.error({
+      titleTag: "h2",
+      description: "Tous les formulaires doivent être renseignés et valides.",
+    });
     console.warn("Erreurs de validation :", validationErrors.value);
     // gestion erreurs
   }

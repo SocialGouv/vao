@@ -26,21 +26,21 @@
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
       <DsfrInputGroup
-        name="precisionComplementaire"
+        name="budgetPersoGestionComplementaire"
         label="Précisions complémentaires (optionnel)"
-        :model-value="precisionComplementaire"
+        :model-value="budgetPersoGestionComplementaire"
         :label-visible="true"
         :is-textarea="true"
-        :is-valid="precisionComplementaireMeta.valid"
-        :error-message="precisionComplementaireErrorMessage"
-        @update:model-value="onPrecisionComplementaireChange"
+        :is-valid="budgetPersoGestionComplementaireMeta.valid"
+        :error-message="budgetPersoGestionComplementaireErrorMessage"
+        @update:model-value="onBudgetPersoGestionComplementaireChange"
       />
     </div>
   </div>
 
   <div class="fr-fieldset__element fr-mt-8v">
     <UtilsMultiFilesUpload
-      v-model="filesProjetsSejoursBudgetPersonnes"
+      v-model="filesProjSejoursBudgetPersonnes"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -50,26 +50,38 @@
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 
-// const props = defineProps({
-//   initAgrement: { type: Object, required: true },
-//   cdnUrl: { type: String, required: true },
-// });
+const props = defineProps({
+  initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
+});
 
-// todo: gerer file
-const filesProjetsSejoursBudgetPersonnes = ref([]);
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
+
+const filesProjSejoursBudgetPersonnes = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.PROJSEJOURSBUDGETPERSONNES,
+  ) || [],
+);
 
 const validationSchema = yup.object({
-  budgetGestionPerso: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .required("Ce champ est obligatoire."),
-  precisionComplementaire: yup.string().nullable(),
+  budgetGestionPerso: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  budgetPersoGestionComplementaire: yup.string().nullable(),
 });
 
 const initialValues = {
-  budgetGestionPerso: "",
-  precisionComplementaire: "",
+  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+  budgetGestionPerso: props.initAgrement.budgetGestionPerso || "",
+  budgetPersoGestionComplementaire:
+    props.initAgrement.budgetPersoGestionComplementaire || "",
 };
 
 const { handleSubmit } = useForm({
@@ -86,11 +98,11 @@ const {
 } = useField("budgetGestionPerso");
 
 const {
-  value: precisionComplementaire,
-  errorMessage: precisionComplementaireErrorMessage,
-  meta: precisionComplementaireMeta,
-  handleChange: onPrecisionComplementaireChange,
-} = useField("precisionComplementaire");
+  value: budgetPersoGestionComplementaire,
+  errorMessage: budgetPersoGestionComplementaireErrorMessage,
+  meta: budgetPersoGestionComplementaireMeta,
+  handleChange: onBudgetPersoGestionComplementaireChange,
+} = useField("budgetPersoGestionComplementaire");
 
 const validateForm = async () => {
   const formValid = true;
@@ -112,9 +124,9 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesProjetsSejoursBudgetPersonnes.value.length > 0 && {
-          filesProjetsSejoursBudgetPersonnes:
-            filesProjetsSejoursBudgetPersonnes.value,
+        ...(filesProjSejoursBudgetPersonnes.value.length > 0 && {
+          filesProjSejoursBudgetPersonnes:
+            filesProjSejoursBudgetPersonnes.value,
         }),
       };
       console.log("Données finales:", finalData);

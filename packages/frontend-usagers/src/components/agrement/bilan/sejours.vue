@@ -44,6 +44,7 @@ import { TitleWithIcon } from "@vao/shared-ui";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
 });
 
 const initialSelectedIndex = 0;

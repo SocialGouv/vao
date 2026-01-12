@@ -16,6 +16,12 @@
         :button-label="buttonLabel"
         label="Vous pouvez sélectionner une ou plusieurs options."
       />
+      <p
+        v-if="activitesSelectionneesErrorMessage"
+        class="fr-error-text fr-mt-1v"
+      >
+        {{ activitesSelectionneesErrorMessage }}
+      </p>
     </div>
     <div class="fr-mt-4v">
       <DsfrInputGroup
@@ -32,13 +38,28 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import { TitleWithIcon } from "@vao/shared-ui";
 import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 import { useForm, useField } from "vee-validate";
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import * as yup from "yup";
 
+const props = defineProps({
+  initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
+});
+
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
+
 const validationSchema = yup.object({
+  activitesSelectionnees: requiredUnlessBrouillon(
+    yup.array().min(1, "Veuillez sélectionner au moins une activité"),
+  ),
   animationAutre: yup
     .string()
     .max(1000, "Le texte ne doit pas dépasser 1000 caractères.")
@@ -48,7 +69,9 @@ const validationSchema = yup.object({
 const { handleSubmit } = useForm({
   validationSchema,
   initialValues: {
-    animationAutre: "",
+    statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+    animationAutre: props.initAgrement.animationAutre || "",
+    activitesSelectionnees: props.initAgrement.activitesSelectionnees || [],
   },
   validateOnMount: false,
 });
@@ -90,7 +113,10 @@ const buttonLabel = computed(() => {
 });
 
 // Le multiselect n'est pas géré par vee-validate, on utilise un ref classique
-const activitesSelectionnees = ref([]);
+const {
+  value: activitesSelectionnees,
+  errorMessage: activitesSelectionneesErrorMessage,
+} = useField("activitesSelectionnees");
 
 const validateForm = async () => {
   try {

@@ -42,6 +42,8 @@ const props = defineProps({
   message: { type: String, default: null },
 });
 
+const toaster = useToaster();
+
 const emit = defineEmits(["previous", "next", "update"]);
 
 const changementsRef = ref(null);
@@ -142,8 +144,12 @@ const handleSuivant = async () => {
     console.log("Données transformées à émettre :", transformedData);
 
     emit("update", transformedData);
-    // emit("next");
+    emit("next");
   } else {
+    toaster.error({
+      titleTag: "h2",
+      description: "Tous les formulaires doivent être renseignés et valides.",
+    });
     console.warn("Erreurs de validation :", validationErrors.value);
     // gestion erreurs
   }

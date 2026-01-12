@@ -83,6 +83,7 @@
             <AgrementProjets
               :init-agrement="agrementStore.agrementCourant ?? {}"
               :cdn-url="`${config.public.backendUrl}/documents/`"
+              @update="(formValues) => updateOrCreate(formValues)"
               @next="nextHash"
               @previous="previousHash"
             />
@@ -110,7 +111,7 @@ const canModify = true;
 
 async function updateOrCreate(formValues) {
   const updatedData = { ...formValues };
-  console.log("Données à enregistrer :", updatedData);
+  console.log("Données à enregistrer updateOrCreate :", updatedData);
   try {
     updatedData.agrementFiles = [];
     const fileMappings = [
@@ -221,7 +222,7 @@ async function updateOrCreate(formValues) {
       },
       {
         key: "filesProjetsSejoursOrgaTransports",
-        multiple: true,
+        multiple: false,
         category: FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT,
       },
       {
@@ -232,17 +233,17 @@ async function updateOrCreate(formValues) {
       {
         key: "filesProjetsSejoursProtocoleReorientation",
         multiple: true,
-        category: FILE_CATEGORY.PROJETSSEJOURSPROTCOLEREORIENTATION,
+        category: FILE_CATEGORY.PROJSEJPROTCOREORIENT,
       },
       {
         key: "filesProjetsSejoursProtocoleRapatriement",
         multiple: true,
-        category: FILE_CATEGORY.PROJETSSEJOURSPROTCOLERAPATRIEMENT,
+        category: FILE_CATEGORY.PROJSSEJOURSPROTCOLERAPATR,
       },
       {
-        key: "filesProjetsSejoursBudgetPersonnes",
+        key: "filesProjSejoursBudgetPersonnes",
         multiple: true,
-        category: FILE_CATEGORY.PROJETSSEJOURSBUDGETPERSONNES,
+        category: FILE_CATEGORY.PROJSEJOURSBUDGETPERSONNES,
       },
     ];
 

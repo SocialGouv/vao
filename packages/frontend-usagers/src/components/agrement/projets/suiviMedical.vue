@@ -48,29 +48,41 @@
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 
-// const props = defineProps({
-//   initAgrement: { type: Object, required: true },
-//   cdnUrl: { type: String, required: true },
-// });
+const props = defineProps({
+  initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
+});
 
 // todo: gerer file
-const filesProjetsSejoursSuiviMed = ref([]);
+const filesProjetsSejoursSuiviMed = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSSUIVIMED,
+  ) || [],
+);
+
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
 
 const validationSchema = yup.object({
-  suiviMedDistribution: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .required("Ce champ est obligatoire."),
-  suiviMedAccordSejour: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .required("Ce champ est obligatoire."),
+  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
+  suiviMedDistribution: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  suiviMedAccordSejour: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
 });
 
 const initialValues = {
-  suiviMedDistribution: "",
-  suiviMedAccordSejour: "",
+  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+  suiviMedDistribution: props.initAgrement.suiviMedDistribution || "",
+  suiviMedAccordSejour: props.initAgrement.suiviMedAccordSejour || "",
 };
 
 const { handleSubmit } = useForm({
@@ -100,12 +112,11 @@ const validateForm = async () => {
     // CORRECTION : handleSubmit retourne maintenant les valeurs actuelles
     const result = await handleSubmit((values) => {
       // Log des valeurs ACTUELLES du formulaire
-      console.log("Valeurs du formulaire:", values);
       return values;
     })();
 
     if (!formValid) {
-      console.error("Le formulaire n'est pas valide.");
+      console.error("Le formulaire n'est pas valide suivi.");
     }
 
     if (result) {
@@ -121,7 +132,7 @@ const validateForm = async () => {
       return finalData;
     }
   } catch (error) {
-    console.error("Erreur lors de la validation du formulaire :", error);
+    console.error("Erreur lors de la validation du formulaire suivi :", error);
   }
 };
 

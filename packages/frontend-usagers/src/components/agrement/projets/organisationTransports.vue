@@ -47,27 +47,39 @@ import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { FileUpload } from "@vao/shared-ui";
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 
 const props = defineProps({
+  initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
 });
 
-// todo fichier
+const filesProjetsSejoursOrgaTransports = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT,
+  ) || null,
+);
 
-const filesProjetsSejoursOrgaTransports = ref([]);
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
 
 const validationSchema = yup.object({
-  transportAllerRetour: yup
-    .string()
-    .required("Merci de renseigner le mode de transport aller-retour."),
-  transportSejour: yup
-    .string()
-    .required("Merci de renseigner le mode de transport durant le séjour."),
+  transportAllerRetour: requiredUnlessBrouillon(
+    yup.string().min(1, "Merci de décrire au moins 1 caractères.").nullable(),
+  ),
+  transportSejour: requiredUnlessBrouillon(
+    yup.string().min(1, "Merci de décrire au moins 1 caractères.").nullable(),
+  ),
 });
 
 const initialValues = {
-  transportAllerRetour: "",
-  transportSejour: "",
+  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+  transportAllerRetour: props.initAgrement.transportAllerRetour || "",
+  transportSejour: props.initAgrement.transportSejour || "",
 };
 
 const { handleSubmit } = useForm({
@@ -98,19 +110,17 @@ const validateForm = async () => {
       "Début de la validation du formulaire Organisation des transports",
     );
 
-    // Log des valeurs actuelles des champs
-    console.log("Valeur de transportAllerRetour :", transportAllerRetour.value);
-    console.log("Valeur de transportSejour :", transportSejour.value);
-    console.log(
-      "Valeur de filesProjetsSejoursOrgaTransports :",
-      filesProjetsSejoursOrgaTransports.value,
-    );
     // CORRECTION : handleSubmit retourne maintenant les valeurs actuelles
     const result = await handleSubmit((values) => {
       // Log des valeurs ACTUELLES du formulaire
-      console.log("Valeurs du formulaire:", values);
+      console.log("Valeurs du formulaire transports:", values);
       return values;
     })();
+
+    console.log(
+      "filesProjetsSejoursOrgaTransports.value:",
+      filesProjetsSejoursOrgaTransports.value,
+    );
 
     // Validation du type de déficiences
 
@@ -123,11 +133,10 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesProjetsSejoursOrgaTransports.value &&
-          filesProjetsSejoursOrgaTransports.value.length > 0 && {
-            filesProjetsSejoursOrgaTransports:
-              filesProjetsSejoursOrgaTransports.value,
-          }),
+        ...(filesProjetsSejoursOrgaTransports.value && {
+          filesProjetsSejoursOrgaTransports:
+            filesProjetsSejoursOrgaTransports.value,
+        }),
       };
       console.log("Données finales transports:", finalData);
       return finalData;

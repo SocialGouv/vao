@@ -66,15 +66,15 @@
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
       <DsfrInputGroup
-        name="protocoleMateriel"
+        name="protocoleInfoFamille"
         label="Modalités d’information, de transports et de rapatriement"
         hint="Expliciter les mesures organisationnelles prévues (transports, lien avec ambassade, modalités d’information de l’entourage du vacancier, conditions de retour vers l’ESSMS, le domicile ou autre lieu de séjour, liens avec les services médicaux et de secours) "
-        :model-value="protocoleMateriel"
+        :model-value="protocoleInfoFamille"
         :label-visible="true"
         :is-textarea="true"
-        :is-valid="protocoleMaterielMeta.valid"
-        :error-message="protocoleMaterielErrorMessage"
-        @update:model-value="onProtocoleMaterielChange"
+        :is-valid="protocoleInfoFamilleMeta.valid"
+        :error-message="protocoleInfoFamilleErrorMessage"
+        @update:model-value="onprotocoleInfoFamilleChange"
       />
     </div>
   </div>
@@ -90,39 +90,53 @@
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 
-// const props = defineProps({
-//   initAgrement: { type: Object, required: true },
-//   cdnUrl: { type: String, required: true },
-// });
+const props = defineProps({
+  initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
+});
 
-const filesProjetsSejoursProtocoleReorientation = ref([]);
-const filesProjetsSejoursProtocoleRapatriement = ref([]);
+const filesProjetsSejoursProtocoleReorientation = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.PROJSEJPROTCOREORIENT,
+  ) || [],
+);
+const filesProjetsSejoursProtocoleRapatriement = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.PROJSSEJOURSPROTCOLERAPATR,
+  ) || [],
+);
+
+const requiredUnlessBrouillon = (schema) =>
+  schema.when("statut", {
+    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema) => schema.nullable(),
+  });
 
 const validationSchema = yup.object({
-  protocoleEvacUrg: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .required("Ce champ est obligatoire."),
-  protocoleRapatUrg: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .required("Ce champ est obligatoire."),
-  protocoleRapatEtranger: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .required("Ce champ est obligatoire."),
-  protocoleMateriel: yup
-    .string()
-    .min(20, "Merci de décrire au moins 20 caractères.")
-    .required("Ce champ est obligatoire."),
+  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
+  protocoleEvacUrg: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  protocoleRapatUrg: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  protocoleRapatEtranger: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
+  protocoleInfoFamille: requiredUnlessBrouillon(
+    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+  ),
 });
 
 const initialValues = {
-  protocoleEvacUrg: "",
-  protocoleRapatUrg: "",
-  protocoleRapatEtranger: "",
-  protocoleMateriel: "",
+  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
+  protocoleEvacUrg: props.initAgrement.protocoleEvacUrg || "",
+  protocoleRapatUrg: props.initAgrement.protocoleRapatUrg || "",
+  protocoleRapatEtranger: props.initAgrement.protocoleRapatEtranger || "",
+  protocoleInfoFamille: props.initAgrement.protocoleInfoFamille || "",
 };
 
 const { handleSubmit } = useForm({
@@ -153,11 +167,11 @@ const {
 } = useField("protocoleRapatEtranger");
 
 const {
-  value: protocoleMateriel,
-  errorMessage: protocoleMaterielErrorMessage,
-  meta: protocoleMaterielMeta,
-  handleChange: onProtocoleMaterielChange,
-} = useField("protocoleMateriel");
+  value: protocoleInfoFamille,
+  errorMessage: protocoleInfoFamilleErrorMessage,
+  meta: protocoleInfoFamilleMeta,
+  handleChange: onprotocoleInfoFamilleChange,
+} = useField("protocoleInfoFamille");
 
 const validateForm = async () => {
   const formValid = true;

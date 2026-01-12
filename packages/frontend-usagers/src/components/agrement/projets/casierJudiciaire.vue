@@ -33,14 +33,18 @@ import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { FileUpload } from "@vao/shared-ui";
-
-console.log("Hello from projet/casierJudiciaire.vue");
+import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 
 const props = defineProps({
+  initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
 });
 
-const fileProjetsSejoursCasier = ref(null);
+const fileProjetsSejoursCasier = ref(
+  props.initAgrement?.agrementFiles.filter(
+    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSCASIER,
+  ) || null,
+);
 
 const validationSchema = yup.object({
   accompRespAttestHono: yup
@@ -53,6 +57,7 @@ const validationSchema = yup.object({
 });
 
 const initialValues = {
+  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
   accompRespAttestHono: false,
 };
 
@@ -80,9 +85,9 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(fileProjetsSejoursCasier.value
-          ? { fileProjetsSejoursCasier: fileProjetsSejoursCasier.value }
-          : {}),
+        ...(fileProjetsSejoursCasier.value && {
+          filesProjetsSejoursCasier: fileProjetsSejoursCasier.value,
+        }),
       };
       return finalData;
     }
