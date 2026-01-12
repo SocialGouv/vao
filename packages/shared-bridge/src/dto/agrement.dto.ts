@@ -33,6 +33,7 @@ export interface AgrementDto {
   protocoleInfoFamille: string | null;
   protocoleRemboursement: string | null;
   budgetGestionPerso: string | null;
+  budgetPersoGestionComplementaire: string | null;
   budgetPaiementSecurise: string | null;
   budgetComplement: string | null;
   bilanAucunChangementEvolution: boolean | null;

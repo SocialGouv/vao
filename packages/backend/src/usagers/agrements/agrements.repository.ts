@@ -146,7 +146,7 @@ export const AgrementsRepository = {
           suivi_med_distribution, suivi_med_accord_sejour,
           protocole_evac_urg, protocole_rapat_urg, protocole_rapat_etranger,
           protocole_materiel, protocole_info_famille, protocole_remboursement,
-          budget_gestion_perso, budget_paiement_securise, budget_complement,
+          budget_gestion_perso, budget_perso_gestion_complementaire, budget_paiement_securise, budget_complement,
           bilan_changement_evolution, bilan_aucun_changement_evolution,
           bilan_qual_perception_sensibilite, bilan_qual_perspective_evol,
           bilan_qual_elements_marquants, bilan_financier_comptabilite,
@@ -160,7 +160,7 @@ export const AgrementsRepository = {
           $17,$18,$19,$20,$21,
           $22,$23,$24,$25,$26,$27,
           $28,$29,$30,$31,$32,$33,$34,$35,
-          $36,$37,$38,$39,$40, $41
+          $36,$37,$38,$39,$40, $41, $42
         )
         RETURNING id;
       `;
@@ -195,6 +195,7 @@ export const AgrementsRepository = {
         agrement.protocoleInfoFamille,
         agrement.protocoleRemboursement,
         agrement.budgetGestionPerso,
+        agrement.budgetPersoGestionComplementaire,
         agrement.budgetPaiementSecurise,
         agrement.budgetComplement,
         agrement.bilanChangementEvolution,
@@ -367,19 +368,20 @@ export const AgrementsRepository = {
         protocole_info_famille = $27,
         protocole_remboursement = $28,
         budget_gestion_perso = $29,
-        budget_paiement_securise = $30,
-        budget_complement = $31,
-        bilan_changement_evolution = $32,
-        bilan_aucun_changement_evolution = $33,
-        bilan_qual_perception_sensibilite = $34,
-        bilan_qual_perspective_evol = $35,
-        bilan_qual_elements_marquants = $36,
-        bilan_financier_comptabilite = $37,
-        bilan_financier_comparatif = $38,
-        bilan_financier_ressources_humaines = $39,
-        bilan_financier_commentaire = $40,
-        date_fin_validite = $41
-      WHERE id = $42;
+        budget_perso_gestion_complementaire = $30,
+        budget_paiement_securise = $31,
+        budget_complement = $32,
+        bilan_changement_evolution = $33,
+        bilan_aucun_changement_evolution = $34,
+        bilan_qual_perception_sensibilite = $35,
+        bilan_qual_perspective_evol = $36,
+        bilan_qual_elements_marquants = $37,
+        bilan_financier_comptabilite = $38,
+        bilan_financier_comparatif = $39,
+        bilan_financier_ressources_humaines = $40,
+        bilan_financier_commentaire = $41,
+        date_fin_validite = $42
+      WHERE id = $43;
     `;
 
       const agrementValues = [
@@ -412,6 +414,7 @@ export const AgrementsRepository = {
         agrement.protocoleInfoFamille,
         agrement.protocoleRemboursement,
         agrement.budgetGestionPerso,
+        agrement.budgetPersoGestionComplementaire,
         agrement.budgetPaiementSecurise,
         agrement.budgetComplement,
         agrement.bilanChangementEvolution,

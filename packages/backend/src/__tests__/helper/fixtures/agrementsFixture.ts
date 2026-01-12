@@ -65,6 +65,7 @@ export async function buildAgrementFixture({
     budgetComplement: "Complément OK",
     budgetGestionPerso: "Gestion perso OK",
     budgetPaiementSecurise: "Paiement OK",
+    budgetPersoGestionComplementaire: "Gestion complémentaire OK",
     commentaire: "Commentaire de test",
     dateConfirmCompletude: new Date("2024-12-07"),
     dateDepot: new Date("2024-12-01"),

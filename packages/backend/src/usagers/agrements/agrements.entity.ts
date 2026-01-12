@@ -34,6 +34,7 @@ export interface AgrementEntity {
   protocole_info_famille: string | null;
   protocole_remboursement: string | null;
   budget_gestion_perso: string | null;
+  budget_perso_gestion_complementaire: string | null;
   budget_paiement_securise: string | null;
   budget_complement: string | null;
   bilan_changement_evolution: string | null;

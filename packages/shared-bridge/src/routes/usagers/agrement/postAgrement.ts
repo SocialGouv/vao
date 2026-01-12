@@ -166,6 +166,9 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     budgetComplement: requiredUnlessBrouillon(yup.string().nullable()),
     budgetGestionPerso: requiredUnlessBrouillon(yup.string().nullable()),
     budgetPaiementSecurise: requiredUnlessBrouillon(yup.string().nullable()),
+    budgetPersoGestionComplementaire: requiredUnlessBrouillon(
+      yup.string().nullable(),
+    ),
     commentaire: requiredUnlessBrouillon(yup.string().nullable()),
 
     dateConfirmCompletude: requiredUnlessBrouillon(yup.date().nullable()),

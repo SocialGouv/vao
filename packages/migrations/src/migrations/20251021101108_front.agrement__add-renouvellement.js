@@ -93,9 +93,10 @@ exports.up = async function (knex) {
       table.text("protocole_info_famille");
       table.text("protocole_remboursement");
       table.text("budget_gestion_perso");
+      table.text("budget_perso_gestion_complementaire");
       table.text("budget_paiement_securise");
       table.text("budget_complement");
-      table.boolean("bilan_changement_evolution");
+      table.text("bilan_changement_evolution");
       table.boolean("bilan_aucun_changement_evolution");
       table.text("bilan_qual_perception_sensibilite");
       table.text("bilan_qual_perspective_evol");
@@ -358,6 +359,7 @@ exports.down = async function (knex) {
       table.dropColumn("protocole_info_famille");
       table.dropColumn("protocole_remboursement");
       table.dropColumn("budget_gestion_perso");
+      table.dropColumn("budget_perso_gestion_complementaire");
       table.dropColumn("budget_paiement_securise");
       table.dropColumn("budget_complement");
       table.dropColumn("bilan_changement_evolution");
