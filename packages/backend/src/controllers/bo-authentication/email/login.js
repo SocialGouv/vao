@@ -1,6 +1,5 @@
 const { ERRORS_LOGIN } = require("@vao/shared-bridge");
 
-const jwt = require("jsonwebtoken");
 const config = require("../../../config");
 
 const User = require("../../../services/BoUser");
@@ -12,8 +11,8 @@ const logger = require("../../../utils/logger");
 const { status } = require("../../../helpers/users");
 const { schema } = require("../../../helpers/schema");
 const {
-  buildAccessToken,
-  buildRefreshToken,
+  signAccessToken,
+  signRefreshToken,
 } = require("../../../utils/bo-token");
 const AppError = require("../../../utils/error").default;
 
@@ -79,23 +78,8 @@ module.exports = async function login(req, res, next) {
   }
 
   try {
-    const accessToken = jwt.sign(
-      buildAccessToken(user),
-      config.tokenSecret_BO,
-      {
-        algorithm: config.algorithm,
-        expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde
-      },
-    );
-
-    const refreshToken = jwt.sign(
-      buildRefreshToken(user),
-      config.tokenSecret_BO,
-      {
-        algorithm: config.algorithm,
-        expiresIn: config.refreshToken.expiresIn / 1000,
-      },
-    );
+    const accessToken = signAccessToken({ ...user, id: Number(user.id) });
+    const refreshToken = signRefreshToken({ ...user, id: Number(user.id) });
 
     await Session.create(user.id, refreshToken, schema.BACK);
 

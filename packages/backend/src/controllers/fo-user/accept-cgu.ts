@@ -1,14 +1,13 @@
 import type { NextFunction, Response } from "express";
-import jwt from "jsonwebtoken";
 
 import config from "../../config";
 import { schema } from "../../helpers/schema";
 import Session from "../../services/common/Session";
-import CommonUser from "../../services/common/Users";
+import CommonUserService from "../../services/common/Users";
 import { UserRequest } from "../../types/request";
-import { buildAccessToken, buildRefreshToken } from "../../utils/bo-token";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
+import { signAccessToken, signRefreshToken } from "../../utils/token";
 
 const log = logger(module.filename);
 
@@ -17,19 +16,20 @@ export default async function acceptCgu(
   res: Response,
   next: NextFunction,
 ) {
+  console.log("Accept CGU called");
   const user = req.decoded;
   log.i("IN", { user });
   if (!user) {
     log.w("Paramètes manquants");
     return next(
       new AppError("Paramètre incorrect", {
-        statusCode: 400,
+        statusCode: 403,
       }),
     );
   }
 
   try {
-    await CommonUser.acceptCgu({
+    await CommonUserService.acceptCgu({
       userId: user.id,
       userSchema: schema.FRONT,
     });
@@ -42,23 +42,8 @@ export default async function acceptCgu(
     if (!config.tokenSecret_FO) {
       throw new Error("tokenSecret_FO is not defined in config");
     }
-    const accessToken = jwt.sign(
-      buildAccessToken(user),
-      config.tokenSecret_FO as string,
-      {
-        algorithm: config.algorithm as jwt.Algorithm,
-        expiresIn: Math.floor(config.accessToken.expiresIn / 1000), // Le délai avant expiration exprimé en seconde
-      },
-    );
-
-    const refreshToken = jwt.sign(
-      buildRefreshToken(user),
-      config.tokenSecret_FO as string,
-      {
-        algorithm: config.algorithm as jwt.Algorithm,
-        expiresIn: Math.floor(config.refreshToken.expiresIn / 1000),
-      },
-    );
+    const accessToken = signAccessToken({ ...user, id: Number(user.id) });
+    const refreshToken = signRefreshToken({ ...user, id: Number(user.id) });
 
     await Session.create(user.id, refreshToken, schema.FRONT);
 

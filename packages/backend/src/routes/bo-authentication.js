@@ -6,7 +6,7 @@ const logger = require("../utils/logger");
 const router = express.Router();
 const log = logger(module.filename);
 
-router.get("/check-token", BOcheckJWT(), (req, res) => {
+router.get("/check-token", BOcheckJWT, (req, res) => {
   log.d("check token is OK! ");
   res.send("OK");
 });

@@ -6,6 +6,6 @@ const router = express.Router();
 
 const { agrementController } = require("../controllers");
 
-router.post("/", checkJWT(), checkPermissionAgrement, agrementController.post);
+router.post("/", checkJWT, checkPermissionAgrement, agrementController.post);
 
 module.exports = router;

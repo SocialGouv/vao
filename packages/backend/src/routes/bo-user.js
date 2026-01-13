@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const BOcheckJWT = require("../middlewares/bo-check-JWT");
+const BOcheckJWTWithoutCGU = require("../middlewares/bo-check-JWT-without-CGU");
 const BOcheckRole = require("../middlewares/bo-check-role.js");
 const BOUserController = require("../controllers/bo-user");
 const checkTerrForAccountCreation = require("../middlewares/bo-check-terr-for-account-creation");
@@ -13,39 +14,30 @@ const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 
 const BOcheckRoleCompte = BOcheckRole(["Compte"]);
 // Acceptation des CGU
-router.post(
-  "/accept-cgu",
-  BOcheckJWT({ checkCgu: false }),
-  BOUserController.acceptCgu,
-);
+router.post("/accept-cgu", BOcheckJWTWithoutCGU, BOUserController.acceptCgu);
 
 // Renvoie la liste des utilisateurs du BO
-router.get("/", BOcheckJWT(), BOcheckRoleCompte, BOUserController.list);
+router.get("/", BOcheckJWT, BOcheckRoleCompte, BOUserController.list);
 router.get(
   "/extract",
-  BOcheckJWT(),
+  BOcheckJWT,
   BOcheckRoleCompte,
   BOUserController.getExtract,
 );
 // Gère une connexion via mot de passe.
-router.get("/me", BOcheckJWT(), BOUserController.getMe);
+router.get("/me", BOcheckJWT, BOUserController.getMe);
 // Liste des utilisateurs BO Liés à un territoire et sous territoires
 router.get(
   "/territoires/:territoireCode",
-  BOcheckJWT(),
+  BOcheckJWT,
   BOUserController.listUsersTerritoire,
 );
 // Renvoie les informations liées à l'utilisateur
-router.get(
-  "/:userId",
-  BOcheckJWT(),
-  BOcheckRoleCompte,
-  BOUserController.getOne,
-);
+router.get("/:userId", BOcheckJWT, BOcheckRoleCompte, BOUserController.getOne);
 // Mise à jour de mes informations
 router.post(
   "/me",
-  BOcheckJWT(),
+  BOcheckJWT,
   trackBoUser({
     action: TRACKING_ACTIONS.modification,
     itself: true,
@@ -56,7 +48,7 @@ router.post(
 // Création d'un utilisateur
 router.post(
   "/",
-  BOcheckJWT(),
+  BOcheckJWT,
   BOcheckRoleCompte,
   getDepartements,
   checkTerrForAccountCreation,
@@ -69,7 +61,7 @@ router.post(
 // Mise à jour d'un utilisateur
 router.post(
   "/:userId",
-  BOcheckJWT(),
+  BOcheckJWT,
   BOcheckRoleCompte,
   getDepartements,
   checkTerrForAccountCreation,
@@ -82,7 +74,7 @@ router.post(
 // Fonctione transverse de recherche du service compétent
 router.get(
   "/:territoireCode",
-  BOcheckJWT(),
+  BOcheckJWT,
   BOcheckRoleCompte,
   BOUserController.serviceCompetence,
 );

@@ -8,36 +8,36 @@ const checkPermissionOrganisme = require("../middlewares/checkPermissionOrganism
 const checkComingFrom = require("../middlewares/checkComingFrom");
 const organismeController = require("../controllers/organisme");
 
-router.get("/bo/liste", BOcheckJWT(), organismeController.getListe);
-router.get("/bo/extract", BOcheckJWT(), organismeController.getListeExtract);
-router.get("/bo/nonagrees", BOcheckJWT(), organismeController.getNonAgrees);
+router.get("/bo/liste", BOcheckJWT, organismeController.getListe);
+router.get("/bo/extract", BOcheckJWT, organismeController.getListeExtract);
+router.get("/bo/nonagrees", BOcheckJWT, organismeController.getNonAgrees);
 router.get(
   "/bo/:organismeId",
-  BOcheckJWT(),
+  BOcheckJWT,
   checkComingFrom,
   organismeController.getByOrganismeId,
 );
-router.get("/siret/:siret", checkJWT(), organismeController.getBySiret);
+router.get("/siret/:siret", checkJWT, organismeController.getBySiret);
 router.get(
   "/:organismeId",
-  checkJWT(),
+  checkJWT,
   checkPermissionOrganisme,
   checkComingFrom,
   organismeController.getByOrganismeId,
 );
-router.get("/", checkJWT(), organismeController.getMine);
+router.get("/", checkJWT, organismeController.getMine);
 router.post(
   "/:organismeId",
-  checkJWT(),
+  checkJWT,
   checkPermissionOrganisme,
   organismeController.update,
 );
 router.post(
   "/:organismeId/finalize",
-  checkJWT(),
+  checkJWT,
   checkPermissionOrganisme,
   organismeController.finalize,
 );
-router.post("/", checkJWT(), organismeController.post);
+router.post("/", checkJWT, organismeController.post);
 
 module.exports = router;

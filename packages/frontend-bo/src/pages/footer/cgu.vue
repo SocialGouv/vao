@@ -15,7 +15,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { CguValidation } from "@vao/shared-ui";
 
 useHead({

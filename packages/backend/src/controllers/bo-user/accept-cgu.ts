@@ -1,12 +1,11 @@
 import type { NextFunction, Response } from "express";
-import jwt from "jsonwebtoken";
 
 import config from "../../config";
 import { schema } from "../../helpers/schema";
 import Session from "../../services/common/Session";
-import CommonUser from "../../services/common/Users";
+import CommonUserService from "../../services/common/Users";
 import { UserRequest } from "../../types/request";
-import { buildAccessToken, buildRefreshToken } from "../../utils/bo-token";
+import { signAccessToken, signRefreshToken } from "../../utils/bo-token";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 
@@ -23,13 +22,13 @@ export default async function acceptCgu(
     log.w("Paramètes manquants");
     return next(
       new AppError("Paramètre incorrect", {
-        statusCode: 400,
+        statusCode: 403,
       }),
     );
   }
 
   try {
-    await CommonUser.acceptCgu({
+    await CommonUserService.acceptCgu({
       userId: user.id,
       userSchema: schema.BACK,
     });
@@ -43,23 +42,8 @@ export default async function acceptCgu(
       throw new Error("tokenSecret_BO is not defined in config");
     }
 
-    const accessToken = jwt.sign(
-      buildAccessToken(user),
-      config.tokenSecret_BO as string,
-      {
-        algorithm: config.algorithm as jwt.Algorithm,
-        expiresIn: Math.floor(config.accessToken.expiresIn / 1000), // Le délai avant expiration exprimé en seconde
-      },
-    );
-
-    const refreshToken = jwt.sign(
-      buildRefreshToken(user),
-      config.tokenSecret_BO as string,
-      {
-        algorithm: config.algorithm as jwt.Algorithm,
-        expiresIn: Math.floor(config.refreshToken.expiresIn / 1000),
-      },
-    );
+    const accessToken = signAccessToken({ ...user, id: Number(user.id) });
+    const refreshToken = signRefreshToken({ ...user, id: Number(user.id) });
 
     await Session.create(user.id, refreshToken, schema.BACK);
 
