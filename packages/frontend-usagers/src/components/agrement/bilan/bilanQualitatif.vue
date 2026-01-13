@@ -147,7 +147,7 @@ const filesBilanQualitPerspectives = ref(
 );
 const filesBilanQualitElementsMarquants = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.BILANQUALITELEMENTSMARQUANTS,
+    (file) => file.category === FILE_CATEGORY.BILANQUALITELEMARQ,
   ) || [],
 );
 const filesBilanQualitComplementaires = ref(

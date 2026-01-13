@@ -181,9 +181,9 @@ async function updateOrCreate(formValues) {
         category: FILE_CATEGORY.BILANQUALITPERSPECTIVE,
       },
       {
-        key: "filesBilanQualitelementsMarquants",
+        key: "filesBilanQualitElementsMarquants",
         multiple: true,
-        category: FILE_CATEGORY.BILANQUALITELEMENTSMARQUANTS,
+        category: FILE_CATEGORY.BILANQUALITELEMARQ,
       },
       {
         key: "filesBilanQualitComplementaires",
@@ -302,6 +302,7 @@ async function createDocuments({ documents, category }) {
 
 async function createDocument({ document, category }) {
   if (document && Object.keys(document?.uuid ?? {}).length === 0) {
+    console.log("Création nouveau document :", document);
     try {
       const uuid = await documentStore.postDocument({
         document,
