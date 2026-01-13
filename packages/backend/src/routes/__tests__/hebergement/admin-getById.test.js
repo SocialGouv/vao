@@ -55,6 +55,6 @@ describe("GET /hebergement/admin/:id", () => {
     });
     Hebergement.getById.mockResolvedValueOnce(null);
     const response = await request(app).get("/hebergement/admin/2");
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(404);
   });
 });
