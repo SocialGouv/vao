@@ -79,7 +79,7 @@
                     Inactif depuis le
                     {{
                       historic?.updatedAt
-                        ? formatDate(new Date(historic.updatedAt))
+                        ? setFormatDateToFRString(new Date(historic.updatedAt))
                         : ""
                     }}
                   </div>
@@ -240,7 +240,7 @@
 
 <script setup lang="ts">
 import { useField, useForm } from "vee-validate";
-import dayjs from "dayjs";
+import { setFormatDateToFRString } from "@vao/shared-bridge";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
 import { apiTypes } from "@vao/shared-ui/src/models";
@@ -270,8 +270,6 @@ const userStore = useUserStore();
 
 const confirmUpdatingSiret = ref(false);
 const siretToUpdate = ref(null);
-
-const formatDate = (date: Date) => dayjs(date).format("DD/MM/YYYY");
 
 const validationSchema = computed(() => {
   return yup.object(organisme.personnePhysiqueSchema);

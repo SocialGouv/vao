@@ -89,7 +89,7 @@
                     Inactif depuis le
                     {{
                       historic?.updatedAt
-                        ? formatDate(new Date(historic.updatedAt))
+                        ? setFormatDateToFRString(new Date(historic.updatedAt))
                         : ""
                     }}
                   </div>
@@ -336,7 +336,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
-import dayjs from "dayjs";
+import { setFormatDateToFRString } from "@vao/shared-bridge";
 import { apiTypes } from "@vao/shared-ui/src/models";
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
@@ -351,8 +351,6 @@ const toaster = useToaster();
 const log = logger("components/organisme/personne-morale");
 
 const emit = defineEmits(["previous", "next", "update"]);
-
-const formatDate = (date: Date) => dayjs(date).format("DD/MM/YYYY");
 
 const organismeStore = useOrganismeStore();
 const userStore = useUserStore();

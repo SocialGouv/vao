@@ -31,11 +31,11 @@ function formatByPattern({
 }
 
 export function formatSiret({ siret }: { siret?: number | string }) {
-  if (siret === undefined) return "";
+  if (!siret) return "";
   return formatByPattern({ input: String(siret), pattern: [3, 3, 3, 5] });
 }
 
 export function formatSiren({ siren }: { siren?: number | string }) {
-  if (siren === undefined) return "";
+  if (!siren) return "";
   return formatByPattern({ input: String(siren), pattern: [3, 3, 3] });
 }
