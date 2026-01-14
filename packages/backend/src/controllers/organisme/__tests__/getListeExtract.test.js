@@ -1,11 +1,11 @@
 const get = require("../getListeExtract");
 const Organisme = require("../../../services/Organisme");
-const { formatSiren, formatSiret } = require("../../../utils/siret");
+const { formatSiren, formatSiret } = require("@vao/shared-bridge");
 const { escapeCsvField } = require("../../../utils/csv");
 const dayjs = require("dayjs");
 
 jest.mock("../../../services/Organisme");
-jest.mock("../../../utils/siret");
+jest.mock("@vao/shared-bridge");
 jest.mock("../../../utils/csv");
 jest.mock("../../../utils/logger", () =>
   jest.fn(() => ({
@@ -20,9 +20,9 @@ describe("Controller get() - export CSV des organismes", () => {
   beforeEach(() => {
     req = {};
     res = {
+      send: jest.fn(),
       setHeader: jest.fn(),
       status: jest.fn().mockReturnThis(),
-      send: jest.fn(),
     };
     next = jest.fn();
 
@@ -38,37 +38,37 @@ describe("Controller get() - export CSV des organismes", () => {
   it("retourne un CSV formaté correctement avec les bons en-têtes", async () => {
     const fakeOrganismes = [
       {
-        typeOrganisme: "personne_morale",
-        siren: "123456789",
-        siret: "12345678901234",
-        raisonSociale: "Entreprise Test",
+        agrement: { dateObtention: "2024-05-01", regionObtention: "Occitanie" },
+        complet: true,
+        editedAt: "2024-06-01",
+        email: "test@example.com",
         nomPersonnePhysique: "",
         prenomPersonnePhysique: "",
-        agrement: { dateObtention: "2024-05-01", regionObtention: "Occitanie" },
-        editedAt: "2024-06-01",
-        complet: true,
-        email: "test@example.com",
-        telephone: "0123456789",
+        raisonSociale: "Entreprise Test",
         sejourCount: 5,
         sejourCountTransmise: 2,
+        siren: "123456789",
+        siret: "12345678901234",
+        telephone: "0123456789",
+        typeOrganisme: "personne_morale",
       },
       {
-        typeOrganisme: "personne_physique",
-        siren: "987654321",
-        siret: "98765432109876",
-        raisonSociale: "Individuel Test",
-        nomPersonnePhysique: "",
-        prenomPersonnePhysique: "",
         agrement: {
           dateObtention: "2025-01-01",
           regionObtention: "Hauts-de-France",
         },
-        editedAt: "2025-01-15",
         complet: true,
+        editedAt: "2025-01-15",
         email: "test2@example.com",
-        telephone: "0198765432",
+        nomPersonnePhysique: "",
+        prenomPersonnePhysique: "",
+        raisonSociale: "Individuel Test",
         sejourCount: 2,
         sejourCountTransmise: 1,
+        siren: "987654321",
+        siret: "98765432109876",
+        telephone: "0198765432",
+        typeOrganisme: "personne_physique",
       },
     ];
 

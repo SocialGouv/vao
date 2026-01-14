@@ -7,7 +7,15 @@
  *  ex [2,3,4] devra contenir une chaine de 2+3+4 (9) caractères numériques en input  et séparateur " "
  *  123456789 sortira sous le format "12 345 6789"
  * */
-function formatByPattern({ pattern, input = "", separator = " " }) {
+function formatByPattern({
+  pattern,
+  input = "",
+  separator = " ",
+}: {
+  pattern: number[];
+  input?: string;
+  separator?: string;
+}) {
   if (typeof input !== "string") input = String(input ?? "");
   const expectedLength = pattern.reduce((a, b) => a + b, 0);
   if (input.length !== expectedLength || !/^\d+$/.test(input)) return input;
@@ -22,11 +30,12 @@ function formatByPattern({ pattern, input = "", separator = " " }) {
     .join(separator);
 }
 
-function formatSiret({ siret }) {
-  return formatByPattern({ pattern: [3, 3, 3, 5], input: siret });
+export function formatSiret({ siret }: { siret?: number | string }) {
+  if (!siret) return "";
+  return formatByPattern({ input: String(siret), pattern: [3, 3, 3, 5] });
 }
 
-function formatSiren({ siren }) {
-  return formatByPattern({ pattern: [3, 3, 3], input: siren });
+export function formatSiren({ siren }: { siren?: number | string }) {
+  if (!siren) return "";
+  return formatByPattern({ input: String(siren), pattern: [3, 3, 3] });
 }
-module.exports = { formatSiren, formatSiret };

@@ -97,6 +97,20 @@ const query = {
     FROM front.personne_physique
     WHERE organisme_id = $1 AND current = true;
   `,
+  getHistoricByOrganismeId: `
+    SELECT pp.id AS "id",
+      pp.siret AS "siret",
+      u.nom AS "nom",
+      u.prenom AS "prenom",
+      th.timestamp AS "updatedAt"
+    FROM front.personne_physique pp
+    INNER JOIN tracking_actions th ON th.entity_id = pp.id::text 
+      AND th.entity = 'PERSONNE_PHYSIQUE' AND th.action = 'DELETION' 
+    INNER JOIN front.users u ON u.id = th.user_id
+    WHERE pp.organisme_id = $1
+    AND pp.current = FALSE
+    ORDER BY th.timestamp DESC;
+  `,
   getIdByOrganiseId: `
     SELECT *
     FROM front.personne_physique
@@ -251,10 +265,14 @@ export const createOrUpdate = async (
 
 export const getByOrganismeId = async (organismeId: number) => {
   log.i("getByOrganismeId - IN", organismeId);
-
   const { rowCount, rows } = await getPool().query(query.getByOrganismeId, [
     organismeId,
   ]);
-
-  return rowCount === 0 ? {} : rows[0];
+  const { rows: personnePhysiqueHistoric } = await getPool().query(
+    query.getHistoricByOrganismeId,
+    [organismeId],
+  );
+  return rowCount === 0
+    ? {}
+    : { ...rows[0], historic: personnePhysiqueHistoric };
 };

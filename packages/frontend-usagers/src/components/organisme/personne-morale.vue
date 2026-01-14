@@ -53,14 +53,56 @@
       </div>
       <div
         v-if="props.modifiable && organismeStore.organismeCourant?.complet"
-        class="fr-input-group fr-col-8"
+        class="fr-input-group fr-col-12"
       >
         <DsfrButton
           id="chercherNouveauSiret"
           :disabled="!siretMeta.valid"
           @click.prevent="searchNewSiret"
-          >Mettre à jour le SIRET et/ou les informations
+        >
+          Mettre à jour le SIRET et/ou les informations
         </DsfrButton>
+
+        <DsfrAccordion
+          title="Historique des mises à jour du SIRET"
+          class="fr-col-12 fr-mt-3w"
+        >
+          <div class="fr-grid-row">
+            <div
+              v-for="(historic, key) in organismeStore.organismeCourant
+                ?.personneMorale?.historic ?? []"
+              :key="key"
+              class="fr-col-12"
+            >
+              <div class="fr-card fr-px-3w fr-py-1w">
+                <div
+                  class="fr-grid-row fr-grid-row--no-wrap fr-grid-row--middle fr-grid-row--gutters"
+                >
+                  <div class="fr-col-auto fr-text--ellipsis fr-mr-2w">
+                    {{ formatSiret({ siret: historic?.siret }) }}
+                  </div>
+
+                  <div
+                    class="fr-col-auto fr-text--ellipsis fr-mr-2w"
+                    style="font-style: italic; color: brown"
+                  >
+                    Inactif depuis le
+                    {{
+                      historic?.updatedAt
+                        ? setFormatDateToFRString(new Date(historic.updatedAt))
+                        : ""
+                    }}
+                  </div>
+
+                  <div class="fr-col fr-text--ellipsis">
+                    Mis à jour par {{ historic?.prenom ?? "" }}
+                    {{ historic?.nom ?? "" }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DsfrAccordion>
       </div>
       <div class="fr-input-group fr-col-8">
         <OrganismeConfirmUpdateSiret
@@ -294,11 +336,15 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
-import dayjs from "dayjs";
+import { setFormatDateToFRString } from "@vao/shared-bridge";
 import { apiTypes } from "@vao/shared-ui/src/models";
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
-import { ERRORS_SIRET_MESSAGES, ERRORS_SIRET } from "@vao/shared-bridge";
+import {
+  ERRORS_SIRET_MESSAGES,
+  ERRORS_SIRET,
+  formatSiret,
+} from "@vao/shared-bridge";
 
 const toaster = useToaster();
 
