@@ -68,7 +68,7 @@ const query = {
         u.status_code AS statut,
         u.created_at AS "dateCreation",
         u.lastconnection_at AS "lastConnectionAt",
-        coalesce(u.siret, pp.siret, pm.siret )) AS "siret",
+        coalesce(u.siret, pp.siret, pm.siret) AS "siret",
         CASE 
           WHEN NULLIF(pp.id, 0) IS NOT NULL THEN 
             true
@@ -106,7 +106,6 @@ const query = {
       ) AS r
       WHERE 1=1
     `,
-
   getByToValidateByBo: `
     SELECT
       u.id AS "userId",
