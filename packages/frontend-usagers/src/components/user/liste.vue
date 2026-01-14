@@ -119,7 +119,8 @@ const defs = [
   ["email", "Adresse courriel", optionType.SORTABLE],
   ["telephone", "N° de téléphone", optionType.SORTABLE],
   ["siegeSocial", "Organisme", optionType.SORTABLE],
-  ["Adresse", "Ville", optionType.SORTABLE],
+  // Le tri par adresse est désactivé car trop complexe à gérer en back (traitement réalisé en front)
+  ["Adresse", "Ville", optionType.NONE],
   ["statut", "Statut", optionType.SORTABLE],
   ["dateCreation", "Date inscription", optionType.SORTABLE],
   ["custom:edit", "Action", optionType.FIXED_RIGHT],
