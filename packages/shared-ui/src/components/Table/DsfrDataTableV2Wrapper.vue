@@ -42,11 +42,7 @@
 import { computed } from "vue";
 import DsfrPaginationV2 from "./dsfrDataTabeV2/DsfrPaginationV2.vue";
 import DsfrDataTableV2 from "./DsfrDataTableV2.vue";
-import type {
-  Row,
-  Columns,
-  Slots,
-} from "@vao/shared-ui/src/types/DsfrDataTableV2.type";
+import type { Row, Columns, Slots } from "@vao/shared-ui";
 
 const props = withDefaults(
   defineProps<{

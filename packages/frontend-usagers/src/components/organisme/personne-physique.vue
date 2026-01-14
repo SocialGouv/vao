@@ -96,8 +96,8 @@
         <div class="fr-input-group fr-col-8">
           <OrganismeConfirmUpdateSiret
             :opened="confirmUpdatingSiret"
-            :ancien-siret="siret"
-            :nouveau-siret="siretToUpdate"
+            :ancien-siret="siret!"
+            :nouveau-siret="siretToUpdate!"
             @close="confirmUpdatingSiret = false"
             @confirm="updateSiret"
           />
@@ -241,8 +241,8 @@
 <script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
-import { apiTypes } from "@vao/shared-ui/src/models";
+import { IsDownloading, ApiUnavailable, apiModel } from "@vao/shared-ui";
+const apiTypes = apiModel.apiTypes;
 import { SiretService } from "~/services/siretService";
 import {
   ERRORS_SIRET_MESSAGES,
@@ -269,7 +269,7 @@ const organismeStore = useOrganismeStore();
 const userStore = useUserStore();
 
 const confirmUpdatingSiret = ref(false);
-const siretToUpdate = ref(null);
+const siretToUpdate = ref<string | undefined>();
 
 const validationSchema = computed(() => {
   return yup.object(organisme.personnePhysiqueSchema);
@@ -297,21 +297,21 @@ const {
   errorMessage: siretErrorMessage,
   handleChange: onSiretChange,
   meta: siretMeta,
-} = useField<string | null>("siret");
-const { value: nomNaissance } = useField<string | null>("nomNaissance");
+} = useField<string | undefined>("siret");
+const { value: nomNaissance } = useField<string | undefined>("nomNaissance");
 const {
   value: nomUsage,
   errorMessage: nomUsageErrorMessage,
   handleChange: onNomUsageChange,
   meta: nomUsageMeta,
-} = useField<string | null>("nomUsage");
-const { value: prenom } = useField<string | null>("prenom");
+} = useField<string | undefined>("nomUsage");
+const { value: prenom } = useField<string | undefined>("prenom");
 const {
   value: profession,
   errorMessage: professionErrorMessage,
   handleChange: onProfessionChange,
   meta: professionMeta,
-} = useField<string | null>("profession");
+} = useField<string | undefined>("profession");
 const { value: adresseDomicile } = useField<{
   label: string;
   codeInsee: string;
@@ -335,10 +335,10 @@ const {
   errorMessage: telephoneErrorMessage,
   handleChange: onTelephoneChange,
   meta: telephoneMeta,
-} = useField<string | null>("telephone");
+} = useField<string | undefined>("telephone");
 
-function trimSiret(s: string) {
-  return onSiretChange(s.replace(/ /g, ""));
+function trimSiret(s?: string | number): any {
+  return onSiretChange(s ? String(s).replace(/ /g, "") : "");
 }
 
 const formatedSiret = computed(() => {
@@ -362,7 +362,7 @@ async function searchNewSiret() {
   log.i("searchNewSiret - IN");
   try {
     const siretFromResponse = await SiretService.getSiretSiegeSocial(
-      siret.value,
+      siret.value!,
     );
     if (siretFromResponse !== siret.value) {
       siretToUpdate.value = siretFromResponse;
@@ -374,12 +374,12 @@ async function searchNewSiret() {
       });
       await searchOrganisme();
     }
-  } catch (error) {
+  } catch (error: any) {
     log.w("searchNewSiret - erreur:", { error });
     const body = error.data;
-    const codeError = body.name;
+    const codeError = body.name as ERRORS_SIRET;
     const description =
-      (await ERRORS_SIRET_MESSAGES(codeError)) || ERRORS_SIRET.UnknownError;
+      (await ERRORS_SIRET_MESSAGES[codeError]) || ERRORS_SIRET.UnknownError;
     toaster.error({
       titleTag: "h2",
       description,

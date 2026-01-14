@@ -1,4 +1,5 @@
-import { HebergementDto } from "../../../dto/HebergementDto";
+import { HebergementDto } from "@vao/shared-bridge";
+
 import Hebergement from "../../../services/hebergement/Hebergement";
 
 export const createHebergement = async ({

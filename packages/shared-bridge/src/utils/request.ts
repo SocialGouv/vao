@@ -1,4 +1,4 @@
-import { BasicRoute } from "../routes";
+import type { BasicRoute } from "../routes";
 
 export function buildRequestPath(
   path: BasicRoute["path"],

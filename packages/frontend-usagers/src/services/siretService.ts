@@ -17,7 +17,7 @@ const SiretService = {
         credentials: "include",
       });
       return siretEtablissementSuccesseur;
-    } catch (error) {
+    } catch (error: any) {
       if (error?.data?.name === ERRORS_SIRET.EtablissementNoSuccesseur) {
         return "";
       } else {

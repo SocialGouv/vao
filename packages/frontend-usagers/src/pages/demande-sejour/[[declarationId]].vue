@@ -239,8 +239,8 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { Chat, DemandeStatusBadge } from "@vao/shared-ui";
-import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
+import { Chat, DemandeStatusBadge, fileUtils } from "@vao/shared-ui";
+const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 const route = useRoute();
 

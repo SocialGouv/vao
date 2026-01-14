@@ -1,5 +1,5 @@
-import { PersonneMoraleDto } from "./personneMoraleDto";
-import { PersonnePhysiqueDto } from "./personnePhysiqueDto";
+import type { PersonneMoraleDto } from "./personneMoraleDto";
+import type { PersonnePhysiqueDto } from "./personnePhysiqueDto";
 
 export interface OrganismeDto {
   id: string;

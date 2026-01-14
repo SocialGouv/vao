@@ -4,7 +4,8 @@ import regex from "./regex";
 import personne from "./personne";
 import protocoleTransport from "./protocoleTransport";
 import protocoleSanitaire from "./protocoleSanitaire";
-import { adresseSchema } from "@vao/shared-ui/src/schema/adresse";
+import { eigSchema } from "@vao/shared-ui";
+const { adresseSchema } = eigSchema;
 
 const types = [
   {

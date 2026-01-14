@@ -60,10 +60,11 @@
 definePageMeta({
   middleware: ["is-connected", "check-hebergement-id-param"],
 });
-import hebergementUtils from "@vao/shared-ui/src/utils/hebergement";
+import { eigUtils, fileUtils } from "@vao/shared-ui";
 import HebergementStatusBadge from "../../components/hebergements/HebergementStatusBadge.vue";
-import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
 
+const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
+const hebergementUtils = eigUtils;
 const config = useRuntimeConfig();
 
 const toaster = useToaster();

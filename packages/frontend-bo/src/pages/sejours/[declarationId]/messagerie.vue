@@ -10,7 +10,8 @@
 
 <script setup>
 import { Chat } from "@vao/shared-ui";
-import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
+import { fileUtils } from "@vao/shared-ui";
+const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 const route = useRoute();
 const demandeSejourStore = useDemandeSejourStore();

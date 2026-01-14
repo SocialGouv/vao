@@ -26,9 +26,13 @@
 
 <script setup>
 import dayjs from "dayjs";
-import EigStatusBadge from "@vao/shared-ui/src/components/eig/EigStatusBadge.vue";
-import { TableFull, ValidationModal } from "@vao/shared-ui";
-import { mapEigToLabel } from "@vao/shared-ui/src/utils/eigUtils";
+import {
+  TableFull,
+  ValidationModal,
+  EigStatusBadge,
+  eigUtils,
+} from "@vao/shared-ui";
+const mapEigToLabel = eigUtils.mapEigToLabel;
 
 const DsfrButton = resolveComponent("DsfrButton");
 

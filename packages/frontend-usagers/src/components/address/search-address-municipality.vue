@@ -64,9 +64,9 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
-import { MultiSelectOption } from "@vao/shared-ui";
+import { MultiSelectOption, eigSchema } from "@vao/shared-ui";
 import { useForm } from "vee-validate";
-import { adresseSchema } from "@vao/shared-ui/src/schema/adresse";
+const { adresseSchema } = eigSchema;
 import * as yup from "yup";
 
 const emits = defineEmits(["choose-manual-address"]);

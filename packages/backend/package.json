@@ -6,7 +6,8 @@
   "license": "Apache-2.0",
   "main": "src/index.js",
   "scripts": {
-    "lint": "eslint --fix ./src",
+    "lint": "eslint --ext .js,.ts ./src",
+    "lint:fix": "yarn lint --fix",
     "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js",
     "test": "jest --config=jest.config.js",
     "test:debug": "jest --config=jest.config.js --debug --detectOpenHandles",

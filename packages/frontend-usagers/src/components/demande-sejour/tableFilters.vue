@@ -106,16 +106,28 @@ const props = defineProps<{
 }>();
 
 const defaultStatus = [
-  ...Object.values(statusUtils.defaultStatus as Record<string, string>),
+  ...Object.values(statusUtils.defaultStatus as Record<string, string>).map(
+    (status) => ({
+      id: status,
+      label: status,
+      value: status,
+    }),
+  ),
 ];
 
-const seasonOptions = ["hiver", "printemps", "été", "automne"];
+const seasonOptions = ["hiver", "printemps", "été", "automne"].map(
+  (season) => ({
+    id: season,
+    label: season,
+    value: season,
+  }),
+);
 
 const departementOptions = computed(() => {
   return (
     departementStore.departements as { text: string; value: string }[]
   ).map((d) => {
-    return { label: d.text, value: d.value };
+    return { label: d.text, value: d.value, id: d.value };
   });
 });
 

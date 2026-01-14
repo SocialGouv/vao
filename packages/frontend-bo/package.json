@@ -11,7 +11,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "eslint --fix ./src",
+    "lint": "eslint --ext .vue,.js,.ts ./src",
+    "lint:fix": "yarn lint --fix",
     "test": "vitest",
     "clean": "nuxt cleanup"
   },
@@ -36,9 +37,8 @@
     "pinia": "~2.2.2",
     "ufo": "^1.5.4",
     "vee-validate": "~4.13.0",
-    "vue": "latest",
+    "vue": "^3.5.22",
     "vue-matomo": "~4.2.0",
-    "vue-router": "latest",
     "yup": "~1.4.0"
   },
   "devDependencies": {
@@ -52,7 +52,8 @@
     "sass": "~1.79.3",
     "sass-loader": "~16.0.2",
     "typescript": "~5.6.2",
-    "vue-dsfr-nuxt-module": "^2.0.0"
+    "vue-dsfr-nuxt-module": "^2.0.0",
+    "vue-tsc": "^3.2.2"
   },
   "lint-staged": {
     "src/**/*.{js,vue,ts}": "npx eslint --cache --max-warnings=0"

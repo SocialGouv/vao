@@ -3,7 +3,7 @@ import { computed } from "vue";
 
 import { useRandomId } from "@gouvminint/vue-dsfr";
 
-import type { DsfrSelectProps } from "@gouvminint/vue-dsfr/types";
+import type { DsfrSelectProps } from "@gouvminint/vue-dsfr";
 
 type EnhancedDsfrSelectProps = DsfrSelectProps & {
   selectClassName?: string;

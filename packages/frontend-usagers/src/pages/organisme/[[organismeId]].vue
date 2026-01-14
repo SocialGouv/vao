@@ -87,7 +87,8 @@
 </template>
 
 <script setup>
-import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
+import { fileUtils } from "@vao/shared-ui";
+const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 const route = useRoute();
 const toaster = useToaster();
 const log = logger("pages/organisme/[[organismeId]]");
