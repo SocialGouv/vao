@@ -222,7 +222,7 @@ async function updateOrCreate(formValues) {
       },
       {
         key: "filesProjetsSejoursOrgaTransports",
-        multiple: false,
+        multiple: true,
         category: FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT,
       },
       {

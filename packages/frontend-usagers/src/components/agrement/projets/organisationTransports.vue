@@ -33,11 +33,9 @@
   </div>
 
   <div class="fr-fieldset__element fr-mt-6v">
-    <FileUpload
+    <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursOrgaTransports"
-      :cdn-url="props.cdnUrl"
-      label="Ajouter un fichier (optionnel)"
-      :modifiable="true"
+      label="Ajouter des fichiers (optionnel)"
     />
   </div>
 </template>
@@ -46,7 +44,6 @@
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
-import { FileUpload } from "@vao/shared-ui";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 
 const props = defineProps({
@@ -57,7 +54,7 @@ const props = defineProps({
 const filesProjetsSejoursOrgaTransports = ref(
   props.initAgrement?.agrementFiles.filter(
     (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT,
-  ) || null,
+  ) || [],
 );
 
 const requiredUnlessBrouillon = (schema) =>
@@ -116,11 +113,6 @@ const validateForm = async () => {
       console.log("Valeurs du formulaire transports:", values);
       return values;
     })();
-
-    console.log(
-      "filesProjetsSejoursOrgaTransports.value:",
-      filesProjetsSejoursOrgaTransports.value,
-    );
 
     // Validation du type de déficiences
 
