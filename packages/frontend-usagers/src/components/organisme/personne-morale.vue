@@ -336,7 +336,10 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
-import { setFormatDateToFRString } from "@vao/shared-bridge";
+import {
+  setFormatDateAndTimeToFRString,
+  setFormatDateToFRString,
+} from "@vao/shared-bridge";
 import { apiTypes } from "@vao/shared-ui/src/models";
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
@@ -393,7 +396,7 @@ const usersWithSiret = computed(() =>
     user.nom,
     user.prenom,
     user.email,
-    dayjs(user.dateCreation).format("DD/MM/YYYY HH:MM"),
+    setFormatDateAndTimeToFRString(new Date(user.dateCreation)),
   ]),
 );
 

@@ -26,3 +26,9 @@ export function setFormatDateToFRString(date: Date) {
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 }
+
+export function setFormatDateAndTimeToFRString(date: Date) {
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${setFormatDateToFRString(date)} ${hours}:${minutes}`;
+}
