@@ -1,6 +1,5 @@
 const { ERRORS_LOGIN } = require("@vao/shared-bridge");
 
-const jwt = require("jsonwebtoken");
 const config = require("../../../config");
 
 const User = require("../../../services/User");
@@ -11,7 +10,7 @@ const logger = require("../../../utils/logger");
 
 const { status } = require("../../../helpers/users");
 const { schema } = require("../../../helpers/schema");
-const { buildAccessToken, buildRefreshToken } = require("../../../utils/token");
+const { signAccessToken, signRefreshToken } = require("../../../utils/token");
 const AppError = require("../../../utils/error").default;
 
 const log = logger(module.filename);
@@ -44,7 +43,6 @@ module.exports = async function login(req, res, next) {
     }
 
     const user = await User.login({ email, password });
-
     if (!user) {
       log.w("Utilisateur inexistant");
       const ip =
@@ -94,23 +92,9 @@ module.exports = async function login(req, res, next) {
         ),
       );
     }
-    const accessToken = jwt.sign(
-      buildAccessToken(user),
-      config.tokenSecret_FO,
-      {
-        algorithm: config.algorithm,
-        expiresIn: config.accessToken.expiresIn / 1000, // Le délai avant expiration exprimé en seconde
-      },
-    );
 
-    const refreshToken = jwt.sign(
-      buildRefreshToken(user),
-      config.tokenSecret_FO,
-      {
-        algorithm: config.algorithm,
-        expiresIn: config.refreshToken.expiresIn / 1000,
-      },
-    );
+    const accessToken = signAccessToken(user);
+    const refreshToken = signRefreshToken(user);
 
     await Session.create(user.id, refreshToken, schema.FRONT);
 

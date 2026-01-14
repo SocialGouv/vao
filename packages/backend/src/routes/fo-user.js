@@ -5,12 +5,15 @@ const router = express.Router();
 
 const BOcheckJWT = require("../middlewares/bo-check-JWT");
 const checkJWT = require("../middlewares/checkJWT");
+const checkJWTWithoutCGU = require("../middlewares/checkJWTWithoutCGU");
 const FOUserController = require("../controllers/fo-user");
 const checkPermissionFoRole = require("../middlewares/checkPermissionFoRole");
 const checkPermissionBOForUpdateStatusFo = require("../middlewares/checkPermissionBOForUpdateStatusFo");
 const checkPermissionBOForFoStatus = require("../middlewares/checkPermissionBoForFoStatus");
 const checkPermissionFOForUpdateStatusFo = require("../middlewares/checkPermissionFOForUpdateStatusFo");
 
+// Acceptation des CGU
+router.post("/accept-cgu", checkJWTWithoutCGU, FOUserController.acceptCgu);
 // Renvoie la liste des utilisateurs du BO
 router.get("/admin/list", BOcheckJWT, FOUserController.list);
 router.get(

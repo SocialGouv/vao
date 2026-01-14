@@ -98,6 +98,17 @@
                         </li>
                       </ul>
                     </div>
+                    <DsfrModal
+                      modal-ref="cgu-modal"
+                      name="cgu-modal"
+                      :opened="openCgu"
+                      @close="refuseCgu"
+                      ><CguValidation
+                        :allow-validation="true"
+                        @refuse="refuseCgu"
+                        @validate="validateCgu"
+                      />
+                    </DsfrModal>
                   </div>
                 </form>
               </div>
@@ -120,7 +131,7 @@
 </template>
 
 <script setup>
-import { PasswordInput, apiModel } from "@vao/shared-ui";
+import { PasswordInput, apiModel, CguValidation } from "@vao/shared-ui";
 import { ERRORS_LOGIN } from "@vao/shared-bridge";
 
 const toaster = useToaster();
@@ -129,6 +140,8 @@ const organismeStore = useOrganismeStore();
 const config = useRuntimeConfig();
 
 const log = logger("pages/connexion");
+
+const openCgu = ref(false);
 
 useHead({
   title: "Connexion | Vacances Adaptées Organisées",
@@ -187,6 +200,7 @@ async function login() {
         body: { email: email.value, password: password.value },
       },
     );
+    openCgu.value = response.user?.cguAccepted === false;
     formStatus.value = formStates.SUBMITTED;
     userStore.user = response.user;
     organismeStore.setMyOrganisme();
@@ -196,7 +210,9 @@ async function login() {
       description: `Authentification réalisée avec succès`,
     });
     displayType.value = "Success";
-    return navigateTo("/");
+    if (!openCgu.value) {
+      return navigateTo("/");
+    }
   } catch (error) {
     formStatus.value = formStates.SUBMITTED;
     const codeError = error?.data?.name;
@@ -222,6 +238,27 @@ async function login() {
         break;
     }
   }
+}
+
+async function refuseCgu() {
+  log.i("refuseCgu");
+  openCgu.value = false;
+  navigateTo("/connexion");
+}
+
+async function validateCgu() {
+  log.i("validateCgu");
+  openCgu.value = false;
+  await $fetch(config.public.backendUrl + "/fo-user/accept-cgu", {
+    credentials: "include",
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  await organismeStore.setMyOrganisme();
+  await userStore.refreshProfile();
+  navigateTo("/");
 }
 </script>
 

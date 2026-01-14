@@ -1,3 +1,7 @@
+export enum ERRORS_COMMON {
+  NOT_FOUND = "NOT_FOUND",
+}
+
 export enum ERRORS_LOGIN {
   TooManyLoginAttempts = "TooManyLoginAttempts",
   WrongCredentials = "WrongCredentials",

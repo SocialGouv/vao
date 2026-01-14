@@ -8,6 +8,16 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  afterMandatoryLinks: {
+    type: Array,
+    default: () => [
+      {
+        label: "Conditions Générales d'Utilisation",
+        button: false,
+        to: "/footer/cgu",
+      },
+    ],
+  },
 });
 </script>
 
@@ -16,6 +26,7 @@ const props = defineProps({
     id="footer"
     legal-link="/footer/mentions-legales"
     personal-data-link="/footer/donnees-personnelles"
+    :after-mandatory-links="afterMandatoryLinks"
     cookies-link="/footer/gestion-cookies"
     a11y-compliance-link="/footer/accessibilite"
     home-title="Retour à l'accueil Vacances Adaptées Organisés, République Française"

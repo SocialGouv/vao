@@ -1,3 +1,4 @@
+module.exports.acceptCgu = require("./accept-cgu").default;
 module.exports.list = require("./list");
 module.exports.listUsersTerritoire = require("./list-users-territoire");
 module.exports.getExtract = require("./getExtract");

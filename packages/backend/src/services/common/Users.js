@@ -7,6 +7,16 @@ const normalize = require("../../utils/normalize");
 const log = logger(module.filename);
 
 const query = {
+  acceptCgu: (userSchema) => `
+    UPDATE ${userSchema}.users
+    SET
+      cgu_accepted = true,
+      cgu_accepted_at = NOW()
+    WHERE
+      id = $1
+    returning id, mail as email, cgu_accepted, cgu_accepted_at
+  `,
+
   getLoginAttempt: (userSchema) => `
     SELECT
       id,
@@ -32,6 +42,13 @@ const query = {
         attempt_count = attempt_count + 1,
         attempt_at = NOW()
       WHERE mail = $1`,
+};
+
+module.exports.acceptCgu = async ({ userId, userSchema }) => {
+  log.i("acceptCgu - IN", { userId });
+  const user = await getPool().query(query.acceptCgu(userSchema), [userId]);
+  log.i("acceptCgu - DONE");
+  return user.rowCount === 0 ? null : user.rows[0];
 };
 
 module.exports.verifyLoginAttempt = async (email, userSchema) => {

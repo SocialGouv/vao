@@ -251,7 +251,8 @@ ${Object.keys(criterias)
       us.prenom as prenom,
       us.validated AS validated,
       us.ter_code as "territoireCode",
-      ur.roles
+      ur.roles,
+      us.cgu_accepted AS "cguAccepted"
     FROM back.users us
     LEFT OUTER JOIN (
       SELECT
