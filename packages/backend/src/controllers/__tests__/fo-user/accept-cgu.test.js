@@ -87,12 +87,12 @@ describe("POST /accept-cgu", () => {
   });
 
   // =========================
-  // ❌ USER ABSENT → 400
+  // ❌ USER ABSENT → 403
   // =========================
-  it("retourne une erreur 400 si user absent", async () => {
+  it("retourne une erreur 403 si user absent", async () => {
     const app = createApp(undefined);
 
-    const response = await request(app).post("/accept-cgu").expect(400);
+    const response = await request(app).post("/accept-cgu").expect(403);
 
     expect(response.body.message).toBe("Paramètre incorrect");
     expect(CommonUser.acceptCgu).not.toHaveBeenCalled();
