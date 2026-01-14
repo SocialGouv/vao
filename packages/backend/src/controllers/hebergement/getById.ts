@@ -22,7 +22,7 @@ export default async function get(
       return res.status(404).json({
         message: "hebergement not found",
         name: ERRORS_COMMON.NOT_FOUND,
-      });
+      } as any);
     }
     log.d(hebergement);
     res.json({ hebergement });
