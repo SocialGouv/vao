@@ -59,48 +59,51 @@ const query = {
   ],
   getByOrganismeId: () =>
     `SELECT * FROM (
-        SELECT
-          u.id AS "userId",
-          u.mail AS email,
-          u.nom AS nom,
-          u.prenom AS prenom,
-          u.telephone AS telephone,
-          u.status_code AS statut,
-          u.created_at AS "dateCreation",
-          u.lastconnection_at as "lastConnectionAt",
-          coalesce(u.siret,coalesce(pp.siret, pm.siret ))
-          ,
-          CASE 
-            WHEN NULLIF(pp.id, 0) IS NOT NULL THEN 
-              true
-            ELSE
-			        (
-                  SELECT pm3.siege_social
-                  FROM front.personne_morale pm3
-                  WHERE pm3.siret = COALESCE(u.siret, pm.siret)
-                  AND pm3."current" = true
-                  LIMIT 1
-                )            
-          END AS "siegeSocial",
-	    CASE 
-        WHEN NULLIF(pp.id, 0) IS NOT NULL THEN 
-          pp.adresse_siege_label
-        ELSE (
-          SELECT pm4.adresse
-            FROM front.personne_morale pm4
-            WHERE pm4.siret = COALESCE(u.siret, pm.siret)
-            AND pm4."current" = true
-            LIMIT 1
-          )
-      END AS "Adresse"
-
-		 FROM front.users AS u
-		 	LEFT JOIN front.user_organisme uo ON uo.use_id = u.id
-		 	LEFT JOIN front.personne_morale pm on pm.organisme_id = uo.org_id AND pm."current" = true
-		 	LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp."current" = true
-		 WHERE (uo.org_id = ANY ($1) OR 
-		 u.siret IN (SELECT siret FROM front.personne_morale pm2 WHERE pm2.siret = u.siret AND pm2.organisme_id = ANY ($1) AND pm2."current" = true))
-     ) AS r
+      SELECT
+        u.id AS "userId",
+        u.mail AS email,
+        u.nom AS nom,
+        u.prenom AS prenom,
+        u.telephone AS telephone,
+        u.status_code AS statut,
+        u.created_at AS "dateCreation",
+        u.lastconnection_at AS "lastConnectionAt",
+        coalesce(u.siret, pp.siret, pm.siret )) AS "siret",
+        CASE 
+          WHEN NULLIF(pp.id, 0) IS NOT NULL THEN 
+            true
+          ELSE
+            (
+                SELECT pm3.siege_social
+                FROM front.personne_morale pm3
+                WHERE pm3.siret = COALESCE(u.siret, pm.siret)
+                AND pm3."current" = true
+                LIMIT 1
+              )            
+        END AS "siegeSocial",
+        CASE 
+          WHEN NULLIF(pp.id, 0) IS NOT NULL THEN 
+            pp.adresse_siege_label
+          ELSE (
+            SELECT pm4.adresse
+              FROM front.personne_morale pm4
+              WHERE pm4.siret = COALESCE(u.siret, pm.siret)
+              AND pm4."current" = true
+              LIMIT 1
+            )
+        END AS "Adresse"
+      FROM front.users AS u
+        LEFT JOIN front.user_organisme uo ON uo.use_id = u.id
+        LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id AND pm."current" = true
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp."current" = true
+      WHERE (uo.org_id = ANY ($1) OR 
+        u.siret IN (
+          SELECT siret 
+          FROM front.personne_morale pm2 
+          WHERE pm2.siret = u.siret 
+          AND pm2.organisme_id = ANY ($1) 
+          AND pm2."current" = true))
+      ) AS r
       WHERE 1=1
     `,
 
