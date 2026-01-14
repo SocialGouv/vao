@@ -187,6 +187,9 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     protocoleRemboursement: requiredUnlessBrouillon(yup.string().nullable()),
     sejourCommentaire: requiredUnlessBrouillon(yup.string().nullable()),
     sejourNbEnvisage: requiredUnlessBrouillon(yup.number().nullable()),
+    sejourTypeHandicap: requiredUnlessBrouillon(
+      yup.array(yup.string().nullable()).nullable(),
+    ),
     statut: yup
       .mixed<AGREMENT_STATUT>()
       .oneOf(Object.values(AGREMENT_STATUT))

@@ -51,6 +51,7 @@ export interface AgrementEntity {
   agrement_file: AgrementFilesEntity[] | null;
   agrement_sejour: AgrementSejoursEntity[] | null;
   agrement_bilan_annuel: AgrementBilanAnnuelEntity[] | null;
+  sejour_type_handicap: string[] | null;
 }
 
 /**

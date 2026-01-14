@@ -61,6 +61,7 @@ export const AgrementsMapper = {
       protocoleRemboursement: entity.protocole_remboursement,
       sejourCommentaire: entity.sejour_commentaire,
       sejourNbEnvisage: entity.sejour_nb_envisage,
+      sejourTypeHandicap: entity.sejour_type_handicap,
       statut: entity.statut as any,
       suiviMedAccordSejour: entity.suivi_med_accord_sejour,
       suiviMedDistribution: entity.suivi_med_distribution,

@@ -342,6 +342,7 @@ exports.down = async function (knex) {
       table.dropColumn("immatriculation");
       table.dropColumn("sejour_nb_envisage");
       table.dropColumn("sejour_commentaire");
+      table.dropColumn("sejour_type_handicap");
       table.dropColumn("vacanciers_nb_envisage");
       table.dropColumn("animation_autre");
       table.dropColumn("accomp_resp_nb");

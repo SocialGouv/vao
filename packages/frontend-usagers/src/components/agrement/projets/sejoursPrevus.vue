@@ -22,7 +22,10 @@
   />
   <hr />
   <p><b>Informations sur les vacanciers</b></p>
-  <AgrementTypeDeficiences ref="typeDeficiencesRef" />
+  <AgrementTypeDeficiences
+    ref="typeDeficiencesRef"
+    :type-deficiences="props.initAgrement.sejourTypeHandicap || []"
+  />
   <hr />
   <p class="fr-mb-1v"><b>Informations complémentaires</b></p>
   <div class="fr-col-6 fr-mb-4v">
@@ -172,7 +175,7 @@ const validateForm = async () => {
       const finalData = {
         ...data,
         agrementSejours: sejoursData?.sejours || [],
-        typeHandicap: typeDeficiencesValidation.value,
+        sejourTypeHandicap: typeDeficiencesValidation.value,
         ...(filesProjetsSejoursPrevus.value.length > 0 && {
           filesProjetsSejoursPrevus: filesProjetsSejoursPrevus.value,
         }),

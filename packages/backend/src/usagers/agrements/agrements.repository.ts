@@ -134,8 +134,12 @@ export const AgrementsRepository = {
   }): Promise<number> {
     const client = await getPool().connect();
     try {
+      log.i("create repo agrement - IN");
       await client.query("BEGIN");
 
+      console.log("Données reçues pour insertion :", agrement);
+      log.i("Données reçues pour insertion :", agrement);
+      log.i("AgrementsRepository");
       const agrementInsertQuery = `
         INSERT INTO front.agrements (
           statut, organisme_id, updated_at, date_obtention_certificat, date_depot,
@@ -152,7 +156,7 @@ export const AgrementsRepository = {
           bilan_qual_elements_marquants, bilan_financier_comptabilite,
           bilan_financier_comparatif, bilan_financier_ressources_humaines,
           bilan_financier_commentaire,
-          date_fin_validite
+          date_fin_validite, sejour_type_handicap
         )
         VALUES (
           $1,$2,$3,$4,$5,$6,$7,$8,
@@ -160,7 +164,7 @@ export const AgrementsRepository = {
           $17,$18,$19,$20,$21,
           $22,$23,$24,$25,$26,$27,
           $28,$29,$30,$31,$32,$33,$34,$35,
-          $36,$37,$38,$39,$40, $41, $42
+          $36,$37,$38,$39,$40, $41, $42, $43
         )
         RETURNING id;
       `;
@@ -208,6 +212,7 @@ export const AgrementsRepository = {
         agrement.bilanFinancierRessourcesHumaines,
         agrement.bilanFinancierCommentaire,
         dateFinValidite,
+        agrement.sejourTypeHandicap,
       ];
 
       const result = await client.query(agrementInsertQuery, agrementValues);
@@ -326,7 +331,8 @@ export const AgrementsRepository = {
   }): Promise<number> {
     const client = await getPool().connect();
     const agrementId: number = agrement.id!;
-
+    log.i("update repo agrement - IN", { agrementId });
+    log.i("AgrementsRepository - update", { agrement });
     try {
       if (agrementId == null) {
         throw new Error(
@@ -380,8 +386,9 @@ export const AgrementsRepository = {
         bilan_financier_comparatif = $39,
         bilan_financier_ressources_humaines = $40,
         bilan_financier_commentaire = $41,
-        date_fin_validite = $42
-      WHERE id = $43;
+        date_fin_validite = $42,
+        sejour_type_handicap = $43
+      WHERE id = $44;
     `;
 
       const agrementValues = [
@@ -427,6 +434,7 @@ export const AgrementsRepository = {
         agrement.bilanFinancierRessourcesHumaines,
         agrement.bilanFinancierCommentaire,
         dateFinValidite,
+        agrement.sejourTypeHandicap,
         agrementId,
       ];
 

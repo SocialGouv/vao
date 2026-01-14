@@ -16,6 +16,7 @@ export interface AgrementDto {
   immatriculation: string | null;
   sejourNbEnvisage: number | null;
   sejourCommentaire: string | null;
+  sejourTypeHandicap: string[] | null;
   vacanciersNbEnvisage: number | null;
   animationAutre: string | null;
   accompRespNb: number | null;
