@@ -134,12 +134,8 @@ export const AgrementsRepository = {
   }): Promise<number> {
     const client = await getPool().connect();
     try {
-      log.i("create repo agrement - IN");
       await client.query("BEGIN");
 
-      console.log("Données reçues pour insertion :", agrement);
-      log.i("Données reçues pour insertion :", agrement);
-      log.i("AgrementsRepository");
       const agrementInsertQuery = `
         INSERT INTO front.agrements (
           statut, organisme_id, updated_at, date_obtention_certificat, date_depot,
@@ -228,7 +224,7 @@ export const AgrementsRepository = {
       return agrementId;
     } catch (err) {
       await client.query("ROLLBACK");
-      console.error("Erreur lors de la création d’un agrément :", err);
+      console.error("Erreur lors de la création d'un agrément :", err);
       throw err;
     } finally {
       client.release();
@@ -252,8 +248,29 @@ export const AgrementsRepository = {
     ${
       withDetails
         ? `,
-      COALESCE(json_agg(DISTINCT act.*) FILTER (WHERE act.id IS NOT NULL), '[]') AS activite,
-      COALESCE(json_agg(DISTINCT ani.*) FILTER (WHERE ani.id IS NOT NULL), '[]') AS agrement_animation,
+      COALESCE(
+        (
+          SELECT json_agg(
+            jsonb_build_object(
+              'id', ani.id,
+              'activite_id', ani.activite_id,
+              'agrement_id', ani.agrement_id,
+              'created_at', ani.created_at,
+              'updated_at', ani.updated_at,
+              'activite', jsonb_build_object(
+                'id', act.id,
+                'code', act.code,
+                'libelle', act.libelle,
+                'activite_type', act.activite_type
+              )
+            )
+          )
+          FROM front.agrement_animation ani
+          LEFT JOIN front.activite act ON act.id = ani.activite_id
+          WHERE ani.agrement_id = agr.id
+        ),
+        '[]'
+      ) AS agrement_animation,
       COALESCE(json_agg(DISTINCT fil.*) FILTER (WHERE fil.id IS NOT NULL), '[]') AS agrement_file,
       COALESCE(json_agg(DISTINCT sej.*) FILTER (WHERE sej.id IS NOT NULL), '[]') AS agrement_sejour,
 
@@ -284,8 +301,6 @@ export const AgrementsRepository = {
   ${
     withDetails
       ? `
-      LEFT JOIN front.agrement_animation ani ON ani.agrement_id = agr.id
-      LEFT JOIN front.activite act ON act.id = ani.activite_id
       LEFT JOIN front.agrement_files fil ON fil.agrement_id = agr.id
       LEFT JOIN front.agrement_sejours sej ON sej.agrement_id = agr.id
       `
@@ -331,8 +346,7 @@ export const AgrementsRepository = {
   }): Promise<number> {
     const client = await getPool().connect();
     const agrementId: number = agrement.id!;
-    log.i("update repo agrement - IN", { agrementId });
-    log.i("AgrementsRepository - update", { agrement });
+
     try {
       if (agrementId == null) {
         throw new Error(
@@ -477,7 +491,7 @@ export const AgrementsRepository = {
       await client.query("COMMIT");
     } catch (err) {
       await client.query("ROLLBACK");
-      console.error("Erreur lors de la mise à jour de l’agrément :", err);
+      console.error("Erreur lors de la mise à jour de l'agrément :", err);
       throw err;
     } finally {
       client.release();
