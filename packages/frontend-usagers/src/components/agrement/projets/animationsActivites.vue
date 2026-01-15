@@ -38,62 +38,81 @@
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from "vue";
 import { TitleWithIcon } from "@vao/shared-ui";
 import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import * as yup from "yup";
 
+const agrementStore = useAgrementStore();
+
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
 });
 
-// Mapping des activités avec leurs codes et types
-const ACTIVITES_DB = {
-  Baignade: { id: 1, code: "BAIGNADE", type: "SPORT" },
-  Randonnée: { id: 2, code: "RANDONNEE", type: "SPORT" },
-  "Voile, char à voile, rafting": {
-    id: 3,
-    code: "VOILE_CHAR_RAFTING",
-    type: "SPORT",
-  },
-  "Tir à l'arc": { id: 4, code: "TIR_A_L_ARC", type: "SPORT" },
-  ULM: { id: 5, code: "ULM", type: "SPORT" },
-  Équitation: { id: 6, code: "EQUITATION", type: "SPORT" },
-  Ski: { id: 7, code: "SKI", type: "SPORT" },
-  "Sports nautiques": { id: 8, code: "SPORTS_NAUTIQUES", type: "SPORT" },
-  Pêche: { id: 9, code: "PECHE", type: "SPORT" },
-  Thalassothérapie: { id: 11, code: "THALASSO", type: "SPORT" },
-  Balnéothérapie: { id: 12, code: "BALNEO", type: "SPORT" },
-  "Visites touristiques": { id: 13, code: "VISITES", type: "CULTURE" },
-  "Spectacles, animations, musées": {
-    id: 14,
-    code: "SPECTACLES_ANIMATIONS_MUSEES",
-    type: "CULTURE",
-  },
-  Musique: { id: 15, code: "MUSIQUE", type: "CULTURE" },
-  "Expression théatrale": {
-    id: 16,
-    code: "EXPRESSION_THEATRALE",
-    type: "CULTURE",
-  },
-  "Arts plastiques": { id: 17, code: "ARTS_PLASTIQUES", type: "CULTURE" },
-  Danse: { id: 18, code: "DANSE", type: "CULTURE" },
-  Chant: { id: 19, code: "CHANT", type: "CULTURE" },
-  "Soirées dansantes": { id: 20, code: "SOIREES_DANSANTES", type: "CULTURE" },
-  "Ferme pédagogique": { id: 21, code: "FERME_PEDAGOGIQUE", type: "CULTURE" },
-};
+const loadError = ref(false);
 
-// Fonction pour initialiser les activités sélectionnées depuis les données du store
+onMounted(async () => {
+  try {
+    await agrementStore.getAllActivites();
+  } catch (error) {
+    console.error("Erreur lors de la récupération des activités:", error);
+    loadError.value = true;
+  }
+});
+
+const activitesMap = computed(() => {
+  const map = {};
+
+  const activites = agrementStore.activites || [];
+
+  if (activites.length === 0) {
+    console.warn("Aucune activité disponible dans le store");
+    return map;
+  }
+
+  activites.forEach((activite) => {
+    if (activite.libelle) {
+      map[activite.libelle] = {
+        id: activite.id,
+        code: activite.code,
+        type: activite.activiteType,
+      };
+    }
+  });
+
+  return map;
+});
+
+console.log("activitesMap:", activitesMap.value);
+
+const options = computed(() => {
+  const activites = agrementStore.activites || [];
+
+  if (activites.length === 0) {
+    return [];
+  }
+
+  return activites.map((a) =>
+    a.code.includes("AUTRES") ? `${a.libelle} (${a.activiteType})` : a.libelle,
+  );
+});
+console.log("Options pour le multiselect:", options.value);
+
 const initActivitesFromStore = () => {
   if (!props.initAgrement.agrementAnimation?.length) {
     return [];
   }
 
   return props.initAgrement.agrementAnimation
-    .map((animation) => animation.activite?.libelle)
-    .filter(Boolean); // Filtre les valeurs null/undefined
+    .map((animation) =>
+      animation.activite?.code.includes("AUTRES")
+        ? `${animation.activite.libelle} (${animation.activite.activiteType})`
+        : animation.activite?.libelle,
+    )
+    .filter(Boolean);
 };
 
 const requiredUnlessBrouillon = (schema) =>
@@ -130,29 +149,6 @@ const {
   meta: animationAutreMeta,
 } = useField("animationAutre");
 
-const options = [
-  "Arts plastiques",
-  "Baignade",
-  "Balnéothérapie",
-  "Chant",
-  "Danse",
-  "Équitation",
-  "Expression théatrale",
-  "Ferme pédagogique",
-  "Musique",
-  "Pêche",
-  "Randonnée",
-  "Ski",
-  "Soirées dansantes",
-  "Spectacles, animations, musées",
-  "Sports nautiques",
-  "Thalassothérapie",
-  "Tir à l'arc",
-  "ULM",
-  "Visites touristiques",
-  "Voile, char à voile, rafting",
-];
-
 const buttonLabel = computed(() => {
   return activitesSelectionnees.value.length === 0
     ? "Sélectionner une ou plusieurs options."
@@ -164,23 +160,30 @@ const {
   errorMessage: activitesSelectionneesErrorMessage,
 } = useField("activitesSelectionnees");
 
-// Fonction pour convertir les activités sélectionnées au format AgrementAnimationDto
 const convertToAgrementAnimation = (activitesLibelles, agrementId = null) => {
   const agrementAnimations = [];
+  console.log(
+    "Conversion des activités sélectionnées en AgrementAnimationDto:",
+    activitesLibelles,
+  );
 
-  // Convertir les activités sélectionnées
   activitesLibelles.forEach((libelle) => {
-    const activiteInfo = ACTIVITES_DB[libelle];
+    // Retirer le suffixe "(Sport)" ou "(Culture)" pour retrouver l'activité dans le mapping
+    const cleanedLibelle = libelle.replace(/ \(.*\)$/, "");
+    const activiteInfo = activitesMap.value[cleanedLibelle];
+
     if (activiteInfo) {
       agrementAnimations.push({
         activiteId: activiteInfo.id,
         agrementId: agrementId,
         activite: {
           code: activiteInfo.code,
-          libelle: libelle,
+          libelle: cleanedLibelle,
           activiteType: activiteInfo.type,
         },
       });
+    } else {
+      console.warn(`Activité non trouvée dans le mapping: "${libelle}"`);
     }
   });
 
@@ -198,7 +201,6 @@ const validateForm = async () => {
     })();
 
     if (result) {
-      // Convertir au format attendu par le parent
       const agrementAnimation = convertToAgrementAnimation(
         activitesSelectionnees.value,
         props.initAgrement.id || null,
