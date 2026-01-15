@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export function isBefore(
   date: string | number | Date,
   dateToCompare: string | number | Date,
@@ -19,10 +21,10 @@ export function addDays(date: Date, days: number) {
 export function addMonths(date: Date, months: number) {
   return addDays(date, 30 * months);
 }
+export function formatFR(date: Date) {
+  return dayjs(date).format("DD/MM/YYYY");
+}
 
-export function setFormatDateToFRString(date: Date) {
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
+export function formatFRDateTime(date: Date) {
+  return dayjs(date).format("DD/MM/YYYY HH:mm");
 }

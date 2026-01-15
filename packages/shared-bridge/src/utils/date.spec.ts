@@ -1,14 +1,23 @@
 import {
   addDays,
   addMonths,
+  formatFR,
+  formatFRDateTime,
   isAfter,
   isBefore,
-  setFormatDateToFRString,
 } from "./date";
 
 describe("setFormatDateToFRString", () => {
   it("should format date to FR string", () => {
-    expect(setFormatDateToFRString(new Date(2023, 0, 1))).toBe("01/01/2023");
+    expect(formatFR(new Date(2023, 0, 1))).toBe("01/01/2023");
+  });
+});
+
+describe("setFormatDateAndTimeToFRString", () => {
+  it("should format date and time to FR string", () => {
+    expect(formatFRDateTime(new Date(2023, 0, 1, 21, 5))).toBe(
+      "01/01/2023 21:05",
+    );
   });
 });
 
