@@ -89,7 +89,7 @@
                     Inactif depuis le
                     {{
                       historic?.updatedAt
-                        ? setFormatDateToFRString(new Date(historic.updatedAt))
+                        ? formatFR(new Date(historic.updatedAt))
                         : ""
                     }}
                   </div>
@@ -336,10 +336,6 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
-import {
-  setFormatDateAndTimeToFRString,
-  setFormatDateToFRString,
-} from "@vao/shared-bridge";
 import { apiTypes } from "@vao/shared-ui/src/models";
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
@@ -347,6 +343,8 @@ import {
   ERRORS_SIRET_MESSAGES,
   ERRORS_SIRET,
   formatSiret,
+  formatFR,
+  formatFRDateTime,
 } from "@vao/shared-bridge";
 
 const toaster = useToaster();
@@ -396,7 +394,7 @@ const usersWithSiret = computed(() =>
     user.nom,
     user.prenom,
     user.email,
-    setFormatDateAndTimeToFRString(new Date(user.dateCreation)),
+    formatFRDateTime(new Date(user.dateCreation)),
   ]),
 );
 

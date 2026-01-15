@@ -79,7 +79,7 @@
                     Inactif depuis le
                     {{
                       historic?.updatedAt
-                        ? setFormatDateToFRString(new Date(historic.updatedAt))
+                        ? formatFR(new Date(historic.updatedAt))
                         : ""
                     }}
                   </div>
@@ -240,7 +240,6 @@
 
 <script setup lang="ts">
 import { useField, useForm } from "vee-validate";
-import { setFormatDateToFRString } from "@vao/shared-bridge";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
 import { apiTypes } from "@vao/shared-ui/src/models";
@@ -249,6 +248,7 @@ import {
   ERRORS_SIRET_MESSAGES,
   ERRORS_SIRET,
   formatSiret,
+  formatFR,
 } from "@vao/shared-bridge";
 
 const toaster = useToaster();
