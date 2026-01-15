@@ -13,7 +13,7 @@ const log = logger(module.filename);
 
 export default async function get(
   req: UserRequest,
-  res: RouteResponse<TerritoireUsagersRoutes["Get"]>,
+  res: RouteResponse<TerritoireUsagersRoutes["GetByAgrementRegionUser"]>,
   next: NextFunction,
 ) {
   log.i("IN");
