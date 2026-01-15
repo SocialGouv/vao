@@ -178,10 +178,7 @@ const validateForm = async () => {
   const formValid = true;
 
   try {
-    // CORRECTION : handleSubmit retourne maintenant les valeurs actuelles
     const result = await handleSubmit((values) => {
-      // Log des valeurs ACTUELLES du formulaire
-      console.log("Valeurs du formulaire:", values);
       return values;
     })();
 
@@ -206,7 +203,6 @@ const validateForm = async () => {
             filesProjetsSejoursComplementaires.value,
         }),
       };
-      console.log("Données finales:", finalData);
       return finalData;
     }
   } catch (error) {

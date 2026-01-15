@@ -71,32 +71,12 @@ const tabTitles = computed(() => {
   return years;
 });
 
-// const selectedYear = computed(() => {
-//   return tabTitles.value[selectedTabIndex.value]?.title;
-// });
-
-// const sejoursForSelectedYear = computed(() => {
-//   if (!props.initAgrement?.agrementSejours) return [];
-//   return props.initAgrement.agrementSejours.filter((sejour) =>
-//     sejour.mois?.some((mois) => Math.floor(mois / 100) === selectedYear.value),
-//   );
-// });
-// console.log("initAgrement", props.initAgrement);
-// console.log(
-//   "Séjours pour l'année",
-//   selectedYear.value,
-//   ":",
-//   sejoursForSelectedYear.value,
-// );
-
 const bilanAnnuelByYear = computed(() => {
   const result = {};
   const data = props.initAgrement?.agrementBilanAnnuel || [];
   data.forEach((bilan) => {
     const year = bilan.annee;
-    console.log("Traitement du bilan pour l'année :", year, bilan);
     if (!result[year]) {
-      // Initialise avec une copie du premier bilan
       result[year] = {
         ...bilan,
         bilanHebergement: [...bilan.bilanHebergement],
@@ -108,7 +88,6 @@ const bilanAnnuelByYear = computed(() => {
         nbTotalJoursVacances: bilan.nbTotalJoursVacances,
       };
     } else {
-      // Fusionne les propriétés
       result[year].bilanHebergement.push(...bilan.bilanHebergement);
       result[year].trancheAge = Array.from(
         new Set([...result[year].trancheAge, ...bilan.trancheAge] || []),
@@ -122,23 +101,11 @@ const bilanAnnuelByYear = computed(() => {
       result[year].nbTotalJoursVacances += bilan.nbTotalJoursVacances;
     }
   });
-  console.log("Bilan annuel par année :", result);
   return result;
 });
 
 const selectTab = async (idx) => {
   asc.value = selectedTabIndex.value < idx;
-  console.log("selectedTabIndex:", selectedTabIndex.value);
-  // load data
-
-  // if (idx === 0 && !historique.value) {
-  //   executeHistorique();
-  // }
-
-  // if (idx === 3) {
-  //   await demandeSejourStore.readMessages(route.params.declarationId);
-  //   demandeSejourStore.fetchMessages(route.params.declarationId);
-  // }
 };
 
 async function validateAllYears() {
@@ -164,8 +131,6 @@ async function validateAllYears() {
     });
     return false;
   }
-
-  console.log("Données validées pour toutes les années :", allResults);
 
   return allResults;
 }

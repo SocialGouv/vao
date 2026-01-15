@@ -122,7 +122,6 @@ const toaster = useToaster();
 
 const localHebergements = ref([...props.bilanHebergement]);
 
-// Si les props changent vraiment (changement d'année), on met à jour
 const isFirstLoad = ref(true);
 
 watch(
@@ -136,7 +135,6 @@ watch(
   { immediate: true, deep: true },
 );
 
-// Configuration de la pagination
 const ITEMS_PER_PAGE = 10;
 const currentPage = ref(0);
 
@@ -146,12 +144,10 @@ function toggleForm() {
   showForm.value = !showForm.value;
 }
 
-// Calcul du nombre total de pages
 const totalPages = computed(() => {
   return Math.ceil(localHebergements.value.length / ITEMS_PER_PAGE);
 });
 
-// Génération des pages pour le composant DsfrPagination
 const pages = computed(() => {
   const pageArray = [];
   for (let i = 1; i <= totalPages.value; i++) {
@@ -164,7 +160,6 @@ const pages = computed(() => {
   return pageArray;
 });
 
-// Calcul des hébergements paginés
 const paginatedHebergements = computed(() => {
   const start = currentPage.value * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE;
@@ -180,7 +175,6 @@ function handleHebergementDelete(index) {
   const actualIndex = currentPage.value * ITEMS_PER_PAGE + index;
   localHebergements.value.splice(actualIndex, 1);
 
-  // Ajuster la page courante si nécessaire
   if (currentPage.value >= totalPages.value && currentPage.value > 0) {
     currentPage.value = totalPages.value - 1;
   }

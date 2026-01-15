@@ -77,7 +77,6 @@ const initialValues = {
     props.initAgrement.bilanAucunChangementEvolution || false,
 };
 
-// const { handleSubmit, meta } = useForm({
 const { handleSubmit } = useForm({
   validationSchema,
   initialValues,
@@ -111,6 +110,5 @@ const validateForm = async () => {
 
 defineExpose({
   validateForm,
-  // isValid: () => meta.value.valid, // Optionnel : pour vérifier la validité
 });
 </script>

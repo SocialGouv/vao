@@ -86,8 +86,6 @@ const activitesMap = computed(() => {
   return map;
 });
 
-console.log("activitesMap:", activitesMap.value);
-
 const options = computed(() => {
   const activites = agrementStore.activites || [];
 
@@ -99,7 +97,6 @@ const options = computed(() => {
     a.code.includes("AUTRES") ? `${a.libelle} (${a.activiteType})` : a.libelle,
   );
 });
-console.log("Options pour le multiselect:", options.value);
 
 const initActivitesFromStore = () => {
   if (!props.initAgrement.agrementAnimation?.length) {
@@ -162,13 +159,7 @@ const {
 
 const convertToAgrementAnimation = (activitesLibelles, agrementId = null) => {
   const agrementAnimations = [];
-  console.log(
-    "Conversion des activités sélectionnées en AgrementAnimationDto:",
-    activitesLibelles,
-  );
-
   activitesLibelles.forEach((libelle) => {
-    // Retirer le suffixe "(Sport)" ou "(Culture)" pour retrouver l'activité dans le mapping
     const cleanedLibelle = libelle.replace(/ \(.*\)$/, "");
     const activiteInfo = activitesMap.value[cleanedLibelle];
 
@@ -193,10 +184,6 @@ const convertToAgrementAnimation = (activitesLibelles, agrementId = null) => {
 const validateForm = async () => {
   try {
     const result = await handleSubmit((values) => {
-      console.log("=== VALIDATION DU FORMULAIRE ===");
-      console.log("Champ 'Autres':", values.animationAutre || "(vide)");
-      console.log("Activités sélectionnées:", activitesSelectionnees.value);
-
       return values;
     })();
 
@@ -211,17 +198,10 @@ const validateForm = async () => {
         animationAutre: result.animationAutre || null,
       };
 
-      console.log("Données finales (format AgrementDto):", finalData);
       return finalData;
     }
   } catch (error) {
-    console.error("=== ERREUR DE VALIDATION ===");
-    console.error("Message d'erreur:", error.message);
     console.error("Détails:", error);
-
-    console.log("Valeurs actuelles:");
-    console.log("- Champ 'Autres':", animationAutre.value || "(vide)");
-    console.log("- Activités sélectionnées:", activitesSelectionnees.value);
   }
 };
 

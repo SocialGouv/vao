@@ -96,9 +96,6 @@
 <script setup>
 const route = useRoute();
 
-// TODO  - Pour la suite lorsque l'on aura l'ID dans l'URL
-//const agrementId = computed(() => route.params?.agrementId);
-
 const toaster = useToaster();
 
 const agrementStore = useAgrementStore();
@@ -111,7 +108,6 @@ const canModify = true;
 
 async function updateOrCreate(formValues) {
   const updatedData = { ...formValues };
-  console.log("Données à enregistrer updateOrCreate :", updatedData);
   try {
     updatedData.agrementFiles = [];
     const fileMappings = [
@@ -269,14 +265,10 @@ async function updateOrCreate(formValues) {
     };
     agrementStore.agrementCourant = newAgrement;
 
-    console.log("New agrement to save:", newAgrement);
-
     await agrementStore.postAgrement({
       agrement: newAgrement,
       organismeId: organismeStore.organismeCourant?.organismeId,
     });
-
-    console.log("Agrement enregistré avec succès :", newAgrement);
 
     toaster.success("Données enregistrées avec succès !");
   } catch (error) {
@@ -290,7 +282,6 @@ async function updateOrCreate(formValues) {
 
 async function createDocuments({ documents, category }) {
   const result = [];
-  console.log("Création documents :", documents);
 
   for (const document of documents) {
     const docInfo = await createDocument({ document, category });
@@ -302,7 +293,6 @@ async function createDocuments({ documents, category }) {
 
 async function createDocument({ document, category }) {
   if (document && Object.keys(document?.uuid ?? {}).length === 0) {
-    console.log("Création nouveau document :", document);
     try {
       const uuid = await documentStore.postDocument({
         document,
@@ -406,8 +396,6 @@ function nextHash() {
 }
 
 const sommaireOptions = computed(() => agrementMenu.menus.map((m) => m.id));
-
-//const titleEnd = " | Vacances Adaptées Organisées";
 
 const titles = computed(() => agrementMenu.titles());
 </script>

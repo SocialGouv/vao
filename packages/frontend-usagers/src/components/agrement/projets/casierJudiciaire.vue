@@ -76,7 +76,6 @@ const {
 const validateForm = async () => {
   try {
     const result = await handleSubmit((values) => {
-      console.log("Valeurs du formulaire:", values);
       return values;
     })();
 

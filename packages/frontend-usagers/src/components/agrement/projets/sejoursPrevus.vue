@@ -120,14 +120,12 @@ const initialValues = {
     : "",
 };
 
-// CORRECTION PRINCIPALE : Récupérer `values` de useForm
 const { handleSubmit } = useForm({
   validationSchema,
   initialValues,
   validateOnMount: false,
 });
 
-// Définir les champs APRÈS useForm
 const {
   value: sejourNbEnvisage,
   errorMessage: sejourNbEnvisageErrorMessage,
@@ -146,17 +144,12 @@ const validateForm = async () => {
   let formValid = true;
 
   try {
-    // Appeler la méthode validateForm du composant enfant
     const sejoursData = await listeSejoursRef.value?.validateForm();
 
-    // CORRECTION : handleSubmit retourne maintenant les valeurs actuelles
     const result = await handleSubmit((values) => {
-      // Log des valeurs ACTUELLES du formulaire
-      console.log("Valeurs du formulaire sejoursPrevus:", values);
       return values;
     })();
 
-    // Validation du type de déficiences
     const typeDeficiencesValidation =
       await typeDeficiencesRef.value?.validateTypeDeficiences();
 
@@ -180,7 +173,6 @@ const validateForm = async () => {
           filesProjetsSejoursPrevus: filesProjetsSejoursPrevus.value,
         }),
       };
-      console.log("Données finales:", finalData);
       return finalData;
     }
   } catch (error) {

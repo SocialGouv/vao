@@ -55,7 +55,6 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
 });
 
-// todo: gerer file
 const filesProjetsSejoursSuiviMed = ref(
   props.initAgrement?.agrementFiles.filter(
     (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSSUIVIMED,
@@ -109,9 +108,7 @@ const validateForm = async () => {
   const formValid = true;
 
   try {
-    // CORRECTION : handleSubmit retourne maintenant les valeurs actuelles
     const result = await handleSubmit((values) => {
-      // Log des valeurs ACTUELLES du formulaire
       return values;
     })();
 
@@ -128,7 +125,6 @@ const validateForm = async () => {
           filesProjetsSejoursSuiviMed: filesProjetsSejoursSuiviMed.value,
         }),
       };
-      console.log("Données finales:", finalData);
       return finalData;
     }
   } catch (error) {

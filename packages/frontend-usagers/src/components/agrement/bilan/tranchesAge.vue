@@ -29,7 +29,6 @@ const props = defineProps({
   statut: { type: String, required: true },
 });
 
-console.log("Tranche d'âge initiale :", props.trancheAge);
 const ageRangeOptions = [
   { label: "de 18 à 39 ans", value: "18_39" },
   { label: "de 40 à 59 ans", value: "40_59" },

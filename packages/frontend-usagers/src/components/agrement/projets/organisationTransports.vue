@@ -103,18 +103,9 @@ const validateForm = async () => {
   const formValid = true;
 
   try {
-    console.log(
-      "Début de la validation du formulaire Organisation des transports",
-    );
-
-    // CORRECTION : handleSubmit retourne maintenant les valeurs actuelles
     const result = await handleSubmit((values) => {
-      // Log des valeurs ACTUELLES du formulaire
-      console.log("Valeurs du formulaire transports:", values);
       return values;
     })();
-
-    // Validation du type de déficiences
 
     if (!formValid) {
       console.error("Le formulaire n'est pas valide.");
@@ -130,7 +121,6 @@ const validateForm = async () => {
             filesProjetsSejoursOrgaTransports.value,
         }),
       };
-      console.log("Données finales transports:", finalData);
       return finalData;
     }
   } catch (error) {

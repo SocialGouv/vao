@@ -82,11 +82,6 @@ const financierRef = ref(null);
 
 const validationErrors = ref([]);
 
-/**
- * Valide et agrège les données de tous les formulaires enfants
- * @param {Array} formulaires - Liste des formulaires à valider
- * @returns {Object} { donnees, erreurs, allFormsAreValid }
- */
 const validateAllForms = async (formulaires) => {
   const formsErrors = [];
   const formsData = {};
@@ -94,23 +89,17 @@ const validateAllForms = async (formulaires) => {
   const resultats = await Promise.allSettled(
     formulaires.map(async (form) => {
       const data = await form.ref.value.validateForm();
-      console.log(`Données validées pour ${form.nom}:`, data);
       return { cle: form.cle, nom: form.nom, data };
     }),
   );
 
-  console.log("Résultats de la validation :", resultats);
-
   resultats.forEach((result, index) => {
     if (result.status === "fulfilled" && result.value.data) {
-      // Validation réussie, on agrège les données
       formsData[result.value.cle] = result.value.data;
     } else {
-      // Validation échouée ou rejetée
       const nomFormulaire = formulaires[index].nom;
       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
 
-      // Log pour debug
       if (result.status === "rejected") {
         console.error(`Erreur dans ${nomFormulaire}:`, result.reason);
       }
@@ -125,10 +114,8 @@ const validateAllForms = async (formulaires) => {
 };
 
 const handleSuivant = async () => {
-  // Réinitialiser les erreurs
   validationErrors.value = [];
 
-  // Configuration des formulaires à valider
   const forms = [
     {
       ref: sejoursPrevusRef,
@@ -172,12 +159,10 @@ const handleSuivant = async () => {
     },
   ];
 
-  // Valider et agréger tous les formulaires
   const { formsData, formsErrors, allFormsAreValid } =
     await validateAllForms(forms);
 
   validationErrors.value = formsErrors;
-  console.log("Toutes les données etape 4 :", formsData);
 
   if (allFormsAreValid) {
     const transformedData = {
@@ -193,20 +178,14 @@ const handleSuivant = async () => {
 
     delete transformedData.statut;
 
-    // Émettre les données agrégées vers le composant grand-parent
-    // emit("next", formsData);
-
-    // Ou si vous voulez aussi mettre à jour en temps réel :
-    console.log("Données transformées à émettre etape 4 :", transformedData);
     emit("update", transformedData);
-    // emit("next");
+    emit("next");
   } else {
     toaster.error({
       titleTag: "h2",
       description: "Tous les formulaires doivent être renseignés et valides.",
     });
     console.warn("Erreurs de validation :", validationErrors.value);
-    // gestion erreurs
   }
 };
 </script>

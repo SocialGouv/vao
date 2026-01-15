@@ -24,7 +24,6 @@
       @click="toggleForm"
     />
     <div v-if="showForm" class="fr-mt-2v">
-      <!-- Formulaire d'ajout de séjour -->
       <div class="fr-mt-6v">
         <DsfrInput
           name="nomSejour"
@@ -169,7 +168,7 @@ const onSubmitAddSejour = handleSubmit(
     showForm.value = false;
   },
   (errors) => {
-    console.log("Erreurs de validation :", errors);
+    console.error("Erreurs de validation :", errors);
   },
 );
 

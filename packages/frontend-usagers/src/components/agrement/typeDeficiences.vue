@@ -54,7 +54,6 @@ const initialValues = {
   typeDeficiences: props.typeDeficiences || [],
 };
 
-console.log("Type de déficiences initial :", props.typeDeficiences);
 const { validate } = useForm({
   validationSchema,
   initialValues,

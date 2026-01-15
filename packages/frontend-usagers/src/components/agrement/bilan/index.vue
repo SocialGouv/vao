@@ -52,11 +52,6 @@ const sejoursRef = ref(null);
 const qualitatifRef = ref(null);
 const validationErrors = ref([]);
 
-/**
- * Valide et agrège les données de tous les formulaires enfants
- * @param {Array} formulaires - Liste des formulaires à valider
- * @returns {Object} { donnees, erreurs, allFormsAreValid }
- */
 const validateAllForms = async (formulaires) => {
   const formsErrors = [];
   const formsData = {};
@@ -64,24 +59,17 @@ const validateAllForms = async (formulaires) => {
   const resultats = await Promise.allSettled(
     formulaires.map(async (form) => {
       const data = await form.ref.value.validateForm();
-      console.log(`Données validées pour ${form.nom}:`, data);
       return { cle: form.cle, nom: form.nom, data };
     }),
   );
 
-  console.log("Résultats de la validation :", resultats);
-
   resultats.forEach((result, index) => {
     if (result.status === "fulfilled" && result.value.data) {
-      // Validation réussie, on agrège les données
       formsData[result.value.cle] = result.value.data;
     } else {
-      // Validation échouée ou rejetée
       const nomFormulaire = formulaires[index].nom;
       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
-      console.log("formsErrors:", formsErrors);
 
-      // Log pour debug
       if (result.status === "rejected") {
         console.error(`Erreur dans ${nomFormulaire}:`, result.reason);
       }
@@ -96,10 +84,8 @@ const validateAllForms = async (formulaires) => {
 };
 
 const handleSuivant = async () => {
-  // Réinitialiser les erreurs
   validationErrors.value = [];
 
-  // Configuration des formulaires à valider
   const forms = [
     {
       ref: changementsRef,
@@ -123,25 +109,21 @@ const handleSuivant = async () => {
     },
   ];
 
-  // Valider et agréger tous les formulaires
+  // Valide tous les forms
   const { formsData, formsErrors, allFormsAreValid } =
     await validateAllForms(forms);
 
   validationErrors.value = formsErrors;
 
   if (allFormsAreValid) {
-    console.log("Toutes les données validées :", formsData);
-
     const transformedData = {
-      ...formsData.changements, // Décomposer les propriétés de "changements"
-      ...formsData.financier, // Décomposer les propriétés de "financier"
-      agrementBilanAnnuel: formsData.sejours, // Inclure directement le tableau "sejours"
-      ...formsData.qualitatif, // Décomposer les propriétés de "qualitatif"
+      ...formsData.changements,
+      ...formsData.financier,
+      agrementBilanAnnuel: formsData.sejours,
+      ...formsData.qualitatif,
     };
 
     delete transformedData.statut;
-
-    console.log("Données transformées à émettre :", transformedData);
 
     emit("update", transformedData);
     emit("next");
@@ -151,7 +133,6 @@ const handleSuivant = async () => {
       description: "Tous les formulaires doivent être renseignés et valides.",
     });
     console.warn("Erreurs de validation :", validationErrors.value);
-    // gestion erreurs
   }
 };
 </script>

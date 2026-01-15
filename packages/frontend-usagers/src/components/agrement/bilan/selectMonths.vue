@@ -60,7 +60,6 @@ const buttonLabel = computed(() => {
   if (selectedLabels.value.length === 0) {
     return "Sélection";
   }
-  // Convertit les labels en indices (1-based)
   const selectedIndices = selectedLabels.value
     .map((label) => months.indexOf(label) + 1)
     .filter((num) => num > 0)

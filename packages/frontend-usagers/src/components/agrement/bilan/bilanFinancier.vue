@@ -135,7 +135,6 @@ const initialValues = {
   bilanFinancierCommentaire: props.initAgrement.bilanFinancierCommentaire || "",
 };
 
-// const { handleSubmit, meta } = useForm({
 const { handleSubmit } = useForm({
   validationSchema,
   initialValues,
@@ -185,6 +184,5 @@ const validateForm = async () => {
 
 defineExpose({
   validateForm,
-  // isValid: () => meta.value.valid, // Optionnel : pour vérifier la validité
 });
 </script>

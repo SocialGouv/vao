@@ -89,7 +89,6 @@ const props = defineProps({
   },
 });
 
-// Détection du mode d'affichage
 const showNbJours = computed(() =>
   Object.prototype.hasOwnProperty.call(props.hebergement, "nbJours"),
 );
@@ -129,7 +128,6 @@ const requiredUnlessBrouillon = (schema) =>
     otherwise: (schema) => schema.nullable(),
   });
 
-// Schéma de validation dynamique
 const validationSchema = computed(() => {
   const schema = {
     nomHebergement: requiredUnlessBrouillon(yup.string()),
@@ -152,7 +150,6 @@ const validationSchema = computed(() => {
   return yup.object(schema);
 });
 
-// Valeurs initiales dynamiques
 const initialValues = computed(() => {
   const values = {
     nomHebergement: props.hebergement.nomHebergement || "",
@@ -191,7 +188,6 @@ const {
   meta: adresseMeta,
 } = useField("adresse");
 
-// Champs conditionnels pour nbJours
 const {
   value: nbJours,
   errorMessage: nbJoursErrorMessage,
@@ -206,7 +202,6 @@ const {
       meta: { valid: true },
     };
 
-// Champs conditionnels pour nbVacanciers
 const {
   value: nbVacanciers,
   errorMessage: nbVacanciersErrorMessage,
@@ -257,7 +252,7 @@ watch(adresse, (newValue) => {
 
 const validateForm = async () => {
   const result = await handleSubmit((values) => values)();
-  console.log("result", result);
+  return result;
 };
 
 defineExpose({

@@ -96,8 +96,6 @@ const hebergementsRef = ref(null);
 
 const agrementId = props.agrementId;
 
-console.log("Agrement ID dans sejourDetails:", agrementId);
-
 const requiredUnlessBrouillon = (schema) =>
   schema.when("statut", {
     is: (val) => val !== AGREMENT_STATUT.BROUILLON,
@@ -179,7 +177,6 @@ const validateForm = async () => {
   const hebergements = hebergementsRef.value?.getHebergements() || [];
   const hasSejoursPourAnnee = hebergements.length > 0;
 
-  // Validation conditionnelle des tranches d'âge
   let trancheAgeValue = [];
   if (hasSejoursPourAnnee) {
     const tranchesAgeValidation =
@@ -192,11 +189,9 @@ const validateForm = async () => {
       trancheAgeValue = tranchesAgeValidation.value;
     }
   } else {
-    // Si pas de séjours, on récupère la valeur sans valider
     trancheAgeValue = tranchesAgeRef.value?.getCurrentValue() || [];
   }
 
-  // Validation conditionnelle du type de déficiences
   let typeDeficiencesValue = [];
   if (hasSejoursPourAnnee) {
     const typeDeficiencesValidation =
@@ -209,11 +204,9 @@ const validateForm = async () => {
       typeDeficiencesValue = typeDeficiencesValidation.value;
     }
   } else {
-    // Si pas de séjours, on récupère la valeur sans valider
     typeDeficiencesValue = typeDeficiencesRef.value?.getCurrentValue() || [];
   }
 
-  // Validation des hébergements
   if (hasSejoursPourAnnee) {
     const hebergementsValid = hebergementsRef.value?.validateHebergements();
     if (!hebergementsValid) {
