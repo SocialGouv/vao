@@ -13,13 +13,13 @@ export const useTerritoireStore = defineStore("territoire", {
   actions: {
     async fetchFicheByAgrementRegionUser() {
       try {
-        const { ficheTerritoire } = await $fetchBackend(
+        const { territoire } = await $fetchBackend(
           "/territoire/get-by-agrement-region-user",
           {
             credentials: "include",
           },
         );
-        this.territoire = ficheTerritoire;
+        this.territoire = territoire;
       } catch {
         this.territoire = null;
       }

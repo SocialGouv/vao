@@ -29,7 +29,7 @@ export default async function get(
     const ficheTerritoire: TerritoireDto | null =
       await territoireService.readOne(result.id);
     log.d(ficheTerritoire);
-    return res.status(200).json({ ficheTerritoire });
+    return res.status(200).json({ territoire: ficheTerritoire });
   } catch (error) {
     log.w("DONE with error");
     next(error);
