@@ -440,6 +440,19 @@ async function register() {
     return navigateTo("/");
   } catch (error) {
     const statusCode = error.response?.status || error.statusCode || 0;
+    const body = error.data;
+    const codeError = body?.name;
+    log.w("Erreur lors de l'enregistrement :", error);
+
+    if (codeError === "EmailAlreadyExistsError") {
+      toaster.error({
+        titleTag: "h2",
+        description:
+          "Un compte existe déjà avec cette adresse mail. Veuillez vous connecter.",
+      });
+      return navigateTo("/");
+    }
+
     if (statusCode === 500) {
       toaster.error({
         titleTag: "h2",
@@ -447,8 +460,7 @@ async function register() {
           "Une erreur technique est survenue, veuillez réessayer plus tard",
       });
     }
-    const body = error.data;
-    const codeError = body.name;
+
     let description = "";
     switch (codeError) {
       case "UserAlreadyExists":
