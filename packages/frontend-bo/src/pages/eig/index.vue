@@ -8,92 +8,80 @@
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
-                <DsfrInputGroup
-                  v-model="searchState.idFonctionnelle"
-                  type="text"
-                  name="Déclaration"
-                  label="Déclaration"
-                  placeholder="Déclaration"
-                  :label-visible="true"
-                />
-              </div>
+              <DsfrInputGroup
+                v-model="searchState.idFonctionnelle"
+                type="text"
+                name="Déclaration"
+                label="Déclaration"
+                placeholder="Déclaration"
+                :label-visible="true"
+              />
             </div>
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
-                <DsfrInputGroup
-                  v-model="searchState.organisme"
-                  type="text"
-                  name="organisme"
-                  label="Organisme"
-                  placeholder="Organisme"
-                  :label-visible="true"
-                />
-              </div>
+              <DsfrInputGroup
+                v-model="searchState.organisme"
+                type="text"
+                name="organisme"
+                label="Organisme"
+                placeholder="Organisme"
+                :label-visible="true"
+              />
             </div>
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
-                <DsfrInputGroup
-                  v-model="searchState.libelle"
-                  type="text"
-                  name="Séjour"
-                  label="Séjour"
-                  placeholder="Séjour"
-                  :label-visible="true"
-                />
-              </div>
+              <DsfrInputGroup
+                v-model="searchState.libelle"
+                type="text"
+                name="Séjour"
+                label="Séjour"
+                placeholder="Séjour"
+                :label-visible="true"
+              />
             </div>
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
-                <DsfrSelect
-                  :model-value="searchState.departement"
-                  label="Territoire"
-                  name="Territoire"
-                  mode="tags"
-                  :searchable="true"
-                  :close-on-select="false"
-                  :options="departement"
-                  @update:model-value="onSelect($event, 'departement')"
-                />
-              </div>
+              <DsfrSelect
+                :model-value="searchState.departement"
+                label="Territoire"
+                name="Territoire"
+                mode="tags"
+                :searchable="true"
+                :close-on-select="false"
+                :options="departement"
+                @update:model-value="onSelect($event, 'departement')"
+              />
             </div>
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
-                <DsfrSelect
-                  :model-value="searchState.type"
-                  label="Type d'événement"
-                  name="type"
-                  mode="tags"
-                  :searchable="true"
-                  :close-on-select="false"
-                  :options="typesOption"
-                  @update:model-value="onSelect($event, 'type')"
-                />
-              </div>
+              <DsfrSelect
+                :model-value="searchState.type"
+                label="Type d'événement"
+                name="type"
+                mode="tags"
+                :searchable="true"
+                :close-on-select="false"
+                :options="typesOption"
+                @update:model-value="onSelect($event, 'type')"
+              />
             </div>
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <div class="fr-input-group">
-                <DsfrSelect
-                  :model-value="searchState.statut"
-                  label="Statut"
-                  name="status"
-                  mode="tags"
-                  :searchable="true"
-                  :close-on-select="false"
-                  :options="status"
-                  @update:model-value="onSelect($event, 'statut')"
-                />
-              </div>
+              <DsfrSelect
+                :model-value="searchState.statut"
+                label="Statut"
+                name="status"
+                mode="tags"
+                :searchable="true"
+                :close-on-select="false"
+                :options="status"
+                @update:model-value="onSelect($event, 'statut')"
+              />
             </div>
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"

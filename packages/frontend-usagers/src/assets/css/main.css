@@ -47,6 +47,27 @@
   box-shadow: inset 0 0 0 1px #18753c;
 }
 
+
+
+/* ============================= */
+/* Champs inline et filtres table */
+/* ============================= */
+
+
+/* Harmonisation de tous les champs inline DSFR */
+.fr-fieldset__element--inline {
+  display: flex;
+  align-items: baseline; /* aligne les inputs, selects et datepickers */
+  gap: 1rem; /* espace entre champs */
+}
+
+/* Spécifique aux barres de filtres du tableau */
+.default-table-filters-bar .filters-bar__element {
+  display: flex;
+  align-items: baseline; /* alignement vertical uniforme */
+  gap: 1rem;
+}
+
 /* search-adredress overrides  */
 .fr-multiselect-adress .multiselect-clear {
   display: none;

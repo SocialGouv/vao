@@ -14,7 +14,7 @@
     "clean": "nuxt cleanup"
   },
   "dependencies": {
-    "@gouvfr/dsfr": "^1.13.0",
+    "@gouvfr/dsfr": "^1.14.0",
     "@gouvminint/vue-dsfr": "^8.4.0",
     "@iconify/vue": "^4.3.0",
     "@pinia/nuxt": "~0.5.4",

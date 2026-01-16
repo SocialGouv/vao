@@ -33,12 +33,34 @@
   box-shadow: inset 0 0 0 1px #18753c;
 }
 
- /* //cette propriété surcharge le DSFR et permet d'harmoniser la hauteur des filtres dans la barre de filtres du composant DefaultTableFilters */
-@media screen and (min-width: 768px) {
-  .default-table-filters-bar .filters-bar__input-group > input,
-  .default-table-filters-bar .filters-bar__multiselect-button,
-  .default-table-filters-bar .filters-bar__select {
-    height: 4rem;
-    min-height: 4rem;
-  }
- }
+/* ============================= */
+/* Champs inline et filtres table */
+/* ============================= */
+
+/* Harmonisation de tous les champs inline DSFR */
+.fr-fieldset__element--inline {
+  display: flex;
+  align-items: baseline; /* aligne les inputs, selects et datepickers */
+  gap: 1rem; /* espace entre champs */
+}
+
+/* Spécifique aux barres de filtres du tableau */
+.default-table-filters-bar .filters-bar__element {
+  display: flex;
+  align-items: baseline; /* alignement vertical uniforme */
+  gap: 1rem;
+}
+
+/* Harmonisation des champs input, select et multiselect dans les filtres */
+.default-table-filters-bar .filters-bar__input-group > input,
+.default-table-filters-bar .filters-bar__select,
+.default-table-filters-bar .filters-bar__multiselect-button {
+  /* Laisser la hauteur naturelle DSFR, padding et line-height gèrent l'alignement */
+  height: auto;
+  min-height: 2.5rem; /* valeur DSFR minimale */
+  box-sizing: border-box;
+}
+
+.fr-select .fr-input {
+  min-height: 2.5rem; /* DSFR default input */
+}
