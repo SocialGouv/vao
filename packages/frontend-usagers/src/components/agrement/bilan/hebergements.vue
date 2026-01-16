@@ -271,7 +271,7 @@ const onSubmitAddSejour = handleSubmit(
     });
   },
   (errors) => {
-    console.log("Erreurs de validation :", errors);
+    console.warn("Erreurs de validation :", errors);
   },
 );
 

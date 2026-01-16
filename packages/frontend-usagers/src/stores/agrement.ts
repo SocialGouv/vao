@@ -8,7 +8,7 @@ export const useAgrementStore = defineStore("agrement", {
   state: () => ({
     agrement: {} as AgrementDto,
     agrementCourant: {} as AgrementDto,
-    ctivites: [] as ActiviteDto[],
+    activites: [] as ActiviteDto[],
   }),
   actions: {
     async getByOrganismeId(organismeId: number) {
