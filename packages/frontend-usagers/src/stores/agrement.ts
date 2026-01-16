@@ -51,11 +51,9 @@ export const useAgrementStore = defineStore("agrement", {
     },
     async getAllActivites() {
       log.i("getAllActivites - IN");
-      console.log("getAllActivites - IN");
       try {
         const activites = await AgrementService.getAllActivies();
         this.activites = activites;
-        console.log("Activités récupérées:", activites);
         log.i("getAllActivites - DONE");
       } catch (err) {
         log.w("getAllActivites - DONE with error", err);
