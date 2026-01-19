@@ -8,6 +8,7 @@
     <AgrementBilanSejours
       ref="sejoursRef"
       :init-agrement="props.initAgrement ?? {}"
+      :cdn-url="props.cdnUrl"
     />
     <AgrementBilanQualitatif
       ref="qualitatifRef"
@@ -33,13 +34,22 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
+import type { Ref } from "vue";
+
+interface FormulaireItem {
+  ref: Ref<any>;
+  nom: string;
+  cle: string;
+}
+
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   showButtons: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
   message: { type: String, default: null },
+  isDownloading: { type: Boolean, default: false },
 });
 
 const toaster = useToaster();
@@ -50,11 +60,11 @@ const changementsRef = ref(null);
 const financierRef = ref(null);
 const sejoursRef = ref(null);
 const qualitatifRef = ref(null);
-const validationErrors = ref([]);
+const validationErrors = ref<string[]>([]);
 
-const validateAllForms = async (formulaires) => {
-  const formsErrors = [];
-  const formsData = {};
+const validateAllForms = async (formulaires: FormulaireItem[]) => {
+  const formsErrors: string[] = [];
+  const formsData: Record<string, any> = {};
 
   const resultats = await Promise.allSettled(
     formulaires.map(async (form) => {

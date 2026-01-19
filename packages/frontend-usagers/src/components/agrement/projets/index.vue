@@ -59,13 +59,20 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   showButtons: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
   message: { type: String, default: null },
+  isDownloading: { type: Boolean, default: false },
 });
+
+interface FormulaireItem {
+  ref: Ref<any>;
+  nom: string;
+  cle: string;
+}
 
 const toaster = useToaster();
 
@@ -80,11 +87,11 @@ const suiviMedicalRef = ref(null);
 const protocoleRef = ref(null);
 const financierRef = ref(null);
 
-const validationErrors = ref([]);
+const validationErrors = ref<string[]>([]);
 
-const validateAllForms = async (formulaires) => {
-  const formsErrors = [];
-  const formsData = {};
+const validateAllForms = async (formulaires: FormulaireItem[]) => {
+  const formsErrors: string[] = [];
+  const formsData: Record<string, any> = {};
 
   const resultats = await Promise.allSettled(
     formulaires.map(async (form) => {
