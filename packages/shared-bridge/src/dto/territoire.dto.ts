@@ -5,5 +5,5 @@ export interface TerritoireDto {
   code: string;
   parentCode: string | null;
   label: string;
-  ficheTerritoire: FicheTerritoireDto;
+  ficheTerritoire: FicheTerritoireDto | null;
 }

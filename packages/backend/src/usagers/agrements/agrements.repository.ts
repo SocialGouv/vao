@@ -152,7 +152,8 @@ export const AgrementsRepository = {
           bilan_qual_elements_marquants, bilan_financier_comptabilite,
           bilan_financier_comparatif, bilan_financier_ressources_humaines,
           bilan_financier_commentaire,
-          date_fin_validite, sejour_type_handicap
+          date_fin_validite, sejour_type_handicap, 
+          region_obtention
         )
         VALUES (
           $1,$2,$3,$4,$5,$6,$7,$8,
@@ -209,6 +210,7 @@ export const AgrementsRepository = {
         agrement.bilanFinancierCommentaire,
         dateFinValidite,
         agrement.sejourTypeHandicap,
+        agrement.regionObtention,
       ];
 
       const result = await client.query(agrementInsertQuery, agrementValues);
@@ -411,8 +413,9 @@ export const AgrementsRepository = {
         bilan_financier_ressources_humaines = $40,
         bilan_financier_commentaire = $41,
         date_fin_validite = $42,
-        sejour_type_handicap = $43
-      WHERE id = $44;
+        sejour_type_handicap = $43,
+        region_obtention = $44
+      WHERE id = $45;
     `;
 
       const agrementValues = [
@@ -459,6 +462,7 @@ export const AgrementsRepository = {
         agrement.bilanFinancierCommentaire,
         dateFinValidite,
         agrement.sejourTypeHandicap,
+        agrement.regionObtention,
         agrementId,
       ];
 
