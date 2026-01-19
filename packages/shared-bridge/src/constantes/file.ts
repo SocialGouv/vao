@@ -27,3 +27,31 @@ export enum FILE_CATEGORY {
   PROJSSEJOURSPROTCOLERAPATR = "AGR_PROJSSEJOURSPROTCOLERAPATR",
   PROJSEJOURSBUDGETPERSONNES = "AGR_PROJSEJOURSBUDGETPERSONNES",
 }
+
+export type FileKey =
+  | "filesMotivation"
+  | "fileProcesVerbal"
+  | "fileImmatriculation"
+  | "fileAttestationsRespCivile"
+  | "fileAttestationsRapatriement"
+  | "filesChangeEvol"
+  | "filesBilanQualit"
+  | "filesBilanFinancier"
+  | "filesAgrementSejour"
+  | "filesAccompResp"
+  | "filesSuiviMed"
+  | "filesBilanQualitPerception"
+  | "filesBilanQualitPerspectives"
+  | "filesBilanQualitElementsMarquants"
+  | "filesBilanQualitComplementaires"
+  | "filesBilanFinancierQuatreAnnees"
+  | "filesProjetsSejoursPrevus"
+  | "filesProjetsSejoursCompetencesExperience"
+  | "filesProjetsSejoursMesures"
+  | "filesProjetsSejoursComplementaires"
+  | "fileProjetsSejoursCasier"
+  | "filesProjetsSejoursOrgaTransports"
+  | "filesProjetsSejoursSuiviMed"
+  | "filesProjetsSejoursProtocoleReorientation"
+  | "filesProjetsSejoursProtocoleRapatriement"
+  | "filesProjSejoursBudgetPersonnes";

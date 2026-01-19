@@ -93,7 +93,7 @@
     </div>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 const route = useRoute();
 
 const toaster = useToaster();
@@ -102,15 +102,27 @@ const agrementStore = useAgrementStore();
 const organismeStore = useOrganismeStore();
 const documentStore = useDocumentStore();
 const config = useRuntimeConfig();
-import { FILE_CATEGORY } from "@vao/shared-bridge";
+
+const readOnly = false;
+
+import { FILE_CATEGORY, type FileKey } from "@vao/shared-bridge";
+import type { AgrementDto } from "@vao/shared-bridge";
+
+type AgrementFormValues = Partial<AgrementDto> & {
+  [K in FileKey]?: any;
+};
 
 const canModify = true;
 
-async function updateOrCreate(formValues) {
-  const updatedData = { ...formValues };
+async function updateOrCreate(formValues: AgrementFormValues) {
+  const updatedData: AgrementFormValues = { ...formValues };
   try {
     updatedData.agrementFiles = [];
-    const fileMappings = [
+    const fileMappings: {
+      key: FileKey;
+      multiple: boolean;
+      category: FILE_CATEGORY;
+    }[] = [
       {
         key: "filesMotivation",
         multiple: true,
@@ -244,7 +256,7 @@ async function updateOrCreate(formValues) {
     ];
 
     for (const { key, multiple, category } of fileMappings) {
-      const value = updatedData[key];
+      const value = updatedData[key as FileKey];
 
       if (!value) continue;
       if (multiple) {
@@ -259,15 +271,28 @@ async function updateOrCreate(formValues) {
       }
     }
 
+    const rawOrganismeId = organismeStore.organismeCourant?.organismeId;
+    const organismeId = rawOrganismeId != null ? Number(rawOrganismeId) : null;
     const newAgrement = {
       ...agrementStore.agrementCourant,
       ...updatedData,
+      organismeId,
+      statut:
+        updatedData.statut ?? agrementStore.agrementCourant?.statut ?? null,
     };
-    agrementStore.agrementCourant = newAgrement;
+
+    if (organismeId == null) {
+      toaster.error({
+        titleTag: "h2",
+        title: "Erreur",
+        description: "Impossible d’enregistrer l’agrément : organisme inconnu.",
+      });
+      return;
+    }
 
     await agrementStore.postAgrement({
       agrement: newAgrement,
-      organismeId: organismeStore.organismeCourant?.organismeId,
+      organismeId,
     });
 
     toaster.success("Données enregistrées avec succès !");
@@ -275,12 +300,18 @@ async function updateOrCreate(formValues) {
     toaster.error({
       titleTag: "h2",
       title: "Erreur lors de l'enregistrement de l'agrément",
-      description: error?.message,
+      description: error instanceof Error ? error.message : String(error),
     });
   }
 }
 
-async function createDocuments({ documents, category }) {
+async function createDocuments({
+  documents,
+  category,
+}: {
+  documents: any[];
+  category: FILE_CATEGORY;
+}) {
   const result = [];
 
   for (const document of documents) {
@@ -291,7 +322,13 @@ async function createDocuments({ documents, category }) {
   return result;
 }
 
-async function createDocument({ document, category }) {
+async function createDocument({
+  document,
+  category,
+}: {
+  document: any;
+  category: FILE_CATEGORY;
+}) {
   if (document && Object.keys(document?.uuid ?? {}).length === 0) {
     try {
       const uuid = await documentStore.postDocument({
@@ -308,11 +345,12 @@ async function createDocument({ document, category }) {
         uuid: uuid,
         fileUuid: uuid,
         category,
+        agrementId: agrementStore.agrementCourant?.id ?? null,
       };
     } catch (error) {
       toaster.error({
         titleTag: "h2",
-        description: error?.message,
+        description: error instanceof Error ? error.message : String(error),
       });
       return null;
     }
@@ -325,6 +363,7 @@ async function createDocument({ document, category }) {
       uuid: document?.uuid,
       fileUuid: document.uuid,
       category,
+      agrementId: agrementStore.agrementCourant?.id ?? null,
     };
   }
 
@@ -334,7 +373,7 @@ async function createDocument({ document, category }) {
 const hash = computed(() => {
   if (route.hash) {
     useHead({
-      title: titles.value[route.hash],
+      title: titles.value[route.hash as keyof typeof titles.value],
     });
     return route.hash.slice(1);
   }
@@ -370,18 +409,6 @@ useHead({
   ],
 });
 
-try {
-  await agrementStore.getByOrganismeId(
-    organismeStore.organismeCourant?.organismeId,
-  );
-} catch (error) {
-  toaster.error({
-    titleTag: "h2",
-    title: "Erreur lors du chargement de l'agrément",
-    description: error?.message,
-  });
-}
-
 function previousHash() {
   const index = sommaireOptions.value.findIndex((o) => o === hash.value);
   return navigateTo({ hash: "#" + sommaireOptions.value[index - 1] });
@@ -389,8 +416,9 @@ function previousHash() {
 
 function nextHash() {
   const index = sommaireOptions.value.findIndex((o) => o === hash.value);
+  const id = agrementStore.agrementCourant?.id ?? "";
   return navigateTo({
-    path: `/agrement/${agrementStore.agrementCourant.value?.id ?? ""}`,
+    path: `/agrement/${id}`,
     hash: "#" + sommaireOptions.value[index + 1],
   });
 }

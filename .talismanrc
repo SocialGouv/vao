@@ -256,7 +256,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue
   checksum: 05743cc5c3dfd946e8ee41cb11571b1e505bbdb5260e9c59a53e4ca16cb11f08
 - filename: packages/frontend-usagers/src/pages/agrement/[[agrementId]].vue
-  checksum: 30520b571d5f687ce49f7acd8b250a28cd2ff9a63b66fbf60a830c83f929670e
+  checksum: 9f1b4a0e00392a84b23746ab66cad677bddc49b1f9999454b123cb7111c204c3
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
   checksum: dd393d7c31566dfa3864bb9a63fe98f9bf040cc8321e8cad0f74e8634e8365f8
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
