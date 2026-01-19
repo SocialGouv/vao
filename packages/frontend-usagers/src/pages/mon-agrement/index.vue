@@ -102,7 +102,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const route = useRoute();
 
 useHead({
@@ -131,6 +131,7 @@ const initialSelectedIndex = parseInt(
 );
 
 const selectedTabIndex = ref(initialSelectedIndex);
+const asc = ref(true);
 
 const selectTab = async (idx) => {
   asc.value = selectedTabIndex.value < idx;

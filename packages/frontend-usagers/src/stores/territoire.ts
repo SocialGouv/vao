@@ -1,7 +1,8 @@
 import { defineStore } from "pinia";
-import { $fetchBackend } from "#imports";
 import type { TerritoireDto } from "@vao/shared-bridge";
-
+import { logger } from "#imports";
+import { TerritoireService } from "~/services/territoireService";
+const log = logger("stores/territoire");
 interface TerritoireStoreState<TerritoireDto> {
   territoire: TerritoireDto | null;
 }
@@ -13,15 +14,13 @@ export const useTerritoireStore = defineStore("territoire", {
   actions: {
     async fetchFicheByAgrementRegionUser() {
       try {
-        const { territoire } = await $fetchBackend(
-          "/territoire/get-by-agrement-region-user",
-          {
-            credentials: "include",
-          },
-        );
-        this.territoire = territoire;
-      } catch {
+        const territoire = await TerritoireService.getTerritoire();
+        if (territoire) {
+          this.territoire = territoire;
+        }
+      } catch (err: unknown) {
         this.territoire = null;
+        log.i("fetchById - DONE with error", err);
       }
     },
   },
