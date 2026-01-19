@@ -46,7 +46,7 @@
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^20.14.12",
+    "@types/node": "^25.0.3",
     "@types/pg": "^8.15.5",
     "eslint": "^8.57.0",
     "eslint-plugin-prettier": "^5.1.3",
