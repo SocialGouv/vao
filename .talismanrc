@@ -51,8 +51,14 @@ fileignoreconfig:
   checksum: 1f161d556f83694bf1d4f728591667cdaeef494e6d24ea2b475b4d7cb054383f
 - filename: package.json
   checksum: 180654b4eb22710ddeba4331c45b63ed92542e989744f390182a90a563eb8e1b
+- filename: packages/backend/src/__tests__/admin/accept-cgu.test.ts
+  checksum: 7828616d3903047c45d473a7a3738e2582d076c076ead215fabde8d9eb61379c
+- filename: packages/backend/src/__tests__/helper/fixtures/userHelper.ts
+  checksum: f21c793c4ab301f8cf965e2cf50ff22853fd0a4dd118a58ee5f82f8f00f3884e
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
   checksum: 9e05b5b350d7e13beb365c6a550dbb2f4d39a0a1d12b43e9fac815fd3c1fdc8d
+- filename: packages/backend/src/__tests__/usagers/accept-cgu.test.ts
+  checksum: e9b027e184d985d212be8447e44512fd867589b3cff5c0628e7a87520d6e9ed3
 - filename: packages/backend/src/config.js
   checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/__tests__/bo-user/accept-cgu.test.js
