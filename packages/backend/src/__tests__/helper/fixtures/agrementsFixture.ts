@@ -80,6 +80,7 @@ export async function buildAgrementFixture({
     protocoleRapatEtranger: "Procédure OK",
     protocoleRapatUrg: "Procédure OK",
     protocoleRemboursement: "Remboursement OK",
+    regionObtention: "IDF",
     sejourNbEnvisage: 2,
     statut: AGREMENT_STATUT.BROUILLON,
     suiviMedAccordSejour: "Oui",

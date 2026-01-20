@@ -13,5 +13,6 @@ export interface OrganismeDto {
   agrement: {
     numero: string;
     dateFinValidite: string;
+    regionObtention: string;
   };
 }
