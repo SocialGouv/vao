@@ -79,8 +79,6 @@ export const useAgrementStore = defineStore("agrement", {
         bilanAucunChangementEvolution:
           agrement.bilanAucunChangementEvolution ?? null,
         bilanChangementEvolution: agrement.bilanChangementEvolution ?? null,
-        bilanAucunEvolutChangemention:
-          agrement.bilanAucunEvolutChangemention ?? null,
         bilanQualPerceptionSensibilite:
           agrement.bilanQualPerceptionSensibilite ?? null,
         bilanQualPerspectiveEvol: agrement.bilanQualPerspectiveEvol ?? null,
