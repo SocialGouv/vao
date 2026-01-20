@@ -2,12 +2,36 @@
 import { Header, Footer, Skiplinks, useLayoutHeader } from "@vao/shared-ui";
 
 const userStore = useUserStore();
+const organismeStore = useOrganismeStore();
+const agrementStore = useAgrementStore();
 const config = useRuntimeConfig();
+const toaster = useToaster();
 
 const { quickLinks, homeTo } = useLayoutHeader({
   logoutUrl: "/authentication/disconnect",
   accountPath: "/mon-compte",
   userStore,
+});
+
+watchEffect(async () => {
+  if (
+    userStore.isConnected &&
+    organismeStore.organismeCourant?.organismeId &&
+    !agrementStore.agrementCourant
+  ) {
+    try {
+      await agrementStore.getByOrganismeId(
+        organismeStore.organismeCourant.organismeId,
+      );
+    } catch (e) {
+      toaster.error({
+        titleTag: "h2",
+        title: "Erreur lors du chargement de l'agrément",
+        description: e?.message,
+      });
+      console.error("Erreur lors de la récupération de l'agrément :", e);
+    }
+  }
 });
 
 const consentCookie = useCookie("VAO_consent", {

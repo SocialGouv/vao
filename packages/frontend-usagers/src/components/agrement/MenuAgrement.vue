@@ -32,7 +32,7 @@ const menus = [
     to: { hash: "#agrement-bilan" },
   },
   {
-    id: "projets",
+    id: "agrement-projets",
     text: "Projets de séjours envisagés pour les 12 prochains mois",
     to: { hash: "#agrement-projets" },
   },
