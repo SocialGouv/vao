@@ -7,4 +7,6 @@ export * from "./userDto";
 export * from "./adresse.dto";
 export * from "./agrement.dto";
 export * from "./document.dto";
+export * from "./ficheTerritoire.dto";
 export * from "./hebergement.dto";
+export * from "./territoire.dto";
