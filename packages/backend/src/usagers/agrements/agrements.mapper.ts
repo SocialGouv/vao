@@ -42,6 +42,8 @@ export const AgrementsMapper = {
       budgetComplement: entity.budget_complement,
       budgetGestionPerso: entity.budget_gestion_perso,
       budgetPaiementSecurise: entity.budget_paiement_securise,
+      budgetPersoGestionComplementaire:
+        entity.budget_perso_gestion_complementaire,
       commentaire: entity.commentaire,
       dateConfirmCompletude: entity.date_confirm_completude,
       dateDepot: entity.date_depot,
@@ -59,6 +61,7 @@ export const AgrementsMapper = {
       protocoleRemboursement: entity.protocole_remboursement,
       sejourCommentaire: entity.sejour_commentaire,
       sejourNbEnvisage: entity.sejour_nb_envisage,
+      sejourTypeHandicap: entity.sejour_type_handicap,
       statut: entity.statut as any,
       suiviMedAccordSejour: entity.suivi_med_accord_sejour,
       suiviMedDistribution: entity.suivi_med_distribution,
