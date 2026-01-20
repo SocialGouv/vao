@@ -12,6 +12,10 @@ const menus = [
     text: "Bilan des 4 années précédentes",
   },
   {
+    id: "agrement-projets",
+    text: "Projet de séjours envisagés pour les 12 prochains mois",
+  },
+  {
     id: "agrement-synthese",
     text: "Synthèse",
   },
@@ -37,6 +41,10 @@ const titles = () => {
     "#agrement-bilan":
       titleStart +
       `étape ${getCurrentStepNumber("agrement-bilan")} sur ${stepNumber} | Bilan des 4 années précédentes` +
+      titleEnd,
+    "#agrement-projets":
+      titleStart +
+      `étape ${getCurrentStepNumber("agrement-projets")} sur ${stepNumber} | Projet de séjours envisagés pour les 12 prochains mois` +
       titleEnd,
     "#agrement-synthese":
       titleStart +
