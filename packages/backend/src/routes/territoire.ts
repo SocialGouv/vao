@@ -1,6 +1,12 @@
 import express from "express";
 
-import territoireController from "../controllers/territoire";
+import {
+  getFicheByAgrementRegionUser,
+  getFicheIdByTerCode,
+  getOne,
+  list,
+  update,
+} from "../controllers/territoire";
 import BOcheckJWT from "../middlewares/bo-check-JWT";
 import checkJWT from "../middlewares/checkJWT";
 
@@ -9,15 +15,15 @@ const router = express.Router();
 router.get(
   "/get-by-agrement-region-user",
   checkJWT,
-  territoireController.getFicheByAgrementRegionUser,
+  getFicheByAgrementRegionUser,
 );
-router.get("/list", BOcheckJWT, territoireController.list);
-router.get("/get-one/:idTerritoire", BOcheckJWT, territoireController.getOne);
+router.get("/list", BOcheckJWT, list);
+router.get("/get-one/:idTerritoire", BOcheckJWT, getOne);
 router.get(
   "/get-fiche-id-by-ter-code/:territoireCode",
   BOcheckJWT,
-  territoireController.getFicheIdByTerCode,
+  getFicheIdByTerCode,
 );
-router.put("/:id", BOcheckJWT, territoireController.update);
+router.put("/:id", BOcheckJWT, update);
 
 module.exports = router;

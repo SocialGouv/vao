@@ -3,12 +3,12 @@ import type { TerritoireDto } from "@vao/shared-bridge";
 import { logger } from "#imports";
 import { TerritoireService } from "~/services/territoireService";
 const log = logger("stores/territoire");
-interface TerritoireStoreState<TerritoireDto> {
+interface TerritoireStoreState {
   territoire: TerritoireDto | null;
 }
 
 export const useTerritoireStore = defineStore("territoire", {
-  state: (): TerritoireStoreState<TerritoireDto> => ({
+  state: (): TerritoireStoreState => ({
     territoire: null,
   }),
   actions: {

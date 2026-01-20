@@ -20,7 +20,6 @@ export default async function get(
   next: NextFunction,
 ) {
   log.i("IN");
-  console.log("getFicheByAgrementRegionUser - IN", { userId: req.decoded!.id });
   try {
     const organisme: OrganismeDto | null = await OrganismeService.getOne({
       use_id: req.decoded!.id,
@@ -32,13 +31,12 @@ export default async function get(
         }),
       );
     }
-    console.log("Organisme récupéré :", organisme);
     if (!organisme.agrement?.regionObtention) {
       return next(
         new AppError(
           "Erreur lors de la récupération de la région d'obtention de l'agrément",
           {
-            statusCode: 400,
+            statusCode: 422,
           },
         ),
       );

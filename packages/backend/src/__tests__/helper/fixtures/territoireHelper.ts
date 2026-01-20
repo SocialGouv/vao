@@ -2,7 +2,7 @@ import { randomInt } from "crypto";
 
 import { readFicheIdByTerCode, update } from "../../../services/Territoire";
 
-export const buildTerritoireFixture = async ({
+export const createTerritoire = async ({
   territoireCode,
   territoire = {},
 }: {

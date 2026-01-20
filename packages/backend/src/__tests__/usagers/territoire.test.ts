@@ -4,7 +4,7 @@ import app from "../../app";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import { createAgrement } from "../helper/fixtures/agrementsHelper";
 import { createOrganisme } from "../helper/fixtures/organismeHelper";
-import { buildTerritoireFixture } from "../helper/fixtures/territoireHelper";
+import { createTerritoire } from "../helper/fixtures/territoireHelper";
 import { createUsagersUser } from "../helper/fixtures/userHelper";
 import {
   createTestContainer,
@@ -37,7 +37,7 @@ describe("GET /territoire/getByAgrementRegionUser", () => {
       agrement: agrementData,
       organismeId,
     });
-    const territoireId = await buildTerritoireFixture({
+    const territoireId = await createTerritoire({
       territoireCode: "IDF",
     });
     console.log("Territoire ID simulé :", territoireId);
