@@ -35,8 +35,6 @@
       class="fr-my-2w"
     />
 
-    <hr class="fr-mt-4w" />
-
     <DsfrAlert
       v-if="personnePhysiqueError"
       role="alert"
@@ -57,7 +55,7 @@
       {{ personneMoraleError }}
     </DsfrAlert>
 
-    <DsfrButton @click.prevent="onNext">Suivant</DsfrButton>
+    <DsfrButton class="fr-mb-6v" @click.prevent="onNext">Suivant</DsfrButton>
   </div>
 </template>
 
