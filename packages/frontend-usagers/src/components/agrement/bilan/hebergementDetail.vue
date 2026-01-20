@@ -70,11 +70,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useField, useForm } from "vee-validate";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
-import { defineEmits, watch, computed } from "vue";
+import { watch, computed } from "vue";
 import * as yup from "yup";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const emits = defineEmits(["delete", "update"]);
 
@@ -101,35 +101,28 @@ function emitDelete() {
   emits("delete");
 }
 
-function handleMonths(monthsArray) {
+function handleMonths(monthsArray: number[]) {
   emits("update", { ...props.hebergement, mois: monthsArray });
 }
 
-function emitNomHebergementUpdate(value) {
+function emitNomHebergementUpdate(value: string) {
   emits("update", { ...props.hebergement, nomHebergement: value });
 }
 
-function emitNbJoursUpdate(value) {
+function emitNbJoursUpdate(value: number) {
   emits("update", { ...props.hebergement, nbJours: value });
 }
 
-function emitNbVacanciersUpdate(value) {
+function emitNbVacanciersUpdate(value: number) {
   emits("update", { ...props.hebergement, nbVacanciers: value });
 }
 
-function emitAdresseUpdate(value) {
+function emitAdresseUpdate(value: string) {
   emits("update", { ...props.hebergement, adresse: value });
 }
 
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
-
 const validationSchema = computed(() => {
-  const schema = {
+  const schema: Record<string, yup.AnySchema> = {
     nomHebergement: requiredUnlessBrouillon(yup.string()),
     adresse: requiredUnlessBrouillon(yup.string()),
     statut: yup.string(),
@@ -151,7 +144,13 @@ const validationSchema = computed(() => {
 });
 
 const initialValues = computed(() => {
-  const values = {
+  const values: {
+    nomHebergement: string;
+    adresse: string;
+    statut: string;
+    nbJours?: number;
+    nbVacanciers?: number;
+  } = {
     nomHebergement: props.hebergement.nomHebergement || "",
     adresse: props.hebergement.adresse || "",
     statut: props.statut,
@@ -179,14 +178,14 @@ const {
   errorMessage: nomHebergementErrorMessage,
   handleChange: onNomHebergementChange,
   meta: nomHebergementMeta,
-} = useField("nomHebergement");
+} = useField<string>("nomHebergement");
 
 const {
   value: adresse,
   errorMessage: adresseErrorMessage,
   handleChange: onAdresseChange,
   meta: adresseMeta,
-} = useField("adresse");
+} = useField<string | { label: string }>("adresse");
 
 const {
   value: nbJours,
@@ -194,11 +193,11 @@ const {
   handleChange: onNbJoursChange,
   meta: nbJoursMeta,
 } = showNbJours.value
-  ? useField("nbJours")
+  ? useField<number>("nbJours")
   : {
       value: null,
       errorMessage: null,
-      handleChange: null,
+      handleChange: undefined,
       meta: { valid: true },
     };
 
@@ -208,11 +207,11 @@ const {
   handleChange: onNbVacanciersChange,
   meta: nbVacanciersMeta,
 } = showNbVacanciers.value
-  ? useField("nbVacanciers")
+  ? useField<number>("nbVacanciers")
   : {
       value: null,
       errorMessage: null,
-      handleChange: null,
+      handleChange: undefined,
       meta: { valid: true },
     };
 
@@ -234,20 +233,30 @@ watch(nomHebergement, (newValue) => {
   emitNomHebergementUpdate(newValue);
 });
 
-if (showNbJours.value) {
+if (showNbJours.value && nbJours) {
   watch(nbJours, (newValue) => {
-    emitNbJoursUpdate(newValue);
+    if (newValue !== null && newValue !== undefined) {
+      emitNbJoursUpdate(newValue);
+    }
   });
 }
 
-if (showNbVacanciers.value) {
+if (showNbVacanciers.value && nbVacanciers) {
   watch(nbVacanciers, (newValue) => {
-    emitNbVacanciersUpdate(newValue);
+    if (newValue !== null && newValue !== undefined) {
+      emitNbVacanciersUpdate(newValue);
+    }
   });
 }
 
 watch(adresse, (newValue) => {
-  emitAdresseUpdate(newValue);
+  if (typeof newValue === "string") {
+    emitAdresseUpdate(newValue);
+  } else if (typeof newValue === "object" && newValue?.label) {
+    emitAdresseUpdate(newValue.label);
+  } else if (newValue) {
+    emitAdresseUpdate(String(newValue));
+  }
 });
 
 const validateForm = async () => {

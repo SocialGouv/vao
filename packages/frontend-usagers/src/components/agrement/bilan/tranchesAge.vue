@@ -19,10 +19,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   trancheAge: { type: Array, default: () => [] },
@@ -30,17 +30,10 @@ const props = defineProps({
 });
 
 const ageRangeOptions = [
-  { label: "de 18 à 39 ans", value: "18_39" },
-  { label: "de 40 à 59 ans", value: "40_59" },
-  { label: "plus de 59 ans", value: "59_et_plus" },
+  { label: "de 18 à 39 ans", value: "18_39", name: "trancheAge" },
+  { label: "de 40 à 59 ans", value: "40_59", name: "trancheAge" },
+  { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
 ];
-
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
 
 const validationSchema = yup.object({
   trancheAge: requiredUnlessBrouillon(

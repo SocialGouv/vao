@@ -74,7 +74,7 @@
         :is-textarea="true"
         :is-valid="protocoleInfoFamilleMeta.valid"
         :error-message="protocoleInfoFamilleErrorMessage"
-        @update:model-value="onprotocoleInfoFamilleChange"
+        @update:model-value="onProtocoleInfoFamilleChange"
       />
     </div>
   </div>
@@ -86,11 +86,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -99,21 +101,16 @@ const props = defineProps({
 
 const filesProjetsSejoursProtocoleReorientation = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.PROJSEJPROTCOREORIENT,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJSEJPROTCOREORIENT,
   ) || [],
 );
 const filesProjetsSejoursProtocoleRapatriement = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.PROJSSEJOURSPROTCOLERAPATR,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJSSEJOURSPROTCOLERAPATR,
   ) || [],
 );
-
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
@@ -150,28 +147,28 @@ const {
   errorMessage: protocoleEvacUrgErrorMessage,
   meta: protocoleEvacUrgMeta,
   handleChange: onProtocoleEvacUrgChange,
-} = useField("protocoleEvacUrg");
+} = useField<string>("protocoleEvacUrg");
 
 const {
   value: protocoleRapatUrg,
   errorMessage: protocoleRapatUrgErrorMessage,
   meta: protocoleRapatUrgMeta,
   handleChange: onProtocoleRapatUrgChange,
-} = useField("protocoleRapatUrg");
+} = useField<string>("protocoleRapatUrg");
 
 const {
   value: protocoleRapatEtranger,
   errorMessage: protocoleRapatEtrangerErrorMessage,
   meta: protocoleRapatEtrangerMeta,
   handleChange: onProtocoleRapatEtrangerChange,
-} = useField("protocoleRapatEtranger");
+} = useField<string>("protocoleRapatEtranger");
 
 const {
   value: protocoleInfoFamille,
   errorMessage: protocoleInfoFamilleErrorMessage,
   meta: protocoleInfoFamilleMeta,
-  handleChange: onprotocoleInfoFamilleChange,
-} = useField("protocoleInfoFamille");
+  handleChange: onProtocoleInfoFamilleChange,
+} = useField<string>("protocoleInfoFamille");
 
 const validateForm = async () => {
   const formValid = true;

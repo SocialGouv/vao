@@ -89,24 +89,19 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { ref } from "vue";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
 });
-
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
 
 const validationSchema = yup.object({
   accompRespNb: requiredUnlessBrouillon(
@@ -125,18 +120,20 @@ const validationSchema = yup.object({
 
 const filesProjetsSejoursCompetencesExperience = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) =>
+    (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
   ) || [],
 );
 const filesProjetsSejoursMesures = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSMESURES,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJETSSEJOURSMESURES,
   ) || [],
 );
 const filesProjetsSejoursComplementaires = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSCOMPLEMENTAIRES,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJETSSEJOURSCOMPLEMENTAIRES,
   ) || [],
 );
 
@@ -158,21 +155,21 @@ const {
   errorMessage: accompRespNbErrorMessage,
   handleChange: onAccompRespNbChange,
   meta: accompRespNbMeta,
-} = useField("accompRespNb");
+} = useField<number>("accompRespNb");
 
 const {
   value: accompRespCompExp,
   errorMessage: accompRespCompExpErrorMessage,
   handleChange: onAccompRespCompExpChange,
   meta: accompRespCompExpMeta,
-} = useField("accompRespCompExp");
+} = useField<string>("accompRespCompExp");
 
 const {
   value: accompRespRecruteUrg,
   errorMessage: accompRespRecruteUrgErrorMessage,
   handleChange: onAccompRespRecruteUrgChange,
   meta: accompRespRecruteUrgMeta,
-} = useField("accompRespRecruteUrg");
+} = useField<string>("accompRespRecruteUrg");
 
 const validateForm = async () => {
   const formValid = true;

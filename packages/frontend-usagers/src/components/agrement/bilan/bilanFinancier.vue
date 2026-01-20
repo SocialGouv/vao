@@ -81,11 +81,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -93,32 +95,27 @@ const props = defineProps({
 
 const filesBilanFinancierQuatreAnnees = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.BILANFINANCIERQUATREANNEES,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.BILANFINANCIERQUATREANNEES,
   ) || [],
 );
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
   bilanFinancierComptabilite: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
   ),
   bilanFinancierComparatif: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
   ),
   bilanFinancierRessourcesHumaines: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
   ),
   bilanFinancierCommentaire: yup
     .string()
     .nullable()
     .when([], {
-      is: (val) => val && val.length > 0,
+      is: (val: string | null) => val && val.length > 0,
       then: (schema) =>
         schema.min(20, "Merci de décrire au moins 20 caractères."),
       otherwise: (schema) => schema,
@@ -146,28 +143,28 @@ const {
   errorMessage: bilanFinancierComptabiliteErrorMessage,
   handleChange: onBilanFinancierComptabiliteChange,
   meta: bilanFinancierComptabiliteMeta,
-} = useField("bilanFinancierComptabilite");
+} = useField<string | null>("bilanFinancierComptabilite");
 
 const {
   value: bilanFinancierComparatif,
   errorMessage: bilanFinancierComparatifErrorMessage,
   handleChange: onBilanFinancierComparatifChange,
   meta: bilanFinancierComparatifMeta,
-} = useField("bilanFinancierComparatif");
+} = useField<string | null>("bilanFinancierComparatif");
 
 const {
   value: bilanFinancierRessourcesHumaines,
   errorMessage: bilanFinancierRessourcesHumainesErrorMessage,
   handleChange: onBilanFinancierRessourcesHumainesChange,
   meta: bilanFinancierRessourcesHumainesMeta,
-} = useField("bilanFinancierRessourcesHumaines");
+} = useField<string | null>("bilanFinancierRessourcesHumaines");
 
 const {
   value: bilanFinancierCommentaire,
   errorMessage: bilanFinancierCommentaireErrorMessage,
   handleChange: onBilanFinancierCommentaireChange,
   meta: bilanFinancierCommentaireMeta,
-} = useField("bilanFinancierCommentaire");
+} = useField<string | null>("bilanFinancierCommentaire");
 
 const validateForm = async () => {
   const result = await handleSubmit((values) => values)();

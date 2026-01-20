@@ -124,11 +124,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -137,42 +139,39 @@ const props = defineProps({
 
 const filesBilanQualitPerception = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.BILANQUALITPERCEPTION,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.BILANQUALITPERCEPTION,
   ) || [],
 );
 const filesBilanQualitPerspectives = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.BILANQUALITPERSPECTIVE,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.BILANQUALITPERSPECTIVE,
   ) || [],
 );
 const filesBilanQualitElementsMarquants = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.BILANQUALITELEMARQ,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.BILANQUALITELEMARQ,
   ) || [],
 );
 const filesBilanQualitComplementaires = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.BILANQUALITCOMPLEMENTAIRES,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.BILANQUALITCOMPLEMENTAIRES,
   ) || [],
 );
-
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
   bilanQualPerceptionSensibilite: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
   ),
   bilanQualPerspectiveEvol: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
   ),
   bilanQualElementsMarquants: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
   ),
 });
 
@@ -196,21 +195,21 @@ const {
   errorMessage: bilanQualPerceptionSensibiliteErrorMessage,
   handleChange: onBilanQualPerceptionSensibiliteChange,
   meta: bilanQualPerceptionSensibiliteMeta,
-} = useField("bilanQualPerceptionSensibilite");
+} = useField<string | null>("bilanQualPerceptionSensibilite");
 
 const {
   value: bilanQualPerspectiveEvol,
   errorMessage: bilanQualPerspectiveEvolErrorMessage,
   handleChange: onBilanQualPerspectiveEvolChange,
   meta: bilanQualPerspectiveEvolMeta,
-} = useField("bilanQualPerspectiveEvol");
+} = useField<string | null>("bilanQualPerspectiveEvol");
 
 const {
   value: bilanQualElementsMarquants,
   errorMessage: bilanQualElementsMarquantsErrorMessage,
   handleChange: onBilanQualElementsMarquantsChange,
   meta: bilanQualElementsMarquantsMeta,
-} = useField("bilanQualElementsMarquants");
+} = useField<string | null>("bilanQualElementsMarquants");
 
 const validateForm = async () => {
   const result = await handleSubmit((values) => values)();

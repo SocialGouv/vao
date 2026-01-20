@@ -44,11 +44,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -57,16 +59,10 @@ const props = defineProps({
 
 const filesProjetsSejoursSuiviMed = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSSUIVIMED,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJETSSEJOURSSUIVIMED,
   ) || [],
 );
-
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
@@ -95,14 +91,14 @@ const {
   errorMessage: suiviMedDistributionErrorMessage,
   meta: suiviMedDistributionMeta,
   handleChange: onSuiviMedDistributionChange,
-} = useField("suiviMedDistribution");
+} = useField<string>("suiviMedDistribution");
 
 const {
   value: suiviMedAccordSejour,
   errorMessage: suiviMedAccordSejourErrorMessage,
   meta: suiviMedAccordSejourMeta,
   handleChange: onSuiviMedAccordSejourChange,
-} = useField("suiviMedAccordSejour");
+} = useField<string>("suiviMedAccordSejour");
 
 const validateForm = async () => {
   const formValid = true;

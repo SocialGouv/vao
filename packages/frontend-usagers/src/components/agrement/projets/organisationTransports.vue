@@ -40,11 +40,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -53,16 +55,10 @@ const props = defineProps({
 
 const filesProjetsSejoursOrgaTransports = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT,
   ) || [],
 );
-
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
 
 const validationSchema = yup.object({
   transportAllerRetour: requiredUnlessBrouillon(
@@ -90,14 +86,14 @@ const {
   errorMessage: transportAllerRetourErrorMessage,
   meta: transportAllerRetourMeta,
   handleChange: onTransportAllerRetourChange,
-} = useField("transportAllerRetour");
+} = useField<string>("transportAllerRetour");
 
 const {
   value: transportSejour,
   errorMessage: transportSejourErrorMessage,
   meta: transportSejourMeta,
   handleChange: onTransportSejourChange,
-} = useField("transportSejour");
+} = useField<string>("transportSejour");
 
 const validateForm = async () => {
   const formValid = true;

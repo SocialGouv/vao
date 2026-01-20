@@ -46,27 +46,23 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
 });
 
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
-
 const filesProjSejoursBudgetPersonnes = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.PROJSEJOURSBUDGETPERSONNES,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJSEJOURSBUDGETPERSONNES,
   ) || [],
 );
 
@@ -95,14 +91,14 @@ const {
   errorMessage: budgetGestionPersoErrorMessage,
   meta: budgetGestionPersoMeta,
   handleChange: onBudgetGestionPersoChange,
-} = useField("budgetGestionPerso");
+} = useField<string>("budgetGestionPerso");
 
 const {
   value: budgetPersoGestionComplementaire,
   errorMessage: budgetPersoGestionComplementaireErrorMessage,
   meta: budgetPersoGestionComplementaireMeta,
   handleChange: onBudgetPersoGestionComplementaireChange,
-} = useField("budgetPersoGestionComplementaire");
+} = useField<string>("budgetPersoGestionComplementaire");
 
 const validateForm = async () => {
   const formValid = true;

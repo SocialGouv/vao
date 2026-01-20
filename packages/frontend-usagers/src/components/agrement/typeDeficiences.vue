@@ -18,10 +18,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   statut: { type: String, required: true },
@@ -29,19 +29,13 @@ const props = defineProps({
 });
 
 const handicapOptions = [
-  { label: "Sensoriel", value: "auditif" },
-  { label: "Cognitif", value: "cognitif" },
-  { label: "Mental/Psychique", value: "mental" },
-  { label: "Moteur", value: "moteur" },
-  { label: "Polyhandicap", value: "polyhandicap" },
+  { label: "Sensoriel", value: "auditif", name: "typeDeficiences" },
+  { label: "Sensoriel", value: "visuel", name: "typeDeficiences" },
+  { label: "Cognitif", value: "cognitif", name: "typeDeficiences" },
+  { label: "Mental/Psychique", value: "mental", name: "typeDeficiences" },
+  { label: "Moteur", value: "moteur", name: "typeDeficiences" },
+  { label: "Polyhandicap", value: "polyhandicap", name: "typeDeficiences" },
 ];
-
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
 
 const validationSchema = yup.object({
   typeDeficiences: requiredUnlessBrouillon(
@@ -62,7 +56,7 @@ const { validate } = useForm({
 const {
   value: typeDeficiencesField,
   errorMessage: typeDeficiencesErrorMessage,
-} = useField("typeDeficiences");
+} = useField<string[]>("typeDeficiences");
 
 const validateTypeDeficiences = async () => {
   const result = await validate();

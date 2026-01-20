@@ -34,17 +34,19 @@
       name="checkbox-required-custom"
       label="Aucun changement ou évolution à déclarer."
       :error-message="bilanAucunChangementEvolutionErrorMessage"
+      :value="true"
       required
     />
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -53,7 +55,7 @@ const props = defineProps({
 
 const filesChangeEvol = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.CHANGEEVOL,
+    (file: AgrementFilesDto) => file.category === FILE_CATEGORY.CHANGEEVOL,
   ) || [],
 );
 
@@ -88,12 +90,12 @@ const {
   errorMessage: bilanChangementEvolutionErrorMessage,
   handleChange: onBilanChangementEvolutionChange,
   meta: bilanChangementEvolutionMeta,
-} = useField("bilanChangementEvolution");
+} = useField<string | null>("bilanChangementEvolution");
 
 const {
   value: bilanAucunChangementEvolution,
   errorMessage: bilanAucunChangementEvolutionErrorMessage,
-} = useField("bilanAucunChangementEvolution");
+} = useField<boolean>("bilanAucunChangementEvolution");
 
 const validateForm = async () => {
   const result = await handleSubmit((values) => values)();

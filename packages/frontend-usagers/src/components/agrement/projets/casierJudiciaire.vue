@@ -12,6 +12,7 @@
       name="checkbox-required-custom"
       label="J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire"
       required
+      :value="true"
       @update:model-value="onAccompRespAttestHonoChange"
     />
     <p v-if="accompRespAttestHonoErrorMessage" class="fr-error-text">
@@ -28,12 +29,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { FileUpload } from "@vao/shared-ui";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -42,7 +44,8 @@ const props = defineProps({
 
 const fileProjetsSejoursCasier = ref(
   props.initAgrement?.agrementFiles.filter(
-    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSCASIER,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJETSSEJOURSCASIER,
   ) || null,
 );
 
@@ -71,7 +74,7 @@ const {
   value: accompRespAttestHono,
   errorMessage: accompRespAttestHonoErrorMessage,
   handleChange: onAccompRespAttestHonoChange,
-} = useField("accompRespAttestHono");
+} = useField<boolean>("accompRespAttestHono");
 
 const validateForm = async () => {
   try {

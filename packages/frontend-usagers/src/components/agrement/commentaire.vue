@@ -11,7 +11,7 @@
   />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 
@@ -36,7 +36,7 @@ const {
   errorMessage: commentaireErrorMessage,
   handleChange: onCommentaireChange,
   meta: commentaireMeta,
-} = useField("commentaire");
+} = useField<string>("commentaire");
 
 async function getComment() {
   let result = null;
