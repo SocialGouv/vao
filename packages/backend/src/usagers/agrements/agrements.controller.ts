@@ -30,6 +30,18 @@ export const AgrementController = {
       next(error);
     }
   },
+  async getAllActivites(
+    req: RouteRequest<AgrementUsagersRoutes["GetAllActivites"]>,
+    res: RouteResponse<AgrementUsagersRoutes["GetAllActivites"]>,
+    next: NextFunction,
+  ) {
+    try {
+      const activites = await AgrementService.getAllActivites();
+      res.status(200).json(activites);
+    } catch (error) {
+      next(error);
+    }
+  },
   async post(
     req: RouteRequest<AgrementUsagersRoutes["PostAgrement"]>,
     res: RouteResponse<AgrementUsagersRoutes["PostAgrement"]>,

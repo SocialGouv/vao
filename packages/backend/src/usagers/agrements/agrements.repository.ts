@@ -3,7 +3,7 @@ import { AgrementDto } from "@vao/shared-bridge";
 import { saveAdresse } from "../../services/adresse";
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
-import { AgrementEntity } from "./agrements.entity";
+import { ActiviteEntity, AgrementEntity } from "./agrements.entity";
 import {
   AgrementAnimationMapper,
   AgrementBilanAnnuelMapper,
@@ -146,13 +146,13 @@ export const AgrementsRepository = {
           suivi_med_distribution, suivi_med_accord_sejour,
           protocole_evac_urg, protocole_rapat_urg, protocole_rapat_etranger,
           protocole_materiel, protocole_info_famille, protocole_remboursement,
-          budget_gestion_perso, budget_paiement_securise, budget_complement,
+          budget_gestion_perso, budget_perso_gestion_complementaire, budget_paiement_securise, budget_complement,
           bilan_changement_evolution, bilan_aucun_changement_evolution,
           bilan_qual_perception_sensibilite, bilan_qual_perspective_evol,
           bilan_qual_elements_marquants, bilan_financier_comptabilite,
           bilan_financier_comparatif, bilan_financier_ressources_humaines,
           bilan_financier_commentaire,
-          date_fin_validite
+          date_fin_validite, sejour_type_handicap
         )
         VALUES (
           $1,$2,$3,$4,$5,$6,$7,$8,
@@ -160,7 +160,7 @@ export const AgrementsRepository = {
           $17,$18,$19,$20,$21,
           $22,$23,$24,$25,$26,$27,
           $28,$29,$30,$31,$32,$33,$34,$35,
-          $36,$37,$38,$39,$40, $41
+          $36,$37,$38,$39,$40, $41, $42, $43
         )
         RETURNING id;
       `;
@@ -195,6 +195,7 @@ export const AgrementsRepository = {
         agrement.protocoleInfoFamille,
         agrement.protocoleRemboursement,
         agrement.budgetGestionPerso,
+        agrement.budgetPersoGestionComplementaire,
         agrement.budgetPaiementSecurise,
         agrement.budgetComplement,
         agrement.bilanChangementEvolution,
@@ -207,6 +208,7 @@ export const AgrementsRepository = {
         agrement.bilanFinancierRessourcesHumaines,
         agrement.bilanFinancierCommentaire,
         dateFinValidite,
+        agrement.sejourTypeHandicap,
       ];
 
       const result = await client.query(agrementInsertQuery, agrementValues);
@@ -222,11 +224,22 @@ export const AgrementsRepository = {
       return agrementId;
     } catch (err) {
       await client.query("ROLLBACK");
-      console.error("Erreur lors de la création d’un agrément :", err);
+      console.error("Erreur lors de la création d'un agrément :", err);
       throw err;
     } finally {
       client.release();
     }
+  },
+
+  async getAllActivites(): Promise<ActiviteEntity[]> {
+    const client = await getPool().connect();
+    const query = `
+      SELECT id, code, libelle, activite_type
+      FROM front.activite
+      ORDER BY libelle ASC;
+    `;
+    const result = await client.query(query);
+    return result.rows;
   },
 
   /**
@@ -241,53 +254,72 @@ export const AgrementsRepository = {
   }): Promise<AgrementDto | null> {
     log.i("getByOrganismeId - IN");
     const query = `
-  SELECT
-    agr.*
-    ${
-      withDetails
-        ? `,
-      COALESCE(json_agg(DISTINCT act.*) FILTER (WHERE act.id IS NOT NULL), '[]') AS activite,
-      COALESCE(json_agg(DISTINCT ani.*) FILTER (WHERE ani.id IS NOT NULL), '[]') AS agrement_animation,
-      COALESCE(json_agg(DISTINCT fil.*) FILTER (WHERE fil.id IS NOT NULL), '[]') AS agrement_file,
-      COALESCE(json_agg(DISTINCT sej.*) FILTER (WHERE sej.id IS NOT NULL), '[]') AS agrement_sejour,
-
-      COALESCE(
-        (
-          SELECT json_agg(
-            to_jsonb(bil) || jsonb_build_object(
-              'bilan_hebergement',
-              COALESCE(
-                (
-                  SELECT json_agg(bhe.*)
-                  FROM front.bilan_hebergement bhe
-                  WHERE bhe.agr_bilan_annuel_id = bil.id
-                ),
-                '[]'::json
+      SELECT
+        agr.*
+        ${
+          withDetails
+            ? `,
+          COALESCE(
+            (
+              SELECT json_agg(
+                jsonb_build_object(
+                  'id', ani.id,
+                  'activite_id', ani.activite_id,
+                  'agrement_id', ani.agrement_id,
+                  'created_at', ani.created_at,
+                  'updated_at', ani.updated_at,
+                  'activite', jsonb_build_object(
+                    'id', act.id,
+                    'code', act.code,
+                    'libelle', act.libelle,
+                    'activite_type', act.activite_type
+                  )
+                )
               )
-            )
-          )
-          FROM front.agrement_bilan_annuel bil
-          WHERE bil.agrement_id = agr.id
-        ),
-        '[]'
-      ) AS agrement_bilan_annuel
-      `
-        : ""
-    }
-  FROM front.agrements agr
-  ${
-    withDetails
-      ? `
-      LEFT JOIN front.agrement_animation ani ON ani.agrement_id = agr.id
-      LEFT JOIN front.activite act ON act.id = ani.activite_id
-      LEFT JOIN front.agrement_files fil ON fil.agrement_id = agr.id
-      LEFT JOIN front.agrement_sejours sej ON sej.agrement_id = agr.id
-      `
-      : ""
-  }
-  WHERE agr.organisme_id = $1
-  GROUP BY agr.id;
-`;
+              FROM front.agrement_animation ani
+              LEFT JOIN front.activite act ON act.id = ani.activite_id
+              WHERE ani.agrement_id = agr.id
+            ),
+            '[]'
+          ) AS agrement_animation,
+          COALESCE(json_agg(DISTINCT fil.*) FILTER (WHERE fil.id IS NOT NULL), '[]') AS agrement_file,
+          COALESCE(json_agg(DISTINCT sej.*) FILTER (WHERE sej.id IS NOT NULL), '[]') AS agrement_sejour,
+
+          COALESCE(
+            (
+              SELECT json_agg(
+                to_jsonb(bil) || jsonb_build_object(
+                  'bilan_hebergement',
+                  COALESCE(
+                    (
+                      SELECT json_agg(bhe.*)
+                      FROM front.bilan_hebergement bhe
+                      WHERE bhe.agr_bilan_annuel_id = bil.id
+                    ),
+                    '[]'::json
+                  )
+                )
+              )
+              FROM front.agrement_bilan_annuel bil
+              WHERE bil.agrement_id = agr.id
+            ),
+            '[]'
+          ) AS agrement_bilan_annuel
+          `
+            : ""
+        }
+      FROM front.agrements agr
+      ${
+        withDetails
+          ? `
+          LEFT JOIN front.agrement_files fil ON fil.agrement_id = agr.id
+          LEFT JOIN front.agrement_sejours sej ON sej.agrement_id = agr.id
+          `
+          : ""
+      }
+      WHERE agr.organisme_id = $1
+      GROUP BY agr.id;
+    `;
 
     const response = await getPool().query(query, [organismeId]);
     log.i("getByOrganismeId - DONE");
@@ -315,7 +347,6 @@ export const AgrementsRepository = {
 
     return agrementDto;
   },
-
   async update({
     agrement,
     dateFinValidite,
@@ -367,19 +398,21 @@ export const AgrementsRepository = {
         protocole_info_famille = $27,
         protocole_remboursement = $28,
         budget_gestion_perso = $29,
-        budget_paiement_securise = $30,
-        budget_complement = $31,
-        bilan_changement_evolution = $32,
-        bilan_aucun_changement_evolution = $33,
-        bilan_qual_perception_sensibilite = $34,
-        bilan_qual_perspective_evol = $35,
-        bilan_qual_elements_marquants = $36,
-        bilan_financier_comptabilite = $37,
-        bilan_financier_comparatif = $38,
-        bilan_financier_ressources_humaines = $39,
-        bilan_financier_commentaire = $40,
-        date_fin_validite = $41
-      WHERE id = $42;
+        budget_perso_gestion_complementaire = $30,
+        budget_paiement_securise = $31,
+        budget_complement = $32,
+        bilan_changement_evolution = $33,
+        bilan_aucun_changement_evolution = $34,
+        bilan_qual_perception_sensibilite = $35,
+        bilan_qual_perspective_evol = $36,
+        bilan_qual_elements_marquants = $37,
+        bilan_financier_comptabilite = $38,
+        bilan_financier_comparatif = $39,
+        bilan_financier_ressources_humaines = $40,
+        bilan_financier_commentaire = $41,
+        date_fin_validite = $42,
+        sejour_type_handicap = $43
+      WHERE id = $44;
     `;
 
       const agrementValues = [
@@ -412,6 +445,7 @@ export const AgrementsRepository = {
         agrement.protocoleInfoFamille,
         agrement.protocoleRemboursement,
         agrement.budgetGestionPerso,
+        agrement.budgetPersoGestionComplementaire,
         agrement.budgetPaiementSecurise,
         agrement.budgetComplement,
         agrement.bilanChangementEvolution,
@@ -424,6 +458,7 @@ export const AgrementsRepository = {
         agrement.bilanFinancierRessourcesHumaines,
         agrement.bilanFinancierCommentaire,
         dateFinValidite,
+        agrement.sejourTypeHandicap,
         agrementId,
       ];
 
@@ -466,7 +501,7 @@ export const AgrementsRepository = {
       await client.query("COMMIT");
     } catch (err) {
       await client.query("ROLLBACK");
-      console.error("Erreur lors de la mise à jour de l’agrément :", err);
+      console.error("Erreur lors de la mise à jour de l'agrément :", err);
       throw err;
     } finally {
       client.release();
