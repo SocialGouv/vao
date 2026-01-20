@@ -147,7 +147,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     bilanAucunChangementEvolution: requiredUnlessBrouillon(
       yup.boolean().nullable(),
     ),
-    bilanChangementEvolution: requiredUnlessBrouillon(yup.boolean().nullable()),
+    bilanChangementEvolution: requiredUnlessBrouillon(yup.string().nullable()),
     bilanFinancierCommentaire: requiredUnlessBrouillon(yup.string().nullable()),
     bilanFinancierComparatif: requiredUnlessBrouillon(yup.string().nullable()),
     bilanFinancierComptabilite: requiredUnlessBrouillon(
@@ -166,6 +166,9 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     budgetComplement: requiredUnlessBrouillon(yup.string().nullable()),
     budgetGestionPerso: requiredUnlessBrouillon(yup.string().nullable()),
     budgetPaiementSecurise: requiredUnlessBrouillon(yup.string().nullable()),
+    budgetPersoGestionComplementaire: requiredUnlessBrouillon(
+      yup.string().nullable(),
+    ),
     commentaire: requiredUnlessBrouillon(yup.string().nullable()),
 
     dateConfirmCompletude: requiredUnlessBrouillon(yup.date().nullable()),
@@ -184,6 +187,9 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     protocoleRemboursement: requiredUnlessBrouillon(yup.string().nullable()),
     sejourCommentaire: requiredUnlessBrouillon(yup.string().nullable()),
     sejourNbEnvisage: requiredUnlessBrouillon(yup.number().nullable()),
+    sejourTypeHandicap: requiredUnlessBrouillon(
+      yup.array(yup.string().nullable()).nullable(),
+    ),
     statut: yup
       .mixed<AGREMENT_STATUT>()
       .oneOf(Object.values(AGREMENT_STATUT))

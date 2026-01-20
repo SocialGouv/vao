@@ -1,18 +1,17 @@
 <template>
   <DsfrInputGroup
     name="commentaire"
-    label="Commentaire"
+    label="Ajouter un commentaire (optionnel)"
     :model-value="commentaireValue"
     :label-visible="true"
     :is-textarea="true"
     :is-valid="commentaireMeta.valid"
     :error-message="commentaireErrorMessage"
-    hint="Votre commentaire..."
     @update:model-value="onCommentaireChange"
   />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 
@@ -37,7 +36,7 @@ const {
   errorMessage: commentaireErrorMessage,
   handleChange: onCommentaireChange,
   meta: commentaireMeta,
-} = useField("commentaire");
+} = useField<string>("commentaire");
 
 async function getComment() {
   let result = null;

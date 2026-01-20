@@ -18,6 +18,15 @@ const AgrementService = {
     })();
     return id;
   },
+  getAllActivies: async () => {
+    const activites = await buildRequest<
+      AgrementUsagersRoutes["GetAllActivites"]
+    >({
+      path: "/agrements/activites",
+      method: "GET",
+    })();
+    return activites;
+  },
 };
 
 export { AgrementService };

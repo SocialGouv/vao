@@ -1,4 +1,9 @@
-import { addYears, AgrementDto } from "@vao/shared-bridge";
+import {
+  ACTIVITE_TYPE,
+  ActiviteDto,
+  addYears,
+  AgrementDto,
+} from "@vao/shared-bridge";
 
 import { getById } from "../../services/adresse";
 import { getFileMetaData } from "../../services/Document";
@@ -36,6 +41,15 @@ export const AgrementService = {
     return agrement;
   },
 
+  async getAllActivites(): Promise<ActiviteDto[]> {
+    const activites = await AgrementsRepository.getAllActivites();
+    return activites.map((activite) => ({
+      activiteType: activite.activite_type as ACTIVITE_TYPE,
+      code: activite.code,
+      id: activite.id,
+      libelle: activite.libelle,
+    }));
+  },
   async save(agrement: AgrementDto): Promise<number> {
     const dateFinValidite = addYears(agrement?.dateObtentionCertificat, 5);
     let agrementId = null;
