@@ -16,6 +16,7 @@ export interface AgrementDto {
   immatriculation: string | null;
   sejourNbEnvisage: number | null;
   sejourCommentaire: string | null;
+  sejourTypeHandicap: string[] | null;
   vacanciersNbEnvisage: number | null;
   animationAutre: string | null;
   accompRespNb: number | null;
@@ -33,10 +34,11 @@ export interface AgrementDto {
   protocoleInfoFamille: string | null;
   protocoleRemboursement: string | null;
   budgetGestionPerso: string | null;
+  budgetPersoGestionComplementaire: string | null;
   budgetPaiementSecurise: string | null;
   budgetComplement: string | null;
-  bilanChangementEvolution: boolean | null;
   bilanAucunChangementEvolution: boolean | null;
+  bilanChangementEvolution: string | null;
   bilanQualPerceptionSensibilite: string | null;
   bilanQualPerspectiveEvol: string | null;
   bilanQualElementsMarquants: string | null;

@@ -34,9 +34,10 @@ export interface AgrementEntity {
   protocole_info_famille: string | null;
   protocole_remboursement: string | null;
   budget_gestion_perso: string | null;
+  budget_perso_gestion_complementaire: string | null;
   budget_paiement_securise: string | null;
   budget_complement: string | null;
-  bilan_changement_evolution: boolean | null;
+  bilan_changement_evolution: string | null;
   bilan_aucun_changement_evolution: boolean | null;
   bilan_qual_perception_sensibilite: string | null;
   bilan_qual_perspective_evol: string | null;
@@ -50,6 +51,7 @@ export interface AgrementEntity {
   agrement_file: AgrementFilesEntity[] | null;
   agrement_sejour: AgrementSejoursEntity[] | null;
   agrement_bilan_annuel: AgrementBilanAnnuelEntity[] | null;
+  sejour_type_handicap: string[] | null;
 }
 
 /**

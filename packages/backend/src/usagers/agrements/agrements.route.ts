@@ -24,4 +24,6 @@ router.post(
   AgrementController.post,
 );
 
+router.get("/activites", checkJWT, AgrementController.getAllActivites);
+
 export default router;

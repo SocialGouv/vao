@@ -11,4 +11,47 @@ export enum FILE_CATEGORY {
   CHANGEEVOL = "AGR_CHANGEEVOL",
   BILANQUALIT = "AGR_BILANQUALIT",
   BILANFINANC = "AGR_BILANFINANC",
+  BILANQUALITPERCEPTION = "AGR_BILANQUALITPERCEPTION",
+  BILANQUALITPERSPECTIVE = "AGR_BILANQUALITPERSPECTIVE",
+  BILANQUALITELEMARQ = "AGR_BILANQUALITELEMARQ",
+  BILANQUALITCOMPLEMENTAIRES = "AGR_BILANQUALITCOMPLEMENTAIRES",
+  BILANFINANCIERQUATREANNEES = "AGR_BILANFINANCIERQUATREANNEES",
+  PROJETSSEJOURSPREVUS = "AGR_PROJETSSEJOURSPREVUS",
+  PROJETSSEJOURSCOMPETENCESEXPERIENCE = "AGR_PROJSEJCOMPETEXP",
+  PROJETSSEJOURSMESURES = "AGR_PROJETSSEJOURSMESURES",
+  PROJETSSEJOURSCOMPLEMENTAIRES = "AGR_PROJETSSEJOURSCOMPLEMENTAIRES",
+  PROJETSSEJOURSCASIER = "AGR_PROJETSSEJOURSCASIER",
+  PROJETSSEJOURSORGATRANSPORT = "AGR_PROJSSEJORGATRANSPORT",
+  PROJETSSEJOURSSUIVIMED = "AGR_PROJETSSEJOURSSUIVIMED",
+  PROJSEJPROTCOREORIENT = "AGR_PROJSEJPROTCOREORIENT",
+  PROJSSEJOURSPROTCOLERAPATR = "AGR_PROJSSEJOURSPROTCOLERAPATR",
+  PROJSEJOURSBUDGETPERSONNES = "AGR_PROJSEJOURSBUDGETPERSONNES",
 }
+
+export type FileKey =
+  | "filesMotivation"
+  | "fileProcesVerbal"
+  | "fileImmatriculation"
+  | "fileAttestationsRespCivile"
+  | "fileAttestationsRapatriement"
+  | "filesChangeEvol"
+  | "filesBilanQualit"
+  | "filesBilanFinancier"
+  | "filesAgrementSejour"
+  | "filesAccompResp"
+  | "filesSuiviMed"
+  | "filesBilanQualitPerception"
+  | "filesBilanQualitPerspectives"
+  | "filesBilanQualitElementsMarquants"
+  | "filesBilanQualitComplementaires"
+  | "filesBilanFinancierQuatreAnnees"
+  | "filesProjetsSejoursPrevus"
+  | "filesProjetsSejoursCompetencesExperience"
+  | "filesProjetsSejoursMesures"
+  | "filesProjetsSejoursComplementaires"
+  | "fileProjetsSejoursCasier"
+  | "filesProjetsSejoursOrgaTransports"
+  | "filesProjetsSejoursSuiviMed"
+  | "filesProjetsSejoursProtocoleReorientation"
+  | "filesProjetsSejoursProtocoleRapatriement"
+  | "filesProjSejoursBudgetPersonnes";
