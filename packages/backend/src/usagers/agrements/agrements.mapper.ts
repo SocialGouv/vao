@@ -59,6 +59,7 @@ export const AgrementsMapper = {
       protocoleRapatEtranger: entity.protocole_rapat_etranger,
       protocoleRapatUrg: entity.protocole_rapat_urg,
       protocoleRemboursement: entity.protocole_remboursement,
+      regionObtention: entity.region_obtention,
       sejourCommentaire: entity.sejour_commentaire,
       sejourNbEnvisage: entity.sejour_nb_envisage,
       sejourTypeHandicap: entity.sejour_type_handicap,
