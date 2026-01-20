@@ -50,6 +50,7 @@ export interface AgrementDto {
   agrementFiles?: AgrementFilesDto[];
   agrementSejours?: AgrementSejoursDto[];
   agrementBilanAnnuel?: AgrementBilanAnnuelDto[];
+  regionObtention: string | null;
 }
 
 export interface ActiviteDto {

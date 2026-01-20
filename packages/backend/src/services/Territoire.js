@@ -148,7 +148,6 @@ module.exports.readOne = async (idTerritoire) => {
 
 module.exports.update = async (id, { nom, prenom, email, telephone }) => {
   log.i("update - IN", { id });
-
   const response = await getPool().query(query.update, [
     id,
     nom,
