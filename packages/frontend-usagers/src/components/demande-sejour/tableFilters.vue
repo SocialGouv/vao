@@ -1,80 +1,86 @@
 <template>
   <div class="fr-fieldset">
-    <div :class="filedsetClass">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="idFonctionnelleSync"
-          type="text"
-          name="idFonctionnelle"
-          label="Numéro de déclaration"
-          placeholder="Numéro de déclaration"
-          :label-visible="true"
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="idFonctionnelleSync"
+            type="text"
+            name="idFonctionnelle"
+            label="Numéro de déclaration"
+            placeholder="Numéro de déclaration"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="libelleSync"
+            type="text"
+            name="libelle"
+            label="Nom du séjour"
+            placeholder="Nom du séjour"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="siretSync"
+            type="text"
+            name="siret"
+            label="Établissement déclarant"
+            placeholder="Établissement déclarant"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-md-4">
+        <DsfrMultiselectV2
+          v-model="departementSuiviSync"
+          label="Département d'instruction"
+          search
+          select-all
+          id-key="value"
+          :options="departementOptions"
+          @update:model-value="filtersUpdate"
+        />
+      </div>
+      <div class="fr-col-12 fr-col-md-4">
+        <DsfrMultiselectV2
+          v-model="seasonSync"
+          label="Saison"
+          search
+          select-all
+          :options="seasonOptions"
+          @update:model-value="filtersUpdate"
+        >
+          <template #checkbox-label="{ option }">
+            {{ option.charAt(0).toUpperCase() + option.slice(1) }}
+          </template>
+        </DsfrMultiselectV2>
+      </div>
+      <div class="fr-col-12 fr-col-md-4">
+        <DsfrMultiselectV2
+          v-model="statusSync"
+          label="Statut"
+          search
+          select-all
+          :options="defaultStatus"
           @update:model-value="filtersUpdate"
         />
       </div>
     </div>
-    <div :class="filedsetClass">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="libelleSync"
-          type="text"
-          name="libelle"
-          label="Nom du séjour"
-          placeholder="Nom du séjour"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
-      </div>
-    </div>
-    <div :class="filedsetClass">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="siretSync"
-          type="text"
-          name="siret"
-          label="Établissement déclarant"
-          placeholder="Établissement déclarant"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
-      </div>
-    </div>
-    <div :class="filedsetClass">
-      <DsfrMultiselectV2
-        v-model="departementSuiviSync"
-        label="Département d'instruction"
-        search
-        select-all
-        id-key="value"
-        :options="departementOptions"
-        @update:model-value="filtersUpdate"
-      />
-    </div>
-    <div :class="filedsetClass">
-      <DsfrMultiselectV2
-        v-model="seasonSync"
-        label="Saison"
-        search
-        select-all
-        :options="seasonOptions"
-        @update:model-value="filtersUpdate"
-      >
-        <template #checkbox-label="{ option }">
-          {{ option.charAt(0).toUpperCase() + option.slice(1) }}
-        </template>
-      </DsfrMultiselectV2>
-    </div>
-    <div :class="filedsetClass">
-      <DsfrMultiselectV2
-        v-model="statusSync"
-        label="Statut"
-        search
-        select-all
-        :options="defaultStatus"
-        @update:model-value="filtersUpdate"
-      />
-    </div>
-    <div :class="filedsetClass">
+  </div>
+  <div class="fr-grid-row fr-mt-6v fr-mt-md-8v">
+    <div class="fr-col-12 fr-col-md-12">
       <DsfrButton
         type="button"
         label="Extraire en CSV"
@@ -123,9 +129,6 @@ const emits = defineEmits<{
   "filters-update": [];
   "export-get": [];
 }>();
-
-const filedsetClass =
-  "fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-4";
 
 const idFonctionnelleSync = computed({
   get() {
@@ -179,3 +182,11 @@ const seasonSync = computed({
 const filtersUpdate = () => emits("filters-update");
 const exportGet = () => emits("export-get");
 </script>
+
+<style lang="css" scoped>
+.fr-grid-row .fr-input-group,
+.fr-grid-row .fr-multiselect {
+  width: 100% !important; /* force vraiment */
+  max-width: 100% !important;
+}
+</style>
