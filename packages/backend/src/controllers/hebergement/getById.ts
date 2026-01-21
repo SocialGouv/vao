@@ -1,4 +1,7 @@
-import type { HebergementDto, HebergementRoutes } from "@vao/shared-bridge";
+import type {
+  HebergementDto,
+  HebergementUsagersRoutes,
+} from "@vao/shared-bridge";
 import { ERRORS_COMMON } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 

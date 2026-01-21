@@ -35,3 +35,13 @@ export function formatFRDateTime(date: Date) {
 export function formatFRTime(date: Date) {
   return dayjs(date).format("HH:mm");
 }
+/**
+ *
+ * @param Date au format JJ/MM/AAAA
+ * @returns Date au format JS (AAAA-MM-JJ) ou null si la valeur est vide
+ */
+export const parseToISODate = (dateString: string | null): string | null => {
+  if (!dateString) return null;
+  const [day, month, year] = dateString.split("/");
+  return `${year}-${month}-${day}`;
+};
