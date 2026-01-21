@@ -19,7 +19,15 @@ export type RouteSchema<T extends BasicRoute> = {
   query?: yup.ObjectSchema<NonNullable<T["query"]>>;
 };
 
-export type { HebergementRoutes } from "./hebergement";
-export { HebergementRoutesSchema } from "./hebergement";
+export type { HebergementAdminRoutes } from "./admin/hebergement";
+export { HebergementAdminRoutesSchema } from "./admin/hebergement";
+export type { AgrementUsagersRoutes } from "./usagers/agrement";
+export { AgrementUsagersRoutesSchema } from "./usagers/agrement";
+export type { DocumentUsagersRoutes } from "./usagers/document";
+export { DocumentUsagersRoutesSchema } from "./usagers/document";
+export type { HebergementUsagersRoutes } from "./usagers/hebergement";
+export { HebergementUsagersRoutesSchema } from "./usagers/hebergement";
 export type { SiretRoutes } from "./usagers/siret";
 export { SiretRoutesSchema } from "./usagers/siret";
+export type { TerritoireUsagersRoutes } from "./usagers/territoire";
+export { TerritoireUsagersRoutesSchema } from "./usagers/territoire";

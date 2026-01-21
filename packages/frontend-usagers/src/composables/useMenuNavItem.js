@@ -1,12 +1,19 @@
-import { computed, useOrganismeStore, useUserStore } from "#imports";
+import {
+  computed,
+  useOrganismeStore,
+  useUserStore,
+  useAgrementStore,
+} from "#imports";
 import { ROLES as userRolesRef } from "../helpers/users";
 
 export const useMenuNavItems = () => {
   const userStore = useUserStore();
   const organismeStore = useOrganismeStore();
+  const agrementStore = useAgrementStore();
   if (userStore.isConnected) {
     organismeStore.setMyOrganisme();
   }
+
   return computed(() => {
     if (!userStore.isConnected) {
       return [];
@@ -28,6 +35,19 @@ export const useMenuNavItems = () => {
             text: "Liste des utilisateurs",
             to: "/utilisateurs/liste",
           },
+          ...(organismeStore.organismeCourant?.typeOrganisme ===
+            "personne_physique" || agrementStore?.agrementCourant
+            ? [
+                {
+                  text: "Mon agrément",
+                  to: "/mon-agrement",
+                },
+                {
+                  text: "Renouvellement d'agrément",
+                  to: "/agrement",
+                },
+              ]
+            : []),
         ],
       },
       ...(organismeStore.organismeCourant?.complet

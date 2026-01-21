@@ -107,7 +107,7 @@ module.exports.create = async (
   file,
 ) => {
   const {
-    rows: [{ id: agrementId }],
+    rows: [{ agrementId }],
   } = await getPool().query(
     ...query.create(
       organismeId,
@@ -118,6 +118,7 @@ module.exports.create = async (
       file,
     ),
   );
+
   log.d("create - DONE", { agrementId });
   return agrementId;
 };

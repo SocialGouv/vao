@@ -33,6 +33,7 @@ import ErrorPage from "./ErrorPage.vue";
 import Skiplinks from "./Skiplinks.vue";
 import Accessibilite from "./Accessibilite.vue";
 import TitleWithIcon from "./TitleWithIcon.vue";
+import DsfrLinkV2 from "./DsfrLinkV2.vue";
 export {
   CguValidation,
   ApiUnavailable,
@@ -69,4 +70,5 @@ export {
   Skiplinks,
   Accessibilite,
   TitleWithIcon,
+  DsfrLinkV2,
 };
