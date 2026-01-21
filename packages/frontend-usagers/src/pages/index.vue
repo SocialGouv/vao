@@ -7,9 +7,9 @@
       <h2>Déposez votre dossier de renouvellement d’agrément</h2>
       <p>
         Votre agrément actuel expire le
-        {{ formatLongDateFr(organismeCourant?.agrement?.dateFinValidite) }}. Une
-        fois l’agrément renouvelé, vous pourrez déposer de nouvelles
-        déclarations de séjours dans la continuité du précédent agrément.
+        {{ formatFR(organismeCourant?.agrement?.dateFinValidite) }}. Une fois
+        l’agrément renouvelé, vous pourrez déposer de nouvelles déclarations de
+        séjours dans la continuité du précédent agrément.
       </p>
     </div>
     <div v-if="isExpirySoon" class="fr-alert fr-alert--warning fr-mb-5v">
@@ -49,7 +49,7 @@
 
 <script setup>
 import { CardsNumber } from "@vao/shared-ui";
-import { formatLongDateFr } from "@vao/shared-bridge";
+import { formatFR } from "@vao/shared-bridge";
 
 definePageMeta({
   middleware: ["is-connected"],
