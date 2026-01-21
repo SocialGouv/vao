@@ -5,7 +5,7 @@ import { getPool } from "../../utils/pgpool";
 
 const log = Logger(module.filename);
 
-export const UserFactory = {
+export const UsersRepository = {
   create: async ({ user }: { user: any }) => {
     log.i("create - IN");
 
@@ -48,7 +48,7 @@ export const UserFactory = {
         `;
     const response = await getPool().query(query(), [
       user.email,
-      user.password,
+      user.password || null,
       user.status_code || statusUserFront.NEED_EMAIL_VALIDATION,
       user.nom,
       user.prenom,

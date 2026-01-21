@@ -16,16 +16,9 @@ jest.mock("../../middlewares/checkJWTWithoutCGU", () => jest.fn());
 let user: any;
 const userFixtureComplement = {
   cgu_accepted: false,
-  status_code: statusUserFront.NEED_EMAIL_VALIDATION,
+  status_code: statusUserFront.VALIDATED,
 };
-/*
-jest.mock("../../middlewares/checkJWTWithoutCGU", () => {
-  return jest.fn((req, res, next) => {
-    req.decoded = user[0];
-    next();
-  });
-});
-*/
+
 beforeAll(async () => {
   await createTestContainer(userFixtureComplement);
   user = await createUsagersUserValide();
@@ -48,7 +41,7 @@ afterEach(() => {
 });
 
 describe("POST /fo-user/accept-cgu/", () => {
-  it("devrait retourner un user", async () => {
+  it("devrait retourner 200 avec un user", async () => {
     const response = await request(app).post(`/fo-user/accept-cgu/`);
     expect(response.status).toBe(200);
   });

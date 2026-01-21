@@ -3,7 +3,7 @@ import { getPool } from "../../utils/pgpool";
 
 const log = Logger(module.filename);
 
-export const UserFactory = {
+export const UsersRepository = {
   create: async ({ user }: { user: any }) => {
     log.i("create - IN");
 

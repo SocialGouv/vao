@@ -1,5 +1,5 @@
-import { UserFactory as AdminUserFactory } from "../../../factories/admin/user.factory";
-import { UserFactory as UsagerUserFactory } from "../../../factories/usagers/user.factory";
+import { UsersRepository as AdminUsersRepository } from "../../../repositories/admin/Users";
+import { UsersRepository as UsagerUsersRepository } from "../../../repositories/usagers/Users";
 import { create as createBoUserService } from "../../../services/BoUser";
 import { registerByEmail as createFrontUserService } from "../../../services/User";
 
@@ -20,7 +20,6 @@ export const createUsagersUser = async (user = {}) => {
   const fixture = {
     email: `frontuser${timestamp}@example.com`,
     nom: "FrontNom",
-    password: "password123",
     prenom: "FrontPrenom",
     siret: `123456789012${timestamp.toString().slice(-2)}`,
     telephone: "0102030405",
@@ -36,14 +35,13 @@ export const createUsagersUserValide = async (user = {}) => {
   const fixture = {
     email: `frontuser${timestamp}@example.com`,
     nom: "FrontNom",
-    password: "password123",
     prenom: "FrontPrenom",
     siret: `123456789012${timestamp.toString().slice(-2)}`,
     telephone: "0102030405",
     terCode: "FRA",
     ...user,
   };
-  const result = await UsagerUserFactory.create({ user: fixture });
+  const result = await UsagerUsersRepository.create({ user: fixture });
   return result.user;
 };
 
@@ -59,6 +57,6 @@ export const createAdminUserValide = async (user = {}) => {
     verified: true,
     ...user,
   };
-  const result = await AdminUserFactory.create({ user: fixture });
+  const result = await AdminUsersRepository.create({ user: fixture });
   return result.user;
 };
