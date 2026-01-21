@@ -42,7 +42,7 @@ export const UsersRepository = {
         `;
     const response = await getPool().query(query(), [
       user.email,
-      user.password,
+      user.password || null,
       user?.validated || false,
       user?.deleted || false,
       user.nom,

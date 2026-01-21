@@ -50,7 +50,6 @@ export const createAdminUserValide = async (user = {}) => {
   const fixture = {
     email: `bouser${timestamp}@example.com`,
     nom: "boNom",
-    password: "password456",
     prenom: "boPrenom",
     telephone: "0102030405",
     terCode: "FRA",
