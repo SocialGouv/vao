@@ -53,6 +53,8 @@ fileignoreconfig:
   checksum: 180654b4eb22710ddeba4331c45b63ed92542e989744f390182a90a563eb8e1b
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
   checksum: 9e05b5b350d7e13beb365c6a550dbb2f4d39a0a1d12b43e9fac815fd3c1fdc8d
+- filename: packages/backend/src/__tests__/usagers/authentification.test.ts
+  checksum: c15d2aeea878e0da568caa3a14d4dc58287fad8ee1cd6d026626c38870e8bc47
 - filename: packages/backend/src/config.js
   checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/__tests__/bo-user/accept-cgu.test.js
