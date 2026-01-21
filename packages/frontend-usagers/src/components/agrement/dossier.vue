@@ -113,7 +113,7 @@ import * as yup from "yup";
 import {
   AGREMENT_STATUT,
   FILE_CATEGORY,
-  formatShortDateFr,
+  formatFR,
   parseToISODate,
 } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
@@ -163,9 +163,7 @@ const validationSchema = yup.object({
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
   motivations: props.initAgrement.motivations || "",
-  dateObtentionCertificat: formatShortDateFr(
-    props.initAgrement.dateObtentionCertificat,
-  ),
+  dateObtentionCertificat: formatFR(props.initAgrement.dateObtentionCertificat),
 };
 
 const { handleSubmit } = useForm({
