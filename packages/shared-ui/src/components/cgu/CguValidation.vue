@@ -1,5 +1,10 @@
 <template>
-  <main id="contenu-principal">
+  <main id="contenu-principal" :class="{ 'small-headings': allowValidation }">
+    <div class="fr-grid-row">
+      <div class="fr-col">
+        <h1>Conditions Générales d'Utilisation (CGU)</h1>
+      </div>
+    </div>
     <section aria-labelledby="preambule">
       <h2 id="preambule">Préambule</h2>
       <ol>
@@ -715,4 +720,13 @@ const onValidate = () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.small-headings h1,
+.small-headings h2,
+.small-headings h3,
+.small-headings h4 {
+  white-space: nowrap;
+  transform: scale(0.6);
+  transform-origin: left;
+}
+</style>

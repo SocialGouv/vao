@@ -6,11 +6,6 @@
       </div>
     </div>
 
-    <div class="fr-grid-row">
-      <div class="fr-col">
-        <h1>Conditions Générales d'Utilisation (CGU)</h1>
-      </div>
-    </div>
     <CguValidation />
   </div>
 </template>
