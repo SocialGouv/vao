@@ -7,9 +7,9 @@
       <h2>Déposez votre dossier de renouvellement d’agrément</h2>
       <p>
         Votre agrément actuel expire le
-        {{ formatLongDateFr(organismeCourant?.agrement?.dateFinValidite) }}. Une
-        fois l’agrément renouvelé, vous pourrez déposer de nouvelles
-        déclarations de séjours dans la continuité du précédent agrément.
+        {{ formatFR(organismeCourant?.agrement?.dateFinValidite) }}. Une fois
+        l’agrément renouvelé, vous pourrez déposer de nouvelles déclarations de
+        séjours dans la continuité du précédent agrément.
       </p>
     </div>
     <div v-if="isExpirySoon" class="fr-alert fr-alert--warning fr-mb-5v">
@@ -53,7 +53,7 @@ import NationalIdentityCard from "@gouvfr/dsfr/dist/artwork/pictograms/document/
 import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
 import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
 
-import { formatLongDateFr } from "@vao/shared-bridge";
+import { formatFR } from "@vao/shared-bridge";
 
 definePageMeta({
   middleware: ["is-connected"],
