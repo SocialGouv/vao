@@ -16,7 +16,6 @@ export default async function acceptCgu(
   res: Response,
   next: NextFunction,
 ) {
-  console.log("Accept CGU called");
   const user = req.decoded;
   log.i("IN", { user });
   if (!user) {
