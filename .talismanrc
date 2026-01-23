@@ -57,8 +57,8 @@ fileignoreconfig:
   checksum: 600d325169fbfde8360f18412ffdaf4b5a2cf77092b8ef0240d4c9129b36ec94
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
   checksum: 9e05b5b350d7e13beb365c6a550dbb2f4d39a0a1d12b43e9fac815fd3c1fdc8d
-- filename: packages/backend/src/__tests__/usagers/accept-cgu.test.ts
-  checksum: e9b027e184d985d212be8447e44512fd867589b3cff5c0628e7a87520d6e9ed3
+- filename: packages/backend/src/__tests__/usagers/authentification.test.ts
+  checksum: c15d2aeea878e0da568caa3a14d4dc58287fad8ee1cd6d026626c38870e8bc47
 - filename: packages/backend/src/config.js
   checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/__tests__/bo-user/accept-cgu.test.js
@@ -112,7 +112,7 @@ fileignoreconfig:
 - filename: packages/backend/src/services/Document.js
   checksum: 1fbeae31395935da7b8daef1d3872151b793d433d1cde968d0607b4628ba50a8
 - filename: packages/backend/src/services/Insee.js
-  checksum: 56f1881f4f97498ce67fb3113015197b58f44ccf4c2e3b39e8b97f635e217af4
+  checksum: 8c067dbdd0a587b46905003d34a13df176fe03192253e881287c21577311f564
 - filename: packages/backend/src/services/Organisme.js
   checksum: 380a1a8859259026f36e77b17308658e9554df253c2c54790559fd8c0014e89a
 - filename: packages/backend/src/services/Territoire.js

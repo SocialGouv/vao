@@ -148,4 +148,18 @@ describe("register controller", () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ code: "MailEnvoye" });
   });
+
+  it("should return 400 if SIRET is not found", async () => {
+    User.read.mockResolvedValue([]);
+    insee.getEtablissement.mockResolvedValue(null);
+
+    await register(req, res, next);
+
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({
+        message: "Le SIRET fourni est inconnu. Veuillez vérifier et réessayer.",
+        statusCode: 400,
+      }),
+    );
+  });
 });
