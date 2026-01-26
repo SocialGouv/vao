@@ -78,7 +78,7 @@ export default async function update(
           partOrganisme.PERSONNE_PHYSIQUE ||
         (organismeWithTheSiret.typeOrganisme ===
           partOrganisme.PERSONNE_MORALE &&
-          organismeWithTheSiret.siegeSocial)
+          organismeWithTheSiret?.personneMorale?.siegeSocial)
       ) {
         const territoire = await TerritoireService.readFicheIdByTerCode(
           organismeWithTheSiret.agrement.regionObtention,
