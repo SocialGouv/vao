@@ -471,15 +471,20 @@ async function register() {
       case ERRORS_LOGIN.SiretNotFound:
         description =
           body.message ||
-          "Le SIRET fourni est inconnu. Veuillez vérifier et réessayer.!";
+          "Le SIRET fourni est inconnu. Veuillez vérifier et réessayer.";
         nextTick(() => {
           const inputElement = document.querySelector(
             ".siret-input-group input",
           );
           inputElement?.focus();
         });
-
-        break;
+        if (description) {
+          toaster.error({
+            titleTag: "h2",
+            description,
+          });
+        }
+        return;
     }
     if (description) {
       toaster.error({
