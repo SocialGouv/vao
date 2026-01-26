@@ -478,8 +478,13 @@ async function register() {
           );
           inputElement?.focus();
         });
-
-        break;
+        if (description) {
+          toaster.error({
+            titleTag: "h2",
+            description,
+          });
+        }
+        return;
     }
     if (description) {
       toaster.error({
