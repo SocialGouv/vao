@@ -11,12 +11,26 @@ const getTagSejourLibelle = eigUtils.getTagSejourLibelle;
 const log = logger("stores/hebergement");
 
 interface EigStoreState {
-  eigs: any[];
-  availableDs: any[];
-  selectedDemande: any | null;
-  currentEig: any | null;
+  eigs: unknown[];
+  availableDs: unknown[];
+  selectedDemande: Record<string, unknown> | null;
+  currentEig: Record<string, unknown> | null;
   total: number;
 }
+
+type DemandeWithHebergements = {
+  hebergement?: {
+    hebergements?: Array<{
+      coordonnees?: { adresse?: { departement?: string } };
+    }>;
+  };
+  dateDebut?: string;
+  dateFin?: string;
+};
+
+type EigOneResponse = { eig: Record<string, unknown> };
+type EigMeResponse = { eig: { eigs: unknown[]; total: number } };
+type SejourOneResponse = { demande: Record<string, unknown> };
 
 export const useEigStore = defineStore("eig", {
   state: (): EigStoreState => ({
@@ -50,16 +64,18 @@ export const useEigStore = defineStore("eig", {
       if (!this.selectedDemande) {
         return null;
       }
-      return [this.selectedDemande.dateDebut, this.selectedDemande.dateFin];
+      const selectedDemande = this.selectedDemande as DemandeWithHebergements;
+      if (!selectedDemande.dateDebut || !selectedDemande.dateFin) {
+        return null;
+      }
+      return [selectedDemande.dateDebut, selectedDemande.dateFin];
     },
     departementsOptions(): string[] {
+      const selectedDemande = this.selectedDemande as DemandeWithHebergements;
       return (
-        this.selectedDemande?.hebergement?.hebergements
-          ?.map(
-            (hebergement: any) =>
-              hebergement?.coordonnees?.adresse?.departement,
-          )
-          .filter((departement: any) => !!departement) ?? []
+        selectedDemande?.hebergement?.hebergements
+          ?.map((hebergement) => hebergement?.coordonnees?.adresse?.departement)
+          .filter((departement): departement is string => !!departement) ?? []
       );
     },
   },
@@ -71,10 +87,10 @@ export const useEigStore = defineStore("eig", {
         log.i("fetchEig for one id - IN");
 
         try {
-          const { eig } = await $fetchBackend(`/eig/${eigId}`, {
+          const { eig } = (await $fetchBackend(`/eig/${eigId}`, {
             method: "GET",
             credentials: "include",
-          });
+          })) as EigOneResponse;
 
           this.currentEig = eig;
           log.i("fetchEig for one id - OUT");
@@ -96,11 +112,11 @@ export const useEigStore = defineStore("eig", {
       offset?: number;
       sortBy?: string;
       sortDirection?: string;
-      search?: any;
+      search?: Record<string, unknown>;
     } = {}) {
       log.i("fetchEig - IN");
       try {
-        const { eig } = await $fetchBackend("/eig/me", {
+        const { eig } = (await $fetchBackend("/eig/me", {
           method: "GET",
           credentials: "include",
           params: {
@@ -110,7 +126,7 @@ export const useEigStore = defineStore("eig", {
             sortDirection,
             search,
           },
-        });
+        })) as EigMeResponse;
         this.eigs = eig.eigs;
         this.total = eig.total;
         log.i("fetchEig - OUT");
@@ -120,7 +136,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async updateEig(eigId: string, type: string, data: any) {
+    async updateEig(eigId: string, type: string, data: unknown) {
       try {
         return await $fetchBackend(`/eig/${eigId}`, {
           method: "PUT",
@@ -135,7 +151,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async create(data: any) {
+    async create(data: unknown) {
       try {
         return await $fetchBackend("/eig", {
           method: "POST",
@@ -149,7 +165,7 @@ export const useEigStore = defineStore("eig", {
         throw err;
       }
     },
-    async depose(eigId: string, body: any) {
+    async depose(eigId: string, body: unknown) {
       try {
         return await $fetchBackend(`/eig/depose/${eigId}`, {
           method: "POST",
@@ -180,7 +196,7 @@ export const useEigStore = defineStore("eig", {
           params: { search },
         });
 
-        this.availableDs = res;
+        this.availableDs = res as unknown[];
       } catch (err) {
         this.availableDs = [];
         log.w("getAvailableDs - DONE with error", err);
@@ -195,10 +211,10 @@ export const useEigStore = defineStore("eig", {
       }
 
       try {
-        const { demande } = await $fetchBackend(`/sejour/${id}`, {
+        const { demande } = (await $fetchBackend(`/sejour/${id}`, {
           method: "GET",
           credentials: "include",
-        });
+        })) as SejourOneResponse;
         if (demande) {
           log.i("setDemandeCourante - DONE");
           this.selectedDemande = demande;

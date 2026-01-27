@@ -131,7 +131,7 @@ const updateOrCreate = async (data, type) => {
     }
 
     toaster.success(`EIG ${eigId.value ? "sauvegardée" : "créée"}`);
-    log.d(`EIG ${eigId} mis à jour`);
+    log.d(`EIG ${eigId.value} mis à jour`);
     eigId.value = response.id;
     return await nextHash();
   } catch (error) {

@@ -24,16 +24,16 @@ e2e/
 
 ```bash
 # Tests E2E en local
-yarn tests:e2e
+pnpm -w tests:e2e
 
 # Interface graphique
-yarn tests:e2e:ui
+pnpm -w tests:e2e:ui
 
 # Mode debug
-yarn tests:e2e --debug
+pnpm -w tests:e2e --debug
 
 # Fichier spécifique
-yarn tests:e2e --grep "register_and_login"
+pnpm -w tests:e2e --grep "register_and_login"
 ```
 
 ## Scénarios testés
@@ -96,10 +96,10 @@ test("register_and_login", async ({ page }) => {
 
 ```bash
 # Mode debug avec pause
-yarn tests:e2e --debug
+pnpm -w tests:e2e --debug
 
 # Tests avec trace
-yarn tests:e2e --trace on
+pnpm -w tests:e2e --trace on
 
 # Inspection des sélecteurs
 npx playwright codegen

@@ -6,12 +6,11 @@
 </template>
 
 <script setup>
+import downloadSVG from "../assets/download.svg";
 const props = defineProps({
   isDownloading: { type: Boolean, default: false },
   message: { type: String, required: false, default: null },
 });
-
-import downloadSVG from "../assets/download.svg";
 </script>
 
 <style scoped>

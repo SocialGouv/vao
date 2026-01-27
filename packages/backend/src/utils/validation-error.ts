@@ -2,7 +2,9 @@ import AppError, { AppErrorOptions } from "./error";
 
 export interface ValidationAppErrorCause {
   errors: unknown;
-  [key: string]: any; // si tu veux autoriser plus de champs
+  // Allows attaching additional fields as needed.
+  // NOTE: use `_` (not `key`) to avoid Talisman false-positives.
+  [_: string]: unknown;
 }
 
 export interface ValidationAppErrorOptions

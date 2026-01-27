@@ -454,7 +454,7 @@ const initialValues = {
     props.user?.serviceCompetent ?? getInitialTerritoireCode(props.user),
   territoireCode: props.user?.territoireCode ?? null,
   roles: [...(props.user?.roles ?? [])],
-  isActive: !props.user?.deleted ?? true,
+  isActive: props.user?.deleted ? false : true,
 };
 
 const validationSchema = yup.object(BoUser.BoUserSchema);

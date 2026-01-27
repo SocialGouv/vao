@@ -582,8 +582,11 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { FileUpload, hebergement as hebergementUtils } from "@vao/shared-ui";
-import { fileUtils } from "@vao/shared-ui";
+import {
+  FileUpload,
+  hebergement as hebergementUtils,
+  fileUtils,
+} from "@vao/shared-ui";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 const config = useRuntimeConfig();

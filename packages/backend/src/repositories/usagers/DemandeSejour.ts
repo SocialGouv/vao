@@ -73,7 +73,7 @@ export const DemandeSejourRepository = {
     departementCodes: string[];
     territoireCode: string;
     criterias: string[];
-    queryParams: any;
+    queryParams: Record<string, unknown>;
   }) => {
     log.i("getByDepartementCodes - IN");
 

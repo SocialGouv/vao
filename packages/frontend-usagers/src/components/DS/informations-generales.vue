@@ -180,6 +180,7 @@ const periode = computed(() => {
   if (moisDebut < 6) return "printemps";
   if (moisDebut < 9) return "été";
   if (moisDebut < 12) return "automne";
+  return "";
 });
 
 const validationSchema = yup.object(DeclarationSejour.baseSchema);

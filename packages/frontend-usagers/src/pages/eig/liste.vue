@@ -109,10 +109,6 @@
 </template>
 
 <script setup>
-definePageMeta({
-  middleware: ["is-connected", "check-roles"],
-});
-
 import dayjs from "dayjs";
 import {
   eigModel,
@@ -123,8 +119,12 @@ import {
   eigUtils,
   EigStatusBadge,
 } from "@vao/shared-ui";
-const mapEigToLabel = eigUtils.mapEigToLabel;
 import { getEigPermissions, canDelete } from "../../utils/eig";
+const mapEigToLabel = eigUtils.mapEigToLabel;
+
+definePageMeta({
+  middleware: ["is-connected", "check-roles"],
+});
 
 const eig = reactive({
   allowEigReadWrite: false,

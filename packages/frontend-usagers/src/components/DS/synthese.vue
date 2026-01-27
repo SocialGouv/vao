@@ -400,6 +400,7 @@ const libelleBoutonTransmission = computed(() => {
   ) {
     return "Transmettre ma déclaration de séjour à 8 jours";
   }
+  return "";
 });
 
 function validateHebergement(index) {

@@ -4,14 +4,19 @@ import { $fetchBackend, logger } from "#imports";
 const log = logger("stores/demande-sejour");
 
 interface DemandeSejourStoreState {
-  demandes: any[];
+  demandes: unknown[];
   totalDemandes: number;
-  demandeCourante: any;
-  messages: any[] | null;
-  demandesDeprecated: any[];
+  demandeCourante: Record<string, unknown>;
+  messages: unknown[] | null;
+  demandesDeprecated: unknown[];
   totalDemandesDeprecated: number;
-  stats: any | null;
+  stats: unknown | null;
 }
+
+type DemandesResponse = { demandes?: unknown[]; total?: number };
+type DemandeResponse = { demande?: Record<string, unknown> };
+type StatsResponse = { stats?: unknown };
+type ReadMessagesResponse = { readMessages?: unknown };
 
 const resetDemandeCourante = () => ({
   informationsOrganisme: {},
@@ -50,17 +55,17 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     async fetchDemandesDeprecated({ sortBy }: { sortBy?: string } = {}) {
       log.i("fetchDemandes - IN");
       try {
-        const { demandes, total } = await $fetchBackend("/sejour/deprecated", {
+        const { demandes, total } = (await $fetchBackend("/sejour/deprecated", {
           method: "GET",
           credentials: "include",
           params: {
             sortBy,
           },
-        });
+        })) as DemandesResponse;
         if (demandes) {
           log.i("fetchDemandes - DONE");
           this.demandesDeprecated = demandes;
-          this.totalDemandesDeprecated = total;
+          this.totalDemandesDeprecated = total ?? 0;
         }
       } catch (err) {
         log.w("fetchDemandes - DONE with error", err);
@@ -69,18 +74,18 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
         throw err;
       }
     },
-    async fetchDemandes(params: any) {
+    async fetchDemandes(params: Record<string, unknown>) {
       log.i("fetchDemandes - IN");
       try {
-        const { demandes, total } = await $fetchBackend("/sejour", {
+        const { demandes, total } = (await $fetchBackend("/sejour", {
           method: "GET",
           credentials: "include",
           params,
-        });
+        })) as DemandesResponse;
         if (demandes) {
           log.i("fetchDemandes - DONE");
           this.demandes = demandes;
-          this.totalDemandes = total;
+          this.totalDemandes = total ?? 0;
         }
       } catch (err) {
         log.w("fetchDemandes - DONE with error", err);
@@ -92,10 +97,10 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     async setDemandeCourante(id: number) {
       log.i("setDemandeCourante - IN");
       try {
-        const { demande } = await $fetchBackend(`/sejour/${id}`, {
+        const { demande } = (await $fetchBackend(`/sejour/${id}`, {
           method: "GET",
           credentials: "include",
-        });
+        })) as DemandeResponse;
         if (demande) {
           log.i("setDemandeCourante - DONE");
           this.demandeCourante = demande;
@@ -109,7 +114,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
       log.i("resetDemandeCourante - IN");
       this.demandeCourante = resetDemandeCourante();
     },
-    async postDemande(demande: any) {
+    async postDemande(demande: unknown) {
       log.i("postDemande - IN", { demande });
       try {
         await $fetchBackend(`/demandes-sejour`, {
@@ -132,7 +137,7 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
 
         if (messages) {
           log.i("fetchMessages - DONE");
-          this.messages = messages;
+          this.messages = messages as unknown[];
         } else {
           throw new Error("erreur sur la récupération des messages");
         }
@@ -145,13 +150,13 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     async readMessages(declarationId: string) {
       log.i("readMessages - In");
       try {
-        const { readMessages } = await $fetchBackend(
+        const { readMessages } = (await $fetchBackend(
           `/message/read/${declarationId}`,
           {
             method: "GET",
             credentials: "include",
           },
-        );
+        )) as ReadMessagesResponse;
 
         if (readMessages) {
           log.i("readMessages - DONE");
@@ -166,10 +171,10 @@ export const useDemandeSejourStore = defineStore("demandeSejour", {
     async getStats() {
       log.i("getStats - In");
       try {
-        const { stats } = await $fetchBackend("/sejour/stats", {
+        const { stats } = (await $fetchBackend("/sejour/stats", {
           method: "GET",
           credentials: "include",
-        });
+        })) as StatsResponse;
         this.stats = stats;
         return stats;
       } catch (err) {

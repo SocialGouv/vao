@@ -10,6 +10,10 @@ import logger from "../../utils/logger";
 
 const log = logger(module.filename);
 
+type DeclarationFileItem = {
+  type?: string;
+};
+
 export default async function post(
   req: UserRequest,
   res: Response,
@@ -62,7 +66,7 @@ export default async function post(
     }
 
     sourceDeclaration.files = sourceDeclaration.files?.files?.filter(
-      (f: any) =>
+      (f: DeclarationFileItem) =>
         f.type !== "declaration_2_mois" && f.type !== "AR_declaration_2_mois",
     );
     const newDeclarationId = await DemandeSejour.copy({

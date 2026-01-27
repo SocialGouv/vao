@@ -9,8 +9,7 @@
 </template>
 
 <script setup>
-import { Chat } from "@vao/shared-ui";
-import { fileUtils } from "@vao/shared-ui";
+import { Chat, fileUtils } from "@vao/shared-ui";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 const route = useRoute();

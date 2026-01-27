@@ -1,4 +1,4 @@
-import { HebergementDto } from "@vao/shared-bridge";
+import type { HebergementDto } from "@vao/shared-bridge";
 
 import Hebergement from "../../../services/hebergement/Hebergement";
 

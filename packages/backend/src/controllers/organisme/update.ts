@@ -1,6 +1,5 @@
 import { type NextFunction, type Response } from "express";
 
-import MailUtils = require("../../utils/mail");
 import { partOrganisme } from "../../helpers/org-part";
 import UserFoService from "../../services/FoUser";
 import { mailService } from "../../services/mail";
@@ -9,6 +8,7 @@ import TerritoireService from "../../services/Territoire";
 import { UserRequest } from "../../types/request";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
+import MailUtils from "../../utils/mail";
 
 const log = logger(module.filename);
 

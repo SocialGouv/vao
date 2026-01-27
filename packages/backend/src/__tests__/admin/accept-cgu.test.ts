@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import request from "supertest";
 
 import app from "../../app";
@@ -19,7 +20,7 @@ jest.mock("../../middlewares/bo-check-JWT-without-CGU", () => jest.fn());
 beforeAll(async () => {
   await createTestContainer();
   user = await createAdminUserValide(userFixtureComplement);
-  config.tokenSecret_BO = require("crypto").randomBytes(32).toString("hex");
+  config.tokenSecret_BO = crypto.randomBytes(32).toString("hex");
 });
 
 beforeEach(() => {

@@ -7,9 +7,8 @@ import {
   DsfrCheckbox,
   DsfrFieldset,
   DsfrInput,
+  type DsfrMultiSelectProps,
 } from "@gouvminint/vue-dsfr";
-
-import type { DsfrMultiSelectProps } from "@gouvminint/vue-dsfr";
 
 interface Option {
   id?: string;
