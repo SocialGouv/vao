@@ -33,6 +33,10 @@
 
 <script setup>
 import { CardsNumber } from "@vao/shared-ui";
+import NationalIdentityCard from "@gouvfr/dsfr/dist/artwork/pictograms/document/national-identity-card.svg";
+import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
+import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
+
 definePageMeta({
   middleware: ["is-connected"],
 });
@@ -90,10 +94,6 @@ const bottomCards = computed(() => [
 
 const libelleMessageAccueil =
   "Afin de profiter de toutes les fonctionnalités de ce site, nous vous invitons à renseigner votre fiche organisateur";
-
-import NationalIdentityCard from "@gouvfr/dsfr/dist/artwork/pictograms/document/national-identity-card.svg";
-import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
-import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
 
 const tiles = computed(() => [
   {

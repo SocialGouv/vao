@@ -4,7 +4,7 @@ import { buildRequestPath } from "@vao/shared-bridge";
 
 export type FetchBackendOptions = Record<string, unknown>;
 
-export const $fetchBackend = <T = unknown>(
+export const $fetchBackend = <T = any>(
   url: string,
   option: FetchBackendOptions = {},
 ): Promise<T> => {

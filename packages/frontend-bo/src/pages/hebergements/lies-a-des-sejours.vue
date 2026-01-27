@@ -13,8 +13,9 @@
 </template>
 
 <script setup>
-const demandeSejourStore = useDemandeSejourStore();
 import { columnsTable } from "@vao/shared-ui";
+
+const demandeSejourStore = useDemandeSejourStore();
 const optionType = columnsTable.optionType;
 const defs = [
   ["nom", "Nom", optionType.SORTABLE],

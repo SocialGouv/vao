@@ -242,7 +242,6 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable, apiModel } from "@vao/shared-ui";
-const apiTypes = apiModel.apiTypes;
 import { SiretService } from "~/services/siretService";
 import {
   ERRORS_SIRET_MESSAGES,
@@ -250,6 +249,7 @@ import {
   formatSiret,
   formatFR,
 } from "@vao/shared-bridge";
+const apiTypes = apiModel.apiTypes;
 
 const toaster = useToaster();
 const log = logger("components/organisme/personne-physique");

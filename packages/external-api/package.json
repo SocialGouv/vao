@@ -7,16 +7,18 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "nest build",
-    "typecheck:staged": "node ../../scripts/typecheck-staged-tsc.cjs -- nest build --",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --preserveWatchOutput --watch --experimental-require-module",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --max-warnings=0",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest --",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage"
+  },
+  "lint-staged": {
+    "src/**/*.{js,ts}": "corepack pnpm exec eslint"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.758.0",

@@ -1,8 +1,8 @@
 import type { BasicRoute, RouteSchema } from "@vao/shared-bridge";
-import type { NextFunction, RequestHandler } from "express";
+import { NextFunction } from "express";
 import * as yup from "yup";
 
-import type { RouteRequest } from "../types/request";
+import type { RouteRequest, RouteResponse } from "../types/request";
 import AppError from "../utils/error";
 import logger from "../utils/logger";
 
@@ -16,29 +16,22 @@ const ERRORS = {
 
 export function requestValidatorMiddleware<T extends BasicRoute>(
   validator: RouteSchema<T>,
-): RequestHandler<
-  Record<string, string>,
-  unknown,
-  unknown,
-  Record<string, string> | undefined
-> {
-  return (req, _res, next: NextFunction) => {
-    const typedReq = req as unknown as RouteRequest<T>;
+) {
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    req: RouteRequest<any>,
+    _res: RouteResponse<T>,
+    next: NextFunction,
+  ) => {
     try {
-      typedReq.validatedParams = requestParamsValidator<T["params"]>(
+      req.validatedParams = requestParamsValidator(
         validator.params,
-        typedReq.params,
+        req.params,
       );
-      typedReq.validatedQuery = requestQueryValidator<T["query"]>(
-        validator.query,
-        typedReq.query,
-      );
-      typedReq.validatedBody = requestBodyValidator<T["body"]>(
-        validator.body,
-        typedReq.body,
-      );
-    } catch {
-      log.w("missing or invalid parameter");
+      req.validatedQuery = requestQueryValidator(validator.query, req.query);
+      req.validatedBody = requestBodyValidator(validator.body, req.body);
+    } catch (error) {
+      log.w("missing or invalid parameter", error);
       return next(
         new AppError("Paramètre incorrect", {
           statusCode: 400,
@@ -51,42 +44,45 @@ export function requestValidatorMiddleware<T extends BasicRoute>(
 
 export function requestParamsValidator<T>(
   validator: yup.AnySchema<T> | undefined,
-  params: unknown,
-): T | undefined {
+  params: any | undefined,
+) {
   if (params && validator) {
     try {
       return validator.validateSync(params, { stripUnknown: true });
-    } catch {
+    } catch (error) {
+      log.w("INVALID_PARAMS", error);
       throw new Error(ERRORS.INVALID_PARAMS);
     }
   }
-  return undefined;
+  return {};
 }
 
 export function requestQueryValidator<T>(
   validator: yup.AnySchema<T> | undefined,
-  query: unknown,
-): T | undefined {
+  query: any | undefined,
+) {
   if (query && validator) {
     try {
       return validator.validateSync(query, { stripUnknown: true });
-    } catch {
+    } catch (error) {
+      log.d("INVALID_QUERY", error);
       throw new Error(ERRORS.INVALID_QUERY);
     }
   }
-  return undefined;
+  return {};
 }
 
 export function requestBodyValidator<T>(
   validator: yup.AnySchema<T> | undefined,
-  body: unknown,
-): T | undefined {
+  body: any | undefined,
+) {
   if (body && validator) {
     try {
       return validator.validateSync(body, { stripUnknown: true });
-    } catch {
+    } catch (error) {
+      log.d("INVALID_BODY", error);
       throw new Error(ERRORS.INVALID_BODY);
     }
   }
-  return undefined;
+  return {};
 }

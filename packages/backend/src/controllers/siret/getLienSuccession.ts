@@ -1,5 +1,6 @@
 import type { SiretRoutes, SiretSuccesseurDto } from "@vao/shared-bridge";
 import { ERRORS_SIRET } from "@vao/shared-bridge";
+import { AxiosError } from "axios";
 import type { NextFunction } from "express";
 
 import { getEtablissementSuccesseur } from "../../services/Insee";
@@ -8,15 +9,6 @@ import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 
 const log = logger(module.filename);
-
-function isAxiosLikeError(e: unknown): e is { response?: { status?: number } } {
-  return (
-    typeof e === "object" &&
-    e !== null &&
-    "response" in e &&
-    typeof (e as { response?: unknown }).response === "object"
-  );
-}
 
 export default async function get(
   req: RouteRequest<SiretRoutes["GetSuccesseur"]>,
@@ -39,8 +31,7 @@ export default async function get(
     });
   } catch (e) {
     log.w("DONE with error");
-    const status = isAxiosLikeError(e) ? e.response?.status : undefined;
-    if (status === 404) {
+    if ((e as AxiosError).response?.status === 404) {
       return next(
         new AppError("Aucun successeur pour ce numéro de siret", {
           cause: e,

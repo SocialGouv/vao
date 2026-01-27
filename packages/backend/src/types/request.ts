@@ -15,9 +15,8 @@ export interface UserRequest extends Request {
 }
 
 export interface RouteRequest<T extends BasicRoute>
-  extends Omit<UserRequest, "body" | "query" | "params"> {
+  extends Omit<UserRequest, "body" | "params"> {
   body: T["body"];
-  query: T["query"];
   params: NonNullable<T["params"]>;
   validatedBody?: T["body"];
   validatedQuery?: T["query"];

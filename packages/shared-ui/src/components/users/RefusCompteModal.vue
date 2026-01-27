@@ -43,6 +43,8 @@
 
 <script setup>
 import { DsfrButton, DsfrInputGroup } from "@gouvminint/vue-dsfr";
+import { useField, useForm } from "vee-validate";
+import * as yup from "yup";
 
 const props = defineProps({
   modalRef: { type: String, required: true },
@@ -63,9 +65,6 @@ const props = defineProps({
     default: null,
   },
 });
-
-import { useField, useForm } from "vee-validate";
-import * as yup from "yup";
 
 const validationSchema = computed(() =>
   yup.object({

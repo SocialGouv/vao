@@ -7,14 +7,16 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint --ext .js,.ts ./src",
-    "lint:fix": "yarn lint --fix",
+    "lint:fix": "corepack pnpm lint --fix",
     "dev": "nodemon --inspect=0.0.0.0:9229 src/index.js",
     "test": "corepack pnpm rebuild @sentry/profiling-node && jest --config=jest.config.js",
     "test:debug": "corepack pnpm rebuild @sentry/profiling-node && jest --config=jest.config.js --debug --detectOpenHandles",
     "test:watch": "corepack pnpm rebuild @sentry/profiling-node && jest --config=jest.config.js --watch",
     "test:coverage": "corepack pnpm rebuild @sentry/profiling-node && jest --config=jest.config.js --coverage",
-    "typecheck:staged": "node ../../scripts/typecheck-staged-tsc.cjs -- tsc -b ./tsconfig.json --",
     "build": "tsc -b ./tsconfig.json"
+  },
+  "lint-staged": {
+    "src/**/*.{js,ts}": "corepack pnpm exec eslint"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.649.0",

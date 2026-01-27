@@ -1,6 +1,6 @@
 import type { HebergementDto, HebergementRoutes } from "@vao/shared-bridge";
 import { ERRORS_COMMON } from "@vao/shared-bridge";
-import type { RequestHandler } from "express";
+import type { NextFunction } from "express";
 
 import Hebergement from "../../services/hebergement/Hebergement";
 import type { RouteRequest, RouteResponse } from "../../types/request";
@@ -8,21 +8,13 @@ import logger from "../../utils/logger";
 
 const log = logger(module.filename);
 
-type GetByIdRoute =
-  | HebergementRoutes["GetOne"]
-  | HebergementRoutes["GetOneAdmin"];
-
-const get: RequestHandler<
-  { id: string },
-  unknown,
-  Record<string, unknown> | undefined,
-  Record<string, string> | undefined
-> = async (req, res, next) => {
-  const typedReq = req as unknown as RouteRequest<GetByIdRoute>;
-  const typedRes = res as unknown as RouteResponse<GetByIdRoute>;
-
+export default async function get(
+  req: RouteRequest<HebergementRoutes["GetOne"]>,
+  res: RouteResponse<HebergementRoutes["GetOne"]>,
+  next: NextFunction,
+) {
   log.i("IN");
-  const hebergementId = typedReq.validatedParams?.id ?? typedReq.params.id;
+  const hebergementId = req.validatedParams!.id;
 
   try {
     const hebergement: HebergementDto | null =
@@ -34,11 +26,9 @@ const get: RequestHandler<
       } as any);
     }
     log.d(hebergement);
-    typedRes.json({ hebergement });
+    res.json({ hebergement });
   } catch (error) {
     log.w("DONE with error");
     next(error);
   }
-};
-
-export default get;
+}

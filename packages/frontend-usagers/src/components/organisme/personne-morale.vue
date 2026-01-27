@@ -336,7 +336,6 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { IsDownloading, ApiUnavailable, apiModel } from "@vao/shared-ui";
-const apiTypes = apiModel.apiTypes;
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
 import {
@@ -346,6 +345,7 @@ import {
   formatFR,
   formatFRDateTime,
 } from "@vao/shared-bridge";
+const apiTypes = apiModel.apiTypes;
 
 const toaster = useToaster();
 
