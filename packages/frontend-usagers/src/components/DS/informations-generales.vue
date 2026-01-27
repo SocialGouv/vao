@@ -187,7 +187,7 @@ const periode = computed(() => {
 const validationSchema = yup.object(DeclarationSejour.baseSchema);
 
 const initialValues = (() => {
-  const responsableSejour = initDataByOrganisme();
+  const initResponsableSejour = initDataByOrganisme();
   return {
     libelle: props.initData.libelle,
     dateDebut: props.initData.dateDebut
@@ -196,7 +196,7 @@ const initialValues = (() => {
     dateFin: props.initData.dateFin
       ? dayjs(props.initData.dateFin).format("YYYY-MM-DD")
       : dayjs().add(2, "month").add(7, "day").format("YYYY-MM-DD"),
-    responsableSejour,
+    responsableSejour: initResponsableSejour,
   };
 })();
 
@@ -232,19 +232,16 @@ defineExpose({
 });
 
 function initDataByOrganisme() {
-  return (
-    props.initOrganisme.personneMorale.responsableSejour ??
-    (props.initOrganisme.typeOrganisme === "personne_morale"
-      ? props.initOrganisme.personneMorale?.responsableSejour
-      : {
-          nom: props.initOrganisme?.personnePhysique?.nomNaissance,
-          prenom: props.initOrganisme?.personnePhysique?.prenom,
-          fonction: "organisateur de séjour",
-          email: userStore.user.email,
-          telephone: props.initOrganisme?.personnePhysique?.telephone,
-          adresse: props.initOrganisme?.personnePhysique?.adresseSiege,
-        })
-  );
+  return props.initOrganisme.typeOrganisme === "personne_morale"
+    ? props.initOrganisme.personneMorale?.responsableSejour
+    : {
+        nom: props.initOrganisme?.personnePhysique?.nomNaissance,
+        prenom: props.initOrganisme?.personnePhysique?.prenom,
+        fonction: "organisateur de séjour",
+        email: userStore.user.email,
+        telephone: props.initOrganisme?.personnePhysique?.telephone,
+        adresse: props.initOrganisme?.personnePhysique?.adresseSiege,
+      };
 }
 
 function next() {
