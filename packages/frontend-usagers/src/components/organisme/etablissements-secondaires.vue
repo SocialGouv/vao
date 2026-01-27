@@ -125,35 +125,34 @@ const emit = defineEmits(["previous", "next", "update"]);
 const log = logger("components/organisme/personne-morale");
 const toaster = useToaster();
 
-const organismeStore = useOrganismeStore();
-
-const siret = computed(
-  () => organismeStore.organismeCourant.personneMorale.siret,
-);
-
 const props = defineProps({
   showButtons: { type: Boolean, default: true },
   modifiable: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
+  initOrganisme: {
+    type: Object,
+    required: true,
+  },
 });
 
+const siret = computed(() => props.initOrganisme.personneMorale.siret);
+
 const validationSchema = computed(() =>
-  yup.object(organisme.etablissementsSecondaireSchema),
+  yup.object(props.initOrganisme.etablissementsSecondaireSchema),
 );
 
 const { meta, values, setValues } = useForm({
   validationSchema,
   initialValues: {
-    etablissements:
-      organismeStore.organismeCourant.personneMorale.etablissements ?? [],
+    etablissements: props.initOrganisme.personneMorale.etablissements ?? [],
   },
 });
 
 onMounted(async () => {
   if (
-    !organismeStore.organismeCourant.personneMorale.etablissements ||
-    organismeStore.organismeCourant.personneMorale.etablissements.length === 0
+    !props.initOrganisme.personneMorale.etablissements ||
+    props.initOrganisme.personneMorale.etablissements.length === 0
   ) {
     refreshEtablissmentsSecondaires();
   }
