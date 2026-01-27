@@ -34,7 +34,7 @@
     "nuxt": "~3.19.0",
     "nuxt-maplibre": "^1.0.0",
     "nuxt-security": "^2.0.0-rc.9",
-    "pinia": "~2.2.2",
+    "pinia": "~3.0.4",
     "ufo": "^1.5.4",
     "vee-validate": "~4.13.0",
     "vue": "^3.5.22",

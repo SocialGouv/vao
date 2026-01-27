@@ -5531,6 +5531,13 @@
   resolved "https://registry.npmjs.org/@vue/devtools-api/-/devtools-api-6.6.4.tgz"
   integrity sha512-sGhTPMuXqZ1rVOk32RylztWkfXTRhuS7vgAKv0zjqk8gbsHkJ7xfFf+jbySxt7tWObEJwyKaHMikV/WGDiQm8g==
 
+"@vue/devtools-api@^7.7.7":
+  version "7.7.9"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-api/-/devtools-api-7.7.9.tgz#999dbea50da6b00cf59a1336f11fdc2b43d9e063"
+  integrity sha512-kIE8wvwlcZ6TJTbNeU2HQNtaxLx3a84aotTITUuL/4bzfPxzajGBOoqjMhwZJ8L9qFYDU/lAYMEEm11dnZOD6g==
+  dependencies:
+    "@vue/devtools-kit" "^7.7.9"
+
 "@vue/devtools-core@^7.7.7":
   version "7.7.7"
   resolved "https://registry.yarnpkg.com/@vue/devtools-core/-/devtools-core-7.7.7.tgz#9885e2ecb7b462cca8e629d9cff0ab00bfd30d63"
@@ -5556,10 +5563,30 @@
     speakingurl "^14.0.1"
     superjson "^2.2.2"
 
+"@vue/devtools-kit@^7.7.9":
+  version "7.7.9"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-kit/-/devtools-kit-7.7.9.tgz#bc218a815616e8987df7ab3e10fc1fb3b8706c58"
+  integrity sha512-PyQ6odHSgiDVd4hnTP+aDk2X4gl2HmLDfiyEnn3/oV+ckFDuswRs4IbBT7vacMuGdwY/XemxBoh302ctbsptuA==
+  dependencies:
+    "@vue/devtools-shared" "^7.7.9"
+    birpc "^2.3.0"
+    hookable "^5.5.3"
+    mitt "^3.0.1"
+    perfect-debounce "^1.0.0"
+    speakingurl "^14.0.1"
+    superjson "^2.2.2"
+
 "@vue/devtools-shared@^7.7.7":
   version "7.7.7"
   resolved "https://registry.yarnpkg.com/@vue/devtools-shared/-/devtools-shared-7.7.7.tgz#ff14aa8c1262ebac8c0397d3b09f767cd489750c"
   integrity sha512-+udSj47aRl5aKb0memBvcUG9koarqnxNM5yjuREvqwK6T3ap4mn3Zqqc17QrBFTqSMjr3HK1cvStEZpMDpfdyw==
+  dependencies:
+    rfdc "^1.4.1"
+
+"@vue/devtools-shared@^7.7.9":
+  version "7.7.9"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-shared/-/devtools-shared-7.7.9.tgz#fa4c096b744927081a7dda5fcf05f34b1ae6ca14"
+  integrity sha512-iWAb0v2WYf0QWmxCGy0seZNDPdO3Sp5+u78ORnyeonS6MT4PC7VPrryX2BpMJrwlDeaZ6BD4vP4XKjK0SZqaeA==
   dependencies:
     rfdc "^1.4.1"
 
@@ -12573,13 +12600,12 @@ pinia@^2.2.3:
     "@vue/devtools-api" "^6.6.3"
     vue-demi "^0.14.10"
 
-pinia@~2.2.2:
-  version "2.2.8"
-  resolved "https://registry.npmjs.org/pinia/-/pinia-2.2.8.tgz"
-  integrity sha512-NRTYy2g+kju5tBRe0oNlriZIbMNvma8ZJrpHsp3qudyiMEA8jMmPPKQ2QMHg0Oc4BkUyQYWagACabrwriCK9HQ==
+pinia@~3.0.4:
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/pinia/-/pinia-3.0.4.tgz#75dde12784a61e34c1fa6abcd13c1a1061c360c0"
+  integrity sha512-l7pqLUFTI/+ESXn6k3nu30ZIzW5E2WZF/LaHJEpoq6ElcLD+wduZoB2kBN19du6K/4FDpPMazY2wJr+IndBtQw==
   dependencies:
-    "@vue/devtools-api" "^6.6.3"
-    vue-demi "^0.14.10"
+    "@vue/devtools-api" "^7.7.7"
 
 pino-abstract-transport@^2.0.0:
   version "2.0.0"
