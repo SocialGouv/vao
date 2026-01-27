@@ -224,10 +224,10 @@
 
 <script setup>
 import "@vueform/multiselect/themes/default.css";
-import { ApiUnavailable } from "@vao/shared-ui";
-import { apiTypes } from "@vao/shared-ui/src/models";
 import { ERRORS_LOGIN } from "@vao/shared-bridge";
 import { nextTick } from "vue";
+import { ApiUnavailable, apiModel } from "@vao/shared-ui";
+const apiTypes = apiModel.apiTypes;
 
 const log = logger("pages/connexion/enregistrement");
 

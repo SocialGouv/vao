@@ -131,7 +131,8 @@ import {
   TableWithBackendPagination,
   ValidationModal,
 } from "@vao/shared-ui";
-import { mapEigToLabel } from "@vao/shared-ui/src/utils/eigUtils";
+import { eigUtils } from "@vao/shared-ui";
+const mapEigToLabel = eigUtils.mapEigToLabel;
 
 definePageMeta({
   middleware: ["is-connected", "check-role"],

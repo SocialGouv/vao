@@ -74,8 +74,8 @@
 </template>
 
 <script setup>
-import { eigModel } from "@vao/shared-ui";
-import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
+import { eigModel, fileUtils } from "@vao/shared-ui";
+const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 definePageMeta({
   middleware: ["is-connected", "check-roles", "check-eig-id-param"],

@@ -9,16 +9,24 @@ import {
   DsfrInput,
 } from "@gouvminint/vue-dsfr";
 
-import type {
-  DsfrMultiSelectProps,
-  DsfrMultiSelectSlots,
-} from "@gouvminint/vue-dsfr/types";
+import type { DsfrMultiSelectProps } from "@gouvminint/vue-dsfr";
 
-type EnhancedMultiSelectProps = DsfrMultiSelectProps & {
+interface Option {
+  id?: string;
+  label: string;
+  value?: string;
+}
+
+type EnhancedMultiSelectProps = Omit<
+  DsfrMultiSelectProps<Option>,
+  "idKey" | "labelKey"
+> & {
   buttonClassName?: string;
+  idKey?: keyof Option;
+  labelKey?: keyof Option;
 };
 
-const props = withDefaults(defineProps<EnhancedMultiSelectProps<T>>(), {
+const props = withDefaults(defineProps<EnhancedMultiSelectProps>(), {
   labelVisible: true,
   labelClass: "",
   hint: "",
@@ -30,31 +38,27 @@ const props = withDefaults(defineProps<EnhancedMultiSelectProps<T>>(), {
   successMessage: "",
   selectAllLabel: () => ["Tout sélectionner", "Tout désélectionner"],
   search: false,
-  idKey: "id" as keyof {
-    [K in keyof T as T[K] extends string | number ? K : never]: T[K];
-  },
-  labelKey: "label" as keyof {
-    [K in keyof T as T[K] extends string | number ? K : never]: T[K];
-  },
-  filteringKeys: () => ["label"] as (keyof T)[],
+  idKey: "id",
+  labelKey: "label",
+  filteringKeys: () => ["label"] as (keyof Option)[],
   maxOverflowHeight: "400px",
   buttonClassName: "",
 });
 
-defineSlots<DsfrMultiSelectSlots<T>>();
+defineSlots();
 
 const isObjectWithIdKey = (
   option: unknown,
-  idKey: keyof T | undefined,
-): option is T => {
+  idKey: keyof Option | undefined,
+): option is Option => {
   return (
     typeof option === "object" && option !== null && !!idKey && idKey in option
   );
 };
 
 const getValueOrId = (
-  option: T,
-  idKey: keyof T | undefined,
+  option: Option,
+  idKey: keyof Option | undefined,
 ): string | number => {
   if (idKey && isObjectWithIdKey(option, idKey)) {
     const value = option[idKey];
@@ -76,9 +80,9 @@ const getValueOrId = (
 };
 
 const generateId = (
-  option: T,
+  option: Option,
   id: string,
-  idKey: keyof T | undefined,
+  idKey: keyof Option | undefined,
 ): string => {
   return `${id}-${getValueOrId(option, idKey)}`;
 };
@@ -415,15 +419,15 @@ const finalLabelClass = computed(() => [
         <slot name="legend" />
         <div
           v-for="option in filteredOptions"
-          :key="`${generateId(option as T, id, props.idKey)}-checkbox`"
+          :key="`${generateId(option, id, props.idKey)}-checkbox`"
           class="fr-fieldset__element"
         >
           <div class="fr-checkbox-group fr-checkbox-group--sm">
             <DsfrCheckbox
-              :id="`${generateId(option as T, id, props.idKey)}-checkbox`"
+              :id="`${generateId(option, id, props.idKey)}-checkbox`"
               v-model="model"
-              :value="getValueOrId(option as T, props.idKey)"
-              :name="`${generateId(option as T, id, props.idKey)}-checkbox`"
+              :value="getValueOrId(option, props.idKey)"
+              :name="`${generateId(option, id, props.idKey)}-checkbox`"
               small
               @keydown.down="handleFocusNextCheckbox"
               @keydown.right="handleFocusNextCheckbox"
@@ -432,8 +436,8 @@ const finalLabelClass = computed(() => [
               @keydown.tab="handleFocusNextElementUsingTab"
             >
               <template #label>
-                <slot name="checkbox-label" :option="option as T">
-                  {{ getValueOrId(option as T, props.labelKey) }}
+                <slot name="checkbox-label" :option="option">
+                  {{ getValueOrId(option, props.labelKey) }}
                 </slot>
               </template>
             </DsfrCheckbox>

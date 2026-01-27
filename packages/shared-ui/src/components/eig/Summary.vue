@@ -21,7 +21,8 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { mapEigToLabel } from "../../utils/eigUtils";
+import { eigUtils } from "@vao/shared-ui";
+const mapEigToLabel = eigUtils.mapEigToLabel;
 
 const props = defineProps({
   eig: { type: Object, required: true },

@@ -27,7 +27,7 @@ export const useEigStore = defineStore("eig", {
   }),
 
   actions: {
-    getById(eigId: string) {
+    getById(eigId: number) {
       return this.eigs.find((eig) => eig.id === eigId);
     },
     async getPdf(eigId: string) {

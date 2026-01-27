@@ -1,12 +1,12 @@
 import * as yup from "yup";
-import { emailSchema } from "@vao/shared-ui/src/schema/email";
-import { prenomSchema } from "@vao/shared-ui/src/schema/prenom";
-import { nomSchema } from "@vao/shared-ui/src/schema/nom";
+import { eigSchema } from "@vao/shared-ui";
 import {
   serviceCompetenceDEP,
   serviceCompetenceNAT,
   serviceCompetenceREG,
 } from "./serviceCompetenceOptions";
+
+const { emailSchema, prenomSchema, nomSchema } = eigSchema;
 
 const BoUserSchema = {
   isActive: yup.boolean().required(),

@@ -106,7 +106,14 @@ const props = withDefaults(
   { filters: () => Object.values(demandesSejours.filters) },
 );
 
-const defaultStatus = [...Object.values(demandesSejours.statuts)];
+// TODO: check if mapper is needed
+const defaultStatus = [...Object.values(demandesSejours.statuts)].map(
+  (status) => ({
+    id: status,
+    label: status,
+    value: status,
+  }),
+);
 
 const emits = defineEmits<{
   "update:idFonctionnelle": [string];

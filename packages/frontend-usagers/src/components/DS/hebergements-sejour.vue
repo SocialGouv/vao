@@ -85,7 +85,8 @@ import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
 import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
 import { hebergement as hebergementUtils } from "@vao/shared-ui";
-import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
+import { fileUtils } from "@vao/shared-ui";
+const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 const toaster = useToaster();
 
