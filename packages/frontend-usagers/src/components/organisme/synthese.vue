@@ -50,6 +50,7 @@
           <OrganismeEtablissementsSecondaires
             :modifiable="false"
             :show-buttons="false"
+            :init-organisme="organismeStore.organismeCourant"
           />
         </DsfrAccordion>
         <DsfrAccordion :id="tabs.findIndex((t) => t.id === 'agrement') + 1">
