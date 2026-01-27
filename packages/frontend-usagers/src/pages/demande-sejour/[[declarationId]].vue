@@ -69,6 +69,7 @@
                   <DSInformationsGenerales
                     v-if="hash === 'info-generales'"
                     :init-data="demandeCourante ?? {}"
+                    :init-organisme="organismeEnCours"
                     :modifiable="canModify"
                     :is-downloading="apiStatus.isDownloading"
                     :message="apiStatus.message"
@@ -154,6 +155,7 @@
                   <DSSynthese
                     v-if="hash === 'synthese'"
                     :declaration-courante="demandeCourante ?? {}"
+                    :init-organisme="organismeEnCours"
                     :modifiable="canModify"
                     :modifiable-en-cours="canModifyEnCours"
                     :is-downloading="apiStatus.isDownloading"
@@ -303,6 +305,18 @@ const demandeCourante = computed(() => {
 });
 
 const organismeStore = useOrganismeStore();
+
+const organismeEnCours = computed(() => {
+  if (
+    demandeSejourStore?.demandeCourante.statut === undefined ||
+    demandeSejourStore?.demandeCourante.statut ===
+      DeclarationSejour.statuts.BROUILLON
+  ) {
+    return organismeStore.organismeCourant;
+  } else {
+    return demandeSejourStore.demandeCourante.organisme;
+  }
+});
 
 const initialSelectedIndex = parseInt(
   route.query?.defaultTabIndex ? route.query.defaultTabIndex : 0,

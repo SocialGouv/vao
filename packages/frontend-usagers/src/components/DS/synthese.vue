@@ -16,6 +16,7 @@
               <DSInformationsGenerales
                 ref="sectionInformationsGenerales"
                 :init-data="props.declarationCourante"
+                :init-organisme="props.initOrganisme"
                 :validate-on-mount="true"
                 :modifiable="false"
                 :show-buttons="false"
@@ -278,6 +279,7 @@ import { IsDownloading } from "@vao/shared-ui";
 
 const props = defineProps({
   declarationCourante: { type: Object, default: null, required: true },
+  initOrganisme: { type: Object, default: null, required: true },
   modifiable: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },

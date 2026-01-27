@@ -102,12 +102,10 @@
         @update:personne="onResponsableSejourChange"
       ></Personne>
     </div>
-    <div
-      v-if="organismeStore.organismeCourant.typeOrganisme === 'personne_morale'"
-    >
+    <div v-if="props.initOrganisme.typeOrganisme === 'personne_morale'">
       <h3>Organisme</h3>
       <OrganismePersonneMorale
-        :init-data="organismeStore.organismeCourant.personneMorale"
+        :init-data="props.initOrganisme?.personneMorale"
         :show-responsable-sejour="false"
         :show-buttons="false"
         :modifiable="false"
@@ -116,6 +114,7 @@
         v-if="organismeStore.isSiegeSocial"
         :modifiable="false"
         :show-buttons="false"
+        :init-organisme="props.initOrganisme"
       />
     </div>
 
@@ -141,9 +140,12 @@ import * as yup from "yup";
 import dayjs from "dayjs";
 import { IsDownloading } from "@vao/shared-ui";
 import { DsfrAlert } from "@gouvminint/vue-dsfr";
-
 const props = defineProps({
   initData: {
+    type: Object,
+    required: true,
+  },
+  initOrganisme: {
     type: Object,
     required: true,
   },
@@ -186,19 +188,7 @@ const periode = computed(() => {
 const validationSchema = yup.object(DeclarationSejour.baseSchema);
 
 const initialValues = (() => {
-  const responsableSejour =
-    props.initData.responsableSejour ??
-    (organismeStore.organismeCourant.typeOrganisme === "personne_morale"
-      ? organismeStore.organismeCourant.personneMorale.responsableSejour
-      : {
-          nom: organismeStore.organismeCourant.personnePhysique.nomNaissance,
-          prenom: organismeStore.organismeCourant.personnePhysique.prenom,
-          fonction: "organisateur de séjour",
-          email: userStore.user.email,
-          telephone: organismeStore.organismeCourant.personnePhysique.telephone,
-          adresse:
-            organismeStore.organismeCourant.personnePhysique.adresseSiege,
-        });
+  const responsableSejour = initDataByOrganisme();
   return {
     libelle: props.initData.libelle,
     dateDebut: props.initData.dateDebut
@@ -241,6 +231,22 @@ const { value: responsableSejour, handleChange: onResponsableSejourChange } =
 defineExpose({
   meta,
 });
+
+function initDataByOrganisme() {
+  return (
+    props.initOrganisme.personneMorale.responsableSejour ??
+    (props.initOrganisme.typeOrganisme === "personne_morale"
+      ? props.initOrganisme.personneMorale?.responsableSejour
+      : {
+          nom: props.initOrganisme?.personnePhysique?.nomNaissance,
+          prenom: props.initOrganisme?.personnePhysique?.prenom,
+          fonction: "organisateur de séjour",
+          email: userStore.user.email,
+          telephone: props.initOrganisme?.personnePhysique?.telephone,
+          adresse: props.initOrganisme?.personnePhysique?.adresseSiege,
+        })
+  );
+}
 
 function next() {
   if (!props.modifiable) {

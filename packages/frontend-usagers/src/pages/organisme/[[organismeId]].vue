@@ -27,6 +27,7 @@
               v-if="hash === 'etablissement-secondaires'"
               :is-downloading="apiStatus.isDownloading"
               :message="apiStatus.message"
+              :init-organisme="organismeStore.organismeCourant"
               @update="updateOrCreate"
               @previous="previousHash"
               @next="nextHash"
