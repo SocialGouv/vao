@@ -15,6 +15,10 @@
         :selected="selectedTabIndex === 0"
         :asc="asc"
       >
+        <h2>Dossier</h2>
+        <AgrementEtapesAvancement
+          :init-agrement="agrementStore.agrementCourant ?? {}"
+        />
       </DsfrTabContent>
 
       <DsfrTabContent
@@ -103,6 +107,7 @@
 </template>
 
 <script setup lang="ts">
+const agrementStore = useAgrementStore();
 const route = useRoute();
 
 useHead({
