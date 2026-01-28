@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3 class="fr-mb-0">Etapes d’avancement</h3>
-    <p>A chaque étapes vous recevez un mail sur adressemail@mail.com</p>
+    <p>A chaque étape vous recevez un mail sur adressemail@mail.com</p>
     <div class="stepper-container">
       <div class="stepper">
         <div class="line"></div>
