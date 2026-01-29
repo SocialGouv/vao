@@ -145,7 +145,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import * as yup from "yup";
 import { useForm } from "vee-validate";
 import { IsDownloading } from "@vao/shared-ui";
