@@ -239,7 +239,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import dayjs from "dayjs";
 import { Chat, DemandeStatusBadge, fileUtils } from "@vao/shared-ui";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
