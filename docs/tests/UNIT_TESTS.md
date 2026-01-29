@@ -41,15 +41,15 @@ packages/backend/src/
 ```bash
 # Lancer un fichier de test spécifique (depuis le package)
 cd packages/backend
-yarn test -- src/services/userService.spec.ts
+pnpm test -- src/services/userService.spec.ts
 
 # Tests en mode watch (depuis le package)
 cd packages/backend
-yarn test:watch
+pnpm test:watch
 
 # Tests en mode debug (depuis le package)
 cd packages/backend
-yarn test:debug
+pnpm test:debug
 ```
 
 ### Exemple de test unitaire

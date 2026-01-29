@@ -15,6 +15,7 @@ export default async function get(
 ) {
   log.i("IN");
   const hebergementId = req.validatedParams!.id;
+
   try {
     const hebergement: HebergementDto | null =
       await Hebergement.getById(hebergementId);

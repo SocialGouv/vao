@@ -1,4 +1,4 @@
-import type { Response } from "express";
+import type { Request, Response } from "express";
 
 import * as service from "../../../services/DemandeSejour";
 import getController from "../../demandeSejour/getAdminStats";
@@ -8,7 +8,10 @@ jest.mock("../../../services/DemandeSejour", () => ({
 }));
 
 describe("controllers/demandeSejour/getAdminStats", () => {
-  let req: any;
+  let req: Partial<Request> & {
+    decoded?: { territoireCode: string };
+    departements?: Array<{ value: string }>;
+  };
   let res: Response;
   let next: jest.Mock;
 

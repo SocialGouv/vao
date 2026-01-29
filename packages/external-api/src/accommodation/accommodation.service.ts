@@ -14,12 +14,10 @@ import { status } from "../helpers/accommodation";
 import { HotelServiceService } from "../hotelService/hotelService.service";
 import { parseData } from "../lib/zodHelper";
 import { OrganismService } from "../organism/organism.service";
-import type {
-  Accommodation,
-  CreateAccommodation,
-  CreateAccommodationDto,
-} from "../schemas/accommodation.schema";
 import {
+  type Accommodation,
+  type CreateAccommodation,
+  type CreateAccommodationDto,
   type DeleteAccommodationCheck,
   AccommodationSchema,
   DeleteAccommodationCheckSchema,

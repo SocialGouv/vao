@@ -1,6 +1,7 @@
 import request from "supertest";
 
 import app from "../../app";
+import { getEtablissement } from "../../services/Insee";
 import { createUsagersUser } from "../helper/fixtures/userHelper";
 import {
   createTestContainer,
@@ -19,8 +20,6 @@ jest.mock("../../middlewares/common/checkJWT", () => {
 jest.mock("../../services/Insee", () => ({
   getEtablissement: jest.fn(),
 }));
-
-const { getEtablissement } = require("../../services/Insee");
 
 beforeAll(async () => {
   await createTestContainer();

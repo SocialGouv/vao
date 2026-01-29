@@ -130,8 +130,8 @@ import {
   RangeDatePicker,
   TableWithBackendPagination,
   ValidationModal,
+  eigUtils,
 } from "@vao/shared-ui";
-import { eigUtils } from "@vao/shared-ui";
 const mapEigToLabel = eigUtils.mapEigToLabel;
 
 definePageMeta({

@@ -9,24 +9,33 @@ FROM external-api-base AS external-api-deps
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+RUN corepack enable
+
+# Non-interactive pnpm behavior during Docker builds
+ENV CI=true
+
+# cache keyed by lockfile/config
+COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm fetch --prod --ignore-scripts
+
+COPY package.json ./
 COPY packages/external-api/package.json ./packages/external-api/
 COPY packages/external-api/src ./packages/external-api/src
-COPY packages/shared-bridge packages/shared-bridge
-RUN yarn workspace @vao/external-api install --frozen-lockfile
+COPY packages/shared-bridge/package.json packages/shared-bridge/
+RUN pnpm install --frozen-lockfile
 
 FROM external-api-deps AS external-api-build
 
 WORKDIR /app
 
 COPY --from=external-api-deps /app/node_modules ./node_modules
-COPY package.json yarn.lock ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/external-api/package.json ./packages/external-api/
 COPY packages/external-api/ ./packages/external-api/
 COPY packages/shared-bridge packages/shared-bridge
 ENV NODE_ENV=production
 
-RUN yarn workspace @vao/external-api build
+RUN pnpm --filter @vao/external-api build
 
 FROM external-api-base AS external-api-production
 
@@ -34,7 +43,14 @@ USER 1000
 WORKDIR /app
 
 COPY --chown=1000:1000 --from=external-api-build /app/node_modules ./node_modules
+COPY --chown=1000:1000 --from=external-api-build /app/packages/external-api/node_modules ./packages/external-api/node_modules
 COPY --chown=1000:1000 --from=external-api-build /app/packages/external-api/dist ./packages/external-api/dist
+
+# Ensure workspace dependency symlinks (e.g. @vao/shared-bridge) can resolve at runtime
+COPY --chown=1000:1000 --from=external-api-build /app/packages/shared-bridge ./packages/shared-bridge
+
+# Ensure shared-bridge runtime deps (e.g. `yup`) are resolvable when shared-bridge JS is executed.
+COPY --chown=1000:1000 --from=external-api-build /app/packages/shared-bridge/node_modules ./packages/shared-bridge/node_modules
 
 ENV NODE_ENV=production
 

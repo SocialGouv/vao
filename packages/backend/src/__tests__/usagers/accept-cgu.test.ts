@@ -1,4 +1,5 @@
 import { statusUserFront } from "@vao/shared-bridge";
+import crypto from "crypto";
 import request from "supertest";
 
 import app from "../../app";
@@ -23,7 +24,7 @@ beforeAll(async () => {
   await createTestContainer(userFixtureComplement);
   user = await createUsagersUserValide();
   // Surcharger la clé secrète pour les tests car elle est défini par environnement
-  config.tokenSecret_FO = require("crypto").randomBytes(32).toString("hex");
+  config.tokenSecret_FO = crypto.randomBytes(32).toString("hex");
 });
 
 beforeEach(() => {

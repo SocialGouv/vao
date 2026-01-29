@@ -18,6 +18,7 @@ export function requestValidatorMiddleware<T extends BasicRoute>(
   validator: RouteSchema<T>,
 ) {
   return (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     req: RouteRequest<any>,
     _res: RouteResponse<T>,
     next: NextFunction,
@@ -49,6 +50,7 @@ export function requestParamsValidator<T>(
     try {
       return validator.validateSync(params, { stripUnknown: true });
     } catch (error) {
+      log.w("INVALID_PARAMS", error);
       throw new Error(ERRORS.INVALID_PARAMS);
     }
   }
@@ -63,6 +65,7 @@ export function requestQueryValidator<T>(
     try {
       return validator.validateSync(query, { stripUnknown: true });
     } catch (error) {
+      log.d("INVALID_QUERY", error);
       throw new Error(ERRORS.INVALID_QUERY);
     }
   }
@@ -77,6 +80,7 @@ export function requestBodyValidator<T>(
     try {
       return validator.validateSync(body, { stripUnknown: true });
     } catch (error) {
+      log.d("INVALID_BODY", error);
       throw new Error(ERRORS.INVALID_BODY);
     }
   }

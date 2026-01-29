@@ -1,3 +1,3 @@
-
-yarn workspace @vao/cron install --ignore-scripts
-exec yarn workspace @vao/cron dev
+#!/bin/bash
+corepack pnpm --filter @vao/cron... install
+exec corepack pnpm --filter @vao/cron dev

@@ -34,6 +34,6 @@ describe("mapQueryParams", () => {
   test("devrait supprimer la clé 'search' du résultat final", () => {
     const input = { search: { organismeId: 42 } };
     const result = mapQueryParams(input);
-    expect((result as any).search).toBeUndefined();
+    expect((result as unknown as { search?: unknown }).search).toBeUndefined();
   });
 });

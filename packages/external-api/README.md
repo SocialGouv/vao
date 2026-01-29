@@ -5,30 +5,30 @@ An api to add create accommodations in VAO
 ## Project setup
 
 ```bash
-yarn install
+pnpm -w install
 ```
 
 ## Compile and run the project
 
 ```bash
 # development
-$ yarn run start
+$ pnpm --filter @vao/external-api start
 
 # watch mode
-$ yarn run start:dev
+$ pnpm --filter @vao/external-api start:dev
 
 # production mode
-$ yarn run start:prod
+$ pnpm --filter @vao/external-api start:prod
 ```
 
 ## Run tests
 
 ```bash
 # unit tests
-$ yarn run test
+$ pnpm --filter @vao/external-api test
 
 # test coverage
-$ yarn run test:cov
+$ pnpm --filter @vao/external-api test:cov
 ```
 
 ## Swagger

@@ -1,6 +1,6 @@
 const mockFakePdfDoc = {
-  on: jest.fn(),
   end: jest.fn(),
+  on: jest.fn(),
 };
 const mockCreatePdfKitDocument = jest.fn().mockReturnValue(mockFakePdfDoc);
 
@@ -18,15 +18,15 @@ jest.mock("../../../../utils/logger", () => {
 });
 
 jest.mock("../../../../helpers/declaration/mise-en-page", () => ({
-  buildLines: jest.fn(() => [{ text: "fake-line" }]),
   MARGIN_UP_30: [0, 30, 0, 0],
+  buildLines: jest.fn(() => [{ text: "fake-line" }]),
 }));
 
 jest.mock("../../../../helpers/eig", () => ({
   mapEigToLabel: {
     accident: "Accident",
-    violence: "Violence",
     autre: "Autre",
+    violence: "Violence",
   },
 }));
 
@@ -44,33 +44,33 @@ describe("Service PDF EIG - build()", () => {
 
   it("devrait créer un PDF avec le contenu attendu et renvoyer un buffer", async () => {
     const fakeEig = {
-      idFonctionnelle: "EIG123",
+      adresses: ["Paris"],
       agrementRegionObtention: "REG1",
-      departementLibelle: "DEP",
-      departement: "75",
-      raisonSociale: "OVA",
-      libelle: "Séjour été",
+      date: "2025-06-02",
       dateDebut: "2025-06-01",
       dateFin: "2025-06-10",
-      saison: "Été",
-      adresses: ["Paris"],
-      date: "2025-06-02",
+      departement: "75",
+      departementLibelle: "DEP",
       deroulement: "Tout s'est bien passé.",
+      dispositionInformations: "Famille informée",
       dispositionRemediation: "Aucune",
       dispositionVictimes: "RAS",
-      dispositionInformations: "Famille informée",
-      readByDdets: true,
-      readByDreets: false,
+      idFonctionnelle: "EIG123",
+      libelle: "Séjour été",
       personnel: [
         {
-          nom: "Dupont",
-          prenom: "Jean",
           dateNaissance: "2000-01-01",
           listeFonction: ["Animateur"],
+          nom: "Dupont",
+          prenom: "Jean",
           telephone: "0600000000",
         },
       ],
-      types: [{ type: "accident", precision: "Mineur" }],
+      raisonSociale: "OVA",
+      readByDdets: true,
+      readByDreets: false,
+      saison: "Été",
+      types: [{ precision: "Mineur", type: "accident" }],
     };
 
     const buffer = await build({
@@ -85,15 +85,15 @@ describe("Service PDF EIG - build()", () => {
 
   it("devrait gérer un eig minimal sans personnel ni types", async () => {
     const fakeEig = {
+      adresses: [],
       agrementRegionObtention: "REG1",
       departementLibelle: "DEP",
-      adresses: [],
-      personnel: [],
-      types: [],
       deroulement: "",
+      dispositionInformations: "",
       dispositionRemediation: "",
       dispositionVictimes: "",
-      dispositionInformations: "",
+      personnel: [],
+      types: [],
     };
 
     const buffer = await build({

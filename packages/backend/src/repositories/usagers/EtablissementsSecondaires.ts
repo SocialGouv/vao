@@ -17,7 +17,7 @@ export const EtablissementsSecondairesRepository = {
       denomination?: string;
       etatAdministratif?: string;
     }[];
-    personneMoraleId: Number;
+    personneMoraleId: number;
   }) => {
     const query = (valueParams: string) => `
     INSERT INTO front.opm_etablissements (
@@ -60,7 +60,7 @@ export const EtablissementsSecondairesRepository = {
     personneMoraleId,
   }: {
     client: PoolClient;
-    personneMoraleId: Number;
+    personneMoraleId: number;
   }) => {
     const query = `
         DELETE FROM front.opm_etablissements

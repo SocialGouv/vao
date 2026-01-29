@@ -3,10 +3,10 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 
 export interface AccessTokenPayload {
-  id: Number;
-  email: String;
-  territoireCode: String;
-  cguAccepted: Boolean;
+  id: number;
+  email: string;
+  territoireCode: string;
+  cguAccepted: boolean;
 }
 
 export const buildAccessToken = ({
@@ -21,10 +21,10 @@ export const buildAccessToken = ({
   territoireCode,
 });
 
-export const buildRefreshToken = ({ id: userId }: { id: Number }) => ({
+export const buildRefreshToken = ({ id: userId }: { id: number }) => ({
   userId,
 });
-export const buildEmailToken = (email: String) => ({ email });
+export const buildEmailToken = (email: string) => ({ email });
 
 export const signAccessToken = (user: AccessTokenPayload) => {
   return jwt.sign(buildAccessToken(user), config.tokenSecret_FO as string, {

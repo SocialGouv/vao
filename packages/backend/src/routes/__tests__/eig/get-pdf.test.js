@@ -11,12 +11,12 @@ describe("getPdf controller", () => {
   let req, res, next;
 
   beforeEach(() => {
-    req = { params: {}, body: {} };
+    req = { body: {}, params: {} };
     res = {
-      status: jest.fn().mockReturnThis(),
       json: jest.fn(),
-      setHeader: jest.fn(),
       send: jest.fn(),
+      setHeader: jest.fn(),
+      status: jest.fn().mockReturnThis(),
     };
     next = jest.fn();
 

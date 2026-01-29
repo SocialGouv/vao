@@ -6,8 +6,6 @@ node_modules
 .local
 .cache
 
-yarn-error.log
-.yarn
 coverage
 notes.txt
 
@@ -15,6 +13,7 @@ notes.txt
 
 playwright-report/
 test-results/
+.pnpm-store
 
 # macOS
 .DS_Store

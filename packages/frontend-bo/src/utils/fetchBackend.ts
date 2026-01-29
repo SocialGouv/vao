@@ -2,13 +2,18 @@ import { useRuntimeConfig } from "#app";
 import type { BasicRoute } from "@vao/shared-bridge";
 import { buildRequestPath } from "@vao/shared-bridge";
 
-export const $fetchBackend = (url: string, option = {}): Promise<any> => {
+export type FetchBackendOptions = Record<string, unknown>;
+
+export const $fetchBackend = <T = any>(
+  url: string,
+  option: FetchBackendOptions = {},
+): Promise<T> => {
   const config = useRuntimeConfig();
   // eslint-disable-next-line no-undef
   return $fetch(url, {
     baseURL: config.public.backendUrl,
     ...option,
-  });
+  }) as Promise<T>;
 };
 
 const OPTIONS_DEFAULT = {

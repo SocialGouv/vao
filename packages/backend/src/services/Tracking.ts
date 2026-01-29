@@ -6,7 +6,7 @@ interface AddHistoricParams {
   entity: Entity;
   entityId: number | string | null;
   action: Action;
-  data?: any | null;
+  data?: Record<string, unknown> | null;
   userId?: number | string | null;
   userType: UserType;
 }

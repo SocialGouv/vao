@@ -1,6 +1,9 @@
+import type { SiretRoutes } from "@vao/shared-bridge";
 import { ERRORS_SIRET } from "@vao/shared-bridge";
+import type { NextFunction } from "express";
 
 import { getEtablissementSuccesseur } from "../../services/Insee";
+import type { RouteRequest, RouteResponse } from "../../types/request";
 import AppError from "../../utils/error";
 import get from "./getLienSuccession";
 
@@ -10,21 +13,23 @@ describe("Route getLienSuccession", () => {
   const mockedGetEtablissementSuccesseur =
     getEtablissementSuccesseur as jest.Mock;
 
-  let req: any;
-  let res: any;
-  let next: jest.Mock;
+  let req: RouteRequest<SiretRoutes["GetSuccesseur"]>;
+  let res: RouteResponse<SiretRoutes["GetSuccesseur"]>;
+  let next: NextFunction & jest.Mock;
 
   beforeEach(() => {
     req = {
+      body: undefined,
       params: { siret: "12345678901234" },
-    };
+      query: undefined,
+    } as unknown as RouteRequest<SiretRoutes["GetSuccesseur"]>;
 
     res = {
       json: jest.fn(),
       status: jest.fn().mockReturnThis(),
-    };
+    } as unknown as RouteResponse<SiretRoutes["GetSuccesseur"]>;
 
-    next = jest.fn();
+    next = jest.fn() as unknown as NextFunction & jest.Mock;
 
     jest.clearAllMocks();
   });

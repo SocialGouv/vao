@@ -96,9 +96,9 @@
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
 import { eigModel, eigUtils, eigSchema, Summary } from "@vao/shared-ui";
-const getTagSejourLibelle = eigUtils.getTagSejourLibelle;
 import dayjs from "dayjs";
 import { DsfrAlert } from "@gouvminint/vue-dsfr";
+const getTagSejourLibelle = eigUtils.getTagSejourLibelle;
 
 const config = useRuntimeConfig();
 

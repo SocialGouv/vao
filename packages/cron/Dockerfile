@@ -6,11 +6,22 @@ FROM cron-base AS cron-deps
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
+RUN corepack enable
+
+# Non-interactive pnpm behavior during Docker builds
+ENV CI=true
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+COPY packages/cron/package.json ./packages/cron/
+COPY packages/shared-bridge/package.json packages/shared-bridge/
+
+RUN pnpm fetch --prod --ignore-scripts
+
+COPY package.json ./
 COPY packages/cron/package.json ./packages/cron/
 COPY packages/cron ./packages/cron
 COPY packages/shared-bridge packages/shared-bridge
-RUN yarn workspace @vao/cron install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 FROM cron-deps AS cron-production
 
@@ -20,12 +31,13 @@ USER 1000
 WORKDIR /app
 
 COPY --chown=1000:1000 --from=cron-deps /app/node_modules ./node_modules
-COPY package.json yarn.lock ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/cron/package.json ./packages/cron/
 COPY packages/cron ./packages/cron
 COPY packages/shared-bridge packages/shared-bridge
 
+RUN corepack install
+
 ENV NODE_ENV=production
 
-CMD ["yarn", "workspace", "@vao/cron", "dev"]
-
+CMD ["pnpm", "--filter", "@vao/cron", "dev"]

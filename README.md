@@ -74,7 +74,7 @@ Le développement s'appuie sur [docker](https://docs.docker.com/engine/install/)
 
 Afin d'installer la stack, le plugin [docker compose](https://docs.docker.com/compose/install/) est utilisé.
 
-Le gestionnaire de paquets utilisé est [yarn](https://classic.yarnpkg.com/lang/en/docs/install).
+ Le gestionnaire de paquets utilisé est [pnpm](https://pnpm.io/).
 
 ### Avant le premier lancement
 
@@ -134,19 +134,19 @@ Afin de conserver les données dans le cas d'une mise à jour du schéma de la b
 
 Installer les paquets (sans passer par docker) :
 
-`yarn`
+`pnpm -w install`
 
 Installer les navigateurs (headless) utilisés par Playwright :
 
-`yarn playwright install`
+`pnpm exec playwright install`
 
 Lancer les tests (attention il faut avoir démarré la stack locale via docker, cf plus haut) :
 
-`yarn tests:e2e`
+`pnpm -w tests:e2e`
 
 Pour débugger ou écrire de nouveaux tests, utiliser l'interface graphique de Playwright :
 
-`yarn tests:e2e:ui`
+`pnpm -w tests:e2e:ui`
 
 ## Kubernetes
 

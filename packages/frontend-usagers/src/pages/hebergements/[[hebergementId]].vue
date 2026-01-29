@@ -57,11 +57,12 @@
 </template>
 
 <script setup>
+import { eigUtils, fileUtils } from "@vao/shared-ui";
+import HebergementStatusBadge from "../../components/hebergements/HebergementStatusBadge.vue";
+
 definePageMeta({
   middleware: ["is-connected", "check-hebergement-id-param"],
 });
-import { eigUtils, fileUtils } from "@vao/shared-ui";
-import HebergementStatusBadge from "../../components/hebergements/HebergementStatusBadge.vue";
 
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 const hebergementUtils = eigUtils;
