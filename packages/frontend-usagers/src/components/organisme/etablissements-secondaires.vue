@@ -114,7 +114,7 @@
   </DsfrFieldset>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { DsfrToggleSwitch } from "@gouvminint/vue-dsfr";

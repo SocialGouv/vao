@@ -271,7 +271,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
 import dayjs from "dayjs";
