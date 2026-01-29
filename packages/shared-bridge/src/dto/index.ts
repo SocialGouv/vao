@@ -1,3 +1,4 @@
+export * from "./etablissementDto";
 export * from "./hebergementDto";
 export * from "./organismeDto";
 export * from "./personneMoraleDto";
