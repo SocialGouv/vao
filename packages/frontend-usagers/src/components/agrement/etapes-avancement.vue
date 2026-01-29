@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h3 class="fr-mb-0">Etapes d’avancement</h3>
-    <p>A chaque étape vous recevez un mail sur adressemail@mail.com</p>
+    <h3 class="fr-mb-0">Etapes d'avancement</h3>
+    <p>A chaque étape vous recevez un e-mail sur {{ user.email }}</p>
     <div class="stepper-container">
       <div class="stepper">
         <div class="line"></div>
@@ -10,16 +10,33 @@
         <div class="circle"></div>
         <div class="circle"></div>
       </div>
-      <ul class="cards">
+      <ol class="cards">
         <li v-for="(step, idx) in steps" :key="step.statut">
           <AgrementEtapeAvancement
             :state="idx <= currentStepIndex ? 'success' : 'waiting'"
             :libelle="step.libelle"
-            :date="step.date"
             :entite="step.entite"
-          />
+          >
+            <template #temporalite>
+              <template v-if="step.temporalite.texte">
+                {{ step.temporalite.texte }}
+                <a
+                  v-if="step.temporalite.lien"
+                  :href="step.temporalite.lien.url"
+                  class="lien-info"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ step.temporalite.lien.label }}
+                </a>
+              </template>
+              <template v-else>
+                {{ step.temporalite }}
+              </template>
+            </template>
+          </AgrementEtapeAvancement>
         </li>
-      </ul>
+      </ol>
     </div>
   </div>
 </template>
@@ -30,11 +47,12 @@ import { AGREMENT_STATUT } from "@vao/shared-bridge";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   territoire: { type: Object, required: true },
+  user: { type: Object, required: true },
 });
 
 const statutOrder = [
   AGREMENT_STATUT.TRANSMIS,
-  AGREMENT_STATUT.VERIF_EN_COURS,
+  AGREMENT_STATUT.PRIS_EN_CHARGE,
   AGREMENT_STATUT.COMPLETUDE_CONFIRME,
   AGREMENT_STATUT.VALIDE,
 ];
@@ -51,26 +69,33 @@ const getEntite = () => {
 const steps = [
   {
     statut: AGREMENT_STATUT.TRANSMIS,
-    libelle: "Envoi de la première demande d’agrément",
-    date: props.initAgrement?.dateDepot ?? "",
+    libelle: "Envoi de la première demande d'agrément",
+    temporalite: props.initAgrement?.dateDepot ?? "",
     entite: getEntite(),
   },
   {
-    statut: AGREMENT_STATUT.VERIF_EN_COURS,
+    statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     libelle: "Vérification de la complétude de votre dossier",
-    date: props.initAgrement?.dateVerifCompleture ?? "",
+    temporalite:
+      "Possible demande de complément d'informations ou documents justificatifs",
     entite: getEntite(),
   },
   {
     statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
     libelle: "Confirmation de complétude de votre dossier",
-    date: props.initAgrement?.dateConfirmCompletude ?? "",
+    temporalite: "Récépissé de complétude",
     entite: getEntite(),
   },
   {
     statut: AGREMENT_STATUT.VALIDE,
-    libelle: "Décision d’obtention de l’agrément",
-    date: props.initAgrement?.dateObtentionCertificat ?? "",
+    libelle: "Décision d'obtention de l'agrément",
+    temporalite: {
+      texte: "Délais de deux mois à compter du récépissé de complétude",
+      lien: {
+        url: "https://example.com/info-delais",
+        label: "Cliquer ici pour en savoir plus",
+      },
+    },
     entite: getEntite(),
   },
 ];
@@ -79,7 +104,11 @@ const currentStepIndex = computed(() =>
   statutOrder.indexOf(props.initAgrement?.statut),
 );
 </script>
+
 <style scoped lang="scss">
+li::marker {
+  content: "";
+}
 .cards {
   list-style-type: none;
   display: flex;
@@ -130,6 +159,17 @@ const currentStepIndex = computed(() =>
   top: 274px;
   transform: translate(-50%, 0);
 }
+
+.lien-info {
+  margin-left: 0.5rem;
+  text-decoration: underline;
+  color: var(--light-decisions-artwork-artwork-major-blue-france, #000091);
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
 @media (max-width: 597px) {
   .circle:nth-child(2) {
     top: 0px;

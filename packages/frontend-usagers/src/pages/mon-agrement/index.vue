@@ -19,7 +19,11 @@
         <AgrementEtapesAvancement
           :init-agrement="agrementStore.agrementCourant ?? {}"
           :territoire="territoireStore.territoire ?? {}"
+          :user="userStore.user ?? {}"
         />
+        <p class="fr-mt-4v">
+          <b>Déclarer vos séjours</b> 2 mois minimum avant la date de départ
+        </p>
       </DsfrTabContent>
 
       <DsfrTabContent
@@ -110,6 +114,7 @@
 <script setup lang="ts">
 const agrementStore = useAgrementStore();
 const route = useRoute();
+const userStore = useUserStore();
 
 useHead({
   title: "Déclaration de séjour détaillée | Vacances Adaptées Organisées",

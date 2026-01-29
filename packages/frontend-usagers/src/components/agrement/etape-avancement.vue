@@ -12,7 +12,9 @@
     ></span>
     <div class="texte">
       <p class="texte-intitule">{{ libelle }}</p>
-      <p class="texte-date">{{ date }}</p>
+      <p class="texte-temporalite">
+        <slot name="temporalite">{{ temporalite }}</slot>
+      </p>
     </div>
     <p class="entite">{{ entite }}</p>
   </div>
@@ -29,9 +31,10 @@ defineProps({
     type: String,
     required: true,
   },
-  date: {
+  temporalite: {
     type: String,
-    required: true,
+    required: false,
+    default: "",
   },
   entite: {
     type: String,
@@ -73,7 +76,7 @@ defineProps({
   font-weight: 700;
   color: var(--light-decisions-artwork-artwork-major-blue-france, #000091);
 }
-.texte-date {
+.texte-temporalite {
   font-size: 14px;
 }
 .entite {
