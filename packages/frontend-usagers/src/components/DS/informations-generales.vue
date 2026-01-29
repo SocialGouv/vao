@@ -12,7 +12,7 @@
           name="libelle"
           label="Titre"
           :label-visible="true"
-          :model-value="libelle"
+          :model-value="libelle as string"
           :readonly="!props.modifiable"
           :is-valid="libelleMeta.valid"
           :error-message="libelleErrorMessage"
@@ -40,7 +40,7 @@
           type="date"
           label="Date de début"
           :label-visible="true"
-          :model-value="dateDebut"
+          :model-value="dateDebut as string"
           :readonly="!props.modifiable"
           :is-valid="dateDebutMeta.valid"
           :error-message="dateDebutErrorMessage"
@@ -54,7 +54,7 @@
           type="date"
           label="Date de fin"
           :label-visible="true"
-          :model-value="dateFin"
+          :model-value="dateFin as string"
           :readonly="!props.modifiable"
           :is-valid="dateFinMeta.valid"
           :error-message="dateFinErrorMessage"
@@ -77,7 +77,7 @@
     <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-col-12">
         <DsfrInputGroup
-          v-if="duree > 0"
+          v-if="Number(duree) > 0"
           name="duree"
           label="Durée du séjour (en jours)"
           :label-visible="true"
@@ -172,12 +172,12 @@ const statutsAfficheRappel = [
 ];
 
 const duree = computed(() => {
-  const nbjours = dayjs(dateFin.value).diff(dateDebut.value, "day") + 1;
+  const nbjours = dayjs(dateFin.value as string).diff(dayjs(dateDebut.value as string), "day") + 1;
   return nbjours.toString();
 });
 
 const periode = computed(() => {
-  const moisDebut = dayjs(dateDebut.value).month();
+  const moisDebut = dayjs(dateDebut.value as string).month();
   if (moisDebut < 3) return "hiver";
   if (moisDebut < 6) return "printemps";
   if (moisDebut < 9) return "été";
@@ -225,8 +225,17 @@ const {
   handleChange: onDateFinChange,
   meta: dateFinMeta,
 } = useField("dateFin");
+interface ResponsableSejour {
+  nom?: string;
+  prenom?: string;
+  fonction?: string;
+  email?: string;
+  telephone?: string;
+  adresse?: string;
+}
+
 const { value: responsableSejour, handleChange: onResponsableSejourChange } =
-  useField("responsableSejour");
+  useField<ResponsableSejour>("responsableSejour");
 
 defineExpose({
   meta,
@@ -239,7 +248,7 @@ function initDataByOrganisme() {
         nom: props.initOrganisme?.personnePhysique?.nomNaissance,
         prenom: props.initOrganisme?.personnePhysique?.prenom,
         fonction: "organisateur de séjour",
-        email: userStore.user.email,
+        email: userStore?.user?.email,
         telephone: props.initOrganisme?.personnePhysique?.telephone,
         adresse: props.initOrganisme?.personnePhysique?.adresseSiege,
       };

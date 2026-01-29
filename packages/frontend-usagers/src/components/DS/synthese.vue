@@ -4,7 +4,7 @@
       <DsfrAccordionsGroup v-model="expandedIndex">
         <ul role="list">
           <li v-if="stepToDisplay('info-generales')" role="listitem">
-            <DsfrAccordion :id="1" title="Informations générales">
+            <DsfrAccordion :id="'1'" title="Informations générales">
               <template #title>
                 <span>Informations générales&nbsp;</span>
                 <DsfrBadge
@@ -24,7 +24,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('info-vacanciers')" role="listitem">
-            <DsfrAccordion :id="2" title="Informations sur les vacanciers">
+            <DsfrAccordion :id="'2'" title="Informations sur les vacanciers">
               <template #title>
                 <span>Informations sur les vacanciers&nbsp;</span>
                 <DsfrBadge
@@ -45,7 +45,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('info-personnel')" role="listitem">
-            <DsfrAccordion :id="3" title="Informations sur le personnel">
+            <DsfrAccordion :id="'3'" title="Informations sur le personnel">
               <template #title>
                 <span>Informations sur le personnel&nbsp;</span>
                 <DsfrBadge
@@ -66,7 +66,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('projet-sejour')" role="listitem">
-            <DsfrAccordion :id="4" title="Projet de séjour">
+            <DsfrAccordion :id="'4'" title="Projet de séjour">
               <template #title>
                 <span>Projet de séjour &nbsp;</span>
                 <DsfrBadge
@@ -84,7 +84,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('info-transport')" role="listitem">
-            <DsfrAccordion :id="5" title="Informations sur le transport">
+            <DsfrAccordion :id="'5'" title="Informations sur le transport">
               <template #title>
                 <span>Informations sur le transport &nbsp;</span>
                 <DsfrBadge
@@ -104,7 +104,7 @@
             </DsfrAccordion>
           </li>
           <li v-if="stepToDisplay('info-sanitaires')" role="listitem">
-            <DsfrAccordion :id="6" title="Informations sanitaires">
+            <DsfrAccordion :id="'6'" title="Informations sanitaires">
               <template #title>
                 <span>Informations sanitaires &nbsp;</span>
                 <DsfrBadge
@@ -145,10 +145,10 @@
                 >
                   <DsfrAccordion
                     :id="'synthese-hebergement-' + index"
-                    :title="`Fiche annexe n°${index + 1}`"
+                    :title="`Fiche annexe n°${Number(index) + 1}`"
                   >
                     <template #title>
-                      <span>Fiche annexe n°{{ index + 1 }} &nbsp;</span>
+                      <span>Fiche annexe n°{{ Number(index) + 1 }} &nbsp;</span>
                       <DsfrBadge
                         :label="validateHebergement(index).label"
                         :small="true"
@@ -187,6 +187,7 @@
             label="Je certifie sur l'honneur que les renseignements portés sur cette déclaration sont exacts."
             :small="true"
             :disabled="!props.modifiable"
+            :value="true"
             @update:model-value="onACertifieChange"
           />
         </div>
@@ -198,7 +199,7 @@
             readonly
             :label-visible="true"
             placeholder=""
-            :model-value="nom"
+            :model-value="nom as string"
           />
         </div>
 
@@ -209,7 +210,7 @@
             readonly
             :label-visible="true"
             placeholder=""
-            :model-value="prenom"
+            :model-value="prenom as string"
           />
         </div>
 
@@ -220,8 +221,8 @@
             :readonly="!props.modifiable"
             :label-visible="true"
             placeholder=""
-            :model-value="qualite"
-            :error-message="qualiteErrorMessage && qualiteMeta.touched"
+            :model-value="qualite as string"
+            :error-message="qualiteMeta.touched ? qualiteErrorMessage : undefined"
             :is-valid="qualiteMeta"
             @update:model-value="onQualiteChange"
           />
@@ -235,7 +236,7 @@
             readonly
             :label-visible="true"
             placeholder=""
-            :model-value="at"
+            :model-value="at ? String(at) : ''"
           />
         </div>
       </div>
@@ -278,16 +279,16 @@ import dayjs from "dayjs";
 import { IsDownloading } from "@vao/shared-ui";
 
 const props = defineProps({
-  declarationCourante: { type: Object, default: null, required: true },
-  initOrganisme: { type: Object, default: null, required: true },
+  declarationCourante: { type: Object, default: null },
+  initOrganisme: { type: Object, default: null },
   modifiable: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
 });
 
 const emit = defineEmits(["previous", "finalize"]);
-const expandedIndex = ref(-1);
-const subExpandedIndex = ref(-1);
+const expandedIndex = ref(Number(-1));
+const subExpandedIndex = ref<number>(-1);
 
 const userStore = useUserStore();
 const demandeSejourStore = useDemandeSejourStore();
@@ -300,8 +301,8 @@ const initialValues = {
   attestation: {
     ...(props.declarationCourante.attestation ?? {}),
     ...(props.modifiable && {
-      nom: userStore.user.nom,
-      prenom: userStore.user.prenom,
+      nom: userStore?.user?.nom,
+      prenom: userStore?.user?.prenom,
       aCertifie: false,
       at: dayjs(new Date()).format("YYYY-MM-DD"),
     }),
@@ -335,17 +336,17 @@ const {
 } = useField("attestation.qualite");
 const { value: at } = useField("attestation.at");
 
-const success = {
+const success: { label: string; type: "success" } = {
   label: "complet",
   type: "success",
 };
 
-const failure = {
+const failure: { label: string; type: "warning" } = {
   label: "incomplet",
   type: "warning",
 };
 
-const sectionInformationsGenerales = ref(null);
+const sectionInformationsGenerales = ref<any>(null);
 
 const informationsGenerales = computed(() =>
   sectionInformationsGenerales.value?.meta.valid ? success : failure,
@@ -405,7 +406,12 @@ const libelleBoutonTransmission = computed(() => {
   return "";
 });
 
-function validateHebergement(index) {
+interface ValidationResult {
+  label: string;
+  type: "success" | "warning";
+}
+
+function validateHebergement(index: number): ValidationResult {
   return !Object.keys(errors.value).find((k) =>
     k.startsWith("hebergement.hebergements[" + index + "]"),
   )
@@ -413,13 +419,12 @@ function validateHebergement(index) {
     : failure;
 }
 
-function stepToDisplay(step) {
+function stepToDisplay(step: string): boolean {
   const statutsMasques = demandeSejourMenus.find(
-    (menu) => menu.id === step,
+    (menu: any) => menu.id === step,
   )?.statutsMasques;
-  return !(statutsMasques && statutsMasques.includes(declarationStatut.value));
+  return !(statutsMasques && statutsMasques.includes(declarationStatut.value as string));
 }
-
 function finalizeDeclaration() {
   emit("finalize", values.attestation);
 }

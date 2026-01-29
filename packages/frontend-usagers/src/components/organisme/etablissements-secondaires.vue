@@ -72,14 +72,13 @@
           v-model:limit="limit"
           v-model:offset="offset"
           :columns="columns"
-          :data="fitleredEtablissements.slice(offset, offset + limit)"
+          :data="fitleredEtablissements.slice(offset, offset + limit) as EtablissementDto[]"
           :total="fitleredEtablissements?.length ?? 0"
-          row-id="siret"
-          @update-data="updateData"
+          row-id="siret"  
         >
           <template #cell-custom:edit="{ row }">
             <DsfrToggleSwitch
-              :model-value="row.enabled"
+              :model-value="row.enabled === true"
               :disabled="
                 !props.modifiable ||
                 (!row.enabled && !(row.etatAdministratif === 'En activité'))
@@ -87,7 +86,7 @@
               :inactive-text="
                 row.etatAdministratif === 'En activité' ? 'Désactivé' : 'Fermé'
               "
-              @update:model-value="() => enableEtablissements(row.siret)"
+              @update:model-value="() => enableEtablissements(row.siret as string)"
             ></DsfrToggleSwitch>
           </template>
         </DsfrDataTableV2Wrapper>
@@ -119,6 +118,7 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
 import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
+import type { EtablissementDto } from "@vao/shared-bridge";
 
 const emit = defineEmits(["previous", "next", "update"]);
 
@@ -158,7 +158,7 @@ onMounted(async () => {
   }
 });
 
-const { value: etablissements } = useField("etablissements");
+const { value: etablissements } = useField<EtablissementDto[]>("etablissements");
 
 const openedEtablissements = computed(() =>
   etablissements.value.filter((e) => e.etatAdministratif === "En activité"),
@@ -180,10 +180,10 @@ const fitleredEtablissements = computed(() => {
     // filtering conditions
     const elements = [
       () => (!props.modifiable ? e.enabled : e),
-      () => new RegExp(searchState.value.siret, "i").test(e.siret),
+      () => new RegExp(searchState.value.siret ?? "", "i").test(e.siret as string),
       () =>
-        new RegExp(searchState.value.denomination, "i").test(e.denomination),
-      () => new RegExp(searchState.value.commune, "i").test(e.commune),
+        new RegExp(searchState.value.denomination, "i").test(e.denomination as string),
+      () => new RegExp(searchState.value.commune, "i").test(e.commune as string),
       () => {
         if (searchState.value.autorisation === "Tous") return true;
         if (
@@ -218,12 +218,12 @@ const defs = [
 
 const columns = columnsTable.buildColumns(defs);
 
-const enableEtablissements = (siret) => {
+const enableEtablissements = (siret: string) => {
   setValues({
-    etablissements: [...etablissements.value].reduce((acc, curr) => {
+    etablissements: [...etablissements.value].reduce<EtablissementDto[]>((acc, curr) => {
       if (curr.siret === siret) {
         acc.push({ ...curr, enabled: !curr.enabled });
-      } else {
+      } else {  
         acc.push(curr);
       }
 
