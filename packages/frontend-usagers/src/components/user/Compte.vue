@@ -96,7 +96,7 @@
 
 <script setup>
 import { DsfrButton } from "@gouvminint/vue-dsfr";
-import { DisplayInput, statusUser, ValidationModal } from "@vao/shared-ui";
+import { DisplayInput, statusUser, ValidationModal, useToaster } from "@vao/shared-ui";
 import { defineProps } from "vue";
 import { useField, useForm } from "vee-validate";
 import FoUser from "~/utils/fo-user";
@@ -240,12 +240,14 @@ async function update() {
         titleTag: "h2",
         title: displayInfos.LastUserOrgansimeError.title,
         description: displayInfos.LastUserOrgansimeError.description,
+        role: "alert",
       });
     } else {
       toaster.error({
         titleTag: "h2",
         title: displayInfos.UnexpectedError.title,
         description: displayInfos.UnexpectedError.description,
+        role: "alert",
       });
       throw error;
     }

@@ -131,7 +131,7 @@
 </template>
 
 <script setup>
-import { PasswordInput, apiModel, CguValidation } from "@vao/shared-ui";
+import { PasswordInput, apiModel, CguValidation, useToaster } from "@vao/shared-ui";
 import { ERRORS_LOGIN } from "@vao/shared-bridge";
 
 const toaster = useToaster();

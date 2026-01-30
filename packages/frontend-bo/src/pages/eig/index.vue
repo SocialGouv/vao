@@ -131,6 +131,7 @@ import {
   TableWithBackendPagination,
   ValidationModal,
   eigUtils,
+  useToaster,
 } from "@vao/shared-ui";
 const mapEigToLabel = eigUtils.mapEigToLabel;
 
@@ -170,7 +171,10 @@ try {
   });
   await departementStore.fetch();
 } catch (error) {
-  toaster.error("Une erreur est survenue lors de la récupération des EIG");
+  toaster.error({
+    description: "Une erreur est survenue lors de la récupération des EIG",
+    role: "alert",
+  });
   throw error;
 }
 
@@ -184,9 +188,10 @@ const paginateResults = async (sortValue, limitValue, currentPageValue) => {
       search: searchState,
     });
   } catch (error) {
-    toaster.error(
-      "Une erreur est survenue lors de la récupération de la demande",
-    );
+    toaster.error({
+      description: "Une erreur est survenue lors de la récupération de la demande",
+      role: "alert",
+    });
     throw error;
   }
 };
@@ -201,9 +206,10 @@ const fetchEigsDebounce = debounce(async (search) => {
       search,
     });
   } catch (error) {
-    toaster.error(
-      "Une erreur est survenue lors de la récupération de la demande",
-    );
+    toaster.error({
+      description: "Une erreur est survenue lors de la récupération de la demande",
+      role: "alert",
+    });
     throw error;
   }
 });
@@ -349,7 +355,10 @@ const readEig = async (id) => {
     await eigStore.markAsRead(id);
     navigateTo(`/eig/${id}`);
   } catch (error) {
-    toaster.error("Une erreur est survenue lors de la lecture de l'eig");
+    toaster.error({
+      description: "Une erreur est survenue lors de la lecture de l'eig",
+      role: "alert",
+    });
     throw error;
   }
 };

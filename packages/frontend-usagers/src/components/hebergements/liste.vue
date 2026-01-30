@@ -81,7 +81,7 @@
 </template>
 
 <script setup>
-import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
+import { DsfrDataTableV2Wrapper, columnsTable, useToaster } from "@vao/shared-ui";
 import HebergementStatusBadge from "./HebergementStatusBadge.vue";
 const toaster = useToaster();
 
@@ -157,6 +157,7 @@ async function desactivateOrReactivate(row) {
         description:
           error.data.message ??
           "Erreur lors de la désactivation de l'hébergement" + row.nom,
+          role: "alert",
       });
       throw error;
     }
@@ -173,6 +174,7 @@ async function desactivateOrReactivate(row) {
         description:
           error.data.message ??
           "Erreur lors de la réactivation de l'hébergement" + row.nom,
+          role: "alert",
       });
       throw error;
     }

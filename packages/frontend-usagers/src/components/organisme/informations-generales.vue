@@ -46,6 +46,7 @@
 </template>
 
 <script setup>
+import { useToaster } from "@vao/shared-ui";
 import { useField } from "vee-validate";
 
 const useExternalApi = useExternalApiStore();

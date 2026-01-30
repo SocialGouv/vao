@@ -4,10 +4,9 @@ import { DsfrAlert } from "@gouvminint/vue-dsfr";
 
 const { toasts } = useToaster();
 
-// role status par défaut ?
-// forcer le role en warning quand j'ai un type warning ?? ou laisser gérer par l'utilisateur ?
-// ajouter un aria live ?? Par defaut ?
-// supprimer duration ?
+function isValidToast(toast: any): boolean {
+  return toast && toast.id && toast.type;
+}
 
 function resolvedClosed(id: string) {
   const toast = toasts.find((t) => t.id === id);
@@ -17,20 +16,23 @@ function resolvedClosed(id: string) {
 
 <template>
   <div class="toast-container toast-container--top">
-    <DsfrAlert
-      v-for="toast in toasts"
-      :id="String(toast.id)"
-      :key="toast.id"
-      :type="toast.type"
-      :title="toast.title"
-      :description="toast.description"
-      :title-tag="toast.titleTag"
-      :small="toast.small"
-      :closeable="true"
-      :close-button-label="toast.closeButtonLabel || 'Fermer'"
-      :role="toast.role || 'status'"
-      @close="() => resolvedClosed(toast.id)"
-    />
+    <template v-for="toast in toasts" :key="toast.id">
+      <DsfrAlert
+        v-if="isValidToast(toast)"
+        :id="String(toast.id)"
+        :type="toast.type"
+        :title="toast.title"
+        :description="toast.description"
+        :title-tag="toast.titleTag"
+        :small="toast.small"
+        :closeable="true"
+        :close-button-label="toast.closeButtonLabel || 'Fermer'"
+        :role="toast.role || 'status'"
+        :aria-live="toast.role === 'alert' ? 'assertive' : 'polite'"
+        :duration="toast.duration || undefined"
+        @close="() => resolvedClosed(toast.id)"
+      />
+    </template>
   </div>
 </template>
 

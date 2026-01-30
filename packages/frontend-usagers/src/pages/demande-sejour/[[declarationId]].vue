@@ -241,7 +241,7 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { Chat, DemandeStatusBadge, fileUtils } from "@vao/shared-ui";
+import { Chat, DemandeStatusBadge, fileUtils, useToaster } from "@vao/shared-ui";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 const route = useRoute();
@@ -548,6 +548,7 @@ const sendMessage = async ({ message, file }) => {
       toaster.error({
         titleTag: "h2",
         description,
+        role: "alert",
       });
       return;
     }
@@ -569,6 +570,7 @@ const sendMessage = async ({ message, file }) => {
     return toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de l'envoi de votre message`,
+      role: "alert",
     });
   }
   demandeSejourStore.fetchMessages(sejourId.value);
@@ -601,6 +603,7 @@ async function updateOrCreate(data, type) {
         toaster.error({
           titleTag: "h2",
           description,
+          role: "alert",
         });
         return;
       }
@@ -636,6 +639,7 @@ async function updateOrCreate(data, type) {
         toaster.error({
           titleTag: "h2",
           description,
+          role: "alert",
         });
         return;
       }
@@ -672,6 +676,7 @@ async function updateOrCreate(data, type) {
       description:
         error.data.message ??
         `Une erreur est survenue lors de la mise à jour de la déclaration de séjour`,
+      role: "alert",
     });
   } finally {
     resetApiStatut();
@@ -723,6 +728,7 @@ async function finalize(attestation) {
         titleTag: "h2",
         description:
           "Une erreur est survenue durant la génération du PDF mais la déclaration a bien été transmise",
+        role: "alert",
       });
     }
     log.d(`demande de séjour ${sejourId.value} transmise`);
@@ -740,6 +746,7 @@ async function finalize(attestation) {
     return toaster.error({
       titleTag: "h2",
       description: displayMessage,
+      role: "alert",
     });
   } finally {
     resetApiStatut();

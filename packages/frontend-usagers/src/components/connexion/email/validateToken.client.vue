@@ -45,6 +45,7 @@
 </template>
 
 <script setup>
+import { useToaster } from "@vao/shared-ui";
 const props = defineProps({ token: { type: String, required: true } });
 const log = logger("components/connexion/email/validationToken");
 
@@ -128,6 +129,7 @@ async function renewToken() {
       toaster.error({
         titleTag: "h2",
         description: `Une erreur est survenue lors de l'envoi de du courriel. Veuillez contacter l'assistance.`,
+        role: "alert",
       });
       log.w("renew", error);
     });

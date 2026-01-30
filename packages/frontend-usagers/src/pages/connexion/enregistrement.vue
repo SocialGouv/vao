@@ -226,7 +226,7 @@
 import "@vueform/multiselect/themes/default.css";
 import { ERRORS_LOGIN } from "@vao/shared-bridge";
 import { nextTick } from "vue";
-import { ApiUnavailable, apiModel } from "@vao/shared-ui";
+import { ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
 const apiTypes = apiModel.apiTypes;
 
 const log = logger("pages/connexion/enregistrement");
@@ -450,6 +450,7 @@ async function register() {
         titleTag: "h2",
         description:
           "Une erreur technique est survenue, veuillez réessayer plus tard",
+        role: "alert",
       });
     }
     const body = error.data;
@@ -482,6 +483,7 @@ async function register() {
           toaster.error({
             titleTag: "h2",
             description,
+            role: "alert",
           });
         }
         return;
@@ -490,6 +492,7 @@ async function register() {
       toaster.error({
         titleTag: "h2",
         description,
+        role: "alert",
       });
     }
     throw error;

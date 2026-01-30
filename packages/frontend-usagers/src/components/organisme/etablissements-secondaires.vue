@@ -118,7 +118,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
-import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
+import { DsfrDataTableV2Wrapper, columnsTable, useToaster } from "@vao/shared-ui";
 
 const emit = defineEmits(["previous", "next", "update"]);
 
@@ -259,6 +259,7 @@ async function refreshEtablissmentsSecondaires() {
       titleTag: "h2",
       description:
         "erreur lors du rafraichissment des établissements secondaires",
+      role: "alert",
     });
     log.w("searchOrganismeBySiret - erreur:", { error });
     return null;

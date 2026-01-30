@@ -130,6 +130,7 @@
 
 <script setup>
 import { useField, useForm } from "vee-validate";
+import { useToaster } from "@vao/shared-ui";
 import * as yup from "yup";
 
 const log = logger("components/protocole-transport");
@@ -214,6 +215,7 @@ function next() {
       titleTag: "h2",
       description:
         "Les documents requis relatifs à l'organisation des transports  doivent obligatoirement être au format pdf, png ou jpg",
+      role: "alert",
     });
 }
 </script>

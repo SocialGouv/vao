@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-import { ValidationModal } from "@vao/shared-ui";
+import { ValidationModal, useToaster } from "@vao/shared-ui";
 import dayjs from "dayjs";
 
 const toaster = useToaster();
@@ -61,7 +61,11 @@ const readEig = async () => {
     await eigStore.setCurrentEig(modalDetails.value.eigId);
     closeEigModal();
   } catch (error) {
-    toaster.error("Une erreur est survenue lors de la lecture de l'eig");
+    toaster.error({
+      titleTag: "h2",
+      description: "Une erreur est survenue lors de la lecture de l'eig",
+      role: "alert",
+    });
     throw error;
   }
 };

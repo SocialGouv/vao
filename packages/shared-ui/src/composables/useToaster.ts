@@ -4,7 +4,7 @@ import type { Toast, ToastOptions, ToastType } from "../types/toaster.type";
 const toasts = reactive<Toast[]>([]);
 
 function addToast(options: ToastOptions, type: ToastType): Toast {
-  const id = options.id ?? Math.random().toString(36).slice(2); // string id
+  const id = options.id ?? Math.random().toString(36).slice(2);
   const toast: Toast = {
     ...options,
     id,

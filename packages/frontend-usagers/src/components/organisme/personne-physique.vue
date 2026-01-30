@@ -241,7 +241,7 @@
 <script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading, ApiUnavailable, apiModel } from "@vao/shared-ui";
+import { IsDownloading, ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
 import { SiretService } from "~/services/siretService";
 import {
   ERRORS_SIRET_MESSAGES,
@@ -383,6 +383,7 @@ async function searchNewSiret() {
     toaster.error({
       titleTag: "h2",
       description,
+      role: "alert",
     });
   }
 }
@@ -429,6 +430,7 @@ async function searchOrganismeBySiret() {
       toaster.error({
         titleTag: "h2",
         description: "Un organisme existe déjà pour ce SIRET",
+        role: "alert",
       });
       return true;
     }
@@ -437,6 +439,7 @@ async function searchOrganismeBySiret() {
       titleTag: "h2",
       description:
         "erreur lors de la récupération des données internes à partir du SIRET",
+      role: "alert",
     });
     log.w("searchOrganismeBySiret - erreur:", { error });
     return true;
@@ -475,12 +478,14 @@ async function searchApiInsee() {
         titleTag: "h2",
         description:
           "Le SIRET renseigné n’est plus valide. Veuillez utiliser le nouveau SIRET de votre établissement",
+        role: "alert",
       });
     } else {
       toaster.error({
         titleTag: "h2",
         description:
           "erreur lors de la récupération des données à partir du SIRET",
+        role: "alert",
       });
     }
     log.w("searchApiInsee - erreur:", { error });

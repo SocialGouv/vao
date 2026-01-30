@@ -206,7 +206,7 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/components/utils/TableFull.vue
   checksum: 74a74e68299d204eac907efee98c2eb3d776ff4c206b304acbca02d058bfbc4e
 - filename: packages/frontend-bo/src/pages/connexion/index.vue
-  checksum: 6c10f84098b60418a616ac078d458c3dd4313fb9e9bfb8e7611f0b533ee4512e
+  checksum: c485769ab46567927328d76c49aa2458b34a6f34ccf35ef934286fb16a81608d
 - filename: packages/frontend-bo/src/pages/connexion/reset-mot-de-passe.vue
   checksum: f544299c6795c35ca29f1ddd0babb1c840f7c25c72435b3c6b0939e0ea55d120
 - filename: packages/frontend-bo/src/pages/hebergements/[type]/[demandeSejourId]/[hebergementId].vue
@@ -270,7 +270,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
   checksum: dd393d7c31566dfa3864bb9a63fe98f9bf040cc8321e8cad0f74e8634e8365f8
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
-  checksum: 6a0259a5bfca987ea2d83fb1fa90116d8dda92335214993671111d7a04425429
+  checksum: fcacdc94675ff0c9eedddafc751e3dc1149edbc8d853494e3c42d935677eceff
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
   checksum: a30047520f10c9428ebb0865e8019baf9799801d99b0a6606eec58154a73c91b
 - filename: packages/frontend-usagers/src/pages/connexion/reset-mot-de-passe.vue
@@ -306,7 +306,7 @@ fileignoreconfig:
 - filename: packages/shared-ui/src/components/Table/DsfrDataTableV2.vue
   checksum: 0333a8dd3d87ab118f5896b079f89423f9e465208c68bebed045a83350ce24d6
 - filename: packages/shared-ui/src/components/Toaster.vue
-  checksum: 4830af09d658ce1a94f9c70e6aaf744b11d5fc40ca794ab7ada74a4a64408663
+  checksum: 83bcf77f5b7763c7f6bc272366174a0780fec328462c6ca4bc29ef144e2c37de
 - filename: packages/shared-ui/src/composables/useToaster.ts
   checksum: 704ad956e4817e92ca2df2f4cbdf14cc7a39218cdacdfef070dd91c8d1e4c563
 - filename: packages/shared-ui/src/types/Toaster.ts
