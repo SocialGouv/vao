@@ -1,0 +1,130 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Clean & install",
+      "type": "shell",
+      "command": "corepack pnpm clean && corepack pnpm install",
+      "problemMatcher": []
+    },
+    {
+      "label": "Start container",
+      "type": "shell",
+      "command": "docker compose up -d --remove-orphans",
+      "problemMatcher": []
+    },
+    {
+      "label": "Remove container",
+      "type": "shell",
+      "command": "docker compose down",
+      "problemMatcher": []
+    },
+    {
+      "label": "Install dependencies",
+      "command": "corepack pnpm install",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "./"
+      }
+    },
+    {
+      "label": "Clean dependencies",
+      "command": "corepack pnpm clean",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "./"
+      }
+    },
+    {
+      "label": "Start applications",
+      "dependsOn": [
+        "Start Backend",
+        "Start Cron",
+        "Start Frontend Usagers",
+        "Start Frontend BO"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "Start Backend",
+      "dependsOn": ["Start Migrations"],
+      "command": "npx env-cmd -- corepack pnpm --filter @vao/backend dev",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "./"
+      }
+    },
+    {
+      "label": "Start External API",
+      "command": "npx env-cmd -- corepack pnpm --filter @vao/external-api dev",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "./"
+      }
+    },
+    {
+      "label": "Start Cron",
+      "dependsOn": ["Start Migrations"],
+      "command": "npx env-cmd -- corepack pnpm --filter @vao/cron dev",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "./"
+      }
+    },
+    {
+      "label": "Start Frontend BO",
+      "command": "npx env-cmd -- corepack pnpm --filter @vao/frontend-bo dev",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "./"
+      }
+    },
+    {
+      "label": "Start Frontend Usagers",
+      "command": "npx env-cmd -- corepack pnpm --filter @vao/frontend-usagers dev",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "./"
+      }
+    },
+    {
+      "label": "Start Migrations",
+      "command": "npx env-cmd -- corepack pnpm --filter @vao/migrations exec knex --cwd ./src migrate:latest",
+      "type": "shell",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "./"
+      }
+    },
+    {
+      "label": "Logs all",
+      "dependsOn": ["Logs migrations", "Logs cron", "Logs postgres"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Logs migrations",
+      "type": "shell",
+      "command": "docker compose logs -f migrations --no-log-prefix",
+      "problemMatcher": []
+    },
+    {
+      "label": "Logs cron",
+      "type": "shell",
+      "command": "docker compose logs -f cron --no-log-prefix",
+      "problemMatcher": []
+    },
+    {
+      "label": "Logs postgres",
+      "type": "shell",
+      "command": "docker compose logs -f postgres --no-log-prefix",
+      "problemMatcher": []
+    }
+  ]
+}

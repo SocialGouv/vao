@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 5592a600679ab6e7ea811a8a82401756d15128d7d09e3f27c06c06caaa15e1dd
+  checksum: 380b225ca58c0ede2cf1944dbfe96d16511f866772bd56cc009b5d605d929938
 - filename: .github/workflows/e2e.yaml
   checksum: d28e325635cc8d77cbf5b260c67cb9721b58578ac86ddd39ec691e753e4d0412
 - filename: .github/workflows/lint-format-tests.yaml
@@ -41,6 +41,8 @@ fileignoreconfig:
   checksum: ebaeaef58dff99ed0a70ace0cb1cfceb31c0656d921999e19ce183e2adc9431f
 - filename: .kontinuous/values.yaml
   checksum: 5500f51a969877fcd8752914257b42067328bf8c9c7e84bb55849ef91b4ae44c
+- filename: .vscode/settings.json
+  checksum: bfa8870f696549d178edd6992541e3c7c2eb10a911abac24f97575436183fdaa
 - filename: README.md
   checksum: 3627cd363d1cfc640df689ce74d5467e13707a2cc9c44b0bffaba14f217296e2
 - filename: _scripts/dev/local-node.dockerfile
