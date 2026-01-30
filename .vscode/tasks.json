@@ -50,7 +50,7 @@
     {
       "label": "Start Backend",
       "dependsOn": ["Start Migrations"],
-      "command": "npx env-cmd -- corepack pnpm --filter @vao/backend dev",
+      "command": "source ~/.zshrc && nvm use && npx env-cmd -- corepack pnpm --filter @vao/backend dev",
       "type": "shell",
       "problemMatcher": [],
       "options": {
@@ -59,7 +59,7 @@
     },
     {
       "label": "Start External API",
-      "command": "npx env-cmd -- corepack pnpm --filter @vao/external-api dev",
+      "command": "source ~/.zshrc && nvm use && npx env-cmd -- corepack pnpm --filter @vao/external-api dev",
       "type": "shell",
       "problemMatcher": [],
       "options": {
@@ -69,7 +69,7 @@
     {
       "label": "Start Cron",
       "dependsOn": ["Start Migrations"],
-      "command": "npx env-cmd -- corepack pnpm --filter @vao/cron dev",
+      "command": "source ~/.zshrc && nvm use && npx env-cmd -- corepack pnpm --filter @vao/cron dev",
       "type": "shell",
       "problemMatcher": [],
       "options": {
@@ -78,7 +78,7 @@
     },
     {
       "label": "Start Frontend BO",
-      "command": "npx env-cmd -- corepack pnpm --filter @vao/frontend-bo dev",
+      "command": "source ~/.zshrc && nvm use && npx env-cmd -- corepack pnpm --filter @vao/frontend-bo dev",
       "type": "shell",
       "problemMatcher": [],
       "options": {
@@ -87,7 +87,7 @@
     },
     {
       "label": "Start Frontend Usagers",
-      "command": "npx env-cmd -- corepack pnpm --filter @vao/frontend-usagers dev",
+      "command": "source ~/.zshrc && nvm use && npx env-cmd -- corepack pnpm --filter @vao/frontend-usagers dev",
       "type": "shell",
       "problemMatcher": [],
       "options": {
@@ -96,7 +96,7 @@
     },
     {
       "label": "Start Migrations",
-      "command": "npx env-cmd -- corepack pnpm --filter @vao/migrations exec knex --cwd ./src migrate:latest",
+      "command": "source ~/.zshrc && nvm use && npx env-cmd -- corepack pnpm --filter @vao/migrations exec knex --cwd ./src migrate:latest",
       "type": "shell",
       "problemMatcher": [],
       "options": {
