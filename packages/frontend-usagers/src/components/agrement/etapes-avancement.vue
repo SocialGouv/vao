@@ -23,7 +23,6 @@
                 <a
                   v-if="step.temporalite.lien"
                   :href="step.temporalite.lien.url"
-                  class="lien-info"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -92,7 +91,7 @@ const steps = [
     temporalite: {
       texte: "Délais de deux mois à compter du récépissé de complétude",
       lien: {
-        url: "https://example.com/info-delais",
+        url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030344746/",
         label: "Cliquer ici pour en savoir plus",
       },
     },
@@ -158,16 +157,6 @@ li::marker {
 .circle:nth-child(5) {
   top: 274px;
   transform: translate(-50%, 0);
-}
-
-.lien-info {
-  margin-left: 0.5rem;
-  text-decoration: underline;
-  color: var(--light-decisions-artwork-artwork-major-blue-france, #000091);
-
-  &:hover {
-    text-decoration: none;
-  }
 }
 
 @media (max-width: 597px) {
