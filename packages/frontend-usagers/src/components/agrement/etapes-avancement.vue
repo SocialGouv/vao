@@ -56,38 +56,34 @@ const statutOrder = [
   AGREMENT_STATUT.VALIDE,
 ];
 
-const getEntite = () => {
-  const prenom = props.territoire?.corresp_vao_prenom;
-  const nom = props.territoire?.corresp_vao_nom;
-  if (prenom && nom) {
-    return prenom + " " + nom;
-  }
-  return "";
-};
-
 const steps = [
   {
     statut: AGREMENT_STATUT.TRANSMIS,
     libelle: "Envoi de la première demande d'agrément",
     temporalite: props.initAgrement?.dateDepot ?? "",
-    entite: getEntite(),
+    entite: "",
   },
   {
     statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     libelle: "Vérification de la complétude de votre dossier",
     temporalite:
+      props.initAgrement?.dateVerifCompleture ||
       "Possible demande de complément d'informations ou documents justificatifs",
-    entite: getEntite(),
+    entite: "",
   },
   {
     statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
-    libelle: "Confirmation de complétude de votre dossier",
+    libelle:
+      props.initAgrement?.dateConfirmCompletude ||
+      "Confirmation de complétude de votre dossier",
     temporalite: "Récépissé de complétude",
-    entite: getEntite(),
+    entite: "",
   },
   {
     statut: AGREMENT_STATUT.VALIDE,
-    libelle: "Décision d'obtention de l'agrément",
+    libelle:
+      props.initAgrement?.dateObtentionCertificat ||
+      "Décision d'obtention de l'agrément",
     temporalite: {
       texte: "Délais de deux mois à compter du récépissé de complétude",
       lien: {
@@ -95,7 +91,7 @@ const steps = [
         label: "Cliquer ici pour en savoir plus",
       },
     },
-    entite: getEntite(),
+    entite: "",
   },
 ];
 
