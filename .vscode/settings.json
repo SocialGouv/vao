@@ -1,0 +1,33 @@
+{
+  "jest.shell": "/bin/zsh",
+  "jest.virtualFolders": [
+    {
+      "name": "backend",
+      "rootPath": "packages/backend",
+      "jestCommandLine": "corepack pnpm test:debug",
+      "runMode": "on-demand"
+    },
+    {
+      "name": "cron",
+      "rootPath": "packages/cron",
+      "jestCommandLine": "corepack pnpm test",
+      "runMode": "on-demand"
+    },
+    {
+      "name": "external-api",
+      "rootPath": "packages/external-api",
+      "jestCommandLine": "corepack pnpm test",
+      "runMode": "on-demand"
+    },
+    {
+      "name": "shared-bridge",
+      "rootPath": "packages/shared-bridge",
+      "jestCommandLine": "corepack pnpm test",
+      "runMode": "watch"
+    }
+  ],
+  "sonarlint.connectedMode.project": {
+    "connectionId": "socialgouv",
+    "projectKey": "SocialGouv_vao"
+  }
+}

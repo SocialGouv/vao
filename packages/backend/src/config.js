@@ -111,7 +111,7 @@ module.exports = {
     port: process.env.SMTP_PORT,
     secure: process.env.SMTP_IS_SECURE === "true",
   },
-  tmpDirectory: process.env.TMP_DIRECTORY,
+  tmpDirectory: process.env.TMP_DIRECTORY || "/tmp/",
   tokenSecret: process.env.TOKEN_SECRET_LINK,
   tokenSecret_BO: process.env.TOKEN_SECRET_BO,
   tokenSecret_FO: process.env.TOKEN_SECRET_FO,
