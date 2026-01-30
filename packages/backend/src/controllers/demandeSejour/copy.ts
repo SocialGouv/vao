@@ -65,13 +65,17 @@ export default async function post(
       );
     }
 
-    sourceDeclaration.files.files = sourceDeclaration.files?.files?.filter(
-      (f: DeclarationFileItem) =>
-        f.type !== "declaration_2_mois" &&
-        f.type !== "AR_declaration_2_mois" &&
-        f.type !== "declaration_8jours" &&
-        f.type !== "AR_declaration_8_jours",
-    );
+    if (!sourceDeclaration.files) {
+      sourceDeclaration.files = { files: [] };
+    }
+    sourceDeclaration.files.files =
+      sourceDeclaration.files.files?.filter(
+        (f: DeclarationFileItem) =>
+          f.type !== "declaration_2_mois" &&
+          f.type !== "AR_declaration_2_mois" &&
+          f.type !== "declaration_8jours" &&
+          f.type !== "AR_declaration_8_jours",
+      ) ?? [];
     const newDeclarationId = await DemandeSejour.copy({
       declaration: sourceDeclaration,
       organisme,
