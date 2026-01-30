@@ -23,6 +23,7 @@
                 <a
                   v-if="step.temporalite.lien"
                   :href="step.temporalite.lien.url"
+                  :title="step.temporalite.lien.title"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -85,10 +86,11 @@ const steps = [
       props.initAgrement?.dateObtentionCertificat ||
       "Décision d'obtention de l'agrément",
     temporalite: {
-      texte: "Délais de deux mois à compter du récépissé de complétude",
+      texte: "Délais de deux mois à compter du récépissé de complétude.",
       lien: {
         url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030344746/",
-        label: "Cliquer ici pour en savoir plus",
+        label: "En savoir plus",
+        title: "Article R412-12 - Code du tourisme",
       },
     },
     entite: "",
