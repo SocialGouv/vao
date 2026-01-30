@@ -338,6 +338,7 @@ import * as yup from "yup";
 import { IsDownloading, ApiUnavailable, apiModel } from "@vao/shared-ui";
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
+
 import {
   ERRORS_SIRET_MESSAGES,
   ERRORS_SIRET,
@@ -348,6 +349,7 @@ import {
 const apiTypes = apiModel.apiTypes;
 
 const toaster = useToaster();
+console.log("toaster", toaster);
 
 const log = logger("components/organisme/personne-morale");
 
@@ -707,6 +709,7 @@ async function searchOrganisme() {
       return false;
     }
     if (siren.value) {
+      console.log("Données récupérées");
       toaster.success({ titleTag: "h2", description: "Données récupérées" });
     }
     randomId.value = random.getRandomId();

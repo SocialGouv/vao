@@ -305,6 +305,14 @@ fileignoreconfig:
   checksum: 1de96bc77280e61537e5c573a8116d32a8d2793eb073f89080cc66f8a389ce73
 - filename: packages/shared-ui/src/components/Table/DsfrDataTableV2.vue
   checksum: 0333a8dd3d87ab118f5896b079f89423f9e465208c68bebed045a83350ce24d6
+- filename: packages/shared-ui/src/components/Toaster.vue
+  checksum: 4830af09d658ce1a94f9c70e6aaf744b11d5fc40ca794ab7ada74a4a64408663
+- filename: packages/shared-ui/src/composables/useToaster.ts
+  checksum: 704ad956e4817e92ca2df2f4cbdf14cc7a39218cdacdfef070dd91c8d1e4c563
+- filename: packages/shared-ui/src/types/Toaster.ts
+  checksum: a7011a6c5b2fab8affe5a5ff590f40e0610b28896e0cc36cae3665aefcd45913
+- filename: packages/shared-ui/src/types/toaster.type.ts
+  checksum: 582e51f53bdaea62de234ebe2c415961b7a8855764c69aad86418eb8519b6d54
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/DsfrMultiSelect.vue
