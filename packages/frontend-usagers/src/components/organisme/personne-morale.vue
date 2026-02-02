@@ -715,7 +715,6 @@ async function searchOrganisme() {
       return false;
     }
     if (siren.value) {
-      console.log("Données récupérées");
       toaster.success({ titleTag: "h2", description: "Données récupérées" });
     }
     randomId.value = random.getRandomId();
