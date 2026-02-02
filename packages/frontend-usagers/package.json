@@ -53,6 +53,6 @@
     "sass-loader": "~16.0.2",
     "typescript": "~5.6.2",
     "vue-tsc": "^2.2.12",
-    "vue-dsfr-nuxt-module": "^2.0.0"
+    "vue-dsfr-nuxt-module": "^3.1.2"
   }
 }
