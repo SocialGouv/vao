@@ -82,6 +82,9 @@ export default defineNuxtConfig({
     client: true,
   },
   vite: {
+    optimizeDeps: {
+      include: ["maplibre-gl"],
+    },
     plugins: [
       sentryVitePlugin({
         authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -93,6 +96,6 @@ export default defineNuxtConfig({
     ],
   },
   devServer: {
-    port: 8000
-  }
+    port: 8000,
+  },
 });

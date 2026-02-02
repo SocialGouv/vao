@@ -35,8 +35,9 @@
     "@vueform/multiselect": "~2.6.7",
     "dayjs": "^1.11.11",
     "debug": "~4.3.4",
+    "maplibre-gl": "4.7.1",
     "nuxt": "~3.19.0",
-    "nuxt-maplibre": "^1.0.0",
+    "nuxt-maplibre": "^1.2.0",
     "nuxt-security": "^2.0.0-rc.9",
     "pinia": "~2.2.2",
     "ufo": "^1.5.4",
@@ -55,7 +56,7 @@
     "sass": "~1.79.3",
     "sass-loader": "~16.0.2",
     "typescript": "~5.6.2",
-    "vue-tsc": "^2.2.12",
-    "vue-dsfr-nuxt-module": "^2.0.0"
+    "vue-dsfr-nuxt-module": "^2.0.0",
+    "vue-tsc": "^2.2.12"
   }
 }
