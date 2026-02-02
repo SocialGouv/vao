@@ -12,7 +12,7 @@ export default defineNuxtConfig({
       link: [{ rel: "icon", type: "image/png", href: "/favicon.png" }],
     },
   },
-  
+
   css: [
     "@gouvfr/dsfr/dist/dsfr.min.css",
     "@gouvminint/vue-dsfr/styles",
@@ -90,6 +90,9 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    optimizeDeps: {
+      include: ["maplibre-gl"],
+    },
     plugins: [
       sentryVitePlugin({
         authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -103,6 +106,6 @@ export default defineNuxtConfig({
 
   compatibilityDate: "2025-03-31",
   devServer: {
-    port: 8001
-  }
+    port: 8001,
+  },
 });
