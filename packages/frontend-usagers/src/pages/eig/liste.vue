@@ -68,10 +68,22 @@
             <div
               class="fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2"
             >
-              <RangeDatePicker
-                v-model="searchState.dateRange"
-                label="Date de l'eig"
-              />
+              <div class="fr-input-group">
+                EIG entre le :
+                <DsfrInputGroup
+                  v-model="searchState.dateRange.start"
+                  type="date"
+                  label="Date de début"
+                />
+              </div>
+              <div class="fr-input-group">
+                et le :
+                <DsfrInputGroup
+                  v-model="searchState.dateRange.end"
+                  type="date"
+                  label="Date de fin"
+                />
+              </div>
             </div>
           </div>
         </form>
@@ -113,7 +125,6 @@ import dayjs from "dayjs";
 import {
   eigModel,
   EigTypeListe,
-  RangeDatePicker,
   TableWithBackendPagination,
   ValidationModal,
   eigUtils,
@@ -153,7 +164,7 @@ const searchState = reactive({
   statut: null,
   idFonctionnelle: null,
   type: null,
-  dateRange: null,
+  dateRange: { start: new Date(), end: new Date() },
 });
 
 const paginateResults = async (sortValue, limitValue, currentPageValue) => {
