@@ -54,7 +54,6 @@ import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
 import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
 import { formatFR } from "@vao/shared-bridge";
 
-import { formatDateFr } from "../utils/dateFormat";
 definePageMeta({
   middleware: ["is-connected"],
 });
