@@ -1,9 +1,9 @@
 export interface FicheTerritoireDto {
   id: number;
   ter_code: string;
-  serviceMail: string | null;
-  serviceTelephone: string | null;
-  serviceVaoNom: string | null;
-  serviceVaoPrenom: string | null;
+  service_mail: string | null;
+  service_telephone: string | null;
+  service_vao_nom: string | null;
+  service_vao_prenom: string | null;
   editedAt: Date | null;
 }
