@@ -14,7 +14,6 @@ export interface ToastOptions {
   closeButtonLabel?: string;
   duration?: number;
   role?: "alert" | "status";
-  [key: string]: any;
 }
 
 export interface Toast extends ToastOptions {
