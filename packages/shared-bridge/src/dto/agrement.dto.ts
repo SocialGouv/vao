@@ -1,6 +1,6 @@
 import { ACTIVITE_TYPE, AGREMENT_STATUT } from "../constantes/agrement";
 import { FILE_CATEGORY } from "../constantes/file";
-import { AdresseDto } from "./adresse.dto";
+import type { AdresseDto } from "./adresse.dto";
 
 export interface AgrementDto {
   id?: number | null;

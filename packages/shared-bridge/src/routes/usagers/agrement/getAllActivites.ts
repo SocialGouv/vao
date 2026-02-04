@@ -1,5 +1,4 @@
-import type { BasicRoute } from "@vao/shared-bridge";
-import { ActiviteDto } from "@vao/shared-bridge";
+import type { ActiviteDto, BasicRoute } from "@vao/shared-bridge";
 import * as yup from "yup";
 
 export interface GetAllActivitesRoute extends BasicRoute {
