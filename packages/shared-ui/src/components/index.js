@@ -35,6 +35,7 @@ import Accessibilite from "./Accessibilite.vue";
 import TitleWithIcon from "./TitleWithIcon.vue";
 import Toaster from "./Toaster.vue";
 import DsfrLinkV2 from "./DsfrLinkV2.vue";
+import Toaster from "./Toaster.vue";
 export {
   CguValidation,
   ApiUnavailable,
@@ -73,4 +74,5 @@ export {
   TitleWithIcon,
   Toaster,
   DsfrLinkV2,
+  Toaster,
 };
