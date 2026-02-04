@@ -56,7 +56,7 @@ fileignoreconfig:
 - filename: package-lock.json
   checksum: 1f161d556f83694bf1d4f728591667cdaeef494e6d24ea2b475b4d7cb054383f
 - filename: package.json
-  checksum: 91f8cad0c60bac303635d48a31ff3da7d3d6a868c4a90a36b06c82b21c44f3e5
+  checksum: 52f91a0a30ade63600c4994f2f5b85c64290ebbb9d09e353e5ad28bb276986c0
 - filename: packages/backend/src/__tests__/admin/accept-cgu.test.ts
   checksum: 692450d4fc33a59b516dab82ef8a447c1b0afa242acfac281b9c4584e330cbda
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
