@@ -97,9 +97,15 @@ export const useOrganismeStore = defineStore("organismes", {
         log.i("setOrganismeCourant - DONE with error");
       }
     },
-    async updatePersonne(parametre, type) {
+    async updatePersonne(parametre: any, type: any) {
       log.i(`updatePersonne - IN (${type})`, { parametre });
-      const organismeId = this.organismeCourant?.organismeId;
+      
+      const organisme = this.organismeCourant;
+      if (!organisme) {
+        throw new Error("Aucun organisme courant sélectionné");
+      }
+
+      const organismeId = organisme?.organismeId;
       if (!organismeId) throw new Error("Aucun organisme courant sélectionné");
       try {
         await $fetchBackend(`/organisme/${organismeId}`, {
@@ -112,17 +118,17 @@ export const useOrganismeStore = defineStore("organismes", {
         });
         if (type === "personne_morale") {
           this.organismeCourant = {
-            ...this.organismeCourant,
+            ...organisme,
             personneMorale: {
-              ...this.organismeCourant.personneMorale,
+              ...organisme.personneMorale,
               ...parametre,
             },
           };
         } else if (type === "personne_physique") {
           this.organismeCourant = {
-            ...this.organismeCourant,
+            ...organisme,
             personnePhysique: {
-              ...this.organismeCourant.personnePhysique,
+              ...organisme.personnePhysique,
               ...parametre,
             },
           };
@@ -133,10 +139,10 @@ export const useOrganismeStore = defineStore("organismes", {
         throw err;
       }
     },
-    async updatePersonneMorale(personneMorale) {
+    async updatePersonneMorale(personneMorale: any) {
       return this.updatePersonne(personneMorale, "personne_morale");
     },
-    async updatePersonnePhysique(personnePhysique) {
+    async updatePersonnePhysique(personnePhysique: any) {
       return this.updatePersonne(personnePhysique, "personne_physique");
     },
     // todo: commit changements backend

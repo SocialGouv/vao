@@ -1,10 +1,10 @@
-import type { HebergementAdminRoutes } from "@vao/shared-bridge";
+import type { HebergementUsagersRoutes } from "@vao/shared-bridge";
 import { buildRequest } from "~/utils/fetchBackend";
 
 const HebergementService = {
   getHebergement: async (hebergementId: number) => {
     const { hebergement } = await buildRequest<
-      HebergementAdminRoutes["GetOne"]
+      HebergementUsagersRoutes["GetOne"]
     >({
       path: "/hebergement/{id}",
       method: "GET",
