@@ -3,18 +3,19 @@ import { buildRequestFile } from "~/utils/fetchBackend";
 
 const DocumentService = {
   postDocument: async ({
-    document,
+    file,
     category,
-  }: DocumentUsagersRoutes["PostDocument"]["body"]) => {
-    const body = new FormData();
-    body.append("category", category);
-    body.append("file", document);
+  }: { file: File, category: DocumentUsagersRoutes["PostDocument"]["body"]["category"] }) => {
+
     const { uuid } = await buildRequestFile<
       DocumentUsagersRoutes["PostDocument"]
     >({
       path: "/documents/",
       method: "POST",
-      body,
+      body: {
+        category
+      },
+      file
     })();
     return uuid;
   },

@@ -6,7 +6,7 @@ const TerritoireService = {
     const { territoire } = await buildRequest<
       TerritoireUsagersRoutes["GetByAgrementRegionUser"]
     >({
-      path: "/territoire/get-by-agrement-region-user",
+      path: "/territoire/get-by-agrement-region-user/",
       method: "GET",
     })();
     return territoire;

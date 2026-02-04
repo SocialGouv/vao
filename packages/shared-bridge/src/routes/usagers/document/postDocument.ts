@@ -1,24 +1,28 @@
 import * as yup from "yup";
 
-import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
+import {
+  type BasicRoute,
+  type RouteResponseBody,
+  type RouteSchema,
+  FILE_CATEGORY,
+} from "../../..";
 import type { DocumentDto } from "../../../dto";
 
 export interface PostDocumentRoute extends BasicRoute {
   method: "POST";
   path: "/documents/";
-  body: DocumentDto;
+  body: {
+    category: DocumentDto["category"];
+  };
+  file: File;
   response: RouteResponseBody<{ uuid: string | null }>;
 }
+
 export const PostDocumentRouteSchema: RouteSchema<PostDocumentRoute> = {
   body: yup.object({
-    category: yup.string().required("Catégorie obligatoire"),
-    file: yup
-      .mixed()
-      .test(
-        "file-required",
-        "Fichier obligatoire",
-        (value) => value instanceof File,
-      )
-      .required(),
-  }) as yup.ObjectSchema<DocumentDto>,
+    category: yup
+      .string()
+      .oneOf(Object.values(FILE_CATEGORY))
+      .required("Catégorie obligatoire"),
+  }),
 };

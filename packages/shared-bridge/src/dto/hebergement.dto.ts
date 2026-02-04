@@ -1,4 +1,4 @@
-import { AdresseDto } from "./adresse.dto";
+import type { AdresseDto } from "./adresse.dto";
 
 export interface CoordonneesDto {
   adresse: AdresseDto | null;

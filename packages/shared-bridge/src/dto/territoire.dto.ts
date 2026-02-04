@@ -1,9 +1,8 @@
 import type { FicheTerritoireDto } from "./ficheTerritoire.dto";
 
-export interface TerritoireDto {
+export interface TerritoireDto extends FicheTerritoireDto {
   id: number;
   code: string;
   parentCode: string | null;
   label: string;
-  ficheTerritoire: FicheTerritoireDto | null;
 }

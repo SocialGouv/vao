@@ -92,6 +92,7 @@ export const useAgrementStore = defineStore("agrement", {
         agrementFiles: agrement.agrementFiles ?? undefined,
         agrementSejours: agrement.agrementSejours ?? undefined,
         agrementBilanAnnuel: agrement.agrementBilanAnnuel ?? undefined,
+        regionObtention: agrement.regionObtention ?? null,
       };
 
       const agrementId: number | null =

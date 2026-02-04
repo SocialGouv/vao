@@ -8,10 +8,10 @@ interface TerritoireDto {
   code?: string;
   label?: string;
   parent?: string;
-  serviceMail?: string;
-  serviceTelephone?: string;
-  correspVaoNom?: string;
-  correspVaoPrenom?: string;
+  service_mail?: string;
+  service_telephone?: string;
+  corresp_vao_nom?: string;
+  corresp_vao_prenom?: string;
 }
 
 interface TerritoireStoreState {
