@@ -586,6 +586,7 @@ import {
   FileUpload,
   hebergement as hebergementUtils,
   fileUtils,
+  useToaster,
 } from "@vao/shared-ui";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
@@ -868,6 +869,7 @@ function verifFormatFile(file, toasterMessage) {
       titleTag: "h2",
       description:
         toasterMessage + " doit obligatoirement être au format pdf, png ou jpg",
+      role: "alert",
     });
     return false;
   }
@@ -915,6 +917,7 @@ async function addHebergement(hebergement) {
     toaster.error({
       titleTag: "h2",
       description,
+      role: "alert",
     });
     resetApiStatut();
     return;
@@ -928,6 +931,7 @@ async function addHebergement(hebergement) {
       titleTag: "h2",
       description:
         "Une erreur est survenue lors de l'ajout de l'hébergement au référentiel",
+      role: "alert",
     });
   }
   if (!id) {

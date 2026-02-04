@@ -147,6 +147,7 @@ import {
   MessageHover,
   TableFull,
   ValidationModal,
+  useToaster,
 } from "@vao/shared-ui";
 import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 import dayjs from "dayjs";
@@ -687,6 +688,7 @@ async function copyDS(dsId) {
     toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de la copie de la déclaration de séjour`,
+      role: "alert",
     });
   } finally {
     closeModal();
@@ -711,6 +713,7 @@ async function deleteDS(dsId) {
       toaster.error({
         titleTag: "h2",
         description: `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
+        role: "alert",
       });
     }
   } catch (error) {
@@ -718,6 +721,7 @@ async function deleteDS(dsId) {
     toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de la suppression de la déclaration de séjour`,
+      role: "alert",
     });
     throw error;
   } finally {
@@ -743,6 +747,7 @@ async function cancelDS(dsId) {
       toaster.error({
         titleTag: "h2",
         description: `Une erreur est survenue lors de l'annulation' de la déclaration de séjour`,
+        role: "alert",
       });
     }
   } catch (error) {
@@ -750,6 +755,7 @@ async function cancelDS(dsId) {
     toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de l'annulation de la déclaration de séjour`,
+      role: "alert",
     });
     throw error;
   } finally {

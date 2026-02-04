@@ -88,7 +88,7 @@
 </template>
 
 <script setup>
-import { fileUtils } from "@vao/shared-ui";
+import { fileUtils, useToaster } from "@vao/shared-ui";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 const route = useRoute();
 const toaster = useToaster();
@@ -195,6 +195,7 @@ async function updateOrCreate(organismeData, type) {
         return toaster.error({
           titleTag: "h2",
           description,
+          role: "alert",
         });
       }
     }
@@ -228,11 +229,13 @@ async function updateOrCreate(organismeData, type) {
           return toaster.error({
             titleTag: "h2",
             description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+            role: "alert",
           });
         }
         return toaster.error({
           titleTag: "h2",
           description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+          role: "alert",
         });
       }
     }
@@ -273,6 +276,7 @@ async function updateOrCreate(organismeData, type) {
       return toaster.error({
         titleTag: "h2",
         description: "Ce SIRET est déjà utilisé",
+        role: "alert",
       });
     }
 
@@ -281,6 +285,7 @@ async function updateOrCreate(organismeData, type) {
       titleTag: "h2",
       description:
         "Une erreur est survenue lors de la sauvegarde de la fiche organisateur",
+      role: "alert",
     });
   } finally {
     resetApiStatut();
@@ -307,17 +312,20 @@ async function updateOrCreateAgrement(agrementData, type) {
           return toaster.error({
             titleTag: "h2",
             description: `Le fichier ${file.name} dépasse la taille maximale autorisée`,
+            role: "alert",
           });
         }
         if (error.response.status === 415) {
-          return toaster.error(
-            `Le fichier ${file.name} n'est pas au format PDF`,
-          );
+          return toaster.error({
+            description: `Le fichier ${file.name} n'est pas au format PDF`,
+            role: "alert",
+          });
         }
         log.w(error);
-        return toaster.error(
-          `Une erreur est survenue lors du dépôt du document ${file.name}`,
-        );
+        return toaster.error({
+          description: `Une erreur est survenue lors du dépôt du document ${file.name}`,
+          role: "alert",
+        });
       }
     }
   }
@@ -339,6 +347,7 @@ async function updateOrCreateAgrement(agrementData, type) {
     return toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de la mise à jour des informations de l'agrément`,
+      role: "alert",
     });
   } finally {
     resetApiStatut();
@@ -369,6 +378,7 @@ async function finalizeOrganisme() {
       titleTag: "h2",
       description:
         "Une erreur est survenue lors de la finalisation de la fiche organisateur",
+      role: "alert",
     });
   } finally {
     resetApiStatut();

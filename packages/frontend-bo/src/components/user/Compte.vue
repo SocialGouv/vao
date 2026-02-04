@@ -273,7 +273,7 @@
 <script setup>
 import dayjs from "dayjs";
 import { DsfrButton, DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
-import { ValidationModal } from "@vao/shared-ui";
+import { ValidationModal, useToaster } from "@vao/shared-ui";
 import { defineProps } from "vue";
 import { useField, useForm } from "vee-validate";
 import BoUser from "~/utils/bo-user";
@@ -575,6 +575,7 @@ async function post() {
       titleTag: "h2",
       title: displayInfos.UnexpectedError.title,
       description: displayInfos.UnexpectedError.description,
+      role: "alert",
     });
   } finally {
     log.i("post - DONE");
@@ -610,6 +611,7 @@ async function updateMe() {
       titleTag: "h2",
       title: displayInfos.UnexpectedError.title,
       description: displayInfos.UnexpectedError.description,
+      role: "alert",
     });
   } finally {
     log.i("updateMe - DONE");
@@ -649,6 +651,7 @@ async function update() {
       titleTag: "h2",
       title: displayInfos.UnexpectedError.title,
       description: displayInfos.UnexpectedError.description,
+      role: "alert",
     });
   }
 }

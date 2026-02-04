@@ -483,6 +483,7 @@
 
 <script setup>
 import { useField, useForm } from "vee-validate";
+import { useToaster } from "@vao/shared-ui";
 import * as yup from "yup";
 
 const toaster = useToaster();
@@ -734,6 +735,7 @@ function valid() {
       titleTag: "h2",
       description:
         "Les documents requis pour les informations sanitaires doivent obligatoirement être au format pdf, png ou jpg",
+      role: "alert",
     });
 }
 </script>

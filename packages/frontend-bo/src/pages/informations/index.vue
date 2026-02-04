@@ -23,6 +23,7 @@
 
 <script setup>
 import { DsfrFileDownload, DsfrHighlight } from "@gouvminint/vue-dsfr";
+import { useToaster } from "@vao/shared-ui";
 
 const log = logger("pages/information");
 const toaster = useToaster();
@@ -46,6 +47,7 @@ const loadXlsx = async () => {
       titleTag: "h2",
       description:
         "Erreur lors de la récupération de la liste des organisateurs VAO ayant fait l’objet d’un retrait",
+      role: "alert",
     });
   }
 };

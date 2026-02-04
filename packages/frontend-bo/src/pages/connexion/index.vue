@@ -125,7 +125,7 @@
 <script setup>
 import { useUserStore } from "@/stores/user";
 import { ERRORS_LOGIN } from "@vao/shared-bridge";
-import { PasswordInput, apiModel, CguValidation } from "@vao/shared-ui";
+import { PasswordInput, apiModel, CguValidation, useToaster } from "@vao/shared-ui";
 
 const toaster = useToaster();
 

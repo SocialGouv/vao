@@ -335,9 +335,10 @@
 <script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading, ApiUnavailable, apiModel } from "@vao/shared-ui";
+import { IsDownloading, ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
+
 import {
   ERRORS_SIRET_MESSAGES,
   ERRORS_SIRET,
@@ -517,7 +518,7 @@ async function searchNewSiret() {
       siretToUpdate.value = siretFromResponse;
       confirmUpdatingSiret.value = true;
     } else {
-      toaster.info({
+      toaster.warning({
         titleTag: "h2",
         description: "Le numéro SIRET est déjà à jour",
       });
@@ -531,6 +532,7 @@ async function searchNewSiret() {
     toaster.error({
       titleTag: "h2",
       description,
+      role: "alert",
     });
   }
 }
@@ -559,6 +561,7 @@ async function searchApiInsee() {
           titleTag: "h2",
           description:
             "Votre établissement n'est pas autorisé par le siège social à se déclarer",
+          role: "alert",
         });
         setEmptyValues();
         return false;
@@ -605,12 +608,14 @@ async function searchApiInsee() {
         titleTag: "h2",
         description:
           "Le SIRET renseigné n’est plus valide. Veuillez utiliser le nouveau SIRET de votre établissement",
+        role: "alert",
       });
     } else {
       toaster.error({
         titleTag: "h2",
         description:
           "erreur lors de la récupération des données à partir du SIRET",
+        role: "alert",
       });
     }
     log.w("searchApiInsee - erreur:", { error });
@@ -653,6 +658,7 @@ async function searchOrganismeBySiret() {
       titleTag: "h2",
       description:
         "erreur lors de la récupération des données internes à partir du SIRET",
+      role: "alert",
     });
     log.w("searchOrganismeBySiret - erreur:", { error });
     return null;
@@ -673,6 +679,7 @@ async function searchOrganisme() {
         titleTag: "h2",
         description:
           "Un établissement principal est nécessairement titulaire d'un agrément",
+          role: "alert",
       });
       setValues({
         siren: null,
@@ -692,6 +699,7 @@ async function searchOrganisme() {
         titleTag: "h2",
         description:
           "L'établissement principal ne s'est pas encore déclaré sur la plateforme. Veuillez réessayer plus tard.",
+        role: "alert",
       });
       setValues({
         siren: null,

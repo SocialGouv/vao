@@ -21,7 +21,6 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: [
     "@pinia/nuxt",
-    "@socialgouv/dsfr-toaster-nuxt-module",
     "nuxt-maplibre",
     "nuxt-security",
     "vue-dsfr-nuxt-module",

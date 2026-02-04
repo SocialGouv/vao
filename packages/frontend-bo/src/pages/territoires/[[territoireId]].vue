@@ -118,7 +118,7 @@
   </div>
 </template>
 <script setup>
-import { TableFull, TitleWithIcon } from "@vao/shared-ui";
+import { TableFull, TitleWithIcon, useToaster } from "@vao/shared-ui";
 import { useField, useForm } from "vee-validate";
 import Territoires from "~/utils/territoires";
 import * as yup from "yup";
@@ -240,18 +240,20 @@ async function chargeTerritoiresAndUsers() {
     await TerritoireStore.get(route.params.territoireId);
   } catch (error) {
     log.w("chargeTerritoiresAndUsers: ", { error });
-    return toaster.error(
-      `Une erreur est survenue lors de la récupération des informations du territoire'`,
-    );
+    return toaster.error({
+      description: "Une erreur est survenue lors de la récupération des informations du territoire",
+      role: "alert",
+    });
   }
 
   try {
     await userStore.fetchUsersTerritoire(TerritoireStore.territoire.value);
   } catch (error) {
     log.w("chargeTerritoiresAndUsers: ", { error });
-    return toaster.error(
-      `Une erreur est survenue lors de la récupération de l'utilisateur territoire'`,
-    );
+    return toaster.error({
+      description: "Une erreur est survenue lors de la récupération de l'utilisateur territoire",
+      role: "alert",
+    });
   }
 }
 
@@ -281,6 +283,7 @@ async function update() {
     toaster.error({
       titleTag: "h2",
       description: `Erreur lors de la mise à jour du territoire`,
+      role: "alert",
     });
     throw error;
   } finally {

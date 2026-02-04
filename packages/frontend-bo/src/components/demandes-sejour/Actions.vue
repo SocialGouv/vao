@@ -87,6 +87,7 @@
 
 <script setup>
 import { useIsDownloading } from "~/composables/useIsDownloading";
+import { useToaster } from "@vao/shared-ui";
 
 const demandeSejourStore = useDemandeSejourStore();
 const userStore = useUserStore();
@@ -115,6 +116,7 @@ const onValidComplement = async (commentaires) => {
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de la prise en charge de la demande",
+      role: "alert",
     });
     throw error;
   } finally {
@@ -129,6 +131,7 @@ const onValidComplement = async (commentaires) => {
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de récupération des infos mise à jours",
+      role: "alert",
     });
     throw error;
   }
@@ -147,6 +150,7 @@ const onValidRefus = async (commentaires) => {
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de la prise en charge de la demande",
+      role: "alert",
     });
     throw error;
   } finally {
@@ -161,6 +165,7 @@ const onValidRefus = async (commentaires) => {
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de récupération des infos mise à jours",
+      role: "alert",
     });
     throw error;
   }
@@ -176,6 +181,7 @@ const onValidEnregistrement2Mois = async () => {
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de la prise en charge de la demande",
+      role: "alert",
     });
     throw error;
   } finally {
@@ -190,6 +196,7 @@ const onValidEnregistrement2Mois = async () => {
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de récupération des infos mise à jours",
+      role: "alert",
     });
     throw error;
   }

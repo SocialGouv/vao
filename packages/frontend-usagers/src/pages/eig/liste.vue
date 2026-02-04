@@ -118,6 +118,7 @@ import {
   ValidationModal,
   eigUtils,
   EigStatusBadge,
+  useToaster,
 } from "@vao/shared-ui";
 import { getEigPermissions, canDelete } from "../../utils/eig";
 const mapEigToLabel = eigUtils.mapEigToLabel;
@@ -166,9 +167,10 @@ const paginateResults = async (sortValue, limitValue, currentPageValue) => {
       search: searchState,
     });
   } catch (error) {
-    toaster.error(
-      "Une erreur est survenue lors de la récupération de la demande",
-    );
+    toaster.error({
+      description: "Une erreur est survenue lors de la récupération de la demande",
+      role: "alert",
+    });
     throw error;
   }
 };
@@ -183,9 +185,10 @@ const fetchEigDebounce = debounce(async (search) => {
       search,
     });
   } catch (error) {
-    toaster.error(
-      "Une erreur est survenue lors de la récupération de la demande",
-    );
+    toaster.error({
+      description: "Une erreur est survenue lors de la récupération de la demande",
+      role: "alert",
+    });
     throw error;
   }
 });
@@ -350,7 +353,10 @@ const deleteEig = async () => {
     await eigStore.delete(eigToDelete.value);
     await eigStore.get();
   } catch (error) {
-    toaster.error("Une erreur est survenue de la suppression de l'EIG");
+    toaster.error({
+      description: "Une erreur est survenue lors de la suppression de l'EIG",
+      role: "alert",
+    });
     throw error;
   } finally {
     closeEigModal();
@@ -364,7 +370,10 @@ try {
     search: searchState,
   });
 } catch (error) {
-  toaster.error("Une erreur est survenue lors de la récupération des eigs");
+  toaster.error({
+    description: "Une erreur est survenue lors de la récupération des eigs",
+    role: "alert",
+  });
   throw error;
 }
 </script>

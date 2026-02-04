@@ -1,5 +1,11 @@
 <script setup>
-import { Header, Footer, Skiplinks, useLayoutHeader } from "@vao/shared-ui";
+import {
+  Header,
+  Footer,
+  Skiplinks,
+  useLayoutHeader,
+  Toaster,
+} from "@vao/shared-ui";
 
 const userStore = useUserStore();
 const config = useRuntimeConfig();
@@ -23,7 +29,8 @@ const navItems = useMenuNavItems();
 
 <template>
   <div>
-    <DsfrToaster />
+    <Toaster />
+    <!-- <DsfrToaster /> -->
     <Skiplinks />
     <Header
       :home-to="homeTo"
