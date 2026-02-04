@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from "#app";
 import type { BasicRoute } from "@vao/shared-bridge";
-import { buildRequestPath } from "@vao/shared-bridge";
+import { buildRequestPath, hashToFormData } from "@vao/shared-bridge";
 
 export type FetchBackendOptions = Record<string, unknown>;
 
@@ -9,7 +9,7 @@ export const $fetchBackend = <T = any>(
   option: FetchBackendOptions = {},
 ): Promise<T> => {
   const config = useRuntimeConfig();
-  // eslint-disable-next-line no-undef
+   
   return $fetch(url, {
     baseURL: config.public.backendUrl,
     ...option,
@@ -72,8 +72,11 @@ export function buildRequestFile<Route extends BasicRoute>({
   body,
   path,
   method,
-}: Omit<Route, "response">): () => Promise<Route["response"]> {
+  file,
+}: Omit<Route, "response"> & { file: File }): () => Promise<Route["response"]> {
   const url = buildRequestPath(path, params);
+  const formData = body ? hashToFormData(body) : new FormData();
+  formData.append("file", file, file.name);
   switch (method) {
     case "POST":
       return async () =>
