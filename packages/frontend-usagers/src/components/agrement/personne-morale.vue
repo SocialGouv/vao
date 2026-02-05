@@ -83,7 +83,7 @@
 import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
+import { TitleWithIcon, DsfrLinkV2, useToaster } from "@vao/shared-ui";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { telephoneYupNullable } from "@/utils/telephoneValidators";
 
