@@ -39,7 +39,7 @@
         :selected="selectedTabIndex === 2"
         :asc="asc"
       >
-      <!--
+        <!--
         <DSHistorique
           v-if="historique"
           :historique="historique.historique ?? []"
@@ -141,9 +141,8 @@ const log = logger("pages/mon-agrement/");
 
 const queryIndex = route.query.defaultTabIndex;
 
-const initialSelectedIndex = typeof queryIndex === 'string'
-  ? parseInt(queryIndex, 10)
-  : 0;
+const initialSelectedIndex =
+  typeof queryIndex === "string" ? parseInt(queryIndex, 10) : 0;
 
 const selectedTabIndex = ref(initialSelectedIndex);
 
