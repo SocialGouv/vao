@@ -10,8 +10,9 @@
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
+          v-if="props.modifiable"
           name="bilanFinancierComptabilite"
-          label="Comptabilité analytique de l’activité"
+          :label="displayInput.IAgrementBilanAnnuel['bilanFinancierComptabilite'].label"
           hint="Détaillez les dépenses et recettes rattachées spécifiquement à l’activité concernée, en précisant les postes budgétaires si possible."
           :model-value="bilanFinancierComptabilite"
           :label-visible="true"
@@ -20,6 +21,13 @@
           :error-message="bilanFinancierComptabiliteErrorMessage"
           @update:model-value="onBilanFinancierComptabiliteChange"
         />
+        <UtilsDisplayInput
+          v-else
+          :value="bilanFinancierComptabilite"
+          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierComptabilite']"
+          :is-valid="bilanFinancierComptabiliteMeta.valid"
+          :error-message="bilanFinancierComptabiliteErrorMessage"
+        />
       </div>
     </div>
   </div>
@@ -27,8 +35,9 @@
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
+          v-if="props.modifiable"
           name="bilanFinancierComparatif"
-          label="Comparatif entre les périodes N et N-1"
+          :label="displayInput.IAgrementBilanAnnuel['bilanFinancierComparatif'].label"
           hint="Présentez les principales évolutions financières entre l’année en cours (N) et l’année précédente (N-1) : écarts, tendances ou variations significatives."
           :model-value="bilanFinancierComparatif"
           :label-visible="true"
@@ -37,22 +46,12 @@
           :error-message="bilanFinancierComparatifErrorMessage"
           @update:model-value="onBilanFinancierComparatifChange"
         />
-      </div>
-    </div>
-  </div>
-  <div class="fr-mt-8v">
-    <div class="fr-fieldset__element">
-      <div class="fr-col-12">
-        <DsfrInputGroup
-          name="bilanFinancierRessourcesHumaines"
-          label="Ressources humaines mobilisées et montants financiers engagés pour l’action"
-          hint="Indiquez le nombre de personnes impliquées (en ETP), leurs fonctions et compétences principales, ainsi que les coûts salariaux, dépenses de fonctionnement ou autres coûts associés à leur mobilisation."
-          :model-value="bilanFinancierRessourcesHumaines"
-          :label-visible="true"
-          :is-textarea="true"
-          :is-valid="bilanFinancierRessourcesHumainesMeta.valid"
-          :error-message="bilanFinancierRessourcesHumainesErrorMessage"
-          @update:model-value="onBilanFinancierRessourcesHumainesChange"
+        <UtilsDisplayInput
+          v-else
+          :value="bilanFinancierComparatif"
+          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierComparatif']"
+          :is-valid="bilanFinancierComparatifMeta.valid"
+          :error-message="bilanFinancierComparatifErrorMessage"
         />
       </div>
     </div>
@@ -61,6 +60,32 @@
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
+          v-if ="props.modifiable"
+          name="bilanFinancierRessourcesHumaines"
+          :label="displayInput.IAgrementBilanAnnuel['bilanFinancierRessourcesHumaines'].label"
+          hint="Indiquez le nombre de personnes impliquées (en ETP), leurs fonctions et compétences principales, ainsi que les coûts salariaux, dépenses de fonctionnement ou autres coûts associés à leur mobilisation."
+          :model-value="bilanFinancierRessourcesHumaines"
+          :label-visible="true"
+          :is-textarea="true"
+          :is-valid="bilanFinancierRessourcesHumainesMeta.valid"
+          :error-message="bilanFinancierRessourcesHumainesErrorMessage"
+          @update:model-value="onBilanFinancierRessourcesHumainesChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          :value="bilanFinancierRessourcesHumaines"
+          :is-valid="bilanFinancierRessourcesHumainesMeta.valid"
+          :error-message="bilanFinancierRessourcesHumainesErrorMessage"
+          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierRessourcesHumaines']"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="fr-mt-8v">
+    <div class="fr-fieldset__element">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          v-if="props.modifiable"
           name="bilanFinancierCommentaire"
           label="Ajouter un commentaire (optionnel)"
           :model-value="bilanFinancierCommentaire"
@@ -70,12 +95,20 @@
           :error-message="bilanFinancierCommentaireErrorMessage"
           @update:model-value="onBilanFinancierCommentaireChange"
         />
+        <UtilsDisplayInput
+          v-else
+          :value="bilanFinancierCommentaire"
+          :is-valid="bilanFinancierCommentaireMeta.valid"
+          :error-message="bilanFinancierCommentaireErrorMessage"
+          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierCommentaire']"
+        />
       </div>
     </div>
   </div>
   <div class="fr-fieldset__element fr-mt-6v">
     <UtilsMultiFilesUpload
       v-model="filesBilanFinancierQuatreAnnees"
+      :modifiable="props.modifiable"
       label="Ajouter des fichiers complémentaires (optionnel)"
     />
   </div>
@@ -88,13 +121,15 @@ import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import displayInput from "../../../utils/display-input";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
+  modifiable: { type: Boolean, default: false },
 });
 
 const filesBilanFinancierQuatreAnnees = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.BILANFINANCIERQUATREANNEES,
   ) || [],

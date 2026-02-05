@@ -10,8 +10,9 @@
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="suiviMedDistribution"
-        label="Mesures prévues pour la distribution et le stockage des médicaments"
+        :label="displayInput.IAgrementProjets['suiviMedDistribution'].label"
         :model-value="suiviMedDistribution"
         :label-visible="true"
         :is-textarea="true"
@@ -19,14 +20,22 @@
         :error-message="suiviMedDistributionErrorMessage"
         @update:model-value="onSuiviMedDistributionChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="suiviMedDistribution"
+        :input="displayInput.IAgrementProjets['suiviMedDistribution']"
+        :is-valid="suiviMedDistributionMeta.valid"
+        :error-message="suiviMedDistributionErrorMessage"
+      />
     </div>
   </div>
 
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="suiviMedAccordSejour"
-        label="Accords passés avec un cabinet paramédical ou un médecin à proximité du lieu de séjour"
+        :label="displayInput.IAgrementProjets['suiviMedAccordSejour'].label"
         :model-value="suiviMedAccordSejour"
         :label-visible="true"
         :is-textarea="true"
@@ -34,11 +43,19 @@
         :error-message="suiviMedAccordSejourErrorMessage"
         @update:model-value="onSuiviMedAccordSejourChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="suiviMedAccordSejour"
+        :input="displayInput.IAgrementProjets['suiviMedAccordSejour']"
+        :is-valid="suiviMedAccordSejourMeta.valid"
+        :error-message="suiviMedAccordSejourErrorMessage"
+      />
     </div>
   </div>
   <div class="fr-fieldset__element">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursSuiviMed"
+      :modifiable="props.modifiable"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -55,10 +72,11 @@ import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: false },
 });
 
 const filesProjetsSejoursSuiviMed = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJETSSEJOURSSUIVIMED,
   ) || [],

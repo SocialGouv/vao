@@ -11,11 +11,13 @@
       <HebergementDetail
         :hebergement="sejour"
         :statut="statut"
+        :modifiable="props.modifiable"
         @update="updateSejour(index, $event)"
         @delete="deleteSejour(index)"
       />
     </div>
     <DsfrButton
+      v-if="props.modifiable"
       class="fr-mt-2v fr-col-12 add-btn"
       type="button"
       label="Ajouter un séjour"
@@ -26,6 +28,7 @@
     <div v-if="showForm" class="fr-mt-2v">
       <div class="fr-mt-6v">
         <DsfrInput
+          v-if="props.modifiable"
           name="nomSejour"
           type="text"
           label="Nom de l'hébergement"
@@ -82,19 +85,12 @@ import HebergementDetail from "@/components/agrement/bilan/hebergementDetail.vue
 
 const props = defineProps({
   agrementId: { type: String, required: true },
-  initialSejours: {
-    type: Array,
-    required: true,
-    default: () => [],
-  },
-  statut: {
-    type: String,
-    required: true,
-    default: "BROUILLON",
-  },
+  initialSejours: { type: Array, required: false, default: () => [] },
+  statut: { type: String, required: false,default: "BROUILLON" },
+  modifiable: { type: Boolean, default: false },
 });
 
-const sejours = ref([...props.initialSejours] || []);
+const sejours = ref([...props.initialSejours]);
 const showForm = ref(false);
 
 function toggleForm() {

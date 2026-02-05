@@ -2,62 +2,98 @@
   <div class="cells">
     <div class="cell">
       <DsfrInput
+        v-if="props.modifiable"
         name="nomHebergement"
         type="text"
-        label="Nom de l'hébergement"
+        :label="displayInput.IAgrementProjets['nomHebergement'].label"
         :model-value="nomHebergement"
         :label-visible="false"
         :is-valid="nomHebergementMeta.valid"
         :error-message="nomHebergementErrorMessage"
         @update:model-value="onNomHebergementChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="nomHebergement"
+        :input="displayInput.IAgrementProjets['nomHebergement']"
+        :label-visible="false"
+        :is-valid="nomHebergementMeta.valid"
+        :error-message="nomHebergementErrorMessage"
+      />
     </div>
     <div class="cell">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="adresse"
         type="recherche"
         icon="fr-icon-search-line"
-        label="Adresse de l'hébergement"
-        :readonly="true"
+        :label="displayInput.IAgrementProjets['adresseLabel'].label"
         :label-visible="false"
         :model-value="adresseLabel"
         :is-valid="adresseMeta.valid"
         :error-message="adresseErrorMessage"
         @update:model-value="onAdresseChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="adresseLabel"
+        :input="displayInput.IAgrementProjets['adresseLabel']"
+        :label-visible="false"
+        :is-valid="adresseMeta.valid"
+        :error-message="adresseErrorMessage"
+      />
     </div>
     <div class="cell">
       <AgrementBilanSelectMonths
         :default-selected="props.hebergement.mois"
+        :modifiable="props.modifiable"
         @update:selected="handleMonths"
       />
     </div>
     <div v-if="showNbJours" class="cell">
       <DsfrInput
+        v-if="props.modifiable"
         name="nbJours"
         type="number"
-        label="nombre de jours"
+        :label="displayInput.IAgrementProjets['nbJours'].label"
         :model-value="nbJours"
         :label-visible="false"
         :is-valid="nbJoursMeta.valid"
         :error-message="nbJoursErrorMessage"
         @update:model-value="onNbJoursChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="nbJours"
+        :input="displayInput.IAgrementProjets['nbJours']"
+        :label-visible="false"
+        :is-valid="nbJoursMeta.valid"
+      />
     </div>
     <div v-if="showNbVacanciers" class="cell">
       <DsfrInput
+        v-if="props.modifiable"
         name="nbVacanciers"
         type="number"
-        label="nombre de vacanciers"
+        :label="displayInput.IAgrementProjets['nbVacanciers'].label"
         :model-value="nbVacanciers"
         :label-visible="false"
         :is-valid="nbVacanciersMeta.valid"
         :error-message="nbVacanciersErrorMessage"
         @update:model-value="onNbVacanciersChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="nbVacanciers"
+        :input="displayInput.IAgrementProjets['nbVacanciers']"
+        :label-visible="false"
+        :is-valid="nbVacanciersMeta.valid"
+      />
+
     </div>
     <div class="cell">
       <DsfrButton
+        v-if="props.modifiable"
         class="fr-mt-2v"
         type="button"
         label="supprimer l'hébergement"
@@ -75,6 +111,7 @@ import { useField, useForm } from "vee-validate";
 import { watch, computed } from "vue";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import displayInput from "../../../utils/display-input";
 
 const emits = defineEmits(["delete", "update"]);
 
@@ -87,6 +124,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  modifiable: { type: Boolean, default: false },
 });
 
 const showNbJours = computed(() =>

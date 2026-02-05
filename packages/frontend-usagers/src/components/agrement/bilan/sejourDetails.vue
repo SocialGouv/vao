@@ -6,8 +6,9 @@
     <div class="flex-inputs">
       <div class="fr-col-4">
         <DsfrInput
+          v-if="modifiable"
           name="nbGlobalVacanciers"
-          label="Nombre global de vacanciers"
+          :label="displayInput.IAgrementBilanAnnuel['nbGlobalVacanciers'].label"
           type="number"
           :model-value="nbGlobalVacanciers"
           :label-visible="true"
@@ -15,11 +16,21 @@
           :error-message="nbGlobalVacanciersErrorMessage"
           @update:model-value="onNbGlobalVacanciersChange"
         />
+        <UtilsDisplayInput
+          v-else
+          :value="nbGlobalVacanciers"
+          :input="displayInput.IAgrementBilanAnnuel['nbGlobalVacanciers']"
+          :is-valid="nbGlobalVacanciersMeta.valid"
+          :error-message="nbGlobalVacanciersErrorMessage"
+        />
+
       </div>
+
       <div class="fr-col-4">
         <DsfrInput
+          v-if="modifiable"
           name="nbHommes"
-          label="Nombre d'hommes"
+          :label="displayInput.IAgrementBilanAnnuel['nbHommes'].label"
           type="number"
           :model-value="nbHommes"
           :label-visible="true"
@@ -27,11 +38,20 @@
           :error-message="nbHommesErrorMessage"
           @update:model-value="onNbHommesChange"
         />
+        <UtilsDisplayInput
+          v-else
+          :value="nbHommes"
+          :input="displayInput.IAgrementBilanAnnuel['nbHommes']"
+          :is-valid="nbHommesMeta.valid"
+          :error-message="nbHommesErrorMessage"
+        />
       </div>
+
       <div class="fr-col-4">
         <DsfrInput
+        v-if="modifiable"
           name="nbFemmes"
-          label="Nombre de femmes"
+          :label="displayInput.IAgrementBilanAnnuel['nbFemmes'].label"
           type="number"
           :model-value="nbFemmes"
           :label-visible="true"
@@ -39,28 +59,48 @@
           :error-message="nbFemmesErrorMessage"
           @update:model-value="onNbFemmesChange"
         />
+        <UtilsDisplayInput
+          v-else
+          :value="nbHommes"
+          :input="displayInput.IAgrementBilanAnnuel['nbFemmes']"
+          :is-valid="nbFemmesMeta.valid"
+          :error-message="nbFemmesErrorMessage"
+        />
       </div>
     </div>
+
+    <!-- Tranches d'âge -->
     <AgrementBilanTranchesAge
       ref="tranchesAgeRef"
       :tranche-age="props.bilanAnnuel?.trancheAge"
       :statut="props.agrementStatus"
+      :modifiable="props.modifiable"
       class="fr-mt-8v"
     />
+
+    <!-- Types de déficiences -->
     <AgrementTypeDeficiences
       ref="typeDeficiencesRef"
       :statut="props.agrementStatus"
       :type-deficiences="props.bilanAnnuel?.typeHandicap"
+      :modifiable="props.modifiable"
     />
+
     <hr class="fr-mt-8v fr-mb-0v" />
+
+    <!-- Hébergements -->
     <AgrementBilanHebergements
       ref="hebergementsRef"
       :agrement-bilan-annuel="props.agrementBilanAnnuel"
       :bilan-hebergement="props.bilanAnnuel?.bilanHebergement || []"
       :statut="props.agrementStatus"
+      :modifiable="props.modifiable"
     />
+
+    <!-- Jours de vacances -->
     <div class="fr-col-6 fr-mt-4v">
       <DsfrInput
+        v-if="props.modifiable"
         name="nbTotalJoursVacances"
         label="Nombre total de jours de vacances"
         type="number"
@@ -73,12 +113,12 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import * as yup from "yup";
+import displayInput from "../../../utils/display-input";
 
 const toaster = useToaster();
 
@@ -88,6 +128,7 @@ const props = defineProps({
   bilanAnnuel: { type: Object, default: () => ({}) },
   agrementStatus: { type: String, required: true },
   agrementId: { type: String, required: true },
+  modifiable: { type: Boolean, default: false },
 });
 
 const tranchesAgeRef = ref(null);
@@ -183,7 +224,6 @@ const validateForm = async () => {
       await tranchesAgeRef.value?.validateTranchesAge();
 
     if (!tranchesAgeValidation?.valid) {
-      console.error("Les tranches d'âge ne sont pas valides.");
       formValid = false;
     } else {
       trancheAgeValue = tranchesAgeValidation.value;
@@ -198,7 +238,6 @@ const validateForm = async () => {
       await typeDeficiencesRef.value?.validateTypeDeficiences();
 
     if (!typeDeficiencesValidation?.valid) {
-      console.error("Le type de déficiences n'est pas valide.");
       formValid = false;
     } else {
       typeDeficiencesValue = typeDeficiencesValidation.value;
@@ -210,7 +249,6 @@ const validateForm = async () => {
   if (hasSejoursPourAnnee) {
     const hebergementsValid = hebergementsRef.value?.validateHebergements();
     if (!hebergementsValid) {
-      console.error("Les hébergements ne sont pas valides.");
       formValid = false;
     }
   }
@@ -225,6 +263,7 @@ const validateForm = async () => {
   if (result) {
     const data = { ...result };
     delete data.statut;
+
     return {
       ...data,
       agrementId,

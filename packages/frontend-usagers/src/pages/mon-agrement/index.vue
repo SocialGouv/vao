@@ -30,6 +30,7 @@
         :selected="selectedTabIndex === 2"
         :asc="asc"
       >
+      <!--
         <DSHistorique
           v-if="historique"
           :historique="historique.historique ?? []"
@@ -38,6 +39,7 @@
           >Une erreur est survenue durant la récupération de l'historique de la
           déclaration
         </DsfrAlert>
+        -->
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="agrement-content-3"
@@ -126,24 +128,31 @@ const links = [
 
 const log = logger("pages/mon-agrement/");
 
-const initialSelectedIndex = parseInt(
-  route.query?.defaultTabIndex ? route.query.defaultTabIndex : 0,
-);
+const queryIndex = route.query.defaultTabIndex;
+
+const initialSelectedIndex = typeof queryIndex === 'string'
+  ? parseInt(queryIndex, 10)
+  : 0;
 
 const selectedTabIndex = ref(initialSelectedIndex);
+
 const asc = ref(true);
 
-const selectTab = async (idx) => {
+enum Tab {
+  Documents = 1,
+  Historique = 2,
+  Messages = 3,
+}
+
+const tabActions: Record<Tab, () => void> = {
+  [Tab.Documents]: () => {},
+  [Tab.Historique]: () => {},
+  [Tab.Messages]: () => {},
+};
+
+const selectTab = async (idx: Tab) => {
   asc.value = selectedTabIndex.value < idx;
-  if (idx === 1) {
-    // documents tab
-  }
-  if (idx === 2) {
-    // historique tab
-  }
-  if (idx === 3) {
-    //  messages tab
-  }
+  tabActions[idx]();
 };
 
 const tabTitles = computed(() => [

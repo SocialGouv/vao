@@ -1,42 +1,54 @@
 <template>
-  <div
-    v-if="displayValue !== undefined && displayValue !== null"
-    class="container"
-  >
-    <div
-      v-if="props.input.inputType !== displayInput.InputTypes.TABLE"
-      class="display-info-bloc"
-    >
-      <div class="fr-col-10">
-        <span class="read-only-label">{{ input.label }}</span>
-      </div>
-      <div class="fr-col-10">
-        <span class="read-only-value">
-          <slot :value="displayValue">{{ displayValue }}</slot>
-        </span>
-      </div>
-    </div>
-    <div v-else>
-      <div class="fr-col-10">
-        <span class="read-only-label">{{ input.label }}</span>
-      </div>
-      <TableFull :headers="header" :data="rows" title="" />
-    </div>
+<div
+  class="container"
+  :class="{ 'container--error': !isValid }"
+>
+  <div v-if="props.labelVisible" class="fr-col-10" >
+    <span class="read-only-label">{{ input.label }}</span>
   </div>
+
+<div class="fr-col-10">
+  <div class="read-only-box">
+    <span 
+      class="read-only-value"
+      :class="{ 'is-empty': !displayValue }"
+    >
+      <slot :value="displayValue">
+        {{ displayValue || '—' }}
+      </slot>
+    </span>
+  </div>
+</div>
+
+  <p 
+    v-if="!isValid" 
+    class="fr-error-text"  
+    role="alert"
+    aria-live="polite">
+    {{ errorMessage ?? "Champ invalide" }}
+  </p>
+</div>
+
 </template>
 
 <script setup>
-import { TableFull } from "@vao/shared-ui";
-import displayInput from "~/utils/display-input";
+import displayInput from "../../utils/display-input";
 
 defineEmits(["emitComment"]);
 
-
-onMounted(async () => {
-  console.log("Display From SharedUI")
-});
-
 const props = defineProps({
+  labelVisible: {
+    type: Boolean,
+    default: true,
+  },
+  isValid: {
+    type: Boolean,
+    default: true,
+  },
+  errorMessage: {
+    type: String,
+    default: "",
+  },
   input: {
     required: true,
     validator: (value) => {
@@ -79,35 +91,6 @@ const props = defineProps({
   },
 });
 
-const rows = computed(() => {
-  const data =
-    (props.input.filter && props.input.filter(props.value)) ?? props.value;
-
-  const formatter = props.input.fields?.reduce((acc, curr) => {
-    acc.set(curr.value, curr.format ?? ((data) => data[curr.value]));
-    return acc;
-  }, new Map());
-
-  return data.map((d) => {
-    const res = {};
-    for (const [key, format] of formatter.entries()) {
-      res[key] = format(d);
-    }
-    return res;
-  });
-});
-
-const header = computed(() =>
-  props.input.fields?.map((f) => ({
-    column: f.value,
-    sorter: f.value,
-    text: f.label,
-    headerAttrs: {
-      class: "suivi",
-    },
-  })),
-);
-
 const displayValue = computed(() => {
   const inputHandlers = {
     [displayInput.InputTypes.RAW]: (props) => props.value,
@@ -147,4 +130,24 @@ const displayValue = computed(() => {
   position: relative;
   width: 100%;
 }
+
+.container--error .read-only-label,
+.container--error .read-only-value {
+  color: var(--text-default-error);
+}
+.read-only-box {
+  width: 100%;
+  min-height: 2.2rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fafafa;
+}
+
+.read-only-value.is-empty {
+  color: #999;
+  font-style: italic;
+}
+
+
 </style>

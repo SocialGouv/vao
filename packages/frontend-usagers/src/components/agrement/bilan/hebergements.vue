@@ -25,6 +25,7 @@
       @delete="() => handleHebergementDelete(index)"
     />
     <DsfrButton
+      v-if="props.modifiable"
       class="fr-mt-2v fr-col-12 add-btn"
       type="button"
       label="Ajouter un séjour"
@@ -116,6 +117,7 @@ const props = defineProps({
     required: true,
     default: "BROUILLON",
   },
+  modifiable: { type: Boolean, required: true, default: false },
 });
 
 const toaster = useToaster();

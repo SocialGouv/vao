@@ -6,12 +6,12 @@
   >
     Changement ou évolution
   </TitleWithIcon>
-
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="bilanChangementEvolution"
-        label="Note d'information présentant les éventuelles améliorations ou changements apportés aux séjours (optionnel)"
+        :label="displayInput.IAgrementBilanAnnuel['bilanChangementEvolution'].label"
         :model-value="bilanChangementEvolution"
         :label-visible="true"
         :is-textarea="true"
@@ -20,12 +20,21 @@
         hint="De votre propre initiative ou suite aux observations des inspecteurs de l'action sanitaire et sociale, les médecins inspecteurs de santé publique ou les inspecteurs des agences régionales de santé ayant la qualité de médecin à l'issue des contrôles effectués au cours de l'agrément."
         @update:model-value="onBilanChangementEvolutionChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="bilanChangementEvolution"
+        :input="displayInput.IAgrementBilanAnnuel['bilanChangementEvolution']"
+        :is-valid="bilanChangementEvolutionMeta.valid"
+        :error-message="bilanChangementEvolutionErrorMessage"
+      />
+
     </div>
   </div>
   <div class="fr-fieldset__element">
     <UtilsMultiFilesUpload
       v-model="filesChangeEvol"
       label="Ajouter des fichiers (optionnel)"
+      :modifiable="props.modifiable"
     />
   </div>
   <div class="fr-fieldset__element">
@@ -33,6 +42,7 @@
       v-model="bilanAucunChangementEvolution"
       name="checkbox-required-custom"
       label="Aucun changement ou évolution à déclarer."
+      :readonly="!props.modifiable"
       :error-message="bilanAucunChangementEvolutionErrorMessage"
       :value="true"
       required
@@ -47,29 +57,31 @@ import * as yup from "yup";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
+import displayInput from "../../../utils/display-input"; 
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const filesChangeEvol = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) => file.category === FILE_CATEGORY.CHANGEEVOL,
   ) || [],
 );
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  bilanChangementEvolution: yup
+  bilanChangementEvolution: requiredUnlessBrouillon(yup
     .string()
     .nullable()
-    .notRequired()
     .test(
       "min-if-filled",
       "Merci de décrire au moins 20 caractères.",
       (value) => !value || value.length >= 20,
-    ),
+    )),
 });
 
 const initialValues = {
@@ -82,7 +94,7 @@ const initialValues = {
 const { handleSubmit } = useForm({
   validationSchema,
   initialValues,
-  validateOnMount: false,
+  validateOnMount: true,
 });
 
 const {

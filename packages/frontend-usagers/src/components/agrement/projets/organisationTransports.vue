@@ -9,8 +9,9 @@
 
   <div class="fr-col-12">
     <DsfrInputGroup
+      v-if="props.modifiable"
       name="transportAllerRetour"
-      label="Du lieu habituel de résidence au lieu de vacances de même que lors du retour "
+      :label="displayInput.IAgrementProjets['transportAllerRetour'].label"
       hint="Exemple : Car"
       :model-value="transportAllerRetour"
       :label-visible="true"
@@ -18,11 +19,19 @@
       :error-message="transportAllerRetourErrorMessage"
       @update:model-value="onTransportAllerRetourChange"
     />
+    <UtilsDisplayInput
+      v-else
+      :value="transportAllerRetour"
+      :input="displayInput.IAgrementProjets['transportAllerRetour']"
+      :is-valid="transportAllerRetourMeta.valid"
+      :error-message="transportAllerRetourErrorMessage"
+    />
   </div>
   <div class="fr-col-12 fr-mt-6v">
     <DsfrInputGroup
+      v-if="props.modifiable"
       name="transportSejour"
-      label="Durant le séjour du lieu d’hébergement au lieu des activités"
+      :label="displayInput.IAgrementProjets['transportSejour'].label"
       hint="Exemple : Mini-bus"
       :model-value="transportSejour"
       :label-visible="true"
@@ -30,11 +39,19 @@
       :error-message="transportSejourErrorMessage"
       @update:model-value="onTransportSejourChange"
     />
+    <UtilsDisplayInput
+      v-else
+      :value="transportSejour"
+      :input="displayInput.IAgrementProjets['transportSejour']"
+      :is-valid="transportSejourMeta.valid"
+      :error-message="transportSejourErrorMessage"
+    />
   </div>
 
   <div class="fr-fieldset__element fr-mt-6v">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursOrgaTransports"
+      :modifiable="props.modifiable"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -47,20 +64,22 @@ import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
-
+import displayInput from "../../../utils/display-input";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: false },
 });
 
 const filesProjetsSejoursOrgaTransports = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT,
   ) || [],
 );
 
 const validationSchema = yup.object({
+  statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
   transportAllerRetour: requiredUnlessBrouillon(
     yup.string().min(1, "Merci de décrire au moins 1 caractères.").nullable(),
   ),

@@ -6,14 +6,14 @@
   >
     Protocole de réorientation, évacuation, rapatriement prévu
   </TitleWithIcon>
-
   <p><b>Réorientation, évacuation</b></p>
 
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="protocoleEvacUrg"
-        label="Mesures d’anticipation prévues par l’organisateur de séjour"
+        :label="displayInput.IAgrementProjets['protocoleEvacUrg'].label"
         hint="Identification des risques potentiels, actions prévues par le responsable du séjour, information sur la sécurité du site et modes d’évacuation prévus, information du lieu d’hébergement sur la nature du public et possibles besoins d’aides en cas d’alerte."
         :model-value="protocoleEvacUrg"
         :label-visible="true"
@@ -22,13 +22,21 @@
         :error-message="protocoleEvacUrgErrorMessage"
         @update:model-value="onProtocoleEvacUrgChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="protocoleEvacUrg"
+        :input="displayInput.IAgrementProjets['protocoleEvacUrg']"
+        :is-valid="protocoleEvacUrgMeta.valid"
+        :error-message="protocoleEvacUrgErrorMessage"
+      />
     </div>
   </div>
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="protocoleRapatUrg"
-        label="Modalités d’information, de transports et de réorientation, évacuation"
+        :label="displayInput.IAgrementProjets['protocoleRapatUrg'].label"
         hint="Expliquer les mesures organisationnelles prévues (transports, modalités d’information de l’entourage du vacancier, conditions de retour vers l’ESSMS, le domicile ou autre lieu de séjour, liens avec les services médicaux et de secours)."
         :model-value="protocoleRapatUrg"
         :label-visible="true"
@@ -37,12 +45,20 @@
         :error-message="protocoleRapatUrgErrorMessage"
         @update:model-value="onProtocoleRapatUrgChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="protocoleRapatUrg"
+        :input="displayInput.IAgrementProjets['protocoleRapatUrg']"
+        :is-valid="protocoleRapatUrgMeta.valid"
+        :error-message="protocoleRapatUrgErrorMessage"
+      />
     </div>
   </div>
 
   <div class="fr-fieldset__element">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursProtocoleReorientation"
+      :modifiable="props.modifiable"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -51,8 +67,9 @@
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="protocoleRapatEtranger"
-        label="Mesures d’anticipation prévues par l’organisateur de séjour"
+        :label="displayInput.IAgrementProjets['protocoleRapatEtranger'].label"
         hint="Identification des risques potentiels, actions prévues par le responsable du séjour, information sur la sécurité du site et modes d’évacuation prévus, information du lieu d’hébergement sur la nature du public et possibles besoins d’aides en cas d’alerte"
         :model-value="protocoleRapatEtranger"
         :label-visible="true"
@@ -61,13 +78,21 @@
         :error-message="protocoleRapatEtrangerErrorMessage"
         @update:model-value="onProtocoleRapatEtrangerChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="protocoleRapatEtranger"
+        :input="displayInput.IAgrementProjets['protocoleRapatEtranger']"
+        :is-valid="protocoleRapatEtrangerMeta.valid"
+        :error-message="protocoleRapatEtrangerErrorMessage"
+      />
     </div>
   </div>
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="protocoleInfoFamille"
-        label="Modalités d’information, de transports et de rapatriement"
+        :label="displayInput.IAgrementProjets['protocoleInfoFamille'].label"
         hint="Expliciter les mesures organisationnelles prévues (transports, lien avec ambassade, modalités d’information de l’entourage du vacancier, conditions de retour vers l’ESSMS, le domicile ou autre lieu de séjour, liens avec les services médicaux et de secours) "
         :model-value="protocoleInfoFamille"
         :label-visible="true"
@@ -76,11 +101,19 @@
         :error-message="protocoleInfoFamilleErrorMessage"
         @update:model-value="onProtocoleInfoFamilleChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="protocoleInfoFamille"
+        :input="displayInput.IAgrementProjets['protocoleInfoFamille']"
+        :is-valid="protocoleInfoFamilleMeta.valid"
+        :error-message="protocoleInfoFamilleErrorMessage"
+      />
     </div>
   </div>
   <div class="fr-fieldset__element fr-mt-8v">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursProtocoleRapatriement"
+      :modifiable="props.modifiable"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -93,20 +126,22 @@ import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import displayInput from "../../../utils/display-input";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: false },
 });
 
 const filesProjetsSejoursProtocoleReorientation = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJSEJPROTCOREORIENT,
   ) || [],
 );
 const filesProjetsSejoursProtocoleRapatriement = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJSSEJOURSPROTCOLERAPATR,
   ) || [],

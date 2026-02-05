@@ -1,10 +1,10 @@
 <template>
   <div>
-    <p class="fr-mb-1v"><b>Type de handicaps</b></p>
-    <p class="fr-hint-text fr-mb-0">
-      Vous pouvez sélectionner une ou plusieurs options.
-    </p>
-    <div>
+    <div v-if="props.modifiable">
+      <p class="fr-mb-1v"><b>Type de handicaps</b></p>
+      <p class="fr-hint-text fr-mb-0">
+        Vous pouvez sélectionner une ou plusieurs options.
+      </p>
       <DsfrCheckboxSet
         v-model="typeDeficiencesField"
         name="typeDeficiences"
@@ -15,6 +15,13 @@
         :error-message="typeDeficiencesErrorMessage"
       />
     </div>
+    <UtilsDisplayInput
+      v-else
+      :input="displayInput.IAgrementBilanAnnuel.typeHandicap"
+      :value="typeDeficiencesField"
+      :error-message="typeDeficiencesErrorMessage"
+      :is-valid="typeDeficiencesMeta.valid"
+    />
   </div>
 </template>
 
@@ -22,15 +29,16 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
-
+import displayInput from "../../utils/display-input";
 const props = defineProps({
   statut: { type: String, required: true },
   typeDeficiences: { type: Array, default: () => [] },
+  modifiable: { type: Boolean, required: true, default: false },
 });
 
 const handicapOptions = [
   { label: "Sensoriel", value: "auditif", name: "typeDeficiences" },
-  { label: "Sensoriel", value: "visuel", name: "typeDeficiences" },
+  { label: "Visuel", value: "visuel", name: "typeDeficiences" },
   { label: "Cognitif", value: "cognitif", name: "typeDeficiences" },
   { label: "Mental/Psychique", value: "mental", name: "typeDeficiences" },
   { label: "Moteur", value: "moteur", name: "typeDeficiences" },
@@ -55,6 +63,7 @@ const { validate } = useForm({
 
 const {
   value: typeDeficiencesField,
+  meta: typeDeficiencesMeta,
   errorMessage: typeDeficiencesErrorMessage,
 } = useField<string[]>("typeDeficiences");
 

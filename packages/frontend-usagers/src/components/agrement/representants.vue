@@ -38,7 +38,11 @@
               : idx + 2
           }}
         </h5>
-        <DsfrLinkV2 as="button" @click="removeNewRepresentant(idx)">
+        <DsfrLinkV2
+          v-if="props.modifiable"
+          as="button"
+          @click="removeNewRepresentant(idx)"
+        >
           Supprimer ce représentant
         </DsfrLinkV2>
       </div>
@@ -120,6 +124,7 @@
 
   <div class="fr-mt-2w">
     <DsfrLinkV2
+      v-if="props.modifiable"
       as="button"
       class-names="fr-ml-0"
       @click="addNewRepresentantForm()"
@@ -235,6 +240,10 @@ async function validateAndSave() {
   addRepresentantForms.value = [];
   return allRepresentants;
 }
+
+const props = defineProps({
+  modifiable: { type: Boolean, default: true },
+});
 
 defineExpose({
   getRepresentants: () => [

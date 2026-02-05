@@ -28,6 +28,7 @@
         <dd>
           {{ personnePhysique.telephone || "-" }}
           <DsfrLinkV2
+            v-if="modifiable"
             as="button"
             icon-name="icon-edit-line"
             @click="startEditTelephone"
@@ -73,6 +74,7 @@ import { telephoneYupNullable } from "@/utils/telephoneValidators";
 const props = defineProps({
   initOrganisme: { type: Object, required: true },
   initAgrement: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const isEditingTelephone = ref(false);

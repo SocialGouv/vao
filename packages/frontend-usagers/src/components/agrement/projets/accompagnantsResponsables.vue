@@ -8,14 +8,22 @@
   </TitleWithIcon>
   <div class="fr-col-6 fr-mb-4v">
     <DsfrInput
+      v-if="props.modifiable"
       name="accompRespNb"
-      label="Nombre d’accompagnants prévus par lieu de vacances"
+      :label="displayInput.IAgrementProjets['accompRespNb'].label"
       type="number"
       :model-value="accompRespNb"
       :label-visible="true"
       :is-valid="accompRespNbMeta.valid"
       :error-message="accompRespNbErrorMessage"
       @update:model-value="onAccompRespNbChange"
+    />
+    <UtilsDisplayInput
+      v-else
+      :value="accompRespNb"
+      :input="displayInput.IAgrementProjets['accompRespNb']"
+      :is-valid="accompRespNbMeta.valid"
+      :error-message="accompRespNbErrorMessage"
     />
   </div>
   <p class="light-decisions-text-text-default-info fr-text--xs fr-mt-8v">
@@ -35,6 +43,7 @@
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
+          v-if="props.modifiable"
           name="accompRespCompExp"
           label="description"
           :model-value="accompRespCompExp"
@@ -44,11 +53,19 @@
           :error-message="accompRespCompExpErrorMessage"
           @update:model-value="onAccompRespCompExpChange"
         />
+        <UtilsDisplayInput
+          v-else
+          :value="accompRespCompExp"
+          :input="displayInput.IAgrementProjets['accompRespCompExp']"
+          :is-valid="accompRespCompExpMeta.valid"
+          :error-message="accompRespCompExpErrorMessage"
+        />
       </div>
     </div>
     <div class="fr-fieldset__element">
       <UtilsMultiFilesUpload
         v-model="filesProjetsSejoursCompetencesExperience"
+        :modifiable="props.modifiable"
         label="Ajouter des fichiers"
       />
     </div>
@@ -63,8 +80,9 @@
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
+          v-if="props.modifiable"
           name="accompRespRecruteUrg"
-          label="description"
+          :label="displayInput.IAgrementProjets['accompRespRecruteUrg'].label"
           :model-value="accompRespRecruteUrg"
           :label-visible="true"
           :is-textarea="true"
@@ -72,11 +90,19 @@
           :error-message="accompRespRecruteUrgErrorMessage"
           @update:model-value="onAccompRespRecruteUrgChange"
         />
+        <UtilsDisplayInput
+          v-else
+          :value="accompRespRecruteUrg"
+          :input="displayInput.IAgrementProjets['accompRespRecruteUrg']"
+          :is-valid="accompRespRecruteUrgMeta.valid"
+          :error-message="accompRespRecruteUrgErrorMessage"
+        />
       </div>
     </div>
     <div class="fr-fieldset__element">
       <UtilsMultiFilesUpload
         v-model="filesProjetsSejoursMesures"
+        :modifiable="props.modifiable"
         label="Ajouter des fichiers"
       />
     </div>
@@ -84,6 +110,7 @@
   <div class="fr-fieldset__element fr-mt-6v">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursComplementaires"
+      :modifiable="props.modifiable"
       label="Ajouter des fichiers complémentaires (optionnel)"
     />
   </div>
@@ -97,10 +124,12 @@ import { ref } from "vue";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import displayInput from "../../../utils/display-input";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: false },
 });
 
 const validationSchema = yup.object({
@@ -119,19 +148,19 @@ const validationSchema = yup.object({
 });
 
 const filesProjetsSejoursCompetencesExperience = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
   ) || [],
 );
 const filesProjetsSejoursMesures = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJETSSEJOURSMESURES,
   ) || [],
 );
 const filesProjetsSejoursComplementaires = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJETSSEJOURSCOMPLEMENTAIRES,
   ) || [],

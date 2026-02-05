@@ -88,12 +88,27 @@
               @previous="previousHash"
             />
           </div>
+          <div
+            v-if="hash === 'agrement-synthese'"
+            id="agrement-synthese"
+            :read-only="readOnly"
+          >
+            <AgrementSynthese
+              class="fr-my-2w"
+              :init-organisme="organismeStore.organismeCourant ?? {}"
+              :init-agrement="agrementStore.agrementCourant ?? {}"
+              :modifiable="false"
+              :cdn-url="`${config.public.backendUrl}/documents/`"
+            />
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
+import  { FILE_CATEGORY, type AgrementDto, type FileKey } from "@vao/shared-bridge";
+
 const route = useRoute();
 
 const toaster = useToaster();
@@ -104,9 +119,6 @@ const documentStore = useDocumentStore();
 const config = useRuntimeConfig();
 
 const readOnly = false;
-
-import { FILE_CATEGORY, type FileKey } from "@vao/shared-bridge";
-import type { AgrementDto } from "@vao/shared-bridge";
 
 type AgrementFormValues = Partial<AgrementDto> & {
   [K in FileKey]?: any;
@@ -331,10 +343,7 @@ async function createDocument({
 }) {
   if (document && Object.keys(document?.uuid ?? {}).length === 0) {
     try {
-      const uuid = await documentStore.postDocument({
-        document,
-        category,
-      });
+      const uuid = await documentStore.postDocument(document);
       toaster.info({
         titleTag: "h2",
         description: `Fichier ${document.name} déposé`,
