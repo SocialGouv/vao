@@ -35,6 +35,7 @@ module.exports = async function register(req, res, next) {
   const checkUser = await User.read({ mail: email });
   if (checkUser && checkUser.length !== 0) {
     log.w("Utilisateur déjà existant");
+
     try {
       await Send(
         MailUtils.usagers.authentication.sendAccountAlreadyExist({
@@ -52,7 +53,13 @@ module.exports = async function register(req, res, next) {
         }),
       );
     }
-    return res.status(200).json({ code: "CreationCompte" });
+
+    return next(
+      new AppError("Un compte avec cet email existe déjà", {
+        name: "EmailAlreadyExistsError",
+        statusCode: 409,
+      }),
+    );
   }
   let territoire = "";
   try {
