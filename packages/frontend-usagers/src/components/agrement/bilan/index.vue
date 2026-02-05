@@ -42,6 +42,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { Ref } from "vue";
+import { useToaster } from "@vao/shared-ui";
 
 interface FormulaireItem {
   ref: Ref<any>;
@@ -61,7 +62,7 @@ const props = defineProps({
 
 const toaster = useToaster();
 
-const emit = defineEmits(["update:valid", "update", "previous", "next", ]);
+const emit = defineEmits(["update:valid", "update", "previous", "next"]);
 
 const changementsRef = ref(null);
 const financierRef = ref(null);
@@ -106,7 +107,7 @@ onMounted(async () => {
   }
 });
 
-const validationForm = async() => {
+const validationForm = async () => {
   validationErrors.value = [];
 
   const forms = [
@@ -149,7 +150,6 @@ const validationForm = async() => {
     };
 
     delete transformedData.statut;
-
   } else {
     toaster.error({
       titleTag: "h2",
@@ -158,7 +158,6 @@ const validationForm = async() => {
     console.warn("Erreurs de validation :", validationErrors.value);
   }
 };
-
 
 const handleSuivant = async () => {
   validationErrors.value = [];

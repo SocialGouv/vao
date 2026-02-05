@@ -104,20 +104,21 @@
 import { computed, ref, watch } from "vue";
 import SearchAddress from "@/components/address/search-address.vue";
 import { useField, useForm } from "vee-validate";
+import { useToaster } from "@vao/shared-ui";
 import * as yup from "yup";
 
 const props = defineProps({
   bilanHebergement: {
     type: Array,
-    required: true,
+    required: false,
     default: () => [],
   },
   statut: {
     type: String,
-    required: true,
+    required: false,
     default: "BROUILLON",
   },
-  modifiable: { type: Boolean, required: true, default: false },
+  modifiable: { type: Boolean, required: false, default: false },
 });
 
 const toaster = useToaster();

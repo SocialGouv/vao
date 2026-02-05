@@ -4,7 +4,7 @@ import {
   Footer,
   Skiplinks,
   useLayoutHeader,
-  Toaster,
+  useToaster,
 } from "@vao/shared-ui";
 
 const userStore = useUserStore();

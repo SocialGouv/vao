@@ -23,7 +23,6 @@
           :is-valid="nbGlobalVacanciersMeta.valid"
           :error-message="nbGlobalVacanciersErrorMessage"
         />
-
       </div>
 
       <div class="fr-col-4">
@@ -49,7 +48,7 @@
 
       <div class="fr-col-4">
         <DsfrInput
-        v-if="modifiable"
+          v-if="modifiable"
           name="nbFemmes"
           :label="displayInput.IAgrementBilanAnnuel['nbFemmes'].label"
           type="number"
@@ -117,6 +116,7 @@
 import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { useToaster } from "@vao/shared-ui";
 import * as yup from "yup";
 import displayInput from "../../../utils/display-input";
 

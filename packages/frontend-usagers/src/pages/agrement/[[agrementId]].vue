@@ -107,7 +107,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import  { FILE_CATEGORY, type AgrementDto, type FileKey } from "@vao/shared-bridge";
+import {
+  FILE_CATEGORY,
+  type AgrementDto,
+  type FileKey,
+} from "@vao/shared-bridge";
+import { useToaster } from "@vao/shared-ui";
 
 const route = useRoute();
 
@@ -307,7 +312,10 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       organismeId,
     });
 
-    toaster.success("Données enregistrées avec succès !");
+    toaster.success({
+      titleTag: "h2",
+      description: "Données enregistrées avec succès !",
+    });
   } catch (error) {
     toaster.error({
       titleTag: "h2",

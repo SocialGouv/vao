@@ -66,7 +66,7 @@
 
 <script setup>
 import { ref } from "vue";
-import { FileUpload } from "@vao/shared-ui";
+import { FileUpload, useToaster } from "@vao/shared-ui";
 
 const props = defineProps({
   valid: { type: Boolean, default: true },
@@ -166,7 +166,7 @@ async function saveCoordonneesStep() {
   );
   if (personneMoraleRef.value && !personneMoraleData) {
     isValid = false;
-    return;  
+    return;
   }
   props.modifiable ? saveAgrement() : emit("update:valid", isValid);
 

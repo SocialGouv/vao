@@ -68,6 +68,8 @@
 </template>
 
 <script setup lang="ts">
+import { useToaster } from "@vao/shared-ui";
+
 const props = defineProps({
   valid: { type: Boolean, default: true },
   initAgrement: { type: Object, required: true },
