@@ -664,7 +664,10 @@ async function updateOrCreate(data, type) {
     });
 
     toaster.success(
-      `Demande de séjour ${sejourId.value ? "sauvegardée" : "créée"}`,
+      {
+        titleTag: "h2",
+        description: `Déclaration de séjour ${sejourId.value ? "sauvegardée" : "créée"}`,
+      }
     );
     log.d(`demande de séjour ${sejourId.value} mis à jour`);
     sejourId.value = response.id;

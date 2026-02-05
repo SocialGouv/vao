@@ -614,6 +614,9 @@ import IsDownloading from "./IsDownloading.vue";
 import hebergementUtils from "../utils/hebergement";
 import FileUpload from "./FileUpload.vue";
 import createLogger from "../utils/createLogger";
+import {
+  useToaster,
+} from '../composables/useToaster';
 
 const toaster = useToaster();
 
