@@ -8,6 +8,7 @@
         ref="personnePhysiqueRef"
         :init-organisme="props.initOrganisme"
         :init-agrement="props.initAgrement"
+        :modifiable="props.modifiable"
       />
       <hr class="fr-my-2w" />
       <AgrementPersonneMorale
@@ -17,6 +18,7 @@
         ref="personneMoraleRef"
         :init-organisme="props.initOrganisme"
         :init-agrement="props.initAgrement"
+        :modifiable="props.modifiable"
       />
     </div>
 
@@ -25,13 +27,14 @@
       v-model="fileProcesVerbal"
       :cdn-url="props.cdnUrl"
       label="Dernier procès verbal d'assemblée générale"
-      :modifiable="true"
+      :modifiable="props.modifiable"
     />
     <hr class="fr-mt-4w" />
 
     <AgrementCommentaire
       ref="commentaireRef"
       :init-commentaire="props.initAgrement.commentaire"
+      :modifiable="props.modifiable"
       class="fr-my-2w"
     />
 
@@ -55,7 +58,9 @@
       {{ personneMoraleError }}
     </DsfrAlert>
 
-    <DsfrButton class="fr-mb-6v" @click.prevent="onNext">Suivant</DsfrButton>
+    <DsfrButton v-if="props.modifiable" class="fr-mb-6v" @click.prevent="onNext"
+      >Suivant</DsfrButton
+    >
   </div>
 </template>
 
@@ -64,19 +69,20 @@ import { ref } from "vue";
 import { FileUpload } from "@vao/shared-ui";
 
 const props = defineProps({
+  valid: { type: Boolean, default: true },
   initAgrement: { type: Object, required: true },
   initOrganisme: { type: Object, required: true },
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
 });
-const emit = defineEmits(["next", "update"]);
+const emit = defineEmits(["next", "update", "update:valid"]);
 
 const toaster = useToaster();
 const organismeStore = useOrganismeStore();
 
 const getFileByCategory = (category) => {
   return (
-    props.initAgrement?.agrementFiles.find(
+    props.initAgrement?.agrementFiles?.find(
       (file) => file.category === category,
     ) || null
   );
@@ -140,7 +146,7 @@ async function validatePersonne(ref, saveMethod, errorRef, errorMsg) {
 async function saveCoordonneesStep() {
   personnePhysiqueError.value = "";
   personneMoraleError.value = "";
-  let valid = true;
+  let isValid = true;
   const personnePhysiqueData = await validatePersonne(
     personnePhysiqueRef,
     "savePersonnePhysique",
@@ -148,7 +154,7 @@ async function saveCoordonneesStep() {
     "Veuillez corriger les erreurs dans le formulaire de la personne physique.",
   );
   if (personnePhysiqueRef.value && !personnePhysiqueData) {
-    valid = false;
+    isValid = false;
     return;
   }
 
@@ -159,22 +165,28 @@ async function saveCoordonneesStep() {
     "Veuillez corriger les erreurs dans le formulaire de la personne morale.",
   );
   if (personneMoraleRef.value && !personneMoraleData) {
-    valid = false;
-    return;
+    isValid = false;
+    return;  
   }
+  props.modifiable ? saveAgrement() : emit("update:valid", isValid);
 
-  saveAgrement();
-
-  if (!valid) {
+  if (!isValid) {
     return toaster.error({
       titleTag: "h2",
       description:
         "Des erreurs sont présentes dans le formulaire. Veuillez les corriger avant de continuer.",
     });
   }
-
-  emit("next");
+  if (props.modifiable) {
+    emit("next");
+  }
 }
+
+onMounted(async () => {
+  if (!props.modifiable) {
+    saveCoordonneesStep();
+  }
+});
 
 function onNext() {
   saveCoordonneesStep();

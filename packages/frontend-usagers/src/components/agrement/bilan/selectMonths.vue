@@ -1,6 +1,7 @@
 <template>
   <div class="select-months">
     <DsfrMultiselect
+      v-if="props.modifiable"
       id="months-select"
       v-model="selectedLabels"
       aria-label="sélectionnez un ou plusieurs mois"
@@ -8,16 +9,26 @@
       :options="months"
       size="small"
     />
+    <UtilsDisplayInput
+      v-else
+      :input="displayInput.IAgrementProjets.selectedMonths"
+      :value="selectedLabels"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 import { ref, watch } from "vue";
+import displayInput from "../../../utils/display-input";
+const props = defineProps({
+  defaultSelected: {
+    type: Array as PropType<number[]>,
+    default: () => [],
+  },
+  modifiable: { type: Boolean, default: false },
+});
 
-const props = defineProps<{
-  defaultSelected?: number[];
-}>();
 
 const months = [
   "janvier",
@@ -62,7 +73,7 @@ const buttonLabel = computed(() => {
   }
   const selectedIndices = selectedLabels.value
     .map((label) => months.indexOf(label) + 1)
-    .filter((num) => num > 0)
+    .filter((num: number) => num > 0)
     .sort((a, b) => a - b);
 
   if (selectedIndices.length === 1) {

@@ -11,10 +11,497 @@ const InputTypes = {
   TABLE: "table",
 };
 
-const IUser = {
+const ouiNon = {
+  false: "Non",
+  true: "Oui",
+};
+
+const IPersonneMorale = {
+  complet: {
+    inputType: InputTypes.RADIO,
+    label: "Fiche Complète",
+    options: ouiNon,
+  },
+  createdAt: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de création",
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
+  },
+  editedAt: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de dernière modification",
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
+  },
+  raisonSociale: {
+    inputType: InputTypes.TEXT,
+    label: "Raison sociale",
+  },
+  nomCommercial: {
+    inputType: InputTypes.TEXT,
+    label: "Nom commercial",
+  },
+  siren: {
+    inputType: InputTypes.TEXT,
+    label: "Siren",
+  },
+  siret: {
+    inputType: InputTypes.TEXT,
+    label: "Siret",
+  },
+  statut: {
+    inputType: InputTypes.TEXT,
+    label: "Statut",
+  },
+  telephoneEP: {
+    inputType: InputTypes.TEXT,
+    label: "Téléphone",
+  },
+  adresseShort: {
+    inputType: InputTypes.TEXT,
+    label: "Adresse",
+  },
   email: {
     inputType: InputTypes.TEXT,
     label: "Adresse courriel",
+  },
+  representantsLegaux: {
+    inputType: InputTypes.TABLE,
+    label: "Représentants légaux",
+    fields: [
+      {
+        label: "Nom",
+        value: "nom",
+        display: "text",
+      },
+      {
+        label: "Prénom",
+        value: "prenom",
+        display: "text",
+      },
+      {
+        label: "Fonction",
+        value: "fonction",
+        display: "text",
+      },
+    ],
+  },
+  etablissements: {
+    inputType: InputTypes.TABLE,
+    label: "Etablissements secondaires",
+    fields: [
+      {
+        label: "Code NIC",
+        value: "nic",
+        display: "text",
+      },
+      {
+        label: "Nom",
+        value: "denomination",
+        display: "text",
+      },
+      {
+        label: "Etat adminsitratif",
+        value: "etatAdministratif",
+        display: "text",
+      },
+      {
+        label: "Adresse",
+        value: "adresse",
+        format: function (element) {
+          return `${element["adresse"]} ${element["codePostal"]} ${element["commune"]}`;
+        },
+        display: "function",
+      },
+      {
+        label: "Autorisé à la déclaration",
+        value: "enabled",
+        format: function (element) {
+          return element.enabled ? "Oui" : "Non";
+        },
+        display: "function",
+      },
+    ],
+    filter: (tab) => tab.filter((e) => e.enabled === true),
+  },
+};
+
+const IPersonnePhysique = {
+  complet: {
+    inputType: InputTypes.RADIO,
+    label: "Fiche Complète",
+    options: ouiNon,
+  },
+  createdAt: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de création",
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
+  },
+  editedAt: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de dernière modification",
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
+  },
+  prenom: {
+    inputType: InputTypes.TEXT,
+    label: "Prénom",
+  },
+  nomNaissance: {
+    inputType: InputTypes.TEXT,
+    label: "Nom de naissance",
+  },
+  nomUsage: {
+    inputType: InputTypes.TEXT,
+    label: "Nom d'usage",
+  },
+  siret: {
+    inputType: InputTypes.TEXT,
+    label: "Siret",
+  },
+  profession: {
+    inputType: InputTypes.TEXT,
+    label: "Profession",
+  },
+  telephone: {
+    inputType: InputTypes.TEXT,
+    label: "Téléphone",
+  },
+  adresseDomicile: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Adresse Domicile",
+    formatter: (value) => value.label,
+  },
+  adresseSiege: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Adresse Siège",
+    formatter: (value) => value.label,
+  },
+  adresseIdentique: {
+    inputType: InputTypes.RADIO,
+    label:
+      "L'adresse du lieu d’exercice des activités de VAO est-elle celle du domicile ?\n",
+    options: ouiNon,
+  },
+};
+
+const IResponsableSejour = {
+  nom: {
+    inputType: InputTypes.TEXT,
+    label: "Nom",
+  },
+  prenom: {
+    inputType: InputTypes.TEXT,
+    label: "Prénom",
+  },
+  fonction: {
+    inputType: InputTypes.TEXT,
+    label: "Fonction",
+  },
+  email: {
+    inputType: InputTypes.TEXT,
+    label: "Adresse courriel",
+  },
+  telephone: {
+    inputType: InputTypes.TEXT,
+    label: "Téléphone",
+  },
+  adresse: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Adresse",
+    formatter: (value) => value.label,
+  },
+};
+
+const IVacancier = {
+  effectifPrevisionnel: {
+    inputType: InputTypes.NUMBER,
+    label: "Effectif prévisionnel des vacanciers",
+  },
+  effectifPrevisionnelFemme: {
+    inputType: InputTypes.NUMBER,
+    label: "Femme",
+  },
+  effectifPrevisionnelHomme: {
+    inputType: InputTypes.NUMBER,
+    label: "Homme",
+  },
+  trancheAge: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Tranches d'âge",
+  },
+  typeDeficiences: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Type de déficiences",
+  },
+  precisionDeficiences: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+};
+
+const Ipersonnel = {
+  nombreResponsable: {
+    inputType: InputTypes.NUMBER,
+    label:
+      "Nombre total de personnes responsables du déroulement du séjour sur le(s) lieu(x) de séjour",
+  },
+  procedureRecrutementSupplementaire: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Procédure en cas de recrutement de personnels supplémentaires durant le séjour",
+    options: ouiNon,
+  },
+  nombreAccompagnant: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre total d'accompagnants sur le(s) lieu(x) de séjour",
+  },
+};
+
+const IProjetSejour = {
+  destination: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Destination",
+  },
+  activitesSportives: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Sports et loisirs (optionnel)",
+  },
+  activitesCulturelles: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Culture et découverte (optionnel)",
+  },
+  activitesBienEtre: {
+    inputType: InputTypes.MULTISELECT,
+    label:
+      "Personnel ou organisme prévu le cas échéant pour encadrer les activités spécifiques (optionnel)",
+  },
+  activitesPersonnelPrevu: {
+    inputType: InputTypes.TEXT,
+    label: "Bien être (optionnel)",
+  },
+};
+
+const ITransport = {
+  responsableTransportLieuSejour: {
+    inputType: InputTypes.RADIO,
+    label: "Qui est responsable du transport jusqu'au lieu de séjour ? ",
+    options: {
+      vacanciers: "Les vacanciers viennent par leurs propres moyens",
+      organisateur:
+        "Le transport vers le lieu de séjour est assuré par l'organisateur",
+    },
+  },
+  modeTransport: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Précisez le ou les modes de transport utilisés",
+  },
+  precisionModeOrganisation: {
+    inputType: InputTypes.TEXT,
+    label:
+      "Précisez le mode d’organisation retenu (conditions d’accompagnement des vacanciers, gestion des correspondances, lieux de prise en charge, temps d’attente, etc.)",
+  },
+  deplacementDurantSejour: {
+    inputType: InputTypes.RADIO,
+    label: "Des déplacements sont-ils prévus durant le séjour ?",
+    options: ouiNon,
+  },
+  vehiculesAdaptes: {
+    inputType: InputTypes.RADIO,
+    label: "Les véhicules adaptés sont ils adaptés ?",
+    options: ouiNon,
+  },
+  precisionVehiculesAdaptes: {
+    inputType: InputTypes.TEXT,
+    label: "Spécificité des véhicules :",
+    options: ouiNon,
+  },
+};
+
+const ISanitaire = {
+  dispositionsSpecifiques: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Des dispositions d’ordre sanitaire spécifiques sont-elles prévues ?",
+    options: ouiNon,
+  },
+
+  precisionDispositionsSpecifiques: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez ?",
+  },
+  constitutionEquipe: {
+    inputType: InputTypes.MULTISELECT,
+    label: "L’équipe comprend-elle ?",
+  },
+  precisionConstitutionEquipe: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  troussePharmacie: {
+    inputType: InputTypes.RADIO,
+    label: "Présence d’une trousse à pharmacie de premier secours ?",
+    options: ouiNon,
+  },
+  accordCabinetMedical: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Un accord est-il passé avec un cabinet médical ou paramédical à proximité des lieux de séjour ?",
+    options: ouiNon,
+  },
+  precisionAccordCabinetMedical: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  responsableAdministrationMedicament: {
+    inputType: InputTypes.MULTISELECT,
+    label:
+      "Personne désignée en charge de la distribution et de l’administration des médicaments et de l’enregistrement de l’administration ?",
+  },
+  precisionResponsableAdministrationMedicament: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  stockageMedicamentSecurise: {
+    inputType: InputTypes.RADIO,
+    label: "Présence d’une trousse à pharmacie de premier secours ?",
+    options: ouiNon,
+  },
+  precisionStockageMedicamentSecurise: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  conservationMedicamentThermosensible: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Un dispositif est-il prévu pour la conservation des médicaments thermosensibles ?",
+    options: ouiNon,
+  },
+  precisionConservationMedicament: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  individualisationMedicaments: {
+    inputType: InputTypes.RADIO,
+    label: "Individualisation des médicaments ?",
+    options: ouiNon,
+  },
+  precisionIndividualisationMedicaments: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  preparationPilluliers: {
+    inputType: InputTypes.RADIO,
+    label: "Individualisation des médicaments ?",
+    options: {
+      aucune: "Sans objet",
+      prepares_prealablement:
+        "Piluliers préparés préalablement au séjour par le vacancier, sa famille, le représentant légal, l’établissement de résidence habituelle, le médecin",
+      au_fur_et_a_mesure: "Piluliers préparés durant le séjour",
+    },
+  },
+  precisionPreparationPilluliers: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  prescriptionMedicaleJointe: {
+    inputType: InputTypes.RADIO,
+    label: "une prescription médicale est-elle jointe à chaque pilulier ?",
+    options: ouiNon,
+  },
+  protocoleModificationTraitement: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Existe-t-il un protocole en cas de modification de traitement en cours de séjour ?",
+    options: ouiNon,
+  },
+  precisionProtocoleModificationTraitement: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  ficheSuiviMedicaments: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Existe-t-il une fiche de suivi de la distribution, de l’administration et de l’enregistrement des médicaments ?",
+    options: ouiNon,
+  },
+  protocoleEvacuation: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Existe-t-il un protocole d’évacuation et de rapatriement des vacanciers si nécessaire au cours du séjour ?",
+    options: ouiNon,
+  },
+  precisionProtocoleEvacuation: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  protocoleAccident: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Existe-t-il un protocole d’évacuation et de rapatriement des vacanciers si nécessaire au cours du séjour ?",
+    options: ouiNon,
+  },
+  precisionProtocoleAccident: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  protocoleReorientation: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Existe-t-il un protocole en cas de chute, d’intoxication (alimentaire, médicamenteuse, etc.) ou autre accident ?",
+    options: ouiNon,
+  },
+  precisionProtocoleReorientation: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+  protocoleCanicule: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Existe-t-il un protocole en cas d’alerte canicule (locaux, transports…) ?",
+    options: ouiNon,
+  },
+  precisionProtocoleCanicule: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+
+  gestionBudgetPersonnel: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez",
+  },
+};
+
+const IHebergement = {
+  dateDebut: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de début",
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
+  },
+  dateFin: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Date de fin",
+    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
+  },
+  nom: {
+    inputType: InputTypes.TEXT,
+    label: "Nom",
+  },
+  coordonnees: {
+    inputType: InputTypes.TO_FORMAT,
+    label: "Adresse",
+    formatter: (value) => value.adresse.label,
+  },
+};
+
+const IAttestation = {
+  aCertifie: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Je certifie sur l'honneur que les renseignements portés sur cette déclaration sont exacts",
+    options: ouiNon,
+  },
+  at: {
+    inputType: InputTypes.TEXT,
+    label: "Date",
   },
   nom: {
     inputType: InputTypes.TEXT,
@@ -24,33 +511,347 @@ const IUser = {
     inputType: InputTypes.TEXT,
     label: "Prénom",
   },
-  createdAt: {
+  qualite: {
+    inputType: InputTypes.TEXT,
+    label: "Qualité",
+  },
+};
+
+const IHebergementInformationLocaux = {
+  type: {
+    inputType: InputTypes.RADIO,
+    label: "Type du lieu d'hébergement",
+    options: {
+      hotel: "Hôtel",
+      meuble_tourisme: "Meublé de tourisme",
+      residence_tourisme: "Résidence de tourisme, chambre d'hôte",
+      camping: "Camping, caravaning, mobile home",
+      autre: "Autre",
+    },
+  },
+  visiteLocaux: {
+    inputType: InputTypes.RADIO,
+    label: "Une visite des locaux par l’organisateur a-t-elle été effectuée ? ",
+    options: ouiNon,
+  },
+  reglementationErp: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Le lieu d’hébergement est-il soumis à la réglementation ERP (établissement recevant du public) ? ",
+    options: ouiNon,
+  },
+  accessibilite: {
+    inputType: InputTypes.RADIO,
+    label: "Accessibilité",
+    options: {
+      accessible: "Accessible",
+      non_adapte: "Signalé comme non adapté",
+      commentaires: "Commentaires",
+    },
+  },
+  accessibilitePrecision: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez ",
+  },
+  pension: {
+    inputType: InputTypes.RADIO,
+    label: "Accessibilité",
+    options: {
+      accessible: "Accessible",
+      non_adapte: "Signalé comme non adapté",
+      commentaires: "Commentaires",
+      non_renseigne: "Non renseigné",
+    },
+  },
+  prestationsHotelieres: {
+    inputType: InputTypes.MULTISELECT,
+    label: "Prestations hôtelières assurées par le lieu d’accueil",
+  },
+  descriptionLieuHebergement: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Description du lieu d’hébergement (parties communes et notamment équipements sanitaires) ?",
+    options: ouiNon,
+  },
+  nombreLits: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre de lits dans le lieu d'hébergement",
+  },
+  nombreLitsSuperposes: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre de lits superposés inclus",
+  },
+  litsDessus: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Pour les lits superposés, les lits « du dessus » seront-ils occupés par des vacanciers ?",
+    options: ouiNon,
+  },
+  nombreMaxPersonnesCouchage: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre maximum de personnes prévues par espace de couchage",
+  },
+  couchageIndividuel: {
+    inputType: InputTypes.RADIO,
+    label: "Chaque vacancier bénéficie-t-il d’un couchage individuel ? ",
+    options: ouiNon,
+  },
+  rangementIndividuel: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Chaque vacancier bénéficie t-il d’un espace de rangement des affaires personnelles ? ",
+    options: ouiNon,
+  },
+  chambresUnisexes: {
+    inputType: InputTypes.RADIO,
+    label: "Les femmes et les hommes dorment-ils dans des lieux séparés ? ",
+    options: ouiNon,
+  },
+  chambresDoubles: {
+    inputType: InputTypes.RADIO,
+    label: "Les couples de vacanciers bénéficient t-ils de chambres doubles ? ",
+    options: ouiNon,
+  },
+  amenagementsSpecifiques: {
+    inputType: InputTypes.RADIO,
+    label:
+      "Des aménagements spécifiques des locaux sont-ils prévus pour accueillir les vacanciers ? ",
+    options: ouiNon,
+  },
+  precisionAmenagementsSpecifiques: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez ",
+  },
+};
+const IHebergementInformationsTransport = {
+  vehiculesAdaptes: {
+    inputType: InputTypes.RADIO,
+    label: "Les véhicules utilisés sont-ils adaptés ? ",
+    options: ouiNon,
+  },
+  deplacementProximite: {
+    inputType: InputTypes.TEXT,
+    label:
+      "Précisez la fréquence, les distances et le mode de transport utilisé pour les déplacements de proximité",
+  },
+  excursion: {
+    inputType: InputTypes.TEXT,
+    label:
+      "Précisez la fréquence, les distances et le mode de transport utilisé pour les excursions",
+  },
+  rejoindreEtape: {
+    inputType: InputTypes.TEXT,
+    label: "Précisez le mode de transport utilisé pour rejoindre cette étape  ",
+  },
+};
+
+const IAgrement = {
+  numero: {
+    inputType: InputTypes.TEXT,
+    label: "Numéro d'agrément \"Vacances adaptées organisées",
+  },
+  dateObtention: {
     inputType: InputTypes.TO_FORMAT,
-    label: "Date de création du compte",
+    label: "Date d'obtention de l'agrément",
     formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
   },
-  telephone: {
+  regionObtention: {
     inputType: InputTypes.TEXT,
-    label: "Numéro de téléphone",
+    label: "Région d´obtention de l´agrément",
   },
-  lastConnectionAt: {
-    inputType: InputTypes.TO_FORMAT,
-    label: "Date de dernière connexion",
-    formatter: (value) => dayjs(value).format("DD/MM/YYYY"),
+  file: {
+    inputType: InputTypes.RAW,
+    label: "Copie de l´agrément",
   },
-  statutLabel: {
-    inputType: InputTypes.TO_FORMAT,
-    label: "StatutLabel",
-    formatter: (value) => value,
-  },
-  organisme: {
+  commentaire: {
     inputType: InputTypes.TEXT,
-    label: "Organisme",
-    formatter: (value) => value,
+    label: "Commentaire",
   },
+  motivations: {
+    inputType: InputTypes.TEXT,
+    label: "Motivations, compétences et expériences",
+  },
+  dateObtentionCertificat: {
+    inputType: InputTypes.TEXT,
+    label: "Date d’obtention du certificat",
+  },
+};
+
+const IAgrementBilanAnnuel = {
+  typeHandicap: {
+    inputType: InputTypes.MULTISELECT,
+    label: "",
+    options: [
+      { label: "Sensoriel", value: "auditif", name: "typeHandicap" },
+      { label: "Visuel", value: "visuel", name: "typeHandicap" },
+      { label: "Cognitif", value: "cognitif", name: "typeHandicap" },
+      { label: "Mental/Psychique", value: "mental", name: "typeHandicap" },
+      { label: "Moteur", value: "moteur", name: "typeHandicap" },
+      { label: "Polyhandicap", value: "polyhandicap", name: "typeHandicap" },
+    ],
+  },
+  bilanFinancierComptabilite: {
+    inputType: InputTypes.TEXT,
+    label: "Comptabilité analytique de l’activité",
+  },
+  bilanFinancierComparatif: {
+    inputType: InputTypes.TEXT,
+    label: "Comparatif entre les périodes N et N-1",
+  },
+  bilanFinancierRessourcesHumaines: {
+    inputType: InputTypes.TEXT,
+    label: "Ressources humaines mobilisées et montants financiers engagés pour l’action",
+  },
+  bilanFinancierCommentaire: {
+    inputType: InputTypes.TEXT,
+    label: "Commentaire",
+  },
+  bilanQualPerceptionSensibilite: {
+    inputType: InputTypes.TEXT,
+    label: "Description",
+  },
+  bilanQualPerspectiveEvol: {
+    inputType: InputTypes.TEXT,
+    label: "Description",
+  },
+  bilanQualElementsMarquants: {
+    inputType: InputTypes.TEXT,
+    label: "Description",
+  },
+  bilanChangementEvolution: {
+    inputType: InputTypes.TEXT,
+    label: "Note d'information présentant les éventuelles améliorations ou changements apportés aux séjours (optionnel)",
+  },
+  nbGlobalVacanciers: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre global de vacanciers",
+  },
+    nbHommes: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre d'hommes",
+  },
+    nbFemmes: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre de femmes",
+  },
+  trancheAge: {
+    inputType: InputTypes.MULTISELECT,
+    label: "",
+    options: [
+      { label: "de 18 à 39 ans", value: "18_39", name: "trancheAge" },
+      { label: "de 40 à 59 ans", value: "40_59", name: "trancheAge" },
+      { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
+    ]
+  },
+};
+
+const IAgrementProjets = {
+  accompRespNb: {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre d’accompagnants prévus par lieu de vacances",
+  },
+  accompRespCompExp: {
+    inputType: InputTypes.TEXT,
+    label: "Description",
+  },
+  accompRespRecruteUrg: {
+    inputType: InputTypes.TEXT,
+    label: "Description",
+  },
+  animationAutre: {
+    inputType: InputTypes.TEXT,
+    label: "Autres (optionnel)",
+  },
+  budgetGestionPerso: {
+    inputType: InputTypes.TEXT,
+    label: "Conditions de gestion sur place et d’usage du budget personnel des personnes accueillies",
+  },
+  budgetPersoGestionComplementaire: {
+    inputType: InputTypes.TEXT,
+    label: "Précisions complémentaires (optionnel)",
+  },
+  transportAllerRetour: {
+    inputType: InputTypes.TEXT,
+    label: "Du lieu habituel de résidence au lieu de vacances de même que lors du retour ",
+  },
+  transportSejour: {
+    inputType: InputTypes.TEXT,
+    label: "Durant le séjour du lieu d’hébergement au lieu des activités",
+  },
+  protocoleEvacUrg: {
+    inputType: InputTypes.TEXT,
+    label: "Mesures d’anticipation prévues par l’organisateur de séjour",
+  },
+  protocoleRapatUrg: {
+    inputType: InputTypes.TEXT,
+    label: "Modalités d’information, de transports et de réorientation, évacuation",
+  },
+  protocoleRapatEtranger: {
+    inputType: InputTypes.TEXT,
+    label: "Mesures d’anticipation prévues par l’organisateur de séjour",
+  },
+  protocoleInfoFamille: {
+    inputType: InputTypes.TEXT,
+    label: "Modalités d’information, de transports et de rapatriement",
+  },
+  sejourNbEnvisage: {
+    inputType: InputTypes.TEXT,
+    label: "Nombre de séjours envisagés l'année suivante (optionnel)",
+  },
+  sejourCommentaire: {
+    inputType: InputTypes.TEXT,
+    label: "Commentaire (optionnel)",
+  },
+  suiviMedDistribution: {
+    inputType: InputTypes.TEXT,
+    label: "Mesures prévues pour la distribution et le stockage des médicaments",
+  },
+  suiviMedAccordSejour: {
+    inputType: InputTypes.TEXT,
+    label: "Accords passés avec un cabinet paramédical ou un médecin à proximité du lieu de séjour",
+  },
+  activitesSelectionnees: {
+    inputType: InputTypes.MULTISELECT,
+    label: "",
+  },
+  nomHebergement: {
+    inputType: InputTypes.TEXT,
+    label: "Nom de l'hébergement",
+  },
+  adresseLabel: {
+    inputType: InputTypes.TEXT,
+    label: "Adresse de l'hébergement",
+  },
+  selectedMonths:  {
+    inputType: InputTypes.MULTISELECT,
+    label: "",
+  },
+  nbJours:  {
+    inputType: InputTypes.NUMBER,
+    label: "Nombre de jours",
+  },
+  nbVacanciers:  {
+    inputType: InputTypes.NUMBER,
+    label: "nombre de vacanciers",
+  },
+  
 };
 
 export default {
   InputTypes,
-  IUser,
+  IPersonneMorale,
+  IPersonnePhysique,
+  IVacancier,
+  Ipersonnel,
+  IProjetSejour,
+  ITransport,
+  ISanitaire,
+  IResponsableSejour,
+  IHebergement,
+  IHebergementInformationLocaux,
+  IHebergementInformationsTransport,
+  IAttestation,
+  IAgrement,
+  IAgrementProjets,
+  IAgrementBilanAnnuel,
 };

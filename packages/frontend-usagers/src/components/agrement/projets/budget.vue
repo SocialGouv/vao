@@ -10,8 +10,9 @@
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="budgetGestionPerso"
-        label="Conditions de gestion sur place et d’usage du budget personnel des personnes accueillies"
+        :label="displayInput.IAgrementProjets['budgetGestionPerso'].label"
         hint="Précisez la manière dont vous organisez le budget de chaque vacancier"
         :model-value="budgetGestionPerso"
         :label-visible="true"
@@ -20,14 +21,22 @@
         :error-message="budgetGestionPersoErrorMessage"
         @update:model-value="onBudgetGestionPersoChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="budgetGestionPerso"
+        :input="displayInput.IAgrementProjets['budgetGestionPerso']"
+        :is-valid="budgetGestionPersoMeta.valid"
+        :error-message="budgetGestionPersoErrorMessage"
+      />
     </div>
   </div>
 
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="budgetPersoGestionComplementaire"
-        label="Précisions complémentaires (optionnel)"
+        :label="displayInput.IAgrementProjets['budgetPersoGestionComplementaire'].label"
         :model-value="budgetPersoGestionComplementaire"
         :label-visible="true"
         :is-textarea="true"
@@ -35,12 +44,20 @@
         :error-message="budgetPersoGestionComplementaireErrorMessage"
         @update:model-value="onBudgetPersoGestionComplementaireChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :value="budgetGestionPerso"
+        :input="displayInput.IAgrementProjets['budgetPersoGestionComplementaire']"
+        :is-valid="budgetPersoGestionComplementaireMeta.valid"
+        :error-message="budgetPersoGestionComplementaireErrorMessage"
+      />
     </div>
   </div>
 
   <div class="fr-fieldset__element fr-mt-8v">
     <UtilsMultiFilesUpload
       v-model="filesProjSejoursBudgetPersonnes"
+      :modifiable="props.modifiable"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -53,14 +70,16 @@ import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import displayInput from "../../../utils/display-input";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: false },
 });
 
 const filesProjSejoursBudgetPersonnes = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJSEJOURSBUDGETPERSONNES,
   ) || [],
