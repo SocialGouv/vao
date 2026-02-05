@@ -96,9 +96,7 @@ import { ref } from "vue";
 
 import Message from "./Message.vue";
 import FileUpload from "./FileUpload.vue";
-import {
-  useToaster,
-} from '../composables/useToaster'
+import { useToaster } from '../composables/useToaster';
 
 const MAX_MESSAGE_LENGTH = 1000;
 
