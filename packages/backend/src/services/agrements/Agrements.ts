@@ -1,4 +1,5 @@
-import { AgrementsDto } from "../../dto/AgrementsDto";
+import type { AgrementDto } from "@vao/shared-bridge";
+
 import { AgrementsRepository } from "../../repositories/usagers/Agrements";
 
 export default async function getByOrganismeId({
@@ -6,7 +7,7 @@ export default async function getByOrganismeId({
 }: {
   organismeId: number;
 }) {
-  const { agrement }: { agrement: AgrementsDto } =
+  const { agrement }: { agrement: AgrementDto } =
     await AgrementsRepository.getByOrganismeId({
       organismeId,
     });
