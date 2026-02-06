@@ -13,6 +13,4 @@ router.get(
   agrementController.getByOrganismeId,
 );
 
-router.post("/", checkJWT, checkPermissionAgrement, agrementController.post);
-
 export default router;
