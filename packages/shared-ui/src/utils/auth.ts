@@ -6,14 +6,6 @@ import type {
 } from "../types/Auth.type";
 import { emailRegex } from "./regex";
 
-/**
- * Helpers partagés pour l'authentification FO et BO
- * Extrait les fonctions communes sans créer de dépendances
- */
-
-/**
- * Masque un email : exemple@domain.com → e***@d***.com
- */
 export function maskEmail(emailAddress: string): string {
   if (!emailAddress || !emailAddress.includes("@")) return emailAddress;
 
@@ -24,9 +16,6 @@ export function maskEmail(emailAddress: string): string {
   return `${local[0]}***@${domainParts[0][0]}***.${extension}`;
 }
 
-/**
- * Retourne le message d'erreur approprié pour les erreurs 2FA
- */
 export function getErrorMessage2FA(
   errorCode?: TwoFactorErrorType | string,
 ): string {
@@ -43,24 +32,15 @@ export function getErrorMessage2FA(
   );
 }
 
-/**
- * Valide le format d'un email
- */
 export function isValidEmail(email: string): boolean {
   if (!email) return false;
   return emailRegex.test(email);
 }
 
-/**
- * Valide qu'un mot de passe n'est pas vide
- */
 export function isValidPassword(password: string): boolean {
   return password !== null && password !== "" && password !== undefined;
 }
 
-/**
- * Crée un objet d'état initial pour l'authentification
- */
 export function createAuthState(): AuthState {
   return {
     email: ref<string>(""),
