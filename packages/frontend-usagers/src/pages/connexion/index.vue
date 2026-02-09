@@ -132,10 +132,16 @@
 </template>
 
 <script setup lang="ts">
-import { PasswordInput, apiModel, CguValidation } from "@vao/shared-ui";
+import {
+  PasswordInput,
+  apiModel,
+  CguValidation,
+  useAuthentication,
+} from "@vao/shared-ui";
 
 const log = logger("pages/connexion");
 const userStore = useUserStore();
+const config = useRuntimeConfig();
 
 useHead({
   title: "Connexion | Vacances Adaptées Organisées",
@@ -157,7 +163,7 @@ const {
   login,
   validateCgu,
   refuseCgu,
-} = useAuthenticationFO();
+} = useAuthentication("fo", config.public.backendUrl);
 
 const displayInfos = apiModel.connectionInfos;
 

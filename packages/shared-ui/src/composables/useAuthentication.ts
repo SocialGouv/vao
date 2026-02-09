@@ -1,12 +1,13 @@
 import { computed } from "vue";
 import { ERRORS_LOGIN, type UserDto } from "@vao/shared-bridge";
-import { useToaster } from "@vao/shared-ui";
+import { useToaster } from "../composables/useToaster";
+import { useUserStore } from "#imports";
 import {
   maskEmail,
   getErrorMessage2FA,
   isValidPassword,
   createAuthState,
-} from "@vao/shared-ui/utils/auth";
+} from "../utils/auth";
 import type {
   UseAuthenticationReturn,
   LoginResponse,
@@ -15,14 +16,70 @@ import type {
   ApiError,
   LoginErrorType,
   ApiEndpoints,
-} from "@vao/shared-ui/types/Auth.type";
+} from "../types/Auth.type";
 
-export const useAuthenticationFO = (): UseAuthenticationReturn => {
-  const config = useRuntimeConfig();
+type AuthType = "fo" | "bo";
+
+interface AuthConfig {
+  endpoints: ApiEndpoints;
+  sessionStorageKey: string;
+  route2FA: string;
+  routeLogin: string;
+  useOrganismeStore: boolean;
+  useRefreshProfile: boolean;
+  /** Calculer serviceCompetent (BO uniquement) */
+  calculateServiceCompetent: boolean;
+  /** Gérer erreur NeedSiretValidation (FO uniquement) */
+  handleSiretValidation: boolean;
+}
+
+function getAuthConfig(type: AuthType): AuthConfig {
+  if (type === "bo") {
+    return {
+      endpoints: {
+        LOGIN: "/bo-authentication/email/login",
+        VERIFY_2FA: "/bo-authentication/verify-2fa",
+        RESEND_2FA: "/bo-authentication/resend-2fa",
+        ACCEPT_CGU: "/bo-user/accept-cgu",
+      },
+      sessionStorageKey: "2fa-email-bo",
+      route2FA: "connexion/verification-2fa",
+      routeLogin: "/connexion",
+      useOrganismeStore: false,
+      useRefreshProfile: false,
+      calculateServiceCompetent: true,
+      handleSiretValidation: false,
+    };
+  }
+
+  return {
+    endpoints: {
+      LOGIN: "/authentication/email/login",
+      VERIFY_2FA: "/authentication/verify-2fa",
+      RESEND_2FA: "/authentication/resend-2fa",
+      ACCEPT_CGU: "/fo-user/accept-cgu",
+    },
+    sessionStorageKey: "2fa-email",
+    route2FA: "/connexion/verification-2fa",
+    routeLogin: "/connexion",
+    useOrganismeStore: true,
+    useRefreshProfile: true,
+    calculateServiceCompetent: false,
+    handleSiretValidation: true,
+  };
+}
+
+export const useAuthentication = (
+  type: AuthType,
+  backendUrl: string,
+  organismeStore?: { setMyOrganisme: () => Promise<void> },
+): UseAuthenticationReturn => {
   const toaster = useToaster();
   const userStore = useUserStore();
-  const organismeStore = useOrganismeStore();
-  const log = logger("composables/useAuthenticationFO");
+  const log = logger(`composables/useAuthentication-${type.toUpperCase()}`);
+
+  const authConfig = getAuthConfig(type);
+  const API = authConfig.endpoints;
 
   const state = createAuthState();
   const {
@@ -35,13 +92,6 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
     isVerifying2FA,
     isResendingCode,
   } = state;
-
-  const API: ApiEndpoints = {
-    LOGIN: "/authentication/email/login",
-    VERIFY_2FA: "/authentication/verify-2fa",
-    RESEND_2FA: "/authentication/resend-2fa",
-    ACCEPT_CGU: "/fo-user/accept-cgu",
-  };
 
   const canLogin = computed<boolean>(() => {
     return (
@@ -57,10 +107,44 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
     return maskEmail(email.value);
   });
 
+  function calculateServiceCompetent(
+    territoireCode: string,
+  ): "NAT" | "DEP" | "REG" {
+    if (territoireCode === "FRA") {
+      return "NAT";
+    }
+    if (/^\d+$/.test(territoireCode)) {
+      return "DEP";
+    }
+    return "REG";
+  }
+
+  function processUserData(user: UserDto): UserDto {
+    if (!authConfig.calculateServiceCompetent) {
+      return user;
+    }
+
+    const serviceCompetent = calculateServiceCompetent(
+      user.territoireCode || "",
+    );
+    return {
+      ...user,
+      territoireCode: user.territoireCode || "",
+      serviceCompetent,
+    };
+  }
+
   async function continueAuthenticationFlow(user: UserDto): Promise<void> {
-    userStore.user = user;
-    await organismeStore.setMyOrganisme();
-    await userStore.refreshProfile();
+    const processedUser = processUserData(user);
+    userStore.user = processedUser;
+
+    if (authConfig.useOrganismeStore && organismeStore) {
+      await organismeStore.setMyOrganisme();
+    }
+
+    if (authConfig.useRefreshProfile) {
+      await userStore.refreshProfile();
+    }
 
     if (user?.cguAccepted === false) {
       openCgu.value = true;
@@ -86,33 +170,28 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
     displayType.value = null;
 
     try {
-      const response = await $fetch<LoginResponse>(
-        config.public.backendUrl + API.LOGIN,
-        {
-          credentials: "include",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: {
-            email: email.value,
-            password: password.value,
-          },
+      const response = await $fetch<LoginResponse>(backendUrl + API.LOGIN, {
+        credentials: "include",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: {
+          email: email.value,
+          password: password.value,
+        },
+      });
+
+      response.requires2FA = true;
 
       if (response.requires2FA) {
         log.i("login - 2FA requis, navigation vers page dédiée");
 
         if (typeof window !== "undefined") {
-          sessionStorage.setItem("2fa-email", email.value);
+          sessionStorage.setItem(authConfig.sessionStorageKey, email.value);
         }
 
-        if (response.twoFactorExpiration) {
-            sessionStorage.setItem("2fa-expiration-fo", response.twoFactorExpiration);
-        }
-
-        navigateTo("/connexion/verification-2fa");
+        navigateTo(authConfig.route2FA);
         return;
       }
 
@@ -137,8 +216,13 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
         case ERRORS_LOGIN.NeedEmailValidation:
           displayType.value = ERRORS_LOGIN.NeedEmailValidation;
           break;
+        // NeedSiretValidation : FO uniquement
         case ERRORS_LOGIN.NeedSiretValidation:
-          displayType.value = ERRORS_LOGIN.NeedSiretValidation;
+          if (authConfig.handleSiretValidation) {
+            displayType.value = ERRORS_LOGIN.NeedSiretValidation;
+          } else {
+            displayType.value = ERRORS_LOGIN.UnexpectedError;
+          }
           break;
         default:
           displayType.value = ERRORS_LOGIN.UnexpectedError;
@@ -162,7 +246,7 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
 
     try {
       const response = await $fetch<Verify2FAResponse>(
-        config.public.backendUrl + API.VERIFY_2FA,
+        backendUrl + API.VERIFY_2FA,
         {
           credentials: "include",
           method: "POST",
@@ -176,7 +260,7 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
       log.i("verify2FACode - succès");
 
       if (typeof window !== "undefined") {
-        sessionStorage.removeItem("2fa-email");
+        sessionStorage.removeItem(authConfig.sessionStorageKey);
       }
 
       await continueAuthenticationFlow(response.user);
@@ -198,8 +282,10 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
   async function resendCode(): Promise<void> {
     log.i("resendCode");
 
+    isResendingCode.value = true;
+
     try {
-      await $fetch(config.public.backendUrl + API.RESEND_2FA, {
+      await $fetch(backendUrl + API.RESEND_2FA, {
         credentials: "include",
         method: "POST",
       });
@@ -230,7 +316,7 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
     log.i("validateCgu");
 
     try {
-      await $fetch(config.public.backendUrl + API.ACCEPT_CGU, {
+      await $fetch(backendUrl + API.ACCEPT_CGU, {
         credentials: "include",
         method: "POST",
         headers: {
@@ -240,8 +326,14 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
 
       openCgu.value = false;
 
-      await organismeStore.setMyOrganisme();
-      await userStore.refreshProfile();
+      // Appels spécifiques FO
+      if (authConfig.useOrganismeStore && organismeStore) {
+        await organismeStore.setMyOrganisme();
+      }
+
+      if (authConfig.useRefreshProfile) {
+        await userStore.refreshProfile();
+      }
 
       toaster.success({
         description: "CGU acceptées avec succès",
@@ -260,7 +352,7 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
   function refuseCgu(): void {
     log.i("refuseCgu");
     openCgu.value = false;
-    navigateTo("/connexion");
+    navigateTo(authConfig.routeLogin);
   }
 
   function reset(): void {
@@ -271,6 +363,7 @@ export const useAuthenticationFO = (): UseAuthenticationReturn => {
     openCgu.value = false;
     isLoggingIn.value = false;
     isVerifying2FA.value = false;
+    isResendingCode.value = false;
   }
 
   return {

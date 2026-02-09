@@ -19,12 +19,13 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
-import { TwoFactorCodeVerification } from "@vao/shared-ui";
+import { TwoFactorCodeVerification, useAuthentication } from "@vao/shared-ui";
 import type { Verify2FAPayload } from "@vao/shared-ui/types/Auth.type";
 import { maskEmail } from "@vao/shared-ui/utils/auth";
 
 const log = logger("pages/bo/connexion/verification-2fa");
 const router = useRouter();
+const config = useRuntimeConfig();
 
 useHead({
   title: "Vérification en deux étapes - Portail Administration | VAO",
@@ -58,7 +59,10 @@ const expirationTime = computed(() => {
   });
 });
 
-const { isVerifying2FA, verify2FACode, resendCode } = useAuthenticationBO();
+const { isVerifying2FA, verify2FACode, resendCode } = useAuthentication(
+  "bo",
+  config.public.backendUrl,
+);
 
 const twoFactorRef = ref<InstanceType<typeof TwoFactorCodeVerification> | null>(
   null,

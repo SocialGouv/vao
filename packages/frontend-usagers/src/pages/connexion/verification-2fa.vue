@@ -17,12 +17,13 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
-import { TwoFactorCodeVerification } from "@vao/shared-ui";
+import { TwoFactorCodeVerification, useAuthentication } from "@vao/shared-ui";
 import type { Verify2FAPayload } from "@vao/shared-ui/types/Auth.type";
 import { maskEmail } from "@vao/shared-ui/utils/auth";
 
 const log = logger("pages/connexion/verification-2fa");
 const router = useRouter();
+const config = useRuntimeConfig();
 
 useHead({
   title: "Vérification en deux étapes | Vacances Adaptées Organisées",
@@ -33,6 +34,8 @@ useHead({
     },
   ],
 });
+
+const organismeStore = useOrganismeStore();
 
 const email = computed<string>(() => {
   if (typeof window !== "undefined") {
@@ -45,7 +48,11 @@ const maskedEmail = computed<string>(() => {
   return maskEmail(email.value);
 });
 
-const { isVerifying2FA, verify2FACode, resendCode } = useAuthenticationFO();
+const { isVerifying2FA, verify2FACode, resendCode } = useAuthentication(
+  "fo",
+  config.public.backendUrl,
+  organismeStore,
+);
 
 const twoFactorRef = ref<InstanceType<typeof TwoFactorCodeVerification> | null>(
   null,

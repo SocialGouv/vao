@@ -313,6 +313,8 @@ fileignoreconfig:
   checksum: 83bcf77f5b7763c7f6bc272366174a0780fec328462c6ca4bc29ef144e2c37de
 - filename: packages/shared-ui/src/components/auth/TwoFactorCodeVerification.vue
   checksum: 2390d3ea1f84fd5826a4fb9f88ae8d434935f0595395538114a43aeee2664be1
+- filename: packages/shared-ui/src/composables/index.js
+  checksum: 1a41578cc15aa2da2b59efa2c378e9ed2552a2912c7d7cd666527e148d4d15f6
 - filename: packages/shared-ui/src/composables/useToaster.ts
   checksum: 704ad956e4817e92ca2df2f4cbdf14cc7a39218cdacdfef070dd91c8d1e4c563
 - filename: packages/shared-ui/src/types/Auth.type.ts

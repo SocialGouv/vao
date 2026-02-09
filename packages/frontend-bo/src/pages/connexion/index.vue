@@ -128,10 +128,16 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useUserStore } from "@/stores/user";
-import { PasswordInput, apiModel, CguValidation } from "@vao/shared-ui";
+import {
+  PasswordInput,
+  apiModel,
+  CguValidation,
+  useAuthentication,
+} from "@vao/shared-ui";
 
 const log = logger("pages/bo/connexion");
 const userStore = useUserStore();
+const config = useRuntimeConfig();
 
 useHead({
   title: "VAO - Connexion Portail Administration",
@@ -155,7 +161,7 @@ const {
   login,
   validateCgu,
   refuseCgu,
-} = useAuthenticationBO();
+} = useAuthentication("bo", config.public.backendUrl);
 
 const displayInfos = apiModel.connectionInfos;
 
