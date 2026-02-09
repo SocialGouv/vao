@@ -41,8 +41,6 @@ const email = computed<string>(() => {
   return "";
 });
 
-console.log("Email récupéré pour 2FA:", email.value);
-
 const maskedEmail = computed<string>(() => {
   return maskEmail(email.value);
 });
