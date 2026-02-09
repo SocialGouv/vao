@@ -138,6 +138,8 @@ import {
 const log = logger("pages/bo/connexion");
 const userStore = useUserStore();
 const config = useRuntimeConfig();
+const router = useRouter();
+const navigateTo = (route: string) => router.push(route);
 
 useHead({
   title: "VAO - Connexion Portail Administration",
@@ -161,7 +163,7 @@ const {
   login,
   validateCgu,
   refuseCgu,
-} = useAuthentication("bo", config.public.backendUrl);
+} = useAuthentication("bo", config.public.backendUrl, userStore, navigateTo);
 
 const displayInfos = apiModel.connectionInfos;
 

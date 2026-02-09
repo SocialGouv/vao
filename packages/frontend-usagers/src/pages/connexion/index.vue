@@ -143,6 +143,10 @@ const log = logger("pages/connexion");
 const userStore = useUserStore();
 const config = useRuntimeConfig();
 
+const router = useRouter();
+
+const navigateTo = (route: string) => router.push(route);
+
 useHead({
   title: "Connexion | Vacances Adaptées Organisées",
   meta: [
@@ -152,6 +156,8 @@ useHead({
     },
   ],
 });
+
+const organismeStore = useOrganismeStore();
 
 const {
   email,
@@ -163,7 +169,13 @@ const {
   login,
   validateCgu,
   refuseCgu,
-} = useAuthentication("fo", config.public.backendUrl);
+} = useAuthentication(
+  "fo",
+  config.public.backendUrl,
+  userStore,
+  navigateTo,
+  organismeStore,
+);
 
 const displayInfos = apiModel.connectionInfos;
 

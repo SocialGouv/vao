@@ -26,6 +26,9 @@ import { maskEmail } from "@vao/shared-ui/utils/auth";
 const log = logger("pages/bo/connexion/verification-2fa");
 const router = useRouter();
 const config = useRuntimeConfig();
+const userStore = useUserStore();
+
+const navigateTo = (route: string) => router.push(route);
 
 useHead({
   title: "Vérification en deux étapes - Portail Administration | VAO",
@@ -62,6 +65,8 @@ const expirationTime = computed(() => {
 const { isVerifying2FA, verify2FACode, resendCode } = useAuthentication(
   "bo",
   config.public.backendUrl,
+  userStore,
+  navigateTo,
 );
 
 const twoFactorRef = ref<InstanceType<typeof TwoFactorCodeVerification> | null>(
@@ -69,7 +74,6 @@ const twoFactorRef = ref<InstanceType<typeof TwoFactorCodeVerification> | null>(
 );
 
 onMounted(() => {
-  // Si pas d'email, rediriger vers la page de connexion BO
   if (!email.value) {
     log.w("Accès à la page 2FA sans email, redirection");
     router.push("/bo/connexion");

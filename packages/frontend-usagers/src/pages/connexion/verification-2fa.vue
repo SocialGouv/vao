@@ -6,6 +6,7 @@
           ref="twoFactorRef"
           :masked-email="maskedEmail"
           :loading="isVerifying2FA"
+          :expiration-time="expirationTime"
           @validate="handleVerify2FA"
           @resend="handleResendCode"
           @cancel="handleCancel2FA"
@@ -24,6 +25,10 @@ import { maskEmail } from "@vao/shared-ui/utils/auth";
 const log = logger("pages/connexion/verification-2fa");
 const router = useRouter();
 const config = useRuntimeConfig();
+const userStore = useUserStore();
+const organismeStore = useOrganismeStore();
+
+const navigateTo = (route: string) => router.push(route);
 
 useHead({
   title: "Vérification en deux étapes | Vacances Adaptées Organisées",
@@ -34,8 +39,6 @@ useHead({
     },
   ],
 });
-
-const organismeStore = useOrganismeStore();
 
 const email = computed<string>(() => {
   if (typeof window !== "undefined") {
@@ -48,9 +51,22 @@ const maskedEmail = computed<string>(() => {
   return maskEmail(email.value);
 });
 
+const expirationTime = computed(() => {
+  const iso = sessionStorage.getItem("2fa-expiration-fo");
+  if (!iso) return null;
+
+  const date = new Date(iso);
+  return date.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+});
+
 const { isVerifying2FA, verify2FACode, resendCode } = useAuthentication(
   "fo",
   config.public.backendUrl,
+  userStore,
+  navigateTo,
   organismeStore,
 );
 

@@ -9,7 +9,7 @@
         role="alert"
         class="fr-grid-row fr-my-3v"
         title="3 tentatives érronées"
-        description="Vous pourrez demander un nouveau code dans 15 minutes, à 12h02, depuis cette page. Merci de patienter."
+        :description="`Vous pourrez demander un nouveau code dans 15 minutes, à ${unlockAtDisplay}, depuis cette page. Merci de patienter.`"
         type="error"
         :closeable="false"
       />
@@ -179,6 +179,7 @@ interface Props {
   loading?: boolean;
   maxAttempts?: number;
   expirationTime?: string | null;
+  unlockAt?: string | Date | null;
 }
 
 interface Emits {
@@ -196,6 +197,7 @@ const props = withDefaults(defineProps<Props>(), {
   loading: false,
   maxAttempts: 3,
   expirationTime: null,
+  unlockAt: null,
 });
 
 const logger = createLogger("vao-shared-ui");
@@ -221,6 +223,13 @@ const fullCode = computed<string>(() => {
 const loading = computed(() => props.loading);
 
 const isLocked = computed(() => remainingAttempts.value === 0);
+
+const unlockAtDisplay = computed(() => {
+  if (!props.unlockAt) return "";
+  const date = typeof props.unlockAt === "string" ? new Date(props.unlockAt) : props.unlockAt;
+  if (isNaN(date.getTime())) return "";
+  return date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+});
 
 const remainingAttempts = computed<number>(() => {
   return Math.max(0, props.maxAttempts - attemptCount.value);

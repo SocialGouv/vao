@@ -1,7 +1,8 @@
 import { computed } from "vue";
+import { $fetch } from "ofetch";
 import { ERRORS_LOGIN, type UserDto } from "@vao/shared-bridge";
 import { useToaster } from "../composables/useToaster";
-import { useUserStore } from "#imports";
+import createLogger from "../utils/createLogger";
 import {
   maskEmail,
   getErrorMessage2FA,
@@ -20,9 +21,18 @@ import type {
 
 type AuthType = "fo" | "bo";
 
+interface IUserStore {
+  user: UserDto | null;
+  refreshProfile: () => Promise<void>;
+}
+interface IOrganismeStore {
+  setMyOrganisme: () => Promise<void>;
+}
+
 interface AuthConfig {
   endpoints: ApiEndpoints;
   sessionStorageKey: string;
+  expirationKey: string; 
   route2FA: string;
   routeLogin: string;
   useOrganismeStore: boolean;
@@ -43,7 +53,8 @@ function getAuthConfig(type: AuthType): AuthConfig {
         ACCEPT_CGU: "/bo-user/accept-cgu",
       },
       sessionStorageKey: "2fa-email-bo",
-      route2FA: "connexion/verification-2fa",
+      expirationKey: "2fa-expiration-bo", 
+      route2FA: "/connexion/verification-2fa",
       routeLogin: "/connexion",
       useOrganismeStore: false,
       useRefreshProfile: false,
@@ -60,6 +71,7 @@ function getAuthConfig(type: AuthType): AuthConfig {
       ACCEPT_CGU: "/fo-user/accept-cgu",
     },
     sessionStorageKey: "2fa-email",
+    expirationKey: "2fa-expiration", 
     route2FA: "/connexion/verification-2fa",
     routeLogin: "/connexion",
     useOrganismeStore: true,
@@ -72,10 +84,12 @@ function getAuthConfig(type: AuthType): AuthConfig {
 export const useAuthentication = (
   type: AuthType,
   backendUrl: string,
-  organismeStore?: { setMyOrganisme: () => Promise<void> },
+  userStore: IUserStore,
+  navigateTo?: (route: string) => void,
+  organismeStore?: IOrganismeStore,
 ): UseAuthenticationReturn => {
   const toaster = useToaster();
-  const userStore = useUserStore();
+  const logger = createLogger("vao-shared-ui");
   const log = logger(`composables/useAuthentication-${type.toUpperCase()}`);
 
   const authConfig = getAuthConfig(type);
@@ -154,7 +168,9 @@ export const useAuthentication = (
         description: "Authentification réalisée avec succès",
       });
       displayType.value = null;
-      navigateTo("/");
+      if (navigateTo) {
+        navigateTo("/");
+      }
     }
   }
 
@@ -182,16 +198,21 @@ export const useAuthentication = (
         },
       });
 
-      response.requires2FA = true;
-
       if (response.requires2FA) {
         log.i("login - 2FA requis, navigation vers page dédiée");
 
         if (typeof window !== "undefined") {
           sessionStorage.setItem(authConfig.sessionStorageKey, email.value);
+          
+          if (response.twoFactorExpiration) {
+            sessionStorage.setItem(authConfig.expirationKey, response.twoFactorExpiration);
+            log.i("login - expiration stockée", { expiration: response.twoFactorExpiration });
+          }
         }
-
-        navigateTo(authConfig.route2FA);
+        
+        if (navigateTo) {
+          navigateTo(authConfig.route2FA);
+        }
         return;
       }
 
@@ -261,6 +282,7 @@ export const useAuthentication = (
 
       if (typeof window !== "undefined") {
         sessionStorage.removeItem(authConfig.sessionStorageKey);
+        sessionStorage.removeItem(authConfig.expirationKey);
       }
 
       await continueAuthenticationFlow(response.user);
@@ -338,8 +360,10 @@ export const useAuthentication = (
       toaster.success({
         description: "CGU acceptées avec succès",
       });
-
-      navigateTo("/");
+      
+      if (navigateTo) {
+        navigateTo("/");
+      }
     } catch (error) {
       log.w("validateCgu - erreur", { error });
 
@@ -352,7 +376,9 @@ export const useAuthentication = (
   function refuseCgu(): void {
     log.i("refuseCgu");
     openCgu.value = false;
-    navigateTo(authConfig.routeLogin);
+    if (navigateTo) {
+      navigateTo(authConfig.routeLogin);
+    }
   }
 
   function reset(): void {
