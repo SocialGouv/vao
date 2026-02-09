@@ -44,7 +44,7 @@
     "husky": "^9.0.10",
     "lint-staged": "^15.2.1",
     "node-talisman": "^1.29.22",
-    "npm": "10.9.2",
+    "npm": "11.7.0",
     "prettier": "^3.2.5",
     "typescript": "^5.9.3"
   },
