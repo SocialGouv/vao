@@ -22,7 +22,7 @@
     "@vueform/multiselect": "~2.6.7",
     "dayjs": "^1.11.11",
     "debug": "~4.3.4",
-    "vee-validate": "~4.13.0",
+    "vee-validate": "~4.15.1",
     "vue": "latest",
     "yup": "~1.4.0"
   },
