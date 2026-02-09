@@ -28,7 +28,7 @@
     "@vao/shared-bridge": "workspace:^",
     "@vao/shared-ui": "workspace:^",
     "@vee-validate/i18n": "~4.13.0",
-    "@vee-validate/rules": "~4.13.0",
+    "@vee-validate/rules": "~4.15.1",
     "@vueform/multiselect": "~2.6.7",
     "dayjs": "~1.11.11",
     "debug": "~4.3.4",
