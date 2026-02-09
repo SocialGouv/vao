@@ -26,7 +26,7 @@
     "clean": "corepack pnpm --dir ./packages/frontend-usagers clean && corepack pnpm --dir ./packages/frontend-bo clean && rm -rf node_modules packages/*/node_modules"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.0.0",
+    "@commitlint/cli": "^20.3.1",
     "@commitlint/config-conventional": "^19.0.0",
     "@playwright/test": "^1.47.0",
     "@socialgouv/eslint-config-recommended": "^1.131.0",
