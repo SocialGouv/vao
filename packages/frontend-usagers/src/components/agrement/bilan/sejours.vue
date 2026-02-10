@@ -34,6 +34,7 @@
         :bilan-annuel="bilanAnnuelByYear[parseInt(tab.title)]"
         :agrement-status="props.initAgrement?.statut"
         :agrement-id="props.initAgrement?.id"
+        :modifiable="props.modifiable"
       />
     </DsfrTabContent>
   </DsfrTabs>
@@ -45,6 +46,7 @@ import { TitleWithIcon } from "@vao/shared-ui";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const initialSelectedIndex = 0;
@@ -80,8 +82,8 @@ const bilanAnnuelByYear = computed(() => {
       result[year] = {
         ...bilan,
         bilanHebergement: [...bilan.bilanHebergement],
-        trancheAge: [...bilan.trancheAge] || [],
-        typeHandicap: [...bilan.typeHandicap] || [],
+        trancheAge: [...bilan.trancheAge],
+        typeHandicap: [...bilan.typeHandicap],
         nbFemmes: bilan.nbFemmes,
         nbHommes: bilan.nbHommes,
         nbGlobalVacanciers: bilan.nbGlobalVacanciers,
@@ -90,10 +92,10 @@ const bilanAnnuelByYear = computed(() => {
     } else {
       result[year].bilanHebergement.push(...bilan.bilanHebergement);
       result[year].trancheAge = Array.from(
-        new Set([...result[year].trancheAge, ...bilan.trancheAge] || []),
+        new Set([...result[year].trancheAge, ...bilan.trancheAge]),
       );
       result[year].typeHandicap = Array.from(
-        new Set([...result[year].typeHandicap, ...bilan.typeHandicap] || []),
+        new Set([...result[year].typeHandicap, ...bilan.typeHandicap]),
       );
       result[year].nbFemmes += bilan.nbFemmes;
       result[year].nbHommes += bilan.nbHommes;
