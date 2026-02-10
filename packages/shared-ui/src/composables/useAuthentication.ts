@@ -32,7 +32,7 @@ interface IOrganismeStore {
 interface AuthConfig {
   endpoints: ApiEndpoints;
   sessionStorageKey: string;
-  expirationKey: string; 
+  expirationKey: string;
   route2FA: string;
   routeLogin: string;
   useOrganismeStore: boolean;
@@ -53,7 +53,7 @@ function getAuthConfig(type: AuthType): AuthConfig {
         ACCEPT_CGU: "/bo-user/accept-cgu",
       },
       sessionStorageKey: "2fa-email-bo",
-      expirationKey: "2fa-expiration-bo", 
+      expirationKey: "2fa-expiration-bo",
       route2FA: "/connexion/verification-2fa",
       routeLogin: "/connexion",
       useOrganismeStore: false,
@@ -71,7 +71,7 @@ function getAuthConfig(type: AuthType): AuthConfig {
       ACCEPT_CGU: "/fo-user/accept-cgu",
     },
     sessionStorageKey: "2fa-email",
-    expirationKey: "2fa-expiration", 
+    expirationKey: "2fa-expiration",
     route2FA: "/connexion/verification-2fa",
     routeLogin: "/connexion",
     useOrganismeStore: true,
@@ -198,18 +198,25 @@ export const useAuthentication = (
         },
       });
 
+      response.requires2FA = true;
+
       if (response.requires2FA) {
         log.i("login - 2FA requis, navigation vers page dédiée");
 
         if (typeof window !== "undefined") {
           sessionStorage.setItem(authConfig.sessionStorageKey, email.value);
-          
+
           if (response.twoFactorExpiration) {
-            sessionStorage.setItem(authConfig.expirationKey, response.twoFactorExpiration);
-            log.i("login - expiration stockée", { expiration: response.twoFactorExpiration });
+            sessionStorage.setItem(
+              authConfig.expirationKey,
+              response.twoFactorExpiration,
+            );
+            log.i("login - expiration stockée", {
+              expiration: response.twoFactorExpiration,
+            });
           }
         }
-        
+
         if (navigateTo) {
           navigateTo(authConfig.route2FA);
         }
@@ -252,6 +259,7 @@ export const useAuthentication = (
 
       toaster.error({
         titleTag: "h2",
+        role: "alert",
         description: "Échec de l'authentification",
       });
     } finally {
@@ -315,13 +323,14 @@ export const useAuthentication = (
       log.i("resendCode - succès");
 
       toaster.success({
-        description: "Un nouveau code a été envoyé à votre adresse email",
+        description: "Un nouveau code a été envoyé à votre adresse e-mail",
       });
     } catch (error) {
       log.w("resendCode - erreur", { error });
 
       toaster.error({
         description: "Impossible de renvoyer le code. Veuillez réessayer.",
+        role: "alert",
       });
 
       throw error;
@@ -360,7 +369,7 @@ export const useAuthentication = (
       toaster.success({
         description: "CGU acceptées avec succès",
       });
-      
+
       if (navigateTo) {
         navigateTo("/");
       }
@@ -369,6 +378,7 @@ export const useAuthentication = (
 
       toaster.error({
         description: "Erreur lors de l'acceptation des CGU",
+        role: "alert",
       });
     }
   }

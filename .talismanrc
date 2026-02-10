@@ -316,7 +316,7 @@ fileignoreconfig:
 - filename: packages/shared-ui/src/composables/index.js
   checksum: 1a41578cc15aa2da2b59efa2c378e9ed2552a2912c7d7cd666527e148d4d15f6
 - filename: packages/shared-ui/src/composables/useAuthentication.ts
-  checksum: cef87cffbf7ad8e21ea93d6e6ac3ecc11abcfeb1894f47db46f615383d98af02
+  checksum: cca73e0d096e3c7fa35123c8a53888966abdcb6eed089dc2251e4127652ae809
 - filename: packages/shared-ui/src/composables/useToaster.ts
   checksum: 704ad956e4817e92ca2df2f4cbdf14cc7a39218cdacdfef070dd91c8d1e4c563
 - filename: packages/shared-ui/src/types/Auth.type.ts

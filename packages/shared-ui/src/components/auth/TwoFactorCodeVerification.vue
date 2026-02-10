@@ -8,9 +8,10 @@
       <DsfrAlert
         role="alert"
         class="fr-grid-row fr-my-3v"
-        title="3 tentatives érronées"
+        title="3 tentatives erronées"
+        title-tag="h2"
         :description="`Vous pourrez demander un nouveau code dans 15 minutes, à ${unlockAtDisplay}, depuis cette page. Merci de patienter.`"
-        type="error"
+        type="warning"
         :closeable="false"
       />
     </template>
@@ -27,8 +28,11 @@
           class="fr-fieldset__element"
           :class="{ 'has-error': hasValidationError }"
         >
-          <label class="fr-label" for="code-input-0">
+          <label id="code-label" for="code-input-0" class="fr-label">
             Code de sécurité valable 30 minutes
+            <span id="code-hint" class="fr-sr-only">
+              Saisissez les 6 chiffres du code reçu par email
+            </span>
           </label>
 
           <span class="fr-hint-text">
@@ -48,7 +52,7 @@
             class="code-inputs-container fr-mt-2v"
             :class="{ 'has-error': hasValidationError }"
             role="group"
-            aria-labelledby="2fa-title"
+            aria-labelledby="code-label"
             aria-describedby="code-hint"
           >
             <input
@@ -72,9 +76,6 @@
               @focus="handleFocus(index)"
             />
           </div>
-          <span id="code-hint" class="fr-sr-only">
-            Saisissez les 6 chiffres du code reçu par email
-          </span>
           <p v-if="hasValidationError" class="fr-mt-5v fr-message--error">
             Le code est erroné. Veuillez vérifier et le ressaisir. Il vous reste
             {{ remainingAttempts }} tentative{{
@@ -101,23 +102,12 @@
         <div class="fr-fieldset__element fr-mt-4v">
           <ul role="list" class="btns-group">
             <li role="listitem">
-              <DsfrButton
-                secondary
-                :disabled="resendLoading"
-                @click="resendCode"
-              >
+              <DsfrButton secondary @click="resendCode">
                 Renvoyer un code
               </DsfrButton>
             </li>
             <li role="listitem">
-              <DsfrButton
-                :disabled="
-                  !isCodeComplete || loading || remainingAttempts === 0
-                "
-                @click="validateCode"
-              >
-                {{ loading ? "Validation..." : "Valider" }}
-              </DsfrButton>
+              <DsfrButton @click="validateCode"> Valider </DsfrButton>
             </li>
           </ul>
         </div>
@@ -148,11 +138,30 @@
           <h3 class="fr-text--lg">
             Si vous n'avez pas reçu votre code de connexion :
           </h3>
-          <ul>
-            <li>Vérifiez les courriers indésirables de votre boite e-mail</li>
-            <li>Vérifiez l'adresse e-mail saisie</li>
-            <li>Demandez un nouveau code</li>
+          <ul class="list-style-none">
             <li>
+              <span
+                class="fr-icon-mail-forbid-fill fr-mr-1v"
+                aria-hidden="true"
+              ></span
+              >Vérifiez les courriers indésirables de votre boite e-mail
+            </li>
+            <li>
+              <span class="fr-icon-at-fill fr-mr-1v" aria-hidden="true"></span
+              >Vérifiez l'adresse e-mail saisie
+            </li>
+            <li>
+              <span
+                class="fr-icon-send-plane-fill fr-mr-1v"
+                aria-hidden="true"
+              ></span
+              >Demandez un nouveau code
+            </li>
+            <li>
+              <span
+                aria-hidden="true"
+                class="fr-icon-question-fill fr-mr-1v"
+              ></span>
               Si le problème persiste vous pouvez
               <a
                 title="libellé du lien - nouvelle fenêtre"
@@ -160,7 +169,7 @@
                 target="_blank"
                 rel="noopener external"
                 class="fr-link"
-                >contacter le support</a
+                >Contacter le support - nouvel onglet</a
               >
             </li>
           </ul>
@@ -220,15 +229,19 @@ const fullCode = computed<string>(() => {
   return codeDigits.value.join("");
 });
 
-const loading = computed(() => props.loading);
-
 const isLocked = computed(() => remainingAttempts.value === 0);
 
 const unlockAtDisplay = computed(() => {
   if (!props.unlockAt) return "";
-  const date = typeof props.unlockAt === "string" ? new Date(props.unlockAt) : props.unlockAt;
+  const date =
+    typeof props.unlockAt === "string"
+      ? new Date(props.unlockAt)
+      : props.unlockAt;
   if (isNaN(date.getTime())) return "";
-  return date.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 });
 
 const remainingAttempts = computed<number>(() => {
@@ -543,5 +556,9 @@ defineExpose({
 }
 .fr-fieldset__element.has-error {
   border-left: 2px solid var(--text-default-error);
+}
+.list-style-none {
+  list-style: none;
+  padding-left: 0;
 }
 </style>
