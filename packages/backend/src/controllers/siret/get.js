@@ -99,7 +99,9 @@ module.exports = async function get(req, res, next) {
   }
 
   if (
-    uniteLegale.adresseEtablissement?.coordonneeLambertAbscisseEtablissement
+    uniteLegale.adresseEtablissement?.coordonneeLambertAbscisseEtablissement &&
+    uniteLegale.adresseEtablissement?.coordonneeLambertAbscisseEtablissement !==
+      "[ND]"
   ) {
     proj4.defs(
       "EPSG:2154",
