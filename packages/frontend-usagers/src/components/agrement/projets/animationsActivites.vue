@@ -9,12 +9,19 @@
   <div class="flex flex-col">
     <div>
       <DsfrMultiselect
+        v-if="props.modifiable"
         v-model="activitesSelectionnees"
         :options="options"
         search
         select-all
         :button-label="buttonLabel"
         label="Vous pouvez sélectionner une ou plusieurs options."
+      />
+      <UtilsDisplayInput
+        v-else
+        :input="displayInput.IAgrementProjets.activitesSelectionnees"
+        :value="activitesSelectionnees"
+        :error-message="activitesSelectionneesErrorMessage"
       />
       <p
         v-if="activitesSelectionneesErrorMessage"
@@ -25,6 +32,7 @@
     </div>
     <div class="fr-mt-4v">
       <DsfrInputGroup
+        v-if="props.modifiable"
         name="animationAutre"
         label="Autres (optionnel)"
         :model-value="animationAutre"
@@ -32,6 +40,13 @@
         :is-valid="animationAutreMeta.valid"
         :error-message="animationAutreErrorMessage"
         @update:model-value="onAnimationAutreChange"
+      />
+      <UtilsDisplayInput
+        v-else
+        :value="animationAutre"
+        :input="displayInput.IAgrementProjets['animationAutre']"
+        :is-valid="animationAutreMeta.valid"
+        :error-message="animationAutreErrorMessage"
       />
     </div>
   </div>
@@ -44,12 +59,14 @@ import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import * as yup from "yup";
+import displayInput from "../../../utils/display-input";
 
 const agrementStore = useAgrementStore();
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: false },
 });
 
 const loadError = ref(false);

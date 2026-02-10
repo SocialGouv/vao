@@ -19,19 +19,22 @@
     ref="listeSejoursRef"
     :agrement-id="props.initAgrement.id"
     :initial-sejours="props.initAgrement.agrementSejours || []"
+    :modifiable="props.modifiable"
   />
   <hr />
   <p><b>Informations sur les vacanciers</b></p>
   <AgrementTypeDeficiences
     ref="typeDeficiencesRef"
     :type-deficiences="props.initAgrement.sejourTypeHandicap || []"
+    :modifiable="props.modifiable"
   />
   <hr />
   <p class="fr-mb-1v"><b>Informations complémentaires</b></p>
   <div class="fr-col-6 fr-mb-4v">
     <DsfrInput
+      v-if="props.modifiable"
       name="sejourNbEnvisage"
-      label="Nombre de séjours envisagés l'année suivante (optionnel)"
+      :label="displayInput.IAgrementProjets['sejourNbEnvisage'].label"
       type="number"
       :model-value="sejourNbEnvisage"
       :label-visible="true"
@@ -39,8 +42,16 @@
       :error-message="sejourNbEnvisageErrorMessage"
       @update:model-value="onsejourNbEnvisageChange"
     />
+    <UtilsDisplayInput
+      v-else
+      :value="sejourNbEnvisage"
+      :input="displayInput.IAgrementProjets['sejourNbEnvisage']"
+      :is-valid="sejourNbEnvisageMeta.valid"
+      :error-message="sejourNbEnvisageErrorMessage"
+    />
   </div>
   <DsfrInputGroup
+    v-if="props.modifiable"
     name="sejourCommentaire"
     label="Ajouter un commentaire (optionnel)"
     :model-value="sejourCommentaire"
@@ -50,10 +61,18 @@
     :error-message="commentaireErrorMessage"
     @update:model-value="onCommentaireChange"
   />
+  <UtilsDisplayInput
+      v-else
+      :value="sejourCommentaire"
+      :input="displayInput.IAgrementProjets['sejourCommentaire']"
+      :is-valid="commentaireMeta.valid"
+      :error-message="commentaireErrorMessage"
+  />
   <div class="fr-fieldset__element">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursPrevus"
       label="Ajouter des fichiers (optionnel)"
+      :modifiable="props.modifiable"
     />
   </div>
   <div class="fr-p-4v fr-mt-6v bg-light-blue">
@@ -79,10 +98,12 @@ import * as yup from "yup";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { useForm, useField } from "vee-validate";
 import { ref } from "vue";
+import displayInput from "../../../utils/display-input";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: false },
 });
 
 const config = useRuntimeConfig();
@@ -91,7 +112,7 @@ const typeDeficiencesRef = ref(null);
 const listeSejoursRef = ref(null);
 
 const filesProjetsSejoursPrevus = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSPREVUS,
   ) || [],
 );

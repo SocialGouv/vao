@@ -12,6 +12,7 @@
       name="checkbox-required-custom"
       label="J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire"
       required
+      :readonly="!props.modifiable"
       :value="true"
       @update:model-value="onAccompRespAttestHonoChange"
     />
@@ -23,27 +24,27 @@
     <FileUpload
       v-model="fileProjetsSejoursCasier"
       :cdn-url="props.cdnUrl"
+      :modifiable="props.modifiable"
       label="Ajouter un fichier (optionnel)"
-      :modifiable="true"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { TitleWithIcon } from "@vao/shared-ui";
+import { FileUpload, TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
-import { FileUpload } from "@vao/shared-ui";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: false },
 });
 
 const fileProjetsSejoursCasier = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJETSSEJOURSCASIER,
   ) || null,
