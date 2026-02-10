@@ -18,6 +18,7 @@
         <dd>
           {{ personneMorale.telephone || "-" }}
           <DsfrLinkV2
+            v-if="modifiable"
             as="button"
             icon-name="icon-edit-line"
             @click="startEditTelephone"
@@ -45,6 +46,7 @@
         <dd>
           {{ personneMorale.email || "-" }}
           <DsfrLinkV2
+            v-if="modifiable"
             as="button"
             icon-name="icon-edit-line"
             @click="startEditEmail"
@@ -70,7 +72,10 @@
       <dd>{{ personneMorale.adresse || "-" }}</dd>
     </dl>
 
-    <AgrementRepresentants ref="representantsRef" />
+    <AgrementRepresentants
+      ref="representantsRef"
+      :modifiable="props.modifiable"
+    />
   </div>
 </template>
 
@@ -78,13 +83,14 @@
 import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
-import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
+import { TitleWithIcon, DsfrLinkV2, useToaster } from "@vao/shared-ui";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { telephoneYupNullable } from "@/utils/telephoneValidators";
 
 const props = defineProps({
   initOrganisme: { type: Object, required: true },
   initAgrement: { type: Object, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const representantsRef = ref();

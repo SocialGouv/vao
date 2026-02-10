@@ -1,11 +1,12 @@
 <template>
   <div>
-    <p class="fr-mb-1v"><b>Tranches d’âge</b></p>
-    <p class="fr-hint-text fr-mb-0">
+    <p v-if="props.modifiable" class="fr-mb-1v"><b>Tranches d’âge</b></p>
+    <p v-if="props.modifiable" class="fr-hint-text fr-mb-0">
       Vous pouvez sélectionner une ou plusieurs options.
     </p>
     <div>
       <DsfrCheckboxSet
+        v-if="props.modifiable"
         :model-value="trancheAgeField"
         name="trancheAge"
         legend=""
@@ -15,6 +16,12 @@
         :error-message="trancheAgeErrorMessage"
         @update:model-value="onTrancheAgeChange"
       />
+      <UtilsDisplayInput
+        v-else
+        :input="displayInput.IAgrementBilanAnnuel.trancheAge"
+        :value="trancheAgeField"
+        :error-message="trancheAgeErrorMessage"
+      />
     </div>
   </div>
 </template>
@@ -23,10 +30,12 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import displayInput from "../../../utils/display-input";
 
 const props = defineProps({
   trancheAge: { type: Array, default: () => [] },
   statut: { type: String, required: true },
+  modifiable: { type: Boolean, required: true, default: false },
 });
 
 const ageRangeOptions = [
