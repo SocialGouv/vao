@@ -1,4 +1,22 @@
 <template>
+  <DsfrModal
+    v-model:opened="modalDelete.opened"
+    title="Suppression du représentant légal"
+    is-alert
+    @close="modalDelete.opened = false"
+  >
+    <template #default>
+      <p>Etes-vous sûr de vouloir supprimer ce représentant légal ?</p>
+      <div class="btns-group">
+        <DsfrButton
+          label="Annuler"
+          secondary
+          @click="modalDelete.opened = false"
+        />
+        <DsfrButton label="Confirmer la suppression" @click="confirmDelete" />
+      </div>
+    </template>
+  </DsfrModal>
   <div class="fr-mb-5w">
     <!-- Cette div sert a compenser le margin bottom par défault des dsfr-table qui est de 2.5rem.
         On cherche a rapprocher le bouton du tableau -->
@@ -77,6 +95,25 @@ const modalPersonne = reactive({
   opened: false,
 });
 
+const modalDelete = reactive({
+  opened: false,
+  index: null,
+  personne: null,
+});
+
+function openDeleteModal(index) {
+  modalDelete.opened = true;
+  modalDelete.index = index;
+  modalDelete.personne = props.personnes[index];
+}
+
+function confirmDelete() {
+  deleteItem(modalDelete.index);
+  modalDelete.opened = false;
+  modalDelete.index = null;
+  modalDelete.personne = null;
+}
+
 const headersToDisplay = computed(() => {
   const columns = props.headers.map((h) => h.label);
   if (props.modifiable) {
@@ -101,31 +138,15 @@ const personnesToDisplay = computed(() => {
     });
     if (props.modifiable) {
       row.push({
-        component: "DsfrButton",
-        class: "fr-icon-delete-fill",
-        tertiary: true,
-        noOutline: true,
-        tabIndex: 0,
-        "data-delete-index": index,
-        ariaLabel:
-          "Supprimer " + (personne.prenom || "") + " " + (personne.nom || ""),
-        role: "button",
-        onClick: (event) => {
-          event.stopPropagation();
-          deleteItem(index);
-        },
-        onkeydown: (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            event.stopPropagation();
-            deleteItem(index);
-          }
-        },
+        component: "PersonneActionsCell",
+        personne,
+        index,
+        onEdit: () => editItem(index),
+        onDelete: () => openDeleteModal(index),
       });
     } else row.push("");
     return {
       rowData: row,
-      rowAttrs: { class: "pointer", onClick: () => editItem(index) },
     };
   });
 });
@@ -173,16 +194,19 @@ function editItem(i) {
 function updatePersonne(data) {
   log.i("updatePersonne", data);
   let personnes;
+  let action;
   if (indexCourant.value === -1) {
     personnes = [...props.personnes, data];
+    action = "add";
   } else {
     personnes = [
       ...props.personnes.slice(0, indexCourant.value),
       data,
       ...props.personnes.slice(indexCourant.value + 1),
     ];
+    action = "edit";
   }
-  emit("valid", personnes);
+  emit("valid", personnes, action, indexCourant.value);
   indexCourant.value = null;
   modalPersonne.opened = false;
 }
@@ -191,3 +215,12 @@ function onClose() {
   modalPersonne.opened = false;
 }
 </script>
+
+<style scoped>
+.btns-group {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+</style>

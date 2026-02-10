@@ -726,10 +726,17 @@ const ITEMS_PER_PAGE = 10;
 
 const onRepresentantsLegauxChangeWithKeyChange = (
   event: Record<string, any>[],
-  action: "add" | "delete" = "add",
+  action: "add" | "delete" | "edit" = "add",
   personneIndex?: number,
 ) => {
   onRepresentantsLegauxChange(event);
+
+  if (action === "edit") {
+    toaster.success({ description: "Le représentant légal a bien été modifié." });
+  }
+  if (action === "delete") {
+    toaster.success({ description: "Le représentant légal a bien été supprimé." });
+  }
   /* Le fait de changer la clé rernder le composant. Il semble que
   la cloture de la popup rentre en conflit avec ce rerender ce qui casse le scroll.
 
@@ -741,8 +748,8 @@ const onRepresentantsLegauxChangeWithKeyChange = (
   setTimeout(() => {
     // Force le re-render du composant Personnes
     keyRepresentantLegaux.value += 1;
-    // Après suppression, on reste sur la page où était la personne supprimée
-    if (action === "delete" && typeof personneIndex === "number") {
+    // Après suppression ou une édition, on reste sur la page où était la personne supprimée/éditée
+    if ((action === "delete" || action === "edit")  && typeof personneIndex === "number") {
       const page = Math.floor(personneIndex / ITEMS_PER_PAGE) + 1;
       currentPersonnesPage.value = page;
       return;
