@@ -28,8 +28,9 @@
       </p>
       <div class="fr-col-12">
         <DsfrInputGroup
+          v-if="props.modifiable"
           name="bilanQualPerceptionSensibilite"
-          label="Description"
+          :label="displayInput.IAgrementBilanAnnuel['bilanQualPerceptionSensibilite'].label"
           :model-value="bilanQualPerceptionSensibilite"
           :label-visible="true"
           :is-textarea="true"
@@ -38,12 +39,20 @@
           aria-describedby="bilanQualPerceptionSensibilite-desc"
           @update:model-value="onBilanQualPerceptionSensibiliteChange"
         />
+        <UtilsDisplayInput
+          v-else
+          :value="bilanQualPerceptionSensibilite"
+          :input="displayInput.IAgrementBilanAnnuel['bilanQualPerceptionSensibilite']"
+          :is-valid="bilanQualPerceptionSensibiliteMeta.valid"
+          :error-message="bilanQualPerceptionSensibiliteErrorMessage"
+        />
       </div>
     </div>
     <div class="fr-fieldset__element">
       <UtilsMultiFilesUpload
         v-model="filesBilanQualitPerception"
         label="Ajouter des fichiers"
+        :modifiable="props.modifiable"
       />
     </div>
   </div>
@@ -64,8 +73,9 @@
       </p>
       <div class="fr-col-12">
         <DsfrInputGroup
+          v-if="props.modifiable"
           name="bilanQualPerspectiveEvol"
-          label="description"
+          :label="displayInput.IAgrementBilanAnnuel['bilanQualPerspectiveEvol'].label"
           :model-value="bilanQualPerspectiveEvol"
           :label-visible="true"
           :is-textarea="true"
@@ -74,12 +84,20 @@
           aria-describedby="bilanQualPerspectiveEvol-desc"
           @update:model-value="onBilanQualPerspectiveEvolChange"
         />
+        <UtilsDisplayInput
+          v-else
+          :value="bilanQualPerspectiveEvol"
+          :input="displayInput.IAgrementBilanAnnuel['bilanQualPerspectiveEvol']"
+          :is-valid="bilanQualPerspectiveEvolMeta.valid"
+          :error-message="bilanQualPerspectiveEvolErrorMessage"
+        />
       </div>
     </div>
     <div class="fr-fieldset__element">
       <UtilsMultiFilesUpload
         v-model="filesBilanQualitPerspectives"
         label="Ajouter des fichiers"
+        :modifiable="props.modifiable"
       />
     </div>
   </div>
@@ -97,8 +115,9 @@
       </p>
       <div class="fr-col-12">
         <DsfrInputGroup
+          v-if="props.modifiable"
           name="bilanQualElementsMarquants"
-          label="description"
+          :label="displayInput.IAgrementBilanAnnuel['bilanQualElementsMarquants'].label"
           :model-value="bilanQualElementsMarquants"
           :label-visible="true"
           :is-textarea="true"
@@ -107,12 +126,20 @@
           aria-describedby="bilanQualElementsMarquants-desc"
           @update:model-value="onBilanQualElementsMarquantsChange"
         />
+        <UtilsDisplayInput
+          v-else
+          :value="bilanQualPerspectiveEvol"
+          :input="displayInput.IAgrementBilanAnnuel['bilanQualElementsMarquants']"
+          :is-valid="bilanQualElementsMarquantsMeta.valid"
+          :error-message="bilanQualElementsMarquantsErrorMessage"
+        />
       </div>
     </div>
     <div class="fr-fieldset__element">
       <UtilsMultiFilesUpload
         v-model="filesBilanQualitElementsMarquants"
         label="Ajouter des fichiers complémentaires"
+        :modifiable="props.modifiable"
       />
     </div>
   </div>
@@ -120,6 +147,7 @@
     <UtilsMultiFilesUpload
       v-model="filesBilanQualitComplementaires"
       label="Ajouter des fichiers complémentaires (optionnel)"
+      :modifiable="props.modifiable"
     />
   </div>
 </template>
@@ -131,32 +159,34 @@ import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import displayInput from "../../../utils/display-input";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
+  modifiable: { type: Boolean, default: true },
 });
 
 const filesBilanQualitPerception = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.BILANQUALITPERCEPTION,
   ) || [],
 );
 const filesBilanQualitPerspectives = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.BILANQUALITPERSPECTIVE,
   ) || [],
 );
 const filesBilanQualitElementsMarquants = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.BILANQUALITELEMARQ,
   ) || [],
 );
 const filesBilanQualitComplementaires = ref(
-  props.initAgrement?.agrementFiles.filter(
+  props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.BILANQUALITCOMPLEMENTAIRES,
   ) || [],
