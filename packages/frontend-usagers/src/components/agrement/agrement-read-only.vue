@@ -33,7 +33,7 @@
   </DsfrAccordionsGroup>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   initOrganisme: { type: Object, required: true },
