@@ -32,6 +32,10 @@ export function formatFRDateTime(date: Date) {
   return dayjs(date).format("DD/MM/YYYY HH:mm");
 }
 
+export function getYear4k(date: Date) {
+  return dayjs(date).format("YYYY");
+}
+
 /**
  *
  * @param Date au format JJ/MM/AAAA
