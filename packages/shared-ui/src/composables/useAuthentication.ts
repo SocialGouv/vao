@@ -1,6 +1,10 @@
 import { computed } from "vue";
 import { $fetch } from "ofetch";
-import { ERRORS_LOGIN, type UserDto } from "@vao/shared-bridge";
+import {
+  ERRORS_LOGIN,
+  type UserDto,
+  type TwoFactorErrorCode,
+} from "@vao/shared-bridge";
 import { useToaster } from "../composables/useToaster";
 import createLogger from "../utils/createLogger";
 import {
@@ -268,6 +272,7 @@ export const useAuthentication = (
   }
 
   async function verify2FACode(payload: Verify2FAPayload): Promise<void> {
+    console.log("verify2FACode", { payload }); // Garder ce log pour le debug, à supprimer si trop verbeux
     const { code, rememberDevice } = payload;
     log.i("verify2FACode", { codeLength: code?.length, rememberDevice });
 
@@ -296,7 +301,7 @@ export const useAuthentication = (
       await continueAuthenticationFlow(response.user);
     } catch (error) {
       const apiError = error as ApiError;
-      const codeError = apiError?.data?.name;
+      const codeError = apiError?.data?.name as TwoFactorErrorCode | undefined;
       log.w("verify2FACode - erreur", { error: codeError ?? apiError });
 
       throw {

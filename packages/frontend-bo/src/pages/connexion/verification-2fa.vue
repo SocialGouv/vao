@@ -22,6 +22,9 @@ import { computed, ref, onMounted } from "vue";
 import { TwoFactorCodeVerification, useAuthentication } from "@vao/shared-ui";
 import type { Verify2FAPayload } from "@vao/shared-ui/types/Auth.type";
 import { maskEmail } from "@vao/shared-ui/utils/auth";
+import {
+  formatFRTime
+} from "@vao/shared-bridge";
 
 const log = logger("pages/bo/connexion/verification-2fa");
 const router = useRouter();
@@ -56,10 +59,7 @@ const expirationTime = computed(() => {
   if (!iso) return null;
 
   const date = new Date(iso);
-  return date.toLocaleTimeString("fr-FR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatFRTime(date);
 });
 
 const { isVerifying2FA, verify2FACode, resendCode } = useAuthentication(

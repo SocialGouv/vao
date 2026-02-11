@@ -102,7 +102,7 @@
         <div class="fr-fieldset__element fr-mt-4v">
           <ul role="list" class="btns-group">
             <li role="listitem">
-              <DsfrButton secondary @click="resendCode">
+              <DsfrButton secondary :disabled="!canResend" @click="resendCode">
                 Renvoyer un code
               </DsfrButton>
             </li>
@@ -110,6 +110,10 @@
               <DsfrButton @click="validateCode"> Valider </DsfrButton>
             </li>
           </ul>
+          <span v-if="resendTimer > 0" aria-live="polite" class="fr-text--xs">
+            Vous pouvez demander un nouveau code dans
+            {{ resendTimer }} secondes.
+          </span>
         </div>
       </div>
     </template>
@@ -218,11 +222,15 @@ const inputRefs = ref<HTMLInputElement[]>([]);
 const rememberDevice = ref<boolean>(false);
 const errorMessage = ref<ErrorMessage | null>(null);
 const resendLoading = ref<boolean>(false);
+const resendTimer = ref<number>(0);
+let resendInterval: ReturnType<typeof setInterval> | null = null;
 
 const attemptCount = ref<number>(0);
 
 const isCodeComplete = computed<boolean>(() => {
-  return codeDigits.value.every((digit) => digit !== "" && /^\d$/.test(digit));
+  return codeDigits.value.every(
+    (digit: string) => digit !== "" && /^\d$/.test(digit),
+  );
 });
 
 const fullCode = computed<string>(() => {
@@ -251,6 +259,8 @@ const remainingAttempts = computed<number>(() => {
 const hasValidationError = computed<boolean>(() => {
   return errorMessage.value?.type === "error";
 });
+
+const canResend = computed(() => resendTimer.value === 0);
 
 const setInputRef = (el: HTMLInputElement | null, index: number): void => {
   if (el) {
@@ -378,14 +388,18 @@ const validateCode = (): void => {
     };
     log.w("validateCode - code incomplet", { code: fullCode.value });
 
-    const firstEmptyIndex = codeDigits.value.findIndex((digit) => digit === "");
+    const firstEmptyIndex = codeDigits.value.findIndex(
+      (digit: string) => digit === "",
+    );
     if (firstEmptyIndex !== -1) {
       inputRefs.value[firstEmptyIndex]?.focus();
     }
     return;
   }
 
-  const hasNonDigit = codeDigits.value.some((digit) => !/^\d$/.test(digit));
+  const hasNonDigit = codeDigits.value.some(
+    (digit: string) => !/^\d$/.test(digit),
+  );
   if (hasNonDigit) {
     errorMessage.value = {
       type: "error",
@@ -412,6 +426,8 @@ const validateCode = (): void => {
 };
 
 const resendCode = async (): Promise<void> => {
+  if (resendTimer.value > 0) return;
+
   resendLoading.value = true;
 
   log.i("resendCode");
@@ -426,6 +442,17 @@ const resendCode = async (): Promise<void> => {
     nextTick(() => {
       inputRefs.value[0]?.focus();
     });
+
+    //limite le renvoi de code à une fois toutes les 30 secondes
+    resendTimer.value = 30;
+    if (resendInterval) clearInterval(resendInterval);
+    resendInterval = setInterval(() => {
+      resendTimer.value = Math.max(0, resendTimer.value - 1);
+      if (resendTimer.value === 0 && resendInterval) {
+        clearInterval(resendInterval);
+        resendInterval = null;
+      }
+    }, 1000);
   } finally {
     resendLoading.value = false;
   }

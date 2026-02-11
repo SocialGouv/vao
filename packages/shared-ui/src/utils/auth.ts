@@ -1,10 +1,7 @@
 import { ref } from "vue";
-import type {
-  AuthState,
-  LoginErrorType,
-  TwoFactorErrorType,
-} from "../types/Auth.type";
+import type { AuthState, LoginErrorType } from "../types/Auth.type";
 import { emailRegex } from "./regex";
+import { TwoFactorErrorCode } from "@vao/shared-bridge";
 
 export function maskEmail(emailAddress: string): string {
   if (!emailAddress || !emailAddress.includes("@")) return emailAddress;
@@ -17,19 +14,20 @@ export function maskEmail(emailAddress: string): string {
 }
 
 export function getErrorMessage2FA(
-  errorCode?: TwoFactorErrorType | string,
+  errorCode?: TwoFactorErrorCode | string, 
 ): string {
   const messages: Record<string, string> = {
-    INVALID_CODE: "Le code saisi est incorrect. Veuillez réessayer.",
-    EXPIRED_CODE: "Ce code a expiré. Veuillez en demander un nouveau.",
-    TOO_MANY_ATTEMPTS:
+    [TwoFactorErrorCode.INVALID_CODE]:
+      "Le code saisi est incorrect. Veuillez réessayer.",
+    [TwoFactorErrorCode.EXPIRED_CODE]:
+      "Ce code a expiré. Veuillez en demander un nouveau.",
+    [TwoFactorErrorCode.TOO_MANY_ATTEMPTS]:
       "Trop de tentatives. Veuillez attendre avant de réessayer.",
-    CODE_ALREADY_USED: "Ce code a déjà été utilisé.",
+    [TwoFactorErrorCode.CODE_ALREADY_USED]: 
+      "Ce code a déjà été utilisé.",
   };
 
-  return (
-    messages[errorCode || ""] || "Une erreur est survenue. Veuillez réessayer."
-  );
+  return messages[errorCode || ""] || "Une erreur est survenue. Veuillez réessayer.";
 }
 
 export function isValidEmail(email: string): boolean {

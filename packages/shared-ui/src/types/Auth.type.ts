@@ -4,6 +4,7 @@
 
 import type { UserDto } from "@vao/shared-bridge";
 import type { Ref, ComputedRef } from "vue";
+import type {TwoFactorErrorCode} from "@vao/shared-bridge/constantes/auth";
 
 export interface LoginResponse {
   user: UserDto;
@@ -36,12 +37,6 @@ export type LoginErrorType =
   | "NeedEmailValidation"
   | "NeedSiretValidation"
   | "UnexpectedError";
-
-export type TwoFactorErrorType =
-  | "INVALID_CODE"
-  | "EXPIRED_CODE"
-  | "TOO_MANY_ATTEMPTS"
-  | "CODE_ALREADY_USED";
 
 export interface AuthState {
   email: Ref<string>;
@@ -93,7 +88,7 @@ export interface AuthenticationOptions {
 
 export interface ApiError {
   data?: {
-    name?: string;
+    name?: TwoFactorErrorCode;
     message?: string;
     statusCode?: number;
   };
