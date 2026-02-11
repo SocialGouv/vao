@@ -24,6 +24,13 @@
         <p class="fr-mt-4v">
           <b>Déclarer vos séjours</b> 2 mois minimum avant la date de départ
         </p>
+        <AgrementReadOnly
+          class="fr-my-2w"
+          :init-organisme="organismeStore.organismeCourant ?? {}"
+          :init-agrement="agrementStore.agrementCourant ?? {}"
+          :modifiable="false"
+          :cdn-url="`${config.public.backendUrl}/documents/`"
+        />
       </DsfrTabContent>
 
       <DsfrTabContent
@@ -115,6 +122,9 @@
 
 <script setup lang="ts">
 const agrementStore = useAgrementStore();
+const territoireStore = useTerritoireStore();
+const organismeStore = useOrganismeStore();
+const config = useRuntimeConfig();
 const route = useRoute();
 const userStore = useUserStore();
 
@@ -187,7 +197,6 @@ const tabTitles = computed(() => [
     panelId: "agrement-content-3",
   },
 ]);
-const territoireStore = useTerritoireStore();
 
 onMounted(async () => {
   log.i("Mounted");
