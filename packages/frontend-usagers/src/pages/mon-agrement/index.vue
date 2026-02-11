@@ -44,6 +44,9 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
+        <AgrementDocuments
+          :init-agrement="agrementStore.agrementCourant ?? {}"
+        ></AgrementDocuments>
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="agrement-content-2"
