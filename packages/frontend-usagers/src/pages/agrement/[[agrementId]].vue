@@ -136,16 +136,7 @@ async function updateOrCreate(formValues: AgrementFormValues) {
     for (const [category, config] of Object.entries(FILE_CATEGORY_CONFIG)) {
       const { fileKey, multiple } = config;
       const value = updatedData[fileKey as FileKey];
-      console.log(
-        "value",
-        value,
-        "category",
-        category,
-        "fileKey",
-        fileKey,
-        "multiple",
-        multiple,
-      );
+
       if (!value) continue;
 
       if (multiple) {
