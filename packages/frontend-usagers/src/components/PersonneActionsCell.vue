@@ -4,32 +4,37 @@
       class="fr-icon-edit-line"
       tertiary
       no-outline
-      :aria-label="`Éditer ${personne?.prenom || ''} ${personne?.nom || ''}`"
       @click.stop="onEdit"
-    />
+    >
+      <span class="fr-sr-only">
+        Éditer {{ personne?.prenom || "" }} {{ personne?.nom || "" }}
+      </span>
+    </DsfrButton>
     <DsfrButton
       class="fr-icon-delete-fill"
       tertiary
       no-outline
-      :aria-label="`Supprimer ${personne?.prenom || ''} ${personne?.nom || ''}`"
       @click.stop="onDelete"
-    />
+    >
+      <span class="fr-sr-only">
+        Supprimer {{ personne?.prenom || "" }} {{ personne?.nom || "" }}
+      </span>
+    </DsfrButton>
   </div>
 </template>
 
 <script setup lang="ts">
 type Personne = {
-  nom: string
-  prenom: string
-  fonction: string
-}
+  nom: string;
+  prenom: string;
+  fonction: string;
+};
 
 defineProps<{
-  personne: Personne
-  index: number
-  onEdit: () => void
-  onDelete: () => void
-}>()
+  personne: Personne;
+  onEdit: () => void;
+  onDelete: () => void;
+}>();
 </script>
 
 <style scoped>

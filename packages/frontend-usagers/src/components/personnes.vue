@@ -6,7 +6,7 @@
     @close="modalDelete.opened = false"
   >
     <template #default>
-      <p>Etes-vous sûr de vouloir supprimer ce représentant légal ?</p>
+      <p>Êtes-vous sûr de vouloir supprimer ce représentant légal ?</p>
       <div class="btns-group">
         <DsfrButton
           label="Annuler"
@@ -140,7 +140,6 @@ const personnesToDisplay = computed(() => {
       row.push({
         component: "PersonneActionsCell",
         personne,
-        index,
         onEdit: () => editItem(index),
         onDelete: () => openDeleteModal(index),
       });
