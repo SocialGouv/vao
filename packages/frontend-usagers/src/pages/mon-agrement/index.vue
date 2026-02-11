@@ -24,6 +24,18 @@
         <p class="fr-mt-4v">
           <b>Déclarer vos séjours</b> 2 mois minimum avant la date de départ
         </p>
+        <h3 class="fr-mb-0">
+          Formulaire du renouvellement d’agrément ({{
+            agrementAnneeRenouvellement
+          }})
+        </h3>
+        <AgrementReadOnly
+          class="fr-my-2w"
+          :init-organisme="organismeStore.organismeCourant ?? {}"
+          :init-agrement="agrementStore.agrementCourant ?? {}"
+          :modifiable="false"
+          :cdn-url="`${config.public.backendUrl}/documents/`"
+        />
       </DsfrTabContent>
 
       <DsfrTabContent
@@ -114,9 +126,20 @@
 </template>
 
 <script setup lang="ts">
+import { getYear4k } from "@vao/shared-bridge";
+
 const agrementStore = useAgrementStore();
+const territoireStore = useTerritoireStore();
+const organismeStore = useOrganismeStore();
+const config = useRuntimeConfig();
 const route = useRoute();
 const userStore = useUserStore();
+
+const agrementAnneeRenouvellement = computed(() => {
+  return agrementStore.agrementCourant?.dateDepot
+    ? getYear4k(agrementStore.agrementCourant?.dateDepot)
+    : "Non déposé";
+});
 
 useHead({
   title: "Déclaration de séjour détaillée | Vacances Adaptées Organisées",
@@ -187,7 +210,6 @@ const tabTitles = computed(() => [
     panelId: "agrement-content-3",
   },
 ]);
-const territoireStore = useTerritoireStore();
 
 onMounted(async () => {
   log.i("Mounted");
