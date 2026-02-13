@@ -5,17 +5,19 @@ const DocumentService = {
   postDocument: async ({
     file,
     category,
-  }: { file: File, category: DocumentUsagersRoutes["PostDocument"]["body"]["category"] }) => {
-
+  }: {
+    file: File;
+    category: DocumentUsagersRoutes["PostDocument"]["body"]["category"];
+  }) => {
     const { uuid } = await buildRequestFile<
       DocumentUsagersRoutes["PostDocument"]
     >({
       path: "/documents/",
       method: "POST",
       body: {
-        category
+        category,
       },
-      file
+      file,
     })();
     return uuid;
   },
