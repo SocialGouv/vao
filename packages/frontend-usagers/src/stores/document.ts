@@ -17,7 +17,10 @@ export const useDocumentStore = defineStore("document", {
       if (!document) {
         throw new Error("Un document est requis pour le chargement");
       }
-      const uuid = await DocumentService.postDocument({ file: document, category });
+      const uuid = await DocumentService.postDocument({
+        file: document,
+        category,
+      });
       return uuid;
     },
   },
