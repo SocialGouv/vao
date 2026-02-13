@@ -351,7 +351,7 @@ async function createDocument({
 }) {
   if (document && Object.keys(document?.uuid ?? {}).length === 0) {
     try {
-      const uuid = await documentStore.postDocument(document);
+      const uuid = await documentStore.postDocument({ document, category });
       toaster.info({
         titleTag: "h2",
         description: `Fichier ${document.name} déposé`,
