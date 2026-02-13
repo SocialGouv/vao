@@ -9,7 +9,7 @@ export const $fetchBackend = <T = any>(
   option: FetchBackendOptions = {},
 ): Promise<T> => {
   const config = useRuntimeConfig();
-   
+
   return $fetch(url, {
     baseURL: config.public.backendUrl,
     ...option,
@@ -82,9 +82,9 @@ export function buildRequestFile<Route extends BasicRoute>({
       return async () =>
         $fetchBackend(url, {
           ...OPTIONS_DEFAULT,
-          headers: {},
           method: "POST",
-          body,
+          body: formData,
+          headers: {},
         });
     default:
       throw new Error("Method not supported");
