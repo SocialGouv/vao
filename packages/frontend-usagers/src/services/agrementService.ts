@@ -27,6 +27,14 @@ const AgrementService = {
     })();
     return activites;
   },
+  getHistory: async (agrementId: string) => {
+    const history = await buildRequest<AgrementUsagersRoutes["GetHistory"]>({
+      path: "/agrements/history/{agrementId}",
+      method: "GET",
+      params: { agrementId },
+    })();
+    return history;
+  },
 };
 
 export { AgrementService };

@@ -15,7 +15,7 @@
         :selected="selectedTabIndex === 0"
         :asc="asc"
       >
-        <h2>Dossier</h2>
+        <h1>Dossier</h1>
         <AgrementEtapesAvancement
           :init-agrement="agrementStore.agrementCourant ?? {}"
           :territoire="territoireStore.territoire ?? {}"
@@ -24,11 +24,11 @@
         <p class="fr-mt-4v">
           <b>Déclarer vos séjours</b> 2 mois minimum avant la date de départ
         </p>
-        <h3 class="fr-mb-0">
+        <h2 class="fr-mb-0">
           Formulaire du renouvellement d’agrément ({{
             agrementAnneeRenouvellement
           }})
-        </h3>
+        </h2>
         <AgrementReadOnly
           class="fr-my-2w"
           :init-organisme="organismeStore.organismeCourant ?? {}"
@@ -54,16 +54,7 @@
         :selected="selectedTabIndex === 2"
         :asc="asc"
       >
-        <!--
-        <DSHistorique
-          v-if="historique"
-          :historique="historique.historique ?? []"
-        ></DSHistorique>
-        <DsfrAlert v-else-if="errorHistorique" type="error"
-          >Une erreur est survenue durant la récupération de l'historique de la
-          déclaration
-        </DsfrAlert>
-        -->
+        <AgrementHistorique :history="agrementStore.history ?? []" />
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="agrement-content-3"
@@ -137,6 +128,24 @@ const organismeStore = useOrganismeStore();
 const config = useRuntimeConfig();
 const route = useRoute();
 const userStore = useUserStore();
+
+onMounted(async () => {
+  log.i("Mounted");
+  await territoireStore.fetchFicheByAgrementRegionUser();
+
+  const agrementId = agrementStore.agrementCourant?.id;
+  if (!agrementId) {
+    log.w("Aucun id d'agrément trouvé, impossible de récupérer l'historique.");
+    return;
+  }
+
+  try {
+    const history = await agrementStore.getHistory(String(agrementId));
+    log.i("Historique de l'agrément récupéré avec succès", { history });
+  } catch (error) {
+    log.w("Erreur lors de la récupération de l'historique:", error);
+  }
+});
 
 const agrementAnneeRenouvellement = computed(() => {
   return agrementStore.agrementCourant?.dateDepot

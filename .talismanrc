@@ -251,6 +251,8 @@ fileignoreconfig:
   checksum: e22412a54064dea24f7e200e9887726a4ef110f13570feea628c70c4fe2886a9
 - filename: packages/frontend-usagers/src/components/agrement/etapes-avancement.vue
   checksum: 88b30646940faf9e0726799588b6445f5292d9afd912df7bbc91ae61627b93b6
+- filename: packages/frontend-usagers/src/components/agrement/historique.vue
+  checksum: 054caab3085a920f1a5017decf60ebd686cc2c1695eba776c40f5bdb3521dffc
 - filename: packages/frontend-usagers/src/components/agrement/projets/listeSejours.vue
   checksum: 8fedbc8821c31208f6a874718cd0f8805cd7990365928ce883ce1dcbd843decd
 - filename: packages/frontend-usagers/src/components/agrement/projets/sejoursPrevus.vue

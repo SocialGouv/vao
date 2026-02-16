@@ -24,6 +24,15 @@ router.post(
   AgrementController.post,
 );
 
+// TODO: Ajouter requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetAllActivites"]) pour valider la route des activités
 router.get("/activites", checkJWT, AgrementController.getAllActivites);
+
+router.get(
+  "/history/:agrementId",
+  checkJWT,
+  requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetHistory"]),
+  checkPermissionAgrement,
+  AgrementController.getHistory,
+);
 
 export default router;

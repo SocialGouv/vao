@@ -42,6 +42,20 @@ export const AgrementController = {
       next(error);
     }
   },
+  async getHistory(
+    req: RouteRequest<AgrementUsagersRoutes["GetHistory"]>,
+    res: RouteResponse<AgrementUsagersRoutes["GetHistory"]>,
+    next: NextFunction,
+  ) {
+    try {
+      const history = await AgrementService.getHistory(
+        Number(req.validatedParams!.agrementId),
+      );
+      res.status(200).json({ history });
+    } catch (error) {
+      next(error);
+    }
+  },
   async post(
     req: RouteRequest<AgrementUsagersRoutes["PostAgrement"]>,
     res: RouteResponse<AgrementUsagersRoutes["PostAgrement"]>,
@@ -51,9 +65,22 @@ export const AgrementController = {
     const agrement = req.validatedBody!;
     try {
       const id = await AgrementService.save(agrement);
+      log.i("Agrement saved", { id });
+
+      // todo: supprimer/adapter cet exemple de tracking
+      // await AgrementService.trackEvent({
+      //   agrementId: id,
+      //   boUserId: null,
+      //   metadata: null,
+      //   source: "Organisateur",
+      //   type: "Mise à jour page",
+      //   typePrecision: "Renuvellement en cours de complétion",
+      //   usagerUserId: 1,
+      // });
+
       res.json({ id });
     } catch (err) {
-      log.w("DONE with error");
+      log.w("DONE with error", err);
       next(err);
     }
   },
