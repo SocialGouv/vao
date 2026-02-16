@@ -53,7 +53,6 @@
             :class="{ 'has-error': hasValidationError }"
             role="group"
             aria-labelledby="code-label"
-            aria-describedby="code-hint"
           >
             <input
               v-for="(digit, index) in codeDigits"
@@ -110,9 +109,29 @@
               <DsfrButton @click="validateCode"> Valider </DsfrButton>
             </li>
           </ul>
-          <span v-if="resendTimer > 0" aria-live="polite" class="fr-text--xs">
-            Vous pouvez demander un nouveau code dans
-            {{ resendTimer }} secondes.
+          <div v-if="resendTimer > 0" class="fr-text--xs">
+            <span
+              v-if="resendTimer === 30"
+              role="alert"
+              aria-live="assertive"
+              aria-atomic="true"
+              class="sr-only"
+            >
+              Vous pourrez demander un nouveau code dans 30 secondes.
+            </span>
+            <span v-else role="timer" aria-atomic="true" aria-live="off">
+              Vous pourrez demander un nouveau code dans
+              {{ resendTimer }} secondes.
+            </span>
+          </div>
+          <span
+            v-if="resendTimer === 0 && hasRequestedCode"
+            role="alert"
+            aria-live="assertive"
+            aria-atomic="true"
+            class="fr-sr-only"
+          >
+            Vous pouvez demander un nouveau code.
           </span>
         </div>
       </div>
@@ -173,7 +192,9 @@
                 target="_blank"
                 rel="noopener external"
                 class="fr-link"
-                >Contacter le support - nouvel onglet</a
+                >Contacter le support<span class="fr-sr-only">
+                  - nouvel onglet</span
+                ></a
               >
             </li>
           </ul>
@@ -221,9 +242,9 @@ const codeDigits = ref<string[]>(["", "", "", "", "", ""]);
 const inputRefs = ref<HTMLInputElement[]>([]);
 const rememberDevice = ref<boolean>(false);
 const errorMessage = ref<ErrorMessage | null>(null);
-const resendLoading = ref<boolean>(false);
 const resendTimer = ref<number>(0);
 let resendInterval: ReturnType<typeof setInterval> | null = null;
+const hasRequestedCode = ref<boolean>(false);
 
 const attemptCount = ref<number>(0);
 
@@ -425,37 +446,10 @@ const validateCode = (): void => {
   });
 };
 
-const resendCode = async (): Promise<void> => {
+const resendCode = (): void => {
   if (resendTimer.value > 0) return;
-
-  resendLoading.value = true;
-
-  log.i("resendCode");
-
-  try {
-    emit("resend");
-
-    attemptCount.value = 0;
-    codeDigits.value = ["", "", "", "", "", ""];
-    errorMessage.value = null;
-
-    nextTick(() => {
-      inputRefs.value[0]?.focus();
-    });
-
-    //limite le renvoi de code à une fois toutes les 30 secondes
-    resendTimer.value = 30;
-    if (resendInterval) clearInterval(resendInterval);
-    resendInterval = setInterval(() => {
-      resendTimer.value = Math.max(0, resendTimer.value - 1);
-      if (resendTimer.value === 0 && resendInterval) {
-        clearInterval(resendInterval);
-        resendInterval = null;
-      }
-    }, 1000);
-  } finally {
-    resendLoading.value = false;
-  }
+  hasRequestedCode.value = true;
+  emit("resend");
 };
 
 const setError = (error: ErrorMessage): void => {
@@ -487,7 +481,7 @@ const reset = (): void => {
   rememberDevice.value = false;
   errorMessage.value = null;
   attemptCount.value = 0;
-
+  hasRequestedCode.value = false;
   log.i("reset - composant réinitialisé");
 
   nextTick(() => {
@@ -507,11 +501,24 @@ const setAttemptCount = (count: number): void => {
   log.i("setAttemptCount", { count: attemptCount.value });
 };
 
+const startResendTimer = (): void => {
+  resendTimer.value = 30;
+  if (resendInterval) clearInterval(resendInterval);
+  resendInterval = setInterval(() => {
+    resendTimer.value = Math.max(0, resendTimer.value - 1);
+    if (resendTimer.value === 0 && resendInterval) {
+      clearInterval(resendInterval);
+      resendInterval = null;
+    }
+  }, 1000);
+};
+
 defineExpose({
   setError,
   reset,
   decrementAttempts,
   setAttemptCount,
+  startResendTimer,
 });
 </script>
 

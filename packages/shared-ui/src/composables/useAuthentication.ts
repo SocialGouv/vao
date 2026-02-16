@@ -202,7 +202,7 @@ export const useAuthentication = (
         },
       });
 
-      response.requires2FA = true;
+      // response.requires2FA = true; // Forcer 2FA pour tester
 
       if (response.requires2FA) {
         log.i("login - 2FA requis, navigation vers page dédiée");

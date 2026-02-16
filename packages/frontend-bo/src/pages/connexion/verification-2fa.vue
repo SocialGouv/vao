@@ -22,9 +22,7 @@ import { computed, ref, onMounted } from "vue";
 import { TwoFactorCodeVerification, useAuthentication } from "@vao/shared-ui";
 import type { Verify2FAPayload } from "@vao/shared-ui/types/Auth.type";
 import { maskEmail } from "@vao/shared-ui/utils/auth";
-import {
-  formatFRTime
-} from "@vao/shared-bridge";
+import { formatFRTime } from "@vao/shared-bridge";
 
 const log = logger("pages/bo/connexion/verification-2fa");
 const router = useRouter();
@@ -106,6 +104,7 @@ async function handleVerify2FA(payload: Verify2FAPayload) {
 async function handleResendCode() {
   try {
     await resendCode();
+    twoFactorRef.value?.startResendTimer();
   } catch (error) {
     log.w("handleResendCode - erreur", { error });
   }
