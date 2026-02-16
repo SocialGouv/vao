@@ -1,26 +1,31 @@
 <template>
-  <div class="btns-group">
-    <DsfrButton
-      class="fr-icon-edit-line"
-      tertiary
-      no-outline
-      @click.stop="onEdit"
-    >
-      <span class="fr-sr-only">
-        Éditer {{ personne?.prenom || "" }} {{ personne?.nom || "" }}
-      </span>
-    </DsfrButton>
-    <DsfrButton
-      class="fr-icon-delete-fill"
-      tertiary
-      no-outline
-      @click.stop="onDelete"
-    >
-      <span class="fr-sr-only">
-        Supprimer {{ personne?.prenom || "" }} {{ personne?.nom || "" }}
-      </span>
-    </DsfrButton>
-  </div>
+  <ul class="btns-group">
+    <li>
+      <DsfrButton
+        class="fr-icon-edit-line"
+        tertiary
+        no-outline
+        @click.stop="onEdit"
+      >
+        <span class="fr-sr-only">
+          Éditer {{ personne?.prenom || "" }} {{ personne?.nom || "" }}
+        </span>
+      </DsfrButton>
+    </li>
+
+    <li>
+      <DsfrButton
+        class="fr-icon-delete-fill"
+        tertiary
+        no-outline
+        @click.stop="onDelete"
+      >
+        <span class="fr-sr-only">
+          Supprimer {{ personne?.prenom || "" }} {{ personne?.nom || "" }}
+        </span>
+      </DsfrButton>
+    </li>
+  </ul>
 </template>
 
 <script setup lang="ts">
@@ -43,5 +48,7 @@ defineProps<{
   flex-flow: row nowrap;
   justify-content: flex-end;
   gap: 0.5rem;
+  list-style: none;
+  padding: 0;
 }
 </style>
