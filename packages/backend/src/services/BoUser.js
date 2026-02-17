@@ -336,11 +336,12 @@ module.exports.create = async ({
   const userId = await getPool().query(
     ...query.create(email, nom, prenom, territoireCode),
   );
-
+  //console.log("userId", userId);
   const [user] = userId.rows;
 
   // Création des rôles en base de données
   for (const role of roles) {
+    //console.log("role", role);
     await getPool().query(...query.bindRole(user.id, role));
   }
   // le role eig est attribué par default a tous les utilisateurs back

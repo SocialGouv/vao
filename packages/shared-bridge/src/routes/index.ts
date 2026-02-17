@@ -7,7 +7,10 @@ export interface BasicRoute {
   params?: Record<string, string>;
   body?: Record<string, any>;
   query?: Record<string, string>;
-  response: RouteResponseBody<Record<string, any>> | void;
+  response:
+    | RouteResponseBody<Record<string, any>>
+    | RouteResponseBody<Record<string, any>[]>
+    | void;
   method: "GET" | "POST" | "DELETE" | "PUT";
 }
 
@@ -19,6 +22,8 @@ export type RouteSchema<T extends BasicRoute> = {
   query?: yup.ObjectSchema<NonNullable<T["query"]>>;
 };
 
+export type { AgrementAdminRoutes } from "./admin/agrement";
+export { AgrementAdminRoutesSchema } from "./admin/agrement";
 export type { HebergementAdminRoutes } from "./admin/hebergement";
 export { HebergementAdminRoutesSchema } from "./admin/hebergement";
 export type { AgrementUsagersRoutes } from "./usagers/agrement";

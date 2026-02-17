@@ -18,6 +18,15 @@ export const useMenuNavItems = () => {
             },
           ]
         : [];
+    const gestionAgrements =
+      serviceCompetent === "REG"
+        ? [
+            {
+              text: "Agrements",
+              to: "/agrements/liste",
+            },
+          ]
+        : [];
     const roles = userStore.user?.roles ?? [];
     eigStore.getTotalEigToRead();
     const comptes = roles.includes("Compte")
@@ -103,6 +112,7 @@ export const useMenuNavItems = () => {
             },
           ]
         : []),
+      ...gestionAgrements,
       ...(roles.includes("eig")
         ? [
             {

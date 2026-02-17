@@ -7,7 +7,7 @@
             v-model="nameSync"
             type="text"
             name="name"
-            label="Nom"
+            label="Nom de l'organisme"
             placeholder="Nom"
             :label-visible="true"
             @update:model-value="filtersUpdate"
@@ -27,15 +27,16 @@
           />
         </div>
       </div>
-      {{ years }}
       <div class="fr-col-md-4 fr-col-lg-3">
         <div class="fr-input-group">
-          <DsfrSelect
-            v-model="yearObtentionSync"
-            label="Date agrément"
-            name="dateAgrément"
+          <DsfrInputGroup
+            v-model="numeroAgrementSync"
+            type="text"
+            label="Numéro agrément"
+            placeholder="Numéro agrément"
+            :label-visible="true"
+            name="numeroAgrement"
             mode="tags"
-            :options="years"
             @update:model-value="filtersUpdate"
           />
         </div>
@@ -43,11 +44,11 @@
       <div class="fr-col-md-4 fr-col-lg-3">
         <div class="fr-input-group">
           <DsfrSelect
-            v-model="regionObtentionSync"
-            label="Région agrément"
-            name="regionObtention"
+            v-model="statutSync"
+            label="Statut"
+            name="statut"
             mode="tags"
-            :options="regions"
+            :options="statutOptions"
             @update:model-value="filtersUpdate"
           />
         </div>
@@ -67,30 +68,33 @@
 </template>
 
 <script setup lang="ts">
-const regionStore = useRegionStore();
-const organismeStore = useOrganismeStore();
+import { AGREMENT_STATUT_OPTIONS } from "@vao/shared-bridge";
 
+const statutOptions = [
+  { text: "Aucun", value: null },
+  ...AGREMENT_STATUT_OPTIONS,
+];
 const props = defineProps<{
   siret: string;
   name: string;
-  regionObtention: string;
-  yearObtention: string;
+  numeroAgrement: string;
+  statut: string;
 }>();
 
-const emits = defineEmits<{
-  "update:siret": [string];
-  "update:name": [string];
-  "update:regionObtention": [string];
-  "update:yearObtention": [string];
-  "filters-update": [];
-}>();
+const emit = defineEmits([
+  "update:siret",
+  "update:name",
+  "update:numero-agrement",
+  "update:statut",
+  "filters-update",
+]);
 
 const siretSync = computed({
   get() {
     return props.siret;
   },
   set(value) {
-    emits("update:siret", value);
+    emit("update:siret", value);
   },
 });
 const nameSync = computed({
@@ -98,46 +102,28 @@ const nameSync = computed({
     return props.name;
   },
   set(value) {
-    emits("update:name", value);
+    emit("update:name", value);
   },
 });
-const regionObtentionSync = computed({
+const numeroAgrementSync = computed({
   get() {
-    return props.regionObtention;
+    return props.numeroAgrement;
   },
   set(value) {
-    emits("update:regionObtention", value);
+    emit("update:numero-agrement", value);
   },
 });
-const yearObtentionSync = computed({
+const statutSync = computed({
   get() {
-    return props.yearObtention;
+    return props.statut;
   },
   set(value) {
-    emits("update:yearObtention", value);
+    emit("update:statut", value);
   },
 });
 
-const getLast20Years = () => {
-  const currentYear = new Date().getFullYear();
-  const years = Array(20)
-    .fill(currentYear)
-    .map((y, index) => ({ value: `${y - index}`, text: `${y - index}` }));
-  years.unshift({ value: "", text: "Toutes les années" });
-
-  return years;
-};
-
-const years = getLast20Years();
-const regions = computed(() => [
-  { text: "Toutes", value: "" },
-  ...regionStore.regions,
-]);
-regionStore.fetch();
-
-const filtersUpdate = () => emits("filters-update");
+const filtersUpdate = () => emit("filters-update");
 const getCsv = async () => {
-  const response = await organismeStore.exportOrganismes();
-  exportCsv(response, "organismes.csv");
+  // TODO TICKET 1199
 };
 </script>
