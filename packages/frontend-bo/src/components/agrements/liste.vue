@@ -119,7 +119,9 @@ const defs = [
 const columns: Columns<AgrementWithOrganismeDto> =
   columnsTable.buildColumns(defs);
 
-const title = "Liste des Agréments";
+const title = computed<string>(
+  () => `Liste des Agréments (${agrementStore.agrementsTotal ?? 0})`,
+);
 
 const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],

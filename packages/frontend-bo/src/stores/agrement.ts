@@ -4,7 +4,6 @@ import type {
   ActiviteDto,
   OrganismeDto,
 } from "@vao/shared-bridge";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { AgrementService } from "~/services/agrementService";
 const log = logger("stores/agrement");
 export type AgrementWithOrganismeDto = AgrementDto & {
@@ -29,14 +28,11 @@ export const useAgrementStore = defineStore("agrement", {
     async getListAgrements(params: any): Promise<void> {
       log.i("getListAgrements - IN");
       try {
-        console.log("params", params);
-
-        const agrements: AgrementWithOrganismeDto[] | null =
+        const { agrements, count } =
           await AgrementService.getListAgrements(params);
-        console.log("agrements", agrements);
         log.i("getListAgrements - DONE");
         this.agrements = agrements;
-        this.agrementsTotal = agrements ? agrements.length : 0;
+        this.agrementsTotal = count;
       } catch (err) {
         log.w("getListAgrements - DONE with error", err);
         throw err;

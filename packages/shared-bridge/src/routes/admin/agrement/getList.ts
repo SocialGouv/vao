@@ -14,6 +14,7 @@ export interface GetListRoute extends BasicRoute {
     statut?: string;
   };
   response: RouteResponseBody<{
+    count: number;
     agrements: (AgrementDto & { organisme: OrganismeDto })[];
   }>;
 }

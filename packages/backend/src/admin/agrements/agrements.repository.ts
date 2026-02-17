@@ -22,7 +22,7 @@ export const AgrementsRepository = {
     regionCode: string;
     criterias: Array<Record<string, any>>;
     queryParams: Record<string, unknown>;
-  }): Promise<AgrementDto[] | null> {
+  }): Promise<{ count: number; result: AgrementDto[] | null }> {
     log.i("getByRegionObtention - IN");
     const query = () => `
       SELECT
@@ -53,14 +53,16 @@ export const AgrementsRepository = {
         paginatedQuery.countQueryParams,
       ),
     ]);
-    //const response = await getPool().query(query, [regionCode]);
-    if (!response.rows?.length) return null;
     const agrements = [];
-    for (const row of response.rows) {
+    for (const row of response[0].rows) {
       const agrement = AgrementsMapper.toModel(row as AgrementEntity);
       agrements.push(agrement);
     }
     log.i("getByRegionObtention - DONE");
-    return agrements;
+
+    return {
+      count: parseInt(response[1].rows[0].total, 10),
+      result: agrements,
+    };
   },
 };

@@ -1,4 +1,8 @@
-import type { AgrementAdminRoutes, AgrementDto } from "@vao/shared-bridge";
+import type {
+  AgrementAdminRoutes,
+  AgrementDto,
+  OrganismeDto,
+} from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
 import type { RouteRequest, RouteResponse } from "../../types/request";
@@ -16,16 +20,21 @@ export const AgrementController = {
   ) {
     log.i("IN");
     const regionCode = req.decoded?.territoireCode;
-    const search = req.query.search ? JSON.parse(req.query.search) : {};
+    const search = typeof req.query === "string" ? JSON.parse(req.query) : {};
     try {
-      const agrements: AgrementDto[] | null =
-        await AgrementService.getListAgrements({
-          queryParams: search,
-          regionCode: String(regionCode),
-        });
-      if (!agrements || agrements.length === 0)
+      const {
+        count,
+        result,
+      }: {
+        count: number;
+        result: (AgrementDto & { organisme: OrganismeDto })[];
+      } = await AgrementService.getListAgrements({
+        queryParams: search,
+        regionCode: String(regionCode),
+      });
+      if (!result || result.length === 0)
         throw new AppError("NotFound", { statusCode: 404 });
-      res.json({ agrements });
+      res.json({ agrements: result, count });
     } catch (error) {
       log.w("DONE with error");
       next(error);

@@ -31,13 +31,6 @@ export function buildRequest<Route extends BasicRoute>({
   query,
 }: Omit<Route, "response">): () => Promise<Route["response"]> {
   const url = buildRequestPath(path, params);
-  console.log("body", body);
-  console.log("buildRequest params", query);
-  console.log("buildRequest body", {
-    params: {
-      query,
-    },
-  });
   switch (method) {
     case "GET":
       return async () =>
