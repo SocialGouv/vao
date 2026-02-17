@@ -14,14 +14,13 @@ interface HebergementStoreState {
 }
 
 export const useHebergementStore = defineStore("hebergement", {
-  state: () =>
-    ({
-      hebergements: [],
-      hebergementsCount: 0,
-      isGetHebergementsLoading: false,
-      hebergement: null,
-      isGetHebergementLoading: false,
-    }) as HebergementStoreState,
+  state: (): HebergementStoreState => ({
+    hebergements: [],
+    hebergementsCount: 0,
+    isGetHebergementsLoading: false,
+    hebergement: null,
+    isGetHebergementLoading: false,
+  }),
   actions: {
     async exportHebergements(params = {}) {
       log.i("exportHebergements - IN");

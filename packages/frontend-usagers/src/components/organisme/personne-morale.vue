@@ -18,7 +18,6 @@
         :api-unavailable-types="props.unavailableApi"
         :display-types="[apiTypes.INSEE, apiTypes.ENTREPRISE]"
       ></ApiUnavailable>
-
       <DsfrInputGroup
         name="siret"
         :label="
@@ -33,13 +32,16 @@
         :disabled="
           !props.modifiable ||
           !!organismeStore.organismeCourant?.complet ||
-          userStore.user.userSiret
+          userStore.user?.userSiret
         "
         placeholder=""
         hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
         @update:model-value="trimSiret"
       />
-      <div v-if="props.modifiable" class="fr-fieldset__element">
+      <div
+        v-if="props.modifiable && !organismeStore.organismeCourant?.complet"
+        class="fr-fieldset__element"
+      >
         <div class="fr-input-group fr-col-8">
           <DsfrButton
             id="chercherSiret"
@@ -48,6 +50,68 @@
             >Récupérer les informations de la personne morale
           </DsfrButton>
         </div>
+      </div>
+      <div
+        v-if="props.modifiable && organismeStore.organismeCourant?.complet"
+        class="fr-input-group fr-col-12"
+      >
+        <DsfrButton
+          id="chercherNouveauSiret"
+          :disabled="!siretMeta.valid"
+          @click.prevent="searchNewSiret"
+        >
+          Mettre à jour le SIRET et/ou les informations
+        </DsfrButton>
+
+        <DsfrAccordion
+          title="Historique des mises à jour du SIRET"
+          class="fr-col-12 fr-mt-3w"
+        >
+          <div class="fr-grid-row">
+            <div
+              v-for="(historic, key) in organismeStore.organismeCourant
+                ?.personneMorale?.historic ?? []"
+              :key="key"
+              class="fr-col-12"
+            >
+              <div class="fr-card fr-px-3w fr-py-1w">
+                <div
+                  class="fr-grid-row fr-grid-row--no-wrap fr-grid-row--middle fr-grid-row--gutters"
+                >
+                  <div class="fr-col-auto fr-text--ellipsis fr-mr-2w">
+                    {{ formatSiret({ siret: historic?.siret }) }}
+                  </div>
+
+                  <div
+                    class="fr-col-auto fr-text--ellipsis fr-mr-2w"
+                    style="font-style: italic; color: brown"
+                  >
+                    Inactif depuis le
+                    {{
+                      historic?.updatedAt
+                        ? formatFR(new Date(historic.updatedAt))
+                        : ""
+                    }}
+                  </div>
+
+                  <div class="fr-col fr-text--ellipsis">
+                    Mis à jour par {{ historic?.prenom ?? "" }}
+                    {{ historic?.nom ?? "" }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DsfrAccordion>
+      </div>
+      <div class="fr-input-group fr-col-8">
+        <OrganismeConfirmUpdateSiret
+          :opened="confirmUpdatingSiret"
+          :ancien-siret="siret!"
+          :nouveau-siret="siretToUpdate!"
+          @close="confirmUpdatingSiret = false"
+          @confirm="updateSiret"
+        />
       </div>
     </DsfrFieldset>
     <div v-if="siren">
@@ -268,12 +332,21 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
-import dayjs from "dayjs";
-import { apiTypes } from "@vao/shared-ui/src/models";
+import { IsDownloading, ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
+import type { PersonneMoraleDto } from "@vao/shared-bridge";
+import { SiretService } from "../../services/siretService";
+
+import {
+  ERRORS_SIRET_MESSAGES,
+  ERRORS_SIRET,
+  formatSiret,
+  formatFR,
+  formatFRDateTime,
+} from "@vao/shared-bridge";
+const apiTypes = apiModel.apiTypes;
 
 const toaster = useToaster();
 
@@ -282,8 +355,10 @@ const log = logger("components/organisme/personne-morale");
 const emit = defineEmits(["previous", "next", "update"]);
 
 const organismeStore = useOrganismeStore();
-organismeStore.fetchUsersOrganisme();
 const userStore = useUserStore();
+
+const confirmUpdatingSiret = ref(false);
+const siretToUpdate = ref<string | undefined>();
 
 const props = defineProps({
   initData: { type: Object, required: true },
@@ -320,12 +395,12 @@ const usersWithSiret = computed(() =>
     user.nom,
     user.prenom,
     user.email,
-    dayjs(user.dateCreation).format("DD/MM/YYYY HH:MM"),
+    formatFRDateTime(new Date(user.dateCreation)),
   ]),
 );
 
-const initialValues = {
-  siret: userStore.user.userSiret,
+const initialValues: Partial<PersonneMoraleDto> = {
+  siret: userStore.user?.userSiret,
   siren: null,
   siegeSocial: null,
   porteurAgrement: null,
@@ -353,45 +428,48 @@ const {
   errorMessage: porteurAgrementErrorMessage,
   handleChange: onPorteurAgrementChange,
   meta: porteurAgrementMeta,
-} = useField("porteurAgrement");
+} = useField<string | boolean>("porteurAgrement");
 const {
   value: siret,
   errorMessage: siretErrorMessage,
   handleChange: onSiretChange,
   meta: siretMeta,
-} = useField("siret");
-const { value: siren } = useField("siren");
-const { value: siegeSocial } = useField("siegeSocial");
-const { value: raisonSociale } = useField("raisonSociale");
-const { value: statut } = useField("statut");
-const { value: adresse } = useField("adresse");
-const { value: pays } = useField("pays");
+} = useField<string | undefined>("siret");
+const { value: siren } = useField<string | undefined>("siren");
+const { value: siegeSocial } = useField<boolean | undefined>("siegeSocial");
+const { value: raisonSociale } = useField<string | undefined>("raisonSociale");
+const { value: statut } = useField<string | undefined>("statut");
+const { value: adresse } = useField<string | undefined>("adresse");
+const { value: pays } = useField<string | undefined>("pays");
 const {
   value: email,
   errorMessage: emailErrorMessage,
   handleChange: onEmailChange,
   meta: emailMeta,
-} = useField("email");
+} = useField<string | undefined>("email");
 const {
   value: telephone,
   errorMessage: telephoneErrorMessage,
+  // @ts-expect-error validMessage does not exist in the type ?
   validMessage: telephoneValidMessage,
   handleChange: onTelephoneChange,
   meta: telephoneMeta,
-} = useField("telephone");
+} = useField<string | undefined>("telephone");
 const {
   value: nomCommercial,
   errorMessage: nomCommercialErrorMessage,
   handleChange: onNomCommercialChange,
   meta: nomCommercialMeta,
-} = useField("nomCommercial");
+} = useField<string | undefined>("nomCommercial");
 const {
   value: representantsLegaux,
   handleChange: onRepresentantsLegauxChange,
-} = useField("representantsLegaux");
-const { value: etablissementPrincipal } = useField("etablissementPrincipal");
+} = useField<Record<string, any>[]>("representantsLegaux");
+const { value: etablissementPrincipal } = useField<Record<string, any>>(
+  "etablissementPrincipal",
+);
 const { value: responsableSejour, handleChange: onResponsableSejourChange } =
-  useField("responsableSejour");
+  useField<Record<string, any>>("responsableSejour");
 
 const formatedSiret = computed(() => {
   if (!siret.value) {
@@ -418,8 +496,45 @@ const formatedSiret = computed(() => {
   return formatedSiret;
 });
 
-function trimSiret(s) {
-  return onSiretChange(s.replace(/ /g, ""));
+function trimSiret(s?: string | number): any {
+  return onSiretChange(s ? String(s).replace(/ /g, "") : "");
+}
+
+async function updateSiret() {
+  confirmUpdatingSiret.value = false;
+  siret.value = siretToUpdate.value;
+  await searchOrganisme();
+
+  return true;
+}
+
+async function searchNewSiret() {
+  log.i("searchNewSiret - IN");
+  try {
+    const siretFromResponse = siegeSocial.value
+      ? await SiretService.getSiretSiegeSocial(siret.value!)
+      : await SiretService.getSiretEtablissementSuccesseur(siret.value!);
+    if (siretFromResponse !== "" && siretFromResponse !== siret.value) {
+      siretToUpdate.value = siretFromResponse;
+      confirmUpdatingSiret.value = true;
+    } else {
+      toaster.warning({
+        titleTag: "h2",
+        description: "Le numéro SIRET est déjà à jour",
+      });
+      await searchOrganisme();
+    }
+  } catch (error: any) {
+    const body = error.data;
+    const codeError = (body?.name as ERRORS_SIRET) ?? null;
+    const description =
+      (await ERRORS_SIRET_MESSAGES[codeError]) || ERRORS_SIRET.UnknownError;
+    toaster.error({
+      titleTag: "h2",
+      description,
+      role: "alert",
+    });
+  }
 }
 
 async function searchApiInsee() {
@@ -431,31 +546,36 @@ async function searchApiInsee() {
         method: "GET",
         credentials: "include",
       });
+
     const adresse =
       `${uniteLegale.adresseEtablissement.numeroVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.typeVoieEtablissement ?? ""} ${uniteLegale.adresseEtablissement.libelleVoieEtablissement} ${uniteLegale.adresseEtablissement.codePostalEtablissement} ${uniteLegale.adresseEtablissement.libelleCommuneEtablissement}`.trim();
 
     if (Object.keys(siege).length !== 0) {
-      const isEstablishmentEnabled = siege?.personneMorale?.etablissements
-        .filter((e) => e.siret === siret.value)
-        .map((e) => {
-          return e.enabled;
-        });
+      const isEstablishmentEnabled = (
+        siege?.personneMorale as PersonneMoraleDto
+      )?.etablissements
+        .filter((etablissement) => etablissement.siret === siret.value)
+        .map((etablissement) => etablissement.enabled);
       if (!isEstablishmentEnabled[0] && !porteurAgrement.value) {
         toaster.error({
           titleTag: "h2",
           description:
             "Votre établissement n'est pas autorisé par le siège social à se déclarer",
+          role: "alert",
         });
         setEmptyValues();
         return false;
       }
     }
+
     const etablissementPrincipal =
       siege &&
       siege.complet &&
-      siege.personneMorale?.etablissements?.find((e) => {
-        return e.nic === siret.value.slice(9);
-      })
+      (siege.personneMorale as PersonneMoraleDto)?.etablissements?.find(
+        (etablissement) => {
+          return etablissement.nic === siret.value?.slice(9);
+        },
+      )
         ? {
             siret: siege.personneMorale.siret ?? "",
             raisonSociale: siege.personneMorale.raisonSociale ?? "",
@@ -482,18 +602,20 @@ async function searchApiInsee() {
       representantsLegaux: representantsLegaux.representantsLegaux ?? [],
       etablissementPrincipal,
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error.response?.status === 403) {
       toaster.error({
         titleTag: "h2",
         description:
           "Le SIRET renseigné n’est plus valide. Veuillez utiliser le nouveau SIRET de votre établissement",
+        role: "alert",
       });
     } else {
       toaster.error({
         titleTag: "h2",
         description:
           "erreur lors de la récupération des données à partir du SIRET",
+        role: "alert",
       });
     }
     log.w("searchApiInsee - erreur:", { error });
@@ -531,11 +653,12 @@ async function searchOrganismeBySiret() {
       });
       return data.organisme;
     }
-  } catch (error) {
+  } catch (error: any) {
     toaster.error({
       titleTag: "h2",
       description:
         "erreur lors de la récupération des données internes à partir du SIRET",
+      role: "alert",
     });
     log.w("searchOrganismeBySiret - erreur:", { error });
     return null;
@@ -545,6 +668,7 @@ async function searchOrganismeBySiret() {
 async function searchOrganisme() {
   log.i("searchOrganisme - In");
   const organismeFound = await searchOrganismeBySiret();
+
   if (!organismeFound || !organismeFound?.personneMorale?.siren) {
     log.d("appel API INSEE");
     await searchApiInsee();
@@ -555,6 +679,7 @@ async function searchOrganisme() {
         titleTag: "h2",
         description:
           "Un établissement principal est nécessairement titulaire d'un agrément",
+          role: "alert",
       });
       setValues({
         siren: null,
@@ -574,6 +699,7 @@ async function searchOrganisme() {
         titleTag: "h2",
         description:
           "L'établissement principal ne s'est pas encore déclaré sur la plateforme. Veuillez réessayer plus tard.",
+        role: "alert",
       });
       setValues({
         siren: null,
@@ -588,15 +714,29 @@ async function searchOrganisme() {
       });
       return false;
     }
-    if (siren)
+    if (siren.value) {
       toaster.success({ titleTag: "h2", description: "Données récupérées" });
+    }
     randomId.value = random.getRandomId();
     keyRepresentantLegaux.value += 1;
   }
 }
 
-const onRepresentantsLegauxChangeWithKeyChange = (event) => {
+const ITEMS_PER_PAGE = 10;
+
+const onRepresentantsLegauxChangeWithKeyChange = (
+  event: Record<string, any>[],
+  action: "add" | "delete" | "edit" = "add",
+  personneIndex?: number,
+) => {
   onRepresentantsLegauxChange(event);
+
+  if (action === "edit") {
+    toaster.success({ description: "Le représentant légal a bien été modifié." });
+  }
+  if (action === "delete") {
+    toaster.success({ description: "Le représentant légal a bien été supprimé." });
+  }
   /* Le fait de changer la clé rernder le composant. Il semble que
   la cloture de la popup rentre en conflit avec ce rerender ce qui casse le scroll.
 
@@ -606,9 +746,21 @@ const onRepresentantsLegauxChangeWithKeyChange = (event) => {
   Dans ce cas, comme le tableau est rerender avec 10 colonnes par defaut (ce le composant DsfrTable de Personnes),
   on peut choisir la page a affichée qui est celle du nouvel ajout via la formule suivante.*/
   setTimeout(() => {
+    // Force le re-render du composant Personnes
     keyRepresentantLegaux.value += 1;
-    currentPersonnesPage.value =
-      Math.floor(((representantsLegaux.value ?? []).length - 1) / 10) + 1;
+    // Après suppression ou une édition, on reste sur la page où était la personne supprimée/éditée
+    if ((action === "delete" || action === "edit")  && typeof personneIndex === "number") {
+      const page = Math.floor(personneIndex / ITEMS_PER_PAGE) + 1;
+      currentPersonnesPage.value = page;
+      return;
+    }
+    // Après ajout, on affiche la page du nouvel élément (souvent la dernière page)
+    if (action === "add") {
+      currentPersonnesPage.value =
+        Math.floor(
+          ((representantsLegaux.value ?? []).length - 1) / ITEMS_PER_PAGE,
+        ) + 1;
+    }
   }, 10);
 };
 
@@ -625,6 +777,18 @@ function next() {
     "personne_morale",
   );
 }
+
+onMounted(() => {
+  log.i("Mounted - IN");
+  organismeStore.fetchUsersOrganisme({
+    search: {
+      siret:
+        userStore.user?.userSiret ??
+        organismeStore.organismeCourant?.personneMorale?.siret,
+    },
+  });
+  log.i("Mounted - DONE");
+});
 </script>
 
 <style scoped>

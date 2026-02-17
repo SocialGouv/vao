@@ -9,8 +9,8 @@
 </template>
 
 <script setup>
-import { Chat } from "@vao/shared-ui";
-import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
+import { Chat, fileUtils, useToaster } from "@vao/shared-ui";
+const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 const route = useRoute();
 const demandeSejourStore = useDemandeSejourStore();
@@ -46,6 +46,7 @@ const sendMessage = async ({ message, file }) => {
       toaster.error({
         titleTag: "h2",
         description,
+        role: "alert",
       });
       return;
     }
@@ -62,6 +63,7 @@ const sendMessage = async ({ message, file }) => {
     toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de l'envoi de votre message`,
+      role: "alert",
     });
     throw error;
   }

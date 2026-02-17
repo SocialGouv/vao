@@ -105,7 +105,7 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
-import { FileUpload } from "@vao/shared-ui";
+import { FileUpload, useToaster } from "@vao/shared-ui";
 
 const toaster = useToaster();
 
@@ -172,6 +172,7 @@ async function next() {
     toaster.error({
       titleTag: "h2",
       description: "L'agrément doit obligatoirement être au format PDF",
+      role: "alert",
     });
   } else {
     if (!meta.value.dirty) {

@@ -7,81 +7,83 @@
     </NuxtLink>
   </div>
   <div class="fr-fieldset">
-    <div :class="filedsetClass">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="nomSync"
-          type="text"
-          name="Nom"
-          label="Nom"
-          placeholder="Nom"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-md-2">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="nomSync"
+            type="text"
+            name="Nom"
+            label="Nom"
+            placeholder="Nom"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-md-2">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="prenomSync"
+            type="text"
+            name="Prénom"
+            label="Prénom"
+            placeholder="Prénom"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-md-2">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="emailSync"
+            type="text"
+            name="email"
+            label="Adresse courriel"
+            placeholder="Adresse courriel"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-md-2">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="territoireSync"
+            type="text"
+            name="territoire"
+            label="Territoire"
+            placeholder="Territoire"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
+      </div>
+      <div class="fr-col-12 fr-col-md-2">
+        <div class="fr-input-group">
+          <DsfrSelect
+            v-model="statutSync"
+            label="Actions à faire"
+            name="action"
+            mode="tags"
+            :options="props.statusActions"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
       </div>
     </div>
-    <div :class="filedsetClass">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="prenomSync"
-          type="text"
-          name="Prénom"
-          label="Prénom"
-          placeholder="Prénom"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
-      </div>
-    </div>
-    <div :class="filedsetClass">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="emailSync"
-          type="text"
-          name="email"
-          label="Adresse courriel"
-          placeholder="Adresse courriel"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
-      </div>
-    </div>
-    <div :class="filedsetClass">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="territoireSync"
-          type="text"
-          name="territoire"
-          label="Territoire"
-          placeholder="Territoire"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
-      </div>
-    </div>
-    <div :class="filedsetClass">
-      <div class="fr-input-group">
-        <DsfrSelect
-          v-model="statutSync"
-          label="Actions à faire"
-          name="action"
-          mode="tags"
-          :options="props.statusActions"
-          @update:model-value="filtersUpdate"
-        />
-      </div>
-    </div>
-    <div :class="filedsetClass">
-      <ul class="fr-btns-group">
-        <li>
+    <div class="fr-grid-row fr-grid-row--gutters fr-mt-2v">
+      <div class="fr-col-12 fr-col-md-12 align-self-end">
+        <div class="fr-input-group">
           <DsfrButton
             type="button"
             label="Extraire en CSV"
             primary
             @click="getCsv"
           />
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -106,9 +108,6 @@ const emits = defineEmits<{
   "update:statut": [string];
   "filters-update": [];
 }>();
-
-const filedsetClass =
-  "fr-fieldset__element fr-fieldset__element--inline fr-col-12 fr-col-md-3 fr-col-lg-2";
 
 const nomSync = computed({
   get() {

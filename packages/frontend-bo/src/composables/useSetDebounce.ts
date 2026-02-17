@@ -1,4 +1,6 @@
-export const useSetDebounce = (cb: Function, delay: number) => {
+type UseSetDebounceCallback = (args: { isUnmounted: boolean }) => void;
+
+export const useSetDebounce = (cb: UseSetDebounceCallback, delay: number) => {
   let timeout: ReturnType<typeof setTimeout> | null = null;
   let isUnmounted = false;
 

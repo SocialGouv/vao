@@ -118,42 +118,41 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { DsfrToggleSwitch } from "@gouvminint/vue-dsfr";
-import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
+import { DsfrDataTableV2Wrapper, columnsTable, useToaster } from "@vao/shared-ui";
 
 const emit = defineEmits(["previous", "next", "update"]);
 
 const log = logger("components/organisme/personne-morale");
 const toaster = useToaster();
 
-const organismeStore = useOrganismeStore();
-
-const siret = computed(
-  () => organismeStore.organismeCourant.personneMorale.siret,
-);
-
 const props = defineProps({
   showButtons: { type: Boolean, default: true },
   modifiable: { type: Boolean, default: true },
   isDownloading: { type: Boolean, required: false, default: false },
   message: { type: String, required: false, default: null },
+  initOrganisme: {
+    type: Object,
+    required: true,
+  },
 });
 
+const siret = computed(() => props.initOrganisme.personneMorale.siret);
+
 const validationSchema = computed(() =>
-  yup.object(organisme.etablissementsSecondaireSchema),
+  yup.object(props.initOrganisme.etablissementsSecondaireSchema),
 );
 
 const { meta, values, setValues } = useForm({
   validationSchema,
   initialValues: {
-    etablissements:
-      organismeStore.organismeCourant.personneMorale.etablissements ?? [],
+    etablissements: props.initOrganisme.personneMorale.etablissements ?? [],
   },
 });
 
 onMounted(async () => {
   if (
-    !organismeStore.organismeCourant.personneMorale.etablissements ||
-    organismeStore.organismeCourant.personneMorale.etablissements.length === 0
+    !props.initOrganisme.personneMorale.etablissements ||
+    props.initOrganisme.personneMorale.etablissements.length === 0
   ) {
     refreshEtablissmentsSecondaires();
   }
@@ -260,6 +259,7 @@ async function refreshEtablissmentsSecondaires() {
       titleTag: "h2",
       description:
         "erreur lors du rafraichissment des établissements secondaires",
+      role: "alert",
     });
     log.w("searchOrganismeBySiret - erreur:", { error });
     return null;

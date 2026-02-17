@@ -9,7 +9,7 @@ const normalize = require("../../../utils/normalize");
 const MailUtils = require("../../../utils/mail");
 const { buildEmailToken } = require("../../../utils/token");
 const { status } = require("../../../helpers/users");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 
 const log = logger(module.filename);
 

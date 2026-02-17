@@ -3,8 +3,8 @@ const Hebergement = require("../../services/hebergement/Hebergement");
 const HebergementHelper = require("../../helpers/hebergement");
 const HebergementSchema = require("../../schemas/hebergement");
 const logger = require("../../utils/logger");
-const ValidationAppError = require("../../utils/validation-error");
-const AppError = require("../../utils/error");
+const ValidationAppError = require("../../utils/validation-error").default;
+const AppError = require("../../utils/error").default;
 const FOUser = require("../../services/FoUser");
 
 const log = logger(module.filename);

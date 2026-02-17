@@ -26,7 +26,7 @@ defineProps<{
   }>;
 }>();
 
-defineEmits<{ (e: "click", title: string) }>();
+defineEmits<{ (e: "click", title: string): void }>();
 </script>
 
 <style lang="scss">

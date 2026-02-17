@@ -57,13 +57,15 @@
 </template>
 
 <script setup>
+import { eigUtils, fileUtils, useToaster } from "@vao/shared-ui";
+import HebergementStatusBadge from "../../components/hebergements/HebergementStatusBadge.vue";
+
 definePageMeta({
   middleware: ["is-connected", "check-hebergement-id-param"],
 });
-import hebergementUtils from "@vao/shared-ui/src/utils/hebergement";
-import HebergementStatusBadge from "../../components/hebergements/HebergementStatusBadge.vue";
-import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
 
+const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
+const hebergementUtils = eigUtils;
 const config = useRuntimeConfig();
 
 const toaster = useToaster();
@@ -115,6 +117,7 @@ const uploadFiles = async (hebergement) => {
     toaster.error({
       titleTag: "h2",
       description,
+      role: "alert",
     });
     resetApiStatut();
     return;
@@ -140,6 +143,7 @@ async function updateOrCreate(hebergement) {
       titleTag: "h2",
       description:
         error.data.message ?? "Erreur lors de la sauvegarde de l'hébergement",
+      role: "alert",
     });
     log.w("updateOrCreate - erreur", { error });
   } finally {
@@ -171,6 +175,7 @@ async function updateOrCreateBrouillon(hebergement) {
       description:
         error.data.message ??
         "Erreur lors de la sauvegarde de l'hébergement en mode brouillon",
+      role: "alert",
     });
     log.w("updateOrCreate - erreur", { error });
   } finally {
@@ -197,6 +202,7 @@ async function activate(hebergement) {
       description:
         error.data.message ??
         "Erreur lors de la sauvegarde de l'hébergement en mode brouillon",
+      role: "alert",
     });
     log.w("updateOrCreate - erreur", { error });
   } finally {
@@ -220,6 +226,7 @@ async function desactivate() {
       description:
         error.data.message ??
         "Erreur lors de la desactivation de l'hébergement",
+      role: "alert",
     });
     log.w("desactivate - erreur", { error });
   } finally {
@@ -242,6 +249,7 @@ async function reactivate() {
       titleTag: "h2",
       description:
         error.data.message ?? "Erreur lors de la réactivation de l'hébergement",
+      role: "alert",
     });
     log.w("reaactivate - erreur", { error });
   } finally {

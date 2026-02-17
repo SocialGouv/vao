@@ -1,11 +1,12 @@
 import type { BasicRoute } from "@vao/shared-bridge";
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 
 export interface User {
   id: string;
   email: string;
   roles: string[];
   territoireCode: string;
+  cguAccepted: boolean;
 }
 
 export interface UserRequest extends Request {
@@ -14,9 +15,8 @@ export interface UserRequest extends Request {
 }
 
 export interface RouteRequest<T extends BasicRoute>
-  extends Omit<UserRequest, "body" | "query" | "params"> {
-  body: NonNullable<T["body"]>;
-  query: NonNullable<T["query"]>;
+  extends Omit<UserRequest, "body" | "params"> {
+  body: T["body"];
   params: NonNullable<T["params"]>;
   validatedBody?: T["body"];
   validatedQuery?: T["query"];

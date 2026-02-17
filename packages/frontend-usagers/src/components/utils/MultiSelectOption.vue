@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  isPointed: Boolean;
+  isPointed: boolean;
   label: string;
 }>();
 </script>

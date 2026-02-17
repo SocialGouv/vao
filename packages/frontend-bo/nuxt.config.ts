@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-
+import { resolve } from "path";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 
 export default defineNuxtConfig({
@@ -22,12 +22,25 @@ export default defineNuxtConfig({
 
   modules: [
     "@pinia/nuxt",
-    "@socialgouv/dsfr-toaster-nuxt-module",
     "nuxt-maplibre",
     "nuxt-security",
     "vue-dsfr-nuxt-module",
     "@samk-dev/nuxt-vcalendar",
   ],
+
+  typescript: {
+    typeCheck: true,
+    tsConfig: {
+      exclude: [
+        resolve(__dirname, "../shared-bridge/**"),
+        resolve(__dirname, "../shared-ui/**"),
+      ],
+    },
+  },
+  alias: {
+    "@vao/shared-bridge": resolve(__dirname, "../shared-bridge/src"),
+    "@vao/shared-ui": resolve(__dirname, "../shared-ui/src"),
+  },
 
   runtimeConfig: {
     public: {
@@ -76,6 +89,9 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    optimizeDeps: {
+      include: ["maplibre-gl"],
+    },
     plugins: [
       sentryVitePlugin({
         authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -88,4 +104,7 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: "2025-03-31",
+  devServer: {
+    port: 8001,
+  },
 });

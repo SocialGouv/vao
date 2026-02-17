@@ -95,6 +95,7 @@ import {
   statusUser,
   RefusCompteModal,
   columnsTable,
+  useToaster,
 } from "@vao/shared-ui";
 import dayjs from "dayjs";
 
@@ -119,7 +120,8 @@ const defs = [
   ["email", "Adresse courriel", optionType.SORTABLE],
   ["telephone", "N° de téléphone", optionType.SORTABLE],
   ["siegeSocial", "Organisme", optionType.SORTABLE],
-  ["Adresse", "Ville", optionType.SORTABLE],
+  // Le tri par adresse est désactivé car trop complexe à gérer en back (traitement réalisé en front)
+  ["Adresse", "Ville", optionType.NONE],
   ["statut", "Statut", optionType.SORTABLE],
   ["dateCreation", "Date inscription", optionType.SORTABLE],
   ["custom:edit", "Action", optionType.FIXED_RIGHT],
@@ -167,6 +169,7 @@ async function validate(userId) {
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de la mise à jour du status de l'utilisateur.",
+      role: "alert",
     });
     throw err;
   }

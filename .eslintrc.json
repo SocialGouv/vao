@@ -1,3 +1,48 @@
 {
-    "root": true
+  "root": true,
+  "env": {
+    "es2022": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2022,
+    "sourceType": "script"
+  },
+  "overrides": [
+    {
+      "files": ["*.mjs"],
+      "parserOptions": {
+        "sourceType": "module"
+      }
+    },
+    {
+      "files": ["**/*.jsx"],
+      "parserOptions": {
+        "ecmaVersion": 2022,
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "jsx": true
+        }
+      }
+    },
+    {
+      "files": ["**/*.ts", "**/*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "plugins": ["@typescript-eslint"],
+      "extends": ["plugin:@typescript-eslint/recommended"],
+      "parserOptions": {
+        "ecmaVersion": 2022,
+        "sourceType": "module",
+        "ecmaFeatures": {
+          "jsx": true
+        }
+      }
+    },
+    {
+      "files": ["e2e/**/*.ts", "e2e/**/*.tsx"],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off"
+      }
+    }
+  ]
 }

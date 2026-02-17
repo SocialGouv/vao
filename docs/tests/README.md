@@ -26,13 +26,13 @@ docs/tests/
 
 ```bash
 # Tous les tests unitaires
-yarn test:unit:all
+pnpm -w test:unit:all
 
 # Backend uniquement
-yarn test:unit:backend
+pnpm -w test:unit:backend
 
 # API uniquement
-yarn test:unit:api
+pnpm -w test:unit:api
 ```
 
 ### Tests d'intégration
@@ -40,17 +40,17 @@ yarn test:unit:api
 ```bash
 # Tests d'intégration (depuis le package backend)
 cd packages/backend
-yarn test --testPathPattern=__tests__
+pnpm test --testPathPattern=__tests__
 ```
 
 ### Tests E2E
 
 ```bash
 # Tests E2E en local
-yarn tests:e2e
+pnpm -w tests:e2e
 
 # Interface graphique
-yarn tests:e2e:ui
+pnpm -w tests:e2e:ui
 ```
 
 ## Documentation détaillée

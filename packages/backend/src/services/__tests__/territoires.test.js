@@ -1,11 +1,11 @@
-jest.mock("../../utils/error");
+jest.mock("../../utils/error").default;
 const pgpool = require("../../utils/pgpool");
 
 jest.mock("../../utils/pgpool", () => {
   const mockQuery = jest.fn();
   return {
-    getPool: jest.fn(() => ({ query: mockQuery })),
     __mockQuery: mockQuery,
+    getPool: jest.fn(() => ({ query: mockQuery })),
   };
 });
 

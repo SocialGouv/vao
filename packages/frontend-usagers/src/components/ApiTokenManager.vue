@@ -45,6 +45,8 @@
 </template>
 
 <script setup lang="ts">
+import { useToaster } from "@vao/shared-ui";
+
 const userStore = useUserStore();
 const toaster = useToaster();
 
@@ -79,6 +81,7 @@ const modalActions = [
         toaster.error({
           titleTag: "h2",
           description: `Erreur lors de la génération de votre token d'api`,
+          role: "alert",
         });
         throw error;
       }

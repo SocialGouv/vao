@@ -38,8 +38,8 @@ const bodyParser = require("body-parser");
 const routes = require("./routes");
 
 const logger = require("./utils/logger");
-const AppError = require("./utils/error");
-const ValidationAppError = require("./utils/validation-error");
+const AppError = require("./utils/error").default;
+const ValidationAppError = require("./utils/validation-error").default;
 
 const log = logger(module.filename);
 

@@ -46,6 +46,7 @@ import { useField } from "vee-validate";
 import * as yup from "yup";
 import dayjs from "dayjs";
 import ApiTokenManager from "~/components/ApiTokenManager.vue";
+import { useToaster } from "@vao/shared-ui";
 
 const toaster = useToaster();
 
@@ -141,6 +142,7 @@ const handleOnClick = () => {
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de la mise à jour du profil",
+      role: "alert",
     });
     throw error;
   }

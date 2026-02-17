@@ -37,7 +37,7 @@ const props = withDefaults(
   },
 );
 
-defineEmits<{ (e: "click", title: string) }>();
+defineEmits<{ (e: "click", title: string): void }>();
 
 const wrapper = computed(() => (props.redirect ? "router-link" : "div"));
 </script>

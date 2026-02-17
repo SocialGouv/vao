@@ -95,10 +95,10 @@
 <script setup>
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
-import { eigModel, eigSchema, Summary } from "@vao/shared-ui";
-import { getTagSejourLibelle } from "@vao/shared-ui/src/utils/eigUtils";
+import { eigModel, eigUtils, eigSchema, Summary, useToaster } from "@vao/shared-ui";
 import dayjs from "dayjs";
 import { DsfrAlert } from "@gouvminint/vue-dsfr";
+const getTagSejourLibelle = eigUtils.getTagSejourLibelle;
 
 const config = useRuntimeConfig();
 
@@ -127,7 +127,10 @@ const fetchAvailableDsDebounce = (search) => {
       await eigStore.setAvailableDs(search);
     } catch (error) {
       toaster.error(
-        "Une erreur est survenue lors de la récupération de la demande",
+        {
+          description: "Une erreur est survenue lors de la récupération de la demande",
+          role: "alert",
+        }
       );
       throw error;
     }

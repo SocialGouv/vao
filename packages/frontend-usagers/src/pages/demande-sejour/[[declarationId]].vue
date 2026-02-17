@@ -69,6 +69,7 @@
                   <DSInformationsGenerales
                     v-if="hash === 'info-generales'"
                     :init-data="demandeCourante ?? {}"
+                    :init-organisme="organismeEnCours"
                     :modifiable="canModify"
                     :is-downloading="apiStatus.isDownloading"
                     :message="apiStatus.message"
@@ -154,6 +155,7 @@
                   <DSSynthese
                     v-if="hash === 'synthese'"
                     :declaration-courante="demandeCourante ?? {}"
+                    :init-organisme="organismeEnCours"
                     :modifiable="canModify"
                     :modifiable-en-cours="canModifyEnCours"
                     :is-downloading="apiStatus.isDownloading"
@@ -239,8 +241,8 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { Chat, DemandeStatusBadge } from "@vao/shared-ui";
-import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
+import { Chat, DemandeStatusBadge, fileUtils, useToaster } from "@vao/shared-ui";
+const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 const route = useRoute();
 
@@ -303,6 +305,18 @@ const demandeCourante = computed(() => {
 });
 
 const organismeStore = useOrganismeStore();
+
+const organismeEnCours = computed(() => {
+  if (
+    demandeSejourStore?.demandeCourante.statut === undefined ||
+    demandeSejourStore?.demandeCourante.statut ===
+      DeclarationSejour.statuts.BROUILLON
+  ) {
+    return organismeStore.organismeCourant;
+  } else {
+    return demandeSejourStore.demandeCourante.organisme;
+  }
+});
 
 const initialSelectedIndex = parseInt(
   route.query?.defaultTabIndex ? route.query.defaultTabIndex : 0,
@@ -534,6 +548,7 @@ const sendMessage = async ({ message, file }) => {
       toaster.error({
         titleTag: "h2",
         description,
+        role: "alert",
       });
       return;
     }
@@ -555,6 +570,7 @@ const sendMessage = async ({ message, file }) => {
     return toaster.error({
       titleTag: "h2",
       description: `Une erreur est survenue lors de l'envoi de votre message`,
+      role: "alert",
     });
   }
   demandeSejourStore.fetchMessages(sejourId.value);
@@ -587,6 +603,7 @@ async function updateOrCreate(data, type) {
         toaster.error({
           titleTag: "h2",
           description,
+          role: "alert",
         });
         return;
       }
@@ -622,6 +639,7 @@ async function updateOrCreate(data, type) {
         toaster.error({
           titleTag: "h2",
           description,
+          role: "alert",
         });
         return;
       }
@@ -646,7 +664,10 @@ async function updateOrCreate(data, type) {
     });
 
     toaster.success(
-      `Demande de séjour ${sejourId.value ? "sauvegardée" : "créée"}`,
+      {
+        titleTag: "h2",
+        description: `Déclaration de séjour ${sejourId.value ? "sauvegardée" : "créée"}`,
+      }
     );
     log.d(`demande de séjour ${sejourId.value} mis à jour`);
     sejourId.value = response.id;
@@ -658,6 +679,7 @@ async function updateOrCreate(data, type) {
       description:
         error.data.message ??
         `Une erreur est survenue lors de la mise à jour de la déclaration de séjour`,
+      role: "alert",
     });
   } finally {
     resetApiStatut();
@@ -709,6 +731,7 @@ async function finalize(attestation) {
         titleTag: "h2",
         description:
           "Une erreur est survenue durant la génération du PDF mais la déclaration a bien été transmise",
+        role: "alert",
       });
     }
     log.d(`demande de séjour ${sejourId.value} transmise`);
@@ -726,6 +749,7 @@ async function finalize(attestation) {
     return toaster.error({
       titleTag: "h2",
       description: displayMessage,
+      role: "alert",
     });
   } finally {
     resetApiStatut();

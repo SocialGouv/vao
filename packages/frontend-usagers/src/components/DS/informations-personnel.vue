@@ -270,7 +270,7 @@ const validationSchema = yup.object(
 const initialValues = {
   nombreResponsable:
     declarationStatut.value === DeclarationSejour.statuts.ATTENTE_8_JOUR ||
-    declarationStatut === DeclarationSejour.statuts.A_MODIFIER_8J
+    declarationStatut.value === DeclarationSejour.statuts.A_MODIFIER_8J
       ? (props.initData.encadrants?.length ?? "0")
       : (props.initData.nombreResponsable ?? null),
   encadrants: props.initData.encadrants ?? [],

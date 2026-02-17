@@ -1,3 +1,4 @@
+import CguValidation from "./cgu/CguValidation.vue";
 import ApiUnavailable from "./api/ApiUnavailable.vue";
 import FileUpload from "./FileUpload.vue";
 import Chat from "./Chat.vue";
@@ -32,7 +33,9 @@ import ErrorPage from "./ErrorPage.vue";
 import Skiplinks from "./Skiplinks.vue";
 import Accessibilite from "./Accessibilite.vue";
 import TitleWithIcon from "./TitleWithIcon.vue";
+import Toaster from "./Toaster.vue";
 export {
+  CguValidation,
   ApiUnavailable,
   FileUpload,
   Chat,
@@ -67,4 +70,5 @@ export {
   Skiplinks,
   Accessibilite,
   TitleWithIcon,
+  Toaster,
 };

@@ -5,8 +5,8 @@ const User = require("../../../services/BoUser");
 const config = require("../../../config");
 const passwordSchema = require("../../../schemas/parts/password");
 
-const AppError = require("../../../utils/error");
-const ValidationAppError = require("../../../utils/validation-error");
+const AppError = require("../../../utils/error").default;
+const ValidationAppError = require("../../../utils/validation-error").default;
 const logger = require("../../../utils/logger");
 
 const log = logger(module.filename);

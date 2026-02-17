@@ -1,5 +1,5 @@
 const Hebergement = require("../../services/hebergement/Hebergement");
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 
 const logger = require("../../utils/logger");
 

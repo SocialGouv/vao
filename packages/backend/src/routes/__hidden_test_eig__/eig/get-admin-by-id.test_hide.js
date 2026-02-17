@@ -3,7 +3,7 @@ const checkPermissionBOEIG = require("../../../middlewares/checkPermissionBOEIG"
 const request = require("supertest");
 const app = require("../../../app");
 const eigService = require("../../../services/eig");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 const { getEmails } = require("../../../helpers/eigMail");
 
 jest.mock("../../../middlewares/bo-check-JWT");

@@ -6,7 +6,7 @@ const UserFo = require("../../services/FoUser");
 const Session = require("../../services/common/Session");
 const { schema } = require("../../helpers/schema");
 
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 const logger = require("../../utils/logger");
 const {
   buildAccessToken: buildAccessTokenBo,
@@ -81,9 +81,8 @@ async function getUserBySchema(targetSchema, userId) {
   });
 }
 
-async function checkJWT(req, res, next, targetSchema) {
+async function checkJWT(req, res, next, targetSchema, checkCgu) {
   log.i("IN");
-
   if (![schema.FRONT, schema.BACK].includes(targetSchema)) {
     return next(
       new AppError("targetSchema is not valid", {
@@ -123,6 +122,15 @@ async function checkJWT(req, res, next, targetSchema) {
       try {
         const decoded = await verifyToken(accessToken, tokenSecret);
         req.decoded = decoded;
+        if (checkCgu && !req.decoded.cguAccepted) {
+          return next(
+            new AppError("CGU non acceptées", {
+              name: "UnacceptedCguUser",
+              statusCode: 401,
+            }),
+          );
+        }
+
         return next();
       } catch (error) {
         if (!(error instanceof jwt.TokenExpiredError)) {

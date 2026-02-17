@@ -7,7 +7,7 @@ const Send = require("../../../services/mail").mailService.send;
 const logger = require("../../../utils/logger");
 const MailUtils = require("../../../utils/mail");
 const { buildEmailToken } = require("../../../utils/bo-token");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 
 const log = logger(module.filename);
 

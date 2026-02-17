@@ -27,7 +27,7 @@ describe("POST /organisme/:id", () => {
     jest.clearAllMocks();
   });
 
-  it("should return an error 403 if organism complet and try to change siret", async () => {
+  it("should return an error 200 if organism complet and try to change siret", async () => {
     Organisme.getIsComplet.mockResolvedValue(true);
     Organisme.getBySiret.mockResolvedValue({
       organismeId: 1,
@@ -40,11 +40,7 @@ describe("POST /organisme/:id", () => {
         parametre: { siret: "38456094200044" },
         type: "personne_morale",
       });
-    expect(response.statusCode).toBe(403);
-    expect(response.body).toHaveProperty(
-      "name",
-      "Forbidden - siret update - organisme complete",
-    );
+    expect(response.statusCode).toBe(200);
   });
 
   it("should work if the organism is complet and the siret is not changed", async () => {

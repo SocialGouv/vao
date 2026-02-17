@@ -1,7 +1,8 @@
+import { HebergementDto } from "@vao/shared-bridge";
+import { NextFunction, Request, Response } from "express";
 import request from "supertest";
 
 import app from "../../../app"; // Chemin vers ton application Express
-import { HebergementDto } from "../../../dto/HebergementDto";
 import CheckJWT from "../../../middlewares/checkJWT";
 import checkPermissionHebergement from "../../../middlewares/checkPermissionHebergement";
 import Hebergement from "../../../services/hebergement/Hebergement";
@@ -12,7 +13,7 @@ jest.mock("../../../middlewares/checkJWT");
 jest.mock("../../../middlewares/checkPermissionHebergement");
 jest.mock(
   "../../../middlewares/checkStatutHebergement",
-  () => () => (req, res, next) => {
+  () => () => (req: Request, res: Response, next: NextFunction) => {
     next();
   },
 );
@@ -65,7 +66,9 @@ describe("GET /hebergement/:id", () => {
         next();
       },
     );
-
+    (
+      Hebergement.getById as jest.MockedFunction<typeof Hebergement.getById>
+    ).mockResolvedValue(null);
     const response = await request(app).get("/hebergement/2");
     expect(response.status).toBe(400);
   });

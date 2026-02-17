@@ -1,6 +1,6 @@
 const renewPassword = require("../renew-password");
 const User = require("../../../../services/User");
-const AppError = require("../../../../utils/error");
+const AppError = require("../../../../utils/error").default;
 const jwt = require("jsonwebtoken");
 
 jest.mock("../../../../services/User");

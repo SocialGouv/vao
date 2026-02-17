@@ -1,66 +1,66 @@
 <template>
   <div class="fr-fieldset">
-    <div :class="filedsetClass + 'fr-col-md-4 fr-col-lg-4'">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="nameSync"
-          type="text"
-          name="name"
-          label="Nom"
-          placeholder="Nom"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-md-2">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="nameSync"
+            type="text"
+            name="name"
+            label="Nom"
+            placeholder="Nom"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
       </div>
-    </div>
-    <div :class="filedsetClass + 'fr-col-md-2 fr-col-lg-2'">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="siretSync"
-          type="text"
-          name="name"
-          label="Siret"
-          placeholder="Siret"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
+      <div class="fr-col-md-4 fr-col-lg-3">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="siretSync"
+            type="text"
+            name="name"
+            label="Siret"
+            placeholder="Siret"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
       </div>
-    </div>
-    <div :class="filedsetClass + 'fr-col-md-2 fr-col-lg-2'">
-      <div class="fr-input-group">
-        <DsfrSelect
-          v-model="yearObtentionSync"
-          label="Date agrément"
-          name="dateAgrément"
-          mode="tags"
-          :options="years"
-          @update:model-value="filtersUpdate"
-        />
+      <div class="fr-col-md-4 fr-col-lg-3">
+        <div class="fr-input-group">
+          <DsfrSelect
+            v-model="yearObtentionSync"
+            label="Date agrément"
+            name="dateAgrément"
+            mode="tags"
+            :options="years"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
       </div>
-    </div>
-    <div :class="filedsetClass + 'fr-col-md-2 fr-col-lg-2'">
-      <div class="fr-input-group">
-        <DsfrSelect
-          v-model="regionObtentionSync"
-          label="Région agrément"
-          name="regionObtention"
-          mode="tags"
-          :options="regions"
-          @update:model-value="filtersUpdate"
-        />
+      <div class="fr-col-md-4 fr-col-lg-3">
+        <div class="fr-input-group">
+          <DsfrSelect
+            v-model="regionObtentionSync"
+            label="Région agrément"
+            name="regionObtention"
+            mode="tags"
+            :options="regions"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
       </div>
-    </div>
-    <div :class="filedsetClass + 'fr-col-md-2 fr-col-lg-2'">
-      <ul class="fr-btns-group">
-        <li>
+      <div class="fr-col-md-4 fr-col-lg-2">
+        <div class="fr-btns-group">
           <DsfrButton
             type="button"
             label="Extraire en CSV"
             primary
             @click="getCsv"
           />
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -83,9 +83,6 @@ const emits = defineEmits<{
   "update:yearObtention": [string];
   "filters-update": [];
 }>();
-
-const filedsetClass =
-  "fr-fieldset__element fr-fieldset__element--inline fr-col-12 ";
 
 const siretSync = computed({
   get() {

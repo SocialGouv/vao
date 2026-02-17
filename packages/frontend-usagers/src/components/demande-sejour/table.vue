@@ -104,6 +104,7 @@ import {
   isValidParams,
   usePagination,
   columnsTable,
+  useToaster,
 } from "@vao/shared-ui";
 import { exportCsv } from "../../utils/csv";
 
@@ -283,6 +284,7 @@ const displayToasterError = (type) => {
   toaster.error({
     titleTag: "h2",
     description: `Une erreur est survenue lors de ${type} de la déclaration de séjour`,
+    role: "alert",
   });
 };
 
@@ -300,6 +302,7 @@ const copyDS = async (declarationId) => {
         titleTag: "h2",
         description:
           "La duplication a échoué: le libellé de la déclaration copiée dépasse la limite de 100 caractères.",
+        role: "alert",
       });
     } else {
       displayToasterError("la copie");

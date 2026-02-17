@@ -167,6 +167,7 @@ import {
   MessageHover,
   TableWithBackendPagination,
   ValidationModal,
+  useToaster,
 } from "@vao/shared-ui";
 import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
 import dayjs from "dayjs";
@@ -288,6 +289,7 @@ try {
   toaster.error({
     titleTag: "h2",
     description: "Une erreur est survenue lors de la récupération des demandes",
+    role: "alert",
   });
   throw error;
 }
@@ -308,6 +310,7 @@ watch(
         titleTag: "h2",
         description:
           "Une erreur est survenue lors de la récupération de la demande",
+        role: "alert",
       });
       throw error;
     }
@@ -329,6 +332,7 @@ const fetchDemandesDebounce = debounce(async (search) => {
       titleTag: "h2",
       description:
         "Une erreur est survenue lors de la récupération de la demande",
+      role: "alert",
     });
     throw error;
   }
@@ -493,6 +497,7 @@ const validatePriseEnCharge = async () => {
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de la prise en charge de la demande",
+      role: "alert",
     });
     throw error;
   }

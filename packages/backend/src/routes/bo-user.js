@@ -3,15 +3,18 @@ const express = require("express");
 const router = express.Router();
 
 const BOcheckJWT = require("../middlewares/bo-check-JWT");
+const BOcheckJWTWithoutCGU = require("../middlewares/bo-check-JWT-without-CGU");
 const BOcheckRole = require("../middlewares/bo-check-role.js");
 const BOUserController = require("../controllers/bo-user");
 const checkTerrForAccountCreation = require("../middlewares/bo-check-terr-for-account-creation");
 const getDepartements = require("../middlewares/getDepartements");
 const trackBoUser = require("../middlewares/trackBoUser");
 
-const { actions, userTypes } = require("../helpers/tracking");
+const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 
 const BOcheckRoleCompte = BOcheckRole(["Compte"]);
+// Acceptation des CGU
+router.post("/accept-cgu", BOcheckJWTWithoutCGU, BOUserController.acceptCgu);
 
 // Renvoie la liste des utilisateurs du BO
 router.get("/", BOcheckJWT, BOcheckRoleCompte, BOUserController.list);
@@ -36,9 +39,9 @@ router.post(
   "/me",
   BOcheckJWT,
   trackBoUser({
-    action: actions.modification,
+    action: TRACKING_ACTIONS.modification,
     itself: true,
-    userType: userTypes.back,
+    userType: TRACKING_USER_TYPE.back,
   }),
   BOUserController.updateMe,
 );
@@ -49,7 +52,10 @@ router.post(
   BOcheckRoleCompte,
   getDepartements,
   checkTerrForAccountCreation,
-  trackBoUser({ action: actions.creation, userType: userTypes.back }),
+  trackBoUser({
+    action: TRACKING_ACTIONS.creation,
+    userType: TRACKING_USER_TYPE.back,
+  }),
   BOUserController.create,
 );
 // Mise à jour d'un utilisateur
@@ -59,7 +65,10 @@ router.post(
   BOcheckRoleCompte,
   getDepartements,
   checkTerrForAccountCreation,
-  trackBoUser({ action: actions.modification, userType: userTypes.back }),
+  trackBoUser({
+    action: TRACKING_ACTIONS.modification,
+    userType: TRACKING_USER_TYPE.back,
+  }),
   BOUserController.update,
 );
 // Fonctione transverse de recherche du service compétent

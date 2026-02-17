@@ -26,9 +26,16 @@
 
 <script setup>
 import dayjs from "dayjs";
-import EigStatusBadge from "@vao/shared-ui/src/components/eig/EigStatusBadge.vue";
-import { TableFull, ValidationModal } from "@vao/shared-ui";
-import { mapEigToLabel } from "@vao/shared-ui/src/utils/eigUtils";
+import {
+  TableFull,
+  ValidationModal,
+  EigStatusBadge,
+  eigUtils,
+  useToaster,
+} from "@vao/shared-ui";
+const mapEigToLabel = eigUtils.mapEigToLabel;
+
+const toaster = useToaster();
 
 const DsfrButton = resolveComponent("DsfrButton");
 
@@ -118,7 +125,7 @@ const deleteEig = async () => {
     await eigStore.delete(eigToDelete.value);
     await props.fetchEig();
   } catch (error) {
-    toaster.error("Une erreur est survenue de la suppression de l'EIG");
+    toaster.error({ description: "Une erreur est survenue de la suppression de l'EIG", role: "alert" });
     throw error;
   } finally {
     closeEigModal();

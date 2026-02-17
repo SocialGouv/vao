@@ -3,7 +3,7 @@ const Organisme = require("../../services/Organisme");
 
 const logger = require("../../utils/logger");
 const dayjs = require("dayjs");
-const { formatSiren, formatSiret } = require("../../utils/siret");
+const { formatSiren, formatSiret } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);
 

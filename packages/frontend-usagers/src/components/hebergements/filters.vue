@@ -1,41 +1,43 @@
 <template>
   <div class="fr-fieldset">
-    <div :class="`${filedsetClass} fr-col-md-4 fr-col-lg-4`">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="nomSync"
-          type="text"
-          name="nom"
-          label="Nom du lieu d'hébergement"
-          placeholder="Nom"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
+    <div class="fr-grid-row fr-grid-row--gutters">
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="nomSync"
+            type="text"
+            name="nom"
+            label="Nom du lieu d'hébergement"
+            placeholder="Nom"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
       </div>
-    </div>
-    <div :class="`${filedsetClass} fr-col-md-4 fr-col-lg-4`">
-      <div class="fr-input-group">
-        <DsfrInputGroup
-          v-model="adresseSync"
-          type="text"
-          name="adresse"
-          label="Adresse"
-          placeholder="Adresse"
-          :label-visible="true"
-          @update:model-value="filtersUpdate"
-        />
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-input-group">
+          <DsfrInputGroup
+            v-model="adresseSync"
+            type="text"
+            name="adresse"
+            label="Adresse"
+            placeholder="Adresse"
+            :label-visible="true"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
       </div>
-    </div>
-    <div :class="`${filedsetClass} fr-col-md-4 fr-col-lg-4`">
-      <div class="fr-input-group">
-        <DsfrSelect
-          v-model="statutSync"
-          label="Statut de l'hébergement"
-          name="statut"
-          mode="tags"
-          :options="statusFiltre"
-          @update:model-value="filtersUpdate"
-        />
+      <div class="fr-col-12 fr-col-md-4">
+        <div class="fr-input-group">
+          <DsfrSelect
+            v-model="statutSync"
+            label="Statut de l'hébergement"
+            name="statut"
+            mode="tags"
+            :options="statusFiltre"
+            @update:model-value="filtersUpdate"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -54,8 +56,6 @@ const emits = defineEmits<{
   "update:statut": [string];
   "filters-update": [];
 }>();
-const filedsetClass =
-  "fr-fieldset__element fr-fieldset__element--inline fr-col-12 ";
 
 const nomSync = computed({
   get() {

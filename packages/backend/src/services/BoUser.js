@@ -13,11 +13,11 @@ const {
   sanitizeFiltersParams,
 } = require("../helpers/queryParams");
 
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 
 const { addHistoric } = require("./Tracking");
 
-const { entities } = require("../helpers/tracking");
+const { TRACKING_ENTITIES } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);
 
@@ -195,7 +195,8 @@ ${Object.keys(criterias)
         WHEN us.ter_code = 'FRA' THEN 'Nationale'
         WHEN ter.parent_code = 'FRA' THEN 'Régionale'
         ELSE 'Départementale'
-      END AS "competence"
+      END AS "competence",
+      (COALESCE((ter.code = $1 OR ter.parent_code = $1), false) OR $1 = 'FRA') as "editable"
     FROM back.users AS us
     LEFT OUTER JOIN (
       SELECT
@@ -211,7 +212,7 @@ ${Object.keys(criterias)
     LEFT OUTER JOIN geo.territoires dep ON dep.code = us.ter_code AND dep.parent_code <> 'FRA'
     LEFT OUTER JOIN geo.territoires reg ON ((reg.code = ter.code AND ter.parent_code = 'FRA') or (dep.parent_code = reg.code))
     LEFT OUTER JOIN back.users ud on ud.id = us.deleted_use_id
-    WHERE 1 = 1
+    WHERE ((ter.code = $1 OR ter.parent_code = $1) OR $1 = 'FRA')
   `,
   getTotal: (additionalParamsQuery, additionalParams) => [
     `
@@ -250,7 +251,8 @@ ${Object.keys(criterias)
       us.prenom as prenom,
       us.validated AS validated,
       us.ter_code as "territoireCode",
-      ur.roles
+      ur.roles,
+      us.cgu_accepted AS "cguAccepted"
     FROM back.users us
     LEFT OUTER JOIN (
       SELECT
@@ -623,7 +625,7 @@ module.exports.getListe = async (queryParams, territoireCode) => {
       type: "default",
     },
     {
-      key: "us.territoire",
+      key: "ter.label",
       query: (index, value) => {
         if (value === "FRA") {
           return {
@@ -650,9 +652,10 @@ module.exports.getListe = async (queryParams, territoireCode) => {
       type: "default",
     },
     {
-      key: "us.editable",
+      key: "editable",
       queryKey: "editable",
       sortEnabled: true,
+      sortType: "boolean",
       type: "default",
     },
     {
@@ -672,16 +675,11 @@ module.exports.getListe = async (queryParams, territoireCode) => {
     },
   ];
   const filterParams = sanitizeFiltersParams(queryParams, titles);
-  let queryGet = query.getListe();
-  const params = [];
-  if (territoireCode !== "FRA") {
-    queryGet = `
-      ${queryGet}
-      AND (ter.code = $1 OR ter.parent_code = $1)
-    `;
-    params.push(territoireCode);
-  }
-  const filterQuery = applyFilters(queryGet, params, filterParams);
+  const filterQuery = applyFilters(
+    query.getListe(),
+    [territoireCode],
+    filterParams,
+  );
   const { limit, offset, sort } = sanitizePaginationParams(queryParams, titles);
   const paginatedQuery = applyPagination(
     filterQuery.query,
@@ -690,6 +688,7 @@ module.exports.getListe = async (queryParams, territoireCode) => {
     offset,
     sort,
   );
+
   const result = await Promise.all([
     getPool().query(paginatedQuery.query, paginatedQuery.params),
     getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
@@ -815,7 +814,7 @@ const addAsyncUserHistoric = async ({
         after: newData,
         before: oldData,
       },
-      entity: entities.userBack,
+      entity: TRACKING_ENTITIES.userBack,
       entityId: boUserId,
       userId,
       userType,

@@ -1,7 +1,6 @@
-import { emailSchema } from "@vao/shared-ui/src/schema/email";
-import { prenomSchema } from "@vao/shared-ui/src/schema/prenom";
-import { nomSchema } from "@vao/shared-ui/src/schema/nom";
-import { telephoneSchema } from "@vao/shared-ui/src/schema/telephone";
+import { eigSchema } from "@vao/shared-ui";
+
+const { emailSchema, prenomSchema, nomSchema, telephoneSchema } = eigSchema;
 
 const FicheTerritoireSchema = {
   email: emailSchema(),

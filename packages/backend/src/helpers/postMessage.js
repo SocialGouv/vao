@@ -2,9 +2,9 @@ const Message = require("../services/Message");
 const DeclarationSejourService = require("../services/DemandeSejour");
 const Send = require("../services/mail").mailService.send;
 const logger = require("../utils/logger");
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 const MessageSchema = require("../schemas/message");
-const ValidationAppError = require("../utils/validation-error");
+const ValidationAppError = require("../utils/validation-error").default;
 
 const log = logger(module.filename);
 

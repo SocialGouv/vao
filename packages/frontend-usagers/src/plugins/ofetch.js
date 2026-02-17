@@ -1,6 +1,6 @@
 import { ofetch } from "ofetch";
 import { defineNuxtPlugin, navigateTo } from "#app";
-import { useToaster } from "#imports";
+import { useToaster } from "@vao/shared-ui";
 
 export default defineNuxtPlugin(() => {
   globalThis.$fetch = ofetch.create({
@@ -13,6 +13,7 @@ export default defineNuxtPlugin(() => {
         return toaster.error({
           titleTag: "h2",
           description: "Vous n'êtes pas autorisé à réaliser cette action",
+          role: "alert",
         });
       }
     },

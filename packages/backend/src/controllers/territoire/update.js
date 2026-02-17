@@ -1,4 +1,4 @@
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 const Territoire = require("../../services/Territoire");
 const logger = require("../../utils/logger");
 

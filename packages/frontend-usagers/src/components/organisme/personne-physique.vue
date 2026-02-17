@@ -17,7 +17,7 @@
             :disabled="
               !props.modifiable ||
               !!organismeStore.organismeCourant?.complet ||
-              userStore.user.userSiret
+              userStore.user?.userSiret
             "
             placeholder=""
             hint="14 chiffres consécutifs qui indiquent l'établissement organisateur. Exemple: 110 000 072 00014"
@@ -43,6 +43,67 @@
           </DsfrButton>
         </div>
       </div>
+      <div
+        v-if="props.modifiable && organismeStore.organismeCourant?.complet"
+        class="fr-input-group fr-col-8"
+      >
+        <DsfrButton
+          id="chercherNouveauSiret"
+          :disabled="!siretMeta.valid"
+          @click.prevent="searchNewSiret"
+          >Mettre à jour le SIRET et/ou les informations
+        </DsfrButton>
+        <DsfrAccordion
+          title="Historique des mises à jour du SIRET"
+          class="fr-col-12 fr-mt-3w"
+        >
+          <div class="fr-grid-row">
+            <div
+              v-for="(historic, key) in organismeStore.organismeCourant
+                ?.personnePhysique?.historic ?? []"
+              :key="key"
+              class="fr-col-12"
+            >
+              <div class="fr-card fr-px-3w fr-py-1w">
+                <div
+                  class="fr-grid-row fr-grid-row--no-wrap fr-grid-row--middle fr-grid-row--gutters"
+                >
+                  <div class="fr-col-auto fr-text--ellipsis fr-mr-2w">
+                    {{ formatSiret({ siret: historic?.siret }) }}
+                  </div>
+
+                  <div
+                    class="fr-col-auto fr-text--ellipsis fr-mr-2w"
+                    style="font-style: italic; color: brown"
+                  >
+                    Inactif depuis le
+                    {{
+                      historic?.updatedAt
+                        ? formatFR(new Date(historic.updatedAt))
+                        : ""
+                    }}
+                  </div>
+
+                  <div class="fr-col fr-text--ellipsis">
+                    Mis à jour par {{ historic?.prenom ?? "" }}
+                    {{ historic?.nom ?? "" }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </DsfrAccordion>
+        <div class="fr-input-group fr-col-8">
+          <OrganismeConfirmUpdateSiret
+            :opened="confirmUpdatingSiret"
+            :ancien-siret="siret!"
+            :nouveau-siret="siretToUpdate!"
+            @close="confirmUpdatingSiret = false"
+            @confirm="updateSiret"
+          />
+        </div>
+      </div>
+
       <div v-if="nomNaissance">
         <div class="fr-fieldset__element">
           <div class="fr-input-group fr-col-8">
@@ -153,7 +214,7 @@
                     ? 'Nouvelle adresse du lieu d’exercice des activités VAO'
                     : 'Adresse du lieu d’exercice des activités VAO'
                 "
-                :value="adresseSiege"
+                :value="adresseSiege ?? undefined"
                 @select="onAdressSiegeChange"
               />
             </div>
@@ -177,11 +238,18 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading, ApiUnavailable } from "@vao/shared-ui";
-import { apiTypes } from "@vao/shared-ui/src/models";
+import { IsDownloading, ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
+import { SiretService } from "~/services/siretService";
+import {
+  ERRORS_SIRET_MESSAGES,
+  ERRORS_SIRET,
+  formatSiret,
+  formatFR,
+} from "@vao/shared-bridge";
+const apiTypes = apiModel.apiTypes;
 
 const toaster = useToaster();
 const log = logger("components/organisme/personne-physique");
@@ -198,8 +266,10 @@ const props = defineProps({
 
 const emit = defineEmits(["update", "next"]);
 const organismeStore = useOrganismeStore();
-organismeStore.fetchUsersOrganisme();
 const userStore = useUserStore();
+
+const confirmUpdatingSiret = ref(false);
+const siretToUpdate = ref<string | undefined>();
 
 const validationSchema = computed(() => {
   return yup.object(organisme.personnePhysiqueSchema);
@@ -227,42 +297,48 @@ const {
   errorMessage: siretErrorMessage,
   handleChange: onSiretChange,
   meta: siretMeta,
-} = useField("siret");
-const { value: nomNaissance } = useField("nomNaissance");
+} = useField<string | undefined>("siret");
+const { value: nomNaissance } = useField<string | undefined>("nomNaissance");
 const {
   value: nomUsage,
   errorMessage: nomUsageErrorMessage,
   handleChange: onNomUsageChange,
   meta: nomUsageMeta,
-} = useField("nomUsage");
-const { value: prenom } = useField("prenom");
+} = useField<string | undefined>("nomUsage");
+const { value: prenom } = useField<string | undefined>("prenom");
 const {
   value: profession,
   errorMessage: professionErrorMessage,
   handleChange: onProfessionChange,
   meta: professionMeta,
-} = useField("profession");
-const { value: adresseDomicile } = useField("adresseDomicile");
+} = useField<string | undefined>("profession");
+const { value: adresseDomicile } = useField<{
+  label: string;
+  codeInsee: string;
+  codePostal: string;
+  coordinates: { lat: number; lng: number };
+  departement: string;
+}>("adresseDomicile");
 const {
   value: adresseIdentique,
   errorMessage: adresseIdentiqueErrorMessage,
   meta: adresseIdentiqueMeta,
-} = useField("adresseIdentique");
+} = useField<boolean>("adresseIdentique");
 const {
   value: adresseSiege,
   errorMessage: adresseSiegeErrorMessage,
   resetField: resetAdressSiegeField,
   handleChange: onAdressSiegeChange,
-} = useField("adresseSiege");
+} = useField<Record<string, any> | null>("adresseSiege");
 const {
   value: telephone,
   errorMessage: telephoneErrorMessage,
   handleChange: onTelephoneChange,
   meta: telephoneMeta,
-} = useField("telephone");
+} = useField<string | undefined>("telephone");
 
-function trimSiret(s) {
-  return onSiretChange(s.replace(/ /g, ""));
+function trimSiret(s?: string | number): any {
+  return onSiretChange(s ? String(s).replace(/ /g, "") : "");
 }
 
 const formatedSiret = computed(() => {
@@ -281,6 +357,48 @@ const formatedSiret = computed(() => {
 
   return formatSiret;
 });
+
+async function searchNewSiret() {
+  log.i("searchNewSiret - IN");
+  try {
+    const siretFromResponse = await SiretService.getSiretSiegeSocial(
+      siret.value!,
+    );
+    if (siretFromResponse !== siret.value) {
+      siretToUpdate.value = siretFromResponse;
+      confirmUpdatingSiret.value = true;
+    } else {
+      toaster.info({
+        titleTag: "h2",
+        description: "Le numéro SIRET est déjà à jour",
+      });
+      await searchOrganisme();
+    }
+  } catch (error: any) {
+    log.w("searchNewSiret - erreur:", { error });
+    const body = error.data;
+    const codeError = body.name as ERRORS_SIRET;
+    const description =
+      (await ERRORS_SIRET_MESSAGES[codeError]) || ERRORS_SIRET.UnknownError;
+    toaster.error({
+      titleTag: "h2",
+      description,
+      role: "alert",
+    });
+  }
+}
+
+async function updateSiret() {
+  confirmUpdatingSiret.value = false;
+  siret.value = siretToUpdate.value;
+
+  await searchOrganisme();
+  resetAdressSiegeField({
+    value: adresseDomicile.value,
+  });
+
+  return true;
+}
 
 async function searchOrganisme() {
   log.i("searchOrganisme - In");
@@ -312,6 +430,7 @@ async function searchOrganismeBySiret() {
       toaster.error({
         titleTag: "h2",
         description: "Un organisme existe déjà pour ce SIRET",
+        role: "alert",
       });
       return true;
     }
@@ -320,6 +439,7 @@ async function searchOrganismeBySiret() {
       titleTag: "h2",
       description:
         "erreur lors de la récupération des données internes à partir du SIRET",
+      role: "alert",
     });
     log.w("searchOrganismeBySiret - erreur:", { error });
     return true;
@@ -352,30 +472,32 @@ async function searchApiInsee() {
         departement: uniteLegale.adresseEtablissement.departement,
       },
     });
-  } catch (error) {
+  } catch (error: any) {
     if (error.response?.status === 403) {
       toaster.error({
         titleTag: "h2",
         description:
           "Le SIRET renseigné n’est plus valide. Veuillez utiliser le nouveau SIRET de votre établissement",
+        role: "alert",
       });
     } else {
       toaster.error({
         titleTag: "h2",
         description:
           "erreur lors de la récupération des données à partir du SIRET",
+        role: "alert",
       });
     }
     log.w("searchApiInsee - erreur:", { error });
   }
 }
 
-function setAdresseIdentique(v) {
+function setAdresseIdentique(checked: string | number | boolean) {
   log.d("setAdresseIdentique - IN");
   resetAdressSiegeField({
-    value: v ? adresseDomicile.value : null,
+    value: checked ? adresseDomicile.value : null,
   });
-  adresseIdentique.value = v;
+  adresseIdentique.value = !!checked;
   log.d("setAdresseIdentique - Done");
 }
 

@@ -6,7 +6,7 @@ const Send = require("../../services/mail").mailService.send;
 
 const { status: refStatus } = require("../../helpers/users");
 
-const AppError = require("../../utils/error");
+const AppError = require("../../utils/error").default;
 
 const log = logger(module.filename);
 

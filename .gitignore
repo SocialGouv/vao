@@ -1,13 +1,13 @@
 .env
 node_modules
-.vscode
+.vscode/*
+!.vscode/tasks.json
+!.vscode/settings.json
 .prettierrc
 .eslintcache
 .local
 .cache
 
-yarn-error.log
-.yarn
 coverage
 notes.txt
 
@@ -15,6 +15,7 @@ notes.txt
 
 playwright-report/
 test-results/
+.pnpm-store
 
 # macOS
 .DS_Store

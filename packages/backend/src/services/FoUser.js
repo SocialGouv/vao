@@ -9,7 +9,7 @@ const {
 } = require("../helpers/queryParams");
 const { processQuery } = require("../helpers/queryParams");
 
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 
 const log = logger(module.filename);
 
@@ -47,8 +47,8 @@ const query = {
     FROM front.users AS us
       LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
       LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
-      LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id
-      LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
+      LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id AND pm.current = TRUE
+      LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id AND pp.current = TRUE
       LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
     WHERE 1 = 1
     ${searchQuery}
@@ -58,80 +58,54 @@ const query = {
     [...params],
   ],
   getByOrganismeId: () =>
-    ` SELECT * FROM (
-      (
-        SELECT
-          u.id AS "userId",
-          u.mail AS email,
-          u.nom AS nom,
-          u.prenom AS prenom,
-          u.telephone AS telephone,
-          u.status_code AS statut,
-          u.created_at AS "dateCreation",
-          u.lastconnection_at as "lastConnectionAt",
-          CASE 
-            WHEN o.type_organisme = 'personne_morale' THEN pm.siege_social 
-            ELSE true
-          END AS "siegeSocial",
-          COALESCE(pm.adresse, pp.adresse_siege_label) AS "Adresse"
-        FROM front.users AS u
-          LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = u.id
-          LEFT OUTER JOIN front.organismes AS o ON o.id = uo.org_id
-          LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id
-          LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id
-        WHERE o.id = ANY ($1)
-      )
-      UNION
-      (
-        SELECT
-          u.id AS "userId",
-          u.mail AS email,
-          u.nom AS nom,
-          u.prenom AS prenom,
-          u.telephone AS telephone,
-          u.status_code AS statut,
-          u.created_at AS "dateCreation",
-          u.lastconnection_at as "lastConnectionAt",
-          CASE 
-            WHEN pm.siret = u.siret THEN pm.siege_social 
-            ELSE false
-          END AS "siegeSocial",
-          COALESCE(CONCAT(etab.adresse,' ',etab.code_postal,' ',etab.commune), pm.adresse, pp.adresse_siege_label) AS "Adresse"
-        FROM front.users AS u
-          LEFT JOIN front.opm_etablissements etab ON etab.siret = u.siret
-          LEFT JOIN front.personne_morale pm ON pm.siege_social = true AND ((pm.siren = substr(u.siret,1,9) AND etab.siret = u.siret) OR pm.siret = u.siret) AND pm.organisme_id = ANY ($1)
-          LEFT JOIN front.personne_physique pp ON pp.siret = u.siret AND pp.organisme_id = ANY ($1)
-          INNER JOIN front.organismes AS o ON o.id = pm.organisme_id OR o.id = pp.organisme_id
-        WHERE u.id NOT IN (SELECT use_id FROM front.user_organisme uo WHERE uo.use_id = u.id)
-        GROUP BY 1,2,3,4,5,6,7,8,9,10
-      )
-        UNION
-      (
-        SELECT
-          u.id AS "userId",
-          u.mail AS email,
-          u.nom AS nom,
-          u.prenom AS prenom,
-          u.telephone AS telephone,
-          u.status_code AS statut,
-          u.created_at AS "dateCreation",
-          u.lastconnection_at as "lastConnectionAt",
-          CASE 
-            WHEN pm.siret = u.siret THEN pm.siege_social 
-            ELSE false
-          END AS "siegeSocial",
-          COALESCE(CONCAT(etab.adresse, ' ', etab.code_postal, ' ', etab.commune), pm.adresse) AS "Adresse"
-        FROM front.users AS u
-          LEFT JOIN front.personne_morale pm ON pm.siege_social = false AND pm.siret = u.siret AND pm.organisme_id = ANY ($1)
-          LEFT JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm.id
-          INNER JOIN front.organismes AS o ON o.id = pm.organisme_id
-        WHERE u.id NOT IN (SELECT use_id FROM front.user_organisme uo WHERE uo.use_id = u.id)
-        GROUP BY 1,2,3,4,5,6,7,8,9,10
-      )
-    ) AS Resultat
-    WHERE 1 = 1
+    `SELECT * FROM (
+      SELECT
+        u.id AS "userId",
+        u.mail AS email,
+        u.nom AS nom,
+        u.prenom AS prenom,
+        u.telephone AS telephone,
+        u.status_code AS statut,
+        u.created_at AS "dateCreation",
+        u.lastconnection_at AS "lastConnectionAt",
+        coalesce(u.siret, pp.siret, pm.siret) AS "siret",
+        CASE 
+          WHEN NULLIF(pp.id, 0) IS NOT NULL THEN 
+            true
+          ELSE
+            (
+                SELECT pm3.siege_social
+                FROM front.personne_morale pm3
+                WHERE pm3.siret = COALESCE(u.siret, pm.siret)
+                AND pm3."current" = true
+                LIMIT 1
+              )            
+        END AS "siegeSocial",
+        CASE 
+          WHEN NULLIF(pp.id, 0) IS NOT NULL THEN 
+            pp.adresse_siege_label
+          ELSE (
+            SELECT pm4.adresse
+              FROM front.personne_morale pm4
+              WHERE pm4.siret = COALESCE(u.siret, pm.siret)
+              AND pm4."current" = true
+              LIMIT 1
+            )
+        END AS "Adresse"
+      FROM front.users AS u
+        LEFT JOIN front.user_organisme uo ON uo.use_id = u.id
+        LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id AND pm."current" = true
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp."current" = true
+      WHERE (uo.org_id = ANY ($1) OR 
+        u.siret IN (
+          SELECT siret 
+          FROM front.personne_morale pm2 
+          WHERE pm2.siret = u.siret 
+          AND pm2.organisme_id = ANY ($1) 
+          AND pm2."current" = true))
+      ) AS r
+      WHERE 1=1
     `,
-
   getByToValidateByBo: `
     SELECT
       u.id AS "userId",
@@ -171,14 +145,14 @@ const query = {
     FROM (
         SELECT count(*) AS total_count
         FROM front.user_organisme uco 
-        INNER JOIN front.personne_morale ucpm ON ucpm.organisme_id = uco.org_id AND siege_social = true
-        INNER JOIN front.personne_morale uupm ON uupm.siren = ucpm.siren
+        INNER JOIN front.personne_morale ucpm ON ucpm.organisme_id = uco.org_id AND siege_social = true AND ucpm.current = TRUE
+        INNER JOIN front.personne_morale uupm ON uupm.siren = ucpm.siren AND uupm.current = TRUE
         INNER JOIN front.user_organisme uuo ON uuo.org_id = uupm.organisme_id
         WHERE uco.use_id = $1 AND uuo.use_id = $2
       UNION ALL
         SELECT count(*) AS total_count
         FROM front.user_organisme uco 
-        INNER JOIN front.personne_morale ucpm ON ucpm.organisme_id = uco.org_id AND siege_social = true
+        INNER JOIN front.personne_morale ucpm ON ucpm.organisme_id = uco.org_id AND siege_social = true AND ucpm.current = TRUE
         INNER JOIN front.users uu ON ucpm.siren = substr(uu.siret,1,9)
         WHERE uco.use_id = $1 AND uu.id = $2
     ) AS counts;
@@ -203,8 +177,8 @@ const query = {
       FROM front.users AS us
         LEFT JOIN front.user_organisme AS uo ON uo.use_id = us.id
         LEFT JOIN front.organismes AS org ON org.id = uo.org_id
-        LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id
-        LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
+        LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id AND pm.current = TRUE
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id AND pp.current = TRUE
         LEFT JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
       GROUP BY us.id, us.mail, us.nom, us.prenom, us.status_code, org.id, org.type_organisme, pm.siren
     )
@@ -236,11 +210,12 @@ const query = {
       CASE 
         WHEN o.type_organisme = 'personne_morale' THEN pm.siege_social 
         ELSE true
-      END AS "siegeSocial"
+      END AS "siegeSocial",
+      u.cgu_accepted as "cguAccepted"
     FROM front.users AS u
     INNER JOIN front.user_organisme uo ON uo.use_id = u.id
     INNER JOIN front.organismes o ON o.id = uo.org_id
-    LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id
+    LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id AND pm.current = TRUE
     WHERE u.id = $1
     `,
   getRolesByUserId: `
@@ -256,8 +231,8 @@ const query = {
       FROM front.users AS us
         LEFT OUTER JOIN front.user_organisme AS uo ON uo.use_id = us.id
         LEFT OUTER JOIN front.organismes AS org ON org.id = uo.org_id
-        LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id
-        LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id
+        LEFT JOIN front.personne_morale pm ON pm.organisme_id = org.id AND pm.current = TRUE
+        LEFT JOIN front.personne_physique pp ON pp.organisme_id = org.id AND pp.current = TRUE
         LEFT OUTER JOIN front.demande_sejour AS ds ON ds.organisme_id = org.id
       WHERE 1 = 1
     ${additionalParamsQuery}

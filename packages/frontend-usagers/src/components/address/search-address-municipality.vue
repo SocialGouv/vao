@@ -64,10 +64,10 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
-import { MultiSelectOption } from "@vao/shared-ui";
+import { MultiSelectOption, eigSchema, useToaster } from "@vao/shared-ui";
 import { useForm } from "vee-validate";
-import { adresseSchema } from "@vao/shared-ui/src/schema/adresse";
 import * as yup from "yup";
+const { adresseSchema } = eigSchema;
 
 const emits = defineEmits(["choose-manual-address"]);
 
@@ -128,6 +128,7 @@ const searchAddressDebounced = debounce(async function (queryString) {
     toaster.error({
       titleTag: "h2",
       description: "erreur lors de l'appel à l'API adresse",
+      role: "alert",
     });
   }
   log.d("searchAddressDebounced - DONE", { queryString });

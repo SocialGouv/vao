@@ -1,9 +1,9 @@
 <script setup>
 import Multiselect from "@vueform/multiselect";
 import "@vueform/multiselect/themes/default.css";
-import { MultiSelectOption, ApiUnavailable } from "@vao/shared-ui";
+import { MultiSelectOption, ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
 import { ref } from "vue";
-import { apiTypes } from "@vao/shared-ui/src/models";
+const apiTypes = apiModel.apiTypes;
 
 const useExternalApi = useExternalApiStore();
 
@@ -86,6 +86,7 @@ const searchAddressDebounced = debounce(async function (queryString) {
     toaster.error({
       titleTag: "h2",
       description: "erreur lors de l'appel à l'API adresse",
+      role: "alert",
     });
   }
   log.d("searchAddressDebounced - DONE", { queryString });

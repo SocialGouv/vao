@@ -1,7 +1,7 @@
 const get = require("../../demandeSejour/getExtractFO");
 const DemandeSejour = require("../../../services/DemandeSejour");
 const Organisme = require("../../../services/Organisme");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 
 jest.mock("../../../services/Organisme");
 jest.mock("../../../services/DemandeSejour");
@@ -12,9 +12,9 @@ describe("Controller get() - export CSV des séjours FO", () => {
   beforeEach(() => {
     req = { decoded: { id: 1 } };
     res = {
+      send: jest.fn(),
       setHeader: jest.fn(),
       status: jest.fn().mockReturnThis(),
-      send: jest.fn(),
     };
     next = jest.fn();
     jest.clearAllMocks();
@@ -29,15 +29,15 @@ describe("Controller get() - export CSV des séjours FO", () => {
 
     const fakeData = [
       {
-        reference: "REF001",
-        libelle: "Séjour test",
-        departement: "75",
-        etablissement: "",
-        siret: "12345678901234",
         date_debut: "2024-04-01",
         date_fin: "2024-04-07",
-        statut: "en cours",
+        departement: "75",
+        etablissement: "",
         hebergement_nom: "Hotel Test",
+        libelle: "Séjour test",
+        reference: "REF001",
+        siret: "12345678901234",
+        statut: "en cours",
       },
     ];
 
@@ -77,15 +77,15 @@ describe("Controller get() - export CSV des séjours FO", () => {
 
     const fakeData = [
       {
-        reference: "REF002",
-        libelle: "Séjour collectif",
-        departement: "33",
-        etablissement: "Maison d’enfants",
-        siret: "98765432100012",
         date_debut: "2024-05-01",
         date_fin: "2024-05-10",
-        statut: "transmise",
+        departement: "33",
+        etablissement: "Maison d’enfants",
         hebergement_nom: "Centre A",
+        libelle: "Séjour collectif",
+        reference: "REF002",
+        siret: "98765432100012",
+        statut: "transmise",
       },
     ];
 

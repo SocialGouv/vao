@@ -391,9 +391,6 @@ const handleCheckboxChange = (event: Event) => {
 .fr-table .fr-icon-arrow-up-line {
   color: var(--blue-france-sun-113-625);
 }
-.fr-sort-icon {
-  margin-left: 1rem;
-}
 
 .fr-table .fr-cell {
   word-wrap: break-word;
@@ -445,6 +442,16 @@ const handleCheckboxChange = (event: Event) => {
   position: sticky;
   right: 0;
   z-index: 1;
+}
+.fr-table__sort-btn {
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  column-gap: 0.5rem;
+  row-gap: 0.5rem;
 }
 .fr-table__sort-btn:hover {
   background-color: transparent;

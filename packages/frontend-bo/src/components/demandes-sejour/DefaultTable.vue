@@ -70,6 +70,7 @@ import {
   usePagination,
   isValidParams,
   columnsTable,
+  useToaster,
 } from "@vao/shared-ui";
 import dayjs from "dayjs";
 
@@ -226,6 +227,7 @@ const validatePriseEnCharge = async () => {
     toaster.error({
       titleTag: "h2",
       description: "Erreur lors de la prise en charge de la demande",
+      role: "alert",
     });
     throw error;
   }

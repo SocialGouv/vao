@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { Hebergement } from "@vao/shared-ui";
+import { Hebergement, useToaster } from "@vao/shared-ui";
 
 definePageMeta({
   middleware: ["is-connected"],
@@ -62,6 +62,7 @@ if (isNaN(hebergementId)) {
   toaster.error({
     titleTag: "h2",
     description: "Cet hébergement n'existe pas",
+    role: "alert",
   });
   navigateTo("/hebergements/tous");
 }
@@ -72,6 +73,7 @@ try {
     toaster.error({
       titleTag: "h2",
       description: "Cet hébergement n'existe pas",
+      role: "alert",
     });
     navigateTo("/hebergements/tous");
   }

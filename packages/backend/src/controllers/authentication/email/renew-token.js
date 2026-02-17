@@ -7,7 +7,7 @@ const config = require("../../../config");
 const { status } = require("../../../helpers/users");
 
 const MailUtils = require("../../../utils/mail");
-const AppError = require("../../../utils/error");
+const AppError = require("../../../utils/error").default;
 const logger = require("../../../utils/logger");
 const normalize = require("../../../utils/normalize");
 const { buildEmailToken } = require("../../../utils/token");

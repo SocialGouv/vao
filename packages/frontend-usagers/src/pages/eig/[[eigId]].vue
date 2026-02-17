@@ -74,8 +74,8 @@
 </template>
 
 <script setup>
-import { eigModel } from "@vao/shared-ui";
-import { getFileUploadErrorMessage } from "@vao/shared-ui/src/utils/file.mjs";
+import { eigModel, fileUtils, useToaster } from "@vao/shared-ui";
+const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 definePageMeta({
   middleware: ["is-connected", "check-roles", "check-eig-id-param"],
@@ -131,13 +131,15 @@ const updateOrCreate = async (data, type) => {
     }
 
     toaster.success(`EIG ${eigId.value ? "sauvegardée" : "créée"}`);
-    log.d(`EIG ${eigId} mis à jour`);
+    log.d(`EIG ${eigId.value} mis à jour`);
     eigId.value = response.id;
     return await nextHash();
   } catch (error) {
     log.w("Creation/modification EIG: ", { error });
-    return toaster.error(
-      `Une erreur est survenue lors de la mise à jour de l'EIG'`,
+    return toaster.error({
+      description: "Une erreur est survenue lors de la mise à jour de l'EIG",
+      role: "alert",
+    }
     );
   } finally {
     resetApiStatut();
@@ -181,6 +183,7 @@ async function finalize(body) {
       toaster.error({
         titleTag: "h2",
         description,
+        role: "alert",
       });
       return;
     }
@@ -201,7 +204,11 @@ async function finalize(body) {
   } catch (error) {
     log.w("Finalisation de la declaration de sejour : ", { error });
     return toaster.error(
-      "Une erreur est survenue lors de la transmission de la déclaration de séjour",
+      {
+        description:
+          "Une erreur est survenue lors de la transmission de l'EIG",
+        role: "alert",
+      }
     );
   } finally {
     resetApiStatut();

@@ -41,6 +41,10 @@ module.exports = {
   },
   crons: {
     request: {
+      blocageTemporaire3m: {
+        cron: process.env.BACKEND_CRON_DISABLE_ACCOUNT_3M_CRON,
+        name: "DISABLE_ACCOUNT_3M",
+      },
       notify: {
         cron: process.env.BACKEND_CRON_REQUEST_DS8J15J_NOTIFY_CRON,
         deadlineRemind:
@@ -58,10 +62,6 @@ module.exports = {
       update: {
         cron: process.env.BACKEND_CRON_UPDATE_STATUT_DS_CRON,
         name: "UPDATE_STATUT_DS",
-      },
-      blocageTemporaire3m: {
-        cron: process.env.BACKEND_CRON_DISABLE_ACCOUNT_3M_CRON,
-        name: "DISABLE_ACCOUNT_3M",
       },
     },
   },
@@ -111,7 +111,7 @@ module.exports = {
     port: process.env.SMTP_PORT,
     secure: process.env.SMTP_IS_SECURE === "true",
   },
-  tmpDirectory: process.env.TMP_DIRECTORY,
+  tmpDirectory: process.env.TMP_DIRECTORY || "/tmp/",
   tokenSecret: process.env.TOKEN_SECRET_LINK,
   tokenSecret_BO: process.env.TOKEN_SECRET_BO,
   tokenSecret_FO: process.env.TOKEN_SECRET_FO,

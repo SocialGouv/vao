@@ -29,7 +29,7 @@ afterAll(async () => {
 describe("GET /hebergement/admin/:id", () => {
   it("devrait retourner un hébergement par ID avec succès", async () => {
     authUser = await createUsagersUser();
-    const organismeId = await createOrganisme();
+    const organismeId = await createOrganisme({ userId: authUser.id });
     const hebergementId = await createHebergement({
       organismeId,
       userId: authUser.id,

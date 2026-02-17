@@ -1,7 +1,7 @@
 const { encodeFilename, getFileNameAndExtension } = require("../utils/file");
 const logger = require("../utils/logger");
 const { getPool: getPoolDoc } = require("../utils/pgpoolDoc");
-const AppError = require("../utils/error");
+const AppError = require("../utils/error").default;
 const path = require("node:path");
 
 const {

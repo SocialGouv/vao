@@ -5,7 +5,6 @@ const { sentry } = require("../config");
 const log = logger(module.filename);
 const crypto = require("crypto");
 
-
 const algorithm = "aes-256-gcm";
 
 // Clé de 32 octets (256 bits), encodée en hex dans la variable d'environnement
@@ -64,7 +63,7 @@ function decrypt(data) {
     const decipher = crypto.createDecipheriv(
       algorithm,
       secretKey,
-      Buffer.from(data.iv, "hex")
+      Buffer.from(data.iv, "hex"),
     );
 
     decipher.setAuthTag(Buffer.from(data.tag, "hex"));
@@ -90,4 +89,4 @@ function decrypt(data) {
   }
 }
 
-module.exports = { encrypt, decrypt };
+module.exports = { decrypt, encrypt };

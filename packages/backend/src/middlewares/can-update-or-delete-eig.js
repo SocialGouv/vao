@@ -1,6 +1,6 @@
 const { number } = require("yup");
-const ValidationAppError = require("../utils/validation-error");
-const AppError = require("../utils/error");
+const ValidationAppError = require("../utils/validation-error").default;
+const AppError = require("../utils/error").default;
 const eigService = require("../services/eig");
 const { statuts } = require("../helpers/eig");
 

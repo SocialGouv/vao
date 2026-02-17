@@ -1,4 +1,4 @@
-const { actions } = require("../helpers/tracking");
+const { TRACKING_ACTIONS } = require("@vao/shared-bridge");
 const eigService = require("../services/eig");
 
 function trackEig({ action, userType }) {
@@ -7,7 +7,7 @@ function trackEig({ action, userType }) {
     const { id: eigId } = req.params;
 
     let oldEig = null;
-    if (action !== actions.creation) {
+    if (action !== TRACKING_ACTIONS.creation) {
       oldEig = await eigService.getByEigId(eigId);
     }
 
@@ -17,9 +17,9 @@ function trackEig({ action, userType }) {
       }
 
       let newEig = null;
-      const id = action === actions.creation ? req.tracking.id : eigId;
+      const id = action === TRACKING_ACTIONS.creation ? req.tracking.id : eigId;
 
-      if (action !== actions.deletion) {
+      if (action !== TRACKING_ACTIONS.deletion) {
         newEig = eigService.getByEigId(id);
       }
 
