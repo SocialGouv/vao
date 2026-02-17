@@ -7,6 +7,7 @@
     @filters-update="() => updateData(true)"
   />
   <DsfrDataTableV2Wrapper
+    v-model:limit="limit"
     v-model:offset="offset"
     v-model:sort="sort"
     v-model:sort-direction="sortDirection"
@@ -65,13 +66,13 @@ import {
 
 import type { AgrementDto, OrganismeDto } from "@vao/shared-bridge";
 import { formatFR } from "@vao/shared-bridge";
-import type { Columns } from "@vao/shared-ui";
+import type { Columns, NestedKeys } from "@vao/shared-ui";
+import { useAgrementStore } from "~/stores/agrement";
 
-export type AgrementWithOrganismeDto = AgrementDto;
-/* {
+export type AgrementWithOrganismeDto = AgrementDto & {
   organisme: OrganismeDto;
 };
-*/
+
 type CellSlotProps = {
   row: AgrementWithOrganismeDto;
 };
@@ -122,17 +123,23 @@ const title = "Liste des Agréments";
 
 const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],
-) as Columns<AgrementWithOrganismeDto>[number]["key"][];
+) as NestedKeys<AgrementWithOrganismeDto>[];
 
 const name = ref<string>(String(query.name ?? ""));
 const numeroAgrement = ref<string>(String(query.numeroAgrement ?? ""));
 const siret = ref<string>(String(query.siret ?? ""));
 const statut = ref<string>(String(query.statut ?? ""));
 
-const { limit, offset, sort, sortDirection } = usePagination(
-  queryString,
-  sortableColumns,
-);
+const { limit, offset, sort, sortDirection } =
+  usePagination<AgrementWithOrganismeDto>(
+    {
+      limit: queryString.limit,
+      offset: queryString.offset,
+      sort: queryString.sort,
+      sortDirection: queryString.sortDirection as "asc" | "desc" | "",
+    },
+    sortableColumns,
+  );
 
 const getSearchParams = () => ({
   ...(isValidParams(name.value) ? { name: name.value } : {}),
