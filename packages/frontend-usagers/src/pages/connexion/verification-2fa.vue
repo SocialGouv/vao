@@ -103,11 +103,17 @@ async function handleVerify2FA(payload: Verify2FAPayload) {
 }
 
 async function handleResendCode() {
+  log.i("handleResendCode");
+
   try {
     await resendCode();
-    twoFactorRef.value?.startResendTimer();
+
+    log.i("handleResendCode - succès, démarrage du timer");
+    if (twoFactorRef.value) {
+      twoFactorRef.value.startResendTimer();
+    }
   } catch (error) {
-    log.w("handleResendCode - erreur", { error });
+    log.w("handleResendCode - échec API, timer non démarré", { error });
   }
 }
 

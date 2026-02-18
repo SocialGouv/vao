@@ -109,33 +109,25 @@
               <DsfrButton @click="validateCode"> Valider </DsfrButton>
             </li>
           </ul>
-          <div v-if="resendTimer > 0" class="fr-text--xs">
-            <span
-              v-if="resendTimer === 30"
-              role="alert"
-              aria-live="assertive"
-              aria-atomic="true"
-              class="sr-only"
-            >
-              Vous pourrez demander un nouveau code dans 30 secondes.
-            </span>
-            <span v-else role="timer" aria-atomic="true" aria-live="off">
-              Vous pourrez demander un nouveau code dans
-              {{ resendTimer }} secondes.
-            </span>
-          </div>
-          <span
-            v-if="resendTimer === 0 && hasRequestedCode"
+
+          <div
+            v-if="liveMessage"
             role="alert"
             aria-live="assertive"
             aria-atomic="true"
             class="fr-sr-only"
           >
-            Vous pouvez demander un nouveau code.
-          </span>
+            {{ liveMessage }}
+          </div>
+
+          <div v-if="resendTimer > 0" class="fr-text--xs" aria-hidden="true">
+            Vous pourrez demander un nouveau code dans
+            {{ resendTimer }} secondes.
+          </div>
         </div>
       </div>
     </template>
+
     <div class="fr-fieldset">
       <div class="fr-fieldset__element fr-mt-3v">
         <DsfrAccordion
@@ -166,19 +158,19 @@
               <span
                 class="fr-icon-mail-forbid-fill fr-mr-1v"
                 aria-hidden="true"
-              ></span
-              >Vérifiez les courriers indésirables de votre boite e-mail
+              ></span>
+              Vérifiez les courriers indésirables de votre boite e-mail
             </li>
             <li>
-              <span class="fr-icon-at-fill fr-mr-1v" aria-hidden="true"></span
-              >Vérifiez l'adresse e-mail saisie
+              <span class="fr-icon-at-fill fr-mr-1v" aria-hidden="true"></span>
+              Vérifiez l'adresse e-mail saisie
             </li>
             <li>
               <span
                 class="fr-icon-send-plane-fill fr-mr-1v"
                 aria-hidden="true"
-              ></span
-              >Demandez un nouveau code
+              ></span>
+              Demandez un nouveau code
             </li>
             <li>
               <span
@@ -192,10 +184,10 @@
                 target="_blank"
                 rel="noopener external"
                 class="fr-link"
-                >Contacter le support<span class="fr-sr-only">
-                  - nouvel onglet</span
-                ></a
               >
+                Contacter le support
+                <span class="fr-sr-only"> - nouvel onglet</span>
+              </a>
             </li>
           </ul>
         </DsfrAccordion>
@@ -205,7 +197,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted } from "vue";
+import { ref, computed, nextTick, onMounted, onBeforeUnmount } from "vue";
 import createLogger from "../../utils/createLogger";
 
 interface Props {
@@ -245,6 +237,8 @@ const errorMessage = ref<ErrorMessage | null>(null);
 const resendTimer = ref<number>(0);
 let resendInterval: ReturnType<typeof setInterval> | null = null;
 const hasRequestedCode = ref<boolean>(false);
+
+const liveMessage = ref<string | null>(null);
 
 const attemptCount = ref<number>(0);
 
@@ -295,6 +289,13 @@ onMounted(() => {
       inputRefs.value[0].focus();
     }
   });
+});
+
+onBeforeUnmount(() => {
+  if (resendInterval) {
+    clearInterval(resendInterval);
+    resendInterval = null;
+  }
 });
 
 const handleInput = (index: number, event: InputEvent): void => {
@@ -449,6 +450,7 @@ const validateCode = (): void => {
 const resendCode = (): void => {
   if (resendTimer.value > 0) return;
   hasRequestedCode.value = true;
+
   emit("resend");
 };
 
@@ -482,6 +484,15 @@ const reset = (): void => {
   errorMessage.value = null;
   attemptCount.value = 0;
   hasRequestedCode.value = false;
+
+  liveMessage.value = null;
+
+  if (resendInterval) {
+    clearInterval(resendInterval);
+    resendInterval = null;
+  }
+  resendTimer.value = 0;
+
   log.i("reset - composant réinitialisé");
 
   nextTick(() => {
@@ -503,12 +514,36 @@ const setAttemptCount = (count: number): void => {
 
 const startResendTimer = (): void => {
   resendTimer.value = 30;
-  if (resendInterval) clearInterval(resendInterval);
+
+  if (resendInterval) {
+    clearInterval(resendInterval);
+  }
+
+  liveMessage.value = "";
+
+  nextTick(() => {
+    setTimeout(() => {
+      liveMessage.value =
+        "Vous pourrez demander un nouveau code dans 30 secondes.";
+    }, 50);
+  });
+
   resendInterval = setInterval(() => {
     resendTimer.value = Math.max(0, resendTimer.value - 1);
-    if (resendTimer.value === 0 && resendInterval) {
-      clearInterval(resendInterval);
-      resendInterval = null;
+
+    if (resendTimer.value === 0) {
+      if (resendInterval) {
+        clearInterval(resendInterval);
+        resendInterval = null;
+      }
+
+      liveMessage.value = "";
+      nextTick(() => {
+        setTimeout(() => {
+          liveMessage.value =
+            "Vous pouvez maintenant demander un nouveau code.";
+        }, 50);
+      });
     }
   }, 1000);
 };
@@ -581,16 +616,20 @@ defineExpose({
   justify-content: flex-end;
   gap: 1rem;
 }
+
 .has-error {
   color: var(--text-default-error);
 }
+
 .has-error span,
 .has-error label {
   color: var(--text-default-error);
 }
+
 .fr-fieldset__element.has-error {
   border-left: 2px solid var(--text-default-error);
 }
+
 .list-style-none {
   list-style: none;
   padding-left: 0;
