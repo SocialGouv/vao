@@ -156,16 +156,14 @@ const updateData = (resetOffset = false) => {
   if (resetOffset) {
     offset.value = 0;
   }
-  const queryFilter: Record<string, any> = {
+  const queryFilter = {
     limit: limit.value,
     offset: offset.value,
     ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
     ...(isValidParams(sortDirection.value)
       ? { sortDirection: sortDirection.value.toUpperCase() }
       : {}),
-    search: {
-      ...getSearchParams(),
-    },
+    ...getSearchParams(),
   };
   agrementStore.getListAgrements(queryFilter);
   navigateTo({ query: queryFilter });

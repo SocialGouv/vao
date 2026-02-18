@@ -8,7 +8,7 @@ import type {
 } from "../../..";
 import { AGREMENT_STATUT } from "../../..";
 import type { AgrementDto } from "../../../dto/agrement.dto";
-import { PaginationQueryDto } from "../../../dto/paginationQueryDto";
+import type { PaginationQueryDto } from "../../../dto/paginationQueryDto";
 import { SearchQuerySchema } from "../../schemas";
 
 export interface GetListRoute extends BasicRoute {
