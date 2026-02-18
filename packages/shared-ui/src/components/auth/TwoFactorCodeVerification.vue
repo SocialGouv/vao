@@ -525,7 +525,7 @@ const startResendTimer = (): void => {
     setTimeout(() => {
       liveMessage.value =
         "Vous pourrez demander un nouveau code dans 30 secondes.";
-    }, 50);
+    }, 200);
   });
 
   resendInterval = setInterval(() => {
@@ -542,7 +542,7 @@ const startResendTimer = (): void => {
         setTimeout(() => {
           liveMessage.value =
             "Vous pouvez maintenant demander un nouveau code.";
-        }, 50);
+        }, 200);
       });
     }
   }, 1000);
