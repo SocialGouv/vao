@@ -21,7 +21,7 @@ export const AgrementController = {
   ) {
     log.i("IN");
     const regionCode = req.decoded?.territoireCode;
-    const search = parseQueryParams(req.query as Record<string, string>);
+    const search = parseQueryParams(req.query as QueryParamsSearch);
     try {
       const {
         count,
