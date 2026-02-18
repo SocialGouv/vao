@@ -3,7 +3,6 @@ import { buildRequest } from "~/utils/fetchBackend";
 
 const AgrementService = {
   getListAgrements: async (params: any) => {
-    console.log("AgrementService - loaded", params);
     const { agrements, count } = await buildRequest<
       AgrementAdminRoutes["GetList"]
     >({
@@ -11,8 +10,6 @@ const AgrementService = {
       method: "GET",
       query: params,
     })();
-    console.log("AgrementService - getListAgrements - agrements", agrements);
-    console.log("AgrementService - getListAgrements - count", count);
     return { agrements, count };
   },
 };

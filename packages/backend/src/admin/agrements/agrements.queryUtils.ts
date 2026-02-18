@@ -1,17 +1,30 @@
-import { QueryParams } from "../../types/queryParams";
+export interface Search {
+  name?: string;
+  numero?: string;
+  siret?: string;
+  statut?: string;
+}
 
-interface QueryParamsSearch {
+export interface QueryParamsSearch {
   limit?: number;
   offset?: number;
   sortBy?: string;
   sortDirection?: string;
-  siret?: string;
-  dateDepot?: string | Date;
-  names?: string;
-  statut?: string[];
+  search?: Search;
 }
 
-export function mapQueryParams(queryParams: QueryParams): QueryParamsSearch {
+export function parseQueryParams(query: QueryParamsSearch): QueryParamsSearch {
+  return {
+    limit: Number(query.limit) || 10,
+    offset: Number(query.offset) || 0,
+    search: query.search ? JSON.parse(query.search) : "",
+    sortBy: query.sortBy ? query.sortBy : "",
+    sortDirection: query.sortDirection ? query.sortDirection : "",
+  };
+}
+export function mapQueryParams(
+  queryParams: QueryParamsSearch,
+): QueryParamsSearch {
   const queryParamsNew: QueryParamsSearch = {
     limit: queryParams.limit as QueryParamsSearch["limit"],
     offset: queryParams.offset as QueryParamsSearch["offset"],
@@ -20,5 +33,6 @@ export function mapQueryParams(queryParams: QueryParams): QueryParamsSearch {
       queryParams?.sortDirection as QueryParamsSearch["sortDirection"],
     ...queryParams.search,
   };
+
   return queryParamsNew;
 }

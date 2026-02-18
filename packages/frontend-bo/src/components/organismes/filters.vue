@@ -27,7 +27,6 @@
           />
         </div>
       </div>
-      {{ years }}
       <div class="fr-col-md-4 fr-col-lg-3">
         <div class="fr-input-group">
           <DsfrSelect

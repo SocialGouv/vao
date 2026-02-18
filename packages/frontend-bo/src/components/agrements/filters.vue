@@ -71,7 +71,7 @@
 import { AGREMENT_STATUT_OPTIONS } from "@vao/shared-bridge";
 
 const statutOptions = [
-  { text: "Aucun", value: null },
+  { text: "Tous", value: "%" },
   ...AGREMENT_STATUT_OPTIONS,
 ];
 const props = defineProps<{

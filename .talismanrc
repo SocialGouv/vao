@@ -66,7 +66,7 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/usagers/authentification.test.ts
   checksum: c15d2aeea878e0da568caa3a14d4dc58287fad8ee1cd6d026626c38870e8bc47
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
-  checksum: 65d00e40c1cc5e8f1b269c44953e0f6243795224cd04706eebec98a90ff2b1ea
+  checksum: 8f4c20086189fa2e89ff078120488bd868a0370b6f6cbd737b93def3b82c4c15
 - filename: packages/backend/src/config.js
   checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/__tests__/bo-user/accept-cgu.test.js

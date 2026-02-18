@@ -5,6 +5,7 @@ import { AgrementEntity } from "../../shared/agrements/agrements.entity";
 import { AgrementsMapper } from "../../shared/agrements/agrements.mapper";
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
+import type { QueryParamsSearch } from "./agrements.queryUtils";
 
 const log = Logger(module.filename);
 // ------------------------------------------------------------
@@ -21,7 +22,7 @@ export const AgrementsRepository = {
   }: {
     regionCode: string;
     criterias: Array<Record<string, any>>;
-    queryParams: Record<string, unknown>;
+    queryParams: QueryParamsSearch;
   }): Promise<{ count: number; result: AgrementDto[] | null }> {
     log.i("getByRegionObtention - IN");
     const query = () => `
@@ -45,7 +46,6 @@ export const AgrementsRepository = {
       criterias ?? {},
       queryParams,
     );
-
     const response = await Promise.all([
       getPool().query(paginatedQuery.query, paginatedQuery.params),
       getPool().query(
