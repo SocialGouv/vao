@@ -8,8 +8,8 @@ export interface GetListRoute {
   path: "/admin/agrements/list";
   method: "GET";
   query: {
-    limit?: number;
-    offset?: number;
+    limit?: string;
+    offset?: string;
     sortBy?: string;
     sortDirection?: string;
     search?: {
@@ -27,8 +27,8 @@ export interface GetListRoute {
 
 export const GetListRouteSchema = {
   query: yup.object({
-    limit: yup.number().optional(),
-    offset: yup.number().optional(),
+    limit: yup.string().optional(),
+    offset: yup.string().optional(),
     search: yup
       .object({
         name: yup.string().optional(),
