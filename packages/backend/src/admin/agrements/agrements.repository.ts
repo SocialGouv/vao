@@ -1,11 +1,11 @@
 import { AgrementDto } from "@vao/shared-bridge";
+import { PaginationQueryDto } from "@vao/shared-bridge/src/dto/paginationQueryDto";
 
 import { processQuery } from "../../helpers/queryParams";
 import { AgrementEntity } from "../../shared/agrements/agrements.entity";
 import { AgrementsMapper } from "../../shared/agrements/agrements.mapper";
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
-import type { QueryParamsSearch } from "./agrements.queryUtils";
 
 const log = Logger(module.filename);
 // ------------------------------------------------------------
@@ -22,8 +22,13 @@ export const AgrementsRepository = {
   }: {
     regionCode: string;
     criterias: Array<Record<string, any>>;
-    queryParams: QueryParamsSearch;
-  }): Promise<{ count: number; result: AgrementDto[] | null }> {
+    queryParams: PaginationQueryDto & {
+      name?: string;
+      numero?: string;
+      siret?: string;
+      statut?: string;
+    };
+  }): Promise<{ count: number; result: AgrementDto[] }> {
     log.i("getByRegionObtention - IN");
     const query = () => `
       SELECT

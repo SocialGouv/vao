@@ -1,9 +1,8 @@
-import { AgrementDto, OrganismeDto } from "@vao/shared-bridge";
+import { OrganismeDto } from "@vao/shared-bridge";
+import { PaginationQueryDto } from "@vao/shared-bridge/src/dto/paginationQueryDto";
 
 import { getOne as serviceOrganismeGetOne } from "../../services/Organisme";
 import logger from "../../utils/logger";
-import type { QueryParamsSearch } from "./agrements.queryUtils";
-import { mapQueryParams } from "./agrements.queryUtils";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
@@ -14,11 +13,13 @@ export const AgrementService = {
     queryParams,
   }: {
     regionCode: string;
-    queryParams: QueryParamsSearch;
-  }): Promise<{
-    count: number;
-    result: (AgrementDto & { organisme: OrganismeDto })[];
-  }> {
+    queryParams: PaginationQueryDto & {
+      name?: string;
+      numero?: string;
+      siret?: string;
+      statut?: string;
+    };
+  }) {
     log.i("IN");
     const criterias = [
       {
@@ -79,13 +80,15 @@ export const AgrementService = {
     const { count, result: agrements } =
       await AgrementsRepository.getByRegionObtention({
         criterias,
-        queryParams: mapQueryParams(queryParams),
-        regionCode: String(regionCode),
+        queryParams,
+        regionCode,
       });
-    if (!agrements || agrements.length === 0) return { count: 0, result: [] };
+    if (!agrements || agrements.length === 0) {
+      return { count: 0, result: [] };
+    }
     const agrementsWithOrganisme = await Promise.all(
       agrements.map(async (agrement) => {
-        const organisme = await serviceOrganismeGetOne({
+        const organisme: OrganismeDto = await serviceOrganismeGetOne({
           "o.id": agrement.organismeId,
         });
 
