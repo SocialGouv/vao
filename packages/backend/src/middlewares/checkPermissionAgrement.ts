@@ -1,10 +1,25 @@
-const logger = require("../utils/logger");
-const AppError = require("../utils/error").default;
-const { getPool } = require("../utils/pgpool");
+import { NextFunction, Response } from "express";
+
+import { UserRequest } from "../types/request";
+import AppError from "../utils/error";
+import logger from "../utils/logger";
+import { getPool } from "../utils/pgpool";
 
 const log = logger(module.filename);
 
-async function checkPermissionAgrement(req, res, next) {
+async function checkPermissionAgrement(
+  req: UserRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  if (!req.decoded || typeof req.decoded.id === "undefined") {
+    log.w("Utilisateur non authentifié ou id manquant");
+    return next(
+      new AppError("Authentification requise", {
+        statusCode: 401,
+      }),
+    );
+  }
   const { id: userId } = req.decoded;
   // Récupère l'Id de l'organisme en fonction de la provenance (POST ou GET)
   const organismeId = req.body?.organismeId ?? req.params?.id ?? null;
@@ -33,4 +48,4 @@ async function checkPermissionAgrement(req, res, next) {
   next();
 }
 
-module.exports = checkPermissionAgrement;
+export default checkPermissionAgrement;

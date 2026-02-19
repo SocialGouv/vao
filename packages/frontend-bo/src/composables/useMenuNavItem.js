@@ -1,5 +1,5 @@
 import { computed, useUserStore, useEigStore } from "#imports";
-
+import { USER_COMPETENCE_BO } from "@vao/shared-bridge";
 export const useMenuNavItems = () => {
   const userStore = useUserStore();
   const eigStore = useEigStore();
@@ -10,7 +10,7 @@ export const useMenuNavItems = () => {
 
     const serviceCompetent = userStore.user?.serviceCompetent ?? [];
     const validationOva =
-      serviceCompetent === "REG"
+      serviceCompetent === USER_COMPETENCE_BO.REGIONALE
         ? [
             {
               text: "Validation des OVA",
@@ -19,7 +19,7 @@ export const useMenuNavItems = () => {
           ]
         : [];
     const gestionAgrements =
-      serviceCompetent === "REG"
+      serviceCompetent === USER_COMPETENCE_BO.REGIONALE
         ? [
             {
               text: "Agrements",
