@@ -8,4 +8,5 @@ export interface UserDto {
   territoireCode: string;
   userSiret: string;
   serviceCompetent?: string;
+  cguAccepted: boolean;
 }

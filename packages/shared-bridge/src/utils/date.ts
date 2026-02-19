@@ -28,3 +28,7 @@ export function formatFR(date: Date) {
 export function formatFRDateTime(date: Date) {
   return dayjs(date).format("DD/MM/YYYY HH:mm");
 }
+
+export function formatFRTime(date: Date) {
+  return dayjs(date).format("HH:mm");
+}

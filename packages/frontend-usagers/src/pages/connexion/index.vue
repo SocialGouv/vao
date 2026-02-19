@@ -1,5 +1,19 @@
 <template>
   <div class="fr-container fr-container--fluid fr-my-md-14v">
+    <DsfrModal
+      modal-ref="cgu-modal"
+      name="cgu-modal"
+      title="Conditions Générales d'Utilisation"
+      :opened="openCgu"
+      @close="refuseCgu"
+    >
+      <CguValidation
+        :allow-validation="true"
+        @refuse="refuseCgu"
+        @validate="validateCgu"
+      />
+    </DsfrModal>
+
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
         <div
@@ -9,117 +23,104 @@
           <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-9 fr-col-lg-8">
               <h1>Connexion à VAO</h1>
-              <div>
-                <form id="login-1760">
-                  <div
-                    id="login-1760-fieldset"
-                    class="fr-fieldset"
-                    aria-labelledby="login-1760-fieldset-legend login-1760-fieldset-messages"
-                  >
-                    <legend
-                      id="login-1760-fieldset-legend"
-                      class="fr-fieldset__legend"
-                    >
-                      <h2>Se connecter avec son compte organisateur</h2>
-                    </legend>
 
-                    <div v-if="displayType" class="fr-grid-row">
-                      <DsfrAlert
-                        class="fr-my-3v"
-                        :role="displayType === 'Success' ? 'status' : 'alert'"
-                        :title="displayInfos[displayType].title"
-                        :description="displayInfos[displayType].description"
-                        :type="displayInfos[displayType].type"
-                        :closeable="false"
-                      />
-                    </div>
-                    <div class="fr-fieldset__element">
-                      <div
-                        id="credentials"
-                        class="fr-fieldset"
-                        aria-labelledby="credentials-messages"
-                      >
-                        <div class="fr-fieldset__element">
-                          <span class="fr-hint-text"
-                            >Sauf mention contraire, tous les champs sont
-                            obligatoires.</span
-                          >
+              <form id="login-form" @submit.prevent="login">
+                <div
+                  class="fr-fieldset"
+                  aria-labelledby="login-fieldset-legend"
+                >
+                  <legend
+                    id="login-fieldset-legend"
+                    class="fr-fieldset__legend"
+                  >
+                    <h2>Se connecter avec son compte organisateur</h2>
+                  </legend>
+
+                  <div v-if="currentAlert" class="fr-grid-row">
+                    <DsfrAlert
+                      class="fr-my-3v"
+                      :role="'alert'"
+                      :title="currentAlert.title"
+                      :description="currentAlert.description"
+                      :type="currentAlert.type"
+                      :closeable="false"
+                    />
+                  </div>
+
+                  <div class="fr-fieldset__element">
+                    <div class="fr-fieldset">
+                      <div class="fr-fieldset__element">
+                        <span class="fr-hint-text">
+                          Sauf mention contraire, tous les champs sont
+                          obligatoires.
+                        </span>
+                      </div>
+
+                      <div class="fr-fieldset__element">
+                        <div class="fr-input-group">
+                          <DsfrInput
+                            v-model="email"
+                            autocomplete="email"
+                            type="email"
+                            name="email"
+                            label="Identifiant"
+                            :label-visible="true"
+                            hint="Format attendu : nom@domaine.fr"
+                            required
+                          />
                         </div>
-                        <div class="fr-fieldset__element">
-                          <div class="fr-input-group">
-                            <DsfrInput
-                              autocomplete="email"
-                              :model-value="email"
-                              type="text"
-                              name="email"
-                              label="Identifiant"
-                              :label-visible="true"
-                              hint="Format attendu : nom@domaine.fr"
+                      </div>
+
+                      <div class="fr-fieldset__element">
+                        <div class="fr-password">
+                          <div class="fr-input-wrap">
+                            <PasswordInput
+                              id="password"
+                              v-model="password"
+                              autocomplete="current-password"
+                              label="Mot de passe"
+                              name="password"
+                              hint="Veuillez saisir votre mot de passe"
                               required
-                              @update:model-value="editMail"
                             />
                           </div>
-                        </div>
-                        <div class="fr-fieldset__element">
-                          <div id="password-1758" class="fr-password">
-                            <div class="fr-input-wrap">
-                              <PasswordInput
-                                id="password"
-                                autocomplete="current-password"
-                                :model-value="password"
-                                :type="showPassword ? 'text' : 'password'"
-                                label="Mot de passe"
-                                name="password"
-                                hint="Veuillez saisir votre mot de passe"
-                                required
-                                @update:model-value="editPwd"
-                              ></PasswordInput>
-                            </div>
-                            <p>
-                              <NuxtLink
-                                class="fr-link"
-                                to="/connexion/mot-de-passe-oublie"
-                              >
-                                Mot de passe oublié ?
-                              </NuxtLink>
-                            </p>
-                          </div>
+                          <p>
+                            <NuxtLink
+                              class="fr-link"
+                              to="/connexion/mot-de-passe-oublie"
+                            >
+                              Mot de passe oublié ?
+                            </NuxtLink>
+                          </p>
                         </div>
                       </div>
                     </div>
-                    <div class="fr-fieldset__element">
-                      <ul role="list" class="fr-btns-group">
-                        <li role="listitem">
-                          <DsfrButton
-                            :disabled="!canLogin"
-                            @click.prevent="login"
-                            >Se connecter</DsfrButton
-                          >
-                        </li>
-                      </ul>
-                    </div>
-                    <DsfrModal
-                      modal-ref="cgu-modal"
-                      name="cgu-modal"
-                      :opened="openCgu"
-                      @close="refuseCgu"
-                      ><CguValidation
-                        :allow-validation="true"
-                        @refuse="refuseCgu"
-                        @validate="validateCgu"
-                      />
-                    </DsfrModal>
                   </div>
-                </form>
-              </div>
+
+                  <div class="fr-fieldset__element">
+                    <ul role="list" class="fr-btns-group">
+                      <li role="listitem">
+                        <DsfrButton
+                          type="submit"
+                          :disabled="!canLogin || isLoggingIn"
+                        >
+                          {{ isLoggingIn ? "Connexion..." : "Se connecter" }}
+                        </DsfrButton>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </form>
+
               <hr />
-              <h4>Vous n’avez pas de compte ?</h4>
+              <h4>Vous n'avez pas de compte ?</h4>
               <ul role="list" class="fr-btns-group">
                 <li role="listitem">
                   <DsfrButton
                     @click.prevent="navigateTo('/connexion/enregistrement')"
-                    >Créer un compte</DsfrButton
                   >
+                    Créer un compte
+                  </DsfrButton>
                 </li>
               </ul>
             </div>
@@ -130,18 +131,21 @@
   </div>
 </template>
 
-<script setup>
-import { PasswordInput, apiModel, CguValidation, useToaster } from "@vao/shared-ui";
-import { ERRORS_LOGIN } from "@vao/shared-bridge";
-
-const toaster = useToaster();
-const organismeStore = useOrganismeStore();
-
-const config = useRuntimeConfig();
+<script setup lang="ts">
+import {
+  PasswordInput,
+  apiModel,
+  CguValidation,
+  useAuthentication,
+} from "@vao/shared-ui";
 
 const log = logger("pages/connexion");
+const userStore = useUserStore();
+const config = useRuntimeConfig();
 
-const openCgu = ref(false);
+const router = useRouter();
+
+const navigateTo = (route: string) => router.push(route);
 
 useHead({
   title: "Connexion | Vacances Adaptées Organisées",
@@ -153,113 +157,52 @@ useHead({
   ],
 });
 
-const formStates = {
-  CREATION: 1,
-  SUBMITTED: 2,
-};
+const organismeStore = useOrganismeStore();
 
-const formStatus = ref(formStates.CREATION);
-
-const email = ref("");
-const password = ref("");
-const showPassword = ref(false);
-
-const editMail = (v) => (email.value = v);
-const editPwd = (v) => (password.value = v);
+const {
+  email,
+  password,
+  displayType,
+  openCgu,
+  isLoggingIn,
+  canLogin,
+  login,
+  validateCgu,
+  refuseCgu,
+} = useAuthentication(
+  "fo",
+  config.public.backendUrl,
+  userStore,
+  navigateTo,
+  organismeStore,
+);
 
 const displayInfos = apiModel.connectionInfos;
-const displayType = ref(null);
 
-const canLogin = computed(() => {
-  return (
-    email.value !== null &&
-    email.value !== "" &&
-    password.value !== null &&
-    password.value !== ""
-  );
+const currentAlert = computed<{
+  title: string;
+  description: string;
+  type: "error" | "success" | "warning" | "info";
+} | null>(() => {
+  if (!displayType.value) return null;
+
+  if (displayType.value in displayInfos) {
+    const alert = displayInfos[displayType.value as keyof typeof displayInfos];
+
+    return {
+      title: alert.title,
+      description: alert.description,
+      type: alert.type as "error" | "success" | "warning" | "info",
+    };
+  }
+
+  return null;
 });
-
-const userStore = useUserStore();
 
 onMounted(() => {
-  if (userStore?.isConnected) navigateTo("/");
-});
-
-async function login() {
-  log.i("login", { email: email.value });
-  try {
-    displayType.value = null;
-    const response = await $fetch(
-      config.public.backendUrl + "/authentication/email/login",
-      {
-        credentials: "include",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: { email: email.value, password: password.value },
-      },
-    );
-    openCgu.value = response.user?.cguAccepted === false;
-    formStatus.value = formStates.SUBMITTED;
-    userStore.user = response.user;
-    organismeStore.setMyOrganisme();
-    userStore.refreshProfile();
-    toaster.success({
-      titleTag: "h2",
-      description: `Authentification réalisée avec succès`,
-    });
-    displayType.value = "Success";
-    if (!openCgu.value) {
-      return navigateTo("/");
-    }
-  } catch (error) {
-    formStatus.value = formStates.SUBMITTED;
-    const codeError = error?.data?.name;
-    log.w("login", { error: codeError ?? error?.data ?? error });
-
-    switch (codeError) {
-      case ERRORS_LOGIN.TooManyLoginAttempts:
-        displayType.value = ERRORS_LOGIN.TooManyLoginAttempts;
-        break;
-      case ERRORS_LOGIN.WrongCredentials:
-      case ERRORS_LOGIN.EmailUnauthorized:
-      case ERRORS_LOGIN.UserTemporarilyBlocked:
-        displayType.value = ERRORS_LOGIN.WrongCredentials;
-        break;
-      case ERRORS_LOGIN.NeedEmailValidation:
-        displayType.value = ERRORS_LOGIN.NeedEmailValidation;
-        break;
-      case ERRORS_LOGIN.NeedSiretValidation:
-        displayType.value = ERRORS_LOGIN.NeedSiretValidation;
-        break;
-      default:
-        displayType.value = ERRORS_LOGIN.UnexpectedError;
-        break;
-    }
+  if (userStore?.isConnected) {
+    log.i("Utilisateur déjà connecté, redirection");
+    navigateTo("/");
   }
-}
-
-async function refuseCgu() {
-  log.i("refuseCgu");
-  openCgu.value = false;
-  navigateTo("/connexion");
-}
-
-async function validateCgu() {
-  log.i("validateCgu");
-  openCgu.value = false;
-  await $fetch(config.public.backendUrl + "/fo-user/accept-cgu", {
-    credentials: "include",
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  await organismeStore.setMyOrganisme();
-  await userStore.refreshProfile();
-  navigateTo("/");
-}
+});
 </script>
-
-<style lang="scss" scoped></style>

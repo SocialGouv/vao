@@ -205,8 +205,10 @@ fileignoreconfig:
   checksum: 93bc040f6886d9c3c7318e4d8f8c01d3bc280e1d9f2da3656d2754888e1b448a
 - filename: packages/frontend-bo/src/components/utils/TableFull.vue
   checksum: 74a74e68299d204eac907efee98c2eb3d776ff4c206b304acbca02d058bfbc4e
+- filename: packages/frontend-bo/src/composables/useAuthentication.ts
+  checksum: 810660f58ad352f8275f89ac5f1a899fcfb66d11a3c51637deb478d96c2f86a3
 - filename: packages/frontend-bo/src/pages/connexion/index.vue
-  checksum: c485769ab46567927328d76c49aa2458b34a6f34ccf35ef934286fb16a81608d
+  checksum: b70d397eb0bb35525f88b8cb6e894d4183d65bbfbdc61dd4953dda70f042eaa6
 - filename: packages/frontend-bo/src/pages/connexion/reset-mot-de-passe.vue
   checksum: f544299c6795c35ca29f1ddd0babb1c840f7c25c72435b3c6b0939e0ea55d120
 - filename: packages/frontend-bo/src/pages/hebergements/[type]/[demandeSejourId]/[hebergementId].vue
@@ -267,10 +269,12 @@ fileignoreconfig:
   checksum: 846543dfd36589a6fe10859c28fe0ca4e3a4f084f58ea56b42fce695d30b31c8
 - filename: packages/frontend-usagers/src/components/utils/TableFull.vue
   checksum: 05743cc5c3dfd946e8ee41cb11571b1e505bbdb5260e9c59a53e4ca16cb11f08
+- filename: packages/frontend-usagers/src/composables/useAuthentication.ts
+  checksum: 2782b0cff674f8d213292afcca67c12b90386a3fb42d906091a09baead5488e9
 - filename: packages/frontend-usagers/src/pages/connexion/enregistrement.vue
   checksum: dd393d7c31566dfa3864bb9a63fe98f9bf040cc8321e8cad0f74e8634e8365f8
 - filename: packages/frontend-usagers/src/pages/connexion/index.vue
-  checksum: fcacdc94675ff0c9eedddafc751e3dc1149edbc8d853494e3c42d935677eceff
+  checksum: f7c52d87d6cd2945c9f77bf893a0b225b8793879e6102b3c88f635be30f09485
 - filename: packages/frontend-usagers/src/pages/connexion/mot-de-passe-oublie.vue
   checksum: a30047520f10c9428ebb0865e8019baf9799801d99b0a6606eec58154a73c91b
 - filename: packages/frontend-usagers/src/pages/connexion/reset-mot-de-passe.vue
@@ -307,12 +311,22 @@ fileignoreconfig:
   checksum: 0333a8dd3d87ab118f5896b079f89423f9e465208c68bebed045a83350ce24d6
 - filename: packages/shared-ui/src/components/Toaster.vue
   checksum: 83bcf77f5b7763c7f6bc272366174a0780fec328462c6ca4bc29ef144e2c37de
+- filename: packages/shared-ui/src/components/auth/TwoFactorCodeVerification.vue
+  checksum: 2390d3ea1f84fd5826a4fb9f88ae8d434935f0595395538114a43aeee2664be1
+- filename: packages/shared-ui/src/composables/index.js
+  checksum: 1a41578cc15aa2da2b59efa2c378e9ed2552a2912c7d7cd666527e148d4d15f6
+- filename: packages/shared-ui/src/composables/useAuthentication.ts
+  checksum: cca73e0d096e3c7fa35123c8a53888966abdcb6eed089dc2251e4127652ae809
 - filename: packages/shared-ui/src/composables/useToaster.ts
   checksum: 704ad956e4817e92ca2df2f4cbdf14cc7a39218cdacdfef070dd91c8d1e4c563
+- filename: packages/shared-ui/src/types/Auth.type.ts
+  checksum: bed61f0675740636abe1f9b7f841d26302d5a4b7da627fdc2bbeaacd6e6b0663
 - filename: packages/shared-ui/src/types/Toaster.ts
   checksum: a7011a6c5b2fab8affe5a5ff590f40e0610b28896e0cc36cae3665aefcd45913
 - filename: packages/shared-ui/src/types/toaster.type.ts
   checksum: 582e51f53bdaea62de234ebe2c415961b7a8855764c69aad86418eb8519b6d54
+- filename: packages/shared-ui/src/utils/auth.ts
+  checksum: 4714bf4ea74204e7647ce578c5ad6e793f10b34f6e990ccdb04d1e8a1eff027f
 - filename: packages/shared/src/components/Chat.vue
   checksum: f2dbbf72bf098c7abd2c3aee230d220f5a5a106952883c0e116eb49f4f9d4db7
 - filename: packages/shared/src/components/DsfrMultiSelect.vue
