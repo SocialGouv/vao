@@ -1,16 +1,19 @@
 import { AgrementDto } from "@vao/shared-bridge";
 
 import { saveAdresse } from "../../services/adresse";
-import Logger from "../../utils/logger";
-import { getPool } from "../../utils/pgpool";
-import { ActiviteEntity, AgrementEntity } from "./agrements.entity";
+import {
+  ActiviteEntity,
+  AgrementEntity,
+} from "../../shared/agrements/agrements.entity";
 import {
   AgrementAnimationMapper,
   AgrementBilanAnnuelMapper,
   AgrementFilesMapper,
   AgrementSejoursMapper,
   AgrementsMapper,
-} from "./agrements.mapper";
+} from "../../shared/agrements/agrements.mapper";
+import Logger from "../../utils/logger";
+import { getPool } from "../../utils/pgpool";
 
 const log = Logger(module.filename);
 
@@ -153,7 +156,7 @@ export const AgrementsRepository = {
           bilan_financier_comparatif, bilan_financier_ressources_humaines,
           bilan_financier_commentaire,
           date_fin_validite, sejour_type_handicap, 
-          region_obtention
+          region_obtention, numero
         )
         VALUES (
           $1,$2,$3,$4,$5,$6,$7,$8,
@@ -161,7 +164,8 @@ export const AgrementsRepository = {
           $17,$18,$19,$20,$21,
           $22,$23,$24,$25,$26,$27,
           $28,$29,$30,$31,$32,$33,$34,$35,
-          $36,$37,$38,$39,$40, $41, $42, $43, $44
+          $36,$37,$38,$39,$40, $41, 
+          $42, $43, $44, $45
         )
         RETURNING id;
       `;
@@ -211,6 +215,7 @@ export const AgrementsRepository = {
         dateFinValidite,
         agrement.sejourTypeHandicap,
         agrement.regionObtention,
+        agrement.numero,
       ];
 
       const result = await client.query(agrementInsertQuery, agrementValues);
@@ -414,8 +419,9 @@ export const AgrementsRepository = {
         bilan_financier_commentaire = $41,
         date_fin_validite = $42,
         sejour_type_handicap = $43,
-        region_obtention = $44
-      WHERE id = $45;
+        region_obtention = $44,
+        numero = $45
+      WHERE id = $46;
     `;
 
       const agrementValues = [
@@ -463,6 +469,7 @@ export const AgrementsRepository = {
         dateFinValidite,
         agrement.sejourTypeHandicap,
         agrement.regionObtention,
+        agrement.numero,
         agrementId,
       ];
 

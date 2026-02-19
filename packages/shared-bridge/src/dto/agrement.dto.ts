@@ -51,6 +51,7 @@ export interface AgrementDto {
   agrementSejours?: AgrementSejoursDto[];
   agrementBilanAnnuel?: AgrementBilanAnnuelDto[];
   regionObtention: string | null;
+  numero: string | null;
 }
 
 export interface ActiviteDto {

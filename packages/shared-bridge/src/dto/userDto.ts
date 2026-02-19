@@ -1,3 +1,5 @@
+import { USER_COMPETENCE_BO } from "../constantes/users";
+
 export interface UserDto {
   id: string;
   email: string;
@@ -7,6 +9,6 @@ export interface UserDto {
   roles: string[];
   territoireCode: string;
   userSiret: string;
-  serviceCompetent?: string;
   cguAccepted: boolean;
+  serviceCompetent?: USER_COMPETENCE_BO | null;
 }

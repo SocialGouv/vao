@@ -13,7 +13,7 @@ import {
 } from "vue";
 
 export type Row = {
-  [key: PropertyKey]: Primitive | Row;
+  [key: PropertyKey]: any; // TODO: Replace any with a more specific type
 };
 
 export type Primitive = string | number | boolean | bigint | null | symbol;

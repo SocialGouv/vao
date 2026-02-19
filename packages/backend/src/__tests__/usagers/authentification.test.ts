@@ -48,7 +48,6 @@ describe("POST /authentication/email/register", () => {
       .post("/authentication/email/register")
       .send(payload);
 
-    console.log("Response body:", response.body);
     expect(response.status).toBe(400);
     expect(response.body.name).toBe("SiretNotFound");
   });

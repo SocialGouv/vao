@@ -52,6 +52,7 @@ export const AgrementsMapper = {
       id: entity.id,
       immatriculation: entity.immatriculation,
       motivations: entity.motivations,
+      numero: entity.numero,
       organismeId: entity.organisme_id,
       protocoleEvacUrg: entity.protocole_evac_urg,
       protocoleInfoFamille: entity.protocole_info_famille,
