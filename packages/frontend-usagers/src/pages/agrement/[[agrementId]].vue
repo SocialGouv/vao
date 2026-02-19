@@ -133,9 +133,11 @@ async function updateOrCreate(formValues: AgrementFormValues) {
   try {
     updatedData.agrementFiles = [];
 
-    for (const [category, config] of Object.entries(FILE_CATEGORY_CONFIG)) {
-      const { fileKey, multiple } = config;
-      const value = updatedData[fileKey as FileKey];
+    for (const category of Object.keys(
+      FILE_CATEGORY_CONFIG,
+    ) as (keyof typeof FILE_CATEGORY_CONFIG)[]) {
+      const { fileKey, multiple } = FILE_CATEGORY_CONFIG[category];
+      const value = updatedData[fileKey];
 
       if (!value) continue;
 
