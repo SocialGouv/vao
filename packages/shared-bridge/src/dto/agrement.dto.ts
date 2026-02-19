@@ -68,7 +68,7 @@ export interface AgrementAnimationDto {
 
 export interface AgrementFilesDto {
   agrementId: number | null;
-  category: FILE_CATEGORY | null;
+  category: FILE_CATEGORY;
   fileUuid: string | null;
 }
 

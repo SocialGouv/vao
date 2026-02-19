@@ -107,11 +107,8 @@
   </div>
 </template>
 <script setup lang="ts">
-import {
-  FILE_CATEGORY,
-  type AgrementDto,
-  type FileKey,
-} from "@vao/shared-bridge";
+import type { FILE_CATEGORY, AgrementDto, FileKey } from "@vao/shared-bridge";
+import { FILE_CATEGORY_CONFIG } from "@vao/shared-bridge";
 import { useToaster } from "@vao/shared-ui";
 
 const route = useRoute();
@@ -135,154 +132,25 @@ async function updateOrCreate(formValues: AgrementFormValues) {
   const updatedData: AgrementFormValues = { ...formValues };
   try {
     updatedData.agrementFiles = [];
-    const fileMappings: {
-      key: FileKey;
-      multiple: boolean;
-      category: FILE_CATEGORY;
-    }[] = [
-      {
-        key: "filesMotivation",
-        multiple: true,
-        category: FILE_CATEGORY.MOTIVATION,
-      },
-      {
-        key: "fileProcesVerbal",
-        multiple: false,
-        category: FILE_CATEGORY.PROCVERBAL,
-      },
-      {
-        key: "fileImmatriculation",
-        multiple: false,
-        category: FILE_CATEGORY.IMMATRICUL,
-      },
-      {
-        key: "fileAttestationsRespCivile",
-        multiple: false,
-        category: FILE_CATEGORY.ASSURRESP,
-      },
-      {
-        key: "fileAttestationsRapatriement",
-        multiple: false,
-        category: FILE_CATEGORY.ASSURRAPAT,
-      },
-      {
-        key: "filesChangeEvol",
-        multiple: true,
-        category: FILE_CATEGORY.CHANGEEVOL,
-      },
-      {
-        key: "filesBilanQualit",
-        multiple: true,
-        category: FILE_CATEGORY.BILANQUALIT,
-      },
-      {
-        key: "filesBilanFinancier",
-        multiple: true,
-        category: FILE_CATEGORY.BILANFINANC,
-      },
-      {
-        key: "filesAgrementSejour",
-        multiple: true,
-        category: FILE_CATEGORY.SEJOUR,
-      },
-      {
-        key: "filesAccompResp",
-        multiple: true,
-        category: FILE_CATEGORY.ACCOMPRESP,
-      },
-      {
-        key: "filesSuiviMed",
-        multiple: true,
-        category: FILE_CATEGORY.SUIVIMED,
-      },
-      {
-        key: "filesBilanQualitPerception",
-        multiple: true,
-        category: FILE_CATEGORY.BILANQUALITPERCEPTION,
-      },
-      {
-        key: "filesBilanQualitPerspectives",
-        multiple: true,
-        category: FILE_CATEGORY.BILANQUALITPERSPECTIVE,
-      },
-      {
-        key: "filesBilanQualitElementsMarquants",
-        multiple: true,
-        category: FILE_CATEGORY.BILANQUALITELEMARQ,
-      },
-      {
-        key: "filesBilanQualitComplementaires",
-        multiple: true,
-        category: FILE_CATEGORY.BILANQUALITCOMPLEMENTAIRES,
-      },
-      {
-        key: "filesBilanFinancierQuatreAnnees",
-        multiple: true,
-        category: FILE_CATEGORY.BILANFINANCIERQUATREANNEES,
-      },
-      {
-        key: "filesProjetsSejoursPrevus",
-        multiple: true,
-        category: FILE_CATEGORY.PROJETSSEJOURSPREVUS,
-      },
-      {
-        key: "filesProjetsSejoursCompetencesExperience",
-        multiple: true,
-        category: FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
-      },
-      {
-        key: "filesProjetsSejoursMesures",
-        multiple: true,
-        category: FILE_CATEGORY.PROJETSSEJOURSMESURES,
-      },
-      {
-        key: "filesProjetsSejoursComplementaires",
-        multiple: true,
-        category: FILE_CATEGORY.PROJETSSEJOURSCOMPLEMENTAIRES,
-      },
-      {
-        key: "fileProjetsSejoursCasier",
-        multiple: false,
-        category: FILE_CATEGORY.PROJETSSEJOURSCASIER,
-      },
-      {
-        key: "filesProjetsSejoursOrgaTransports",
-        multiple: true,
-        category: FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT,
-      },
-      {
-        key: "filesProjetsSejoursSuiviMed",
-        multiple: true,
-        category: FILE_CATEGORY.PROJETSSEJOURSSUIVIMED,
-      },
-      {
-        key: "filesProjetsSejoursProtocoleReorientation",
-        multiple: true,
-        category: FILE_CATEGORY.PROJSEJPROTCOREORIENT,
-      },
-      {
-        key: "filesProjetsSejoursProtocoleRapatriement",
-        multiple: true,
-        category: FILE_CATEGORY.PROJSSEJOURSPROTCOLERAPATR,
-      },
-      {
-        key: "filesProjSejoursBudgetPersonnes",
-        multiple: true,
-        category: FILE_CATEGORY.PROJSEJOURSBUDGETPERSONNES,
-      },
-    ];
 
-    for (const { key, multiple, category } of fileMappings) {
-      const value = updatedData[key as FileKey];
+    for (const category of Object.keys(
+      FILE_CATEGORY_CONFIG,
+    ) as (keyof typeof FILE_CATEGORY_CONFIG)[]) {
+      const { fileKey, multiple } = FILE_CATEGORY_CONFIG[category];
+      const value = updatedData[fileKey];
 
       if (!value) continue;
+
       if (multiple) {
-        const docs = await createDocuments({ documents: value, category });
+        const docs = await createDocuments({
+          documents: value,
+          category: category as FILE_CATEGORY,
+        });
         updatedData.agrementFiles.push(...docs);
       } else {
         const doc = await createDocument({
           document: value,
-          category,
+          category: category as FILE_CATEGORY,
         });
         if (doc) updatedData.agrementFiles.push(doc);
       }
@@ -351,7 +219,7 @@ async function createDocument({
 }) {
   if (document && Object.keys(document?.uuid ?? {}).length === 0) {
     try {
-      const uuid = await documentStore.postDocument(document);
+      const uuid = await documentStore.postDocument({ document, category });
       toaster.info({
         titleTag: "h2",
         description: `Fichier ${document.name} déposé`,
