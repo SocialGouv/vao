@@ -56,7 +56,6 @@ async function checkPermissionAgrement(
         }),
       );
     }
-    log.i("DONE");
     next();
   } catch (error) {
     log.w("Erreur dans checkPermissionAgrement:", error);
