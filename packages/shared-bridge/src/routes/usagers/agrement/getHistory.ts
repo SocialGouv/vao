@@ -1,7 +1,7 @@
 import * as yup from "yup";
 
 import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
-import type { AgrementHistoryItem } from "../../../constantes/agrement";
+import type { AgrementHistoryItem } from "../../../dto/agrement.dto";
 
 export interface GetHistoryRoute extends BasicRoute {
   method: "GET";
