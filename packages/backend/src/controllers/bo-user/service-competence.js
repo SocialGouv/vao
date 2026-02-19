@@ -1,5 +1,5 @@
 const logger = require("../../utils/logger");
-const { competence } = require("../../helpers/bo-competence");
+const { USER_COMPETENCE_BO } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);
 
@@ -7,11 +7,11 @@ module.exports = async function serviceCompetence(territoireCode) {
   try {
     log.i("IN", territoireCode);
     log.i("DONE");
-    return territoireCode === "FRA"
-      ? "NAT"
+    return territoireCode === USER_COMPETENCE_BO
+      ? USER_COMPETENCE_BO.NATIONALE
       : /^[0-9]+$/.test(territoireCode)
-        ? "DEP"
-        : "REG";
+        ? USER_COMPETENCE_BO.DEPARTEMENTALE
+        : USER_COMPETENCE_BO.REGIONALE;
   } catch (error) {
     log.w("DONE with error");
     return error;
@@ -23,10 +23,12 @@ module.exports = async function verifyCompetence(
   serviceCompetentUtilisateurCreateOrUpdate,
 ) {
   return (
-    serviceCompetentUserConnected === competence.NATIONALE ||
-    (serviceCompetentUtilisateurCreateOrUpdate != competence.NATIONALE &&
-      serviceCompetentUserConnected === competence.REGIONALE) ||
-    (serviceCompetentUtilisateurCreateOrUpdate === competence.DEPARTEMENTALE &&
-      serviceCompetentUserConnected === competence.DEPARTEMENTALE)
+    serviceCompetentUserConnected === USER_COMPETENCE_BO.NATIONALE ||
+    (serviceCompetentUtilisateurCreateOrUpdate !=
+      USER_COMPETENCE_BO.NATIONALE &&
+      serviceCompetentUserConnected === USER_COMPETENCE_BO.REGIONALE) ||
+    (serviceCompetentUtilisateurCreateOrUpdate ===
+      USER_COMPETENCE_BO.DEPARTEMENTALE &&
+      serviceCompetentUserConnected === USER_COMPETENCE_BO.DEPARTEMENTALE)
   );
 };

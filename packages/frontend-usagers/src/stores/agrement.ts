@@ -93,6 +93,7 @@ export const useAgrementStore = defineStore("agrement", {
         agrementSejours: agrement.agrementSejours ?? undefined,
         agrementBilanAnnuel: agrement.agrementBilanAnnuel ?? undefined,
         regionObtention: agrement.regionObtention ?? null,
+        numero: agrement.numero ?? null,
       };
 
       const agrementId: number | null =

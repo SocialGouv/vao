@@ -9,7 +9,7 @@ export const $fetchBackend = <T = any>(
   option: FetchBackendOptions = {},
 ): Promise<T> => {
   const config = useRuntimeConfig();
-  // eslint-disable-next-line no-undef
+
   return $fetch(url, {
     baseURL: config.public.backendUrl,
     ...option,
@@ -31,16 +31,13 @@ export function buildRequest<Route extends BasicRoute>({
   query,
 }: Omit<Route, "response">): () => Promise<Route["response"]> {
   const url = buildRequestPath(path, params);
-
   switch (method) {
     case "GET":
       return async () =>
         $fetchBackend(url, {
           ...OPTIONS_DEFAULT,
           method: "GET",
-          params: {
-            search: query,
-          },
+          params: query,
         });
     case "POST":
       return async () =>

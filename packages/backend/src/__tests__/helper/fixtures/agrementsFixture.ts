@@ -73,6 +73,7 @@ export async function buildAgrementFixture({
     dateVerifCompleture: new Date("2024-12-05"),
     immatriculation: "123-AB-456",
     motivations: "Motivation de test",
+    numero: "AGR-2024-0001",
     organismeId,
     protocoleEvacUrg: "Procédure OK",
     protocoleInfoFamille: "Information envoyée",

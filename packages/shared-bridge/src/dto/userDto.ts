@@ -1,4 +1,5 @@
 import { FeatureFlagName } from "../constantes";
+import { USER_COMPETENCE_BO } from "../constantes/users";
 
 export interface UserDto {
   id: string;
@@ -9,7 +10,7 @@ export interface UserDto {
   roles: string[];
   territoireCode: string;
   userSiret: string;
-  serviceCompetent?: string;
   cguAccepted: boolean;
+  serviceCompetent?: USER_COMPETENCE_BO | null;
   featureFlags?: Partial<Record<FeatureFlagName, boolean>>;
 }
