@@ -53,6 +53,7 @@ export interface AgrementEntity {
   agrement_bilan_annuel: AgrementBilanAnnuelEntity[] | null;
   sejour_type_handicap: string[] | null;
   region_obtention: string | null;
+  numero: string | null;
 }
 
 /**

@@ -336,7 +336,6 @@ module.exports.create = async ({
   const userId = await getPool().query(
     ...query.create(email, nom, prenom, territoireCode),
   );
-
   const [user] = userId.rows;
 
   // Création des rôles en base de données

@@ -1,0 +1,5 @@
+export enum USER_COMPETENCE_BO {
+  DEPARTEMENTALE = "DEP",
+  NATIONALE = "NAT",
+  REGIONALE = "REG",
+}
