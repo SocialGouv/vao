@@ -29,8 +29,9 @@
 <script setup lang="ts">
 import { TableFull } from "@vao/shared-ui";
 import {
+  type AgrementFilesDto,
+  type DocumentDto,
   formatFRDateTime,
-  type FILE_CATEGORY,
   getFileCategoryLabel,
 } from "@vao/shared-bridge";
 
@@ -54,7 +55,7 @@ const headers = [
     column: "category",
     sorter: "category",
     text: "Type de fichier",
-    format: (item: any) => getFileCategoryLabel(item.category as FILE_CATEGORY),
+    format: (item: AgrementFilesDto) => getFileCategoryLabel(item.category!),
     headerAttrs: {
       class: "suivi",
     },
@@ -62,7 +63,7 @@ const headers = [
   {
     column: "createdAt",
     sorter: "createdAt",
-    format: (item: any) => formatFRDateTime(item.createdAt),
+    format: (item: DocumentDto) => formatFRDateTime(item.createdAt!),
     text: "Date de dépose",
     headerAttrs: {
       class: "suivi",
@@ -70,7 +71,7 @@ const headers = [
   },
   {
     text: "téléchargement",
-    component: (file: any) => {
+    component: (file: DocumentDto) => {
       return {
         component: NuxtLink,
         to: `${config.public.backendUrl}/documents/${file.uuid}`,
