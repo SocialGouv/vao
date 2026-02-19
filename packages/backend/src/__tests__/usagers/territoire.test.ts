@@ -40,7 +40,6 @@ describe("GET /territoire/getByAgrementRegionUser", () => {
     const territoireId = await createTerritoire({
       territoireCode: "IDF",
     });
-    console.log("Territoire ID simulé :", territoireId);
     const response = await request(app).get(
       `/territoire/get-by-agrement-region-user`,
     );

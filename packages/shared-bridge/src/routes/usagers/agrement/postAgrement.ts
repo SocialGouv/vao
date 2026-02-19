@@ -178,6 +178,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     id: requiredUnlessBrouillon(yup.number().nullable()),
     immatriculation: requiredUnlessBrouillon(yup.string().nullable()),
     motivations: requiredUnlessBrouillon(yup.string().nullable()),
+    numero: requiredUnlessBrouillon(yup.string().nullable()),
     organismeId: requiredUnlessBrouillon(yup.number().required()),
     protocoleEvacUrg: requiredUnlessBrouillon(yup.string().nullable()),
     protocoleInfoFamille: requiredUnlessBrouillon(yup.string().nullable()),

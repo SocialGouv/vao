@@ -5,6 +5,8 @@ export interface PersonnePhysiqueDto {
     siret: string | null;
     updatedAt: Date | null;
   }[];
+  siren: string | null;
+  siret: string;
   nomUsage: string;
   nomNaissance: string;
   prenom: string;
