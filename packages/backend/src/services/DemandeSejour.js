@@ -1324,7 +1324,7 @@ module.exports.getByDepartementCodes = async (
       key: "o.id",
       queryKey: "organismeId",
       sortEnabled: true,
-      type: "number",
+      type: "default",
     },
     {
       key: "id_fonctionnelle",
