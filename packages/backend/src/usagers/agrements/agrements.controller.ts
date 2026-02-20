@@ -15,7 +15,7 @@ export const AgrementController = {
     next: NextFunction,
   ) {
     log.i("IN");
-    const organismeId = req.validatedParams!.id;
+    const organismeId = req.validatedParams!.organismeId;
 
     try {
       const agrement: AgrementDto | null = await AgrementService.getAgrement({

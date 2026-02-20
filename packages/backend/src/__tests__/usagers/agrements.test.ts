@@ -25,7 +25,7 @@ jest.mock("../../middlewares/common/checkJWT", () => {
 beforeAll(async () => await createTestContainer());
 afterAll(async () => await removeTestContainer());
 
-describe("GET /agrements/organisme/:id", () => {
+describe("GET /agrements/organisme/:organismeId", () => {
   it("devrait retourner un agrément par ID de l'organisme avec succès", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });

@@ -29,6 +29,8 @@ async function checkPermissionAgrement(
   const agrementId = req.params?.agrementId ?? req.body?.agrementId ?? null;
   let organismeId = null;
 
+  log.i("IN", { userId });
+
   if (agrementId) {
     const orgQuery = `SELECT organisme_id FROM front.agrements WHERE id = $1`;
     const orgResult = await getPool().query(orgQuery, [agrementId]);
