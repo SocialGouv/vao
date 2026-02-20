@@ -34,7 +34,13 @@ async function checkPermissionOrganisme(
       WHERE u.id = $1
     `;
   const { rows } = await getPool().query(query, [userId]);
-  if (!rows || rows.length !== 1 || rows[0].org_id.toString() !== organismeId) {
+  if (
+    !rows ||
+    rows.length === 0 ||
+    !rows
+      .map((r: { org_id: number | string }) => r.org_id.toString())
+      .includes(organismeId.toString())
+  ) {
     return next(
       new AppError("Utilisateur non autorisé à accéder à l'organisme", {
         statusCode: 403,

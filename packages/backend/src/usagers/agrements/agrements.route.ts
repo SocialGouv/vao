@@ -21,7 +21,7 @@ router.post(
   "/",
   checkJWT,
   requestValidatorMiddleware(AgrementUsagersRoutesSchema["PostAgrement"]),
-  checkPermissionAgrement,
+  checkPermissionOrganisme,
   AgrementController.post,
 );
 
