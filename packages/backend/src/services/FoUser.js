@@ -306,11 +306,7 @@ module.exports.getByOrganismeId = async (organismesId, queryParams) => {
     offset,
     sort,
   );
-  console.log(
-    "paginatedQuery.query, paginatedQuery.params",
-    paginatedQuery.query,
-    paginatedQuery.params,
-  );
+
   const result = await Promise.all([
     getPool().query(paginatedQuery.query, paginatedQuery.params),
     getPool().query(paginatedQuery.countQuery, paginatedQuery.countQueryParams),
