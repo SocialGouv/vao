@@ -220,13 +220,18 @@ const updateData = (resetOffset = false) => {
 };
 
 const getCommuneCp = (adresse) => {
-  const decomposeAdresse = adresse.split(" ");
-  const cpIndex = decomposeAdresse.findIndex((mot) =>
-    regex.formatCommuneCP.test(mot),
-  );
-  return cpIndex > 0
-    ? `${decomposeAdresse.slice(cpIndex + 1).join(" ")} (${decomposeAdresse[cpIndex]})`
-    : null;
+  try {
+    const decomposeAdresse = adresse.split(" ");
+    const cpIndex = decomposeAdresse.findIndex((mot) =>
+      regex.formatCommuneCP.test(mot),
+    );
+    return cpIndex > 0
+      ? `${decomposeAdresse.slice(cpIndex + 1).join(" ")} (${decomposeAdresse[cpIndex]})`
+      : null;
+  } catch (e) {
+    log.error("Error while decomposing address", e);
+    return "";
+  }
 };
 updateData();
 
