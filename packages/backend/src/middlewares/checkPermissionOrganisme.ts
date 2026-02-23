@@ -26,28 +26,28 @@ async function checkPermissionOrganisme(
 
   log.i("IN", { userId });
 
+  if (!/^\d+$/.test(organismeId)) {
+    return next(
+      new AppError("organismeId doit être un entier", {
+        statusCode: 400,
+      }),
+    );
+  }
+
   const query = `
-      SELECT uo.org_id
-      FROM 
-      front.user_organisme uo 
-      JOIN front.users u ON uo.use_id = u.id
-      WHERE u.id = $1
-    `;
-  const { rows } = await getPool().query(query, [userId]);
-  if (
-    !rows ||
-    rows.length === 0 ||
-    !rows
-      .map((r: { org_id: number | string }) => r.org_id.toString())
-      .includes(organismeId.toString())
-  ) {
+    SELECT uo.org_id as organismeId
+    FROM front.user_organisme uo
+    JOIN front.users u ON uo.use_id = u.id
+    WHERE u.id = $1 AND uo.org_id = $2
+  `;
+  const { rows } = await getPool().query(query, [userId, organismeId]);
+  if (!rows || rows.length === 0) {
     return next(
       new AppError("Utilisateur non autorisé à accéder à l'organisme", {
         statusCode: 403,
       }),
     );
   }
-  log.i("DONE");
   next();
 }
 
