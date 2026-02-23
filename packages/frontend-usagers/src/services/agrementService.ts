@@ -4,9 +4,9 @@ import { buildRequest } from "~/utils/fetchBackend";
 const AgrementService = {
   getByOrganismeId: async (organismeId: number) => {
     const { agrement } = await buildRequest<AgrementUsagersRoutes["GetOne"]>({
-      path: "/agrements/organisme/{id}",
+      path: "/agrements/organisme/{organismeId}",
       method: "GET",
-      params: { id: String(organismeId) },
+      params: { organismeId: String(organismeId) },
     })();
     return agrement;
   },
@@ -26,6 +26,14 @@ const AgrementService = {
       method: "GET",
     })();
     return activites;
+  },
+  getHistory: async (agrementId: string) => {
+    const history = await buildRequest<AgrementUsagersRoutes["GetHistory"]>({
+      path: "/agrements/history/{agrementId}",
+      method: "GET",
+      params: { agrementId },
+    })();
+    return history;
   },
 };
 
