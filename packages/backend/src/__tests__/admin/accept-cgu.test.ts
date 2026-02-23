@@ -3,6 +3,7 @@ import request from "supertest";
 
 import app from "../../app";
 import config from "../../config";
+// @ts-expect-error js file
 import jwtMiddleware from "../../middlewares/bo-check-JWT-without-CGU";
 import { createAdminUserValide } from "../helper/fixtures/userHelper";
 import {

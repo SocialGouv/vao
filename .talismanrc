@@ -60,11 +60,13 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/admin/accept-cgu.test.ts
   checksum: 692450d4fc33a59b516dab82ef8a447c1b0afa242acfac281b9c4584e330cbda
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
-  checksum: 9e05b5b350d7e13beb365c6a550dbb2f4d39a0a1d12b43e9fac815fd3c1fdc8d
+  checksum: 1cd24bcc2b9ad1e9c238c3ad905b5b1a7114370d0c19dffad9475a6e443b3e94
 - filename: packages/backend/src/__tests__/usagers/accept-cgu.test.ts
   checksum: ab7a0f54777521ceb0cf4f2f253cc6f804e24ad7e27015eb9d66961366510a12
 - filename: packages/backend/src/__tests__/usagers/authentification.test.ts
   checksum: c15d2aeea878e0da568caa3a14d4dc58287fad8ee1cd6d026626c38870e8bc47
+- filename: packages/backend/src/__tests__/usagers/documents.test.ts
+  checksum: d5d23d8aa40adf45f04cb47587350ba4c52423bb669307779f9be0254e77b695
 - filename: packages/backend/src/config.js
   checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/__tests__/bo-user/accept-cgu.test.js
@@ -117,6 +119,8 @@ fileignoreconfig:
   checksum: 84d16fbf7cf0433f833c790f360cda6c8d23c30fe580eec4a0e3851a2d0311b0
 - filename: packages/backend/src/services/Document.js
   checksum: 1fbeae31395935da7b8daef1d3872151b793d433d1cde968d0607b4628ba50a8
+- filename: packages/backend/src/services/Document.ts
+  checksum: daf6e4809e43288a6a7b0b0686bf755e8d569eca283a1f28ba868f62748f66a2
 - filename: packages/backend/src/services/Insee.js
   checksum: 8c067dbdd0a587b46905003d34a13df176fe03192253e881287c21577311f564
 - filename: packages/backend/src/services/Organisme.js

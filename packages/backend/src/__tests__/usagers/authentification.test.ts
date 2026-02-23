@@ -1,7 +1,9 @@
+import { NextFunction } from "express";
 import request from "supertest";
 
 import app from "../../app";
 import { getEtablissement } from "../../services/Insee";
+import { UserRequest } from "../../types/request";
 import { createUsagersUser } from "../helper/fixtures/userHelper";
 import {
   createTestContainer,
@@ -11,8 +13,8 @@ import {
 let authUser = { id: 1, role: "admin" };
 
 jest.mock("../../middlewares/common/checkJWT", () => {
-  return async (req, res, next) => {
-    req.decoded = authUser;
+  return async (req: UserRequest, _res: Response, next: NextFunction) => {
+    req.decoded = authUser as any;
     next();
   };
 });
@@ -33,7 +35,7 @@ describe("POST /authentication/email/register", () => {
   it("should return 400 if SIRET is not found", async () => {
     authUser = await createUsagersUser();
 
-    getEtablissement.mockResolvedValue(null);
+    (getEtablissement as jest.Mock).mockResolvedValue(null);
 
     const payload = {
       email: "test@example.com",

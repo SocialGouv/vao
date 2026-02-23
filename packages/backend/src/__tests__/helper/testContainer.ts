@@ -1,7 +1,9 @@
+import { CreateBucketCommand, S3Client } from "@aws-sdk/client-s3";
 import {
   PostgreSqlContainer,
   StartedPostgreSqlContainer,
 } from "@testcontainers/postgresql";
+import { S3MockContainer } from "@testcontainers/s3mock";
 import { knex } from "knex";
 
 import { disconnect } from "../../utils/pgpool";
@@ -64,7 +66,54 @@ async function runMigrations(container: StartedPostgreSqlContainer) {
   });
   await db.migrate.latest();
 }
-export async function createTestContainer() {
+export async function createTestContainer({
+  s3 = false,
+  pg = true,
+}: { s3?: boolean; pg?: boolean } = {}) {
+  if (pg) {
+    await createPgTestContainer();
+  }
+  if (s3) {
+    await createS3TestContainer();
+  }
+}
+
+export async function createS3TestContainer() {
+  if (global.s3Container) {
+    console.warn("S3 container already started");
+    return;
+  }
+  console.debug("Starting S3 container...");
+  try {
+    console.time("StartingS3");
+    const container = await new S3MockContainer("adobe/s3mock").start();
+    console.timeEnd("StartingS3");
+    const client = new S3Client({
+      credentials: {
+        accessKeyId: container.getAccessKeyId(),
+        secretAccessKey: container.getSecretAccessKey(),
+      },
+      endpoint: container.getHttpConnectionUrl(),
+      forcePathStyle: true,
+      region: "auto",
+    });
+    console.time("S3CreateBucket");
+    await client.send(
+      new CreateBucketCommand({
+        Bucket: process.env.S3_BUCKET_NAME!,
+      }),
+    );
+    console.timeEnd("S3CreateBucket");
+    console.debug("S3 initialized successfully");
+    global.s3Container = container;
+  } catch (error) {
+    // need to remove "credsStore": "desktop" from ~/.docker/config.json on MACOS
+    console.error("Failed to start S3 container:", error);
+    throw error;
+  }
+}
+
+export async function createPgTestContainer() {
   if (global.postgresContainer) {
     console.warn("Postgres container already started");
     return;

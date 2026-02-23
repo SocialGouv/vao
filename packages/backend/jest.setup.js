@@ -5,9 +5,13 @@
 //
 // This stays test-only (jest setup) to avoid impacting runtime behavior.
 const buffer = require("buffer");
+
 if (!buffer.SlowBuffer) {
   buffer.SlowBuffer = buffer.Buffer;
 }
 
 process.env.PG_VAO_CIPHER_DATA =
   "e14de305fbac8f2ed5ab96ce9659265625db31d01ea9d5b7a20b5f985612a054";
+process.env.S3_BUCKET_NAME = "vao";
+
+process.env.DEBUG = "*warn*";

@@ -13,7 +13,7 @@ module.exports.agrement = require("./agrement");
 module.exports.message = require("./message");
 module.exports.territoire = require("./territoire");
 
-module.exports.documents = require("./documents");
+module.exports.documents = require("./documents").default;
 
 module.exports.geo = require("./geo");
 module.exports.debugSentry = require("./debug-sentry");
