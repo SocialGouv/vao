@@ -20,12 +20,12 @@
     :modifiable="props.modifiable"
   />
   <hr class="fr-mt-8v" />
-  <AgrementProjetsCasierJudiciaire
+  <!-- <AgrementProjetsCasierJudiciaire
     ref="casierJudiciaireRef"
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
-  />
+  /> -->
   <hr class="fr-mt-8v" />
   <AgrementProjetsOrganisationTransports
     ref="organisationTransportsRef"
@@ -93,7 +93,7 @@ const emit = defineEmits(["update:valid", "update", "previous", "next"]);
 const sejoursPrevusRef = ref(null);
 const animationsActivitesRef = ref(null);
 const accompagnantsResponsablesRef = ref(null);
-const casierJudiciaireRef = ref(null);
+// const casierJudiciaireRef = ref(null);
 const organisationTransportsRef = ref(null);
 const suiviMedicalRef = ref(null);
 const protocoleRef = ref(null);
@@ -157,11 +157,11 @@ const handleSuivant = async () => {
       nom: "Accompagnants et responsables",
       cle: "accompagnantsResponsables",
     },
-    {
-      ref: casierJudiciaireRef,
-      nom: "Casier judiciaire",
-      cle: "casierJudiciaire",
-    },
+    // {
+    //   ref: casierJudiciaireRef,
+    //   nom: "Casier judiciaire",
+    //   cle: "casierJudiciaire",
+    // },
     {
       ref: organisationTransportsRef,
       nom: "Organisation des transports",

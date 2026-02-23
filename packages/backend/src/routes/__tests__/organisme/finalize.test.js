@@ -1,5 +1,5 @@
 const checkJWT = require("../../../middlewares/checkJWT");
-const checkPermissionOrganisme = require("../../../middlewares/checkPermissionOrganisme");
+const checkPermissionOrganismeModule = require("../../../middlewares/checkPermissionOrganisme");
 const request = require("supertest");
 const app = require("../../../app");
 const Organisme = require("../../../services/Organisme");
@@ -18,9 +18,11 @@ describe("POST /organisme/:id/finalize", () => {
       req.decoded = { ...user };
       next();
     });
-    checkPermissionOrganisme.mockImplementation((req, res, next) => {
-      next();
-    });
+    checkPermissionOrganismeModule.default.mockImplementation(
+      (req, res, next) => {
+        next();
+      },
+    );
   });
 
   afterEach(() => {
