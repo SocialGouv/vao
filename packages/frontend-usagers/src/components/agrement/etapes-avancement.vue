@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h3 class="fr-mb-0">Etapes d'avancement</h3>
+    <h2 class="fr-mb-0">Etapes d'avancement</h2>
     <p>A chaque étape vous recevez un e-mail sur {{ user.email }}</p>
     <div class="stepper-container">
       <div class="stepper">
@@ -18,7 +18,7 @@
             :entite="step.entite"
           >
             <template #temporalite>
-              <template v-if="step.temporalite.texte">
+              <template v-if="typeof step.temporalite === 'object' && step.temporalite.texte">
                 {{ step.temporalite.texte }}
                 <a
                   v-if="step.temporalite.lien"
@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { AGREMENT_STATUT, formatFR } from "@vao/shared-bridge";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -56,36 +56,33 @@ const statutOrder = [
   AGREMENT_STATUT.COMPLETUDE_CONFIRME,
   AGREMENT_STATUT.VALIDE,
 ];
-
+//todo utiliser les vraies valeurs et supprimer les placeholders quand historique sera finalisé avec tout traqué:
 const steps = [
   {
     statut: AGREMENT_STATUT.TRANSMIS,
     libelle: "Envoi de la première demande d'agrément",
-    temporalite: props.initAgrement?.dateDepot ?? "",
+    temporalite: props.initAgrement?.dateDepot ? formatFR(props.initAgrement?.dateDepot) : "02/05/2025",
     entite: "",
   },
   {
     statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     libelle: "Vérification de la complétude de votre dossier",
     temporalite:
-      props.initAgrement?.dateVerifCompleture ||
-      "Possible demande de complément d'informations ou documents justificatifs",
+      props.initAgrement?.dateVerifCompleture ? formatFR(props.initAgrement?.dateVerifCompleture) : "Possible demande de complément d'informations ou documents justificatifs",
     entite: "",
   },
   {
     statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
     libelle:
-      props.initAgrement?.dateConfirmCompletude ||
       "Confirmation de complétude de votre dossier",
-    temporalite: "Récépissé de complétude",
+    temporalite: props.initAgrement?.dateConfirmCompletude ? formatFR(props.initAgrement?.dateConfirmCompletude) : "Récépissé de complétude",
     entite: "",
   },
   {
     statut: AGREMENT_STATUT.VALIDE,
     libelle:
-      props.initAgrement?.dateObtentionCertificat ||
       "Décision d'obtention de l'agrément",
-    temporalite: {
+    temporalite: props.initAgrement?.dateObtentionCertificat ? formatFR(props.initAgrement?.dateObtentionCertificat) : {
       texte: "Délais de deux mois à compter du récépissé de complétude.",
       lien: {
         url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030344746/",

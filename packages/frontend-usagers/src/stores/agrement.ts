@@ -1,5 +1,9 @@
 import { defineStore } from "pinia";
-import type { AgrementDto, ActiviteDto } from "@vao/shared-bridge";
+import type {
+  AgrementDto,
+  ActiviteDto,
+  AgrementHistoryItem,
+} from "@vao/shared-bridge";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { AgrementService } from "~/services/agrementService";
 const log = logger("stores/agrement");
@@ -8,6 +12,7 @@ export interface AgrementStoreState {
   agrement: AgrementDto | null;
   agrementCourant: AgrementDto | null;
   activites: ActiviteDto[];
+  history: AgrementHistoryItem[] | null;
 }
 
 export const useAgrementStore = defineStore("agrement", {
@@ -15,6 +20,7 @@ export const useAgrementStore = defineStore("agrement", {
     agrement: null,
     agrementCourant: null,
     activites: [],
+    history: null,
   }),
   actions: {
     async getByOrganismeId(organismeId: number): Promise<void> {
@@ -114,6 +120,17 @@ export const useAgrementStore = defineStore("agrement", {
         log.i("getAllActivites - DONE");
       } catch (err) {
         log.w("getAllActivites - DONE with error", err);
+        throw err;
+      }
+    },
+    async getHistory(agrementId: string): Promise<void> {
+      log.i("getHistory - IN", { agrementId });
+      try {
+        const { history } = await AgrementService.getHistory(agrementId);
+        this.history = history;
+        log.i("getHistory - DONE", { history });
+      } catch (err) {
+        log.w("getHistory - DONE with error", err);
         throw err;
       }
     },

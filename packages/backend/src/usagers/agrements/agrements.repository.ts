@@ -1,3 +1,7 @@
+import type {
+  AgrementHistoryItem,
+  AgrementHistoryRow,
+} from "@vao/shared-bridge";
 import { AgrementDto } from "@vao/shared-bridge";
 
 import { saveAdresse } from "../../services/adresse";
@@ -231,7 +235,6 @@ export const AgrementsRepository = {
       return agrementId;
     } catch (err) {
       await client.query("ROLLBACK");
-      console.error("Erreur lors de la création d'un agrément :", err);
       throw err;
     } finally {
       client.release();
@@ -353,6 +356,104 @@ export const AgrementsRepository = {
     }
 
     return agrementDto;
+  },
+  async getHistory(agrementId: number): Promise<AgrementHistoryItem[]> {
+    const client = await getPool().connect();
+    try {
+      const query = `
+       SELECT
+          h.id,
+          h.source,
+          h.agrement_id,
+          h.usager_user_id,
+          u.nom AS usager_nom,
+          u.prenom AS usager_prenom,
+          u.mail AS usager_mail,
+          h.bo_user_id,
+          b.nom AS bo_nom,
+          b.prenom AS bo_prenom,
+          b.mail AS bo_mail,
+          h.type,
+          h.type_precision,
+          h.metadata,
+          h.created_at
+        FROM front.agrement_history h
+        LEFT JOIN front.users u ON h.usager_user_id = u.id
+        LEFT JOIN back.users b ON h.bo_user_id = b.id
+        WHERE h.agrement_id = $1
+        ORDER BY h.created_at DESC;
+      `;
+      const result = await client.query(query, [agrementId]);
+      return result.rows.map((row: AgrementHistoryRow) => ({
+        agrement_id: row.agrement_id,
+        bo_user: row.bo_user_id
+          ? {
+              id: row.bo_user_id,
+              mail: row.bo_mail,
+              nom: row.bo_nom,
+              prenom: row.bo_prenom,
+            }
+          : null,
+        created_at: row.created_at,
+        id: row.id,
+        metadata: row.metadata,
+        source: row.source,
+        type: row.type,
+        type_precision: row.type_precision,
+        usager_user: row.usager_user_id
+          ? {
+              id: row.usager_user_id,
+              mail: row.usager_mail,
+              nom: row.usager_nom,
+              prenom: row.usager_prenom,
+            }
+          : null,
+      }));
+    } finally {
+      client.release();
+    }
+  },
+  async insertHistoryEvent({
+    source,
+    agrementId,
+    usagerUserId,
+    boUserId,
+    type,
+    typePrecision,
+    metadata,
+  }: {
+    source: string;
+    agrementId: number;
+    usagerUserId?: number | null;
+    boUserId?: number | null;
+    type?: string | null;
+    typePrecision?: string | null;
+    metadata?: Record<string, unknown> | null;
+  }): Promise<number> {
+    const query = `
+      INSERT INTO front.agrement_history (
+        source,
+        agrement_id,
+        usager_user_id,
+        bo_user_id,
+        type,
+        type_precision,
+        metadata,
+        created_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+      RETURNING id;
+    `;
+    const values = [
+      source,
+      agrementId,
+      usagerUserId ?? null,
+      boUserId ?? null,
+      type ?? null,
+      typePrecision ?? null,
+      metadata ?? null,
+    ];
+    const { rows } = await getPool().query(query, values);
+    return rows[0].id;
   },
   async update({
     agrement,
@@ -512,7 +613,6 @@ export const AgrementsRepository = {
       await client.query("COMMIT");
     } catch (err) {
       await client.query("ROLLBACK");
-      console.error("Erreur lors de la mise à jour de l'agrément :", err);
       throw err;
     } finally {
       client.release();

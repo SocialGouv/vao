@@ -50,6 +50,10 @@ export const AgrementService = {
       libelle: activite.libelle,
     }));
   },
+  async getHistory(agrementId: number) {
+    const history = await AgrementsRepository.getHistory(agrementId);
+    return history;
+  },
   async save(agrement: AgrementDto): Promise<number> {
     const dateFinValidite = addYears(agrement?.dateObtentionCertificat, 5);
     let agrementId = null;
@@ -68,5 +72,16 @@ export const AgrementService = {
       log.d("Add meta values - DONE", { agrementId });
     }
     return agrementId;
+  },
+  async trackEvent(event: {
+    source: string;
+    agrementId: number;
+    usagerUserId?: number | null;
+    boUserId?: number | null;
+    type?: string | null;
+    typePrecision?: string | null;
+    metadata?: Record<string, unknown> | null;
+  }) {
+    return AgrementsRepository.insertHistoryEvent(event);
   },
 };

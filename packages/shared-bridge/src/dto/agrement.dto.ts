@@ -99,3 +99,40 @@ export interface BilanHebergementDto {
   nbJours: number | null;
   mois: number[] | null;
 }
+
+export interface AgrementHistoryUser {
+  id: number;
+  nom: string;
+  prenom: string;
+  mail: string;
+}
+
+export interface AgrementHistoryItem {
+  id: number;
+  source: string;
+  agrement_id: number;
+  usager_user?: AgrementHistoryUser | null;
+  bo_user?: AgrementHistoryUser | null;
+  type?: string | null;
+  type_precision?: string | null;
+  metadata?: Record<string, unknown> | null;
+  created_at: Date;
+}
+
+export interface AgrementHistoryRow {
+  id: number;
+  source: string;
+  agrement_id: number;
+  usager_user_id?: number | null;
+  usager_nom?: string | null;
+  usager_prenom?: string | null;
+  usager_mail?: string | null;
+  bo_user_id?: number | null;
+  bo_nom?: string | null;
+  bo_prenom?: string | null;
+  bo_mail?: string | null;
+  type?: string | null;
+  type_precision?: string | null;
+  metadata?: Record<string, unknown> | null;
+  created_at: Date;
+}

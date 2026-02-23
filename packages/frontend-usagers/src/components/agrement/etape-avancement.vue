@@ -7,15 +7,15 @@
     ></span>
     <span v-if="state === 'success'" class="fr-sr-only">Étape terminée</span>
     <span
-      v-else-if="state === 'waiting'"
+      v-if="state === 'waiting'"
       class="fr-icon-time-line icone icone--waiting"
       aria-hidden="true"
     ></span>
-    <span v-else-if="state === 'waiting'" class="fr-sr-only">Étape en attente</span>
+    <span v-if="state === 'waiting'" class="fr-sr-only">Étape en attente</span>
     <div class="texte">
       <p class="texte-intitule">{{ libelle }}</p>
       <p class="texte-temporalite">
-        <slot name="temporalite">{{ temporalite }}</slot>
+        <slot name="temporalite"></slot>
       </p>
     </div>
     <p class="entite">{{ entite }}</p>
@@ -32,11 +32,6 @@ defineProps({
   libelle: {
     type: String,
     required: true,
-  },
-  temporalite: {
-    type: String,
-    required: false,
-    default: "",
   },
   entite: {
     type: String,
