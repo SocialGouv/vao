@@ -84,23 +84,28 @@ const query = {
         CASE 
           WHEN NULLIF(pp.id, 0) IS NOT NULL THEN 
             pp.adresse_siege_label
-          ELSE (
-            SELECT pm4.adresse
+          ELSE 
+          (
+            SELECT pm4.adresse 
               FROM front.personne_morale pm4
               WHERE pm4.siret = COALESCE(u.siret, pm.siret)
               AND pm4."current" = true
-              LIMIT 1
-            )
+            UNION
+		        SELECT '- ' || eta.code_postal || ' ' || eta.commune 
+              FROM front.opm_etablissements eta 
+              WHERE eta.siret = COALESCE(u.siret, pm.siret)
+            LIMIT 1
+          )
         END AS "Adresse"
       FROM front.users AS u
         LEFT JOIN front.user_organisme uo ON uo.use_id = u.id
         LEFT JOIN front.personne_morale pm ON pm.organisme_id = uo.org_id AND pm."current" = true
         LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp."current" = true
       WHERE (uo.org_id = ANY ($1) OR 
-        u.siret IN (
-          SELECT siret 
+        substr(u.siret,1,9) IN (
+          SELECT siren 
           FROM front.personne_morale pm2 
-          WHERE pm2.siret = u.siret 
+          WHERE pm2.siren = substr(u.siret,1,9) 
           AND pm2.organisme_id = ANY ($1) 
           AND pm2."current" = true))
       ) AS r
