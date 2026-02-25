@@ -1,7 +1,19 @@
-import type { AgrementDto, AgrementUsagersRoutes } from "@vao/shared-bridge";
+import type {
+  AgrementDto,
+  AgrementUsagersRoutes,
+  AGREMENT_STATUT,
+} from "@vao/shared-bridge";
 import { buildRequest } from "~/utils/fetchBackend";
 
 const AgrementService = {
+  patchStatut: async (agrementId: number, statut: AGREMENT_STATUT) => {
+    return await buildRequest<AgrementUsagersRoutes["PatchStatut"]>({
+      path: "/agrements/{agrementId}/statut",
+      method: "PATCH",
+      params: { agrementId: String(agrementId) },
+      body: { statut },
+    })();
+  },
   getByOrganismeId: async (organismeId: number) => {
     const { agrement } = await buildRequest<AgrementUsagersRoutes["GetOne"]>({
       path: "/agrements/organisme/{organismeId}",

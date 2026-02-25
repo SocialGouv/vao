@@ -116,8 +116,8 @@ const validationSchema = yup.object({
     yup.string().email("Format d'email invalide").nullable(),
   ),
   adresse: requiredUnlessBrouillon(yup.string().nullable()),
-  prenom: requiredUnlessBrouillon(yup.string().nullable()),
-  nom: requiredUnlessBrouillon(yup.string().nullable()),
+  // prenom: requiredUnlessBrouillon(yup.string().nullable()),
+  // nom: requiredUnlessBrouillon(yup.string().nullable()),
 });
 
 const initialValues = {
@@ -125,8 +125,8 @@ const initialValues = {
   telephone: props.initOrganisme?.personneMorale?.telephone || "",
   email: props.initOrganisme?.personneMorale?.email || "",
   adresse: props.initOrganisme?.personneMorale?.adresse || "",
-  prenom: props.initOrganisme?.personneMorale?.prenom || "",
-  nom: props.initOrganisme?.personneMorale?.nom || "",
+  // prenom: props.initOrganisme?.personneMorale?.prenom || "",
+  // nom: props.initOrganisme?.personneMorale?.nom || "",
 };
 
 const { handleSubmit, setValues } = useForm({

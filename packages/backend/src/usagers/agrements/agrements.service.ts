@@ -2,12 +2,15 @@ import {
   ACTIVITE_TYPE,
   ActiviteDto,
   addYears,
+  AGREMENT_STATUT,
   AgrementDto,
 } from "@vao/shared-bridge";
 
 import { getById } from "../../services/adresse";
 import { getFileMetaData } from "../../services/Document";
+import { mailService } from "../../services/mail";
 import logger from "../../utils/logger";
+import MailUtils from "../../utils/mail";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
@@ -40,7 +43,6 @@ export const AgrementService = {
     }
     return agrement;
   },
-
   async getAllActivites(): Promise<ActiviteDto[]> {
     const activites = await AgrementsRepository.getAllActivites();
     return activites.map((activite) => ({
@@ -50,6 +52,7 @@ export const AgrementService = {
       libelle: activite.libelle,
     }));
   },
+
   async getHistory(agrementId: number) {
     const history = await AgrementsRepository.getHistory(agrementId);
     return history;
@@ -83,5 +86,40 @@ export const AgrementService = {
     metadata?: Record<string, unknown> | null;
   }) {
     return AgrementsRepository.insertHistoryEvent(event);
+  },
+  async updateStatut({
+    agrementId,
+    statut,
+  }: {
+    agrementId: number;
+    statut: AGREMENT_STATUT;
+  }): Promise<boolean> {
+    const updated = await AgrementsRepository.updateStatut({
+      agrementId,
+      statut,
+    });
+    if (!updated) return false;
+
+    // Envoi d'email si le statut devient TRANSMIS
+    if (statut === AGREMENT_STATUT.TRANSMIS) {
+      console.log("Statut mis à jour, envoi de l'email de transmission", {
+        agrementId,
+        statut,
+      });
+      try {
+        const email =
+          await AgrementsRepository.getUserMailByAgrementId(agrementId);
+        if (email) {
+          await mailService.send(
+            MailUtils.usagers.agrement.sendStatutTransmisMail({ email }),
+          );
+        } else {
+          log.w("Aucun email trouvé pour l'agrément", agrementId);
+        }
+      } catch (e) {
+        log.w("Erreur lors de l'envoi de l'email de transmission", e);
+      }
+    }
+    return true;
   },
 };

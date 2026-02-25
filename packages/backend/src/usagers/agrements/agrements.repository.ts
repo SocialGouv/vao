@@ -2,7 +2,7 @@ import type {
   AgrementHistoryItem,
   AgrementHistoryRow,
 } from "@vao/shared-bridge";
-import { AgrementDto } from "@vao/shared-bridge";
+import { AGREMENT_STATUT, AgrementDto } from "@vao/shared-bridge";
 
 import { saveAdresse } from "../../services/adresse";
 import {
@@ -357,6 +357,7 @@ export const AgrementsRepository = {
 
     return agrementDto;
   },
+
   async getHistory(agrementId: number): Promise<AgrementHistoryItem[]> {
     const client = await getPool().connect();
     try {
@@ -413,6 +414,32 @@ export const AgrementsRepository = {
       client.release();
     }
   },
+
+  /**
+   * Récupère l'email du user lié à un agrément id
+   */
+  async getUserMailByAgrementId(agrementId: number): Promise<string | null> {
+    const client = await getPool().connect();
+    try {
+      const query = `
+        SELECT u.mail
+        FROM front.agrements a
+        JOIN front.organismes o ON a.organisme_id = o.id
+        JOIN front.user_organisme uo ON uo.org_id = o.id
+        JOIN front.users u ON uo.use_id = u.id
+        WHERE a.id = $1
+        LIMIT 1;
+      `;
+      const result = await client.query(query, [agrementId]);
+      if (result.rows.length > 0) {
+        return result.rows[0].mail;
+      }
+      return null;
+    } finally {
+      client.release();
+    }
+  },
+
   async insertHistoryEvent({
     source,
     agrementId,
@@ -455,6 +482,7 @@ export const AgrementsRepository = {
     const { rows } = await getPool().query(query, values);
     return rows[0].id;
   },
+
   async update({
     agrement,
     dateFinValidite,
@@ -618,5 +646,26 @@ export const AgrementsRepository = {
       client.release();
     }
     return agrementId;
+  },
+  /**
+   * Met à jour uniquement le statut d'un agrément
+   */
+  async updateStatut({
+    agrementId,
+    statut,
+  }: {
+    agrementId: number;
+    statut: AGREMENT_STATUT;
+  }): Promise<boolean> {
+    const client = await getPool().connect();
+    try {
+      const result = await client.query(
+        `UPDATE front.agrements SET statut = $1, updated_at = NOW() WHERE id = $2`,
+        [statut, agrementId],
+      );
+      return result.rowCount > 0;
+    } finally {
+      client.release();
+    }
   },
 };
