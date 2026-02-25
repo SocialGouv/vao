@@ -90,9 +90,11 @@ export const AgrementService = {
   async updateStatut({
     agrementId,
     statut,
+    usagerUserId,
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
+    usagerUserId: string;
   }): Promise<boolean> {
     const updated = await AgrementsRepository.updateStatut({
       agrementId,
@@ -100,12 +102,16 @@ export const AgrementService = {
     });
     if (!updated) return false;
 
+    await AgrementService.trackEvent({
+      agrementId,
+      source: "usager",
+      type: "STATUT_CHANGE",
+      typePrecision: statut,
+      usagerUserId: Number(usagerUserId),
+    });
+
     // Envoi d'email si le statut devient TRANSMIS
     if (statut === AGREMENT_STATUT.TRANSMIS) {
-      console.log("Statut mis à jour, envoi de l'email de transmission", {
-        agrementId,
-        statut,
-      });
       try {
         const email =
           await AgrementsRepository.getUserMailByAgrementId(agrementId);

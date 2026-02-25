@@ -62,12 +62,16 @@ export const AgrementController = {
     next: NextFunction,
   ) {
     log.i("PATCH statut IN");
+    console.log("req.decoded", req.decoded);
+    const { id: usagerUserId } = req.decoded;
+
     const agrementId = Number(req.validatedParams!.agrementId);
     const { statut } = req.validatedBody!;
     try {
       const success = await AgrementService.updateStatut({
         agrementId,
         statut,
+        usagerUserId,
       });
       if (!success)
         throw new AppError("Agrement not found or update failed", {
