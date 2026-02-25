@@ -62,7 +62,10 @@ export const AgrementController = {
     next: NextFunction,
   ) {
     log.i("PATCH statut IN");
-    console.log("req.decoded", req.decoded);
+
+    if (!req.decoded) {
+      throw new AppError("Utilisateur non authentifié", { statusCode: 401 });
+    }
     const { id: usagerUserId } = req.decoded;
 
     const agrementId = Number(req.validatedParams!.agrementId);
