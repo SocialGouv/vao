@@ -134,5 +134,32 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
+    async changeStatutAgrement({
+      agrementId,
+      statut,
+    }: {
+      agrementId: number;
+      statut: AGREMENT_STATUT;
+    }): Promise<boolean> {
+      log.i("changeStatutAgrement - IN", { agrementId, statut });
+      try {
+        const { success } = await AgrementService.patchStatut(
+          agrementId,
+          statut,
+        );
+        if (
+          success &&
+          this.agrementCourant &&
+          this.agrementCourant.id === agrementId
+        ) {
+          this.agrementCourant.statut = statut;
+        }
+        log.i("changeStatutAgrement - DONE", { success });
+        return success;
+      } catch (err) {
+        log.w("changeStatutAgrement - ERROR", err);
+        throw err;
+      }
+    },
   },
 });

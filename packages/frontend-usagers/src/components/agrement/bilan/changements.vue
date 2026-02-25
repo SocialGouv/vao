@@ -58,7 +58,6 @@ import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import displayInput from "../../../utils/display-input"; 
-import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -74,14 +73,15 @@ const filesChangeEvol = ref(
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  bilanChangementEvolution: requiredUnlessBrouillon(yup
+  bilanChangementEvolution: yup
     .string()
     .nullable()
-    .test(
-      "min-if-filled",
-      "Merci de décrire au moins 20 caractères.",
-      (value) => !value || value.length >= 20,
-    )),
+    .when([], {
+      is: (val: string | null) => val && val.length > 0,
+      then: (schema) =>
+        schema.min(20, "Merci de décrire au moins 20 caractères."),
+      otherwise: (schema) => schema,
+    }),
 });
 
 const initialValues = {

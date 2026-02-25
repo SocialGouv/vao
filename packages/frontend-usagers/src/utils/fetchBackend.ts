@@ -55,6 +55,13 @@ export function buildRequest<Route extends BasicRoute>({
           method: "PUT",
           body,
         });
+    case "PATCH":
+      return async () =>
+        $fetchBackend<Route["response"]>(url, {
+          ...OPTIONS_DEFAULT,
+          method: "PATCH",
+          body,
+        });
     case "DELETE":
       return async () =>
         $fetchBackend<Route["response"]>(url, {

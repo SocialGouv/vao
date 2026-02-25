@@ -11,7 +11,7 @@ export interface BasicRoute {
     | RouteResponseBody<Record<string, any>>
     | RouteResponseBody<Record<string, any>[]>
     | void;
-  method: "GET" | "POST" | "DELETE" | "PUT";
+  method: "GET" | "POST" | "DELETE" | "PUT" | "PATCH";
 }
 
 export type RouteResponseBody<T> = T;
