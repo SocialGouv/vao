@@ -1,6 +1,7 @@
 import request from "supertest";
 
 import app from "../../app";
+import { mailService } from "../../services/mail";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import {
   createAgrement,
@@ -90,4 +91,50 @@ describe("POST /agrements", () => {
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
+});
+
+it("devrait changer le statut d'un agrément avec succès", async () => {
+  authUser = await createUsagersUser();
+  const organismeId = await createOrganisme({ userId: authUser.id });
+  const agrementData = await buildAgrementFixture({ organismeId });
+  const agrementId = await createAgrement({
+    agrement: agrementData,
+    organismeId,
+  });
+
+  const response = await request(app)
+    .patch(`/agrements/${agrementId}/statut`)
+    .send({ statut: "TRANSMIS" });
+
+  expect(response.status).toBe(200);
+  expect(response.body.success).toBe(true);
+
+  const { agrement } = await getAgrement(organismeId);
+  expect(agrement.statut).toBe("TRANSMIS");
+});
+
+jest.mock("../../services/mail", () => ({
+  mailService: { send: jest.fn() },
+}));
+
+it("workflow changement statut de l'agrement", async () => {
+  authUser = await createUsagersUser();
+  const organismeId = await createOrganisme({ userId: authUser.id });
+  const agrementData = await buildAgrementFixture({ organismeId });
+  const agrementId = await createAgrement({
+    agrement: agrementData,
+    organismeId,
+  });
+
+  const response = await request(app)
+    .patch(`/agrements/${agrementId}/statut`)
+    .send({ statut: "TRANSMIS" });
+
+  expect(response.status).toBe(200);
+  expect(response.body.success).toBe(true);
+
+  const { agrement } = await getAgrement(organismeId);
+  expect(agrement.statut).toBe("TRANSMIS");
+
+  expect(mailService.send).toHaveBeenCalledTimes(1);
 });
