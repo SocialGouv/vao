@@ -1,4 +1,5 @@
 import type {
+  AGREMENT_HISTORY_TYPE,
   AgrementHistoryItem,
   AgrementHistoryRow,
 } from "@vao/shared-bridge";
@@ -453,7 +454,7 @@ export const AgrementsRepository = {
     agrementId: number;
     usagerUserId?: number | null;
     boUserId?: number | null;
-    type?: string | null;
+    type?: AGREMENT_HISTORY_TYPE | null;
     typePrecision?: string | null;
     metadata?: Record<string, unknown> | null;
   }): Promise<number> {
