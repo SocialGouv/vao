@@ -2,6 +2,7 @@ import {
   ACTIVITE_TYPE,
   ActiviteDto,
   addYears,
+  AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AgrementDto,
 } from "@vao/shared-bridge";
@@ -81,7 +82,7 @@ export const AgrementService = {
     agrementId: number;
     usagerUserId?: number | null;
     boUserId?: number | null;
-    type?: string | null;
+    type?: AGREMENT_HISTORY_TYPE | null;
     typePrecision?: string | null;
     metadata?: Record<string, unknown> | null;
   }) {
@@ -105,7 +106,7 @@ export const AgrementService = {
     await AgrementService.trackEvent({
       agrementId,
       source: "usager",
-      type: "STATUT_CHANGE",
+      type: AGREMENT_HISTORY_TYPE.STATUT_CHANGE,
       typePrecision: statut,
       usagerUserId: Number(usagerUserId),
     });

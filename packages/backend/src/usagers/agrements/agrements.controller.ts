@@ -103,7 +103,7 @@ export const AgrementController = {
       //   boUserId: null,
       //   metadata: null,
       //   source: "Organisateur",
-      //   type: "Mise à jour page",
+      //   type: AGREMENT_HISTORY_TYPE.CREATION,
       //   typePrecision: "Renuvellement en cours de complétion",
       //   usagerUserId: 1,
       // });
