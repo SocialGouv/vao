@@ -5,6 +5,8 @@ import type { GetHistoryRoute } from "./getHistory";
 import { GetHistoryRouteSchema } from "./getHistory";
 import type { GetOneRoute } from "./getOne";
 import { GetOneRouteSchema } from "./getOne";
+import type { PatchStatutRoute } from "./patchStatut";
+import { PatchStatutRouteSchema } from "./patchStatut";
 import type { PostAgrementRoute } from "./postAgrement";
 import { PostAgrementRouteSchema } from "./postAgrement";
 
@@ -13,11 +15,13 @@ export type AgrementUsagersRoutes = {
   PostAgrement: PostAgrementRoute;
   GetAllActivites: GetAllActivitesRoute;
   GetHistory: GetHistoryRoute;
+  PatchStatut: PatchStatutRoute;
 };
 
 export const AgrementUsagersRoutesSchema = {
   GetAllActivites: GetAllActivitesRouteSchema,
   GetHistory: GetHistoryRouteSchema,
   GetOne: GetOneRouteSchema,
+  PatchStatut: PatchStatutRouteSchema,
   PostAgrement: PostAgrementRouteSchema,
 };

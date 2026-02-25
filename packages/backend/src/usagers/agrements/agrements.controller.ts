@@ -56,6 +56,29 @@ export const AgrementController = {
       next(error);
     }
   },
+  async patchStatut(
+    req: RouteRequest<AgrementUsagersRoutes["PatchStatut"]>,
+    res: RouteResponse<AgrementUsagersRoutes["PatchStatut"]>,
+    next: NextFunction,
+  ) {
+    log.i("PATCH statut IN");
+    const agrementId = Number(req.validatedParams!.agrementId);
+    const { statut } = req.validatedBody!;
+    try {
+      const success = await AgrementService.updateStatut({
+        agrementId,
+        statut,
+      });
+      if (!success)
+        throw new AppError("Agrement not found or update failed", {
+          statusCode: 404,
+        });
+      res.json({ success: true });
+    } catch (error) {
+      log.w("PATCH statut error", error);
+      next(error);
+    }
+  },
   async post(
     req: RouteRequest<AgrementUsagersRoutes["PostAgrement"]>,
     res: RouteResponse<AgrementUsagersRoutes["PostAgrement"]>,

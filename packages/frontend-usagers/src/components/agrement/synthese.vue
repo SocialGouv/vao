@@ -109,6 +109,10 @@
 </template>
 
 <script setup>
+import { storeToRefs } from "pinia";
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { useToaster } from "@vao/shared-ui";
+
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   initOrganisme: { type: Object, required: true },
@@ -122,10 +126,46 @@ const dossierValid = ref(false);
 const bilanValid = ref(false);
 const projetValid = ref(false);
 
-function onNext() {
-  // TO DO TICKET 1103
-  navigateTo("/demande-agrement-transmise");
+const agrementStore = useAgrementStore();
+const { agrementCourant } = storeToRefs(agrementStore);
+
+const toaster = useToaster();
+
+const log = logger("components/agrement/synthese.vue");
+
+async function onNext() {
+  if (!agrementCourant.value?.id) {
+    toaster.error({
+      description: "Aucun agrément trouvé. Veuillez réessayer.",
+      role: "alert",
+    });
+
+    return;
+  }
+  try {
+    const success = await agrementStore.changeStatutAgrement({
+      agrementId: agrementCourant.value.id,
+      statut: AGREMENT_STATUT.TRANSMIS,
+    });
+    if (success) {
+      navigateTo("/demande-agrement-transmise");
+    } else {
+      toaster.error({
+        description:
+          "Erreur lors de la transmission de votre demande. Veuillez réessayer.",
+        role: "alert",
+      });
+    }
+  } catch (err) {
+    log.w("Erreur lors de la transmission de la demande d'agrément", err);
+    toaster.error({
+      description:
+        "Erreur lors de la transmission de votre demande. Veuillez réessayer.",
+      role: "alert",
+    });
+  }
 }
+
 function onModifierCoordonnees() {
   navigateTo("/agrement#agrement-coordonnees");
 }

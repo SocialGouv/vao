@@ -904,6 +904,39 @@ module.exports = {
         return params;
       },
     },
+    agrement: {
+      sendStatutTransmisMail: ({ email }) => {
+        log.i("sendStatutTransmisMail - In", { email });
+        if (!email) {
+          throw new AppError(
+            "Email manquant pour l'envoi du mail de transmission d'agrément",
+          );
+        }
+        const html = sendTemplate.getBody(
+          "VAO - Demande d'agrément transmise",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Votre demande de renouvellement d'agrément a bien été transmise.",
+                assistanceText,
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject: "VAO - Demande d'agrément transmise",
+          to: email,
+        };
+        log.d("sendStatutTransmisMail post email", { params });
+        return params;
+      },
+    },
     authentication: {
       sendAccountAlreadyExist: ({ email }) => {
         log.i("sendAccountAlreadyExist - In", {
