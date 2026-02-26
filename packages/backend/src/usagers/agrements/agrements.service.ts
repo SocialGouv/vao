@@ -10,6 +10,7 @@ import {
 import { getById } from "../../services/adresse";
 import { getFileMetaData } from "../../services/Document";
 import { mailService } from "../../services/mail";
+import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 import MailUtils from "../../utils/mail";
 import { AgrementsRepository } from "./agrements.repository";
@@ -97,11 +98,23 @@ export const AgrementService = {
     statut: AGREMENT_STATUT;
     usagerUserId: string;
   }): Promise<boolean> {
+    let agrement;
+    try {
+      agrement = await AgrementsRepository.getById(agrementId);
+    } catch (err) {
+      log.w("Erreur lors de la récupération de l'agrément", err);
+      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+    }
+
     const updated = await AgrementsRepository.updateStatut({
       agrementId,
       statut,
     });
-    if (!updated) return false;
+    if (!updated) {
+      throw new AppError("Échec de la mise à jour du statut", {
+        statusCode: 500,
+      });
+    }
 
     await AgrementService.trackEvent({
       agrementId,
@@ -111,20 +124,18 @@ export const AgrementService = {
       usagerUserId: Number(usagerUserId),
     });
 
-    // Envoi d'email si le statut devient TRANSMIS
     if (statut === AGREMENT_STATUT.TRANSMIS) {
-      try {
-        const email =
-          await AgrementsRepository.getUserMailByAgrementId(agrementId);
-        if (email) {
+      const email = agrement.user_mail;
+      if (email) {
+        try {
           await mailService.send(
             MailUtils.usagers.agrement.sendStatutTransmisMail({ email }),
           );
-        } else {
-          log.w("Aucun email trouvé pour l'agrément", agrementId);
+        } catch (e) {
+          log.w("Erreur lors de l'envoi de l'email de transmission", e);
         }
-      } catch (e) {
-        log.w("Erreur lors de l'envoi de l'email de transmission", e);
+      } else {
+        log.w("Aucun email trouvé pour l'agrément", agrementId);
       }
     }
     return true;
