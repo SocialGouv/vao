@@ -108,7 +108,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { useToaster } from "@vao/shared-ui";
@@ -120,11 +120,11 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
 });
 
-const expandedIndex = ref(-1);
-const coordonneesValid = ref(false);
-const dossierValid = ref(false);
-const bilanValid = ref(false);
-const projetValid = ref(false);
+const expandedIndex = ref<number>(-1);
+const coordonneesValid = ref<boolean>(false);
+const dossierValid = ref<boolean>(false);
+const bilanValid = ref<boolean>(false);
+const projetValid = ref<boolean>(false);
 
 const agrementStore = useAgrementStore();
 const { agrementCourant } = storeToRefs(agrementStore);

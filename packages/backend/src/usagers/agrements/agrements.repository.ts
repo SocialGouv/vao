@@ -254,6 +254,33 @@ export const AgrementsRepository = {
   },
 
   /**
+   * Récupère un agrément par son ID. Retourne agrement enrichi avec l'email du user responsable.
+   */
+  async getById(
+    agrementId: number,
+  ): Promise<AgrementEntity & { user_mail: string | null }> {
+    const client = await getPool().connect();
+    try {
+      const result = await client.query(
+        `SELECT a.*, u.mail AS user_mail
+          FROM front.agrements a
+          JOIN front.organismes o ON a.organisme_id = o.id
+          JOIN front.user_organisme uo ON uo.org_id = o.id
+          JOIN front.users u ON uo.use_id = u.id
+          WHERE a.id = $1
+          LIMIT 1;`,
+        [agrementId],
+      );
+      if (result.rows.length === 0) {
+        throw new Error("Aucun agrément trouvé avec cet ID");
+      }
+      return result.rows[0] as AgrementEntity & { user_mail: string | null };
+    } finally {
+      client.release();
+    }
+  },
+
+  /**
    * Récupère un agrément par organisme ID (avec ou sans détails liés)
    */
   async getByOrganismeId({
@@ -411,31 +438,6 @@ export const AgrementsRepository = {
             }
           : null,
       }));
-    } finally {
-      client.release();
-    }
-  },
-
-  /**
-   * Récupère l'email du user lié à un agrément id
-   */
-  async getUserMailByAgrementId(agrementId: number): Promise<string | null> {
-    const client = await getPool().connect();
-    try {
-      const query = `
-        SELECT u.mail
-        FROM front.agrements a
-        JOIN front.organismes o ON a.organisme_id = o.id
-        JOIN front.user_organisme uo ON uo.org_id = o.id
-        JOIN front.users u ON uo.use_id = u.id
-        WHERE a.id = $1
-        LIMIT 1;
-      `;
-      const result = await client.query(query, [agrementId]);
-      if (result.rows.length > 0) {
-        return result.rows[0].mail;
-      }
-      return null;
     } finally {
       client.release();
     }

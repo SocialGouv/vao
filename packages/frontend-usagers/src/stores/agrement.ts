@@ -147,11 +147,7 @@ export const useAgrementStore = defineStore("agrement", {
           agrementId,
           statut,
         );
-        if (
-          success &&
-          this.agrementCourant &&
-          this.agrementCourant.id === agrementId
-        ) {
+        if (success && this.agrementCourant?.id === agrementId) {
           this.agrementCourant.statut = statut;
         }
         log.i("changeStatutAgrement - DONE", { success });

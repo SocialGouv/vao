@@ -63,11 +63,7 @@ export const AgrementController = {
   ) {
     log.i("PATCH statut IN");
 
-    if (!req.decoded) {
-      throw new AppError("Utilisateur non authentifié", { statusCode: 401 });
-    }
-    const { id: usagerUserId } = req.decoded;
-
+    const { id: usagerUserId } = req.decoded!;
     const agrementId = Number(req.validatedParams!.agrementId);
     const { statut } = req.validatedBody!;
     try {
