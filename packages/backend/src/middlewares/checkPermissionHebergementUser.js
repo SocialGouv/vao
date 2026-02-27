@@ -16,17 +16,29 @@ async function checkPermissionHebergementUser(req, _res, next) {
       }),
     );
   }
-  const isHebergementAutoriseForUserId =
-    await Hebergement.getIsHebergementAutoriseForUserId(userId, hebergementId);
-  if (!isHebergementAutoriseForUserId) {
+  try {
+    const isHebergementAutoriseForUserId =
+      await Hebergement.getIsHebergementAutoriseForUserId(
+        userId,
+        hebergementId,
+      );
+    if (!isHebergementAutoriseForUserId) {
+      return next(
+        new AppError("Utilisateur non autorisé à modifier cet hébergement", {
+          statusCode: 403,
+        }),
+      );
+    }
+    log.i("DONE");
+    next();
+  } catch (err) {
+    log.e("checkPermissionHebergementUser error", err);
     return next(
-      new AppError("Utilisateur non autorisé à modifier cet hébergement", {
-        statusCode: 403,
+      new AppError("Erreur interne lors de la vérification des permissions", {
+        statusCode: 500,
       }),
     );
   }
-  log.i("DONE");
-  next();
 }
 
 module.exports = checkPermissionHebergementUser;

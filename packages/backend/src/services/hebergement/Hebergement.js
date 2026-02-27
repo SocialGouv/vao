@@ -191,7 +191,7 @@ ${new Array(nbRows)
       front.hebergement h
     LEFT JOIN front.personne_morale pmh ON pmh.organisme_id = h.organisme_id AND pmh.current = true
     LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren AND pmu.current = true
-    LEFT JOIN front.personne_physique pph ON pph.organisme_id = h.organisme_id AND pp.current = TRUE
+    LEFT JOIN front.personne_physique pph ON pph.organisme_id = h.organisme_id AND pph.current = TRUE
     LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id)
     WHERE uo.use_id = $1 AND h.id = $2
   `,
