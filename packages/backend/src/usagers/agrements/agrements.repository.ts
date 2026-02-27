@@ -258,7 +258,7 @@ export const AgrementsRepository = {
    */
   async getById(
     agrementId: number,
-  ): Promise<AgrementEntity & { user_mail: string | null }> {
+  ): Promise<(AgrementEntity & { user_mail: string | null }) | null> {
     const client = await getPool().connect();
     try {
       const result = await client.query(
@@ -272,7 +272,7 @@ export const AgrementsRepository = {
         [agrementId],
       );
       if (result.rows.length === 0) {
-        throw new Error("Aucun agrément trouvé avec cet ID");
+        return null;
       }
       return result.rows[0] as AgrementEntity & { user_mail: string | null };
     } finally {
