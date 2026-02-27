@@ -225,7 +225,6 @@ ${new Array(nbRows)
 	    LEFT JOIN front.personne_morale pmu ON pmu.siren = pmh.siren AND pmu.current = true
 	    LEFT JOIN front.personne_physique pph ON pph.organisme_id = h.organisme_id AND pph.current = TRUE
 	    LEFT JOIN front.user_organisme uo ON (uo.org_id = pmu.organisme_id OR uo.org_id = pph.organisme_id)
-      LEFT JOIN front.personne_physique pp ON pp.organisme_id = uo.org_id AND pp.organisme_id = h.organisme_id AND pp.current = TRUE
       WHERE h.CURRENT IS TRUE AND (pmh.siren = pmu.siren OR o.type_organisme = 'personne_physique') `,
   getPreviousValueForHistory: `
   SELECT
