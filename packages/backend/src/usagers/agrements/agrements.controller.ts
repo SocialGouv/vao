@@ -67,15 +67,11 @@ export const AgrementController = {
     const agrementId = Number(req.validatedParams!.agrementId);
     const { statut } = req.validatedBody!;
     try {
-      const success = await AgrementService.updateStatut({
+      await AgrementService.updateStatut({
         agrementId,
         statut,
         usagerUserId,
       });
-      if (!success)
-        throw new AppError("Agrement not found or update failed", {
-          statusCode: 404,
-        });
       res.json({ success: true });
     } catch (error) {
       log.w("PATCH statut error", error);
