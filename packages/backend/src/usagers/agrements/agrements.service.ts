@@ -98,11 +98,9 @@ export const AgrementService = {
     statut: AGREMENT_STATUT;
     usagerUserId: string;
   }): Promise<boolean> {
-    let agrement;
-    try {
-      agrement = await AgrementsRepository.getById(agrementId);
-    } catch (err) {
-      log.w("Erreur lors de la récupération de l'agrément", err);
+    const agrement = await AgrementsRepository.getById(agrementId);
+    if (!agrement) {
+      log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
 
