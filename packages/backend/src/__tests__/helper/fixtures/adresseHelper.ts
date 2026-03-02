@@ -1,8 +1,7 @@
 import { randomInt } from "crypto";
 
 import { saveAdresse } from "../../../services/adresse";
-
-const { getPool } = require("../../../utils/pgpool");
+import { getPool } from "../../../utils/pgpool";
 
 export const createAdresse = async ({
   adresse = {},
@@ -25,9 +24,9 @@ export const createAdresse = async ({
     ...adresse,
   };
   const client = getPool();
-  client.BEGIN;
+  await client.query("BEGIN");
   const adresseId = await saveAdresse(client, fixture.adresse);
-  client.COMMIT;
+  await client.query("COMMIT");
   return adresseId;
 };
 
