@@ -1,10 +1,7 @@
 import { computed } from "vue";
 import { $fetch } from "ofetch";
-import {
-  ERRORS_LOGIN,
-  type UserDto,
-  type TwoFactorErrorCode,
-} from "@vao/shared-bridge";
+import { ERRORS_LOGIN, USER_COMPETENCE_BO } from "@vao/shared-bridge";
+import type { UserDto, TwoFactorErrorCode } from "@vao/shared-bridge";
 import { useToaster } from "../composables/useToaster";
 import createLogger from "../utils/createLogger";
 import {
@@ -125,16 +122,14 @@ export const useAuthentication = (
     return maskEmail(email.value);
   });
 
-  function calculateServiceCompetent(
-    territoireCode: string,
-  ): "NAT" | "DEP" | "REG" {
+  function calculateServiceCompetent(territoireCode: string) {
     if (territoireCode === "FRA") {
-      return "NAT";
+      return USER_COMPETENCE_BO.NATIONALE;
     }
     if (/^\d+$/.test(territoireCode)) {
-      return "DEP";
+      return USER_COMPETENCE_BO.DEPARTEMENTALE;
     }
-    return "REG";
+    return USER_COMPETENCE_BO.REGIONALE;
   }
 
   function processUserData(user: UserDto): UserDto {

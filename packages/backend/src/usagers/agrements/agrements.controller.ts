@@ -56,6 +56,28 @@ export const AgrementController = {
       next(error);
     }
   },
+  async patchStatut(
+    req: RouteRequest<AgrementUsagersRoutes["PatchStatut"]>,
+    res: RouteResponse<AgrementUsagersRoutes["PatchStatut"]>,
+    next: NextFunction,
+  ) {
+    log.i("PATCH statut IN");
+
+    const { id: usagerUserId } = req.decoded!;
+    const agrementId = Number(req.validatedParams!.agrementId);
+    const { statut } = req.validatedBody!;
+    try {
+      await AgrementService.updateStatut({
+        agrementId,
+        statut,
+        usagerUserId,
+      });
+      res.json({ success: true });
+    } catch (error) {
+      log.w("PATCH statut error", error);
+      next(error);
+    }
+  },
   async post(
     req: RouteRequest<AgrementUsagersRoutes["PostAgrement"]>,
     res: RouteResponse<AgrementUsagersRoutes["PostAgrement"]>,
@@ -73,7 +95,7 @@ export const AgrementController = {
       //   boUserId: null,
       //   metadata: null,
       //   source: "Organisateur",
-      //   type: "Mise à jour page",
+      //   type: AGREMENT_HISTORY_TYPE.CREATION,
       //   typePrecision: "Renuvellement en cours de complétion",
       //   usagerUserId: 1,
       // });

@@ -37,3 +37,11 @@ router.get(
 );
 
 export default router;
+
+router.patch(
+  "/:agrementId/statut",
+  checkJWT,
+  requestValidatorMiddleware(AgrementUsagersRoutesSchema["PatchStatut"]),
+  checkPermissionAgrement,
+  AgrementController.patchStatut,
+);
