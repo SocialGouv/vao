@@ -1,4 +1,8 @@
-import type { BasicRoute, RouteSchema } from "@vao/shared-bridge";
+import {
+  type BasicRoute,
+  type RouteSchema,
+  ERRORS_COMMON,
+} from "@vao/shared-bridge";
 import { NextFunction } from "express";
 import * as yup from "yup";
 
@@ -7,12 +11,6 @@ import AppError from "../utils/error";
 import logger from "../utils/logger";
 
 const log = logger(module.filename);
-
-const ERRORS = {
-  INVALID_BODY: "INVALID_BODY",
-  INVALID_PARAMS: "INVALID_PARAMS",
-  INVALID_QUERY: "INVALID_QUERY",
-};
 
 export function requestValidatorMiddleware<T extends BasicRoute>(
   validator: RouteSchema<T>,
@@ -51,7 +49,7 @@ export function requestParamsValidator<T>(
       return validator.validateSync(params, { stripUnknown: true });
     } catch (error) {
       log.w("INVALID_PARAMS", error);
-      throw new Error(ERRORS.INVALID_PARAMS);
+      throw new Error(ERRORS_COMMON.INVALID_PARAMS);
     }
   }
   return {};
@@ -66,7 +64,7 @@ export function requestQueryValidator<T>(
       return validator.validateSync(query, { stripUnknown: true });
     } catch (error) {
       log.d("INVALID_QUERY", error);
-      throw new Error(ERRORS.INVALID_QUERY);
+      throw new Error(ERRORS_COMMON.INVALID_QUERY);
     }
   }
   return {};
@@ -81,7 +79,7 @@ export function requestBodyValidator<T>(
       return validator.validateSync(body, { stripUnknown: true });
     } catch (error) {
       log.d("INVALID_BODY", error);
-      throw new Error(ERRORS.INVALID_BODY);
+      throw new Error(ERRORS_COMMON.INVALID_BODY);
     }
   }
   return {};

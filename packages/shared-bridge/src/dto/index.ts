@@ -1,4 +1,5 @@
 export * from "./documentDto";
+export * from "./featureFlagDto";
 export * from "./hebergementDto";
 export * from "./organismeDto";
 export * from "./personneMoraleDto";

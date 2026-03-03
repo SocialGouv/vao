@@ -26,7 +26,7 @@ export const createUsagersUser = async (user = {}) => {
     terCode: "FRA",
     ...user,
   };
-  const result = await createFrontUserService(fixture);
+  const result = await createFrontUserService(fixture as any);
   return result.user;
 };
 

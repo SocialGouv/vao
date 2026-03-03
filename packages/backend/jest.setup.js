@@ -15,3 +15,7 @@ process.env.PG_VAO_CIPHER_DATA =
 process.env.S3_BUCKET_NAME = "vao";
 
 process.env.DEBUG = "*warn*";
+process.env.TOKEN_SECRET_FO = "test";
+process.env.TOKEN_SECRET_BO = "test";
+process.env.TOKEN_SECRET = "test";
+process.env.TOKEN_SECRET_LINK = "test";

@@ -1,25 +1,29 @@
-const { ERRORS_LOGIN } = require("@vao/shared-bridge");
+import { ERRORS_LOGIN, FeatureFlagName, UserDto } from "@vao/shared-bridge";
+import type { NextFunction, Response } from "express";
 
-const config = require("../../../config");
-
-const User = require("../../../services/BoUser");
-const CommonUser = require("../../../services/common/Users");
-const Session = require("../../../services/common/Session");
-
-const logger = require("../../../utils/logger");
-
-const { status } = require("../../../helpers/users");
-const { schema } = require("../../../helpers/schema");
-const {
-  signAccessToken,
-  signRefreshToken,
-} = require("../../../utils/bo-token");
-const AppError = require("../../../utils/error").default;
+import config from "../../../config";
+import { schema } from "../../../helpers/schema";
+import { status } from "../../../helpers/users";
+import User from "../../../services/BoUser";
+import Session from "../../../services/common/Session";
+import CommonUser from "../../../services/common/Users";
+import { FeatureFlagService } from "../../../services/featureFlagService";
+import { UserRequest } from "../../../types/request";
+import { signAccessToken, signRefreshToken } from "../../../utils/bo-token";
+import AppError from "../../../utils/error";
+import logger from "../../../utils/logger";
 
 const log = logger(module.filename);
 
-module.exports = async function login(req, res, next) {
-  const { email, password } = req.body;
+export default async function login(
+  req: UserRequest,
+  res: Response,
+  next: NextFunction,
+) {
+  const { email, password } = req.body as {
+    email?: string;
+    password?: string;
+  };
   log.i("IN", { email });
   if (!email || !password) {
     log.w("Paramètes manquants");
@@ -30,7 +34,7 @@ module.exports = async function login(req, res, next) {
     );
   }
 
-  let user;
+  let user: UserDto;
   try {
     const verifAttempt = await CommonUser.verifyLoginAttempt(
       email,
@@ -53,7 +57,7 @@ module.exports = async function login(req, res, next) {
 
   if (!user) {
     const ip =
-      req.headers["x-forwarded-for"]?.split(",").shift() || // Si derrière un proxy
+      (req.headers["x-forwarded-for"] as string)?.split(",").shift() || // Si derrière un proxy
       req.socket?.remoteAddress || // Sinon, l'IP directe
       null;
     await CommonUser.recordLoginAttempt(email, ip, schema.BACK);
@@ -67,6 +71,7 @@ module.exports = async function login(req, res, next) {
   }
 
   log.d({ user });
+  // @ts-expect-error FIXME statusCode n'existe pas dans la requête sql
   if (user.statusCode === status.NEED_EMAIL_VALIDATION) {
     log.w("Compte non validé");
     return next(
@@ -99,9 +104,13 @@ module.exports = async function login(req, res, next) {
 
     log.i("DONE");
 
-    return res.json({ user });
+    const featureFlags = await FeatureFlagService.getFeatureFlagsAvailable();
+    const requires2FA = await FeatureFlagService.isFeatureAvailable(
+      FeatureFlagName.AUTH_2FA,
+    );
+    return res.json({ user: { ...user, featureFlags, requires2FA } });
   } catch (error) {
     log.w("DONE with error");
     return next(error);
   }
-};
+}

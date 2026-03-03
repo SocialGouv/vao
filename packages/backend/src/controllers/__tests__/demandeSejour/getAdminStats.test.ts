@@ -32,7 +32,7 @@ describe("controllers/demandeSejour/getAdminStats", () => {
       stats: fakeStats,
     });
 
-    await getController(req, res, next);
+    await getController(req as UserRequest, res, next);
 
     expect(service.getAdminStats).toHaveBeenCalledWith({
       departementCodes: ["01"],
@@ -47,7 +47,7 @@ describe("controllers/demandeSejour/getAdminStats", () => {
     const err = new Error("boom");
     (service.getAdminStats as jest.Mock).mockRejectedValue(err);
 
-    await getController(req, res, next);
+    await getController(req as UserRequest, res, next);
 
     expect(service.getAdminStats).toHaveBeenCalled();
     expect(next).toHaveBeenCalledWith(err);
@@ -59,7 +59,7 @@ describe("controllers/demandeSejour/getAdminStats", () => {
     // controller no longer throws on undefined departements; ensure it doesn't call next/res
     req.departements = undefined;
 
-    await getController(req, res, next);
+    await getController(req as UserRequest, res, next);
     expect(next).toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();

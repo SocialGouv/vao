@@ -1,3 +1,5 @@
+import { FeatureFlagName } from "../constantes";
+
 export interface UserDto {
   id: string;
   email: string;
@@ -9,4 +11,5 @@ export interface UserDto {
   userSiret: string;
   serviceCompetent?: string;
   cguAccepted: boolean;
+  featureFlags?: Partial<Record<FeatureFlagName, boolean>>;
 }

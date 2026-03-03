@@ -1,3 +1,3 @@
 packages:
   - "packages/*"
-minimumReleaseAge: 103680
+minimumReleaseAge: 40000
