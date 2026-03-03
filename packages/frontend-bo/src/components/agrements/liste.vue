@@ -59,11 +59,7 @@
     :opened="modalPriseEnChargeOpened"
     title="Prise en charge du renouvellement d’agrément"
     :on-close="fermerPriseEnCharge"
-    :on-validate="
-      () => {
-        /* à compléter à l'étape suivante */
-      }
-    "
+    :on-validate="validerPriseEnCharge"
     validation-label="Valider la prise en charge"
   >
     <div>
@@ -80,6 +76,7 @@ import {
   usePagination,
   columnsTable,
   ValidationModal,
+  useToaster,
 } from "@vao/shared-ui";
 
 import type { AgrementDto, OrganismeDto } from "@vao/shared-bridge";
@@ -106,6 +103,8 @@ const optionType = columnsTable.optionType;
 const agrementStore = useAgrementStore();
 
 const route = useRoute();
+
+const toaster = useToaster();
 
 const modalPriseEnChargeOpened = ref(false);
 const agrementAPrendreEnCharge = ref<AgrementWithOrganismeDto | null>(null);
@@ -200,5 +199,43 @@ function ouvrirPriseEnCharge(agrement: AgrementWithOrganismeDto) {
 function fermerPriseEnCharge() {
   agrementAPrendreEnCharge.value = null;
   modalPriseEnChargeOpened.value = false;
+}
+
+async function validerPriseEnCharge() {
+  if (!agrementAPrendreEnCharge.value?.id) {
+    toaster.error({
+      description: "Identifiant d'agrément manquant.",
+      role: "alert",
+    });
+    return;
+  }
+  try {
+    const success = await agrementStore.changeStatutAgrement({
+      agrementId: agrementAPrendreEnCharge.value.id,
+      statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
+    });
+    if (success) {
+      fermerPriseEnCharge();
+      //todo: naviguer vers la page de l'agrément pris en charge
+      // await router.push(`/agrements/${agrementAPrendreEnCharge.value.id}`);
+      toaster.success({
+        description: "La prise en charge a bien été validée.",
+      });
+    } else {
+      toaster.error({
+        description: "Erreur lors de la prise en charge.",
+        role: "alert",
+      });
+    }
+  } catch (err) {
+    console.error(
+      "Erreur lors de la prise en charge du renouvellement d'agrément",
+      err,
+    );
+    toaster.error({
+      description: "Erreur lors de la prise en charge.",
+      role: "alert",
+    });
+  }
 }
 </script>

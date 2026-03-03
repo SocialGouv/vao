@@ -3,6 +3,7 @@ import type {
   AgrementDto,
   ActiviteDto,
   OrganismeDto,
+  AGREMENT_STATUT 
 } from "@vao/shared-bridge";
 import { AgrementService } from "~/services/agrementService";
 const log = logger("stores/agrement");
@@ -35,6 +36,29 @@ export const useAgrementStore = defineStore("agrement", {
         this.agrementsTotal = count;
       } catch (err) {
         log.w("getListAgrements - DONE with error", err);
+        throw err;
+      }
+    },
+    async changeStatutAgrement({
+      agrementId,
+      statut,
+    }: {
+      agrementId: number;
+      statut: AGREMENT_STATUT;
+    }): Promise<boolean> {
+      log.i("changeStatutAgrement - IN", { agrementId, statut });
+      try {
+        const { success } = await AgrementService.patchStatut(
+          agrementId,
+          statut,
+        );
+        if (success && this.agrementCourant?.id === agrementId) {
+          this.agrementCourant.statut = statut;
+        }
+        log.i("changeStatutAgrement - DONE", { success });
+        return success;
+      } catch (err) {
+        log.w("changeStatutAgrement - ERROR", err);
         throw err;
       }
     },

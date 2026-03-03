@@ -447,7 +447,6 @@ export const AgrementsRepository = {
     source,
     agrementId,
     usagerUserId,
-    boUserId,
     type,
     typePrecision,
     metadata,
@@ -455,7 +454,6 @@ export const AgrementsRepository = {
     source: string;
     agrementId: number;
     usagerUserId?: number | null;
-    boUserId?: number | null;
     type?: AGREMENT_HISTORY_TYPE | null;
     typePrecision?: string | null;
     metadata?: Record<string, unknown> | null;
@@ -477,7 +475,7 @@ export const AgrementsRepository = {
       source,
       agrementId,
       usagerUserId ?? null,
-      boUserId ?? null,
+      null, // bo_user_id n'est pas utilisé côté usager
       type ?? null,
       typePrecision ?? null,
       metadata ?? null,
