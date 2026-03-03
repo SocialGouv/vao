@@ -39,21 +39,38 @@
       }}
     </template>
     <template #cell-custom:edit="{ row }">
-      <NuxtLink
-        :to="`/agrements/${String(row.id)}`"
-        title="Naviguer vers l'agrément"
-        class="no-background-image"
+      <DsfrButton
+        v-if="row.statut === AGREMENT_STATUT.TRANSMIS"
+        label="valider la prise en charge du renouvellement d’agrément"
+        icon="ri:arrow-right-s-line"
+        icon-only
+        primary
+        size="small"
+        type="button"
+        @click="ouvrirPriseEnCharge(row)"
       >
-        <DsfrButton
-          icon="ri:arrow-right-s-line"
-          icon-only
-          primary
-          size="small"
-          type="button"
-        />
-      </NuxtLink>
+        Prendre en charge
+      </DsfrButton>
     </template>
   </DsfrDataTableV2Wrapper>
+  <ValidationModal
+    modal-ref="priseEnChargeModal"
+    name="prise-en-charge-modal"
+    :opened="modalPriseEnChargeOpened"
+    title="Prise en charge du renouvellement d’agrément"
+    :on-close="fermerPriseEnCharge"
+    :on-validate="
+      () => {
+        /* à compléter à l'étape suivante */
+      }
+    "
+    validation-label="Valider la prise en charge"
+  >
+    <div>
+      Voulez-vous prendre en charge le renouvellement de l’agrément
+      <strong>{{ agrementAPrendreEnCharge?.numero }}</strong> ?
+    </div>
+  </ValidationModal>
 </template>
 
 <script setup lang="ts">
@@ -62,10 +79,11 @@ import {
   isValidParams,
   usePagination,
   columnsTable,
+  ValidationModal,
 } from "@vao/shared-ui";
 
 import type { AgrementDto, OrganismeDto } from "@vao/shared-bridge";
-import { formatFR } from "@vao/shared-bridge";
+import { AGREMENT_STATUT, formatFR } from "@vao/shared-bridge";
 import type { Columns, NestedKeys } from "@vao/shared-ui";
 import { useAgrementStore } from "~/stores/agrement";
 
@@ -88,6 +106,9 @@ const optionType = columnsTable.optionType;
 const agrementStore = useAgrementStore();
 
 const route = useRoute();
+
+const modalPriseEnChargeOpened = ref(false);
+const agrementAPrendreEnCharge = ref<AgrementWithOrganismeDto | null>(null);
 
 const data = computed<AgrementWithOrganismeDto[]>(
   () => agrementStore.agrements ?? [],
@@ -170,4 +191,14 @@ const updateData = (resetOffset = false) => {
 };
 
 updateData();
+
+function ouvrirPriseEnCharge(agrement: AgrementWithOrganismeDto) {
+  agrementAPrendreEnCharge.value = agrement;
+  modalPriseEnChargeOpened.value = true;
+}
+
+function fermerPriseEnCharge() {
+  agrementAPrendreEnCharge.value = null;
+  modalPriseEnChargeOpened.value = false;
+}
 </script>
