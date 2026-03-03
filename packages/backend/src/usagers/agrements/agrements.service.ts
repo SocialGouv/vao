@@ -81,8 +81,7 @@ export const AgrementService = {
   async trackEvent(event: {
     source: string;
     agrementId: number;
-    usagerUserId?: number | null;
-    boUserId?: number | null;
+    usagerUserId: number;
     type?: AGREMENT_HISTORY_TYPE | null;
     typePrecision?: string | null;
     metadata?: Record<string, unknown> | null;

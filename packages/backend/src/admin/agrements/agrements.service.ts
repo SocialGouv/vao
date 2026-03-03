@@ -1,7 +1,12 @@
-import { OrganismeDto } from "@vao/shared-bridge";
+import {
+  AGREMENT_HISTORY_TYPE,
+  AGREMENT_STATUT,
+  OrganismeDto,
+} from "@vao/shared-bridge";
 import { PaginationQueryDto } from "@vao/shared-bridge/src/dto/paginationQueryDto";
 
 import { getOne as serviceOrganismeGetOne } from "../../services/Organisme";
+import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 import { AgrementsRepository } from "./agrements.repository";
 
@@ -100,5 +105,50 @@ export const AgrementService = {
     );
     log.i("DONE");
     return { count, result: agrementsWithOrganisme };
+  },
+  async trackEvent(event: {
+    source: string;
+    agrementId: number;
+    boUserId: number;
+    type?: AGREMENT_HISTORY_TYPE | null;
+    typePrecision?: string | null;
+    metadata?: Record<string, unknown> | null;
+  }) {
+    return AgrementsRepository.insertHistoryEvent(event);
+  },
+  async updateStatut({
+    agrementId,
+    statut,
+    boUserId,
+  }: {
+    agrementId: number;
+    statut: AGREMENT_STATUT;
+    boUserId: string;
+  }): Promise<boolean> {
+    const agrement = await AgrementsRepository.getById(agrementId);
+    if (!agrement) {
+      log.w("Agrement non trouvé", agrementId);
+      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+    }
+
+    const updated = await AgrementsRepository.updateStatut({
+      agrementId,
+      statut,
+    });
+    if (!updated) {
+      throw new AppError("Échec de la mise à jour du statut", {
+        statusCode: 500,
+      });
+    }
+
+    await AgrementService.trackEvent({
+      agrementId,
+      boUserId: Number(boUserId),
+      source: "DREETS",
+      type: AGREMENT_HISTORY_TYPE.STATUT_CHANGE,
+      typePrecision: statut,
+    });
+
+    return true;
   },
 };
