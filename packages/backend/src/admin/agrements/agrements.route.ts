@@ -16,4 +16,12 @@ router.get(
   AgrementController.getList,
 );
 
+router.patch(
+  "/:agrementId/statut",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["PatchStatut"]),
+  checkPermissionBOAgrement,
+  AgrementController.patchStatut,
+);
+
 export default router;

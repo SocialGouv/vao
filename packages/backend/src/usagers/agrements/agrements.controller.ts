@@ -1,4 +1,5 @@
 import type { AgrementDto, AgrementUsagersRoutes } from "@vao/shared-bridge";
+import { AGREMENT_HISTORY_TYPE } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
 import type { RouteRequest, RouteResponse } from "../../types/request";
@@ -85,20 +86,17 @@ export const AgrementController = {
   ) {
     log.i("IN");
     const agrement = req.validatedBody!;
+    const { id: usagerUserId } = req.decoded!;
     try {
       const id = await AgrementService.save(agrement);
       log.i("Agrement saved", { id });
 
-      // todo: supprimer/adapter cet exemple de tracking
-      // await AgrementService.trackEvent({
-      //   agrementId: id,
-      //   boUserId: null,
-      //   metadata: null,
-      //   source: "Organisateur",
-      //   type: AGREMENT_HISTORY_TYPE.CREATION,
-      //   typePrecision: "Renuvellement en cours de complétion",
-      //   usagerUserId: 1,
-      // });
+      await AgrementService.trackEvent({
+        agrementId: id,
+        source: "usager",
+        type: AGREMENT_HISTORY_TYPE.CREATION,
+        usagerUserId: Number(usagerUserId),
+      });
 
       res.json({ id });
     } catch (err) {

@@ -26,4 +26,26 @@ export const AgrementController = {
       next(error);
     }
   },
+  async patchStatut(
+    req: RouteRequest<AgrementAdminRoutes["PatchStatut"]>,
+    res: RouteResponse<AgrementAdminRoutes["PatchStatut"]>,
+    next: NextFunction,
+  ) {
+    log.i("PATCH statut IN");
+
+    const { id: boUserId } = req.decoded!;
+    const agrementId = Number(req.validatedParams!.agrementId);
+    const { statut } = req.validatedBody!;
+    try {
+      await AgrementService.updateStatut({
+        agrementId,
+        boUserId,
+        statut,
+      });
+      res.json({ success: true });
+    } catch (error) {
+      log.w("PATCH statut error", error);
+      next(error);
+    }
+  },
 };
