@@ -212,7 +212,7 @@ async function validerPriseEnCharge() {
   try {
     const success = await agrementStore.changeStatutAgrement({
       agrementId: agrementAPrendreEnCharge.value.id,
-      statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
+      statut: AGREMENT_STATUT.EN_COURS,
     });
     if (success) {
       fermerPriseEnCharge();

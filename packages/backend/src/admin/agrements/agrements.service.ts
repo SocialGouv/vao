@@ -13,6 +13,10 @@ import { AgrementsRepository } from "./agrements.repository";
 const log = logger(module.filename);
 
 export const AgrementService = {
+  async getHistory(agrementId: number) {
+    const history = await AgrementsRepository.getHistory(agrementId);
+    return history;
+  },
   async getListAgrements({
     regionCode,
     queryParams,
