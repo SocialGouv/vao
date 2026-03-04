@@ -102,6 +102,8 @@ defineSlots<{
 const optionType = columnsTable.optionType;
 const agrementStore = useAgrementStore();
 
+const log = logger("components/agrement/liste.vue");
+
 const route = useRoute();
 
 const toaster = useToaster();
@@ -228,7 +230,7 @@ async function validerPriseEnCharge() {
       });
     }
   } catch (err) {
-    console.error(
+    log.w(
       "Erreur lors de la prise en charge du renouvellement d'agrément",
       err,
     );
