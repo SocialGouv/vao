@@ -53,7 +53,6 @@ defineProps({
     default: null,
   },
 });
-// ...existing code...
 </script>
 
 <style scoped></style>
