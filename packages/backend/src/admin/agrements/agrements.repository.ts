@@ -1,4 +1,8 @@
-import type { AGREMENT_HISTORY_TYPE } from "@vao/shared-bridge";
+import type {
+  AGREMENT_HISTORY_TYPE,
+  AgrementHistoryItem,
+  AgrementHistoryRow,
+} from "@vao/shared-bridge";
 import { AGREMENT_STATUT, AgrementDto } from "@vao/shared-bridge";
 import { PaginationQueryDto } from "@vao/shared-bridge/src/dto/paginationQueryDto";
 
@@ -89,6 +93,63 @@ export const AgrementsRepository = {
       count: parseInt(response[1].rows[0].total, 10),
       result: agrements,
     };
+  },
+
+  async getHistory(agrementId: number): Promise<AgrementHistoryItem[]> {
+    const client = await getPool().connect();
+    try {
+      const query = `
+      SELECT
+        h.id,
+        h.source,
+        h.agrement_id,
+        h.usager_user_id,
+        u.nom AS usager_nom,
+        u.prenom AS usager_prenom,
+        u.mail AS usager_mail,
+        h.bo_user_id,
+        b.nom AS bo_nom,
+        b.prenom AS bo_prenom,
+        b.mail AS bo_mail,
+        h.type,
+        h.type_precision,
+        h.metadata,
+        h.created_at
+      FROM front.agrement_history h
+      LEFT JOIN front.users u ON h.usager_user_id = u.id
+      LEFT JOIN back.users b ON h.bo_user_id = b.id
+      WHERE h.agrement_id = $1
+      ORDER BY h.created_at DESC;
+    `;
+      const result = await client.query(query, [agrementId]);
+      return result.rows.map((row: AgrementHistoryRow) => ({
+        agrement_id: row.agrement_id,
+        bo_user: row.bo_user_id
+          ? {
+              id: row.bo_user_id,
+              mail: row.bo_mail,
+              nom: row.bo_nom,
+              prenom: row.bo_prenom,
+            }
+          : null,
+        created_at: row.created_at,
+        id: row.id,
+        metadata: row.metadata,
+        source: row.source,
+        type: row.type,
+        type_precision: row.type_precision,
+        usager_user: row.usager_user_id
+          ? {
+              id: row.usager_user_id,
+              mail: row.usager_mail,
+              nom: row.usager_nom,
+              prenom: row.usager_prenom,
+            }
+          : null,
+      }));
+    } finally {
+      client.release();
+    }
   },
   async insertHistoryEvent({
     source,
