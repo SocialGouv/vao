@@ -1,16 +1,23 @@
-const Sentry = require("@sentry/node");
+import fs from "node:fs/promises";
 
-const { sentry } = require("../../config");
-const fs = require("node:fs/promises");
-const { PDFDocument } = require("pdf-lib");
-const DocumentService = require("../../services/Document");
-const AppError = require("../../utils/error").default;
+import * as Sentry from "@sentry/node";
+import type { NextFunction, Response } from "express";
+import { PDFDocument } from "pdf-lib";
 
-const logger = require("../../utils/logger");
+import { sentry } from "../../config";
+import * as DocumentService from "../../services/Document";
+import type { UserRequest } from "../../types/request";
+import AppError from "../../utils/error";
+import { getFileTypeFromBuffer } from "../../utils/file";
+import logger from "../../utils/logger";
 
 const log = logger(module.filename);
 
-module.exports = async (req, res, next) => {
+export default async function upload(
+  req: UserRequest,
+  res: Response,
+  next: NextFunction,
+) {
   log.i("IN");
   const { category } = req.body;
   const { decoded, file } = req;
@@ -27,8 +34,7 @@ module.exports = async (req, res, next) => {
   try {
     const { path, originalname: filename } = file;
     const fileBuffer = await fs.readFile(path);
-    const fileTypeLib = await import("file-type");
-    const fileType = await fileTypeLib.fileTypeFromBuffer(fileBuffer);
+    const fileType = await getFileTypeFromBuffer(fileBuffer);
 
     if (!fileType) {
       log.w("DONE with error: Impossible de déterminer le type de fichier");
@@ -97,25 +103,12 @@ module.exports = async (req, res, next) => {
       );
     }
 
-    const MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
-    if (fileBuffer.length > MAX_SIZE_BYTES) {
-      return next(
-        new AppError(
-          "Le fichier dépasse la taille maximale autorisée de 5 Mo.",
-          {
-            name: "FileIsTooLargeError",
-            statusCode: 413,
-          },
-        ),
-      );
-    }
-
     const uuid = await DocumentService.createFile(
       filename,
       category,
       detectedMimeType,
       fileBuffer,
-      decoded.id,
+      decoded!.id,
     );
 
     log.d("DONE", uuid);
@@ -124,9 +117,9 @@ module.exports = async (req, res, next) => {
     log.w("DONE with error");
     return next(error);
   }
-};
+}
 
-async function detectJavaScriptInPDF(fileBuffer) {
+async function detectJavaScriptInPDF(fileBuffer: Buffer): Promise<boolean> {
   log.i("detectJavaScriptInPDF - IN");
   try {
     const pdfDoc = await PDFDocument.load(fileBuffer);
@@ -142,7 +135,7 @@ async function detectJavaScriptInPDF(fileBuffer) {
       );
     });
   } catch (error) {
-    log.w("DONE with error");
+    log.w("DONE with error", error);
     if (sentry.enabled) {
       Sentry.captureException(error);
     }

@@ -1,6 +1,7 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 
 import * as service from "../../../services/DemandeSejour";
+import { UserRequest } from "../../../types/request";
 import getController from "../../demandeSejour/getAdminStats";
 
 jest.mock("../../../services/DemandeSejour", () => ({
@@ -8,10 +9,7 @@ jest.mock("../../../services/DemandeSejour", () => ({
 }));
 
 describe("controllers/demandeSejour/getAdminStats", () => {
-  let req: Partial<Request> & {
-    decoded?: { territoireCode: string };
-    departements?: Array<{ value: string }>;
-  };
+  let req: UserRequest;
   let res: Response;
   let next: jest.Mock;
 
@@ -20,7 +18,7 @@ describe("controllers/demandeSejour/getAdminStats", () => {
     req = {
       decoded: { territoireCode: "T1" },
       departements: [{ value: "01" }],
-    };
+    } as UserRequest;
     res = {
       json: jest.fn(),
       status: jest.fn().mockReturnThis(),

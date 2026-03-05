@@ -17,7 +17,7 @@ export const createAdminUser = async (user = {}) => {
 
 export const createUsagersUser = async (user = {}) => {
   const timestamp = Date.now();
-  const fixture = {
+  const fixture: any = {
     email: `frontuser${timestamp}@example.com`,
     nom: "FrontNom",
     prenom: "FrontPrenom",
