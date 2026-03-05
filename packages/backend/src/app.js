@@ -131,11 +131,10 @@ app.use(async function errorHandler(err, req, res, next) {
     return res.status(400).send({ errors: err.errors, name: err.name });
   }
 
-  res
-    .status(err.statusCode)
-    .send(
-      (err.name !== "Error" && { name: err.name }) || { message: err.message },
-    );
+  res.status(err.statusCode).send({
+    message: err.message,
+    name: err.name,
+  });
 });
 
 module.exports = app;

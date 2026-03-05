@@ -33,11 +33,7 @@ async function checkPermissionHebergementUser(req, _res, next) {
     next();
   } catch (err) {
     log.e("checkPermissionHebergementUser error", err);
-    return next(
-      new AppError("Erreur interne lors de la vérification des permissions", {
-        statusCode: 500,
-      }),
-    );
+    next(err);
   }
 }
 
