@@ -63,5 +63,5 @@ export const createAdminUserValide = async (user = {}) => {
     ...user,
   };
   const result = await AdminUsersRepository.create({ user: fixture });
-  return result;
+  return result.user[0];
 };

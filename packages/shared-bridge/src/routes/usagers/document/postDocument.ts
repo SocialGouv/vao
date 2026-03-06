@@ -1,11 +1,7 @@
 import * as yup from "yup";
 
-import {
-  type BasicRoute,
-  type RouteResponseBody,
-  type RouteSchema,
-  FILE_CATEGORY,
-} from "../../..";
+import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
+import { FILE_CATEGORY } from "../../../constantes/file";
 import type { DocumentDto } from "../../../dto";
 
 export interface PostDocumentRoute extends BasicRoute {

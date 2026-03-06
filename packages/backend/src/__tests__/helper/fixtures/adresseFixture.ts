@@ -1,6 +1,6 @@
 import { randomInt } from "crypto";
 
-export const buildAdresseFixture = async (): Promise<object> => {
+export const buildAdresseFixture = async () => {
   const departement = randomDepartement();
   return {
     cleInsee: `${departement}${randomInt(10000, 99999)}`,

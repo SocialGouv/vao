@@ -3,8 +3,11 @@ import type {
   AgrementHistoryItem,
   AgrementHistoryRow,
 } from "@vao/shared-bridge";
-import { AGREMENT_STATUT, AgrementDto } from "@vao/shared-bridge";
-import { PaginationQueryDto } from "@vao/shared-bridge/src/dto/paginationQueryDto";
+import {
+  AGREMENT_STATUT,
+  AgrementDto,
+  PaginationQueryDto,
+} from "@vao/shared-bridge";
 
 import { processQuery } from "../../helpers/queryParams";
 import { AgrementEntity } from "../../shared/agrements/agrements.entity";

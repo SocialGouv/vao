@@ -1,7 +1,10 @@
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { NextFunction, Response } from "express";
 import request from "supertest";
 
 import app from "../../app";
 import { mailService } from "../../services/mail";
+import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import {
   createAgrement,
@@ -17,8 +20,8 @@ import {
 let authUser = { id: 1, role: "admin" };
 
 jest.mock("../../middlewares/common/checkJWT", () => {
-  return async (req, res, next) => {
-    req.decoded = authUser;
+  return async (req: UserRequest, res: Response, next: NextFunction) => {
+    req.decoded = authUser as unknown as User;
     next();
   };
 });
@@ -90,7 +93,7 @@ describe("POST /agrements", () => {
     const agrementData = await buildAgrementFixture({ organismeId });
     await createAgrement({ agrement: agrementData, organismeId });
     const { agrement } = await getAgrement(organismeId);
-    const response = await request(app).post(`/agrements/`).send(agrement);
+    const response = await request(app).post(`/agrements/`).send(agrement!);
 
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
@@ -114,7 +117,7 @@ it("devrait changer le statut d'un agrément avec succès", async () => {
   expect(response.body.success).toBe(true);
 
   const { agrement } = await getAgrement(organismeId);
-  expect(agrement.statut).toBe("TRANSMIS");
+  expect(agrement?.statut).toBe("TRANSMIS");
 });
 
 jest.mock("../../services/mail", () => ({
@@ -138,7 +141,7 @@ it("workflow changement statut de l'agrement", async () => {
   expect(response.body.success).toBe(true);
 
   const { agrement } = await getAgrement(organismeId);
-  expect(agrement.statut).toBe("TRANSMIS");
+  expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
 
   expect(mailService.send).toHaveBeenCalledTimes(1);
 });

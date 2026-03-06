@@ -1,8 +1,14 @@
-import { AGREMENT_HISTORY_TYPE, AGREMENT_STATUT } from "@vao/shared-bridge";
+import {
+  AGREMENT_HISTORY_TYPE,
+  AGREMENT_STATUT,
+  AgrementDto,
+} from "@vao/shared-bridge";
+import { NextFunction, Response } from "express";
 import request from "supertest";
 
 import { AgrementService } from "../../admin/agrements/agrements.service";
 import app from "../../app";
+import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import { createAgrement } from "../helper/fixtures/agrementsHelper";
 import { createOrganisme } from "../helper/fixtures/organismeHelper";
@@ -20,8 +26,8 @@ let authUser2 = { id: 2, role: "admin" };
 let authUserBo = { territoireCode: "IDF" };
 
 jest.mock("../../middlewares/common/checkJWT", () => {
-  return async (req, res, next) => {
-    req.decoded = authUserBo;
+  return async (req: UserRequest, res: Response, next: NextFunction) => {
+    req.decoded = authUserBo as unknown as User;
     next();
   };
 });
@@ -83,7 +89,7 @@ describe("GET /agrements/list/", () => {
     // Vérifier que le statut a bien changé en base
     const listResponse = await request(app).get(`/admin/agrements/list/`);
     const agrement = listResponse.body.agrements.find(
-      (a) => a.id === agrementId,
+      (a: AgrementDto) => a.id === agrementId,
     );
     expect(agrement.statut).toBe(AGREMENT_STATUT.EN_COURS);
   });
@@ -110,7 +116,7 @@ describe("GET /agrements/list/", () => {
         event.type_precision === AGREMENT_STATUT.EN_COURS,
     );
     expect(priseEnChargeEvent).toBeDefined();
-    expect(priseEnChargeEvent.bo_user).toBeDefined();
+    expect(priseEnChargeEvent?.bo_user).toBeDefined();
   });
 
   it("devrait retourner une 404 si l'agrément n'existe pas (PATCH /admin/agrements/:id/statut)", async () => {

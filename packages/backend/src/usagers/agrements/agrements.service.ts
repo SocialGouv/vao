@@ -30,7 +30,7 @@ export const AgrementService = {
       withDetails,
     });
     for (const doc of agrement?.agrementFiles || []) {
-      const meta = await getFileMetaData(doc.fileUuid);
+      const meta = await getFileMetaData(doc.fileUuid!);
       Object.assign(doc, meta);
     }
     for (const bilanAnnuel of agrement?.agrementBilanAnnuel || []) {

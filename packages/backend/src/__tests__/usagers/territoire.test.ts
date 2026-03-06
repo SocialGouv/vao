@@ -1,6 +1,8 @@
+import type { NextFunction, Response } from "express";
 import request from "supertest";
 
 import app from "../../app";
+import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import { createAgrement } from "../helper/fixtures/agrementsHelper";
 import { createOrganisme } from "../helper/fixtures/organismeHelper";
@@ -14,8 +16,8 @@ import {
 let authUser = { id: 1, role: "admin" };
 
 jest.mock("../../middlewares/common/checkJWT", () => {
-  return async (req, res, next) => {
-    req.decoded = authUser;
+  return async (req: UserRequest, res: Response, next: NextFunction) => {
+    req.decoded = authUser as unknown as User;
     next();
   };
 });

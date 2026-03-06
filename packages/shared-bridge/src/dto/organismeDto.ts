@@ -1,6 +1,6 @@
 import type { AgrementDto } from "./agrement.dto";
-import type { PersonneMoraleDto } from "./personneMoraleDto";
-import type { PersonnePhysiqueDto } from "./personnePhysiqueDto";
+import type { PersonneMoraleDto } from "./personneMorale.dto";
+import type { PersonnePhysiqueDto } from "./personnePhysique.dto";
 
 export interface OrganismeDto {
   id: number;
