@@ -7,4 +7,4 @@ function checkJWTWithoutCGU(req: Request, res: Response, next: NextFunction) {
   return commonCheckJWT(req, res, next, schema.BACK, false);
 }
 
-module.exports = checkJWTWithoutCGU;
+export default checkJWTWithoutCGU;

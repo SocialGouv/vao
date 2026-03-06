@@ -1,5 +1,9 @@
 import {
   AGREMENT_STATUT,
+  AgrementDto,
+  AgrementFilesDto,
+  AgrementSejoursDto,
+  BilanHebergementDto,
   FILE_CATEGORY,
   TRANCHE_AGE,
   TYPE_HANDICAP,
@@ -14,15 +18,27 @@ export async function buildAgrementFixture({
 }: {
   organismeId: number;
   activiteId?: number;
-}) {
+}): Promise<AgrementDto> {
   return {
     accompRespAttestHono: true,
     accompRespCompExp: "Oui",
     accompRespNb: 1,
     accompRespRecruteUrg: "Non",
-    agrementAnimation: [{ activiteId }, { activiteId: `${21 - activiteId}` }],
+    agrementAnimation: [
+      {
+        activite: { activiteType: null, code: null, libelle: null },
+        activiteId,
+        agrementId: null,
+      },
+      {
+        activite: { activiteType: null, code: null, libelle: null },
+        activiteId: 21 - activiteId,
+        agrementId: null,
+      },
+    ],
     agrementBilanAnnuel: [
       {
+        agrementId: null,
         annee: 2024,
         bilanHebergement: [
           {
@@ -30,7 +46,7 @@ export async function buildAgrementFixture({
             mois: [6, 7],
             nbJours: 140,
             nomHebergement: "Centre de vacances Test",
-          },
+          } as BilanHebergementDto,
         ],
         nbFemmes: 10,
         nbGlobalVacanciers: 20,
@@ -41,8 +57,14 @@ export async function buildAgrementFixture({
       },
     ],
     agrementFiles: [
-      { category: FILE_CATEGORY.MOTIVATION, fileUuid: randomUUID() },
-      { category: FILE_CATEGORY.IMMATRICUL, fileUuid: randomUUID() },
+      {
+        category: FILE_CATEGORY.MOTIVATION,
+        fileUuid: randomUUID(),
+      } as AgrementFilesDto,
+      {
+        category: FILE_CATEGORY.IMMATRICUL,
+        fileUuid: randomUUID(),
+      } as AgrementFilesDto,
     ],
     agrementSejours: [
       {
@@ -50,7 +72,7 @@ export async function buildAgrementFixture({
         mois: [5, 11],
         nbVacanciers: 10,
         nomHebergement: "Centre de vacances Test",
-      },
+      } as AgrementSejoursDto,
     ],
     animationAutre: "Atelier peinture",
     bilanAucunChangementEvolution: false,
@@ -82,7 +104,9 @@ export async function buildAgrementFixture({
     protocoleRapatUrg: "Procédure OK",
     protocoleRemboursement: "Remboursement OK",
     regionObtention: "IDF",
+    sejourCommentaire: "Commentaire de test",
     sejourNbEnvisage: 2,
+    sejourTypeHandicap: [],
     statut: AGREMENT_STATUT.BROUILLON,
     suiviMedAccordSejour: "Oui",
     suiviMedDistribution: "Oui",

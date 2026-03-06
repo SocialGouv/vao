@@ -2,8 +2,8 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   OrganismeDto,
+  PaginationQueryDto,
 } from "@vao/shared-bridge";
-import { PaginationQueryDto } from "@vao/shared-bridge/src/dto/paginationQueryDto";
 
 import { getOne as serviceOrganismeGetOne } from "../../services/Organisme";
 import AppError from "../../utils/error";

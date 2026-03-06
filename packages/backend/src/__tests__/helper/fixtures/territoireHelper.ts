@@ -16,7 +16,7 @@ export const createTerritoire = async ({
     telephone: `0${randomInt(100000000, 999999999)}`,
     ...territoire,
   };
-  const { id: territoireId }: number =
+  const { id: territoireId }: { id: number } =
     await readFicheIdByTerCode(territoireCode);
 
   if (territoireId) {

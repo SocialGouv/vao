@@ -1,38 +1,22 @@
-import crypto from "crypto";
 import request from "supertest";
 
 import app from "../../app";
-import config from "../../config";
-// @ts-expect-error: js file
-import jwtMiddleware from "../../middlewares/bo-check-JWT-without-CGU";
+import checkJWTWithoutCGU from "../../middlewares/bo-check-JWT-without-CGU";
 import { createAdminUserValide } from "../helper/fixtures/userHelper";
 import {
   createTestContainer,
   removeTestContainer,
 } from "../helper/testContainer";
 
-const mockJwtMiddleware = jwtMiddleware as jest.Mock;
+jest.mock("../../middlewares/bo-check-JWT-without-CGU", () => ({
+  __esModule: true,
+  default: jest.fn((req, res, next) => next()),
+}));
 
-let user: any;
 const userFixtureComplement = { cgu_accepted: false, ter_code: "IDF" };
-
-jest.mock("../../middlewares/bo-check-JWT-without-CGU", () => jest.fn());
 
 beforeAll(async () => {
   await createTestContainer();
-  user = await createAdminUserValide(userFixtureComplement);
-  config.tokenSecret_BO = crypto.randomBytes(32).toString("hex");
-});
-
-beforeEach(() => {
-  mockJwtMiddleware.mockImplementation((req, res, next) => {
-    req.decoded = user[0];
-    next();
-  });
-});
-
-afterEach(() => {
-  jest.clearAllMocks();
 });
 
 afterAll(async () => {
@@ -41,6 +25,11 @@ afterAll(async () => {
 
 describe("POST /bo-user/accept-cgu/", () => {
   it("devrait retourner un user", async () => {
+    const adminUser = await createAdminUserValide(userFixtureComplement);
+    (checkJWTWithoutCGU as jest.Mock).mockImplementation((req, res, next) => {
+      req.decoded = adminUser;
+      next();
+    });
     const response = await request(app).post("/bo-user/accept-cgu/");
 
     expect(response.status).toBe(200);
@@ -49,7 +38,9 @@ describe("POST /bo-user/accept-cgu/", () => {
   });
 
   it("devrait retourner 403 si pas de decoded", async () => {
-    mockJwtMiddleware.mockImplementation((req, res, next) => next());
+    (checkJWTWithoutCGU as jest.Mock).mockImplementation((req, res, next) =>
+      next(),
+    );
 
     const response = await request(app).post("/bo-user/accept-cgu/");
     expect(response.status).toBe(403);

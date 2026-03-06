@@ -3,34 +3,24 @@ import { AgrementDto } from "@vao/shared-bridge";
 import { AgrementService } from "../../../usagers/agrements/agrements.service";
 
 export const createAgrement = async ({
-  organismeId,
+  organismeId = null,
   agrement = {},
 }: {
-  agrement?: Partial<object>;
-  organismeId?: number;
+  agrement?: Partial<AgrementDto> | null;
+  organismeId?: number | null;
 } = {}): Promise<number> => {
-  const fixture = {
-    adresseIdentique: true,
-    createdAt: new Date(),
-    dateFinValidite: "2030-01-01",
-    dateObtention: "2025-01-01",
-    file: {
-      createdAt: new Date(),
-      name: "Arrêté modificatif VAO signé.pdf",
-      uuid: "5f1f5a95-33c7-490a-9211-4663b7629888",
-    },
-    numero: " IDF-022-2023-02",
-    organismeId,
+  const fixture: AgrementDto = {
+    dateObtentionCertificat: new Date("2025-01-01"),
+    numero: "IDF-022-2023-02",
+    organismeId: organismeId,
     regionObtention: "IDF",
     ...agrement,
-  };
+  } as unknown as AgrementDto;
   const agrementId = await AgrementService.save(fixture);
   return agrementId;
 };
 
-export const getAgrement = async (
-  organismeId: number,
-): Promise<AgrementDto> => {
+export const getAgrement = async (organismeId: number) => {
   const agrement = await AgrementService.getAgrement({
     organismeId,
     withDetails: true,

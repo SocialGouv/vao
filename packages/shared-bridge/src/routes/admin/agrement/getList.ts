@@ -6,9 +6,9 @@ import type {
   RouteResponseBody,
   RouteSchema,
 } from "../../..";
-import { AGREMENT_STATUT } from "../../..";
+import { AGREMENT_STATUT } from "../../../constantes/agrement";
 import type { AgrementDto } from "../../../dto/agrement.dto";
-import type { PaginationQueryDto } from "../../../dto/paginationQueryDto";
+import type { PaginationQueryDto } from "../../../dto/paginationQuery.dto";
 import { SearchQuerySchema } from "../../schemas";
 
 export interface GetListRoute extends BasicRoute {
