@@ -1,3 +1,5 @@
+import { ERRORS_COMMON } from "@vao/shared-bridge";
+
 const jwt = require("jsonwebtoken");
 
 const User = require("../../../services/User");
@@ -21,6 +23,7 @@ module.exports = async function register(req, res, next) {
 
     return next(
       new AppError("Paramètre incorrect", {
+        name: ERRORS_COMMON.INVALID_QUERY,
         statusCode: 400,
       }),
     );

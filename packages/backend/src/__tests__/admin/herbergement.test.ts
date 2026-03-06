@@ -1,4 +1,5 @@
-import { NextFunction } from "express";
+import { UserDto } from "@vao/shared-bridge";
+import { NextFunction, Response } from "express";
 import request from "supertest";
 
 import app from "../../app";
@@ -14,8 +15,8 @@ import {
 let authUser = { id: 1, role: "admin" };
 
 jest.mock("../../middlewares/common/checkJWT", () => {
-  return async (req: UserRequest, _res: Response, next: NextFunction) => {
-    req.decoded = authUser as any;
+  return async (req: UserRequest, res: Response, next: NextFunction) => {
+    req.decoded = authUser as unknown as UserDto;
     next();
   };
 });

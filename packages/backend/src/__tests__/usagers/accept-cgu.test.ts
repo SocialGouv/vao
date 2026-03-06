@@ -1,10 +1,7 @@
-// import { statusUserFront } from "@vao/shared-bridge";
-import crypto from "crypto";
 import request from "supertest";
 
 import app from "../../app";
-import config from "../../config";
-// @ts-expect-error js file
+// @ts-expect-error: js file
 import jwtMiddleware from "../../middlewares/checkJWTWithoutCGU";
 import { createUsagersUserValide } from "../helper/fixtures/userHelper";
 import {
@@ -16,16 +13,10 @@ const mockJwtMiddleware = jwtMiddleware as jest.Mock;
 jest.mock("../../middlewares/checkJWTWithoutCGU", () => jest.fn());
 
 let user: any;
-// const userFixtureComplement = {
-//   cgu_accepted: false,
-//   status_code: statusUserFront.VALIDATED,
-// };
 
 beforeAll(async () => {
   await createTestContainer();
   user = await createUsagersUserValide();
-  // Surcharger la clé secrète pour les tests car elle est défini par environnement
-  config.tokenSecret_FO = crypto.randomBytes(32).toString("hex");
 });
 
 beforeEach(() => {
