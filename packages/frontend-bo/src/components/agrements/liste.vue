@@ -41,15 +41,19 @@
     <template #cell-custom:edit="{ row }">
       <DsfrButton
         v-if="row.statut === AGREMENT_STATUT.TRANSMIS"
-        label="valider la prise en charge du renouvellement d’agrément"
-        icon="ri:arrow-right-s-line"
-        icon-only
+        label="Voir"
         primary
-        size="small"
         type="button"
         @click="ouvrirPriseEnCharge(row)"
       >
-        Prendre en charge
+      </DsfrButton>
+      <DsfrButton
+        v-else
+        label="Voir"
+        primary
+        type="button"
+        @click="router.push(`/agrements/${row.id}`)"
+      >
       </DsfrButton>
     </template>
   </DsfrDataTableV2Wrapper>
@@ -105,6 +109,7 @@ const agrementStore = useAgrementStore();
 const log = logger("components/agrement/liste.vue");
 
 const route = useRoute();
+const router = useRouter();
 
 const toaster = useToaster();
 
@@ -217,12 +222,7 @@ async function validerPriseEnCharge() {
       statut: AGREMENT_STATUT.EN_COURS,
     });
     if (success) {
-      fermerPriseEnCharge();
-      //todo: naviguer vers la page de l'agrément pris en charge
-      // await router.push(`/agrements/${agrementAPrendreEnCharge.value.id}`);
-      toaster.success({
-        description: "La prise en charge a bien été validée.",
-      });
+      await router.push(`/agrements/${agrementAPrendreEnCharge.value.id}`);
     } else {
       toaster.error({
         description: "Erreur lors de la prise en charge.",

@@ -157,3 +157,28 @@ describe("GET /agrements/list/", () => {
     expect(response.body.agrements[0].numero).toEqual(agrementData.numero);
   });
 });
+
+describe("GET /admin/agrements/:id", () => {
+  it("devrait retourner un agrément existant avec succès", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+
+    const response = await request(app).get(`/admin/agrements/${agrementId}`);
+    expect(response.status).toBe(200);
+    expect(response.body.agrement).toBeDefined();
+    expect(response.body.agrement.id).toBe(agrementId);
+    expect(response.body.agrement.raisonSociale).toBeDefined();
+  });
+
+  it("devrait retourner une 404 si l'agrément n'existe pas", async () => {
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(app).get(`/admin/agrements/999999`);
+    expect(response.status).toBe(404);
+  });
+});
