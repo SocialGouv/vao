@@ -33,7 +33,7 @@
     "dayjs": "~1.11.11",
     "debug": "~4.3.4",
     "maplibre-gl": "4.7.1",
-    "nuxt": "~3.19.0",
+    "nuxt": "~4.3.0",
     "nuxt-maplibre": "^1.2.0",
     "nuxt-security": "^2.0.0-rc.9",
     "pinia": "~2.2.2",
