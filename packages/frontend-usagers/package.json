@@ -22,7 +22,7 @@
     "@gouvfr/dsfr": "^1.14.0",
     "@gouvminint/vue-dsfr": "^8.4.0",
     "@iconify/vue": "^4.3.0",
-    "@pinia/nuxt": "~0.5.4",
+    "@pinia/nuxt": "~0.11.3",
     "@samk-dev/nuxt-vcalendar": "^1.0.4",
     "@sentry/vue": "~8.54.0",
     "@vao/shared-bridge": "workspace:^",
