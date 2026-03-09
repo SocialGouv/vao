@@ -23,17 +23,22 @@ export const AgrementsRepository = {
   /**
    * Récupère un agrément par son ID.
    */
-  async getById(agrementId: number): Promise<AgrementEntity | null> {
+  async getById(agrementId: number): Promise<AgrementDto | null> {
     const client = await getPool().connect();
     try {
       const result = await client.query(
-        `SELECT * FROM front.agrements WHERE id = $1 LIMIT 1;`,
+        `SELECT a.*, pm.raison_sociale
+       FROM front.agrements a
+       JOIN front.organismes o ON a.organisme_id = o.id
+       LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
+       WHERE a.id = $1
+       LIMIT 1;`,
         [agrementId],
       );
       if (result.rows.length === 0) {
         return null;
       }
-      return result.rows[0] as AgrementEntity;
+      return AgrementsMapper.toModel(result.rows[0]);
     } finally {
       client.release();
     }

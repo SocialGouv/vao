@@ -16,6 +16,14 @@ router.get(
   AgrementController.getList,
 );
 
+router.get(
+  "/:agrementId",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["GetOne"]),
+  checkPermissionBOAgrement,
+  AgrementController.getOne,
+);
+
 router.patch(
   "/:agrementId/statut",
   boCheckJWT,

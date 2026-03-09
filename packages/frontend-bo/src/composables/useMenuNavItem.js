@@ -22,7 +22,7 @@ export const useMenuNavItems = () => {
       serviceCompetent === USER_COMPETENCE_BO.REGIONALE
         ? [
             {
-              text: "Agrements",
+              text: "Agréments",
               to: "/agrements/liste",
             },
           ]
