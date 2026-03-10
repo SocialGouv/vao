@@ -44,6 +44,7 @@ export default async function acceptCgu(
     const accessToken = signAccessToken({ ...user, id: Number(user.id) });
     const refreshToken = signRefreshToken({ ...user, id: Number(user.id) });
 
+    await Session.clean({ id: user.id }, schema.FRONT);
     await Session.create(user.id, refreshToken, schema.FRONT);
 
     res.cookie("VAO_access_token", accessToken, {

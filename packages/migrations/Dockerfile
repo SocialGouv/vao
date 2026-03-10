@@ -33,4 +33,4 @@ COPY packages/migrations/src packages/migrations/src
 
 COPY packages/shared-bridge/package.json packages/shared-bridge/
 
-CMD ["./packages/migrations/node_modules/.bin/knex", "--cwd", "packages/migrations/src", "migrate:latest"]
+CMD ./packages/migrations/node_modules/.bin/knex --cwd packages/migrations/src migrate:latest && ./packages/migrations/node_modules/.bin/knex --cwd packages/migrations/src seed:run

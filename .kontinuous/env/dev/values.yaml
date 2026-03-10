@@ -71,3 +71,5 @@ jobs:
               key: bucket_secret_key
         - name: S3_BUCKET_ROOT_DIR
           value: review-branch/{{ .Values.global.branchSlug32  }}/files
+        - name: SEEDS_DIR
+          value: "e2e"
