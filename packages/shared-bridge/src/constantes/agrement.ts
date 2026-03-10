@@ -56,4 +56,19 @@ export enum AGREMENT_HISTORY_TYPE {
   CREATION = "CREATION",
   MODIFICATION = "MODIFICATION",
   VALIDATION = "VALIDATION",
+  TRANSMISSION = "TRANSMISSION",
+  VERIFICATION = "VERIFICATION",
+  PRISE_EN_CHARGE = "PRISE_EN_CHARGE",
+  EN_COURS = "EN_COURS",
 }
+
+export const AGREMENT_HISTORY_LABELS: Record<AGREMENT_HISTORY_TYPE, string> = {
+  CREATION: "Création de la demande d’agrément",
+  EN_COURS: "Renouvellement de l’agrément en cours",
+  MODIFICATION: "Modification de la demande d’agrément",
+  PRISE_EN_CHARGE: "Prise en charge de la demande d’agrément",
+  STATUT_CHANGE: "Changement de statut de l’agrément",
+  TRANSMISSION: "Envoi de la demande de renouvellement d’agrément",
+  VALIDATION: "Validation de la demande d’agrément",
+  VERIFICATION: "Vérification en cours de la demande d’agrément",
+};

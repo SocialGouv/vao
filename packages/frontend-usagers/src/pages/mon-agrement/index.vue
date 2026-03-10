@@ -54,7 +54,7 @@
         :selected="selectedTabIndex === 2"
         :asc="asc"
       >
-        <AgrementHistorique :history="agrementStore.history ?? []" />
+        <Historique :history="agrementStore.history ?? []" />
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="agrement-content-3"
@@ -78,6 +78,7 @@
 
 <script setup lang="ts">
 import { getYear4k } from "@vao/shared-bridge";
+import { Historique } from "@vao/shared-ui";
 
 const agrementStore = useAgrementStore();
 const territoireStore = useTerritoireStore();

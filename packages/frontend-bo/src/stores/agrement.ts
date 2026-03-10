@@ -4,6 +4,7 @@ import type {
   ActiviteDto,
   OrganismeDto,
   AGREMENT_STATUT,
+  AgrementHistoryItem,
 } from "@vao/shared-bridge";
 import { AgrementService } from "~/services/agrementService";
 const log = logger("stores/agrement");
@@ -17,6 +18,7 @@ export interface AgrementStoreState {
   agrementsTotal?: number;
   agrementCourant?: AgrementDto | null;
   activites?: ActiviteDto[];
+  history: AgrementHistoryItem[] | null;
 }
 
 export const useAgrementStore = defineStore("agrement", {
@@ -24,6 +26,7 @@ export const useAgrementStore = defineStore("agrement", {
     agrement: null,
     agrementCourant: null,
     activites: [],
+    history: null,
   }),
   actions: {
     async getAgrementById(agrementId: number): Promise<void> {
@@ -47,6 +50,17 @@ export const useAgrementStore = defineStore("agrement", {
         this.agrementsTotal = count;
       } catch (err) {
         log.w("getListAgrements - DONE with error", err);
+        throw err;
+      }
+    },
+    async getHistory(agrementId: string): Promise<void> {
+      log.i("getHistory - IN", { agrementId });
+      try {
+        const { history } = await AgrementService.getHistory(agrementId);
+        this.history = history;
+        log.i("getHistory - DONE", { history });
+      } catch (err) {
+        log.w("getHistory - DONE with error", err);
         throw err;
       }
     },

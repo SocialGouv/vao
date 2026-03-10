@@ -1,33 +1,41 @@
 <template>
   <div class="card">
-   <div class="texte">
-      <p class="texte-intitule">{{ type ?? "" }}</p>
+    <div class="texte">
+      <p class="texte-intitule">{{ typeLabel }}</p>
       <p class="texte-temporalite">
-        {{ formatFR(created_at) ?? "" }} - {{ type_precision ?? "" }}
+        {{ formatFR(created_at) ?? "" }} -
+        <span v-if="type_precision">Statut {{ formatLabel(type_precision) ?? "" }}</span>
       </p>
     </div>
     <p class="user">
       {{ usager_user?.mail ?? "" }}
     </p>
+    <p class="user">
+      {{ bo_user?.mail ?? "" }}
+    </p>
   </div>
 </template>
 
 <script setup lang="ts">
-
-import type { AgrementHistoryItem } from "@vao/shared-bridge";
-import { formatFR } from "@vao/shared-bridge";
+import type {
+  AgrementHistoryItem,
+  AGREMENT_HISTORY_TYPE,
+} from "@vao/shared-bridge";
+import { formatFR, AGREMENT_HISTORY_LABELS, formatLabel } from "@vao/shared-bridge";
 
 const props = defineProps<{
-  entry: AgrementHistoryItem
+  entry: AgrementHistoryItem;
 }>();
-const { type, created_at, type_precision, usager_user } = props.entry;
+const { type, created_at, type_precision, usager_user, bo_user } = props.entry;
+const typeLabel =
+  AGREMENT_HISTORY_LABELS[type as AGREMENT_HISTORY_TYPE] ?? type;
 </script>
 <style scoped lang="scss">
 .card {
   display: flex;
   align-items: flex-start;
   width: 100%;
-  min-height: 86px; 
+  min-height: 86px;
   border-radius: 4px;
   padding: 1rem;
   border: 1px solid

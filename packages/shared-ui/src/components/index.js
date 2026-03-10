@@ -36,6 +36,8 @@ import TitleWithIcon from "./TitleWithIcon.vue";
 import Toaster from "./Toaster.vue";
 import TwoFactorCodeVerification from "./auth/TwoFactorCodeVerification.vue";
 import DsfrLinkV2 from "./DsfrLinkV2.vue";
+import Historique from "./agrement/Historique.vue";
+import EtapeHistorique from "./agrement/EtapeHistorique.vue";
 export {
   CguValidation,
   ApiUnavailable,
@@ -75,4 +77,6 @@ export {
   Toaster,
   TwoFactorCodeVerification,
   DsfrLinkV2,
+  Historique,
+  EtapeHistorique,
 };
