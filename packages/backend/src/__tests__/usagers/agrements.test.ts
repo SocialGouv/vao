@@ -3,6 +3,7 @@ import { NextFunction, Response } from "express";
 import request from "supertest";
 
 import app from "../../app";
+import checkJwt from "../../middlewares/checkJWT";
 import { mailService } from "../../services/mail";
 import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
@@ -17,14 +18,12 @@ import {
   removeTestContainer,
 } from "../helper/testContainer";
 
-let authUser = { id: 1, role: "admin" };
-
-jest.mock("../../middlewares/common/checkJWT", () => {
-  return async (req: UserRequest, res: Response, next: NextFunction) => {
-    req.decoded = authUser as unknown as User;
+jest.mock("../../middlewares/checkJWT", () =>
+  jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
+    req.decoded = { id: 1, role: "admin" } as unknown as User;
     next();
-  };
-});
+  }),
+);
 
 beforeAll(async () => await createTestContainer());
 afterAll(async () => await removeTestContainer());
@@ -35,7 +34,7 @@ beforeEach(() => {
 
 describe("GET /agrements/organisme/:organismeId", () => {
   it("devrait retourner un agrément par ID de l'organisme avec succès", async () => {
-    authUser = await createUsagersUser();
+    const authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
     const agrementId = await createAgrement({
@@ -52,7 +51,7 @@ describe("GET /agrements/organisme/:organismeId", () => {
     expect(response.body.agrement.id).toEqual(agrementId);
   });
   it("devrait retourner une erreur", async () => {
-    authUser = await createUsagersUser();
+    const authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
     await createAgrement({
@@ -66,8 +65,12 @@ describe("GET /agrements/organisme/:organismeId", () => {
     expect(response.status).toBe(400);
   });
   it("devrait retourner un agrement introuvable", async () => {
-    authUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: authUser.id });
+    const adminUser = await createUsagersUser();
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    const organismeId = await createOrganisme({ userId: adminUser.id });
     const response = await request(app).get(
       `/agrements/organisme/${organismeId}`,
     );
@@ -78,9 +81,13 @@ describe("GET /agrements/organisme/:organismeId", () => {
 });
 describe("POST /agrements", () => {
   it("devrait créer un agrément (POST /agrements)", async () => {
-    authUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: authUser.id });
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
 
     const response = await request(app).post(`/agrements/`).send(agrementData);
 
@@ -88,10 +95,14 @@ describe("POST /agrements", () => {
     expect(response.body).toBeDefined();
   });
   it("devrait mettre à jour un agrément (POST /agrements)", async () => {
-    authUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: authUser.id });
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
     await createAgrement({ agrement: agrementData, organismeId });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
     const { agrement } = await getAgrement(organismeId);
     const response = await request(app).post(`/agrements/`).send(agrement!);
 
@@ -101,14 +112,17 @@ describe("POST /agrements", () => {
 });
 
 it("devrait changer le statut d'un agrément avec succès", async () => {
-  authUser = await createUsagersUser();
-  const organismeId = await createOrganisme({ userId: authUser.id });
+  const adminUser = await createUsagersUser();
+  const organismeId = await createOrganisme({ userId: adminUser.id });
   const agrementData = await buildAgrementFixture({ organismeId });
   const agrementId = await createAgrement({
     agrement: agrementData,
     organismeId,
   });
-
+  (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+    req.decoded = { id: adminUser.id };
+    next();
+  });
   const response = await request(app)
     .patch(`/agrements/${agrementId}/statut`)
     .send({ statut: "TRANSMIS" });
@@ -125,14 +139,17 @@ jest.mock("../../services/mail", () => ({
 }));
 
 it("workflow changement statut de l'agrement", async () => {
-  authUser = await createUsagersUser();
-  const organismeId = await createOrganisme({ userId: authUser.id });
+  const adminUser = await createUsagersUser();
+  const organismeId = await createOrganisme({ userId: adminUser.id });
   const agrementData = await buildAgrementFixture({ organismeId });
   const agrementId = await createAgrement({
     agrement: agrementData,
     organismeId,
   });
-
+  (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+    req.decoded = { id: adminUser.id };
+    next();
+  });
   const response = await request(app)
     .patch(`/agrements/${agrementId}/statut`)
     .send({ statut: "TRANSMIS" });

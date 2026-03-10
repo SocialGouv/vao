@@ -1,4 +1,4 @@
-import { ERRORS_COMMON, statusUserFront, UserDto } from "@vao/shared-bridge";
+import { ERRORS_COMMON, statusUserFront } from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 import request from "supertest";
@@ -9,8 +9,7 @@ import { UsersRepository as UsagersUsersRepository } from "../../repositories/us
 import { getEtablissement } from "../../services/Insee";
 import { mailService } from "../../services/mail";
 import * as UserService from "../../services/User";
-import { UserRequest } from "../../types/request";
-import { createUsagersUser } from "../helper/fixtures/userHelper";
+import { User, UserRequest } from "../../types/request";
 import {
   createTestContainer,
   removeTestContainer,
@@ -20,14 +19,12 @@ jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
 }));
 
-let authUser = { id: 1, role: "admin" };
-
-jest.mock("../../middlewares/common/checkJWT", () => {
-  return async (req: UserRequest, res: Response, next: NextFunction) => {
-    req.decoded = authUser as unknown as UserDto;
+jest.mock("../../middlewares/checkJWT", () =>
+  jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
+    req.decoded = { id: 1, role: "admin" } as unknown as User;
     next();
-  };
-});
+  }),
+);
 
 jest.mock("../../services/Insee", () => ({
   getEtablissement: jest.fn(),
@@ -43,8 +40,6 @@ afterAll(async () => {
 
 describe("POST /authentication/email/register", () => {
   it("should return 400 if SIRET is not found", async () => {
-    authUser = await createUsagersUser();
-
     (getEtablissement as jest.Mock).mockResolvedValue(null);
 
     const payload = {
@@ -65,8 +60,6 @@ describe("POST /authentication/email/register", () => {
   });
 
   it("should return 400 when validation fails", async () => {
-    authUser = await createUsagersUser();
-
     const invalidPayload = {
       email: "invalid-email",
       nom: "Doe",
@@ -86,7 +79,6 @@ describe("POST /authentication/email/register", () => {
   });
 
   it("should return 500 if mail sending fails for existing user", async () => {
-    authUser = await createUsagersUser();
     const timestamp = Date.now();
     const email = `existing-user-${timestamp}@example.com`;
 
@@ -122,7 +114,6 @@ describe("POST /authentication/email/register", () => {
   });
 
   it("should return 500 if INSEE lookup fails", async () => {
-    authUser = await createUsagersUser();
     const timestamp = Date.now();
     (getEtablissement as jest.Mock).mockRejectedValue(new Error("INSEE down"));
 
@@ -142,7 +133,6 @@ describe("POST /authentication/email/register", () => {
   });
 
   it("should return 500 if validation mail sending fails", async () => {
-    authUser = await createUsagersUser();
     const timestamp = Date.now();
     const email = `register-mail-fail-${timestamp}@example.com`;
 
@@ -167,7 +157,6 @@ describe("POST /authentication/email/register", () => {
   });
 
   it("should register user and return 200 with code", async () => {
-    authUser = await createUsagersUser();
     const timestamp = Date.now();
     const email = `register-ok-${timestamp}@example.com`;
 

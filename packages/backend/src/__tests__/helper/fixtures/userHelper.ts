@@ -58,7 +58,7 @@ export const createAdminUserValide = async (user = {}) => {
     nom: "boNom",
     prenom: "boPrenom",
     telephone: "0102030405",
-    terCode: "FRA",
+    ter_code: "FRA",
     verified: true,
     ...user,
   };
