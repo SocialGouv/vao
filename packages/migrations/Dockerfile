@@ -32,5 +32,7 @@ COPY packages/migrations/package.json packages/migrations/
 COPY packages/migrations/src packages/migrations/src
 
 COPY packages/shared-bridge/package.json packages/shared-bridge/
+# proc stock for e2e tests
+COPY pg/seeds/PG-1-proc-data-deletion.sql pg/seeds/PG-1-proc-data-deletion.sql
 
-CMD ["./packages/migrations/node_modules/.bin/knex", "--cwd", "packages/migrations/src", "migrate:latest"]
+CMD ./packages/migrations/node_modules/.bin/knex --cwd packages/migrations/src migrate:latest && ./packages/migrations/node_modules/.bin/knex --cwd packages/migrations/src seed:run

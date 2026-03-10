@@ -1,4 +1,4 @@
-import { statusUserFront } from "@vao/shared-bridge";
+import { STATUS_USER_FRONT } from "@vao/shared-bridge";
 
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
@@ -49,7 +49,7 @@ export const UsersRepository = {
     const response = await getPool().query(query(), [
       user.email,
       user.password || null,
-      user.status_code || statusUserFront.NEED_EMAIL_VALIDATION,
+      user.status_code || STATUS_USER_FRONT.NEED_EMAIL_VALIDATION,
       user.nom,
       user.prenom,
       user.telephone || null,

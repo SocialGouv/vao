@@ -1,6 +1,7 @@
--- Premier compte
+-- Compte par défaut nécessaire pour les tests e2e
+-- mot de passe : Azertyuiop1!
 INSERT INTO back.users (validated, mail,prenom,nom,pwd, ter_code, enddate)
-VALUES (true,'laurent.scherer@sg.social.gouv.fr','Laurent','SCHERER','$2a$06$UonmnHnZmE5CT2S/ORS2M.BmfgxSJDQd/B7ktNdn.DixGm9.qZ1Ey', 'FRA', now()) RETURNING id;
+VALUES (true,'admin.national@example.com','Admin','NATIONAL',crypt('Azertyuiop1!', gen_salt('bf')), 'FRA', now()) RETURNING id;
 
 -- Ajout de tous les rôles pour le superAdmin
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),1);
@@ -9,86 +10,35 @@ INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),3);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),4);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),5);
 
+-- Compte par défaut pour la région IDF
 INSERT INTO back.users (validated, mail,prenom,nom,pwd, ter_code, enddate)
-VALUES (true,'vincent.carcel@sg.social.gouv.fr','Vincent','CARCEL','$2a$06$UonmnHnZmE5CT2S/ORS2M.BmfgxSJDQd/B7ktNdn.DixGm9.qZ1Ey', 'FRA', now()) RETURNING id;
+VALUES (true,'region.idf@example.com','Région','IDF',crypt('Azertyuiop1!', gen_salt('bf')), 'IDF', now()) RETURNING id;
 
--- Ajout de tous les rôles pour le superAdmin
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),1);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),2);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),3);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),4);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),5);
 
-
+-- Compte par défaut pour le département Paris (75)
 INSERT INTO back.users (validated, mail,prenom,nom,pwd, ter_code, enddate)
-VALUES (true,'benjamin.pinard@sg.social.gouv.fr','Benjamin','PINARD','$2a$06$UonmnHnZmE5CT2S/ORS2M.BmfgxSJDQd/B7ktNdn.DixGm9.qZ1Ey', 'FRA', now()) RETURNING id;
+VALUES (true,'departement.75@example.com','Département','PARIS',crypt('Azertyuiop1!', gen_salt('bf')), '75', now()) RETURNING id;
 
--- Ajout de tous les rôles pour le superAdmin
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),1);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),2);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),3);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),4);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),5);
 
+--------------------------------------------------
+-- TNR
+--------------------------------------------------
+INSERT INTO back.users (validated,mail,prenom,nom,pwd,ter_code,enddate)
+VALUES (true,'tnra.agent.idf@example.com','IDF','TNRA',crypt('Azertyuiop1!', gen_salt('bf')), 'IDF',now()) RETURNING id;
 
-INSERT INTO back.users (validated, mail,prenom,nom,pwd, ter_code, enddate)
-VALUES (true,'gweill@guigops.fr','Guillaume','WEILL','$2a$06$UonmnHnZmE5CT2S/ORS2M.BmfgxSJDQd/B7ktNdn.DixGm9.qZ1Ey', 'FRA', now()) RETURNING id;
-
--- Ajout de tous les rôles pour le superAdmin
+-- Ajout des rôles regional
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),1);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),2);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),3);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),4);
 INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),5);
-
-
-INSERT INTO back.users (validated, mail,prenom,nom,pwd, ter_code, enddate)
-VALUES (true,'olivier.toumsy@sg.social.gouv.fr','Olivier','TOUMSY','$2a$06$UonmnHnZmE5CT2S/ORS2M.BmfgxSJDQd/B7ktNdn.DixGm9.qZ1Ey', 'FRA', now()) RETURNING id;
-
--- Ajout de tous les rôles pour le superAdmin
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),1);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),2);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),3);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),4);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),5);
-
-
-INSERT INTO back.users (validated, mail,prenom,nom,pwd, ter_code, enddate)
-VALUES (true,'assia.rachedi@sg.social.gouv.fr','Assia','RACHEDI','$2a$06$UonmnHnZmE5CT2S/ORS2M.BmfgxSJDQd/B7ktNdn.DixGm9.qZ1Ey', 'FRA', now()) RETURNING id;
-
--- Ajout de tous les rôles pour le superAdmin
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),1);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),2);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),3);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),4);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),5);
-
-INSERT INTO back.users (validated, mail,prenom,nom,pwd, ter_code, enddate)
-VALUES (true,'boubeker.ait-aider@social.gouv.fr','Boubeker','AIT-AIDER','$2a$06$UonmnHnZmE5CT2S/ORS2M.BmfgxSJDQd/B7ktNdn.DixGm9.qZ1Ey', 'FRA', now()) RETURNING id;
-
--- Ajout de tous les rôles pour le superAdmin
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),1);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),2);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),3);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),4);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),5);
-
-INSERT INTO back.users (validated, mail,prenom,nom,pwd, ter_code, enddate)
-VALUES (true,'nelly.jousset-antiphon@social.gouv.fr','Nelly','JOUSSET-ANTIPHON','$2a$06$UonmnHnZmE5CT2S/ORS2M.BmfgxSJDQd/B7ktNdn.DixGm9.qZ1Ey', 'FRA', now()) RETURNING id;
-
--- Ajout de tous les rôles pour le superAdmin
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),1);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),2);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),3);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),4);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),5);
-
-INSERT INTO back.users (validated, mail,prenom,nom,pwd, ter_code, enddate)
-VALUES (true,'romain.pontefract@social.gouv.fr','Romain','PONTEFRACT','$2a$06$UonmnHnZmE5CT2S/ORS2M.BmfgxSJDQd/B7ktNdn.DixGm9.qZ1Ey', 'FRA', now()) RETURNING id;
-
--- Ajout de tous les rôles pour le superAdmin
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),1);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),2);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),3);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),4);
-INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),5);
+INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),6);
+INSERT INTO back.user_roles VALUES (currval('back.users_id_seq'),7);
