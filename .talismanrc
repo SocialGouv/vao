@@ -51,8 +51,14 @@ fileignoreconfig:
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
   checksum: 4c29834d1782647485b51852dc7921ff87bd72bbe55134f21830f226ed9bc06d
+- filename: docs/tests/E2E_TESTS.md
+  checksum: dfe0de0276abfc1876610d297f96594742046ca920775faaa5e79c76ee348715
 - filename: e2e/register-login-organisateur.spec.ts
   checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
+- filename: e2e/register-personne-physique.spec.ts
+  checksum: c0f61f77438b6c52f94298623ae23087ba29959b5fb6249de4a4993b3f412d7a
+- filename: e2e/utils/users.ts
+  checksum: 5bd7bc434793e037c1330a79b89a7c7bc98274d59ae348b018893b6ef7e0695c
 - filename: package-lock.json
   checksum: 1f161d556f83694bf1d4f728591667cdaeef494e6d24ea2b475b4d7cb054383f
 - filename: package.json
@@ -392,7 +398,7 @@ fileignoreconfig:
 - filename: pg/seeds/BO-1-back-user.sql
   checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
 - filename: pg/seeds/PG-1-proc-data-deletion.sql
-  checksum: da9708d3baf269566275aa1c2de6908ef3873651e9328f968e707ce07fa87380
+  checksum: 4cb453d9ae55936fb5cc6b09946aff96fbf5a44733575e9050d2cd00fdd68f4d
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
 scopeconfig:
