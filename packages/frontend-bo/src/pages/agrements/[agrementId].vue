@@ -11,7 +11,10 @@
           type="bo"
         />
       </div>
-      <!-- <p v-if="agrementCourant.raison_sociale"><b>Organisme :</b> {{ agrementCourant.raison_sociale }}</p> -->
+      <p v-if="organismeStore.organisme?.personneMorale?.raisonSociale">
+        <b>Organisme :</b>
+        {{ organismeStore.organisme.personneMorale.raisonSociale }}
+      </p>
       <p v-if="agrementCourant.regionObtention">
         <b>Région :</b> {{ agrementCourant.regionObtention }}
       </p>
@@ -74,6 +77,9 @@ import { useAgrementStore } from "~/stores/agrement";
 import { onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { DemandeStatusBadge } from "@vao/shared-ui";
+import { useOrganismeStore } from "~/stores/organisme";
+
+const organismeStore = useOrganismeStore();
 
 const route = useRoute();
 const agrementStore = useAgrementStore();
@@ -86,6 +92,25 @@ onMounted(async () => {
     await agrementStore.getAgrementById(agrementId.value);
   }
 });
+
+watch(
+  () => agrementCourant.value?.organismeId,
+  async (organismeId) => {
+    console.log(
+      "Changement de l'organisme lié à l'agrément, chargement des données de l'organisme",
+      {
+        organismeId,
+      },
+    );
+    if (organismeId) {
+      await organismeStore.getOrganisme(organismeId);
+      console.log("Données de l'organisme chargées", {
+        organisme: organismeStore.organisme,
+      });
+    }
+  },
+  { immediate: true },
+);
 
 useHead({
   title: "Page agrément - Portail Administration | VAO",
@@ -157,11 +182,6 @@ const tabTitles = computed(() => [
     panelId: "agrement-content-3",
   },
 ]);
-
-// onMounted(async () => {
-//   log.i("Mounted");
-//   await territoireStore.fetchFicheByAgrementRegionUser();
-// });
 </script>
 
 <style scoped>
