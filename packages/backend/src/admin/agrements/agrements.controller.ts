@@ -9,6 +9,20 @@ import { AgrementService } from "./agrements.service";
 const log = logger(module.filename);
 
 export const AgrementController = {
+  async getHistory(
+    req: RouteRequest<AgrementAdminRoutes["GetHistory"]>,
+    res: RouteResponse<AgrementAdminRoutes["GetHistory"]>,
+    next: NextFunction,
+  ) {
+    try {
+      const history = await AgrementService.getHistory(
+        Number(req.validatedParams!.agrementId),
+      );
+      res.status(200).json({ history });
+    } catch (error) {
+      next(error);
+    }
+  },
   async getList(
     req: RouteRequest<AgrementAdminRoutes["GetList"]>,
     res: RouteResponse<AgrementAdminRoutes["GetList"]>,

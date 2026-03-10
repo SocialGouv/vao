@@ -28,6 +28,14 @@ const AgrementService = {
     })();
     return agrement;
   },
+  getHistory: async (agrementId: string) => {
+    const history = await buildRequest<AgrementAdminRoutes["GetHistory"]>({
+      path: "/admin/agrements/history/{agrementId}",
+      method: "GET",
+      params: { agrementId },
+    })();
+    return history;
+  },
 };
 
 export { AgrementService };

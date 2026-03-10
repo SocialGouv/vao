@@ -148,11 +148,20 @@ export const AgrementService = {
       });
     }
 
+    let eventType: AGREMENT_HISTORY_TYPE;
+    if (statut === AGREMENT_STATUT.VERIF_EN_COURS) {
+      eventType = AGREMENT_HISTORY_TYPE.TRANSMISSION;
+    } else if (statut === AGREMENT_STATUT.EN_COURS) {
+      eventType = AGREMENT_HISTORY_TYPE.EN_COURS;
+    } else {
+      eventType = AGREMENT_HISTORY_TYPE.STATUT_CHANGE;
+    }
+
     await AgrementService.trackEvent({
       agrementId,
       boUserId: Number(boUserId),
       source: "DREETS",
-      type: AGREMENT_HISTORY_TYPE.STATUT_CHANGE,
+      type: eventType,
       typePrecision: statut,
     });
 

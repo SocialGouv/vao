@@ -11,6 +11,8 @@
 
 <script setup lang="ts">
 import type { AgrementHistoryItem } from "@vao/shared-bridge";
+import AgrementEtapeHistorique from "./EtapeHistorique.vue";
+import { computed } from "vue";
 
 const props = defineProps<{
   history?: AgrementHistoryItem[];
