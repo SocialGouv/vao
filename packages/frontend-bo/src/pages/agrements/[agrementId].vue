@@ -96,17 +96,8 @@ onMounted(async () => {
 watch(
   () => agrementCourant.value?.organismeId,
   async (organismeId) => {
-    console.log(
-      "Changement de l'organisme lié à l'agrément, chargement des données de l'organisme",
-      {
-        organismeId,
-      },
-    );
     if (organismeId) {
       await organismeStore.getOrganisme(organismeId);
-      console.log("Données de l'organisme chargées", {
-        organisme: organismeStore.organisme,
-      });
     }
   },
   { immediate: true },
