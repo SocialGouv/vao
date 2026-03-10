@@ -1,78 +1,60 @@
 import { test, expect } from "@playwright/test";
-import { randomUUID } from "crypto";
+import { initTests } from "./utils/helper";
 
-const baseUrl =
-  process.env.E2E_BASE_URL || "vao-main.ovh.fabrique.social.gouv.fr";
-const runLocal = process.env.E2E_LOCAL === "true" || false;
+const { username, password, appUsagersUrl, maildevUrl } = initTests();
 
-const username = process.env.E2E_USERNAME || `e2e-${randomUUID()}@test.com`;
-const password = "Pizza1234567;";
-
-// Run tests in serial mode because they are dependant on each other
-test.describe.configure({ mode: "serial" });
-
-function getUrl(prefix?: string) {
-  if (runLocal) {
-    if (prefix === "maildev") {
-      return `http://localhost:1080`;
-    }
-    return `http://localhost:3000`;
-  }
-  return `${runLocal ? "http" : "https"}://${prefix ? prefix + "-" : ""}${baseUrl}`;
-}
-/*
-async function login(page) {
-  await page
-    .getByLabel("Identifiant * Format attendu : nom@domaine.fr")
-    .click();
-  await page
-    .getByLabel("Identifiant * Format attendu : nom@domaine.fr")
-    .fill(username);
-  await page.getByLabel("Mot de passe * Afficher mot").click();
-  await page.getByLabel("Mot de passe * Afficher mot").fill(password);
-  await page.getByRole("button", { name: "Se connecter" }).click();
-  await expect(page.getByText("Bienvenue PrénomTest NomTest")).toBeVisible();
-}
-*/
-test("register_and_login", async ({ page }) => {
-  // register
-  await page.goto(`${getUrl()}/connexion`);
+test("register-personne-physique", async ({ page }) => {
+  await page.goto(`${appUsagersUrl}/connexion`);
   await expect(page.getByText("Connexion à VAO")).toBeVisible();
 
   await page.getByRole("button", { name: "Créer un compte" }).click();
-  await page.getByPlaceholder("Veuillez saisir votre email").click();
-  await page.getByPlaceholder("Veuillez saisir votre email").fill(username);
-  await page.getByLabel("Mot de passe Veuillez saisir").click();
-  await page.getByLabel("Mot de passe Veuillez saisir").fill(password);
-  await page.getByLabel("Confirmation mot de passe").click();
-  await page.getByLabel("Confirmation mot de passe").fill(password);
-  await page.getByLabel("Nom Veuillez saisir votre nom").click();
-  await page.getByLabel("Nom Veuillez saisir votre nom").fill("NomTest");
-  await page.getByLabel("Prénom Veuillez saisir votre").click();
-  await page.getByLabel("Prénom Veuillez saisir votre").fill("PrénomTest");
-  await page.getByLabel("Numéro de téléphone Veuillez").click();
-  await page.getByLabel("Numéro de téléphone Veuillez").fill("0123456789");
+  await page.getByRole("textbox", { name: "Adresse courriel Format" }).click();
   await page
-    .getByLabel(
-      "SIRET Veuillez indiquer le siret de l´organisme que vous souhaitez rejoindre. Exemple: 1100007200014",
-    )
+    .getByRole("textbox", { name: "Adresse courriel Format" })
+    .fill(username);
+  await page
+    .getByRole("textbox", { name: "Mot de passe Veuillez saisir" })
     .click();
-
   await page
-    .getByLabel(
-      "SIRET Veuillez indiquer le siret de l´organisme que vous souhaitez rejoindre. Exemple: 1100007200014",
-    )
-    .fill("45348443800016");
-
+    .getByRole("textbox", { name: "Mot de passe Veuillez saisir" })
+    .fill(password);
+  await page
+    .getByRole("textbox", { name: "Confirmation mot de passe" })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Confirmation mot de passe" })
+    .fill(password);
+  await page
+    .getByRole("textbox", { name: "Nom Veuillez saisir votre nom" })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Nom Veuillez saisir votre nom" })
+    .fill("JourdainAutomatisé");
+  await page
+    .getByRole("textbox", { name: "Prénom Veuillez saisir votre" })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Prénom Veuillez saisir votre" })
+    .fill("Olivier");
+  await page
+    .getByRole("textbox", { name: "Numéro de téléphone Veuillez" })
+    .click();
+  await page
+    .getByRole("textbox", { name: "Numéro de téléphone Veuillez" })
+    .fill("0123456789");
+  await page
+    .getByRole("textbox", { name: "SIRET Veuillez indiquer le" })
+    .click();
+  await page
+    .getByRole("textbox", { name: "SIRET Veuillez indiquer le" })
+    .fill("43286010400301");
   await page.getByRole("button", { name: "Créer mon compte" }).click();
-  await expect(
-    page.getByText(
-      "Votre formulaire a été envoyé. Veuillez valider votre adresse mail en cliquant sur le lien reçu par mail.",
-    ),
-  ).toBeVisible();
+  await expect(page.locator("#alert-v-0-3-description")).toContainText(
+    "Votre formulaire a été envoyé. Veuillez valider votre adresse mail en cliquant sur le lien reçu par mail.",
+  );
 
   // validate email
-  await page.goto(`${getUrl("maildev")}/#/`);
+  await page.goto(`${maildevUrl}/#/`);
   await page
     .getByRole("link", {
       name: `Portail VAO - Validez votre adresse courriel To: ${username}`,
