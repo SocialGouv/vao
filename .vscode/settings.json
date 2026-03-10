@@ -42,6 +42,9 @@
       "runMode": "watch"
     }
   ],
+  "playwright.env": {
+    "E2E_LOCAL": true
+  },
   "sonarlint.connectedMode.project": {
     "connectionId": "socialgouv",
     "projectKey": "SocialGouv_vao"

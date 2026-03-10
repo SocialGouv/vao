@@ -19,4 +19,9 @@ module.exports = {
     directory: "./migrations",
     tableName: "knex_migrations",
   },
+  seeds: {
+    directory: process.env.SEEDS_DIR
+      ? `./seeds/${process.env.SEEDS_DIR}`
+      : "./seeds",
+  },
 };
