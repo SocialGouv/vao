@@ -58,9 +58,6 @@
     </template>
   </DsfrDataTableV2Wrapper>
 
-  <!-- a placer dans le tab (#1104) -->
-  <Historique :history="agrementStore.history ?? []" />
-
   <ValidationModal
     modal-ref="priseEnChargeModal"
     name="prise-en-charge-modal"
@@ -85,7 +82,6 @@ import {
   columnsTable,
   ValidationModal,
   useToaster,
-  Historique,
 } from "@vao/shared-ui";
 
 import type { AgrementDto, OrganismeDto } from "@vao/shared-bridge";
@@ -117,16 +113,6 @@ const route = useRoute();
 const router = useRouter();
 
 const toaster = useToaster();
-
-onMounted(async () => {
-  log.i("Mounted");
-  try {
-    const history = await agrementStore.getHistory(String(1)); // Remplacerpar le vrai id quand on aura les tabs (#1104)
-    log.i("Historique de l'agrément récupéré avec succès", { history });
-  } catch (error) {
-    log.w("Erreur lors de la récupération de l'historique:", error);
-  }
-});
 
 const modalPriseEnChargeOpened = ref(false);
 const agrementAPrendreEnCharge = ref<AgrementWithOrganismeDto | null>(null);
