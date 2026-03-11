@@ -53,6 +53,7 @@
         :selected="selectedTabIndex === 2"
         :asc="asc"
       >
+        <Historique :history="agrementStore.history ?? []" />
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="agrement-content-3"
@@ -76,7 +77,7 @@
 import { useAgrementStore } from "~/stores/agrement";
 import { onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-import { DemandeStatusBadge } from "@vao/shared-ui";
+import { DemandeStatusBadge, Historique } from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
 
 const organismeStore = useOrganismeStore();
@@ -90,6 +91,13 @@ const agrementCourant = computed(() => agrementStore.agrementCourant);
 onMounted(async () => {
   if (agrementId.value) {
     await agrementStore.getAgrementById(agrementId.value);
+
+    try {
+      await agrementStore.getHistory(String(agrementId.value));
+      log.i("Historique de l'agrément récupéré avec succès");
+    } catch (error) {
+      log.w("Erreur lors de la récupération de l'historique:", error);
+    }
   }
 });
 
