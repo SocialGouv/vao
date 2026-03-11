@@ -20,3 +20,4 @@ module.exports.debugSentry = require("./debug-sentry");
 module.exports.healthz = require("./healthz");
 
 module.exports.eig = require("./eig");
+module.exports.metabase = require("./metabase");
