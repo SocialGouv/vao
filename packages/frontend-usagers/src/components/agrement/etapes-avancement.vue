@@ -56,7 +56,7 @@ const props = defineProps({
 
 const statutOrder = [
   AGREMENT_STATUT.TRANSMIS,
-  AGREMENT_STATUT.PRIS_EN_CHARGE,
+  AGREMENT_STATUT.EN_COURS,
   AGREMENT_STATUT.COMPLETUDE_CONFIRME,
   AGREMENT_STATUT.VALIDE,
 ];
@@ -71,7 +71,7 @@ const steps = [
     entite: "",
   },
   {
-    statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
+    statut: AGREMENT_STATUT.EN_COURS,
     libelle: "Vérification de la complétude de votre dossier",
     temporalite: props.initAgrement?.dateVerifCompleture
       ? formatFR(props.initAgrement?.dateVerifCompleture)

@@ -113,7 +113,7 @@ useHead({
   ],
 });
 
-const links = [
+const links = computed(() => [
   {
     to: "/agrements/liste",
     text: "Agréments",
@@ -121,7 +121,7 @@ const links = [
   {
     text: `Agrément n° ${agrementCourant.value?.numero || ""}`,
   },
-];
+]);
 
 const log = logger("pages/agrements/");
 
