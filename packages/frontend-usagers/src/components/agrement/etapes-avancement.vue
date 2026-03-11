@@ -18,7 +18,11 @@
             :entite="step.entite"
           >
             <template #temporalite>
-              <template v-if="typeof step.temporalite === 'object' && step.temporalite.texte">
+              <template
+                v-if="
+                  typeof step.temporalite === 'object' && step.temporalite.texte
+                "
+              >
                 {{ step.temporalite.texte }}
                 <a
                   v-if="step.temporalite.lien"
@@ -52,7 +56,7 @@ const props = defineProps({
 
 const statutOrder = [
   AGREMENT_STATUT.TRANSMIS,
-  AGREMENT_STATUT.PRIS_EN_CHARGE,
+  AGREMENT_STATUT.EN_COURS,
   AGREMENT_STATUT.COMPLETUDE_CONFIRME,
   AGREMENT_STATUT.VALIDE,
 ];
@@ -61,35 +65,40 @@ const steps = [
   {
     statut: AGREMENT_STATUT.TRANSMIS,
     libelle: "Envoi de la première demande d'agrément",
-    temporalite: props.initAgrement?.dateDepot ? formatFR(props.initAgrement?.dateDepot) : "02/05/2025",
+    temporalite: props.initAgrement?.dateDepot
+      ? formatFR(props.initAgrement?.dateDepot)
+      : "",
     entite: "",
   },
   {
-    statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
+    statut: AGREMENT_STATUT.EN_COURS,
     libelle: "Vérification de la complétude de votre dossier",
-    temporalite:
-      props.initAgrement?.dateVerifCompleture ? formatFR(props.initAgrement?.dateVerifCompleture) : "Possible demande de complément d'informations ou documents justificatifs",
+    temporalite: props.initAgrement?.dateVerifCompleture
+      ? formatFR(props.initAgrement?.dateVerifCompleture)
+      : "Possible demande de complément d'informations ou documents justificatifs",
     entite: "",
   },
   {
     statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
-    libelle:
-      "Confirmation de complétude de votre dossier",
-    temporalite: props.initAgrement?.dateConfirmCompletude ? formatFR(props.initAgrement?.dateConfirmCompletude) : "Récépissé de complétude",
+    libelle: "Confirmation de complétude de votre dossier",
+    temporalite: props.initAgrement?.dateConfirmCompletude
+      ? formatFR(props.initAgrement?.dateConfirmCompletude)
+      : "Récépissé de complétude",
     entite: "",
   },
   {
     statut: AGREMENT_STATUT.VALIDE,
-    libelle:
-      "Décision d'obtention de l'agrément",
-    temporalite: props.initAgrement?.dateObtentionCertificat ? formatFR(props.initAgrement?.dateObtentionCertificat) : {
-      texte: "Délais de deux mois à compter du récépissé de complétude.",
-      lien: {
-        url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030344746/",
-        label: "En savoir plus",
-        title: "Article R412-12 - Code du tourisme",
-      },
-    },
+    libelle: "Décision d'obtention de l'agrément",
+    temporalite: props.initAgrement?.dateObtentionCertificat
+      ? formatFR(props.initAgrement?.dateObtentionCertificat)
+      : {
+          texte: "Délais de deux mois à compter du récépissé de complétude.",
+          lien: {
+            url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030344746/",
+            label: "En savoir plus",
+            title: "Article R412-12 - Code du tourisme",
+          },
+        },
     entite: "",
   },
 ];

@@ -1,7 +1,8 @@
-import type { AgrementAdminRoutes } from "@vao/shared-bridge";
+import type { AgrementAdminRoutes, AgrementDto } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
 import type { RouteRequest, RouteResponse } from "../../types/request";
+import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 import { AgrementService } from "./agrements.service";
 
@@ -23,6 +24,21 @@ export const AgrementController = {
       res.json({ agrements: result, count });
     } catch (error) {
       log.w("DONE with error");
+      next(error);
+    }
+  },
+  async getOne(
+    req: RouteRequest<AgrementAdminRoutes["GetOne"]>,
+    res: RouteResponse<AgrementAdminRoutes["GetOne"]>,
+    next: NextFunction,
+  ) {
+    const agrementId = Number(req.validatedParams!.agrementId);
+    try {
+      const agrement: AgrementDto | null =
+        await AgrementService.getById(agrementId);
+      if (!agrement) throw new AppError("NotFound", { statusCode: 404 });
+      res.json({ agrement });
+    } catch (error) {
       next(error);
     }
   },

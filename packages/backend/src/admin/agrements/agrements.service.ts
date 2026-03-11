@@ -13,6 +13,9 @@ import { AgrementsRepository } from "./agrements.repository";
 const log = logger(module.filename);
 
 export const AgrementService = {
+  async getById(agrementId: number) {
+    return AgrementsRepository.getById(agrementId);
+  },
   async getHistory(agrementId: number) {
     const history = await AgrementsRepository.getHistory(agrementId);
     return history;
