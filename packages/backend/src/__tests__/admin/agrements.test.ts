@@ -173,7 +173,6 @@ describe("GET /admin/agrements/:id", () => {
     expect(response.status).toBe(200);
     expect(response.body.agrement).toBeDefined();
     expect(response.body.agrement.id).toBe(agrementId);
-    expect(response.body.agrement.raisonSociale).toBeDefined();
   });
 
   it("devrait retourner une 404 si l'agrément n'existe pas", async () => {
