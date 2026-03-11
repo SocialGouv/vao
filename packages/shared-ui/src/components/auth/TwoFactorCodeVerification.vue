@@ -149,7 +149,7 @@
             <li>Utilisez le code le plus récent reçu</li>
             <li>Le code expire après 30 minutes</li>
           </ul>
-
+            <hr class="fr-mt-5v" />
           <h3 class="fr-text--lg">
             Si vous n'avez pas reçu votre code de connexion :
           </h3>
