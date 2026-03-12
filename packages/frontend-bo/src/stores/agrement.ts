@@ -21,6 +21,7 @@ export interface AgrementStoreState {
   activites?: ActiviteDto[];
   history: AgrementHistoryItem[] | null;
   messages: AgrementMessage[] | null;
+  messagesTotal?: number | null;
 }
 
 export const useAgrementStore = defineStore("agrement", {
@@ -30,6 +31,7 @@ export const useAgrementStore = defineStore("agrement", {
     activites: [],
     history: null,
     messages: null,
+    messagesTotal: null,
   }),
   actions: {
     async getAgrementById(agrementId: number): Promise<void> {
@@ -46,9 +48,11 @@ export const useAgrementStore = defineStore("agrement", {
     async getMessages(agrementId: string): Promise<void> {
       log.i("getMessages - IN", { agrementId });
       try {
-        const messages = await AgrementService.getMessages(agrementId);
-        log.i("getMessages - DONE", { messages });
+        const { count, messages } =
+          await AgrementService.getMessages(agrementId);
+        log.i("getMessages - DONE", { messages, count });
         this.messages = messages;
+        this.messagesTotal = count;
       } catch (err) {
         log.w("getMessages - DONE with error", err);
         throw err;
