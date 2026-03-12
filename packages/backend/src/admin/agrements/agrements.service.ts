@@ -1,3 +1,4 @@
+import type { AgrementMessage } from "@vao/shared-bridge";
 import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
@@ -115,6 +116,17 @@ export const AgrementService = {
     log.i("DONE");
     return { count, result: agrementsWithOrganisme };
   },
+  async getMessages(agrementId: number): Promise<AgrementMessage[]> {
+    const agrement = await AgrementsRepository.getById(agrementId);
+    if (!agrement) {
+      log.w("Agrement non trouvé", agrementId);
+      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+    }
+
+    const messages = await AgrementsRepository.getMessages(agrementId);
+    return messages;
+  },
+
   async postMessage({
     agrementId,
     backUserId,
@@ -124,14 +136,12 @@ export const AgrementService = {
     backUserId: number;
     message: string;
   }): Promise<void> {
-    // Vérifier que l'agrément existe
     const agrement = await AgrementsRepository.getById(agrementId);
     if (!agrement) {
       log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
 
-    // Insérer le message dans la table de messagerie
     const inserted = await AgrementsRepository.insertMessage({
       agrementId,
       backUserId,
