@@ -97,4 +97,25 @@ export const AgrementController = {
       next(error);
     }
   },
+  async postMessage(
+    req: RouteRequest<AgrementAdminRoutes["PostMessage"]>,
+    res: RouteResponse<AgrementAdminRoutes["PostMessage"]>,
+    next: NextFunction,
+  ) {
+    const agrementId = Number(req.validatedParams!.agrementId);
+    const { message } = req.validatedBody!;
+    const { id: backUserId } = req.decoded!;
+
+    try {
+      await AgrementService.postMessage({
+        agrementId,
+        backUserId: Number(backUserId),
+        message,
+      });
+      res.status(201).json({ success: true });
+    } catch (error) {
+      log.w("erreur POST message", error);
+      next(error);
+    }
+  },
 };

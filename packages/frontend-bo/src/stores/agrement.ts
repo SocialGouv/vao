@@ -6,6 +6,7 @@ import type {
   OrganismeDto,
   AGREMENT_STATUT,
   AgrementHistoryItem,
+  AgrementMessage,
 } from "@vao/shared-bridge";
 import { AgrementService } from "~/services/agrementService";
 const log = logger("stores/agrement");
@@ -20,6 +21,7 @@ export interface AgrementStoreState {
   agrementCourant?: AgrementDto | null;
   activites?: ActiviteDto[];
   history: AgrementHistoryItem[] | null;
+  messages: AgrementMessage[] | null;
 }
 
 export const useAgrementStore = defineStore("agrement", {
@@ -28,6 +30,7 @@ export const useAgrementStore = defineStore("agrement", {
     agrementCourant: null,
     activites: [],
     history: null,
+    messages: null,
   }),
   actions: {
     async getAgrementById(agrementId: number): Promise<void> {
@@ -91,6 +94,22 @@ export const useAgrementStore = defineStore("agrement", {
         return success;
       } catch (err) {
         log.w("changeStatutAgrement - ERROR", err);
+        throw err;
+      }
+    },
+    async postMessage({
+      agrementId,
+      message,
+    }: {
+      agrementId: number;
+      message: string;
+    }): Promise<void> {
+      log.i("postMessage - IN", { agrementId, message });
+      try {
+        await AgrementService.postMessage(agrementId, message);
+        log.i("postMessage - DONE");
+      } catch (err) {
+        log.w("postMessage - ERROR", err);
         throw err;
       }
     },

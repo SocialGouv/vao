@@ -45,6 +45,14 @@ const AgrementService = {
     })();
     return history;
   },
+  postMessage: async (agrementId: number, message: string) => {
+    await buildRequest<AgrementAdminRoutes["PostMessage"]>({
+      path: "/admin/agrements/{agrementId}/message",
+      method: "POST",
+      params: { agrementId: String(agrementId) },
+      body: { message },
+    })();
+  },
 };
 
 export { AgrementService };

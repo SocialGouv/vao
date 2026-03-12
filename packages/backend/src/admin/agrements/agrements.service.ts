@@ -130,6 +130,36 @@ export const AgrementService = {
     log.i("DONE");
     return { count, result: agrementsWithOrganisme };
   },
+  async postMessage({
+    agrementId,
+    backUserId,
+    message,
+  }: {
+    agrementId: number;
+    backUserId: number;
+    message: string;
+  }): Promise<void> {
+    // Vérifier que l'agrément existe
+    const agrement = await AgrementsRepository.getById(agrementId);
+    if (!agrement) {
+      log.w("Agrement non trouvé", agrementId);
+      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+    }
+
+    // Insérer le message dans la table de messagerie
+    const inserted = await AgrementsRepository.insertMessage({
+      agrementId,
+      backUserId,
+      message,
+    });
+
+    if (!inserted) {
+      log.w("Échec de l'insertion du message", { agrementId, backUserId });
+      throw new AppError("Échec de l'insertion du message", {
+        statusCode: 500,
+      });
+    }
+  },
   async trackEvent(event: {
     source: string;
     agrementId: number;
