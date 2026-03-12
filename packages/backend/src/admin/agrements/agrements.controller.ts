@@ -85,12 +85,13 @@ export const AgrementController = {
   ) {
     const agrementId = Number(req.validatedParams!.agrementId);
     const { message } = req.validatedBody!;
-    const { id: backUserId } = req.decoded!;
+
+    const backUserId = Number(req.decoded!.id);
 
     try {
       await AgrementService.postMessage({
         agrementId,
-        backUserId: Number(backUserId),
+        backUserId,
         message,
       });
       res.status(201).json({ success: true });
