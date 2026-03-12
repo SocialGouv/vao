@@ -199,6 +199,35 @@ export const AgrementsRepository = {
     const { rows } = await getPool().query(query, values);
     return rows[0].id;
   },
+  async insertMessage({
+    agrementId,
+    backUserId,
+    message,
+  }: {
+    agrementId: number;
+    backUserId: number;
+    message: string;
+  }): Promise<number> {
+    const client = await getPool().connect();
+    try {
+      const query = `
+      INSERT INTO front.agrement_messagerie (
+        agrement_id,
+        front_user_id,
+        back_user_id,
+        message,
+        created_at,
+        read_at
+      ) VALUES ($1, $2, $3, $4, NOW(), $5)
+      RETURNING id;
+    `;
+      const values = [agrementId, null, backUserId, message, null];
+      const result = await client.query(query, values);
+      return result.rows[0]?.id ?? 0;
+    } finally {
+      client.release();
+    }
+  },
   async updateStatut({
     agrementId,
     statut,
