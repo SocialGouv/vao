@@ -273,7 +273,11 @@ const hash = computed(() => {
 });
 
 definePageMeta({
-  middleware: ["is-connected", "check-organisme-is-complet"],
+  middleware: [
+    "is-connected",
+    "check-organisme-is-complet",
+    "check-feature-flags",
+  ],
 });
 
 const links = [

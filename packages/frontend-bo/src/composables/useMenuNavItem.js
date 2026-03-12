@@ -19,6 +19,7 @@ export const useMenuNavItems = () => {
           ]
         : [];
     const gestionAgrements =
+      userStore.user.featureFlags?.RENOUVELLEMENT_AGREMENT &&
       serviceCompetent === USER_COMPETENCE_BO.REGIONALE
         ? [
             {
