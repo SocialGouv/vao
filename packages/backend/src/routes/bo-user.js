@@ -3,7 +3,8 @@ const express = require("express");
 const router = express.Router();
 
 const BOcheckJWT = require("../middlewares/bo-check-JWT");
-const BOcheckJWTWithoutCGU = require("../middlewares/bo-check-JWT-without-CGU");
+const BOcheckJWTWithoutCGU =
+  require("../middlewares/bo-check-JWT-without-CGU").default;
 const BOcheckRole = require("../middlewares/bo-check-role.js");
 const BOUserController = require("../controllers/bo-user");
 const checkTerrForAccountCreation = require("../middlewares/bo-check-terr-for-account-creation");

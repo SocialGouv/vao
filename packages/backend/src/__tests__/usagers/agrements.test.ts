@@ -1,0 +1,147 @@
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { NextFunction, Response } from "express";
+import request from "supertest";
+
+import app from "../../app";
+import { mailService } from "../../services/mail";
+import { User, UserRequest } from "../../types/request";
+import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
+import {
+  createAgrement,
+  getAgrement,
+} from "../helper/fixtures/agrementsHelper";
+import { createOrganisme } from "../helper/fixtures/organismeHelper";
+import { createUsagersUser } from "../helper/fixtures/userHelper";
+import {
+  createTestContainer,
+  removeTestContainer,
+} from "../helper/testContainer";
+
+let authUser = { id: 1, role: "admin" };
+
+jest.mock("../../middlewares/common/checkJWT", () => {
+  return async (req: UserRequest, res: Response, next: NextFunction) => {
+    req.decoded = authUser as unknown as User;
+    next();
+  };
+});
+
+beforeAll(async () => await createTestContainer());
+afterAll(async () => await removeTestContainer());
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+describe("GET /agrements/organisme/:organismeId", () => {
+  it("devrait retourner un agrément par ID de l'organisme avec succès", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    const response = await request(app).get(
+      `/agrements/organisme/${organismeId}`,
+    );
+
+    // Vérification des résultats
+    expect(response.status).toBe(200);
+    expect(response.body.agrement).not.toBeNull();
+    expect(response.body.agrement.id).toEqual(agrementId);
+  });
+  it("devrait retourner une erreur", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    const response = await request(app).get(`/agrements/organisme/invalid`);
+
+    // Vérification des résultats
+    // TODO ACH Problème sur le params string. Devrait retourner une 400
+    expect(response.status).toBe(400);
+  });
+  it("devrait retourner un agrement introuvable", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const response = await request(app).get(
+      `/agrements/organisme/${organismeId}`,
+    );
+
+    // Vérification des résultats
+    expect(response.status).toBe(404);
+  });
+});
+describe("POST /agrements", () => {
+  it("devrait créer un agrément (POST /agrements)", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+
+    const response = await request(app).post(`/agrements/`).send(agrementData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+  it("devrait mettre à jour un agrément (POST /agrements)", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    await createAgrement({ agrement: agrementData, organismeId });
+    const { agrement } = await getAgrement(organismeId);
+    const response = await request(app).post(`/agrements/`).send(agrement!);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+});
+
+it("devrait changer le statut d'un agrément avec succès", async () => {
+  authUser = await createUsagersUser();
+  const organismeId = await createOrganisme({ userId: authUser.id });
+  const agrementData = await buildAgrementFixture({ organismeId });
+  const agrementId = await createAgrement({
+    agrement: agrementData,
+    organismeId,
+  });
+
+  const response = await request(app)
+    .patch(`/agrements/${agrementId}/statut`)
+    .send({ statut: "TRANSMIS" });
+
+  expect(response.status).toBe(200);
+  expect(response.body.success).toBe(true);
+
+  const { agrement } = await getAgrement(organismeId);
+  expect(agrement?.statut).toBe("TRANSMIS");
+});
+
+jest.mock("../../services/mail", () => ({
+  mailService: { send: jest.fn() },
+}));
+
+it("workflow changement statut de l'agrement", async () => {
+  authUser = await createUsagersUser();
+  const organismeId = await createOrganisme({ userId: authUser.id });
+  const agrementData = await buildAgrementFixture({ organismeId });
+  const agrementId = await createAgrement({
+    agrement: agrementData,
+    organismeId,
+  });
+
+  const response = await request(app)
+    .patch(`/agrements/${agrementId}/statut`)
+    .send({ statut: "TRANSMIS" });
+
+  expect(response.status).toBe(200);
+  expect(response.body.success).toBe(true);
+
+  const { agrement } = await getAgrement(organismeId);
+  expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
+
+  expect(mailService.send).toHaveBeenCalledTimes(1);
+});

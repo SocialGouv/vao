@@ -14,6 +14,9 @@ export function isAfter(
   return new Date(date).getTime() > new Date(dateToCompare).getTime();
 }
 
+export function addYears(date: Date | null, years: number) {
+  return date ? dayjs(date).add(years, "year").toDate() : null;
+}
 export function addDays(date: Date, days: number) {
   return new Date(date.getTime() + days * 24 * 60 * 60 * 1000);
 }
@@ -32,3 +35,18 @@ export function formatFRDateTime(date: Date) {
 export function formatFRTime(date: Date) {
   return dayjs(date).format("HH:mm");
 }
+
+export function getYear4k(date: Date) {
+  return dayjs(date).format("YYYY");
+}
+
+/**
+ *
+ * @param Date au format JJ/MM/AAAA
+ * @returns Date au format JS (AAAA-MM-JJ) ou null si la valeur est vide
+ */
+export const parseToISODate = (dateString: string | null): string | null => {
+  if (!dateString) return null;
+  const [day, month, year] = dateString.split("/");
+  return `${year}-${month}-${day}`;
+};

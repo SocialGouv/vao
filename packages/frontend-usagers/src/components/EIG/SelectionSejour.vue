@@ -7,6 +7,13 @@
         :url="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
         filename="eig.pdf"
       />
+      <DsfrFileDownload
+        format="pdf"
+        size="61.88 Ko"
+        :href="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
+        download=""
+        title="questionnaire-vacanciers.pdf"
+      />
     </h5>
     <dsfr-alert v-if="eigStore.currentEig" class="fr-mb-6v">
       <Summary :eig="eigStore.currentEig" env="USAGER" />

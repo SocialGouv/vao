@@ -1,5 +1,4 @@
 import { ERRORS_LOGIN } from "@vao/shared-bridge";
-import crypto from "crypto";
 import request from "supertest";
 
 import app from "../../app";
@@ -13,7 +12,6 @@ import {
 beforeAll(async () => {
   await createTestContainer();
 
-  config.tokenSecret_BO = crypto.randomBytes(32).toString("hex");
   config.algorithm = "HS256";
   config.accessToken.expiresIn = 60000;
   config.refreshToken.expiresIn = 120000;

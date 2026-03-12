@@ -83,7 +83,12 @@ app.use(`/bo-user`, routes.BOUser);
 app.use(`/fo-user`, routes.FOUser);
 app.use(`/authentication`, routes.authentication);
 app.use(`/users`, routes.user);
-app.use(`/agrements`, routes.agrement);
+app.use(`/agrements`, require("./usagers/agrements/agrements.route").default);
+app.use(
+  `/admin/agrements`,
+  require("./admin/agrements/agrements.route").default,
+);
+
 app.use(`/organisme`, routes.organisme);
 app.use(`/sejour`, routes.sejour);
 app.use(`/hebergement`, routes.hebergement);
