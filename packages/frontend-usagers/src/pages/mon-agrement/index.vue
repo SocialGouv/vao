@@ -87,6 +87,14 @@ const config = useRuntimeConfig();
 const route = useRoute();
 const userStore = useUserStore();
 
+definePageMeta({
+  middleware: [
+    "is-connected",
+    "check-organisme-is-complet",
+    "check-feature-flags",
+  ],
+});
+
 onMounted(async () => {
   log.i("Mounted");
   await territoireStore.fetchFicheByAgrementRegionUser();

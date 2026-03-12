@@ -7,6 +7,6 @@
 
 <script setup>
 definePageMeta({
-  middleware: ["is-connected"],
+  middleware: ["is-connected", "check-feature-flags"],
 });
 </script>

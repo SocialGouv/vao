@@ -3,24 +3,40 @@
     <div class="fr-grid-row fr-py-5w">
       <h1>Bienvenue {{ userStore.user.prenom }} {{ userStore.user.nom }}</h1>
     </div>
-    <div v-if="isExpiryMedium" class="fr-alert fr-alert--info fr-mb-5v">
-      <h2>Déposez votre dossier de renouvellement d’agrément</h2>
-      <p>
+    <div
+      v-if="isExpiryMedium || isExpirySoon"
+      :class="[
+        'fr-alert fr-mb-5v',
+        isExpiryMedium ? 'fr-alert--info' : 'fr-alert--warning',
+      ]"
+    >
+      <h2>
+        {{
+          isExpiryMedium
+            ? "Déposez votre dossier de renouvellement d’agrément"
+            : "Votre agrément arrive à expiration."
+        }}
+      </h2>
+
+      <p v-if="isExpiryMedium">
         Votre agrément actuel expire le
         {{ formatFR(organismeCourant?.agrement?.dateFinValidite) }}. Une fois
         l’agrément renouvelé, vous pourrez déposer de nouvelles déclarations de
         séjours dans la continuité du précédent agrément.
       </p>
-      <DsfrButton class="fr-mt-3v" @click.prevent="onClickRenouvellement">
-        Renouveller mon agrément</DsfrButton
-      >
-    </div>
-    <div v-if="isExpirySoon" class="fr-alert fr-alert--warning fr-mb-5v">
-      <h2>Votre agrément arrive à expiration.</h2>
-      <p>
+
+      <p v-else>
         Une fois l’agrément renouvelé, vous pourrez déposer une nouvelle
         déclaration de séjour dans la continuité du précédent.
       </p>
+
+      <DsfrButton
+        v-if="userStore.user.featureFlags?.RENOUVELLEMENT_AGREMENT"
+        class="fr-mt-3v"
+        @click.prevent="onClickRenouvellement"
+      >
+        Renouveler mon agrément
+      </DsfrButton>
     </div>
     <div
       v-if="!organismeCourant || !organismeCourant.complet"
@@ -169,17 +185,20 @@ const tiles = computed(() => [
     description:
       "Cette page vous permet de renseigner les informations sur l'organisme.",
   },
-  {
-    title: "Agrément",
-    to: organismeStore.agrement
-      ? `/agrement/${agrementStore.agrement?.id}`
-      : "/agrement/",
-    imgSrc: NationalIdentityCard,
-    titleTag: "h2",
-    description:
-      "Cette page vous permet de renseigner les informations sur l'agrément.",
-  },
-
+  ...(userStore.user.featureFlags?.RENOUVELLEMENT_AGREMENT
+    ? [
+        {
+          title: "Agrément",
+          to: organismeStore.agrement
+            ? `/agrement/${agrementStore.agrement?.id}`
+            : "/agrement/",
+          imgSrc: NationalIdentityCard,
+          titleTag: "h2",
+          description:
+            "Cette page vous permet de renseigner les informations sur l'agrément.",
+        },
+      ]
+    : []),
   ...(organismeStore.organismeCourant && organismeStore.organismeCourant.complet
     ? [
         {

@@ -35,8 +35,10 @@ export const useMenuNavItems = () => {
             text: "Liste des utilisateurs",
             to: "/utilisateurs/liste",
           },
-          ...(organismeStore.organismeCourant?.typeOrganisme ===
-            "personne_physique" || agrementStore?.agrementCourant
+          ...(userStore.user.featureFlags?.RENOUVELLEMENT_AGREMENT &&
+          (organismeStore.organismeCourant?.typeOrganisme ===
+            "personne_physique" ||
+            agrementStore?.agrementCourant)
             ? [
                 {
                   text: "Mon agrément",
