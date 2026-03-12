@@ -5,7 +5,7 @@ import type { AgrementHistoryItem } from "../../../dto/agrement.dto";
 
 export interface GetHistoryRoute extends BasicRoute {
   method: "GET";
-  path: "/agrements/history/{agrementId}";
+  path: "/agrements/{agrementId}/history/";
   params: {
     agrementId: string;
   };

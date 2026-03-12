@@ -14,7 +14,8 @@ export interface PostAgrementRoute extends BasicRoute {
 
 const requiredUnlessBrouillon = (field: yup.AnySchema) =>
   field.when("statut", {
-    is: (val: string) => val !== AGREMENT_STATUT.BROUILLON,
+    is: (val: string) =>
+      val !== AGREMENT_STATUT.BROUILLON && val !== AGREMENT_STATUT.VALIDE,
     otherwise: (schema) => schema.nullable(),
     then: (schema) => schema.required("Champ obligatoire"),
   });
@@ -170,11 +171,12 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
       yup.string().nullable(),
     ),
     commentaire: requiredUnlessBrouillon(yup.string().nullable()),
-
     dateConfirmCompletude: requiredUnlessBrouillon(yup.date().nullable()),
     dateDepot: requiredUnlessBrouillon(yup.date().nullable()),
+    dateObtention: requiredUnlessBrouillon(yup.date().nullable()),
     dateObtentionCertificat: requiredUnlessBrouillon(yup.date().nullable()),
     dateVerifCompleture: requiredUnlessBrouillon(yup.date().nullable()),
+    file: requiredUnlessBrouillon(yup.object().nullable()),
     id: requiredUnlessBrouillon(yup.number().nullable()),
     immatriculation: requiredUnlessBrouillon(yup.string().nullable()),
     motivations: requiredUnlessBrouillon(yup.string().nullable()),
@@ -186,6 +188,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     protocoleRapatEtranger: requiredUnlessBrouillon(yup.string().nullable()),
     protocoleRapatUrg: requiredUnlessBrouillon(yup.string().nullable()),
     protocoleRemboursement: requiredUnlessBrouillon(yup.string().nullable()),
+    regionObtention: requiredUnlessBrouillon(yup.string().nullable()),
     sejourCommentaire: requiredUnlessBrouillon(yup.string().nullable()),
     sejourNbEnvisage: requiredUnlessBrouillon(yup.number().nullable()),
     sejourTypeHandicap: requiredUnlessBrouillon(

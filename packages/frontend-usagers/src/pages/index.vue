@@ -11,6 +11,9 @@
         l’agrément renouvelé, vous pourrez déposer de nouvelles déclarations de
         séjours dans la continuité du précédent agrément.
       </p>
+      <DsfrButton class="fr-mt-3v" @click.prevent="onClickRenouvellement">
+        Renouveller mon agrément</DsfrButton
+      >
     </div>
     <div v-if="isExpirySoon" class="fr-alert fr-alert--warning fr-mb-5v">
       <h2>Votre agrément arrive à expiration.</h2>
@@ -197,6 +200,15 @@ const tiles = computed(() => [
       ]
     : []),
 ]);
+
+const onClickRenouvellement = async () => {
+  await agrementStore.getEnRenouvellement();
+  if (agrementStore.agrementEnTraitement) {
+    return navigateTo(`/agrement/${agrementStore.agrementEnTraitement.id}`);
+  } else {
+    return navigateTo("/agrement/");
+  }
+};
 
 onMounted(() => {
   document.querySelector("header").focus();

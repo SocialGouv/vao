@@ -89,8 +89,8 @@ const steps = [
   {
     statut: AGREMENT_STATUT.VALIDE,
     libelle: "Décision d'obtention de l'agrément",
-    temporalite: props.initAgrement?.dateObtentionCertificat
-      ? formatFR(props.initAgrement?.dateObtentionCertificat)
+    temporalite: props.initAgrement?.dateObtention
+      ? formatFR(props.initAgrement?.dateObtention)
       : {
           texte: "Délais de deux mois à compter du récépissé de complétude.",
           lien: {

@@ -5,15 +5,15 @@ import type { AgrementDto } from "../../../dto";
 
 export interface GetOneRoute extends BasicRoute {
   method: "GET";
-  path: "/agrements/organisme/{organismeId}";
+  path: "/agrements/{agrementId}";
   params: {
-    organismeId: string;
+    agrementId: string;
   };
   response: RouteResponseBody<{ agrement: AgrementDto | null }>;
 }
 
 export const GetOneRouteSchema: RouteSchema<GetOneRoute> = {
   params: yup.object({
-    organismeId: yup.string().required(),
+    agrementId: yup.string().required(),
   }),
 };

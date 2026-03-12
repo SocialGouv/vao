@@ -4,7 +4,7 @@
  */
 exports.up = function (knex) {
   return knex.schema
-    .withSchema("front")
+    .withSchema("public")
     .createTable("feature_flags", (table) => {
       table.string("name", 255).primary().notNullable();
       table.string("description", 500).notNullable();
@@ -22,7 +22,7 @@ exports.up = function (knex) {
     })
     .then(function () {
       return knex.raw(
-        "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE front.feature_flags TO vao_u",
+        "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE feature_flags TO vao_u",
       );
     });
 };
@@ -32,5 +32,5 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-  return knex.schema.withSchema("front").dropTableIfExists("feature_flags");
+  return knex.schema.withSchema("public").dropTableIfExists("feature_flags");
 };

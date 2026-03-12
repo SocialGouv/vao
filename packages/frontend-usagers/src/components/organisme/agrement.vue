@@ -141,6 +141,8 @@ const initialValues = {
   numero: null,
   dateObtention: null,
   file: null,
+  statut: "VALIDE",
+  id: null,
   ...props.initAgrement,
 };
 
@@ -182,6 +184,7 @@ async function next() {
     emit(
       "update",
       {
+        ...props.initAgrement,
         ...values,
       },
       "agrement",

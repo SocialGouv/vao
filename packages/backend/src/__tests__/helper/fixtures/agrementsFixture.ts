@@ -15,9 +15,11 @@ import { buildAdresseFixture } from "./adresseFixture";
 export async function buildAgrementFixture({
   organismeId,
   activiteId = Math.floor(Math.random() * 20) + 1,
+  statut = AGREMENT_STATUT.BROUILLON,
 }: {
   organismeId: number;
   activiteId?: number;
+  statut?: AGREMENT_STATUT;
 }): Promise<AgrementDto> {
   return {
     accompRespAttestHono: true,
@@ -107,7 +109,7 @@ export async function buildAgrementFixture({
     sejourCommentaire: "Commentaire de test",
     sejourNbEnvisage: 2,
     sejourTypeHandicap: [],
-    statut: AGREMENT_STATUT.BROUILLON,
+    statut,
     suiviMedAccordSejour: "Oui",
     suiviMedDistribution: "Oui",
     transportAllerRetour: "Bus",

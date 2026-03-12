@@ -14,13 +14,15 @@ const AgrementService = {
       body: { statut },
     })();
   },
-  getByOrganismeId: async (organismeId: number) => {
-    const { agrement } = await buildRequest<AgrementUsagersRoutes["GetOne"]>({
-      path: "/agrements/organisme/{organismeId}",
+  getListAgrements: async (
+    params: AgrementUsagersRoutes["GetList"]["query"],
+  ) => {
+    const { agrements } = await buildRequest<AgrementUsagersRoutes["GetList"]>({
+      path: "/agrements/list",
       method: "GET",
-      params: { organismeId: String(organismeId) },
+      query: params,
     })();
-    return agrement;
+    return { agrements };
   },
   postAgrement: async (agrement: AgrementDto) => {
     const { id } = await buildRequest<AgrementUsagersRoutes["PostAgrement"]>({
@@ -41,11 +43,19 @@ const AgrementService = {
   },
   getHistory: async (agrementId: string) => {
     const history = await buildRequest<AgrementUsagersRoutes["GetHistory"]>({
-      path: "/agrements/history/{agrementId}",
+      path: "/agrements/{agrementId}/history/",
       method: "GET",
       params: { agrementId },
     })();
     return history;
+  },
+  get: async (agrementId: string) => {
+    const agrement = await buildRequest<AgrementUsagersRoutes["GetOne"]>({
+      path: "/agrements/{agrementId}",
+      method: "GET",
+      params: { agrementId },
+    })();
+    return agrement;
   },
 };
 

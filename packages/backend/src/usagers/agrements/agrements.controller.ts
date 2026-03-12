@@ -10,27 +10,6 @@ import { AgrementService } from "./agrements.service";
 const log = logger(module.filename);
 
 export const AgrementController = {
-  async get(
-    req: RouteRequest<AgrementUsagersRoutes["GetOne"]>,
-    res: RouteResponse<AgrementUsagersRoutes["GetOne"]>,
-    next: NextFunction,
-  ) {
-    log.i("IN");
-    const organismeId = req.validatedParams!.organismeId;
-
-    try {
-      const agrement: AgrementDto | null = await AgrementService.getAgrement({
-        organismeId: Number(organismeId),
-        withDetails: true,
-      });
-      log.d(agrement);
-      if (!agrement) throw new AppError("NotFound", { statusCode: 404 });
-      res.json({ agrement });
-    } catch (error) {
-      log.w("DONE with error");
-      next(error);
-    }
-  },
   async getAllActivites(
     req: RouteRequest<AgrementUsagersRoutes["GetAllActivites"]>,
     res: RouteResponse<AgrementUsagersRoutes["GetAllActivites"]>,
@@ -54,6 +33,48 @@ export const AgrementController = {
       );
       res.status(200).json({ history });
     } catch (error) {
+      next(error);
+    }
+  },
+  async getList(
+    req: RouteRequest<AgrementUsagersRoutes["GetList"]>,
+    res: RouteResponse<AgrementUsagersRoutes["GetList"]>,
+    next: NextFunction,
+  ) {
+    log.i("IN");
+    const { id: usagerUserId } = req.decoded!;
+    const statut = req.validatedQuery?.statut ?? null;
+    try {
+      const agrements: AgrementDto[] | [] = await AgrementService.getList({
+        statut,
+        userId: Number(usagerUserId),
+      });
+      log.d(agrements);
+      if (!agrements.length)
+        throw new AppError("NotFound", { statusCode: 404 });
+      res.json({ agrements });
+    } catch (error) {
+      log.w("DONE with error");
+      next(error);
+    }
+  },
+  async getOne(
+    req: RouteRequest<AgrementUsagersRoutes["GetOne"]>,
+    res: RouteResponse<AgrementUsagersRoutes["GetOne"]>,
+    next: NextFunction,
+  ) {
+    log.i("IN");
+    const agrementId = Number(req.validatedParams!.agrementId);
+    try {
+      const agrement: AgrementDto | null = await AgrementService.get({
+        agrementId: Number(agrementId),
+        withDetails: true,
+      });
+      log.d(agrement);
+      if (!agrement) throw new AppError("NotFound", { statusCode: 404 });
+      res.json({ agrement });
+    } catch (error) {
+      log.w("DONE with error");
       next(error);
     }
   },

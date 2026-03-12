@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+
 const yup = require("yup");
 const Regions = require("./geo/Region");
 
@@ -76,6 +78,7 @@ const query = {
         (
             SELECT
               json_build_object(
+                'id', a.id,
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
@@ -87,12 +90,13 @@ const query = {
             JOIN front.organismes o2 ON o2.id = a.organisme_id
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
-            WHERE pm.siret = etab.siret
-            AND a.supprime = false
+            WHERE pm.siret = etab.siret AND a.statut = '${AGREMENT_STATUT.VALIDE}'
+            AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
         )
         ELSE (
           SELECT
               json_build_object(
+                'id', a.id,
                 'numero', numero,
                 'regionObtention', region_obtention,
                 'dateObtention', date_obtention,
@@ -102,7 +106,7 @@ const query = {
               ) as "agrement"
           FROM front.agrements a
           WHERE organisme_id = o.id
-          AND a.supprime = false
+          AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
         )
       END AS agrement,
       o.created_at as "createdAt",
@@ -141,7 +145,7 @@ const query = {
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
             WHERE pm.siret = etab.siret
-            AND a.supprime = false
+            AND a.supprime = false ND a.statut = '${AGREMENT_STATUT.VALIDE}'
         )
         ELSE (
           SELECT
@@ -154,7 +158,7 @@ const query = {
               ) as "agrement"
           FROM front.agrements a
           WHERE organisme_id = o.id
-          AND a.supprime = false
+          AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
         )
       END AS agrement,
       o.created_at as "createdAt",
@@ -186,7 +190,7 @@ const query = {
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
             WHERE pm.siret = etab.siret
-            AND a.supprime = false
+            AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
         )
         ELSE (
           SELECT
@@ -199,7 +203,7 @@ const query = {
               ) as "agrement"
           FROM front.agrements a
           WHERE organisme_id = o.id
-          AND a.supprime = false
+          AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
         )
       END AS agrement,
       o.created_at as "createdAt",
@@ -238,7 +242,7 @@ const query = {
                 INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
                 INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
                 WHERE pm.siret = etab.siret
-                  AND a.supprime = FALSE
+                  AND a.supprime = FALSE AND a.statut = '${AGREMENT_STATUT.VALIDE}'
               )
               ELSE (
                 SELECT JSON_BUILD_OBJECT(
@@ -247,7 +251,7 @@ const query = {
                           'dateObtention', date_obtention
                         )
                 FROM front.agrements a
-                WHERE organisme_id = o.id AND a.supprime = FALSE
+                WHERE organisme_id = o.id AND a.supprime = FALSE AND a.statut = '${AGREMENT_STATUT.VALIDE}'
               )
             END AS "agrement"
       FROM front.organismes o
@@ -316,13 +320,13 @@ const query = {
                 INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
                 INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
                 WHERE pm.siret = etab.siret
-                  AND a.supprime = FALSE
+                  AND a.supprime = FALSE AND a.statut = '${AGREMENT_STATUT.VALIDE}'
               )
               ELSE (
                 SELECT JSON_BUILD_OBJECT('numero', numero, 'regionObtention', region_obtention, 'dateObtention', date_obtention,
                                           'file', file, 'yearObtention', EXTRACT(YEAR FROM a.date_obtention)) AS "agrement"
                 FROM front.agrements a
-                WHERE organisme_id = o.id AND a.supprime = FALSE
+                WHERE organisme_id = o.id AND a.supprime = FALSE AND a.statut = '${AGREMENT_STATUT.VALIDE}' 
               )
             END AS "agrement"
       FROM front.organismes o
@@ -387,7 +391,7 @@ FROM back.organisme_non_agree ona
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm.id
             WHERE pm2.siret = etab.siret AND
-            a.supprime = false
+            a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}' 
         )
         ELSE (
           SELECT
@@ -400,7 +404,7 @@ FROM back.organisme_non_agree ona
               ) as "agrement"
           FROM front.agrements a
           WHERE organisme_id = o.id
-          AND a.supprime = false
+          AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}' 
         )
       END AS agrement,
       o.created_at as "createdAt",
