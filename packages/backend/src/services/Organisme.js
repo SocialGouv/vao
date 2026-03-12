@@ -145,7 +145,7 @@ const query = {
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id AND pm2.current = true
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
             WHERE pm.siret = etab.siret
-            AND a.supprime = false ND a.statut = '${AGREMENT_STATUT.VALIDE}'
+            AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
         )
         ELSE (
           SELECT
