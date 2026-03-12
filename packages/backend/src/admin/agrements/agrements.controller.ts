@@ -54,7 +54,10 @@ export const AgrementController = {
     const agrementId = Number(req.validatedParams!.agrementId);
     try {
       const messages = await AgrementService.getMessages(agrementId);
-      res.status(200).json(messages);
+      res.status(200).json({
+        count: messages.length,
+        messages,
+      });
     } catch (error) {
       log.w("Erreur lors de la récupération des messages", error);
       next(error);
