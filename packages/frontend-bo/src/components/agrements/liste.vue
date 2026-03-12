@@ -57,6 +57,7 @@
       </DsfrButton>
     </template>
   </DsfrDataTableV2Wrapper>
+
   <ValidationModal
     modal-ref="priseEnChargeModal"
     name="prise-en-charge-modal"

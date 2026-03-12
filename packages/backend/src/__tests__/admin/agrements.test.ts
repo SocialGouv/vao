@@ -181,3 +181,54 @@ describe("GET /admin/agrements/:id", () => {
     expect(response.status).toBe(404);
   });
 });
+
+describe("GET /admin/agrements/history/:agrementId", () => {
+  it("devrait retourner l'historique d'un agrément existant", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.EN_COURS });
+    const response = await request(app).get(
+      `/admin/agrements/history/${agrementId}`,
+    );
+    expect(response.status).toBe(200);
+    expect(response.body.history).toBeDefined();
+    expect(Array.isArray(response.body.history)).toBe(true);
+    expect(response.body.history.length).toBeGreaterThan(0);
+    const event = response.body.history[0];
+    expect(event).toHaveProperty("id");
+    expect(event).toHaveProperty("agrement_id", agrementId);
+    expect(event).toHaveProperty("type");
+    expect(event).toHaveProperty("created_at");
+  });
+  it("devrait retourner un tableau vide si aucun historique", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(app).get(
+      `/admin/agrements/history/${agrementId}`,
+    );
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body.history)).toBe(true);
+    expect(response.body.history.length).toBe(0);
+  });
+  it("devrait retourner 200 et un tableau vide pour un agrément inexistant", async () => {
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(app).get(`/admin/agrements/history/9999999`);
+    expect(response.status).toBe(200);
+    expect(Array.isArray(response.body.history)).toBe(true);
+    expect(response.body.history.length).toBe(0);
+  });
+});
