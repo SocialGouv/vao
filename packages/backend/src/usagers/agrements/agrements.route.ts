@@ -10,11 +10,17 @@ import { AgrementController } from "./agrements.controller";
 const router = express.Router();
 
 router.get(
-  "/organisme/:organismeId",
+  "/list",
+  checkJWT,
+  requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetList"]),
+  AgrementController.getList,
+);
+
+router.get(
+  "/:agrementId",
   checkJWT,
   requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetOne"]),
-  checkPermissionOrganisme,
-  AgrementController.get,
+  AgrementController.getOne,
 );
 
 router.post(
@@ -29,7 +35,7 @@ router.post(
 router.get("/activites", checkJWT, AgrementController.getAllActivites);
 
 router.get(
-  "/history/:agrementId",
+  "/:agrementId/history",
   checkJWT,
   requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetHistory"]),
   checkPermissionAgrement,

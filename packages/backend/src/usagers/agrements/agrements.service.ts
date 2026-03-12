@@ -18,15 +18,15 @@ import { AgrementsRepository } from "./agrements.repository";
 const log = logger(module.filename);
 
 export const AgrementService = {
-  async getAgrement({
-    organismeId,
+  async get({
+    agrementId,
     withDetails,
   }: {
-    organismeId: number;
+    agrementId: number;
     withDetails: boolean;
   }): Promise<AgrementDto | null> {
-    const agrement = await AgrementsRepository.getByOrganismeId({
-      organismeId,
+    const agrement = await AgrementsRepository.getById({
+      agrementId,
       withDetails,
     });
     for (const doc of agrement?.agrementFiles || []) {
@@ -54,25 +54,36 @@ export const AgrementService = {
       libelle: activite.libelle,
     }));
   },
-
   async getHistory(agrementId: number) {
     const history = await AgrementsRepository.getHistory(agrementId);
     return history;
   },
+
+  async getList({
+    userId,
+    statut,
+  }: {
+    userId: number;
+    statut?: string | null;
+  }): Promise<AgrementDto[] | []> {
+    const agrements = await AgrementsRepository.getList({
+      statut,
+      userId,
+    });
+    return agrements;
+  },
   async save(agrement: AgrementDto): Promise<number> {
-    const dateFinValidite = addYears(agrement?.dateObtentionCertificat, 5);
+    agrement.dateFinValidite = addYears(agrement?.dateObtention, 5);
     let agrementId = null;
 
     if (agrement && agrement?.id) {
       agrementId = await AgrementsRepository.update({
         agrement,
-        dateFinValidite,
       });
       log.d("updated meta values - DONE", { agrementId });
     } else {
       agrementId = await AgrementsRepository.create({
         agrement,
-        dateFinValidite,
       });
       log.d("Add meta values - DONE", { agrementId });
     }
@@ -97,7 +108,10 @@ export const AgrementService = {
     statut: AGREMENT_STATUT;
     usagerUserId: string;
   }): Promise<boolean> {
-    const agrement = await AgrementsRepository.getById(agrementId);
+    const agrement = await AgrementsRepository.getById({
+      agrementId,
+      withDetails: false,
+    });
     if (!agrement) {
       log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
@@ -122,7 +136,7 @@ export const AgrementService = {
     });
 
     if (statut === AGREMENT_STATUT.TRANSMIS) {
-      const email = agrement.user_mail;
+      const email = await AgrementsRepository.getUserMail(agrementId);
       if (email) {
         try {
           await mailService.send(

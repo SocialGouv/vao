@@ -54,8 +54,6 @@ describe("POST /hebergement/:id/desactivate - middleware checkPermissionHebergem
       userId: userA.id,
     });
 
-    console.log("Hebergement ID:", hebergementId);
-
     // Authentification avec un utilisateur B (qui n'a pas accès)
     authUser = await createUsagersUser();
     const response = await request(app).put(

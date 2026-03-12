@@ -52,6 +52,9 @@ export interface AgrementDto {
   agrementBilanAnnuel?: AgrementBilanAnnuelDto[];
   regionObtention: string | null;
   numero: string | null;
+  dateFinValidite?: Date | null;
+  dateObtention: Date | null;
+  file: object | null;
 }
 
 export interface ActiviteDto {

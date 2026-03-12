@@ -11,6 +11,7 @@ const log = logger("stores/agrement");
 export interface AgrementStoreState {
   agrement: AgrementDto | null;
   agrementCourant: AgrementDto | null;
+  agrementEnTraitement: AgrementDto | null;
   activites: ActiviteDto[];
   history: AgrementHistoryItem[] | null;
 }
@@ -19,22 +20,67 @@ export const useAgrementStore = defineStore("agrement", {
   state: (): AgrementStoreState => ({
     agrement: null,
     agrementCourant: null,
+    agrementEnTraitement: null,
     activites: [],
     history: null,
   }),
   actions: {
-    async getByOrganismeId(organismeId: number): Promise<void> {
-      log.i("getByOrganismeId - IN");
+    async getCurrent(): Promise<void> {
+      log.i("getCurrent - IN");
       try {
-        const agrement: AgrementDto | null =
-          await AgrementService.getByOrganismeId(organismeId);
-        log.i("getByOrganismeId - DONE");
-        this.agrementCourant = agrement;
+        const { agrements }: { agrements: AgrementDto[] | [] } =
+          await AgrementService.getListAgrements({
+            statut: AGREMENT_STATUT.VALIDE,
+          });
+        log.i("getCurrent - DONE");
+        const { agrement: agrementDetail } = await AgrementService.get(
+          String(agrements[0].id!),
+        );
+        log.i("getCurrent - DONE with details");
+
+        this.agrementCourant = agrementDetail;
       } catch (err) {
-        log.w("getByOrganismeId - DONE with error", err);
+        log.w("getCurrent - DONE with error", err);
         throw err;
       }
     },
+    async getEnRenouvellement(): Promise<void> {
+      log.i("getEnRenouvellement - IN");
+      try {
+        const { agrements }: { agrements: AgrementDto[] | [] } =
+          await AgrementService.getListAgrements({});
+
+        const allowedStatuts = [
+          AGREMENT_STATUT.BROUILLON,
+          AGREMENT_STATUT.A_MODIFIER,
+          AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+          AGREMENT_STATUT.DEPOSE,
+          AGREMENT_STATUT.EN_COURS,
+          AGREMENT_STATUT.PRIS_EN_CHARGE,
+          AGREMENT_STATUT.VERIF_EN_COURS,
+        ];
+
+        const filtered = agrements.filter(
+          (agrement) =>
+            agrement.statut !== null &&
+            allowedStatuts.includes(agrement.statut as AGREMENT_STATUT),
+        );
+        if (filtered.length === 0) {
+          this.agrementEnTraitement = null;
+          log.i("getEnRenouvellement - DONE no agrement in renouvellement");
+          return;
+        }
+        const { agrement: agrementDetail } = await AgrementService.get(
+          String(filtered[0].id!),
+        );
+        log.i("getEnRenouvellement - DONE");
+        this.agrementEnTraitement = agrementDetail ?? null;
+      } catch (err) {
+        log.w("getEnRenouvellement - DONE with error", err);
+        throw err;
+      }
+    },
+
     async postAgrement({
       agrement,
       organismeId,
@@ -52,6 +98,7 @@ export const useAgrementStore = defineStore("agrement", {
           : AGREMENT_STATUT.BROUILLON,
         updatedAt: agrement.updatedAt ?? null,
         dateObtentionCertificat: agrement.dateObtentionCertificat ?? null,
+        dateObtention: agrement.dateObtention ?? null,
         dateDepot: agrement.dateDepot ?? null,
         dateVerifCompleture: agrement.dateVerifCompleture ?? null,
         dateConfirmCompletude: agrement.dateConfirmCompletude ?? null,
@@ -100,6 +147,7 @@ export const useAgrementStore = defineStore("agrement", {
         agrementBilanAnnuel: agrement.agrementBilanAnnuel ?? undefined,
         regionObtention: agrement.regionObtention ?? null,
         numero: agrement.numero ?? null,
+        file: agrement.file ?? null,
       };
 
       const agrementId: number | null =
@@ -147,8 +195,8 @@ export const useAgrementStore = defineStore("agrement", {
           agrementId,
           statut,
         );
-        if (success && this.agrementCourant?.id === agrementId) {
-          this.agrementCourant.statut = statut;
+        if (success && this.agrementEnTraitement?.id === agrementId) {
+          this.agrementEnTraitement.statut = statut;
         }
         log.i("changeStatutAgrement - DONE", { success });
         return success;

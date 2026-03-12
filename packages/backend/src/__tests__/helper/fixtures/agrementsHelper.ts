@@ -1,4 +1,4 @@
-import { AgrementDto } from "@vao/shared-bridge";
+import type { AgrementDto } from "@vao/shared-bridge";
 
 import { AgrementService } from "../../../usagers/agrements/agrements.service";
 
@@ -20,9 +20,9 @@ export const createAgrement = async ({
   return agrementId;
 };
 
-export const getAgrement = async (organismeId: number) => {
-  const agrement = await AgrementService.getAgrement({
-    organismeId,
+export const getAgrement = async (agrementId: number) => {
+  const agrement = await AgrementService.get({
+    agrementId,
     withDetails: true,
   });
   return { agrement };

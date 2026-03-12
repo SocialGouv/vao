@@ -37,9 +37,7 @@ export function buildRequest<Route extends BasicRoute>({
         $fetchBackend<Route["response"]>(url, {
           ...OPTIONS_DEFAULT,
           method: "GET",
-          params: {
-            search: query,
-          },
+          params: query,
         });
     case "POST":
       return async () =>

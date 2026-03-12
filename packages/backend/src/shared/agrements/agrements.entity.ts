@@ -54,6 +54,9 @@ export interface AgrementEntity {
   sejour_type_handicap: string[] | null;
   region_obtention: string | null;
   numero: string | null;
+  date_fin_validite: Date | null;
+  date_obtention: Date | null;
+  file: object | null;
 }
 
 /**
