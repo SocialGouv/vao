@@ -67,7 +67,7 @@ const steps = [
     libelle: "Envoi de la première demande d'agrément",
     temporalite: props.initAgrement?.dateDepot
       ? formatFR(props.initAgrement?.dateDepot)
-      : "",
+      : "Non déposé",
     entite: "",
   },
   {

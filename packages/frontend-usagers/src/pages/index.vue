@@ -3,41 +3,7 @@
     <div class="fr-grid-row fr-py-5w">
       <h1>Bienvenue {{ userStore.user.prenom }} {{ userStore.user.nom }}</h1>
     </div>
-    <div
-      v-if="isExpiryMedium || isExpirySoon"
-      :class="[
-        'fr-alert fr-mb-5v',
-        isExpiryMedium ? 'fr-alert--info' : 'fr-alert--warning',
-      ]"
-    >
-      <h2>
-        {{
-          isExpiryMedium
-            ? "Déposez votre dossier de renouvellement d’agrément"
-            : "Votre agrément arrive à expiration."
-        }}
-      </h2>
-
-      <p v-if="isExpiryMedium">
-        Votre agrément actuel expire le
-        {{ formatFR(organismeCourant?.agrement?.dateFinValidite) }}. Une fois
-        l’agrément renouvelé, vous pourrez déposer de nouvelles déclarations de
-        séjours dans la continuité du précédent agrément.
-      </p>
-
-      <p v-else>
-        Une fois l’agrément renouvelé, vous pourrez déposer une nouvelle
-        déclaration de séjour dans la continuité du précédent.
-      </p>
-
-      <DsfrButton
-        v-if="userStore.user.featureFlags?.RENOUVELLEMENT_AGREMENT"
-        class="fr-mt-3v"
-        @click.prevent="onClickRenouvellement"
-      >
-        Renouveler mon agrément
-      </DsfrButton>
-    </div>
+    <AgrementAlertRenouvellement> </AgrementAlertRenouvellement>
     <div
       v-if="!organismeCourant || !organismeCourant.complet"
       class="fr-grid-row fr-grid-row--left"
@@ -72,8 +38,6 @@ import NationalIdentityCard from "@gouvfr/dsfr/dist/artwork/pictograms/document/
 import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
 import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
 
-import { formatFR } from "@vao/shared-bridge";
-
 definePageMeta({
   middleware: ["is-connected"],
 });
@@ -91,48 +55,6 @@ const agrementStore = useAgrementStore();
 const organismeCourant = computed(() => {
   return organismeStore.organismeCourant;
 });
-
-const daysUntilExpiry = computed(() => {
-  const organisme = organismeCourant.value;
-
-  const expiry = organisme?.agrement?.dateFinValidite
-    ? new Date(organisme.agrement.dateFinValidite)
-    : null;
-
-  if (!expiry) return null;
-
-  const diffMs = expiry.getTime() - Date.now();
-  return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-});
-
-// 6 mois à partir d'aujourd'hui
-const sixMonthsFromNow = computed(() => {
-  const date = new Date();
-  date.setMonth(date.getMonth() + 6);
-  return date;
-});
-
-const isExpirySoon = computed(() => {
-  const days = daysUntilExpiry.value;
-  return days !== null && days >= 0 && days <= 120;
-});
-
-const isExpiryMedium = computed(() => {
-  const organisme = organismeCourant.value;
-  const expiry = organisme?.agrement?.dateFinValidite
-    ? new Date(organisme.agrement.dateFinValidite)
-    : null;
-
-  if (!expiry) return false;
-
-  // Entre 120 jours et 6 mois (date réelle à +6 mois)
-  const expiryMs = expiry.getTime();
-  const sixMonthsMs = sixMonthsFromNow.value.getTime();
-  const days = daysUntilExpiry.value;
-
-  return days !== null && days > 120 && expiryMs <= sixMonthsMs;
-});
-
 demandeSejourStore.getStats();
 
 const topcards = computed(() => [

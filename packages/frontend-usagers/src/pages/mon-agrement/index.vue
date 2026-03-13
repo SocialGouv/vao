@@ -1,7 +1,24 @@
 <template>
   <div class="fr-container">
     <DsfrBreadcrumb :links="links" />
-
+    <div class="fr-grid-row fr-py-5w">
+      <h1>
+        Mon agrément : {{ agrementStore.agrementCourant?.numero }}
+        <AgrementStatusBadge
+          :statut="
+            agrementStore?.agrementCourant?.statut ?? AGREMENT_STATUT.BROUILLON
+          "
+          type="fu"
+        />
+        <DsfrBadge
+          v-if="agrementStore.isExpiryMedium || agrementStore.isExpirySoon"
+          type="warning"
+          :small="true"
+          style="margin-left: 1ex"
+          label="A RENOUVELLER"
+        />
+      </h1>
+    </div>
     <DsfrTabs
       v-model="selectedTabIndex"
       tab-list-name="display-dossier"
@@ -15,9 +32,14 @@
         :selected="selectedTabIndex === 0"
         :asc="asc"
       >
-        <h1>Dossier</h1>
+        <h2>Dossier</h2>
+        <AgrementAlertRenouvellement></AgrementAlertRenouvellement>
         <AgrementEtapesAvancement
-          :init-agrement="agrementStore.agrementCourant ?? {}"
+          :init-agrement="
+            agrementStore?.agrementEnTraitement ??
+            agrementStore.agrementCourant ??
+            {}
+          "
           :territoire="territoireStore.territoire ?? {}"
           :user="userStore.user ?? {}"
         />
@@ -77,8 +99,8 @@
 </template>
 
 <script setup lang="ts">
-import { getYear4k } from "@vao/shared-bridge";
-import { Historique } from "@vao/shared-ui";
+import { getYear4k, AGREMENT_STATUT } from "@vao/shared-bridge";
+import { AgrementStatusBadge, Historique } from "@vao/shared-ui";
 
 const agrementStore = useAgrementStore();
 const territoireStore = useTerritoireStore();
@@ -98,7 +120,9 @@ definePageMeta({
 onMounted(async () => {
   log.i("Mounted");
   await territoireStore.fetchFicheByAgrementRegionUser();
-
+  if (!agrementStore.agrementEnTraitement) {
+    await agrementStore.getEnRenouvellement();
+  }
   const agrementId = agrementStore.agrementCourant?.id;
   if (!agrementId) {
     log.w("Aucun id d'agrément trouvé, impossible de récupérer l'historique.");

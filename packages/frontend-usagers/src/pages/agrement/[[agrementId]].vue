@@ -2,6 +2,7 @@
   <div class="fr-container">
     <div class="fr-grid-row">
       <div class="fr-pb-3w fr-col-12">
+        {{ agrementStore.agrementEnTraitement }}
         <DsfrBreadcrumb :links="links" />
         <h1>Renouvellement d’agrément</h1>
         <p class="fr-mb-2w">
