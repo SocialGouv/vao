@@ -42,4 +42,14 @@ describe("GET /users/me", () => {
     expect(response.body.user.featureFlags).toBeDefined();
     expect(typeof response.body.user.featureFlags).toBe("object");
   });
+
+  it("should return a 404 error if the user is not found", async () => {
+    (checkJWT as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { email: "invalid@example.com" };
+      next();
+    });
+    const response = await request(app).get("/users/me");
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("name", "UserNotFound");
+  });
 });

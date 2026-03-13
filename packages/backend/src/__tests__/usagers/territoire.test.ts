@@ -1,3 +1,4 @@
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
 import request from "supertest";
 
@@ -34,7 +35,10 @@ describe("GET /territoire/getByAgrementRegionUser", () => {
   it("devrait retourner un territoire pour l'utilisateur l'agrément avec succès", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementData = await buildAgrementFixture({ organismeId });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.VALIDE,
+    });
     await createAgrement({
       agrement: agrementData,
       organismeId,

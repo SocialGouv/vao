@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+const { AGREMENT_STATUT } = require("@vao/shared-bridge");
 
 const yup = require("yup");
 const Regions = require("./geo/Region");

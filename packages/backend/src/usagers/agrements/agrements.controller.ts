@@ -1,5 +1,9 @@
 import type { AgrementDto, AgrementUsagersRoutes } from "@vao/shared-bridge";
-import { AGREMENT_HISTORY_TYPE } from "@vao/shared-bridge";
+import {
+  AGREMENT_HISTORY_TYPE,
+  ERRORS_COMMON,
+  validateId,
+} from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
 import type { RouteRequest, RouteResponse } from "../../types/request";
@@ -64,7 +68,13 @@ export const AgrementController = {
     next: NextFunction,
   ) {
     log.i("IN");
-    const agrementId = Number(req.validatedParams!.agrementId);
+    const { id: agrementId, error } = validateId(req.params.agrementId);
+    if (error) {
+      return next(
+        new AppError(ERRORS_COMMON.INVALID_PARAMS, { statusCode: 400 }),
+      );
+    }
+
     try {
       const agrement: AgrementDto | null = await AgrementService.get({
         agrementId: Number(agrementId),
