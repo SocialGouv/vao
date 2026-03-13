@@ -176,7 +176,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     dateObtention: requiredUnlessBrouillon(yup.date().nullable()),
     dateObtentionCertificat: requiredUnlessBrouillon(yup.date().nullable()),
     dateVerifCompleture: requiredUnlessBrouillon(yup.date().nullable()),
-    file: requiredUnlessBrouillon(yup.object().nullable()),
+    file: requiredUnlessBrouillon(yup.mixed().nullable()),
     id: requiredUnlessBrouillon(yup.number().nullable()),
     immatriculation: requiredUnlessBrouillon(yup.string().nullable()),
     motivations: requiredUnlessBrouillon(yup.string().nullable()),
