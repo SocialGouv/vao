@@ -29,12 +29,16 @@ beforeAll(async () => await createTestContainer());
 afterAll(async () => await removeTestContainer());
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  jest.resetAllMocks();
 });
 
 describe("GET /agrements/list", () => {
   it("devrait retourner une liste d'agréments lié à l'utilisateur connecté", async () => {
     const authUser = await createUsagersUser();
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: authUser.id };
+      next();
+    });
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
     const agrementId = await createAgrement({
@@ -50,6 +54,10 @@ describe("GET /agrements/list", () => {
   });
   it("devrait retourner une liste avec un agrement valide à l'utilisateur connecté", async () => {
     const authUser = await createUsagersUser();
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: authUser.id };
+      next();
+    });
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData1 = await buildAgrementFixture({ organismeId });
     await createAgrement({
@@ -76,6 +84,10 @@ describe("GET /agrements/list", () => {
 describe("GET /agrements/:agrementId", () => {
   it("devrait retourner un agrément", async () => {
     const authUser = await createUsagersUser();
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: authUser.id };
+      next();
+    });
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
     const agrementId = await createAgrement({
@@ -92,16 +104,18 @@ describe("GET /agrements/:agrementId", () => {
 
   it("devrait retourner un agrément introuvalbe", async () => {
     const authUser = await createUsagersUser();
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: authUser.id };
+      next();
+    });
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
     await createAgrement({
       agrement: agrementData,
       organismeId,
     });
-    const response = await request(app).get(`/agrements/organisme/invalid`);
+    const response = await request(app).get(`/agrements/invalid`);
 
-    // Vérification des résultats
-    // TODO ACH Problème sur le params string. Devrait retourner une 400
     expect(response.status).toBe(400);
   });
   it("devrait retourner un agrement introuvable", async () => {
@@ -137,6 +151,10 @@ describe("POST /agrements", () => {
   });
   it("devrait mettre à jour un agrément (POST /agrements)", async () => {
     const adminUser = await createUsagersUser();
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
     const organismeId = await createOrganisme({ userId: adminUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
