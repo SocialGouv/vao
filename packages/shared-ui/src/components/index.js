@@ -1,3 +1,4 @@
+import AgrementStatusBadge from "./agrement/AgrementStatusBadge.vue";
 import CguValidation from "./cgu/CguValidation.vue";
 import ApiUnavailable from "./api/ApiUnavailable.vue";
 import FileUpload from "./FileUpload.vue";
@@ -37,6 +38,7 @@ import Toaster from "./Toaster.vue";
 import TwoFactorCodeVerification from "./auth/TwoFactorCodeVerification.vue";
 import DsfrLinkV2 from "./DsfrLinkV2.vue";
 export {
+  AgrementStatusBadge,
   CguValidation,
   ApiUnavailable,
   FileUpload,

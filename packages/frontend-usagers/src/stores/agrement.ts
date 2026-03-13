@@ -4,8 +4,15 @@ import type {
   ActiviteDto,
   AgrementHistoryItem,
 } from "@vao/shared-bridge";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import {
+  AGREMENT_STATUT,
+  daysBetween,
+  addMonths,
+  isBetweenDates,
+  addDays,
+} from "@vao/shared-bridge";
 import { AgrementService } from "~/services/agrementService";
+
 const log = logger("stores/agrement");
 
 export interface AgrementStoreState {
@@ -24,19 +31,50 @@ export const useAgrementStore = defineStore("agrement", {
     activites: [],
     history: null,
   }),
+  getters: {
+    expiryDate: (state): Date | null => {
+      return state.agrementCourant?.dateFinValidite
+        ? new Date(state.agrementCourant.dateFinValidite)
+        : null;
+    },
+
+    daysUntilExpiry(): number | null {
+      if (!this.expiryDate) return null;
+      return daysBetween(new Date(), this.expiryDate);
+    },
+
+    sixMonthsFromNow(): Date {
+      return addMonths(new Date(), 6);
+    },
+
+    isExpirySoon(): boolean {
+      const days = this.daysUntilExpiry;
+      return days !== null && days >= 0 && days <= 120;
+    },
+
+    isExpiryMedium(): boolean {
+      if (!this.expiryDate) return false;
+
+      return isBetweenDates(
+        this.expiryDate,
+        addDays(new Date(), 121),
+        this.sixMonthsFromNow,
+      );
+    },
+  },
+
   actions: {
     async getCurrent(): Promise<void> {
       log.i("getCurrent - IN");
+
       try {
-        const { agrements }: { agrements: AgrementDto[] | [] } =
-          await AgrementService.getListAgrements({
-            statut: AGREMENT_STATUT.VALIDE,
-          });
-        log.i("getCurrent - DONE");
+        const { agrements } = await AgrementService.getListAgrements({
+          statut: AGREMENT_STATUT.VALIDE,
+        });
+
         const { agrement: agrementDetail } = await AgrementService.get(
           String(agrements[0].id!),
         );
-        log.i("getCurrent - DONE with details");
 
         this.agrementCourant = agrementDetail;
       } catch (err) {
@@ -153,7 +191,7 @@ export const useAgrementStore = defineStore("agrement", {
       const agrementId: number | null =
         await AgrementService.postAgrement(agrementToSend);
 
-      this.agrementCourant = {
+      this.agrementEnTraitement = {
         ...agrementToSend,
         id: agrementToSend.id ?? agrementId ?? null,
       };
