@@ -339,6 +339,8 @@ jobs:
           psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-2-back-data.sql
           echo "03-2-ref-data : "
           psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-3-ref-data.sql
+          echo "03-4-back-default-data : "
+          psql -d $PGDATABASE -f /workspace/pg/scripts/03/03-4-back-default-data.sql
         fi
 
 migrate-s3:
