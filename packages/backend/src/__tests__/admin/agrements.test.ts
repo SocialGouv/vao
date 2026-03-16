@@ -470,12 +470,10 @@ describe("Messagerie d'agrément", () => {
   });
 
   it("GET /messages devrait retourner les messages existants", async () => {
-    // D'abord, créer un message
     await request(app)
       .post(`/admin/agrements/${agrementId}/message`)
       .send({ message: "Message de test" });
 
-    // Puis, récupérer les messages
     const getResponse = await request(app).get(
       `/admin/agrements/${agrementId}/messages`,
     );
