@@ -161,10 +161,12 @@ export const AgrementsRepository = {
     }
   },
 
-  async getMessages(agrementId: number): Promise<AgrementMessage[]> {
+  async getMessages(
+    agrementId: number,
+  ): Promise<{ messages: AgrementMessage[]; unreadCount: number }> {
     const client = await getPool().connect();
     try {
-      const query = `
+      const messagesQuery = `
       SELECT
         m.id,
         m.agrement_id,
@@ -179,8 +181,20 @@ export const AgrementsRepository = {
       WHERE m.agrement_id = $1
       ORDER BY m.created_at ASC
     `;
-      const result = await client.query(query, [agrementId]);
-      return result.rows as AgrementMessage[];
+      const messagesResult = await client.query(messagesQuery, [agrementId]);
+
+      const unreadQuery = `
+      SELECT COUNT(*) AS unread_count
+      FROM front.agrement_messagerie
+      WHERE agrement_id = $1 AND read_at IS NULL
+    `;
+      const unreadResult = await client.query(unreadQuery, [agrementId]);
+      const unreadCount = Number(unreadResult.rows[0].unread_count);
+
+      return {
+        messages: messagesResult.rows as AgrementMessage[],
+        unreadCount,
+      };
     } finally {
       client.release();
     }
@@ -251,6 +265,21 @@ export const AgrementsRepository = {
       const values = [agrementId, null, backUserId, message, null];
       const result = await client.query(query, values);
       return result.rows[0]?.id ?? 0;
+    } finally {
+      client.release();
+    }
+  },
+  async markMessagesAsRead(agrementId: number): Promise<number> {
+    const client = await getPool().connect();
+    try {
+      const query = `
+      UPDATE front.agrement_messagerie
+      SET read_at = NOW()
+      WHERE agrement_id = $1 AND read_at IS NULL
+      RETURNING id;
+    `;
+      const result = await client.query(query, [agrementId]);
+      return result.rowCount;
     } finally {
       client.release();
     }

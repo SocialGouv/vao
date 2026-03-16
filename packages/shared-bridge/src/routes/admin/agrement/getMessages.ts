@@ -9,7 +9,11 @@ export interface GetMessagesRoute extends BasicRoute {
   params: {
     agrementId: string;
   };
-  response: RouteResponseBody<{ count: number; messages: AgrementMessage[] }>;
+  response: RouteResponseBody<{
+    count: number;
+    messages: AgrementMessage[];
+    unreadCount: number;
+  }>;
 }
 
 export const GetMessagesRouteSchema: RouteSchema<GetMessagesRoute> = {

@@ -10,6 +10,14 @@ const AgrementService = {
       body: { statut },
     })();
   },
+  markMessagesAsRead: async (agrementId: string) => {
+    const { count } = await buildRequest<AgrementAdminRoutes["PatchMessages"]>({
+      path: "/admin/agrements/{agrementId}/messages/read",
+      method: "PATCH",
+      params: { agrementId },
+    })();
+    return count;
+  },
   getListAgrements: async (params: AgrementAdminRoutes["GetList"]["query"]) => {
     const { agrements, count } = await buildRequest<
       AgrementAdminRoutes["GetList"]

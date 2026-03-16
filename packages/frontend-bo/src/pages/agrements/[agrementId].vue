@@ -152,7 +152,10 @@ enum Tab {
 const tabActions: Record<Tab, () => void> = {
   [Tab.Documents]: () => {},
   [Tab.Historique]: () => {},
-  [Tab.Messages]: () => {},
+  [Tab.Messages]: async () => {
+    await agrementStore.patchMessagesAsRead(String(agrementId.value));
+    await agrementStore.getMessages(String(agrementId.value));
+  },
 };
 
 const selectTab = async (idx: Tab) => {
@@ -161,6 +164,8 @@ const selectTab = async (idx: Tab) => {
 };
 
 const messages = computed(() => agrementStore.messages ?? []);
+
+const unreadCount = computed(() => agrementStore.messagesUnreadCount ?? 0);
 
 const tabTitles = computed(() => [
   {
@@ -179,7 +184,10 @@ const tabTitles = computed(() => [
     panelId: "agrement-content-2",
   },
   {
-    title: "Messagerie",
+    title:
+      unreadCount.value > 0
+        ? `Messagerie (${unreadCount.value})`
+        : "Messagerie",
     tabId: "agrement-tab-3",
     panelId: "agrement-content-3",
   },
