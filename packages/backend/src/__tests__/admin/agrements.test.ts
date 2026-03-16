@@ -448,22 +448,34 @@ describe("GET /admin/agrements/history/:agrementId", () => {
 });
 
 describe("Messagerie d'agrément", () => {
-  it("devrait permettre d'envoyer et de récupérer un message", async () => {
+  let agrementId: number;
+
+  beforeEach(async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
-    const agrementId = await createAgrement({
+    agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
+  });
 
+  it("POST /message devrait créer un message et retourner 201", async () => {
     const postResponse = await request(app)
       .post(`/admin/agrements/${agrementId}/message`)
       .send({ message: "Message de test" });
     expect(postResponse.status).toBe(201);
     expect(postResponse.body.success).toBe(true);
+  });
 
+  it("GET /messages devrait retourner les messages existants", async () => {
+    // D'abord, créer un message
+    await request(app)
+      .post(`/admin/agrements/${agrementId}/message`)
+      .send({ message: "Message de test" });
+
+    // Puis, récupérer les messages
     const getResponse = await request(app).get(
       `/admin/agrements/${agrementId}/messages`,
     );
@@ -472,5 +484,17 @@ describe("Messagerie d'agrément", () => {
     expect(getResponse.body.count).toBe(1);
     expect(getResponse.body.messages[0].message).toBe("Message de test");
     expect(getResponse.body.messages[0].backUserPrenom).toBeDefined();
+  });
+
+  it("POST /message devrait retourner 404 pour un agrément inexistant", async () => {
+    const response = await request(app)
+      .post(`/admin/agrements/999999/message`)
+      .send({ message: "test" });
+    expect(response.status).toBe(404);
+  });
+
+  it("GET /messages devrait retourner 404 pour un agrément inexistant", async () => {
+    const response = await request(app).get(`/admin/agrements/999999/messages`);
+    expect(response.status).toBe(404);
   });
 });

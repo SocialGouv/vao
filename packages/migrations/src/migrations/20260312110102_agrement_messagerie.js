@@ -12,8 +12,16 @@ exports.up = async function (knex) {
         .notNullable()
         .references("id")
         .inTable("front.agrements");
-      table.integer("front_user_id").nullable();
-      table.integer("back_user_id").nullable();
+      table
+        .integer("front_user_id")
+        .nullable()
+        .references("id")
+        .inTable("front.users");
+      table
+        .integer("back_user_id")
+        .nullable()
+        .references("id")
+        .inTable("back.users");
       table.string("message", 1000).notNullable();
       table.timestamp("created_at").defaultTo(knex.fn.now()).notNullable();
       table.timestamp("read_at").nullable();
