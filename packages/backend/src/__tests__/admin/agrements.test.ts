@@ -446,3 +446,31 @@ describe("GET /admin/agrements/history/:agrementId", () => {
     expect(response.body.history.length).toBe(0);
   });
 });
+
+describe("Messagerie d'agrément", () => {
+  it("devrait permettre d'envoyer et de récupérer un message", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+
+    const postResponse = await request(app)
+      .post(`/admin/agrements/${agrementId}/message`)
+      .send({ message: "Message de test" });
+    expect(postResponse.status).toBe(201);
+    expect(postResponse.body.success).toBe(true);
+
+    const getResponse = await request(app).get(
+      `/admin/agrements/${agrementId}/messages`,
+    );
+    expect(getResponse.status).toBe(200);
+    expect(getResponse.body.messages).toBeDefined();
+    expect(getResponse.body.count).toBe(1);
+    expect(getResponse.body.messages[0].message).toBe("Message de test");
+    expect(getResponse.body.messages[0].backUserPrenom).toBeDefined();
+  });
+});
