@@ -15,12 +15,12 @@ const AgrementService = {
     })();
   },
   getListAgrements: async (
-    params: AgrementUsagersRoutes["GetList"]["query"],
+    query: AgrementUsagersRoutes["GetList"]["query"],
   ) => {
     const { agrements } = await buildRequest<AgrementUsagersRoutes["GetList"]>({
-      path: "/agrements/list",
+      path: "/agrements",
       method: "GET",
-      query: params,
+      query,
     })();
     return { agrements };
   },
@@ -41,19 +41,19 @@ const AgrementService = {
     })();
     return activites;
   },
-  getHistory: async (agrementId: string) => {
+  getHistory: async (agrementId: number) => {
     const history = await buildRequest<AgrementUsagersRoutes["GetHistory"]>({
       path: "/agrements/{agrementId}/history/",
       method: "GET",
-      params: { agrementId },
+      params: { agrementId: String(agrementId) },
     })();
     return history;
   },
-  get: async (agrementId: string) => {
+  get: async (agrementId: number) => {
     const agrement = await buildRequest<AgrementUsagersRoutes["GetOne"]>({
       path: "/agrements/{agrementId}",
       method: "GET",
-      params: { agrementId },
+      params: { agrementId: String(agrementId) },
     })();
     return agrement;
   },

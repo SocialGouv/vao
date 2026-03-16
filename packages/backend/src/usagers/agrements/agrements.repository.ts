@@ -560,9 +560,7 @@ export const AgrementsRepository = {
   /**
    * Récupère le courriel du user responsable d'un agrément.
    */
-  async getUserMail(
-    agrementId: number,
-  ): Promise<{ user_mail: string | null } | null> {
+  async getUserMail(agrementId: number): Promise<string | null> {
     const client = await getPool().connect();
     try {
       const result = await client.query(
@@ -578,7 +576,7 @@ export const AgrementsRepository = {
       if (result.rows.length === 0) {
         return null;
       }
-      return result.rows[0] as { user_mail: string | null };
+      return result.rows[0]?.user_mail;
     } finally {
       client.release();
     }

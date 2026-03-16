@@ -130,7 +130,7 @@ onMounted(async () => {
   }
 
   try {
-    const history = await agrementStore.getHistory(String(agrementId));
+    const history = await agrementStore.getHistory(agrementId);
     log.i("Historique de l'agrément récupéré avec succès", { history });
   } catch (error) {
     log.w("Erreur lors de la récupération de l'historique:", error);

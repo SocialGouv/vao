@@ -49,13 +49,11 @@ export const AgrementController = {
     const { id: usagerUserId } = req.decoded!;
     const statut = req.validatedQuery?.statut ?? null;
     try {
-      const agrements: AgrementDto[] | [] = await AgrementService.getList({
+      const agrements = await AgrementService.getList({
         statut,
         userId: Number(usagerUserId),
       });
       log.d(agrements);
-      if (!agrements.length)
-        throw new AppError("NotFound", { statusCode: 404 });
       res.json({ agrements });
     } catch (error) {
       log.w("DONE with error");
@@ -69,7 +67,7 @@ export const AgrementController = {
   ) {
     log.i("IN");
     const { id: agrementId, error } = validateId(req.params.agrementId);
-    if (error) {
+    if (error || agrementId === undefined) {
       return next(
         new AppError(ERRORS_COMMON.INVALID_PARAMS, { statusCode: 400 }),
       );
@@ -77,7 +75,7 @@ export const AgrementController = {
 
     try {
       const agrement: AgrementDto | null = await AgrementService.get({
-        agrementId: Number(agrementId),
+        agrementId,
         withDetails: true,
       });
       log.d(agrement);

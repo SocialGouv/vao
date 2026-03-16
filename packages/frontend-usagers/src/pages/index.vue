@@ -34,6 +34,7 @@
 
 <script setup>
 import { CardsNumber } from "@vao/shared-ui";
+import { FeatureFlagName } from "@vao/shared-bridge";
 import NationalIdentityCard from "@gouvfr/dsfr/dist/artwork/pictograms/document/national-identity-card.svg";
 import House from "@gouvfr/dsfr/dist/artwork/pictograms/buildings/house.svg";
 import Contract from "@gouvfr/dsfr/dist/artwork/pictograms/document/contract.svg";
@@ -107,7 +108,7 @@ const tiles = computed(() => [
     description:
       "Cette page vous permet de renseigner les informations sur l'organisme.",
   },
-  ...(userStore.user.featureFlags?.RENOUVELLEMENT_AGREMENT
+  ...(userStore.user?.featureFlags?.[FeatureFlagName.RENOUVELLEMENT_AGREMENT]
     ? [
         {
           title: "Agrément",

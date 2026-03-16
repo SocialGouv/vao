@@ -15,6 +15,15 @@ import { AgrementService } from "~/services/agrementService";
 
 const log = logger("stores/agrement");
 
+const ALLOWED_STATUTS_RENOUVELLEMENT = [
+  AGREMENT_STATUT.BROUILLON,
+  AGREMENT_STATUT.A_MODIFIER,
+  AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+  AGREMENT_STATUT.DEPOSE,
+  AGREMENT_STATUT.EN_COURS,
+  AGREMENT_STATUT.PRIS_EN_CHARGE,
+  AGREMENT_STATUT.VERIF_EN_COURS,
+];
 export interface AgrementStoreState {
   agrement: AgrementDto | null;
   agrementCourant: AgrementDto | null;
@@ -72,11 +81,15 @@ export const useAgrementStore = defineStore("agrement", {
           statut: AGREMENT_STATUT.VALIDE,
         });
 
-        const { agrement: agrementDetail } = await AgrementService.get(
-          String(agrements[0].id!),
-        );
+        if (!agrements || agrements.length === 0) {
+          this.agrementCourant = null;
+        } else {
+          const { agrement: agrementDetail } = await AgrementService.get(
+            agrements[0].id!,
+          );
 
-        this.agrementCourant = agrementDetail;
+          this.agrementCourant = agrementDetail;
+        }
       } catch (err) {
         log.w("getCurrent - DONE with error", err);
         throw err;
@@ -88,20 +101,12 @@ export const useAgrementStore = defineStore("agrement", {
         const { agrements }: { agrements: AgrementDto[] | [] } =
           await AgrementService.getListAgrements({});
 
-        const allowedStatuts = [
-          AGREMENT_STATUT.BROUILLON,
-          AGREMENT_STATUT.A_MODIFIER,
-          AGREMENT_STATUT.COMPLETUDE_CONFIRME,
-          AGREMENT_STATUT.DEPOSE,
-          AGREMENT_STATUT.EN_COURS,
-          AGREMENT_STATUT.PRIS_EN_CHARGE,
-          AGREMENT_STATUT.VERIF_EN_COURS,
-        ];
-
         const filtered = agrements.filter(
           (agrement) =>
             agrement.statut !== null &&
-            allowedStatuts.includes(agrement.statut as AGREMENT_STATUT),
+            ALLOWED_STATUTS_RENOUVELLEMENT.includes(
+              agrement.statut as AGREMENT_STATUT,
+            ),
         );
         if (filtered.length === 0) {
           this.agrementEnTraitement = null;
@@ -109,7 +114,7 @@ export const useAgrementStore = defineStore("agrement", {
           return;
         }
         const { agrement: agrementDetail } = await AgrementService.get(
-          String(filtered[0].id!),
+          filtered[0].id!,
         );
         log.i("getEnRenouvellement - DONE");
         this.agrementEnTraitement = agrementDetail ?? null;
@@ -209,7 +214,7 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
-    async getHistory(agrementId: string): Promise<void> {
+    async getHistory(agrementId: number): Promise<void> {
       log.i("getHistory - IN", { agrementId });
       try {
         const { history } = await AgrementService.getHistory(agrementId);

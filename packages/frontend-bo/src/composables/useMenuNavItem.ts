@@ -1,5 +1,5 @@
 import { computed, useUserStore, useEigStore } from "#imports";
-import { USER_COMPETENCE_BO } from "@vao/shared-bridge";
+import { USER_COMPETENCE_BO, FeatureFlagName } from "@vao/shared-bridge";
 export const useMenuNavItems = () => {
   const userStore = useUserStore();
   const eigStore = useEigStore();
@@ -19,7 +19,7 @@ export const useMenuNavItems = () => {
           ]
         : [];
     const gestionAgrements =
-      userStore.user.featureFlags?.RENOUVELLEMENT_AGREMENT &&
+      userStore.user?.featureFlags?.[FeatureFlagName.RENOUVELLEMENT_AGREMENT] &&
       serviceCompetent === USER_COMPETENCE_BO.REGIONALE
         ? [
             {

@@ -5,6 +5,7 @@ import {
   useAgrementStore,
 } from "#imports";
 import { ROLES as userRolesRef } from "../helpers/users";
+import { FeatureFlagName } from "@vao/shared-bridge";
 
 export const useMenuNavItems = () => {
   const userStore = useUserStore();
@@ -35,7 +36,9 @@ export const useMenuNavItems = () => {
             text: "Liste des utilisateurs",
             to: "/utilisateurs/liste",
           },
-          ...(userStore.user.featureFlags?.RENOUVELLEMENT_AGREMENT &&
+          ...(userStore.user?.featureFlags?.[
+            FeatureFlagName.RENOUVELLEMENT_AGREMENT
+          ] &&
           (organismeStore.organismeCourant?.typeOrganisme ===
             "personne_physique" ||
             agrementStore?.agrementCourant)

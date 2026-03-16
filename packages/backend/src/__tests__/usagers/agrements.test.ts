@@ -32,7 +32,7 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-describe("GET /agrements/list", () => {
+describe("GET /agrements/", () => {
   it("devrait retourner une liste d'agréments lié à l'utilisateur connecté", async () => {
     const authUser = await createUsagersUser();
     (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
@@ -45,7 +45,7 @@ describe("GET /agrements/list", () => {
       agrement: agrementData,
       organismeId,
     });
-    const response = await request(app).get(`/agrements/list`);
+    const response = await request(app).get(`/agrements/`);
 
     // Vérification des résultats
     expect(response.status).toBe(200);
@@ -72,7 +72,7 @@ describe("GET /agrements/list", () => {
       agrement: agrementData2,
       organismeId,
     });
-    const response = await request(app).get(`/agrements/list?statut=VALIDE`);
+    const response = await request(app).get(`/agrements?statut=VALIDE`);
 
     // Vérification des résultats
     expect(response.status).toBe(200);

@@ -10,7 +10,7 @@ import { AgrementController } from "./agrements.controller";
 const router = express.Router();
 
 router.get(
-  "/list",
+  "/",
   checkJWT,
   requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetList"]),
   AgrementController.getList,
@@ -42,8 +42,6 @@ router.get(
   AgrementController.getHistory,
 );
 
-export default router;
-
 router.patch(
   "/:agrementId/statut",
   checkJWT,
@@ -51,3 +49,5 @@ router.patch(
   checkPermissionAgrement,
   AgrementController.patchStatut,
 );
+
+export default router;

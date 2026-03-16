@@ -1,11 +1,12 @@
 import * as yup from "yup";
 
 import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
+import { AGREMENT_STATUT } from "../../../constantes";
 import type { AgrementDto } from "../../../dto";
 
 export interface GetListRoute extends BasicRoute {
   method: "GET";
-  path: "/agrements/list";
+  path: "/agrements";
   query: {
     statut?: string;
   };
@@ -14,6 +15,6 @@ export interface GetListRoute extends BasicRoute {
 
 export const GetListRouteSchema: RouteSchema<GetListRoute> = {
   query: yup.object({
-    statut: yup.string().optional(),
+    statut: yup.string().oneOf(Object.values(AGREMENT_STATUT)).optional(),
   }),
 };
