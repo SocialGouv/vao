@@ -4,15 +4,8 @@
       <div>Sélectionner un séjour</div>
       <UtilsDownloadFile
         label="Télécharger Formulaire EIG"
-        :url="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
+        :url="urlPdfEig"
         filename="eig.pdf"
-      />
-      <DsfrFileDownload
-        format="pdf"
-        size="61.88 Ko"
-        :href="`${config.public.backendUrl}/documents/public/modele_EIG.pdf`"
-        download=""
-        title="questionnaire-vacanciers.pdf"
       />
     </h5>
     <dsfr-alert v-if="eigStore.currentEig" class="fr-mb-6v">
@@ -102,7 +95,13 @@
 <script setup>
 import * as yup from "yup";
 import { useField, useForm } from "vee-validate";
-import { eigModel, eigUtils, eigSchema, Summary, useToaster } from "@vao/shared-ui";
+import {
+  eigModel,
+  eigUtils,
+  eigSchema,
+  Summary,
+  useToaster,
+} from "@vao/shared-ui";
 import dayjs from "dayjs";
 import { DsfrAlert } from "@gouvminint/vue-dsfr";
 const getTagSejourLibelle = eigUtils.getTagSejourLibelle;
@@ -133,12 +132,11 @@ const fetchAvailableDsDebounce = (search) => {
     try {
       await eigStore.setAvailableDs(search);
     } catch (error) {
-      toaster.error(
-        {
-          description: "Une erreur est survenue lors de la récupération de la demande",
-          role: "alert",
-        }
-      );
+      toaster.error({
+        description:
+          "Une erreur est survenue lors de la récupération de la demande",
+        role: "alert",
+      });
       throw error;
     }
   }, 300);
@@ -181,6 +179,13 @@ const {
   errorMessage: dateErrorMessage,
   meta: dateMeta,
 } = useField("date");
+
+const urlPdfEig = computed(() => {
+  return new URL(
+    "/documents/public/modele_EIG.pdf",
+    config.public.backendUrl,
+  ).toString();
+});
 
 onMounted(async () => {
   if (initialValues.declarationId) {

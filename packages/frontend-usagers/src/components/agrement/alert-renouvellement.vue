@@ -27,7 +27,9 @@
     </p>
 
     <DsfrButton
-      v-if="userStore?.user?.featureFlags?.RENOUVELLEMENT_AGREMENT"
+      v-if="
+        userStore.user?.featureFlags?.[FeatureFlagName.RENOUVELLEMENT_AGREMENT]
+      "
       class="fr-mt-3v"
       @click.prevent="onClickRenouvellement"
     >
@@ -37,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { formatFR } from "@vao/shared-bridge";
+import { formatFR, FeatureFlagName } from "@vao/shared-bridge";
 
 const agrementStore = useAgrementStore();
 const userStore = useUserStore();

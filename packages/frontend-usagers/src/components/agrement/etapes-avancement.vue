@@ -60,6 +60,13 @@ const statutOrder = [
   AGREMENT_STATUT.COMPLETUDE_CONFIRME,
   AGREMENT_STATUT.VALIDE,
 ];
+
+const urlLegifrance = computed(() => {
+  return new URL(
+    "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030344746/",
+  ).toString();
+});
+
 //todo utiliser les vraies valeurs et supprimer les placeholders quand historique sera finalisé avec tout traqué:
 const steps = [
   {
@@ -94,7 +101,7 @@ const steps = [
       : {
           texte: "Délais de deux mois à compter du récépissé de complétude.",
           lien: {
-            url: "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030344746/",
+            url: urlLegifrance.value,
             label: "En savoir plus",
             title: "Article R412-12 - Code du tourisme",
           },

@@ -62,11 +62,11 @@
     @update:model-value="onCommentaireChange"
   />
   <UtilsDisplayInput
-      v-else
-      :value="sejourCommentaire"
-      :input="displayInput.IAgrementProjets['sejourCommentaire']"
-      :is-valid="commentaireMeta.valid"
-      :error-message="commentaireErrorMessage"
+    v-else
+    :value="sejourCommentaire"
+    :input="displayInput.IAgrementProjets['sejourCommentaire']"
+    :is-valid="commentaireMeta.valid"
+    :error-message="commentaireErrorMessage"
   />
   <div class="fr-fieldset__element">
     <UtilsMultiFilesUpload
@@ -85,7 +85,7 @@
     <DsfrFileDownload
       format="pdf"
       size="61.88 Ko"
-      :href="`${config.public.backendUrl}/documents/public/annexe-5-questionaire-vacanciers.pdf`"
+      :href="urlPdfQuestionnaireVacanciers"
       download=""
       title="questionnaire-vacanciers.pdf"
     />
@@ -160,6 +160,13 @@ const {
   handleChange: onCommentaireChange,
   meta: commentaireMeta,
 } = useField("sejourCommentaire");
+
+const urlPdfQuestionnaireVacanciers = computed(() => {
+  return new URL(
+    "/documents/public/annexe-5-questionnaire-vacanciers.pdf",
+    config.public.backendUrl,
+  ).toString();
+});
 
 const validateForm = async () => {
   let formValid = true;
