@@ -4,6 +4,7 @@ export * from "./document.dto";
 export * from "./featureFlag.dto";
 export * from "./ficheTerritoire.dto";
 export * from "./hebergement.dto";
+export * from "./messagerie.dto";
 export * from "./organismeDto";
 export * from "./paginationQuery.dto";
 export * from "./personneMorale.dto";
