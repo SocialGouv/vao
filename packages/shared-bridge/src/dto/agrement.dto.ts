@@ -139,3 +139,15 @@ export interface AgrementHistoryRow {
   metadata?: Record<string, unknown> | null;
   created_at: Date;
 }
+
+export interface AgrementMessage {
+  id: number;
+  agrement_id: number;
+  front_user_id: number | null;
+  back_user_id: number | null;
+  message: string;
+  created_at: string;
+  read_at: string | null;
+  backUserPrenom?: string | null;
+  frontUserPrenom?: string | null;
+}

@@ -27,8 +27,8 @@ const query = {
       m.front_user_id as "frontUserId",
       m.back_user_id as "backUserId",
       m.message as "message",
-      m.created_at as "created",
-      m.read_at as "readAt",
+      m.created_at,
+      m.read_at,
       fu.prenom as "frontUserPrenom",
       bu.prenom as "backUserPrenom",
       m.file as file

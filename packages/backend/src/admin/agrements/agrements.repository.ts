@@ -166,16 +166,18 @@ export const AgrementsRepository = {
     try {
       const query = `
       SELECT
-        id,
-        agrement_id,
-        front_user_id,
-        back_user_id,
-        message,
-        created_at,
-        read_at
-      FROM front.agrement_messagerie
-      WHERE agrement_id = $1
-      ORDER BY created_at ASC
+        m.id,
+        m.agrement_id,
+        m.front_user_id,
+        m.back_user_id,
+        m.message,
+        m.created_at,
+        m.read_at,
+        bu.prenom AS "backUserPrenom"
+      FROM front.agrement_messagerie m
+      LEFT JOIN back.users bu ON bu.id = m.back_user_id
+      WHERE m.agrement_id = $1
+      ORDER BY m.created_at ASC
     `;
       const result = await client.query(query, [agrementId]);
       return result.rows as AgrementMessage[];

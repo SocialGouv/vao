@@ -61,13 +61,7 @@
         :selected="selectedTabIndex === 3"
         :asc="asc"
       >
-      </DsfrTabContent>
-      <DsfrTabContent
-        panel-id="agrement-content-4"
-        tab-id="agrement-tab-4"
-        :selected="selectedTabIndex === 4"
-        :asc="asc"
-      >
+        <AgrementsMessagerie :messages="messages" />
       </DsfrTabContent>
     </DsfrTabs>
   </div>
@@ -97,6 +91,13 @@ onMounted(async () => {
       log.i("Historique de l'agrément récupéré avec succès");
     } catch (error) {
       log.w("Erreur lors de la récupération de l'historique:", error);
+    }
+
+    try {
+      await agrementStore.getMessages(String(agrementId.value));
+      log.i("Messages de l'agrément récupérés avec succès");
+    } catch (error) {
+      log.w("Erreur lors de la récupération des messages:", error);
     }
   }
 });
@@ -158,6 +159,8 @@ const selectTab = async (idx: Tab) => {
   asc.value = selectedTabIndex.value < idx;
   tabActions[idx]();
 };
+
+const messages = computed(() => agrementStore.messages ?? []);
 
 const tabTitles = computed(() => [
   {
