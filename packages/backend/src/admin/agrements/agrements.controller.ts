@@ -53,10 +53,12 @@ export const AgrementController = {
   ) {
     const agrementId = Number(req.validatedParams!.agrementId);
     try {
-      const messages = await AgrementService.getMessages(agrementId);
+      const { messages, unreadCount } =
+        await AgrementService.getMessages(agrementId);
       res.status(200).json({
         count: messages.length,
         messages,
+        unreadCount,
       });
     } catch (error) {
       log.w("Erreur lors de la récupération des messages", error);
@@ -82,6 +84,20 @@ export const AgrementController = {
     }
   },
 
+  async patchMessages(
+    req: RouteRequest<AgrementAdminRoutes["PatchMessages"]>,
+    res: RouteResponse<AgrementAdminRoutes["PatchMessages"]>,
+    next: NextFunction,
+  ) {
+    const agrementId = Number(req.validatedParams!.agrementId);
+    try {
+      const count = await AgrementService.markMessagesAsRead(agrementId);
+      res.status(200).json({ count });
+    } catch (error) {
+      log.w("Erreur lors du patch des messages", error);
+      next(error);
+    }
+  },
   async patchStatut(
     req: RouteRequest<AgrementAdminRoutes["PatchStatut"]>,
     res: RouteResponse<AgrementAdminRoutes["PatchStatut"]>,

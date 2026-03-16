@@ -56,4 +56,12 @@ router.patch(
   AgrementController.patchStatut,
 );
 
+router.patch(
+  "/:agrementId/messages/read",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["PatchMessages"]),
+  checkPermissionBOAgrement,
+  AgrementController.patchMessages,
+);
+
 export default router;

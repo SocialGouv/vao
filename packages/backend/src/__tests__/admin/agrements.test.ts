@@ -497,4 +497,25 @@ describe("Messagerie d'agrément", () => {
     const response = await request(app).get(`/admin/agrements/999999/messages`);
     expect(response.status).toBe(404);
   });
+
+  it("PATCH /messages devrait marquer tous les messages non lus comme lus et retourner le bon count", async () => {
+    await request(app)
+      .post(`/admin/agrements/${agrementId}/message`)
+      .send({ message: "Message 1" });
+
+    await request(app)
+      .post(`/admin/agrements/${agrementId}/message`)
+      .send({ message: "Message 2" });
+
+    const patchResponse = await request(app).patch(
+      `/admin/agrements/${agrementId}/messages/read`,
+    );
+    expect(patchResponse.status).toBe(200);
+    expect(patchResponse.body.count).toBe(2);
+
+    const getResponse = await request(app).get(
+      `/admin/agrements/${agrementId}/messages`,
+    );
+    expect(getResponse.body.unreadCount).toBe(0);
+  });
 });

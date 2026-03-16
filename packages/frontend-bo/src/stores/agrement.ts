@@ -23,6 +23,7 @@ export interface AgrementStoreState {
   history: AgrementHistoryItem[] | null;
   messages: AgrementMessage[] | null;
   messagesTotal?: number | null;
+  messagesUnreadCount?: number | null;
 }
 
 export const useAgrementStore = defineStore("agrement", {
@@ -35,6 +36,17 @@ export const useAgrementStore = defineStore("agrement", {
     messagesTotal: null,
   }),
   actions: {
+    async patchMessagesAsRead(agrementId: string): Promise<number> {
+      log.i("patchMessagesAsRead - IN", { agrementId });
+      try {
+        const count = await AgrementService.markMessagesAsRead(agrementId);
+        log.i("patchMessagesAsRead - DONE", { count });
+        return count;
+      } catch (err) {
+        log.w("patchMessagesAsRead - ERROR", err);
+        throw err;
+      }
+    },
     async getAgrementById(agrementId: number): Promise<void> {
       log.i("getAgrementById - IN", { agrementId });
       try {
@@ -49,11 +61,12 @@ export const useAgrementStore = defineStore("agrement", {
     async getMessages(agrementId: string): Promise<void> {
       log.i("getMessages - IN", { agrementId });
       try {
-        const { count, messages } =
+        const { count, messages, unreadCount } =
           await AgrementService.getMessages(agrementId);
-        log.i("getMessages - DONE", { messages, count });
+        log.i("getMessages - DONE", { messages, count, unreadCount });
         this.messages = messages;
         this.messagesTotal = count;
+        this.messagesUnreadCount = unreadCount;
       } catch (err) {
         log.w("getMessages - DONE with error", err);
         throw err;

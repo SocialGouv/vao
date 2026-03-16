@@ -7,6 +7,8 @@ import type { GetMessagesRoute } from "./getMessages";
 import { GetMessagesRouteSchema } from "./getMessages";
 import type { GetOneRoute } from "./getOne";
 import { GetOneRouteSchema } from "./getOne";
+import type { PatchMessagesRoute } from "./patchMessages";
+import { PatchMessagesRouteSchema } from "./patchMessages";
 import type { PatchStatutRoute } from "./patchStatut";
 import { PatchStatutRouteSchema } from "./patchStatut";
 import type { PostMessageRoute } from "./postMessage";
@@ -19,6 +21,7 @@ export type AgrementAdminRoutes = {
   GetHistory: GetHistoryRoute;
   PostMessage: PostMessageRoute;
   GetMessages: GetMessagesRoute;
+  PatchMessages: PatchMessagesRoute;
 };
 
 export const AgrementAdminRoutesSchema = {
@@ -26,6 +29,7 @@ export const AgrementAdminRoutesSchema = {
   GetList: GetListRouteSchema,
   GetMessages: GetMessagesRouteSchema,
   GetOne: GetOneRouteSchema,
+  PatchMessages: PatchMessagesRouteSchema,
   PatchStatut: PatchStatutRouteSchema,
   PostMessage: PostMessageRouteSchema,
 };

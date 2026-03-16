@@ -131,17 +131,26 @@ export const AgrementService = {
     log.i("DONE");
     return { count, result: agrementsWithOrganisme };
   },
-  async getMessages(agrementId: number): Promise<AgrementMessage[]> {
+  async getMessages(
+    agrementId: number,
+  ): Promise<{ messages: AgrementMessage[]; unreadCount: number }> {
+    const agrement = await AgrementsRepository.getById(agrementId);
+    if (!agrement) {
+      log.w("Agrement non trouvé", agrementId);
+      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+    }
+    return await AgrementsRepository.getMessages(agrementId);
+  },
+  async markMessagesAsRead(agrementId: number): Promise<number> {
     const agrement = await AgrementsRepository.getById(agrementId);
     if (!agrement) {
       log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
 
-    const messages = await AgrementsRepository.getMessages(agrementId);
-    return messages;
+    const count = await AgrementsRepository.markMessagesAsRead(agrementId);
+    return count;
   },
-
   async postMessage({
     agrementId,
     backUserId,
