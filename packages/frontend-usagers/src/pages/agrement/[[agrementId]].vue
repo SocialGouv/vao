@@ -39,7 +39,7 @@
             <AgrementCoordonnees
               v-if="hash === 'agrement-coordonnees'"
               :init-organisme="organismeStore.organismeCourant ?? {}"
-              :init-agrement="agrementStore.agrementCourant ?? {}"
+              :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :modifiable="canModify"
               :cdn-url="`${config.public.backendUrl}/documents/`"
               @update="updateOrCreate"
@@ -53,7 +53,7 @@
           >
             <AgrementDossier
               class="fr-my-2w"
-              :init-agrement="agrementStore.agrementCourant ?? {}"
+              :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :modifiable="canModify"
               :cdn-url="`${config.public.backendUrl}/documents/`"
               @update="(formValues) => updateOrCreate(formValues)"
@@ -67,7 +67,7 @@
             :read-only="readOnly"
           >
             <AgrementBilan
-              :init-agrement="agrementStore.agrementCourant ?? {}"
+              :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :modifiable="canModify"
               :cdn-url="`${config.public.backendUrl}/documents/`"
               @update="(formValues) => updateOrCreate(formValues)"
@@ -81,7 +81,7 @@
             :read-only="readOnly"
           >
             <AgrementProjets
-              :init-agrement="agrementStore.agrementCourant ?? {}"
+              :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :cdn-url="`${config.public.backendUrl}/documents/`"
               @update="(formValues) => updateOrCreate(formValues)"
               @next="nextHash"
@@ -96,7 +96,7 @@
             <AgrementSynthese
               class="fr-my-2w"
               :init-organisme="organismeStore.organismeCourant ?? {}"
-              :init-agrement="agrementStore.agrementCourant ?? {}"
+              :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :modifiable="false"
               :cdn-url="`${config.public.backendUrl}/documents/`"
             />
@@ -108,7 +108,7 @@
 </template>
 <script setup lang="ts">
 import type { FILE_CATEGORY, AgrementDto, FileKey } from "@vao/shared-bridge";
-import { FILE_CATEGORY_CONFIG } from "@vao/shared-bridge";
+import { AGREMENT_STATUT, FILE_CATEGORY_CONFIG } from "@vao/shared-bridge";
 import { useToaster } from "@vao/shared-ui";
 
 const route = useRoute();
@@ -132,7 +132,9 @@ async function updateOrCreate(formValues: AgrementFormValues) {
   const updatedData: AgrementFormValues = { ...formValues };
   try {
     updatedData.agrementFiles = [];
-
+    if (updatedData.id == null) {
+      updatedData.statut = AGREMENT_STATUT.BROUILLON;
+    }
     for (const category of Object.keys(
       FILE_CATEGORY_CONFIG,
     ) as (keyof typeof FILE_CATEGORY_CONFIG)[]) {
@@ -159,11 +161,13 @@ async function updateOrCreate(formValues: AgrementFormValues) {
     const rawOrganismeId = organismeStore.organismeCourant?.organismeId;
     const organismeId = rawOrganismeId != null ? Number(rawOrganismeId) : null;
     const newAgrement = {
-      ...agrementStore.agrementCourant,
+      ...agrementStore.agrementEnTraitement,
       ...updatedData,
       organismeId,
       statut:
-        updatedData.statut ?? agrementStore.agrementCourant?.statut ?? null,
+        updatedData.statut ??
+        agrementStore.agrementEnTraitement?.statut ??
+        null,
     };
 
     if (organismeId == null) {
@@ -230,7 +234,7 @@ async function createDocument({
         uuid: uuid,
         fileUuid: uuid,
         category,
-        agrementId: agrementStore.agrementCourant?.id ?? null,
+        agrementId: agrementStore.agrementEnTraitement?.id ?? null,
       };
     } catch (error) {
       toaster.error({
@@ -248,7 +252,7 @@ async function createDocument({
       uuid: document?.uuid,
       fileUuid: document.uuid,
       category,
-      agrementId: agrementStore.agrementCourant?.id ?? null,
+      agrementId: agrementStore.agrementEnTraitement?.id ?? null,
     };
   }
 
@@ -269,7 +273,11 @@ const hash = computed(() => {
 });
 
 definePageMeta({
-  middleware: ["is-connected", "check-organisme-is-complet"],
+  middleware: [
+    "is-connected",
+    "check-organisme-is-complet",
+    "check-feature-flags",
+  ],
 });
 
 const links = [
@@ -301,7 +309,7 @@ function previousHash() {
 
 function nextHash() {
   const index = sommaireOptions.value.findIndex((o) => o === hash.value);
-  const id = agrementStore.agrementCourant?.id ?? "";
+  const id = agrementStore.agrementEnTraitement?.id ?? "";
   return navigateTo({
     path: `/agrement/${id}`,
     hash: "#" + sommaireOptions.value[index + 1],

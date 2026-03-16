@@ -5,3 +5,4 @@ export * from "./file";
 export * from "./request";
 export * from "./siret";
 export * from "./stringUtils";
+export * from "./validator";

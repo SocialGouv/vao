@@ -26,9 +26,7 @@ watchEffect(async () => {
     !agrementStore.agrementCourant
   ) {
     try {
-      await agrementStore.getByOrganismeId(
-        organismeStore.organismeCourant.organismeId,
-      );
+      await agrementStore.getCurrent();
     } catch (e) {
       toaster.error({
         titleTag: "h2",

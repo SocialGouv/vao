@@ -47,8 +47,11 @@ export const AgrementsMapper = {
       commentaire: entity.commentaire,
       dateConfirmCompletude: entity.date_confirm_completude,
       dateDepot: entity.date_depot,
+      dateFinValidite: entity.date_fin_validite,
+      dateObtention: entity.date_obtention,
       dateObtentionCertificat: entity.date_obtention_certificat,
       dateVerifCompleture: entity.date_verif_completure,
+      file: entity.file, // TODO : Rétrocompatibilité. A supprimer par la suite.
       id: entity.id,
       immatriculation: entity.immatriculation,
       motivations: entity.motivations,

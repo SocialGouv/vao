@@ -133,13 +133,7 @@ export const AgrementsRepository = {
   /**
    * Crée un nouvel agrément et ses sous-éléments
    */
-  async create({
-    agrement,
-    dateFinValidite,
-  }: {
-    agrement: AgrementDto;
-    dateFinValidite: Date | null;
-  }): Promise<number> {
+  async create({ agrement }: { agrement: AgrementDto }): Promise<number> {
     const client = await getPool().connect();
     try {
       await client.query("BEGIN");
@@ -161,7 +155,7 @@ export const AgrementsRepository = {
           bilan_financier_comparatif, bilan_financier_ressources_humaines,
           bilan_financier_commentaire,
           date_fin_validite, sejour_type_handicap, 
-          region_obtention, numero
+          region_obtention, numero, date_obtention, file
         )
         VALUES (
           $1,$2,$3,$4,$5,$6,$7,$8,
@@ -170,7 +164,7 @@ export const AgrementsRepository = {
           $22,$23,$24,$25,$26,$27,
           $28,$29,$30,$31,$32,$33,$34,$35,
           $36,$37,$38,$39,$40, $41, 
-          $42, $43, $44, $45
+          $42, $43, $44, $45, $46, $47
         )
         RETURNING id;
       `;
@@ -217,10 +211,12 @@ export const AgrementsRepository = {
         agrement.bilanFinancierComparatif,
         agrement.bilanFinancierRessourcesHumaines,
         agrement.bilanFinancierCommentaire,
-        dateFinValidite,
+        agrement.dateFinValidite,
         agrement.sejourTypeHandicap,
         agrement.regionObtention,
         agrement.numero,
+        agrement.dateObtention,
+        agrement.file,
       ];
 
       const result = await client.query(agrementInsertQuery, agrementValues);
@@ -254,30 +250,109 @@ export const AgrementsRepository = {
   },
 
   /**
-   * Récupère un agrément par son ID. Retourne agrement enrichi avec l'email du user responsable.
+   * Récupère un agrément par son ID (avec ou sans détails liés)
    */
-  async getById(
-    agrementId: number,
-  ): Promise<(AgrementEntity & { user_mail: string | null }) | null> {
-    const client = await getPool().connect();
-    try {
-      const result = await client.query(
-        `SELECT a.*, u.mail AS user_mail
-          FROM front.agrements a
-          JOIN front.organismes o ON a.organisme_id = o.id
-          JOIN front.user_organisme uo ON uo.org_id = o.id
-          JOIN front.users u ON uo.use_id = u.id
-          WHERE a.id = $1
-          LIMIT 1;`,
-        [agrementId],
-      );
-      if (result.rows.length === 0) {
-        return null;
+  async getById({
+    agrementId,
+    withDetails,
+  }: {
+    agrementId: number;
+    withDetails: boolean;
+  }): Promise<AgrementDto | null> {
+    log.i("getById - IN");
+    const query = `
+      SELECT
+        agr.*
+        ${
+          withDetails
+            ? `,
+          COALESCE(
+            (
+              SELECT json_agg(
+                jsonb_build_object(
+                  'id', ani.id,
+                  'activite_id', ani.activite_id,
+                  'agrement_id', ani.agrement_id,
+                  'created_at', ani.created_at,
+                  'updated_at', ani.updated_at,
+                  'activite', jsonb_build_object(
+                    'id', act.id,
+                    'code', act.code,
+                    'libelle', act.libelle,
+                    'activite_type', act.activite_type
+                  )
+                )
+              )
+              FROM front.agrement_animation ani
+              LEFT JOIN front.activite act ON act.id = ani.activite_id
+              WHERE ani.agrement_id = agr.id
+            ),
+            '[]'
+          ) AS agrement_animation,
+          COALESCE(json_agg(DISTINCT fil.*) FILTER (WHERE fil.id IS NOT NULL), '[]') AS agrement_file,
+          COALESCE(json_agg(DISTINCT sej.*) FILTER (WHERE sej.id IS NOT NULL), '[]') AS agrement_sejour,
+
+          COALESCE(
+            (
+              SELECT json_agg(
+                to_jsonb(bil) || jsonb_build_object(
+                  'bilan_hebergement',
+                  COALESCE(
+                    (
+                      SELECT json_agg(bhe.*)
+                      FROM front.bilan_hebergement bhe
+                      WHERE bhe.agr_bilan_annuel_id = bil.id
+                    ),
+                    '[]'::json
+                  )
+                )
+              )
+              FROM front.agrement_bilan_annuel bil
+              WHERE bil.agrement_id = agr.id
+            ),
+            '[]'
+          ) AS agrement_bilan_annuel
+          `
+            : ""
+        }
+      FROM front.agrements agr
+      ${
+        withDetails
+          ? `
+          LEFT JOIN front.agrement_files fil ON fil.agrement_id = agr.id
+          LEFT JOIN front.agrement_sejours sej ON sej.agrement_id = agr.id
+          `
+          : ""
       }
-      return result.rows[0] as AgrementEntity & { user_mail: string | null };
-    } finally {
-      client.release();
+      WHERE agr.id = $1
+      GROUP BY agr.id;
+    `;
+
+    const response = await getPool().query(query, [agrementId]);
+    log.i("getById - DONE");
+    if (!response.rows?.length) return null;
+    const row = response.rows[0] as AgrementEntity;
+    const agrementDto = AgrementsMapper.toModel(row);
+
+    if (withDetails) {
+      agrementDto.agrementAnimation = row.agrement_animation
+        ? AgrementAnimationMapper.toModels(row.agrement_animation)
+        : [];
+
+      agrementDto.agrementFiles = row.agrement_file
+        ? AgrementFilesMapper.toModels(row.agrement_file)
+        : [];
+
+      agrementDto.agrementSejours = row.agrement_sejour
+        ? AgrementSejoursMapper.toModels(row.agrement_sejour)
+        : [];
+
+      agrementDto.agrementBilanAnnuel = row.agrement_bilan_annuel
+        ? AgrementBilanAnnuelMapper.toModels(row.agrement_bilan_annuel)
+        : [];
     }
+
+    return agrementDto;
   },
 
   /**
@@ -443,6 +518,70 @@ export const AgrementsRepository = {
     }
   },
 
+  async getList({
+    userId,
+    statut,
+  }: {
+    userId: number;
+    statut?: string | null;
+  }): Promise<AgrementDto[] | []> {
+    log.i("getList - IN");
+
+    let query = `
+    SELECT
+      agr.*
+    FROM front.agrements agr
+    INNER JOIN front.user_organisme uo ON uo.org_id = agr.organisme_id
+    INNER JOIN front.users u ON u.id = uo.use_id
+    WHERE u.id = $1
+  `;
+
+    const params: any[] = [userId];
+
+    if (statut) {
+      query += ` AND agr.statut = $2`;
+      params.push(statut);
+    }
+
+    const response = await getPool().query(query, params);
+
+    if (!response.rows?.length) return [];
+
+    const agrements: AgrementDto[] = [];
+    for (const row of response.rows) {
+      const agrementDto = AgrementsMapper.toModel(row);
+      agrements.push(agrementDto);
+    }
+
+    log.i("getList - DONE");
+    return agrements;
+  },
+
+  /**
+   * Récupère le courriel du user responsable d'un agrément.
+   */
+  async getUserMail(agrementId: number): Promise<string | null> {
+    const client = await getPool().connect();
+    try {
+      const result = await client.query(
+        `SELECT u.mail AS user_mail
+          FROM front.agrements a
+          JOIN front.organismes o ON a.organisme_id = o.id
+          JOIN front.user_organisme uo ON uo.org_id = o.id
+          JOIN front.users u ON uo.use_id = u.id
+          WHERE a.id = $1
+          LIMIT 1;`,
+        [agrementId],
+      );
+      if (result.rows.length === 0) {
+        return null;
+      }
+      return result.rows[0]?.user_mail;
+    } finally {
+      client.release();
+    }
+  },
+
   async insertHistoryEvent({
     source,
     agrementId,
@@ -484,13 +623,7 @@ export const AgrementsRepository = {
     return rows[0].id;
   },
 
-  async update({
-    agrement,
-    dateFinValidite,
-  }: {
-    agrement: AgrementDto;
-    dateFinValidite: Date | null;
-  }): Promise<number> {
+  async update({ agrement }: { agrement: AgrementDto }): Promise<number> {
     const client = await getPool().connect();
     const agrementId: number = agrement.id!;
 
@@ -550,8 +683,10 @@ export const AgrementsRepository = {
         date_fin_validite = $42,
         sejour_type_handicap = $43,
         region_obtention = $44,
-        numero = $45
-      WHERE id = $46;
+        numero = $45,
+        date_obtention = $46,
+        file = $47
+      WHERE id = $48;
     `;
 
       const agrementValues = [
@@ -596,10 +731,12 @@ export const AgrementsRepository = {
         agrement.bilanFinancierComparatif,
         agrement.bilanFinancierRessourcesHumaines,
         agrement.bilanFinancierCommentaire,
-        dateFinValidite,
+        agrement.dateFinValidite,
         agrement.sejourTypeHandicap,
         agrement.regionObtention,
         agrement.numero,
+        agrement.dateObtention,
+        agrement.file,
         agrementId,
       ];
 

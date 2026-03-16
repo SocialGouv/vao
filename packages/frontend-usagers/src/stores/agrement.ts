@@ -4,13 +4,30 @@ import type {
   ActiviteDto,
   AgrementHistoryItem,
 } from "@vao/shared-bridge";
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import {
+  AGREMENT_STATUT,
+  daysBetween,
+  addMonths,
+  isBetweenDates,
+  addDays,
+} from "@vao/shared-bridge";
 import { AgrementService } from "~/services/agrementService";
+
 const log = logger("stores/agrement");
 
+const ALLOWED_STATUTS_RENOUVELLEMENT = [
+  AGREMENT_STATUT.BROUILLON,
+  AGREMENT_STATUT.A_MODIFIER,
+  AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+  AGREMENT_STATUT.DEPOSE,
+  AGREMENT_STATUT.EN_COURS,
+  AGREMENT_STATUT.PRIS_EN_CHARGE,
+  AGREMENT_STATUT.VERIF_EN_COURS,
+];
 export interface AgrementStoreState {
   agrement: AgrementDto | null;
   agrementCourant: AgrementDto | null;
+  agrementEnTraitement: AgrementDto | null;
   activites: ActiviteDto[];
   history: AgrementHistoryItem[] | null;
 }
@@ -19,22 +36,94 @@ export const useAgrementStore = defineStore("agrement", {
   state: (): AgrementStoreState => ({
     agrement: null,
     agrementCourant: null,
+    agrementEnTraitement: null,
     activites: [],
     history: null,
   }),
+  getters: {
+    expiryDate: (state): Date | null => {
+      return state.agrementCourant?.dateFinValidite
+        ? new Date(state.agrementCourant.dateFinValidite)
+        : null;
+    },
+
+    daysUntilExpiry(): number | null {
+      if (!this.expiryDate) return null;
+      return daysBetween(new Date(), this.expiryDate);
+    },
+
+    sixMonthsFromNow(): Date {
+      return addMonths(new Date(), 6);
+    },
+
+    isExpirySoon(): boolean {
+      const days = this.daysUntilExpiry;
+      return days !== null && days >= 0 && days <= 120;
+    },
+
+    isExpiryMedium(): boolean {
+      if (!this.expiryDate) return false;
+
+      return isBetweenDates(
+        this.expiryDate,
+        addDays(new Date(), 121),
+        this.sixMonthsFromNow,
+      );
+    },
+  },
+
   actions: {
-    async getByOrganismeId(organismeId: number): Promise<void> {
-      log.i("getByOrganismeId - IN");
+    async getCurrent(): Promise<void> {
+      log.i("getCurrent - IN");
+
       try {
-        const agrement: AgrementDto | null =
-          await AgrementService.getByOrganismeId(organismeId);
-        log.i("getByOrganismeId - DONE");
-        this.agrementCourant = agrement;
+        const { agrements } = await AgrementService.getListAgrements({
+          statut: AGREMENT_STATUT.VALIDE,
+        });
+
+        if (!agrements || agrements.length === 0) {
+          this.agrementCourant = null;
+        } else {
+          const { agrement: agrementDetail } = await AgrementService.get(
+            agrements[0].id!,
+          );
+
+          this.agrementCourant = agrementDetail;
+        }
       } catch (err) {
-        log.w("getByOrganismeId - DONE with error", err);
+        log.w("getCurrent - DONE with error", err);
         throw err;
       }
     },
+    async getEnRenouvellement(): Promise<void> {
+      log.i("getEnRenouvellement - IN");
+      try {
+        const { agrements }: { agrements: AgrementDto[] | [] } =
+          await AgrementService.getListAgrements({});
+
+        const filtered = agrements.filter(
+          (agrement) =>
+            agrement.statut !== null &&
+            ALLOWED_STATUTS_RENOUVELLEMENT.includes(
+              agrement.statut as AGREMENT_STATUT,
+            ),
+        );
+        if (filtered.length === 0) {
+          this.agrementEnTraitement = null;
+          log.i("getEnRenouvellement - DONE no agrement in renouvellement");
+          return;
+        }
+        const { agrement: agrementDetail } = await AgrementService.get(
+          filtered[0].id!,
+        );
+        log.i("getEnRenouvellement - DONE");
+        this.agrementEnTraitement = agrementDetail ?? null;
+      } catch (err) {
+        log.w("getEnRenouvellement - DONE with error", err);
+        throw err;
+      }
+    },
+
     async postAgrement({
       agrement,
       organismeId,
@@ -52,6 +141,7 @@ export const useAgrementStore = defineStore("agrement", {
           : AGREMENT_STATUT.BROUILLON,
         updatedAt: agrement.updatedAt ?? null,
         dateObtentionCertificat: agrement.dateObtentionCertificat ?? null,
+        dateObtention: agrement.dateObtention ?? null,
         dateDepot: agrement.dateDepot ?? null,
         dateVerifCompleture: agrement.dateVerifCompleture ?? null,
         dateConfirmCompletude: agrement.dateConfirmCompletude ?? null,
@@ -100,12 +190,13 @@ export const useAgrementStore = defineStore("agrement", {
         agrementBilanAnnuel: agrement.agrementBilanAnnuel ?? undefined,
         regionObtention: agrement.regionObtention ?? null,
         numero: agrement.numero ?? null,
+        file: agrement.file ?? null,
       };
 
       const agrementId: number | null =
         await AgrementService.postAgrement(agrementToSend);
 
-      this.agrementCourant = {
+      this.agrementEnTraitement = {
         ...agrementToSend,
         id: agrementToSend.id ?? agrementId ?? null,
       };
@@ -123,7 +214,7 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
-    async getHistory(agrementId: string): Promise<void> {
+    async getHistory(agrementId: number): Promise<void> {
       log.i("getHistory - IN", { agrementId });
       try {
         const { history } = await AgrementService.getHistory(agrementId);
@@ -147,8 +238,8 @@ export const useAgrementStore = defineStore("agrement", {
           agrementId,
           statut,
         );
-        if (success && this.agrementCourant?.id === agrementId) {
-          this.agrementCourant.statut = statut;
+        if (success && this.agrementEnTraitement?.id === agrementId) {
+          this.agrementEnTraitement.statut = statut;
         }
         log.i("changeStatutAgrement - DONE", { success });
         return success;

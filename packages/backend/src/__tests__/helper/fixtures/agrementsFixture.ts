@@ -15,9 +15,11 @@ import { buildAdresseFixture } from "./adresseFixture";
 export async function buildAgrementFixture({
   organismeId,
   activiteId = Math.floor(Math.random() * 20) + 1,
+  statut = AGREMENT_STATUT.BROUILLON,
 }: {
   organismeId: number;
   activiteId?: number;
+  statut?: AGREMENT_STATUT;
 }): Promise<AgrementDto> {
   return {
     accompRespAttestHono: true,
@@ -91,8 +93,10 @@ export async function buildAgrementFixture({
     commentaire: "Commentaire de test",
     dateConfirmCompletude: new Date("2024-12-07"),
     dateDepot: new Date("2024-12-01"),
+    dateObtention: null,
     dateObtentionCertificat: new Date("2025-01-15"),
     dateVerifCompleture: new Date("2024-12-05"),
+    file: {},
     immatriculation: "123-AB-456",
     motivations: "Motivation de test",
     numero: "AGR-2024-0001",
@@ -107,7 +111,7 @@ export async function buildAgrementFixture({
     sejourCommentaire: "Commentaire de test",
     sejourNbEnvisage: 2,
     sejourTypeHandicap: [],
-    statut: AGREMENT_STATUT.BROUILLON,
+    statut,
     suiviMedAccordSejour: "Oui",
     suiviMedDistribution: "Oui",
     transportAllerRetour: "Bus",
