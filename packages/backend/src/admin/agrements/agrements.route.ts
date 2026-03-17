@@ -9,7 +9,7 @@ import { AgrementController } from "./agrements.controller";
 const router = express.Router();
 
 router.get(
-  "/list/",
+  "/",
   boCheckJWT,
   requestValidatorMiddleware(AgrementAdminRoutesSchema["GetList"]),
   checkPermissionBOAgrement,

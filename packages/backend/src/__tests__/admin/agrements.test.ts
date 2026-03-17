@@ -39,7 +39,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe("GET /agrements/list/", () => {
+describe("GET /admin/agrements", () => {
   it("devrait retourner une liste d'agréments avec succès", async () => {
     authUser = await createUsagersUser();
     const organismeId1 = await createOrganisme({ userId: authUser.id });
@@ -60,7 +60,7 @@ describe("GET /agrements/list/", () => {
       organismeId: organismeId2,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app).get(`/admin/agrements/list/`);
+    const response = await request(app).get(`/admin/agrements`);
 
     expect(response.status).toBe(200);
     expect(response.body.agrements).toBeDefined();
@@ -87,7 +87,7 @@ describe("GET /agrements/list/", () => {
     expect(response.body.success).toBe(true);
 
     // Vérifier que le statut a bien changé en base
-    const listResponse = await request(app).get(`/admin/agrements/list/`);
+    const listResponse = await request(app).get(`/admin/agrements`);
     const agrement = listResponse.body.agrements.find(
       (a: AgrementDto) => a.id === agrementId,
     );
@@ -148,7 +148,7 @@ describe("GET /agrements/list/", () => {
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const response = await request(app).get(
-      `/admin/agrements/list?limit=1&offset=0&search={"numero":"${agrementData.numero}"}`,
+      `/admin/agrements?limit=1&offset=0&search={"numero":"${agrementData.numero}"}`,
     );
 
     expect(response.status).toBe(200);

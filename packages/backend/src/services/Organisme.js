@@ -754,10 +754,7 @@ module.exports.getOne = async (criterias = {}) => {
     ...query.get(criterias),
   );
   if (rowCount === 0) {
-    throw new AppError("Organisme non trouvé", {
-      name: "NOT_FOUND",
-      statusCode: 404,
-    });
+    return null;
   }
   const organisme = await getComplementOrganisme(organismes[0]);
   // Initialisation d'une valeur vide pour permettre l'affichage au niveau front BO

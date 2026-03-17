@@ -14,7 +14,7 @@ const AgrementService = {
     const { agrements, count } = await buildRequest<
       AgrementAdminRoutes["GetList"]
     >({
-      path: "/admin/agrements/list",
+      path: "/admin/agrements",
       method: "GET",
       query: params,
     })();
