@@ -31,7 +31,7 @@ afterAll(async () => {
   await removeTestContainer();
 });
 
-describe("GET /territoire/getByAgrementRegionUser", () => {
+describe("GET /territoire/get-by-agrement-region-user", () => {
   it("devrait retourner un territoire pour l'utilisateur l'agrément avec succès", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
@@ -51,5 +51,37 @@ describe("GET /territoire/getByAgrementRegionUser", () => {
     );
     expect(response.status).toBe(200);
     expect(response.body.territoire.territoire_id).toEqual(territoireId);
+  });
+
+  it("devrait retourner 404 si aucun organisme n'est lié à l'utilisateur", async () => {
+    authUser = await createUsagersUser();
+
+    const response = await request(app).get(
+      `/territoire/get-by-agrement-region-user`,
+    );
+
+    expect(response.status).toBe(404);
+  });
+
+  it("devrait retourner 422 si la région d'obtention de l'agrément est manquante", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.VALIDE,
+    });
+    await createAgrement({
+      agrement: {
+        ...agrementData,
+        regionObtention: null as unknown as string,
+      },
+      organismeId,
+    });
+
+    const response = await request(app).get(
+      `/territoire/get-by-agrement-region-user`,
+    );
+
+    expect(response.status).toBe(422);
   });
 });

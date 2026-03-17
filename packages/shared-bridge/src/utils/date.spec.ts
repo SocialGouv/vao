@@ -1,12 +1,16 @@
 import {
   addDays,
   addMonths,
+  addYears,
   daysBetween,
   formatFR,
   formatFRDateTime,
+  formatFRTime,
+  getYear4k,
   isAfter,
   isBefore,
   isBetweenDates,
+  parseToISODate,
 } from "./date";
 
 describe("setFormatDateToFRString", () => {
@@ -57,6 +61,18 @@ describe("addMonths", () => {
   });
 });
 
+describe("addYears", () => {
+  it("should add years to date", () => {
+    const date = new Date(2023, 0, 1);
+    const newDate = addYears(date, 2);
+    expect(newDate?.getFullYear()).toBe(2025);
+  });
+
+  it("should return null when date is null", () => {
+    expect(addYears(null, 2)).toBeNull();
+  });
+});
+
 describe("daysBetween", () => {
   it("should return number of days between two dates", () => {
     expect(daysBetween("2023-01-01", "2023-01-05")).toBe(4);
@@ -100,5 +116,31 @@ describe("isBetweenDates", () => {
 
   it("should return true if date is equal to end", () => {
     expect(isBetweenDates("2023-01-10", "2023-01-01", "2023-01-10")).toBe(true);
+  });
+});
+
+describe("formatFRTime", () => {
+  it("should format time to FR string", () => {
+    expect(formatFRTime(new Date(2023, 0, 1, 9, 5))).toBe("09:05");
+  });
+});
+
+describe("getYear4k", () => {
+  it("should return year as 4 digits", () => {
+    expect(getYear4k(new Date(1999, 0, 1))).toBe("1999");
+  });
+});
+
+describe("parseToISODate", () => {
+  it("should return null when input is null", () => {
+    expect(parseToISODate(null)).toBeNull();
+  });
+
+  it("should convert JJ/MM/AAAA to AAAA-MM-JJ", () => {
+    expect(parseToISODate("01/02/2023")).toBe("2023-02-01");
+  });
+
+  it("should keep parts even without padding", () => {
+    expect(parseToISODate("1/2/2023")).toBe("2023-2-1");
   });
 });
