@@ -41,6 +41,26 @@ export const AgrementController = {
       next(error);
     }
   },
+  async getMessages(
+    req: RouteRequest<AgrementAdminRoutes["GetMessages"]>,
+    res: RouteResponse<AgrementAdminRoutes["GetMessages"]>,
+    next: NextFunction,
+  ) {
+    const agrementId = Number(req.validatedParams!.agrementId);
+    try {
+      const { messages, unreadCount } =
+        await AgrementService.getMessages(agrementId);
+      res.status(200).json({
+        count: messages.length,
+        messages,
+        unreadCount,
+      });
+    } catch (error) {
+      log.w("Erreur lors de la récupération des messages", error);
+      next(error);
+    }
+  },
+
   async getOne(
     req: RouteRequest<AgrementAdminRoutes["GetOne"]>,
     res: RouteResponse<AgrementAdminRoutes["GetOne"]>,
@@ -53,6 +73,21 @@ export const AgrementController = {
       if (!agrement) throw new AppError("NotFound", { statusCode: 404 });
       res.json({ agrement });
     } catch (error) {
+      next(error);
+    }
+  },
+
+  async patchMessages(
+    req: RouteRequest<AgrementAdminRoutes["PatchMessages"]>,
+    res: RouteResponse<AgrementAdminRoutes["PatchMessages"]>,
+    next: NextFunction,
+  ) {
+    const agrementId = Number(req.validatedParams!.agrementId);
+    try {
+      const count = await AgrementService.markMessagesAsRead(agrementId);
+      res.status(200).json({ count });
+    } catch (error) {
+      log.w("Erreur lors du patch des messages", error);
       next(error);
     }
   },
@@ -75,6 +110,28 @@ export const AgrementController = {
       res.json({ success: true });
     } catch (error) {
       log.w("PATCH statut error", error);
+      next(error);
+    }
+  },
+  async postMessage(
+    req: RouteRequest<AgrementAdminRoutes["PostMessage"]>,
+    res: RouteResponse<AgrementAdminRoutes["PostMessage"]>,
+    next: NextFunction,
+  ) {
+    const agrementId = Number(req.validatedParams!.agrementId);
+    const { message } = req.validatedBody!;
+
+    const backUserId = Number(req.decoded!.id);
+
+    try {
+      await AgrementService.postMessage({
+        agrementId,
+        backUserId,
+        message,
+      });
+      res.status(201).json({ success: true });
+    } catch (error) {
+      log.w("erreur POST message", error);
       next(error);
     }
   },

@@ -32,12 +32,36 @@ router.get(
   AgrementController.getHistory,
 );
 
+router.get(
+  "/:agrementId/messages",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["GetMessages"]),
+  checkPermissionBOAgrement,
+  AgrementController.getMessages,
+);
+
+router.post(
+  "/:agrementId/message",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["PostMessage"]),
+  checkPermissionBOAgrement,
+  AgrementController.postMessage,
+);
+
 router.patch(
   "/:agrementId/statut",
   boCheckJWT,
   requestValidatorMiddleware(AgrementAdminRoutesSchema["PatchStatut"]),
   checkPermissionBOAgrement,
   AgrementController.patchStatut,
+);
+
+router.patch(
+  "/:agrementId/messages/read",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["PatchMessages"]),
+  checkPermissionBOAgrement,
+  AgrementController.patchMessages,
 );
 
 export default router;

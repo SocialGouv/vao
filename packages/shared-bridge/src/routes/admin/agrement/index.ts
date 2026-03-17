@@ -3,21 +3,33 @@ import type { GetHistoryRoute } from "./getHistory";
 import { GetHistoryRouteSchema } from "./getHistory";
 import type { GetListRoute } from "./getList";
 import { GetListRouteSchema } from "./getList";
+import type { GetMessagesRoute } from "./getMessages";
+import { GetMessagesRouteSchema } from "./getMessages";
 import type { GetOneRoute } from "./getOne";
 import { GetOneRouteSchema } from "./getOne";
+import type { PatchMessagesRoute } from "./patchMessages";
+import { PatchMessagesRouteSchema } from "./patchMessages";
 import type { PatchStatutRoute } from "./patchStatut";
 import { PatchStatutRouteSchema } from "./patchStatut";
+import type { PostMessageRoute } from "./postMessage";
+import { PostMessageRouteSchema } from "./postMessage";
 
 export type AgrementAdminRoutes = {
   GetList: GetListRoute;
   GetOne: GetOneRoute;
   PatchStatut: PatchStatutRoute;
   GetHistory: GetHistoryRoute;
+  PostMessage: PostMessageRoute;
+  GetMessages: GetMessagesRoute;
+  PatchMessages: PatchMessagesRoute;
 };
 
 export const AgrementAdminRoutesSchema = {
   GetHistory: GetHistoryRouteSchema,
   GetList: GetListRouteSchema,
+  GetMessages: GetMessagesRouteSchema,
   GetOne: GetOneRouteSchema,
+  PatchMessages: PatchMessagesRouteSchema,
   PatchStatut: PatchStatutRouteSchema,
+  PostMessage: PostMessageRouteSchema,
 };
