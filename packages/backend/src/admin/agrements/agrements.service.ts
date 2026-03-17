@@ -98,17 +98,19 @@ export const AgrementService = {
     if (!agrements || agrements.length === 0) {
       return { count: 0, result: [] };
     }
-    const agrementsWithOrganisme = await Promise.all(
+    let agrementsWithOrganisme = await Promise.all(
       agrements.map(async (agrement) => {
         const organisme: OrganismeDto = await serviceOrganismeGetOne({
           "o.id": agrement.organismeId,
         });
-
         return {
           ...agrement,
           organisme,
         };
       }),
+    );
+    agrementsWithOrganisme = agrementsWithOrganisme.filter(
+      (agrement) => agrement.organisme,
     );
     log.i("DONE");
     return { count, result: agrementsWithOrganisme };

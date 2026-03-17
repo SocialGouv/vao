@@ -12,7 +12,7 @@ import type { PaginationQueryDto } from "../../../dto/paginationQuery.dto";
 import { SearchQuerySchema } from "../../schemas";
 
 export interface GetListRoute extends BasicRoute {
-  path: "/admin/agrements/list";
+  path: "/admin/agrements";
   method: "GET";
   query: PaginationQueryDto & {
     name?: string;
