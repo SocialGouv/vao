@@ -4,7 +4,8 @@ const router = express.Router();
 
 const checkJWT = require("../middlewares/checkJWT");
 const BOcheckJWT = require("../middlewares/bo-check-JWT");
-const checkPermissionOrganisme = require("../middlewares/checkPermissionOrganisme");
+const checkPermissionOrganisme =
+  require("../middlewares/checkPermissionOrganisme").default;
 const checkComingFrom = require("../middlewares/checkComingFrom");
 const organismeController = require("../controllers/organisme");
 

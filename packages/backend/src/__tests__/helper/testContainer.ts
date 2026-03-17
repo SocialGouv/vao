@@ -65,6 +65,7 @@ async function runMigrations(container: StartedPostgreSqlContainer) {
     },
   });
   await db.migrate.latest();
+  await db.destroy(); // close the connection
 }
 export async function createTestContainer({
   s3 = false,
@@ -149,9 +150,14 @@ export async function createPgTestContainer() {
 export async function removeTestContainer() {
   disconnectDoc();
   disconnect();
-  if (!global.postgresContainer) {
+  if (global.postgresContainer) {
+    await global.postgresContainer.stop();
+    global.postgresContainer = undefined;
+  } else {
     console.warn("No Postgres container found");
-    return;
   }
-  await global.postgresContainer?.stop();
+  if (global.s3Container) {
+    await global.s3Container.stop();
+    global.s3Container = undefined;
+  }
 }

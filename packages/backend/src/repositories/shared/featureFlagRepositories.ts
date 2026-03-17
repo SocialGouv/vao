@@ -26,7 +26,7 @@ async function findOneByName(name: string): Promise<FeatureFlagDto | null> {
   const result = await getPool().query(
     `SELECT name, description, enabled,
             date_from, date_to, created_at, updated_at
-     FROM front.feature_flags
+     FROM feature_flags
      WHERE name = $1`,
     [name],
   );
@@ -38,7 +38,7 @@ async function findAll(): Promise<FeatureFlagDto[]> {
   const result = await getPool().query(
     `SELECT name, description, enabled,
             date_from, date_to, created_at, updated_at
-     FROM front.feature_flags`,
+     FROM feature_flags`,
   );
   return result.rows.map(mapToDto);
 }

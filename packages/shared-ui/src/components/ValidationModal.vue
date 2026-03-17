@@ -31,7 +31,7 @@
   </DsfrModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { DsfrButton } from "@gouvminint/vue-dsfr";
 
 defineProps({
@@ -40,11 +40,11 @@ defineProps({
   opened: { type: Boolean, default: false },
   title: { type: String, required: true },
   onClose: {
-    type: Function,
+    type: Function as PropType<() => void>,
     default: () => {},
   },
   onValidate: {
-    type: Function,
+    type: Function as PropType<() => void>,
     default: () => {},
   },
   validationLabel: {

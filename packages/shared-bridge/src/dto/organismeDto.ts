@@ -1,8 +1,9 @@
-import type { PersonneMoraleDto } from "./personneMoraleDto";
-import type { PersonnePhysiqueDto } from "./personnePhysiqueDto";
+import type { AgrementDto } from "./agrement.dto";
+import type { PersonneMoraleDto } from "./personneMorale.dto";
+import type { PersonnePhysiqueDto } from "./personnePhysique.dto";
 
 export interface OrganismeDto {
-  id: string;
+  id: number;
   nom: string;
   siret: string;
   organismeId: string;
@@ -10,8 +11,7 @@ export interface OrganismeDto {
   typeOrganisme: string;
   personneMorale: PersonneMoraleDto;
   personnePhysique: PersonnePhysiqueDto;
-  agrement: {
-    numero: string;
+  agrement: AgrementDto & {
     dateFinValidite: string;
   };
 }

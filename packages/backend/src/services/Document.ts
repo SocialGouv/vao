@@ -7,7 +7,11 @@ import {
   S3Client,
 } from "@aws-sdk/client-s3";
 import * as Sentry from "@sentry/node";
-import { DocumentDto, FileMetaDataDto } from "@vao/shared-bridge";
+import {
+  DocumentDto,
+  FILE_CATEGORY,
+  FileMetaDataDto,
+} from "@vao/shared-bridge";
 
 import AppError from "../utils/error";
 import {
@@ -96,7 +100,7 @@ export const getFile = async (uuid: string): Promise<DocumentDto | null> => {
   if (fileS3?.Body) {
     const file = await streamToBuffer(fileS3.Body as Readable);
     return {
-      category: fileS3.Metadata?.category as string,
+      category: fileS3.Metadata?.category as FILE_CATEGORY,
       file,
       filename: fileS3.Metadata?.originalname as string,
       mimeType: fileS3.Metadata?.mimetype as string,

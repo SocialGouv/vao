@@ -1,7 +1,9 @@
 /* eslint-disable import/no-unresolved */
+import { FILE_CATEGORY, FILE_CATEGORY_CONFIG } from "../constantes";
 import {
   decodeFilename,
   encodeFilename,
+  getFileCategoryLabel,
   getFileNameAndExtension,
   getFileUploadErrorMessage,
 } from "./file";
@@ -241,6 +243,19 @@ describe("file utils", () => {
       expect(result).toBe(
         "Le type de fichier my document.pdf n'est pas reconnu. Veuillez télécharger un fichier PDF, PNG, JPG ou JPEG.",
       );
+    });
+  });
+
+  describe("getFileCategoryLabel", () => {
+    it("should return the configured label when the category exists in config", () => {
+      const result = getFileCategoryLabel(FILE_CATEGORY.PROCVERBAL);
+      expect(result).toBe(FILE_CATEGORY_CONFIG[FILE_CATEGORY.PROCVERBAL].label);
+    });
+
+    it("should fallback to category value when the category is not in config", () => {
+      const category = FILE_CATEGORY.BILANQUALITPERCEPTION;
+      const result = getFileCategoryLabel(category);
+      expect(result).toBe(category);
     });
   });
 });

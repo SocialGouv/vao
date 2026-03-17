@@ -1,18 +1,24 @@
 import { UsersRepository as AdminUsersRepository } from "../../../repositories/admin/Users";
 import { UsersRepository as UsagerUsersRepository } from "../../../repositories/usagers/Users";
-import { create as createBoUserService } from "../../../services/BoUser";
+import {
+  create as createBoUserService,
+  readOneByMail as readOneByMailBoUserService,
+} from "../../../services/BoUser";
 import { registerByEmail as createFrontUserService } from "../../../services/User";
 
 export const createAdminUser = async (user = {}) => {
+  const timestamp = Date.now();
   const fixture = {
-    email: "user1@example.com",
+    email: `userbo${timestamp}@example.com`,
     nom: "Nom1",
     prenom: "Prenom1",
-    roles: ["eig", "DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
+    roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
     territoireCode: "FRA",
     ...user,
   };
-  return await createBoUserService(fixture);
+  await createBoUserService(fixture);
+  const result = await readOneByMailBoUserService(fixture.email);
+  return result;
 };
 
 export const createUsagersUser = async (user = {}) => {
@@ -21,7 +27,7 @@ export const createUsagersUser = async (user = {}) => {
     email: `frontuser${timestamp}@example.com`,
     nom: "FrontNom",
     prenom: "FrontPrenom",
-    siret: `123456789012${timestamp.toString().slice(-2)}`,
+    siret: `${timestamp.toString().slice(-2)}123456789012`,
     telephone: "0102030405",
     terCode: "FRA",
     ...user,
@@ -52,10 +58,10 @@ export const createAdminUserValide = async (user = {}) => {
     nom: "boNom",
     prenom: "boPrenom",
     telephone: "0102030405",
-    terCode: "FRA",
+    ter_code: "FRA",
     verified: true,
     ...user,
   };
   const result = await AdminUsersRepository.create({ user: fixture });
-  return result.user;
+  return result.user[0];
 };

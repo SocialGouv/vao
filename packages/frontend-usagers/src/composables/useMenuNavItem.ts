@@ -1,0 +1,104 @@
+import {
+  computed,
+  useOrganismeStore,
+  useUserStore,
+  useAgrementStore,
+} from "#imports";
+import { ROLES as userRolesRef } from "../helpers/users";
+import { FeatureFlagName } from "@vao/shared-bridge";
+
+export const useMenuNavItems = () => {
+  const userStore = useUserStore();
+  const organismeStore = useOrganismeStore();
+  const agrementStore = useAgrementStore();
+  if (userStore.isConnected) {
+    organismeStore.setMyOrganisme();
+  }
+
+  return computed(() => {
+    if (!userStore.isConnected) {
+      return [];
+    }
+
+    return [
+      {
+        text: "Accueil",
+        to: "/",
+      },
+      {
+        title: "Organisateur",
+        links: [
+          {
+            text: "Ma fiche organisateur",
+            to: "/organisme",
+          },
+          {
+            text: "Liste des utilisateurs",
+            to: "/utilisateurs/liste",
+          },
+          ...(userStore.user?.featureFlags?.[
+            FeatureFlagName.RENOUVELLEMENT_AGREMENT
+          ] &&
+          (organismeStore.organismeCourant?.typeOrganisme ===
+            "personne_physique" ||
+            agrementStore?.agrementCourant)
+            ? [
+                {
+                  text: "Mon agrément",
+                  to: "/mon-agrement",
+                },
+                {
+                  text: "Renouvellement d'agrément",
+                  to: "/agrement",
+                },
+              ]
+            : []),
+        ],
+      },
+      ...(organismeStore.organismeCourant?.complet
+        ? [
+            {
+              title: "Déclaration de séjour",
+              links: [
+                {
+                  text: "Nouvelle déclaration",
+                  to: "/demande-sejour",
+                },
+                {
+                  text: "Mes déclarations",
+                  to: "/demande-sejour/liste",
+                },
+                {
+                  text: "Messagerie",
+                  to: "/messagerie",
+                },
+              ],
+            },
+            {
+              text: "Mes hébergements",
+              to: "/hebergements/liste",
+            },
+            ...(userStore.user?.roles?.some((role) =>
+              [userRolesRef.EIG_LECTURE, userRolesRef.EIG_ECRITURE].includes(
+                role,
+              ),
+            )
+              ? [
+                  {
+                    title: "EIG",
+                    links: [
+                      { text: "Mes EIG", to: "/eig/liste" },
+                      ...(userStore.user?.roles?.includes(
+                        userRolesRef.EIG_ECRITURE,
+                      )
+                        ? [{ text: "Créer un EIG", to: "/eig" }]
+                        : []),
+                    ],
+                  },
+                ]
+              : []),
+          ]
+        : []),
+    ];
+  });
+};

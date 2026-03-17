@@ -3,6 +3,7 @@ import {
   create as createOrganismeService,
   link as linkOrganisme,
 } from "../../../services/Organisme";
+import { generateRandomSiret } from "../organismeHelper";
 
 export const createOrganisme = async ({
   userId,
@@ -36,7 +37,7 @@ export const createOrganisme = async ({
     nomUsage: `TestNom${timestamp}`,
     prenom: `TestPrenom${timestamp}`,
     profession: "Testeur",
-    siret: `123456789012${timestamp.toString().slice(-2)}`,
+    siret: generateRandomSiret(),
     telephone: "0102030405",
     ...organisme,
   };

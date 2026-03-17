@@ -2,9 +2,8 @@
  * Types pour l'authent bo et usagers
  */
 
-import type { UserDto } from "@vao/shared-bridge";
+import type { UserDto, TwoFactorErrorCode } from "@vao/shared-bridge";
 import type { Ref, ComputedRef } from "vue";
-import type {TwoFactorErrorCode} from "@vao/shared-bridge/constantes/auth";
 
 export interface LoginResponse {
   user: UserDto;
