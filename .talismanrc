@@ -389,6 +389,8 @@ fileignoreconfig:
   checksum: 0738f07a54568f11530944b7dd793718435c7b1ab6cc6eacf6739f380fb1eb83
 - filename: pg/seeds/BO-1-back-user.sql
   checksum: 2261cabf80475ffa0c06e59760d4a89ea3331b81062fe5e8640745741a562995
+- filename: pg/seeds/PG-1-proc-data-deletion.sql
+  checksum: da9708d3baf269566275aa1c2de6908ef3873651e9328f968e707ce07fa87380
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
 scopeconfig:
