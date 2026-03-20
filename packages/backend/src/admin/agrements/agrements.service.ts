@@ -1,13 +1,17 @@
 import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
+  AgrementFilesDto,
   OrganismeDto,
   PaginationQueryDto,
 } from "@vao/shared-bridge";
 
+import Region from "../../services/geo/Region";
+import { mailService } from "../../services/mail";
 import { getOne as serviceOrganismeGetOne } from "../../services/Organisme";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
+import MailUtils from "../../utils/mail";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
@@ -129,19 +133,32 @@ export const AgrementService = {
     agrementId,
     statut,
     boUserId,
+    file,
+    commentaire,
+    territoireCode,
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
     boUserId: string;
+    file?: AgrementFilesDto;
+    commentaire?: string;
+    territoireCode: string;
   }): Promise<boolean> {
     const agrement = await AgrementsRepository.getById(agrementId);
     if (!agrement) {
       log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
+    const allowedStatuts = [AGREMENT_STATUT.REFUSE, AGREMENT_STATUT.A_MODIFIER];
+
+    if (allowedStatuts.includes(statut) && !commentaire) {
+      throw new AppError("Commentaire absent", { statusCode: 404 });
+    }
 
     const updated = await AgrementsRepository.updateStatut({
       agrementId,
+      commentaire,
+      file,
       statut,
     });
     if (!updated) {
@@ -166,6 +183,32 @@ export const AgrementService = {
       type: eventType,
       typePrecision: statut,
     });
+
+    if (statut === AGREMENT_STATUT.A_MODIFIER) {
+      const regionDreets = await Region.fetchOne(territoireCode);
+      if (!regionDreets) {
+        throw new AppError("Échec, une région devrait exister", {
+          statusCode: 500,
+        });
+      }
+      const resultat = await AgrementsRepository.getUserMail(agrementId);
+      const mailsOVA = resultat.map((u: { mail: string }) => u.mail);
+      if (mailsOVA) {
+        try {
+          await mailService.send(
+            MailUtils.usagers.agrement.sendStatutAModifierMail({
+              commentaire,
+              email: mailsOVA,
+              regionDreets: regionDreets.text,
+            }),
+          );
+        } catch (e) {
+          log.w("Erreur lors de l'envoi de l'email de transmission", e);
+        }
+      } else {
+        log.w("Aucun email trouvé pour l'agrément", agrementId);
+      }
+    }
 
     return true;
   },

@@ -63,14 +63,17 @@ export const AgrementController = {
   ) {
     log.i("PATCH statut IN");
 
-    const { id: boUserId } = req.decoded!;
+    const { id: boUserId, territoireCode } = req.decoded!;
     const agrementId = Number(req.validatedParams!.agrementId);
-    const { statut } = req.validatedBody!;
+    const { statut, commentaire, file } = req.validatedBody!;
     try {
       await AgrementService.updateStatut({
         agrementId,
         boUserId,
+        commentaire,
+        file,
         statut,
+        territoireCode,
       });
       res.json({ success: true });
     } catch (error) {

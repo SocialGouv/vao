@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from "#app";
 import type { BasicRoute } from "@vao/shared-bridge";
-import { buildRequestPath } from "@vao/shared-bridge";
+import { buildRequestPath, hashToFormData } from "@vao/shared-bridge";
 
 export type FetchBackendOptions = Record<string, unknown>;
 
@@ -66,6 +66,30 @@ export function buildRequest<Route extends BasicRoute>({
           ...OPTIONS_DEFAULT,
           method: "DELETE",
           body,
+        });
+    default:
+      throw new Error("Method not supported");
+  }
+}
+
+export function buildRequestFile<Route extends BasicRoute>({
+  params,
+  body,
+  path,
+  method,
+  file,
+}: Omit<Route, "response"> & { file: File }): () => Promise<Route["response"]> {
+  const url = buildRequestPath(path, params);
+  const formData = body ? hashToFormData(body) : new FormData();
+  formData.append("file", file, file.name);
+  switch (method) {
+    case "POST":
+      return async () =>
+        $fetchBackend(url, {
+          ...OPTIONS_DEFAULT,
+          method: "POST",
+          body: formData,
+          headers: {},
         });
     default:
       throw new Error("Method not supported");

@@ -1,13 +1,22 @@
-import type { AgrementAdminRoutes, AGREMENT_STATUT } from "@vao/shared-bridge";
+import type {
+  AgrementAdminRoutes,
+  AGREMENT_STATUT,
+  AgrementFilesDto,
+} from "@vao/shared-bridge";
 import { buildRequest } from "~/utils/fetchBackend";
 
 const AgrementService = {
-  patchStatut: async (agrementId: number, statut: AGREMENT_STATUT) => {
+  patchStatut: async (
+    agrementId: number,
+    statut: AGREMENT_STATUT,
+    commentaire?: string,
+    file?: AgrementFilesDto,
+  ) => {
     return await buildRequest<AgrementAdminRoutes["PatchStatut"]>({
       path: "admin/agrements/{agrementId}/statut",
       method: "PATCH",
       params: { agrementId: String(agrementId) },
-      body: { statut },
+      body: { statut, commentaire, file },
     })();
   },
   getListAgrements: async (params: AgrementAdminRoutes["GetList"]["query"]) => {
