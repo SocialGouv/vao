@@ -1,8 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import {
   Header,
   Footer,
   Skiplinks,
+  Toaster,
   useLayoutHeader,
   useToaster,
 } from "@vao/shared-ui";
@@ -31,7 +32,7 @@ watchEffect(async () => {
       toaster.error({
         titleTag: "h2",
         title: "Erreur lors du chargement de l'agrément",
-        description: e?.message,
+        description: (e as Error)?.message,
       });
       console.error("Erreur lors de la récupération de l'agrément :", e);
     }
@@ -52,7 +53,6 @@ const navItems = useMenuNavItems();
 <template>
   <div>
     <Toaster />
-    <!-- <DsfrToaster /> -->
     <Skiplinks />
     <Header
       :home-to="homeTo"
