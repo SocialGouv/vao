@@ -45,7 +45,7 @@
     "lint-staged": "^15.2.1",
     "node-talisman": "^1.29.22",
     "npm": "10.9.2",
-    "prettier": "^3.2.5",
+    "prettier": "^3.8.1",
     "typescript": "^5.9.3"
   },
   "workspaces": [
