@@ -8,22 +8,22 @@ import {
 
 export const nomSchema = () =>
   string()
-    .test("acceptedChars", "Caractères non acceptés détectés", (nom) =>
-      acceptedCharsRegex.test(nom),
+    .test("acceptedChars", "Caractères non acceptés détectés", (nom?: string) =>
+      acceptedCharsRegex.test(nom ?? ""),
     )
     .test(
       "doubleSpaces",
       "Le nom ne peut contenir deux espaces successifs",
-      (nom) => !doubleSpacesRegex.test(nom),
+      (nom?: string) => !doubleSpacesRegex.test(nom ?? ""),
     )
     .test(
       "spaceFollowingDash",
       "Le nom ne peut contenir d'espace suivant un tiret",
-      (nom) => !spaceFollowingDashRegex.test(nom),
+      (nom?: string) => !spaceFollowingDashRegex.test(nom ?? ""),
     )
     .test(
       "tripleDash",
       "Le nom ne peut contenir trois tirets consécutifs",
-      (nom) => !tripleDashRegex.test(nom),
+      (nom?: string) => !tripleDashRegex.test(nom ?? ""),
     )
     .required();

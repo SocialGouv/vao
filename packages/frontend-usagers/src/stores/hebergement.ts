@@ -62,7 +62,7 @@ export const useHebergementStore = defineStore("hebergement", {
         log.i("fetchById - IN", { id });
 
         const hebergement = await HebergementService.getHebergement(id);
-        log.d(hebergement);
+        log.d("fetchById - FETCH", hebergement);
         if (hebergement) {
           this.hebergementCourant = hebergement;
         }
