@@ -56,7 +56,7 @@
               :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :modifiable="canModify"
               :cdn-url="`${config.public.backendUrl}/documents/`"
-              @update="(formValues) => updateOrCreate(formValues)"
+              @update="(formValues: any) => updateOrCreate(formValues)"
               @next="nextHash"
               @previous="previousHash"
             />

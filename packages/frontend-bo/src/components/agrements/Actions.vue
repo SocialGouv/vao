@@ -85,7 +85,7 @@ const onValidComplement = async (payload: { commentaire: string }) => {
       });
       toaster.success({
         titleTag: "h2",
-        description: `La demande de complétion de l'agrément a été envoyé`,
+        description: `La demande de complétion de l'agrément a été envoyée`,
       });
     } catch (error) {
       toaster.error({

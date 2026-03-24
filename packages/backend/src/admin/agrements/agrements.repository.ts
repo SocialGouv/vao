@@ -65,11 +65,11 @@ export const AgrementsRepository = {
     log.i("getByRegionObtention - IN");
     const query = () => `
       SELECT
-        agr.*, 
-        pm.siret, 
-        pm.raison_sociale, 
-        pp.prenom, 
-        pp.nom_usage, 
+        agr.*,
+        pm.siret,
+        pm.raison_sociale,
+        pp.prenom,
+        pp.nom_usage,
         pp.siret
       FROM front.agrements agr
       INNER JOIN front.organismes o ON o.id = agr.organisme_id
@@ -253,14 +253,14 @@ export const AgrementsRepository = {
     try {
       const result = await client.query(
         `UPDATE front.agrements
-          SET 
+          SET
             statut = $1::front.agrement_statut,
-            commentaire_refus = CASE 
-              WHEN $1::text = '${AGREMENT_STATUT.REFUSE}' THEN $3 
+            commentaire_refus = CASE
+              WHEN $1::text = '${AGREMENT_STATUT.REFUSE}' THEN $3
               ELSE commentaire_refus
             END,
-            commentaire_completude = CASE 
-              WHEN $1::text = '${AGREMENT_STATUT.A_MODIFIER}' THEN $3 
+            commentaire_completude = CASE
+              WHEN $1::text = '${AGREMENT_STATUT.A_MODIFIER}' THEN $3
               ELSE commentaire_completude
             END,
             updated_at = NOW()
@@ -268,7 +268,7 @@ export const AgrementsRepository = {
         [statut, agrementId, commentaire],
       );
       if (file) {
-        AgrementsRepository.insertAgrementFiles(client, agrementId, file);
+        await AgrementsRepository.insertAgrementFiles(client, agrementId, file);
       }
       return result.rowCount > 0;
     } finally {

@@ -197,7 +197,7 @@ export const AgrementService = {
       }
       const resultat = await AgrementsRepository.getUserMail(agrementId);
       const mailsOVA = resultat.map((u: { mail: string }) => u.mail);
-      if (mailsOVA) {
+      if (mailsOVA.length > 0) {
         try {
           await mailService.send(
             MailUtils.usagers.agrement.sendStatutAModifierMail({

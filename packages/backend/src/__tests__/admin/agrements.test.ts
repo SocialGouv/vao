@@ -101,7 +101,7 @@ describe("GET /admin/agrements", () => {
   });
 });
 
-describe("PATCH /admin/agrements/{idAgrement/statut", () => {
+describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
   it("devrait changer le statut d'un agrément avec succès", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
