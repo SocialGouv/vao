@@ -7,9 +7,8 @@ import {
   AgrementDto,
 } from "@vao/shared-bridge";
 
-import { getById } from "../../services/adresse";
-import { getFileMetaData } from "../../services/Document";
 import { mailService } from "../../services/mail";
+import { AgrementsRepository as AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 import { AgrementMailUsagers } from "./agrements.mail";
@@ -18,33 +17,6 @@ import { AgrementsRepository } from "./agrements.repository";
 const log = logger(module.filename);
 
 export const AgrementService = {
-  async get({
-    agrementId,
-    withDetails,
-  }: {
-    agrementId: number;
-    withDetails: boolean;
-  }): Promise<AgrementDto | null> {
-    const agrement = await AgrementsRepository.getById({
-      agrementId,
-      withDetails,
-    });
-    for (const doc of agrement?.agrementFiles || []) {
-      const meta = await getFileMetaData(doc.fileUuid!);
-      Object.assign(doc, meta);
-    }
-    for (const bilanAnnuel of agrement?.agrementBilanAnnuel || []) {
-      for (const bilanHebergement of bilanAnnuel.bilanHebergement || []) {
-        const adresse = await getById(bilanHebergement.adresse.id);
-        bilanHebergement.adresse = adresse;
-      }
-    }
-    for (const sejours of agrement?.agrementSejours || []) {
-      const adresse = await getById(sejours.adresse.id);
-      sejours.adresse = adresse;
-    }
-    return agrement;
-  },
   async getAllActivites(): Promise<ActiviteDto[]> {
     const activites = await AgrementsRepository.getAllActivites();
     return activites.map((activite) => ({
@@ -108,7 +80,7 @@ export const AgrementService = {
     statut: AGREMENT_STATUT;
     usagerUserId: string;
   }): Promise<boolean> {
-    const agrement = await AgrementsRepository.getById({
+    const agrement = await AgrementsRepositoryShared.getById({
       agrementId,
       withDetails: false,
     });

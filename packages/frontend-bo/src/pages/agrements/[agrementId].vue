@@ -49,6 +49,9 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
+        <AgrementDocuments
+          :init-agrement="agrementStore.agrementCourant ?? {}"
+        ></AgrementDocuments>
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="agrement-content-2"
@@ -80,7 +83,11 @@
 import { useAgrementStore } from "~/stores/agrement";
 import { onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-import { DemandeStatusBadge, Historique } from "@vao/shared-ui";
+import {
+  DemandeStatusBadge,
+  Historique,
+  AgrementDocuments,
+} from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
 import { formatFR } from "@vao/shared-bridge";
 

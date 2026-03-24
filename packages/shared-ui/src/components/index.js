@@ -1,4 +1,5 @@
 import AgrementStatusBadge from "./agrement/AgrementStatusBadge.vue";
+import AgrementDocuments from "./agrement/Documents.vue";
 import CguValidation from "./cgu/CguValidation.vue";
 import ApiUnavailable from "./api/ApiUnavailable.vue";
 import FileUpload from "./FileUpload.vue";
@@ -41,6 +42,7 @@ import Historique from "./agrement/Historique.vue";
 import EtapeHistorique from "./agrement/EtapeHistorique.vue";
 export {
   AgrementStatusBadge,
+  AgrementDocuments,
   CguValidation,
   ApiUnavailable,
   FileUpload,
