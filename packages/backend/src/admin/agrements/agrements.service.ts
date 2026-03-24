@@ -2,6 +2,8 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AgrementFilesDto,
+  FUNCTIONAL_ERRORS,
+  FunctionalException,
   OrganismeDto,
   PaginationQueryDto,
 } from "@vao/shared-bridge";
@@ -147,12 +149,14 @@ export const AgrementService = {
     const agrement = await AgrementsRepository.getById(agrementId);
     if (!agrement) {
       log.w("Agrement non trouvé", agrementId);
-      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+      throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_NOT_FOUND);
     }
-    const allowedStatuts = [AGREMENT_STATUT.REFUSE, AGREMENT_STATUT.A_MODIFIER];
 
-    if (allowedStatuts.includes(statut) && !commentaire) {
-      throw new AppError("Commentaire absent", { statusCode: 404 });
+    if (
+      [AGREMENT_STATUT.REFUSE, AGREMENT_STATUT.A_MODIFIER].includes(statut) &&
+      !commentaire
+    ) {
+      throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_INCONSISTENT);
     }
 
     const updated = await AgrementsRepository.updateStatut({

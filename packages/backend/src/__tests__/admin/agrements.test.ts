@@ -2,6 +2,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AgrementDto,
+  FUNCTIONAL_ERRORS,
 } from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
 import request from "supertest";
@@ -101,7 +102,7 @@ describe("GET /admin/agrements", () => {
 });
 
 describe("PATCH /admin/agrements/{idAgrement/statut", () => {
-  it("devrait changer le statut d'un agrément avec succès (PATCH /admin/agrements/:id/statut)", async () => {
+  it("devrait changer le statut d'un agrément avec succès", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
@@ -126,7 +127,7 @@ describe("PATCH /admin/agrements/{idAgrement/statut", () => {
     expect(agrement.statut).toBe(AGREMENT_STATUT.EN_COURS);
   });
 
-  it("devrait modifier le statut et historiser (PATCH /admin/agrements/:id/statut)", async () => {
+  it("devrait modifier le statut et historiser", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
@@ -159,15 +160,16 @@ describe("PATCH /admin/agrements/{idAgrement/statut", () => {
     expect(aModifierEvent?.bo_user).toBeDefined();
   });
 
-  it("devrait retourner une 404 si l'agrément n'existe pas (PATCH /admin/agrements/:id/statut)", async () => {
+  it("devrait retourner une 422 si l'agrément n'existe pas", async () => {
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const response = await request(app)
       .patch(`/admin/agrements/999999/statut`)
       .send({ statut: "PRIS_EN_CHARGE" });
-    expect(response.status).toBe(404);
+    expect(response.status).toBe(422);
+    expect(response.body.name).toBe(FUNCTIONAL_ERRORS.AGREMENT_NOT_FOUND);
   });
 
-  it("devrait historiser l'événement de prise en charge (PATCH /admin/agrements/:id/statut)", async () => {
+  it("devrait historiser l'événement de prise en charge", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
@@ -192,7 +194,7 @@ describe("PATCH /admin/agrements/{idAgrement/statut", () => {
     expect(priseEnChargeEvent?.bo_user).toBeDefined();
   });
 
-  it("devrait changer retourner une erreur 400 paramètre manquant (PATCH /admin/agrements/:id/statut)", async () => {
+  it("devrait changer retourner une erreur 400 paramètre manquant", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });

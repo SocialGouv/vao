@@ -1,4 +1,9 @@
-import type { AgrementAdminRoutes, AgrementDto } from "@vao/shared-bridge";
+import {
+  type AgrementAdminRoutes,
+  type AgrementDto,
+  FunctionalException,
+  translate,
+} from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
 import type { RouteRequest, RouteResponse } from "../../types/request";
@@ -77,6 +82,15 @@ export const AgrementController = {
       });
       res.json({ success: true });
     } catch (error) {
+      if (error instanceof FunctionalException) {
+        return next(
+          new AppError(translate(error.code), {
+            cause: error,
+            name: error.code,
+            statusCode: 422,
+          }),
+        );
+      }
       log.w("PATCH statut error", error);
       next(error);
     }
