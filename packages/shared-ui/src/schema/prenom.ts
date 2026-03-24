@@ -8,22 +8,24 @@ import {
 
 export const prenomSchema = () =>
   string()
-    .test("acceptedChars", "Caractères non acceptés détectés", (prenom) =>
-      acceptedCharsRegex.test(prenom),
+    .test(
+      "acceptedChars",
+      "Caractères non acceptés détectés",
+      (prenom?: string) => acceptedCharsRegex.test(prenom ?? ""),
     )
     .test(
       "doubleSpaces",
       "Le prénom ne peut contenir deux espaces successifs",
-      (prenom) => !doubleSpacesRegex.test(prenom),
+      (prenom?: string) => !doubleSpacesRegex.test(prenom ?? ""),
     )
     .test(
       "spaceFollowingDash",
       "Le prénom ne peut contenir d'espace suivant un tiret",
-      (prenom) => !spaceFollowingDashRegex.test(prenom),
+      (prenom?: string) => !spaceFollowingDashRegex.test(prenom ?? ""),
     )
     .test(
       "doubleDash",
       "Le prénom ne peut contenir deux tirets consécutifs",
-      (prenom) => !doubleDashRegex.test(prenom),
+      (prenom?: string) => !doubleDashRegex.test(prenom ?? ""),
     )
     .required();

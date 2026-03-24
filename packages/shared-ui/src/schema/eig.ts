@@ -1,5 +1,5 @@
 import * as yup from "yup";
-import { eigModel } from "@vao/shared-ui";
+import * as eigModel from "../models";
 import { personneSchema } from "./personne";
 
 const { Types, Categorie } = eigModel;
@@ -17,10 +17,10 @@ const eigTypeBase = yup
   .string()
   .oneOf(
     [
-      ...Object.values(Types[Categorie.VICTIMES]),
-      ...Object.values(Types[Categorie.SECURITE]),
-      ...Object.values(Types[Categorie.SANTE]),
-      ...Object.values(Types[Categorie.FONCTIONNEMENT_ORGANISME]),
+      ...(Object.values(Types[Categorie.VICTIMES]) as string[]),
+      ...(Object.values(Types[Categorie.SECURITE]) as string[]),
+      ...(Object.values(Types[Categorie.SANTE]) as string[]),
+      ...(Object.values(Types[Categorie.FONCTIONNEMENT_ORGANISME]) as string[]),
     ],
     "la valeur insérée ne fait pas partie de la liste des possibles",
   )
@@ -44,7 +44,7 @@ const eigTypeDepose = {
     .string()
     .nullable()
     .when("type", {
-      is: (type) => {
+      is: (type: string) => {
         return (
           type === Types[Categorie.VICTIMES].AUTRE ||
           type === Types[Categorie.FONCTIONNEMENT_ORGANISME].AUTRE ||
@@ -68,7 +68,7 @@ const eigTypesSchemaCRUD = {
     .string()
     .nullable()
     .when("types", {
-      is: (types) => {
+      is: (types: string[]) => {
         return (types ?? []).includes(Types[Categorie.VICTIMES].AUTRE);
       },
       then: (precision) =>
@@ -79,7 +79,7 @@ const eigTypesSchemaCRUD = {
     .string()
     .nullable()
     .when("types", {
-      is: (types) => {
+      is: (types: string[]) => {
         return (types ?? []).includes(Types[Categorie.SECURITE].AUTRE);
       },
       then: (precision) =>
@@ -90,7 +90,7 @@ const eigTypesSchemaCRUD = {
     .string()
     .nullable()
     .when("types", {
-      is: (types) => {
+      is: (types: string[]) => {
         return (types ?? []).includes(Types[Categorie.SANTE].AUTRE);
       },
       then: (precision) =>
@@ -101,7 +101,7 @@ const eigTypesSchemaCRUD = {
     .string()
     .nullable()
     .when("types", {
-      is: (types) => {
+      is: (types: string[]) => {
         return (types ?? []).includes(
           Types[Categorie.FONCTIONNEMENT_ORGANISME].AUTRE,
         );

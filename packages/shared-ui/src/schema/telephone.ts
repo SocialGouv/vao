@@ -6,8 +6,8 @@ export const telephoneSchema = () =>
     .test(
       "telephone",
       "Format de numéro de téléphone invalide",
-      (telephone) => {
-        return telephone === null || numTelephoneRegex.test(telephone);
+      (telephone?: string) => {
+        return telephone === null || numTelephoneRegex.test(telephone ?? "");
       },
     )
     .required();

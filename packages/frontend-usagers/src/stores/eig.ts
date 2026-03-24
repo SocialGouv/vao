@@ -58,7 +58,7 @@ export const useEigStore = defineStore("eig", {
       if (!this.selectedDemande) {
         return null;
       }
-      return getTagSejourLibelle(this.selectedDemande);
+      return getTagSejourLibelle(this.selectedDemande as any);
     },
     selectedDemandeDateRange(): [string, string] | null {
       if (!this.selectedDemande) {

@@ -59,7 +59,7 @@ const UpdateTypes = {
   EMAIL_AUTRES_DESTINATAIRES: "EMAIL_AUTRES_DESTINATAIRES",
 };
 
-const isTypeActive = (type) => {
+const isTypeActive = (type: string) => {
   return ![Types[Categorie.VICTIMES].VIOLS].includes(type);
 };
 

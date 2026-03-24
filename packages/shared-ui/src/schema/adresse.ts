@@ -1,9 +1,11 @@
 import * as yup from "yup";
 
-export const adresseSchema = ({ isFromAPIAdresse } = {}) => {
+export const adresseSchema = ({
+  isFromAPIAdresse,
+}: { isFromAPIAdresse?: boolean } = {}): Record<string, yup.AnySchema> => {
   return isFromAPIAdresse
     ? {
-        cleInsee: yup.string().nullable(true),
+        cleInsee: yup.string().nullable(),
         codeInsee: yup.string().required("ce champ est obligatoire"),
         codePostal: yup.string().required("ce champ est obligatoire"),
         coordinates: yup.array().required("ce champ est obligatoire"),
