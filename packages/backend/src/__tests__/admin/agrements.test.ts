@@ -2,6 +2,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AgrementDto,
+  FILE_CATEGORY,
   FUNCTIONAL_ERRORS,
 } from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
@@ -12,6 +13,7 @@ import app from "../../app";
 import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import { createAgrement } from "../helper/fixtures/agrementsHelper";
+import { createDocument } from "../helper/fixtures/documentHelper";
 import { createOrganisme } from "../helper/fixtures/organismeHelper";
 import {
   createAdminUser,
@@ -99,6 +101,19 @@ describe("GET /admin/agrements", () => {
     expect(response.body.agrements.length).toBe(1);
     expect(response.body.agrements[0].numero).toEqual(agrementData.numero);
   });
+  it("devrait ne retourner aucun agrément avec succès", async () => {
+    authUser = await createUsagersUser();
+    const organismeId1 = await createOrganisme({ userId: authUser.id });
+    await buildAgrementFixture({
+      organismeId: organismeId1,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(app).get(
+      `/admin/agrements?limit=1&offset=0&siret=80399410200025`,
+    );
+    expect(response.status).toBe(200);
+    expect(response.body.agrements.length).toBe(0);
+  });
 });
 
 describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
@@ -136,12 +151,16 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
       organismeId,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-
+    const uuid = await createDocument({ userId: null });
     const response = await request(app)
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         commentaire: "L'agrément est à modifier",
-        file: "",
+        file: {
+          agrementId,
+          category: FILE_CATEGORY.AMODIFER,
+          fileUuid: uuid.toString(),
+        },
         statut: AGREMENT_STATUT.A_MODIFIER,
       });
 
