@@ -17,6 +17,7 @@ import {
   AgrementSejoursMapper,
   AgrementsMapper,
 } from "../../shared/agrements/agrements.mapper";
+import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 
@@ -247,6 +248,16 @@ export const AgrementsRepository = {
     `;
     const result = await client.query(query);
     return result.rows;
+  },
+
+  async getById({
+    agrementId,
+    withDetails,
+  }: {
+    agrementId: number;
+    withDetails: boolean;
+  }): Promise<AgrementDto | null> {
+    return AgrementsRepositoryShared.getById({ agrementId, withDetails });
   },
   /**
    * Récupère un agrément par organisme ID (avec ou sans détails liés)

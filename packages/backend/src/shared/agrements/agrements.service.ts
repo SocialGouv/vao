@@ -1,8 +1,8 @@
 import { getById } from "../../services/adresse";
 import { getFileMetaData } from "../../services/Document";
-import { AgrementsRepository } from "./agrements.repository";
+import { AgrementsRepositoryShared } from "./agrements.repository";
 
-export const AgrementService = {
+export const AgrementServiceShared = {
   async getById({
     agrementId,
     withDetails,
@@ -10,7 +10,7 @@ export const AgrementService = {
     agrementId: number;
     withDetails: boolean;
   }) {
-    const agrement = await AgrementsRepository.getById({
+    const agrement = await AgrementsRepositoryShared.getById({
       agrementId,
       withDetails,
     });

@@ -1,4 +1,4 @@
-import { AgrementDto } from "@vao/shared-bridge";
+import type { AgrementDto } from "@vao/shared-bridge";
 
 import { AgrementEntity } from "../../shared/agrements/agrements.entity";
 import {
@@ -13,9 +13,9 @@ import { getPool } from "../../utils/pgpool";
 
 const log = Logger(module.filename);
 // ------------------------------------------------------------
-// 🏗️ Repository Admin
+// 🏗️ Repository Shared
 // ------------------------------------------------------------
-export const AgrementsRepository = {
+export const AgrementsRepositoryShared = {
   /**
    * Récupère un agrément par son ID.
    */

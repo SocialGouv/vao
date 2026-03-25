@@ -6,7 +6,6 @@ import {
 } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
-import { AgrementService as AgrementServiceShared } from "../../shared/agrements/agrements.service";
 import type { RouteRequest, RouteResponse } from "../../types/request";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
@@ -54,7 +53,7 @@ export const AgrementController = {
   ) {
     const agrementId = Number(req.validatedParams!.agrementId);
     try {
-      const agrement: AgrementDto | null = await AgrementServiceShared.getById({
+      const agrement: AgrementDto | null = await AgrementService.getById({
         agrementId,
         withDetails: true,
       });

@@ -8,7 +8,7 @@ import {
 } from "@vao/shared-bridge";
 
 import { mailService } from "../../services/mail";
-import { AgrementsRepository as AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
+import { AgrementServiceShared } from "../../shared/agrements/agrements.service";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 import { AgrementMailUsagers } from "./agrements.mail";
@@ -25,6 +25,15 @@ export const AgrementService = {
       id: activite.id,
       libelle: activite.libelle,
     }));
+  },
+  async getById({
+    agrementId,
+    withDetails,
+  }: {
+    agrementId: number;
+    withDetails: boolean;
+  }) {
+    return await AgrementServiceShared.getById({ agrementId, withDetails });
   },
   async getHistory(agrementId: number) {
     const history = await AgrementsRepository.getHistory(agrementId);
@@ -80,7 +89,7 @@ export const AgrementService = {
     statut: AGREMENT_STATUT;
     usagerUserId: string;
   }): Promise<boolean> {
-    const agrement = await AgrementsRepositoryShared.getById({
+    const agrement = await AgrementsRepository.getById({
       agrementId,
       withDetails: false,
     });
