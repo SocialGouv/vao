@@ -24,6 +24,8 @@ export type RouteSchema<T extends BasicRoute> = {
 
 export type { AgrementAdminRoutes } from "./admin/agrement";
 export { AgrementAdminRoutesSchema } from "./admin/agrement";
+export type { DocumentAdminRoutes } from "./admin/document";
+export { DocumentAdminRoutesSchema } from "./admin/document";
 export type { HebergementAdminRoutes } from "./admin/hebergement";
 export { HebergementAdminRoutesSchema } from "./admin/hebergement";
 export type { AgrementUsagersRoutes } from "./usagers/agrement";

@@ -49,5 +49,12 @@ router.get("/admin/:uuid", boCheckJWT, documentsController.adminDownload);
 router.get("/admin/static/:name", boCheckJWT, documentsController.getStatic);
 router.get("/public/:name", documentsController.getPublic);
 router.post("/", checkJWT, uploadFile, scanFile, documentsController.upload);
+router.post(
+  "/admin/",
+  boCheckJWT,
+  uploadFile,
+  scanFile,
+  documentsController.upload,
+);
 
 export default router;

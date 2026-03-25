@@ -2,6 +2,8 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AgrementDto,
+  FILE_CATEGORY,
+  FUNCTIONAL_ERRORS,
 } from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
 import request from "supertest";
@@ -11,6 +13,7 @@ import app from "../../app";
 import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import { createAgrement } from "../helper/fixtures/agrementsHelper";
+import { createDocument } from "../helper/fixtures/documentHelper";
 import { createOrganisme } from "../helper/fixtures/organismeHelper";
 import {
   createAdminUser,
@@ -69,64 +72,6 @@ describe("GET /admin/agrements", () => {
     expect(response.body.agrements[1].id).toEqual(agrementId2);
   });
 
-  it("devrait changer le statut d'un agrément avec succès (PATCH /admin/agrements/:id/statut)", async () => {
-    authUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementData = await buildAgrementFixture({ organismeId });
-    const agrementId = await createAgrement({
-      agrement: agrementData,
-      organismeId,
-    });
-    authUserBo = await createAdminUser({ territoireCode: "IDF" });
-
-    const response = await request(app)
-      .patch(`/admin/agrements/${agrementId}/statut`)
-      .send({ statut: AGREMENT_STATUT.EN_COURS });
-
-    expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
-
-    // Vérifier que le statut a bien changé en base
-    const listResponse = await request(app).get(`/admin/agrements`);
-    const agrement = listResponse.body.agrements.find(
-      (a: AgrementDto) => a.id === agrementId,
-    );
-    expect(agrement.statut).toBe(AGREMENT_STATUT.EN_COURS);
-  });
-
-  it("devrait historiser l'événement de prise en charge (PATCH /admin/agrements/:id/statut)", async () => {
-    authUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: authUser.id });
-    const agrementData = await buildAgrementFixture({ organismeId });
-    const agrementId = await createAgrement({
-      agrement: agrementData,
-      organismeId,
-    });
-    authUserBo = await createAdminUser({ territoireCode: "IDF" });
-
-    await request(app)
-      .patch(`/admin/agrements/${agrementId}/statut`)
-      .send({ statut: AGREMENT_STATUT.EN_COURS });
-
-    // Vérifier que l'événement a bien été historisé
-    const history = await AgrementService.getHistory(agrementId);
-    const priseEnChargeEvent = history.find(
-      (event) =>
-        event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
-        event.type_precision === AGREMENT_STATUT.EN_COURS,
-    );
-    expect(priseEnChargeEvent).toBeDefined();
-    expect(priseEnChargeEvent?.bo_user).toBeDefined();
-  });
-
-  it("devrait retourner une 404 si l'agrément n'existe pas (PATCH /admin/agrements/:id/statut)", async () => {
-    authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app)
-      .patch(`/admin/agrements/999999/statut`)
-      .send({ statut: "PRIS_EN_CHARGE" });
-    expect(response.status).toBe(404);
-  });
-
   it("devrait retourner un seul agréments filtré avec succès", async () => {
     authUser = await createUsagersUser();
     const organismeId1 = await createOrganisme({ userId: authUser.id });
@@ -155,6 +100,134 @@ describe("GET /admin/agrements", () => {
     expect(response.body.agrements).toBeDefined();
     expect(response.body.agrements.length).toBe(1);
     expect(response.body.agrements[0].numero).toEqual(agrementData.numero);
+  });
+  it("devrait ne retourner aucun agrément avec succès", async () => {
+    authUser = await createUsagersUser();
+    const organismeId1 = await createOrganisme({ userId: authUser.id });
+    await buildAgrementFixture({
+      organismeId: organismeId1,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(app).get(
+      `/admin/agrements?limit=1&offset=0&siret=80399410200025`,
+    );
+    expect(response.status).toBe(200);
+    expect(response.body.agrements.length).toBe(0);
+  });
+});
+
+describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
+  it("devrait changer le statut d'un agrément avec succès", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+
+    const response = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.EN_COURS });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+
+    // Vérifier que le statut a bien changé en base
+    const listResponse = await request(app).get(`/admin/agrements`);
+    const agrement = listResponse.body.agrements.find(
+      (a: AgrementDto) => a.id === agrementId,
+    );
+    expect(agrement.statut).toBe(AGREMENT_STATUT.EN_COURS);
+  });
+
+  it("devrait modifier le statut et historiser", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const uuid = await createDocument({ userId: null });
+    const response = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        commentaire: "L'agrément est à modifier",
+        file: {
+          agrementId,
+          category: FILE_CATEGORY.AMODIFER,
+          fileUuid: uuid.toString(),
+        },
+        statut: AGREMENT_STATUT.A_MODIFIER,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+
+    // Vérifier que l'événement a bien été historisé
+    const history = await AgrementService.getHistory(agrementId);
+    const aModifierEvent = history.find(
+      (event) =>
+        event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+        event.type_precision === AGREMENT_STATUT.A_MODIFIER,
+    );
+
+    expect(aModifierEvent).toBeDefined();
+    expect(aModifierEvent?.bo_user).toBeDefined();
+  });
+
+  it("devrait retourner une 422 si l'agrément n'existe pas", async () => {
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(app)
+      .patch(`/admin/agrements/999999/statut`)
+      .send({ statut: "PRIS_EN_CHARGE" });
+    expect(response.status).toBe(422);
+    expect(response.body.name).toBe(FUNCTIONAL_ERRORS.AGREMENT_NOT_FOUND);
+  });
+
+  it("devrait historiser l'événement de prise en charge", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+
+    await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.EN_COURS });
+
+    // Vérifier que l'événement a bien été historisé
+    const history = await AgrementService.getHistory(agrementId);
+    const priseEnChargeEvent = history.find(
+      (event) =>
+        event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+        event.type_precision === AGREMENT_STATUT.EN_COURS,
+    );
+    expect(priseEnChargeEvent).toBeDefined();
+    expect(priseEnChargeEvent?.bo_user).toBeDefined();
+  });
+
+  it("devrait changer retourner une erreur 400 paramètre manquant", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+
+    const response = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.A_MODIFIER });
+
+    expect(response.status).toBe(400);
   });
 });
 

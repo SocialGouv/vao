@@ -1,5 +1,6 @@
 import type {
   AGREMENT_HISTORY_TYPE,
+  AgrementFilesDto,
   AgrementHistoryItem,
   AgrementHistoryRow,
 } from "@vao/shared-bridge";
@@ -64,11 +65,11 @@ export const AgrementsRepository = {
     log.i("getByRegionObtention - IN");
     const query = () => `
       SELECT
-        agr.*, 
-        pm.siret, 
-        pm.raison_sociale, 
-        pp.prenom, 
-        pp.nom_usage, 
+        agr.*,
+        pm.siret,
+        pm.raison_sociale,
+        pp.prenom,
+        pp.nom_usage,
         pp.siret
       FROM front.agrements agr
       INNER JOIN front.organismes o ON o.id = agr.organisme_id
@@ -159,6 +160,44 @@ export const AgrementsRepository = {
       client.release();
     }
   },
+  /**
+   * Récupère le courriel du user responsable d'un agrément.
+   */
+  async getUserMail(agrementId: number): Promise<{ mail: string }[]> {
+    const client = await getPool().connect();
+    try {
+      const result = await client.query(
+        `SELECT u.mail
+          FROM front.agrements a
+          JOIN front.organismes o ON a.organisme_id = o.id
+          JOIN front.user_organisme uo ON uo.org_id = o.id
+          JOIN front.users u ON uo.use_id = u.id
+          WHERE a.id = $1
+          GROUP BY u.mail`,
+        [agrementId],
+      );
+      if (result.rows.length === 0) {
+        return [];
+      }
+      return result.rows;
+    } finally {
+      client.release();
+    }
+  },
+
+  async insertAgrementFiles(
+    client: any,
+    agrementId: number | null | undefined,
+    file: AgrementFilesDto,
+  ) {
+    if (!file) return;
+    await client.query(
+      `INSERT INTO front.agrement_files (agrement_id, category, file_uuid)
+       VALUES ($1, $2, $3);`,
+      [agrementId, file.category, file.fileUuid],
+    );
+  },
+
   async insertHistoryEvent({
     source,
     agrementId,
@@ -202,16 +241,35 @@ export const AgrementsRepository = {
   async updateStatut({
     agrementId,
     statut,
+    commentaire,
+    file,
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
+    commentaire?: string;
+    file?: AgrementFilesDto;
   }): Promise<boolean> {
     const client = await getPool().connect();
     try {
       const result = await client.query(
-        `UPDATE front.agrements SET statut = $1, updated_at = NOW() WHERE id = $2`,
-        [statut, agrementId],
+        `UPDATE front.agrements
+          SET
+            statut = $1::front.agrement_statut,
+            commentaire_refus = CASE
+              WHEN $1::text = '${AGREMENT_STATUT.REFUSE}' THEN $3
+              ELSE commentaire_refus
+            END,
+            commentaire_completude = CASE
+              WHEN $1::text = '${AGREMENT_STATUT.A_MODIFIER}' THEN $3
+              ELSE commentaire_completude
+            END,
+            updated_at = NOW()
+          WHERE id = $2`,
+        [statut, agrementId, commentaire],
       );
+      if (file) {
+        await AgrementsRepository.insertAgrementFiles(client, agrementId, file);
+      }
       return result.rowCount > 0;
     } finally {
       client.release();

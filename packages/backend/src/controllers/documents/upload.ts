@@ -108,7 +108,7 @@ export default async function upload(
       category,
       detectedMimeType,
       fileBuffer,
-      decoded!.id,
+      !decoded!.territoireCode ? decoded!.id : null,
     );
 
     log.d("DONE", uuid);

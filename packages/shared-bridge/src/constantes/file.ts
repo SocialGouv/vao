@@ -1,4 +1,6 @@
 export enum FILE_CATEGORY {
+  AMODIFER = "AGR_AMODIFIER",
+  REFUS = "AGR_REFUS",
   PROCVERBAL = "AGR_PROCVERBAL",
   MOTIVATION = "AGR_MOTIVATION",
   IMMATRICUL = "AGR_IMMATRICUL",
@@ -29,6 +31,8 @@ export enum FILE_CATEGORY {
 }
 
 export type FileKey =
+  | "fileAModifier"
+  | "fileRefus"
   | "filesMotivation"
   | "fileProcesVerbal"
   | "fileImmatriculation"
@@ -57,6 +61,16 @@ export type FileKey =
   | "filesProjSejoursBudgetPersonnes";
 
 export const FILE_CATEGORY_CONFIG = {
+  [FILE_CATEGORY.AMODIFER]: {
+    fileKey: "fileAModifier",
+    label: "Fichier associé à la demande de complétion",
+    multiple: false,
+  },
+  [FILE_CATEGORY.REFUS]: {
+    fileKey: "fileRefus",
+    label: "Fichier lié au refus de l'agrément",
+    multiple: false,
+  },
   [FILE_CATEGORY.PROCVERBAL]: {
     fileKey: "fileProcesVerbal",
     label: "Procès verbal d’assemblée générale",

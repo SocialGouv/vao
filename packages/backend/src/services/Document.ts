@@ -61,7 +61,7 @@ const query = {
     category: string,
     filename: string,
     mime_type: string,
-    userId: string | number,
+    userId: string | number | null,
     file: Buffer,
   ) => [
     `
@@ -180,7 +180,7 @@ export const createFile = async (
   category: string,
   mimetype: string,
   data: Buffer,
-  userid: string | number,
+  userid: string | number | null,
 ): Promise<string> => {
   log.i("createFile pg - In");
   try {
@@ -214,7 +214,7 @@ async function uploadToS3(
   filename: string,
   category: string,
   mimetype: string,
-  userid: string | number,
+  userid: string | number | null,
   data: Buffer,
   uuid: string,
 ): Promise<void> {

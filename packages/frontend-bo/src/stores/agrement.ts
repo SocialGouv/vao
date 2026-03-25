@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import type {
   AgrementDto,
+  AgrementFilesDto,
   ActiviteDto,
   OrganismeDto,
   AGREMENT_STATUT,
@@ -67,15 +68,21 @@ export const useAgrementStore = defineStore("agrement", {
     async changeStatutAgrement({
       agrementId,
       statut,
+      commentaire,
+      file,
     }: {
       agrementId: number;
       statut: AGREMENT_STATUT;
+      commentaire?: string;
+      file?: AgrementFilesDto;
     }): Promise<boolean> {
       log.i("changeStatutAgrement - IN", { agrementId, statut });
       try {
         const { success } = await AgrementService.patchStatut(
           agrementId,
           statut,
+          commentaire,
+          file,
         );
         if (success && this.agrementCourant?.id === agrementId) {
           this.agrementCourant.statut = statut;
