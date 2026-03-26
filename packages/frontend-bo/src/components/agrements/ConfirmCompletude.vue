@@ -1,8 +1,8 @@
 <template>
   <div>
-    <label class="fr-label" for="file-upload-with-error">
+    <label class="fr-label">
       Vous devez fournir un récépissé de complétude du dossier, qui sera
-      transmis à l’organisateur.
+      transmis à l'organisateur.
       <span class="fr-hint-text">.</span>
     </label>
     <div class="fr-fieldset">
