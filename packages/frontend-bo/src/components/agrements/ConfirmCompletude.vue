@@ -25,12 +25,12 @@
       <p>
         La décision d’agrément intervient à l’étape suivante, dans un délai de
         deux mois.
-      </p></DsfrAlert
-    >
+      </p>
+    </DsfrAlert>
     <div class="fr-fieldset">
       <DsfrButtonGroup :inline-layout-when="true">
         <DsfrButton
-          id="CancelDemandeComplement"
+          id="CancelConfirmCompletude"
           secondary
           @click.prevent="cancelConfirmCompletude"
           >Annuler
@@ -50,13 +50,13 @@
 <script setup lang="ts">
 import { FileUpload } from "@vao/shared-ui";
 
-const emit = defineEmits(["valid", "update:file", "close"]);
-
 const localFile = ref<File | null>(null);
 
 const props = defineProps<{
   cdnUrl: string;
 }>();
+
+const emit = defineEmits(["valid", "update:file", "close"]);
 
 function handleFileChange(newFile: File | null) {
   localFile.value = newFile;

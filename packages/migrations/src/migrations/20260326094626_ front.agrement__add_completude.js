@@ -36,7 +36,7 @@ exports.down = async function (knex) {
         enum_values
       );
 
-      ALTER TABLE front.agrement_file
+      ALTER TABLE front.agrement_files
       ALTER COLUMN category TYPE front.file_category
       USING category::text::front.file_category;
 

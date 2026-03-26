@@ -55,6 +55,7 @@
 <script setup lang="ts">
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { useToaster } from "@vao/shared-ui";
+import type { UUID } from "crypto";
 import { useAgrementStore } from "~/stores/agrement";
 import { useDocumentStore } from "~/stores/document";
 const agrementStore = useAgrementStore();
@@ -141,10 +142,11 @@ async function createDocument({
   document,
   category,
 }: {
-  document: any;
+  document: File | undefined;
   category: FILE_CATEGORY;
 }) {
-  if (document && Object.keys(document?.uuid ?? {}).length === 0) {
+  console.log("document", document);
+  if (document) {
     try {
       const uuid = await documentStore.postDocument({ document, category });
       toaster.info({

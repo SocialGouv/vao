@@ -1,6 +1,6 @@
 /**
  * Migration agrements
- * Ajout des informations lors de complétude ou refus
+ * Ajout des informations lors de demande de complétion ou refus
  * PostgreSQL + Knex.js
  */
 
@@ -16,7 +16,7 @@ exports.up = async function (knex) {
     DO $$ BEGIN
       IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'file_category') THEN
         ALTER TYPE front.file_category ADD VALUE 'AGR_AMODIFIER';
-        ALTER TYPE front.file_category ADD VALUE 'AGR_REFUS'; 
+        ALTER TYPE front.file_category ADD VALUE 'AGR_REFUS';
       END IF;
     END $$;
   `);
@@ -50,7 +50,7 @@ exports.down = async function (knex) {
         enum_values
       );
 
-      ALTER TABLE front.agrement_file
+      ALTER TABLE front.agrement_files
       ALTER COLUMN category TYPE front.file_category
       USING category::text::front.file_category;
 
