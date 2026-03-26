@@ -20,7 +20,7 @@
       </p>
       <p v-if="agrementCourant.dateDepot">
         <b>Date de la demande de renouvellement :</b>
-        {{ agrementCourant.dateDepot }}
+        {{ formatFR(agrementCourant.dateDepot) }}
       </p>
     </div>
 
@@ -82,6 +82,7 @@ import { onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import { DemandeStatusBadge, Historique } from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
+import { formatFR } from "@vao/shared-bridge";
 
 const organismeStore = useOrganismeStore();
 

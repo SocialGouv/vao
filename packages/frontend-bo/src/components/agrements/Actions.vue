@@ -17,23 +17,36 @@
       <AgrementsDemandeComplements
         :cdn-url="props.cdnUrl"
         @valid="onValidComplement"
+        @close="isModalComplementOpened = false"
         @update:file="fileUpdate"
       />
     </DsfrModal>
-
+    <DsfrModal
+      name="modalConfirmCompletude"
+      :opened="isModalConfirmCompletudeOpened"
+      title="Confirmation de la complétude du dossier"
+      size="xl"
+      @close="isModalConfirmCompletudeOpened = false"
+    >
+      <AgrementsConfirmCompletude
+        :cdn-url="props.cdnUrl"
+        @valid="onValidConfirmCompletude"
+        @close="isModalConfirmCompletudeOpened = false"
+        @update:file="fileUpdate"
+      />
+    </DsfrModal>
     <DsfrButtonGroup :inline-layout-when="true">
       <DsfrButton
         label="Demander des compléments à l'organisateur"
         tertiary
         type="button"
-        :disabled="false"
         @click="isModalComplementOpened = true"
       />
       <DsfrButton
         label="Confirmer la complétude du dossier"
         primary
         type="button"
-        :disabled="true"
+        @click="isModalConfirmCompletudeOpened = true"
       />
     </DsfrButtonGroup>
   </div>
@@ -60,6 +73,7 @@ const ALLOWED_STATUTS_ACTIONS = [
 ];
 
 const isModalComplementOpened = ref(false);
+const isModalConfirmCompletudeOpened = ref(false);
 
 const isActionsVisible = computed(() =>
   agrementStore.agrementCourant
@@ -86,6 +100,32 @@ const onValidComplement = async (payload: { commentaire: string }) => {
       toaster.success({
         titleTag: "h2",
         description: `La demande de complétion de l'agrément a été envoyée`,
+      });
+    } catch (error) {
+      toaster.error({
+        titleTag: "h2",
+        description: error instanceof Error ? error.message : String(error),
+      });
+      return undefined;
+    }
+  }
+};
+const onValidConfirmCompletude = async () => {
+  isModalConfirmCompletudeOpened.value = false;
+  if (agrementStore.agrementCourant?.id) {
+    try {
+      const fileCompletude = await createDocument({
+        document: file?.value,
+        category: FILE_CATEGORY.COMPLETUDE,
+      });
+      await agrementStore.changeStatutAgrement({
+        agrementId: agrementStore.agrementCourant.id,
+        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        file: fileCompletude,
+      });
+      toaster.success({
+        titleTag: "h2",
+        description: `La confirmation de complétude de l'agrément a été envoyée`,
       });
     } catch (error) {
       toaster.error({

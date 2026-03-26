@@ -32,7 +32,7 @@
         <DsfrButton
           id="CancelDemandeComplement"
           secondary
-          @click.prevent="validateDemandeComplement"
+          @click.prevent="closeDemandeComplement"
           >Annuler
         </DsfrButton>
         <DsfrButton
@@ -52,7 +52,7 @@ import { useField, useForm } from "vee-validate";
 import { FileUpload } from "@vao/shared-ui";
 import * as yup from "yup";
 
-const emit = defineEmits(["valid", "update:file"]);
+const emit = defineEmits(["valid", "update:file", "close"]);
 
 const localFile = ref<File | null>(null);
 
@@ -91,6 +91,9 @@ function handleFileChange(newFile: File | null) {
 }
 function validateDemandeComplement() {
   emit("valid", { ...values });
+}
+function closeDemandeComplement() {
+  emit("close");
 }
 </script>
 

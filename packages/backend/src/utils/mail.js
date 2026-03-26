@@ -54,6 +54,38 @@ module.exports = {
         return params;
       },
     },
+    agrement: {
+      sendStatutCompletudeMail: ({ mailDreets, agrementId, Organisme }) => {
+        const urlAgrement = frontBODomain + "/agrements/" + agrementId;
+        const html = sendTemplate.getBody(
+          "Portail VAO – Confirmation de complétude du dossier de renouvellement d’agrément",
+          [
+            {
+              p: [
+                "Bonjour,",
+                `Vous venez de confirmer la complétude du dossier de renouvellement d’agrément de l’OVA ${Organisme.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme.personneMorale.raisonSociale : (Organisme.personnePhysique?.nomUsage ?? Organisme.personnePhysique?.nomNaissance)}.`,
+                "À partir de cette date, un délai légal de <strong>2 mois calendaires</strong> est activé pour instruire la demande et rendre une décision expresse.",
+                "Sans décision expresse à l’issue de ce délai, la demande sera automatiquement <strong>validée par tacite accord</strong>. La décision implicite d’acceptation du dossier ne court qu'à compter du moment où l’ensemble des pièces sont fournies par l’OVA. En cas de demande de compléments d’information par la DREETS, le délai est donc suspendu..",
+                "Un accusé a été adressé automatiquement à l’OVA concerné.",
+                "Vous pouvez consulter le dossier à tout moment via le portail VAO :",
+                `<a href=${urlAgrement}>${urlAgrement}</a>`,
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+        );
+
+        return {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject:
+            "Portail VAO – Confirmation de complétude du dossier de renouvellement d’agrément",
+          to: mailDreets,
+        };
+      },
+    },
     authentication: {
       sendForgottenPassword: ({ email, token }) => {
         log.i("sendForgottenPassword - In", {
@@ -937,6 +969,42 @@ module.exports = {
           replyTo: senderEmail,
           subject:
             "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
+          to: email,
+        };
+        log.d("sendStatutTransmisMail post email", { params });
+        return params;
+      },
+      sendStatutCompletudeMail: ({ email, regionDreets }) => {
+        log.i("sendStatutAModifierMail - In", { email });
+        if (!email) {
+          throw new AppError(
+            "Email manquant pour l'envoi du mail de demande de modification d'agrément",
+          );
+        }
+        const urlAgrement = frontUsagersDomain + "/mon-agrement";
+        const html = sendTemplate.getBody(
+          "Portail VAO – Confirmation de la complétude de votre dossier de renouvellement d’agrément",
+          [
+            {
+              p: [
+                "Bonjour,",
+                `Votre demande de renouvellement d’agrément a été examinée par la DREETS ${regionDreets}.`,
+                "Conformément à la réglementation, l’administration dispose d’un délai de 2 mois pour instruire votre dossier et rendre une décision (ce délai est géré par la DREETS).",
+                `À défaut de décision dans ce délai, votre agrément sera réputé accordé (règle du "silence vaut accord"). La décision implicite d’acceptation du dossier ne court qu'à compter du moment où l’ensemble des pièces sont fournies par l’OVA.`,
+                "Vous pouvez suivre l’avancement de votre demande à tout moment depuis votre espace sur le portail VAO :",
+                `<a href=${urlAgrement}>${urlAgrement}</a>`,
+              ],
+              type: "p",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+        );
+        const params = {
+          from: senderEmail,
+          html,
+          replyTo: senderEmail,
+          subject:
+            "Portail VAO – Confirmation de la complétude de votre dossier de renouvellement d’agrément",
           to: email,
         };
         log.d("sendStatutTransmisMail post email", { params });
