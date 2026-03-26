@@ -1,15 +1,15 @@
 import type { AgrementDto } from "@vao/shared-bridge";
 
-import { AgrementEntity } from "../../shared/agrements/agrements.entity";
+import Logger from "../../utils/logger";
+import { getPool } from "../../utils/pgpool";
+import { AgrementEntity } from "./agrements.entity";
 import {
   AgrementAnimationMapper,
   AgrementBilanAnnuelMapper,
   AgrementFilesMapper,
   AgrementSejoursMapper,
   AgrementsMapper,
-} from "../../shared/agrements/agrements.mapper";
-import Logger from "../../utils/logger";
-import { getPool } from "../../utils/pgpool";
+} from "./agrements.mapper";
 
 const log = Logger(module.filename);
 // ------------------------------------------------------------
