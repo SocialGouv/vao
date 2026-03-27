@@ -38,6 +38,9 @@
         :asc="asc"
       >
         <h1>Dossier</h1>
+        <AgrementsActions
+          :cdn-url="`${config.public.backendUrl}/documents/`"
+        ></AgrementsActions>
       </DsfrTabContent>
 
       <DsfrTabContent
@@ -147,6 +150,7 @@ const initialSelectedIndex =
   typeof queryIndex === "string" ? parseInt(queryIndex, 10) : 0;
 
 const selectedTabIndex = ref(initialSelectedIndex);
+const config = useRuntimeConfig();
 
 const asc = ref(true);
 
