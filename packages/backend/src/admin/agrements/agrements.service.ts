@@ -12,9 +12,10 @@ import Region from "../../services/geo/Region";
 import { mailService } from "../../services/mail";
 import { getOne as serviceOrganismeGetOne } from "../../services/Organisme";
 import TerritoireService from "../../services/Territoire";
+import { AgrementMailUsagers } from "../../usagers/agrements/agrements.mail";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
-import MailUtils from "../../utils/mail";
+import { AgrementMailAdmin } from "./agrements.mail";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
@@ -206,16 +207,21 @@ export const AgrementService = {
           const organisme = await serviceOrganismeGetOne({
             "o.id": agrement.organismeId,
           });
-
           const fiche = await TerritoireService.readOne(territoire.id);
           if (fiche?.service_mail) {
-            await mailService.send(
-              MailUtils.bo.agrement.sendStatutCompletudeMail({
-                Organisme: organisme,
-                agrementId,
-                mailDreets: fiche.service_mail,
-              }),
-            );
+            try {
+              await mailService.send(
+                AgrementMailAdmin.sendStatutCompletudeMail({
+                  Organisme: organisme,
+                  agrementId,
+                  mailDreets: fiche.service_mail,
+                }),
+              );
+            } catch (e) {
+              log.w("Erreur lors de l'envoi de l'email à la Dreets", e);
+            }
+          } else {
+            log.w("Aucun email trouvé pour le territoire", territoire.id);
           }
         }
       }
@@ -225,12 +231,12 @@ export const AgrementService = {
         try {
           const mailToSend =
             statut === AGREMENT_STATUT.A_MODIFIER
-              ? MailUtils.usagers.agrement.sendStatutAModifierMail({
+              ? AgrementMailUsagers.sendStatutAModifierMail({
                   commentaire,
                   email: mailsOVA,
                   regionDreets: regionDreets.text,
                 })
-              : MailUtils.usagers.agrement.sendStatutCompletudeMail({
+              : AgrementMailUsagers.sendStatutCompletudeMail({
                   email: mailsOVA,
                   regionDreets: regionDreets.text,
                 });

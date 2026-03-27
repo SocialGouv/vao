@@ -145,7 +145,6 @@ async function createDocument({
   document: File | undefined;
   category: FILE_CATEGORY;
 }) {
-  console.log("document", document);
   if (document) {
     try {
       const uuid = await documentStore.postDocument({ document, category });

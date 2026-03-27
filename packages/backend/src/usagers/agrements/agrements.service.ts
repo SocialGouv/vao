@@ -12,7 +12,7 @@ import { getFileMetaData } from "../../services/Document";
 import { mailService } from "../../services/mail";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
-import MailUtils from "../../utils/mail";
+import { AgrementMailUsagers } from "./agrements.mail";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
@@ -149,7 +149,7 @@ export const AgrementService = {
       if (email) {
         try {
           await mailService.send(
-            MailUtils.usagers.agrement.sendStatutTransmisMail({ email }),
+            AgrementMailUsagers.sendStatutTransmisMail({ email }),
           );
         } catch (e) {
           log.w("Erreur lors de l'envoi de l'email de transmission", e);
