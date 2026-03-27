@@ -1,34 +1,20 @@
 /**
  * Migration agrements
- * Ajout des informations lors de demande de complétion ou refus
+ * Ajout des informations lors de complétude
  * PostgreSQL + Knex.js
  */
 
 exports.up = async function (knex) {
-  await knex.schema
-    .withSchema("front")
-    .alterTable("agrements", function (table) {
-      table.text("commentaire_completude");
-      table.text("commentaire_refus");
-    });
-
   await knex.schema.raw(`
     DO $$ BEGIN
       IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'file_category') THEN
-        ALTER TYPE front.file_category ADD VALUE 'AGR_AMODIFIER';
-        ALTER TYPE front.file_category ADD VALUE 'AGR_REFUS';
+        ALTER TYPE front.file_category ADD VALUE 'AGR_COMPLETUDE';
       END IF;
     END $$;
   `);
 };
 
 exports.down = async function (knex) {
-  await knex.schema
-    .withSchema("front")
-    .alterTable("agrements", function (table) {
-      table.dropColumn("commentaire_completude");
-      table.dropColumn("commentaire_refus");
-    });
   await knex.schema.raw(`
     DO $$
     DECLARE
@@ -41,7 +27,7 @@ exports.down = async function (knex) {
       JOIN pg_namespace n ON n.oid = t.typnamespace
       WHERE t.typname = 'file_category'
         AND n.nspname = 'front'
-        AND enumlabel NOT IN ('AGR_AMODIFIER', 'AGR_REFUS');
+        AND enumlabel NOT IN ('AGR_COMPLETUDE');
 
       ALTER TYPE front.file_category RENAME TO file_category_old;
 

@@ -10,11 +10,13 @@ import request from "supertest";
 
 import { AgrementService } from "../../admin/agrements/agrements.service";
 import app from "../../app";
+import { mailService } from "../../services/mail";
 import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import { createAgrement } from "../helper/fixtures/agrementsHelper";
 import { createDocument } from "../helper/fixtures/documentHelper";
 import { createOrganisme } from "../helper/fixtures/organismeHelper";
+import { createTerritoire } from "../helper/fixtures/territoireHelper";
 import {
   createAdminUser,
   createUsagersUser,
@@ -143,6 +145,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
   });
 
   it("devrait modifier le statut et historiser", async () => {
+    const sendSpy = jest.spyOn(mailService, "send");
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
@@ -166,6 +169,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
+    expect(sendSpy).toHaveBeenCalledTimes(1);
 
     // Vérifier que l'événement a bien été historisé
     const history = await AgrementService.getHistory(agrementId);
@@ -177,6 +181,70 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     expect(aModifierEvent).toBeDefined();
     expect(aModifierEvent?.bo_user).toBeDefined();
+  });
+
+  it("devrait modifier le statut COMPLETUDE et historiser", async () => {
+    const sendSpy = jest.spyOn(mailService, "send");
+    authUser = await createUsagersUser();
+
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.EN_COURS,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    await createTerritoire({ territoireCode: "IDF" });
+
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const uuid = await createDocument({ userId: null });
+    const response = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        file: {
+          agrementId,
+          category: FILE_CATEGORY.COMPLETUDE,
+          fileUuid: uuid.toString(),
+        },
+        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(sendSpy).toHaveBeenCalledTimes(2); // BO + usager
+    // Vérifier que l'événement a bien été historisé
+    const history = await AgrementService.getHistory(agrementId);
+    const aModifierEvent = history.find(
+      (event) =>
+        event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+        event.type_precision === AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+    );
+
+    expect(aModifierEvent).toBeDefined();
+    expect(aModifierEvent?.bo_user).toBeDefined();
+  });
+
+  it("devrait remonter une erreur file required pour statut COMPLETUDE_CONFIRME", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.EN_COURS,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      });
+
+    expect(response.status).toBe(400);
   });
 
   it("devrait retourner une 422 si l'agrément n'existe pas", async () => {

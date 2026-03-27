@@ -30,10 +30,17 @@ const requiredIfInformationNeeds = (field: yup.AnySchema) =>
     then: (schema) => schema.required("Champ obligatoire"),
   });
 
+const requiredOnCompletude = (field: yup.AnySchema) =>
+  field.when("statut", {
+    is: (val: AGREMENT_STATUT) => val === AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+    otherwise: (schema) => schema.notRequired().nullable(),
+    then: (schema) => schema.required("Champ obligatoire"),
+  });
+
 export const PatchStatutRouteSchema: RouteSchema<PatchStatutRoute> = {
   body: yup.object({
     commentaire: requiredIfInformationNeeds(yup.string().min(20)),
-    file: yup.mixed(),
+    file: requiredOnCompletude(yup.mixed()),
     statut: yup
       .mixed<AGREMENT_STATUT>()
       .oneOf(Object.values(AGREMENT_STATUT))

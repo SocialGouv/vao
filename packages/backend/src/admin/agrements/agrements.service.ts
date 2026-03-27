@@ -11,9 +11,11 @@ import {
 import Region from "../../services/geo/Region";
 import { mailService } from "../../services/mail";
 import { getOne as serviceOrganismeGetOne } from "../../services/Organisme";
+import TerritoireService from "../../services/Territoire";
+import { AgrementMailUsagers } from "../../usagers/agrements/agrements.mail";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
-import MailUtils from "../../utils/mail";
+import { AgrementMailAdmin } from "./agrements.mail";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
@@ -188,24 +190,57 @@ export const AgrementService = {
       typePrecision: statut,
     });
 
-    if (statut === AGREMENT_STATUT.A_MODIFIER) {
+    if (
+      statut === AGREMENT_STATUT.A_MODIFIER ||
+      statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME
+    ) {
       const regionDreets = await Region.fetchOne(territoireCode);
       if (!regionDreets) {
         throw new AppError("Échec, une région devrait exister", {
           statusCode: 500,
         });
       }
+      if (statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME) {
+        const territoire =
+          await TerritoireService.readFicheIdByTerCode(territoireCode);
+        if (territoire) {
+          const organisme = await serviceOrganismeGetOne({
+            "o.id": agrement.organismeId,
+          });
+          const fiche = await TerritoireService.readOne(territoire.id);
+          if (fiche?.service_mail) {
+            try {
+              await mailService.send(
+                AgrementMailAdmin.sendStatutCompletudeMail({
+                  Organisme: organisme,
+                  agrementId,
+                  mailDreets: fiche.service_mail,
+                }),
+              );
+            } catch (e) {
+              log.w("Erreur lors de l'envoi de l'email à la Dreets", e);
+            }
+          } else {
+            log.w("Aucun email trouvé pour le territoire", territoire.id);
+          }
+        }
+      }
       const resultat = await AgrementsRepository.getUserMail(agrementId);
       const mailsOVA = resultat.map((u: { mail: string }) => u.mail);
       if (mailsOVA.length > 0) {
         try {
-          await mailService.send(
-            MailUtils.usagers.agrement.sendStatutAModifierMail({
-              commentaire,
-              email: mailsOVA,
-              regionDreets: regionDreets.text,
-            }),
-          );
+          const mailToSend =
+            statut === AGREMENT_STATUT.A_MODIFIER
+              ? AgrementMailUsagers.sendStatutAModifierMail({
+                  commentaire,
+                  email: mailsOVA,
+                  regionDreets: regionDreets.text,
+                })
+              : AgrementMailUsagers.sendStatutCompletudeMail({
+                  email: mailsOVA,
+                  regionDreets: regionDreets.text,
+                });
+          await mailService.send(mailToSend);
         } catch (e) {
           log.w("Erreur lors de l'envoi de l'email de transmission", e);
         }
@@ -213,7 +248,6 @@ export const AgrementService = {
         log.w("Aucun email trouvé pour l'agrément", agrementId);
       }
     }
-
     return true;
   },
 };
