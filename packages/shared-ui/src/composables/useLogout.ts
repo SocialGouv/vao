@@ -8,7 +8,17 @@ import { unref } from "vue";
  * @param {any} options.user - L'objet utilisateur courant
  * @param {Function} options.resetUserStore - Fonction pour reset le store utilisateur
  */
-export function useLogout({ apiUrl, getUserId, user, resetUserStore }) {
+export function useLogout({
+  apiUrl,
+  getUserId,
+  user,
+  resetUserStore,
+}: {
+  apiUrl: string;
+  getUserId: (user: any) => string;
+  user: any;
+  resetUserStore: () => void;
+}) {
   const log = logger("logout");
 
   async function logout() {

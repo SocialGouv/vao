@@ -1,14 +1,15 @@
 <script lang="ts" setup>
 import { computed, onUnmounted, ref } from "vue";
 
-import { useCollapsable, useRandomId } from "@gouvminint/vue-dsfr";
 import {
   DsfrButton,
   DsfrCheckbox,
   DsfrFieldset,
   DsfrInput,
-  type DsfrMultiSelectProps,
+  useCollapsable,
+  useRandomId,
 } from "@gouvminint/vue-dsfr";
+import type { DsfrMultiSelectProps } from "@gouvminint/vue-dsfr";
 
 interface Option {
   id?: string;

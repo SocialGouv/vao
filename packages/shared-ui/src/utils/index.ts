@@ -7,7 +7,7 @@ import MessageHover from "../components/messages/MessageHover.vue";
 import MessageEtat from "../components/messages/MessageEtat.vue";
 import status from "./status";
 import statusUser from "./statusUser";
-import columnsTable from "./columnsTable";
+import * as columnsTable from "./columnsTable";
 import * as fileUtils from "./file";
 
 const regex = hebergement;
