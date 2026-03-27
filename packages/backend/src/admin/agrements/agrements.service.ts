@@ -12,6 +12,7 @@ import Region from "../../services/geo/Region";
 import { mailService } from "../../services/mail";
 import { getOne as serviceOrganismeGetOne } from "../../services/Organisme";
 import TerritoireService from "../../services/Territoire";
+import { AgrementServiceShared } from "../../shared/agrements/agrements.service";
 import { AgrementMailUsagers } from "../../usagers/agrements/agrements.mail";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
@@ -21,8 +22,14 @@ import { AgrementsRepository } from "./agrements.repository";
 const log = logger(module.filename);
 
 export const AgrementService = {
-  async getById(agrementId: number) {
-    return AgrementsRepository.getById(agrementId);
+  async getById({
+    agrementId,
+    withDetails,
+  }: {
+    agrementId: number;
+    withDetails: boolean;
+  }) {
+    return await AgrementServiceShared.getById({ agrementId, withDetails });
   },
   async getHistory(agrementId: number) {
     const history = await AgrementsRepository.getHistory(agrementId);
@@ -148,7 +155,10 @@ export const AgrementService = {
     commentaire?: string;
     territoireCode: string;
   }): Promise<boolean> {
-    const agrement = await AgrementsRepository.getById(agrementId);
+    const agrement = await AgrementsRepository.getById({
+      agrementId,
+      withDetails: false,
+    });
     if (!agrement) {
       log.w("Agrement non trouvé", agrementId);
       throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_NOT_FOUND);

@@ -3,10 +3,11 @@
     <DsfrBreadcrumb :links="links" />
     <div class="fr-grid-row fr-py-5w">
       <h1>
-        Mon agrément : {{ agrementStore.agrementCourant?.numero }}
+        Mon agrément : {{ agrementStore.agrementEnTraitement?.numero }}
         <AgrementStatusBadge
           :statut="
-            agrementStore?.agrementCourant?.statut ?? AGREMENT_STATUT.BROUILLON
+            agrementStore?.agrementEnTraitement?.statut ??
+            AGREMENT_STATUT.BROUILLON
           "
           type="fu"
         />
@@ -35,11 +36,7 @@
         <h2>Dossier</h2>
         <AgrementAlertRenouvellement></AgrementAlertRenouvellement>
         <AgrementEtapesAvancement
-          :init-agrement="
-            agrementStore?.agrementEnTraitement ??
-            agrementStore.agrementCourant ??
-            {}
-          "
+          :init-agrement="agrementStore?.agrementEnTraitement ?? {}"
           :territoire="territoireStore.territoire ?? {}"
           :user="userStore.user ?? {}"
         />
@@ -54,7 +51,7 @@
         <AgrementReadOnly
           class="fr-my-2w"
           :init-organisme="organismeStore.organismeCourant ?? {}"
-          :init-agrement="agrementStore.agrementCourant ?? {}"
+          :init-agrement="agrementStore.agrementEnTraitement ?? {}"
           :modifiable="false"
           :cdn-url="`${config.public.backendUrl}/documents/`"
         />
@@ -67,7 +64,7 @@
         :asc="asc"
       >
         <AgrementDocuments
-          :init-agrement="agrementStore.agrementCourant ?? {}"
+          :init-agrement="agrementStore.agrementEnTraitement ?? {}"
         ></AgrementDocuments>
       </DsfrTabContent>
       <DsfrTabContent
@@ -100,7 +97,11 @@
 
 <script setup lang="ts">
 import { getYear4k, AGREMENT_STATUT } from "@vao/shared-bridge";
-import { AgrementStatusBadge, Historique } from "@vao/shared-ui";
+import {
+  AgrementStatusBadge,
+  Historique,
+  AgrementDocuments,
+} from "@vao/shared-ui";
 
 const agrementStore = useAgrementStore();
 const territoireStore = useTerritoireStore();
@@ -123,7 +124,7 @@ onMounted(async () => {
   if (!agrementStore.agrementEnTraitement) {
     await agrementStore.getEnRenouvellement();
   }
-  const agrementId = agrementStore.agrementCourant?.id;
+  const agrementId = agrementStore.agrementEnTraitement?.id;
   if (!agrementId) {
     log.w("Aucun id d'agrément trouvé, impossible de récupérer l'historique.");
     return;
@@ -138,8 +139,8 @@ onMounted(async () => {
 });
 
 const agrementAnneeRenouvellement = computed(() => {
-  return agrementStore.agrementCourant?.dateDepot
-    ? getYear4k(agrementStore.agrementCourant?.dateDepot)
+  return agrementStore.agrementEnTraitement?.dateDepot
+    ? getYear4k(agrementStore.agrementEnTraitement?.dateDepot)
     : "Non déposé";
 });
 

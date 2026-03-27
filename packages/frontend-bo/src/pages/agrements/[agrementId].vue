@@ -38,9 +38,6 @@
         :asc="asc"
       >
         <h1>Dossier</h1>
-        <AgrementsActions
-          :cdn-url="`${config.public.backendUrl}/documents/`"
-        ></AgrementsActions>
       </DsfrTabContent>
 
       <DsfrTabContent
@@ -49,6 +46,9 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
+        <AgrementDocuments
+          :init-agrement="agrementStore.agrementCourant ?? {}"
+        ></AgrementDocuments>
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="agrement-content-2"
@@ -80,7 +80,11 @@
 import { useAgrementStore } from "~/stores/agrement";
 import { onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-import { DemandeStatusBadge, Historique } from "@vao/shared-ui";
+import {
+  DemandeStatusBadge,
+  Historique,
+  AgrementDocuments,
+} from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
 import { formatFR } from "@vao/shared-bridge";
 
@@ -143,7 +147,6 @@ const initialSelectedIndex =
   typeof queryIndex === "string" ? parseInt(queryIndex, 10) : 0;
 
 const selectedTabIndex = ref(initialSelectedIndex);
-const config = useRuntimeConfig();
 
 const asc = ref(true);
 

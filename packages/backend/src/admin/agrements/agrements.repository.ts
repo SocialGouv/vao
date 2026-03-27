@@ -13,6 +13,7 @@ import {
 import { processQuery } from "../../helpers/queryParams";
 import { AgrementEntity } from "../../shared/agrements/agrements.entity";
 import { AgrementsMapper } from "../../shared/agrements/agrements.mapper";
+import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 
@@ -21,30 +22,15 @@ const log = Logger(module.filename);
 // 🏗️ Repository Admin
 // ------------------------------------------------------------
 export const AgrementsRepository = {
-  /**
-   * Récupère un agrément par son ID.
-   */
-  async getById(agrementId: number): Promise<AgrementDto | null> {
-    const client = await getPool().connect();
-    try {
-      const result = await client.query(
-        `SELECT a.*, pm.raison_sociale
-       FROM front.agrements a
-       JOIN front.organismes o ON a.organisme_id = o.id
-       LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
-       WHERE a.id = $1
-       LIMIT 1;`,
-        [agrementId],
-      );
-      if (result.rows.length === 0) {
-        return null;
-      }
-      return AgrementsMapper.toModel(result.rows[0]);
-    } finally {
-      client.release();
-    }
+  async getById({
+    agrementId,
+    withDetails,
+  }: {
+    agrementId: number;
+    withDetails: boolean;
+  }): Promise<AgrementDto | null> {
+    return AgrementsRepositoryShared.getById({ agrementId, withDetails });
   },
-
   /**
    * Récupère une liste d'agréments par région d'obtention
    */

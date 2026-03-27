@@ -17,6 +17,7 @@ import {
   AgrementSejoursMapper,
   AgrementsMapper,
 } from "../../shared/agrements/agrements.mapper";
+import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 
@@ -154,7 +155,7 @@ export const AgrementsRepository = {
           bilan_qual_elements_marquants, bilan_financier_comptabilite,
           bilan_financier_comparatif, bilan_financier_ressources_humaines,
           bilan_financier_commentaire,
-          date_fin_validite, sejour_type_handicap, 
+          date_fin_validite, sejour_type_handicap,
           region_obtention, numero, date_obtention, file
         )
         VALUES (
@@ -163,7 +164,7 @@ export const AgrementsRepository = {
           $17,$18,$19,$20,$21,
           $22,$23,$24,$25,$26,$27,
           $28,$29,$30,$31,$32,$33,$34,$35,
-          $36,$37,$38,$39,$40, $41, 
+          $36,$37,$38,$39,$40, $41,
           $42, $43, $44, $45, $46, $47
         )
         RETURNING id;
@@ -249,9 +250,6 @@ export const AgrementsRepository = {
     return result.rows;
   },
 
-  /**
-   * Récupère un agrément par son ID (avec ou sans détails liés)
-   */
   async getById({
     agrementId,
     withDetails,
@@ -259,102 +257,8 @@ export const AgrementsRepository = {
     agrementId: number;
     withDetails: boolean;
   }): Promise<AgrementDto | null> {
-    log.i("getById - IN");
-    const query = `
-      SELECT
-        agr.*
-        ${
-          withDetails
-            ? `,
-          COALESCE(
-            (
-              SELECT json_agg(
-                jsonb_build_object(
-                  'id', ani.id,
-                  'activite_id', ani.activite_id,
-                  'agrement_id', ani.agrement_id,
-                  'created_at', ani.created_at,
-                  'updated_at', ani.updated_at,
-                  'activite', jsonb_build_object(
-                    'id', act.id,
-                    'code', act.code,
-                    'libelle', act.libelle,
-                    'activite_type', act.activite_type
-                  )
-                )
-              )
-              FROM front.agrement_animation ani
-              LEFT JOIN front.activite act ON act.id = ani.activite_id
-              WHERE ani.agrement_id = agr.id
-            ),
-            '[]'
-          ) AS agrement_animation,
-          COALESCE(json_agg(DISTINCT fil.*) FILTER (WHERE fil.id IS NOT NULL), '[]') AS agrement_file,
-          COALESCE(json_agg(DISTINCT sej.*) FILTER (WHERE sej.id IS NOT NULL), '[]') AS agrement_sejour,
-
-          COALESCE(
-            (
-              SELECT json_agg(
-                to_jsonb(bil) || jsonb_build_object(
-                  'bilan_hebergement',
-                  COALESCE(
-                    (
-                      SELECT json_agg(bhe.*)
-                      FROM front.bilan_hebergement bhe
-                      WHERE bhe.agr_bilan_annuel_id = bil.id
-                    ),
-                    '[]'::json
-                  )
-                )
-              )
-              FROM front.agrement_bilan_annuel bil
-              WHERE bil.agrement_id = agr.id
-            ),
-            '[]'
-          ) AS agrement_bilan_annuel
-          `
-            : ""
-        }
-      FROM front.agrements agr
-      ${
-        withDetails
-          ? `
-          LEFT JOIN front.agrement_files fil ON fil.agrement_id = agr.id
-          LEFT JOIN front.agrement_sejours sej ON sej.agrement_id = agr.id
-          `
-          : ""
-      }
-      WHERE agr.id = $1
-      GROUP BY agr.id;
-    `;
-
-    const response = await getPool().query(query, [agrementId]);
-    log.i("getById - DONE");
-    if (!response.rows?.length) return null;
-    const row = response.rows[0] as AgrementEntity;
-    const agrementDto = AgrementsMapper.toModel(row);
-
-    if (withDetails) {
-      agrementDto.agrementAnimation = row.agrement_animation
-        ? AgrementAnimationMapper.toModels(row.agrement_animation)
-        : [];
-
-      agrementDto.agrementFiles = row.agrement_file
-        ? AgrementFilesMapper.toModels(row.agrement_file)
-        : [];
-
-      agrementDto.agrementSejours = row.agrement_sejour
-        ? AgrementSejoursMapper.toModels(row.agrement_sejour)
-        : [];
-
-      agrementDto.agrementBilanAnnuel = row.agrement_bilan_annuel
-        ? AgrementBilanAnnuelMapper.toModels(row.agrement_bilan_annuel)
-        : [];
-    }
-
-    return agrementDto;
+    return AgrementsRepositoryShared.getById({ agrementId, withDetails });
   },
-
   /**
    * Récupère un agrément par organisme ID (avec ou sans détails liés)
    */

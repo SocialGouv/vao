@@ -1,28 +1,13 @@
 <template>
-  <!-- TODO Filtrer ou mettre l'objet correspondant aux documents des DREETS-->
-  <div
-    v-if="
-      props.initAgrement.dreetsFiles &&
-      props.initAgrement.dreetsFiles.length > 0
-    "
-  >
+  <div v-if="dreetsFiles && dreetsFiles.length > 0">
     <TableFull
       title="Documents de la DREETS"
       :headers="headers"
-      :data="props.initAgrement.dreetsFiles"
+      :data="dreetsFiles"
     />
   </div>
-  <div
-    v-if="
-      props.initAgrement.agrementFiles &&
-      props.initAgrement.agrementFiles.length > 0
-    "
-  >
-    <TableFull
-      title="Documents de l'OVA"
-      :headers="headers"
-      :data="props.initAgrement.agrementFiles"
-    />
+  <div v-if="ovaFiles && ovaFiles.length > 0">
+    <TableFull title="Documents de l'OVA" :headers="headers" :data="ovaFiles" />
   </div>
 </template>
 
@@ -37,10 +22,23 @@ import {
 
 const config = useRuntimeConfig();
 const NuxtLink = resolveComponent("NuxtLink");
-
 const props = defineProps({
   initAgrement: { type: Object, required: true },
 });
+
+const dreetsFiles = computed(
+  () =>
+    props.initAgrement?.agrementFiles?.filter(
+      (agrementFile: DocumentDto) => agrementFile.userId === null,
+    ) ?? [],
+);
+
+const ovaFiles = computed(
+  () =>
+    props.initAgrement?.agrementFiles?.filter(
+      (agrementFile: DocumentDto) => agrementFile.userId !== null,
+    ) ?? [],
+);
 
 const headers = [
   {

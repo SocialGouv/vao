@@ -21,7 +21,7 @@ export const createAgrement = async ({
 };
 
 export const getAgrement = async (agrementId: number) => {
-  const agrement = await AgrementService.get({
+  const agrement = await AgrementService.getById({
     agrementId,
     withDetails: true,
   });

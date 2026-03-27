@@ -53,8 +53,10 @@ export const AgrementController = {
   ) {
     const agrementId = Number(req.validatedParams!.agrementId);
     try {
-      const agrement: AgrementDto | null =
-        await AgrementService.getById(agrementId);
+      const agrement: AgrementDto | null = await AgrementService.getById({
+        agrementId,
+        withDetails: true,
+      });
       if (!agrement) throw new AppError("NotFound", { statusCode: 404 });
       res.json({ agrement });
     } catch (error) {

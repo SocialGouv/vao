@@ -74,7 +74,7 @@ export const AgrementController = {
     }
 
     try {
-      const agrement: AgrementDto | null = await AgrementService.get({
+      const agrement: AgrementDto | null = await AgrementService.getById({
         agrementId,
         withDetails: true,
       });
