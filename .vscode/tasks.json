@@ -3,8 +3,7 @@
   "tasks": [
     {
       "label": "Clean & install",
-      "type": "shell",
-      "command": "corepack pnpm clean && corepack pnpm install",
+      "dependsOn": ["Clean dependencies", "Install dependencies"],
       "problemMatcher": []
     },
     {
@@ -21,7 +20,7 @@
     },
     {
       "label": "Install dependencies",
-      "command": "corepack pnpm install",
+      "command": "source ~/.zshrc && nvm use && npx env-cmd -- corepack pnpm install",
       "type": "shell",
       "problemMatcher": [],
       "options": {
@@ -30,7 +29,7 @@
     },
     {
       "label": "Clean dependencies",
-      "command": "corepack pnpm clean",
+      "command": "source ~/.zshrc && nvm use && npx env-cmd -- corepack pnpm clean",
       "type": "shell",
       "problemMatcher": [],
       "options": {
@@ -104,21 +103,13 @@
       }
     },
     {
-      "label": "Logs all",
-      "dependsOn": ["Logs migrations", "Logs cron", "Logs postgres"],
-      "problemMatcher": []
-    },
-    {
-      "label": "Logs migrations",
+      "label": "Start Seeds (e2e)",
+      "command": "source ~/.zshrc && nvm use && SEEDS_DIR=e2e npx env-cmd -- corepack pnpm --filter @vao/migrations exec knex --cwd ./src/ seed:run",
       "type": "shell",
-      "command": "docker compose logs -f migrations --no-log-prefix",
-      "problemMatcher": []
-    },
-    {
-      "label": "Logs cron",
-      "type": "shell",
-      "command": "docker compose logs -f cron --no-log-prefix",
-      "problemMatcher": []
+      "problemMatcher": [],
+      "options": {
+        "cwd": "./"
+      }
     },
     {
       "label": "Logs postgres",
