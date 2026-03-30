@@ -105,7 +105,7 @@ export const AgrementMailUsagers = {
     log.i("sendStatutRefuseMail - In", { email });
     if (!email) {
       throw new AppError(
-        "Email manquant pour l'envoi du mail la validation de la complétude de l'agrément",
+        "Email manquant pour l'envoi du mail de refus d'agrément",
       );
     }
     const urlAgrement = frontUsagersDomain + "/mon-agrement";

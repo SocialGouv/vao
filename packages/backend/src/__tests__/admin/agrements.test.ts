@@ -278,6 +278,11 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(sendSpy).toHaveBeenCalledTimes(1); // usager
+    expect(sendSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subject: "Portail VAO - Refus de votre agrément",
+      }),
+    );
     // Vérifier que l'événement a bien été historisé
     const history = await AgrementService.getHistory(agrementId);
     const aModifierEvent = history.find(
