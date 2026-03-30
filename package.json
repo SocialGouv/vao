@@ -42,7 +42,7 @@
     "eslint-plugin-simple-import-sort": "^8.0.0",
     "eslint-plugin-sort-keys-fix": "^1.1.2",
     "husky": "^9.0.10",
-    "lint-staged": "^15.2.1",
+    "lint-staged": "^16.2.7",
     "node-talisman": "^1.29.22",
     "npm": "10.9.2",
     "prettier": "^3.2.5",
