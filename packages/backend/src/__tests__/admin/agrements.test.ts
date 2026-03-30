@@ -247,6 +247,70 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(response.status).toBe(400);
   });
 
+  it("devrait modifier le statut REFUSE et historiser", async () => {
+    const sendSpy = jest.spyOn(mailService, "send");
+    authUser = await createUsagersUser();
+
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.EN_COURS,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    await createTerritoire({ territoireCode: "IDF" });
+
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const uuid = await createDocument({ userId: null });
+    const response = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        file: {
+          agrementId,
+          category: FILE_CATEGORY.REFUS,
+          fileUuid: uuid.toString(),
+        },
+        statut: AGREMENT_STATUT.REFUSE,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(sendSpy).toHaveBeenCalledTimes(1); // usager
+    // Vérifier que l'événement a bien été historisé
+    const history = await AgrementService.getHistory(agrementId);
+    const aModifierEvent = history.find(
+      (event) =>
+        event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+        event.type_precision === AGREMENT_STATUT.REFUSE,
+    );
+
+    expect(aModifierEvent).toBeDefined();
+    expect(aModifierEvent?.bo_user).toBeDefined();
+  });
+
+  it("devrait remonter une erreur file required pour statut REFUSE", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.EN_COURS,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        statut: AGREMENT_STATUT.REFUSE,
+      });
+
+    expect(response.status).toBe(400);
+  });
+
   it("devrait retourner une 422 si l'agrément n'existe pas", async () => {
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const response = await request(app)

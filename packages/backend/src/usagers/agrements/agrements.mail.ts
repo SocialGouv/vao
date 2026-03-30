@@ -95,6 +95,46 @@ export const AgrementMailUsagers = {
     log.d("sendStatutTransmisMail post email", { params });
     return params;
   },
+  sendStatutRefuseMail: ({
+    email,
+    regionDreets,
+  }: {
+    email: string[];
+    regionDreets: string;
+  }) => {
+    log.i("sendStatutRefuseMail - In", { email });
+    if (!email) {
+      throw new AppError(
+        "Email manquant pour l'envoi du mail la validation de la complétude de l'agrément",
+      );
+    }
+    const urlAgrement = frontUsagersDomain + "/mon-agrement";
+    const html = sendTemplate.getBody(
+      "Portail VAO - Refus de votre agrément",
+      [
+        {
+          p: [
+            "Bonjour,",
+            `Suite à l’instruction de votre demande de renouvellement d’agrément, la DREETS ${regionDreets} vous informe que celle-ci a été <strong>refusée</strong>.`,
+            `Vous trouverez sur le <a href=${urlAgrement}>portail VAO</a> <strong>l’arrêté officiel de refus</strong> correspondant à cette décision.`,
+            "Nous vous rappelons que, conformément à la réglementation en vigueur, cette décision est <strong>définitive</strong> et vous empêche de déclarer de nouveaux séjours adaptés. Cependant, cette décision ne vous empêche pas de vous connecter à votre compte sur le portail VAO.",
+            "Pour toute question ou précision concernant ce refus, merci d’utiliser la <strong>messagerie intégrée au portail VAO</strong>, accessible depuis votre page agrément.",
+          ],
+          type: "p",
+        },
+      ],
+      `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+    );
+    const params = {
+      from: senderEmail,
+      html,
+      replyTo: senderEmail,
+      subject: "Portail VAO - Refus de votre agrément",
+      to: email,
+    };
+    log.d("sendStatutTransmisMail post email", { params });
+    return params;
+  },
   sendStatutTransmisMail: ({ email }: { email: string }) => {
     log.i("sendStatutTransmisMail - In", { email });
     if (!email) {
