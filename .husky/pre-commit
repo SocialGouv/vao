@@ -1,5 +1,36 @@
 #!/usr/bin/env sh
 
+staged_added_lines () {
+  git diff --cached -- . ':(exclude).husky' | grep '^+' | grep -v '^+++'
+}
+
+throw_if_occurence () {
+  if staged_added_lines | grep -Fq "$1"
+  then
+    if [ -t 1 ]; then
+      # enable user input
+      exec < /dev/tty
+      staged_added_lines | grep -F "$1"
+      echo ""
+      echo $2
+      printf "Continue anyway? (y/n) "
+      read yn
+      case "$yn" in
+        [Yy]*) ;;
+        *) exit 1 ;;
+      esac
+    else
+      # No terminal attached (e.g commiting from VSCode)
+      echo "$2. Run \"git commit\" command manually to commit anyway"
+      echo ""
+      staged_added_lines | grep -F "$1" | head
+      exit 1
+    fi
+  fi
+}
+
+throw_if_occurence "console.log" "There are debug console calls in your staged changes"
+
 corepack pnpm --filter vao... install
 corepack pnpm exec lint-staged --concurrent false
 

@@ -11,7 +11,7 @@
     "test:coverage": "jest --config=jest.config.js --coverage"
   },
   "lint-staged": {
-    "src/**/*.{js,ts}": "corepack pnpm exec eslint"
+    "src/**/*.{js,ts}": "corepack pnpm lint"
   },
   "author": "orgs/SocialGouv/teams/vao",
   "license": "Apache-2.0",
