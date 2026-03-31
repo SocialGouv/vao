@@ -1,4 +1,51 @@
-import { buildRequestPath, hashToFormData } from "./request";
+import {
+  buildRequestPath,
+  buildRequestQueryString,
+  hashToFormData,
+} from "./request";
+
+describe("buildRequestQueryString", () => {
+  it("should return an empty string with no query", () => {
+    expect(buildRequestQueryString()).toEqual("");
+  });
+
+  it("should return an empty string with an empty query", () => {
+    expect(buildRequestQueryString({})).toEqual("");
+  });
+
+  it("should return a query string with a single query param", () => {
+    const query = { page: 1 };
+    expect(buildRequestQueryString(query)).toEqual("?page=1");
+  });
+
+  it("should return a query string with an undefined query param", () => {
+    const query = { limit: undefined, page: 1 };
+    // @ts-expect-error undefined is not a valid query param
+    expect(buildRequestQueryString(query)).toEqual("?page=1");
+  });
+
+  it("should return a query string with multiple query params", () => {
+    const query = { limit: 10, page: 1 };
+    expect(buildRequestQueryString(query)).toEqual("?limit=10&page=1");
+  });
+
+  it("should return a query string with an array query param", () => {
+    const query = { page: ["1", "2", "3"] };
+    expect(buildRequestQueryString(query)).toEqual(
+      "?page=%5B%221%22%2C%222%22%2C%223%22%5D",
+    );
+  });
+  it("should return a query string with an object query param", () => {
+    const query = {
+      deleted: ["false", "true"],
+      limit: 10,
+      nom: "John",
+    };
+    expect(buildRequestQueryString(query)).toEqual(
+      "?deleted=%5B%22false%22%2C%22true%22%5D&limit=10&nom=John",
+    );
+  });
+});
 
 describe("buildRequestPath", () => {
   it("should return the path with no params", () => {

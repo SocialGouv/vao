@@ -6,7 +6,10 @@ export interface BasicRoute {
   path: string;
   params?: Record<string, string>;
   body?: Record<string, any>;
-  query?: Record<string, string | number | boolean>;
+  query?: Record<
+    string,
+    string | string[] | number | number[] | boolean | boolean[]
+  >;
   response:
     | RouteResponseBody<Record<string, any>>
     | RouteResponseBody<Record<string, any>[]>
