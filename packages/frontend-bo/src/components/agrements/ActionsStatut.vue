@@ -112,27 +112,27 @@ const isActionsVisible = computed(() =>
     : false,
 );
 
+const statutConfig: Partial<
+  Record<
+    AGREMENT_STATUT,
+    {
+      category: FILE_CATEGORY;
+      description: string;
+    }
+  >
+> = {
+  [AGREMENT_STATUT.COMPLETUDE_CONFIRME]: {
+    category: FILE_CATEGORY.COMPLETUDE,
+    description: "La confirmation de complétude de l'agrément a été envoyée",
+  },
+  [AGREMENT_STATUT.REFUSE]: {
+    category: FILE_CATEGORY.REFUS,
+    description: "Le refus d'agrément a été envoyé",
+  },
+};
+
 const onValidForm = async (statut: AGREMENT_STATUT) => {
   isModalModaleConfirmationsOpened.value = false;
-
-  const statutConfig: Partial<
-    Record<
-      AGREMENT_STATUT,
-      {
-        category: FILE_CATEGORY;
-        description: string;
-      }
-    >
-  > = {
-    [AGREMENT_STATUT.COMPLETUDE_CONFIRME]: {
-      category: FILE_CATEGORY.COMPLETUDE,
-      description: "La confirmation de complétude de l'agrément a été envoyée",
-    },
-    [AGREMENT_STATUT.REFUSE]: {
-      category: FILE_CATEGORY.REFUS,
-      description: "Le refus d'agrément a été envoyé",
-    },
-  };
 
   const config = statutConfig[statut];
 
@@ -154,7 +154,7 @@ const onValidForm = async (statut: AGREMENT_STATUT) => {
       });
       await agrementStore.changeStatutAgrement({
         agrementId: agrementStore.agrementCourant.id,
-        statut: statut,
+        statut,
         file: fileCompletude,
       });
       toaster.success({

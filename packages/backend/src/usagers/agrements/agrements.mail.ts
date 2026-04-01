@@ -132,7 +132,7 @@ export const AgrementMailUsagers = {
       subject: "Portail VAO - Refus de votre agrément",
       to: email,
     };
-    log.d("sendStatutTransmisMail post email", { params });
+    log.d("sendStatutRefuseMail post email", { params });
     return params;
   },
   sendStatutTransmisMail: ({ email }: { email: string }) => {
