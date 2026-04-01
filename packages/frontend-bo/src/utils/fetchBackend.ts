@@ -1,6 +1,10 @@
 import { useRuntimeConfig } from "#app";
 import type { BasicRoute } from "@vao/shared-bridge";
-import { buildRequestPath, hashToFormData } from "@vao/shared-bridge";
+import {
+  buildRequestPath,
+  buildRequestQueryString,
+  hashToFormData,
+} from "@vao/shared-bridge";
 
 export type FetchBackendOptions = Record<string, unknown>;
 
@@ -30,14 +34,15 @@ export function buildRequest<Route extends BasicRoute>({
   method,
   query,
 }: Omit<Route, "response">): () => Promise<Route["response"]> {
-  const url = buildRequestPath(path, params);
+  const finalPath = buildRequestPath(path, params);
+  const queryString = buildRequestQueryString(query);
+  const url = `${finalPath}${queryString}`;
   switch (method) {
     case "GET":
       return async () =>
         $fetchBackend(url, {
           ...OPTIONS_DEFAULT,
           method: "GET",
-          params: query,
         });
     case "POST":
       return async () =>

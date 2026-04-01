@@ -17,7 +17,7 @@
     "typecheck": "tsc --noEmit"
   },
   "lint-staged": {
-    "src/**/*.{js,ts}": "corepack pnpm exec eslint"
+    "src/**/*.{js,ts}": "corepack pnpm lint"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.649.0",

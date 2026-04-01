@@ -1,4 +1,23 @@
+import qs from "query-string";
+
 import type { BasicRoute } from "../routes";
+
+export function buildRequestQueryString(
+  query: BasicRoute["query"] = {},
+): string {
+  if (!query || Object.keys(query).length === 0) {
+    return "";
+  }
+  const stringQuery = Object.entries(query).reduce((acc, [key, value]) => {
+    // les tableaux étant mal interpretés par query-string, on parse les sous objets ou tableaux en JSON
+    if (Array.isArray(value) || typeof value === "object") {
+      return { ...acc, [key]: JSON.stringify(value) };
+    } else {
+      return { ...acc, [key]: value };
+    }
+  }, {});
+  return `?${qs.stringify(stringQuery)}`;
+}
 
 export function buildRequestPath(
   path: BasicRoute["path"],

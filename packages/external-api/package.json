@@ -18,7 +18,7 @@
     "test:cov": "jest --coverage"
   },
   "lint-staged": {
-    "src/**/*.{js,ts}": "corepack pnpm exec eslint"
+    "src/**/*.{js,ts}": "corepack pnpm lint"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.758.0",
