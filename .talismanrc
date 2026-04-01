@@ -147,6 +147,8 @@ fileignoreconfig:
   checksum: 971c26e540505ee376587d3fbafb0efb226dbb3202ecf91b1f7820b279ecd28c
 - filename: packages/backend/src/types/reorgQueryParams.ts
   checksum: 48c16e791d844e7d30d14fec5fcf36798ecb4235b685a204ecf7456ca84364ac
+- filename: packages/backend/src/usagers/agrements/agrements.mail.ts
+  checksum: 9435876e82a33a64481b490c8d148c9db042fd15ec42e72e6a8ddb23d5356af8
 - filename: packages/backend/src/utils/mail-service.js
   checksum: bf5f3c01e2edcf3a7ef6d8cbde306deb931a01df88ef90fe911c0c9ace41135c
 - filename: packages/backend/src/utils/mail.js

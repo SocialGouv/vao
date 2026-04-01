@@ -1,10 +1,7 @@
 <template>
   <div>
-    <label class="fr-label">
-      Vous devez fournir un récépissé de complétude du dossier, qui sera
-      transmis à l'organisateur.
-    </label>
-    <div class="fr-fieldset">
+    <label class="fr-label"> {{ description }} </label>
+    <div class="fr-grid-row fr-alert--sm fr-my-3v">
       <FileUpload
         :model-value="localFile"
         :cdn-url="props.cdnUrl"
@@ -14,32 +11,27 @@
       />
     </div>
     <DsfrAlert
+      v-if="textAlert"
       class="fr-grid-row fr-alert--sm fr-my-3v"
       :role="'alert'"
       type="info"
-      ><p>
-        Cette étape ne constitue pas une décision d’agrément. Elle atteste
-        uniquement que le dossier est complet.
-      </p>
-      <p>
-        La décision d’agrément intervient à l’étape suivante, dans un délai de
-        deux mois.
+    >
+      <p v-for="(item, index) in textAlert" :key="index">
+        {{ item }}
       </p>
     </DsfrAlert>
     <div class="fr-fieldset">
       <DsfrButtonGroup :inline-layout-when="true">
-        <DsfrButton
-          id="CancelConfirmCompletude"
-          secondary
-          @click.prevent="cancelConfirmCompletude"
+        <DsfrButton id="CancelForm" secondary @click.prevent="cancelForm"
           >Annuler
         </DsfrButton>
         <DsfrButton
           id="ValidationDemandeComplement"
           primary
+          :label="validButton"
           :disabled="!localFile"
-          @click.prevent="validateConfirmCompletude"
-          >Confirmer
+          @click.prevent="validateForm"
+        >
         </DsfrButton>
       </DsfrButtonGroup>
     </div>
@@ -53,6 +45,9 @@ const localFile = ref<File | null>(null);
 
 const props = defineProps<{
   cdnUrl: string;
+  textAlert?: string[] | null;
+  description: string;
+  validButton: string;
 }>();
 
 const emit = defineEmits(["valid", "update:file", "close"]);
@@ -61,10 +56,10 @@ function handleFileChange(newFile: File | null) {
   localFile.value = newFile;
   emit("update:file", newFile);
 }
-function validateConfirmCompletude() {
+function validateForm() {
   emit("valid");
 }
-function cancelConfirmCompletude() {
+function cancelForm() {
   emit("close");
 }
 </script>

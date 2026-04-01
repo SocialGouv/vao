@@ -22,16 +22,35 @@
       />
     </DsfrModal>
     <DsfrModal
-      name="modalConfirmCompletude"
-      :opened="isModalConfirmCompletudeOpened"
+      name="modalModaleConfirmations"
+      :opened="isModalModaleConfirmationsOpened"
       title="Confirmation de la complétude du dossier"
       size="xl"
-      @close="isModalConfirmCompletudeOpened = false"
+      @close="isModalModaleConfirmationsOpened = false"
     >
-      <AgrementsConfirmCompletude
+      <AgrementsModaleConfirmations
         :cdn-url="props.cdnUrl"
-        @valid="onValidConfirmCompletude"
-        @close="isModalConfirmCompletudeOpened = false"
+        description="Vous devez fournir un récépissé de complétude du dossier, qui sera transmis à l'organisateur."
+        :text-alert="textAlertModaleConfirmations"
+        valid-button="Confirmer"
+        @valid="() => onValidForm(AGREMENT_STATUT.COMPLETUDE_CONFIRME)"
+        @close="isModalModaleConfirmationsOpened = false"
+        @update:file="fileUpdate"
+      />
+    </DsfrModal>
+    <DsfrModal
+      name="modalRefuse"
+      :opened="isModalRefusOpened"
+      title="Refuser l'agrément"
+      size="xl"
+      @close="isModalRefusOpened = false"
+    >
+      <AgrementsModaleConfirmations
+        :cdn-url="props.cdnUrl"
+        valid-button="Confirmer le refus"
+        description="Pour le refus de l’agrément, veuillez fournir l’arrêté de refus qui sera transmis à l’organisateur."
+        @valid="() => onValidForm(AGREMENT_STATUT.REFUSE)"
+        @close="isModalRefusOpened = false"
         @update:file="fileUpdate"
       />
     </DsfrModal>
@@ -43,10 +62,16 @@
         @click="isModalComplementOpened = true"
       />
       <DsfrButton
+        label="Refuser l'agrément"
+        secondary
+        type="button"
+        @click="isModalRefusOpened = true"
+      />
+      <DsfrButton
         label="Confirmer la complétude du dossier"
         primary
         type="button"
-        @click="isModalConfirmCompletudeOpened = true"
+        @click="isModalModaleConfirmationsOpened = true"
       />
     </DsfrButtonGroup>
   </div>
@@ -55,7 +80,6 @@
 <script setup lang="ts">
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { useToaster } from "@vao/shared-ui";
-import type { UUID } from "crypto";
 import { useAgrementStore } from "~/stores/agrement";
 import { useDocumentStore } from "~/stores/document";
 const agrementStore = useAgrementStore();
@@ -74,8 +98,12 @@ const ALLOWED_STATUTS_ACTIONS = [
 ];
 
 const isModalComplementOpened = ref(false);
-const isModalConfirmCompletudeOpened = ref(false);
-
+const isModalModaleConfirmationsOpened = ref(false);
+const isModalRefusOpened = ref(false);
+const textAlertModaleConfirmations = [
+  "Cette étape ne constitue pas une décision d’agrément. Elle atteste uniquement que le dossier est complet.",
+  "La décision d’agrément intervient à l’étape suivante, dans un délai de deux mois.",
+];
 const isActionsVisible = computed(() =>
   agrementStore.agrementCourant
     ? ALLOWED_STATUTS_ACTIONS.includes(
@@ -84,6 +112,64 @@ const isActionsVisible = computed(() =>
     : false,
 );
 
+const statutConfig: Partial<
+  Record<
+    AGREMENT_STATUT,
+    {
+      category: FILE_CATEGORY;
+      description: string;
+    }
+  >
+> = {
+  [AGREMENT_STATUT.COMPLETUDE_CONFIRME]: {
+    category: FILE_CATEGORY.COMPLETUDE,
+    description: "La confirmation de complétude de l'agrément a été envoyée",
+  },
+  [AGREMENT_STATUT.REFUSE]: {
+    category: FILE_CATEGORY.REFUS,
+    description: "Le refus d'agrément a été envoyé",
+  },
+};
+
+const onValidForm = async (statut: AGREMENT_STATUT) => {
+  isModalModaleConfirmationsOpened.value = false;
+
+  const config = statutConfig[statut];
+
+  if (!config) {
+    toaster.error({
+      titleTag: "h2",
+      description: `Statut d'agrément non autorisé ${statut}`,
+    });
+    return;
+  }
+
+  const { category, description } = config;
+
+  if (agrementStore.agrementCourant?.id) {
+    try {
+      const fileCompletude = await createDocument({
+        document: file?.value,
+        category,
+      });
+      await agrementStore.changeStatutAgrement({
+        agrementId: agrementStore.agrementCourant.id,
+        statut,
+        file: fileCompletude,
+      });
+      toaster.success({
+        titleTag: "h2",
+        description,
+      });
+    } catch (error) {
+      toaster.error({
+        titleTag: "h2",
+        description: error instanceof Error ? error.message : String(error),
+      });
+      return undefined;
+    }
+  }
+};
 const onValidComplement = async (payload: { commentaire: string }) => {
   isModalComplementOpened.value = false;
   if (agrementStore.agrementCourant?.id) {
@@ -101,32 +187,6 @@ const onValidComplement = async (payload: { commentaire: string }) => {
       toaster.success({
         titleTag: "h2",
         description: `La demande de complétion de l'agrément a été envoyée`,
-      });
-    } catch (error) {
-      toaster.error({
-        titleTag: "h2",
-        description: error instanceof Error ? error.message : String(error),
-      });
-      return undefined;
-    }
-  }
-};
-const onValidConfirmCompletude = async () => {
-  isModalConfirmCompletudeOpened.value = false;
-  if (agrementStore.agrementCourant?.id) {
-    try {
-      const fileCompletude = await createDocument({
-        document: file?.value,
-        category: FILE_CATEGORY.COMPLETUDE,
-      });
-      await agrementStore.changeStatutAgrement({
-        agrementId: agrementStore.agrementCourant.id,
-        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
-        file: fileCompletude,
-      });
-      toaster.success({
-        titleTag: "h2",
-        description: `La confirmation de complétude de l'agrément a été envoyée`,
       });
     } catch (error) {
       toaster.error({
