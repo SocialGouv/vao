@@ -26,7 +26,7 @@ const genericMessages = computed<GenericMessage[]>(() =>
     id: m.id,
     message: m.message,
     createdAt: m.created_at,
-    name: m.backUserPrenom,
+    name: m.backUserPrenom ?? "Admin",
     isAnswer: !!m.back_user_id,
     file: null,
   })),
