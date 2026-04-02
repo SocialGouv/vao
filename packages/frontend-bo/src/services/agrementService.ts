@@ -61,14 +61,12 @@ const AgrementService = {
       body: { message },
     })();
   },
-  getMessages: async (agrementId: string) => {
-    const messages = await buildRequest<AgrementAdminRoutes["GetMessages"]>({
+  getMessages: async (agrementId: string) =>
+    await buildRequest<AgrementAdminRoutes["GetMessages"]>({
       path: "/admin/agrements/{agrementId}/messages",
       method: "GET",
       params: { agrementId },
-    })();
-    return messages;
-  },
+    })(),
 };
 
 export { AgrementService };

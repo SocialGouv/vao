@@ -132,7 +132,6 @@ export const useAgrementStore = defineStore("agrement", {
       agrementId: string;
       message: string;
     }): Promise<void> {
-      log.i("postMessage - IN", { agrementId, message });
       try {
         await AgrementService.postMessage(agrementId, message);
         log.i("postMessage - DONE");

@@ -179,7 +179,11 @@ export const AgrementsRepository = {
       const unreadCount = Number(unreadResult.rows[0].unread_count);
 
       return {
-        messages: messagesResult.rows as AgrementMessage[],
+        messages: messagesResult.rows.map((row: AgrementMessage) => ({
+          ...row,
+          created_at: row.created_at?.toString(),
+          read_at: row.read_at ? row.read_at.toString() : null,
+        })) as AgrementMessage[],
         unreadCount,
       };
     } finally {

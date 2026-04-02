@@ -134,22 +134,27 @@ export const AgrementService = {
   async getMessages(
     agrementId: number,
   ): Promise<{ messages: AgrementMessage[]; unreadCount: number }> {
-    const agrement = await AgrementsRepository.getById(agrementId);
+    const agrement = await AgrementsRepository.getById({
+      agrementId,
+      withDetails: false,
+    });
     if (!agrement) {
       log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
-    return await AgrementsRepository.getMessages(agrementId);
+    return AgrementsRepository.getMessages(agrementId);
   },
   async markMessagesAsRead(agrementId: number): Promise<number> {
-    const agrement = await AgrementsRepository.getById(agrementId);
+    const agrement = await AgrementsRepository.getById({
+      agrementId,
+      withDetails: false,
+    });
     if (!agrement) {
       log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
 
-    const count = await AgrementsRepository.markMessagesAsRead(agrementId);
-    return count;
+    return AgrementsRepository.markMessagesAsRead(agrementId);
   },
   async postMessage({
     agrementId,
@@ -160,7 +165,10 @@ export const AgrementService = {
     backUserId: number;
     message: string;
   }): Promise<void> {
-    const agrement = await AgrementsRepository.getById(agrementId);
+    const agrement = await AgrementsRepository.getById({
+      agrementId,
+      withDetails: false,
+    });
     if (!agrement) {
       log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
