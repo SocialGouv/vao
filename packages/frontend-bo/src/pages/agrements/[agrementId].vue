@@ -38,6 +38,12 @@
         :asc="asc"
       >
         <h1>Dossier</h1>
+        <AgrementsDossier
+          :init-organisme="organismeStore.organisme ?? {}"
+          :init-agrement="agrementStore.agrementCourant ?? {}"
+          :modifiable="false"
+          cdn-url="sqs"
+        ></AgrementsDossier>
         <AgrementsActionsStatut
           :cdn-url="`${config.public.backendUrl}/documents/`"
         ></AgrementsActionsStatut>
