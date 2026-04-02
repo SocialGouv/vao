@@ -3,6 +3,7 @@ import type {
   AgrementFilesDto,
   AgrementHistoryItem,
   AgrementHistoryRow,
+  AgrementMessage,
 } from "@vao/shared-bridge";
 import {
   AGREMENT_STATUT,
@@ -146,6 +147,30 @@ export const AgrementsRepository = {
       client.release();
     }
   },
+
+  async getMessages(agrementId: number): Promise<AgrementMessage[]> {
+    const client = await getPool().connect();
+    try {
+      const query = `
+      SELECT
+        id,
+        agrement_id,
+        front_user_id,
+        back_user_id,
+        message,
+        created_at,
+        read_at
+      FROM front.agrement_messagerie
+      WHERE agrement_id = $1
+      ORDER BY created_at ASC
+    `;
+      const result = await client.query(query, [agrementId]);
+      return result.rows as AgrementMessage[];
+    } finally {
+      client.release();
+    }
+  },
+
   /**
    * Récupère le courriel du user responsable d'un agrément.
    */

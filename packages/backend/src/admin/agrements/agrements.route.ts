@@ -32,6 +32,14 @@ router.get(
   AgrementController.getHistory,
 );
 
+router.get(
+  "/:agrementId/messages",
+  boCheckJWT,
+  requestValidatorMiddleware(AgrementAdminRoutesSchema["GetMessages"]),
+  checkPermissionBOAgrement,
+  AgrementController.getMessages,
+);
+
 router.post(
   "/:agrementId/message",
   boCheckJWT,

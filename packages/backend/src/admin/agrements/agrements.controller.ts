@@ -46,6 +46,21 @@ export const AgrementController = {
       next(error);
     }
   },
+  async getMessages(
+    req: RouteRequest<AgrementAdminRoutes["GetMessages"]>,
+    res: RouteResponse<AgrementAdminRoutes["GetMessages"]>,
+    next: NextFunction,
+  ) {
+    const agrementId = Number(req.validatedParams!.agrementId);
+    try {
+      const messages = await AgrementService.getMessages(agrementId);
+      res.status(200).json(messages);
+    } catch (error) {
+      log.w("Erreur lors de la récupération des messages", error);
+      next(error);
+    }
+  },
+
   async getOne(
     req: RouteRequest<AgrementAdminRoutes["GetOne"]>,
     res: RouteResponse<AgrementAdminRoutes["GetOne"]>,
@@ -63,6 +78,7 @@ export const AgrementController = {
       next(error);
     }
   },
+
   async patchStatut(
     req: RouteRequest<AgrementAdminRoutes["PatchStatut"]>,
     res: RouteResponse<AgrementAdminRoutes["PatchStatut"]>,

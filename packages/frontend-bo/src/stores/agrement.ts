@@ -44,6 +44,17 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
+    async getMessages(agrementId: string): Promise<void> {
+      log.i("getMessages - IN", { agrementId });
+      try {
+        const messages = await AgrementService.getMessages(agrementId);
+        log.i("getMessages - DONE", { messages });
+        this.messages = messages;
+      } catch (err) {
+        log.w("getMessages - DONE with error", err);
+        throw err;
+      }
+    },
     async getListAgrements(params: any): Promise<void> {
       log.i("getListAgrements - IN");
       try {
@@ -101,7 +112,7 @@ export const useAgrementStore = defineStore("agrement", {
       agrementId,
       message,
     }: {
-      agrementId: number;
+      agrementId: string;
       message: string;
     }): Promise<void> {
       log.i("postMessage - IN", { agrementId, message });
