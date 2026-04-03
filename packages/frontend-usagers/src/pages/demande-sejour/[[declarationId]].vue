@@ -169,7 +169,6 @@
             </div>
           </div>
           <DsfrModal
-            ref="modal"
             class="fr-icon-checkbox-circle-line fr-icon--lg"
             name="modal-confirm-transmission"
             :opened="isModalConfirmTransmissionOpened"
@@ -492,9 +491,9 @@ const hash = computed(() => {
 
 const isModalConfirmTransmissionOpened = ref(false);
 
-function onCloseConfirmTransmissionModal() {
+async function onCloseConfirmTransmissionModal() {
   isModalConfirmTransmissionOpened.value = false;
-  navigateTo("/demande-sejour/liste");
+  await navigateTo("/demande-sejour/liste");
 }
 const canModify = computed(() => {
   return (
