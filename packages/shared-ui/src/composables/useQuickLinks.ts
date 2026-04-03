@@ -1,3 +1,4 @@
+import type { Ref } from "vue";
 import { computed, unref } from "vue";
 
 /**
@@ -11,6 +12,10 @@ export function useQuickLinks({
   isConnected,
   logout,
   accountPath = "/mon-compte",
+}: {
+  isConnected: Ref<boolean>;
+  logout: () => void;
+  accountPath?: string;
 }) {
   return computed(() => [
     {

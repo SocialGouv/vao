@@ -136,7 +136,7 @@ const queryString: Record<string, string> = Object.fromEntries(
   ]),
 );
 
-const defs = [
+const defs: [string, string, string][] = [
   ["name", "Nom", optionType.SORTABLE],
   ["siret", "Siret", optionType.SORTABLE],
   ["numero", "Agrément", optionType.SORTABLE],
@@ -144,8 +144,9 @@ const defs = [
   ["dateDepot", "Date de la demande", optionType.SORTABLE],
   ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
-const columns: Columns<AgrementWithOrganismeDto> =
-  columnsTable.buildColumns(defs);
+const columns = columnsTable.buildColumns(
+  defs,
+) as Columns<AgrementWithOrganismeDto>;
 
 const title = computed<string>(
   () => `Liste des Agréments (${agrementStore.agrementsTotal ?? 0})`,

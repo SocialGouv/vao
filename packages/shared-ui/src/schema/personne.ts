@@ -17,6 +17,15 @@ export const personneSchema = ({
   showFonction,
   showListeFonction,
   showTelephone,
+}: {
+  showAdresse: boolean;
+  showAttestation: boolean;
+  showCompetence: boolean;
+  showDateNaissance: boolean;
+  showEmail: boolean;
+  showFonction: boolean;
+  showListeFonction: boolean;
+  showTelephone: boolean;
 }) => {
   return {
     nom: nomSchema(),

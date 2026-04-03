@@ -1,13 +1,21 @@
 import { computed } from "vue";
-import { useLogout, useQuickLinks } from "@vao/shared-ui";
+import { useLogout, useQuickLinks } from "../composables";
 
-export function useLayoutHeader({ logoutUrl, accountPath, userStore }) {
-  const isConnected = computed(() => userStore.isConnected);
+export function useLayoutHeader({
+  logoutUrl,
+  accountPath,
+  userStore,
+}: {
+  logoutUrl: string;
+  accountPath: string;
+  userStore: any;
+}) {
+  const isConnected = computed<boolean>(() => userStore.isConnected);
   const user = computed(() => userStore.user);
 
   const { logout } = useLogout({
     apiUrl: logoutUrl,
-    getUserId: (user) => user?.id,
+    getUserId: (user: any) => user?.id,
     user,
     resetUserStore: () => userStore.$reset(),
   });

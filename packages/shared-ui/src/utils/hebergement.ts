@@ -61,7 +61,7 @@ const coordonneesSchema = {
     .test(
       "telephone",
       "Format de numéro de téléphone invalide",
-      (numTelephone1) => numTelephoneRegex.test(numTelephone1),
+      (numTelephone1?: string) => numTelephoneRegex.test(numTelephone1 ?? ""),
     )
     .required(),
   numTelephone2: yup
@@ -83,11 +83,11 @@ const informationsLocauxSchema = {
     .boolean()
     .required("Il est nécessaire de renseigner si vous avez visité les locaux"),
   visiteLocauxAt: yup
-    .date("Vous devez saisir une date valide au format JJ/MM/AAAA")
+    .date()
     .nullable()
-    .typeError("date invalide")
+    .typeError("Vous devez saisir une date valide au format JJ/MM/AAAA")
     .when("visiteLocaux", {
-      is: (visiteLocaux) => !!visiteLocaux,
+      is: (visiteLocaux: boolean) => !!visiteLocaux,
       then: (schema) =>
         schema
           .max(new Date(), "La date doit être inférieure à la date du jour.")
@@ -146,7 +146,7 @@ const informationsLocauxSchema = {
     .string()
     .nullable()
     .when("accessibilite", {
-      is: (accessibilite) => {
+      is: (accessibilite: string) => {
         return accessibilite !== "commentaires";
       },
       then: (schema) => schema.strip(),
@@ -163,7 +163,7 @@ const informationsLocauxSchema = {
     .required("Il est nécessaire de renseigner le nombre de lits"),
   nombreLitsSuperposes: yup.number().nullable(),
   litsDessus: yup.boolean().when("nombreLitsSuperposes", {
-    is: (nombreLitsSuperposes) => !!nombreLitsSuperposes,
+    is: (nombreLitsSuperposes: boolean) => !!nombreLitsSuperposes,
     then: (schema) =>
       schema.required(
         "Il est nécessaire de renseigner si les lits du dessus seront utilisés",
@@ -195,7 +195,7 @@ const informationsLocauxSchema = {
   precisionAmenagementsSpecifiques: yup
     .string()
     .when("amenagementsSpecifiques", {
-      is: (amenagementsSpecifiques) => !!amenagementsSpecifiques,
+      is: (amenagementsSpecifiques: boolean) => !!amenagementsSpecifiques,
       then: (schema) =>
         schema
           .min(
