@@ -15,10 +15,7 @@
       />
     </div>
     <div class="cell">
-      <AgrementsBilanSelectMonths
-        :default-selected="props.hebergement?.mois"
-        :modifiable="props.modifiable"
-      />
+      <AgrementsBilanSelectMonths :default-selected="props.hebergement?.mois" />
     </div>
     <DisplayInputCommon
       :value="props.hebergement?.nbJours"
@@ -46,51 +43,18 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  modifiable: { type: Boolean, default: false },
-});
-
-const showNbJours = computed(() =>
-  Object.prototype.hasOwnProperty.call(props.hebergement, "nbJours"),
-);
-
-const showNbVacanciers = computed(() =>
-  Object.prototype.hasOwnProperty.call(props.hebergement, "nbVacanciers"),
-);
-
-const initialValues = computed(() => {
-  const values: {
-    nomHebergement: string;
-    adresse: string;
-    statut: string;
-    nbJours?: number;
-    nbVacanciers?: number;
-  } = {
-    nomHebergement: props.hebergement.nomHebergement || "",
-    adresse: props.hebergement.adresse || "",
-    statut: props.statut,
-  };
-
-  if (showNbJours.value) {
-    values.nbJours = props.hebergement.nbJours || 0;
-  }
-
-  if (showNbVacanciers.value) {
-    values.nbVacanciers = props.hebergement.nbVacanciers || 0;
-  }
-
-  return values;
 });
 
 const adresseLabel = computed(() => {
   const adresse = props.hebergement?.adresse ?? "";
-  if (!adresse.value) return "";
+  if (!adresse) return "";
 
-  if (typeof adresse.value === "object" && adresse.value.label) {
-    return adresse.value.label;
+  if (typeof adresse === "object" && adresse.label) {
+    return adresse.label;
   }
 
-  if (typeof adresse.value === "string") {
-    return adresse.value;
+  if (typeof adresse === "string") {
+    return adresse;
   }
 
   return "";

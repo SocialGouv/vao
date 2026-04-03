@@ -9,37 +9,52 @@
     </div>
     <div class="fr-input-group">
       <DsfrFileUpload
-        v-if="props.modifiable"
+        v-if="modifiable"
         v-bind="$attrs"
-        @change="changeFiles"
+        @change="onFileInputChange"
       />
     </div>
   </div>
 </template>
 
-<script setup>
-import { DsfrButtonGroup } from "@gouvminint/vue-dsfr";
+<script setup lang="ts">
+import { computed } from "vue";
+import type { PropType } from "vue";
+
 import dayjs from "dayjs";
 
 const props = defineProps({
   modifiable: { type: Boolean, default: true },
 });
+
 const config = useRuntimeConfig();
 
-const headers = ["Fichier", "Date de création", "Actions"];
+const headers: string[] = ["Fichier", "Date de création", "Actions"];
 
-const files = defineModel({ type: Array });
+interface UploadedFile {
+  name: string;
+  uuid?: string;
+  createdAt?: string | Date;
+  [key: string]: unknown;
+}
+
+const files = defineModel<UploadedFile[]>({
+  type: Array as PropType<UploadedFile[]>,
+});
 
 const rows = computed(() => {
-  return files.value.map((file, index) => {
-    const name = file.uuid
-      ? {
-          component: "a",
-          text: file.name,
-          href: `${config.public.backendUrl}/documents/${file.uuid}`,
-          download: true,
-        }
-      : file.name;
+  const fileList = files.value as UploadedFile[] | undefined;
+  if (!fileList) return [];
+  return fileList.map((file, index: number) => {
+    const name =
+      file && typeof file === "object" && "uuid" in file && file.uuid
+        ? {
+            component: "a",
+            text: (file as UploadedFile).name,
+            href: `${config.public.backendUrl}/documents/${(file as UploadedFile).uuid}`,
+            download: true,
+          }
+        : (file as UploadedFile).name;
     const buttons = [
       {
         icon: "ri:delete-bin-2-line",
@@ -47,32 +62,36 @@ const rows = computed(() => {
         tertiary: true,
         noOutline: true,
         onClick: () => removeFile(index),
-        ariaLabel: `Supprimer le fichier ${file.name}`,
+        ariaLabel: `Supprimer le fichier ${(file as UploadedFile).name}`,
       },
     ];
-    const createdAt = file.createdAt
-      ? dayjs(file.createdAt).format("YYYY-MM-DD HH:mm")
+    const createdAt = (file as UploadedFile).createdAt
+      ? dayjs((file as UploadedFile).createdAt).format("YYYY-MM-DD HH:mm")
       : "";
     return [
       name,
       createdAt,
       {
-        component: DsfrButtonGroup,
-        buttons: props.modifiable && buttons,
+        component: "DsfrButtonGroup",
+        buttons: props.modifiable ? buttons : undefined,
       },
     ];
   });
 });
 
-function removeFile(index) {
-  files.value = [
-    ...files.value.slice(0, index),
-    ...files.value.slice(index + 1),
-  ];
+function removeFile(index: number): void {
+  const fileList = files.value as UploadedFile[] | undefined;
+  if (!fileList) return;
+  files.value = [...fileList.slice(0, index), ...fileList.slice(index + 1)];
 }
 
-function changeFiles(fileList) {
-  files.value = [...files.value, ...fileList];
+function onFileInputChange(fileList: FileList): void {
+  const arr: UploadedFile[] = Array.from(fileList).map((file) => ({
+    name: file.name,
+    // uuid et createdAt seront ajoutés côté backend ou lors de l'upload effectif
+  }));
+  const current = files.value as UploadedFile[] | undefined;
+  files.value = [...(current || []), ...arr];
 }
 </script>
 

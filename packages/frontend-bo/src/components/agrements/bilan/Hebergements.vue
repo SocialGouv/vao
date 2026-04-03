@@ -1,107 +1,103 @@
 <template>
   <div>
     <div class="headings">
-      <p class="fr-mb-0">Nom de l'hébergement</p>
-      <p class="fr-mb-0">Adresse de l'hébergement</p>
-      <p class="fr-mb-0">Période</p>
-      <p class="fr-mb-0">
-        <span>Nombre jours</span>
-        <DsfrTooltip
-          class="fr-ml-2v"
-          content="Précisez la durée du séjour indépendamment du nombre de vacanciers présents."
-        />
-      </p>
-      <p></p>
+      <p>Nom de l'hébergement</p>
+      <p>Adresse</p>
+      <p>Période</p>
+      <p>Nombre de jours</p>
     </div>
-    <AgrementsBilanHebergementDetail
+
+    <div
       v-for="(hebergement, index) in paginatedHebergements"
-      :key="`${hebergement.agrBilanAnnuelId}-${hebergement.adresseId}-${index}`"
-      :hebergement="hebergement"
-    />
-    <div class="fr-mt-2v">
-      <!-- Formulaire d'ajout de séjour -->
-      <div class="fr-mt-6v">
-        <DsfrInput
-          name="nomHebergement"
-          type="text"
-          label="Nom de l'hébergement"
-          :model-value="nomHebergement"
-          :label-visible="true"
-        />
-      </div>
-      <div class="fr-mt-6v">
-        <p class="fr-mb-0">Période</p>
-        <AgrementsBilanSelectMonths />
-      </div>
-      <div class="fr-mt-6v">
-        <DsfrInput
-          name="nbJours"
-          type="number"
-          label="nombre de jours"
-          :model-value="nbJours"
-        />
-      </div>
+      :key="index"
+      class="row"
+    >
+      <p>{{ hebergement.nomHebergement || "-" }}</p>
+
+      <p>{{ hebergement.adresse?.label || "-" }}</p>
+
+      <p>{{ formatMois(hebergement.mois) }}</p>
+
+      <p>{{ hebergement.nbJours ?? "-" }}</p>
     </div>
+
     <!-- Pagination -->
-    <div class="pagination-center">
-      <DsfrPagination
-        v-if="totalPages > 1"
-        v-model:current-page="currentPage"
-        :pages="pages"
-        :trunc-limit="2"
-        next-page-title="séjours suivants"
-        prev-page-title="séjours précédents"
-        current-page-title-suffix=" - page courante"
-        class="fr-mt-4v fr-col-12"
-      />
+    <div v-if="totalPages > 1" class="pagination-center">
+      <button
+        v-for="page in totalPages"
+        :key="page"
+        :class="{ active: currentPage === page - 1 }"
+        @click="currentPage = page - 1"
+      >
+        {{ page }}
+      </button>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref } from "vue";
+import type { BilanHebergementDto } from "@vao/shared-bridge";
 
-const props = defineProps({
-  bilanHebergement: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-});
-
-const localHebergements = ref([...props.bilanHebergement]);
+const props = defineProps<{
+  hebergements: BilanHebergementDto[];
+}>();
 
 const ITEMS_PER_PAGE = 10;
 const currentPage = ref(0);
 
-const totalPages = computed(() => {
-  return Math.ceil(localHebergements.value.length / ITEMS_PER_PAGE);
-});
-
-const pages = computed(() => {
-  const pageArray = [];
-  for (let i = 1; i <= totalPages.value; i++) {
-    pageArray.push({
-      title: `Lien vers la page ${i}`,
-      href: `#${i}`,
-      label: `${i}`,
-    });
-  }
-  return pageArray;
-});
+const totalPages = computed(() =>
+  Math.ceil((props.hebergements?.length || 0) / ITEMS_PER_PAGE),
+);
 
 const paginatedHebergements = computed(() => {
   const start = currentPage.value * ITEMS_PER_PAGE;
-  const end = start + ITEMS_PER_PAGE;
-  return localHebergements.value.slice(start, end);
+  return (props.hebergements || []).slice(start, start + ITEMS_PER_PAGE);
 });
+
+function formatMois(mois: number[] | null): string {
+  if (!mois || mois.length === 0) return "-";
+
+  const moisLabels = [
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
+  ];
+
+  return mois.map((m) => moisLabels[m - 1] || m).join(", ");
+}
 </script>
 
 <style scoped>
 .headings {
   display: grid;
-  grid-template-columns: 2fr 3fr 2fr 1fr 40px;
-  gap: 0 0.5rem;
+  grid-template-columns: 2fr 3fr 2fr 1fr;
+  gap: 0.5rem;
+  font-weight: bold;
   margin-bottom: 1rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 2fr 3fr 2fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.pagination-center {
+  margin-top: 1rem;
+}
+
+button.active {
+  font-weight: bold;
 }
 </style>

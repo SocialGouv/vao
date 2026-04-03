@@ -341,8 +341,12 @@ fileignoreconfig:
   checksum: 2c901e0ed288d842ade3aaf39c6caef76d1ce7eb40acbda7b721d25dfb4409c8
 - filename: packages/shared-bridge/src/utils/request.ts
   checksum: 6a4c93d54f5648fb04d9cb0ec727179358b80c752e7c0e467382ce47f7290bcd
+- filename: packages/shared-ui/src/components/DisplayInputCommon.vue
+  checksum: bef19a82a3c06e380b4d013d428da9c3eab13aaa33a0c60bafc35f41f2e77bc1
 - filename: packages/shared-ui/src/components/DsfrMultiselectV2.vue
   checksum: 1de96bc77280e61537e5c573a8116d32a8d2793eb073f89080cc66f8a389ce73
+- filename: packages/shared-ui/src/components/MultiFilesUpload.vue
+  checksum: f5fcb9ea7e425feb8ee53dd21583de532a7269a55de68faef90b2c5b0fbb76f9
 - filename: packages/shared-ui/src/components/Table/DsfrDataTableV2.vue
   checksum: 0333a8dd3d87ab118f5896b079f89423f9e465208c68bebed045a83350ce24d6
 - filename: packages/shared-ui/src/components/Toaster.vue

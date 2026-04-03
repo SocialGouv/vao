@@ -1,6 +1,6 @@
 <template>
   <div class="container" :class="{ 'container--error': !isValid }">
-    <div v-if="props.labelVisible" class="fr-col-10">
+    <div v-if="labelVisible" class="fr-col-10">
       <span class="read-only-label">{{ input.label }}</span>
     </div>
 
@@ -15,14 +15,27 @@
     </div>
 
     <p v-if="!isValid" class="fr-error-text" role="alert" aria-live="polite">
-      {{ errorMessage ?? "Champ invalide" }}
+      {{ errorMessage || "Champ invalide" }}
     </p>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { computed } from "vue";
+import type { PropType } from "vue";
 import displayInput from "~/utils/display-input";
+
 defineEmits(["emitComment"]);
+
+type DisplayInputType =
+  (typeof displayInput.InputTypes)[keyof typeof displayInput.InputTypes];
+
+interface DisplayInputOption {
+  inputType: DisplayInputType;
+  label: string;
+  options?: Record<string, string>;
+  formatter?: (value: unknown) => string;
+}
 
 const props = defineProps({
   labelVisible: {
@@ -38,8 +51,9 @@ const props = defineProps({
     default: "",
   },
   input: {
+    type: Object as PropType<DisplayInputOption>,
     required: true,
-    validator: (value) => {
+    validator: (value: DisplayInputOption) => {
       if (!value.inputType || !value.label || !value.label.length) {
         return false;
       }
@@ -48,60 +62,44 @@ const props = defineProps({
   },
   value: {
     required: true,
-    validator: (value, props) => {
-      if (props.input.inputType === displayInput.InputTypes.TEXT) {
-        return (
-          typeof value === "string" || value === null || value === undefined
-        );
-      }
-
-      if (
-        props.input.inputType === displayInput.InputTypes.RADIO &&
-        !props.input.options
-      ) {
-        return false;
-      }
-
-      if (
-        props.input.inputType === displayInput.InputTypes.MULTISELECT &&
-        !!props.value &&
-        Array.isArray(props.value) === false
-      ) {
-        return false;
-      }
-
-      return !(
-        props.input.inputType === displayInput.InputTypes.TABLE &&
-        !!props.value &&
-        !Array.isArray(props.value)
-      );
-    },
+    type: null as unknown as PropType<unknown>,
   },
 });
 
 const displayValue = computed(() => {
   const inputHandlers = {
-    [displayInput.InputTypes.RAW]: (props) => props.value,
-    [displayInput.InputTypes.TEXT]: (props) =>
+    [displayInput.InputTypes.RAW]: () => props.value,
+    [displayInput.InputTypes.TEXT]: () =>
       props.value !== null && props.value !== undefined
-        ? props.value.toString()
+        ? String(props.value)
         : null,
-    [displayInput.InputTypes.NUMBER]: (props) =>
-      isNaN(parseInt(props.value)) ? null : parseInt(props.value),
-    [displayInput.InputTypes.RADIO]: (props) =>
-      Object.keys(props.input.options).includes(props.value?.toString())
-        ? props.input.options[props.value]
+    [displayInput.InputTypes.NUMBER]: () => {
+      const val = props.value as string | number | undefined;
+      if (val === undefined || val === null) return null;
+      const strVal = typeof val === "string" ? val : String(val);
+      return isNaN(parseInt(strVal)) ? null : parseInt(strVal);
+    },
+    [displayInput.InputTypes.RADIO]: () => {
+      const options = props.input.options;
+      const val = props.value;
+      if (!options) return null;
+      const key = val !== undefined && val !== null ? String(val) : undefined;
+      return key && Object.keys(options).includes(key) ? options[key] : null;
+    },
+    [displayInput.InputTypes.MULTISELECT]: () =>
+      Array.isArray(props.value)
+        ? (props.value as unknown[]).join(" / ")
         : null,
-    [displayInput.InputTypes.MULTISELECT]: (props) =>
-      Array.isArray(props.value) ? props.value.join(" / ") : null,
-    [displayInput.InputTypes.TO_FORMAT]: (props) =>
-      props.value ? props.input.formatter(props.value) : null,
-    [displayInput.InputTypes.TABLE]: (props) =>
+    [displayInput.InputTypes.TO_FORMAT]: () =>
+      props.value && typeof props.input.formatter === "function"
+        ? props.input.formatter(props.value)
+        : null,
+    [displayInput.InputTypes.TABLE]: () =>
       Array.isArray(props.value) ? props.value : null,
   };
 
   const handler = inputHandlers[props.input.inputType];
-  return handler ? handler(props) : "error";
+  return handler ? handler() : "error";
 });
 </script>
 

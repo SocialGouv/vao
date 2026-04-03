@@ -10,21 +10,16 @@
     <DsfrCheckbox
       v-model="accompRespAttestHono"
       name="checkbox-required-custom"
-      label="J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire"
-      required
-      :readonly="!props.modifiable"
+      label="L'OVA atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire"
+      :readonly="true"
       :value="true"
-      @update:model-value="onAccompRespAttestHonoChange"
     />
-    <p v-if="accompRespAttestHonoErrorMessage" class="fr-error-text">
-      {{ accompRespAttestHonoErrorMessage }}
-    </p>
   </div>
   <div class="fr-fieldset__element">
     <FileUpload
       v-model="fileProjetsSejoursCasier"
       :cdn-url="props.cdnUrl"
-      :modifiable="props.modifiable"
+      :modifiable="false"
       label="Ajouter un fichier (optionnel)"
     />
   </div>
@@ -32,16 +27,15 @@
 
 <script setup lang="ts">
 import { FileUpload, TitleWithIcon } from "@vao/shared-ui";
-import * as yup from "yup";
-import { useForm, useField } from "vee-validate";
-import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import { FILE_CATEGORY } from "@vao/shared-bridge";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
-  modifiable: { type: Boolean, default: false },
 });
+
+const accompRespAttestHono = props.initAgrement.accompRespAttestHono ?? false;
 
 const fileProjetsSejoursCasier = ref(
   props.initAgrement?.agrementFiles?.filter(
@@ -49,59 +43,6 @@ const fileProjetsSejoursCasier = ref(
       file.category === FILE_CATEGORY.PROJETSSEJOURSCASIER,
   ) || null,
 );
-
-const validationSchema = yup.object({
-  accompRespAttestHono: yup
-    .boolean()
-    .oneOf(
-      [true],
-      "Vous devez attester que les accompagnants et le responsable du déroulement du séjour n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire.",
-    )
-    .required("Ce champ est obligatoire."),
-});
-
-const initialValues = {
-  statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
-  accompRespAttestHono: false,
-};
-
-const { handleSubmit } = useForm({
-  validationSchema,
-  initialValues,
-  validateOnMount: false,
-});
-
-const {
-  value: accompRespAttestHono,
-  errorMessage: accompRespAttestHonoErrorMessage,
-  handleChange: onAccompRespAttestHonoChange,
-} = useField<boolean>("accompRespAttestHono");
-
-const validateForm = async () => {
-  try {
-    const result = await handleSubmit((values) => {
-      return values;
-    })();
-
-    if (result) {
-      const data = { ...result };
-      delete data.statut;
-      const finalData = {
-        ...data,
-        ...(fileProjetsSejoursCasier.value && {
-          filesProjetsSejoursCasier: fileProjetsSejoursCasier.value,
-        }),
-      };
-      return finalData;
-    }
-  } catch (error) {
-    console.error("Erreur lors de la validation du formulaire! :", error);
-  }
-};
-
-defineExpose({
-  validateForm,
-});
 </script>
 
 <style scoped>

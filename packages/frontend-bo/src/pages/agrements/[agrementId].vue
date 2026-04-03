@@ -41,8 +41,7 @@
         <AgrementsDossier
           :init-organisme="organismeStore.organisme ?? {}"
           :init-agrement="agrementStore.agrementCourant ?? {}"
-          :modifiable="false"
-          cdn-url="sqs"
+          :cdn-url="`${config.public.backendUrl}/documents/`"
         ></AgrementsDossier>
         <AgrementsActionsStatut
           :cdn-url="`${config.public.backendUrl}/documents/`"

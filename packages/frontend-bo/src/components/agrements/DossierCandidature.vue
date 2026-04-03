@@ -78,7 +78,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import {
   FileUpload,
@@ -96,16 +96,16 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
 });
 
-const getFileByCategory = (category) => {
+const getFileByCategory = (category: string) => {
   return (
     props.initAgrement?.agrementFiles?.find(
-      (file) => file.category === category,
+      (file: { category: string }) => file.category === category,
     ) || null
   );
 };
 const filesMotivation = ref(
   props.initAgrement?.agrementFiles?.filter(
-    (file) => file.category === FILE_CATEGORY.MOTIVATION,
+    (file: { category: string }) => file.category === FILE_CATEGORY.MOTIVATION,
   ) || [],
 );
 const fileImmatriculation = ref(getFileByCategory(FILE_CATEGORY.IMMATRICUL));

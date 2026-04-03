@@ -30,12 +30,12 @@
   <p class="fr-mb-1v"><b>Informations complémentaires</b></p>
   <div class="fr-col-6 fr-mb-4v">
     <DisplayInputCommon
-      :value="sejourNbEnvisage"
+      :value="props.initAgrement.sejourNbEnvisage"
       :input="AgrementDisplayInput.IAgrementProjets['sejourNbEnvisage']"
     />
   </div>
   <DisplayInputCommon
-    :value="sejourCommentaire"
+    :value="props.initAgrement.sejourCommentaire"
     :input="AgrementDisplayInput.IAgrementProjets['sejourCommentaire']"
   />
   <div class="fr-fieldset__element">
