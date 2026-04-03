@@ -168,6 +168,15 @@
               </div>
             </div>
           </div>
+          <DsfrModal
+            class="fr-icon-checkbox-circle-line fr-icon--lg"
+            name="modal-confirm-transmission"
+            :opened="isModalConfirmTransmissionOpened"
+            size="md"
+            @close="onCloseConfirmTransmissionModal"
+          >
+            <DemandeSejourConfirmTransmission />
+          </DsfrModal>
         </div>
       </DsfrTabContent>
 
@@ -241,7 +250,12 @@
 
 <script setup>
 import dayjs from "dayjs";
-import { Chat, DemandeStatusBadge, fileUtils, useToaster } from "@vao/shared-ui";
+import {
+  Chat,
+  DemandeStatusBadge,
+  fileUtils,
+  useToaster,
+} from "@vao/shared-ui";
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 const route = useRoute();
@@ -475,6 +489,12 @@ const hash = computed(() => {
   return sommaireOptions[0];
 });
 
+const isModalConfirmTransmissionOpened = ref(false);
+
+async function onCloseConfirmTransmissionModal() {
+  isModalConfirmTransmissionOpened.value = false;
+  await navigateTo("/demande-sejour/liste");
+}
 const canModify = computed(() => {
   return (
     !demandeCourante.value.statut ||
@@ -663,12 +683,10 @@ async function updateOrCreate(data, type) {
       },
     });
 
-    toaster.success(
-      {
-        titleTag: "h2",
-        description: `Déclaration de séjour ${sejourId.value ? "sauvegardée" : "créée"}`,
-      }
-    );
+    toaster.success({
+      titleTag: "h2",
+      description: `Déclaration de séjour ${sejourId.value ? "sauvegardée" : "créée"}`,
+    });
     log.d(`demande de séjour ${sejourId.value} mis à jour`);
     sejourId.value = response.id;
     return await nextHash();
@@ -735,7 +753,7 @@ async function finalize(attestation) {
       });
     }
     log.d(`demande de séjour ${sejourId.value} transmise`);
-    return await navigateTo("/demande-sejour/liste");
+    isModalConfirmTransmissionOpened.value = true;
   } catch (error) {
     log.w("Finalisation de la declaration de sejour : ", { error });
     const codeError = error?.data?.name;
@@ -781,5 +799,8 @@ onMounted(async () => {
   display: flex;
   justify-content: end;
   align-items: start;
+}
+a img {
+  display: block;
 }
 </style>
