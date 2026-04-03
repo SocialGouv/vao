@@ -72,8 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { useField } from "vee-validate";
-import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import { FILE_CATEGORY } from "@vao/shared-bridge";
 import {
   TitleWithIcon,
   AgrementDisplayInput,
