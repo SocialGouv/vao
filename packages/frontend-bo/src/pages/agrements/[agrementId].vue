@@ -38,9 +38,9 @@
         :asc="asc"
       >
         <h1>Dossier</h1>
-        <AgrementsActions
+        <AgrementsActionsStatut
           :cdn-url="`${config.public.backendUrl}/documents/`"
-        ></AgrementsActions>
+        ></AgrementsActionsStatut>
       </DsfrTabContent>
 
       <DsfrTabContent

@@ -164,10 +164,7 @@ export const AgrementService = {
       throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_NOT_FOUND);
     }
 
-    if (
-      [AGREMENT_STATUT.REFUSE, AGREMENT_STATUT.A_MODIFIER].includes(statut) &&
-      !commentaire
-    ) {
+    if ([AGREMENT_STATUT.A_MODIFIER].includes(statut) && !commentaire) {
       throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_INCONSISTENT);
     }
 
@@ -202,7 +199,8 @@ export const AgrementService = {
 
     if (
       statut === AGREMENT_STATUT.A_MODIFIER ||
-      statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME
+      statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME ||
+      statut === AGREMENT_STATUT.REFUSE
     ) {
       const regionDreets = await Region.fetchOne(territoireCode);
       if (!regionDreets) {
@@ -246,13 +244,21 @@ export const AgrementService = {
                   email: mailsOVA,
                   regionDreets: regionDreets.text,
                 })
-              : AgrementMailUsagers.sendStatutCompletudeMail({
-                  email: mailsOVA,
-                  regionDreets: regionDreets.text,
-                });
+              : statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME
+                ? AgrementMailUsagers.sendStatutCompletudeMail({
+                    email: mailsOVA,
+                    regionDreets: regionDreets.text,
+                  })
+                : AgrementMailUsagers.sendStatutRefuseMail({
+                    email: mailsOVA,
+                    regionDreets: regionDreets.text,
+                  });
           await mailService.send(mailToSend);
         } catch (e) {
-          log.w("Erreur lors de l'envoi de l'email de transmission", e);
+          log.w(
+            `Erreur lors de l'envoi de l'email pour le changement de statut : ${statut}`,
+            e,
+          );
         }
       } else {
         log.w("Aucun email trouvé pour l'agrément", agrementId);

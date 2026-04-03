@@ -61,9 +61,26 @@ export function requestQueryValidator<T>(
 ) {
   if (query && validator) {
     try {
-      return validator.validateSync(query, { stripUnknown: true });
+      // les tableaux étant mal interpretés par query-string, on parse les sous objets ou tableaux en JSON
+      const parsedQuery = Object.entries(query).reduce((acc, [key, value]) => {
+        if (
+          typeof value === "string" &&
+          (/^\{".*"\}$/.test(value) || /^\[.*\]$/.test(value))
+        ) {
+          try {
+            return { ...acc, [key]: JSON.parse(value) };
+          } catch (error: unknown) {
+            log.d("error parsing query", key, value, (error as Error).message);
+          }
+        }
+        return { ...acc, [key]: value };
+      }, {});
+      const validatedQuery = validator.validateSync(parsedQuery, {
+        stripUnknown: true,
+      });
+      return validatedQuery;
     } catch (error) {
-      log.d("INVALID_QUERY", error);
+      log.d("INVALID_QUERY", (error as Error).message, error);
       throw new Error(ERRORS_COMMON.INVALID_QUERY);
     }
   }

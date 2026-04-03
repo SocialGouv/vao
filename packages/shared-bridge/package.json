@@ -11,7 +11,7 @@
     "test:coverage": "jest --config=jest.config.js --coverage"
   },
   "lint-staged": {
-    "src/**/*.{js,ts}": "corepack pnpm exec eslint"
+    "src/**/*.{js,ts}": "corepack pnpm lint"
   },
   "author": "orgs/SocialGouv/teams/vao",
   "license": "Apache-2.0",
@@ -19,6 +19,7 @@
   "dependencies": {
     "dayjs": "^1.11.10",
     "debug": "~4.3.4",
+    "query-string": "^6.14.1",
     "yup": "~1.4.0"
   },
   "devDependencies": {

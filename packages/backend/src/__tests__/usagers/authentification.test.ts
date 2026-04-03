@@ -1,4 +1,4 @@
-import { ERRORS_COMMON, statusUserFront } from "@vao/shared-bridge";
+import { ERRORS_COMMON, STATUS_USER_FRONT } from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
 import request from "supertest";
@@ -90,7 +90,7 @@ describe("POST /authentication/email/register", () => {
         password: "HelloHello1!!",
         prenom: "John",
         siret: "12345678900011",
-        status_code: statusUserFront.NEED_EMAIL_VALIDATION,
+        status_code: STATUS_USER_FRONT.NEED_EMAIL_VALIDATION,
         telephone: "0102030405",
         ter_code: "FRA",
       },
@@ -195,7 +195,7 @@ describe("POST /authentication/email/login", () => {
         password,
         prenom: "FrontPrenom",
         siret: `123456789012${timestamp.toString().slice(-2)}`,
-        status_code: statusUserFront.VALIDATED,
+        status_code: STATUS_USER_FRONT.VALIDATED,
         telephone: "0102030405",
         ter_code: "FRA",
       },
@@ -254,7 +254,7 @@ describe("POST /authentication/email/login", () => {
         password,
         prenom: "FrontPrenom",
         siret: `123456789012${timestamp.toString().slice(-2)}`,
-        status_code: statusUserFront.NEED_EMAIL_VALIDATION,
+        status_code: STATUS_USER_FRONT.NEED_EMAIL_VALIDATION,
         telephone: "0102030405",
         ter_code: "FRA",
       },
@@ -283,7 +283,7 @@ describe("POST /authentication/email/login", () => {
         password,
         prenom: "FrontPrenom",
         siret: `123456789012${timestamp.toString().slice(-2)}`,
-        status_code: statusUserFront.BLOCKED,
+        status_code: STATUS_USER_FRONT.BLOCKED,
         telephone: "0102030405",
         ter_code: "FRA",
       },
@@ -312,7 +312,7 @@ describe("POST /authentication/email/login", () => {
         password,
         prenom: "FrontPrenom",
         siret: `123456789012${timestamp.toString().slice(-2)}`,
-        status_code: statusUserFront.TEMPORARY_BLOCKED,
+        status_code: STATUS_USER_FRONT.TEMPORARY_BLOCKED,
         telephone: "0102030405",
         ter_code: "FRA",
       },
