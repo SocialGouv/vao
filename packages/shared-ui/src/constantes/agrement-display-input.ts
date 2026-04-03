@@ -698,14 +698,14 @@ export const IAgrementBilanAnnuel = {
   typeHandicap: {
     inputType: InputTypes.MULTISELECT,
     label: "",
-    options: [
-      { label: "Sensoriel", value: "auditif", name: "typeHandicap" },
-      { label: "Visuel", value: "visuel", name: "typeHandicap" },
-      { label: "Cognitif", value: "cognitif", name: "typeHandicap" },
-      { label: "Mental/Psychique", value: "mental", name: "typeHandicap" },
-      { label: "Moteur", value: "moteur", name: "typeHandicap" },
-      { label: "Polyhandicap", value: "polyhandicap", name: "typeHandicap" },
-    ],
+    options: {
+      auditif: "Sensoriel",
+      visuel: "Visuel",
+      cognitif: "Cognitif",
+      mental: "Mental/Psychique",
+      moteur: "Moteur",
+      polyhandicap: "Polyhandicap",
+    },
   },
   bilanFinancierComptabilite: {
     inputType: InputTypes.TEXT,
@@ -760,11 +760,11 @@ export const IAgrementBilanAnnuel = {
   trancheAge: {
     inputType: InputTypes.MULTISELECT,
     label: "",
-    options: [
-      { label: "de 18 à 39 ans", value: "18_39", name: "trancheAge" },
-      { label: "de 40 à 59 ans", value: "40_59", name: "trancheAge" },
-      { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
-    ],
+    options: {
+      "18_39": "de 18 à 39 ans",
+      "40_59": "de 40 à 59 ans",
+      "59_et_plus": "plus de 59 ans",
+    },
   },
 };
 
