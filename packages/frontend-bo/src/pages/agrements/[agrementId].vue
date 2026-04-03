@@ -67,13 +67,7 @@
         :selected="selectedTabIndex === 3"
         :asc="asc"
       >
-      </DsfrTabContent>
-      <DsfrTabContent
-        panel-id="agrement-content-4"
-        tab-id="agrement-tab-4"
-        :selected="selectedTabIndex === 4"
-        :asc="asc"
-      >
+        <AgrementsMessagerie :messages="messages" />
       </DsfrTabContent>
     </DsfrTabs>
   </div>
@@ -108,6 +102,13 @@ onMounted(async () => {
       log.i("Historique de l'agrément récupéré avec succès");
     } catch (error) {
       log.w("Erreur lors de la récupération de l'historique:", error);
+    }
+
+    try {
+      await agrementStore.getMessages(String(agrementId.value));
+      log.i("Messages de l'agrément récupérés avec succès");
+    } catch (error) {
+      log.w("Erreur lors de la récupération des messages:", error);
     }
   }
 });
@@ -163,13 +164,20 @@ enum Tab {
 const tabActions: Record<Tab, () => void> = {
   [Tab.Documents]: () => {},
   [Tab.Historique]: () => {},
-  [Tab.Messages]: () => {},
+  [Tab.Messages]: async () => {
+    await agrementStore.patchMessagesAsRead(String(agrementId.value));
+    await agrementStore.getMessages(String(agrementId.value));
+  },
 };
 
 const selectTab = async (idx: Tab) => {
   asc.value = selectedTabIndex.value < idx;
   tabActions[idx]();
 };
+
+const messages = computed(() => agrementStore.messages ?? []);
+
+const unreadCount = computed(() => agrementStore.messagesUnreadCount ?? 0);
 
 const tabTitles = computed(() => [
   {
@@ -188,7 +196,10 @@ const tabTitles = computed(() => [
     panelId: "agrement-content-2",
   },
   {
-    title: "Messagerie",
+    title:
+      unreadCount.value > 0
+        ? `Messagerie (${unreadCount.value})`
+        : "Messagerie",
     tabId: "agrement-tab-3",
     panelId: "agrement-content-3",
   },

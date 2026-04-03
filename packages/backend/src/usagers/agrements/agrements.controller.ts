@@ -94,7 +94,12 @@ export const AgrementController = {
     log.i("PATCH statut IN");
 
     const { id: usagerUserId } = req.decoded!;
-    const agrementId = Number(req.validatedParams!.agrementId);
+    const { id: agrementId, error } = validateId(req.params.agrementId);
+    if (error || agrementId === undefined) {
+      return next(
+        new AppError(ERRORS_COMMON.INVALID_PARAMS, { statusCode: 400 }),
+      );
+    }
     const { statut } = req.validatedBody!;
     try {
       await AgrementService.updateStatut({

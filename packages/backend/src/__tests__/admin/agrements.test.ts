@@ -446,3 +446,74 @@ describe("GET /admin/agrements/history/:agrementId", () => {
     expect(response.body.history.length).toBe(0);
   });
 });
+
+describe("Messagerie d'agrément", () => {
+  let agrementId: number;
+
+  beforeEach(async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+  });
+
+  it("POST /message devrait créer un message et retourner 201", async () => {
+    const postResponse = await request(app)
+      .post(`/admin/agrements/${agrementId}/message`)
+      .send({ message: "Message de test" });
+    expect(postResponse.status).toBe(201);
+    expect(postResponse.body.success).toBe(true);
+  });
+
+  it("GET /messages devrait retourner les messages existants", async () => {
+    await request(app)
+      .post(`/admin/agrements/${agrementId}/message`)
+      .send({ message: "Message de test" });
+
+    const getResponse = await request(app).get(
+      `/admin/agrements/${agrementId}/messages`,
+    );
+    expect(getResponse.status).toBe(200);
+    expect(getResponse.body.messages).toBeDefined();
+    expect(getResponse.body.count).toBe(1);
+    expect(getResponse.body.messages[0].message).toBe("Message de test");
+    expect(getResponse.body.messages[0].backUserPrenom).toBeDefined();
+  });
+
+  it("POST /message devrait retourner 404 pour un agrément inexistant", async () => {
+    const response = await request(app)
+      .post(`/admin/agrements/999999/message`)
+      .send({ message: "test" });
+    expect(response.status).toBe(404);
+  });
+
+  it("GET /messages devrait retourner 404 pour un agrément inexistant", async () => {
+    const response = await request(app).get(`/admin/agrements/999999/messages`);
+    expect(response.status).toBe(404);
+  });
+
+  it("PATCH /messages devrait marquer tous les messages non lus comme lus et retourner le bon count", async () => {
+    await request(app)
+      .post(`/admin/agrements/${agrementId}/message`)
+      .send({ message: "Message 1" });
+
+    await request(app)
+      .post(`/admin/agrements/${agrementId}/message`)
+      .send({ message: "Message 2" });
+
+    const patchResponse = await request(app).patch(
+      `/admin/agrements/${agrementId}/messages/read`,
+    );
+    expect(patchResponse.status).toBe(200);
+    expect(patchResponse.body.count).toBe(2);
+
+    const getResponse = await request(app).get(
+      `/admin/agrements/${agrementId}/messages`,
+    );
+    expect(getResponse.body.unreadCount).toBe(0);
+  });
+});

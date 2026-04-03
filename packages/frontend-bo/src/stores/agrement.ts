@@ -6,6 +6,7 @@ import type {
   OrganismeDto,
   AGREMENT_STATUT,
   AgrementHistoryItem,
+  AgrementMessage,
 } from "@vao/shared-bridge";
 import { AgrementService } from "~/services/agrementService";
 const log = logger("stores/agrement");
@@ -20,6 +21,9 @@ export interface AgrementStoreState {
   agrementCourant?: AgrementDto | null;
   activites?: ActiviteDto[];
   history: AgrementHistoryItem[] | null;
+  messages: AgrementMessage[] | null;
+  messagesTotal?: number | null;
+  messagesUnreadCount?: number | null;
 }
 
 export const useAgrementStore = defineStore("agrement", {
@@ -28,8 +32,21 @@ export const useAgrementStore = defineStore("agrement", {
     agrementCourant: null,
     activites: [],
     history: null,
+    messages: null,
+    messagesTotal: null,
   }),
   actions: {
+    async patchMessagesAsRead(agrementId: string): Promise<number> {
+      log.i("patchMessagesAsRead - IN", { agrementId });
+      try {
+        const count = await AgrementService.markMessagesAsRead(agrementId);
+        log.i("patchMessagesAsRead - DONE", { count });
+        return count;
+      } catch (err) {
+        log.w("patchMessagesAsRead - ERROR", err);
+        throw err;
+      }
+    },
     async getAgrementById(agrementId: number): Promise<void> {
       log.i("getAgrementById - IN", { agrementId });
       try {
@@ -38,6 +55,20 @@ export const useAgrementStore = defineStore("agrement", {
         this.agrementCourant = agrement;
       } catch (err) {
         log.w("getAgrementById - DONE with error", err);
+        throw err;
+      }
+    },
+    async getMessages(agrementId: string): Promise<void> {
+      log.i("getMessages - IN", { agrementId });
+      try {
+        const { count, messages, unreadCount } =
+          await AgrementService.getMessages(agrementId);
+        log.i("getMessages - DONE", { messages, count, unreadCount });
+        this.messages = messages;
+        this.messagesTotal = count;
+        this.messagesUnreadCount = unreadCount;
+      } catch (err) {
+        log.w("getMessages - DONE with error", err);
         throw err;
       }
     },
@@ -91,6 +122,21 @@ export const useAgrementStore = defineStore("agrement", {
         return success;
       } catch (err) {
         log.w("changeStatutAgrement - ERROR", err);
+        throw err;
+      }
+    },
+    async postMessage({
+      agrementId,
+      message,
+    }: {
+      agrementId: string;
+      message: string;
+    }): Promise<void> {
+      try {
+        await AgrementService.postMessage(agrementId, message);
+        log.i("postMessage - DONE");
+      } catch (err) {
+        log.w("postMessage - ERROR", err);
         throw err;
       }
     },

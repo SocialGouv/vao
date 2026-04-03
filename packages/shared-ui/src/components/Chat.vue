@@ -8,12 +8,11 @@
         v-for="m in props.messages"
         :key="m.id"
         :message="m.message"
-        :created-at="m.created"
-        :is-answer="!m.frontUserId"
-        :name="m.frontUserId ? m.frontUserPrenom : m.backUserPrenom"
+        :created-at="m.createdAt"
+        :is-answer="m.isAnswer ?? !m.frontUserId"
+        :name="m.name ?? (m.frontUserId ? m.frontUserPrenom : m.backUserPrenom)"
         :file="m.file"
-        :cdn-url="cdnUrl"
-        :data="m"
+        :cdn-url="props.cdnUrl"
       />
       <DsfrAlert>
         Il est interdit de saisir des données sensibles (personnelles,
@@ -25,6 +24,7 @@
     <div class="answer">
       <div class="fr-input-group answer__form">
         <DsfrButton
+          v-if="props.cdnUrl"
           label="Importer un fichier"
           title="Importer un fichier"
           icon="fr-icon-attachment-line"
@@ -85,38 +85,40 @@
     size="md"
     @close="isModalOpen = false"
   >
-    <FileUpload v-model="file" :cdn-url="props.cdnUrl" />
+    <FileUpload v-if="props.cdnUrl" v-model="file" :cdn-url="props.cdnUrl" />
     <DsfrButton type="button" @click="isModalOpen = false">Valider</DsfrButton>
   </DsfrModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { DsfrButton, DsfrModal } from "@gouvminint/vue-dsfr";
 import { ref } from "vue";
+import type { GenericMessage } from "@vao/shared-bridge";
 
 import Message from "./Message.vue";
 import FileUpload from "./FileUpload.vue";
-import { useToaster } from '../composables/useToaster';
+import { useToaster } from "../composables/useToaster";
 
 const MAX_MESSAGE_LENGTH = 1000;
 
-const props = defineProps({
-  messages: { type: Array, required: true },
-  cdnUrl: { type: String, required: true },
-  isLoading: { type: Boolean, default: true },
-});
+const props = defineProps<{
+  messages: GenericMessage[];
+  cdnUrl?: string;
+  isLoading: boolean;
+}>();
 
 const emit = defineEmits(["send"]);
 
 const message = ref("");
-const file = ref(null);
+const file = ref<{ name: string } | null>(null);
 const isModalOpen = ref(false);
 
 const toaster = useToaster();
 
-const sendMessage = (event) => {
+const sendMessage = (event: Event) => {
   event.preventDefault();
-  if ((!message.value && !file.value) || props.isLoading) return;
+  if ((!message.value && (!props.cdnUrl || !file.value)) || props.isLoading)
+    return;
   if (message.value.length > MAX_MESSAGE_LENGTH) {
     toaster.error({
       titleTag: "h2",

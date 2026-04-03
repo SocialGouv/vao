@@ -19,6 +19,14 @@ const AgrementService = {
       body: { statut, commentaire, file },
     })();
   },
+  markMessagesAsRead: async (agrementId: string) => {
+    const { count } = await buildRequest<AgrementAdminRoutes["PatchMessages"]>({
+      path: "/admin/agrements/{agrementId}/messages/read",
+      method: "PATCH",
+      params: { agrementId },
+    })();
+    return count;
+  },
   getListAgrements: async (params: AgrementAdminRoutes["GetList"]["query"]) => {
     const { agrements, count } = await buildRequest<
       AgrementAdminRoutes["GetList"]
@@ -45,6 +53,20 @@ const AgrementService = {
     })();
     return history;
   },
+  postMessage: async (agrementId: string, message: string) => {
+    await buildRequest<AgrementAdminRoutes["PostMessage"]>({
+      path: "/admin/agrements/{agrementId}/message",
+      method: "POST",
+      params: { agrementId: String(agrementId) },
+      body: { message },
+    })();
+  },
+  getMessages: async (agrementId: string) =>
+    await buildRequest<AgrementAdminRoutes["GetMessages"]>({
+      path: "/admin/agrements/{agrementId}/messages",
+      method: "GET",
+      params: { agrementId },
+    })(),
 };
 
 export { AgrementService };
