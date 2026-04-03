@@ -1,4 +1,5 @@
 export * from "./components";
+export * from "./constantes";
 export * from "./composables";
 export * as apiModel from "./models";
 export * as eigModel from "./models";
