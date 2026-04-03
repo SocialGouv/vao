@@ -61,7 +61,12 @@ export default defineNuxtConfig({
     headers: {
       crossOriginEmbedderPolicy: "unsafe-none",
       contentSecurityPolicy: {
-        "img-src": ["'self'", "*.openstreetmap.org", "data:"],
+        "img-src": [
+          "'self'",
+          "*.openstreetmap.org",
+          "jedonnemonavis.numerique.gouv.fr",
+          "data:",
+        ],
         "script-src": [
           "'self'",
           "https:",
