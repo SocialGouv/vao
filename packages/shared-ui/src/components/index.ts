@@ -27,6 +27,7 @@ import RangeDatePicker from "./RangeDatePicker.vue";
 import MessageHover from "./messages/MessageHover.vue";
 import MessageEtat from "./messages/MessageEtat.vue";
 import DisplayInput from "./DisplayInput.vue";
+import DisplayInputCommon from "./DisplayInputCommon.vue";
 import UserStatusBadge from "./users/UserStatusBadge.vue";
 import RefusCompteModal from "./users/RefusCompteModal.vue";
 import Header from "./Header.vue";
@@ -40,6 +41,7 @@ import TwoFactorCodeVerification from "./auth/TwoFactorCodeVerification.vue";
 import DsfrLinkV2 from "./DsfrLinkV2.vue";
 import Historique from "./agrement/Historique.vue";
 import EtapeHistorique from "./agrement/EtapeHistorique.vue";
+import MultiFilesUpload from "./MultiFilesUpload.vue";
 export {
   AgrementStatusBadge,
   AgrementDocuments,
@@ -83,4 +85,6 @@ export {
   DsfrLinkV2,
   Historique,
   EtapeHistorique,
+  DisplayInputCommon,
+  MultiFilesUpload,
 };
