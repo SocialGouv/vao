@@ -27,7 +27,7 @@
     "@sentry/vue": "~8.54.0",
     "@vao/shared-bridge": "workspace:^",
     "@vao/shared-ui": "workspace:^",
-    "@vee-validate/i18n": "~4.13.0",
+    "@vee-validate/i18n": "~4.15.1",
     "@vee-validate/rules": "~4.13.0",
     "@vueform/multiselect": "~2.6.7",
     "dayjs": "~1.11.11",
