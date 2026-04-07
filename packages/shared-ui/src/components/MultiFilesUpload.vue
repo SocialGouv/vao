@@ -87,5 +87,3 @@ function onFileInputChange(fileList: FileList): void {
   files.value = [...(current || []), ...arr];
 }
 </script>
-
-<style lang="scss" scoped></style>
