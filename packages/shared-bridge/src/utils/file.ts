@@ -1,6 +1,13 @@
 import { FILE_CATEGORY, FILE_CATEGORY_CONFIG } from "../constantes";
 import type { AgrementFilesDto } from "../dto/agrement.dto";
 
+export interface UploadedFile {
+  name: string;
+  uuid?: string;
+  createdAt?: string | Date;
+  [key: string]: unknown;
+}
+
 export const encodeFilename = (fileName: string) =>
   Buffer.from(fileName, "latin1").toString("base64");
 
@@ -77,7 +84,7 @@ export const getFilesByCategory = ({
 }: {
   category: FILE_CATEGORY;
   files?: AgrementFilesDto[] | null;
-}) => {
+}): Partial<AgrementFilesDto[]> => {
   return (
     files?.filter((file: { category: string }) => file.category === category) ||
     []

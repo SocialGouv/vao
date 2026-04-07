@@ -337,6 +337,8 @@ fileignoreconfig:
   checksum: 90e946e20101879e9860b96c6727e9eb83adfd59f9137f3b43ffb520c00a511d
 - filename: packages/shared-bridge/src/dto/userDto.ts
   checksum: 1d22cd52289c17a26f78bdb035db9d7f65d60c4d2aa924ef9af8d9a507b57978
+- filename: packages/shared-bridge/src/utils/file.ts
+  checksum: 32ca7f8fe02c48c5e925733663b89b2c6229b033dddc412d0f151116a7247052
 - filename: packages/shared-bridge/src/utils/request.spec.ts
   checksum: 2c901e0ed288d842ade3aaf39c6caef76d1ce7eb40acbda7b721d25dfb4409c8
 - filename: packages/shared-bridge/src/utils/request.ts

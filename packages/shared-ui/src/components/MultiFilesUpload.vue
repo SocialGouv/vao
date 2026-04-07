@@ -20,6 +20,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { PropType } from "vue";
+import type { UploadedFile } from "@vao/shared-bridge";
 
 import dayjs from "dayjs";
 
@@ -30,14 +31,7 @@ const props = defineProps({
 
 const headers: string[] = ["Fichier", "Date de création", "Actions"];
 
-interface UploadedFile {
-  name: string;
-  uuid?: string;
-  createdAt?: string | Date;
-  [key: string]: unknown;
-}
-
-const files = defineModel<UploadedFile[]>({
+const files = defineModel<any | undefined | any[] | undefined[]>({
   type: Array as PropType<UploadedFile[]>,
 });
 

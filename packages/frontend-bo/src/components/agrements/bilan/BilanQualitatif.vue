@@ -118,14 +118,13 @@
 </template>
 
 <script setup lang="ts">
-import { FILE_CATEGORY } from "@vao/shared-bridge";
+import { FILE_CATEGORY, getFilesByCategory } from "@vao/shared-bridge";
 import {
   TitleWithIcon,
   AgrementDisplayInput,
   DisplayInputCommon,
   MultiFilesUpload,
 } from "@vao/shared-ui";
-import type { AgrementFilesDto } from "@vao/shared-bridge";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -133,28 +132,29 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
 });
 
-const filesBilanQualitPerception = ref(
-  props.initAgrement?.agrementFiles?.filter(
-    (file: AgrementFilesDto) =>
-      file.category === FILE_CATEGORY.BILANQUALITPERCEPTION,
-  ) || [],
+const filesBilanQualitPerception = computed(() =>
+  getFilesByCategory({
+    files: props.initAgrement?.agrementFiles,
+    category: FILE_CATEGORY.BILANQUALITPERCEPTION,
+  }),
 );
-const filesBilanQualitPerspectives = ref(
-  props.initAgrement?.agrementFiles?.filter(
-    (file: AgrementFilesDto) =>
-      file.category === FILE_CATEGORY.BILANQUALITPERSPECTIVE,
-  ) || [],
+
+const filesBilanQualitPerspectives = computed(() =>
+  getFilesByCategory({
+    files: props.initAgrement?.agrementFiles,
+    category: FILE_CATEGORY.BILANQUALITPERSPECTIVE,
+  }),
 );
-const filesBilanQualitElementsMarquants = ref(
-  props.initAgrement?.agrementFiles?.filter(
-    (file: AgrementFilesDto) =>
-      file.category === FILE_CATEGORY.BILANQUALITELEMARQ,
-  ) || [],
+const filesBilanQualitElementsMarquants = computed(() =>
+  getFilesByCategory({
+    files: props.initAgrement?.agrementFiles,
+    category: FILE_CATEGORY.BILANQUALITELEMARQ,
+  }),
 );
-const filesBilanQualitComplementaires = ref(
-  props.initAgrement?.agrementFiles?.filter(
-    (file: AgrementFilesDto) =>
-      file.category === FILE_CATEGORY.BILANQUALITCOMPLEMENTAIRES,
-  ) || [],
+const filesBilanQualitComplementaires = computed(() =>
+  getFilesByCategory({
+    files: props.initAgrement?.agrementFiles,
+    category: FILE_CATEGORY.BILANQUALITCOMPLEMENTAIRES,
+  }),
 );
 </script>
