@@ -85,8 +85,7 @@ import {
   AgrementDisplayInput,
 } from "@vao/shared-ui";
 import { ref } from "vue";
-import { FILE_CATEGORY } from "@vao/shared-bridge";
-import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { FILE_CATEGORY, getFilesByCategory } from "@vao/shared-bridge";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -94,21 +93,21 @@ const props = defineProps({
 });
 
 const filesProjetsSejoursCompetencesExperience = ref(
-  props.initAgrement?.agrementFiles?.filter(
-    (file: AgrementFilesDto) =>
-      file.category === FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
-  ) || [],
+  getFilesByCategory({
+    category: FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
+    files: props.initAgrement?.agrementFiles,
+  }),
 );
 const filesProjetsSejoursMesures = ref(
-  props.initAgrement?.agrementFiles?.filter(
-    (file: AgrementFilesDto) =>
-      file.category === FILE_CATEGORY.PROJETSSEJOURSMESURES,
-  ) || [],
+  getFilesByCategory({
+    category: FILE_CATEGORY.PROJETSSEJOURSMESURES,
+    files: props.initAgrement?.agrementFiles,
+  }),
 );
 const filesProjetsSejoursComplementaires = ref(
-  props.initAgrement?.agrementFiles?.filter(
-    (file: AgrementFilesDto) =>
-      file.category === FILE_CATEGORY.PROJETSSEJOURSCOMPLEMENTAIRES,
-  ) || [],
+  getFilesByCategory({
+    category: FILE_CATEGORY.PROJETSSEJOURSCOMPLEMENTAIRES,
+    files: props.initAgrement?.agrementFiles,
+  }),
 );
 </script>
