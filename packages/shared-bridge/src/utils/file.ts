@@ -71,11 +71,8 @@ export const getFileByCategory = ({
 }: {
   category: FILE_CATEGORY;
   files?: AgrementFilesDto[] | null;
-}) => {
-  return (
-    files?.find((file: { category: string }) => file.category === category) ||
-    null
-  );
+}): AgrementFilesDto | null => {
+  return files?.find((file) => file.category === category) ?? null;
 };
 
 export const getFilesByCategory = ({
@@ -84,9 +81,6 @@ export const getFilesByCategory = ({
 }: {
   category: FILE_CATEGORY;
   files?: AgrementFilesDto[] | null;
-}): Partial<AgrementFilesDto[]> => {
-  return (
-    files?.filter((file: { category: string }) => file.category === category) ||
-    []
-  );
+}): AgrementFilesDto[] => {
+  return files?.filter((file) => file.category === category) ?? [];
 };
