@@ -40,13 +40,8 @@
               Modifier
             </DsfrLinkV2>
           </template>
-          <DsfrButton
-            label="Supprimer le representant"
-            icon="fr-icon-delete-line"
-            icon-only
-            @click="removeRepresentant(idx)"
-          >
-            <span class="fr-sr-only">Supprimer le representant</span>
+          <DsfrButton secondary @click="removeRepresentant(idx)">
+            Supprimer ce représentant
           </DsfrButton>
         </div>
       </div>
@@ -167,6 +162,19 @@
           }}
         </dd>
       </dl>
+      <!-- Affichage des erreurs de validation si présentes -->
+      <ul
+        v-if="getAllErrors(representant.errors).length"
+        class="fr-mt-1w errors-list"
+      >
+        <li
+          v-for="(errMsg, index) in getAllErrors(representant.errors)"
+          :key="index"
+          class="fr-error-text"
+        >
+          {{ errMsg }}
+        </li>
+      </ul>
     </template>
   </div>
 
@@ -214,17 +222,25 @@ const representantSchema = yup.object({
   adresseDomicile: requiredUnlessBrouillon(
     yup
       .object({
-        label: yup.string().required("Le label de l'adresse est requis"),
-        code_insee: yup.string().required("Le code INSEE est requis"),
-        code_postal: yup.string().required("Le code postal est requis"),
-        long: yup.string().required("La longitude est requise"),
-        lat: yup.string().required("La latitude est requise"),
-        departement: yup.string().required("Le département est requis"),
+        label: yup.string().required("L'adresse est obligatoire"),
       })
-      .typeError("Veuillez renseigner une adresse valide")
-      .required("L'adresse du domicile est requise"),
+      .required("L'adresse est obligatoire"),
   ),
 });
+
+function getAllErrors(errors) {
+  // Affiche toutes les erreurs, y compris celles imbriquées (ex: adresseDomicile.label)
+  return Object.entries(errors)
+    .filter(([_, msg]) => !!msg)
+    .map(([key, msg]) => {
+      // Si le champ est imbriqué, on peut afficher le nom du champ
+      if (key.includes(".")) {
+        const parts = key.split(".");
+        return `${parts[1][0].toUpperCase() + parts[1].slice(1)}: ${msg}`;
+      }
+      return msg;
+    });
+}
 
 function getEmptyRepresentant() {
   return {
@@ -336,20 +352,26 @@ async function validateField(representant, field) {
 async function validateAndSave() {
   let valid = true;
   for (const representant of representantsList.value) {
+    // Réinitialise les erreurs
     Object.keys(representant.errors).forEach(
       (key) => (representant.errors[key] = ""),
     );
     try {
       await representantSchema.validate(representant, { abortEarly: false });
     } catch (err) {
-      console.error("Validation du représentant a échoué", representant, err);
       valid = false;
+      // Attache chaque erreur à son champ
       if (err.inner) {
+        console.error("Validation errors1:", err.inner);
         err.inner.forEach((e) => {
           if (representant.errors[e.path] !== undefined) {
+            console.error(`Validation error for field ${e.path}:`, e);
             representant.errors[e.path] = e.message;
           }
         });
+      } else if (err.path && representant.errors[err.path] !== undefined) {
+        console.error("Validation error2:", err);
+        representant.errors[err.path] = err.message;
       }
     }
   }
@@ -388,6 +410,10 @@ dl {
   margin: 0;
 }
 dd {
+  padding-left: 0;
+}
+.errors-list {
+  list-style: none;
   padding-left: 0;
 }
 </style>

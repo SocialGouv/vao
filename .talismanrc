@@ -268,7 +268,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/address/search-address.vue
   checksum: e22412a54064dea24f7e200e9887726a4ef110f13570feea628c70c4fe2886a9
 - filename: packages/frontend-usagers/src/components/agrement/representants.vue
-  checksum: 03c68194257b97f51f745335876c33ac2caae56b78a02b8acb0f2ef61dfa3f10
+  checksum: 259e5ce9282b121d09fe46003a4c5283e6deb9bb2b9a735dfe7b55b03793d7b8
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/demande-sejour/table.vue
