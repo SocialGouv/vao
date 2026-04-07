@@ -20,7 +20,8 @@
     <MultiFilesUpload
       v-model="filesChangeEvol"
       label="Ajouter des fichiers (optionnel)"
-      :modifiable="props.modifiable"
+      :modifiable="false"
+      :cdn-url="props.cdnUrl"
     />
   </div>
   <div class="fr-fieldset__element">
@@ -48,7 +49,6 @@ import type { AgrementFilesDto } from "@vao/shared-bridge";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
-  modifiable: { type: Boolean, default: true },
 });
 
 const filesChangeEvol = ref(

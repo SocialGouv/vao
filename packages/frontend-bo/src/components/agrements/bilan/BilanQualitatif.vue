@@ -36,6 +36,7 @@
         v-model="filesBilanQualitPerception"
         label="Ajouter des fichiers"
         :modifiable="false"
+        :cdn-url="props.cdnUrl"
       />
     </div>
   </div>
@@ -70,6 +71,7 @@
         v-model="filesBilanQualitPerspectives"
         label="Ajouter des fichiers"
         :modifiable="false"
+        :cdn-url="props.cdnUrl"
       />
     </div>
   </div>
@@ -101,6 +103,7 @@
         v-model="filesBilanQualitElementsMarquants"
         label="Ajouter des fichiers complémentaires"
         :modifiable="false"
+        :cdn-url="props.cdnUrl"
       />
     </div>
   </div>
@@ -109,6 +112,7 @@
       v-model="filesBilanQualitComplementaires"
       label="Ajouter des fichiers complémentaires (optionnel)"
       :modifiable="false"
+      :cdn-url="props.cdnUrl"
     />
   </div>
 </template>

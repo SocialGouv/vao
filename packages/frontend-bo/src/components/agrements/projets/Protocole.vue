@@ -29,6 +29,7 @@
     <MultiFilesUpload
       v-model="filesProjetsSejoursProtocoleReorientation"
       :modifiable="false"
+      :cdn-url="props.cdnUrl"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>
@@ -54,6 +55,7 @@
     <MultiFilesUpload
       v-model="filesProjetsSejoursProtocoleRapatriement"
       :modifiable="false"
+      :cdn-url="props.cdnUrl"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>

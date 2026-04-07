@@ -32,7 +32,6 @@
       ref="tranchesAgeRef"
       :tranche-age="props.bilanAnnuel?.trancheAge"
       :statut="props.agrementStatus"
-      :modifiable="props.modifiable"
       class="fr-mt-8v"
     />
     <!-- Types de déficiences -->
@@ -40,7 +39,6 @@
       ref="typeDeficiencesRef"
       :statut="props.agrementStatus"
       :type-deficiences="props.bilanAnnuel?.typeHandicap"
-      :modifiable="props.modifiable"
     />
 
     <hr class="fr-mt-8v fr-mb-0v" />
@@ -51,7 +49,6 @@
       :agrement-bilan-annuel="props.agrementBilanAnnuel"
       :bilan-hebergement="props.bilanAnnuel?.bilanHebergement || []"
       :statut="props.agrementStatus"
-      :modifiable="props.modifiable"
     />
 
     <!-- Jours de vacances -->
@@ -75,7 +72,6 @@ const props = defineProps({
   bilanAnnuel: { type: Object, default: () => ({}) },
   agrementStatus: { type: String, required: true },
   agrementId: { type: String, required: true },
-  modifiable: { type: Boolean, default: false },
 });
 
 const tranchesAgeRef = ref(null);

@@ -28,6 +28,7 @@
     <MultiFilesUpload
       v-model="filesProjetsSejoursSuiviMed"
       :modifiable="false"
+      :cdn-url="props.cdnUrl"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>

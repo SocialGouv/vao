@@ -37,7 +37,8 @@
     <div class="fr-fieldset__element">
       <MultiFilesUpload
         v-model="filesProjetsSejoursCompetencesExperience"
-        :modifiable="props.modifiable"
+        :modifiable="false"
+        :cdn-url="props.cdnUrl"
         label="Ajouter des fichiers"
       />
     </div>
@@ -60,7 +61,8 @@
     <div class="fr-fieldset__element">
       <MultiFilesUpload
         v-model="filesProjetsSejoursMesures"
-        :modifiable="props.modifiable"
+        :modifiable="false"
+        :cdn-url="props.cdnUrl"
         label="Ajouter des fichiers"
       />
     </div>
@@ -68,7 +70,8 @@
   <div class="fr-fieldset__element fr-mt-6v">
     <MultiFilesUpload
       v-model="filesProjetsSejoursComplementaires"
-      :modifiable="props.modifiable"
+      :modifiable="false"
+      :cdn-url="props.cdnUrl"
       label="Ajouter des fichiers complémentaires (optionnel)"
     />
   </div>
@@ -88,7 +91,6 @@ import type { AgrementFilesDto } from "@vao/shared-bridge";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
-  modifiable: { type: Boolean, default: false },
 });
 
 const filesProjetsSejoursCompetencesExperience = ref(

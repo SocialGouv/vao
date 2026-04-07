@@ -23,12 +23,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { PropType } from "vue";
-import displayInput from "~/utils/display-input";
+import { InputTypes } from "../constantes/input-types";
 
 defineEmits(["emitComment"]);
 
-type DisplayInputType =
-  (typeof displayInput.InputTypes)[keyof typeof displayInput.InputTypes];
+type DisplayInputType = (typeof InputTypes)[keyof typeof InputTypes];
 
 interface DisplayInputOption {
   inputType: DisplayInputType;
@@ -57,7 +56,7 @@ const props = defineProps({
       if (!value.inputType || !value.label || !value.label.length) {
         return false;
       }
-      return Object.values(displayInput.InputTypes).includes(value.inputType);
+      return Object.values(InputTypes).includes(value.inputType);
     },
   },
   value: {
@@ -68,34 +67,33 @@ const props = defineProps({
 
 const displayValue = computed(() => {
   const inputHandlers = {
-    [displayInput.InputTypes.RAW]: () => props.value,
-    [displayInput.InputTypes.TEXT]: () =>
+    [InputTypes.RAW]: () => props.value,
+    [InputTypes.TEXT]: () =>
       props.value !== null && props.value !== undefined
         ? String(props.value)
         : null,
-    [displayInput.InputTypes.NUMBER]: () => {
+    [InputTypes.NUMBER]: () => {
       const val = props.value as string | number | undefined;
       if (val === undefined || val === null) return null;
       const strVal = typeof val === "string" ? val : String(val);
       return isNaN(parseInt(strVal)) ? null : parseInt(strVal);
     },
-    [displayInput.InputTypes.RADIO]: () => {
+    [InputTypes.RADIO]: () => {
       const options = props.input.options;
       const val = props.value;
       if (!options) return null;
       const key = val !== undefined && val !== null ? String(val) : undefined;
       return key && Object.keys(options).includes(key) ? options[key] : null;
     },
-    [displayInput.InputTypes.MULTISELECT]: () =>
+    [InputTypes.MULTISELECT]: () =>
       Array.isArray(props.value)
         ? (props.value as unknown[]).join(" / ")
         : null,
-    [displayInput.InputTypes.TO_FORMAT]: () =>
+    [InputTypes.TO_FORMAT]: () =>
       props.value && typeof props.input.formatter === "function"
         ? props.input.formatter(props.value)
         : null,
-    [displayInput.InputTypes.TABLE]: () =>
-      Array.isArray(props.value) ? props.value : null,
+    [InputTypes.TABLE]: () => (Array.isArray(props.value) ? props.value : null),
   };
 
   const handler = inputHandlers[props.input.inputType];

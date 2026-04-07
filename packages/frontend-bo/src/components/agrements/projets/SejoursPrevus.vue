@@ -43,6 +43,7 @@
       v-model="filesProjetsSejoursPrevus"
       label="Ajouter des fichiers (optionnel)"
       :modifiable="false"
+      :cdn-url="props.cdnUrl"
     />
   </div>
 </template>

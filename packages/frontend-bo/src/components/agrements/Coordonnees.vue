@@ -78,9 +78,16 @@
 
         <h4 class="fr-text--lg fr-mt-4w">Représentant legal</h4>
 
-        <div v-for="(rep, idx) in representants" :key="idx" class="fr-mb-4w">
-          <template v-if="idx > 0">
-            <h5 class="fr-text--md fr-mb-1w">Représentant n°{{ idx + 1 }}</h5>
+        <div
+          v-for="(rep, idx) in representants"
+          :key="Number(idx)"
+          class="fr-mb-4w"
+          :data-idx="Number(idx)"
+        >
+          <template v-if="Number(idx) > 0">
+            <h5 class="fr-text--md fr-mb-1w">
+              Représentant n°{{ Number(idx) + 1 }}
+            </h5>
           </template>
           <dl class="fr-text--sm fr-pl-0">
             <dt><strong>Prénom:</strong></dt>
@@ -122,13 +129,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   FileUpload,
   TitleWithIcon,
   DisplayInputCommon,
   AgrementDisplayInput,
 } from "@vao/shared-ui";
+import { getFileByCategory, FILE_CATEGORY } from "@vao/shared-bridge";
 
 const props = defineProps({
   valid: { type: Boolean, default: true },
@@ -138,18 +145,15 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
 });
 
-const getFileByCategory = (category: string) => {
-  return (
-    props.initAgrement?.agrementFiles?.find(
-      (file: { category: string }) => file.category === category,
-    ) || null
-  );
-};
-
 const representants = computed(
   () => props.initOrganisme?.personneMorale?.representantsLegaux || [],
 );
-const fileProcesVerbal = ref(getFileByCategory("PROCVERBAL"));
+const fileProcesVerbal = computed(() => {
+  return getFileByCategory({
+    files: props.initAgrement?.agrementFiles,
+    category: FILE_CATEGORY.PROCVERBAL,
+  });
+});
 </script>
 
 <style scoped>

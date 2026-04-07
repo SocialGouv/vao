@@ -24,6 +24,7 @@
     <MultiFilesUpload
       v-model="filesProjetsSejoursOrgaTransports"
       :modifiable="false"
+      :cdn-url="props.cdnUrl"
       label="Ajouter des fichiers (optionnel)"
     />
   </div>

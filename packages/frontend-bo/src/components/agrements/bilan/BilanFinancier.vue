@@ -66,6 +66,7 @@
     <MultiFilesUpload
       v-model="filesBilanFinancierQuatreAnnees"
       :modifiable="false"
+      :cdn-url="props.cdnUrl"
       label="Ajouter des fichiers complémentaires (optionnel)"
     />
   </div>
@@ -84,6 +85,7 @@ import type { AgrementFilesDto } from "@vao/shared-bridge";
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   modifiable: { type: Boolean, default: false },
+  cdnUrl: { type: String, required: true },
 });
 
 const filesBilanFinancierQuatreAnnees = ref(

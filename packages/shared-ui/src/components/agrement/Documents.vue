@@ -12,7 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import { TableFull } from "@vao/shared-ui";
+import { computed } from "vue";
+import TableFull from "../../components/Table/TableFull.vue";
 import {
   type AgrementFilesDto,
   type DocumentDto,
@@ -20,10 +21,9 @@ import {
   getFileCategoryLabel,
 } from "@vao/shared-bridge";
 
-const config = useRuntimeConfig();
-const NuxtLink = resolveComponent("NuxtLink");
 const props = defineProps({
   initAgrement: { type: Object, required: true },
+  cdnUrl: { type: String, required: true },
 });
 
 const dreetsFiles = computed(
@@ -71,8 +71,9 @@ const headers = [
     text: "téléchargement",
     component: (file: DocumentDto) => {
       return {
-        component: NuxtLink,
-        to: `${config.public.backendUrl}/documents/${file.uuid}`,
+        component: "a",
+        href: `${props.cdnUrl}${file.uuid}`,
+        target: "_blank",
         class: "fr-icon-file-download-fill",
       };
     },

@@ -25,9 +25,8 @@ import dayjs from "dayjs";
 
 const props = defineProps({
   modifiable: { type: Boolean, default: true },
+  cdnUrl: { type: String, required: true },
 });
-
-const config = useRuntimeConfig();
 
 const headers: string[] = ["Fichier", "Date de création", "Actions"];
 
@@ -51,7 +50,7 @@ const rows = computed(() => {
         ? {
             component: "a",
             text: (file as UploadedFile).name,
-            href: `${config.public.backendUrl}/documents/${(file as UploadedFile).uuid}`,
+            href: `${props.cdnUrl}${(file as UploadedFile).uuid}`,
             download: true,
           }
         : (file as UploadedFile).name;

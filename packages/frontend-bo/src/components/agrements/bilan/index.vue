@@ -14,13 +14,12 @@
       ref="qualitatifRef"
       :init-agrement="props.initAgrement ?? {}"
       :cdn-url="props.cdnUrl"
-      :modifiable="false"
     />
     <hr class="fr-mt-4w" />
     <AgrementsBilanFinancier
       ref="financierRef"
       :init-agrement="props.initAgrement ?? {}"
-      :modifiable="false"
+      :cdn-url="props.cdnUrl"
     />
   </div>
 </template>

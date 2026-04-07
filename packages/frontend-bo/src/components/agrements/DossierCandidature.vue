@@ -19,6 +19,7 @@
     <MultiFilesUpload
       v-model="filesMotivation"
       :modifiable="false"
+      :cdn-url="props.cdnUrl"
       label="Vous avez la possibilité de joindre des documents relatifs aux informations d’ordre sanitaire (optionnel)"
     />
   </div>
@@ -79,7 +80,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import {
   FileUpload,
   TitleWithIcon,
@@ -88,35 +88,42 @@ import {
   MultiFilesUpload,
 } from "@vao/shared-ui";
 
-import { FILE_CATEGORY, formatFR } from "@vao/shared-bridge";
-
+import { FILE_CATEGORY, formatFR, getFileByCategory } from "@vao/shared-bridge";
 // --- Props et événements ---
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
 });
 
-const getFileByCategory = (category: string) => {
+const filesMotivation = computed(() => {
   return (
-    props.initAgrement?.agrementFiles?.find(
-      (file: { category: string }) => file.category === category,
-    ) || null
+    props.initAgrement?.agrementFiles?.filter(
+      (file: { category: string }) =>
+        file.category === FILE_CATEGORY.MOTIVATION,
+    ) || []
   );
-};
-const filesMotivation = ref(
-  props.initAgrement?.agrementFiles?.filter(
-    (file: { category: string }) => file.category === FILE_CATEGORY.MOTIVATION,
-  ) || [],
-);
-const fileImmatriculation = ref(getFileByCategory(FILE_CATEGORY.IMMATRICUL));
+});
 
-const fileAttestationsRespCivile = ref(
-  getFileByCategory(FILE_CATEGORY.ASSURRESP),
-);
+const fileImmatriculation = computed(() => {
+  return getFileByCategory({
+    files: props.initAgrement?.agrementFiles,
+    category: FILE_CATEGORY.IMMATRICUL,
+  });
+});
 
-const fileAttestationsRapatriement = ref(
-  getFileByCategory(FILE_CATEGORY.ASSURRAPAT),
-);
+const fileAttestationsRespCivile = computed(() => {
+  return getFileByCategory({
+    files: props.initAgrement?.agrementFiles,
+    category: FILE_CATEGORY.ASSURRESP,
+  });
+});
+
+const fileAttestationsRapatriement = computed(() => {
+  return getFileByCategory({
+    files: props.initAgrement?.agrementFiles,
+    category: FILE_CATEGORY.ASSURRAPAT,
+  });
+});
 </script>
 
 <style scoped>

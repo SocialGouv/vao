@@ -1,4 +1,5 @@
 import { FILE_CATEGORY, FILE_CATEGORY_CONFIG } from "../constantes";
+import type { AgrementFilesDto } from "../dto/agrement.dto";
 
 export const encodeFilename = (fileName: string) =>
   Buffer.from(fileName, "latin1").toString("base64");
@@ -56,3 +57,29 @@ export const getFileUploadErrorMessage = (
 export const getFileCategoryLabel = (category: FILE_CATEGORY) =>
   FILE_CATEGORY_CONFIG[category as keyof typeof FILE_CATEGORY_CONFIG]?.label ??
   category;
+
+export const getFileByCategory = ({
+  category,
+  files,
+}: {
+  category: FILE_CATEGORY;
+  files?: AgrementFilesDto[] | null;
+}) => {
+  return (
+    files?.find((file: { category: string }) => file.category === category) ||
+    null
+  );
+};
+
+export const getFilesByCategory = ({
+  category,
+  files,
+}: {
+  category: FILE_CATEGORY;
+  files?: AgrementFilesDto[] | null;
+}) => {
+  return (
+    files?.filter((file: { category: string }) => file.category === category) ||
+    []
+  );
+};
