@@ -126,7 +126,7 @@ test("exemple_inscription", async ({ page }) => {
 1. Créer un nouveau fichier `.spec.ts` dans `/e2e/`
 2. Définir les données de test nécessaires
 3. Implémenter le parcours utilisateur
-4. Ajouter les assertions appropriées
+4. Ajouter les assertions appropriées.
 
 ### Debugging
 
