@@ -65,6 +65,7 @@
       >
         <AgrementDocuments
           :init-agrement="agrementStore.agrementEnTraitement ?? {}"
+          :cdn-url="`${config.public.backendUrl}/documents/`"
         ></AgrementDocuments>
       </DsfrTabContent>
       <DsfrTabContent

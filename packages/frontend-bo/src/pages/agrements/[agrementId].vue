@@ -38,6 +38,11 @@
         :asc="asc"
       >
         <h1>Dossier</h1>
+        <AgrementsDossier
+          :init-organisme="organismeStore.organisme ?? {}"
+          :init-agrement="agrementStore.agrementCourant ?? {}"
+          :cdn-url="`${config.public.backendUrl}/documents/`"
+        ></AgrementsDossier>
         <AgrementsActionsStatut
           :cdn-url="`${config.public.backendUrl}/documents/`"
         ></AgrementsActionsStatut>
@@ -51,6 +56,7 @@
       >
         <AgrementDocuments
           :init-agrement="agrementStore.agrementCourant ?? {}"
+          :cdn-url="`${config.public.backendUrl}/documents/`"
         ></AgrementDocuments>
       </DsfrTabContent>
       <DsfrTabContent
@@ -84,6 +90,8 @@ import {
 } from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
 import { formatFR } from "@vao/shared-bridge";
+
+const NuxtLink = resolveComponent("NuxtLink");
 
 const organismeStore = useOrganismeStore();
 
