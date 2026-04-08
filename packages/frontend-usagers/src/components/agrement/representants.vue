@@ -130,7 +130,7 @@
           secondary
           @click="saveRepresentant(idx)"
         >
-          Sauvegarder le représentant
+          Ajouter le représentant
         </DsfrButton>
         <DsfrButton
           icon-name="icon-close-line"
@@ -222,9 +222,21 @@ const representantSchema = yup.object({
   adresseDomicile: requiredUnlessBrouillon(
     yup
       .object({
-        label: yup.string().required("L'adresse est obligatoire"),
+        label: yup.string().required("L'adresse est requise"),
       })
-      .required("L'adresse est obligatoire"),
+      .typeError("L'adresse est requise") // <-- Ajouté pour forcer l'erreur si non objet ou vide
+      .required("L'adresse est requise")
+      .test(
+        "adresse-not-empty",
+        "L'adresse est requise",
+        (value) =>
+          !!(
+            value &&
+            typeof value === "object" &&
+            value.label &&
+            value.label.trim() !== ""
+          ),
+      ),
   ),
 });
 
@@ -248,7 +260,7 @@ function getEmptyRepresentant() {
     nom: "",
     telephoneRepresentant: "",
     emailRepresentant: "",
-    adresseDomicile: "",
+    adresseDomicile: undefined,
     statut: props.statut,
     errors: {
       prenom: "",
@@ -269,6 +281,7 @@ function loadRepresentants() {
     organismeStore.organismeCourant?.personneMorale?.representantsLegaux || [];
   representantsList.value = existants.map((r) => ({
     ...r,
+    adresseDomicile: r.adresseDomicile || undefined,
     statut: props.statut,
     errors: {
       prenom: "",
@@ -362,7 +375,6 @@ async function validateAndSave() {
       valid = false;
       // Attache chaque erreur à son champ
       if (err.inner) {
-        console.error("Validation errors1:", err.inner);
         err.inner.forEach((e) => {
           if (representant.errors[e.path] !== undefined) {
             console.error(`Validation error for field ${e.path}:`, e);
@@ -370,7 +382,6 @@ async function validateAndSave() {
           }
         });
       } else if (err.path && representant.errors[err.path] !== undefined) {
-        console.error("Validation error2:", err);
         representant.errors[err.path] = err.message;
       }
     }
