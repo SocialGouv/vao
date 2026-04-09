@@ -158,12 +158,14 @@ export const AgrementsRepositoryShared = {
         ORDER BY m.created_at ASC
       `;
       const messagesResult = await client.query(messagesQuery, [agrementId]);
+      const unreadColumn =
+        userType === USER_TYPE.BO ? "back_user_id" : "front_user_id";
 
       const unreadQuery = `
           SELECT COUNT(*) AS unread_count
           FROM front.agrement_messagerie
           WHERE agrement_id = $1
-            AND ${userType === USER_TYPE.BO ? "back_user_id IS NULL" : "front_user_id IS NULL"}
+            AND ${unreadColumn} IS NULL
             AND read_at IS NULL
         `;
       const unreadResult = await client.query(unreadQuery, [agrementId]);
@@ -223,11 +225,13 @@ export const AgrementsRepositoryShared = {
   }): Promise<number> {
     const client = await getPool().connect();
     try {
+      const unreadColumn =
+        userType === USER_TYPE.BO ? "back_user_id" : "front_user_id";
       const query = `
       UPDATE front.agrement_messagerie
       SET read_at = NOW()
       WHERE agrement_id = $1
-        AND  ${userType === USER_TYPE.FU ? "back_user_id IS NOT NULL" : "front_user_id IS NOT NULL"}
+        AND  ${unreadColumn} IS NOT NULL
         AND read_at IS NULL
       RETURNING id;
     `;
