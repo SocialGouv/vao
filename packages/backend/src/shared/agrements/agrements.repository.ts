@@ -226,7 +226,7 @@ export const AgrementsRepositoryShared = {
     const client = await getPool().connect();
     try {
       const unreadColumn =
-        userType === USER_TYPE.BO ? "back_user_id" : "front_user_id";
+        userType === USER_TYPE.FU ? "back_user_id" : "front_user_id";
       const query = `
       UPDATE front.agrement_messagerie
       SET read_at = NOW()
