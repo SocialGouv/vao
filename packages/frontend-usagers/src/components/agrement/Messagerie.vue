@@ -11,11 +11,9 @@
 import { Chat, useToaster } from "@vao/shared-ui";
 import type { AgrementMessage, GenericMessage } from "@vao/shared-bridge";
 import { useAgrementStore } from "~/stores/agrement";
-import { useRoute } from "vue-router";
 import { ref } from "vue";
 
 const { messages } = defineProps<{ messages: AgrementMessage[] }>();
-const route = useRoute();
 const agrementStore = useAgrementStore();
 const toaster = useToaster();
 const isSendingMessage = ref(false);
@@ -38,11 +36,13 @@ const sendMessage = async ({ message }: { message: string }) => {
   isSendingMessage.value = true;
   try {
     await agrementStore.postMessage({
-      agrementId: String(route.params.agrementId),
+      agrementId: String(agrementStore.agrementEnTraitement?.id),
       message: message ?? "",
     });
     chatRef.value?.resetForm();
-    await agrementStore.getMessages(String(route.params.agrementId));
+    await agrementStore.getMessages(
+      String(agrementStore.agrementEnTraitement?.id),
+    );
     isSendingMessage.value = false;
     toaster.info({
       titleTag: "h2",
