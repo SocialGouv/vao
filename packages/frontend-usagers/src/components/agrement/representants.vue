@@ -40,7 +40,11 @@
               Modifier
             </DsfrLinkV2>
           </template>
-          <DsfrButton secondary @click="removeRepresentant(idx)">
+          <DsfrButton
+            v-if="props.modifiable"
+            secondary
+            @click="removeRepresentant(idx)"
+          >
             Supprimer ce représentant
           </DsfrButton>
         </div>
@@ -55,6 +59,7 @@
           :model-value="representant.prenom"
           :is-valid="!representant.errors.prenom"
           :error-message="representant.errors.prenom"
+          :disabled="!props.modifiable"
           hint="Saisissez le premier prénom. Exemple: Pierre"
           @update:model-value="
             (val) => {
@@ -70,6 +75,7 @@
           :model-value="representant.nom"
           :is-valid="!representant.errors.nom"
           :error-message="representant.errors.nom"
+          :disabled="!props.modifiable"
           hint="Saisissez le nom d'usage. Exemple: Dupont"
           @update:model-value="
             (val) => {
@@ -85,6 +91,7 @@
           :model-value="representant.telephoneRepresentant"
           :is-valid="!representant.errors.telephoneRepresentant"
           :error-message="representant.errors.telephoneRepresentant"
+          :disabled="!props.modifiable"
           hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
           @update:model-value="
             (val) => {
@@ -100,6 +107,7 @@
           :model-value="representant.emailRepresentant"
           :is-valid="!representant.errors.emailRepresentant"
           :error-message="representant.errors.emailRepresentant"
+          :disabled="!props.modifiable"
           hint="Adresse courriel de la personne. Exemple: nom@domaine.fr"
           @update:model-value="
             (val) => {
@@ -112,6 +120,7 @@
           label="Adresse du domicile"
           :model-value="representant.adresseDomicile"
           :error-message="representant.errors.adresseDomicile"
+          :disabled="!props.modifiable"
           @select="
             (selected) => {
               onAdresseSelect(representant, selected);
@@ -190,7 +199,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { Representant } from "@vao/shared-bridge/src/dto/personneMorale.dto";
 import { ref } from "vue";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
@@ -198,13 +208,14 @@ import { DsfrLinkV2 } from "@vao/shared-ui";
 import SearchAddress from "@/components/address/search-address.vue";
 import { useOrganismeStore } from "@/stores/organisme";
 import { telephoneYup } from "@/utils/telephoneValidators";
+import type { AdresseDto } from "@vao/shared-bridge/src/dto/adresse.dto";
 
 const organismeStore = useOrganismeStore();
 
-const props = defineProps({
-  modifiable: { type: Boolean, default: true },
-  statut: { type: String, default: "BROUILLON" },
-});
+const props = defineProps<{
+  modifiable?: boolean;
+  statut?: string;
+}>();
 
 const representantSchema = yup.object({
   statut: yup.string(),
@@ -224,7 +235,7 @@ const representantSchema = yup.object({
       .object({
         label: yup.string().required("L'adresse est requise"),
       })
-      .typeError("L'adresse est requise") // <-- Ajouté pour forcer l'erreur si non objet ou vide
+      .typeError("L'adresse est requise")
       .required("L'adresse est requise")
       .test(
         "adresse-not-empty",
@@ -240,12 +251,10 @@ const representantSchema = yup.object({
   ),
 });
 
-function getAllErrors(errors) {
-  // Affiche toutes les erreurs, y compris celles imbriquées (ex: adresseDomicile.label)
+function getAllErrors(errors: Representant["errors"]): string[] {
   return Object.entries(errors)
     .filter(([_, msg]) => !!msg)
     .map(([key, msg]) => {
-      // Si le champ est imbriqué, on peut afficher le nom du champ
       if (key.includes(".")) {
         const parts = key.split(".");
         return `${parts[1][0].toUpperCase() + parts[1].slice(1)}: ${msg}`;
@@ -254,14 +263,15 @@ function getAllErrors(errors) {
     });
 }
 
-function getEmptyRepresentant() {
+function getEmptyRepresentant(): Representant {
   return {
     prenom: "",
     nom: "",
+    fonction: "",
     telephoneRepresentant: "",
     emailRepresentant: "",
     adresseDomicile: undefined,
-    statut: props.statut,
+    statut: props.statut ?? "BROUILLON",
     errors: {
       prenom: "",
       nom: "",
@@ -274,15 +284,20 @@ function getEmptyRepresentant() {
   };
 }
 
-const representantsList = ref([]);
+const representantsList = ref<Representant[]>([]);
 
-function loadRepresentants() {
+function loadRepresentants(): void {
   const existants =
     organismeStore.organismeCourant?.personneMorale?.representantsLegaux || [];
-  representantsList.value = existants.map((r) => ({
+  representantsList.value = existants.map((r: Partial<Representant>) => ({
     ...r,
+    prenom: r.prenom || "",
+    nom: r.nom || "",
+    fonction: r.fonction || "",
+    telephoneRepresentant: r.telephoneRepresentant || "",
+    emailRepresentant: r.emailRepresentant || "",
     adresseDomicile: r.adresseDomicile || undefined,
-    statut: props.statut,
+    statut: props.statut ?? "BROUILLON",
     errors: {
       prenom: "",
       nom: "",
@@ -297,32 +312,36 @@ function loadRepresentants() {
 
 loadRepresentants();
 
-function onAdresseSelect(representant, selected) {
+function onAdresseSelect(
+  representant: Representant,
+  selected: AdresseDto,
+): void {
   representant.adresseDomicile = {
     label: selected.label || "",
-    code_insee: selected.codeInsee || "",
-    code_postal: selected.codePostal || "",
+    codeInsee: selected.codeInsee || "",
+    codePostal: selected.codePostal || "",
     long: selected.coordinates ? String(selected.coordinates[0]) : "",
     lat: selected.coordinates ? String(selected.coordinates[1]) : "",
     departement: selected.departement || "",
+    coordinates: selected.coordinates || null,
   };
 }
 
-function addNewRepresentant() {
+function addNewRepresentant(): void {
   representantsList.value.push(getEmptyRepresentant());
 }
 
-function removeRepresentant(idx) {
+function removeRepresentant(idx: number): void {
   representantsList.value.splice(idx, 1);
 }
 
-function editRepresentant(idx) {
+function editRepresentant(idx: number): void {
   const representant = representantsList.value[idx];
   representant._backup = { ...representant };
   representant.isEditing = true;
 }
 
-function cancelEditRepresentant(idx) {
+function cancelEditRepresentant(idx: number): void {
   const representant = representantsList.value[idx];
   if (representant._backup) {
     Object.assign(representant, representant._backup);
@@ -333,56 +352,76 @@ function cancelEditRepresentant(idx) {
   }
 }
 
-async function saveRepresentant(idx) {
+async function saveRepresentant(idx: number): Promise<void> {
   const representant = representantsList.value[idx];
   Object.keys(representant.errors).forEach(
-    (key) => (representant.errors[key] = ""),
+    (key) =>
+      (representant.errors[key as keyof typeof representant.errors] = ""),
   );
   try {
     await representantSchema.validate(representant, { abortEarly: false });
     representant.isEditing = false;
     representant._backup = null;
   } catch (err) {
-    if (err.inner) {
+    if (err instanceof yup.ValidationError && err.inner) {
       err.inner.forEach((e) => {
-        if (representant.errors[e.path] !== undefined) {
-          representant.errors[e.path] = e.message;
+        if (
+          representant.errors[e.path as keyof typeof representant.errors] !==
+          undefined
+        ) {
+          representant.errors[e.path as keyof typeof representant.errors] =
+            e.message;
         }
       });
     }
   }
 }
 
-async function validateField(representant, field) {
+async function validateField(
+  representant: Representant,
+  field: keyof Representant["errors"],
+): Promise<void> {
   try {
     await representantSchema.validateAt(field, representant);
     representant.errors[field] = "";
-  } catch (err) {
-    representant.errors[field] = err.message;
+  } catch (err: unknown) {
+    if (err instanceof yup.ValidationError) {
+      representant.errors[field] = err.message;
+    } else {
+      representant.errors[field] = "Erreur de validation inconnue";
+    }
   }
 }
 
-async function validateAndSave() {
+async function validateAndSave(): Promise<false | Representant[]> {
   let valid = true;
   for (const representant of representantsList.value) {
-    // Réinitialise les erreurs
     Object.keys(representant.errors).forEach(
-      (key) => (representant.errors[key] = ""),
+      (key) =>
+        (representant.errors[key as keyof typeof representant.errors] = ""),
     );
     try {
       await representantSchema.validate(representant, { abortEarly: false });
-    } catch (err) {
+    } catch (err: unknown) {
       valid = false;
-      // Attache chaque erreur à son champ
-      if (err.inner) {
+      if (err instanceof yup.ValidationError && err.inner) {
         err.inner.forEach((e) => {
-          if (representant.errors[e.path] !== undefined) {
-            console.error(`Validation error for field ${e.path}:`, e);
-            representant.errors[e.path] = e.message;
+          if (
+            representant.errors[e.path as keyof typeof representant.errors] !==
+            undefined
+          ) {
+            representant.errors[e.path as keyof typeof representant.errors] =
+              e.message;
           }
         });
-      } else if (err.path && representant.errors[err.path] !== undefined) {
-        representant.errors[err.path] = err.message;
+      } else if (
+        err instanceof yup.ValidationError &&
+        err.path &&
+        representant.errors[err.path as keyof typeof representant.errors] !==
+          undefined
+      ) {
+        representant.errors[err.path as keyof typeof representant.errors] =
+          err.message;
       }
     }
   }
@@ -391,7 +430,8 @@ async function validateAndSave() {
 }
 
 defineExpose({
-  getRepresentants: () => representantsList.value.map(({ ...r }) => r),
+  getRepresentants: (): Representant[] =>
+    representantsList.value.map(({ ...r }) => r),
   validateAndSave,
 });
 </script>
