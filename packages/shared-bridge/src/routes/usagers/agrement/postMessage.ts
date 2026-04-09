@@ -16,7 +16,7 @@ export interface PostMessageRoute extends BasicRoute {
 
 export const PostMessageRouteSchema: RouteSchema<PostMessageRoute> = {
   body: yup.object({
-    message: yup.string().max(1000).required(),
+    message: yup.string().min(1).max(1000).required(),
   }),
   params: yup.object({
     agrementId: yup.string().required(),
