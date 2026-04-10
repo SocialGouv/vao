@@ -12,7 +12,10 @@
         <DsfrInputGroup
           v-if="props.modifiable"
           name="bilanFinancierComptabilite"
-          :label="displayInput.IAgrementBilanAnnuel['bilanFinancierComptabilite'].label"
+          :label="
+            displayInput.IAgrementBilanAnnuel['bilanFinancierComptabilite']
+              .label
+          "
           hint="Détaillez les dépenses et recettes rattachées spécifiquement à l’activité concernée, en précisant les postes budgétaires si possible."
           :model-value="bilanFinancierComptabilite"
           :label-visible="true"
@@ -24,7 +27,9 @@
         <UtilsDisplayInput
           v-else
           :value="bilanFinancierComptabilite"
-          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierComptabilite']"
+          :input="
+            displayInput.IAgrementBilanAnnuel['bilanFinancierComptabilite']
+          "
           :is-valid="bilanFinancierComptabiliteMeta.valid"
           :error-message="bilanFinancierComptabiliteErrorMessage"
         />
@@ -37,7 +42,9 @@
         <DsfrInputGroup
           v-if="props.modifiable"
           name="bilanFinancierComparatif"
-          :label="displayInput.IAgrementBilanAnnuel['bilanFinancierComparatif'].label"
+          :label="
+            displayInput.IAgrementBilanAnnuel['bilanFinancierComparatif'].label
+          "
           hint="Présentez les principales évolutions financières entre l’année en cours (N) et l’année précédente (N-1) : écarts, tendances ou variations significatives."
           :model-value="bilanFinancierComparatif"
           :label-visible="true"
@@ -60,9 +67,13 @@
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
-          v-if ="props.modifiable"
+          v-if="props.modifiable"
           name="bilanFinancierRessourcesHumaines"
-          :label="displayInput.IAgrementBilanAnnuel['bilanFinancierRessourcesHumaines'].label"
+          :label="
+            displayInput.IAgrementBilanAnnuel[
+              'bilanFinancierRessourcesHumaines'
+            ].label
+          "
           hint="Indiquez le nombre de personnes impliquées (en ETP), leurs fonctions et compétences principales, ainsi que les coûts salariaux, dépenses de fonctionnement ou autres coûts associés à leur mobilisation."
           :model-value="bilanFinancierRessourcesHumaines"
           :label-visible="true"
@@ -76,7 +87,11 @@
           :value="bilanFinancierRessourcesHumaines"
           :is-valid="bilanFinancierRessourcesHumainesMeta.valid"
           :error-message="bilanFinancierRessourcesHumainesErrorMessage"
-          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierRessourcesHumaines']"
+          :input="
+            displayInput.IAgrementBilanAnnuel[
+              'bilanFinancierRessourcesHumaines'
+            ]
+          "
         />
       </div>
     </div>
@@ -100,12 +115,14 @@
           :value="bilanFinancierCommentaire"
           :is-valid="bilanFinancierCommentaireMeta.valid"
           :error-message="bilanFinancierCommentaireErrorMessage"
-          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierCommentaire']"
+          :input="
+            displayInput.IAgrementBilanAnnuel['bilanFinancierCommentaire']
+          "
         />
       </div>
     </div>
   </div>
-  <div class="fr-fieldset__element fr-mt-6v">
+  <div class="fr-fieldset__element fr-mt-6v fr-mb-10v">
     <UtilsMultiFilesUpload
       v-model="filesBilanFinancierQuatreAnnees"
       :modifiable="props.modifiable"
