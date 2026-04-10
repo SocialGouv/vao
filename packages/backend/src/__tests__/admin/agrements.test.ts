@@ -4,6 +4,7 @@ import {
   AgrementDto,
   FILE_CATEGORY,
   FUNCTIONAL_ERRORS,
+  USER_TYPE,
 } from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
 import request from "supertest";
@@ -14,6 +15,7 @@ import { mailService } from "../../services/mail";
 import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import { createAgrement } from "../helper/fixtures/agrementsHelper";
+import { createAgrementMessage } from "../helper/fixtures/agrementsMessageHelper";
 import { createDocument } from "../helper/fixtures/documentHelper";
 import { createOrganisme } from "../helper/fixtures/organismeHelper";
 import { createTerritoire } from "../helper/fixtures/territoireHelper";
@@ -497,13 +499,17 @@ describe("Messagerie d'agrément", () => {
   });
 
   it("PATCH /messages devrait marquer tous les messages non lus comme lus et retourner le bon count", async () => {
-    await request(app)
-      .post(`/admin/agrements/${agrementId}/message`)
-      .send({ message: "Message 1" });
+    await createAgrementMessage({
+      agrementId,
+      agrementMessage: { front_user_id: authUser.id },
+      userType: USER_TYPE.FU,
+    });
 
-    await request(app)
-      .post(`/admin/agrements/${agrementId}/message`)
-      .send({ message: "Message 2" });
+    await createAgrementMessage({
+      agrementId,
+      agrementMessage: { front_user_id: authUser.id },
+      userType: USER_TYPE.FU,
+    });
 
     const patchResponse = await request(app).patch(
       `/admin/agrements/${agrementId}/messages/read`,

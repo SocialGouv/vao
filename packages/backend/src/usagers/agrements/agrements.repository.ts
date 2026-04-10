@@ -1,9 +1,11 @@
 import type {
   AGREMENT_HISTORY_TYPE,
+  AgrementDto,
   AgrementHistoryItem,
   AgrementHistoryRow,
+  AgrementMessage,
 } from "@vao/shared-bridge";
-import { AGREMENT_STATUT, AgrementDto } from "@vao/shared-bridge";
+import { AGREMENT_STATUT, USER_TYPE } from "@vao/shared-bridge";
 
 import { saveAdresse } from "../../services/adresse";
 import {
@@ -461,6 +463,12 @@ export const AgrementsRepository = {
     return agrements;
   },
 
+  async getMessages(
+    agrementId: number,
+  ): Promise<{ messages: AgrementMessage[]; unreadCount: number }> {
+    return AgrementsRepositoryShared.getMessages(agrementId, USER_TYPE.FU);
+  },
+
   /**
    * Récupère le courriel du user responsable d'un agrément.
    */
@@ -525,6 +533,28 @@ export const AgrementsRepository = {
     ];
     const { rows } = await getPool().query(query, values);
     return rows[0].id;
+  },
+  async insertMessage({
+    agrementId,
+    userId,
+    message,
+  }: {
+    agrementId: number;
+    userId: number;
+    message: string;
+  }): Promise<number> {
+    return AgrementsRepositoryShared.insertMessage({
+      agrementId,
+      message,
+      userId,
+      userType: USER_TYPE.FU,
+    });
+  },
+  async markMessagesAsRead(agrementId: number): Promise<number> {
+    return AgrementsRepositoryShared.markMessagesAsRead({
+      agrementId,
+      userType: USER_TYPE.FU,
+    });
   },
 
   async update({ agrement }: { agrement: AgrementDto }): Promise<number> {

@@ -24,6 +24,7 @@ async function checkPermissionAgrement(
       }),
     );
   }
+
   const { id: userId } = req.decoded;
 
   const agrementId = req.params?.agrementId ?? req.body?.agrementId ?? null;
@@ -54,7 +55,7 @@ async function checkPermissionAgrement(
 
   const query = `
       SELECT uo.org_id
-      FROM front.user_organisme uo 
+      FROM front.user_organisme uo
       JOIN front.users u ON uo.use_id = u.id
       WHERE u.id = $1
     `;

@@ -73,7 +73,9 @@
         :selected="selectedTabIndex === 2"
         :asc="asc"
       >
-        <Historique :history="agrementStore.history ?? []" />
+        <div class="tab-scroll">
+          <Historique :history="agrementStore.history ?? []" />
+        </div>
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="agrement-content-3"
@@ -81,13 +83,9 @@
         :selected="selectedTabIndex === 3"
         :asc="asc"
       >
-      </DsfrTabContent>
-      <DsfrTabContent
-        panel-id="agrement-content-4"
-        tab-id="agrement-tab-4"
-        :selected="selectedTabIndex === 4"
-        :asc="asc"
-      >
+        <div ref="messagerieScroll" class="tab-scroll">
+          <AgrementMessagerie :messages="messages" />
+        </div>
       </DsfrTabContent>
     </DsfrTabs>
 
@@ -102,6 +100,8 @@ import {
   Historique,
   AgrementDocuments,
 } from "@vao/shared-ui";
+
+import { nextTick } from "vue";
 
 const agrementStore = useAgrementStore();
 const territoireStore = useTerritoireStore();
@@ -136,7 +136,28 @@ onMounted(async () => {
   } catch (error) {
     log.w("Erreur lors de la récupération de l'historique:", error);
   }
+  try {
+    await agrementStore.getMessages(String(agrementId));
+    log.i("Messages de l'agrément récupérés avec succès");
+  } catch (error) {
+    log.w("Erreur lors de la récupération des messages:", error);
+  }
 });
+
+const messagerieScroll = ref<HTMLElement | null>(null);
+const messages = computed(() => agrementStore.messages ?? []);
+
+watch(messages, async () => {
+  if (selectedTabIndex.value === Tab.Messages) {
+    await nextTick();
+
+    const el = messagerieScroll.value;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }
+});
+const unreadCount = computed(() => agrementStore.messagesUnreadCount ?? 0);
 
 const agrementAnneeRenouvellement = computed(() => {
   return agrementStore.agrementEnTraitement?.dateDepot
@@ -183,14 +204,29 @@ enum Tab {
 const tabActions: Record<Tab, () => void> = {
   [Tab.Documents]: () => {},
   [Tab.Historique]: () => {},
-  [Tab.Messages]: () => {},
+  [Tab.Messages]: async () => {
+    await agrementStore.patchMessagesAsRead(
+      String(agrementStore.agrementEnTraitement?.id),
+    );
+    await agrementStore.getMessages(
+      String(agrementStore.agrementEnTraitement?.id),
+    );
+  },
 };
 
 const selectTab = async (idx: Tab) => {
   asc.value = selectedTabIndex.value < idx;
-  tabActions[idx]();
-};
+  tabActions[idx]?.();
 
+  if (idx === Tab.Messages) {
+    await nextTick();
+
+    const el = messagerieScroll.value;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }
+};
 const tabTitles = computed(() => [
   {
     title: "Dossier",
@@ -208,7 +244,10 @@ const tabTitles = computed(() => [
     panelId: "agrement-content-2",
   },
   {
-    title: "Messagerie",
+    title:
+      unreadCount.value > 0
+        ? `Messagerie (${unreadCount.value})`
+        : "Messagerie",
     tabId: "agrement-tab-3",
     panelId: "agrement-content-3",
   },
@@ -220,6 +259,10 @@ onMounted(async () => {
 });
 </script>
 <style scoped>
+.tab-scroll {
+  height: calc(100vh); /* ajuste */
+  overflow-y: auto;
+}
 .aide-contact-cards {
   flex: 1; /* prend tout le reste de la largeur */
 }

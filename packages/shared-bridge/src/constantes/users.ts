@@ -3,3 +3,8 @@ export enum USER_COMPETENCE_BO {
   NATIONALE = "NAT",
   REGIONALE = "REG",
 }
+
+export enum USER_TYPE {
+  BO = "BO-AGENT", // Back-office Agent
+  FU = "FUSAGER-OVA", // Front-office Usager Organisme de Vacances
+}

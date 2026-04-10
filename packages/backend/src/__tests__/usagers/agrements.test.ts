@@ -1,4 +1,4 @@
-import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { AGREMENT_STATUT, USER_TYPE } from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
 import request from "supertest";
 
@@ -11,8 +11,12 @@ import {
   createAgrement,
   getAgrement,
 } from "../helper/fixtures/agrementsHelper";
+import { createAgrementMessage } from "../helper/fixtures/agrementsMessageHelper";
 import { createOrganisme } from "../helper/fixtures/organismeHelper";
-import { createUsagersUser } from "../helper/fixtures/userHelper";
+import {
+  createAdminUser,
+  createUsagersUser,
+} from "../helper/fixtures/userHelper";
 import {
   createTestContainer,
   removeTestContainer,
@@ -228,4 +232,83 @@ it("workflow changement statut de l'agrement", async () => {
   expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
 
   expect(mailService.send).toHaveBeenCalledTimes(1);
+});
+
+describe("Messagerie d'agrément", () => {
+  let agrementId: number;
+
+  beforeEach(async () => {
+    const authUser = await createUsagersUser();
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: authUser.id };
+      next();
+    });
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+    agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+  });
+
+  it("POST /message devrait créer un message et retourner 201", async () => {
+    const postResponse = await request(app)
+      .post(`/agrements/${agrementId}/message`)
+      .send({ message: "Message de test" });
+    expect(postResponse.status).toBe(201);
+    expect(postResponse.body.success).toBe(true);
+  });
+
+  it("GET /messages devrait retourner les messages existants", async () => {
+    await request(app)
+      .post(`/agrements/${agrementId}/message`)
+      .send({ message: "Message de test" });
+
+    const getResponse = await request(app).get(
+      `/agrements/${agrementId}/messages`,
+    );
+    expect(getResponse.status).toBe(200);
+    expect(getResponse.body.messages).toBeDefined();
+    expect(getResponse.body.count).toBe(1);
+    expect(getResponse.body.messages[0].message).toBe("Message de test");
+    expect(getResponse.body.messages[0].backUserPrenom).toBeDefined();
+  });
+
+  it("POST /message devrait retourner 404 pour un agrément inexistant", async () => {
+    const response = await request(app)
+      .post(`/agrements/999999/message`)
+      .send({ message: "test" });
+    expect(response.status).toBe(404);
+  });
+
+  it("GET /messages devrait retourner 404 pour un agrément inexistant", async () => {
+    const response = await request(app).get(`/agrements/999999/messages`);
+    expect(response.status).toBe(404);
+  });
+
+  it("PATCH /messages devrait marquer tous les messages non lus comme lus et retourner le bon count", async () => {
+    const authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    await createAgrementMessage({
+      agrementId,
+      agrementMessage: { back_user_id: authUserBo.id },
+      userType: USER_TYPE.BO,
+    });
+    await createAgrementMessage({
+      agrementId,
+      agrementMessage: { back_user_id: authUserBo.id },
+      userType: USER_TYPE.BO,
+    });
+    await request(app).get(`/agrements/${agrementId}/messages`);
+
+    const patchResponse = await request(app).patch(
+      `/agrements/${agrementId}/messages/read`,
+    );
+    expect(patchResponse.status).toBe(200);
+    expect(patchResponse.body.count).toBe(2);
+
+    const getResponse = await request(app).get(
+      `/agrements/${agrementId}/messages`,
+    );
+    expect(getResponse.body.unreadCount).toBe(0);
+  });
 });

@@ -1,10 +1,13 @@
+import type {
+  ActiviteDto,
+  AgrementDto,
+  AgrementMessage,
+} from "@vao/shared-bridge";
 import {
   ACTIVITE_TYPE,
-  ActiviteDto,
   addYears,
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
-  AgrementDto,
 } from "@vao/shared-bridge";
 
 import { mailService } from "../../services/mail";
@@ -39,7 +42,6 @@ export const AgrementService = {
     const history = await AgrementsRepository.getHistory(agrementId);
     return history;
   },
-
   async getList({
     userId,
     statut,
@@ -52,6 +54,62 @@ export const AgrementService = {
       userId,
     });
     return agrements;
+  },
+  async getMessages(
+    agrementId: number,
+  ): Promise<{ messages: AgrementMessage[]; unreadCount: number }> {
+    const agrement = await AgrementsRepository.getById({
+      agrementId,
+      withDetails: false,
+    });
+    if (!agrement) {
+      log.w("Agrement non trouvé", agrementId);
+      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+    }
+    return await AgrementsRepository.getMessages(agrementId);
+  },
+  async markMessagesAsRead(agrementId: number): Promise<number> {
+    const agrement = await AgrementsRepository.getById({
+      agrementId,
+      withDetails: false,
+    });
+    if (!agrement) {
+      log.w("Agrement non trouvé", agrementId);
+      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+    }
+
+    return await AgrementsRepository.markMessagesAsRead(agrementId);
+  },
+  async postMessage({
+    agrementId,
+    userId,
+    message,
+  }: {
+    agrementId: number;
+    userId: number;
+    message: string;
+  }): Promise<void> {
+    const agrement = await AgrementsRepository.getById({
+      agrementId,
+      withDetails: false,
+    });
+    if (!agrement) {
+      log.w("Agrement non trouvé", agrementId);
+      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+    }
+
+    const inserted = await AgrementsRepository.insertMessage({
+      agrementId,
+      message,
+      userId,
+    });
+
+    if (!inserted) {
+      log.w("Échec de l'insertion du message", { agrementId, userId });
+      throw new AppError("Échec de l'insertion du message", {
+        statusCode: 500,
+      });
+    }
   },
   async save(agrement: AgrementDto): Promise<number> {
     agrement.dateFinValidite = addYears(agrement?.dateObtention, 5);
