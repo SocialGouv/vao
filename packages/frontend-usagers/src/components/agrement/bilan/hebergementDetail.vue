@@ -162,7 +162,20 @@ function emitAdresseUpdate(value: string) {
 const validationSchema = computed(() => {
   const schema: Record<string, yup.AnySchema> = {
     nomHebergement: requiredUnlessBrouillon(yup.string()),
-    adresse: requiredUnlessBrouillon(yup.string()),
+    adresse: requiredUnlessBrouillon(
+     yup.mixed().test("is-string-or-object", "Adresse requise", (value) => {
+      if (typeof value === "string") return !!value;
+        if (
+          typeof value === "object" &&
+          value !== null &&
+          "label" in value &&
+          typeof (value as { label: unknown }).label === "string"
+        ) {
+          return !!(value as { label: string }).label;
+        }
+        return false;
+      }),
+    ),
     statut: yup.string(),
   };
 
