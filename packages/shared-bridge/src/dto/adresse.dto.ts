@@ -6,4 +6,6 @@ export interface AdresseDto {
   codePostal: string | null;
   coordinates: [number | null, number | null] | number[] | null;
   departement: string | null;
+  long?: string | null;
+  lat?: string | null;
 }
