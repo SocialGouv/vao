@@ -6,10 +6,7 @@ import type {
 import { AGREMENT_STATUT, AgrementDto } from "@vao/shared-bridge";
 
 import { saveAdresse } from "../../services/adresse";
-import {
-  ActiviteEntity,
-  AgrementEntity,
-} from "../../shared/agrements/agrements.entity";
+import { AgrementEntity } from "../../shared/agrements/agrements.entity";
 import {
   AgrementAnimationMapper,
   AgrementBilanAnnuelMapper,
@@ -237,17 +234,6 @@ export const AgrementsRepository = {
     } finally {
       client.release();
     }
-  },
-
-  async getAllActivites(): Promise<ActiviteEntity[]> {
-    const client = await getPool().connect();
-    const query = `
-      SELECT id, code, libelle, activite_type
-      FROM front.activite
-      ORDER BY libelle ASC;
-    `;
-    const result = await client.query(query);
-    return result.rows;
   },
 
   async getById({

@@ -1,14 +1,14 @@
 <template>
   <div class="fr-container">
-    <p class="fr-text fr-text--lg">
-      <b>Informations sur les vacanciers</b>
-    </p>
+    <h2 class="fr-text fr-text--lg fr-text--bold">
+      Informations sur les vacanciers
+    </h2>
     <div class="flex-inputs">
       <div class="fr-col-4">
         <DisplayInputCommon
           :value="props.bilanAnnuel?.nbGlobalVacanciers"
           :input="
-            AgrementDisplayInput.IAgrementBilanAnnuel['nbGlobalVacanciers']
+            AgrementDisplayInput.AgrementBilanAnnuelInput['nbGlobalVacanciers']
           "
         />
       </div>
@@ -16,14 +16,14 @@
       <div class="fr-col-4">
         <DisplayInputCommon
           :value="props.bilanAnnuel?.nbHommes"
-          :input="AgrementDisplayInput.IAgrementBilanAnnuel['nbHommes']"
+          :input="AgrementDisplayInput.AgrementBilanAnnuelInput['nbHommes']"
         />
       </div>
 
       <div class="fr-col-4">
         <DisplayInputCommon
           :value="props.bilanAnnuel?.nbFemmes"
-          :input="AgrementDisplayInput.IAgrementBilanAnnuel['nbFemmes']"
+          :input="AgrementDisplayInput.AgrementBilanAnnuelInput['nbFemmes']"
         />
       </div>
     </div>
@@ -46,9 +46,7 @@
     <!-- Hébergements -->
     <AgrementsBilanHebergements
       ref="hebergementsRef"
-      :agrement-bilan-annuel="props.agrementBilanAnnuel"
-      :bilan-hebergement="props.bilanAnnuel?.bilanHebergement || []"
-      :statut="props.agrementStatus"
+      :hebergements="props.bilanAnnuel?.bilanHebergement || []"
     />
 
     <!-- Jours de vacances -->
@@ -56,13 +54,13 @@
       <DisplayInputCommon
         :value="props.bilanAnnuel?.nbTotalJoursVacances"
         :input="
-          AgrementDisplayInput.IAgrementBilanAnnuel['nbTotalJoursVacances']
+          AgrementDisplayInput.AgrementBilanAnnuelInput['nbTotalJoursVacances']
         "
       />
     </div>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { DisplayInputCommon, AgrementDisplayInput } from "@vao/shared-ui";
 
@@ -70,8 +68,8 @@ const props = defineProps({
   year: { type: Number, required: true },
   sejours: { type: Array, default: () => [] },
   bilanAnnuel: { type: Object, default: () => ({}) },
-  agrementStatus: { type: String, required: true },
-  agrementId: { type: String, required: true },
+  agrementStatus: { type: String, default: null },
+  agrementId: { type: Number, default: null },
 });
 
 const tranchesAgeRef = ref(null);

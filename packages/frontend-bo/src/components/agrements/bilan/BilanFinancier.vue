@@ -12,7 +12,7 @@
         <DisplayInputCommon
           :value="props.initAgrement?.bilanFinancierComptabilite"
           :input="
-            AgrementDisplayInput.IAgrementBilanAnnuel[
+            AgrementDisplayInput.AgrementBilanAnnuelInput[
               'bilanFinancierComptabilite'
             ]
           "
@@ -26,7 +26,7 @@
         <DisplayInputCommon
           :value="props.initAgrement?.bilanFinancierComparatif"
           :input="
-            AgrementDisplayInput.IAgrementBilanAnnuel[
+            AgrementDisplayInput.AgrementBilanAnnuelInput[
               'bilanFinancierComparatif'
             ]
           "
@@ -40,7 +40,7 @@
         <DisplayInputCommon
           :value="props.initAgrement?.bilanFinancierRessourcesHumaines"
           :input="
-            AgrementDisplayInput.IAgrementBilanAnnuel[
+            AgrementDisplayInput.AgrementBilanAnnuelInput[
               'bilanFinancierRessourcesHumaines'
             ]
           "
@@ -54,7 +54,7 @@
         <DisplayInputCommon
           :value="props.initAgrement?.bilanFinancierCommentaire"
           :input="
-            AgrementDisplayInput.IAgrementBilanAnnuel[
+            AgrementDisplayInput.AgrementBilanAnnuelInput[
               'bilanFinancierCommentaire'
             ]
           "

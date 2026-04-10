@@ -11,7 +11,10 @@
       <DsfrInputGroup
         v-if="props.modifiable"
         name="bilanChangementEvolution"
-        :label="displayInput.IAgrementBilanAnnuel['bilanChangementEvolution'].label"
+        :label="
+          displayInput.AgrementBilanAnnuelInput['bilanChangementEvolution']
+            .label
+        "
         :model-value="bilanChangementEvolution"
         :label-visible="true"
         :is-textarea="true"
@@ -23,11 +26,12 @@
       <UtilsDisplayInput
         v-else
         :value="bilanChangementEvolution"
-        :input="displayInput.IAgrementBilanAnnuel['bilanChangementEvolution']"
+        :input="
+          displayInput.AgrementBilanAnnuelInput['bilanChangementEvolution']
+        "
         :is-valid="bilanChangementEvolutionMeta.valid"
         :error-message="bilanChangementEvolutionErrorMessage"
       />
-
     </div>
   </div>
   <div class="fr-fieldset__element">
@@ -57,7 +61,7 @@ import * as yup from "yup";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
 import { TitleWithIcon } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
-import displayInput from "../../../utils/display-input"; 
+import displayInput from "../../../utils/display-input";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },

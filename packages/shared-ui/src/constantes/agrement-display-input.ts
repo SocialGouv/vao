@@ -1,18 +1,15 @@
 import dayjs from "dayjs";
 import { InputTypes } from "./input-types";
 
-export type Formatter<T = unknown, R = string> = (value: T) => R;
-export type FieldFormat<T = unknown, R = string> = (element: T) => R;
-
-export const ouiNon: Record<string, string> = {
+export const booleanLabelMapper: Record<string, string> = {
   false: "Non",
   true: "Oui",
 };
 
-export const IAgrement = {
+export const AgrementInput = {
   numero: {
     inputType: InputTypes.TEXT,
-    label: "Numéro d'agrément \"Vacances adaptées organisées",
+    label: 'Numéro d\'agrément "Vacances adaptées organisées"',
   },
   dateObtention: {
     inputType: InputTypes.TO_FORMAT,
@@ -41,7 +38,7 @@ export const IAgrement = {
   },
 };
 
-export const IAgrementBilanAnnuel = {
+export const AgrementBilanAnnuelInput = {
   typeHandicap: {
     inputType: InputTypes.MULTISELECT,
     label: "",
@@ -115,7 +112,7 @@ export const IAgrementBilanAnnuel = {
   },
 };
 
-export const IAgrementProjets = {
+export const AgrementProjetsInput = {
   accompRespNb: {
     inputType: InputTypes.NUMBER,
     label: "Nombre d’accompagnants prévus par lieu de vacances",
@@ -210,11 +207,9 @@ export const IAgrementProjets = {
     label: "nombre de vacanciers",
   },
 };
-const AgrementDisplayInput = {
+export const AgrementDisplayInput = {
   InputTypes,
-  IAgrement,
-  IAgrementProjets,
-  IAgrementBilanAnnuel,
+  AgrementInput,
+  AgrementProjetsInput,
+  AgrementBilanAnnuelInput,
 };
-
-export { AgrementDisplayInput };

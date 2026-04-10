@@ -12,7 +12,7 @@
       <DsfrInputGroup
         v-if="props.modifiable"
         name="suiviMedDistribution"
-        :label="displayInput.IAgrementProjets['suiviMedDistribution'].label"
+        :label="displayInput.AgrementProjetsInput['suiviMedDistribution'].label"
         :model-value="suiviMedDistribution"
         :label-visible="true"
         :is-textarea="true"
@@ -23,7 +23,7 @@
       <UtilsDisplayInput
         v-else
         :value="suiviMedDistribution"
-        :input="displayInput.IAgrementProjets['suiviMedDistribution']"
+        :input="displayInput.AgrementProjetsInput['suiviMedDistribution']"
         :is-valid="suiviMedDistributionMeta.valid"
         :error-message="suiviMedDistributionErrorMessage"
       />
@@ -35,7 +35,7 @@
       <DsfrInputGroup
         v-if="props.modifiable"
         name="suiviMedAccordSejour"
-        :label="displayInput.IAgrementProjets['suiviMedAccordSejour'].label"
+        :label="displayInput.AgrementProjetsInput['suiviMedAccordSejour'].label"
         :model-value="suiviMedAccordSejour"
         :label-visible="true"
         :is-textarea="true"
@@ -46,7 +46,7 @@
       <UtilsDisplayInput
         v-else
         :value="suiviMedAccordSejour"
-        :input="displayInput.IAgrementProjets['suiviMedAccordSejour']"
+        :input="displayInput.AgrementProjetsInput['suiviMedAccordSejour']"
         :is-valid="suiviMedAccordSejourMeta.valid"
         :error-message="suiviMedAccordSejourErrorMessage"
       />

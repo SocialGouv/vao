@@ -9,7 +9,7 @@
   <div class="fr-col-6 fr-mb-4v">
     <DisplayInputCommon
       :value="props.initAgrement.accompRespNb"
-      :input="AgrementDisplayInput.IAgrementProjets['accompRespNb']"
+      :input="AgrementDisplayInput.AgrementProjetsInput['accompRespNb']"
     />
   </div>
   <p class="light-decisions-text-text-default-info fr-text--xs fr-mt-8v">
@@ -30,7 +30,9 @@
       <div class="fr-col-12">
         <DisplayInputCommon
           :value="props.initAgrement.accompRespCompExp"
-          :input="AgrementDisplayInput.IAgrementProjets['accompRespCompExp']"
+          :input="
+            AgrementDisplayInput.AgrementProjetsInput['accompRespCompExp']
+          "
         />
       </div>
     </div>
@@ -54,7 +56,9 @@
       <div class="fr-col-12">
         <DisplayInputCommon
           :value="props.initAgrement.accompRespRecruteUrg"
-          :input="AgrementDisplayInput.IAgrementProjets['accompRespRecruteUrg']"
+          :input="
+            AgrementDisplayInput.AgrementProjetsInput['accompRespRecruteUrg']
+          "
         />
       </div>
     </div>

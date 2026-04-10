@@ -6,7 +6,11 @@ import {
 } from "@vao/shared-bridge";
 import type { NextFunction } from "express";
 
-import type { RouteRequest, RouteResponse } from "../../types/request";
+import type {
+  RouteRequest,
+  RouteResponse,
+  UserRequest,
+} from "../../types/request";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 import { AgrementService } from "./agrements.service";
@@ -14,6 +18,19 @@ import { AgrementService } from "./agrements.service";
 const log = logger(module.filename);
 
 export const AgrementController = {
+  async getAllActivites(
+    req: UserRequest,
+    res: RouteResponse<AgrementAdminRoutes["GetAllActivites"]>,
+    next: NextFunction,
+  ) {
+    try {
+      const activites = await AgrementService.getAllActivites();
+      res.status(200).json(activites);
+    } catch (error) {
+      next(error);
+    }
+  },
+
   async getHistory(
     req: RouteRequest<AgrementAdminRoutes["GetHistory"]>,
     res: RouteResponse<AgrementAdminRoutes["GetHistory"]>,

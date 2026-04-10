@@ -34,7 +34,7 @@
     <DsfrInput
       v-if="props.modifiable"
       name="sejourNbEnvisage"
-      :label="displayInput.IAgrementProjets['sejourNbEnvisage'].label"
+      :label="displayInput.AgrementProjetsInput['sejourNbEnvisage'].label"
       type="number"
       :model-value="sejourNbEnvisage"
       :label-visible="true"
@@ -45,7 +45,7 @@
     <UtilsDisplayInput
       v-else
       :value="sejourNbEnvisage"
-      :input="displayInput.IAgrementProjets['sejourNbEnvisage']"
+      :input="displayInput.AgrementProjetsInput['sejourNbEnvisage']"
       :is-valid="sejourNbEnvisageMeta.valid"
       :error-message="sejourNbEnvisageErrorMessage"
     />
@@ -64,7 +64,7 @@
   <UtilsDisplayInput
     v-else
     :value="sejourCommentaire"
-    :input="displayInput.IAgrementProjets['sejourCommentaire']"
+    :input="displayInput.AgrementProjetsInput['sejourCommentaire']"
     :is-valid="commentaireMeta.valid"
     :error-message="commentaireErrorMessage"
   />

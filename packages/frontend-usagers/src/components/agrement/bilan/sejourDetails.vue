@@ -8,7 +8,9 @@
         <DsfrInput
           v-if="modifiable"
           name="nbGlobalVacanciers"
-          :label="displayInput.IAgrementBilanAnnuel['nbGlobalVacanciers'].label"
+          :label="
+            displayInput.AgrementBilanAnnuelInput['nbGlobalVacanciers'].label
+          "
           type="number"
           :model-value="nbGlobalVacanciers"
           :label-visible="true"
@@ -19,7 +21,7 @@
         <UtilsDisplayInput
           v-else
           :value="nbGlobalVacanciers"
-          :input="displayInput.IAgrementBilanAnnuel['nbGlobalVacanciers']"
+          :input="displayInput.AgrementBilanAnnuelInput['nbGlobalVacanciers']"
           :is-valid="nbGlobalVacanciersMeta.valid"
           :error-message="nbGlobalVacanciersErrorMessage"
         />
@@ -29,7 +31,7 @@
         <DsfrInput
           v-if="modifiable"
           name="nbHommes"
-          :label="displayInput.IAgrementBilanAnnuel['nbHommes'].label"
+          :label="displayInput.AgrementBilanAnnuelInput['nbHommes'].label"
           type="number"
           :model-value="nbHommes"
           :label-visible="true"
@@ -40,7 +42,7 @@
         <UtilsDisplayInput
           v-else
           :value="nbHommes"
-          :input="displayInput.IAgrementBilanAnnuel['nbHommes']"
+          :input="displayInput.AgrementBilanAnnuelInput['nbHommes']"
           :is-valid="nbHommesMeta.valid"
           :error-message="nbHommesErrorMessage"
         />
@@ -50,7 +52,7 @@
         <DsfrInput
           v-if="modifiable"
           name="nbFemmes"
-          :label="displayInput.IAgrementBilanAnnuel['nbFemmes'].label"
+          :label="displayInput.AgrementBilanAnnuelInput['nbFemmes'].label"
           type="number"
           :model-value="nbFemmes"
           :label-visible="true"
@@ -61,7 +63,7 @@
         <UtilsDisplayInput
           v-else
           :value="nbHommes"
-          :input="displayInput.IAgrementBilanAnnuel['nbFemmes']"
+          :input="displayInput.AgrementBilanAnnuelInput['nbFemmes']"
           :is-valid="nbFemmesMeta.valid"
           :error-message="nbFemmesErrorMessage"
         />

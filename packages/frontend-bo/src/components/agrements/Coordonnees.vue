@@ -123,7 +123,7 @@
     <hr class="fr-mt-4w" />
     <DisplayInputCommon
       :value="props.initAgrement.commentaire"
-      :input="AgrementDisplayInput.IAgrement['commentaire']"
+      :input="AgrementDisplayInput.AgrementInput['commentaire']"
     />
   </div>
 </template>

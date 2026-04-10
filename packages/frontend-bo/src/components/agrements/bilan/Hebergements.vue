@@ -40,7 +40,7 @@ import { computed, ref } from "vue";
 import type { BilanHebergementDto } from "@vao/shared-bridge";
 
 const props = defineProps<{
-  hebergements: BilanHebergementDto[];
+  hebergements: BilanHebergementDto[] | null;
 }>();
 
 const ITEMS_PER_PAGE = 10;

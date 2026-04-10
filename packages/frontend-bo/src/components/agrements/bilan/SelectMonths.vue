@@ -1,7 +1,7 @@
 <template>
   <div class="select-months">
     <DisplayInputCommon
-      :input="AgrementDisplayInput.IAgrementProjets.selectedMonths"
+      :input="AgrementDisplayInput.AgrementProjetsInput.selectedMonths"
       :value="selectedLabels"
     />
   </div>

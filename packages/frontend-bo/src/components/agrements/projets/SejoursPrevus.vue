@@ -31,12 +31,12 @@
   <div class="fr-col-6 fr-mb-4v">
     <DisplayInputCommon
       :value="props.initAgrement.sejourNbEnvisage"
-      :input="AgrementDisplayInput.IAgrementProjets['sejourNbEnvisage']"
+      :input="AgrementDisplayInput.AgrementProjetsInput['sejourNbEnvisage']"
     />
   </div>
   <DisplayInputCommon
     :value="props.initAgrement.sejourCommentaire"
-    :input="AgrementDisplayInput.IAgrementProjets['sejourCommentaire']"
+    :input="AgrementDisplayInput.AgrementProjetsInput['sejourCommentaire']"
   />
   <div class="fr-fieldset__element">
     <MultiFilesUpload
@@ -48,14 +48,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   TitleWithIcon,
   MultiFilesUpload,
   DisplayInputCommon,
   AgrementDisplayInput,
 } from "@vao/shared-ui";
-import { FILE_CATEGORY } from "@vao/shared-bridge";
+import { FILE_CATEGORY, type AgrementFilesDto } from "@vao/shared-bridge";
 import { ref } from "vue";
 
 const props = defineProps({
@@ -69,7 +69,8 @@ const listeSejoursRef = ref(null);
 
 const filesProjetsSejoursPrevus = ref(
   props.initAgrement?.agrementFiles?.filter(
-    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSPREVUS,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJETSSEJOURSPREVUS,
   ) || [],
 );
 </script>

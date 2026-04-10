@@ -6,6 +6,7 @@
   >
     Séjours (par années)
   </TitleWithIcon>
+
   <p>Sélectionner les années</p>
 
   <DsfrTabs
@@ -24,8 +25,8 @@
     >
       <AgrementsBilanSejourDetails
         :ref="(el) => setSejourDetailsRef(el, idx)"
-        :year="parseInt(tab.title)"
-        :bilan-annuel="bilanAnnuelByYear[parseInt(tab.title)]"
+        :year="Number(tab.title)"
+        :bilan-annuel="bilanAnnuelByYear[Number(tab.title)]"
         :agrement-status="props.initAgrement?.statut"
         :agrement-id="props.initAgrement?.id"
       />
@@ -33,29 +34,77 @@
   </DsfrTabs>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref, computed } from "vue";
 import { TitleWithIcon } from "@vao/shared-ui";
 
-const props = defineProps({
-  initAgrement: { type: Object, required: true },
-  cdnUrl: { type: String, required: true },
-  modifiable: { type: Boolean, default: true },
-});
+/* =========================
+   Types métier
+========================= */
+
+interface BilanAnnuel {
+  annee: number;
+  bilanHebergement: unknown[];
+  trancheAge: unknown[];
+  typeHandicap: unknown[];
+  nbFemmes: number;
+  nbHommes: number;
+  nbGlobalVacanciers: number;
+  nbTotalJoursVacances: number;
+}
+
+interface Agrement {
+  id?: number;
+  statut?: string;
+  agrementBilanAnnuel?: BilanAnnuel[];
+}
+
+interface TabTitle {
+  title: string;
+  tabId: string;
+  panelId: string;
+}
+
+/* =========================
+   Props
+========================= */
+
+const props = defineProps<{
+  initAgrement: Agrement;
+  cdnUrl: string;
+  modifiable?: boolean;
+}>();
+
+/* =========================
+   State
+========================= */
 
 const initialSelectedIndex = 0;
 
-const selectedTabIndex = ref(initialSelectedIndex);
-const asc = ref(true);
-const sejourDetailsRefs = ref([]);
+const selectedTabIndex = ref<number>(initialSelectedIndex);
+const asc = ref<boolean>(true);
 
-function setSejourDetailsRef(el, idx) {
+// Si tu connais le type exact du composant, remplace unknown
+const sejourDetailsRefs = ref<unknown[]>([]);
+
+/* =========================
+   Methods
+========================= */
+
+function setSejourDetailsRef(el: unknown, idx: number): void {
   sejourDetailsRefs.value[idx] = el;
 }
 
+/* =========================
+   Tabs (years)
+========================= */
+
 const currentYear = new Date().getFullYear();
 const startYear = 2021;
-const tabTitles = computed(() => {
-  const years = [];
+
+const tabTitles = computed<TabTitle[]>(() => {
+  const years: TabTitle[] = [];
+
   for (let year = currentYear - 1; year >= startYear; year--) {
     years.push({
       title: `${year}`,
@@ -63,14 +112,23 @@ const tabTitles = computed(() => {
       panelId: `declaration-sejour-content-${year}`,
     });
   }
+
   return years;
 });
 
-const bilanAnnuelByYear = computed(() => {
-  const result = {};
-  const data = props.initAgrement?.agrementBilanAnnuel || [];
+/* =========================
+   Computed bilan par année
+========================= */
+
+type BilanByYear = Record<number, BilanAnnuel>;
+
+const bilanAnnuelByYear = computed<BilanByYear>(() => {
+  const result: BilanByYear = {};
+  const data = props.initAgrement?.agrementBilanAnnuel ?? [];
+
   data.forEach((bilan) => {
     const year = bilan.annee;
+
     if (!result[year]) {
       result[year] = {
         ...bilan,
@@ -84,18 +142,22 @@ const bilanAnnuelByYear = computed(() => {
       };
     } else {
       result[year].bilanHebergement.push(...bilan.bilanHebergement);
+
       result[year].trancheAge = Array.from(
         new Set([...result[year].trancheAge, ...bilan.trancheAge]),
       );
+
       result[year].typeHandicap = Array.from(
         new Set([...result[year].typeHandicap, ...bilan.typeHandicap]),
       );
+
       result[year].nbFemmes += bilan.nbFemmes;
       result[year].nbHommes += bilan.nbHommes;
       result[year].nbGlobalVacanciers += bilan.nbGlobalVacanciers;
       result[year].nbTotalJoursVacances += bilan.nbTotalJoursVacances;
     }
   });
+
   return result;
 });
 </script>

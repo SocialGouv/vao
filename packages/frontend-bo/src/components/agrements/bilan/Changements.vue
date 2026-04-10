@@ -11,7 +11,9 @@
       <DisplayInputCommon
         :value="props.initAgrement?.bilanChangementEvolution"
         :input="
-          AgrementDisplayInput.IAgrementBilanAnnuel['bilanChangementEvolution']
+          AgrementDisplayInput.AgrementBilanAnnuelInput[
+            'bilanChangementEvolution'
+          ]
         "
       />
     </div>

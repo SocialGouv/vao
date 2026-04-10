@@ -12,7 +12,10 @@
         <DsfrInputGroup
           v-if="props.modifiable"
           name="bilanFinancierComptabilite"
-          :label="displayInput.IAgrementBilanAnnuel['bilanFinancierComptabilite'].label"
+          :label="
+            displayInput.AgrementBilanAnnuelInput['bilanFinancierComptabilite']
+              .label
+          "
           hint="Détaillez les dépenses et recettes rattachées spécifiquement à l’activité concernée, en précisant les postes budgétaires si possible."
           :model-value="bilanFinancierComptabilite"
           :label-visible="true"
@@ -24,7 +27,9 @@
         <UtilsDisplayInput
           v-else
           :value="bilanFinancierComptabilite"
-          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierComptabilite']"
+          :input="
+            displayInput.AgrementBilanAnnuelInput['bilanFinancierComptabilite']
+          "
           :is-valid="bilanFinancierComptabiliteMeta.valid"
           :error-message="bilanFinancierComptabiliteErrorMessage"
         />
@@ -37,7 +42,10 @@
         <DsfrInputGroup
           v-if="props.modifiable"
           name="bilanFinancierComparatif"
-          :label="displayInput.IAgrementBilanAnnuel['bilanFinancierComparatif'].label"
+          :label="
+            displayInput.AgrementBilanAnnuelInput['bilanFinancierComparatif']
+              .label
+          "
           hint="Présentez les principales évolutions financières entre l’année en cours (N) et l’année précédente (N-1) : écarts, tendances ou variations significatives."
           :model-value="bilanFinancierComparatif"
           :label-visible="true"
@@ -49,7 +57,9 @@
         <UtilsDisplayInput
           v-else
           :value="bilanFinancierComparatif"
-          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierComparatif']"
+          :input="
+            displayInput.AgrementBilanAnnuelInput['bilanFinancierComparatif']
+          "
           :is-valid="bilanFinancierComparatifMeta.valid"
           :error-message="bilanFinancierComparatifErrorMessage"
         />
@@ -60,9 +70,13 @@
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
-          v-if ="props.modifiable"
+          v-if="props.modifiable"
           name="bilanFinancierRessourcesHumaines"
-          :label="displayInput.IAgrementBilanAnnuel['bilanFinancierRessourcesHumaines'].label"
+          :label="
+            displayInput.AgrementBilanAnnuelInput[
+              'bilanFinancierRessourcesHumaines'
+            ].label
+          "
           hint="Indiquez le nombre de personnes impliquées (en ETP), leurs fonctions et compétences principales, ainsi que les coûts salariaux, dépenses de fonctionnement ou autres coûts associés à leur mobilisation."
           :model-value="bilanFinancierRessourcesHumaines"
           :label-visible="true"
@@ -76,7 +90,11 @@
           :value="bilanFinancierRessourcesHumaines"
           :is-valid="bilanFinancierRessourcesHumainesMeta.valid"
           :error-message="bilanFinancierRessourcesHumainesErrorMessage"
-          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierRessourcesHumaines']"
+          :input="
+            displayInput.AgrementBilanAnnuelInput[
+              'bilanFinancierRessourcesHumaines'
+            ]
+          "
         />
       </div>
     </div>
@@ -100,7 +118,9 @@
           :value="bilanFinancierCommentaire"
           :is-valid="bilanFinancierCommentaireMeta.valid"
           :error-message="bilanFinancierCommentaireErrorMessage"
-          :input="displayInput.IAgrementBilanAnnuel['bilanFinancierCommentaire']"
+          :input="
+            displayInput.AgrementBilanAnnuelInput['bilanFinancierCommentaire']
+          "
         />
       </div>
     </div>

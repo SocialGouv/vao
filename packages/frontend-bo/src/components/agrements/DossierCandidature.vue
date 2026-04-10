@@ -10,7 +10,7 @@
     <div class="fr-col-12">
       <DisplayInputCommon
         :value="props.initAgrement?.motivations"
-        :input="AgrementDisplayInput.IAgrement['motivations']"
+        :input="AgrementDisplayInput.AgrementInput['motivations']"
       />
     </div>
   </div>
@@ -47,7 +47,7 @@
     <div class="fr-col-12">
       <DisplayInputCommon
         :value="formatFR(props.initAgrement?.dateObtentionCertificat)"
-        :input="AgrementDisplayInput.IAgrement['dateObtentionCertificat']"
+        :input="AgrementDisplayInput.AgrementInput['dateObtentionCertificat']"
       />
     </div>
   </div>

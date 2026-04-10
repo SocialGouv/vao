@@ -13,7 +13,7 @@
   <UtilsDisplayInput
     v-else
     :value="commentaireValue"
-    :input="displayInput.IAgrement['commentaire']"
+    :input="displayInput.AgrementInput['commentaire']"
     :is-valid="commentaireMeta.valid"
     :error-message="commentaireErrorMessage"
   />

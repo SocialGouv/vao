@@ -8,26 +8,30 @@
       <p></p>
     </div>
     <div v-for="(sejour, index) in sejours" :key="index">
-      <HebergementDetail
-        :hebergement="sejour"
-        :statut="statut"
-        :modifiable="props.modifiable"
-      />
+      <HebergementDetail :hebergement="sejour" />
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import HebergementDetail from "../bilan/HebergementDetail.vue";
 
+interface Sejour {
+  [key: string]: any;
+}
+
 const props = defineProps({
   agrementId: { type: String, required: true },
-  initialSejours: { type: Array, required: false, default: () => [] },
+  initialSejours: {
+    type: Array as any as () => Sejour[],
+    required: false,
+    default: () => [],
+  },
   statut: { type: String, required: false, default: "BROUILLON" },
 });
 
-const sejours = ref([...props.initialSejours]);
+const sejours = ref<Sejour[]>([...props.initialSejours]);
 </script>
 
 <style scoped>

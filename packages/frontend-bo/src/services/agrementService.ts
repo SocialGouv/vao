@@ -67,6 +67,15 @@ const AgrementService = {
       method: "GET",
       params: { agrementId },
     })(),
+  getAllActivies: async () => {
+    const activites = await buildRequest<
+      AgrementAdminRoutes["GetAllActivites"]
+    >({
+      path: "/admin/agrements/activites",
+      method: "GET",
+    })();
+    return activites;
+  },
 };
 
 export { AgrementService };

@@ -9,20 +9,22 @@
   <div class="flex flex-col">
     <div>
       <DisplayInputCommon
-        :input="AgrementDisplayInput.IAgrementProjets.activitesSelectionnees"
+        :input="
+          AgrementDisplayInput.AgrementProjetsInput.activitesSelectionnees
+        "
         :value="props.initAgrement?.activitesSelectionnees"
       />
     </div>
     <div class="fr-mt-4v">
       <DisplayInputCommon
         :value="props.initAgrement?.animationAutre"
-        :input="AgrementDisplayInput.IAgrementProjets['animationAutre']"
+        :input="AgrementDisplayInput.AgrementProjetsInput['animationAutre']"
       />
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted } from "vue";
 import {
   TitleWithIcon,

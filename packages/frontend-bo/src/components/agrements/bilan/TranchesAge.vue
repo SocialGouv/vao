@@ -3,7 +3,7 @@
     <div>
       <p class="fr-mb-1v"><b>Tranches d’âge</b></p>
       <DisplayInputCommon
-        :input="AgrementDisplayInput.IAgrementBilanAnnuel.trancheAge"
+        :input="AgrementDisplayInput.AgrementBilanAnnuelInput.trancheAge"
         :value="props.trancheAge"
       />
     </div>

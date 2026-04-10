@@ -17,7 +17,7 @@
     </div>
     <UtilsDisplayInput
       v-else
-      :input="displayInput.IAgrementBilanAnnuel.typeHandicap"
+      :input="displayInput.AgrementBilanAnnuelInput.typeHandicap"
       :value="typeDeficiencesField"
       :error-message="typeDeficiencesErrorMessage"
       :is-valid="typeDeficiencesMeta.valid"

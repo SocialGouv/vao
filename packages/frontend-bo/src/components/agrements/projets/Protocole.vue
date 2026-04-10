@@ -12,7 +12,7 @@
     <div class="fr-col-12">
       <DisplayInputCommon
         :value="props.initAgrement?.protocoleEvacUrg"
-        :input="AgrementDisplayInput.IAgrementProjets['protocoleEvacUrg']"
+        :input="AgrementDisplayInput.AgrementProjetsInput['protocoleEvacUrg']"
       />
     </div>
   </div>
@@ -20,7 +20,7 @@
     <div class="fr-col-12">
       <DisplayInputCommon
         :value="props.initAgrement?.protocoleRapatUrg"
-        :input="AgrementDisplayInput.IAgrementProjets['protocoleRapatUrg']"
+        :input="AgrementDisplayInput.AgrementProjetsInput['protocoleRapatUrg']"
       />
     </div>
   </div>
@@ -39,7 +39,9 @@
     <div class="fr-col-12">
       <DisplayInputCommon
         :value="props.initAgrement?.protocoleRapatEtranger"
-        :input="AgrementDisplayInput.IAgrementProjets['protocoleRapatEtranger']"
+        :input="
+          AgrementDisplayInput.AgrementProjetsInput['protocoleRapatEtranger']
+        "
       />
     </div>
   </div>
@@ -47,7 +49,9 @@
     <div class="fr-col-12">
       <DisplayInputCommon
         :value="props.initAgrement?.protocoleInfoFamille"
-        :input="AgrementDisplayInput.IAgrementProjets['protocoleInfoFamille']"
+        :input="
+          AgrementDisplayInput.AgrementProjetsInput['protocoleInfoFamille']
+        "
       />
     </div>
   </div>

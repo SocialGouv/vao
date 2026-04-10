@@ -24,7 +24,7 @@
         <DisplayInputCommon
           :value="props.initAgrement?.bilanQualPerceptionSensibilite"
           :input="
-            AgrementDisplayInput.IAgrementBilanAnnuel[
+            AgrementDisplayInput.AgrementBilanAnnuelInput[
               'bilanQualPerceptionSensibilite'
             ]
           "
@@ -59,7 +59,7 @@
         <DisplayInputCommon
           :value="props.initAgrement?.bilanQualPerspectiveEvol"
           :input="
-            AgrementDisplayInput.IAgrementBilanAnnuel[
+            AgrementDisplayInput.AgrementBilanAnnuelInput[
               'bilanQualPerspectiveEvol'
             ]
           "
@@ -91,7 +91,7 @@
         <DisplayInputCommon
           :value="props.initAgrement?.bilanQualElementsMarquants"
           :input="
-            AgrementDisplayInput.IAgrementBilanAnnuel[
+            AgrementDisplayInput.AgrementBilanAnnuelInput[
               'bilanQualElementsMarquants'
             ]
           "

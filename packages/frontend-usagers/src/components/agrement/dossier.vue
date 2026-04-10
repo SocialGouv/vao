@@ -6,12 +6,12 @@
   >
     Motivations
   </TitleWithIcon>
-  <div  class="fr-fieldset__element">
+  <div class="fr-fieldset__element">
     <div class="fr-col-12">
       <DsfrInputGroup
         v-if="modifiable"
         name="motivations"
-        :label="displayInput.IAgrement['motivations'].label"
+        :label="displayInput.AgrementInput['motivations'].label"
         :model-value="motivations"
         :label-visible="true"
         :is-textarea="true"
@@ -23,13 +23,12 @@
       <UtilsDisplayInput
         v-else
         :value="motivations"
-        :input="displayInput.IAgrement['motivations']"
+        :input="displayInput.AgrementInput['motivations']"
         :is-valid="motivationsMeta.valid"
         :error-message="motivationsErrorMessage"
       />
     </div>
   </div>
-
 
   <div class="fr-fieldset__element">
     <UtilsMultiFilesUpload
@@ -63,7 +62,7 @@
       <DsfrInputGroup
         v-if="props.modifiable"
         name="dateObtentionCertificat"
-        :label="displayInput.IAgrement['dateObtentionCertificat'].label"
+        :label="displayInput.AgrementInput['dateObtentionCertificat'].label"
         :error-message="dateObtentionCertificatErrorMessage"
         :is-valid="dateObtentionCertificatMeta.valid"
         :label-visible="true"
@@ -74,7 +73,7 @@
       <UtilsDisplayInput
         v-else
         :value="dateObtentionCertificat"
-        :input="displayInput.IAgrement['dateObtentionCertificat']"
+        :input="displayInput.AgrementInput['dateObtentionCertificat']"
         :error-message="dateObtentionCertificatErrorMessage"
         :is-valid="dateObtentionCertificatMeta.valid"
       />
@@ -135,8 +134,6 @@ import {
 } from "@vao/shared-bridge";
 import displayInput from "../../utils/display-input";
 
-
-
 // --- Props et événements ---
 const props = defineProps({
   valid: { type: Boolean, default: true },
@@ -148,9 +145,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
 });
 
-const emit = defineEmits(["previous", "next", "update:valid", "update" ]);
+const emit = defineEmits(["previous", "next", "update:valid", "update"]);
 //const emit = defineEmits(["previous", "next", "update"]);
-
 
 const requiredUnlessBrouillon = (schema) =>
   schema.when("statut", {
@@ -232,7 +228,6 @@ const fileAttestationsRapatriement = ref(
   getFileByCategory(FILE_CATEGORY.ASSURRAPAT),
 );
 
-
 watch(
   () => meta.value.valid,
   (newVal) => {
@@ -240,7 +235,7 @@ watch(
       emit("update:valid", newVal);
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const update = handleSubmit((values) => {

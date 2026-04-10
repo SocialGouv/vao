@@ -44,6 +44,16 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+describe("GET /admin/agrements/activites", () => {
+  it("devrait retourner une liste d'activités avec succès", async () => {
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(app).get(`/admin/agrements/activites`);
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+    expect(response.body.length).toBe(22);
+  });
+});
+
 describe("GET /admin/agrements", () => {
   it("devrait retourner une liste d'agréments avec succès", async () => {
     authUser = await createUsagersUser();

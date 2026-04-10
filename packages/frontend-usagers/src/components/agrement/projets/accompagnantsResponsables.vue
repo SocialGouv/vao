@@ -10,7 +10,7 @@
     <DsfrInput
       v-if="props.modifiable"
       name="accompRespNb"
-      :label="displayInput.IAgrementProjets['accompRespNb'].label"
+      :label="displayInput.AgrementProjetsInput['accompRespNb'].label"
       type="number"
       :model-value="accompRespNb"
       :label-visible="true"
@@ -21,7 +21,7 @@
     <UtilsDisplayInput
       v-else
       :value="accompRespNb"
-      :input="displayInput.IAgrementProjets['accompRespNb']"
+      :input="displayInput.AgrementProjetsInput['accompRespNb']"
       :is-valid="accompRespNbMeta.valid"
       :error-message="accompRespNbErrorMessage"
     />
@@ -56,7 +56,7 @@
         <UtilsDisplayInput
           v-else
           :value="accompRespCompExp"
-          :input="displayInput.IAgrementProjets['accompRespCompExp']"
+          :input="displayInput.AgrementProjetsInput['accompRespCompExp']"
           :is-valid="accompRespCompExpMeta.valid"
           :error-message="accompRespCompExpErrorMessage"
         />
@@ -82,7 +82,9 @@
         <DsfrInputGroup
           v-if="props.modifiable"
           name="accompRespRecruteUrg"
-          :label="displayInput.IAgrementProjets['accompRespRecruteUrg'].label"
+          :label="
+            displayInput.AgrementProjetsInput['accompRespRecruteUrg'].label
+          "
           :model-value="accompRespRecruteUrg"
           :label-visible="true"
           :is-textarea="true"
@@ -93,7 +95,7 @@
         <UtilsDisplayInput
           v-else
           :value="accompRespRecruteUrg"
-          :input="displayInput.IAgrementProjets['accompRespRecruteUrg']"
+          :input="displayInput.AgrementProjetsInput['accompRespRecruteUrg']"
           :is-valid="accompRespRecruteUrgMeta.valid"
           :error-message="accompRespRecruteUrgErrorMessage"
         />

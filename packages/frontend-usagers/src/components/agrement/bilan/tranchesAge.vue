@@ -18,7 +18,7 @@
       />
       <UtilsDisplayInput
         v-else
-        :input="displayInput.IAgrementBilanAnnuel.trancheAge"
+        :input="displayInput.AgrementBilanAnnuelInput.trancheAge"
         :value="trancheAgeField"
         :error-message="trancheAgeErrorMessage"
       />

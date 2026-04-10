@@ -3,14 +3,14 @@
     <div class="cell">
       <DisplayInputCommon
         :value="props.hebergement?.nomHebergement"
-        :input="AgrementDisplayInput.IAgrementProjets['nomHebergement']"
+        :input="AgrementDisplayInput.AgrementProjetsInput['nomHebergement']"
         :label-visible="false"
       />
     </div>
     <div class="cell">
       <DisplayInputCommon
         :value="adresseLabel"
-        :input="AgrementDisplayInput.IAgrementProjets['adresseLabel']"
+        :input="AgrementDisplayInput.AgrementProjetsInput['adresseLabel']"
         :label-visible="false"
       />
     </div>
@@ -19,12 +19,12 @@
     </div>
     <DisplayInputCommon
       :value="props.hebergement?.nbJours"
-      :input="AgrementDisplayInput.IAgrementProjets['nbJours']"
+      :input="AgrementDisplayInput.AgrementProjetsInput['nbJours']"
       :label-visible="false"
     />
     <DisplayInputCommon
       :value="props.hebergement?.nbVacanciers"
-      :input="AgrementDisplayInput.IAgrementProjets['nbVacanciers']"
+      :input="AgrementDisplayInput.AgrementProjetsInput['nbVacanciers']"
       :label-visible="false"
     />
   </div>
@@ -35,13 +35,9 @@ import { computed } from "vue";
 import { AgrementDisplayInput, DisplayInputCommon } from "@vao/shared-ui";
 
 const props = defineProps({
-  statut: {
-    type: String,
-    required: true,
-  },
   hebergement: {
     type: Object,
-    required: true,
+    default: null,
   },
 });
 

@@ -10,13 +10,13 @@
   <div class="fr-col-12">
     <DisplayInputCommon
       :value="props.initAgrement?.transportAllerRetour"
-      :input="AgrementDisplayInput.IAgrementProjets['transportAllerRetour']"
+      :input="AgrementDisplayInput.AgrementProjetsInput['transportAllerRetour']"
     />
   </div>
   <div class="fr-col-12 fr-mt-6v">
     <DisplayInputCommon
       :value="props.initAgrement?.transportSejour"
-      :input="AgrementDisplayInput.IAgrementProjets['transportSejour']"
+      :input="AgrementDisplayInput.AgrementProjetsInput['transportSejour']"
     />
   </div>
 

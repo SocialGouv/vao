@@ -11,7 +11,7 @@
     <div class="fr-col-12">
       <DisplayInputCommon
         :value="props.initAgrement?.budgetGestionPerso"
-        :input="AgrementDisplayInput.IAgrementProjets['budgetGestionPerso']"
+        :input="AgrementDisplayInput.AgrementProjetsInput['budgetGestionPerso']"
       />
     </div>
   </div>
@@ -21,7 +21,7 @@
       <DisplayInputCommon
         :value="props.initAgrement?.budgetPersoGestionComplementaire"
         :input="
-          AgrementDisplayInput.IAgrementProjets[
+          AgrementDisplayInput.AgrementProjetsInput[
             'budgetPersoGestionComplementaire'
           ]
         "

@@ -11,7 +11,7 @@
     <DsfrInputGroup
       v-if="props.modifiable"
       name="transportAllerRetour"
-      :label="displayInput.IAgrementProjets['transportAllerRetour'].label"
+      :label="displayInput.AgrementProjetsInput['transportAllerRetour'].label"
       hint="Exemple : Car"
       :model-value="transportAllerRetour"
       :label-visible="true"
@@ -22,7 +22,7 @@
     <UtilsDisplayInput
       v-else
       :value="transportAllerRetour"
-      :input="displayInput.IAgrementProjets['transportAllerRetour']"
+      :input="displayInput.AgrementProjetsInput['transportAllerRetour']"
       :is-valid="transportAllerRetourMeta.valid"
       :error-message="transportAllerRetourErrorMessage"
     />
@@ -31,7 +31,7 @@
     <DsfrInputGroup
       v-if="props.modifiable"
       name="transportSejour"
-      :label="displayInput.IAgrementProjets['transportSejour'].label"
+      :label="displayInput.AgrementProjetsInput['transportSejour'].label"
       hint="Exemple : Mini-bus"
       :model-value="transportSejour"
       :label-visible="true"
@@ -42,7 +42,7 @@
     <UtilsDisplayInput
       v-else
       :value="transportSejour"
-      :input="displayInput.IAgrementProjets['transportSejour']"
+      :input="displayInput.AgrementProjetsInput['transportSejour']"
       :is-valid="transportSejourMeta.valid"
       :error-message="transportSejourErrorMessage"
     />

@@ -13,7 +13,7 @@
       <DsfrInputGroup
         v-if="props.modifiable"
         name="protocoleEvacUrg"
-        :label="displayInput.IAgrementProjets['protocoleEvacUrg'].label"
+        :label="displayInput.AgrementProjetsInput['protocoleEvacUrg'].label"
         hint="Identification des risques potentiels, actions prévues par le responsable du séjour, information sur la sécurité du site et modes d’évacuation prévus, information du lieu d’hébergement sur la nature du public et possibles besoins d’aides en cas d’alerte."
         :model-value="protocoleEvacUrg"
         :label-visible="true"
@@ -25,7 +25,7 @@
       <UtilsDisplayInput
         v-else
         :value="protocoleEvacUrg"
-        :input="displayInput.IAgrementProjets['protocoleEvacUrg']"
+        :input="displayInput.AgrementProjetsInput['protocoleEvacUrg']"
         :is-valid="protocoleEvacUrgMeta.valid"
         :error-message="protocoleEvacUrgErrorMessage"
       />
@@ -36,7 +36,7 @@
       <DsfrInputGroup
         v-if="props.modifiable"
         name="protocoleRapatUrg"
-        :label="displayInput.IAgrementProjets['protocoleRapatUrg'].label"
+        :label="displayInput.AgrementProjetsInput['protocoleRapatUrg'].label"
         hint="Expliquer les mesures organisationnelles prévues (transports, modalités d’information de l’entourage du vacancier, conditions de retour vers l’ESSMS, le domicile ou autre lieu de séjour, liens avec les services médicaux et de secours)."
         :model-value="protocoleRapatUrg"
         :label-visible="true"
@@ -48,7 +48,7 @@
       <UtilsDisplayInput
         v-else
         :value="protocoleRapatUrg"
-        :input="displayInput.IAgrementProjets['protocoleRapatUrg']"
+        :input="displayInput.AgrementProjetsInput['protocoleRapatUrg']"
         :is-valid="protocoleRapatUrgMeta.valid"
         :error-message="protocoleRapatUrgErrorMessage"
       />
@@ -69,7 +69,9 @@
       <DsfrInputGroup
         v-if="props.modifiable"
         name="protocoleRapatEtranger"
-        :label="displayInput.IAgrementProjets['protocoleRapatEtranger'].label"
+        :label="
+          displayInput.AgrementProjetsInput['protocoleRapatEtranger'].label
+        "
         hint="Identification des risques potentiels, actions prévues par le responsable du séjour, information sur la sécurité du site et modes d’évacuation prévus, information du lieu d’hébergement sur la nature du public et possibles besoins d’aides en cas d’alerte"
         :model-value="protocoleRapatEtranger"
         :label-visible="true"
@@ -81,7 +83,7 @@
       <UtilsDisplayInput
         v-else
         :value="protocoleRapatEtranger"
-        :input="displayInput.IAgrementProjets['protocoleRapatEtranger']"
+        :input="displayInput.AgrementProjetsInput['protocoleRapatEtranger']"
         :is-valid="protocoleRapatEtrangerMeta.valid"
         :error-message="protocoleRapatEtrangerErrorMessage"
       />
@@ -92,7 +94,7 @@
       <DsfrInputGroup
         v-if="props.modifiable"
         name="protocoleInfoFamille"
-        :label="displayInput.IAgrementProjets['protocoleInfoFamille'].label"
+        :label="displayInput.AgrementProjetsInput['protocoleInfoFamille'].label"
         hint="Expliciter les mesures organisationnelles prévues (transports, lien avec ambassade, modalités d’information de l’entourage du vacancier, conditions de retour vers l’ESSMS, le domicile ou autre lieu de séjour, liens avec les services médicaux et de secours) "
         :model-value="protocoleInfoFamille"
         :label-visible="true"
@@ -104,7 +106,7 @@
       <UtilsDisplayInput
         v-else
         :value="protocoleInfoFamille"
-        :input="displayInput.IAgrementProjets['protocoleInfoFamille']"
+        :input="displayInput.AgrementProjetsInput['protocoleInfoFamille']"
         :is-valid="protocoleInfoFamilleMeta.valid"
         :error-message="protocoleInfoFamilleErrorMessage"
       />

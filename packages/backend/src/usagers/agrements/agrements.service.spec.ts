@@ -1,4 +1,4 @@
-import { AgrementsRepository } from "./agrements.repository";
+import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import { AgrementService } from "./agrements.service";
 
 // On mocke le module repository
@@ -30,13 +30,13 @@ describe("Service: getAllActivites", () => {
   });
 
   it("devrait appeler AgrementsRepository.getAllActivites et retourner les activités", async () => {
-    (AgrementsRepository.getAllActivites as jest.Mock).mockResolvedValue(
+    (AgrementsRepositoryShared.getAllActivites as jest.Mock).mockResolvedValue(
       mockActivites,
     );
 
     const result = await AgrementService.getAllActivites();
 
-    expect(AgrementsRepository.getAllActivites).toHaveBeenCalledTimes(1);
+    expect(AgrementsRepositoryShared.getAllActivites).toHaveBeenCalledTimes(1);
 
     expect(result).toEqual([
       {
@@ -55,7 +55,7 @@ describe("Service: getAllActivites", () => {
   });
 
   it("devrait propager une erreur si le repository échoue", async () => {
-    (AgrementsRepository.getAllActivites as jest.Mock).mockRejectedValue(
+    (AgrementsRepositoryShared.getAllActivites as jest.Mock).mockRejectedValue(
       new Error("Erreur DB"),
     );
 
