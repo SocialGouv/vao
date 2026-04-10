@@ -2,10 +2,10 @@ import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repo
 import { AgrementService } from "./agrements.service";
 
 // On mocke le module repository
-jest.mock("./agrements.repository", () => ({
-  AgrementsRepository: {
+
+jest.mock("../../shared/agrements/agrements.repository", () => ({
+  AgrementsRepositoryShared: {
     getAllActivites: jest.fn(),
-    getByOrganismeId: jest.fn(),
   },
 }));
 
