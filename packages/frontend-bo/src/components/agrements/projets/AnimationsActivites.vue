@@ -1,7 +1,7 @@
 <template>
   <TitleWithIcon
     icon="fr-icon-map-pin-2-fill"
-    :level="2"
+    :level="3"
     title-class="fr-text--lead fr-mb-0"
   >
     Animation et activités prévues

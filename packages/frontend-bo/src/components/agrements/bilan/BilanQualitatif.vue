@@ -7,10 +7,8 @@
     Bilan qualitatif sur les 4 dernières années
   </TitleWithIcon>
   <div class="border fr-p-4v">
-    <h4 class="fr-text fr-text--lg">
-      <strong>
-        Perception et ressenti des vacanciers sur les séjours réalisés.
-      </strong>
+    <h4 class="fr-text fr-text--lg fr-text--bold">
+      Perception et ressenti des vacanciers sur les séjours réalisés.
     </h4>
     <div class="fr-fieldset__element">
       <p
@@ -41,11 +39,9 @@
     </div>
   </div>
   <div class="border fr-p-4v fr-mt-6v">
-    <h4 class="fr-text fr-text--lg">
-      <strong
-        >Évolutions prévues des activités VAO et perspectives de développement à
-        venir</strong
-      >
+    <h4 class="fr-text fr-text--lg fr-text--bold">
+      Évolutions prévues des activités VAO et perspectives de développement à
+      venir
     </h4>
     <div class="fr-fieldset__element">
       <p

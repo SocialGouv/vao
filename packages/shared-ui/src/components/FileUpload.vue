@@ -11,6 +11,9 @@
         :no-caption="true"
       />
     </div>
+    <div v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
+      Aucun fichier téléversé
+    </div>
 
     <DsfrFileUpload
       v-if="props.modifiable"

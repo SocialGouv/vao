@@ -7,6 +7,9 @@
         :rows="rows"
       />
     </div>
+    <div v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
+      Aucun fichier téléversé
+    </div>
     <div class="fr-input-group">
       <DsfrFileUpload
         v-if="modifiable"

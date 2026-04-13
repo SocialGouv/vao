@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="props.modifiable">
-      <p class="fr-mb-1v"><b>Type de handicaps</b></p>
+      <p class="fr-mb-1v fr-text--bold">Type de handicaps</p>
       <p class="fr-hint-text fr-mb-0">
         Vous pouvez sélectionner une ou plusieurs options.
       </p>

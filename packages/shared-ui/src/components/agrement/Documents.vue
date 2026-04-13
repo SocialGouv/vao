@@ -74,7 +74,9 @@ const headers = [
         component: "a",
         href: `${props.cdnUrl}${file.uuid}`,
         target: "_blank",
+        rel: "noopener noreferrer",
         class: "fr-icon-file-download-fill",
+        "aria-label": "Télécharger le fichier - nouvel onglet",
       };
     },
   },

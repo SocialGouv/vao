@@ -13,42 +13,29 @@
           Personne physique
         </TitleWithIcon>
         <dl>
-          <dt>
-            <strong>Prénom: </strong>
-          </dt>
+          <dt>Prénom:</dt>
           <dd>{{ props.initOrganisme?.personnePhysique.prenom || "-" }}</dd>
-          <dt>
-            <strong>Nom: </strong>
-          </dt>
+          <dt>Nom:</dt>
           <dd>{{ props.initOrganisme?.personnePhysique.nom || "-" }}</dd>
-          <dt>
-            <strong>Profession: </strong>
-          </dt>
+          <dt>Profession:</dt>
           <dd>{{ props.initOrganisme?.personnePhysique.profession || "-" }}</dd>
-          <dt>
-            <strong>Téléphone: </strong>
-          </dt>
+          <dt>Téléphone:</dt>
           <dd>
             {{ props.initOrganisme?.personnePhysique.telephone || "-" }}
           </dd>
-          <dt>
-            <strong>Adresse du siège de ses activité: </strong>
-          </dt>
+          <dt>Adresse du siège de ses activité:</dt>
           <dd>
             {{
               props.initOrganisme?.personnePhysique.adresseDomicileLabel || "-"
             }}
           </dd>
-          <dt>
-            <strong>Adresse de ses activités: </strong>
-          </dt>
+          <dt>Adresse de ses activités:</dt>
           <dd>
             {{ props.initOrganisme?.personnePhysique.adresseSiegeLabel || "-" }}
           </dd>
         </dl>
       </div>
-      <hr class="fr-my-2w" />
-      <div class="fr-col-10">
+      <div class="fr-my-2w">
         <TitleWithIcon
           icon="fr-icon-building-line"
           :level="3"
@@ -57,26 +44,26 @@
           Personne morale
         </TitleWithIcon>
         <dl class="fr-text--sm fr-pl-0">
-          <dt><strong>Dénomination sociale:</strong></dt>
+          <dt>Dénomination sociale:</dt>
           <dd>
             {{ props.initOrganisme?.personneMorale?.raisonSociale || "-" }}
           </dd>
-          <dt><strong>Statut, forme juridique:</strong></dt>
+          <dt>Statut, forme juridique:</dt>
           <dd>{{ props.initOrganisme?.personneMorale?.statut || "-" }}</dd>
 
-          <dt><strong>Téléphone:</strong></dt>
+          <dt>Téléphone:</dt>
           <dd>
             {{ props.initOrganisme?.personneMorale?.telephone || "-" }}
           </dd>
-          <dt><strong>Email:</strong></dt>
+          <dt>Email:</dt>
           <dd>
             {{ props.initOrganisme?.personneMorale?.email || "-" }}
           </dd>
-          <dt><strong>Adresse du siège social:</strong></dt>
+          <dt>Adresse du siège social:</dt>
           <dd>{{ props.initOrganisme?.personneMorale?.adresse || "-" }}</dd>
         </dl>
 
-        <h4 class="fr-text--lg fr-mt-4w">Représentant legal</h4>
+        <h4 class="fr-text--lg fr-mt-4w">Représentant légal</h4>
 
         <div
           v-for="(rep, idx) in representants"
@@ -85,20 +72,20 @@
           :data-idx="Number(idx)"
         >
           <template v-if="Number(idx) > 0">
-            <h5 class="fr-text--md fr-mb-1w">
+            <h4 class="fr-text--md fr-mb-1w">
               Représentant n°{{ Number(idx) + 1 }}
-            </h5>
+            </h4>
           </template>
           <dl class="fr-text--sm fr-pl-0">
-            <dt><strong>Prénom:</strong></dt>
+            <dt>Prénom:</dt>
             <dd>{{ rep.prenom || "-" }}</dd>
-            <dt><strong>Nom:</strong></dt>
+            <dt>Nom:</dt>
             <dd>{{ rep.nom || "-" }}</dd>
-            <dt><strong>Téléphone:</strong></dt>
+            <dt>Téléphone:</dt>
             <dd>{{ rep.telephoneRepresentant || "-" }}</dd>
-            <dt><strong>Email:</strong></dt>
+            <dt>Email:</dt>
             <dd>{{ rep.emailRepresentant || "-" }}</dd>
-            <dt><strong>Adresse du domicile:</strong></dt>
+            <dt>Adresse du domicile:</dt>
             <dd>
               {{
                 rep.adresseDomicile && rep.adresseDomicile.label
@@ -113,14 +100,14 @@
       </div>
     </div>
 
-    <h4 class="fr-text--lg fr-mt-4w">Procès verbal</h4>
+    <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
     <FileUpload
       v-model="fileProcesVerbal"
       :cdn-url="props.cdnUrl"
       label="Dernier procès verbal d'assemblée générale"
       :modifiable="false"
     />
-    <hr class="fr-mt-4w" />
+    <div class="separator fr-my-2w"></div>
     <DisplayInputCommon
       :value="props.initAgrement.commentaire"
       :input="AgrementDisplayInput.AgrementInput['commentaire']"
@@ -169,5 +156,11 @@ dd {
 }
 .full-width {
   grid-column: 1 / span 2;
+}
+dt {
+  font-weight: bold;
+}
+.separator {
+  border-top: 1px solid #ddd;
 }
 </style>
