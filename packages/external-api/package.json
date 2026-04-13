@@ -40,7 +40,7 @@
     "express": "^5.0.1",
     "magic-bytes.js": "^1.10.0",
     "multer": "^1.4.5-lts.1",
-    "nestjs-pino": "^4.2.0",
+    "nestjs-pino": "^4.6.1",
     "nestjs-zod": "^4.2.0",
     "pg": "^8.13.1",
     "pino-http": "^10.3.0",
