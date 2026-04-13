@@ -17,13 +17,12 @@ const log = Logger(module.filename);
 // ------------------------------------------------------------
 export const AgrementsRepositoryShared = {
   async getAllActivites(): Promise<ActiviteEntity[]> {
-    const client = await getPool().connect();
     const query = `
       SELECT id, code, libelle, activite_type
       FROM front.activite
       ORDER BY libelle ASC;
     `;
-    const result = await client.query(query);
+    const result = await getPool().query(query);
 
     return result.rows;
   },
