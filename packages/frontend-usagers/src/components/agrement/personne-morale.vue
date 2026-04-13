@@ -75,6 +75,7 @@
     <AgrementRepresentants
       ref="representantsRef"
       :modifiable="props.modifiable"
+      :statut="props.initAgrement.statut || 'BROUILLON'"
     />
   </div>
 </template>
@@ -165,6 +166,7 @@ async function savePersonneMorale() {
   const representantsLegaux = await representantsRef.value?.validateAndSave();
 
   if (!representantsLegaux) {
+    console.error("Validation des représentants légaux a échoué");
     toaster.error({
       titleTag: "h2",
       description: "Erreur de validation des représentants légaux",
