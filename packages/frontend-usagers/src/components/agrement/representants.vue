@@ -160,7 +160,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Representant } from "@vao/shared-bridge/src/dto/personneMorale.dto";
+import type {
+  RepresentantUi,
+  RepresentantLegalDto,
+} from "@vao/shared-bridge/src/dto/personneMorale.dto";
 import { ref } from "vue";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
@@ -185,7 +188,7 @@ const representantSchema = yup.object({
   ),
 });
 
-function getAllErrors(errors: Representant["errors"]): string[] {
+function getAllErrors(errors: RepresentantUi["errors"]): string[] {
   return Object.entries(errors)
     .filter(([_, msg]) => !!msg)
     .map(([key, msg]) => {
@@ -197,7 +200,7 @@ function getAllErrors(errors: Representant["errors"]): string[] {
     });
 }
 
-function getEmptyRepresentant(): Representant {
+function getEmptyRepresentant(): RepresentantUi {
   return {
     prenom: "",
     nom: "",
@@ -213,12 +216,12 @@ function getEmptyRepresentant(): Representant {
   };
 }
 
-const representantsList = ref<Representant[]>([]);
+const representantsList = ref<RepresentantUi[]>([]);
 
 function loadRepresentants(): void {
   const existants =
     organismeStore.organismeCourant?.personneMorale?.representantsLegaux || [];
-  representantsList.value = existants.map((r: Partial<Representant>) => ({
+  representantsList.value = existants.map((r: Partial<RepresentantUi>) => ({
     ...r,
     prenom: r.prenom || "",
     nom: r.nom || "",
@@ -287,8 +290,8 @@ async function saveRepresentant(idx: number): Promise<void> {
 }
 
 async function validateField(
-  representant: Representant,
-  field: keyof Representant["errors"],
+  representant: RepresentantUi,
+  field: keyof RepresentantUi["errors"],
 ): Promise<void> {
   try {
     await representantSchema.validateAt(field, representant);
@@ -302,11 +305,7 @@ async function validateField(
   }
 }
 
-function getCleanRepresentants(): Array<{
-  nom: string;
-  prenom: string;
-  fonction: string;
-}> {
+function getCleanRepresentants(): Array<RepresentantLegalDto> {
   return representantsList.value.map((r) => ({
     nom: r.nom,
     prenom: r.prenom,
@@ -314,9 +313,7 @@ function getCleanRepresentants(): Array<{
   }));
 }
 
-async function validateAndSave(): Promise<
-  false | { nom: string; prenom: string; fonction: string }[]
-> {
+async function validateAndSave(): Promise<false | RepresentantLegalDto[]> {
   let valid = true;
 
   for (const representant of representantsList.value) {
@@ -354,8 +351,7 @@ async function validateAndSave(): Promise<
 }
 
 defineExpose({
-  getRepresentants: (): Representant[] =>
-    representantsList.value.map(({ ...r }) => r),
+  getRepresentants: getCleanRepresentants,
   validateAndSave,
 });
 </script>

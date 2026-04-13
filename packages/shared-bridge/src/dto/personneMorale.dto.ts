@@ -46,19 +46,18 @@ export interface PersonneMoraleDto {
     etatAdministratif: string;
   }[];
 }
-
-type RepresentantErrors = {
-  prenom: string;
-  nom: string;
-  fonction: string;
-};
-
-export interface Representant {
+export interface RepresentantLegalDto {
   nom: string;
   prenom: string;
   fonction: string;
+}
+export interface RepresentantUi extends RepresentantLegalDto {
   statut: string;
-  errors: RepresentantErrors;
+  errors: {
+    prenom: string;
+    nom: string;
+    fonction: string;
+  };
   isEditing: boolean;
-  _backup: Representant | null;
+  _backup: RepresentantUi | null;
 }
