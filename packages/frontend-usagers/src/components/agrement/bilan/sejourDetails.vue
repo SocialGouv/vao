@@ -62,8 +62,8 @@
         />
         <UtilsDisplayInput
           v-else
-          :value="nbHommes"
-          :input="displayInput.AgrementBilanAnnuelInput['nbFemmes']"
+          :value="nbFemmes"
+          :input="displayInput.IAgrementBilanAnnuel['nbFemmes']"
           :is-valid="nbFemmesMeta.valid"
           :error-message="nbFemmesErrorMessage"
         />
