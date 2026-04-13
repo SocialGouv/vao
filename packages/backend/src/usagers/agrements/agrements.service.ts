@@ -1,5 +1,4 @@
 import {
-  ACTIVITE_TYPE,
   ActiviteDto,
   addYears,
   AGREMENT_HISTORY_TYPE,
@@ -18,13 +17,7 @@ const log = logger(module.filename);
 
 export const AgrementService = {
   async getAllActivites(): Promise<ActiviteDto[]> {
-    const activites = await AgrementsRepository.getAllActivites();
-    return activites.map((activite) => ({
-      activiteType: activite.activite_type as ACTIVITE_TYPE,
-      code: activite.code,
-      id: activite.id,
-      libelle: activite.libelle,
-    }));
+    return await AgrementServiceShared.getAllActivites();
   },
   async getById({
     agrementId,

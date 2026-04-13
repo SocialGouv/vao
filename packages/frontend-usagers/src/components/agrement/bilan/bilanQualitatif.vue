@@ -30,7 +30,11 @@
         <DsfrInputGroup
           v-if="props.modifiable"
           name="bilanQualPerceptionSensibilite"
-          :label="displayInput.IAgrementBilanAnnuel['bilanQualPerceptionSensibilite'].label"
+          :label="
+            displayInput.AgrementBilanAnnuelInput[
+              'bilanQualPerceptionSensibilite'
+            ].label
+          "
           :model-value="bilanQualPerceptionSensibilite"
           :label-visible="true"
           :is-textarea="true"
@@ -42,7 +46,11 @@
         <UtilsDisplayInput
           v-else
           :value="bilanQualPerceptionSensibilite"
-          :input="displayInput.IAgrementBilanAnnuel['bilanQualPerceptionSensibilite']"
+          :input="
+            displayInput.AgrementBilanAnnuelInput[
+              'bilanQualPerceptionSensibilite'
+            ]
+          "
           :is-valid="bilanQualPerceptionSensibiliteMeta.valid"
           :error-message="bilanQualPerceptionSensibiliteErrorMessage"
         />
@@ -75,7 +83,10 @@
         <DsfrInputGroup
           v-if="props.modifiable"
           name="bilanQualPerspectiveEvol"
-          :label="displayInput.IAgrementBilanAnnuel['bilanQualPerspectiveEvol'].label"
+          :label="
+            displayInput.AgrementBilanAnnuelInput['bilanQualPerspectiveEvol']
+              .label
+          "
           :model-value="bilanQualPerspectiveEvol"
           :label-visible="true"
           :is-textarea="true"
@@ -87,7 +98,9 @@
         <UtilsDisplayInput
           v-else
           :value="bilanQualPerspectiveEvol"
-          :input="displayInput.IAgrementBilanAnnuel['bilanQualPerspectiveEvol']"
+          :input="
+            displayInput.AgrementBilanAnnuelInput['bilanQualPerspectiveEvol']
+          "
           :is-valid="bilanQualPerspectiveEvolMeta.valid"
           :error-message="bilanQualPerspectiveEvolErrorMessage"
         />
@@ -117,7 +130,10 @@
         <DsfrInputGroup
           v-if="props.modifiable"
           name="bilanQualElementsMarquants"
-          :label="displayInput.IAgrementBilanAnnuel['bilanQualElementsMarquants'].label"
+          :label="
+            displayInput.AgrementBilanAnnuelInput['bilanQualElementsMarquants']
+              .label
+          "
           :model-value="bilanQualElementsMarquants"
           :label-visible="true"
           :is-textarea="true"
@@ -129,7 +145,9 @@
         <UtilsDisplayInput
           v-else
           :value="bilanQualPerspectiveEvol"
-          :input="displayInput.IAgrementBilanAnnuel['bilanQualElementsMarquants']"
+          :input="
+            displayInput.AgrementBilanAnnuelInput['bilanQualElementsMarquants']
+          "
           :is-valid="bilanQualElementsMarquantsMeta.valid"
           :error-message="bilanQualElementsMarquantsErrorMessage"
         />

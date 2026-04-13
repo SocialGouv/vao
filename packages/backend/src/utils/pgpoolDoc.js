@@ -24,6 +24,7 @@ module.exports = {
     }
     log.i("disconnect - IN");
     await pool.end();
+    pool = undefined;
     log.i("disconnect - DONE");
   },
   // Retourne la pool Postgres, la crée si nécessaire

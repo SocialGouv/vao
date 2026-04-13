@@ -1,8 +1,19 @@
+import { ACTIVITE_TYPE, ActiviteDto } from "@vao/shared-bridge";
+
 import { getById } from "../../services/adresse";
 import { getFileMetaData } from "../../services/Document";
 import { AgrementsRepositoryShared } from "./agrements.repository";
 
 export const AgrementServiceShared = {
+  async getAllActivites(): Promise<ActiviteDto[]> {
+    const activites = await AgrementsRepositoryShared.getAllActivites();
+    return activites.map((activite) => ({
+      activiteType: activite.activite_type as ACTIVITE_TYPE,
+      code: activite.code,
+      id: activite.id,
+      libelle: activite.libelle,
+    }));
+  },
   async getById({
     agrementId,
     withDetails,

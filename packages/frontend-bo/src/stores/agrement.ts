@@ -72,6 +72,18 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
+    async getAllActivites(): Promise<void> {
+      log.i("getAllActivites - IN");
+      try {
+        const activites: ActiviteDto[] = await AgrementService.getAllActivies();
+        this.activites = activites;
+        log.i("getAllActivites - DONE");
+      } catch (err) {
+        log.w("getAllActivites - DONE with error", err);
+        throw err;
+      }
+    },
+
     async getListAgrements(params: any): Promise<void> {
       log.i("getListAgrements - IN");
       try {

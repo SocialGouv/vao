@@ -4,12 +4,10 @@ import type {
   AgrementHistoryRow,
 } from "@vao/shared-bridge";
 import { AGREMENT_STATUT, AgrementDto } from "@vao/shared-bridge";
+import type { PoolClient } from "pg";
 
 import { saveAdresse } from "../../services/adresse";
-import {
-  ActiviteEntity,
-  AgrementEntity,
-} from "../../shared/agrements/agrements.entity";
+import { AgrementEntity } from "../../shared/agrements/agrements.entity";
 import {
   AgrementAnimationMapper,
   AgrementBilanAnnuelMapper,
@@ -19,7 +17,7 @@ import {
 } from "../../shared/agrements/agrements.mapper";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import Logger from "../../utils/logger";
-import { getPool } from "../../utils/pgpool";
+import { getPool, withTransaction } from "../../utils/pgpool";
 
 const log = Logger(module.filename);
 
@@ -135,10 +133,7 @@ export const AgrementsRepository = {
    * Crée un nouvel agrément et ses sous-éléments
    */
   async create({ agrement }: { agrement: AgrementDto }): Promise<number> {
-    const client = await getPool().connect();
-    try {
-      await client.query("BEGIN");
-
+    return await withTransaction(async (client: PoolClient) => {
       const agrementInsertQuery = `
         INSERT INTO front.agrements (
           statut, organisme_id, updated_at, date_obtention_certificat, date_depot,
@@ -229,25 +224,8 @@ export const AgrementsRepository = {
       await insertAgrementAnimations(client, agrementId, agrement);
       await insertAgrementBilans(client, agrementId, agrement);
 
-      await client.query("COMMIT");
       return agrementId;
-    } catch (err) {
-      await client.query("ROLLBACK");
-      throw err;
-    } finally {
-      client.release();
-    }
-  },
-
-  async getAllActivites(): Promise<ActiviteEntity[]> {
-    const client = await getPool().connect();
-    const query = `
-      SELECT id, code, libelle, activite_type
-      FROM front.activite
-      ORDER BY libelle ASC;
-    `;
-    const result = await client.query(query);
-    return result.rows;
+    });
   },
 
   async getById({
@@ -528,17 +506,14 @@ export const AgrementsRepository = {
   },
 
   async update({ agrement }: { agrement: AgrementDto }): Promise<number> {
-    const client = await getPool().connect();
     const agrementId: number = agrement.id!;
 
-    try {
-      if (agrementId == null) {
-        throw new Error(
-          "Impossible de mettre à jour : l'ID de l'agrément est manquant",
-        );
-      }
-      await client.query("BEGIN");
-
+    if (agrementId == null) {
+      throw new Error(
+        "Impossible de mettre à jour : l'ID de l'agrément est manquant",
+      );
+    }
+    await withTransaction(async (client: PoolClient) => {
       // ✅ 1. Mise à jour du principal
       const agrementUpdateQuery = `
       UPDATE front.agrements
@@ -679,14 +654,8 @@ export const AgrementsRepository = {
       await insertAgrementSejours(client, agrementId, agrement);
       await insertAgrementAnimations(client, agrementId, agrement);
       await insertAgrementBilans(client, agrementId, agrement);
+    });
 
-      await client.query("COMMIT");
-    } catch (err) {
-      await client.query("ROLLBACK");
-      throw err;
-    } finally {
-      client.release();
-    }
     return agrementId;
   },
   /**

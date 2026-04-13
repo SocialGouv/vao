@@ -645,7 +645,7 @@ const IHebergementInformationsTransport = {
   },
 };
 
-const IAgrement = {
+const AgrementInput = {
   numero: {
     inputType: InputTypes.TEXT,
     label: "Numéro d'agrément \"Vacances adaptées organisées",
@@ -679,5 +679,5 @@ export default {
   IHebergementInformationLocaux,
   IHebergementInformationsTransport,
   IAttestation,
-  IAgrement,
+  AgrementInput,
 };

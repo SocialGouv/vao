@@ -19,7 +19,7 @@
       />
       <UtilsDisplayInput
         v-else
-        :input="displayInput.IAgrementProjets.activitesSelectionnees"
+        :input="displayInput.AgrementProjetsInput.activitesSelectionnees"
         :value="activitesSelectionnees"
         :error-message="activitesSelectionneesErrorMessage"
       />
@@ -44,7 +44,7 @@
       <UtilsDisplayInput
         v-else
         :value="animationAutre"
-        :input="displayInput.IAgrementProjets['animationAutre']"
+        :input="displayInput.AgrementProjetsInput['animationAutre']"
         :is-valid="animationAutreMeta.valid"
         :error-message="animationAutreErrorMessage"
       />

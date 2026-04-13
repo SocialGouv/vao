@@ -160,7 +160,7 @@ fileignoreconfig:
 - filename: packages/backend/src/utils/mail.js
   checksum: 0110e20273092996ed397f2530fe3e5b323f8fdb396abc4846e754bb00713089
 - filename: packages/backend/src/utils/pgpool.js
-  checksum: 5e8464a6bf71468b80886e18e08a705b0c3a523bb907833dd63bfcdd67cd4641
+  checksum: 10d6ecbb906b6283646a6b2607cacbe2b6189059c321f3b85b49f73dbbe489be
 - filename: packages/backend/src/utils/pgpoolDoc.js
   checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
 - filename: packages/backend/src/utils/regex.js
@@ -205,6 +205,14 @@ fileignoreconfig:
   checksum: 2ba032561adc4ef237463114e8761fb3f7a754e062f0d192f7b38d31f80763b7
 - filename: packages/frontend-bo/src/assets/Download.svg
   checksum: 2845f88f98040035bf7e9434a9bd5fe5cb8d0dd28fd1d765dd9c6a0b440e49f7
+- filename: packages/frontend-bo/src/components/agrements/Coordonnees.vue
+  checksum: fe3c7cdf10cbff661284f2ba3c9a3e42d4e583ad207ca9257d5e8ee8eaa4b5a6
+- filename: packages/frontend-bo/src/components/agrements/bilan/Hebergements.vue
+  checksum: 0ed786cfbce9c9272dbe101c59828c11e75211c804da0055363fec891af6bb3c
+- filename: packages/frontend-bo/src/components/agrements/bilan/Sejours.vue
+  checksum: 42c0f273cc6ebd818c3dc25afd1de9e8033f0af90739bdd42f2bbb9ce33f4251
+- filename: packages/frontend-bo/src/components/agrements/projets/ListeSejours.vue
+  checksum: d911b0668bbfef30cfa1002114d099c7dfa55f2a1deab4395eddb7d3e756c88b
 - filename: packages/frontend-bo/src/components/connexion/email/validateToken.client.vue
   checksum: 595435cdea445525554cb0d703a53cf277127a3c0ad39c02502f865cb9fc5dd0
 - filename: packages/frontend-bo/src/components/demandes-sejour/DefaultTable.vue
@@ -267,8 +275,6 @@ fileignoreconfig:
   checksum: 8513c95ff253eb7ef038d5cdd5aff7d09b478c31409ea5644cd0081afbf6428e
 - filename: packages/frontend-usagers/src/components/address/search-address.vue
   checksum: e22412a54064dea24f7e200e9887726a4ef110f13570feea628c70c4fe2886a9
-- filename: packages/frontend-usagers/src/components/agrement/representants.vue
-  checksum: 259e5ce9282b121d09fe46003a4c5283e6deb9bb2b9a735dfe7b55b03793d7b8
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/demande-sejour/table.vue
@@ -331,12 +337,18 @@ fileignoreconfig:
   checksum: 90e946e20101879e9860b96c6727e9eb83adfd59f9137f3b43ffb520c00a511d
 - filename: packages/shared-bridge/src/dto/userDto.ts
   checksum: 1d22cd52289c17a26f78bdb035db9d7f65d60c4d2aa924ef9af8d9a507b57978
+- filename: packages/shared-bridge/src/utils/file.ts
+  checksum: 32ca7f8fe02c48c5e925733663b89b2c6229b033dddc412d0f151116a7247052
 - filename: packages/shared-bridge/src/utils/request.spec.ts
   checksum: 2c901e0ed288d842ade3aaf39c6caef76d1ce7eb40acbda7b721d25dfb4409c8
 - filename: packages/shared-bridge/src/utils/request.ts
   checksum: 6a4c93d54f5648fb04d9cb0ec727179358b80c752e7c0e467382ce47f7290bcd
+- filename: packages/shared-ui/src/components/DisplayInputCommon.vue
+  checksum: bef19a82a3c06e380b4d013d428da9c3eab13aaa33a0c60bafc35f41f2e77bc1
 - filename: packages/shared-ui/src/components/DsfrMultiselectV2.vue
   checksum: 1de96bc77280e61537e5c573a8116d32a8d2793eb073f89080cc66f8a389ce73
+- filename: packages/shared-ui/src/components/MultiFilesUpload.vue
+  checksum: f5fcb9ea7e425feb8ee53dd21583de532a7269a55de68faef90b2c5b0fbb76f9
 - filename: packages/shared-ui/src/components/Table/DsfrDataTableV2.vue
   checksum: 0333a8dd3d87ab118f5896b079f89423f9e465208c68bebed045a83350ce24d6
 - filename: packages/shared-ui/src/components/Toaster.vue

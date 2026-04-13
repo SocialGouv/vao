@@ -1,4 +1,6 @@
 /* eslint-disable import/no-unresolved */
+import type { GetAllActivitesRoute } from "./getAllActivites";
+//import { GetAllActivitesRouteSchema } from "./getAllActivites";
 import type { GetHistoryRoute } from "./getHistory";
 import { GetHistoryRouteSchema } from "./getHistory";
 import type { GetListRoute } from "./getList";
@@ -15,6 +17,7 @@ import type { PostMessageRoute } from "./postMessage";
 import { PostMessageRouteSchema } from "./postMessage";
 
 export type AgrementAdminRoutes = {
+  GetAllActivites: GetAllActivitesRoute;
   GetList: GetListRoute;
   GetOne: GetOneRoute;
   PatchStatut: PatchStatutRoute;
@@ -25,6 +28,7 @@ export type AgrementAdminRoutes = {
 };
 
 export const AgrementAdminRoutesSchema = {
+  //  GetAllActivites: GetAllActivitesRouteSchema,
   GetHistory: GetHistoryRouteSchema,
   GetList: GetListRouteSchema,
   GetMessages: GetMessagesRouteSchema,

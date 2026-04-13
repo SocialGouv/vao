@@ -16,6 +16,8 @@ router.get(
   AgrementController.getList,
 );
 
+router.get("/activites", boCheckJWT, AgrementController.getAllActivites);
+
 router.get(
   "/:agrementId",
   boCheckJWT,

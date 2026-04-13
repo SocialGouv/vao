@@ -44,6 +44,16 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+describe("GET /admin/agrements/activites", () => {
+  it("devrait retourner une liste d'activités avec succès", async () => {
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(app).get(`/admin/agrements/activites`);
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+    expect(response.body.length).toBe(22);
+  });
+});
+
 describe("GET /admin/agrements", () => {
   it("devrait retourner une liste d'agréments avec succès", async () => {
     authUser = await createUsagersUser();
@@ -142,6 +152,18 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
       (a: AgrementDto) => a.id === agrementId,
     );
     expect(agrement.statut).toBe(AGREMENT_STATUT.EN_COURS);
+  });
+
+  it("devrait remonter une erreur si le statut d'un agrément n'est pas valide", async () => {
+    authUser = await createUsagersUser();
+    await createOrganisme({ userId: authUser.id });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+
+    const response = await request(app)
+      .patch(`/admin/agrements/999/statut`)
+      .send({ statut: AGREMENT_STATUT.EN_COURS });
+
+    expect(response.status).toBe(422);
   });
 
   it("devrait modifier le statut et historiser", async () => {
@@ -515,5 +537,11 @@ describe("Messagerie d'agrément", () => {
       `/admin/agrements/${agrementId}/messages`,
     );
     expect(getResponse.body.unreadCount).toBe(0);
+  });
+  it("PATCH /messages devrait remonter une erreur si l'agrément n'existe pas", async () => {
+    const patchResponse = await request(app).patch(
+      `/admin/agrements/999/messages/read`,
+    );
+    expect(patchResponse.status).toBe(404);
   });
 });

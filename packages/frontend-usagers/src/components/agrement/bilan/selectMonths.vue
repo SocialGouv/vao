@@ -11,7 +11,7 @@
     />
     <UtilsDisplayInput
       v-else
-      :input="displayInput.IAgrementProjets.selectedMonths"
+      :input="displayInput.AgrementProjetsInput.selectedMonths"
       :value="selectedLabels"
     />
   </div>
@@ -28,7 +28,6 @@ const props = defineProps({
   },
   modifiable: { type: Boolean, default: false },
 });
-
 
 const months = [
   "janvier",

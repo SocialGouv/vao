@@ -83,15 +83,15 @@
         <div v-if="organismeStore.organisme?.agrement">
           <UtilsDisplayInput
             :value="organismeStore.organisme.agrement.numero"
-            :input="displayInput.IAgrement.numero"
+            :input="displayInput.AgrementInput.numero"
           />
           <UtilsDisplayInput
             :value="organismeStore.organisme.agrement.dateObtention"
-            :input="displayInput.IAgrement.dateObtention"
+            :input="displayInput.AgrementInput.dateObtention"
           />
           <UtilsDisplayInput
             :value="organismeStore.organisme.agrement.regionObtention"
-            :input="displayInput.IAgrement.regionObtention"
+            :input="displayInput.AgrementInput.regionObtention"
           >
             <template #default="{ value }">
               {{ regionDisplay(value) }}
@@ -99,7 +99,7 @@
           </UtilsDisplayInput>
           <UtilsDisplayInput
             :value="organismeStore.organisme.agrement.regionObtention"
-            :input="displayInput.IAgrement.regionObtention"
+            :input="displayInput.AgrementInput.regionObtention"
           >
             <template #default="{ value }">
               {{ regionDisplay(value) }}
@@ -107,7 +107,7 @@
           </UtilsDisplayInput>
           <UtilsDisplayInput
             :value="organismeStore.organisme.agrement.file"
-            :input="displayInput.IAgrement.file"
+            :input="displayInput.AgrementInput.file"
           >
             <template #default="{ value }">
               <a

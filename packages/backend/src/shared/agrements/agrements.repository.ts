@@ -2,7 +2,7 @@ import type { AgrementDto } from "@vao/shared-bridge";
 
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
-import { AgrementEntity } from "./agrements.entity";
+import { ActiviteEntity, AgrementEntity } from "./agrements.entity";
 import {
   AgrementAnimationMapper,
   AgrementBilanAnnuelMapper,
@@ -16,6 +16,16 @@ const log = Logger(module.filename);
 // 🏗️ Repository Shared
 // ------------------------------------------------------------
 export const AgrementsRepositoryShared = {
+  async getAllActivites(): Promise<ActiviteEntity[]> {
+    const query = `
+      SELECT id, code, libelle, activite_type
+      FROM front.activite
+      ORDER BY libelle ASC;
+    `;
+    const result = await getPool().query(query);
+
+    return result.rows;
+  },
   /**
    * Récupère un agrément par son ID.
    */

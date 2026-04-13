@@ -645,7 +645,7 @@ const IHebergementInformationsTransport = {
   },
 };
 
-const IAgrement = {
+const AgrementInput = {
   numero: {
     inputType: InputTypes.TEXT,
     label: "Numéro d'agrément \"Vacances adaptées organisées",
@@ -677,7 +677,7 @@ const IAgrement = {
   },
 };
 
-const IAgrementBilanAnnuel = {
+const AgrementBilanAnnuelInput = {
   typeHandicap: {
     inputType: InputTypes.MULTISELECT,
     label: "",
@@ -700,7 +700,8 @@ const IAgrementBilanAnnuel = {
   },
   bilanFinancierRessourcesHumaines: {
     inputType: InputTypes.TEXT,
-    label: "Ressources humaines mobilisées et montants financiers engagés pour l’action",
+    label:
+      "Ressources humaines mobilisées et montants financiers engagés pour l’action",
   },
   bilanFinancierCommentaire: {
     inputType: InputTypes.TEXT,
@@ -720,17 +721,18 @@ const IAgrementBilanAnnuel = {
   },
   bilanChangementEvolution: {
     inputType: InputTypes.TEXT,
-    label: "Note d'information présentant les éventuelles améliorations ou changements apportés aux séjours (optionnel)",
+    label:
+      "Note d'information présentant les éventuelles améliorations ou changements apportés aux séjours (optionnel)",
   },
   nbGlobalVacanciers: {
     inputType: InputTypes.NUMBER,
     label: "Nombre global de vacanciers",
   },
-    nbHommes: {
+  nbHommes: {
     inputType: InputTypes.NUMBER,
     label: "Nombre d'hommes",
   },
-    nbFemmes: {
+  nbFemmes: {
     inputType: InputTypes.NUMBER,
     label: "Nombre de femmes",
   },
@@ -741,11 +743,11 @@ const IAgrementBilanAnnuel = {
       { label: "de 18 à 39 ans", value: "18_39", name: "trancheAge" },
       { label: "de 40 à 59 ans", value: "40_59", name: "trancheAge" },
       { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
-    ]
+    ],
   },
 };
 
-const IAgrementProjets = {
+const AgrementProjetsInput = {
   accompRespNb: {
     inputType: InputTypes.NUMBER,
     label: "Nombre d’accompagnants prévus par lieu de vacances",
@@ -764,7 +766,8 @@ const IAgrementProjets = {
   },
   budgetGestionPerso: {
     inputType: InputTypes.TEXT,
-    label: "Conditions de gestion sur place et d’usage du budget personnel des personnes accueillies",
+    label:
+      "Conditions de gestion sur place et d’usage du budget personnel des personnes accueillies",
   },
   budgetPersoGestionComplementaire: {
     inputType: InputTypes.TEXT,
@@ -772,7 +775,8 @@ const IAgrementProjets = {
   },
   transportAllerRetour: {
     inputType: InputTypes.TEXT,
-    label: "Du lieu habituel de résidence au lieu de vacances de même que lors du retour ",
+    label:
+      "Du lieu habituel de résidence au lieu de vacances de même que lors du retour ",
   },
   transportSejour: {
     inputType: InputTypes.TEXT,
@@ -784,7 +788,8 @@ const IAgrementProjets = {
   },
   protocoleRapatUrg: {
     inputType: InputTypes.TEXT,
-    label: "Modalités d’information, de transports et de réorientation, évacuation",
+    label:
+      "Modalités d’information, de transports et de réorientation, évacuation",
   },
   protocoleRapatEtranger: {
     inputType: InputTypes.TEXT,
@@ -804,11 +809,13 @@ const IAgrementProjets = {
   },
   suiviMedDistribution: {
     inputType: InputTypes.TEXT,
-    label: "Mesures prévues pour la distribution et le stockage des médicaments",
+    label:
+      "Mesures prévues pour la distribution et le stockage des médicaments",
   },
   suiviMedAccordSejour: {
     inputType: InputTypes.TEXT,
-    label: "Accords passés avec un cabinet paramédical ou un médecin à proximité du lieu de séjour",
+    label:
+      "Accords passés avec un cabinet paramédical ou un médecin à proximité du lieu de séjour",
   },
   activitesSelectionnees: {
     inputType: InputTypes.MULTISELECT,
@@ -822,19 +829,18 @@ const IAgrementProjets = {
     inputType: InputTypes.TEXT,
     label: "Adresse de l'hébergement",
   },
-  selectedMonths:  {
+  selectedMonths: {
     inputType: InputTypes.MULTISELECT,
     label: "",
   },
-  nbJours:  {
+  nbJours: {
     inputType: InputTypes.NUMBER,
     label: "Nombre de jours",
   },
-  nbVacanciers:  {
+  nbVacanciers: {
     inputType: InputTypes.NUMBER,
     label: "nombre de vacanciers",
   },
-  
 };
 
 export default {
@@ -851,7 +857,7 @@ export default {
   IHebergementInformationLocaux,
   IHebergementInformationsTransport,
   IAttestation,
-  IAgrement,
-  IAgrementProjets,
-  IAgrementBilanAnnuel,
+  AgrementInput,
+  AgrementProjetsInput,
+  AgrementBilanAnnuelInput,
 };

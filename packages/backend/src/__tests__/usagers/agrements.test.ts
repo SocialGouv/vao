@@ -25,6 +25,10 @@ jest.mock("../../middlewares/checkJWT", () =>
   }),
 );
 
+jest.mock("../../services/mail", () => ({
+  mailService: { send: jest.fn() },
+}));
+
 beforeAll(async () => await createTestContainer());
 afterAll(async () => await removeTestContainer());
 
@@ -172,60 +176,58 @@ describe("POST /agrements", () => {
   });
 });
 
-it("devrait changer le statut d'un agrément avec succès", async () => {
-  const adminUser = await createUsagersUser();
-  const organismeId = await createOrganisme({ userId: adminUser.id });
-  const agrementData = await buildAgrementFixture({
-    organismeId,
-    statut: AGREMENT_STATUT.BROUILLON,
+describe("PATCH /agrements/:agrementId/statut", () => {
+  it("devrait changer le statut d'un agrément avec succès", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    const response = await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+
+    const { agrement } = await getAgrement(agrementId);
+    expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
   });
-  const agrementId = await createAgrement({
-    agrement: agrementData,
-    organismeId,
+
+  it("workflow changement statut de l'agrement", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    const response = await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+
+    const { agrement } = await getAgrement(agrementId);
+    expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
+
+    expect(mailService.send).toHaveBeenCalledTimes(1);
   });
-  (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-    req.decoded = { id: adminUser.id };
-    next();
-  });
-  const response = await request(app)
-    .patch(`/agrements/${agrementId}/statut`)
-    .send({ statut: AGREMENT_STATUT.TRANSMIS });
-
-  expect(response.status).toBe(200);
-  expect(response.body.success).toBe(true);
-
-  const { agrement } = await getAgrement(agrementId);
-  expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
-});
-
-jest.mock("../../services/mail", () => ({
-  mailService: { send: jest.fn() },
-}));
-
-it("workflow changement statut de l'agrement", async () => {
-  const adminUser = await createUsagersUser();
-  const organismeId = await createOrganisme({ userId: adminUser.id });
-  const agrementData = await buildAgrementFixture({
-    organismeId,
-    statut: AGREMENT_STATUT.BROUILLON,
-  });
-  const agrementId = await createAgrement({
-    agrement: agrementData,
-    organismeId,
-  });
-  (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-    req.decoded = { id: adminUser.id };
-    next();
-  });
-  const response = await request(app)
-    .patch(`/agrements/${agrementId}/statut`)
-    .send({ statut: AGREMENT_STATUT.TRANSMIS });
-
-  expect(response.status).toBe(200);
-  expect(response.body.success).toBe(true);
-
-  const { agrement } = await getAgrement(agrementId);
-  expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
-
-  expect(mailService.send).toHaveBeenCalledTimes(1);
 });

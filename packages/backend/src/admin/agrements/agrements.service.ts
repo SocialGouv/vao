@@ -1,5 +1,6 @@
 import type { AgrementMessage } from "@vao/shared-bridge";
 import {
+  ActiviteDto,
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AgrementFilesDto,
@@ -23,6 +24,9 @@ import { AgrementsRepository } from "./agrements.repository";
 const log = logger(module.filename);
 
 export const AgrementService = {
+  async getAllActivites(): Promise<ActiviteDto[]> {
+    return await AgrementServiceShared.getAllActivites();
+  },
   async getById({
     agrementId,
     withDetails,

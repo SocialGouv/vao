@@ -12,7 +12,7 @@
       <DsfrInputGroup
         v-if="props.modifiable"
         name="budgetGestionPerso"
-        :label="displayInput.IAgrementProjets['budgetGestionPerso'].label"
+        :label="displayInput.AgrementProjetsInput['budgetGestionPerso'].label"
         hint="Précisez la manière dont vous organisez le budget de chaque vacancier"
         :model-value="budgetGestionPerso"
         :label-visible="true"
@@ -24,7 +24,7 @@
       <UtilsDisplayInput
         v-else
         :value="budgetGestionPerso"
-        :input="displayInput.IAgrementProjets['budgetGestionPerso']"
+        :input="displayInput.AgrementProjetsInput['budgetGestionPerso']"
         :is-valid="budgetGestionPersoMeta.valid"
         :error-message="budgetGestionPersoErrorMessage"
       />
@@ -36,7 +36,10 @@
       <DsfrInputGroup
         v-if="props.modifiable"
         name="budgetPersoGestionComplementaire"
-        :label="displayInput.IAgrementProjets['budgetPersoGestionComplementaire'].label"
+        :label="
+          displayInput.AgrementProjetsInput['budgetPersoGestionComplementaire']
+            .label
+        "
         :model-value="budgetPersoGestionComplementaire"
         :label-visible="true"
         :is-textarea="true"
@@ -47,7 +50,9 @@
       <UtilsDisplayInput
         v-else
         :value="budgetGestionPerso"
-        :input="displayInput.IAgrementProjets['budgetPersoGestionComplementaire']"
+        :input="
+          displayInput.AgrementProjetsInput['budgetPersoGestionComplementaire']
+        "
         :is-valid="budgetPersoGestionComplementaireMeta.valid"
         :error-message="budgetPersoGestionComplementaireErrorMessage"
       />

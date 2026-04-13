@@ -5,7 +5,7 @@
         v-if="props.modifiable"
         name="nomHebergement"
         type="text"
-        :label="displayInput.IAgrementProjets['nomHebergement'].label"
+        :label="displayInput.AgrementProjetsInput['nomHebergement'].label"
         :model-value="nomHebergement"
         :label-visible="false"
         :is-valid="nomHebergementMeta.valid"
@@ -15,7 +15,7 @@
       <UtilsDisplayInput
         v-else
         :value="nomHebergement"
-        :input="displayInput.IAgrementProjets['nomHebergement']"
+        :input="displayInput.AgrementProjetsInput['nomHebergement']"
         :label-visible="false"
         :is-valid="nomHebergementMeta.valid"
         :error-message="nomHebergementErrorMessage"
@@ -27,7 +27,7 @@
         name="adresse"
         type="recherche"
         icon="fr-icon-search-line"
-        :label="displayInput.IAgrementProjets['adresseLabel'].label"
+        :label="displayInput.AgrementProjetsInput['adresseLabel'].label"
         :label-visible="false"
         :model-value="adresseLabel"
         :is-valid="adresseMeta.valid"
@@ -37,7 +37,7 @@
       <UtilsDisplayInput
         v-else
         :value="adresseLabel"
-        :input="displayInput.IAgrementProjets['adresseLabel']"
+        :input="displayInput.AgrementProjetsInput['adresseLabel']"
         :label-visible="false"
         :is-valid="adresseMeta.valid"
         :error-message="adresseErrorMessage"
@@ -55,7 +55,7 @@
         v-if="props.modifiable"
         name="nbJours"
         type="number"
-        :label="displayInput.IAgrementProjets['nbJours'].label"
+        :label="displayInput.AgrementProjetsInput['nbJours'].label"
         :model-value="nbJours"
         :label-visible="false"
         :is-valid="nbJoursMeta.valid"
@@ -65,7 +65,7 @@
       <UtilsDisplayInput
         v-else
         :value="nbJours"
-        :input="displayInput.IAgrementProjets['nbJours']"
+        :input="displayInput.AgrementProjetsInput['nbJours']"
         :label-visible="false"
         :is-valid="nbJoursMeta.valid"
       />
@@ -75,7 +75,7 @@
         v-if="props.modifiable"
         name="nbVacanciers"
         type="number"
-        :label="displayInput.IAgrementProjets['nbVacanciers'].label"
+        :label="displayInput.AgrementProjetsInput['nbVacanciers'].label"
         :model-value="nbVacanciers"
         :label-visible="false"
         :is-valid="nbVacanciersMeta.valid"
@@ -85,11 +85,10 @@
       <UtilsDisplayInput
         v-else
         :value="nbVacanciers"
-        :input="displayInput.IAgrementProjets['nbVacanciers']"
+        :input="displayInput.AgrementProjetsInput['nbVacanciers']"
         :label-visible="false"
         :is-valid="nbVacanciersMeta.valid"
       />
-
     </div>
     <div class="cell">
       <DsfrButton
