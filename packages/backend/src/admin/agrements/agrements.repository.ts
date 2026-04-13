@@ -9,6 +9,7 @@ import {
   AGREMENT_STATUT,
   AgrementDto,
   PaginationQueryDto,
+  USER_TYPE,
 } from "@vao/shared-bridge";
 
 import { processQuery } from "../../helpers/queryParams";
@@ -151,44 +152,7 @@ export const AgrementsRepository = {
   async getMessages(
     agrementId: number,
   ): Promise<{ messages: AgrementMessage[]; unreadCount: number }> {
-    const client = await getPool().connect();
-    try {
-      const messagesQuery = `
-      SELECT
-        m.id,
-        m.agrement_id,
-        m.front_user_id,
-        m.back_user_id,
-        m.message,
-        m.created_at,
-        m.read_at,
-        bu.prenom AS "backUserPrenom"
-      FROM front.agrement_messagerie m
-      LEFT JOIN back.users bu ON bu.id = m.back_user_id
-      WHERE m.agrement_id = $1
-      ORDER BY m.created_at ASC
-    `;
-      const messagesResult = await client.query(messagesQuery, [agrementId]);
-
-      const unreadQuery = `
-      SELECT COUNT(*) AS unread_count
-      FROM front.agrement_messagerie
-      WHERE agrement_id = $1 AND read_at IS NULL
-    `;
-      const unreadResult = await client.query(unreadQuery, [agrementId]);
-      const unreadCount = Number(unreadResult.rows[0].unread_count);
-
-      return {
-        messages: messagesResult.rows.map((row: AgrementMessage) => ({
-          ...row,
-          created_at: row.created_at?.toString(),
-          read_at: row.read_at ? row.read_at.toString() : null,
-        })) as AgrementMessage[],
-        unreadCount,
-      };
-    } finally {
-      client.release();
-    }
+    return AgrementsRepositoryShared.getMessages(agrementId, USER_TYPE.BO);
   },
 
   /**
@@ -278,40 +242,18 @@ export const AgrementsRepository = {
     backUserId: number;
     message: string;
   }): Promise<number> {
-    const client = await getPool().connect();
-    try {
-      const query = `
-      INSERT INTO front.agrement_messagerie (
-        agrement_id,
-        front_user_id,
-        back_user_id,
-        message,
-        created_at,
-        read_at
-      ) VALUES ($1, $2, $3, $4, NOW(), $5)
-      RETURNING id;
-    `;
-      const values = [agrementId, null, backUserId, message, null];
-      const result = await client.query(query, values);
-      return result.rows[0]?.id ?? 0;
-    } finally {
-      client.release();
-    }
+    return AgrementsRepositoryShared.insertMessage({
+      agrementId,
+      message,
+      userId: backUserId,
+      userType: USER_TYPE.BO,
+    });
   },
   async markMessagesAsRead(agrementId: number): Promise<number> {
-    const client = await getPool().connect();
-    try {
-      const query = `
-      UPDATE front.agrement_messagerie
-      SET read_at = NOW()
-      WHERE agrement_id = $1 AND read_at IS NULL
-      RETURNING id;
-    `;
-      const result = await client.query(query, [agrementId]);
-      return result.rowCount;
-    } finally {
-      client.release();
-    }
+    return AgrementsRepositoryShared.markMessagesAsRead({
+      agrementId,
+      userType: USER_TYPE.BO,
+    });
   },
   async updateStatut({
     agrementId,

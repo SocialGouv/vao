@@ -4,7 +4,7 @@ import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
 
 export interface PostMessageRoute extends BasicRoute {
   method: "POST";
-  path: "/admin/agrements/{agrementId}/message";
+  path: "/agrements/{agrementId}/message";
   params: {
     agrementId: string;
   };

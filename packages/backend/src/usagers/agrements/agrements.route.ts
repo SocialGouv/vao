@@ -50,4 +50,28 @@ router.patch(
   AgrementController.patchStatut,
 );
 
+router.get(
+  "/:agrementId/messages",
+  checkJWT,
+  requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetMessages"]),
+  checkPermissionAgrement,
+  AgrementController.getMessages,
+);
+
+router.post(
+  "/:agrementId/message",
+  checkJWT,
+  requestValidatorMiddleware(AgrementUsagersRoutesSchema["PostMessage"]),
+  checkPermissionAgrement,
+  AgrementController.postMessage,
+);
+
+router.patch(
+  "/:agrementId/messages/read",
+  checkJWT,
+  requestValidatorMiddleware(AgrementUsagersRoutesSchema["PatchMessages"]),
+  checkPermissionAgrement,
+  AgrementController.patchMessages,
+);
+
 export default router;

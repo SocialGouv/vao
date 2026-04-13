@@ -60,6 +60,25 @@ export const AgrementController = {
       next(error);
     }
   },
+  async getMessages(
+    req: RouteRequest<AgrementUsagersRoutes["GetMessages"]>,
+    res: RouteResponse<AgrementUsagersRoutes["GetMessages"]>,
+    next: NextFunction,
+  ) {
+    const agrementId = Number(req.validatedParams!.agrementId);
+    try {
+      const { messages, unreadCount } =
+        await AgrementService.getMessages(agrementId);
+      res.status(200).json({
+        count: messages.length,
+        messages,
+        unreadCount,
+      });
+    } catch (error) {
+      log.w("Erreur lors de la récupération des messages", error);
+      next(error);
+    }
+  },
   async getOne(
     req: RouteRequest<AgrementUsagersRoutes["GetOne"]>,
     res: RouteResponse<AgrementUsagersRoutes["GetOne"]>,
@@ -83,6 +102,20 @@ export const AgrementController = {
       res.json({ agrement });
     } catch (error) {
       log.w("DONE with error");
+      next(error);
+    }
+  },
+  async patchMessages(
+    req: RouteRequest<AgrementUsagersRoutes["PatchMessages"]>,
+    res: RouteResponse<AgrementUsagersRoutes["PatchMessages"]>,
+    next: NextFunction,
+  ) {
+    const agrementId = Number(req.validatedParams!.agrementId);
+    try {
+      const count = await AgrementService.markMessagesAsRead(agrementId);
+      res.status(200).json({ count });
+    } catch (error) {
+      log.w("Erreur lors du patch des messages", error);
       next(error);
     }
   },
@@ -136,6 +169,28 @@ export const AgrementController = {
     } catch (err) {
       log.w("DONE with error", err);
       next(err);
+    }
+  },
+  async postMessage(
+    req: RouteRequest<AgrementUsagersRoutes["PostMessage"]>,
+    res: RouteResponse<AgrementUsagersRoutes["PostMessage"]>,
+    next: NextFunction,
+  ) {
+    const agrementId = Number(req.validatedParams!.agrementId);
+    const { message } = req.validatedBody!;
+
+    const userId = Number(req.decoded!.id);
+
+    try {
+      await AgrementService.postMessage({
+        agrementId,
+        message,
+        userId,
+      });
+      res.status(201).json({ success: true });
+    } catch (error) {
+      log.w("erreur POST message", error);
+      next(error);
     }
   },
 };

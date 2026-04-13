@@ -14,6 +14,16 @@ const AgrementService = {
       body: { statut },
     })();
   },
+  markMessagesAsRead: async (agrementId: string) => {
+    const { count } = await buildRequest<
+      AgrementUsagersRoutes["PatchMessages"]
+    >({
+      path: "/agrements/{agrementId}/messages/read",
+      method: "PATCH",
+      params: { agrementId },
+    })();
+    return count;
+  },
   getListAgrements: async (
     query: AgrementUsagersRoutes["GetList"]["query"],
   ) => {
@@ -57,6 +67,20 @@ const AgrementService = {
     })();
     return agrement;
   },
+  postMessage: async (agrementId: string, message: string) => {
+    await buildRequest<AgrementUsagersRoutes["PostMessage"]>({
+      path: "/agrements/{agrementId}/message",
+      method: "POST",
+      params: { agrementId: String(agrementId) },
+      body: { message },
+    })();
+  },
+  getMessages: async (agrementId: string) =>
+    await buildRequest<AgrementUsagersRoutes["GetMessages"]>({
+      path: "/agrements/{agrementId}/messages",
+      method: "GET",
+      params: { agrementId },
+    })(),
 };
 
 export { AgrementService };

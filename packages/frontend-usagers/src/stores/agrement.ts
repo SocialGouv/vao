@@ -3,6 +3,7 @@ import type {
   AgrementDto,
   ActiviteDto,
   AgrementHistoryItem,
+  AgrementMessage,
 } from "@vao/shared-bridge";
 import {
   AGREMENT_STATUT,
@@ -30,6 +31,9 @@ export interface AgrementStoreState {
   agrementEnTraitement: AgrementDto | null;
   activites: ActiviteDto[];
   history: AgrementHistoryItem[] | null;
+  messages: AgrementMessage[] | null;
+  messagesTotal?: number | null;
+  messagesUnreadCount?: number | null;
 }
 
 export const useAgrementStore = defineStore("agrement", {
@@ -39,6 +43,8 @@ export const useAgrementStore = defineStore("agrement", {
     agrementEnTraitement: null,
     activites: [],
     history: null,
+    messages: null,
+    messagesTotal: null,
   }),
   getters: {
     expiryDate: (state): Date | null => {
@@ -123,7 +129,46 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
-
+    async patchMessagesAsRead(agrementId: string): Promise<number> {
+      log.i("patchMessagesAsRead - IN", { agrementId });
+      try {
+        const count = await AgrementService.markMessagesAsRead(agrementId);
+        log.i("patchMessagesAsRead - DONE", { count });
+        return count;
+      } catch (err) {
+        log.w("patchMessagesAsRead - ERROR", err);
+        throw err;
+      }
+    },
+    async getMessages(agrementId: string): Promise<void> {
+      log.i("getMessages - IN", { agrementId });
+      try {
+        const { count, messages, unreadCount } =
+          await AgrementService.getMessages(agrementId);
+        log.i("getMessages - DONE", { messages, count, unreadCount });
+        this.messages = messages;
+        this.messagesTotal = count;
+        this.messagesUnreadCount = unreadCount;
+      } catch (err) {
+        log.w("getMessages - DONE with error", err);
+        throw err;
+      }
+    },
+    async postMessage({
+      agrementId,
+      message,
+    }: {
+      agrementId: string;
+      message: string;
+    }): Promise<void> {
+      try {
+        await AgrementService.postMessage(agrementId, message);
+        log.i("postMessage - DONE");
+      } catch (err) {
+        log.w("postMessage - ERROR", err);
+        throw err;
+      }
+    },
     async postAgrement({
       agrement,
       organismeId,
