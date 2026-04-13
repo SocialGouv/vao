@@ -37,7 +37,7 @@
               icon-name="icon-edit-line"
               @click="editRepresentant(idx)"
             >
-              Modifier
+              modifier
             </DsfrLinkV2>
           </template>
           <DsfrButton
