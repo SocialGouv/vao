@@ -696,12 +696,12 @@ const AgrementBilanAnnuelInput = {
   },
   bilanFinancierComparatif: {
     inputType: InputTypes.TEXT,
-    label: "Comparatif entre les périodes N et N-1",
+    label: "Comparatif entre les périodes N et N-1 (optionnel)",
   },
   bilanFinancierRessourcesHumaines: {
     inputType: InputTypes.TEXT,
     label:
-      "Ressources humaines mobilisées et montants financiers engagés pour l’action",
+      "Ressources humaines mobilisées et montants financiers engagés pour l’action (optionnel)",
   },
   bilanFinancierCommentaire: {
     inputType: InputTypes.TEXT,
