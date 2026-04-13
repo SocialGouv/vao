@@ -154,6 +154,18 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(agrement.statut).toBe(AGREMENT_STATUT.EN_COURS);
   });
 
+  it("devrait remonter une erreur si le statut d'un agrément n'est pas valide", async () => {
+    authUser = await createUsagersUser();
+    await createOrganisme({ userId: authUser.id });
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+
+    const response = await request(app)
+      .patch(`/admin/agrements/999/statut`)
+      .send({ statut: AGREMENT_STATUT.EN_COURS });
+
+    expect(response.status).toBe(422);
+  });
+
   it("devrait modifier le statut et historiser", async () => {
     const sendSpy = jest.spyOn(mailService, "send");
     authUser = await createUsagersUser();
@@ -525,5 +537,11 @@ describe("Messagerie d'agrément", () => {
       `/admin/agrements/${agrementId}/messages`,
     );
     expect(getResponse.body.unreadCount).toBe(0);
+  });
+  it("PATCH /messages devrait remonter une erreur si l'agrément n'existe pas", async () => {
+    const patchResponse = await request(app).patch(
+      `/admin/agrements/999/messages/read`,
+    );
+    expect(patchResponse.status).toBe(404);
   });
 });
