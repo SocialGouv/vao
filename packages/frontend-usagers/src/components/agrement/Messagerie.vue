@@ -36,7 +36,7 @@ const sendMessage = async ({ message }: { message: string }) => {
   isSendingMessage.value = true;
   try {
     await agrementStore.postMessage({
-      agrementId: String(agrementStore.agrementEnTraitement?.id),
+      agrementId: String(agrementStore.agrementEnTraitement!.id),
       message: message ?? "",
     });
     chatRef.value?.resetForm();

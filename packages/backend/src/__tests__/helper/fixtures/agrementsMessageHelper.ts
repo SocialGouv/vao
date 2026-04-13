@@ -8,25 +8,28 @@ export const createAgrementMessage = async ({
   userType = USER_TYPE.BO,
   agrementMessage = {},
 }: {
-  agrementId?: number;
+  agrementId: number;
   userType?: USER_TYPE;
   agrementMessage?: Partial<AgrementMessage> | null;
-} = {}): Promise<number> => {
-  const fixture: AgrementMessage = {
+}): Promise<number> => {
+  const fixture: Partial<AgrementMessage> = {
     agrement_id: agrementId,
     back_user_id: null,
     front_user_id: null,
     message: "Message de test",
-    userType: USER_TYPE.BO,
     ...agrementMessage,
-  } as unknown as AgrementMessage;
+  };
+  const userId =
+    userType === USER_TYPE.BO ? fixture.back_user_id : fixture.front_user_id;
+
+  if (!userId || !fixture.message) {
+    throw new Error("Données de message d'agrément invalides");
+  }
+
   const response = await AgrementsRepositoryShared.insertMessage({
-    agrementId: agrementId!,
+    agrementId,
     message: fixture.message,
-    userId:
-      userType === USER_TYPE.BO
-        ? fixture.back_user_id!
-        : fixture.front_user_id!,
+    userId,
     userType,
   });
   return response;

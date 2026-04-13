@@ -206,18 +206,20 @@ const tabActions: Record<Tab, () => void> = {
   [Tab.Documents]: () => {},
   [Tab.Historique]: () => {},
   [Tab.Messages]: async () => {
-    await agrementStore.patchMessagesAsRead(
-      String(agrementStore.agrementEnTraitement?.id),
-    );
-    await agrementStore.getMessages(
-      String(agrementStore.agrementEnTraitement?.id),
-    );
+    if (agrementStore.agrementEnTraitement) {
+      await agrementStore.patchMessagesAsRead(
+        String(agrementStore.agrementEnTraitement?.id),
+      );
+      await agrementStore.getMessages(
+        String(agrementStore.agrementEnTraitement?.id),
+      );
+    }
   },
 };
 
 const selectTab = async (idx: Tab) => {
   asc.value = selectedTabIndex.value < idx;
-  tabActions[idx]?.();
+  await tabActions[idx]?.();
 
   if (idx === Tab.Messages) {
     await nextTick();
