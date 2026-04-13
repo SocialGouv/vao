@@ -17,6 +17,13 @@ router.get(
 );
 
 router.get(
+  "/activites",
+  checkJWT,
+  requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetAllActivites"]),
+  AgrementController.getAllActivites,
+);
+
+router.get(
   "/:agrementId",
   checkJWT,
   requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetOne"]),
@@ -30,9 +37,6 @@ router.post(
   checkPermissionOrganisme,
   AgrementController.post,
 );
-
-// TODO: Ajouter requestValidatorMiddleware(AgrementUsagersRoutesSchema["GetAllActivites"]) pour valider la route des activités
-router.get("/activites", checkJWT, AgrementController.getAllActivites);
 
 router.get(
   "/:agrementId/history",
