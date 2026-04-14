@@ -133,6 +133,77 @@ export const FILE_CATEGORY_CONFIG = {
     label: "Bilan financier 4 dernières années",
     multiple: true,
   },
+  // ...existing code...
+  [FILE_CATEGORY.BILANQUALITPERCEPTION]: {
+    fileKey: "filesBilanQualitPerception",
+    label: "Bilan qualitatif - Perception et ressenti",
+    multiple: true,
+  },
+  [FILE_CATEGORY.BILANQUALITPERSPECTIVE]: {
+    fileKey: "filesBilanQualitPerspectives",
+    label: "Bilan qualitatif - Perspectives d'évolution",
+    multiple: true,
+  },
+  [FILE_CATEGORY.BILANQUALITELEMARQ]: {
+    fileKey: "filesBilanQualitElementsMarquants",
+    label: "Bilan qualitatif - Éléments marquants",
+    multiple: true,
+  },
+  [FILE_CATEGORY.BILANQUALITCOMPLEMENTAIRES]: {
+    fileKey: "filesBilanQualitComplementaires",
+    label: "Bilan qualitatif - Fichiers complémentaires",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE]: {
+    fileKey: "filesProjetsSejoursCompetencesExperience",
+    label: "Compétences et expériences des accompagnants",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSMESURES]: {
+    fileKey: "filesProjetsSejoursMesures",
+    label: "Mesures en cas de recrutement d'urgence",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSCOMPLEMENTAIRES]: {
+    fileKey: "filesProjetsSejoursComplementaires",
+    label: "Fichiers complémentaires accompagnants",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSPREVUS]: {
+    fileKey: "filesProjetsSejoursPrevus",
+    label: "Séjours prévus",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSCASIER]: {
+    fileKey: "fileProjetsSejoursCasier",
+    label: "Casier judiciaire",
+    multiple: false,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSORGATRANSPORT]: {
+    fileKey: "filesProjetsSejoursOrgaTransports",
+    label: "Organisation des transports prévus",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJETSSEJOURSSUIVIMED]: {
+    fileKey: "filesProjetsSejoursSuiviMed",
+    label: "Suivi médical prévu",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJSEJPROTCOREORIENT]: {
+    fileKey: "filesProjetsSejoursProtocoleReorientation",
+    label: "Protocole de réorientation/évacuation",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJSSEJOURSPROTCOLERAPATR]: {
+    fileKey: "filesProjetsSejoursProtocoleRapatriement",
+    label: "Protocole de rapatriement",
+    multiple: true,
+  },
+  [FILE_CATEGORY.PROJSEJOURSBUDGETPERSONNES]: {
+    fileKey: "filesProjSejoursBudgetPersonnes",
+    label: "Budget des personnes prévu",
+    multiple: true,
+  },
 } as const;
 
 export type FileCategoryConfig = typeof FILE_CATEGORY_CONFIG;

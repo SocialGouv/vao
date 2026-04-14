@@ -109,13 +109,13 @@
       />
     </div>
   </div>
-  <div class="fr-fieldset__element fr-mt-6v">
+  <!-- <div class="fr-fieldset__element fr-mt-6v">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursComplementaires"
       :modifiable="props.modifiable"
       label="Ajouter des fichiers complémentaires (optionnel)"
     />
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">
