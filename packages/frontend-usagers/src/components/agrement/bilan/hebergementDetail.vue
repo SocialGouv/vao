@@ -162,8 +162,8 @@ const validationSchema = computed(() => {
   const schema: Record<string, yup.AnySchema> = {
     nomHebergement: requiredUnlessBrouillon(yup.string()),
     adresse: requiredUnlessBrouillon(
-     yup.mixed().test("is-string-or-object", "Adresse requise", (value) => {
-      if (typeof value === "string") return !!value;
+      yup.mixed().test("is-string-or-object", "Adresse requise", (value) => {
+        if (typeof value === "string") return !!value;
         if (
           typeof value === "object" &&
           value !== null &&
