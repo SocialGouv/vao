@@ -160,10 +160,7 @@
 </template>
 
 <script setup lang="ts">
-import type {
-  RepresentantUi,
-  RepresentantLegalDto,
-} from "@vao/shared-bridge/src/dto/personneMorale.dto";
+import type { RepresentantUi, RepresentantLegalDto } from "@vao/shared-bridge";
 import { ref } from "vue";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
