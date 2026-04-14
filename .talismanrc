@@ -278,7 +278,7 @@ fileignoreconfig:
 - filename: packages/frontend-usagers/src/components/customInput.vue
   checksum: ff3d0adca5a28cd4e4c25ed981250d5b8e253f8554ad4ec7280a2b05900faf33
 - filename: packages/frontend-usagers/src/components/demande-sejour/table.vue
-  checksum: d4a8d6f2bad35ffcbd7f0f389afde6d0c4acc1ed24878e40cf8666e0a7c344ca
+  checksum: 81116f9a3a8c2fdf46ea53cf0f84651ef02c28d471fb829a9c486ac9409ae81c
 - filename: packages/frontend-usagers/src/components/hebergements/liste.vue
   checksum: a36fb0ee6ada7f7ba7bbc21a9b32318cce0f2dfc515eb28ab6c4891732fd6321
 - filename: packages/frontend-usagers/src/components/operateur/personne-morale.vue
