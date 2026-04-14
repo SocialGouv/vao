@@ -1,5 +1,3 @@
-import type { AdresseDto } from "./adresse.dto";
-
 export interface PersonneMoraleDto {
   historic: {
     nom: string | null;
@@ -48,24 +46,18 @@ export interface PersonneMoraleDto {
     etatAdministratif: string;
   }[];
 }
-
-type RepresentantErrors = {
-  prenom: string;
-  nom: string;
-  telephoneRepresentant: string;
-  emailRepresentant: string;
-  adresseDomicile: string;
-};
-
-export interface Representant {
+export interface RepresentantLegalDto {
   nom: string;
   prenom: string;
   fonction: string;
-  telephoneRepresentant: string;
-  emailRepresentant: string;
-  adresseDomicile?: AdresseDto;
+}
+export interface RepresentantUi extends RepresentantLegalDto {
   statut: string;
-  errors: RepresentantErrors;
+  errors: {
+    prenom: string;
+    nom: string;
+    fonction: string;
+  };
   isEditing: boolean;
-  _backup: Representant | null;
+  _backup: RepresentantUi | null;
 }

@@ -37,7 +37,7 @@
               icon-name="icon-edit-line"
               @click="editRepresentant(idx)"
             >
-              Modifier
+              modifier
             </DsfrLinkV2>
           </template>
           <DsfrButton
@@ -85,46 +85,18 @@
           "
         />
         <DsfrInputGroup
-          name="telephoneRepresentant"
-          label="Téléphone"
+          name="fonction"
+          label="Fonction"
           :label-visible="true"
-          :model-value="representant.telephoneRepresentant"
-          :is-valid="!representant.errors.telephoneRepresentant"
-          :error-message="representant.errors.telephoneRepresentant"
+          :model-value="representant.fonction"
+          :is-valid="!representant.errors.fonction"
+          :error-message="representant.errors.fonction"
           :disabled="!props.modifiable"
-          hint="Au format 0X, +33X ou 0033. Exemple : 0612345678"
+          hint="Saisissez la fonction du représentant. Exemple : Président"
           @update:model-value="
             (val) => {
-              representant.telephoneRepresentant = val;
-              validateField(representant, 'telephoneRepresentant');
-            }
-          "
-        />
-        <DsfrInputGroup
-          name="emailRepresentant"
-          label="Email"
-          :label-visible="true"
-          :model-value="representant.emailRepresentant"
-          :is-valid="!representant.errors.emailRepresentant"
-          :error-message="representant.errors.emailRepresentant"
-          :disabled="!props.modifiable"
-          hint="Adresse courriel de la personne. Exemple: nom@domaine.fr"
-          @update:model-value="
-            (val) => {
-              representant.emailRepresentant = val;
-              validateField(representant, 'emailRepresentant');
-            }
-          "
-        />
-        <SearchAddress
-          label="Adresse du domicile"
-          :model-value="representant.adresseDomicile"
-          :error-message="representant.errors.adresseDomicile"
-          :disabled="!props.modifiable"
-          @select="
-            (selected) => {
-              onAdresseSelect(representant, selected);
-              validateField(representant, 'adresseDomicile');
+              representant.fonction = val;
+              validateField(representant, 'fonction');
             }
           "
         />
@@ -132,7 +104,7 @@
       <!-- Boutons d'ajout d'un nouveau représentant -->
       <div
         v-if="props.modifiable && !representant._backup"
-        class="container-flex-start"
+        class="container-flex-start fr-mt-4w"
       >
         <DsfrButton
           icon-name="icon-save-line"
@@ -156,20 +128,8 @@
         <dd>{{ representant.prenom || "-" }}</dd>
         <dt><strong>Nom:</strong></dt>
         <dd>{{ representant.nom || "-" }}</dd>
-        <dt><strong>Téléphone:</strong></dt>
-        <dd>{{ representant.telephoneRepresentant || "-" }}</dd>
-        <dt><strong>Email:</strong></dt>
-        <dd>{{ representant.emailRepresentant || "-" }}</dd>
-        <dt><strong>Adresse du domicile:</strong></dt>
-        <dd>
-          {{
-            representant.adresseDomicile && representant.adresseDomicile.label
-              ? representant.adresseDomicile.label
-              : representant.adresseDomicile
-                ? representant.adresseDomicile
-                : "-"
-          }}
-        </dd>
+        <dt><strong>Fonction:</strong></dt>
+        <dd>{{ representant.fonction || "-" }}</dd>
       </dl>
       <!-- Affichage des erreurs de validation si présentes -->
       <ul
@@ -200,15 +160,12 @@
 </template>
 
 <script setup lang="ts">
-import type { Representant } from "@vao/shared-bridge/src/dto/personneMorale.dto";
+import type { RepresentantUi, RepresentantLegalDto } from "@vao/shared-bridge";
 import { ref } from "vue";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import { DsfrLinkV2 } from "@vao/shared-ui";
-import SearchAddress from "@/components/address/search-address.vue";
 import { useOrganismeStore } from "@/stores/organisme";
-import { telephoneYup } from "@/utils/telephoneValidators";
-import type { AdresseDto } from "@vao/shared-bridge/src/dto/adresse.dto";
 
 const organismeStore = useOrganismeStore();
 
@@ -223,35 +180,12 @@ const representantSchema = yup.object({
     yup.string().required("Le prénom est requis"),
   ),
   nom: requiredUnlessBrouillon(yup.string().required("Le nom est requis")),
-  telephoneRepresentant: requiredUnlessBrouillon(telephoneYup()),
-  emailRepresentant: requiredUnlessBrouillon(
-    yup
-      .string()
-      .required("L'email est requis")
-      .email("Format d'email invalide"),
-  ),
-  adresseDomicile: requiredUnlessBrouillon(
-    yup
-      .object({
-        label: yup.string().required("L'adresse est requise"),
-      })
-      .typeError("L'adresse est requise")
-      .required("L'adresse est requise")
-      .test(
-        "adresse-not-empty",
-        "L'adresse est requise",
-        (value) =>
-          !!(
-            value &&
-            typeof value === "object" &&
-            value.label &&
-            value.label.trim() !== ""
-          ),
-      ),
+  fonction: requiredUnlessBrouillon(
+    yup.string().required("La fonction est requise"),
   ),
 });
 
-function getAllErrors(errors: Representant["errors"]): string[] {
+function getAllErrors(errors: RepresentantUi["errors"]): string[] {
   return Object.entries(errors)
     .filter(([_, msg]) => !!msg)
     .map(([key, msg]) => {
@@ -263,47 +197,37 @@ function getAllErrors(errors: Representant["errors"]): string[] {
     });
 }
 
-function getEmptyRepresentant(): Representant {
+function getEmptyRepresentant(): RepresentantUi {
   return {
     prenom: "",
     nom: "",
     fonction: "",
-    telephoneRepresentant: "",
-    emailRepresentant: "",
-    adresseDomicile: undefined,
     statut: props.statut ?? "BROUILLON",
     errors: {
       prenom: "",
       nom: "",
-      telephoneRepresentant: "",
-      emailRepresentant: "",
-      adresseDomicile: "",
+      fonction: "",
     },
     isEditing: true,
     _backup: null,
   };
 }
 
-const representantsList = ref<Representant[]>([]);
+const representantsList = ref<RepresentantUi[]>([]);
 
 function loadRepresentants(): void {
   const existants =
     organismeStore.organismeCourant?.personneMorale?.representantsLegaux || [];
-  representantsList.value = existants.map((r: Partial<Representant>) => ({
+  representantsList.value = existants.map((r: Partial<RepresentantUi>) => ({
     ...r,
     prenom: r.prenom || "",
     nom: r.nom || "",
     fonction: r.fonction || "",
-    telephoneRepresentant: r.telephoneRepresentant || "",
-    emailRepresentant: r.emailRepresentant || "",
-    adresseDomicile: r.adresseDomicile || undefined,
     statut: props.statut ?? "BROUILLON",
     errors: {
       prenom: "",
       nom: "",
-      telephoneRepresentant: "",
-      emailRepresentant: "",
-      adresseDomicile: "",
+      fonction: "",
     },
     isEditing: false,
     _backup: null,
@@ -311,21 +235,6 @@ function loadRepresentants(): void {
 }
 
 loadRepresentants();
-
-function onAdresseSelect(
-  representant: Representant,
-  selected: AdresseDto,
-): void {
-  representant.adresseDomicile = {
-    label: selected.label || "",
-    codeInsee: selected.codeInsee || "",
-    codePostal: selected.codePostal || "",
-    long: selected.coordinates ? String(selected.coordinates[0]) : "",
-    lat: selected.coordinates ? String(selected.coordinates[1]) : "",
-    departement: selected.departement || "",
-    coordinates: selected.coordinates || null,
-  };
-}
 
 function addNewRepresentant(): void {
   representantsList.value.push(getEmptyRepresentant());
@@ -378,8 +287,8 @@ async function saveRepresentant(idx: number): Promise<void> {
 }
 
 async function validateField(
-  representant: Representant,
-  field: keyof Representant["errors"],
+  representant: RepresentantUi,
+  field: keyof RepresentantUi["errors"],
 ): Promise<void> {
   try {
     await representantSchema.validateAt(field, representant);
@@ -393,8 +302,17 @@ async function validateField(
   }
 }
 
-async function validateAndSave(): Promise<false | Representant[]> {
+function getCleanRepresentants(): Array<RepresentantLegalDto> {
+  return representantsList.value.map((r) => ({
+    nom: r.nom,
+    prenom: r.prenom,
+    fonction: r.fonction,
+  }));
+}
+
+async function validateAndSave(): Promise<false | RepresentantLegalDto[]> {
   let valid = true;
+
   for (const representant of representantsList.value) {
     Object.keys(representant.errors).forEach(
       (key) =>
@@ -426,12 +344,11 @@ async function validateAndSave(): Promise<false | Representant[]> {
     }
   }
   if (!valid) return false;
-  return representantsList.value.map(({ ...r }) => r);
+  return getCleanRepresentants();
 }
 
 defineExpose({
-  getRepresentants: (): Representant[] =>
-    representantsList.value.map(({ ...r }) => r),
+  getRepresentants: getCleanRepresentants,
   validateAndSave,
 });
 </script>
