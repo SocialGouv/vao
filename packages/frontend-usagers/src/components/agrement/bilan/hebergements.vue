@@ -57,7 +57,7 @@
       </div>
       <div class="fr-mt-6v">
         <p class="fr-mb-0">Période</p>
-        <AgrementBilanSelectMonths @update:selected="handleMonths" />
+        <AgrementBilanSelectMonths :default-selected="props.bilanHebergement?.mois" :modifiable="props.modifiable" @update:selected="handleMonths" />
         <p
           v-if="periodeMeta.touched && periodeErrorMessage"
           class="fr-error-text"
