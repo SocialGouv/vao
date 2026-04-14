@@ -125,7 +125,7 @@
       </div>
     </div>
   </div>
-  <div class="fr-fieldset__element fr-mt-6v">
+  <div class="fr-fieldset__element fr-mt-6v fr-mb-10v">
     <UtilsMultiFilesUpload
       v-model="filesBilanFinancierQuatreAnnees"
       :modifiable="props.modifiable"
