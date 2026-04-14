@@ -45,6 +45,7 @@ export type FileKey =
   | "filesAgrementSejour"
   | "filesAccompResp"
   | "filesSuiviMed"
+  | "filesBudget"
   | "filesBilanQualitPerception"
   | "filesBilanQualitPerspectives"
   | "filesBilanQualitElementsMarquants"
