@@ -334,7 +334,7 @@ fileignoreconfig:
 - filename: packages/migrations/src/scripts/reset-s3.js
   checksum: 7b52636c4c49bf85a592f649f8fbf653e0203b390f4f9d220fe3ae4da06422a7
 - filename: packages/shared-bridge/src/constantes/file.ts
-  checksum: 90e946e20101879e9860b96c6727e9eb83adfd59f9137f3b43ffb520c00a511d
+  checksum: 7b549c620b439e050ab575cc864fc8ed68208733f9feb48eac3569a85b68c9ca
 - filename: packages/shared-bridge/src/dto/userDto.ts
   checksum: 1d22cd52289c17a26f78bdb035db9d7f65d60c4d2aa924ef9af8d9a507b57978
 - filename: packages/shared-bridge/src/utils/file.ts
