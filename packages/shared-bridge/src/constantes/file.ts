@@ -114,8 +114,8 @@ export const FILE_CATEGORY_CONFIG = {
     multiple: true,
   },
   [FILE_CATEGORY.BUDGET]: {
-    fileKey: "filesProjSejoursBudgetPersonnes",
-    label: "Budget des personnes",
+    fileKey: "filesBudget",
+    label: "Budget",
     multiple: true,
   },
   [FILE_CATEGORY.CHANGEEVOL]: {
