@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="headings">
+    <div v-if="sejours.length > 0" class="headings">
       <p class="fr-mb-0">Nom de l'hébergement</p>
       <p class="fr-mb-0">Adresse de l'hébergement</p>
       <p class="fr-mb-0">Période</p>
@@ -49,7 +49,10 @@
       </div>
       <div class="fr-mt-6v">
         <p class="fr-mb-0">Période</p>
-        <AgrementBilanSelectMonths :modifiable="props.modifiable" @update:selected="handleMonths" />
+        <AgrementBilanSelectMonths
+          :modifiable="props.modifiable"
+          @update:selected="handleMonths"
+        />
         <p v-if="moisMeta.touched && moisErrorMessage" class="fr-error-text">
           {{ moisErrorMessage }}
         </p>
@@ -86,7 +89,7 @@ import HebergementDetail from "@/components/agrement/bilan/hebergementDetail.vue
 const props = defineProps({
   agrementId: { type: String, required: true },
   initialSejours: { type: Array, required: false, default: () => [] },
-  statut: { type: String, required: false,default: "BROUILLON" },
+  statut: { type: String, required: false, default: "BROUILLON" },
   modifiable: { type: Boolean, default: false },
 });
 

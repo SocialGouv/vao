@@ -160,12 +160,24 @@ const validationSchema = yup.object({
   bilanFinancierComptabilite: requiredUnlessBrouillon(
     yup.string().min(20, "Merci de décrire au moins 20 caractères."),
   ),
-  bilanFinancierComparatif: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
-  ),
-  bilanFinancierRessourcesHumaines: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
-  ),
+  bilanFinancierComparatif: yup
+    .string()
+    .nullable()
+    .when([], {
+      is: (val: string | null) => val && val.length > 0,
+      then: (schema) =>
+        schema.min(20, "Merci de décrire au moins 20 caractères."),
+      otherwise: (schema) => schema,
+    }),
+  bilanFinancierRessourcesHumaines: yup
+    .string()
+    .nullable()
+    .when([], {
+      is: (val: string | null) => val && val.length > 0,
+      then: (schema) =>
+        schema.min(20, "Merci de décrire au moins 20 caractères."),
+      otherwise: (schema) => schema,
+    }),
   bilanFinancierCommentaire: yup
     .string()
     .nullable()
