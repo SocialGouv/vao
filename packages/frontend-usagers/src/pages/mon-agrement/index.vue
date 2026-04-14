@@ -43,18 +43,25 @@
         <p class="fr-mt-4v">
           <b>Déclarer vos séjours</b> 2 mois minimum avant la date de départ
         </p>
-        <h2 class="fr-mb-0">
-          Formulaire du renouvellement d’agrément ({{
-            agrementAnneeRenouvellement
-          }})
-        </h2>
-        <AgrementReadOnly
-          class="fr-my-2w"
-          :init-organisme="organismeStore.organismeCourant ?? {}"
-          :init-agrement="agrementStore.agrementEnTraitement ?? {}"
-          :modifiable="false"
-          :cdn-url="`${config.public.backendUrl}/documents/`"
-        />
+        <span
+          v-if="
+            agrementStore.agrementEnTraitement?.statut !==
+            AGREMENT_STATUT.VALIDE
+          "
+        >
+          <h2 class="fr-mb-0">
+            Formulaire du renouvellement d’agrément ({{
+              agrementAnneeRenouvellement
+            }})
+          </h2>
+          <AgrementReadOnly
+            class="fr-my-2w"
+            :init-organisme="organismeStore.organismeCourant ?? {}"
+            :init-agrement="agrementStore.agrementEnTraitement ?? {}"
+            :modifiable="false"
+            :cdn-url="`${config.public.backendUrl}/documents/`"
+          />
+        </span>
       </DsfrTabContent>
 
       <DsfrTabContent
