@@ -21,25 +21,11 @@
             prend que 2 minutes.
           </p>
         </div>
-        <div class="fr-col-12 fr-col-md-6 fr-text--right">
-          <a
-            href="https://jedonnemonavis.numerique.gouv.fr/Demarches/4077?button=4503"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Je donne mon avis - nouvelle fenêtre"
-          >
-            <img
-              src="https://jedonnemonavis.numerique.gouv.fr/static/bouton-bleu-clair.svg"
-              alt="Je donne mon avis"
-            />
-          </a>
-        </div>
+        <DemandeSejourBoutonJdma />
       </div>
     </div>
   </section>
 </template>
-
-<script setup lang="ts"></script>
 
 <style scoped>
 .icon-success {
