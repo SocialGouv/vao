@@ -92,18 +92,32 @@
     </ul>
     <p>Souhaitez vous poursuivre?</p>
   </ValidationModal>
-  <div class="fr-container">
-    <div class="fr-grid-row fr-grid-row--center">
-      <div class="fr-col-5" style="text-align: center">
-        <span class="fr-text--bold fr-text--lg"
-          >Aidez-nous à améliorer ce service !</span
-        ><br />
-        <span class="fr-text--sm">
-          Donnez-nous votre avis, cela ne prend que 2 minutes.
-        </span>
-      </div>
-      <div class="fr-col-5">
-        <DemandeSejourBoutonJdma />
+  <div style="background-color: var(--background-alt-grey)">
+    <div class="fr-container">
+      <div
+        class="fr-grid-row fr-grid-row--middle fr-grid-row--center"
+        style="gap: 8rem"
+      >
+        <div
+          class="fr-col-auto"
+          style="display: flex; align-items: center; gap: 0.5rem"
+        >
+          <span aria-hidden="true" style="font-size: 1.25rem" />
+          <div>
+            <p class="fr-text--sm fr-text--bold fr-mb-0">
+              Aidez-nous à améliorer ce service !
+            </p>
+            <p class="fr-text--xs fr-mb-0">
+              Donnez-nous votre avis, cela ne prend que 2 minutes.
+            </p>
+          </div>
+        </div>
+        <div
+          class="fr-col-auto"
+          style="transform: scale(0.75); transform-origin: left center"
+        >
+          <DemandeSejourBoutonJdma />
+        </div>
       </div>
     </div>
   </div>
