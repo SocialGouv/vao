@@ -115,7 +115,8 @@ export const useAgrementStore = defineStore("agrement", {
             ),
         );
         if (filtered.length === 0) {
-          this.agrementEnTraitement = null;
+          // Pas d'agrément en cours de renouvellement, on affiche l'agrément courant
+          this.agrementEnTraitement = this.agrementCourant;
           log.i("getEnRenouvellement - DONE no agrement in renouvellement");
           return;
         }

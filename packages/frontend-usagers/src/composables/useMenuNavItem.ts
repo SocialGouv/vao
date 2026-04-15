@@ -47,10 +47,6 @@ export const useMenuNavItems = () => {
                   text: "Mon agrément",
                   to: "/mon-agrement",
                 },
-                {
-                  text: "Renouvellement d'agrément",
-                  to: "/agrement",
-                },
               ]
             : []),
         ],
