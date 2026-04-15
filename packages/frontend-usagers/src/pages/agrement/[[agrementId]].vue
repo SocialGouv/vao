@@ -236,11 +236,24 @@ async function createDocument({
         category,
         agrementId: agrementStore.agrementEnTraitement?.id ?? null,
       };
-    } catch (error) {
-      toaster.error({
-        titleTag: "h2",
-        description: error instanceof Error ? error.message : String(error),
-      });
+    } catch (error: any) {
+      console.error("Erreur lors de l'enregistrement du document", error);
+
+      if (
+        error?.response?.status === 415 ||
+        (typeof error?.message === "string" && error.message.includes("415"))
+      ) {
+        toaster.error({
+          titleTag: "h2",
+          description:
+            "Le format du fichier n’est pas supporté. Seuls les fichiers PDF, JPG et PNG sont autorisés.",
+        });
+      } else {
+        toaster.error({
+          titleTag: "h2",
+          description: error instanceof Error ? error.message : String(error),
+        });
+      }
       return null;
     }
   }
