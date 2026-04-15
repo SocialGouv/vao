@@ -236,7 +236,7 @@ async function createDocument({
         category,
         agrementId: agrementStore.agrementEnTraitement?.id ?? null,
       };
-    } catch (error: any) {
+    } catch (error) {
       handleDocumentUploadError(error, toaster);
       return null;
     }
