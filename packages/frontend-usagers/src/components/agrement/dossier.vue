@@ -126,10 +126,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from "vue";
 import { useForm, useField } from "vee-validate";
 import { FileUpload, TitleWithIcon } from "@vao/shared-ui";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
 import * as yup from "yup";
 import {
   AGREMENT_STATUT,
@@ -153,9 +154,9 @@ const props = defineProps({
 const emit = defineEmits(["previous", "next", "update:valid", "update"]);
 //const emit = defineEmits(["previous", "next", "update"]);
 
-const requiredUnlessBrouillon = (schema) =>
+const requiredUnlessBrouillon = (schema: yup.AnySchema) =>
   schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    is: (val: string) => val !== AGREMENT_STATUT.BROUILLON,
     then: (schema) => schema.required("Champ obligatoire"),
     otherwise: (schema) => schema.nullable(),
   });
@@ -204,25 +205,25 @@ const {
   errorMessage: motivationsErrorMessage,
   handleChange: onMotivationsChange,
   meta: motivationsMeta,
-} = useField("motivations");
+} = useField<string | null>("motivations");
 
 const {
   value: dateObtentionCertificat,
   errorMessage: dateObtentionCertificatErrorMessage,
   handleChange: onDateObtentionCertificatChange,
   meta: dateObtentionCertificatMeta,
-} = useField("dateObtentionCertificat");
+} = useField<string | null>("dateObtentionCertificat");
 
-const getFileByCategory = (category) => {
+const getFileByCategory = (category: string): AgrementFilesDto | null => {
   return (
     props.initAgrement?.agrementFiles?.find(
-      (file) => file.category === category,
+      (file: AgrementFilesDto) => file.category === category,
     ) || null
   );
 };
 const filesMotivation = ref(
   props.initAgrement?.agrementFiles?.filter(
-    (file) => file.category === FILE_CATEGORY.MOTIVATION,
+    (file: AgrementFilesDto) => file.category === FILE_CATEGORY.MOTIVATION,
   ) || [],
 );
 const fileImmatriculation = ref(getFileByCategory(FILE_CATEGORY.IMMATRICUL));
