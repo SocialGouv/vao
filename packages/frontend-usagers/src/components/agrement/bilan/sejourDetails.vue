@@ -63,7 +63,7 @@
         <UtilsDisplayInput
           v-else
           :value="nbFemmes"
-          :input="displayInput.IAgrementBilanAnnuel['nbFemmes']"
+          :input="displayInput.AgrementBilanAnnuelInput['nbFemmes']"
           :is-valid="nbFemmesMeta.valid"
           :error-message="nbFemmesErrorMessage"
         />
