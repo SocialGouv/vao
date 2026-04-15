@@ -109,7 +109,7 @@
 <script setup lang="ts">
 import type { FILE_CATEGORY, AgrementDto, FileKey } from "@vao/shared-bridge";
 import { AGREMENT_STATUT, FILE_CATEGORY_CONFIG } from "@vao/shared-bridge";
-import { useToaster } from "@vao/shared-ui";
+import { useToaster, handleDocumentUploadError } from "@vao/shared-ui";
 
 const route = useRoute();
 
@@ -237,23 +237,7 @@ async function createDocument({
         agrementId: agrementStore.agrementEnTraitement?.id ?? null,
       };
     } catch (error: any) {
-      console.error("Erreur lors de l'enregistrement du document", error);
-
-      if (
-        error?.response?.status === 415 ||
-        (typeof error?.message === "string" && error.message.includes("415"))
-      ) {
-        toaster.error({
-          titleTag: "h2",
-          description:
-            "Le format du fichier n’est pas supporté. Seuls les fichiers PDF, JPG et PNG sont autorisés.",
-        });
-      } else {
-        toaster.error({
-          titleTag: "h2",
-          description: error instanceof Error ? error.message : String(error),
-        });
-      }
+      handleDocumentUploadError(error, toaster);
       return null;
     }
   }
