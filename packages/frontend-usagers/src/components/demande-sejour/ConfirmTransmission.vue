@@ -9,7 +9,7 @@
   <section class="fr-container fr-my-4w">
     <p>Votre demande est en cours de traitement</p>
 
-    <div class="avis-box" role="region" aria-labelledby="avis-title">
+    <div class="avis-box">
       <div class="fr-grid-row fr-grid-row--gutters fr-grid-row--middle">
         <div class="fr-col-12 fr-col-md-6">
           <h3 id="avis-title" class="fr-h4">

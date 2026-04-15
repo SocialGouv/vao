@@ -23,21 +23,21 @@
     @update-data="() => updateDataDebounced()"
   >
     <template #cell-dateDebut="{ row }">
-      {{ displayDate(row.dateDebut) }} -<br />
-      {{ displayDate(row.dateFin) }}
+      {{ displayDate(row.dateDebut ?? "") }} -<br />
+      {{ displayDate(row.dateFin ?? "") }}
     </template>
     <template #cell-statut="{ row }">
       <div>
-        <DemandeStatusBadge :statut="row.statut" type="fu" />
+        <DemandeStatusBadge :statut="String(row.statut ?? '')" type="fu" />
       </div>
     </template>
     <template #cell-editedAt="{ row }">
-      {{ displayDate(row.editedAt) }}
+      {{ displayDate(row.editedAt ?? "") }}
     </template>
     <template #cell-custom:edit="{ row }">
       <div class="buttons-group">
         <NuxtLink
-          :to="`/demande-sejour/${row.declarationId}?defaultTabIndex=0`"
+          :to="`/demande-sejour/${String(row.declarationId ?? '')}?defaultTabIndex=0`"
           title="Naviguer vers la demande séjour"
           class="fr-btn fr-btn--sm inline-flex justify-center no-background-image"
         >
@@ -57,12 +57,17 @@
           secondary
           size="small"
           type="button"
-          :label="row.statut === draftStatus ? 'Supprimer' : 'Annuler'"
+          :label="String(row.statut ?? '') === draftStatus ? 'Supprimer' : 'Annuler'"
           :disabled="
-            !enabledDeleteCancelStatus.includes(row.statut) ||
+            !enabledDeleteCancelStatus.includes(String(row.statut ?? '')) ||
             userStore.user?.userSiret !== row.siret
           "
-          @click="handleRemoveClose(row.declarationId, row.statut)"
+          @click="
+            handleRemoveClose(
+              String(row.declarationId ?? ''),
+              String(row.statut ?? ''),
+            )
+          "
         />
         <DsfrButton
           icon="ri:file-copy-2-fill"
@@ -71,8 +76,8 @@
           size="small"
           type="button"
           label="Dupliquer"
-          :disabled="!enabledCopyStatus.includes(row.statut)"
-          @click="handleDuplication(row.declarationId)"
+          :disabled="!enabledCopyStatus.includes(String(row.statut ?? ''))"
+          @click="handleDuplication(String(row.declarationId ?? ''))"
         />
       </div>
     </template>
@@ -254,7 +259,7 @@ const sortableColumns = columns.flatMap((column) =>
   column.options?.isSortable ? [column.key] : [],
 ) as NestedKeys<object>[];
 
-const { limit, offset, sort, sortDirection } = usePagination<object>(
+const { limit, offset, sort, sortDirection } = usePagination(
   {
     limit: queryString.limit,
     offset: queryString.offset,
@@ -317,8 +322,12 @@ onUnmounted(() => {
   }
 });
 
-const displayDate = (date: string | Date): string =>
-  dayjs(date).format("DD/MM/YYYY");
+const displayDate = (date: unknown): string => {
+  if (typeof date !== "string" && !(date instanceof Date)) {
+    return "";
+  }
+  return dayjs(date).format("DD/MM/YYYY");
+};
 
 const init = async (): Promise<void> => {
   await departementStore.fetch();
