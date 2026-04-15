@@ -26,13 +26,13 @@
       {{ displayDate(row.dateDebut) }} -<br />
       {{ displayDate(row.dateFin) }}
     </template>
-    <template #cell-statut="{ cell }">
+    <template #cell-statut="{ row }">
       <div>
-        <DemandeStatusBadge :statut="cell" type="fu" />
+        <DemandeStatusBadge :statut="row.statut" type="fu" />
       </div>
     </template>
-    <template #cell-editedAt="{ cell }">
-      {{ displayDate(cell) }}
+    <template #cell-editedAt="{ row }">
+      {{ displayDate(row.editedAt) }}
     </template>
     <template #cell-custom:edit="{ row }">
       <div class="buttons-group">
@@ -42,9 +42,9 @@
           class="fr-btn fr-btn--sm inline-flex justify-center no-background-image"
         >
           <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
-          <span class="fr-sr-only"
-            >Naviguer vers la demande séjour: {{ row.idFonctionnelle }}</span
-          >
+          <span class="fr-sr-only">
+            Naviguer vers la demande séjour: {{ row.idFonctionnelle }}
+          </span>
         </NuxtLink>
         <DsfrButton
           class="button--danger"
@@ -60,7 +60,7 @@
           :label="row.statut === draftStatus ? 'Supprimer' : 'Annuler'"
           :disabled="
             !enabledDeleteCancelStatus.includes(row.statut) ||
-            userStore.user?.siret !== row.siret
+            userStore.user?.userSiret !== row.siret
           "
           @click="handleRemoveClose(row.declarationId, row.statut)"
         />
@@ -86,15 +86,46 @@
     :on-validate="popUpParams?.cb ?? (() => {})"
     validation-label="Confirmer"
   >
-    <p>Vous vous apprêtez à effectuer l’action suivante :</p>
+    <p>Vous vous apprêtez à effectuer l'action suivante :</p>
     <ul>
       <li>{{ popUpParams?.msg }}</li>
     </ul>
     <p>Souhaitez vous poursuivre?</p>
   </ValidationModal>
+  <div style="background-color: var(--background-alt-grey)">
+    <div class="fr-container">
+      <div
+        class="fr-grid-row fr-grid-row--middle fr-grid-row--center"
+        style="gap: 8rem"
+      >
+        <div
+          class="fr-col-auto"
+          style="display: flex; align-items: center; gap: 0.5rem"
+        >
+          <span aria-hidden="true" style="font-size: 1.25rem" />
+          <div>
+            <p class="fr-text--sm fr-text--bold fr-mb-0">
+              Aidez-nous à améliorer ce service !
+            </p>
+            <p class="fr-text--xs fr-mb-0">
+              Donnez-nous votre avis, cela ne prend que 2 minutes.
+            </p>
+          </div>
+        </div>
+        <div
+          class="fr-col-auto"
+          style="transform: scale(0.75); transform-origin: left center"
+        >
+          <DemandeSejourBoutonJdma />
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script setup>
+<script setup lang="ts" generic="Data extends Row">
+import type { Row, Columns, NestedKeys } from "@vao/shared-ui";
+
 import dayjs from "dayjs";
 import {
   DemandeStatusBadge,
@@ -107,6 +138,25 @@ import {
   useToaster,
 } from "@vao/shared-ui";
 import { exportCsv } from "../../utils/csv";
+interface PopUpParams {
+  cb: () => void;
+  msg: string;
+}
+
+interface ApiQuery extends Record<string, unknown> {
+  limit: number;
+  offset: number;
+  sortBy?: string;
+  sortDirection?: string;
+  idFonctionnelle?: string;
+  libelle?: string;
+  organisme?: string;
+  departementSuivi?: string[];
+  statut?: string[];
+  periode?: string[];
+}
+
+// ─── Composables & stores ─────────────────────────────────────────────────────
 
 const route = useRoute();
 const demandeSejourStore = useDemandeSejourStore();
@@ -114,8 +164,8 @@ const departementStore = useDepartementStore();
 const toaster = useToaster();
 const userStore = useUserStore();
 
-const data = computed(() => demandeSejourStore.demandes);
-const total = computed(() => demandeSejourStore.totalDemandes);
+const data = computed(() => demandeSejourStore.demandes as Data[]);
+const total = computed(() => demandeSejourStore.totalDemandes ?? (0 as number));
 const optionType = columnsTable.optionType;
 
 const { query } = route;
@@ -123,7 +173,7 @@ const { query } = route;
 const title = "Liste des séjours";
 
 const draftStatus = statusUtils.defaultStatus.BROUILLON;
-const enabledCopyStatus = [
+const enabledCopyStatus: string[] = [
   statusUtils.defaultStatus.BROUILLON,
   statusUtils.defaultStatus.TRANSMISE,
   statusUtils.defaultStatus.EN_COURS,
@@ -131,7 +181,7 @@ const enabledCopyStatus = [
   statusUtils.defaultStatus.ABANDONNEE,
 ];
 
-const enabledDeleteCancelStatus = [
+const enabledDeleteCancelStatus: string[] = [
   statusUtils.defaultStatus.BROUILLON,
   statusUtils.defaultStatus.TRANSMISE,
   statusUtils.defaultStatus.EN_COURS,
@@ -143,7 +193,7 @@ const enabledDeleteCancelStatus = [
   statusUtils.defaultStatus.VALIDEE_8J,
 ];
 
-const defs = [
+const defs: [string, string, string][] = [
   ["idFonctionnelle", "Numéro de déclaration", optionType.SORTABLE],
   ["libelle", "Nom du séjour", optionType.SORTABLE],
   ["departementSuivi", "Dept", optionType.SORTABLE],
@@ -153,50 +203,77 @@ const defs = [
   ["custom:edit", "Action", optionType.FIXED_RIGHT],
 ];
 
-const columns = columnsTable.buildColumns(defs);
+const columns: Columns<Data> = columnsTable.buildColumns(defs) as Columns<Data>;
+const defaultStatus: string[] = [...Object.values(statusUtils.defaultStatus)];
 
-const sortableColumns = columns.flatMap((column) =>
-  column.options?.isSortable ? [column.key] : [],
-);
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const defaultStatus = [...Object.values(statusUtils.defaultStatus)];
+const paramsToArray = (params: string | string[]): string[] =>
+  Array.isArray(params) ? params : [params];
 
 const defaultDepartements = computed(() =>
   departementStore.departements.map((d) => ({ label: d.text, value: d.value })),
 );
+const seasons: string[] = ["hiver", "printemps", "été", "automne"];
 
-const seasons = ["hiver", "printemps", "été", "automne"];
-
-const paramsToArray = (params) => (Array.isArray(params) ? params : [params]);
-
-const idFonctionnelle = ref(query.idFonctionnelle ?? "");
-const libelle = ref(query.libelle ?? "");
-const siret = ref(query.siret ?? "");
-const departementSuivi = ref([]);
-const status = ref(
+const idFonctionnelle = ref<string>(
+  typeof query.idFonctionnelle === "string" ? query.idFonctionnelle : "",
+);
+const libelle = ref<string>(
+  typeof query.libelle === "string" ? query.libelle : "",
+);
+const siret = ref<string>(typeof query.siret === "string" ? query.siret : "");
+const departementSuivi = ref<string[]>([]);
+const status = ref<string[]>(
   query.statut
-    ? paramsToArray(query.statut).filter((statut) =>
-        defaultStatus.includes(statut),
+    ? paramsToArray(query.statut as string | string[]).filter((s) =>
+        defaultStatus.includes(s),
       )
     : [],
 );
-const season = ref(
+const season = ref<string[]>(
   query.periode
-    ? paramsToArray(query.periode).filter((s) => seasons.includes(s))
+    ? paramsToArray(query.periode as string | string[]).filter((s) =>
+        seasons.includes(s),
+      )
     : [],
 );
-
-const { limit, offset, sort, sortDirection } = usePagination(
-  query,
-  sortableColumns,
+// Convert LocationQuery to Record<string, string>
+const queryString: Record<string, string> = Object.fromEntries(
+  Object.entries(query).map(([key, value]) => [
+    key,
+    Array.isArray(value)
+      ? value.filter((v) => v != null).join(",")
+      : value == null
+        ? ""
+        : String(value),
+  ]),
 );
 
-const getSearchParams = () => ({
+const sortableColumns = columns.flatMap((column) =>
+  column.options?.isSortable ? [column.key] : [],
+) as NestedKeys<object>[];
+
+const { limit, offset, sort, sortDirection } = usePagination<object>(
+  {
+    limit: queryString.limit,
+    offset: queryString.offset,
+    sort: queryString.sort,
+    sortDirection: queryString.sortDirection as "asc" | "desc" | "",
+  },
+  sortableColumns,
+) as {
+  limit: Ref<number>;
+  offset: Ref<number>;
+  sort: Ref<NestedKeys<Data> | "">;
+  sortDirection: Ref<"asc" | "desc" | "">;
+};
+
+const getSearchParams = (): Partial<ApiQuery> => ({
   ...(isValidParams(idFonctionnelle.value)
     ? { idFonctionnelle: idFonctionnelle.value }
     : {}),
   ...(isValidParams(libelle.value) ? { libelle: libelle.value } : {}),
-  ...(isValidParams(organisme.value) ? { organisme: organisme.value } : {}),
   ...(isValidParams(departementSuivi.value)
     ? { departementSuivi: departementSuivi.value }
     : {}),
@@ -204,9 +281,9 @@ const getSearchParams = () => ({
   ...(isValidParams(season.value) ? { periode: season.value } : {}),
 });
 
-let timeout = null;
+let timeout: ReturnType<typeof setTimeout> | null = null;
 
-const generateApiQuery = () => ({
+const generateApiQuery = (): ApiQuery => ({
   limit: limit.value,
   offset: offset.value,
   ...(isValidParams(sort.value) ? { sortBy: sort.value } : {}),
@@ -216,9 +293,11 @@ const generateApiQuery = () => ({
   ...getSearchParams(),
 });
 
-const updateData = (query) => demandeSejourStore.fetchDemandes(query);
+const updateData = (query?: ApiQuery): void => {
+  demandeSejourStore.fetchDemandes(query ?? {});
+};
 
-const updateDataDebounced = (resetOffset = false) => {
+const updateDataDebounced = (resetOffset = false): void => {
   if (resetOffset) {
     offset.value = 0;
   }
@@ -228,9 +307,7 @@ const updateDataDebounced = (resetOffset = false) => {
   timeout = setTimeout(() => {
     const query = generateApiQuery();
     updateData(query);
-    navigateTo({
-      query,
-    });
+    navigateTo({ query: query as Record<string, string | string[]> });
   }, 300);
 };
 
@@ -240,12 +317,13 @@ onUnmounted(() => {
   }
 });
 
-const displayDate = (date) => dayjs(date).format("DD/MM/YYYY");
+const displayDate = (date: string | Date): string =>
+  dayjs(date).format("DD/MM/YYYY");
 
-const init = async () => {
+const init = async (): Promise<void> => {
   await departementStore.fetch();
   departementSuivi.value = query.departementSuivi?.length
-    ? paramsToArray(query.departementSuivi).filter((dep) =>
+    ? paramsToArray(query.departementSuivi as string | string[]).filter((dep) =>
         defaultDepartements.value.some((d) => d.value === dep),
       )
     : [];
@@ -255,32 +333,32 @@ const init = async () => {
 
 init();
 
-// actions
+// ─── Actions ──────────────────────────────────────────────────────────────────
 
-const popUpParams = ref(null);
+const popUpParams = ref<PopUpParams | null>(null);
 
-const handleDuplication = (declarationId) => {
+const handleDuplication = (declarationId: string): void => {
   popUpParams.value = {
     cb: () => copyDS(declarationId),
-    msg: "Duplication d’une déclaration",
+    msg: "Duplication d'une déclaration",
   };
 };
 
-const handleRemoveClose = (declarationId, status) => {
+const handleRemoveClose = (declarationId: string, status: string): void => {
   if (status === draftStatus) {
     popUpParams.value = {
       cb: () => deleteDS(declarationId),
-      msg: "Suppression d’une déclaration",
+      msg: "Suppression d'une déclaration",
     };
   } else {
     popUpParams.value = {
       cb: () => cancelDS(declarationId),
-      msg: "Annulation d’une déclaration",
+      msg: "Annulation d'une déclaration",
     };
   }
 };
 
-const displayToasterError = (type) => {
+const displayToasterError = (type: string): void => {
   toaster.error({
     titleTag: "h2",
     description: `Une erreur est survenue lors de ${type} de la déclaration de séjour`,
@@ -288,16 +366,21 @@ const displayToasterError = (type) => {
   });
 };
 
-const copyDS = async (declarationId) => {
+const copyDS = async (declarationId: string): Promise<void> => {
   try {
     const response = await demandeSejourStore.copyDemandeSejour(declarationId);
     if (response.declarationId) {
-      toaster.success({ titleTag: "h2", description: `Déclaration dupliquée` });
+      toaster.success({ titleTag: "h2", description: "Déclaration dupliquée" });
     } else {
       displayToasterError("la copie");
     }
-  } catch (error) {
-    if (error?.data?.name === "LibelleTooLong") {
+  } catch (error: unknown) {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "data" in error &&
+      (error as { data?: { name?: string } }).data?.name === "LibelleTooLong"
+    ) {
       toaster.error({
         titleTag: "h2",
         description:
@@ -313,45 +396,43 @@ const copyDS = async (declarationId) => {
   updateData();
 };
 
-const deleteDS = async (declarationId) => {
+const deleteDS = async (declarationId: string): Promise<void> => {
   try {
     const response =
       await demandeSejourStore.deleteDemandeSejour(declarationId);
     if (response.deletedRows === 1) {
-      toaster.success({ titleTag: "h2", description: `Déclaration supprimée` });
+      toaster.success({ titleTag: "h2", description: "Déclaration supprimée" });
     } else {
       displayToasterError("la suppression");
     }
-  } catch (error) {
+  } catch (error: Error | unknown) {
     displayToasterError("la suppression");
     throw error;
   } finally {
-    // closeModal
     popUpParams.value = null;
   }
   updateData();
 };
 
-const cancelDS = async (declarationId) => {
+const cancelDS = async (declarationId: string): Promise<void> => {
   try {
     const response =
       await demandeSejourStore.cancelDemandeSejour(declarationId);
     if (response.canceletedRows === 1) {
-      toaster.success({ titleTag: "h2", description: `Déclaration annulée` });
+      toaster.success({ titleTag: "h2", description: "Déclaration annulée" });
     } else {
       displayToasterError("l'annulation");
     }
-  } catch (error) {
+  } catch (error: unknown) {
     displayToasterError("l'annulation");
     throw error;
   } finally {
-    // closeModal
     popUpParams.value = null;
   }
   updateData();
 };
 
-const getCsv = async () => {
+const getCsv = async (): Promise<void> => {
   const response = await demandeSejourStore.exportSejours();
   exportCsv(response, "sejours.csv");
 };
