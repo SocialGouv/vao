@@ -63,7 +63,7 @@
           @update:model-value="filtersUpdate"
         >
           <template #checkbox-label="{ option }">
-            {{ option.charAt(0).toUpperCase() + option.slice(1) }}
+            {{ capitalize(option.label) }}
           </template>
         </DsfrMultiselectV2>
       </div>
@@ -190,6 +190,11 @@ const seasonSync = computed({
     emits("update:season", value);
   },
 });
+
+function capitalize(str: string): string {
+  if (!str) return "";
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
 
 const filtersUpdate = () => emits("filters-update");
 const exportGet = () => emits("export-get");
