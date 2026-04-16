@@ -1,9 +1,5 @@
 <template>
-  <TitleWithIcon
-    icon="fr-icon-map-pin-2-fill"
-    :level="3"
-    title-class="fr-text--lead fr-mb-0"
-  >
+  <TitleWithIcon icon="fr-icon-map-pin-2-fill" :level="3">
     Séjours (par années)
   </TitleWithIcon>
 
@@ -11,7 +7,7 @@
 
   <DsfrTabs
     v-model="selectedTabIndex"
-    tab-list-name="display-sejours-tabs"
+    tab-list-name="Séjours par année"
     :tab-titles="tabTitles"
     :initial-selected-index="initialSelectedIndex"
   >

@@ -7,62 +7,54 @@
     Bilan financier sur les 4 dernières années
   </TitleWithIcon>
   <div class="fr-mt-8v">
-    <div class="fr-fieldset__element">
-      <div class="fr-col-12">
-        <DisplayInputCommon
-          :value="props.initAgrement?.bilanFinancierComptabilite"
-          :input="
-            AgrementDisplayInput.AgrementBilanAnnuelInput[
-              'bilanFinancierComptabilite'
-            ]
-          "
-        />
-      </div>
+    <div class="fr-col-12">
+      <DisplayInputCommon
+        :value="props.initAgrement?.bilanFinancierComptabilite"
+        :input="
+          AgrementDisplayInput.AgrementBilanAnnuelInput[
+            'bilanFinancierComptabilite'
+          ]
+        "
+      />
     </div>
   </div>
-  <div class="fr-mt-8v">
-    <div class="fr-fieldset__element">
-      <div class="fr-col-12">
-        <DisplayInputCommon
-          :value="props.initAgrement?.bilanFinancierComparatif"
-          :input="
-            AgrementDisplayInput.AgrementBilanAnnuelInput[
-              'bilanFinancierComparatif'
-            ]
-          "
-        />
-      </div>
+  <div class="fr-my-2w">
+    <div class="fr-col-12">
+      <DisplayInputCommon
+        :value="props.initAgrement?.bilanFinancierComparatif"
+        :input="
+          AgrementDisplayInput.AgrementBilanAnnuelInput[
+            'bilanFinancierComparatif'
+          ]
+        "
+      />
     </div>
   </div>
-  <div class="fr-mt-8v">
-    <div class="fr-fieldset__element">
-      <div class="fr-col-12">
-        <DisplayInputCommon
-          :value="props.initAgrement?.bilanFinancierRessourcesHumaines"
-          :input="
-            AgrementDisplayInput.AgrementBilanAnnuelInput[
-              'bilanFinancierRessourcesHumaines'
-            ]
-          "
-        />
-      </div>
+  <div class="fr-my-2w">
+    <div class="fr-col-12">
+      <DisplayInputCommon
+        :value="props.initAgrement?.bilanFinancierRessourcesHumaines"
+        :input="
+          AgrementDisplayInput.AgrementBilanAnnuelInput[
+            'bilanFinancierRessourcesHumaines'
+          ]
+        "
+      />
     </div>
   </div>
-  <div class="fr-mt-8v">
-    <div class="fr-fieldset__element">
-      <div class="fr-col-12">
-        <DisplayInputCommon
-          :value="props.initAgrement?.bilanFinancierCommentaire"
-          :input="
-            AgrementDisplayInput.AgrementBilanAnnuelInput[
-              'bilanFinancierCommentaire'
-            ]
-          "
-        />
-      </div>
+  <div class="fr-my-2w">
+    <div class="fr-col-12">
+      <DisplayInputCommon
+        :value="props.initAgrement?.bilanFinancierCommentaire"
+        :input="
+          AgrementDisplayInput.AgrementBilanAnnuelInput[
+            'bilanFinancierCommentaire'
+          ]
+        "
+      />
     </div>
   </div>
-  <div class="fr-fieldset__element fr-mt-6v">
+  <div class="fr-my-2w">
     <MultiFilesUpload
       v-model="filesBilanFinancierQuatreAnnees"
       :modifiable="false"

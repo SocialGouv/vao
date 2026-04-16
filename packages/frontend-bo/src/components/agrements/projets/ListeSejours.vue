@@ -1,21 +1,72 @@
 <template>
   <div>
-    <div class="headings">
-      <p class="fr-mb-0">Nom de l'hébergement</p>
-      <p class="fr-mb-0">Adresse de l'hébergement</p>
-      <p class="fr-mb-0">Période</p>
-      <p class="fr-mb-0">Nombre de vacanciers</p>
-      <p></p>
-    </div>
-    <div v-for="(sejour, index) in sejours" :key="index">
-      <HebergementDetail :hebergement="sejour" />
-    </div>
+    <DsfrDataTableV2Wrapper
+      v-model:limit="limit"
+      v-model:offset="offset"
+      :columns="columns"
+      :data="props.initialSejours || []"
+      :total="props.initialSejours?.length || 0"
+      row-id="nomHebergement"
+    >
+      <template #cell-mois="{ row }">
+        {{ row.mois ? formatMois(row.mois) : "" }}
+      </template>
+      <template #cell-adresse="{ row }">
+        {{ row.adresse.label || "" }}
+      </template>
+    </DsfrDataTableV2Wrapper>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
-import HebergementDetail from "../bilan/HebergementDetail.vue";
+import type { Columns, NestedKeys } from "@vao/shared-ui";
+
+import {
+  DsfrDataTableV2Wrapper,
+  usePagination,
+  columnsTable,
+} from "@vao/shared-ui";
+import type { BilanHebergementDto } from "@vao/shared-bridge";
+const route = useRoute();
+
+const optionType = columnsTable.optionType;
+
+const { query } = route;
+
+const defs: [string, string, string][] = [
+  ["nomHebergement", "Nom de l'hébergement", optionType.NONE],
+  ["adresse", "Adresse", optionType.NONE],
+  ["mois", "Période", optionType.NONE],
+  ["nbVacanciers", "Nombre de vacanciers", optionType.NONE],
+];
+
+const queryString: Record<string, string> = Object.fromEntries(
+  Object.entries(query).map(([key, value]) => [
+    key,
+    Array.isArray(value)
+      ? value.filter((v) => v != null).join(",")
+      : value == null
+        ? ""
+        : String(value),
+  ]),
+);
+
+const columns = columnsTable.buildColumns(
+  defs,
+) as unknown as Columns<BilanHebergementDto>;
+
+const sortableColumns: NestedKeys<BilanHebergementDto>[] = [];
+
+const { limit, offset } = usePagination<BilanHebergementDto>(
+  {
+    limit: queryString.limit,
+    offset: queryString.offset,
+    sort: queryString.sort,
+    sortDirection: queryString.sortDirection as "asc" | "desc" | "",
+  },
+  sortableColumns,
+);
 
 interface Sejour {
   [key: string]: any;
@@ -31,7 +82,26 @@ const props = defineProps({
   statut: { type: String, required: false, default: "BROUILLON" },
 });
 
-const sejours = ref<Sejour[]>([...props.initialSejours]);
+function formatMois(mois: number[] | null): string {
+  if (!mois || mois.length === 0) return "-";
+
+  const moisLabels = [
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
+  ];
+
+  return mois.map((m) => moisLabels[m - 1] || m).join(", ");
+}
 </script>
 
 <style scoped>

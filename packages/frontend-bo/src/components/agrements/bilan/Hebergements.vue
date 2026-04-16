@@ -1,47 +1,73 @@
 <template>
   <div>
-    <div class="headings">
-      <p>Nom de l'hébergement</p>
-      <p>Adresse</p>
-      <p>Période</p>
-      <p>Nombre de jours</p>
-    </div>
-
-    <div
-      v-for="(hebergement, index) in paginatedHebergements"
-      :key="index"
-      class="row"
+    <DsfrDataTableV2Wrapper
+      v-model:limit="limit"
+      v-model:offset="offset"
+      :columns="columns"
+      :data="props.hebergements || []"
+      :total="props.hebergements?.length || 0"
+      :total-pages="totalPages"
+      row-id="nomHebergement"
     >
-      <p>{{ hebergement.nomHebergement || "-" }}</p>
-
-      <p>{{ hebergement.adresse?.label || "-" }}</p>
-
-      <p>{{ formatMois(hebergement.mois) }}</p>
-
-      <p>{{ hebergement.nbJours ?? "-" }}</p>
-    </div>
-
-    <!-- Pagination -->
-    <div v-if="totalPages > 1" class="pagination-center">
-      <button
-        v-for="page in totalPages"
-        :key="page"
-        :class="{ active: currentPage === page - 1 }"
-        @click="currentPage = page - 1"
-      >
-        {{ page }}
-      </button>
-    </div>
+      <template #cell-mois="{ row }">
+        {{ row.mois ? formatMois(row.mois) : "" }}
+      </template>
+    </DsfrDataTableV2Wrapper>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import type { Columns, NestedKeys } from "@vao/shared-ui";
+
+import {
+  DsfrDataTableV2Wrapper,
+  usePagination,
+  columnsTable,
+} from "@vao/shared-ui";
 import type { BilanHebergementDto } from "@vao/shared-bridge";
+const route = useRoute();
 
 const props = defineProps<{
   hebergements: BilanHebergementDto[] | null;
 }>();
+const optionType = columnsTable.optionType;
+
+const { query } = route;
+
+const defs: [string, string, string][] = [
+  ["nomHebergement", "Nom de l'hébergement", optionType.NONE],
+  ["adresse", "Adresse", optionType.NONE],
+  ["mois", "Période", optionType.NONE],
+  ["nbJours", "Nombre de jours", optionType.NONE],
+];
+
+const queryString: Record<string, string> = Object.fromEntries(
+  Object.entries(query).map(([key, value]) => [
+    key,
+    Array.isArray(value)
+      ? value.filter((v) => v != null).join(",")
+      : value == null
+        ? ""
+        : String(value),
+  ]),
+);
+
+const columns = columnsTable.buildColumns(
+  defs,
+) as unknown as Columns<BilanHebergementDto>;
+
+const sortableColumns: NestedKeys<BilanHebergementDto>[] = [];
+
+const { limit, offset } = usePagination<BilanHebergementDto>(
+  {
+    limit: queryString.limit,
+    offset: queryString.offset,
+    sort: queryString.sort,
+    sortDirection: queryString.sortDirection as "asc" | "desc" | "",
+  },
+  sortableColumns,
+);
 
 const ITEMS_PER_PAGE = 10;
 const currentPage = ref(0);

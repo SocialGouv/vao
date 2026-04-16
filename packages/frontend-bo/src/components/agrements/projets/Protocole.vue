@@ -6,7 +6,7 @@
   >
     Protocole de réorientation, évacuation, rapatriement prévu
   </TitleWithIcon>
-  <p><b>Réorientation, évacuation</b></p>
+  <h4 class="fr-text--lg">Réorientation, évacuation</h4>
 
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
@@ -34,7 +34,7 @@
     />
   </div>
   <hr class="fr-mt-8v" />
-  <p><b>Rapatriement</b></p>
+  <h4 class="fr-text--lg">Rapatriement</h4>
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
       <DisplayInputCommon

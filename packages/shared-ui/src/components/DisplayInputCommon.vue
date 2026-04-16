@@ -1,19 +1,13 @@
 <template>
-  <div class="container" :class="{ 'container--error': !isValid }">
-    <div v-if="labelVisible" class="fr-col-10">
-      <span class="read-only-label">{{ input.label }}</span>
+  <div :class="['container', !isValid ? 'container--error' : '']">
+    <div>
+      <dl class="fr-text--sm fr-pl-0">
+        <dt v-if="labelVisible">{{ input.label }} :</dt>
+        <dd>
+          {{ displayValue ? displayValue : "-" }}
+        </dd>
+      </dl>
     </div>
-
-    <div class="fr-col-10">
-      <div class="read-only-box">
-        <span class="read-only-value" :class="{ 'is-empty': !displayValue }">
-          <slot :value="displayValue">
-            {{ displayValue || "—" }}
-          </slot>
-        </span>
-      </div>
-    </div>
-
     <p v-if="!isValid" class="fr-error-text" role="alert" aria-live="polite">
       {{ errorMessage || "Champ invalide" }}
     </p>
@@ -107,7 +101,6 @@ const displayValue = computed(() => {
   flex-direction: column;
   justify-content: left;
   align-items: start;
-  margin-bottom: 1em;
 }
 
 .display-info-bloc {
@@ -119,17 +112,18 @@ const displayValue = computed(() => {
 .container--error .read-only-value {
   color: var(--text-default-error);
 }
-.read-only-box {
-  width: 100%;
-  min-height: 2.2rem;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: #fafafa;
-}
 
-.read-only-value.is-empty {
-  color: #999;
-  font-style: italic;
+dl {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  row-gap: 0.5rem;
+  column-gap: 1rem;
+  margin: 0;
+}
+dd {
+  padding-left: 0;
+}
+dt {
+  font-weight: bold;
 }
 </style>

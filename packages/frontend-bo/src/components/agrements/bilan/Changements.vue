@@ -6,19 +6,17 @@
   >
     Changement ou évolution
   </TitleWithIcon>
-  <div class="fr-fieldset__element">
-    <div class="fr-col-12">
-      <DisplayInputCommon
-        :value="props.initAgrement?.bilanChangementEvolution"
-        :input="
-          AgrementDisplayInput.AgrementBilanAnnuelInput[
-            'bilanChangementEvolution'
-          ]
-        "
-      />
-    </div>
+  <div class="fr-my-2w">
+    <DisplayInputCommon
+      :value="props.initAgrement?.bilanChangementEvolution"
+      :input="
+        AgrementDisplayInput.AgrementBilanAnnuelInput[
+          'bilanChangementEvolution'
+        ]
+      "
+    />
   </div>
-  <div class="fr-fieldset__element">
+  <div class="fr-my-2w">
     <MultiFilesUpload
       v-model="filesChangeEvol"
       label="Ajouter des fichiers (optionnel)"
@@ -26,15 +24,13 @@
       :cdn-url="props.cdnUrl"
     />
   </div>
-  <div class="fr-fieldset__element">
-    <DsfrCheckbox
-      v-model="bilanAucunChangementEvolution"
-      name="checkbox-required-custom"
-      label="Aucun changement ou évolution à déclarer."
-      :readonly="true"
-      :value="true"
-    />
-  </div>
+  <p class="fr-my-2w fr-text--bold">
+    {{
+      bilanAucunChangementEvolution
+        ? "Aucun changement ou évolution n'a été déclaré."
+        : "Des changements ou évolutions ont été déclarés."
+    }}
+  </p>
 </template>
 
 <script setup lang="ts">

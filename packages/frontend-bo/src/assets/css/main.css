@@ -11,7 +11,7 @@
 }
 
 .fr-multiselect__collapse {
-  z-index: 2!important;
+  z-index: 2 !important;
 }
 
 .no-background-image {
@@ -51,6 +51,10 @@
   gap: 1rem;
 }
 
+.fr-my-2w {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
 /* Harmonisation des champs input, select et multiselect dans les filtres */
 .default-table-filters-bar .filters-bar__input-group > input,
 .default-table-filters-bar .filters-bar__select,
@@ -63,4 +67,8 @@
 
 .fr-select .fr-input {
   min-height: 2.5rem; /* DSFR default input */
+}
+
+.separator {
+  border-bottom: 1px solid var(--border-default-grey);
 }

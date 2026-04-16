@@ -208,11 +208,11 @@ fileignoreconfig:
 - filename: packages/frontend-bo/src/components/agrements/Coordonnees.vue
   checksum: fe3c7cdf10cbff661284f2ba3c9a3e42d4e583ad207ca9257d5e8ee8eaa4b5a6
 - filename: packages/frontend-bo/src/components/agrements/bilan/Hebergements.vue
-  checksum: 0ed786cfbce9c9272dbe101c59828c11e75211c804da0055363fec891af6bb3c
+  checksum: 57875f736c5d66c9cbc17f0e0f107f994e831b854634bb8ca56c6ad75ca579e0
 - filename: packages/frontend-bo/src/components/agrements/bilan/Sejours.vue
   checksum: 42c0f273cc6ebd818c3dc25afd1de9e8033f0af90739bdd42f2bbb9ce33f4251
 - filename: packages/frontend-bo/src/components/agrements/projets/ListeSejours.vue
-  checksum: d911b0668bbfef30cfa1002114d099c7dfa55f2a1deab4395eddb7d3e756c88b
+  checksum: dd5d5b3d5a2801be5f9eb32d613ed3fb796bdca6dde97c4a9f7b7906d4b205ee
 - filename: packages/frontend-bo/src/components/connexion/email/validateToken.client.vue
   checksum: 595435cdea445525554cb0d703a53cf277127a3c0ad39c02502f865cb9fc5dd0
 - filename: packages/frontend-bo/src/components/demandes-sejour/DefaultTable.vue

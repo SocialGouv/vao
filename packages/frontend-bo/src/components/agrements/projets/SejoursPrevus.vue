@@ -20,14 +20,15 @@
     :agrement-id="props.initAgrement.id"
     :initial-sejours="props.initAgrement.agrementSejours || []"
   />
-  <hr />
-  <p><b>Informations sur les vacanciers</b></p>
+  <div class="fr-my-2w separator"></div>
+  <!-- TODO AJOUTER UN BORDER LINE genre fr-border-bottom dsfr -->
+  <p class="fr-text--bold">Informations sur les vacanciers</p>
   <AgrementsTypeDeficiences
     ref="typeDeficiencesRef"
     :type-deficiences="props.initAgrement.sejourTypeHandicap || []"
   />
-  <hr />
-  <p class="fr-mb-1v"><b>Informations complémentaires</b></p>
+  <div class="fr-my-2w separator"></div>
+  <p class="fr-mb-1v fr-text--bold">Informations complémentaires</p>
   <div class="fr-col-6 fr-mb-4v">
     <DisplayInputCommon
       :value="props.initAgrement.sejourNbEnvisage"
@@ -57,6 +58,7 @@ import {
 } from "@vao/shared-ui";
 import { FILE_CATEGORY, type AgrementFilesDto } from "@vao/shared-bridge";
 import { ref } from "vue";
+import DsfrDataTableV2 from "@vao/shared-ui/components/Table/DsfrDataTableV2.vue";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
