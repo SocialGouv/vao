@@ -45,10 +45,12 @@ export function handleDocumentUploadError(
         "Le fichier téléversé dépasse la taille maximale autorisée (5 Mo).",
     });
     return;
-  } else {
-    toaster.error({
-      titleTag: "h2",
-      description: error instanceof Error ? error.message : String(error),
-    });
   }
+
+  toaster.error({
+    titleTag: "h2",
+    description:
+      (error instanceof Error ? error.message : String(error)) ||
+      "Une erreur inattendue est survenue lors de l'upload du fichier.",
+  });
 }
