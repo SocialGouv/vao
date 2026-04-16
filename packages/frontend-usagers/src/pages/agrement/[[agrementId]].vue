@@ -109,7 +109,7 @@
 <script setup lang="ts">
 import type { FILE_CATEGORY, AgrementDto, FileKey } from "@vao/shared-bridge";
 import { AGREMENT_STATUT, FILE_CATEGORY_CONFIG } from "@vao/shared-bridge";
-import { useToaster } from "@vao/shared-ui";
+import { useToaster, handleDocumentUploadError } from "@vao/shared-ui";
 
 const route = useRoute();
 
@@ -237,10 +237,7 @@ async function createDocument({
         agrementId: agrementStore.agrementEnTraitement?.id ?? null,
       };
     } catch (error) {
-      toaster.error({
-        titleTag: "h2",
-        description: error instanceof Error ? error.message : String(error),
-      });
+      handleDocumentUploadError(error, toaster);
       return null;
     }
   }

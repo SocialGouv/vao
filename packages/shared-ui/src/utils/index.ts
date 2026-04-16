@@ -9,6 +9,7 @@ import status from "./status";
 import statusUser from "./statusUser";
 import * as columnsTable from "./columnsTable";
 import * as fileUtils from "./file";
+import { handleDocumentUploadError } from "./handleDocumentUploadError";
 
 const regex = hebergement;
 const eigUtilsHebergement = hebergement;
@@ -31,4 +32,5 @@ export {
   status,
   statusUser,
   fileUtils,
+  handleDocumentUploadError,
 };

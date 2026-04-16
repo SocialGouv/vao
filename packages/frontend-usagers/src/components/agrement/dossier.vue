@@ -37,76 +37,81 @@
       label="Vous avez la possibilité de joindre des documents relatifs aux informations d’ordre sanitaire (optionnel)"
     />
   </div>
+  <div class="fr-mt-8v">
+    <TitleWithIcon
+      icon="fr-icon-briefcase-fill"
+      :level="3"
+      title-class="fr-text--lead fr-mb-0"
+    >
+      Immatriculation
+    </TitleWithIcon>
 
-  <TitleWithIcon
-    icon="fr-icon-briefcase-fill"
-    :level="3"
-    title-class="fr-text--lead fr-mb-0"
-  >
-    Immatriculation
-  </TitleWithIcon>
+    <div class="fr-fieldset__element">
+      <div class="fr-col-12">
+        <FileUpload
+          v-model="fileImmatriculation"
+          :cdn-url="props.cdnUrl"
+          label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
+          :modifiable="props.modifiable"
+        />
+      </div>
+    </div>
 
-  <div class="fr-fieldset__element">
-    <div class="fr-col-12">
+    <div class="fr-fieldset__element">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          v-if="props.modifiable"
+          name="dateObtentionCertificat"
+          :label="displayInput.AgrementInput['dateObtentionCertificat'].label"
+          :error-message="dateObtentionCertificatErrorMessage"
+          :is-valid="dateObtentionCertificatMeta.valid"
+          :label-visible="true"
+          :model-value="dateObtentionCertificat"
+          hint="format attendu : JJ/MM/AAAA"
+          @update:model-value="onDateObtentionCertificatChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          label="Date d’obtention du certificat d’immatriculation"
+          :value="dateObtentionCertificat"
+          :input="displayInput.AgrementInput['dateObtentionCertificat']"
+          :error-message="dateObtentionCertificatErrorMessage"
+          :is-valid="dateObtentionCertificatMeta.valid"
+        />
+        <DsfrAlert class="fr-grid-row fr-my-3v" type="info" :closeable="false">
+          Ce certificat est valable 3 ans, il devra être renouvelé à son
+          échéance.
+        </DsfrAlert>
+      </div>
+    </div>
+  </div>
+
+  <div class="fr-mt-8v">
+    <TitleWithIcon
+      icon="fr-icon-file-text-fill"
+      :level="3"
+      title-class="fr-text--lead fr-mb-0"
+    >
+      Attestations
+    </TitleWithIcon>
+    <div class="fr-fieldset__element">
       <FileUpload
-        v-model="fileImmatriculation"
+        v-model="fileAttestationsRespCivile"
         :cdn-url="props.cdnUrl"
-        label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
+        label="Attestation d’assurance responsabilité civile"
+        hint="Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
         :modifiable="props.modifiable"
       />
     </div>
-  </div>
-
-  <div class="fr-fieldset__element">
-    <div class="fr-col-12">
-      <DsfrInputGroup
-        v-if="props.modifiable"
-        name="dateObtentionCertificat"
-        :label="displayInput.AgrementInput['dateObtentionCertificat'].label"
-        :error-message="dateObtentionCertificatErrorMessage"
-        :is-valid="dateObtentionCertificatMeta.valid"
-        :label-visible="true"
-        :model-value="dateObtentionCertificat"
-        hint="format attendu : JJ/MM/AAAA"
-        @update:model-value="onDateObtentionCertificatChange"
+    <div class="fr-fieldset__element">
+      <FileUpload
+        v-model="fileAttestationsRapatriement"
+        :cdn-url="props.cdnUrl"
+        label="Attestation d’assurance en cas de rapatriement"
+        hint="Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
+        :modifiable="props.modifiable"
       />
-      <UtilsDisplayInput
-        v-else
-        :value="dateObtentionCertificat"
-        :input="displayInput.AgrementInput['dateObtentionCertificat']"
-        :error-message="dateObtentionCertificatErrorMessage"
-        :is-valid="dateObtentionCertificatMeta.valid"
-      />
-      <DsfrAlert class="fr-grid-row fr-my-3v" type="info" :closeable="false">
-        Ce certificat est valable 3 ans, il devra être renouvelé à son échéance.
-      </DsfrAlert>
     </div>
-  </div>
-
-  <TitleWithIcon
-    icon="fr-icon-file-text-fill"
-    :level="3"
-    title-class="fr-text--lead fr-mb-0"
-  >
-    Attestations
-  </TitleWithIcon>
-  <div class="fr-fieldset__element">
-    <FileUpload
-      v-model="fileAttestationsRespCivile"
-      :cdn-url="props.cdnUrl"
-      label="Attestation d’assurance responsabilité civile"
-      hint="Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
-      :modifiable="props.modifiable"
-    />
-  </div>
-  <div class="fr-fieldset__element">
-    <FileUpload
-      v-model="fileAttestationsRapatriement"
-      :cdn-url="props.cdnUrl"
-      label="Attestation d’assurance en cas de rapatriement"
-      hint="Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
-      :modifiable="props.modifiable"
-    />
   </div>
   <div v-if="props.showButtons && props.modifiable">
     <div class="fr-fieldset__element">
@@ -121,10 +126,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from "vue";
 import { useForm, useField } from "vee-validate";
 import { FileUpload, TitleWithIcon } from "@vao/shared-ui";
+import type { AgrementFilesDto } from "@vao/shared-bridge";
 import * as yup from "yup";
 import {
   AGREMENT_STATUT,
@@ -148,9 +154,9 @@ const props = defineProps({
 const emit = defineEmits(["previous", "next", "update:valid", "update"]);
 //const emit = defineEmits(["previous", "next", "update"]);
 
-const requiredUnlessBrouillon = (schema) =>
+const requiredUnlessBrouillon = (schema: yup.AnySchema) =>
   schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
+    is: (val: string) => val !== AGREMENT_STATUT.BROUILLON,
     then: (schema) => schema.required("Champ obligatoire"),
     otherwise: (schema) => schema.nullable(),
   });
@@ -182,7 +188,9 @@ const validationSchema = yup.object({
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
   motivations: props.initAgrement.motivations || "",
-  dateObtentionCertificat: formatFR(props.initAgrement.dateObtentionCertificat),
+  dateObtentionCertificat: props.initAgrement.dateObtentionCertificat
+    ? formatFR(props.initAgrement.dateObtentionCertificat)
+    : "",
   //synthese: props.initAgrement.synthese || false,
 };
 
@@ -197,25 +205,25 @@ const {
   errorMessage: motivationsErrorMessage,
   handleChange: onMotivationsChange,
   meta: motivationsMeta,
-} = useField("motivations");
+} = useField<string | null>("motivations");
 
 const {
   value: dateObtentionCertificat,
   errorMessage: dateObtentionCertificatErrorMessage,
   handleChange: onDateObtentionCertificatChange,
   meta: dateObtentionCertificatMeta,
-} = useField("dateObtentionCertificat");
+} = useField<string | null>("dateObtentionCertificat");
 
-const getFileByCategory = (category) => {
+const getFileByCategory = (category: string): AgrementFilesDto | null => {
   return (
     props.initAgrement?.agrementFiles?.find(
-      (file) => file.category === category,
+      (file: AgrementFilesDto) => file.category === category,
     ) || null
   );
 };
 const filesMotivation = ref(
   props.initAgrement?.agrementFiles?.filter(
-    (file) => file.category === FILE_CATEGORY.MOTIVATION,
+    (file: AgrementFilesDto) => file.category === FILE_CATEGORY.MOTIVATION,
   ) || [],
 );
 const fileImmatriculation = ref(getFileByCategory(FILE_CATEGORY.IMMATRICUL));
