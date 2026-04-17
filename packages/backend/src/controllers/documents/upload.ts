@@ -82,25 +82,27 @@ export default async function upload(
         }),
       );
     }
-    try {
-      const containsJavaScript = await detectJavaScriptInPDF(fileBuffer);
-      if (containsJavaScript) {
-        log.w("DONE with error: PDF contains JavaScript");
+    if (fileExtension === "pdf") {
+      try {
+        const containsJavaScript = await detectJavaScriptInPDF(fileBuffer);
+        if (containsJavaScript) {
+          log.w("DONE with error: PDF contains JavaScript");
+          return next(
+            new AppError("Le fichier PDF contient du JavaScript.", {
+              name: "FileContainsJavaScriptError",
+              statusCode: 415,
+            }),
+          );
+        }
+      } catch (err) {
         return next(
-          new AppError("Le fichier PDF contient du JavaScript.", {
-            name: "FileContainsJavaScriptError",
-            statusCode: 415,
+          new AppError("Impossible d'analyser le fichier PDF.", {
+            cause: err,
+            name: "PDFDetectionFailed",
+            statusCode: 400,
           }),
         );
       }
-    } catch (err) {
-      return next(
-        new AppError("Impossible d'analyser le fichier PDF.", {
-          cause: err,
-          name: "PDFDetectionFailed",
-          statusCode: 400,
-        }),
-      );
     }
 
     const uuid = await DocumentService.createFile(
