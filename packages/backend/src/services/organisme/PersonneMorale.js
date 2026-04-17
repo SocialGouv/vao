@@ -14,8 +14,8 @@ const query = {
   associateRepresentantsLegaux: (valueParams) => `
     INSERT INTO front.opm_representants_legaux (
       personne_morale_id,
-      prenom,
       nom,
+      prenom,
       fonction
       )
     VALUES ${valueParams}
@@ -92,7 +92,7 @@ const query = {
             'denomination', denomination,
             'etatAdministratif', etat_administratif
           )
-        ) 
+        )
         FROM front.opm_etablissements opmetab
         WHERE opmetab.personne_morale_id = pm.id), '[]'
       ) AS etablissements,
@@ -103,10 +103,10 @@ const query = {
             'prenom', prenom,
             'fonction', fonction
           )
-        ) 
+        )
         FROM front.opm_representants_legaux oprepleg
         WHERE oprepleg.personne_morale_id = pm.id AND pm.current = true), '[]'
-      ) AS 
+      ) AS
        "representantsLegaux",
        COALESCE(
         (SELECT
@@ -121,7 +121,7 @@ const query = {
           )
         FROM front.personne_morale pm_siege
         WHERE pm.siren = pm_siege.siren AND pm_siege.current = true AND pm_siege.siege_social = true), '{}'
-      ) AS 
+      ) AS
        "etablissementPrincipal",
       JSON_BUILD_OBJECT(
           'nom', resp_sejour_nom,
@@ -149,8 +149,8 @@ const query = {
       u.prenom AS "prenom",
       th.timestamp AS "updatedAt"
     FROM front.personne_morale pm
-    INNER JOIN tracking_actions th ON th.entity_id = pm.id::text 
-      AND th.entity = 'PERSONNE_MORALE' AND th.action = 'DELETION' 
+    INNER JOIN tracking_actions th ON th.entity_id = pm.id::text
+      AND th.entity = 'PERSONNE_MORALE' AND th.action = 'DELETION'
     INNER JOIN front.users u ON u.id = th.user_id
     WHERE pm.organisme_id = $1
     AND pm.current = FALSE
