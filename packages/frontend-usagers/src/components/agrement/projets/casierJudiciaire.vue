@@ -10,12 +10,12 @@
   <DsfrCheckbox
     v-model="accompRespAttestHono"
     name="accompRespAttestHono"
-    :label="`J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire`"
+    label="J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire"
     :error-message="
       accompRespAttestHonoMeta.touched ? accompRespAttestHonoErrorMessage : ''
     "
     :readonly="!props.modifiable"
-    :required="props.initAgrement.statut !== 'BROUILLON'"
+    :required="props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON"
     :value="true"
   />
 
@@ -33,8 +33,11 @@
 import { FileUpload, TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
-import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
-import type { AgrementFilesDto } from "@vao/shared-bridge";
+import {
+  AGREMENT_STATUT,
+  FILE_CATEGORY,
+  getFileByCategory,
+} from "@vao/shared-bridge";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -43,10 +46,10 @@ const props = defineProps({
 });
 
 const fileProjetsSejoursCasier = ref(
-  props.initAgrement?.agrementFiles?.find(
-    (file: AgrementFilesDto) =>
-      file.category === FILE_CATEGORY.PROJETSSEJOURSCASIER,
-  ) || null,
+  getFileByCategory({
+    category: FILE_CATEGORY.PROJETSSEJOURSCASIER,
+    files: props.initAgrement?.agrementFiles,
+  }),
 );
 
 const validationSchema = yup.object({
