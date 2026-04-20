@@ -155,9 +155,11 @@ function onAdresseSelect(selectedAddress) {
 
 const onSubmitAddSejour = handleSubmit(
   (values) => {
+    const adresseNorm = normalizeAdresse(adresse.value);
+
     sejours.value.push({
       nomHebergement: values.nomSejour,
-      adresse: adresse.value,
+      adresse: adresseNorm,
       mois: values.mois,
       nbVacanciers: values.nbVacanciers,
       agrementId: props.agrementId,
@@ -189,6 +191,18 @@ const validateForm = async () => {
     throw error;
   }
 };
+
+function normalizeAdresse(adresse) {
+  if (!adresse) return adresse;
+  const coords = adresse.coordinates || [null, null];
+  return {
+    ...adresse,
+    long:
+      coords[0] !== undefined && coords[0] !== null ? String(coords[0]) : null,
+    lat:
+      coords[1] !== undefined && coords[1] !== null ? String(coords[1]) : null,
+  };
+}
 
 defineExpose({
   validateForm,
