@@ -47,7 +47,7 @@
         <DsfrButton
           icon="fr-icon-close-line"
           icon-only
-          primary
+          secondary
           @click="cancelEditRepresentant(idx)"
         >
           <span class="fr-sr-only"
