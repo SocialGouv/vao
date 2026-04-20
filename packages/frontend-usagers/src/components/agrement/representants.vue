@@ -34,24 +34,26 @@
         v-if="representant.isEditing && representant._backup"
         class="container-flex-end fr-mt-2w"
       >
-        <DsfrLinkV2
-          as="button"
-          icon-name="icon-save-line"
+        <DsfrButton
+          icon="fr-icon-save-line"
+          icon-only
+          primary
           @click="saveRepresentant(idx)"
         >
           <span class="fr-sr-only"
             >Enregistrer les modifications du représentant {{ idx + 1 }}</span
           >
-        </DsfrLinkV2>
-        <DsfrLinkV2
-          as="button"
-          icon-name="icon-close-line"
+        </DsfrButton>
+        <DsfrButton
+          icon="fr-icon-close-line"
+          icon-only
+          primary
           @click="cancelEditRepresentant(idx)"
         >
           <span class="fr-sr-only"
             >Annuler les modifications du représentant {{ idx + 1 }}</span
           >
-        </DsfrLinkV2>
+        </DsfrButton>
       </div>
     </div>
     <template v-if="representant.isEditing">
