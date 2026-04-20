@@ -119,7 +119,7 @@
         :show-buttons="props.showButtons"
         :is-downloading="props.isDownloading"
         :message="props.message"
-        @next="update"
+        @next="trySubmit"
         @previous="emit('previous')"
       />
     </div>
@@ -129,8 +129,10 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { useForm, useField } from "vee-validate";
-import { FileUpload, TitleWithIcon } from "@vao/shared-ui";
+import { FileUpload, TitleWithIcon, useToaster } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import regex from "../../utils/regex";
 import * as yup from "yup";
 import {
   AGREMENT_STATUT,
@@ -151,20 +153,16 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
 });
 
-const emit = defineEmits(["previous", "next", "update:valid", "update"]);
-//const emit = defineEmits(["previous", "next", "update"]);
+const dateDDMMYYYYRegex = regex.dateDDMMYYYYRegex;
 
-const requiredUnlessBrouillon = (schema: yup.AnySchema) =>
-  schema.when("statut", {
-    is: (val: string) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
+const toaster = useToaster();
+
+const emit = defineEmits(["previous", "next", "update:valid", "update"]);
 
 const dateDDMMYYYY = yup
   .string()
   .transform((value, originalValue) => originalValue || "")
-  .matches(/^\d{2}\/\d{2}\/\d{4}$/, "Format JJ/MM/AAAA invalide")
+  .matches(dateDDMMYYYYRegex, "Format JJ/MM/AAAA invalide")
   .test("is-valid-date", "La date n'est pas valide", (value) => {
     if (!value) return true; // nullable
     const [day, month, year] = value.split("/").map(Number);
@@ -180,7 +178,7 @@ const dateDDMMYYYY = yup
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
   motivations: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
   ),
   dateObtentionCertificat: requiredUnlessBrouillon(dateDDMMYYYY),
 });
@@ -246,18 +244,35 @@ watch(
   { immediate: true },
 );
 
-const update = handleSubmit((values) => {
-  const formValues = {
-    ...values,
-    dateObtentionCertificat: parseToISODate(values.dateObtentionCertificat),
-    filesMotivation: filesMotivation.value,
-    fileImmatriculation: fileImmatriculation.value,
-    fileAttestationsRespCivile: fileAttestationsRespCivile.value,
-    fileAttestationsRapatriement: fileAttestationsRapatriement.value,
-  };
-  emit("update", formValues);
-  emit("next");
-});
+const trySubmit = async () => {
+  let valid = false;
+  let values: any = null;
+  try {
+    values = await handleSubmit((vals) => vals)();
+    valid = true;
+  } catch (e) {
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Merci de corriger les erreurs dans le formulaire avant de continuer.",
+    });
+  }
+
+  if (valid || initialValues.statut === AGREMENT_STATUT.BROUILLON) {
+    const formValues = {
+      ...(values || initialValues),
+      dateObtentionCertificat: parseToISODate(
+        (values || initialValues).dateObtentionCertificat,
+      ),
+      filesMotivation: filesMotivation.value,
+      fileImmatriculation: fileImmatriculation.value,
+      fileAttestationsRespCivile: fileAttestationsRespCivile.value,
+      fileAttestationsRapatriement: fileAttestationsRapatriement.value,
+    };
+    emit("update", formValues);
+    emit("next");
+  }
+};
 </script>
 
 <style scoped>

@@ -16,6 +16,7 @@ const pwdRegexSpecial =
 const pwdRegexNumber = /^(?=.*[0-9])/;
 const pwdRegexMaj = /^(?=.*[A-Z])/;
 const pwdRegexMin = /^(?=.*[a-z])/;
+const dateDDMMYYYYRegex = /^\d{2}\/\d{2}\/\d{4}$/;
 
 export default {
   numTelephoneRegex,
@@ -33,4 +34,5 @@ export default {
   pwdRegexNumber,
   pwdRegexMaj,
   pwdRegexMin,
+  dateDDMMYYYYRegex,
 };
