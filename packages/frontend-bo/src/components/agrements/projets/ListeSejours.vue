@@ -9,7 +9,7 @@
       row-id="nomHebergement"
     >
       <template #cell-mois="{ row }">
-        {{ row.mois ? formatMois(row.mois) : "" }}
+        {{ row.mois ? parseIntToMonthFR(row.mois) : "" }}
       </template>
       <template #cell-adresse="{ row }">
         {{ row.adresse.label || "" }}
@@ -19,7 +19,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
 import type { Columns, NestedKeys } from "@vao/shared-ui";
 
 import {
@@ -28,6 +27,8 @@ import {
   columnsTable,
 } from "@vao/shared-ui";
 import type { BilanHebergementDto } from "@vao/shared-bridge";
+import { parseIntToMonthFR } from "@vao/shared-bridge";
+
 const route = useRoute();
 
 const optionType = columnsTable.optionType;
@@ -81,27 +82,6 @@ const props = defineProps({
   },
   statut: { type: String, required: false, default: "BROUILLON" },
 });
-
-function formatMois(mois: number[] | null): string {
-  if (!mois || mois.length === 0) return "-";
-
-  const moisLabels = [
-    "janvier",
-    "février",
-    "mars",
-    "avril",
-    "mai",
-    "juin",
-    "juillet",
-    "août",
-    "septembre",
-    "octobre",
-    "novembre",
-    "décembre",
-  ];
-
-  return mois.map((m) => moisLabels[m - 1] || m).join(", ");
-}
 </script>
 
 <style scoped>

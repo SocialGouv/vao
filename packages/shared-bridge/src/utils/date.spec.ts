@@ -10,6 +10,7 @@ import {
   isAfter,
   isBefore,
   isBetweenDates,
+  parseIntToMonthFR,
   parseToISODate,
 } from "./date";
 
@@ -142,5 +143,35 @@ describe("parseToISODate", () => {
 
   it("should keep parts even without padding", () => {
     expect(parseToISODate("1/2/2023")).toBe("2023-2-1");
+  });
+});
+
+describe("parseIntToMonthFR", () => {
+  it("should return '-' when mois is null", () => {
+    expect(parseIntToMonthFR(null)).toBe("-");
+  });
+
+  it("should return '-' when mois is empty", () => {
+    expect(parseIntToMonthFR([])).toBe("-");
+  });
+
+  it("should convert a single month", () => {
+    expect(parseIntToMonthFR([1])).toBe("janvier");
+  });
+
+  it("should convert multiple months", () => {
+    expect(parseIntToMonthFR([1, 2, 3])).toBe("janvier, février, mars");
+  });
+
+  it("should handle unordered months", () => {
+    expect(parseIntToMonthFR([12, 1])).toBe("décembre, janvier");
+  });
+
+  it("should fallback to number if month is invalid", () => {
+    expect(parseIntToMonthFR([13])).toBe("13");
+  });
+
+  it("should mix valid and invalid months", () => {
+    expect(parseIntToMonthFR([1, 13])).toBe("janvier, 13");
   });
 });

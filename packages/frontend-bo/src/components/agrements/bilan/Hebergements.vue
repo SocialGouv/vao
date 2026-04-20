@@ -10,7 +10,7 @@
       row-id="nomHebergement"
     >
       <template #cell-mois="{ row }">
-        {{ row.mois ? formatMois(row.mois) : "" }}
+        {{ row.mois ? parseIntToMonthFR(row.mois) : "" }}
       </template>
     </DsfrDataTableV2Wrapper>
   </div>
@@ -26,6 +26,8 @@ import {
   columnsTable,
 } from "@vao/shared-ui";
 import type { BilanHebergementDto } from "@vao/shared-bridge";
+import { parseIntToMonthFR } from "@vao/shared-bridge";
+
 const route = useRoute();
 
 const props = defineProps<{
@@ -75,32 +77,6 @@ const currentPage = ref(0);
 const totalPages = computed(() =>
   Math.ceil((props.hebergements?.length || 0) / ITEMS_PER_PAGE),
 );
-
-const paginatedHebergements = computed(() => {
-  const start = currentPage.value * ITEMS_PER_PAGE;
-  return (props.hebergements || []).slice(start, start + ITEMS_PER_PAGE);
-});
-
-function formatMois(mois: number[] | null): string {
-  if (!mois || mois.length === 0) return "-";
-
-  const moisLabels = [
-    "janvier",
-    "février",
-    "mars",
-    "avril",
-    "mai",
-    "juin",
-    "juillet",
-    "août",
-    "septembre",
-    "octobre",
-    "novembre",
-    "décembre",
-  ];
-
-  return mois.map((m) => moisLabels[m - 1] || m).join(", ");
-}
 </script>
 
 <style scoped>
