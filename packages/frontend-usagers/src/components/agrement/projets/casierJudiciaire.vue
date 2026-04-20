@@ -43,7 +43,7 @@ const props = defineProps({
 });
 
 const fileProjetsSejoursCasier = ref(
-  props.initAgrement?.agrementFiles?.filter(
+  props.initAgrement?.agrementFiles?.find(
     (file: AgrementFilesDto) =>
       file.category === FILE_CATEGORY.PROJETSSEJOURSCASIER,
   ) || null,
@@ -82,9 +82,7 @@ const validateForm = async () => {
   if (result) {
     return {
       ...result,
-      ...(fileProjetsSejoursCasier.value.length > 0 && {
-        filesProjetsSejoursCasier: fileProjetsSejoursCasier.value,
-      }),
+      fileProjetsSejoursCasier: fileProjetsSejoursCasier.value,
     };
   }
   return result;
