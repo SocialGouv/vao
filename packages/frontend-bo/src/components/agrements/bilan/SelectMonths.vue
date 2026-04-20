@@ -1,6 +1,6 @@
 <template>
   <div class="select-months">
-    <DisplayInputCommon
+    <DisplayLabel
       :input="AgrementDisplayInput.AgrementProjetsInput.selectedMonths"
       :value="selectedLabels"
     />
@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { AgrementDisplayInput, DisplayInputCommon } from "@vao/shared-ui";
+import { AgrementDisplayInput, DisplayLabel } from "@vao/shared-ui";
 import { ref } from "vue";
 const props = defineProps({
   defaultSelected: {

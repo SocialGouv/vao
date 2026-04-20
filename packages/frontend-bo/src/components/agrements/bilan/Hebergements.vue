@@ -1,103 +1,49 @@
 <template>
   <div>
-    <div class="headings">
-      <p>Nom de l'hébergement</p>
-      <p>Adresse</p>
-      <p>Période</p>
-      <p>Nombre de jours</p>
-    </div>
-
-    <div
-      v-for="(hebergement, index) in paginatedHebergements"
-      :key="index"
-      class="row"
+    <DsfrDataTableV2Wrapper
+      v-model:limit="limit"
+      v-model:offset="offset"
+      :columns="columns"
+      :data="paginatedData"
+      :total="hebergements.length"
+      row-id="nomHebergement"
     >
-      <p>{{ hebergement.nomHebergement || "-" }}</p>
-
-      <p>{{ hebergement.adresse?.label || "-" }}</p>
-
-      <p>{{ formatMois(hebergement.mois) }}</p>
-
-      <p>{{ hebergement.nbJours ?? "-" }}</p>
-    </div>
-
-    <!-- Pagination -->
-    <div v-if="totalPages > 1" class="pagination-center">
-      <button
-        v-for="page in totalPages"
-        :key="page"
-        :class="{ active: currentPage === page - 1 }"
-        @click="currentPage = page - 1"
-      >
-        {{ page }}
-      </button>
-    </div>
+      <template #cell-mois="{ row }">
+        {{ row.mois ? parseIntToMonthFR(row.mois) : "" }}
+      </template>
+    </DsfrDataTableV2Wrapper>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import type { Columns } from "@vao/shared-ui";
+
+import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
 import type { BilanHebergementDto } from "@vao/shared-bridge";
+import { parseIntToMonthFR } from "@vao/shared-bridge";
 
 const props = defineProps<{
   hebergements: BilanHebergementDto[] | null;
 }>();
 
-const ITEMS_PER_PAGE = 10;
-const currentPage = ref(0);
+const hebergements = computed(() => props.hebergements ?? []);
 
-const totalPages = computed(() =>
-  Math.ceil((props.hebergements?.length || 0) / ITEMS_PER_PAGE),
-);
+const limit = ref(10);
+const offset = ref(0);
 
-const paginatedHebergements = computed(() => {
-  const start = currentPage.value * ITEMS_PER_PAGE;
-  return (props.hebergements || []).slice(start, start + ITEMS_PER_PAGE);
+const paginatedData = computed(() => {
+  return hebergements.value.slice(offset.value, offset.value + limit.value);
 });
 
-function formatMois(mois: number[] | null): string {
-  if (!mois || mois.length === 0) return "-";
+const defs: [string, string, string][] = [
+  ["nomHebergement", "Nom de l'hébergement", columnsTable.optionType.NONE],
+  ["adresse", "Adresse", columnsTable.optionType.NONE],
+  ["mois", "Période", columnsTable.optionType.NONE],
+  ["nbJours", "Nombre de jours", columnsTable.optionType.NONE],
+];
 
-  const moisLabels = [
-    "janvier",
-    "février",
-    "mars",
-    "avril",
-    "mai",
-    "juin",
-    "juillet",
-    "août",
-    "septembre",
-    "octobre",
-    "novembre",
-    "décembre",
-  ];
-
-  return mois.map((m) => moisLabels[m - 1] || m).join(", ");
-}
+const columns = columnsTable.buildColumns(
+  defs,
+) as unknown as Columns<BilanHebergementDto>;
 </script>
-
-<style scoped>
-.headings {
-  display: grid;
-  grid-template-columns: 2fr 3fr 2fr 1fr;
-  gap: 0.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 2fr 3fr 2fr 1fr;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.pagination-center {
-  margin-top: 1rem;
-}
-
-button.active {
-  font-weight: bold;
-}
-</style>

@@ -1,14 +1,14 @@
 <template>
   <TitleWithIcon
     icon="fr-icon-map-pin-2-fill"
-    :level="2"
+    :level="3"
     title-class="fr-text--lead fr-mb-0"
   >
     Animation et activités prévues
   </TitleWithIcon>
   <div class="flex flex-col">
     <div>
-      <DisplayInputCommon
+      <DisplayLabel
         :input="
           AgrementDisplayInput.AgrementProjetsInput.activitesSelectionnees
         "
@@ -16,7 +16,7 @@
       />
     </div>
     <div class="fr-mt-4v">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.animationAutre"
         :input="AgrementDisplayInput.AgrementProjetsInput['animationAutre']"
       />
@@ -28,7 +28,7 @@
 import { onMounted } from "vue";
 import {
   TitleWithIcon,
-  DisplayInputCommon,
+  DisplayLabel,
   AgrementDisplayInput,
 } from "@vao/shared-ui";
 

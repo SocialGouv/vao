@@ -1,14 +1,14 @@
 <template>
   <div class="cells">
     <div class="cell">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.hebergement?.nomHebergement"
         :input="AgrementDisplayInput.AgrementProjetsInput['nomHebergement']"
         :label-visible="false"
       />
     </div>
     <div class="cell">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="adresseLabel"
         :input="AgrementDisplayInput.AgrementProjetsInput['adresseLabel']"
         :label-visible="false"
@@ -17,12 +17,12 @@
     <div class="cell">
       <AgrementsBilanSelectMonths :default-selected="props.hebergement?.mois" />
     </div>
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.hebergement?.nbJours"
       :input="AgrementDisplayInput.AgrementProjetsInput['nbJours']"
       :label-visible="false"
     />
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.hebergement?.nbVacanciers"
       :input="AgrementDisplayInput.AgrementProjetsInput['nbVacanciers']"
       :label-visible="false"
@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { AgrementDisplayInput, DisplayInputCommon } from "@vao/shared-ui";
+import { AgrementDisplayInput, DisplayLabel } from "@vao/shared-ui";
 
 const props = defineProps({
   hebergement: {

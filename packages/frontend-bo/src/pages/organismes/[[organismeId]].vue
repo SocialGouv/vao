@@ -8,7 +8,7 @@
 
     <DsfrTabs
       v-model="selectedTabIndex"
-      tab-list-name="display-formulaire"
+      tab-list-name="Formulaire d'information de l'organisme"
       :tab-titles="tabTitles"
       :initial-selected-index="0"
       @update:model-value="selectTab"

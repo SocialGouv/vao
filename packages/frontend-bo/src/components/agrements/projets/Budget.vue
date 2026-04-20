@@ -9,7 +9,7 @@
 
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.budgetGestionPerso"
         :input="AgrementDisplayInput.AgrementProjetsInput['budgetGestionPerso']"
       />
@@ -18,7 +18,7 @@
 
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.budgetPersoGestionComplementaire"
         :input="
           AgrementDisplayInput.AgrementProjetsInput[
@@ -43,7 +43,7 @@
 import {
   AgrementDisplayInput,
   TitleWithIcon,
-  DisplayInputCommon,
+  DisplayLabel,
   MultiFilesUpload,
 } from "@vao/shared-ui";
 import { FILE_CATEGORY } from "@vao/shared-bridge";

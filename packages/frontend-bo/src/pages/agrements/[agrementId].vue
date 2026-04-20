@@ -4,29 +4,46 @@
 
     <div v-if="agrementCourant">
       <div class="title-container fr-mb-4v">
-        <h1 class="fr-mb-0">Agrément n° {{ agrementCourant.numero }}</h1>
-        <DemandeStatusBadge
+        <h1>
+          Agrément
+          {{ agrementCourant?.numero ? ` n° ${agrementCourant.numero}` : "" }}
+        </h1>
+        <AgrementStatusBadge
           v-if="agrementCourant.statut"
           :statut="agrementCourant.statut"
           type="bo"
         />
       </div>
-      <p v-if="organismeStore.organisme?.personneMorale?.raisonSociale">
-        <b>Organisme :</b>
-        {{ organismeStore.organisme.personneMorale.raisonSociale }}
-      </p>
-      <p v-if="agrementCourant.regionObtention">
-        <b>Région :</b> {{ agrementCourant.regionObtention }}
-      </p>
-      <p v-if="agrementCourant.dateDepot">
-        <b>Date de la demande de renouvellement :</b>
-        {{ formatFR(agrementCourant.dateDepot) }}
-      </p>
+      <div v-if="organismeStore.organisme?.personneMorale?.raisonSociale">
+        <dl class="fr-text--lg fr-pl-0">
+          <dt>Organisme :</dt>
+          <dd>
+            {{ organismeStore.organisme?.personneMorale?.raisonSociale }}
+          </dd>
+        </dl>
+      </div>
+      <div v-if="agrementCourant?.regionObtention">
+        <dl class="fr-text--lg fr-pl-0">
+          <dt>Région :</dt>
+          <dd>
+            {{ agrementCourant.regionObtention }}
+          </dd>
+        </dl>
+      </div>
+      <div v-if="agrementCourant?.dateDepot">
+        <dl class="fr-text--lg fr-pl-0">
+          <dt>Date de la demande de renouvellement :</dt>
+          <dd>
+            {{ formatFR(agrementCourant.dateDepot) }}
+          </dd>
+        </dl>
+      </div>
+      <div class="fr-mt-2w"></div>
     </div>
 
     <DsfrTabs
       v-model="selectedTabIndex"
-      tab-list-name="display-dossier"
+      tab-list-name="Dossier d'agrément"
       :tab-titles="tabTitles"
       :initial-selected-index="initialSelectedIndex"
       @update:model-value="selectTab"
@@ -37,7 +54,6 @@
         :selected="selectedTabIndex === 0"
         :asc="asc"
       >
-        <h1>Dossier</h1>
         <AgrementsDossier
           :init-organisme="organismeStore.organisme ?? {}"
           :init-agrement="agrementStore.agrementCourant ?? {}"
@@ -84,14 +100,12 @@ import { useAgrementStore } from "~/stores/agrement";
 import { onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
 import {
-  DemandeStatusBadge,
   Historique,
   AgrementDocuments,
+  AgrementStatusBadge,
 } from "@vao/shared-ui";
 import { useOrganismeStore } from "~/stores/organisme";
 import { formatFR } from "@vao/shared-bridge";
-
-const NuxtLink = resolveComponent("NuxtLink");
 
 const organismeStore = useOrganismeStore();
 
@@ -220,5 +234,18 @@ const tabTitles = computed(() => [
   align-items: center;
   justify-content: flex-start;
   gap: 1rem;
+}
+dl {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  row-gap: 0.5rem;
+  column-gap: 1rem;
+  margin: 0;
+}
+dd {
+  padding-left: 0;
+}
+dt {
+  font-weight: bold;
 }
 </style>

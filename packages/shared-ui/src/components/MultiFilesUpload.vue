@@ -1,12 +1,15 @@
 <template>
   <div class="fr-fieldset__element">
-    <div v-if="rows.length > 0">
+    <p v-if="rows.length > 0">
       <DsfrTable
         title="Fichier(s) téléversé(s)"
         :headers="headers"
         :rows="rows"
       />
-    </div>
+    </p>
+    <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
+      Aucun fichier téléversé
+    </p>
     <div class="fr-input-group">
       <DsfrFileUpload
         v-if="modifiable"

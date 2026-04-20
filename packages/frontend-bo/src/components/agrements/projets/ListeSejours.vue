@@ -1,51 +1,53 @@
 <template>
   <div>
-    <div class="headings">
-      <p class="fr-mb-0">Nom de l'hébergement</p>
-      <p class="fr-mb-0">Adresse de l'hébergement</p>
-      <p class="fr-mb-0">Période</p>
-      <p class="fr-mb-0">Nombre de vacanciers</p>
-      <p></p>
-    </div>
-    <div v-for="(sejour, index) in sejours" :key="index">
-      <HebergementDetail :hebergement="sejour" />
-    </div>
+    <DsfrDataTableV2Wrapper
+      v-model:limit="limit"
+      v-model:offset="offset"
+      :columns="columns"
+      :data="paginatedData"
+      :total="sejours.length"
+      row-id="nomHebergement"
+    >
+      <template #cell-mois="{ row }">
+        {{ row.mois ? parseIntToMonthFR(row.mois) : "" }}
+      </template>
+
+      <template #cell-adresse="{ row }">
+        {{ row.adresse?.label || "" }}
+      </template>
+    </DsfrDataTableV2Wrapper>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import HebergementDetail from "../bilan/HebergementDetail.vue";
+import { computed, ref } from "vue";
+import type { Columns } from "@vao/shared-ui";
 
-interface Sejour {
-  [key: string]: any;
-}
+import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
+import type { BilanHebergementDto } from "@vao/shared-bridge";
+import { parseIntToMonthFR } from "@vao/shared-bridge";
 
-const props = defineProps({
-  agrementId: { type: String, required: true },
-  initialSejours: {
-    type: Array as any as () => Sejour[],
-    required: false,
-    default: () => [],
-  },
-  statut: { type: String, required: false, default: "BROUILLON" },
+const props = defineProps<{
+  initialSejours?: BilanHebergementDto[];
+}>();
+
+const sejours = computed(() => props.initialSejours ?? []);
+
+const limit = ref(10);
+const offset = ref(0);
+
+const paginatedData = computed(() => {
+  return sejours.value.slice(offset.value, offset.value + limit.value);
 });
 
-const sejours = ref<Sejour[]>([...props.initialSejours]);
-</script>
+const defs: [string, string, string][] = [
+  ["nomHebergement", "Nom de l'hébergement", columnsTable.optionType.NONE],
+  ["adresse", "Adresse", columnsTable.optionType.NONE],
+  ["mois", "Période", columnsTable.optionType.NONE],
+  ["nbVacanciers", "Nombre de vacanciers", columnsTable.optionType.NONE],
+];
 
-<style scoped>
-.headings {
-  display: grid;
-  grid-template-columns: 2fr 3fr 2fr 1fr 40px;
-  gap: 0 0.5rem;
-  margin-bottom: 1rem;
-}
-.add-btn {
-  width: 100%;
-  justify-content: center;
-}
-.bg-light-blue {
-  background: rgba(227, 227, 253, 0.4);
-}
-</style>
+const columns = columnsTable.buildColumns(
+  defs,
+) as unknown as Columns<BilanHebergementDto>;
+</script>

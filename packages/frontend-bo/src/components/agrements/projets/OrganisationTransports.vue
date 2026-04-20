@@ -8,13 +8,13 @@
   </TitleWithIcon>
 
   <div class="fr-col-12">
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.initAgrement?.transportAllerRetour"
       :input="AgrementDisplayInput.AgrementProjetsInput['transportAllerRetour']"
     />
   </div>
   <div class="fr-col-12 fr-mt-6v">
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.initAgrement?.transportSejour"
       :input="AgrementDisplayInput.AgrementProjetsInput['transportSejour']"
     />
@@ -35,7 +35,7 @@ import {
   AgrementDisplayInput,
   TitleWithIcon,
   MultiFilesUpload,
-  DisplayInputCommon,
+  DisplayLabel,
 } from "@vao/shared-ui";
 import { FILE_CATEGORY } from "@vao/shared-bridge";
 import type { AgrementFilesDto } from "@vao/shared-bridge";

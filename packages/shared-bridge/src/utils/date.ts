@@ -67,3 +67,24 @@ export const parseToISODate = (dateString: string | null): string | null => {
   const [day, month, year] = dateString.split("/");
   return `${year}-${month}-${day}`;
 };
+
+export const parseIntToMonthFR = (mois: number[] | null): string => {
+  if (!mois || mois.length === 0) return "-";
+
+  const moisLabels = [
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
+  ];
+
+  return mois.map((m) => moisLabels[m - 1] || m).join(", ");
+};

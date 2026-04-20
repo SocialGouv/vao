@@ -15,7 +15,7 @@
       :init-agrement="props.initAgrement ?? {}"
       :cdn-url="props.cdnUrl"
     />
-    <hr class="fr-mt-4w" />
+    <div class="separator fr-my-2w"></div>
     <AgrementsBilanFinancier
       ref="financierRef"
       :init-agrement="props.initAgrement ?? {}"

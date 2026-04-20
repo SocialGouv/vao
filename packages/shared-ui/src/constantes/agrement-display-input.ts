@@ -41,7 +41,7 @@ export const AgrementInput = {
 export const AgrementBilanAnnuelInput = {
   typeHandicap: {
     inputType: InputTypes.MULTISELECT,
-    label: "",
+    label: "Type de handicaps",
     options: {
       auditif: "Sensoriel",
       visuel: "Visuel",
@@ -103,7 +103,7 @@ export const AgrementBilanAnnuelInput = {
   },
   trancheAge: {
     inputType: InputTypes.MULTISELECT,
-    label: "",
+    label: "Tranches d’âge",
     options: {
       "18_39": "de 18 à 39 ans",
       "40_59": "de 40 à 59 ans",
