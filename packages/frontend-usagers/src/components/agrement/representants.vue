@@ -11,33 +11,13 @@
         <h5 class="fr-text--md fr-mb-0">Représentant n°{{ idx + 1 }}</h5>
         <div class="container-flex-between">
           <template v-if="props.modifiable">
-            <!-- Boutons d'édition d'un existant -->
-            <div
-              v-if="representant.isEditing && representant._backup"
-              class="container-flex-column"
-            >
-              <DsfrLinkV2
-                as="button"
-                icon-name="icon-save-line"
-                @click="saveRepresentant(idx)"
-              >
-                Enregistrer les modifications
-              </DsfrLinkV2>
-              <DsfrLinkV2
-                as="button"
-                icon-name="icon-close-line"
-                @click="cancelEditRepresentant(idx)"
-              >
-                Annuler les modifications
-              </DsfrLinkV2>
-            </div>
             <DsfrLinkV2
               v-if="!representant.isEditing"
               as="button"
               icon-name="icon-edit-line"
               @click="editRepresentant(idx)"
             >
-              modifier
+              Modifier le représentant {{ idx + 1 }}
             </DsfrLinkV2>
           </template>
           <DsfrButton
@@ -45,9 +25,33 @@
             secondary
             @click="removeRepresentant(idx)"
           >
-            Supprimer ce représentant
+            Supprimer le représentant {{ idx + 1 }}
           </DsfrButton>
         </div>
+      </div>
+      <!-- Boutons d'édition d'un existant -->
+      <div
+        v-if="representant.isEditing && representant._backup"
+        class="container-flex-end fr-mt-2w"
+      >
+        <DsfrLinkV2
+          as="button"
+          icon-name="icon-save-line"
+          @click="saveRepresentant(idx)"
+        >
+          <span class="fr-sr-only"
+            >Enregistrer les modifications du représentant {{ idx + 1 }}</span
+          >
+        </DsfrLinkV2>
+        <DsfrLinkV2
+          as="button"
+          icon-name="icon-close-line"
+          @click="cancelEditRepresentant(idx)"
+        >
+          <span class="fr-sr-only"
+            >Annuler les modifications du représentant {{ idx + 1 }}</span
+          >
+        </DsfrLinkV2>
       </div>
     </div>
     <template v-if="representant.isEditing">
@@ -363,6 +367,11 @@ defineExpose({
 .container-flex-start {
   display: flex;
   justify-content: flex-start;
+  gap: 1rem;
+}
+.container-flex-end {
+  display: flex;
+  justify-content: flex-end;
   gap: 1rem;
 }
 .container-flex-column {
