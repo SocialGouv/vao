@@ -3,17 +3,17 @@
     <h2 class="fr-text fr-text--lg fr-text--bold">
       Informations sur les vacanciers
     </h2>
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.bilanAnnuel?.nbGlobalVacanciers"
       :input="
         AgrementDisplayInput.AgrementBilanAnnuelInput['nbGlobalVacanciers']
       "
     />
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.bilanAnnuel?.nbHommes"
       :input="AgrementDisplayInput.AgrementBilanAnnuelInput['nbHommes']"
     />
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.bilanAnnuel?.nbFemmes"
       :input="AgrementDisplayInput.AgrementBilanAnnuelInput['nbFemmes']"
     />
@@ -22,12 +22,12 @@
       :tranche-age="props.bilanAnnuel?.trancheAge"
       :statut="props.agrementStatus"
     />
-    <DisplayInputCommon
+    <DisplayLabel
       :input="AgrementDisplayInput.AgrementBilanAnnuelInput['trancheAge']"
       :value="props.bilanAnnuel?.trancheAge"
     />
 
-    <DisplayInputCommon
+    <DisplayLabel
       :input="AgrementDisplayInput.AgrementBilanAnnuelInput['typeHandicap']"
       :value="props.bilanAnnuel?.typeHandicap"
     />
@@ -41,7 +41,7 @@
     />
 
     <!-- Jours de vacances -->
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.bilanAnnuel?.nbTotalJoursVacances"
       :input="
         AgrementDisplayInput.AgrementBilanAnnuelInput['nbTotalJoursVacances']
@@ -50,7 +50,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { DisplayInputCommon, AgrementDisplayInput } from "@vao/shared-ui";
+import { DisplayLabel, AgrementDisplayInput } from "@vao/shared-ui";
 
 const props = defineProps({
   year: { type: Number, required: true },

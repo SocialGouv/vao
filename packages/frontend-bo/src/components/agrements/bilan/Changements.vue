@@ -7,7 +7,7 @@
     Changement ou évolution
   </TitleWithIcon>
   <div class="fr-my-2w">
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.initAgrement?.bilanChangementEvolution"
       :input="
         AgrementDisplayInput.AgrementBilanAnnuelInput[
@@ -39,7 +39,7 @@ import { FILE_CATEGORY } from "@vao/shared-bridge";
 import {
   TitleWithIcon,
   AgrementDisplayInput,
-  DisplayInputCommon,
+  DisplayLabel,
   MultiFilesUpload,
 } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";

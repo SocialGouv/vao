@@ -27,7 +27,7 @@ import RangeDatePicker from "./RangeDatePicker.vue";
 import MessageHover from "./messages/MessageHover.vue";
 import MessageEtat from "./messages/MessageEtat.vue";
 import DisplayInput from "./DisplayInput.vue";
-import DisplayInputCommon from "./DisplayInputCommon.vue";
+import DisplayLabel from "./DisplayLabel.vue";
 import UserStatusBadge from "./users/UserStatusBadge.vue";
 import RefusCompteModal from "./users/RefusCompteModal.vue";
 import Header from "./Header.vue";
@@ -85,6 +85,6 @@ export {
   DsfrLinkV2,
   Historique,
   EtapeHistorique,
-  DisplayInputCommon,
+  DisplayLabel,
   MultiFilesUpload,
 };

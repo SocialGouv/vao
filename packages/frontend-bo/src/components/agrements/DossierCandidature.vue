@@ -8,7 +8,7 @@
   </TitleWithIcon>
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.motivations"
         :input="AgrementDisplayInput.AgrementInput['motivations']"
       />
@@ -45,7 +45,7 @@
 
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="formatFR(props.initAgrement?.dateObtentionCertificat)"
         :input="AgrementDisplayInput.AgrementInput['dateObtentionCertificat']"
       />
@@ -83,7 +83,7 @@
 import {
   FileUpload,
   TitleWithIcon,
-  DisplayInputCommon,
+  DisplayLabel,
   AgrementDisplayInput,
   MultiFilesUpload,
 } from "@vao/shared-ui";

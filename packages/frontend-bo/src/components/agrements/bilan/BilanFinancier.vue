@@ -8,7 +8,7 @@
   </TitleWithIcon>
   <div class="fr-mt-8v">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.bilanFinancierComptabilite"
         :input="
           AgrementDisplayInput.AgrementBilanAnnuelInput[
@@ -20,7 +20,7 @@
   </div>
   <div class="fr-my-2w">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.bilanFinancierComparatif"
         :input="
           AgrementDisplayInput.AgrementBilanAnnuelInput[
@@ -32,7 +32,7 @@
   </div>
   <div class="fr-my-2w">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.bilanFinancierRessourcesHumaines"
         :input="
           AgrementDisplayInput.AgrementBilanAnnuelInput[
@@ -44,7 +44,7 @@
   </div>
   <div class="fr-my-2w">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.bilanFinancierCommentaire"
         :input="
           AgrementDisplayInput.AgrementBilanAnnuelInput[
@@ -69,7 +69,7 @@ import { FILE_CATEGORY } from "@vao/shared-bridge";
 import {
   TitleWithIcon,
   AgrementDisplayInput,
-  DisplayInputCommon,
+  DisplayLabel,
   MultiFilesUpload,
 } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";

@@ -10,7 +10,7 @@
 
   <div class="fr-fieldset__element">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.protocoleEvacUrg"
         :input="AgrementDisplayInput.AgrementProjetsInput['protocoleEvacUrg']"
       />
@@ -18,7 +18,7 @@
   </div>
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.protocoleRapatUrg"
         :input="AgrementDisplayInput.AgrementProjetsInput['protocoleRapatUrg']"
       />
@@ -37,7 +37,7 @@
   <h4 class="fr-text--lg">Rapatriement</h4>
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.protocoleRapatEtranger"
         :input="
           AgrementDisplayInput.AgrementProjetsInput['protocoleRapatEtranger']
@@ -47,7 +47,7 @@
   </div>
   <div class="fr-fieldset__element fr-mt-8v">
     <div class="fr-col-12">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement?.protocoleInfoFamille"
         :input="
           AgrementDisplayInput.AgrementProjetsInput['protocoleInfoFamille']
@@ -69,7 +69,7 @@
 import {
   AgrementDisplayInput,
   TitleWithIcon,
-  DisplayInputCommon,
+  DisplayLabel,
   MultiFilesUpload,
 } from "@vao/shared-ui";
 

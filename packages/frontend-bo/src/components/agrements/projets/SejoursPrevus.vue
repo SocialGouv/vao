@@ -29,12 +29,12 @@
   <div class="fr-my-2w separator"></div>
   <p class="fr-mb-1v fr-text--bold">Informations complémentaires</p>
   <div class="fr-col-6 fr-mb-4v">
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.initAgrement.sejourNbEnvisage"
       :input="AgrementDisplayInput.AgrementProjetsInput['sejourNbEnvisage']"
     />
   </div>
-  <DisplayInputCommon
+  <DisplayLabel
     :value="props.initAgrement.sejourCommentaire"
     :input="AgrementDisplayInput.AgrementProjetsInput['sejourCommentaire']"
   />
@@ -52,7 +52,7 @@
 import {
   TitleWithIcon,
   MultiFilesUpload,
-  DisplayInputCommon,
+  DisplayLabel,
   AgrementDisplayInput,
 } from "@vao/shared-ui";
 import { FILE_CATEGORY, type AgrementFilesDto } from "@vao/shared-bridge";

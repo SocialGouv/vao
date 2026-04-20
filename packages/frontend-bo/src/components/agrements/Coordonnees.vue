@@ -108,7 +108,7 @@
       :modifiable="false"
     />
     <div class="separator fr-my-2w"></div>
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.initAgrement.commentaire"
       :input="AgrementDisplayInput.AgrementInput['commentaire']"
     />
@@ -119,7 +119,7 @@
 import {
   FileUpload,
   TitleWithIcon,
-  DisplayInputCommon,
+  DisplayLabel,
   AgrementDisplayInput,
 } from "@vao/shared-ui";
 import { getFileByCategory, FILE_CATEGORY } from "@vao/shared-bridge";

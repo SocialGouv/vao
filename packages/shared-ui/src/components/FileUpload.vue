@@ -3,17 +3,17 @@
     <div v-if="!props.modifiable">
       <label>{{ $attrs.label }}</label>
     </div>
-    <div v-if="rows.length > 0">
+    <p v-if="rows.length > 0">
       <DsfrTable
         title="Fichier(s) téléversé(s)"
         :headers="headers"
         :rows="rows"
         :no-caption="true"
       />
-    </div>
-    <div v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
+    </p>
+    <p v-else class="fr-mb-4v fr-icon-file-line fr-text--sm">
       Aucun fichier téléversé
-    </div>
+    </p>
 
     <DsfrFileUpload
       v-if="props.modifiable"

@@ -19,7 +19,7 @@
         (satisfaction, ressenti, difficultés rencontrées…)
       </p>
       <div class="fr-col-12">
-        <DisplayInputCommon
+        <DisplayLabel
           :value="props.initAgrement?.bilanQualPerceptionSensibilite"
           :input="
             AgrementDisplayInput.AgrementBilanAnnuelInput[
@@ -52,7 +52,7 @@
         envisagés à partir de l’expérience passée.
       </p>
       <div class="fr-col-12">
-        <DisplayInputCommon
+        <DisplayLabel
           :value="props.initAgrement?.bilanQualPerspectiveEvol"
           :input="
             AgrementDisplayInput.AgrementBilanAnnuelInput[
@@ -84,7 +84,7 @@
         points d’attention de l’année.
       </p>
       <div class="fr-col-12">
-        <DisplayInputCommon
+        <DisplayLabel
           :value="props.initAgrement?.bilanQualElementsMarquants"
           :input="
             AgrementDisplayInput.AgrementBilanAnnuelInput[
@@ -118,7 +118,7 @@ import { FILE_CATEGORY, getFilesByCategory } from "@vao/shared-bridge";
 import {
   TitleWithIcon,
   AgrementDisplayInput,
-  DisplayInputCommon,
+  DisplayLabel,
   MultiFilesUpload,
 } from "@vao/shared-ui";
 

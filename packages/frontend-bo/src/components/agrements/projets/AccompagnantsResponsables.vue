@@ -7,21 +7,21 @@
     Accompagnants et responsable prévus
   </TitleWithIcon>
   <div class="fr-col-6 fr-mb-4v">
-    <DisplayInputCommon
+    <DisplayLabel
       :value="props.initAgrement.accompRespNb"
       :input="AgrementDisplayInput.AgrementProjetsInput['accompRespNb']"
     />
   </div>
   <div class="border fr-p-4v">
-    <div class="fr-my-2w fr-text--lg fr-text--bold">
+    <p class="fr-my-2w fr-text--lg fr-text--bold">
       Compétences et expériences des accompagnants prévus par lieu de vacances,
       notamment pour ce qui concerne l’encadrement de certaines activités
       sportives. Ou expériences du responsable du déroulement du séjour sur le
       lieu de vacances.
-    </div>
+    </p>
     <div class="fr-my-2w">
       <div class="fr-col-12">
-        <DisplayInputCommon
+        <DisplayLabel
           :value="props.initAgrement.accompRespCompExp"
           :input="
             AgrementDisplayInput.AgrementProjetsInput['accompRespCompExp']
@@ -39,12 +39,12 @@
     </div>
   </div>
   <div class="border fr-p-4v fr-mt-6v">
-    <div class="fr-fr-my-2w fr-text--lg fr-text--bold">
+    <p class="fr-fr-my-2w fr-text--lg fr-text--bold">
       Mesures envisagées au cas où des accompagnants supplémentaires devraient
       être recrutés en urgence
-    </div>
+    </p>
     <div class="fr-fr-my-2w">
-      <DisplayInputCommon
+      <DisplayLabel
         :value="props.initAgrement.accompRespRecruteUrg"
         :input="
           AgrementDisplayInput.AgrementProjetsInput['accompRespRecruteUrg']
@@ -70,7 +70,7 @@
 import {
   TitleWithIcon,
   MultiFilesUpload,
-  DisplayInputCommon,
+  DisplayLabel,
   AgrementDisplayInput,
 } from "@vao/shared-ui";
 import { ref } from "vue";
