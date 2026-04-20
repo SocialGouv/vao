@@ -4,9 +4,8 @@
       v-model:limit="limit"
       v-model:offset="offset"
       :columns="columns"
-      :data="props.hebergements || []"
-      :total="props.hebergements?.length || 0"
-      :total-pages="totalPages"
+      :data="paginatedData"
+      :total="hebergements.length"
       row-id="nomHebergement"
     >
       <template #cell-mois="{ row }">
@@ -18,88 +17,33 @@
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import type { Columns, NestedKeys } from "@vao/shared-ui";
+import type { Columns } from "@vao/shared-ui";
 
-import {
-  DsfrDataTableV2Wrapper,
-  usePagination,
-  columnsTable,
-} from "@vao/shared-ui";
+import { DsfrDataTableV2Wrapper, columnsTable } from "@vao/shared-ui";
 import type { BilanHebergementDto } from "@vao/shared-bridge";
 import { parseIntToMonthFR } from "@vao/shared-bridge";
-
-const route = useRoute();
 
 const props = defineProps<{
   hebergements: BilanHebergementDto[] | null;
 }>();
-const optionType = columnsTable.optionType;
 
-const { query } = route;
+const hebergements = computed(() => props.hebergements ?? []);
+
+const limit = ref(10);
+const offset = ref(0);
+
+const paginatedData = computed(() => {
+  return hebergements.value.slice(offset.value, offset.value + limit.value);
+});
 
 const defs: [string, string, string][] = [
-  ["nomHebergement", "Nom de l'hébergement", optionType.NONE],
-  ["adresse", "Adresse", optionType.NONE],
-  ["mois", "Période", optionType.NONE],
-  ["nbJours", "Nombre de jours", optionType.NONE],
+  ["nomHebergement", "Nom de l'hébergement", columnsTable.optionType.NONE],
+  ["adresse", "Adresse", columnsTable.optionType.NONE],
+  ["mois", "Période", columnsTable.optionType.NONE],
+  ["nbJours", "Nombre de jours", columnsTable.optionType.NONE],
 ];
-
-const queryString: Record<string, string> = Object.fromEntries(
-  Object.entries(query).map(([key, value]) => [
-    key,
-    Array.isArray(value)
-      ? value.filter((v) => v != null).join(",")
-      : value == null
-        ? ""
-        : String(value),
-  ]),
-);
 
 const columns = columnsTable.buildColumns(
   defs,
 ) as unknown as Columns<BilanHebergementDto>;
-
-const sortableColumns: NestedKeys<BilanHebergementDto>[] = [];
-
-const { limit, offset } = usePagination<BilanHebergementDto>(
-  {
-    limit: queryString.limit,
-    offset: queryString.offset,
-    sort: queryString.sort,
-    sortDirection: queryString.sortDirection as "asc" | "desc" | "",
-  },
-  sortableColumns,
-);
-
-const ITEMS_PER_PAGE = 10;
-const currentPage = ref(0);
-
-const totalPages = computed(() =>
-  Math.ceil((props.hebergements?.length || 0) / ITEMS_PER_PAGE),
-);
 </script>
-
-<style scoped>
-.headings {
-  display: grid;
-  grid-template-columns: 2fr 3fr 2fr 1fr;
-  gap: 0.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 2fr 3fr 2fr 1fr;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.pagination-center {
-  margin-top: 1rem;
-}
-
-button.active {
-  font-weight: bold;
-}
-</style>
