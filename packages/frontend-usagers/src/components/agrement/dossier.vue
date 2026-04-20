@@ -132,6 +132,7 @@ import { useForm, useField } from "vee-validate";
 import { FileUpload, TitleWithIcon, useToaster } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import regex from "../../utils/regex";
 import * as yup from "yup";
 import {
   AGREMENT_STATUT,
@@ -152,22 +153,16 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
 });
 
+const dateDDMMYYYYRegex = regex.dateDDMMYYYYRegex;
+
 const toaster = useToaster();
 
 const emit = defineEmits(["previous", "next", "update:valid", "update"]);
-//const emit = defineEmits(["previous", "next", "update"]);
-
-// const requiredUnlessBrouillon = (schema: yup.AnySchema) =>
-//   schema.when("statut", {
-//     is: (val: string) => val !== AGREMENT_STATUT.BROUILLON,
-//     then: (schema) => schema.required("Champ obligatoire"),
-//     otherwise: (schema) => schema.nullable(),
-//   });
 
 const dateDDMMYYYY = yup
   .string()
   .transform((value, originalValue) => originalValue || "")
-  .matches(/^\d{2}\/\d{2}\/\d{4}$/, "Format JJ/MM/AAAA invalide")
+  .matches(dateDDMMYYYYRegex, "Format JJ/MM/AAAA invalide")
   .test("is-valid-date", "La date n'est pas valide", (value) => {
     if (!value) return true; // nullable
     const [day, month, year] = value.split("/").map(Number);
