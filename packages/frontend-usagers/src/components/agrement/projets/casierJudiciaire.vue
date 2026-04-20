@@ -6,20 +6,19 @@
   >
     Casier judiciaire
   </TitleWithIcon>
-  <div class="fr-fieldset__element">
-    <DsfrCheckbox
-      v-model="accompRespAttestHono"
-      name="checkbox-required-custom"
-      label="J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire"
-      required
-      :readonly="!props.modifiable"
-      :value="true"
-      @update:model-value="onAccompRespAttestHonoChange"
-    />
-    <p v-if="accompRespAttestHonoErrorMessage" class="fr-error-text">
-      {{ accompRespAttestHonoErrorMessage }}
-    </p>
-  </div>
+
+  <DsfrCheckbox
+    v-model="accompRespAttestHono"
+    name="accompRespAttestHono"
+    :label="`J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire`"
+    :error-message="
+      accompRespAttestHonoMeta.touched ? accompRespAttestHonoErrorMessage : ''
+    "
+    :readonly="!props.modifiable"
+    :required="props.initAgrement.statut !== 'BROUILLON'"
+    :value="true"
+  />
+
   <div class="fr-fieldset__element">
     <FileUpload
       v-model="fileProjetsSejoursCasier"
@@ -51,18 +50,17 @@ const fileProjetsSejoursCasier = ref(
 );
 
 const validationSchema = yup.object({
-  accompRespAttestHono: yup
-    .boolean()
-    .oneOf(
-      [true],
-      "Vous devez attester que les accompagnants et le responsable du déroulement du séjour n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire.",
-    )
-    .required("Ce champ est obligatoire."),
+  accompRespAttestHono: yup.boolean().when("statut", {
+    is: (val: AGREMENT_STATUT) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema) =>
+      schema.oneOf([true], "Vous devez cocher cette case pour continuer"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
 });
 
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
-  accompRespAttestHono: false,
+  accompRespAttestHono: !!props.initAgrement.accompRespAttestHono || false,
 };
 
 const { handleSubmit } = useForm({
@@ -74,29 +72,22 @@ const { handleSubmit } = useForm({
 const {
   value: accompRespAttestHono,
   errorMessage: accompRespAttestHonoErrorMessage,
-  handleChange: onAccompRespAttestHonoChange,
-} = useField<boolean>("accompRespAttestHono");
+  meta: accompRespAttestHonoMeta,
+} = useField<boolean>("accompRespAttestHono", undefined, {
+  type: "checkbox",
+});
 
 const validateForm = async () => {
-  try {
-    const result = await handleSubmit((values) => {
-      return values;
-    })();
-
-    if (result) {
-      const data = { ...result };
-      delete data.statut;
-      const finalData = {
-        ...data,
-        ...(fileProjetsSejoursCasier.value && {
-          filesProjetsSejoursCasier: fileProjetsSejoursCasier.value,
-        }),
-      };
-      return finalData;
-    }
-  } catch (error) {
-    console.error("Erreur lors de la validation du formulaire! :", error);
+  const result = await handleSubmit((values) => values)();
+  if (result) {
+    return {
+      ...result,
+      ...(fileProjetsSejoursCasier.value.length > 0 && {
+        filesProjetsSejoursCasier: fileProjetsSejoursCasier.value,
+      }),
+    };
   }
+  return result;
 };
 
 defineExpose({
