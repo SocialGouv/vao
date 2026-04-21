@@ -57,7 +57,11 @@
       </div>
       <div class="fr-mt-6v">
         <p class="fr-mb-0">Période</p>
-        <AgrementBilanSelectMonths :default-selected="props.bilanHebergement?.mois" :modifiable="props.modifiable" @update:selected="handleMonths" />
+        <AgrementBilanSelectMonths
+          :default-selected="props.bilanHebergement?.mois"
+          :modifiable="props.modifiable"
+          @update:selected="handleMonths"
+        />
         <p
           v-if="periodeMeta.touched && periodeErrorMessage"
           class="fr-error-text"
@@ -105,6 +109,7 @@ import { computed, ref, watch } from "vue";
 import SearchAddress from "@/components/address/search-address.vue";
 import { useField, useForm } from "vee-validate";
 import { useToaster } from "@vao/shared-ui";
+import { normalizeAdresse } from "@vao/shared-bridge";
 import * as yup from "yup";
 
 const props = defineProps({
@@ -241,22 +246,16 @@ function onAdresseSelect(selectedAddress) {
 const onSubmitAddSejour = handleSubmit(
   (values) => {
     const adresseObject = selectedAdresseObject.value
-      ? {
-          label: selectedAdresseObject.value.label,
-          codeInsee: selectedAdresseObject.value.codeInsee || null,
-          codePostal: selectedAdresseObject.value.codePostal || null,
-          long: selectedAdresseObject.value.long || null,
-          lat: selectedAdresseObject.value.lat || null,
-          departement: selectedAdresseObject.value.departement || null,
-        }
+      ? selectedAdresseObject.value
       : { label: values.adresse };
 
+    const adresseNorm = normalizeAdresse(adresseObject);
     const agrBilanAnnuelId =
       props.bilanHebergement[0]?.agrBilanAnnuelId || null;
 
     const newHebergement = {
       nomHebergement: values.nomHebergement,
-      adresse: adresseObject,
+      adresse: adresseNorm,
       nbJours: parseInt(values.nbJours),
       mois: values.periode.map((m) => parseInt(m)),
       agrBilanAnnuelId,

@@ -82,6 +82,7 @@
 <script setup>
 import { ref } from "vue";
 import { useField, useForm } from "vee-validate";
+import { normalizeAdresse } from "@vao/shared-bridge";
 import * as yup from "yup";
 import SearchAddress from "@/components/address/search-address.vue";
 import HebergementDetail from "@/components/agrement/bilan/hebergementDetail.vue";
@@ -156,7 +157,6 @@ function onAdresseSelect(selectedAddress) {
 const onSubmitAddSejour = handleSubmit(
   (values) => {
     const adresseNorm = normalizeAdresse(adresse.value);
-
     sejours.value.push({
       nomHebergement: values.nomSejour,
       adresse: adresseNorm,
@@ -191,18 +191,6 @@ const validateForm = async () => {
     throw error;
   }
 };
-
-function normalizeAdresse(adresse) {
-  if (!adresse) return adresse;
-  const coords = adresse.coordinates || [null, null];
-  return {
-    ...adresse,
-    long:
-      coords[0] !== undefined && coords[0] !== null ? String(coords[0]) : null,
-    lat:
-      coords[1] !== undefined && coords[1] !== null ? String(coords[1]) : null,
-  };
-}
 
 defineExpose({
   validateForm,
