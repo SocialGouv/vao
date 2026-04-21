@@ -1,0 +1,7 @@
+FROM postgres:17
+
+COPY pg/ /pg/
+
+RUN chmod +x /pg/lancement.sh
+
+ENTRYPOINT ["/pg/lancement.sh"]
