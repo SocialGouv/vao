@@ -2,6 +2,6 @@ FROM postgres:17.5-alpine
 
 COPY pg/ /pg/
 
-RUN chmod +x /pg/lancement.sh
+RUN chmod +x /pg/entrypoint.sh
 
-ENTRYPOINT ["/pg/lancement.sh"]
+ENTRYPOINT ["/pg/entrypoint.sh"]
