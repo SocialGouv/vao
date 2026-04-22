@@ -42,7 +42,7 @@
       <div class="fr-mt-6v">
         <SearchAddress
           label="Adresse de l'hébergement"
-          :value="adresse"
+          :value="adresse as AdresseDto"
           :error-message="adresseErrorMessage"
           @select="onAdresseSelect"
         />
@@ -79,23 +79,33 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useField, useForm } from "vee-validate";
 import { normalizeAdresse } from "@vao/shared-bridge";
+import type { AdresseDto, AgrementSejoursDto } from "@vao/shared-bridge";
 import * as yup from "yup";
 import SearchAddress from "@/components/address/search-address.vue";
 import HebergementDetail from "@/components/agrement/bilan/hebergementDetail.vue";
 
+interface SejourFormValues {
+  nomSejour: string;
+  adresse: AdresseDto;
+  nbVacanciers: number;
+  mois: number[];
+}
+
 const props = defineProps({
-  agrementId: { type: String, required: true },
+  agrementId: { type: Number, required: true },
   initialSejours: { type: Array, required: false, default: () => [] },
   statut: { type: String, required: false, default: "BROUILLON" },
   modifiable: { type: Boolean, default: false },
 });
 
-const sejours = ref([...props.initialSejours]);
-const showForm = ref(false);
+const sejours = ref<AgrementSejoursDto[]>([
+  ...(props.initialSejours as AgrementSejoursDto[]),
+]);
+const showForm = ref<boolean>(false);
 
 function toggleForm() {
   showForm.value = !showForm.value;
@@ -119,7 +129,7 @@ const validationSchema = yup.object({
     .required("Veuillez sélectionner une période."),
 });
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm } = useForm<SejourFormValues>({
   validationSchema,
   validateOnMount: false,
 });
@@ -129,39 +139,43 @@ const {
   errorMessage: nomSejourErrorMessage,
   handleChange: onNomSejourChange,
   meta: nomSejourMeta,
-} = useField("nomSejour");
+} = useField<string>("nomSejour");
 
 const {
   value: nbVacanciers,
   errorMessage: nbVacanciersErrorMessage,
   handleChange: onNbVacanciersChange,
   meta: nbVacanciersMeta,
-} = useField("nbVacanciers");
+} = useField<number>("nbVacanciers");
 const { value: adresse, errorMessage: adresseErrorMessage } =
-  useField("adresse");
+  useField<AdresseDto>("adresse");
 
 const {
   value: mois,
   errorMessage: moisErrorMessage,
   meta: moisMeta,
-} = useField("mois");
+} = useField<number[]>("mois");
 
-function handleMonths(monthsArray) {
+function handleMonths(monthsArray: number[]) {
   mois.value = monthsArray;
 }
 
-function onAdresseSelect(selectedAddress) {
+function onAdresseSelect(selectedAddress: AdresseDto) {
   adresse.value = selectedAddress;
 }
 
 const onSubmitAddSejour = handleSubmit(
   (values) => {
-    const adresseNorm = normalizeAdresse(adresse.value);
+    const adresseNorm: AdresseDto | undefined | null = normalizeAdresse(
+      adresse.value,
+    );
+
+    const formValues = values as Record<string, any>;
     sejours.value.push({
-      nomHebergement: values.nomSejour,
+      nomHebergement: formValues.nomSejour,
       adresse: adresseNorm,
-      mois: values.mois,
-      nbVacanciers: values.nbVacanciers,
+      mois: formValues.mois,
+      nbVacanciers: formValues.nbVacanciers,
       agrementId: props.agrementId,
     });
 
@@ -173,11 +187,11 @@ const onSubmitAddSejour = handleSubmit(
   },
 );
 
-function updateSejour(index, updatedSejour) {
+function updateSejour(index: number, updatedSejour: AgrementSejoursDto) {
   sejours.value[index] = updatedSejour;
 }
 
-function deleteSejour(index) {
+function deleteSejour(index: number) {
   sejours.value.splice(index, 1);
 }
 

@@ -119,8 +119,9 @@ async function validateAllYears() {
       const result = await ref.validateForm();
       if (!result || result === false) {
         allValid = false;
+      } else if (typeof result === "object" && "annee" in result) {
+        allResults.push(result);
       }
-      allResults.push(result);
     } else {
       allValid = false;
     }
