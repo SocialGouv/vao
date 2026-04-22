@@ -36,7 +36,6 @@ const props = defineProps({
   statut: { type: String, required: true },
   typeDeficiences: { type: Array, default: () => [] },
   modifiable: { type: Boolean, required: false, default: false },
-  validationObligatoire: { type: Boolean, default: true },
 });
 
 const toaster = useToaster();
@@ -53,7 +52,7 @@ const handicapOptions = [
 const validationSchema = yup.object({
   typeDeficiences:
     props.statut === AGREMENT_STATUT.BROUILLON
-      ? yup.array() // Pas de validation si brouillon
+      ? yup.array().notRequired().nullable()
       : requiredUnlessBrouillon(
           yup
             .array()

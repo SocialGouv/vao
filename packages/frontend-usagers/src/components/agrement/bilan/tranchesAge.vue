@@ -47,11 +47,10 @@ const ageRangeOptions = [
   { label: "de 40 à 59 ans", value: "40_59", name: "trancheAge" },
   { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
 ];
-
 const validationSchema = yup.object({
   trancheAge:
     props.statut === AGREMENT_STATUT.BROUILLON
-      ? yup.array()
+      ? yup.array().notRequired().nullable()
       : requiredUnlessBrouillon(
           yup
             .array()
@@ -78,6 +77,7 @@ const {
 
 const validateTranchesAge = async () => {
   const result = await validate();
+
   if (!result.valid && trancheAgeErrorMessage.value) {
     toaster.error({
       description: trancheAgeErrorMessage.value,
