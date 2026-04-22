@@ -3,7 +3,7 @@
 
   <div
     v-for="(representant, idx) in representantsList"
-    :key="idx"
+    :key="representant.prenom + representant.nom + idx"
     class="fr-mb-4w fr-mt-4w"
   >
     <div class="fr-mb-2w">
@@ -34,26 +34,16 @@
         v-if="representant.isEditing && representant._backup"
         class="container-flex-end fr-mt-2w"
       >
-        <DsfrButton
-          icon="fr-icon-save-line"
-          icon-only
-          primary
+        <button
+          class="fr-btn fr-icon-save-line"
+          aria-label="Enregistrer les modifications du représentant 3"
           @click="saveRepresentant(idx)"
-        >
-          <span class="fr-sr-only"
-            >Enregistrer les modifications du représentant {{ idx + 1 }}</span
-          >
-        </DsfrButton>
-        <DsfrButton
-          icon="fr-icon-close-line"
-          icon-only
-          secondary
+        ></button>
+        <button
+          class="fr-btn fr-icon-close-line"
+          aria-label="Annuler les modifications du représentant 3"
           @click="cancelEditRepresentant(idx)"
-        >
-          <span class="fr-sr-only"
-            >Annuler les modifications du représentant {{ idx + 1 }}</span
-          >
-        </DsfrButton>
+        ></button>
       </div>
     </div>
     <template v-if="representant.isEditing">
