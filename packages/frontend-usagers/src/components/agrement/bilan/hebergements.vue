@@ -112,6 +112,8 @@ import { useToaster } from "@vao/shared-ui";
 import { normalizeAdresse } from "@vao/shared-bridge";
 import * as yup from "yup";
 
+const log = logger("components/AgrementBilanHebergements");
+
 const props = defineProps({
   bilanHebergement: {
     type: Array,
@@ -249,7 +251,18 @@ const onSubmitAddSejour = handleSubmit(
       ? selectedAdresseObject.value
       : { label: values.adresse };
 
-    const adresseNorm = normalizeAdresse(adresseObject);
+    let adresseNorm;
+    try {
+      adresseNorm = normalizeAdresse(adresseObject);
+    } catch (e) {
+      log.w("Erreur de normalisation de l'adresse :", e);
+      toaster.error({
+        titleTag: "Erreur sur l'adresse",
+        description: "L'adresse saisie est incomplète ou invalide.",
+      });
+      return;
+    }
+
     const agrBilanAnnuelId =
       props.bilanHebergement[0]?.agrBilanAnnuelId || null;
 

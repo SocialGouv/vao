@@ -85,6 +85,7 @@ import { useField, useForm } from "vee-validate";
 import { normalizeAdresse } from "@vao/shared-bridge";
 import type { AdresseDto, AgrementSejoursDto } from "@vao/shared-bridge";
 import * as yup from "yup";
+import { useToaster } from "@vao/shared-ui";
 import SearchAddress from "@/components/address/search-address.vue";
 import HebergementDetail from "@/components/agrement/bilan/hebergementDetail.vue";
 
@@ -95,12 +96,16 @@ interface SejourFormValues {
   mois: number[];
 }
 
+const log = logger("components/AgrementProjetsListeSejours");
+
 const props = defineProps({
   agrementId: { type: Number, required: true },
   initialSejours: { type: Array, required: false, default: () => [] },
   statut: { type: String, required: false, default: "BROUILLON" },
   modifiable: { type: Boolean, default: false },
 });
+
+const toaster = useToaster();
 
 const sejours = ref<AgrementSejoursDto[]>([
   ...(props.initialSejours as AgrementSejoursDto[]),
@@ -166,21 +171,25 @@ function onAdresseSelect(selectedAddress: AdresseDto) {
 
 const onSubmitAddSejour = handleSubmit(
   (values) => {
-    const adresseNorm: AdresseDto | undefined | null = normalizeAdresse(
-      adresse.value,
-    );
+    try {
+      const adresseNorm: AdresseDto = normalizeAdresse(values.adresse);
 
-    const formValues = values as Record<string, any>;
-    sejours.value.push({
-      nomHebergement: formValues.nomSejour,
-      adresse: adresseNorm,
-      mois: formValues.mois,
-      nbVacanciers: formValues.nbVacanciers,
-      agrementId: props.agrementId,
-    });
+      sejours.value.push({
+        nomHebergement: values.nomSejour,
+        adresse: adresseNorm,
+        mois: values.mois,
+        nbVacanciers: values.nbVacanciers,
+        agrementId: props.agrementId,
+      });
 
-    resetForm();
-    showForm.value = false;
+      resetForm();
+      showForm.value = false;
+    } catch (error) {
+      toaster.error({
+        description: "L'adresse saisie est incomplète ou invalide.",
+      });
+      console.error("Erreur lors de l'ajout du séjour :", error);
+    }
   },
   (errors) => {
     console.error("Erreurs de validation :", errors);
@@ -201,7 +210,7 @@ const validateForm = async () => {
       sejours: sejours.value,
     };
   } catch (error) {
-    console.error("Erreur lors de la validation des séjours :", error);
+    log.w("Erreur lors de la validation des séjours :", error);
     throw error;
   }
 };
