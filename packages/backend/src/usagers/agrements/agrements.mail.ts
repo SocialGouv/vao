@@ -135,32 +135,47 @@ export const AgrementMailUsagers = {
     log.d("sendStatutRefuseMail post email", { params });
     return params;
   },
-  sendStatutTransmisMail: ({ email }: { email: string }) => {
-    log.i("sendStatutTransmisMail - In", { email });
+  sendStatutTransmisMail: ({
+    email,
+    date,
+    regionDreets,
+  }: {
+    email: string;
+    date: string;
+    regionDreets: string;
+  }) => {
+    log.i("sendStatutTransmisMail - In", {
+      date,
+      email,
+      regionDreets,
+    });
     if (!email) {
       throw new AppError(
         "Email manquant pour l'envoi du mail de transmission d'agrément",
       );
     }
     const html = sendTemplate.getBody(
-      "VAO - Demande d'agrément transmise",
+      "Portail VAO – Confirmation de transmission de votre demande de renouvellement d’agrément",
       [
         {
           p: [
             "Bonjour,",
-            "Votre demande de renouvellement d'agrément a bien été transmise.",
-            assistanceText,
+            `Votre demande d’agrément a bien été transmise le ${date} à la DREETS ${regionDreets}.`,
+            "Vous pouvez suivre l’avancement de votre dossier à tout moment depuis votre espace personnel sur le portail VAO :",
+            `<a href='${frontUsagersDomain}/mon-agrement'>Lien direct vers le dossier</a>`,
+            "Un email vous sera envoyé à chaque évolution du traitement de votre demande.",
           ],
           type: "p",
         },
       ],
-      `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+      `Cordialement,<br>L’équipe du SI VAO<br><a href='${frontUsagersDomain}'>Portail VAO</a>`,
     );
     const params = {
       from: senderEmail,
       html,
       replyTo: senderEmail,
-      subject: "VAO - Demande d'agrément transmise",
+      subject:
+        "Portail VAO – Confirmation de transmission de votre demande de renouvellement d’agrément",
       to: email,
     };
     log.d("sendStatutTransmisMail post email", { params });
