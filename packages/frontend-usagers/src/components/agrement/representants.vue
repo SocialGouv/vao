@@ -36,12 +36,12 @@
       >
         <button
           class="fr-btn fr-icon-save-line"
-          aria-label="Enregistrer les modifications du représentant 3"
+          :aria-label="`Enregistrer les modifications du représentant ${idx + 1}`"
           @click="saveRepresentant(idx)"
         ></button>
         <button
           class="fr-btn fr-icon-close-line"
-          aria-label="Annuler les modifications du représentant 3"
+          :aria-label="`Annuler les modifications du représentant ${idx + 1}`"
           @click="cancelEditRepresentant(idx)"
         ></button>
       </div>
@@ -365,11 +365,6 @@ defineExpose({
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-}
-.container-flex-column {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 }
 dl {
   display: grid;
