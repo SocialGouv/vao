@@ -165,7 +165,10 @@ async function updateOrCreate(formValues: AgrementFormValues) {
     const organismeId = rawOrganismeId != null ? Number(rawOrganismeId) : null;
     const newAgrement = {
       ...agrementStore.agrementEnTraitement,
-      ...updatedData,
+      agrementFiles: [
+        ...updatedData.agrementFiles,
+        ...(agrementStore.agrementEnTraitement?.agrementFiles ?? []),
+      ],
       organismeId,
       statut:
         updatedData.statut ??
