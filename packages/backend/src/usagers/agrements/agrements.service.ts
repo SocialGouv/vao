@@ -11,6 +11,7 @@ import {
 } from "@vao/shared-bridge";
 import { PoolClient } from "pg";
 
+import Region from "../../services/geo/Region";
 import { mailService } from "../../services/mail";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import { AgrementServiceShared } from "../../shared/agrements/agrements.service";
@@ -189,10 +190,33 @@ export const AgrementService = {
 
     if (statut === AGREMENT_STATUT.TRANSMIS) {
       const email = await AgrementsRepository.getUserMail(agrementId);
+      const date = new Date().toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      const codeObtentionRegion = agrement.regionObtention || null;
+
+      let nomObtentionRegion = "de votre région";
+      if (codeObtentionRegion) {
+        try {
+          const region: { value: string; text: string } =
+            await Region.fetchOne(codeObtentionRegion);
+          nomObtentionRegion = region.text;
+        } catch (e) {
+          log.w("Région non trouvée pour le code", codeObtentionRegion, e);
+        }
+      }
+
       if (email) {
         try {
           await mailService.send(
-            AgrementMailUsagers.sendStatutTransmisMail({ email }),
+            AgrementMailUsagers.sendStatutTransmisMail({
+              date,
+              email,
+              regionDreets: nomObtentionRegion,
+            }),
           );
         } catch (e) {
           log.w("Erreur lors de l'envoi de l'email de transmission", e);
