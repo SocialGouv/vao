@@ -10,6 +10,7 @@ import app from "../../app";
 import checkJwt from "../../middlewares/checkJWT";
 import { mailService } from "../../services/mail";
 import { User, UserRequest } from "../../types/request";
+import { AgrementsRepository } from "../../usagers/agrements/agrements.repository";
 import { AgrementService } from "../../usagers/agrements/agrements.service";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import {
@@ -64,6 +65,12 @@ describe("GET /agrements/", () => {
     expect(response.status).toBe(200);
     expect(response.body.agrements).not.toBeNull();
     expect(response.body.agrements[0].id).toEqual(agrementId);
+
+    const agrementRepo = await AgrementsRepository.getByOrganismeId({
+      organismeId,
+      withDetails: true,
+    });
+    expect(agrementRepo?.id).toEqual(agrementId);
   });
   it("devrait retourner une liste avec un agrement valide à l'utilisateur connecté", async () => {
     const authUser = await createUsagersUser();
