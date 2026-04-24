@@ -19,9 +19,14 @@ describe("buildRequestQueryString", () => {
   });
 
   it("should return a query string with an undefined query param", () => {
-    const query = { limit: undefined, page: 1 };
+    const query = { limit: undefined, page: 1, test: "" };
     // @ts-expect-error undefined is not a valid query param
     expect(buildRequestQueryString(query)).toEqual("?page=1");
+  });
+
+  it("should return a query string with an false query param", () => {
+    const query = { limit: false, page: 1 };
+    expect(buildRequestQueryString(query)).toEqual("?limit=false&page=1");
   });
 
   it("should return a query string with multiple query params", () => {

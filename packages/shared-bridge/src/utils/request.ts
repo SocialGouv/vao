@@ -12,6 +12,8 @@ export function buildRequestQueryString(
     // les tableaux étant mal interpretés par query-string, on parse les sous objets ou tableaux en JSON
     if (Array.isArray(value) || typeof value === "object") {
       return { ...acc, [key]: JSON.stringify(value) };
+    } else if (!value && value !== false && value !== 0) {
+      return acc;
     } else {
       return { ...acc, [key]: value };
     }
