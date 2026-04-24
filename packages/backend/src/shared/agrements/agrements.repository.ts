@@ -1,4 +1,8 @@
-import type { AgrementDto, AgrementMessage } from "@vao/shared-bridge";
+import type {
+  AGREMENT_SVA_TIMER_STATUT,
+  AgrementDto,
+  AgrementMessage,
+} from "@vao/shared-bridge";
 import { USER_TYPE } from "@vao/shared-bridge";
 
 import Logger from "../../utils/logger";
@@ -216,6 +220,19 @@ export const AgrementsRepositoryShared = {
       client.release();
     }
   },
+  async insertSvaPeriode({
+    client,
+    timerId,
+  }: {
+    client: any;
+    timerId: number;
+  }): Promise<void> {
+    await client.query(
+      `INSERT INTO front.agrement_sva_periodes (agrement_sva_timer_id, start_at)
+         VALUES ($1,NOW())`,
+      [timerId],
+    );
+  },
   async markMessagesAsRead({
     agrementId,
     userType,
@@ -240,5 +257,33 @@ export const AgrementsRepositoryShared = {
     } finally {
       client.release();
     }
+  },
+  async updateSvaPeriode({
+    client,
+    timerId,
+  }: {
+    client: any;
+    timerId: number;
+  }): Promise<number> {
+    const { id } = await client.query(
+      "UPDATE front.agrement_sva_timer SET end_at = NOW() WHERE id = $1 AND end_at IS NULL RETURNING id",
+      [timerId],
+    );
+    return id;
+  },
+  async updateSvaTimer({
+    client,
+    agrementId,
+    statut,
+  }: {
+    client: any;
+    agrementId: number;
+    statut: AGREMENT_SVA_TIMER_STATUT;
+  }): Promise<number> {
+    const result = await client.query(
+      "UPDATE front.agrement_sva_timer SET statut = $2, updated_at = NOW() WHERE agrement_id = $1 RETURNING id",
+      [agrementId, statut],
+    );
+    return result.rows[0]?.id ?? null;
   },
 };

@@ -34,6 +34,11 @@ export const suppressionCompteInactif = {
   name: "SUPPRESSION_COMPTE_INACTIF",
 };
 
+export const updateAndNotifySva = {
+  cron: process.env.BACKEND_CRON_UPDATE_AND_NOTIFY_SVA,
+  name: "UPDATE_AND_NOTIFY_SVA",
+};
+
 export const notifyAgrementExpiration = {
   cron: process.env.BACKEND_CRON_REQUEST_AGREMENT_NOTIFY_CRON,
   name: "REQUEST_AGREMENT",
