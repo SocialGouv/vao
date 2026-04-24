@@ -206,7 +206,7 @@ export const AgrementService = {
 
       let organismeName = "";
       let siret = "";
-      let nomObtentionRegion = "de votre région";
+      let nomObtentionRegion = null;
       let emailRegion: string | null = null;
 
       try {
@@ -236,8 +236,23 @@ export const AgrementService = {
           nomObtentionRegion = region.text;
           emailRegion = await getEmailRegion(codeObtentionRegion);
         }
+        if (!organisme) {
+          log.w(`Organisme introuvable pour agrementId=${agrementId}`);
+        } else if (!codeObtentionRegion) {
+          log.w(
+            `Région introuvable pour codeObtentionRegion=${codeObtentionRegion}`,
+          );
+        } else if (!emailRegion) {
+          log.w(
+            `Email de région manquant pour codeObtentionRegion=${codeObtentionRegion}`,
+          );
+        }
       } catch (e) {
-        log.w("Erreur lors de la récupération des infos organisme/région", e);
+        log.w(
+          "Impossible d'envoyer l'email à la région : informations manquantes ou erreur lors de la récupération. AgrementId=" +
+            agrementId,
+          e,
+        );
       }
 
       if (emailRegion) {
