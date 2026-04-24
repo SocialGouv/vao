@@ -7,12 +7,15 @@ import {
   addYears,
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
+  AGREMENT_SVA_TIMER_STATUT,
 } from "@vao/shared-bridge";
 
 import { mailService } from "../../services/mail";
+import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import { AgrementServiceShared } from "../../shared/agrements/agrements.service";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
+import { getPool } from "../../utils/pgpool";
 import { AgrementMailUsagers } from "./agrements.mail";
 import { AgrementsRepository } from "./agrements.repository";
 
@@ -148,15 +151,32 @@ export const AgrementService = {
       log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
+    const client = await getPool().connect();
 
-    const updated = await AgrementsRepository.updateStatut({
-      agrementId,
-      statut,
-    });
-    if (!updated) {
-      throw new AppError("Échec de la mise à jour du statut", {
-        statusCode: 500,
+    try {
+      client.query("BEGIN");
+      const updated = await AgrementsRepository.updateStatut({
+        agrementId,
+        client,
+        statut,
       });
+      if (!updated) {
+        throw new AppError("Échec de la mise à jour du statut", {
+          statusCode: 500,
+        });
+      }
+      await AgrementService.updateSvaTimer({
+        agrementId,
+        client,
+        statut,
+      });
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      log.w("Erreur lors de la mise à jour du statut", { agrementId, error });
+      throw error;
+    } finally {
+      client.release();
     }
 
     let eventType: AGREMENT_HISTORY_TYPE;
@@ -191,5 +211,35 @@ export const AgrementService = {
       }
     }
     return true;
+  },
+  async updateSvaTimer({
+    agrementId,
+    client,
+    statut,
+  }: {
+    agrementId: number;
+    client: any;
+    statut: AGREMENT_STATUT;
+  }): Promise<void> {
+    // Côté OVA, lorsque l'utilisateur fait le retour, alors on redéclenche le SVA.
+    // - changement de statut du timer en RUNNING
+    // - Nouvelle période
+    if (statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME) {
+      const timerId = await AgrementsRepositoryShared.updateSvaTimer({
+        agrementId,
+        client,
+        statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
+      });
+      if (!timerId) {
+        throw new AppError("SVA Timer non trouvé pour l'agrément", {
+          statusCode: 500,
+        });
+      }
+      // On redémarre une nouvelle période
+      await AgrementsRepositoryShared.insertSvaPeriode({
+        client,
+        timerId,
+      });
+    }
   },
 };

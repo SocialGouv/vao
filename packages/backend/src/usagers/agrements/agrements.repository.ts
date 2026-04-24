@@ -522,6 +522,16 @@ export const AgrementsRepository = {
       userType: USER_TYPE.FU,
     });
   },
+  async insertSvaPeriode({ timerId }: { timerId: number }): Promise<number> {
+    return await withTransaction(async (client: PoolClient) => {
+      const id = await client.query(
+        "UPDATE front.agrement_sva_timer SET start_at = NOW() WHERE id = $1 RETURNING id",
+        [timerId],
+      );
+      return id;
+    });
+  },
+
   async markMessagesAsRead(agrementId: number): Promise<number> {
     return AgrementsRepositoryShared.markMessagesAsRead({
       agrementId,
@@ -688,9 +698,11 @@ export const AgrementsRepository = {
   async updateStatut({
     agrementId,
     statut,
+    client,
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
+    client: any;
   }): Promise<boolean> {
     const client = await getPool().connect();
     try {

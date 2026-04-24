@@ -1,4 +1,8 @@
-import { ACTIVITE_TYPE, AGREMENT_STATUT } from "../constantes/agrement";
+import {
+  ACTIVITE_TYPE,
+  AGREMENT_STATUT,
+  AGREMENT_SVA_TIMER_STATUT,
+} from "../constantes/agrement";
 import { FILE_CATEGORY } from "../constantes/file";
 import type { AdresseDto } from "./adresse.dto";
 
@@ -150,4 +154,20 @@ export interface AgrementMessage {
   read_at: string | null;
   backUserPrenom?: string | null;
   frontUserPrenom?: string | null;
+}
+
+export interface AgrementSvaTimerDto {
+  id: number;
+  agrementId: number | null;
+  statut: AGREMENT_SVA_TIMER_STATUT | null;
+  t0: Date | null;
+  createdAt: Date | null;
+}
+
+export interface AgrementSvaPeriodesDto {
+  id: number;
+  agrementSvaTimerId: number | null;
+  startAt: Date | null;
+  endAt: Date | null;
+  mailDelay21dAt: Date | null;
 }
