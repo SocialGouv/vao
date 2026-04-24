@@ -23,6 +23,7 @@ export const AgrementMailUsagers = {
         "Email manquant pour l'envoi du mail de demande de modification d'agrément",
       );
     }
+
     const html = sendTemplate.getBody(
       "PeroVAO - Demande d'agrément transmise",
       [
@@ -154,13 +155,16 @@ export const AgrementMailUsagers = {
         "Email manquant pour l'envoi du mail de transmission d'agrément",
       );
     }
+    const regionPhrase = !regionDreets
+      ? `Votre demande d’agrément a bien été transmise le ${date} à la DREETS compétente.`
+      : `Votre demande d’agrément a bien été transmise le ${date} à la DREETS ${regionDreets}.`;
     const html = sendTemplate.getBody(
       "Portail VAO – Confirmation de transmission de votre demande de renouvellement d’agrément",
       [
         {
           p: [
             "Bonjour,",
-            `Votre demande d’agrément a bien été transmise le ${date} à la DREETS ${regionDreets}.`,
+            regionPhrase,
             "Vous pouvez suivre l’avancement de votre dossier à tout moment depuis votre espace personnel sur le portail VAO :",
             `<a href='${frontUsagersDomain}/mon-agrement'>Lien direct vers le dossier</a>`,
             "Un email vous sera envoyé à chaque évolution du traitement de votre demande.",

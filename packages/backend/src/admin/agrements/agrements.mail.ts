@@ -69,7 +69,7 @@ export const AgrementMailAdmin = {
     });
     if (!email) {
       throw new AppError(
-        "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue (région)",
+        "Email manquant pour l'envoi du mail de notification de la région",
       );
     }
     const html = sendTemplate.getBody(
