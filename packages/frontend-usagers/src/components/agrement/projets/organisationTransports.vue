@@ -80,12 +80,24 @@ const filesProjetsSejoursOrgaTransports = ref(
 
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
-  transportAllerRetour: requiredUnlessBrouillon(
-    yup.string().min(1, "Merci de décrire au moins 1 caractères.").nullable(),
-  ),
-  transportSejour: requiredUnlessBrouillon(
-    yup.string().min(1, "Merci de décrire au moins 1 caractères.").nullable(),
-  ),
+  transportAllerRetour:
+    props.initAgrement.statut === AGREMENT_STATUT.BROUILLON
+      ? yup.string().nullable()
+      : requiredUnlessBrouillon(
+          yup
+            .string()
+            .min(1, "Merci de décrire au moins 1 caractères.")
+            .nullable(),
+        ),
+  transportSejour:
+    props.initAgrement.statut === AGREMENT_STATUT.BROUILLON
+      ? yup.string().nullable()
+      : requiredUnlessBrouillon(
+          yup
+            .string()
+            .min(1, "Merci de décrire au moins 1 caractères.")
+            .nullable(),
+        ),
 });
 
 const initialValues = {
