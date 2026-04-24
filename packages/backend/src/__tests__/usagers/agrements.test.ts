@@ -1,4 +1,8 @@
-import { AGREMENT_STATUT, USER_TYPE } from "@vao/shared-bridge";
+import {
+  AGREMENT_HISTORY_TYPE,
+  AGREMENT_STATUT,
+  USER_TYPE,
+} from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
 import request from "supertest";
 
@@ -6,6 +10,7 @@ import app from "../../app";
 import checkJwt from "../../middlewares/checkJWT";
 import { mailService } from "../../services/mail";
 import { User, UserRequest } from "../../types/request";
+import { AgrementService } from "../../usagers/agrements/agrements.service";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
 import {
   createAgrement,
@@ -110,7 +115,7 @@ describe("GET /agrements/:agrementId", () => {
     expect(response.body.agrement.id).toEqual(agrementId);
   });
 
-  it("devrait retourner un agrément introuvalbe", async () => {
+  it("devrait retourner un agrément introuvable", async () => {
     const authUser = await createUsagersUser();
     (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
       req.decoded = { id: authUser.id };
@@ -203,6 +208,16 @@ describe("PATCH /agrements/:agrementId/statut", () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
 
+    // Vérifier que l'événement a bien été historisé
+    const history = await AgrementService.getHistory(agrementId);
+    const aModifierEvent = history.find(
+      (event) =>
+        event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+        event.type_precision === AGREMENT_STATUT.TRANSMIS,
+    );
+
+    expect(aModifierEvent).toBeDefined();
+    expect(aModifierEvent?.usager_user).toBeDefined();
     const { agrement } = await getAgrement(agrementId);
     expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
   });
