@@ -4,5 +4,6 @@ export * from "./demandeSejour";
 export * from "./errors";
 export * from "./featureFlags";
 export * from "./file";
+export * from "./organisme";
 export * from "./tracking";
 export * from "./users";

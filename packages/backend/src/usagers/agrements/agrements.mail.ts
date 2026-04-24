@@ -59,7 +59,7 @@ export const AgrementMailUsagers = {
     regionDreets,
   }: {
     email: string[];
-    regionDreets: string;
+    regionDreets: string | null;
   }) => {
     log.i("sendStatutCompletudeMail - In", { email });
     if (!email) {
@@ -74,7 +74,7 @@ export const AgrementMailUsagers = {
         {
           p: [
             "Bonjour,",
-            `Votre demande de renouvellement d’agrément a été examinée par la DREETS ${regionDreets}.`,
+            `Votre demande de renouvellement d’agrément a été examinée par la DREETS ${regionDreets || "compétente"}.`,
             "Conformément à la réglementation, l’administration dispose d’un délai de 2 mois pour instruire votre dossier et rendre une décision (ce délai est géré par la DREETS).",
             `À défaut de décision dans ce délai, votre agrément sera réputé accordé (règle du "silence vaut accord"). La décision implicite d’acceptation du dossier ne court qu'à compter du moment où l’ensemble des pièces sont fournies par l’OVA.`,
             "Vous pouvez suivre l’avancement de votre demande à tout moment depuis votre espace sur le portail VAO :",
