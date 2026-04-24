@@ -3,7 +3,7 @@
 
   <div
     v-for="(representant, idx) in representantsList"
-    :key="idx"
+    :key="representant.prenom + representant.nom + idx"
     class="fr-mb-4w fr-mt-4w"
   >
     <div class="fr-mb-2w">
@@ -11,33 +11,13 @@
         <h5 class="fr-text--md fr-mb-0">Représentant n°{{ idx + 1 }}</h5>
         <div class="container-flex-between">
           <template v-if="props.modifiable">
-            <!-- Boutons d'édition d'un existant -->
-            <div
-              v-if="representant.isEditing && representant._backup"
-              class="container-flex-column"
-            >
-              <DsfrLinkV2
-                as="button"
-                icon-name="icon-save-line"
-                @click="saveRepresentant(idx)"
-              >
-                Enregistrer les modifications
-              </DsfrLinkV2>
-              <DsfrLinkV2
-                as="button"
-                icon-name="icon-close-line"
-                @click="cancelEditRepresentant(idx)"
-              >
-                Annuler les modifications
-              </DsfrLinkV2>
-            </div>
             <DsfrLinkV2
               v-if="!representant.isEditing"
               as="button"
               icon-name="icon-edit-line"
               @click="editRepresentant(idx)"
             >
-              modifier
+              Modifier le représentant {{ idx + 1 }}
             </DsfrLinkV2>
           </template>
           <DsfrButton
@@ -45,9 +25,25 @@
             secondary
             @click="removeRepresentant(idx)"
           >
-            Supprimer ce représentant
+            Supprimer le représentant {{ idx + 1 }}
           </DsfrButton>
         </div>
+      </div>
+      <!-- Boutons d'édition d'un existant -->
+      <div
+        v-if="representant.isEditing && representant._backup"
+        class="container-flex-end fr-mt-2w"
+      >
+        <button
+          class="fr-btn fr-icon-save-line"
+          :aria-label="`Enregistrer les modifications du représentant ${idx + 1}`"
+          @click="saveRepresentant(idx)"
+        ></button>
+        <button
+          class="fr-btn fr-icon-close-line"
+          :aria-label="`Annuler les modifications du représentant ${idx + 1}`"
+          @click="cancelEditRepresentant(idx)"
+        ></button>
       </div>
     </div>
     <template v-if="representant.isEditing">
@@ -365,10 +361,10 @@ defineExpose({
   justify-content: flex-start;
   gap: 1rem;
 }
-.container-flex-column {
+.container-flex-end {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  justify-content: flex-end;
+  gap: 1rem;
 }
 dl {
   display: grid;
