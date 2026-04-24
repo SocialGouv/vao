@@ -372,7 +372,7 @@ export const AgrementService = {
       if (svaTimer) {
         timerId = svaTimer.id;
         // Si un timer en pause existe, on le redémarre
-        timerId = await AgrementsRepositoryShared.updateSvaTimer({
+        await AgrementsRepositoryShared.updateSvaTimer({
           agrementId,
           client,
           statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,

@@ -31,7 +31,7 @@ export const updateAndNotifySvaActions = async () => {
     });
     if (svaToNotify.to_passed_finished) {
       const client = await pool.connect();
-      const committed = false;
+      let committed = false;
       try {
         await client.query("BEGIN");
         // On passe le statut du SVA à "finished"
@@ -46,6 +46,7 @@ export const updateAndNotifySvaActions = async () => {
         });
 
         await client.query("COMMIT");
+        committed = true;
 
         await addHistoric({
           action: Actions.Modification,
@@ -56,7 +57,7 @@ export const updateAndNotifySvaActions = async () => {
           userType: UserTypes.Cron,
         });
 
-        await MailSva.bo.sendNotificationSvaTacite({
+        MailSva.bo.sendNotificationSvaTacite({
           to: ficheTerritoire.service_mail,
           svaToNotify,
         });
@@ -78,7 +79,7 @@ export const updateAndNotifySvaActions = async () => {
 
         const mailsOVA = userListMail.map((u: { mail: string }) => u.mail);
 
-        await MailSva.ova.sendNotificationSvaTacite({
+        MailSva.ova.sendNotificationSvaTacite({
           to: mailsOVA,
           territoire: ficheTerritoire,
           svaToNotify,
@@ -118,7 +119,7 @@ export const updateAndNotifySvaActions = async () => {
       id: svaToNotify.id,
     });
     try {
-      await MailSva.bo.sendNotificationDelay21Days({
+      MailSva.bo.sendNotificationDelay21Days({
         to: ficheTerritoire.service_mail,
         svaToNotify,
       });
