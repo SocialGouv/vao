@@ -130,3 +130,19 @@ export interface BilanHebergementEntity {
   nb_jours: number | null;
   mois: number[] | null;
 }
+
+export interface AgrementSvaTimerEntity {
+  id?: number;
+  agrement_id: number | null;
+  statut: string | null;
+  t0: Date | null;
+  created_at: Date | null;
+}
+
+export interface AgrementSvaPeriodesEntity {
+  id?: number;
+  agrement_sva_timer_id: number | null;
+  start_at: Date | null;
+  end_at: Date | null;
+  mail_delay_21d_at: Date | null;
+}
