@@ -15,9 +15,9 @@
     </div>
     <AgrementBilanHebergementDetail
       v-for="(hebergement, index) in paginatedHebergements"
-      :key="`${hebergement.agrBilanAnnuelId}-${hebergement.adresseId}-${index}`"
+      :key="`${hebergement.agrBilanAnnuelId}-${hebergement.agrBilanAnnuelId}-${index}`"
       :hebergement="hebergement"
-      :statut="props.statut"
+      :statut="props.statut || AGREMENT_STATUT.BROUILLON"
       @update="
         (updatedHebergement) =>
           handleHebergementUpdate(index, updatedHebergement)
@@ -58,7 +58,6 @@
       <div class="fr-mt-6v">
         <p class="fr-mb-0">Période</p>
         <AgrementBilanSelectMonths
-          :default-selected="props.bilanHebergement?.mois"
           :modifiable="props.modifiable"
           @update:selected="handleMonths"
         />
@@ -104,41 +103,37 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import type { BilanHebergementDto } from "@vao/shared-bridge/src/dto/agrement.dto";
+import type { AdresseDto } from "@vao/shared-bridge/src/dto/adresse.dto";
 import SearchAddress from "@/components/address/search-address.vue";
 import { useField, useForm } from "vee-validate";
 import { useToaster } from "@vao/shared-ui";
-import { normalizeAdresse } from "@vao/shared-bridge";
+import { normalizeAdresse, AGREMENT_STATUT } from "@vao/shared-bridge";
 import * as yup from "yup";
 
 const log = logger("components/AgrementBilanHebergements");
 
-const props = defineProps({
-  bilanHebergement: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-  statut: {
-    type: String,
-    required: false,
-    default: "BROUILLON",
-  },
-  modifiable: { type: Boolean, required: false, default: false },
-});
+const props = defineProps<{
+  bilanHebergement?: BilanHebergementDto[];
+  statut?: string;
+  modifiable?: boolean;
+}>();
 
 const toaster = useToaster();
 
-const localHebergements = ref([...props.bilanHebergement]);
+const localHebergements = ref<BilanHebergementDto[]>([
+  ...(props.bilanHebergement ?? []),
+]);
 
-const isFirstLoad = ref(true);
+const isFirstLoad = ref<boolean>(true);
 
 watch(
   () => props.bilanHebergement,
   (newBilanHebergement) => {
     if (isFirstLoad.value) {
-      localHebergements.value = [...newBilanHebergement];
+      localHebergements.value = [...(newBilanHebergement ?? [])];
       isFirstLoad.value = false;
     }
   },
@@ -146,20 +141,20 @@ watch(
 );
 
 const ITEMS_PER_PAGE = 10;
-const currentPage = ref(0);
+const currentPage = ref<number>(0);
 
-const showForm = ref(false);
+const showForm = ref<boolean>(false);
 
-function toggleForm() {
+function toggleForm(): void {
   showForm.value = !showForm.value;
 }
 
-const totalPages = computed(() => {
+const totalPages = computed<number>(() => {
   return Math.ceil(localHebergements.value.length / ITEMS_PER_PAGE);
 });
 
-const pages = computed(() => {
-  const pageArray = [];
+const pages = computed<{ title: string; href: string; label: string }[]>(() => {
+  const pageArray: { title: string; href: string; label: string }[] = [];
   for (let i = 1; i <= totalPages.value; i++) {
     pageArray.push({
       title: `Lien vers la page ${i}`,
@@ -170,18 +165,21 @@ const pages = computed(() => {
   return pageArray;
 });
 
-const paginatedHebergements = computed(() => {
+const paginatedHebergements = computed<BilanHebergementDto[]>(() => {
   const start = currentPage.value * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE;
   return localHebergements.value.slice(start, end);
 });
 
-function handleHebergementUpdate(index, updatedHebergement) {
+function handleHebergementUpdate(
+  index: number,
+  updatedHebergement: BilanHebergementDto,
+): void {
   const actualIndex = currentPage.value * ITEMS_PER_PAGE + index;
   localHebergements.value[actualIndex] = { ...updatedHebergement };
 }
 
-function handleHebergementDelete(index) {
+function handleHebergementDelete(index: number): void {
   const actualIndex = currentPage.value * ITEMS_PER_PAGE + index;
   localHebergements.value.splice(actualIndex, 1);
 
@@ -216,62 +214,65 @@ const {
   errorMessage: nomHebergementErrorMessage,
   handleChange: onNomHebergementChange,
   meta: nomHebergementMeta,
-} = useField("nomHebergement");
+} = useField<string>("nomHebergement");
 
 const {
   value: nbJours,
   errorMessage: nbJoursErrorMessage,
   handleChange: onNbJoursChange,
   meta: nbJoursMeta,
-} = useField("nbJours");
+} = useField<number>("nbJours");
 
 const { value: adresse, errorMessage: adresseErrorMessage } =
-  useField("adresse");
+  useField<any>("adresse");
 
 const {
   value: periode,
   errorMessage: periodeErrorMessage,
   meta: periodeMeta,
-} = useField("periode");
+} = useField<string[]>("periode");
 
-function handleMonths(monthsArray) {
+function handleMonths(monthsArray: string[]): void {
   periode.value = monthsArray;
 }
 
-const selectedAdresseObject = ref(null);
+const selectedAdresseObject = ref<AdresseDto | { label: string } | null>(null);
 
-function onAdresseSelect(selectedAddress) {
-  adresse.value = selectedAddress.label;
+function onAdresseSelect(
+  selectedAddress: AdresseDto | { label: string },
+): void {
+  adresse.value = selectedAddress.label || "";
   selectedAdresseObject.value = selectedAddress;
 }
 
 const onSubmitAddSejour = handleSubmit(
-  (values) => {
-    const adresseObject = selectedAdresseObject.value
-      ? selectedAdresseObject.value
-      : { label: values.adresse };
+  (values: Record<string, any>) => {
+    const adresseObject: AdresseDto | { label: string } =
+      selectedAdresseObject.value
+        ? selectedAdresseObject.value
+        : { label: values.adresse };
 
-    let adresseNorm;
+    let adresseNorm: AdresseDto;
     try {
       adresseNorm = normalizeAdresse(adresseObject);
     } catch (e) {
       log.w("Erreur de normalisation de l'adresse :", e);
       toaster.error({
-        titleTag: "Erreur sur l'adresse",
         description: "L'adresse saisie est incomplète ou invalide.",
       });
       return;
     }
 
     const agrBilanAnnuelId =
-      props.bilanHebergement[0]?.agrBilanAnnuelId || null;
+      (props.bilanHebergement && props.bilanHebergement[0]?.agrBilanAnnuelId) ||
+      null;
 
-    const newHebergement = {
+    const newHebergement: BilanHebergementDto = {
+      agrBilanAnnuelId,
       nomHebergement: values.nomHebergement,
       adresse: adresseNorm,
       nbJours: parseInt(values.nbJours),
-      mois: values.periode.map((m) => parseInt(m)),
-      agrBilanAnnuelId,
+      mois: values.periode.map((m: string) => parseInt(m)),
     };
 
     localHebergements.value.push(newHebergement);
@@ -285,19 +286,19 @@ const onSubmitAddSejour = handleSubmit(
       description: "Le séjour a été ajouté avec succès.",
     });
   },
-  (errors) => {
+  (errors: any) => {
     console.warn("Erreurs de validation :", errors);
   },
 );
 
-function validateHebergements() {
+function validateHebergements(): boolean {
   let isValid = true;
-  const errors = [];
+  const errors: string[] = [];
 
   localHebergements.value.forEach((hebergement, index) => {
     if (
       !hebergement.nomHebergement ||
-      hebergement.nomHebergement.trim() === ""
+      hebergement.nomHebergement?.trim?.() === ""
     ) {
       errors.push(`Hébergement ${index + 1}: Le nom est obligatoire`);
       isValid = false;
@@ -340,7 +341,7 @@ function validateHebergements() {
   return isValid;
 }
 
-function getHebergements() {
+function getHebergements(): BilanHebergementDto[] {
   return localHebergements.value;
 }
 

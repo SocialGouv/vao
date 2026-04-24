@@ -40,8 +40,8 @@
   </DsfrTabs>
 </template>
 
-<script setup>
-import { TitleWithIcon } from "@vao/shared-ui";
+<script setup lang="ts">
+import { TitleWithIcon, useToaster } from "@vao/shared-ui";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -49,13 +49,15 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
 });
 
+const toaster = useToaster();
+
 const initialSelectedIndex = 0;
 
-const selectedTabIndex = ref(initialSelectedIndex);
-const asc = ref(true);
-const sejourDetailsRefs = ref([]);
+const selectedTabIndex = ref<number>(initialSelectedIndex);
+const asc = ref<boolean>(true);
+const sejourDetailsRefs = ref<any[]>([]);
 
-function setSejourDetailsRef(el, idx) {
+function setSejourDetailsRef(el: any, idx: number) {
   sejourDetailsRefs.value[idx] = el;
 }
 
@@ -74,9 +76,9 @@ const tabTitles = computed(() => {
 });
 
 const bilanAnnuelByYear = computed(() => {
-  const result = {};
+  const result: Record<number, any> = {};
   const data = props.initAgrement?.agrementBilanAnnuel || [];
-  data.forEach((bilan) => {
+  data.forEach((bilan: any) => {
     const year = bilan.annee;
     if (!result[year]) {
       result[year] = {
@@ -106,7 +108,7 @@ const bilanAnnuelByYear = computed(() => {
   return result;
 });
 
-const selectTab = async (idx) => {
+const selectTab = async (idx: number) => {
   asc.value = selectedTabIndex.value < idx;
 };
 
@@ -119,7 +121,7 @@ async function validateAllYears() {
       const result = await ref.validateForm();
       if (!result || result === false) {
         allValid = false;
-      } else if (typeof result === "object" && "annee" in result) {
+      } else if (result?.annee) {
         allResults.push(result);
       }
     } else {

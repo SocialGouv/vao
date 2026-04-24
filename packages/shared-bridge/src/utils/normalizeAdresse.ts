@@ -26,10 +26,10 @@ export function normalizeAdresse(
 
   // Vérifie que les champs obligatoires sont présents
   if (
-    adresse.label == null ||
-    adresse.codeInsee == null ||
-    adresse.codePostal == null ||
-    adresse.departement == null
+    !adresse.label ||
+    !adresse.codeInsee ||
+    !adresse.codePostal ||
+    !adresse.departement
   ) {
     throw new Error("normalizeAdresse: adresse is missing required fields");
   }
