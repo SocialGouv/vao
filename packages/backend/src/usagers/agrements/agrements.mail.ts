@@ -23,6 +23,7 @@ export const AgrementMailUsagers = {
         "Email manquant pour l'envoi du mail de demande de modification d'agrément",
       );
     }
+
     const html = sendTemplate.getBody(
       "PeroVAO - Demande d'agrément transmise",
       [
@@ -58,7 +59,7 @@ export const AgrementMailUsagers = {
     regionDreets,
   }: {
     email: string[];
-    regionDreets: string;
+    regionDreets: string | null;
   }) => {
     log.i("sendStatutCompletudeMail - In", { email });
     if (!email) {
@@ -73,7 +74,7 @@ export const AgrementMailUsagers = {
         {
           p: [
             "Bonjour,",
-            `Votre demande de renouvellement d’agrément a été examinée par la DREETS ${regionDreets}.`,
+            `Votre demande de renouvellement d’agrément a été examinée par la DREETS ${regionDreets || "compétente"}.`,
             "Conformément à la réglementation, l’administration dispose d’un délai de 2 mois pour instruire votre dossier et rendre une décision (ce délai est géré par la DREETS).",
             `À défaut de décision dans ce délai, votre agrément sera réputé accordé (règle du "silence vaut accord"). La décision implicite d’acceptation du dossier ne court qu'à compter du moment où l’ensemble des pièces sont fournies par l’OVA.`,
             "Vous pouvez suivre l’avancement de votre demande à tout moment depuis votre espace sur le portail VAO :",
@@ -135,32 +136,50 @@ export const AgrementMailUsagers = {
     log.d("sendStatutRefuseMail post email", { params });
     return params;
   },
-  sendStatutTransmisMail: ({ email }: { email: string }) => {
-    log.i("sendStatutTransmisMail - In", { email });
+  sendStatutTransmisMail: ({
+    email,
+    date,
+    regionDreets,
+  }: {
+    email: string;
+    date: string;
+    regionDreets: string;
+  }) => {
+    log.i("sendStatutTransmisMail - In", {
+      date,
+      email,
+      regionDreets,
+    });
     if (!email) {
       throw new AppError(
         "Email manquant pour l'envoi du mail de transmission d'agrément",
       );
     }
+    const regionPhrase = !regionDreets
+      ? `Votre demande d’agrément a bien été transmise le ${date} à la DREETS compétente.`
+      : `Votre demande d’agrément a bien été transmise le ${date} à la DREETS ${regionDreets}.`;
     const html = sendTemplate.getBody(
-      "VAO - Demande d'agrément transmise",
+      "Portail VAO – Confirmation de transmission de votre demande de renouvellement d’agrément",
       [
         {
           p: [
             "Bonjour,",
-            "Votre demande de renouvellement d'agrément a bien été transmise.",
-            assistanceText,
+            regionPhrase,
+            "Vous pouvez suivre l’avancement de votre dossier à tout moment depuis votre espace personnel sur le portail VAO :",
+            `<a href='${frontUsagersDomain}/mon-agrement'>Lien direct vers le dossier</a>`,
+            "Un email vous sera envoyé à chaque évolution du traitement de votre demande.",
           ],
           type: "p",
         },
       ],
-      `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+      `Cordialement,<br>L’équipe du SI VAO<br><a href='${frontUsagersDomain}'>Portail VAO</a>`,
     );
     const params = {
       from: senderEmail,
       html,
       replyTo: senderEmail,
-      subject: "VAO - Demande d'agrément transmise",
+      subject:
+        "Portail VAO – Confirmation de transmission de votre demande de renouvellement d’agrément",
       to: email,
     };
     log.d("sendStatutTransmisMail post email", { params });

@@ -2,14 +2,20 @@ import type {
   ActiviteDto,
   AgrementDto,
   AgrementMessage,
+  OrganismeDto,
 } from "@vao/shared-bridge";
 import {
   addYears,
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
+  ORGANISME_TYPE,
 } from "@vao/shared-bridge";
 
+import { AgrementMailAdmin } from "../../admin/agrements/agrements.mail";
+import Region from "../../services/geo/Region";
 import { mailService } from "../../services/mail";
+import Organisme from "../../services/Organisme";
+import TerritoireService from "../../services/Territoire";
 import { AgrementServiceShared } from "../../shared/agrements/agrements.service";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
@@ -17,6 +23,22 @@ import { AgrementMailUsagers } from "./agrements.mail";
 import { AgrementsRepository } from "./agrements.repository";
 
 const log = logger(module.filename);
+
+async function getEmailRegion(codeRegion: string): Promise<string | null> {
+  try {
+    const fiche = await TerritoireService.readFicheIdByTerCode(codeRegion);
+    if (!fiche?.id) return null;
+    const ficheTerritoire = await TerritoireService.readOne(fiche.id);
+    return ficheTerritoire?.service_mail || null;
+  } catch (e) {
+    log.w(
+      "Erreur lors de la récupération de l'email de la région",
+      codeRegion,
+      e,
+    );
+    return null;
+  }
+}
 
 export const AgrementService = {
   async getAllActivites(): Promise<ActiviteDto[]> {
@@ -178,10 +200,79 @@ export const AgrementService = {
 
     if (statut === AGREMENT_STATUT.TRANSMIS) {
       const email = await AgrementsRepository.getUserMail(agrementId);
+      const date = new Date().toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+
+      let organismeName = "";
+      let siret = "";
+      let nomObtentionRegion = null;
+      let emailRegion: string | null = null;
+
+      try {
+        const organisme: OrganismeDto | null = await Organisme.getOne({
+          "o.id": agrement.organismeId,
+        });
+
+        if (!organisme) {
+          log.w(`Organisme introuvable pour agrementId=${agrementId}`);
+        } else if (
+          organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_MORALE &&
+          organisme.personneMorale
+        ) {
+          organismeName = organisme.personneMorale.raisonSociale || "";
+          siret = organisme.personneMorale.siret || "";
+        } else if (
+          organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_PHYSIQUE &&
+          organisme.personnePhysique
+        ) {
+          organismeName =
+            organisme.personnePhysique.nomUsage?.trim() ||
+            organisme.personnePhysique.nomNaissance ||
+            "";
+          siret = organisme.personnePhysique.siret || "";
+        }
+
+        const codeObtentionRegion = agrement.regionObtention || null;
+        if (codeObtentionRegion) {
+          const region = await Region.fetchOne(codeObtentionRegion);
+          nomObtentionRegion = region.text;
+          emailRegion = await getEmailRegion(codeObtentionRegion);
+        }
+      } catch (e) {
+        log.w(
+          "Impossible d'envoyer l'email à la région : informations manquantes ou erreur lors de la récupération. AgrementId=" +
+            agrementId,
+          e,
+        );
+      }
+
+      if (emailRegion) {
+        try {
+          await mailService.send(
+            AgrementMailAdmin.sendStatutTransmisRegionMail({
+              agrementId,
+              date,
+              email: emailRegion,
+              organismeName,
+              siret,
+            }),
+          );
+        } catch (e) {
+          log.w("Erreur lors de l'envoi de l'email à la région", e);
+        }
+      }
+
       if (email) {
         try {
           await mailService.send(
-            AgrementMailUsagers.sendStatutTransmisMail({ email }),
+            AgrementMailUsagers.sendStatutTransmisMail({
+              date,
+              email,
+              regionDreets: nomObtentionRegion,
+            }),
           );
         } catch (e) {
           log.w("Erreur lors de l'envoi de l'email de transmission", e);
