@@ -6,9 +6,6 @@ export const OrganismesServiceShared = {
   }: {
     id: number;
   }): Promise<{ mail: string }[]> => {
-    const mailsOva = await OrganismesRepositoryShared.getListMailByOrganismesId(
-      { id },
-    );
-    return mailsOva;
+    return await OrganismesRepositoryShared.getListMailByOrganismesId({ id });
   },
 };

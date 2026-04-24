@@ -176,8 +176,7 @@ export const AgrementsRepository = {
     );
     if (!response.rows?.length) return null;
     const row = response.rows[0] as AgrementSvaTimerEntity;
-    const agrementSvaTimerDto = AgrementSvaTimerMapper.toModel(row);
-    return agrementSvaTimerDto;
+    return AgrementSvaTimerMapper.toModel(row);
   },
   /**
    * Récupère le courriel du user responsable d'un agrément.

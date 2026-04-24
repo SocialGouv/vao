@@ -7,8 +7,6 @@ export const TerritoireServiceShared = {
   }: {
     terCode: string;
   }): Promise<FicheTerritoire> => {
-    const ficheTerritoire =
-      await TerritoireRepositoryShared.getByTerCode(terCode);
-    return ficheTerritoire;
+    return await TerritoireRepositoryShared.getByTerCode(terCode);
   },
 };
