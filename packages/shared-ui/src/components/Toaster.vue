@@ -4,6 +4,30 @@ import { DsfrAlert } from "@gouvminint/vue-dsfr";
 
 const { toasts } = useToaster();
 
+const liveMessage = ref<string>("");
+
+watch(
+  () => toasts.length,
+  (newLength, oldLength) => {
+    if (newLength > oldLength) {
+      const lastToast = toasts[toasts.length - 1];
+
+      liveMessage.value = "";
+
+      nextTick(() => {
+        setTimeout(() => {
+          const message = `${lastToast.title ? lastToast.title + ". " : ""}${lastToast.description || ""}`;
+          liveMessage.value = message;
+
+          setTimeout(() => {
+            liveMessage.value = "";
+          }, 1000);
+        }, 100);
+      });
+    }
+  },
+);
+
 function isValidToast(toast: any): boolean {
   return toast && toast.id && toast.type;
 }
@@ -16,6 +40,15 @@ function resolvedClosed(id: string) {
 
 <template>
   <div class="toast-container toast-container--top">
+    <div
+      v-if="liveMessage"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      class="fr-sr-only"
+    >
+      {{ liveMessage }}
+    </div>
     <template v-for="toast in toasts" :key="toast.id">
       <DsfrAlert
         v-if="isValidToast(toast)"
@@ -28,7 +61,7 @@ function resolvedClosed(id: string) {
         :closeable="true"
         :close-button-label="toast.closeButtonLabel || 'Fermer'"
         :role="toast.role || 'status'"
-        :aria-live="toast.role === 'alert' ? 'assertive' : 'polite'"
+        aria-live="off"
         :duration="toast.duration || undefined"
         @close="() => resolvedClosed(toast.id)"
       />
