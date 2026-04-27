@@ -30,24 +30,32 @@
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import { useToaster } from "@vao/shared-ui";
 import displayInput from "../../../utils/display-input";
 
 const props = defineProps({
   trancheAge: { type: Array, default: () => [] },
   statut: { type: String, required: true },
-  modifiable: { type: Boolean, required: true, default: false },
+  modifiable: { type: Boolean, required: false, default: false },
 });
+
+const toaster = useToaster();
 
 const ageRangeOptions = [
   { label: "de 18 à 39 ans", value: "18_39", name: "trancheAge" },
   { label: "de 40 à 59 ans", value: "40_59", name: "trancheAge" },
   { label: "plus de 59 ans", value: "59_et_plus", name: "trancheAge" },
 ];
-
 const validationSchema = yup.object({
-  trancheAge: requiredUnlessBrouillon(
-    yup.array().min(1, "Veuillez sélectionner au moins une tranche d’âge."),
-  ),
+  trancheAge:
+    props.statut === AGREMENT_STATUT.BROUILLON
+      ? yup.array().notRequired().nullable()
+      : requiredUnlessBrouillon(
+          yup
+            .array()
+            .min(1, "Veuillez sélectionner au moins une tranche d’âge."),
+        ),
 });
 
 const initialValues = {
@@ -69,6 +77,12 @@ const {
 
 const validateTranchesAge = async () => {
   const result = await validate();
+
+  if (!result.valid && trancheAgeErrorMessage.value) {
+    toaster.error({
+      description: trancheAgeErrorMessage.value,
+    });
+  }
   return {
     valid: result.valid,
     value: trancheAgeField.value,

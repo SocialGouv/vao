@@ -27,6 +27,7 @@
     ref="typeDeficiencesRef"
     :type-deficiences="props.initAgrement.sejourTypeHandicap || []"
     :modifiable="props.modifiable"
+    :statut="props.initAgrement.statut || AGREMENT_STATUT.BROUILLON"
   />
   <hr />
   <p class="fr-mb-1v"><b>Informations complémentaires</b></p>

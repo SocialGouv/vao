@@ -30,11 +30,15 @@ import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import displayInput from "../../utils/display-input";
+import { useToaster } from "@vao/shared-ui";
+import { AGREMENT_STATUT } from "@vao/shared-bridge";
 const props = defineProps({
   statut: { type: String, required: true },
   typeDeficiences: { type: Array, default: () => [] },
-  modifiable: { type: Boolean, required: true, default: false },
+  modifiable: { type: Boolean, required: false, default: false },
 });
+
+const toaster = useToaster();
 
 const handicapOptions = [
   { label: "Sensoriel", value: "auditif", name: "typeDeficiences" },
@@ -46,9 +50,14 @@ const handicapOptions = [
 ];
 
 const validationSchema = yup.object({
-  typeDeficiences: requiredUnlessBrouillon(
-    yup.array().min(1, "Veuillez sélectionner au moins un type de déficience."),
-  ),
+  typeDeficiences:
+    props.statut === AGREMENT_STATUT.BROUILLON
+      ? yup.array().notRequired().nullable()
+      : requiredUnlessBrouillon(
+          yup
+            .array()
+            .min(1, "Veuillez sélectionner au moins un type de déficience."),
+        ),
 });
 
 const initialValues = {
@@ -69,6 +78,11 @@ const {
 
 const validateTypeDeficiences = async () => {
   const result = await validate();
+  if (!result.valid && typeDeficiencesErrorMessage.value) {
+    toaster.error({
+      description: typeDeficiencesErrorMessage.value,
+    });
+  }
   return {
     valid: result.valid,
     value: typeDeficiencesField.value,
