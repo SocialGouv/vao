@@ -130,6 +130,7 @@ const canModify = true;
 
 async function updateOrCreate(formValues: AgrementFormValues) {
   const updatedData: AgrementFormValues = { ...formValues };
+
   try {
     updatedData.agrementFiles = [];
     if (updatedData.id == null) {
@@ -161,14 +162,46 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       }
     }
 
+    const filesByCategory = new Map<string, any[]>();
+
+    // Ajoute les fichiers existants
+    for (const file of agrementStore.agrementEnTraitement?.agrementFiles ??
+      []) {
+      const { category } = file;
+
+      const { multiple } =
+        FILE_CATEGORY_CONFIG[category as keyof typeof FILE_CATEGORY_CONFIG];
+
+      if (!filesByCategory.has(category)) filesByCategory.set(category, []);
+      if (multiple) {
+        filesByCategory.get(category)!.push(file);
+      } else if (filesByCategory.get(category)!.length === 0) {
+        filesByCategory.get(category)!.push(file);
+      }
+    }
+
+    // Ajoute/remplace avec les fichiers uploadés lors de la soumission
+    for (const file of updatedData.agrementFiles) {
+      const { category } = file;
+      const { multiple } =
+        FILE_CATEGORY_CONFIG[category as keyof typeof FILE_CATEGORY_CONFIG];
+      if (!filesByCategory.has(category)) filesByCategory.set(category, []);
+      if (multiple) {
+        // Ajoute si pas déjà présent (par uuid)
+        if (!filesByCategory.get(category)!.some((f) => f.uuid === file.uuid)) {
+          filesByCategory.get(category)!.push(file);
+        }
+      } else {
+        // Remplace l'unique fichier
+        filesByCategory.set(category, [file]);
+      }
+    }
+
     const rawOrganismeId = organismeStore.organismeCourant?.organismeId;
     const organismeId = rawOrganismeId != null ? Number(rawOrganismeId) : null;
     const newAgrement = {
       ...agrementStore.agrementEnTraitement,
-      agrementFiles: [
-        ...updatedData.agrementFiles,
-        ...(agrementStore.agrementEnTraitement?.agrementFiles ?? []),
-      ],
+      agrementFiles: Array.from(filesByCategory.values()).flat(),
       organismeId,
       statut:
         updatedData.statut ??

@@ -77,6 +77,7 @@ export interface AgrementFilesDto {
   agrementId: number | null;
   category: FILE_CATEGORY;
   fileUuid: string | null;
+  uuid: string | null;
 }
 
 export interface AgrementSejoursDto {
