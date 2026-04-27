@@ -62,11 +62,16 @@ describe("GET /agrements/", () => {
     expect(response.body.agrements).not.toBeNull();
     expect(response.body.agrements[0].id).toEqual(agrementId);
 
-    const agrementRepo = await AgrementsRepository.getByOrganismeId({
+    const agrementByOrganisme = await AgrementsRepository.getByOrganismeId({
       organismeId,
       withDetails: true,
     });
-    expect(agrementRepo?.id).toEqual(agrementId);
+    expect(agrementByOrganisme?.id).toEqual(agrementId);
+    const agrementById = await AgrementsRepository.getById({
+      agrementId,
+      withDetails: true,
+    });
+    expect(agrementById?.id).toEqual(agrementId);
   });
   it("devrait retourner une liste avec un agrement valide à l'utilisateur connecté", async () => {
     const authUser = await createUsagersUser();
@@ -296,6 +301,15 @@ describe("Messagerie d'agrément", () => {
     expect(getResponse.body.count).toBe(1);
     expect(getResponse.body.messages[0].message).toBe("Message de test");
     expect(getResponse.body.messages[0].backUserPrenom).toBeDefined();
+  });
+  // Agrément inexistant
+  it("GET /messages devrait retourner une erreur agrement inexistant", async () => {
+    await request(app)
+      .post(`/agrements/${agrementId}/message`)
+      .send({ message: "Message de test" });
+
+    const getResponse = await request(app).get(`/agrements/999/messages`);
+    expect(getResponse.status).toBe(404);
   });
 
   it("POST /message devrait retourner 404 pour un agrément inexistant", async () => {
