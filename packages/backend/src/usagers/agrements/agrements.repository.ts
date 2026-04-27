@@ -700,10 +700,11 @@ export const AgrementsRepository = {
   }): Promise<boolean> {
     const client = await getPool().connect();
     try {
-      const result = await client.query(
-        `UPDATE front.agrements SET statut = $1, updated_at = NOW() WHERE id = $2`,
-        [statut, agrementId],
-      );
+      const agrementUpdateStatut = `UPDATE front.agrements SET statut = $1, updated_at = NOW() ${AGREMENT_STATUT.TRANSMIS ? ", date_depot = now()" : ""} WHERE id = $2`;
+      const result = await client.query(agrementUpdateStatut, [
+        statut,
+        agrementId,
+      ]);
       return result.rowCount > 0;
     } finally {
       client.release();

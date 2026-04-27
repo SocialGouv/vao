@@ -144,7 +144,7 @@ async function onNext() {
   }
   try {
     const success = await agrementStore.changeStatutAgrement({
-      agrementId: agrementCourant.value.id,
+      agrementId: props.initAgrement?.id,
       statut: AGREMENT_STATUT.TRANSMIS,
     });
     if (success) {
