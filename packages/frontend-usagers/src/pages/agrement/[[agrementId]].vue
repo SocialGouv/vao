@@ -133,6 +133,16 @@ async function updateOrCreate(formValues: AgrementFormValues) {
   const updatedData: AgrementFormValues = { ...formValues };
 
   try {
+    const agrementEnTraitement = agrementStore.agrementEnTraitement;
+    if (!agrementEnTraitement) {
+      toaster.error({
+        titleTag: "h2",
+        title: "Erreur",
+        description: "Impossible d’enregistrer l’agrément : données absentes.",
+      });
+      return;
+    }
+
     updatedData.agrementFiles = [];
     if (updatedData.id == null) {
       updatedData.statut = AGREMENT_STATUT.BROUILLON;
@@ -163,21 +173,15 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       }
     }
 
-    const filesByCategory = getFileByCategory(
-      agrementStore.agrementEnTraitement,
-      updatedData,
-    );
+    const agrementFiles = getFileByCategory(agrementEnTraitement, updatedData);
 
     const rawOrganismeId = organismeStore.organismeCourant?.organismeId;
     const organismeId = rawOrganismeId != null ? Number(rawOrganismeId) : null;
     const newAgrement = {
-      ...agrementStore.agrementEnTraitement,
-      agrementFiles: Array.from(filesByCategory.values()).flat(),
+      ...agrementEnTraitement,
+      agrementFiles,
       organismeId,
-      statut:
-        updatedData.statut ??
-        agrementStore.agrementEnTraitement?.statut ??
-        null,
+      statut: updatedData.statut ?? agrementEnTraitement.statut ?? null,
     };
 
     if (organismeId == null) {

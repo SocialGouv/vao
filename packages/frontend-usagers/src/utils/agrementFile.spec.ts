@@ -9,15 +9,15 @@ describe("getFileByCategory", () => {
       agrementFiles: [
         {
           name: "existing.pdf",
-          uuid: "existing-a",
-          fileUuid: "existing-a",
+          uuid: "existing-a1",
+          fileUuid: "existing-a1",
           category: FILE_CATEGORY.ASSURRAPAT,
           agrementId: 23,
         },
         {
           name: "existing.pdf",
-          uuid: "existing-a",
-          fileUuid: "existing-a",
+          uuid: "existing-b1",
+          fileUuid: "existing-b1",
           category: FILE_CATEGORY.BILANQUALIT,
           agrementId: 23,
         },
@@ -28,15 +28,15 @@ describe("getFileByCategory", () => {
       agrementFiles: [
         {
           name: "existing.pdf",
-          uuid: "existing-a",
-          fileUuid: "existing-a",
+          uuid: "existing-a1",
+          fileUuid: "existing-a1",
           category: FILE_CATEGORY.ASSURRAPAT,
           agrementId: 23,
         },
         {
           name: "uploaded.pdf",
-          uuid: "uploaded-a",
-          fileUuid: "uploaded-a",
+          uuid: "uploaded-a2",
+          fileUuid: "uploaded-a2",
           category: FILE_CATEGORY.ASSURRAPAT,
           agrementId: 23,
         },
@@ -45,18 +45,18 @@ describe("getFileByCategory", () => {
 
     const result = getFileByCategory(agrementEnTraitement, agrementUpdated);
 
-    expect(Array.from(result.values()).flat()).toEqual([
+    expect(result).toEqual([
       {
         name: "uploaded.pdf",
-        uuid: "uploaded-a",
-        fileUuid: "uploaded-a",
+        uuid: "uploaded-a2",
+        fileUuid: "uploaded-a2",
         category: FILE_CATEGORY.ASSURRAPAT,
         agrementId: 23,
       },
       {
         name: "existing.pdf",
-        uuid: "existing-a",
-        fileUuid: "existing-a",
+        uuid: "existing-b1",
+        fileUuid: "existing-b1",
         category: FILE_CATEGORY.BILANQUALIT,
         agrementId: 23,
       },
@@ -97,7 +97,7 @@ describe("getFileByCategory", () => {
 
     const result = getFileByCategory(agrementEnTraitement, agrementUpdated);
 
-    expect(Array.from(result.values()).flat()).toEqual([
+    expect(result).toEqual([
       {
         name: "uploaded.pdf",
         uuid: "uploaded-a",
@@ -135,7 +135,7 @@ describe("getFileByCategory", () => {
 
     const result = getFileByCategory(agrementEnTraitement, agrementUpdated);
 
-    expect(Array.from(result.values()).flat()).toEqual([
+    expect(result).toEqual([
       {
         name: "existing.pdf",
         uuid: "existing-a",
@@ -165,7 +165,7 @@ describe("getFileByCategory", () => {
 
     const result = getFileByCategory(agrementEnTraitement, agrementUpdated);
 
-    expect(Array.from(result.values()).flat()).toEqual([]);
+    expect(result).toEqual([]);
   });
 
   it("deduplicates files for multiple categories and keeps existing files", () => {
@@ -216,7 +216,7 @@ describe("getFileByCategory", () => {
 
     const result = getFileByCategory(agrementEnTraitement, agrementUpdated);
 
-    expect(Array.from(result.values()).flat()).toEqual([
+    expect(result).toEqual([
       {
         name: "existing-a.pdf",
         uuid: "existing-a",
@@ -289,7 +289,7 @@ describe("getFileByCategory", () => {
 
     const result = getFileByCategory(agrementEnTraitement, agrementUpdated);
 
-    expect(Array.from(result.values()).flat()).toEqual([
+    expect(result).toEqual([
       {
         name: "existing-a.pdf",
         uuid: "existing-a",
@@ -334,7 +334,7 @@ describe("getFileByCategory", () => {
 
     const result = getFileByCategory(agrementEnTraitement, agrementUpdated);
 
-    expect(Array.from(result.values()).flat()).toEqual([
+    expect(result).toEqual([
       {
         name: "existing.pdf",
         uuid: "existing-a",
