@@ -14,6 +14,13 @@ describe("getFileByCategory", () => {
           category: FILE_CATEGORY.ASSURRAPAT,
           agrementId: 23,
         },
+        {
+          name: "existing.pdf",
+          uuid: "existing-a",
+          fileUuid: "existing-a",
+          category: FILE_CATEGORY.BILANQUALIT,
+          agrementId: 23,
+        },
       ],
     } as unknown as AgrementDto;
 
@@ -44,6 +51,13 @@ describe("getFileByCategory", () => {
         uuid: "uploaded-a",
         fileUuid: "uploaded-a",
         category: FILE_CATEGORY.ASSURRAPAT,
+        agrementId: 23,
+      },
+      {
+        name: "existing.pdf",
+        uuid: "existing-a",
+        fileUuid: "existing-a",
+        category: FILE_CATEGORY.BILANQUALIT,
         agrementId: 23,
       },
     ]);
