@@ -1,6 +1,7 @@
 import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
+  AGREMENT_SVA_TIMER_STATUT,
   AgrementDto,
   FILE_CATEGORY,
   FUNCTIONAL_ERRORS,
@@ -9,6 +10,7 @@ import {
 import { NextFunction, Response } from "express";
 import request from "supertest";
 
+import { AgrementsRepository } from "../../admin/agrements/agrements.repository";
 import { AgrementService } from "../../admin/agrements/agrements.service";
 import app from "../../app";
 import { mailService } from "../../services/mail";
@@ -236,6 +238,12 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
       });
 
     expect(response.status).toBe(200);
+
+    const svaTimer = await AgrementsRepository.getSvaTimerByStatut({
+      agrementId,
+      statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
+    });
+    expect(svaTimer?.createdAt).toBeDefined();
     expect(response.body.success).toBe(true);
     expect(sendSpy).toHaveBeenCalledTimes(2); // BO + usager
     // Vérifier que l'événement a bien été historisé
