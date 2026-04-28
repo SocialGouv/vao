@@ -48,6 +48,9 @@ afterAll(async () => await removeTestContainer());
 beforeEach(() => {
   jest.resetAllMocks();
 });
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("GET /agrements/", () => {
   it("devrait retourner une liste d'agréments lié à l'utilisateur connecté", async () => {
@@ -199,10 +202,17 @@ describe("PATCH /agrements/:agrementId/statut", () => {
   it("devrait changer le statut d'un agrément avec succès", async () => {
     const adminUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: adminUser.id });
+
     const agrementData = await buildAgrementFixture({
       organismeId,
       statut: AGREMENT_STATUT.BROUILLON,
     });
+
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
@@ -243,6 +253,10 @@ describe("PATCH /agrements/:agrementId/statut", () => {
       organismeId,
       statut: AGREMENT_STATUT.BROUILLON,
     });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
@@ -261,7 +275,60 @@ describe("PATCH /agrements/:agrementId/statut", () => {
     const { agrement } = await getAgrement(agrementId);
     expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
 
+    expect(mailService.send).toHaveBeenCalledTimes(2);
+  });
+
+  it("envoie un mail à la région et à l’usager lors du passage à TRANSMIS", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+    expect(mailService.send).toHaveBeenCalledTimes(2);
+    const calls = (mailService.send as jest.Mock).mock.calls;
+    expect(calls[0][0]).toHaveProperty("to");
+    expect(calls[1][0]).toHaveProperty("to");
+    expect(calls.some((call) => call[0].to && call[0].to.includes("@"))).toBe(
+      true,
+    );
+  });
+
+  it("n’envoie pas de mail à la région si la région est inconnue", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "AAA",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
     expect(mailService.send).toHaveBeenCalledTimes(1);
+    const call = (mailService.send as jest.Mock).mock.calls[0][0];
+    expect(call).toHaveProperty("to");
+    expect(call.html).toMatch(/DREETS compétente/);
   });
 
   it("devrait changer le statut d'un agrément avec succès pour le retour de complétude", async () => {

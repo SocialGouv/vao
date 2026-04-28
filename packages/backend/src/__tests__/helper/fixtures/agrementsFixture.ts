@@ -16,10 +16,12 @@ export async function buildAgrementFixture({
   organismeId,
   activiteId = Math.floor(Math.random() * 20) + 1,
   statut = AGREMENT_STATUT.BROUILLON,
+  regionObtention = "IDF",
 }: {
   organismeId: number;
   activiteId?: number;
   statut?: AGREMENT_STATUT;
+  regionObtention?: string;
 }): Promise<AgrementDto> {
   return {
     accompRespAttestHono: true,
@@ -107,7 +109,7 @@ export async function buildAgrementFixture({
     protocoleRapatEtranger: "Procédure OK",
     protocoleRapatUrg: "Procédure OK",
     protocoleRemboursement: "Remboursement OK",
-    regionObtention: "IDF",
+    regionObtention: regionObtention ?? "IDF",
     sejourCommentaire: "Commentaire de test",
     sejourNbEnvisage: 2,
     sejourTypeHandicap: [],
