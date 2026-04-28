@@ -137,6 +137,7 @@ export interface AgrementSvaTimerEntity {
   statut: string | null;
   t0: Date | null;
   created_at: Date | null;
+  mail_delay_21d_at: Date | null;
 }
 
 export interface AgrementSvaPeriodesEntity {
@@ -144,5 +145,4 @@ export interface AgrementSvaPeriodesEntity {
   agrement_sva_timer_id: number | null;
   start_at: Date | null;
   end_at: Date | null;
-  mail_delay_21d_at: Date | null;
 }

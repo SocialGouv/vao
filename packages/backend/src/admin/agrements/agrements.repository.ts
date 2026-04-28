@@ -13,6 +13,7 @@ import {
   PaginationQueryDto,
   USER_TYPE,
 } from "@vao/shared-bridge";
+import { PoolClient } from "pg";
 
 import { processQuery } from "../../helpers/queryParams";
 import {
@@ -203,7 +204,7 @@ export const AgrementsRepository = {
     }
   },
   async insertAgrementFiles(
-    client: any,
+    client: PoolClient,
     agrementId: number | null | undefined,
     file: AgrementFilesDto,
   ) {
@@ -272,13 +273,13 @@ export const AgrementsRepository = {
     });
   },
   async insertSvaTimer({
-    client,
+    tx,
     agrementId,
   }: {
-    client: any;
+    tx: PoolClient;
     agrementId: number;
   }): Promise<number> {
-    const { rows } = await client.query(
+    const { rows } = await tx.query(
       `INSERT INTO front.agrement_sva_timer (agrement_id, statut, t0, created_at)
          VALUES ($1, $2, NOW(), NOW()) RETURNING id`,
       [agrementId, AGREMENT_SVA_TIMER_STATUT.RUNNING],
@@ -297,15 +298,15 @@ export const AgrementsRepository = {
     statut,
     commentaire,
     file,
-    client,
+    tx,
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
     commentaire?: string;
     file?: AgrementFilesDto;
-    client: any;
+    tx: PoolClient;
   }): Promise<boolean> {
-    const result = await client.query(
+    const result = await tx.query(
       `UPDATE front.agrements
           SET
             statut = $1::front.agrement_statut,
@@ -322,9 +323,9 @@ export const AgrementsRepository = {
       [statut, agrementId, commentaire],
     );
     if (file) {
-      await AgrementsRepository.insertAgrementFiles(client, agrementId, file);
+      await AgrementsRepository.insertAgrementFiles(tx, agrementId, file);
     }
 
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   },
 };

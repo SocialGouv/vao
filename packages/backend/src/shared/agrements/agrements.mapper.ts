@@ -1,5 +1,6 @@
 import {
   ActiviteDto,
+  AGREMENT_SVA_TIMER_STATUT,
   AgrementAnimationDto,
   AgrementBilanAnnuelDto,
   AgrementDto,
@@ -205,7 +206,8 @@ export const AgrementSvaTimerMapper = {
       agrementId: entity.agrement_id ?? null,
       createdAt: entity.created_at,
       id: entity.id ?? 0,
-      statut: entity.statut as any,
+      mailDelay21dAt: entity.mail_delay_21d_at,
+      statut: entity.statut as AGREMENT_SVA_TIMER_STATUT,
       t0: entity.t0,
     };
   },
@@ -220,7 +222,6 @@ export const AgrementSvaPeriodesMapper = {
       agrementSvaTimerId: entity.agrement_sva_timer_id ?? null,
       endAt: entity.end_at,
       id: entity.id ?? 0,
-      mailDelay21dAt: entity.mail_delay_21d_at,
       startAt: entity.start_at,
     };
   },

@@ -522,15 +522,6 @@ export const AgrementsRepository = {
       userType: USER_TYPE.FU,
     });
   },
-  async insertSvaPeriode({ timerId }: { timerId: number }): Promise<number> {
-    return await withTransaction(async (client: PoolClient) => {
-      const id = await client.query(
-        "UPDATE front.agrement_sva_timer SET start_at = NOW() WHERE id = $1 RETURNING id",
-        [timerId],
-      );
-      return id;
-    });
-  },
 
   async markMessagesAsRead(agrementId: number): Promise<number> {
     return AgrementsRepositoryShared.markMessagesAsRead({
@@ -698,22 +689,17 @@ export const AgrementsRepository = {
   async updateStatut({
     agrementId,
     statut,
-    client,
+    tx,
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
-    client: any;
-  }): Promise<boolean> {
-    const client = await getPool().connect();
-    try {
-      const agrementUpdateStatut = `UPDATE front.agrements SET statut = $1, updated_at = NOW() ${AGREMENT_STATUT.TRANSMIS ? ", date_depot = now()" : ""} WHERE id = $2`;
-      const result = await client.query(agrementUpdateStatut, [
-        statut,
-        agrementId,
-      ]);
-      return result.rowCount > 0;
-    } finally {
-      client.release();
-    }
+
+    tx: PoolClient;
+  }): Promise<number | null> {
+    const result = await tx.query(
+      `UPDATE front.agrements SET statut = $1, updated_at = NOW() ${AGREMENT_STATUT.TRANSMIS ? ", date_depot = now()" : ""} WHERE id = $2`,
+      [statut, agrementId],
+    );
+    return result.rowCount;
   },
 };

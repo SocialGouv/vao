@@ -4,6 +4,7 @@ import type {
   AgrementMessage,
 } from "@vao/shared-bridge";
 import { USER_TYPE } from "@vao/shared-bridge";
+import { PoolClient } from "pg";
 
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
@@ -221,13 +222,13 @@ export const AgrementsRepositoryShared = {
     }
   },
   async insertSvaPeriode({
-    client,
+    tx,
     timerId,
   }: {
-    client: any;
+    tx: PoolClient;
     timerId: number;
   }): Promise<void> {
-    await client.query(
+    await tx.query(
       `INSERT INTO front.agrement_sva_periodes (agrement_sva_timer_id, start_at)
          VALUES ($1,NOW())`,
       [timerId],
@@ -259,31 +260,31 @@ export const AgrementsRepositoryShared = {
     }
   },
   async updateSvaPeriode({
-    client,
+    tx,
     timerId,
   }: {
-    client: any;
+    tx: PoolClient;
     timerId: number;
-  }): Promise<number> {
-    const { id } = await client.query(
-      "UPDATE front.agrement_sva_timer SET end_at = NOW() WHERE id = $1 AND end_at IS NULL RETURNING id",
+  }): Promise<boolean> {
+    const result = await tx.query(
+      "UPDATE front.agrement_sva_periodes SET end_at = NOW() WHERE agrement_sva_timer_id = $1 AND end_at IS NULL RETURNING id",
       [timerId],
     );
-    return id;
+    return result.rows[0]?.id > 0;
   },
   async updateSvaTimer({
-    client,
+    tx,
     agrementId,
     statut,
   }: {
-    client: any;
+    tx: PoolClient;
     agrementId: number;
     statut: AGREMENT_SVA_TIMER_STATUT;
-  }): Promise<number> {
-    const result = await client.query(
+  }): Promise<number | null> {
+    const result = await tx.query(
       "UPDATE front.agrement_sva_timer SET statut = $2, updated_at = NOW() WHERE agrement_id = $1 RETURNING id",
       [agrementId, statut],
     );
-    return result.rows[0]?.id ?? null;
+    return result.rowCount;
   },
 };

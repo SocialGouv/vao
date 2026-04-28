@@ -10,6 +10,7 @@ import {
   OrganismeDto,
   PaginationQueryDto,
 } from "@vao/shared-bridge";
+import { PoolClient } from "pg";
 
 import Region from "../../services/geo/Region";
 import { mailService } from "../../services/mail";
@@ -20,7 +21,7 @@ import { AgrementServiceShared } from "../../shared/agrements/agrements.service"
 import { AgrementMailUsagers } from "../../usagers/agrements/agrements.mail";
 import AppError from "../../utils/error";
 import logger from "../../utils/logger";
-import { getPool } from "../../utils/pgpool";
+import { withTransaction } from "../../utils/pgpool";
 import { AgrementMailAdmin } from "./agrements.mail";
 import { AgrementsRepository } from "./agrements.repository";
 
@@ -231,35 +232,29 @@ export const AgrementService = {
     if ([AGREMENT_STATUT.A_MODIFIER].includes(statut) && !commentaire) {
       throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_INCONSISTENT);
     }
-    const client = await getPool().connect();
-    try {
-      await client.query("BEGIN");
 
+    await withTransaction(async (tx: PoolClient) => {
       const updated = await AgrementsRepository.updateStatut({
         agrementId,
-        client,
         commentaire,
         file,
         statut,
+        tx,
       });
+
       if (!updated) {
         throw new AppError("Échec de la mise à jour du statut", {
           statusCode: 500,
         });
       }
-      // Mise à jour du timer SVA en fonction du nouveau statut de l'agrément
+
       await AgrementService.upsertSvaTimer({
         agrementId,
-        client,
         statut,
+        tx,
       });
-      await client.query("COMMIT");
-    } catch (error) {
-      await client.query("ROLLBACK");
-      throw error;
-    } finally {
-      client.release();
-    }
+    });
+
     let eventType: AGREMENT_HISTORY_TYPE;
     if (statut === AGREMENT_STATUT.VERIF_EN_COURS) {
       eventType = AGREMENT_HISTORY_TYPE.TRANSMISSION;
@@ -347,13 +342,13 @@ export const AgrementService = {
     return true;
   },
   async upsertSvaTimer({
-    client,
+    tx,
     agrementId,
     statut,
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
-    client: any;
+    tx: PoolClient;
   }): Promise<void> {
     const agrementPrecedent = await AgrementsRepository.getById({
       agrementId,
@@ -374,20 +369,20 @@ export const AgrementService = {
         // Si un timer en pause existe, on le redémarre
         await AgrementsRepositoryShared.updateSvaTimer({
           agrementId,
-          client,
           statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
+          tx,
         });
         return;
       } else {
         timerId = await AgrementsRepository.insertSvaTimer({
           agrementId,
-          client,
+          tx,
         });
       }
       // Début du chrono de la première période du SVA
       await AgrementsRepositoryShared.insertSvaPeriode({
-        client,
         timerId,
+        tx,
       });
       return;
     }
@@ -397,8 +392,8 @@ export const AgrementService = {
     ) {
       const timerId = await AgrementsRepositoryShared.updateSvaTimer({
         agrementId,
-        client,
         statut: AGREMENT_SVA_TIMER_STATUT.STOPPED,
+        tx,
       });
       if (!timerId) {
         throw new AppError("SVA Timer non trouvé pour l'agrément", {
@@ -407,8 +402,8 @@ export const AgrementService = {
       }
       // Début du chrono de la première période du SVA
       await AgrementsRepositoryShared.updateSvaPeriode({
-        client,
         timerId,
+        tx,
       });
       return;
     }
@@ -419,8 +414,8 @@ export const AgrementService = {
       // Suspension du SVA : mise à jour du statut du timer en PAUSED
       const timerId = await AgrementsRepositoryShared.updateSvaTimer({
         agrementId,
-        client,
         statut: AGREMENT_SVA_TIMER_STATUT.PAUSED,
+        tx,
       });
       if (!timerId) {
         throw new AppError("SVA Timer non trouvé pour l'agrément", {
@@ -428,12 +423,11 @@ export const AgrementService = {
         });
       }
       // Mise à jour de la période pour suspendre au jour de la demande de modification
-      const timerIdSvaPeriode =
-        await AgrementsRepositoryShared.updateSvaPeriode({
-          client,
-          timerId,
-        });
-      if (!timerIdSvaPeriode) {
+      const updated = await AgrementsRepositoryShared.updateSvaPeriode({
+        timerId,
+        tx,
+      });
+      if (!updated) {
         throw new AppError("Échec de la mise à jour de la période SVA", {
           statusCode: 500,
         });

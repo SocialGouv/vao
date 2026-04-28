@@ -162,6 +162,7 @@ export interface AgrementSvaTimerDto {
   statut: AGREMENT_SVA_TIMER_STATUT | null;
   t0: Date | null;
   createdAt: Date | null;
+  mailDelay21dAt: Date | null;
 }
 
 export interface AgrementSvaPeriodesDto {
@@ -169,5 +170,4 @@ export interface AgrementSvaPeriodesDto {
   agrementSvaTimerId: number | null;
   startAt: Date | null;
   endAt: Date | null;
-  mailDelay21dAt: Date | null;
 }

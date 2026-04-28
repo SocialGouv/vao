@@ -135,7 +135,6 @@ export const updateAndNotifySvaActions = async () => {
       if (sentry && sentry.enabled) {
         Sentry.captureException(emailErr);
       }
-      throw emailErr;
     }
 
     report.emailsEnvoyes += 1;

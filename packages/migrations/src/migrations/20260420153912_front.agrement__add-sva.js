@@ -53,6 +53,12 @@ exports.up = async function (knex) {
       table.timestamp("end_at").nullable();
     });
 
+  // Ajout d'une nouvelle valeur dans les statuts d'agrément
+  await knex.schema.raw(`
+    ALTER TYPE front.agrement_statut
+    ADD VALUE IF NOT EXISTS 'A_CORRIGER';
+  `);
+
   return knex.raw(`
     GRANT ALL ON TABLE front.agrement_sva_timer TO vao_u;
     GRANT ALL ON TABLE front.agrement_sva_periodes TO vao_u;
@@ -64,8 +70,8 @@ exports.up = async function (knex) {
 exports.down = async function (knex) {
   await knex.schema
     .withSchema("front")
-    .dropTableIfExists("agrement_sva_timer")
-    .dropTableIfExists("agrement_sva_periodes");
+    .dropTableIfExists("agrement_sva_periodes")
+    .dropTableIfExists("agrement_sva_timer");
 
   await knex.schema.raw(`DROP TYPE IF EXISTS front.agrement_sva_timer_statut;`);
 };
