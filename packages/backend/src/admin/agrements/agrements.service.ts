@@ -372,7 +372,6 @@ export const AgrementService = {
           statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
           tx,
         });
-        return;
       } else {
         timerId = await AgrementsRepository.insertSvaTimer({
           agrementId,
