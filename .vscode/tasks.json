@@ -112,6 +112,12 @@
       }
     },
     {
+      "label": "Run frontend usagers tests",
+      "type": "shell",
+      "command": "source ~/.zshrc && nvm use && pnpm --filter @vao/frontend-usagers test",
+      "problemMatcher": []
+    },
+    {
       "label": "Logs postgres",
       "type": "shell",
       "command": "docker compose logs -f postgres --no-log-prefix",
