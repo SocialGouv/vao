@@ -9,7 +9,15 @@ import { AGREMENT_STATUT, USER_TYPE } from "@vao/shared-bridge";
 import type { PoolClient } from "pg";
 
 import { saveAdresse } from "../../services/adresse";
-import { AgrementsMapper } from "../../shared/agrements/agrements.mapper";
+import { deleteFile } from "../../services/Document";
+import { AgrementEntity } from "../../shared/agrements/agrements.entity";
+import {
+  AgrementAnimationMapper,
+  AgrementBilanAnnuelMapper,
+  AgrementFilesMapper,
+  AgrementSejoursMapper,
+  AgrementsMapper,
+} from "../../shared/agrements/agrements.mapper";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import Logger from "../../utils/logger";
 import { getPool, withTransaction } from "../../utils/pgpool";
@@ -538,7 +546,11 @@ export const AgrementsRepository = {
         "Impossible de mettre à jour : l'ID de l'agrément est manquant",
       );
     }
-    await withTransaction(async (client: PoolClient) => {
+    const agrementOld = await AgrementsRepositoryShared.getById({
+      agrementId,
+      withDetails: false,
+    });
+    await withTransaction(async (tx: PoolClient) => {
       // ✅ 1. Mise à jour du principal
       const agrementUpdateQuery = `
       UPDATE front.agrements
@@ -644,41 +656,55 @@ export const AgrementsRepository = {
         agrementId,
       ];
 
-      await client.query(agrementUpdateQuery, agrementValues);
+      await tx.query(agrementUpdateQuery, agrementValues);
 
       // ✅ 2. Suppression des sous-tables existantes
-      await client.query(
+      await tx.query(
         `DELETE FROM front.agrement_files WHERE agrement_id = $1`,
         [agrementId],
       );
-      await client.query(
+      await tx.query(
         `DELETE FROM front.agrement_sejours WHERE agrement_id = $1`,
         [agrementId],
       );
-      await client.query(
+      await tx.query(
         `DELETE FROM front.agrement_animation WHERE agrement_id = $1`,
         [agrementId],
       );
-      const bilansToDelete = await client.query(
+      const bilansToDelete = await tx.query(
         `SELECT id FROM front.agrement_bilan_annuel WHERE agrement_id = $1`,
         [agrementId],
       );
       for (const bil of bilansToDelete.rows) {
-        await client.query(
+        await tx.query(
           `DELETE FROM front.bilan_hebergement WHERE agr_bilan_annuel_id = $1`,
           [bil.id],
         );
       }
-      await client.query(
+      await tx.query(
         `DELETE FROM front.agrement_bilan_annuel WHERE agrement_id = $1`,
         [agrementId],
       );
 
       // ✅ 3. Réinsertion des nouvelles données via les helpers existants
-      await insertAgrementFiles(client, agrementId, agrement);
-      await insertAgrementSejours(client, agrementId, agrement);
-      await insertAgrementAnimations(client, agrementId, agrement);
-      await insertAgrementBilans(client, agrementId, agrement);
+      await insertAgrementFiles(tx, agrementId, agrement);
+      await insertAgrementSejours(tx, agrementId, agrement);
+      await insertAgrementAnimations(tx, agrementId, agrement);
+      await insertAgrementBilans(tx, agrementId, agrement);
+
+      // suppression des documents orphelins
+      const filesToDelete =
+        agrement.agrementFiles?.filter(
+          (file) =>
+            !agrementOld?.agrementFiles?.some(
+              (f) => f.fileUuid === file.fileUuid,
+            ),
+        ) ?? [];
+      for (const file of filesToDelete) {
+        if (file.fileUuid) {
+          deleteFile(file.fileUuid, tx);
+        }
+      }
     });
 
     return agrementId;

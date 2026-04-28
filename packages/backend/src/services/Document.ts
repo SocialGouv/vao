@@ -2,6 +2,7 @@ import path from "node:path";
 import { Readable } from "node:stream";
 
 import {
+  DeleteObjectCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
@@ -12,6 +13,7 @@ import {
   FILE_CATEGORY,
   FileMetaDataDto,
 } from "@vao/shared-bridge";
+import { PoolClient } from "pg";
 
 import AppError from "../utils/error";
 import {
@@ -172,6 +174,28 @@ export const getFileMetaData = async (
   } catch (err) {
     log.w(err);
     throw new AppError("query.getFileMetaData failed", { cause: err });
+  }
+};
+
+export const deleteFile = async (
+  uuid: string,
+  tx: PoolClient,
+): Promise<void> => {
+  log.i("IN deleteFile");
+  try {
+    await tx.query(`DELETE FROM doc.documents WHERE uuid = $1`, [uuid]);
+    await getS3Client().send(
+      await new DeleteObjectCommand({
+        Bucket: S3_BUCKET_NAME,
+        Key: `${S3_BUCKET_ROOT_DIR}/${uuid}`,
+      }),
+    );
+  } catch (err) {
+    log.w(err);
+    Sentry.setContext("document", {
+      uuid,
+    });
+    Sentry.captureException(err);
   }
 };
 
