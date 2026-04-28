@@ -25,8 +25,6 @@ export enum AGREMENT_STATUT {
   A_CORRIGER = "A_CORRIGER", //  ???
   // OBSOLETE : Ne sera pas utilisé
   DEPOSE = "DEPOSE", //  ???
-  // OBSOLETE : Ne sera pas utilisé
-  VERIF_EN_COURS = "VERIF_EN_COURS", // ???
   // ACTION X : DREETS valide l'agrément, agrément actif (Statut final)
   VALIDE = "VALIDE",
 }
@@ -66,7 +64,6 @@ const LABELS: Record<AGREMENT_STATUT, string> = {
   REFUSE: "Refusé",
   TRANSMIS: "Transmis",
   VALIDE: "Validé",
-  VERIF_EN_COURS: "Vérification en cours",
 };
 
 export const AGREMENT_STATUT_OPTIONS = Object.values(

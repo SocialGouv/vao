@@ -256,9 +256,7 @@ export const AgrementService = {
     });
 
     let eventType: AGREMENT_HISTORY_TYPE;
-    if (statut === AGREMENT_STATUT.VERIF_EN_COURS) {
-      eventType = AGREMENT_HISTORY_TYPE.TRANSMISSION;
-    } else if (statut === AGREMENT_STATUT.EN_COURS) {
+    if (statut === AGREMENT_STATUT.EN_COURS) {
       eventType = AGREMENT_HISTORY_TYPE.EN_COURS;
     } else {
       eventType = AGREMENT_HISTORY_TYPE.STATUT_CHANGE;
