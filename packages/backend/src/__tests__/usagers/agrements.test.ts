@@ -205,7 +205,10 @@ describe("PATCH /agrements/:agrementId/statut", () => {
 
     const { agrement } = await getAgrement(agrementId);
     expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
-    expect(formatFR(agrement?.dateDepot)).toBe(formatFR(new Date()));
+    expect(agrement?.dateDepot).not.toBeNull();
+    expect(agrement?.dateDepot ? formatFR(agrement?.dateDepot) : null).toBe(
+      formatFR(new Date()),
+    );
   });
 
   it("workflow changement statut de l'agrement", async () => {
