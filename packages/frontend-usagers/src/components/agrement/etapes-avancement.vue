@@ -67,45 +67,63 @@ const urlLegifrance = computed(() => {
   ).toString();
 });
 
+const dateDepot = computed(() =>
+  props.initAgrement?.dateDepot
+    ? formatFR(props.initAgrement?.dateDepot)
+    : "Non déposé",
+);
+
+const dateVerifCompletude = computed(() =>
+  props.initAgrement?.dateVerifCompleture
+    ? formatFR(props.initAgrement?.dateVerifCompleture)
+    : "Possible demande de complément d'informations ou documents justificatifs",
+);
+
+const dateConfirmCompletude = computed(() =>
+  props.initAgrement?.dateConfirmCompletude
+    ? formatFR(props.initAgrement?.dateConfirmCompletude)
+    : "Récépissé de complétude",
+);
+
+const dateObtention = computed(() => {
+  if (props.initAgrement?.dateObtention) {
+    return { texte: formatFR(props.initAgrement.dateObtention) };
+  }
+
+  return {
+    texte: "Délais de deux mois à compter du récépissé de complétude.",
+    lien: {
+      url: urlLegifrance.value,
+      label: "En savoir plus",
+      title: "Article R412-12 - Code du tourisme",
+    },
+  };
+});
+
 //todo utiliser les vraies valeurs et supprimer les placeholders quand historique sera finalisé avec tout traqué:
 const steps = [
   {
     statut: AGREMENT_STATUT.TRANSMIS,
     libelle: "Envoi de la première demande d'agrément",
-    temporalite: props.initAgrement?.dateDepot
-      ? formatFR(props.initAgrement?.dateDepot)
-      : "Non déposé",
+    temporalite: dateDepot.value,
     entite: "",
   },
   {
     statut: AGREMENT_STATUT.EN_COURS,
     libelle: "Vérification de la complétude de votre dossier",
-    temporalite: props.initAgrement?.dateVerifCompleture
-      ? formatFR(props.initAgrement?.dateVerifCompleture)
-      : "Possible demande de complément d'informations ou documents justificatifs",
+    temporalite: dateVerifCompletude.value,
     entite: "",
   },
   {
     statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
     libelle: "Confirmation de complétude de votre dossier",
-    temporalite: props.initAgrement?.dateConfirmCompletude
-      ? formatFR(props.initAgrement?.dateConfirmCompletude)
-      : "Récépissé de complétude",
+    temporalite: dateConfirmCompletude.value,
     entite: "",
   },
   {
     statut: AGREMENT_STATUT.VALIDE,
     libelle: "Décision d'obtention de l'agrément",
-    temporalite: props.initAgrement?.dateObtention
-      ? formatFR(props.initAgrement?.dateObtention)
-      : {
-          texte: "Délais de deux mois à compter du récépissé de complétude.",
-          lien: {
-            url: urlLegifrance.value,
-            label: "En savoir plus",
-            title: "Article R412-12 - Code du tourisme",
-          },
-        },
+    temporalite: dateObtention.value,
     entite: "",
   },
 ];

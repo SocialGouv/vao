@@ -9,14 +9,7 @@ import { AGREMENT_STATUT, USER_TYPE } from "@vao/shared-bridge";
 import type { PoolClient } from "pg";
 
 import { saveAdresse } from "../../services/adresse";
-import { AgrementEntity } from "../../shared/agrements/agrements.entity";
-import {
-  AgrementAnimationMapper,
-  AgrementBilanAnnuelMapper,
-  AgrementFilesMapper,
-  AgrementSejoursMapper,
-  AgrementsMapper,
-} from "../../shared/agrements/agrements.mapper";
+import { AgrementsMapper } from "../../shared/agrements/agrements.mapper";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import Logger from "../../utils/logger";
 import { getPool, withTransaction } from "../../utils/pgpool";
@@ -242,6 +235,7 @@ export const AgrementsRepository = {
   /**
    * Récupère un agrément par organisme ID (avec ou sans détails liés)
    */
+  /*
   async getByOrganismeId({
     organismeId,
     withDetails,
@@ -344,7 +338,7 @@ export const AgrementsRepository = {
 
     return agrementDto;
   },
-
+*/
   async getHistory(agrementId: number): Promise<AgrementHistoryItem[]> {
     const client = await getPool().connect();
     try {
@@ -700,10 +694,11 @@ export const AgrementsRepository = {
   }): Promise<boolean> {
     const client = await getPool().connect();
     try {
-      const result = await client.query(
-        `UPDATE front.agrements SET statut = $1, updated_at = NOW() WHERE id = $2`,
-        [statut, agrementId],
-      );
+      const agrementUpdateStatut = `UPDATE front.agrements SET statut = $1, updated_at = NOW() ${AGREMENT_STATUT.TRANSMIS ? ", date_depot = now()" : ""} WHERE id = $2`;
+      const result = await client.query(agrementUpdateStatut, [
+        statut,
+        agrementId,
+      ]);
       return result.rowCount > 0;
     } finally {
       client.release();

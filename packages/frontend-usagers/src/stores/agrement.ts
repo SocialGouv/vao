@@ -19,6 +19,7 @@ const log = logger("stores/agrement");
 const ALLOWED_STATUTS_RENOUVELLEMENT = [
   AGREMENT_STATUT.BROUILLON,
   AGREMENT_STATUT.A_MODIFIER,
+  AGREMENT_STATUT.TRANSMIS,
   AGREMENT_STATUT.COMPLETUDE_CONFIRME,
   AGREMENT_STATUT.DEPOSE,
   AGREMENT_STATUT.EN_COURS,
@@ -178,7 +179,6 @@ export const useAgrementStore = defineStore("agrement", {
       organismeId: number;
     }): Promise<number | null> {
       log.i("updateAgrement - IN", { agrement });
-
       const agrementToSend: AgrementDto = {
         organismeId: agrement.organismeId ?? organismeId ?? null,
         id: agrement.id ?? null,

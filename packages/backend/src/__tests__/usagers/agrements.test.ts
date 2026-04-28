@@ -1,4 +1,4 @@
-import { AGREMENT_STATUT, USER_TYPE } from "@vao/shared-bridge";
+import { AGREMENT_STATUT, formatFR, USER_TYPE } from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
 import request from "supertest";
 
@@ -205,6 +205,10 @@ describe("PATCH /agrements/:agrementId/statut", () => {
 
     const { agrement } = await getAgrement(agrementId);
     expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
+    expect(agrement?.dateDepot).not.toBeNull();
+    expect(agrement?.dateDepot ? formatFR(agrement?.dateDepot) : null).toBe(
+      formatFR(new Date()),
+    );
   });
 
   it("workflow changement statut de l'agrement", async () => {
