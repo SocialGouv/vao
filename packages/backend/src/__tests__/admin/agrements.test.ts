@@ -552,6 +552,16 @@ describe("Messagerie d'agrément", () => {
     );
     expect(getResponse.body.unreadCount).toBe(0);
   });
+
+  it("PATCH /messages/read devrait retourner 0 si aucun message non lu", async () => {
+    const response = await request(app).patch(
+      `/admin/agrements/${agrementId}/messages/read`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body.count).toBe(0);
+  });
+
   it("PATCH /messages devrait remonter une erreur si l'agrément n'existe pas", async () => {
     const patchResponse = await request(app).patch(
       `/admin/agrements/999/messages/read`,
