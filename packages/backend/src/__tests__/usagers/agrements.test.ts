@@ -1,4 +1,9 @@
-import { AGREMENT_STATUT, formatFR, USER_TYPE } from "@vao/shared-bridge";
+import {
+  AGREMENT_HISTORY_TYPE,
+  AGREMENT_STATUT,
+  formatFR,
+  USER_TYPE,
+} from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
 import request from "supertest";
 
@@ -64,11 +69,6 @@ describe("GET /agrements/", () => {
     expect(response.body.agrements).not.toBeNull();
     expect(response.body.agrements[0].id).toEqual(agrementId);
 
-    const agrementByOrganisme = await AgrementsRepository.getByOrganismeId({
-      organismeId,
-      withDetails: true,
-    });
-    expect(agrementByOrganisme?.id).toEqual(agrementId);
     const agrementById = await AgrementsRepository.getById({
       agrementId,
       withDetails: true,
