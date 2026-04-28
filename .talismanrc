@@ -1,6 +1,5 @@
 fileignoreconfig:
 - filename: .env.dev.example.env
-  checksum: 7aadaf6f567f2c55827f5097bc9524a0487702e6b6f551c446aca37c0b3780c5
   checksum: 6d2b816034eceab035c41b6b6be08c11b18b011f16cb47f0112e48f2547499c6
 - filename: .github/workflows/e2e.yaml
   checksum: d28e325635cc8d77cbf5b260c67cb9721b58578ac86ddd39ec691e753e4d0412
@@ -172,6 +171,8 @@ fileignoreconfig:
   checksum: 4bec11a784b24d563235f78e271db6c1a9a7f2ebd0bf06544899c3da4f15b533
 - filename: packages/cron/src/notifySuppressionCompteInactif/notifySuppressionCompteInactif.email.ts
   checksum: de4794018b505faf0ca412917808158d1a5cd6b5a35a1430a3a2303e303585ce
+- filename: packages/cron/src/updateAndNotifySva/updateAndNotifySva.service.ts
+  checksum: 491976d31cdf9175e92605b2127337f37ce88690268d61367be2be4336025718
 - filename: packages/cron/src/updateAndNotifySva/updateAndNotifySva.type.d.ts
   checksum: d687606dc14d8b0e0bf4ed832bf0457146b8ef8a5dd96888655c4a9b8abe2f43
 - filename: packages/external-api/README.md
