@@ -320,6 +320,106 @@ describe("PATCH /agrements/:agrementId/statut", () => {
   });
 });
 
+it("devrait changer le statut en agrement VALIDE", async () => {
+  const usagerUser = await createUsagersUser();
+  // Ici on répond aux conditions de mise à jour backOffice
+  const adminUser = await createAdminUser();
+  await createTerritoire({ territoireCode: "IDF" });
+  const organismeId = await createOrganisme({ userId: usagerUser.id });
+  const agrementData = await buildAgrementFixture({
+    organismeId,
+    statut: AGREMENT_STATUT.BROUILLON,
+  });
+  const agrementId = await createAgrement({
+    agrement: agrementData,
+    organismeId,
+  });
+  (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+    req.decoded = { id: usagerUser.id };
+    next();
+  });
+  const response = await request(app)
+    .patch(`/agrements/${agrementId}/statut`)
+    .send({ statut: AGREMENT_STATUT.TRANSMIS });
+  await AgrementServiceAdmin.updateStatut({
+    agrementId,
+    boUserId: adminUser.id,
+    statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+    territoireCode: agrementData.regionObtention!,
+  });
+  expect(response.status).toBe(200);
+  expect(response.body.success).toBe(true);
+
+  const responseCorrection = await request(app)
+    .patch(`/agrements/${agrementId}/statut`)
+    .send({ statut: AGREMENT_STATUT.VALIDE });
+  expect(responseCorrection.status).toBe(200);
+  expect(responseCorrection.body.success).toBe(true);
+
+  // Vérifier que l'événement a bien été historisé
+  const history = await AgrementService.getHistory(agrementId);
+  const aModifierEvent = history.find(
+    (event) =>
+      event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+      event.type_precision === AGREMENT_STATUT.VALIDE,
+  );
+
+  expect(aModifierEvent).toBeDefined();
+  expect(aModifierEvent?.usager_user).toBeDefined();
+  const { agrement } = await getAgrement(agrementId);
+  expect(agrement?.statut).toBe(AGREMENT_STATUT.VALIDE);
+});
+
+it("devrait changer le statut en agrement REFUSE", async () => {
+  const usagerUser = await createUsagersUser();
+  // Ici on répond aux conditions de mise à jour backOffice
+  const adminUser = await createAdminUser();
+  await createTerritoire({ territoireCode: "IDF" });
+  const organismeId = await createOrganisme({ userId: usagerUser.id });
+  const agrementData = await buildAgrementFixture({
+    organismeId,
+    statut: AGREMENT_STATUT.BROUILLON,
+  });
+  const agrementId = await createAgrement({
+    agrement: agrementData,
+    organismeId,
+  });
+  (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+    req.decoded = { id: usagerUser.id };
+    next();
+  });
+  const response = await request(app)
+    .patch(`/agrements/${agrementId}/statut`)
+    .send({ statut: AGREMENT_STATUT.TRANSMIS });
+  await AgrementServiceAdmin.updateStatut({
+    agrementId,
+    boUserId: adminUser.id,
+    statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+    territoireCode: agrementData.regionObtention!,
+  });
+  expect(response.status).toBe(200);
+  expect(response.body.success).toBe(true);
+
+  const responseCorrection = await request(app)
+    .patch(`/agrements/${agrementId}/statut`)
+    .send({ statut: AGREMENT_STATUT.REFUSE });
+  expect(responseCorrection.status).toBe(200);
+  expect(responseCorrection.body.success).toBe(true);
+
+  // Vérifier que l'événement a bien été historisé
+  const history = await AgrementService.getHistory(agrementId);
+  const aModifierEvent = history.find(
+    (event) =>
+      event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+      event.type_precision === AGREMENT_STATUT.VALIDE,
+  );
+
+  expect(aModifierEvent).toBeDefined();
+  expect(aModifierEvent?.usager_user).toBeDefined();
+  const { agrement } = await getAgrement(agrementId);
+  expect(agrement?.statut).toBe(AGREMENT_STATUT.REFUSE);
+});
+
 describe("Messagerie d'agrément", () => {
   let agrementId: number;
 
