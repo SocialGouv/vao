@@ -2,12 +2,14 @@ import type {
   ActiviteDto,
   AgrementDto,
   AgrementMessage,
+  OrganismeDto,
 } from "@vao/shared-bridge";
 import {
   addYears,
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
+  ORGANISME_TYPE,
 } from "@vao/shared-bridge";
 import { PoolClient } from "pg";
 
@@ -221,17 +223,20 @@ export const AgrementService = {
       let emailRegion: string | null = null;
 
       try {
-        const organisme = await Organisme.getOne({
+        const organisme: OrganismeDto | null = await Organisme.getOne({
           "o.id": agrement.organismeId,
         });
-        if (
-          organisme.typeOrganisme === "personne_morale" &&
+
+        if (!organisme) {
+          log.w(`Organisme introuvable pour agrementId=${agrementId}`);
+        } else if (
+          organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_MORALE &&
           organisme.personneMorale
         ) {
           organismeName = organisme.personneMorale.raisonSociale || "";
           siret = organisme.personneMorale.siret || "";
         } else if (
-          organisme.typeOrganisme === "personne_physique" &&
+          organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_PHYSIQUE &&
           organisme.personnePhysique
         ) {
           organismeName =
@@ -246,17 +251,6 @@ export const AgrementService = {
           const region = await Region.fetchOne(codeObtentionRegion);
           nomObtentionRegion = region.text;
           emailRegion = await getEmailRegion(codeObtentionRegion);
-        }
-        if (!organisme) {
-          log.w(`Organisme introuvable pour agrementId=${agrementId}`);
-        } else if (!codeObtentionRegion) {
-          log.w(
-            `Région introuvable pour codeObtentionRegion=${codeObtentionRegion}`,
-          );
-        } else if (!emailRegion) {
-          log.w(
-            `Email de région manquant pour codeObtentionRegion=${codeObtentionRegion}`,
-          );
         }
       } catch (e) {
         log.w(
