@@ -10,14 +10,7 @@ import type { PoolClient } from "pg";
 
 import { saveAdresse } from "../../services/adresse";
 import { deleteFile } from "../../services/Document";
-import { AgrementEntity } from "../../shared/agrements/agrements.entity";
-import {
-  AgrementAnimationMapper,
-  AgrementBilanAnnuelMapper,
-  AgrementFilesMapper,
-  AgrementSejoursMapper,
-  AgrementsMapper,
-} from "../../shared/agrements/agrements.mapper";
+import { AgrementsMapper } from "../../shared/agrements/agrements.mapper";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import Logger from "../../utils/logger";
 import { getPool, withTransaction } from "../../utils/pgpool";

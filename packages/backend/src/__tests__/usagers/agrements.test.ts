@@ -1,6 +1,7 @@
 import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
+  FILE_CATEGORY,
   formatFR,
   ORGANISME_TYPE,
   USER_TYPE,
@@ -759,6 +760,103 @@ it("devrait changer le statut en agrement REFUSE", async () => {
   expect(aModifierEvent?.usager_user).toBeDefined();
   const { agrement } = await getAgrement(agrementId);
   expect(agrement?.statut).toBe(AGREMENT_STATUT.REFUSE);
+});
+
+describe("upload fichiers", () => {
+  it("supprime le fichier single-upload orphelin lors de la mise à jour", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const initialFileUuid = crypto.randomUUID();
+    const agrementData = await buildAgrementFixture({
+      agrementFiles: [
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.ASSURRAPAT,
+          fileUuid: initialFileUuid,
+        },
+      ],
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+
+    const updateData = {
+      ...agrementData,
+      agrementFiles: [],
+      id: agrementId,
+    };
+    const response = await request(app).post(`/agrements/`).send(updateData);
+    expect(response.status).toBe(200);
+
+    const { agrement } = await getAgrement(agrementId);
+    expect(agrement?.agrementFiles).toEqual([]);
+  });
+
+  it("supprime les fichiers multi-upload orphelins lors de la mise à jour", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+
+    const fileUuid1 = crypto.randomUUID();
+    const fileUuid2 = crypto.randomUUID();
+    const fileUuid3 = crypto.randomUUID();
+    const agrementData = await buildAgrementFixture({
+      agrementFiles: [
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid1,
+        },
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid2,
+        },
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid3,
+        },
+      ],
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+
+    // Mise à jour : on ne garde que fileUuid2
+    const updateData = {
+      ...agrementData,
+      agrementFiles: [
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid2,
+        },
+      ],
+      id: agrementId,
+    };
+    const response = await request(app).post(`/agrements/`).send(updateData);
+    expect(response.status).toBe(200);
+
+    const { agrement } = await getAgrement(agrementId);
+    expect(agrement?.agrementFiles).toEqual([
+      expect.objectContaining({
+        category: FILE_CATEGORY.CHANGEEVOL,
+        fileUuid: fileUuid2,
+      }),
+    ]);
+  });
 });
 
 describe("Messagerie d'agrément", () => {
