@@ -3,6 +3,10 @@ import { OrganismeDto } from "@vao/shared-bridge";
 import { frontBODomain, senderEmail } from "../../config";
 import sendTemplate from "../../helpers/mail";
 import { partOrganisme } from "../../helpers/org-part";
+import AppError from "../../utils/error";
+import logger from "../../utils/logger";
+
+const log = logger(module.filename);
 
 export const AgrementMailAdmin = {
   sendStatutCompletudeMail: ({
@@ -42,5 +46,62 @@ export const AgrementMailAdmin = {
         "Portail VAO – Confirmation de complétude du dossier de renouvellement d’agrément",
       to: mailDreets,
     };
+  },
+  sendStatutTransmisRegionMail: ({
+    email,
+    date,
+    organismeName,
+    siret,
+    agrementId,
+  }: {
+    email: string;
+    date: string;
+    organismeName: string;
+    siret: string;
+    agrementId: number;
+  }) => {
+    log.i("sendStatutTransmisRegionMail - In", {
+      agrementId,
+      date,
+      email,
+      organismeName,
+      siret,
+    });
+    if (!email) {
+      throw new AppError(
+        "Email manquant pour l'envoi du mail de notification de la région",
+      );
+    }
+    const html = sendTemplate.getBody(
+      "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      [
+        {
+          p: [
+            "Bonjour,",
+            "",
+            "Une demande de renouvellement d’agrément vient d’être transmise par l’organisateur suivant :",
+            "",
+            `<strong>Nom de l’organisme</strong> : ${organismeName}`,
+            `<strong>Numéro SIRET</strong> : ${siret}`,
+            `<strong>Date de transmission</strong> : ${date}`,
+            "",
+            "Vous pouvez consulter le dossier directement depuis le portail VAO :",
+            `<a href='${frontBODomain}/agrements/${agrementId}'>Lien direct vers le dossier</a>`,
+          ],
+          type: "p",
+        },
+      ],
+      `Cordialement,<br>L’équipe du SI VAO<br><a href='${frontBODomain}'>Portail VAO</a>`,
+    );
+    const params = {
+      from: senderEmail,
+      html,
+      replyTo: senderEmail,
+      subject:
+        "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      to: email,
+    };
+    log.d("sendStatutTransmisRegionMail post email", { params });
+    return params;
   },
 };
