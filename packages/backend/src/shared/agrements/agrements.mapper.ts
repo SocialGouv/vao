@@ -1,10 +1,13 @@
 import {
   ActiviteDto,
+  AGREMENT_SVA_TIMER_STATUT,
   AgrementAnimationDto,
   AgrementBilanAnnuelDto,
   AgrementDto,
   AgrementFilesDto,
   AgrementSejoursDto,
+  AgrementSvaPeriodesDto,
+  AgrementSvaTimerDto,
   BilanHebergementDto,
 } from "@vao/shared-bridge";
 
@@ -15,6 +18,8 @@ import {
   AgrementEntity,
   AgrementFilesEntity,
   AgrementSejoursEntity,
+  AgrementSvaPeriodesEntity,
+  AgrementSvaTimerEntity,
   BilanHebergementEntity,
 } from "./agrements.entity";
 
@@ -192,5 +197,37 @@ export const BilanHebergementMapper = {
   },
   toModels: (entities: BilanHebergementEntity[]): BilanHebergementDto[] => {
     return entities.map((entity) => BilanHebergementMapper.toModel(entity));
+  },
+};
+
+export const AgrementSvaTimerMapper = {
+  toModel: (entity: AgrementSvaTimerEntity): AgrementSvaTimerDto => {
+    return {
+      agrementId: entity.agrement_id ?? null,
+      createdAt: entity.created_at,
+      id: entity.id ?? 0,
+      mailDelay21dAt: entity.mail_delay_21d_at,
+      statut: entity.statut as AGREMENT_SVA_TIMER_STATUT,
+      t0: entity.t0,
+    };
+  },
+  toModels: (entities: AgrementSvaTimerEntity[]): AgrementSvaTimerDto[] => {
+    return entities.map((entity) => AgrementSvaTimerMapper.toModel(entity));
+  },
+};
+
+export const AgrementSvaPeriodesMapper = {
+  toModel: (entity: AgrementSvaPeriodesEntity): AgrementSvaPeriodesDto => {
+    return {
+      agrementSvaTimerId: entity.agrement_sva_timer_id ?? null,
+      endAt: entity.end_at,
+      id: entity.id ?? 0,
+      startAt: entity.start_at,
+    };
+  },
+  toModels: (
+    entities: AgrementSvaPeriodesEntity[],
+  ): AgrementSvaPeriodesDto[] => {
+    return entities.map((entity) => AgrementSvaPeriodesMapper.toModel(entity));
   },
 };

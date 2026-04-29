@@ -1,6 +1,7 @@
 import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
+  AGREMENT_SVA_TIMER_STATUT,
   AgrementDto,
   FILE_CATEGORY,
   FUNCTIONAL_ERRORS,
@@ -9,6 +10,7 @@ import {
 import { NextFunction, Response } from "express";
 import request from "supertest";
 
+import { AgrementsRepository } from "../../admin/agrements/agrements.repository";
 import { AgrementService } from "../../admin/agrements/agrements.service";
 import app from "../../app";
 import { mailService } from "../../services/mail";
@@ -131,7 +133,7 @@ describe("GET /admin/agrements", () => {
 });
 
 describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
-  it("devrait changer le statut d'un agrément avec succès", async () => {
+  it("devrait changer le statut d'un agrément avec succès BROUILLON => EN_COURS", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
@@ -236,6 +238,12 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
       });
 
     expect(response.status).toBe(200);
+
+    const svaTimer = await AgrementsRepository.getSvaTimerByStatut({
+      agrementId,
+      statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
+    });
+    expect(svaTimer?.createdAt).toBeDefined();
     expect(response.body.success).toBe(true);
     expect(sendSpy).toHaveBeenCalledTimes(2); // BO + usager
     // Vérifier que l'événement a bien été historisé
@@ -544,6 +552,16 @@ describe("Messagerie d'agrément", () => {
     );
     expect(getResponse.body.unreadCount).toBe(0);
   });
+
+  it("PATCH /messages/read devrait retourner 0 si aucun message non lu", async () => {
+    const response = await request(app).patch(
+      `/admin/agrements/${agrementId}/messages/read`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body.count).toBe(0);
+  });
+
   it("PATCH /messages devrait remonter une erreur si l'agrément n'existe pas", async () => {
     const patchResponse = await request(app).patch(
       `/admin/agrements/999/messages/read`,

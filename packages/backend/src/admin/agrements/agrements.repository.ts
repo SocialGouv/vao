@@ -4,17 +4,26 @@ import type {
   AgrementHistoryItem,
   AgrementHistoryRow,
   AgrementMessage,
+  AgrementSvaTimerDto,
 } from "@vao/shared-bridge";
 import {
   AGREMENT_STATUT,
+  AGREMENT_SVA_TIMER_STATUT,
   AgrementDto,
   PaginationQueryDto,
   USER_TYPE,
 } from "@vao/shared-bridge";
+import { PoolClient } from "pg";
 
 import { processQuery } from "../../helpers/queryParams";
-import { AgrementEntity } from "../../shared/agrements/agrements.entity";
-import { AgrementsMapper } from "../../shared/agrements/agrements.mapper";
+import {
+  AgrementEntity,
+  AgrementSvaTimerEntity,
+} from "../../shared/agrements/agrements.entity";
+import {
+  AgrementsMapper,
+  AgrementSvaTimerMapper,
+} from "../../shared/agrements/agrements.mapper";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import Logger from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
@@ -155,6 +164,21 @@ export const AgrementsRepository = {
     return AgrementsRepositoryShared.getMessages(agrementId, USER_TYPE.BO);
   },
 
+  async getSvaTimerByStatut({
+    agrementId,
+    statut,
+  }: {
+    agrementId: number;
+    statut: AGREMENT_SVA_TIMER_STATUT;
+  }): Promise<AgrementSvaTimerDto | null> {
+    const response = await getPool().query(
+      `SELECT * FROM front.agrement_sva_timer WHERE agrement_id = $1 AND statut = $2`,
+      [agrementId, statut],
+    );
+    if (!response.rows?.length) return null;
+    const row = response.rows[0] as AgrementSvaTimerEntity;
+    return AgrementSvaTimerMapper.toModel(row);
+  },
   /**
    * Récupère le courriel du user responsable d'un agrément.
    */
@@ -179,9 +203,8 @@ export const AgrementsRepository = {
       client.release();
     }
   },
-
   async insertAgrementFiles(
-    client: any,
+    client: PoolClient,
     agrementId: number | null | undefined,
     file: AgrementFilesDto,
   ) {
@@ -249,6 +272,21 @@ export const AgrementsRepository = {
       userType: USER_TYPE.BO,
     });
   },
+  async insertSvaTimer({
+    tx,
+    agrementId,
+  }: {
+    tx: PoolClient;
+    agrementId: number;
+  }): Promise<number> {
+    const { rows } = await tx.query(
+      `INSERT INTO front.agrement_sva_timer (agrement_id, statut, t0, created_at)
+         VALUES ($1, $2, NOW(), NOW()) RETURNING id`,
+      [agrementId, AGREMENT_SVA_TIMER_STATUT.RUNNING],
+    );
+    return rows[0].id;
+  },
+
   async markMessagesAsRead(agrementId: number): Promise<number> {
     return AgrementsRepositoryShared.markMessagesAsRead({
       agrementId,
@@ -260,16 +298,16 @@ export const AgrementsRepository = {
     statut,
     commentaire,
     file,
+    tx,
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
     commentaire?: string;
     file?: AgrementFilesDto;
+    tx: PoolClient;
   }): Promise<boolean> {
-    const client = await getPool().connect();
-    try {
-      const result = await client.query(
-        `UPDATE front.agrements
+    const result = await tx.query(
+      `UPDATE front.agrements
           SET
             statut = $1::front.agrement_statut,
             commentaire_refus = CASE
@@ -282,14 +320,12 @@ export const AgrementsRepository = {
             END,
             updated_at = NOW()
           WHERE id = $2`,
-        [statut, agrementId, commentaire],
-      );
-      if (file) {
-        await AgrementsRepository.insertAgrementFiles(client, agrementId, file);
-      }
-      return result.rowCount > 0;
-    } finally {
-      client.release();
+      [statut, agrementId, commentaire],
+    );
+    if (file) {
+      await AgrementsRepository.insertAgrementFiles(tx, agrementId, file);
     }
+
+    return (result.rowCount ?? 0) > 0;
   },
 };

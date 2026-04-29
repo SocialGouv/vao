@@ -8,6 +8,7 @@ export enum Actions {
 }
 
 export enum Entities {
+  Agrements = "AGREMENTS",
   DemandeSejour = "DEMANDE_SEJOUR",
   Eig = "EIG",
   PersonneMorale = "PERSONNE_MORALE",
@@ -19,4 +20,5 @@ export enum Entities {
 export enum UserTypes {
   Back = "BACK",
   Front = "FRONT",
+  Cron = "CRON",
 }

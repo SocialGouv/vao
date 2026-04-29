@@ -67,6 +67,10 @@ module.exports = {
         cron: process.env.BACKEND_CRON_UPDATE_STATUT_DS_CRON,
         name: "UPDATE_STATUT_DS",
       },
+      updateAndNotifySva: {
+        cron: process.env.BACKEND_CRON_UPDATE_AND_NOTIFY_SVA,
+        name: "UPDATE_AND_NOTIFY_SVA",
+      },
     },
   },
   domain: process.env.BACKEND_URL,
