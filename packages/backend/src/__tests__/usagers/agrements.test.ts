@@ -11,6 +11,7 @@ import { AgrementService as AgrementServiceAdmin } from "../../admin/agrements/a
 import app from "../../app";
 import checkJwt from "../../middlewares/checkJWT";
 import { mailService } from "../../services/mail";
+import * as OrganismeService from "../../services/Organisme";
 import { User, UserRequest } from "../../types/request";
 import { AgrementsRepository } from "../../usagers/agrements/agrements.repository";
 import { AgrementService } from "../../usagers/agrements/agrements.service";
@@ -40,6 +41,11 @@ jest.mock("../../middlewares/checkJWT", () =>
 
 jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
+}));
+
+jest.mock("../../services/Organisme", () => ({
+  ...jest.requireActual("../../services/Organisme"),
+  getOne: jest.fn(),
 }));
 
 beforeAll(async () => await createTestContainer());
@@ -307,6 +313,149 @@ describe("PATCH /agrements/:agrementId/statut", () => {
   });
 
   it("n’envoie pas de mail à la région si la région est inconnue", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "AAA",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+    expect(mailService.send).toHaveBeenCalledTimes(1);
+    const call = (mailService.send as jest.Mock).mock.calls[0][0];
+    expect(call).toHaveProperty("to");
+    expect(call.html).toMatch(/DREETS compétente/);
+  });
+
+  it("log une erreur si l'envoi du mail à la région échoue", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (mailService.send as jest.Mock)
+      .mockImplementationOnce(() => {
+        throw new Error("Erreur d'envoi mail région");
+      })
+      .mockImplementationOnce(() => {}); // usager
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+    expect(mailService.send).toHaveBeenCalledTimes(2);
+  });
+
+  it("log une erreur si l'envoi du mail à l'usager échoue", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (mailService.send as jest.Mock)
+      .mockImplementationOnce(() => {}) // région
+      .mockImplementationOnce(() => {
+        throw new Error("Erreur d'envoi mail usager");
+      });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+    expect(mailService.send).toHaveBeenCalledTimes(2);
+  });
+
+  it("n’envoie pas de mail à la région si l’email de la région est manquant", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    await createTerritoire({
+      territoire: { email: null },
+      territoireCode: "IDF",
+    });
+
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+    expect(mailService.send).toHaveBeenCalledTimes(1);
+    const call = (mailService.send as jest.Mock).mock.calls[0][0];
+    expect(call).toHaveProperty("to");
+    expect(call.html).toMatch(/DREETS/);
+  });
+
+  it("n’envoie pas de mail si l’organisme est introuvable", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (OrganismeService.getOne as jest.Mock).mockResolvedValueOnce(null);
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+    expect(mailService.send).toHaveBeenCalledTimes(1);
+    const call = (mailService.send as jest.Mock).mock.calls[0][0];
+    expect(call).toHaveProperty("to");
+    expect(call.html).toMatch(/DREETS/);
+  });
+
+  it("envoie un mail à l’usager avec fallback si la région est inconnue", async () => {
     const adminUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: adminUser.id });
     const agrementData = await buildAgrementFixture({
