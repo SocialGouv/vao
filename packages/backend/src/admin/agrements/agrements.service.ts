@@ -354,28 +354,10 @@ export const AgrementService = {
     });
     // Complétude confirmée : On déclenche le début du délai du SVA
     if (statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME) {
-      let timerId;
-      const svaTimer = await AgrementsRepository.getSvaTimerByStatut({
+      const timerId = await AgrementsRepository.insertSvaTimer({
         agrementId,
-        statut: AGREMENT_SVA_TIMER_STATUT.PAUSED,
+        tx,
       });
-      // Si un timer en pause existe, on le redémarre sinon on en crée un nouveau
-      // Cas 1 => Retour d'un statut A_CORRIGER vers COMPLETUDE_CONFIRME : on redémarre le timer en pause
-      // Cas 2 => Passage direct à COMPLETUDE_CONFIRME sans passer par A_CORRIGER : on crée un nouveau timer
-      if (svaTimer) {
-        timerId = svaTimer.id;
-        // Si un timer en pause existe, on le redémarre
-        await AgrementsRepositoryShared.updateSvaTimer({
-          agrementId,
-          statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
-          tx,
-        });
-      } else {
-        timerId = await AgrementsRepository.insertSvaTimer({
-          agrementId,
-          tx,
-        });
-      }
       // Début du chrono de la première période du SVA
       await AgrementsRepositoryShared.insertSvaPeriode({
         timerId,
