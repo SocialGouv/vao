@@ -17,11 +17,13 @@ export async function buildAgrementFixture({
   activiteId = Math.floor(Math.random() * 20) + 1,
   statut = AGREMENT_STATUT.BROUILLON,
   regionObtention = "IDF",
+  agrementFiles,
 }: {
   organismeId: number;
   activiteId?: number;
   statut?: AGREMENT_STATUT;
   regionObtention?: string;
+  agrementFiles?: AgrementFilesDto[];
 }): Promise<AgrementDto> {
   return {
     accompRespAttestHono: true,
@@ -60,7 +62,7 @@ export async function buildAgrementFixture({
         typeHandicap: [TYPE_HANDICAP.MOTEUR, TYPE_HANDICAP.COGNITIF],
       },
     ],
-    agrementFiles: [
+    agrementFiles: agrementFiles ?? [
       {
         category: FILE_CATEGORY.MOTIVATION,
         fileUuid: randomUUID(),

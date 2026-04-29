@@ -3,7 +3,7 @@
     <div id="personne-physique">
       <AgrementPersonnePhysique
         v-if="
-          organismeStore.organismeCourant.typeOrganisme === 'personne_physique'
+          organismeStore.organismeCourant?.typeOrganisme === 'personne_physique'
         "
         ref="personnePhysiqueRef"
         :init-organisme="props.initOrganisme"
@@ -13,7 +13,7 @@
       <hr class="fr-my-2w" />
       <AgrementPersonneMorale
         v-if="
-          organismeStore.organismeCourant.typeOrganisme === 'personne_morale'
+          organismeStore.organismeCourant?.typeOrganisme === 'personne_morale'
         "
         ref="personneMoraleRef"
         :init-organisme="props.initOrganisme"
@@ -64,9 +64,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { FileUpload, useToaster } from "@vao/shared-ui";
+import { FILE_CATEGORY } from "@vao/shared-bridge";
 
 const props = defineProps({
   valid: { type: Boolean, default: true },
@@ -80,20 +81,20 @@ const emit = defineEmits(["next", "update", "update:valid"]);
 const toaster = useToaster();
 const organismeStore = useOrganismeStore();
 
-const getFileByCategory = (category) => {
+const getFileByCategory = (category: string) => {
   return (
     props.initAgrement?.agrementFiles?.find(
-      (file) => file.category === category,
+      (file: { category: string }) => file.category === category,
     ) || null
   );
 };
 
-const personnePhysiqueRef = ref();
-const personneMoraleRef = ref();
-const commentaireRef = ref("");
-const personnePhysiqueError = ref("");
-const personneMoraleError = ref("");
-const fileProcesVerbal = ref(getFileByCategory("PROCVERBAL"));
+const personnePhysiqueRef = ref<any>(null);
+const personneMoraleRef = ref<any>(null);
+const commentaireRef = ref<any>(null);
+const personnePhysiqueError = ref<string>("");
+const personneMoraleError = ref<string>("");
+const fileProcesVerbal = ref(getFileByCategory(FILE_CATEGORY.PROCVERBAL));
 
 async function saveAgrement() {
   let commentaire;
@@ -111,7 +112,12 @@ async function saveAgrement() {
   emit("update", agrementValues);
 }
 
-async function validatePersonne(ref, saveMethod, errorRef, errorMsg) {
+async function validatePersonne(
+  ref: any,
+  saveMethod: string,
+  errorRef: { value: string },
+  errorMsg: string,
+): Promise<any> {
   if (ref.value?.[saveMethod]) {
     const data = await ref.value[saveMethod]();
     if (!data) {
@@ -121,17 +127,17 @@ async function validatePersonne(ref, saveMethod, errorRef, errorMsg) {
       try {
         if (saveMethod === "savePersonneMorale") {
           await organismeStore.updatePersonneMorale({
-            ...organismeStore.organismeCourant.personneMorale,
+            ...organismeStore.organismeCourant?.personneMorale,
             ...data,
           });
         } else if (saveMethod === "savePersonnePhysique") {
           await organismeStore.updatePersonnePhysique({
-            ...organismeStore.organismeCourant.personnePhysique,
+            ...organismeStore.organismeCourant?.personnePhysique,
             ...data,
           });
         }
         return data;
-      } catch (err) {
+      } catch (err: any) {
         console.error("Erreur lors de la sauvegarde :", err);
         errorRef.value =
           "Erreur lors de la sauvegarde : " +
