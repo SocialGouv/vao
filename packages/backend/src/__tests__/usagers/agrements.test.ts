@@ -2,6 +2,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   formatFR,
+  ORGANISME_TYPE,
   USER_TYPE,
 } from "@vao/shared-bridge";
 import { NextFunction, Response } from "express";
@@ -427,6 +428,80 @@ describe("PATCH /agrements/:agrementId/statut", () => {
     const call = (mailService.send as jest.Mock).mock.calls[0][0];
     expect(call).toHaveProperty("to");
     expect(call.html).toMatch(/DREETS/);
+  });
+
+  it("renseigne organismeName et siret pour une personne physique", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: {
+        personnePhysique: {
+          nomNaissance: "Durand",
+          nomUsage: "Dupont",
+          siret: "98765432100000",
+        },
+        typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
+      },
+      userId: adminUser.id,
+    });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+    const calls = (mailService.send as jest.Mock).mock.calls;
+    // Vérifie que le nom d’usage et le siret sont présents dans le mail
+    expect(calls[0][0].organismeName).toBe("Dupont");
+    expect(calls[0][0].siret).toBe("98765432100000");
+  });
+
+  it("renseigne organismeName et siret pour une personne morale", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: {
+        personneMorale: { raisonSociale: "ACME", siret: "12345678900000" },
+        typeOrganisme: ORGANISME_TYPE.PERSONNE_MORALE,
+      },
+      userId: adminUser.id,
+    });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+    const calls = (mailService.send as jest.Mock).mock.calls;
+    // Vérifie que la raison sociale et le siret sont présents dans le mail
+    expect(calls[0][0].organismeName).toBe("ACME");
+    expect(calls[0][0].siret).toBe("12345678900000");
   });
 
   it("n’envoie pas de mail si l’organisme est introuvable", async () => {
