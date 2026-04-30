@@ -1,12 +1,32 @@
 <template>
   <div>
     <label class="fr-label"> {{ description }} </label>
+    <div v-if="props.haveCommentaire" class="fr-fieldset">
+      <div class="fr-fieldset__element">
+        <div class="fr-input-group fr-col-12">
+          <DsfrInputGroup
+            is-textarea
+            name="commentaires"
+            label="Commentaires"
+            label-visible
+            :model-value="commentaire"
+            :is-valid="commentaireMeta.valid"
+            :error-message="commentaireErrorMessage"
+            hint="Redimensionnez le champ pour saisir plus de ligne. Minimum 20 caractères"
+            placeholder=""
+            @update:model-value="onCommentaireChange"
+          />
+        </div>
+      </div>
+    </div>
     <div class="fr-grid-row fr-alert--sm fr-my-3v">
       <FileUpload
         :model-value="localFile"
+        :label="labelFileUpload"
         :cdn-url="props.cdnUrl"
         :modifiable="true"
-        hint="Documents importés : taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        :hint="hintFileUpload"
+        hint-class="file-upload-hint"
         @update:model-value="handleFileChange"
       />
     </div>
@@ -14,7 +34,7 @@
       v-if="textAlert"
       class="fr-grid-row fr-alert--sm fr-my-3v"
       :role="'alert'"
-      type="info"
+      :type="props.typeAlert"
     >
       <p v-for="(item, index) in textAlert" :key="index">
         {{ item }}
@@ -29,7 +49,7 @@
           id="ValidationDemandeComplement"
           primary
           :label="validButton"
-          :disabled="!localFile"
+          :disabled="!enableValidationButton"
           @click.prevent="validateForm"
         >
         </DsfrButton>
@@ -40,16 +60,76 @@
 
 <script setup lang="ts">
 import { FileUpload } from "@vao/shared-ui";
+import type { DsfrAlertType } from "@gouvminint/vue-dsfr";
+import { useField, useForm } from "vee-validate";
+import * as yup from "yup";
+
+const initialValues = {
+  commentaire: null,
+};
 
 const localFile = ref<File | null>(null);
 
 const props = defineProps<{
   cdnUrl: string;
   textAlert?: string[] | null;
+  typeAlert?: DsfrAlertType;
   description: string;
+  haveCommentaire: boolean;
+  haveRequiredFile: boolean;
   validButton: string;
 }>();
 
+const labelFileUpload = computed(() =>
+  props.haveRequiredFile ? "" : "Ajouter un fichier (optionnel)",
+);
+const hintFileUpload = computed(() => {
+  const parts = [];
+
+  if (!props.haveRequiredFile) {
+    parts.push("Vous pouvez ajouter une pièce jointe.\n");
+  }
+
+  parts.push(
+    "Documents importés : taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf.",
+  );
+
+  return parts.join(" ");
+});
+const validationSchema = computed(() =>
+  yup.object({
+    commentaire: props.haveCommentaire
+      ? yup
+          .string()
+          .min(20, "Il est impératif de fournir un commentaire")
+          .required("Il est impératif de fournir un commentaire")
+      : yup.string().notRequired(),
+  }),
+);
+
+const { values } = useForm({
+  validationSchema,
+  initialValues,
+});
+
+const {
+  value: commentaire,
+  errorMessage: commentaireErrorMessage,
+  handleChange: onCommentaireChange,
+  meta: commentaireMeta,
+} = useField<string>("commentaire", undefined, {
+  initialValue: "",
+});
+
+const enableValidationButton = computed(() => {
+  const isCommentaireOk =
+    !props.haveCommentaire ||
+    (commentaire.value && commentaire.value.length >= 20);
+
+  const isFileOk = !props.haveRequiredFile || localFile.value !== null;
+
+  return isCommentaireOk && isFileOk;
+});
 const emit = defineEmits(["valid", "update:file", "close"]);
 
 function handleFileChange(newFile: File | null) {
@@ -57,9 +137,15 @@ function handleFileChange(newFile: File | null) {
   emit("update:file", newFile);
 }
 function validateForm() {
-  emit("valid");
+  emit("valid", { ...values });
 }
 function cancelForm() {
   emit("close");
 }
 </script>
+
+<style lang="css">
+.fr-hint-text {
+  white-space: pre-line;
+}
+</style>

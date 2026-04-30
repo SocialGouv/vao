@@ -318,6 +318,10 @@ export const AgrementsRepository = {
               WHEN $1::text = '${AGREMENT_STATUT.A_MODIFIER}' THEN $3
               ELSE commentaire_completude
             END,
+            commentaire_correction = CASE
+              WHEN $1::text = '${AGREMENT_STATUT.A_CORRIGER}' THEN $3
+              ELSE commentaire_correction
+            END,
             updated_at = NOW()
           WHERE id = $2`,
       [statut, agrementId, commentaire],

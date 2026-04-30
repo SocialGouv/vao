@@ -18,7 +18,10 @@ export interface PatchStatutRoute extends BasicRoute {
   response: RouteResponseBody<{ success: boolean }>;
 }
 
-const STATUTS_WITH_REQUIRED_FIELDS = [AGREMENT_STATUT.A_MODIFIER];
+const STATUTS_WITH_REQUIRED_FIELDS = [
+  AGREMENT_STATUT.A_MODIFIER,
+  AGREMENT_STATUT.A_CORRIGER,
+];
 
 const STATUTS_WITH_REQUIRED_FILE = [
   AGREMENT_STATUT.COMPLETUDE_CONFIRME,
