@@ -246,9 +246,8 @@ watch(
 
 const trySubmit = async () => {
   let valid = false;
-  let values: any = null;
   try {
-    values = await handleSubmit((vals) => vals)();
+    await handleSubmit((vals) => vals)();
     valid = true;
   } catch (e) {
     toaster.error({
@@ -260,10 +259,10 @@ const trySubmit = async () => {
 
   if (valid || initialValues.statut === AGREMENT_STATUT.BROUILLON) {
     const formValues = {
-      ...(values || initialValues),
-      dateObtentionCertificat: parseToISODate(
-        (values || initialValues).dateObtentionCertificat,
-      ),
+      dateObtentionCertificat: dateObtentionCertificat.value
+        ? parseToISODate(dateObtentionCertificat.value)
+        : null,
+      motivations: motivations.value,
       filesMotivation: filesMotivation.value,
       fileImmatriculation: fileImmatriculation.value,
       fileAttestationsRespCivile: fileAttestationsRespCivile.value,
