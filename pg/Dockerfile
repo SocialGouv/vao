@@ -5,5 +5,8 @@ COPY ./ /pg/
 WORKDIR /pg
 
 RUN chmod +x entrypoint.sh
+RUN chown -R postgres:postgres /pg
 
-ENTRYPOINT ["entrypoint.sh"]
+USER postgres
+
+ENTRYPOINT ["./entrypoint.sh"]
