@@ -26,3 +26,8 @@ echo '03-2-back-data : '
 psql -d $POSTGRES_DB -f /scripts/03/03-2-back-data.sql
 echo '03-3-ref-data : '
 psql -d $POSTGRES_DB -f /scripts/03/03-3-ref-data.sql
+
+echo 'BO-1-back-user : '
+psql -d $POSTGRES_DB -f /seeds/BO-1-back-user.sql
+echo 'PG-1-proc-data-deletion : '
+psql -d $POSTGRES_DB -f /seeds/PG-1-proc-data-deletion.sql
