@@ -651,6 +651,7 @@ describe("PATCH /agrements/:agrementId/statut", () => {
     await AgrementServiceAdmin.updateStatut({
       agrementId,
       boUserId: adminUser.id,
+      commentaire: "commentaire à corriger",
       statut: AGREMENT_STATUT.A_CORRIGER,
       territoireCode: agrementData.regionObtention!,
     });
