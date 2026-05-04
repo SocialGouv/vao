@@ -8,6 +8,51 @@ const log = logger(module.filename);
 const assistanceText = `Si vous avez besoin d’accompagnement, vous pouvez contacter notre <a href='${config.assistance.uriFaq}'>équipe support</a>`;
 
 export const AgrementMailUsagers = {
+  sendStatutACorrigerMail: ({
+    email,
+    commentaire,
+    regionDreets,
+  }: {
+    email: string[];
+    commentaire: string | undefined;
+    regionDreets: string;
+  }) => {
+    log.i("sendStatutACorrigerMail - In", { email });
+    if (!email) {
+      throw new AppError(
+        "Email manquant pour l'envoi du mail de demande de correction d'agrément",
+      );
+    }
+    const html = sendTemplate.getBody(
+      "Portail VAO - Demande de compléments d’informations",
+      [
+        {
+          p: [
+            "Bonjour,",
+            `Suite à l’instruction de votre demande de renouvellement d’agrément, la DREETS ${regionDreets} vous informe qu’un ou plusieurs éléments complémentaires sont nécessaires afin de poursuivre l’examen de votre dossier. La décision implicite d’acceptation du dossier est donc suspendue.`,
+            "<strong>Commentaire de l’agent instructeur :</strong>",
+            commentaire?.replace(/\n/g, "<br>"),
+            "Nous vous invitons à vous connecter au portail <strong>VAO</strong> afin de consulter le détail de cette demande et de transmettre les informations ou documents demandés :",
+            `<a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+            "Pour toute question ou précision concernant cette demande de compléments, merci d’utiliser la <strong>messagerie intégrée au portail VAO</strong>, accessible depuis votre page agrément.",
+            assistanceText,
+          ],
+          type: "p",
+        },
+      ],
+      `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+    );
+    const params = {
+      from: senderEmail,
+      html,
+      replyTo: senderEmail,
+      subject:
+        "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
+      to: email,
+    };
+    log.d("sendStatutACorrigerMail post email", { params });
+    return params;
+  },
   sendStatutAModifierMail: ({
     email,
     commentaire,
@@ -25,7 +70,7 @@ export const AgrementMailUsagers = {
     }
 
     const html = sendTemplate.getBody(
-      "PeroVAO - Demande d'agrément transmise",
+      "Portail VAO – Demande de compléments d’informations",
       [
         {
           p: [
@@ -51,7 +96,7 @@ export const AgrementMailUsagers = {
         "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
       to: email,
     };
-    log.d("sendStatutTransmisMail post email", { params });
+    log.d("sendStatutAModifierMail post email", { params });
     return params;
   },
   sendStatutCompletudeMail: ({
@@ -93,7 +138,7 @@ export const AgrementMailUsagers = {
         "Portail VAO – Confirmation de la complétude de votre dossier de renouvellement d’agrément",
       to: email,
     };
-    log.d("sendStatutTransmisMail post email", { params });
+    log.d("sendStatutCompletudeMail post email", { params });
     return params;
   },
   sendStatutRefuseMail: ({

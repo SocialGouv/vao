@@ -285,6 +285,6 @@ export const AgrementsRepositoryShared = {
       "UPDATE front.agrement_sva_timer SET statut = $2, updated_at = NOW() WHERE agrement_id = $1 RETURNING id",
       [agrementId, statut],
     );
-    return result.rowCount;
+    return result.rows[0]?.id ?? null;
   },
 };

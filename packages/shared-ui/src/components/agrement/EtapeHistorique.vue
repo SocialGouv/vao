@@ -4,7 +4,13 @@
       <p class="texte-intitule">{{ typeLabel }}</p>
       <p class="texte-temporalite">
         {{ formatFR(created_at) ?? "" }} -
-        <span v-if="type_precision">Statut {{ formatLabel(type_precision) ?? "" }}</span>
+        <span v-if="type_precision"
+          >Statut {{ formatLabel(type_precision) ?? "" }}</span
+        ><br />
+        <span v-if="metadata?.commentaire"
+          ><strong>Commentaire : </strong
+          >{{ metadata?.commentaire ?? "" }}</span
+        >
       </p>
     </div>
     <p class="user">
@@ -21,12 +27,17 @@ import type {
   AgrementHistoryItem,
   AGREMENT_HISTORY_TYPE,
 } from "@vao/shared-bridge";
-import { formatFR, AGREMENT_HISTORY_LABELS, formatLabel } from "@vao/shared-bridge";
+import {
+  formatFR,
+  AGREMENT_HISTORY_LABELS,
+  formatLabel,
+} from "@vao/shared-bridge";
 
 const props = defineProps<{
   entry: AgrementHistoryItem;
 }>();
-const { type, created_at, type_precision, usager_user, bo_user } = props.entry;
+const { type, created_at, type_precision, usager_user, bo_user, metadata } =
+  props.entry;
 const typeLabel =
   AGREMENT_HISTORY_LABELS[type as AGREMENT_HISTORY_TYPE] ?? type;
 </script>

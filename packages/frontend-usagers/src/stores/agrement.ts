@@ -19,6 +19,7 @@ const log = logger("stores/agrement");
 const ALLOWED_STATUTS_RENOUVELLEMENT = [
   AGREMENT_STATUT.BROUILLON,
   AGREMENT_STATUT.A_MODIFIER,
+  AGREMENT_STATUT.A_CORRIGER,
   AGREMENT_STATUT.TRANSMIS,
   AGREMENT_STATUT.COMPLETUDE_CONFIRME,
   AGREMENT_STATUT.DEPOSE,
@@ -106,7 +107,6 @@ export const useAgrementStore = defineStore("agrement", {
       try {
         const { agrements }: { agrements: AgrementDto[] | [] } =
           await AgrementService.getListAgrements({});
-
         const filtered = agrements.filter(
           (agrement) =>
             agrement.statut !== null &&

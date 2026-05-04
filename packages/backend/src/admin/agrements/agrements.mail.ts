@@ -9,6 +9,47 @@ import logger from "../../utils/logger";
 const log = logger(module.filename);
 
 export const AgrementMailAdmin = {
+  sendStatutACorrigerMail: ({
+    mailDreets,
+    Organisme,
+    agrementId,
+    commentaire,
+  }: {
+    mailDreets: string[];
+    Organisme: OrganismeDto;
+    agrementId: number;
+    commentaire: string | undefined;
+  }) => {
+    const urlAgrement = frontBODomain + "/agrements/" + agrementId;
+    const html = sendTemplate.getBody(
+      "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
+      [
+        {
+          p: [
+            "Bonjour,",
+            `Vous venez de transmettre à l’organisateur ${Organisme.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme.personneMorale.raisonSociale : (Organisme.personnePhysique?.nomUsage ?? Organisme.personnePhysique?.nomNaissance)} une demande de compléments d’information dans le cadre de son dossier de renouvellement d’agrément.`,
+            "<strong>Commentaire de l’agent instructeur :</strong>",
+            commentaire?.replace(/\n/g, "<br>"),
+            `Conformément à la réglementation, le délai légal d’instruction de <strong>2 mois</strong> est suspendu jusqu’à réception complète des pièces complémentaires.\n
+            Il vous appartient de fixer le délai de réponse attendu auprès de l’organisateur.`,
+            "Vous pouvez suivre et gérer ce dossier directement depuis le portail VAO :",
+            `<a href="${urlAgrement}">${urlAgrement}</a>`,
+          ],
+          type: "p",
+        },
+      ],
+      `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+    );
+
+    return {
+      from: senderEmail,
+      html,
+      replyTo: senderEmail,
+      subject:
+        "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
+      to: mailDreets,
+    };
+  },
   sendStatutCompletudeMail: ({
     mailDreets,
     Organisme,
