@@ -29,7 +29,7 @@
     "typescript-eslint": "^8.46.3"
   },
   "dependencies": {
-    "@sentry/cli": "^2.42.3",
+    "@sentry/cli": "^3.3.5",
     "@sentry/node": "^9.5.0",
     "@vao/shared-bridge": "workspace:^",
     "cron": "^4.1.0",
