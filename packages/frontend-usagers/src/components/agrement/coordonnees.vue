@@ -117,6 +117,9 @@ async function saveAgrement() {
     props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON &&
     !fileProcesVerbal.value
   ) {
+    console.error(
+      "Validation error: Procès verbal is required for non-draft agrement",
+    );
     fileProcesVerbalError.value = "Le procès verbal est requis.";
     toaster.error({
       titleTag: "h2",
@@ -134,7 +137,7 @@ async function saveAgrement() {
   };
 
   emit("update", agrementValues);
-  return;
+  return true;
 }
 
 async function validatePersonne(
@@ -204,12 +207,16 @@ async function saveCoordonneesStep() {
     const agrementSaved = await saveAgrement();
     if (!agrementSaved) {
       console.error(
+        "Échec de la sauvegarde de l'agrément depuis la page de coordonnées",
+      );
+      console.error(
         "Coordonnees invalides: échec de la sauvegarde de l'agrément",
       );
       isValid = false;
       return;
     }
   }
+  // props.modifiable ? saveAgrement() : emit("update:valid", isValid);
 
   if (!isValid) {
     return toaster.error({

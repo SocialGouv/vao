@@ -13,6 +13,26 @@ type AgrementFile = NonNullable<AgrementDto["agrementFiles"]>[number];
 type FileCategory = AgrementFile["category"];
 type FilesByCategory = Map<string, AgrementFile[]>;
 
+/**
+ * Fusionne les fichiers existants (déjà enregistrés dans l'agrément)
+ * et les fichiers modifiés ou ajoutés lors de la soumission du formulaire courant.
+ *
+ * - Pour chaque catégorie de fichier:
+ *   - Si la catégorie est multiple, elle déduplique et remplace la liste par les fichiers du formulaire.
+ *   - Si la catégorie est single-upload, elle remplace le fichier existant par le nouveau s'il y en a un,
+ *     sinon elle conserve l'existant.
+ * - Si une catégorie n'est pas présente dans les fichiers du formulaire, les fichiers existants sont conservés.
+ * - Si une catégorie single-upload est explicitement vidée dans le formulaire, les fichiers existants sont supprimés.
+ *
+ * Cette fonction garantit:
+ *   - L'ajout de nouveaux fichiers à chaque étape,
+ *   - La suppression effective des fichiers supprimés par l'utilisateur,
+ *   - La persistance des fichiers déjà uploadés si aucune modification n'est faite pour une catégorie.
+ *
+ * @param agrementEnTraitement L'agrément en cours d'édition, contenant les fichiers existants
+ * @param updatedData Les valeurs du formulaire courant, contenant les fichiers ajoutés/supprimés à cette étape
+ * @returns La liste fusionnée des fichiers à conserver pour l'agrément
+ */
 export function getFileByCategory(
   agrementEnTraitement: AgrementDto,
   updatedData: AgrementFormValues,
