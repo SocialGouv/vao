@@ -134,60 +134,6 @@ type AgrementFormValues = Partial<AgrementDto> & {
 
 const canModify = true;
 
-/**
- * Fusionne les fichiers du store (tous les fichiers déjà uploadés)
- * et les fichiers du formulaire courant (ceux ajoutés, modifiés ou supprimés à cette étape).
- *
- * - Pour chaque catégorie :
- *   - Si la catégorie est multiple, on prend tous les fichiers présents dans le formulaire pour cette catégorie.
- *     Cela permet d'ajouter ou de supprimer des fichiers dans la liste.
- *   - Si la catégorie est single-upload, on prend le fichier du formulaire s'il existe,
- *     sinon on garde le fichier existant du store.
- * - Les catégories non modifiées à cette étape conservent leurs fichiers existants.
- * - Les catégories explicitement vidées dans le formulaire (liste vide) entraînent la suppression des fichiers correspondants.
- *
- * Cette fonction garantit la persistance des fichiers déjà uploadés tout au long du parcours,
- * tout en permettant l'ajout et la suppression effective de fichiers à chaque étape.
- */
-function mergeAgrementFiles(
-  storeFiles: AgrementFilesDto[],
-  formFiles: AgrementFilesDto[],
-): AgrementFilesDto[] {
-  const filesByCategory = new Map<string, AgrementFilesDto[]>();
-  for (const file of storeFiles) {
-    if (!filesByCategory.has(file.category))
-      filesByCategory.set(file.category, []);
-    filesByCategory.get(file.category)!.push(file);
-  }
-  for (const file of formFiles) {
-    filesByCategory.set(
-      file.category,
-      filesByCategory
-        .get(file.category)
-        ?.filter((f) => f.fileUuid !== file.fileUuid) ?? [],
-    );
-    filesByCategory.get(file.category)!.push(file);
-  }
-  const result: AgrementFilesDto[] = [];
-  for (const [category, files] of filesByCategory.entries()) {
-    const isMultiple =
-      FILE_CATEGORY_CONFIG[category as keyof typeof FILE_CATEGORY_CONFIG]
-        ?.multiple;
-    if (isMultiple) {
-      const formCatFiles = formFiles.filter((f) => f.category === category);
-      result.push(...formCatFiles);
-    } else {
-      const formCatFile = formFiles.find((f) => f.category === category);
-      if (formCatFile) {
-        result.push(formCatFile);
-      } else if (files.length) {
-        result.push(files[0]);
-      }
-    }
-  }
-  return result;
-}
-
 async function updateOrCreate(formValues: AgrementFormValues) {
   const updatedData: AgrementFormValues = { ...formValues };
 
@@ -211,7 +157,7 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       updatedData.dateDepot = new Date();
     }
 
-    const formFiles = [];
+    const formFiles: AgrementFilesDto[] = [];
     for (const category of Object.keys(
       FILE_CATEGORY_CONFIG,
     ) as (keyof typeof FILE_CATEGORY_CONFIG)[]) {
@@ -232,8 +178,42 @@ async function updateOrCreate(formValues: AgrementFormValues) {
         if (doc) formFiles.push(doc);
       }
     }
+    /**
+     * Fusionne les fichiers déjà uploadés (store) et ceux du formulaire courant.
+     * - Si une catégorie est modifiée à cette étape (ajout ou suppression), on prend la nouvelle valeur.
+     * - Si une catégorie est explicitement vide dans le formulaire, on supprime tous ses fichiers.
+     * - Si une catégorie n'est pas modifiée, on conserve les fichiers existants.
+     * Ce bloc garantit la persistance des fichiers à chaque étape du formulaire,
+     * tout en permettant l'ajout et la suppression effective de fichiers.
+     */
+    // Fusion : pour chaque catégorie, on garde les fichiers du formulaire s'ils existent,
+    // sinon on garde ceux du store (catégories non modifiées)
     const storeFiles = agrementStore.agrementEnTraitement?.agrementFiles ?? [];
-    updatedData.agrementFiles = mergeAgrementFiles(storeFiles, formFiles);
+    const filesByCategory = new Map<string, AgrementFilesDto[]>();
+
+    // Ajoute tous les fichiers du store
+    for (const file of storeFiles) {
+      if (!filesByCategory.has(file.category))
+        filesByCategory.set(file.category, []);
+      filesByCategory.get(file.category)!.push(file);
+    }
+
+    // Remplace ou supprime les catégories modifiées dans le formulaire
+    for (const category of Object.keys(
+      FILE_CATEGORY_CONFIG,
+    ) as (keyof typeof FILE_CATEGORY_CONFIG)[]) {
+      const formCatFiles = formFiles.filter((f) => f.category === category);
+      if (formCatFiles.length > 0) {
+        filesByCategory.set(category, formCatFiles);
+      } else if (
+        updatedData[FILE_CATEGORY_CONFIG[category].fileKey] !== undefined
+      ) {
+        // Si la catégorie est explicitement présente et vide dans le formulaire, on la supprime
+        filesByCategory.delete(category);
+      }
+    }
+
+    updatedData.agrementFiles = Array.from(filesByCategory.values()).flat();
 
     const agrementFiles = getFileByCategory(agrementEnTraitement, updatedData);
 
