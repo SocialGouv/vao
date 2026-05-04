@@ -17,10 +17,10 @@ export const AgrementMailUsagers = {
     commentaire: string | undefined;
     regionDreets: string;
   }) => {
-    log.i("sendStatutAModifierMail - In", { email });
+    log.i("sendStatutACorrigerMail - In", { email });
     if (!email) {
       throw new AppError(
-        "Email manquant pour l'envoi du mail de demande de modification d'agrément",
+        "Email manquant pour l'envoi du mail de demande de correction d'agrément",
       );
     }
     const html = sendTemplate.getBody(
@@ -50,7 +50,7 @@ export const AgrementMailUsagers = {
         "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
       to: email,
     };
-    log.d("sendStatutTransmisMail post email", { params });
+    log.d("sendStatutACorrigerMail post email", { params });
     return params;
   },
   sendStatutAModifierMail: ({
@@ -96,7 +96,7 @@ export const AgrementMailUsagers = {
         "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
       to: email,
     };
-    log.d("sendStatutTransmisMail post email", { params });
+    log.d("sendStatutAModifierMail post email", { params });
     return params;
   },
   sendStatutCompletudeMail: ({
@@ -138,7 +138,7 @@ export const AgrementMailUsagers = {
         "Portail VAO – Confirmation de la complétude de votre dossier de renouvellement d’agrément",
       to: email,
     };
-    log.d("sendStatutTransmisMail post email", { params });
+    log.d("sendStatutCompletudeMail post email", { params });
     return params;
   },
   sendStatutRefuseMail: ({

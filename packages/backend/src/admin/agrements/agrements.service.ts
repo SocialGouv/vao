@@ -274,6 +274,17 @@ export const AgrementService = {
       typePrecision: statut,
     });
 
+    if (agrement?.commentaire) {
+      await AgrementService.trackEvent({
+        agrementId,
+        boUserId: Number(boUserId),
+        metadata: { commentaire },
+        source: "DREETS",
+        type: AGREMENT_HISTORY_TYPE.VERIFICATION,
+        typePrecision: statut,
+      });
+    }
+
     if (
       statut === AGREMENT_STATUT.A_MODIFIER ||
       statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME ||
@@ -307,7 +318,7 @@ export const AgrementService = {
                       agrementId,
                       mailDreets: fiche.service_mail,
                     })
-                  : AgrementMailAdmin.sendStatutAModifierMail({
+                  : AgrementMailAdmin.sendStatutACorrigerMail({
                       Organisme: organisme,
                       agrementId,
                       commentaire,
@@ -322,40 +333,55 @@ export const AgrementService = {
           }
         }
       }
+      const allowedStatuts = [
+        AGREMENT_STATUT.A_MODIFIER,
+        AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        AGREMENT_STATUT.A_CORRIGER,
+        AGREMENT_STATUT.REFUSE,
+      ];
+
+      if (!allowedStatuts.includes(statut)) {
+        return true;
+      }
       const resultat = await AgrementsRepository.getUserMail(agrementId);
       const mailsOVA = resultat.map((u: { mail: string }) => u.mail);
       if (mailsOVA.length > 0) {
         try {
-          type HandledStatut =
-            | AGREMENT_STATUT.A_MODIFIER
-            | AGREMENT_STATUT.COMPLETUDE_CONFIRME
-            | AGREMENT_STATUT.A_CORRIGER
-            | AGREMENT_STATUT.REFUSE;
-          const mailHandlers: Record<HandledStatut, any> = {
-            [AGREMENT_STATUT.A_MODIFIER]: () =>
-              AgrementMailUsagers.sendStatutAModifierMail({
+          let mailToSend;
+
+          switch (statut) {
+            case AGREMENT_STATUT.A_MODIFIER:
+              mailToSend = AgrementMailUsagers.sendStatutAModifierMail({
                 commentaire,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
-              }),
-            [AGREMENT_STATUT.COMPLETUDE_CONFIRME]: () =>
-              AgrementMailUsagers.sendStatutCompletudeMail({
+              });
+              break;
+            case AGREMENT_STATUT.COMPLETUDE_CONFIRME:
+              mailToSend = AgrementMailUsagers.sendStatutCompletudeMail({
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
-              }),
-            [AGREMENT_STATUT.A_CORRIGER]: () =>
-              AgrementMailUsagers.sendStatutACorrigerMail({
+              });
+              break;
+            case AGREMENT_STATUT.A_CORRIGER:
+              mailToSend = AgrementMailUsagers.sendStatutACorrigerMail({
                 commentaire,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
-              }),
-            [AGREMENT_STATUT.REFUSE]: () =>
-              AgrementMailUsagers.sendStatutRefuseMail({
+              });
+              break;
+            case AGREMENT_STATUT.REFUSE:
+              mailToSend = AgrementMailUsagers.sendStatutRefuseMail({
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
-              }),
-          };
-          const mailToSend = mailHandlers[statut]();
+              });
+              break;
+            default:
+              throw new Error(
+                `Statut non géré pour l'envoie de mail : ${statut}`,
+              );
+          }
+
           await mailService.send(mailToSend);
         } catch (e) {
           log.w(

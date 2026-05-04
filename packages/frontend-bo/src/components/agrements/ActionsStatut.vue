@@ -118,7 +118,11 @@
 </template>
 
 <script setup lang="ts">
-import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import {
+  AGREMENT_STATUT,
+  FILE_CATEGORY,
+  type AgrementFilesDto,
+} from "@vao/shared-bridge";
 import { useToaster } from "@vao/shared-ui";
 import { useAgrementStore } from "~/stores/agrement";
 import { useDocumentStore } from "~/stores/document";
@@ -217,7 +221,12 @@ const onValidForm = async (
         category,
       });
 
-      const body: any = {
+      const body: {
+        agrementId: number;
+        statut: AGREMENT_STATUT;
+        file?: AgrementFilesDto;
+        commentaire?: string;
+      } = {
         agrementId: agrementStore.agrementCourant.id,
         statut,
         file: fileCompletude,

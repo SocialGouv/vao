@@ -9,7 +9,7 @@ import logger from "../../utils/logger";
 const log = logger(module.filename);
 
 export const AgrementMailAdmin = {
-  sendStatutAModifierMail: ({
+  sendStatutACorrigerMail: ({
     mailDreets,
     Organisme,
     agrementId,
