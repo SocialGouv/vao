@@ -37,7 +37,7 @@
     "maplibre-gl": "4.7.1",
     "nuxt": "~3.19.0",
     "nuxt-maplibre": "^1.2.0",
-    "nuxt-security": "^2.0.0-rc.9",
+    "nuxt-security": "^2.5.1",
     "pinia": "~2.2.2",
     "query-string": "^6.14.1",
     "ufo": "^1.5.4",
