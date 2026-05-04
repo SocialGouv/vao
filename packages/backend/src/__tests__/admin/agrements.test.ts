@@ -258,6 +258,97 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(aModifierEvent?.bo_user).toBeDefined();
   });
 
+  it("devrait modifier le statut A_CORRIGER et historiser", async () => {
+    const sendSpy = jest.spyOn(mailService, "send");
+    authUser = await createUsagersUser();
+
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.EN_COURS,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    await createTerritoire({ territoireCode: "IDF" });
+
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const uuid = await createDocument({ userId: null });
+    const response = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        file: {
+          agrementId,
+          category: FILE_CATEGORY.COMPLETUDE,
+          fileUuid: uuid.toString(),
+        },
+        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      });
+
+    expect(response.status).toBe(200);
+
+    const svaTimer = await AgrementsRepository.getSvaTimerByStatut({
+      agrementId,
+      statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
+    });
+    expect(svaTimer?.createdAt).toBeDefined();
+    expect(response.body.success).toBe(true);
+    expect(sendSpy).toHaveBeenCalledTimes(2); // BO + usager
+    // Vérifier que l'événement a bien été historisé
+    const history = await AgrementService.getHistory(agrementId);
+    const completudeConfirmeEvent = history.find(
+      (event) =>
+        event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+        event.type_precision === AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+    );
+
+    expect(completudeConfirmeEvent).toBeDefined();
+    expect(completudeConfirmeEvent?.bo_user).toBeDefined();
+
+    // Passage au statut à CORRIGER
+    const uuidACorriger = await createDocument({ userId: null });
+
+    const responseACorriger = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        commentaire: "Dossier à corriger rapidement sinon refus du dossier",
+        file: {
+          agrementId,
+          category: FILE_CATEGORY.ACORRIGER,
+          fileUuid: uuidACorriger.toString(),
+        },
+        statut: AGREMENT_STATUT.A_CORRIGER,
+      });
+
+    expect(responseACorriger.status).toBe(200);
+
+    const svaTimerACorriger = await AgrementsRepository.getSvaTimerByStatut({
+      agrementId,
+      statut: AGREMENT_SVA_TIMER_STATUT.PAUSED,
+    });
+    expect(svaTimerACorriger?.createdAt).toBeDefined();
+    expect(responseACorriger.body.success).toBe(true);
+    expect(sendSpy).toHaveBeenCalledTimes(4); // BO + usager
+    // Vérifier que l'événement a bien été historisé
+    const historyACorriger = await AgrementService.getHistory(agrementId);
+    const aCorrigerEvent = historyACorriger.find(
+      (event) =>
+        event.type === AGREMENT_HISTORY_TYPE.VERIFICATION ||
+        event.type_precision === AGREMENT_STATUT.A_MODIFIER,
+    );
+    expect(aCorrigerEvent).toBeDefined();
+    expect(aCorrigerEvent?.bo_user).toBeDefined();
+    const commentaireEvent = historyACorriger.find(
+      (event) =>
+        event.type === AGREMENT_HISTORY_TYPE.VERIFICATION &&
+        event.type_precision === AGREMENT_STATUT.A_CORRIGER &&
+        event.metadata?.commentaire,
+    );
+    expect(commentaireEvent).toBeDefined();
+    expect(commentaireEvent?.bo_user).toBeDefined();
+  });
+
   it("devrait remonter une erreur file required pour statut COMPLETUDE_CONFIRME", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
