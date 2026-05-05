@@ -219,17 +219,11 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesProjetsSejoursCompetencesExperience.value.length > 0 && {
-          filesProjetsSejoursCompetencesExperience:
-            filesProjetsSejoursCompetencesExperience.value,
-        }),
-        ...(filesProjetsSejoursMesures.value.length > 0 && {
-          filesProjetsSejoursMesures: filesProjetsSejoursMesures.value,
-        }),
-        ...(filesProjetsSejoursComplementaires.value.length > 0 && {
-          filesProjetsSejoursComplementaires:
-            filesProjetsSejoursComplementaires.value,
-        }),
+        filesProjetsSejoursCompetencesExperience:
+          filesProjetsSejoursCompetencesExperience.value,
+        filesProjetsSejoursMesures: filesProjetsSejoursMesures.value,
+        filesProjetsSejoursComplementaires:
+          filesProjetsSejoursComplementaires.value,
       };
       return finalData;
     }

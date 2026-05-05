@@ -238,9 +238,7 @@ const validateForm = async () => {
   if (result) {
     return {
       ...result,
-      ...(filesBilanFinancierQuatreAnnees.value.length > 0 && {
-        filesBilanFinancierQuatreAnnees: filesBilanFinancierQuatreAnnees.value,
-      }),
+      filesBilanFinancierQuatreAnnees: filesBilanFinancierQuatreAnnees.value,
     };
   }
   return result;

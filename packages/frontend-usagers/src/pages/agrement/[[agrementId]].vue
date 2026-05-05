@@ -143,12 +143,10 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       toaster.error({
         titleTag: "h2",
         title: "Erreur",
-        description: "Impossible d’enregistrer l’agrément : données absentes.",
+        description: "Impossible d'enregistrer l'agrément : données absentes.",
       });
       return;
     }
-
-    updatedData.agrementFiles = [...(agrementEnTraitement.agrementFiles ?? [])];
 
     if (updatedData.id == null) {
       updatedData.statut = AGREMENT_STATUT.BROUILLON;
@@ -178,27 +176,16 @@ async function updateOrCreate(formValues: AgrementFormValues) {
         if (doc) formFiles.push(doc);
       }
     }
-    /**
-     * Fusionne les fichiers déjà uploadés (store) et ceux du formulaire courant.
-     * - Si une catégorie est modifiée à cette étape (ajout ou suppression), on prend la nouvelle valeur.
-     * - Si une catégorie est explicitement vide dans le formulaire, on supprime tous ses fichiers.
-     * - Si une catégorie n'est pas modifiée, on conserve les fichiers existants.
-     * Ce bloc garantit la persistance des fichiers à chaque étape du formulaire,
-     * tout en permettant l'ajout et la suppression effective de fichiers.
-     */
-    // Fusion : pour chaque catégorie, on garde les fichiers du formulaire s'ils existent,
-    // sinon on garde ceux du store (catégories non modifiées)
-    const storeFiles = agrementStore.agrementEnTraitement?.agrementFiles ?? [];
+
+    const storeFiles = agrementEnTraitement.agrementFiles ?? [];
     const filesByCategory = new Map<string, AgrementFilesDto[]>();
 
-    // Ajoute tous les fichiers du store
     for (const file of storeFiles) {
       if (!filesByCategory.has(file.category))
         filesByCategory.set(file.category, []);
       filesByCategory.get(file.category)!.push(file);
     }
 
-    // Remplace ou supprime les catégories modifiées dans le formulaire
     for (const category of Object.keys(
       FILE_CATEGORY_CONFIG,
     ) as (keyof typeof FILE_CATEGORY_CONFIG)[]) {
@@ -208,17 +195,29 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       } else if (
         updatedData[FILE_CATEGORY_CONFIG[category].fileKey] !== undefined
       ) {
-        // Si la catégorie est explicitement présente et vide dans le formulaire, on la supprime
         filesByCategory.delete(category);
       }
     }
 
     updatedData.agrementFiles = Array.from(filesByCategory.values()).flat();
 
-    const agrementFiles = getFileByCategory(agrementEnTraitement, updatedData);
+    const agrementFiles = getFileByCategory(
+      { ...agrementEnTraitement, agrementFiles: updatedData.agrementFiles },
+      updatedData,
+    );
 
     const rawOrganismeId = organismeStore.organismeCourant?.organismeId;
     const organismeId = rawOrganismeId != null ? Number(rawOrganismeId) : null;
+
+    if (organismeId == null) {
+      toaster.error({
+        titleTag: "h2",
+        title: "Erreur",
+        description: "Impossible d'enregistrer l'agrément : organisme inconnu.",
+      });
+      return;
+    }
+
     const newAgrement = {
       ...agrementEnTraitement,
       ...updatedData,
@@ -226,15 +225,6 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       organismeId,
       statut: updatedData.statut ?? agrementEnTraitement.statut ?? null,
     };
-
-    if (organismeId == null) {
-      toaster.error({
-        titleTag: "h2",
-        title: "Erreur",
-        description: "Impossible d’enregistrer l’agrément : organisme inconnu.",
-      });
-      return;
-    }
 
     await agrementStore.postAgrement({
       agrement: newAgrement,

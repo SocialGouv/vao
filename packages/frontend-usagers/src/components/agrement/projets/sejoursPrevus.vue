@@ -204,9 +204,7 @@ const validateForm = async () => {
         ...data,
         agrementSejours: sejoursData?.sejours || [],
         sejourTypeHandicap: typeDeficiencesValidation.value,
-        ...(filesProjetsSejoursPrevus.value.length > 0 && {
-          filesProjetsSejoursPrevus: filesProjetsSejoursPrevus.value,
-        }),
+        filesProjetsSejoursPrevus: filesProjetsSejoursPrevus.value,
       };
       return finalData;
     }

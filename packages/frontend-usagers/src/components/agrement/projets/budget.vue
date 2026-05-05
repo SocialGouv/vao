@@ -141,10 +141,7 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesProjSejoursBudgetPersonnes.value.length > 0 && {
-          filesProjSejoursBudgetPersonnes:
-            filesProjSejoursBudgetPersonnes.value,
-        }),
+        filesProjSejoursBudgetPersonnes: filesProjSejoursBudgetPersonnes.value,
       };
       return finalData;
     }
