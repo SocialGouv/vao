@@ -541,7 +541,7 @@ export const AgrementsRepository = {
     }
     const agrementOld = await AgrementsRepositoryShared.getById({
       agrementId,
-      withDetails: false,
+      withDetails: true,
     });
     await withTransaction(async (tx: PoolClient) => {
       // ✅ 1. Mise à jour du principal

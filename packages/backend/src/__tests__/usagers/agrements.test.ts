@@ -12,6 +12,7 @@ import request from "supertest";
 import { AgrementService as AgrementServiceAdmin } from "../../admin/agrements/agrements.service";
 import app from "../../app";
 import checkJwt from "../../middlewares/checkJWT";
+import * as DocumentService from "../../services/Document";
 import { mailService } from "../../services/mail";
 import * as OrganismeService from "../../services/Organisme";
 import { User, UserRequest } from "../../types/request";
@@ -857,6 +858,62 @@ describe("upload fichiers", () => {
         fileUuid: fileUuid2,
       }),
     ]);
+  });
+  it("supprime les fichiers orphelins lors de la mise à jour d'un agrément", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+
+    const fileUuid1 = crypto.randomUUID();
+    const fileUuid2 = crypto.randomUUID();
+    const agrementData = await buildAgrementFixture({
+      agrementFiles: [
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid1,
+        },
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid2,
+        },
+      ],
+      organismeId,
+    });
+
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+
+    // Spy sur la fonction deleteFile
+    const deleteFileSpy = jest.spyOn(DocumentService, "deleteFile");
+
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+
+    // Mise à jour : on ne garde que fileUuid2
+    const updateData = {
+      ...agrementData,
+      agrementFiles: [
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid2,
+        },
+      ],
+      id: agrementId,
+    };
+    const response = await request(app).post(`/agrements/`).send(updateData);
+    expect(response.status).toBe(200);
+
+    // Vérifie que deleteFile a été appelée pour fileUuid1
+    expect(deleteFileSpy).toHaveBeenCalledWith(fileUuid1, expect.anything());
+
+    // Nettoyage
+    deleteFileSpy.mockRestore();
   });
 });
 
