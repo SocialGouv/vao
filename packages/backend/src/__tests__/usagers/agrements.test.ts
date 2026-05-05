@@ -114,6 +114,10 @@ describe("GET /agrements/", () => {
     expect(response.body.agrements).not.toBeNull();
     expect(response.body.agrements[0].id).toEqual(agrementId2);
   });
+  it("getUserMail retourne null si aucun user n'est trouvé pour l'agrément", async () => {
+    const result = await AgrementsRepository.getUserMail(99999999); // ID inexistant
+    expect(result).toBeNull();
+  });
 });
 
 describe("GET /agrements/:agrementId", () => {
@@ -170,6 +174,60 @@ describe("GET /agrements/:agrementId", () => {
 });
 
 describe("POST /agrements", () => {
+  it("devrait créer un agrément sans bilan annuel", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    // On force agrementBilanAnnuel à []
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+
+    const response = await request(app).post(`/agrements/`).send(agrementData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+  it("devrait créer un agrément sans animation (coverage)", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    // On force agrementAnimation à []
+    const agrementData = await buildAgrementFixture({
+      agrementAnimation: [],
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+
+    const response = await request(app).post(`/agrements/`).send(agrementData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+  it("devrait créer un agrément sans séjour", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    // On force agrementSejours à []
+    const agrementData = await buildAgrementFixture({
+      agrementSejours: [],
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+
+    const response = await request(app).post(`/agrements/`).send(agrementData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
   it("devrait créer un agrément (POST /agrements)", async () => {
     const adminUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: adminUser.id });

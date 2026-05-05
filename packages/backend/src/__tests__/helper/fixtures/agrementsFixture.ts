@@ -18,19 +18,25 @@ export async function buildAgrementFixture({
   statut = AGREMENT_STATUT.BROUILLON,
   regionObtention = "IDF",
   agrementFiles,
+  agrementBilanAnnuel,
+  agrementSejours,
+  agrementAnimation,
 }: {
   organismeId: number;
   activiteId?: number;
   statut?: AGREMENT_STATUT;
   regionObtention?: string;
   agrementFiles?: AgrementFilesDto[];
+  agrementBilanAnnuel?: AgrementDto["agrementBilanAnnuel"];
+  agrementSejours?: AgrementDto["agrementSejours"];
+  agrementAnimation?: AgrementDto["agrementAnimation"];
 }): Promise<AgrementDto> {
   return {
     accompRespAttestHono: true,
     accompRespCompExp: "Oui",
     accompRespNb: 1,
     accompRespRecruteUrg: "Non",
-    agrementAnimation: [
+    agrementAnimation: agrementAnimation ?? [
       {
         activite: { activiteType: null, code: null, libelle: null },
         activiteId,
@@ -42,7 +48,7 @@ export async function buildAgrementFixture({
         agrementId: null,
       },
     ],
-    agrementBilanAnnuel: [
+    agrementBilanAnnuel: agrementBilanAnnuel ?? [
       {
         agrementId: null,
         annee: 2024,
@@ -72,7 +78,7 @@ export async function buildAgrementFixture({
         fileUuid: randomUUID(),
       } as AgrementFilesDto,
     ],
-    agrementSejours: [
+    agrementSejours: agrementSejours ?? [
       {
         adresse: await buildAdresseFixture(),
         mois: [5, 11],
