@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="agrementStore.isExpiryMedium || agrementStore.isExpirySoon"
+    v-if="displayRenouvellement"
     :class="[
       'fr-alert fr-mb-5v',
       agrementStore.isExpiryMedium ? 'fr-alert--info' : 'fr-alert--warning',
@@ -39,10 +39,17 @@
 </template>
 
 <script setup lang="ts">
-import { formatFR, FeatureFlagName } from "@vao/shared-bridge";
+import { formatFR, FeatureFlagName, AGREMENT_STATUT } from "@vao/shared-bridge";
 
 const agrementStore = useAgrementStore();
 const userStore = useUserStore();
+const displayRenouvellement = computed(
+  () =>
+    ((agrementStore.isExpiryMedium || agrementStore.isExpirySoon) &&
+      agrementStore.agrementEnTraitement?.statut ===
+        AGREMENT_STATUT.BROUILLON) ??
+    true,
+);
 
 const onClickRenouvellement = async () => {
   await agrementStore.getEnRenouvellement();

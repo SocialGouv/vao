@@ -720,7 +720,16 @@ export const AgrementsRepository = {
     tx: PoolClient;
   }): Promise<number | null> {
     const result = await tx.query(
-      `UPDATE front.agrements SET statut = $1, updated_at = NOW() ${AGREMENT_STATUT.TRANSMIS ? ", date_depot = now()" : ""} WHERE id = $2`,
+      `UPDATE front.agrements
+      SET statut = $1,
+        updated_at = NOW(),
+        date_depot = CASE
+          WHEN '${AGREMENT_STATUT.TRANSMIS}'::front.agrement_statut = $1
+            AND date_depot IS NULL
+            THEN NOW()
+          ELSE date_depot
+        END
+      WHERE id = $2`,
       [statut, agrementId],
     );
     return result.rowCount;

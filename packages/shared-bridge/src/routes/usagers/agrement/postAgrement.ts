@@ -8,7 +8,7 @@ import type { AgrementDto } from "../../../dto";
 export interface PostAgrementRoute extends BasicRoute {
   method: "POST";
   path: "/agrements/";
-  body: AgrementDto;
+  body: Partial<AgrementDto>;
   response: RouteResponseBody<{ id: number | null }>;
 }
 

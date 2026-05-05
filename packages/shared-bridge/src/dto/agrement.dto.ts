@@ -59,6 +59,9 @@ export interface AgrementDto {
   dateFinValidite?: Date | null;
   dateObtention: Date | null;
   file: object | null;
+  commentaireCompletude?: string | null;
+  commentaireRefus?: string | null;
+  commentaireCorrection?: string | null;
 }
 
 export interface ActiviteDto {

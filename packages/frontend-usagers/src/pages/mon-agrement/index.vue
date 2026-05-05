@@ -35,6 +35,7 @@
       >
         <h2>Dossier</h2>
         <AgrementAlertRenouvellement></AgrementAlertRenouvellement>
+        <AgrementAModifier></AgrementAModifier>
         <AgrementEtapesAvancement
           :init-agrement="agrementStore?.agrementEnTraitement ?? {}"
           :territoire="territoireStore.territoire ?? {}"

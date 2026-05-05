@@ -151,11 +151,9 @@ async function updateOrCreate(formValues: AgrementFormValues) {
     if (updatedData.id == null) {
       updatedData.statut = AGREMENT_STATUT.BROUILLON;
     }
-    if (updatedData.statut === AGREMENT_STATUT.TRANSMIS) {
-      updatedData.dateDepot = new Date();
-    }
 
     const formFiles: AgrementFilesDto[] = [];
+
     for (const category of Object.keys(
       FILE_CATEGORY_CONFIG,
     ) as (keyof typeof FILE_CATEGORY_CONFIG)[]) {
@@ -321,6 +319,7 @@ definePageMeta({
     "is-connected",
     "check-organisme-is-complet",
     "check-feature-flags",
+    "check-agrement-readonly-statut",
   ],
 });
 

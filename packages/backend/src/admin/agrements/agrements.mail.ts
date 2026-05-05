@@ -88,6 +88,52 @@ export const AgrementMailAdmin = {
       to: mailDreets,
     };
   },
+  sendStatutModificationTransmisRegionMail: ({
+    email,
+    organismeName,
+    agrementId,
+  }: {
+    email: string;
+    organismeName: string;
+    agrementId: number;
+  }) => {
+    log.i("sendStatutModificationTransmisRegionMail - In", {
+      agrementId,
+      email,
+      organismeName,
+    });
+    if (!email) {
+      throw new AppError(
+        "Email manquant pour l'envoi du mail de notification de la région",
+      );
+    }
+    const html = sendTemplate.getBody(
+      "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      [
+        {
+          p: [
+            "Bonjour,",
+            `L’OVA <strong>${organismeName}</strong> a renvoyé sa demande de renouvellement d’agrément après avoir apporté les modifications demandées.`,
+            "Vous pouvez désormais reprendre l’instruction de la demande, accessible via votre espace sur le portail VAO :",
+            `<a href='${frontBODomain}/agrements/${agrementId}'>Lien direct vers le dossier</a>`,
+            "Le dossier est retourné au statut <strong>« Transmis »</strong> et peut être analysé à partir de l’étape « Vérification et confirmation de la complétude du dossier ».",
+          ],
+          type: "p",
+        },
+      ],
+      `Cordialement,<br>L’équipe du SI VAO<br><a href='${frontBODomain}'>Portail VAO</a>`,
+    );
+    const params = {
+      from: senderEmail,
+      html,
+      replyTo: senderEmail,
+      subject:
+        "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      to: email,
+    };
+    log.d("sendStatutModificationTransmisRegionMail post email", { params });
+    return params;
+  },
   sendStatutTransmisRegionMail: ({
     email,
     date,

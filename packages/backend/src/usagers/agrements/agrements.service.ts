@@ -262,21 +262,29 @@ export const AgrementService = {
 
       if (emailRegion) {
         try {
-          await mailService.send(
-            AgrementMailAdmin.sendStatutTransmisRegionMail({
-              agrementId,
-              date,
-              email: emailRegion,
-              organismeName,
-              siret,
-            }),
-          );
+          const mailToSend =
+            agrement.statut === AGREMENT_STATUT.BROUILLON
+              ? // Première Transmission
+                AgrementMailAdmin.sendStatutTransmisRegionMail({
+                  agrementId,
+                  date,
+                  email: emailRegion,
+                  organismeName,
+                  siret,
+                })
+              : // Transmission après demande de modification
+                AgrementMailAdmin.sendStatutModificationTransmisRegionMail({
+                  agrementId,
+                  email: emailRegion,
+                  organismeName,
+                });
+          await mailService.send(mailToSend);
         } catch (e) {
           log.w("Erreur lors de l'envoi de l'email à la région", e);
         }
       }
-
-      if (email) {
+      // Envoie de mail à l'OVA uniquement lors de la première transmission
+      if (agrement.statut === AGREMENT_STATUT.BROUILLON && email) {
         try {
           await mailService.send(
             AgrementMailUsagers.sendStatutTransmisMail({
