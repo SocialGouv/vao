@@ -14,7 +14,7 @@
     "lint": "eslint --ext .vue,.js,.ts ./src",
     "lint:fix": "corepack pnpm lint --fix",
     "typecheck": "nuxi typecheck",
-    "test": "vitest",
+    "test": "vitest --project nuxt --passWithNoTests",
     "clean": "nuxt cleanup"
   },
   "lint-staged": {
@@ -24,6 +24,7 @@
     "@gouvfr/dsfr": "^1.14.0",
     "@gouvminint/vue-dsfr": "^8.4.0",
     "@iconify/vue": "^4.3.0",
+    "@nuxt/test-utils": "^3.21.0",
     "@pinia/nuxt": "~0.5.4",
     "@samk-dev/nuxt-vcalendar": "^1.0.4",
     "@sentry/vue": "~8.54.0",
@@ -50,12 +51,15 @@
     "@nuxt/eslint-config": "1.9.0",
     "@sentry/vite-plugin": "^2.21.1",
     "@socialgouv/eslint-config-recommended": "^1.131.0",
+    "@vue/test-utils": "^2.4.6",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
+    "happy-dom": "^20.0.4",
     "prettier": "^3.2.5",
     "sass": "~1.79.3",
     "sass-loader": "~16.0.2",
     "typescript": "~5.6.2",
+    "vitest": "^3.2.4",
     "vue-dsfr-nuxt-module": "^2.0.0",
     "vue-tsc": "^2.2.12"
   }

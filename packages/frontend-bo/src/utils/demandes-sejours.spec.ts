@@ -24,9 +24,9 @@ describe("getSaison", () => {
     expect(demandeSejours.getSaison(demande)).toBe("Automne");
   });
 
-  it("should return undefined if dateDebut is missing", () => {
+  it("should return NC if dateDebut is missing", () => {
     const demande = {};
-    expect(demandeSejours.getSaison(demande)).toBeUndefined();
+    expect(demandeSejours.getSaison(demande)).toBe("NC");
   });
 });
 
