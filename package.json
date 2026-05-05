@@ -21,6 +21,9 @@
     "test:unit:backend": "corepack pnpm --filter @vao/backend test:coverage",
     "test:unit:cron": "corepack pnpm --filter @vao/cron test:coverage",
     "test:unit:shared-bridge": "corepack pnpm --filter @vao/shared-bridge test:coverage",
+    "test:unit:frontend": "corepack pnpm run test:unit:frontend-bo && corepack pnpm run test:unit:frontend-usagers",
+    "test:unit:frontend-bo": "corepack pnpm --filter @vao/frontend-bo test",
+    "test:unit:frontend-usagers": "corepack pnpm --filter @vao/frontend-usagers test",
     "tests:e2e": "E2E_LOCAL=true playwright test",
     "tests:e2e:ui": "E2E_LOCAL=true playwright test --ui",
     "clean": "corepack pnpm --dir ./packages/frontend-usagers clean && corepack pnpm --dir ./packages/frontend-bo clean && rm -rf node_modules packages/*/node_modules"
