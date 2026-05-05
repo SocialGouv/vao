@@ -121,7 +121,7 @@ export const AgrementMailAdmin = {
           type: "p",
         },
       ],
-      `Cordialement,<br>L’équipe du SI VAO<br><a href='${frontBODomain}'>Portail VAO</a>`,
+      `<br>L’équipe du SI VAO<br><a href='${frontBODomain}'>Portail VAO</a>`,
     );
     const params = {
       from: senderEmail,
@@ -178,7 +178,7 @@ export const AgrementMailAdmin = {
           type: "p",
         },
       ],
-      `Cordialement,<br>L’équipe du SI VAO<br><a href='${frontBODomain}'>Portail VAO</a>`,
+      `<br>L’équipe du SI VAO<br><a href='${frontBODomain}'>Portail VAO</a>`,
     );
     const params = {
       from: senderEmail,
