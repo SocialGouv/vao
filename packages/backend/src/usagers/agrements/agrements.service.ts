@@ -174,9 +174,15 @@ export const AgrementService = {
       log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
+    const dateDepot = agrement?.dateDepot
+      ? agrement?.dateDepot
+      : statut === AGREMENT_STATUT.TRANSMIS
+        ? new Date()
+        : null;
     await withTransaction(async (tx: PoolClient) => {
       const updated = await AgrementsRepository.updateStatut({
         agrementId,
+        dateDepot,
         statut,
         tx,
       });
@@ -284,20 +290,25 @@ export const AgrementService = {
         }
       }
       // Envoie de mail à l'OVA uniquement lors de la première transmission
-      if (agrement.statut === AGREMENT_STATUT.BROUILLON && email) {
-        try {
-          await mailService.send(
-            AgrementMailUsagers.sendStatutTransmisMail({
-              date,
-              email,
-              regionDreets: nomObtentionRegion,
-            }),
-          );
-        } catch (e) {
-          log.w("Erreur lors de l'envoi de l'email de transmission", e);
-        }
-      } else {
+      if (agrement.statut !== AGREMENT_STATUT.BROUILLON) {
+        return true;
+      }
+
+      if (!email) {
         log.w("Aucun email trouvé pour l'agrément", agrementId);
+        return true;
+      }
+
+      try {
+        await mailService.send(
+          AgrementMailUsagers.sendStatutTransmisMail({
+            date,
+            email,
+            regionDreets: nomObtentionRegion,
+          }),
+        );
+      } catch (e) {
+        log.w("Erreur lors de l'envoi de l'email de transmission", e);
       }
     }
     return true;

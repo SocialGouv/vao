@@ -45,10 +45,8 @@ const agrementStore = useAgrementStore();
 const userStore = useUserStore();
 const displayRenouvellement = computed(
   () =>
-    ((agrementStore.isExpiryMedium || agrementStore.isExpirySoon) &&
-      agrementStore.agrementEnTraitement?.statut ===
-        AGREMENT_STATUT.BROUILLON) ??
-    true,
+    (agrementStore.isExpiryMedium || agrementStore.isExpirySoon) &&
+    agrementStore.agrementEnTraitement?.statut === AGREMENT_STATUT.BROUILLON,
 );
 
 const onClickRenouvellement = async () => {

@@ -17,7 +17,7 @@ export default defineNuxtRouteMiddleware(async () => {
   if (
     !agrementStore.agrementEnTraitement ||
     !agrementStatutModification.includes(
-      agrementStore.agrementEnTraitement?.statut ?? AGREMENT_STATUT.BROUILLON,
+      agrementStore.agrementEnTraitement.statut!,
     )
   ) {
     log.w("Agrement is on read only mode, back to home");
