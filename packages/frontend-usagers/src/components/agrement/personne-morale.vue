@@ -22,7 +22,7 @@
             as="button"
             icon-name="icon-edit-line"
             @click="startEditTelephone"
-            >modifier</DsfrLinkV2
+            >modifier <span class="fr-sr-only">le numéro de téléphone</span></DsfrLinkV2
           >
         </dd>
       </template>
@@ -50,7 +50,7 @@
             as="button"
             icon-name="icon-edit-line"
             @click="startEditEmail"
-            >modifier</DsfrLinkV2
+            >modifier <span class="fr-sr-only">l'adresse email</span></DsfrLinkV2
           >
         </dd>
       </template>
