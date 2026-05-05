@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - fix/database-init # Ne pas prendre en compte pour la reeview
     paths:
       - "pg/**"
   workflow_dispatch:
