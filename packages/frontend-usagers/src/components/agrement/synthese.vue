@@ -127,7 +127,7 @@ const bilanValid = ref<boolean>(false);
 const projetValid = ref<boolean>(false);
 const coordonneesRef = ref();
 
-//verification manuelle de l'etape 1 (coordonnees)
+//verification manuelle de l'etape 1 (coordonnees) / check si le fichier pour le proces verbal est bien present
 onMounted(() => {
   if (coordonneesRef.value?.coordonneesIsValid) {
     coordonneesValid.value = coordonneesRef.value.coordonneesIsValid();

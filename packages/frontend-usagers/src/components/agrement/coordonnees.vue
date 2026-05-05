@@ -216,7 +216,6 @@ async function saveCoordonneesStep() {
       return;
     }
   }
-  // props.modifiable ? saveAgrement() : emit("update:valid", isValid);
 
   if (!isValid) {
     return toaster.error({
