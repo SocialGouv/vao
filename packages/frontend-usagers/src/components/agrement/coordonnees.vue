@@ -31,11 +31,11 @@
       :modifiable="props.modifiable"
     />
     <div
-      v-if="fileProcesVerbalError"
+      v-if="showProcesVerbalError"
       class="fr-input-group fr-input-group--error"
     >
       <label class="fr-label">
-        {{ fileProcesVerbalError }}
+        {{ fileProcesVerbalError || procesVerbalRequiredMsg }}
       </label>
     </div>
     <div class="separator fr-my-2w"></div>
@@ -86,6 +86,7 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
 });
 const emit = defineEmits(["next", "update", "update:valid"]);
+const log = logger("components/agrement/coordonnees");
 
 const toaster = useToaster();
 const organismeStore = useOrganismeStore();
@@ -106,6 +107,14 @@ const personneMoraleError = ref<string>("");
 const fileProcesVerbal = ref(getFileByCategory(FILE_CATEGORY.PROCVERBAL));
 const fileProcesVerbalError = ref<string>("");
 
+const procesVerbalRequiredMsg = "Le procès verbal est requis";
+
+const showProcesVerbalError = computed(
+  () =>
+    (!props.modifiable && !props.valid && !fileProcesVerbal?.value) ||
+    fileProcesVerbalError.value,
+);
+
 async function saveAgrement() {
   fileProcesVerbalError.value = "";
   let commentaire;
@@ -117,8 +126,8 @@ async function saveAgrement() {
     props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON &&
     !fileProcesVerbal.value
   ) {
-    console.error(
-      "Validation error: Procès verbal is required for non-draft agrement",
+    log.w(
+      "erreur de validation: le procès verbal est requis pour un agrément non brouillon",
     );
     fileProcesVerbalError.value = "Le procès verbal est requis.";
     toaster.error({
@@ -209,10 +218,6 @@ async function saveCoordonneesStep() {
       console.error(
         "Échec de la sauvegarde de l'agrément depuis la page de coordonnées",
       );
-      console.error(
-        "Coordonnees invalides: échec de la sauvegarde de l'agrément",
-      );
-      isValid = false;
       return;
     }
   }
@@ -229,11 +234,26 @@ async function saveCoordonneesStep() {
   }
 }
 
-function coordonneesIsValid() {
+async function coordonneesIsValid() {
   if (!fileProcesVerbal.value) {
-    fileProcesVerbalError.value = "Le procès verbal est requis.";
     return false;
   }
+
+  // Vérifie la personne morale si présente
+  if (personneMoraleRef.value && personneMoraleRef.value.savePersonneMorale) {
+    const result = await personneMoraleRef.value.savePersonneMorale();
+    if (!result) return false;
+  }
+
+  // Vérifie la personne physique si présente
+  if (
+    personnePhysiqueRef.value &&
+    personnePhysiqueRef.value.savePersonnePhysique
+  ) {
+    const result = await personnePhysiqueRef.value.savePersonnePhysique();
+    if (!result) return false;
+  }
+
   return true;
 }
 

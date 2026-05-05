@@ -16,6 +16,7 @@
           :init-agrement="props.initAgrement ?? {}"
           :modifiable="false"
           :cdn-url="cdnUrl"
+          :valid="coordonneesValid"
         />
         <DsfrButton
           class="fr-mb-6v fr-mt-6v"
@@ -128,20 +129,30 @@ const projetValid = ref<boolean>(false);
 const coordonneesRef = ref();
 
 //verification manuelle de l'etape 1 (coordonnees) / check si le fichier pour le proces verbal est bien present
-onMounted(() => {
+onMounted(async () => {
   if (coordonneesRef.value?.coordonneesIsValid) {
-    coordonneesValid.value = coordonneesRef.value.coordonneesIsValid();
+    coordonneesValid.value = await coordonneesRef.value.coordonneesIsValid();
   }
 });
 
 watch(
   () => props.initAgrement,
-  () => {
+  async () => {
     if (coordonneesRef.value?.coordonneesIsValid) {
-      coordonneesValid.value = coordonneesRef.value.coordonneesIsValid();
+      coordonneesValid.value = await coordonneesRef.value.coordonneesIsValid();
     }
   },
-  { deep: true, immediate: true },
+  { deep: true },
+);
+
+watch(
+  coordonneesRef,
+  async (newRef) => {
+    if (newRef?.coordonneesIsValid) {
+      coordonneesValid.value = await newRef.coordonneesIsValid();
+    }
+  },
+  { immediate: true },
 );
 
 const agrementStore = useAgrementStore();
