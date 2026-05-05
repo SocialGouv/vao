@@ -15,6 +15,7 @@ import checkJwt from "../../middlewares/checkJWT";
 import * as DocumentService from "../../services/Document";
 import { mailService } from "../../services/mail";
 import * as OrganismeService from "../../services/Organisme";
+import * as AgrementsRepositorySharedModule from "../../shared/agrements/agrements.repository";
 import { User, UserRequest } from "../../types/request";
 import { AgrementsRepository } from "../../usagers/agrements/agrements.repository";
 import { AgrementService } from "../../usagers/agrements/agrements.service";
@@ -1072,5 +1073,22 @@ describe("AgrementsRepository.update - erreurs de contrôle", () => {
     ).rejects.toThrow(
       "Impossible de mettre à jour : l'ancien agrément est introuvable",
     );
+  });
+
+  it("lève une erreur si les fichiers de l'ancien agrément sont introuvables", async () => {
+    const agrementId = 12345;
+    const agrement = { id: agrementId };
+    const spy = jest
+      .spyOn(
+        AgrementsRepositorySharedModule.AgrementsRepositoryShared,
+        "getById",
+      )
+      .mockResolvedValueOnce({ id: agrementId });
+    await expect(
+      AgrementsRepository.update({ agrement: agrement as any }),
+    ).rejects.toThrow(
+      "Impossible de mettre à jour : les fichiers de l'ancien agrément sont introuvables",
+    );
+    spy.mockRestore();
   });
 });
