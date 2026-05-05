@@ -1062,3 +1062,15 @@ describe("Messagerie d'agrément", () => {
     expect(getResponse.body.unreadCount).toBe(0);
   });
 });
+
+describe("AgrementsRepository.update - erreurs de contrôle", () => {
+  it("lève une erreur si l'ancien agrément est introuvable", async () => {
+    const fakeAgrement = await buildAgrementFixture({ organismeId: 999999 });
+    fakeAgrement.id = 99999999;
+    await expect(
+      AgrementsRepository.update({ agrement: fakeAgrement }),
+    ).rejects.toThrow(
+      "Impossible de mettre à jour : l'ancien agrément est introuvable",
+    );
+  });
+});
