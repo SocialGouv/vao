@@ -28,7 +28,6 @@
       :cdn-url="props.cdnUrl"
       label="Dernier procès verbal d'assemblée générale"
       hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
-      error-message="un test"
       :modifiable="props.modifiable"
     />
     <div class="separator fr-my-2w"></div>
@@ -186,7 +185,7 @@ async function saveCoordonneesStep() {
     });
   }
   if (props.modifiable) {
-    // emit("next");
+    emit("next");
   }
 }
 
