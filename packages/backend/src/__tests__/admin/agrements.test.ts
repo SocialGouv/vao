@@ -13,6 +13,7 @@ import request from "supertest";
 import { AgrementsRepository } from "../../admin/agrements/agrements.repository";
 import { AgrementService } from "../../admin/agrements/agrements.service";
 import app from "../../app";
+import { partOrganisme } from "../../helpers/org-part";
 import { mailService } from "../../services/mail";
 import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
@@ -258,7 +259,79 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(aModifierEvent?.bo_user).toBeDefined();
   });
 
-  it("devrait modifier le statut A_CORRIGER et historiser", async () => {
+  it("devrait modifier le statut A_CORRIGER Organisme Personne Morale", async () => {
+    const sendSpy = jest.spyOn(mailService, "send");
+    authUser = await createUsagersUser();
+
+    const organismeId = await createOrganisme({
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: authUser.id,
+    });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.EN_COURS,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    await createTerritoire({ territoireCode: "IDF" });
+
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const uuid = await createDocument({ userId: null });
+    const response = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        file: {
+          agrementId,
+          category: FILE_CATEGORY.COMPLETUDE,
+          fileUuid: uuid.toString(),
+        },
+        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      });
+
+    expect(response.status).toBe(200);
+
+    const svaTimer = await AgrementsRepository.getSvaTimerByStatut({
+      agrementId,
+      statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
+    });
+    expect(svaTimer?.createdAt).toBeDefined();
+    expect(response.body.success).toBe(true);
+    expect(sendSpy).toHaveBeenCalledTimes(2); // BO + usager
+    // Vérifier que l'événement a bien été historisé
+    const history = await AgrementService.getHistory(agrementId);
+    const completudeConfirmeEvent = history.find(
+      (event) =>
+        event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+        event.type_precision === AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+    );
+
+    expect(completudeConfirmeEvent).toBeDefined();
+    expect(completudeConfirmeEvent?.bo_user).toBeDefined();
+
+    // Passage au statut à CORRIGER
+    const uuidACorriger = await createDocument({ userId: null });
+
+    const responseACorriger = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        commentaire: "Dossier à corriger rapidement sinon refus du dossier",
+        file: {
+          agrementId,
+          category: FILE_CATEGORY.ACORRIGER,
+          fileUuid: uuidACorriger.toString(),
+        },
+        statut: AGREMENT_STATUT.A_CORRIGER,
+      });
+
+    expect(responseACorriger.status).toBe(200);
+
+    expect(responseACorriger.body.success).toBe(true);
+    expect(sendSpy).toHaveBeenCalledTimes(4); // BO + usager
+  });
+
+  it("devrait modifier le statut A_CORRIGER et historiser Personne Physique", async () => {
     const sendSpy = jest.spyOn(mailService, "send");
     authUser = await createUsagersUser();
 

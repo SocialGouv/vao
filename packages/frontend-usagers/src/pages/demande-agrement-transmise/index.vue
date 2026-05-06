@@ -51,7 +51,7 @@ const rawStep = route.query.step;
 const step = Array.isArray(rawStep) ? Number(rawStep[0]) : Number(rawStep ?? 0);
 
 const title = computed(() => {
-  return `Demande de ${step !== 1 ? "compléments d’information" : "renouvellement d’agrément"} soumise avec succès`;
+  return `Demande de ${step === 1 ? "compléments d’information" : "renouvellement d’agrément"} soumise avec succès`;
 });
 const userStore = useUserStore();
 
