@@ -29,19 +29,10 @@ import { AgrementsRepository } from "./agrements.repository";
 const log = logger(module.filename);
 
 async function getEmailRegion(codeRegion: string): Promise<string | null> {
-  try {
-    const fiche = await TerritoireService.readFicheIdByTerCode(codeRegion);
-    if (!fiche?.id) return null;
-    const ficheTerritoire = await TerritoireService.readOne(fiche.id);
-    return ficheTerritoire?.service_mail || null;
-  } catch (e) {
-    log.w(
-      "Erreur lors de la récupération de l'email de la région",
-      codeRegion,
-      e,
-    );
-    return null;
-  }
+  const fiche = await TerritoireService.readFicheIdByTerCode(codeRegion);
+  if (!fiche?.id) return null;
+  const ficheTerritoire = await TerritoireService.readOne(fiche.id);
+  return ficheTerritoire?.service_mail || null;
 }
 
 export const AgrementService = {

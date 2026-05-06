@@ -159,10 +159,7 @@ describe("GET /agrements/:agrementId", () => {
       req.decoded = { id: adminUser.id };
       next();
     });
-    const organismeId = await createOrganisme({ userId: adminUser.id });
-    const response = await request(app).get(
-      `/agrements/organisme/${organismeId}`,
-    );
+    const response = await request(app).get(`/agrements/123456789`);
 
     // Vérification des résultats
     expect(response.status).toBe(404);
@@ -280,6 +277,23 @@ describe("POST /agrements", () => {
 });
 
 describe("PATCH /agrements/:agrementId/statut", () => {
+  it("retourne 404 si l'agrement est introuvable (if !agrement)", async () => {
+    const authUser = await createUsagersUser();
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: authUser.id };
+      next();
+    });
+
+    const response = await request(app)
+      .patch(`/agrements/999999/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe(
+      "Aucun organismeId récupéré pour l'agrement",
+    );
+  });
+
   it("Devrait remonter une erreur sur la récupération de la fiche territoire", async () => {
     const adminUser = await createUsagersUser();
     const organismeId = await createOrganisme({
@@ -1157,6 +1171,9 @@ describe("Messagerie d'agrément", () => {
   it("GET /messages devrait retourner 404 pour un agrément inexistant", async () => {
     const response = await request(app).get(`/agrements/999999/messages`);
     expect(response.status).toBe(404);
+    expect(response.body.message).toBe(
+      "Aucun organismeId récupéré pour l'agrement",
+    );
   });
 
   it("PATCH /messages devrait marquer tous les messages non lus comme lus et retourner le bon count", async () => {
@@ -1190,5 +1207,24 @@ describe("Messagerie d'agrément", () => {
       `/agrements/999/messages/read`,
     );
     expect(patchResponse.status).toBe(404);
+  });
+
+  it("POST /message couvre if !agrement avec 404 explicite", async () => {
+    const response = await request(app)
+      .post(`/agrements/123456/message`)
+      .send({ message: "Message test" });
+
+    expect(response.status).toBe(404);
+  });
+
+  it("PATCH /messages/read couvre if !agrement avec 404 explicite", async () => {
+    const response = await request(app).patch(
+      `/agrements/123456/messages/read`,
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe(
+      "Aucun organismeId récupéré pour l'agrement",
+    );
   });
 });

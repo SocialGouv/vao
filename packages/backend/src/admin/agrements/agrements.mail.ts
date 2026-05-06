@@ -3,7 +3,6 @@ import { OrganismeDto } from "@vao/shared-bridge";
 import { frontBODomain, senderEmail } from "../../config";
 import sendTemplate from "../../helpers/mail";
 import { partOrganisme } from "../../helpers/org-part";
-import AppError from "../../utils/error";
 import logger from "../../utils/logger";
 
 const log = logger(module.filename);
@@ -102,11 +101,6 @@ export const AgrementMailAdmin = {
       email,
       organismeName,
     });
-    if (!email) {
-      throw new AppError(
-        "Email manquant pour l'envoi du mail de notification de la région",
-      );
-    }
     const html = sendTemplate.getBody(
       "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
       [
@@ -154,11 +148,6 @@ export const AgrementMailAdmin = {
       organismeName,
       siret,
     });
-    if (!email) {
-      throw new AppError(
-        "Email manquant pour l'envoi du mail de notification de la région",
-      );
-    }
     const html = sendTemplate.getBody(
       "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
       [
