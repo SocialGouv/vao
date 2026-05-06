@@ -691,12 +691,6 @@ export const AgrementsRepository = {
       await insertAgrementAnimations(tx, agrementId, agrement);
       await insertAgrementBilans(tx, agrementId, agrement);
 
-      if (!agrementOld?.agrementFiles) {
-        throw new Error(
-          "Impossible de mettre à jour : les fichiers de l'ancien agrément sont introuvables",
-        );
-      }
-
       // suppression des documents orphelins
       const filesToDelete =
         (agrementOld.agrementFiles || []).filter(

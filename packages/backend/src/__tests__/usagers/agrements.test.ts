@@ -15,7 +15,6 @@ import checkJwt from "../../middlewares/checkJWT";
 import * as DocumentService from "../../services/Document";
 import { mailService } from "../../services/mail";
 import * as OrganismeService from "../../services/Organisme";
-import * as AgrementsRepositorySharedModule from "../../shared/agrements/agrements.repository";
 import { User, UserRequest } from "../../types/request";
 import { AgrementsRepository } from "../../usagers/agrements/agrements.repository";
 import { AgrementService } from "../../usagers/agrements/agrements.service";
@@ -261,40 +260,6 @@ describe("POST /agrements", () => {
     expect(response.body).toBeDefined();
   });
 
-  it("retourne une erreur 500 si les fichiers de l'ancien agrément sont introuvables lors de la mise à jour", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
-    const agrementData = await buildAgrementFixture({ organismeId });
-    const agrementId = await createAgrement({
-      agrement: agrementData,
-      organismeId,
-    });
-
-    // Mock du repository partagé pour retourner un agrément sans agrementFiles
-    const spy = jest
-      .spyOn(
-        AgrementsRepositorySharedModule.AgrementsRepositoryShared,
-        "getById",
-      )
-      .mockResolvedValueOnce({
-        ...agrementData,
-        agrementFiles: undefined,
-        id: agrementId,
-      });
-
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-
-    const response = await request(app)
-      .post(`/agrements/`)
-      .send({ ...agrementData, id: agrementId });
-
-    expect(response.status).toBe(500);
-
-    spy.mockRestore();
-  });
   it("retourne une erreur 404 si l'ancien agrément est introuvable lors de la mise à jour", async () => {
     const adminUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: adminUser.id });
