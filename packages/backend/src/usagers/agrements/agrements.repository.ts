@@ -12,6 +12,7 @@ import { saveAdresse } from "../../services/adresse";
 import { deleteFile } from "../../services/Document";
 import { AgrementsMapper } from "../../shared/agrements/agrements.mapper";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
+import AppError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { getPool, withTransaction } from "../../utils/pgpool";
 
@@ -543,6 +544,10 @@ export const AgrementsRepository = {
       agrementId,
       withDetails: true,
     });
+
+    if (!agrementOld) {
+      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+    }
 
     await withTransaction(async (tx: PoolClient) => {
       // ✅ 1. Mise à jour du principal
