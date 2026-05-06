@@ -706,7 +706,7 @@ export const AgrementsRepository = {
         ) ?? [];
       for (const file of filesToDelete) {
         if (file.fileUuid) {
-          deleteFile(file.fileUuid, tx);
+          await deleteFile(file.fileUuid, tx);
         }
       }
     });
