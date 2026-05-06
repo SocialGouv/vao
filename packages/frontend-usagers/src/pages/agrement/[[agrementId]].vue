@@ -148,7 +148,8 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       return;
     }
 
-    if (updatedData.id == null) {
+    updatedData.agrementFiles = [];
+    if (agrementEnTraitement.id == null) {
       updatedData.statut = AGREMENT_STATUT.BROUILLON;
     }
 

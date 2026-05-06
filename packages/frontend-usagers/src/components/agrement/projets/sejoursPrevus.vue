@@ -136,7 +136,7 @@ const validationSchema = yup.object({
 });
 
 const initialValues = {
-  statut: AGREMENT_STATUT.BROUILLON,
+  statut: props.initAgrement?.statut ?? AGREMENT_STATUT.BROUILLON,
   sejourNbEnvisage: props.initAgrement.statut
     ? props.initAgrement.sejourNbEnvisage
     : 0,

@@ -3,25 +3,37 @@
     <DsfrBreadcrumb :links="links" />
     <h1 class="fr-mt-6v">
       <span
+        v-if="step === 0"
         aria-hidden="true"
         class="fr-icon--green fr-icon-checkbox-line fr-pr-2v"
-      ></span
-      >Demande de renouvellement d’agrément soumise avec succès
+      ></span>
+      {{ title }}
     </h1>
-    <p>Votre demande a été transmise à la DREETS (Direction régionale de l'économie, de l'emploi, du travail et des solidarités) de la région de votre siège social.</p>
-    <p>Un accusé de réception a été envoyé à {{ userStore.user?.email ?? "votre adresse email" }}.</p>
+    <p>
+      Votre demande a été transmise à la DREETS (Direction régionale de
+      l'économie, de l'emploi, du travail et des solidarités) de la région de
+      votre siège social.
+    </p>
+    <p v-if="step === 0">
+      Un accusé de réception a été envoyé à
+      {{ userStore.user?.email ?? "votre adresse email" }}.
+    </p>
     <div class="flex fr-mt-10v">
-      <div><img src="/assets/mon-agrement.svg" alt="" aria-hidden="true" /></div>
+      <div>
+        <img src="/assets/mon-agrement.svg" alt="" aria-hidden="true" />
+      </div>
       <div class="fr-pt-10v">
         <h2>Prochaine étape : Analyse de votre dossier.</h2>
-        <h3 class="fr-mb-2v">Suivez l’avancement de votre dossier depuis votre page Agrément.</h3>
-          <NuxtLink
-            to="/mon-agrement"
-            class="fr-btn fr-btn--primary"
-          >
-            Accéder à ma page Agrément
-          </NuxtLink>
-          <p class="fr-mt-6v"><span class="fr-icon-mail-line fr-pr-2v" aria-hidden="true"></span>Vous recevrez un e-mail à chaque étape.</p>
+        <h3 class="fr-mb-2v">
+          Suivez l’avancement de votre dossier depuis votre page Agrément.
+        </h3>
+        <NuxtLink to="/mon-agrement" class="fr-btn fr-btn--primary">
+          Accéder à ma page Agrément
+        </NuxtLink>
+        <p class="fr-mt-6v">
+          <span class="fr-icon-mail-line fr-pr-2v" aria-hidden="true"></span
+          >Vous recevrez un e-mail à chaque étape.
+        </p>
       </div>
     </div>
   </div>
@@ -30,6 +42,17 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+
+const rawStep = route.query.step;
+
+const step = Array.isArray(rawStep) ? Number(rawStep[0]) : Number(rawStep ?? 0);
+
+const title = computed(() => {
+  return `Demande de ${step !== 1 ? "compléments d’information" : "renouvellement d’agrément"} soumise avec succès`;
+});
 const userStore = useUserStore();
 
 useHead({
@@ -51,8 +74,6 @@ const links = [
     text: "Renouvellement d'agrément",
   },
 ];
-
-
 </script>
 <style scoped>
 .fr-icon--green {
