@@ -30,7 +30,7 @@ async function insertAgrementFiles(
   for (const f of agrement.agrementFiles) {
     await client.query(
       `INSERT INTO front.agrement_files (agrement_id, category, file_uuid)
-       VALUES ($1, $2, $3);`,
+     VALUES ($1, $2, $3);`,
       [agrementId, f.category, f.fileUuid],
     );
   }
@@ -687,11 +687,9 @@ export const AgrementsRepository = {
 
       // suppression des documents orphelins
       const filesToDelete =
-        agrement.agrementFiles?.filter(
+        agrementOld?.agrementFiles?.filter(
           (file) =>
-            !agrementOld?.agrementFiles?.some(
-              (f) => f.fileUuid === file.fileUuid,
-            ),
+            !agrement.agrementFiles?.some((f) => f.fileUuid === file.fileUuid),
         ) ?? [];
       for (const file of filesToDelete) {
         if (file.fileUuid) {

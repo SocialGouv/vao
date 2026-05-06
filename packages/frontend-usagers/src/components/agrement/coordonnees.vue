@@ -30,6 +30,14 @@
       hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
       :modifiable="props.modifiable"
     />
+    <div
+      v-if="fileProcesVerbalError"
+      class="fr-input-group fr-input-group--error"
+    >
+      <label class="fr-label">
+        {{ fileProcesVerbalError }}
+      </label>
+    </div>
     <div class="separator fr-my-2w"></div>
 
     <AgrementCommentaire
@@ -68,7 +76,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { FileUpload, useToaster } from "@vao/shared-ui";
-import { FILE_CATEGORY } from "@vao/shared-bridge";
+import { FILE_CATEGORY, AGREMENT_STATUT } from "@vao/shared-bridge";
 
 const props = defineProps({
   valid: { type: Boolean, default: true },
@@ -96,11 +104,26 @@ const commentaireRef = ref<any>(null);
 const personnePhysiqueError = ref<string>("");
 const personneMoraleError = ref<string>("");
 const fileProcesVerbal = ref(getFileByCategory(FILE_CATEGORY.PROCVERBAL));
+const fileProcesVerbalError = ref<string>("");
 
 async function saveAgrement() {
+  fileProcesVerbalError.value = "";
   let commentaire;
   if (commentaireRef.value?.getComment) {
     commentaire = await commentaireRef.value.getComment();
+  }
+
+  if (
+    props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON &&
+    !fileProcesVerbal.value
+  ) {
+    fileProcesVerbalError.value = "Le procès verbal est requis.";
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Des erreurs sont présentes dans le formulaire. Veuillez les corriger avant de continuer.",
+    });
+    return false;
   }
 
   const agrementValues = {
@@ -111,6 +134,7 @@ async function saveAgrement() {
   };
 
   emit("update", agrementValues);
+  return;
 }
 
 async function validatePersonne(
@@ -175,7 +199,17 @@ async function saveCoordonneesStep() {
     isValid = false;
     return;
   }
-  props.modifiable ? saveAgrement() : emit("update:valid", isValid);
+
+  if (props.modifiable) {
+    const agrementSaved = await saveAgrement();
+    if (!agrementSaved) {
+      console.error(
+        "Coordonnees invalides: échec de la sauvegarde de l'agrément",
+      );
+      isValid = false;
+      return;
+    }
+  }
 
   if (!isValid) {
     return toaster.error({
@@ -189,6 +223,14 @@ async function saveCoordonneesStep() {
   }
 }
 
+function coordonneesIsValid() {
+  if (!fileProcesVerbal.value) {
+    fileProcesVerbalError.value = "Le procès verbal est requis.";
+    return false;
+  }
+  return true;
+}
+
 onMounted(async () => {
   if (!props.modifiable) {
     saveCoordonneesStep();
@@ -199,5 +241,5 @@ function onNext() {
   saveCoordonneesStep();
 }
 
-defineExpose({ saveCoordonneesStep });
+defineExpose({ saveCoordonneesStep, coordonneesIsValid });
 </script>

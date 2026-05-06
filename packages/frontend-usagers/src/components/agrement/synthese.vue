@@ -11,7 +11,7 @@
           />
         </template>
         <AgrementCoordonnees
-          v-model:valid="coordonneesValid"
+          ref="coordonneesRef"
           :init-organisme="props.initOrganisme ?? {}"
           :init-agrement="props.initAgrement ?? {}"
           :modifiable="false"
@@ -125,6 +125,24 @@ const coordonneesValid = ref<boolean>(false);
 const dossierValid = ref<boolean>(false);
 const bilanValid = ref<boolean>(false);
 const projetValid = ref<boolean>(false);
+const coordonneesRef = ref();
+
+//verification manuelle de l'etape 1 (coordonnees)
+onMounted(() => {
+  if (coordonneesRef.value?.coordonneesIsValid) {
+    coordonneesValid.value = coordonneesRef.value.coordonneesIsValid();
+  }
+});
+
+watch(
+  () => props.initAgrement,
+  () => {
+    if (coordonneesRef.value?.coordonneesIsValid) {
+      coordonneesValid.value = coordonneesRef.value.coordonneesIsValid();
+    }
+  },
+  { deep: true, immediate: true },
+);
 
 const agrementStore = useAgrementStore();
 const { agrementCourant } = storeToRefs(agrementStore);
