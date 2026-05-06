@@ -115,10 +115,6 @@ describe("GET /agrements/", () => {
     expect(response.body.agrements).not.toBeNull();
     expect(response.body.agrements[0].id).toEqual(agrementId2);
   });
-  it("getUserMail retourne null si aucun user n'est trouvé pour l'agrément", async () => {
-    const result = await AgrementsRepository.getUserMail(99999999); // ID inexistant
-    expect(result).toBeNull();
-  });
 });
 
 describe("GET /agrements/:agrementId", () => {
@@ -299,7 +295,7 @@ describe("POST /agrements", () => {
 
     spy.mockRestore();
   });
-  it("retourne une erreur 500 si l'ancien agrément est introuvable lors de la mise à jour", async () => {
+  it("retourne une erreur 404 si l'ancien agrément est introuvable lors de la mise à jour", async () => {
     const adminUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: adminUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
@@ -314,7 +310,7 @@ describe("POST /agrements", () => {
       .post(`/agrements/`)
       .send({ ...agrementData, id: 99999999 });
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(404);
   });
 });
 

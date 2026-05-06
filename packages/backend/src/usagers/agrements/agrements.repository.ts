@@ -544,12 +544,6 @@ export const AgrementsRepository = {
       withDetails: true,
     });
 
-    if (!agrementOld) {
-      throw new Error(
-        "Impossible de mettre à jour : l'ancien agrément est introuvable",
-      );
-    }
-
     await withTransaction(async (tx: PoolClient) => {
       // ✅ 1. Mise à jour du principal
       const agrementUpdateQuery = `
@@ -700,7 +694,7 @@ export const AgrementsRepository = {
 
       // suppression des documents orphelins
       const filesToDelete =
-        agrementOld.agrementFiles.filter(
+        (agrementOld.agrementFiles || []).filter(
           (file) =>
             !agrement.agrementFiles?.some((f) => f.fileUuid === file.fileUuid),
         ) ?? [];
