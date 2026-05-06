@@ -10,7 +10,7 @@
         :init-agrement="props.initAgrement"
         :modifiable="props.modifiable"
       />
-      <hr class="fr-my-2w" />
+      <div class="separator fr-my-2w"></div>
       <AgrementPersonneMorale
         v-if="
           organismeStore.organismeCourant?.typeOrganisme === 'personne_morale'
@@ -22,14 +22,15 @@
       />
     </div>
 
-    <h4 class="fr-text--lg fr-mt-4w">Procès verbal</h4>
+    <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
     <FileUpload
       v-model="fileProcesVerbal"
       :cdn-url="props.cdnUrl"
       label="Dernier procès verbal d'assemblée générale"
+      hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
       :modifiable="props.modifiable"
     />
-    <hr class="fr-mt-4w" />
+    <div class="separator fr-my-2w"></div>
 
     <AgrementCommentaire
       ref="commentaireRef"

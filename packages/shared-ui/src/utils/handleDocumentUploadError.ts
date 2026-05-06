@@ -31,6 +31,7 @@ export function handleDocumentUploadError(
         "Le fichier PDF contient du JavaScript, ce qui n'est pas autorisé.",
     };
     toaster.error({
+      role: "alert",
       titleTag: "h2",
       description:
         backendMessage ??
@@ -40,6 +41,7 @@ export function handleDocumentUploadError(
     return;
   } else if (status === 413) {
     toaster.error({
+      role: "alert",
       titleTag: "h2",
       description:
         "Le fichier téléversé dépasse la taille maximale autorisée (5 Mo).",
@@ -48,6 +50,7 @@ export function handleDocumentUploadError(
   }
 
   toaster.error({
+    role: "alert",
     titleTag: "h2",
     description:
       (error instanceof Error ? error.message : String(error)) ||

@@ -8,7 +8,7 @@
   >
     <div class="fr-mb-2w">
       <div class="container-flex-between">
-        <h5 class="fr-text--md fr-mb-0">Représentant n°{{ idx + 1 }}</h5>
+        <h4 class="fr-text--md fr-mb-0">Représentant n°{{ idx + 1 }}</h4>
         <div class="container-flex-between">
           <template v-if="props.modifiable">
             <DsfrLinkV2
@@ -148,9 +148,10 @@
       v-if="props.modifiable"
       as="button"
       class-names="fr-ml-0"
+      icon-name="icon-add-line"
       @click="addNewRepresentant()"
     >
-      + Ajouter un représentant légal
+      Ajouter un représentant légal
     </DsfrLinkV2>
   </div>
 </template>
