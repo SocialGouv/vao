@@ -280,6 +280,58 @@ describe("POST /agrements", () => {
 });
 
 describe("PATCH /agrements/:agrementId/statut", () => {
+  it("Devrait remonter une erreur sur la récupération de la fiche territoire", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: {
+        personnePhysique: {
+          nom: "Dupont",
+          prenom: "Jean",
+        },
+        typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
+      },
+      userId: adminUser.id,
+    });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "PACA",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    // Mock explicite pour couvrir la branche PERSONNE_PHYSIQUE
+    (OrganismeService.getOne as jest.Mock).mockResolvedValueOnce({
+      id: organismeId,
+      personnePhysique: {
+        nom: "Dupont",
+        nomNaissance: "Dupont",
+        nomUsage: "Jean Dupont",
+        prenom: "Jean",
+      },
+      typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+
+    // Vérifie que le mail envoyé à la région contient le nom et prénom de la personne physique
+    const calls = (mailService.send as jest.Mock).mock.calls;
+    const mailToRegion = calls.find((call) => {
+      const to = call[0].to || call[0].email;
+      return to && to.endsWith("@territoire.com");
+    });
+    expect(mailToRegion).toBeUndefined();
+  });
   it("renseigne organismeName pour une personne physique lors de l'envoi du mail à la région", async () => {
     const adminUser = await createUsagersUser();
     const organismeId = await createOrganisme({
