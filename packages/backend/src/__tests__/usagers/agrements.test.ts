@@ -1075,20 +1075,41 @@ describe("AgrementsRepository.update - erreurs de contrôle", () => {
     );
   });
 
-  it("lève une erreur si les fichiers de l'ancien agrément sont introuvables", async () => {
-    const agrementId = 12345;
-    const agrement = { id: agrementId };
-    const spy = jest
-      .spyOn(
-        AgrementsRepositorySharedModule.AgrementsRepositoryShared,
-        "getById",
-      )
-      .mockResolvedValueOnce({ id: agrementId });
-    await expect(
-      AgrementsRepository.update({ agrement: agrement as any }),
-    ).rejects.toThrow(
-      "Impossible de mettre à jour : les fichiers de l'ancien agrément sont introuvables",
-    );
-    spy.mockRestore();
+  describe("AgrementsRepository.update - erreurs de contrôle", () => {
+    it("lève une erreur si les fichiers de l'ancien agrément sont introuvables", async () => {
+      // Utilise le fixture pour générer un objet complet
+      const adminUser = await createUsagersUser();
+      const organismeId = await createOrganisme({ userId: adminUser.id });
+      const agrementData = await buildAgrementFixture({ organismeId });
+      const agrementId = await createAgrement({
+        agrement: agrementData,
+        organismeId,
+      });
+
+      // On mocke le repository partagé pour retourner un agrément sans agrementFiles
+      const spy = jest
+        .spyOn(
+          AgrementsRepositorySharedModule.AgrementsRepositoryShared,
+          "getById",
+        )
+        .mockResolvedValueOnce({
+          ...agrementData,
+          agrementFiles: undefined,
+          id: agrementId, // <-- simule le cas attendu
+        });
+
+      await expect(
+        AgrementsRepository.update({
+          agrement: {
+            ...agrementData,
+            id: agrementId,
+          },
+        }),
+      ).rejects.toThrow(
+        "Impossible de mettre à jour : les fichiers de l'ancien agrément sont introuvables",
+      );
+
+      spy.mockRestore();
+    });
   });
 });
