@@ -83,20 +83,22 @@
       représentant légal, afin de connaître ses besoins ou ses problèmes de
       santé
     </p>
-    <DsfrFileDownload
-      format="pdf"
-      size="61.88 Ko"
-      :href="urlPdfQuestionnaireVacanciers"
-      download=""
-      title="questionnaire-vacanciers.pdf"
+    <UtilsDownloadFile
+      label="questionnaire-vacanciers.pdf"
+      :url="urlPdfQuestionnaireVacanciers"
+      filename="questionnaire-vacanciers.pdf"
     />
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
-import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
+import {
+  AGREMENT_STATUT,
+  FILE_CATEGORY,
+  type AgrementFilesDto,
+} from "@vao/shared-bridge";
 import { useForm, useField } from "vee-validate";
 import { ref } from "vue";
 import displayInput from "../../../utils/display-input";
@@ -109,12 +111,13 @@ const props = defineProps({
 
 const config = useRuntimeConfig();
 
-const typeDeficiencesRef = ref(null);
-const listeSejoursRef = ref(null);
+const typeDeficiencesRef = ref<any>(null);
+const listeSejoursRef = ref<any>(null);
 
 const filesProjetsSejoursPrevus = ref(
   props.initAgrement?.agrementFiles?.filter(
-    (file) => file.category === FILE_CATEGORY.PROJETSSEJOURSPREVUS,
+    (file: AgrementFilesDto) =>
+      file.category === FILE_CATEGORY.PROJETSSEJOURSPREVUS,
   ) || [],
 );
 
@@ -153,14 +156,14 @@ const {
   errorMessage: sejourNbEnvisageErrorMessage,
   handleChange: onsejourNbEnvisageChange,
   meta: sejourNbEnvisageMeta,
-} = useField("sejourNbEnvisage");
+} = useField<number>("sejourNbEnvisage");
 
 const {
   value: sejourCommentaire,
   errorMessage: commentaireErrorMessage,
   handleChange: onCommentaireChange,
   meta: commentaireMeta,
-} = useField("sejourCommentaire");
+} = useField<string>("sejourCommentaire");
 
 const urlPdfQuestionnaireVacanciers = computed(() => {
   const url = new URL(
@@ -198,15 +201,12 @@ const validateForm = async () => {
     }
 
     if (result) {
-      const data = { ...result };
-      delete data.statut;
+      const { statut: _statut, ...dataSansStatut } = result;
       const finalData = {
-        ...data,
+        ...dataSansStatut,
         agrementSejours: sejoursData?.sejours || [],
         sejourTypeHandicap: typeDeficiencesValidation.value,
-        ...(filesProjetsSejoursPrevus.value.length > 0 && {
-          filesProjetsSejoursPrevus: filesProjetsSejoursPrevus.value,
-        }),
+        filesProjetsSejoursPrevus: filesProjetsSejoursPrevus.value,
       };
       return finalData;
     }

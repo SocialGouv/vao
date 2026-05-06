@@ -224,14 +224,10 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesProjetsSejoursProtocoleReorientation.value.length > 0 && {
-          filesProjetsSejoursProtocoleReorientation:
-            filesProjetsSejoursProtocoleReorientation.value,
-        }),
-        ...(filesProjetsSejoursProtocoleRapatriement.value.length > 0 && {
-          filesProjetsSejoursProtocoleRapatriement:
-            filesProjetsSejoursProtocoleRapatriement.value,
-        }),
+        filesProjetsSejoursProtocoleReorientation:
+          filesProjetsSejoursProtocoleReorientation.value,
+        filesProjetsSejoursProtocoleRapatriement:
+          filesProjetsSejoursProtocoleRapatriement.value,
       };
       return finalData;
     }

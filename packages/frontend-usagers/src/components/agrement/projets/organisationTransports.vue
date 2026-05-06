@@ -143,10 +143,8 @@ const validateForm = async () => {
       delete data.statut;
       const finalData = {
         ...data,
-        ...(filesProjetsSejoursOrgaTransports.value && {
-          filesProjetsSejoursOrgaTransports:
-            filesProjetsSejoursOrgaTransports.value,
-        }),
+        filesProjetsSejoursOrgaTransports:
+          filesProjetsSejoursOrgaTransports.value,
       };
       return finalData;
     }

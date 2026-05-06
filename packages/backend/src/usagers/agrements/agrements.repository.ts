@@ -12,6 +12,7 @@ import { saveAdresse } from "../../services/adresse";
 import { deleteFile } from "../../services/Document";
 import { AgrementsMapper } from "../../shared/agrements/agrements.mapper";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
+import AppError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { getPool, withTransaction } from "../../utils/pgpool";
 
@@ -30,7 +31,7 @@ async function insertAgrementFiles(
   for (const f of agrement.agrementFiles) {
     await client.query(
       `INSERT INTO front.agrement_files (agrement_id, category, file_uuid)
-       VALUES ($1, $2, $3);`,
+     VALUES ($1, $2, $3);`,
       [agrementId, f.category, f.fileUuid],
     );
   }
@@ -541,8 +542,13 @@ export const AgrementsRepository = {
     }
     const agrementOld = await AgrementsRepositoryShared.getById({
       agrementId,
-      withDetails: false,
+      withDetails: true,
     });
+
+    if (!agrementOld) {
+      throw new AppError("Agrement non trouvé", { statusCode: 404 });
+    }
+
     await withTransaction(async (tx: PoolClient) => {
       // ✅ 1. Mise à jour du principal
       const agrementUpdateQuery = `
@@ -687,15 +693,13 @@ export const AgrementsRepository = {
 
       // suppression des documents orphelins
       const filesToDelete =
-        agrement.agrementFiles?.filter(
+        (agrementOld.agrementFiles || []).filter(
           (file) =>
-            !agrementOld?.agrementFiles?.some(
-              (f) => f.fileUuid === file.fileUuid,
-            ),
+            !agrement.agrementFiles?.some((f) => f.fileUuid === file.fileUuid),
         ) ?? [];
       for (const file of filesToDelete) {
         if (file.fileUuid) {
-          deleteFile(file.fileUuid, tx);
+          await deleteFile(file.fileUuid, tx);
         }
       }
     });

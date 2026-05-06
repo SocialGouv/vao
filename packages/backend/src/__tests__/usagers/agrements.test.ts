@@ -12,6 +12,7 @@ import request from "supertest";
 import { AgrementService as AgrementServiceAdmin } from "../../admin/agrements/agrements.service";
 import app from "../../app";
 import checkJwt from "../../middlewares/checkJWT";
+import * as DocumentService from "../../services/Document";
 import { mailService } from "../../services/mail";
 import * as OrganismeService from "../../services/Organisme";
 import { User, UserRequest } from "../../types/request";
@@ -169,6 +170,60 @@ describe("GET /agrements/:agrementId", () => {
 });
 
 describe("POST /agrements", () => {
+  it("devrait créer un agrément sans bilan annuel", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    // On force agrementBilanAnnuel à []
+    const agrementData = await buildAgrementFixture({
+      agrementBilanAnnuel: [],
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+
+    const response = await request(app).post(`/agrements/`).send(agrementData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+  it("devrait créer un agrément sans animation (coverage)", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    // On force agrementAnimation à []
+    const agrementData = await buildAgrementFixture({
+      agrementAnimation: [],
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+
+    const response = await request(app).post(`/agrements/`).send(agrementData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
+  it("devrait créer un agrément sans séjour", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    // On force agrementSejours à []
+    const agrementData = await buildAgrementFixture({
+      agrementSejours: [],
+      organismeId,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+
+    const response = await request(app).post(`/agrements/`).send(agrementData);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
   it("devrait créer un agrément (POST /agrements)", async () => {
     const adminUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: adminUser.id });
@@ -203,6 +258,24 @@ describe("POST /agrements", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
+  });
+
+  it("retourne une erreur 404 si l'ancien agrément est introuvable lors de la mise à jour", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const agrementData = await buildAgrementFixture({ organismeId });
+
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+
+    // Utilise un id inexistant
+    const response = await request(app)
+      .post(`/agrements/`)
+      .send({ ...agrementData, id: 99999999 });
+
+    expect(response.status).toBe(404);
   });
 });
 
@@ -857,6 +930,62 @@ describe("upload fichiers", () => {
         fileUuid: fileUuid2,
       }),
     ]);
+  });
+  it("supprime les fichiers orphelins lors de la mise à jour d'un agrément", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+
+    const fileUuid1 = crypto.randomUUID();
+    const fileUuid2 = crypto.randomUUID();
+    const agrementData = await buildAgrementFixture({
+      agrementFiles: [
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid1,
+        },
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid2,
+        },
+      ],
+      organismeId,
+    });
+
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+
+    // Spy sur la fonction deleteFile
+    const deleteFileSpy = jest.spyOn(DocumentService, "deleteFile");
+
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+
+    // Mise à jour : on ne garde que fileUuid2
+    const updateData = {
+      ...agrementData,
+      agrementFiles: [
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid2,
+        },
+      ],
+      id: agrementId,
+    };
+    const response = await request(app).post(`/agrements/`).send(updateData);
+    expect(response.status).toBe(200);
+
+    // Vérifie que deleteFile a été appelée pour fileUuid1
+    expect(deleteFileSpy).toHaveBeenCalledWith(fileUuid1, expect.anything());
+
+    // Nettoyage
+    deleteFileSpy.mockRestore();
   });
 });
 

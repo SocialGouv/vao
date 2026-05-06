@@ -30,6 +30,14 @@
       hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
       :modifiable="props.modifiable"
     />
+    <div
+      v-if="showProcesVerbalError"
+      class="fr-input-group fr-input-group--error"
+    >
+      <label class="fr-label">
+        {{ fileProcesVerbalError || procesVerbalRequiredMsg }}
+      </label>
+    </div>
     <div class="separator fr-my-2w"></div>
 
     <AgrementCommentaire
@@ -68,7 +76,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { FileUpload, useToaster } from "@vao/shared-ui";
-import { FILE_CATEGORY } from "@vao/shared-bridge";
+import { FILE_CATEGORY, AGREMENT_STATUT } from "@vao/shared-bridge";
 
 const props = defineProps({
   valid: { type: Boolean, default: true },
@@ -78,6 +86,7 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
 });
 const emit = defineEmits(["next", "update", "update:valid"]);
+const log = logger("components/agrement/coordonnees");
 
 const toaster = useToaster();
 const organismeStore = useOrganismeStore();
@@ -96,11 +105,37 @@ const commentaireRef = ref<any>(null);
 const personnePhysiqueError = ref<string>("");
 const personneMoraleError = ref<string>("");
 const fileProcesVerbal = ref(getFileByCategory(FILE_CATEGORY.PROCVERBAL));
+const fileProcesVerbalError = ref<string>("");
+
+const procesVerbalRequiredMsg = "Le procès verbal est requis";
+
+const showProcesVerbalError = computed(
+  () =>
+    (!props.modifiable && !props.valid && !fileProcesVerbal?.value) ||
+    fileProcesVerbalError.value,
+);
 
 async function saveAgrement() {
+  fileProcesVerbalError.value = "";
   let commentaire;
   if (commentaireRef.value?.getComment) {
     commentaire = await commentaireRef.value.getComment();
+  }
+
+  if (
+    props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON &&
+    !fileProcesVerbal.value
+  ) {
+    log.w(
+      "erreur de validation: le procès verbal est requis pour un agrément non brouillon",
+    );
+    fileProcesVerbalError.value = "Le procès verbal est requis.";
+    toaster.error({
+      titleTag: "h2",
+      description:
+        "Des erreurs sont présentes dans le formulaire. Veuillez les corriger avant de continuer.",
+    });
+    return false;
   }
 
   const agrementValues = {
@@ -111,6 +146,7 @@ async function saveAgrement() {
   };
 
   emit("update", agrementValues);
+  return true;
 }
 
 async function validatePersonne(
@@ -175,7 +211,16 @@ async function saveCoordonneesStep() {
     isValid = false;
     return;
   }
-  props.modifiable ? saveAgrement() : emit("update:valid", isValid);
+
+  if (props.modifiable) {
+    const agrementSaved = await saveAgrement();
+    if (!agrementSaved) {
+      console.error(
+        "Échec de la sauvegarde de l'agrément depuis la page de coordonnées",
+      );
+      return;
+    }
+  }
 
   if (!isValid) {
     return toaster.error({
@@ -189,6 +234,29 @@ async function saveCoordonneesStep() {
   }
 }
 
+async function coordonneesIsValid() {
+  if (!fileProcesVerbal.value) {
+    return false;
+  }
+
+  // Vérifie la personne morale si présente
+  if (personneMoraleRef.value && personneMoraleRef.value.savePersonneMorale) {
+    const result = await personneMoraleRef.value.savePersonneMorale();
+    if (!result) return false;
+  }
+
+  // Vérifie la personne physique si présente
+  if (
+    personnePhysiqueRef.value &&
+    personnePhysiqueRef.value.savePersonnePhysique
+  ) {
+    const result = await personnePhysiqueRef.value.savePersonnePhysique();
+    if (!result) return false;
+  }
+
+  return true;
+}
+
 onMounted(async () => {
   if (!props.modifiable) {
     saveCoordonneesStep();
@@ -199,5 +267,5 @@ function onNext() {
   saveCoordonneesStep();
 }
 
-defineExpose({ saveCoordonneesStep });
+defineExpose({ saveCoordonneesStep, coordonneesIsValid });
 </script>

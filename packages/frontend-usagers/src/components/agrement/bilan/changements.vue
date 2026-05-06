@@ -118,9 +118,7 @@ const validateForm = async () => {
   if (result) {
     return {
       ...result,
-      ...(filesChangeEvol.value.length > 0 && {
-        filesChangeEvol: filesChangeEvol.value,
-      }),
+      filesChangeEvol: filesChangeEvol.value,
     };
   }
   return result;

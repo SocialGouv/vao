@@ -264,19 +264,11 @@ const validateForm = async () => {
   if (result) {
     return {
       ...result,
-      ...(filesBilanQualitPerception.value.length > 0 && {
-        filesBilanQualitPerception: filesBilanQualitPerception.value,
-      }),
-      ...(filesBilanQualitPerspectives.value.length > 0 && {
-        filesBilanQualitPerspectives: filesBilanQualitPerspectives.value,
-      }),
-      ...(filesBilanQualitElementsMarquants.value.length > 0 && {
-        filesBilanQualitElementsMarquants:
-          filesBilanQualitElementsMarquants.value,
-      }),
-      ...(filesBilanQualitComplementaires.value.length > 0 && {
-        filesBilanQualitComplementaires: filesBilanQualitComplementaires.value,
-      }),
+      filesBilanQualitPerception: filesBilanQualitPerception.value,
+      filesBilanQualitPerspectives: filesBilanQualitPerspectives.value,
+      filesBilanQualitElementsMarquants:
+        filesBilanQualitElementsMarquants.value,
+      filesBilanQualitComplementaires: filesBilanQualitComplementaires.value,
     };
   }
   return result;

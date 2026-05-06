@@ -107,7 +107,12 @@
   </div>
 </template>
 <script setup lang="ts">
-import type { FILE_CATEGORY, AgrementDto, FileKey } from "@vao/shared-bridge";
+import type {
+  FILE_CATEGORY,
+  AgrementDto,
+  AgrementFilesDto,
+  FileKey,
+} from "@vao/shared-bridge";
 import { AGREMENT_STATUT, FILE_CATEGORY_CONFIG } from "@vao/shared-bridge";
 import { useToaster, handleDocumentUploadError } from "@vao/shared-ui";
 import { getFileByCategory } from "~/utils/agrementFile";
@@ -138,45 +143,81 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       toaster.error({
         titleTag: "h2",
         title: "Erreur",
-        description: "Impossible d’enregistrer l’agrément : données absentes.",
+        description: "Impossible d'enregistrer l'agrément : données absentes.",
       });
       return;
     }
 
-    updatedData.agrementFiles = [];
     if (updatedData.id == null) {
       updatedData.statut = AGREMENT_STATUT.BROUILLON;
     }
     if (updatedData.statut === AGREMENT_STATUT.TRANSMIS) {
       updatedData.dateDepot = new Date();
     }
+
+    const formFiles: AgrementFilesDto[] = [];
     for (const category of Object.keys(
       FILE_CATEGORY_CONFIG,
     ) as (keyof typeof FILE_CATEGORY_CONFIG)[]) {
       const { fileKey, multiple } = FILE_CATEGORY_CONFIG[category];
       const value = updatedData[fileKey];
-
       if (!value) continue;
-
       if (multiple) {
         const docs = await createDocuments({
           documents: value,
           category: category as FILE_CATEGORY,
         });
-        updatedData.agrementFiles.push(...docs);
+        formFiles.push(...docs);
       } else {
         const doc = await createDocument({
           document: value,
           category: category as FILE_CATEGORY,
         });
-        if (doc) updatedData.agrementFiles.push(doc);
+        if (doc) formFiles.push(doc);
       }
     }
 
-    const agrementFiles = getFileByCategory(agrementEnTraitement, updatedData);
+    const storeFiles = agrementEnTraitement.agrementFiles ?? [];
+    const filesByCategory = new Map<string, AgrementFilesDto[]>();
+
+    for (const file of storeFiles) {
+      if (!filesByCategory.has(file.category))
+        filesByCategory.set(file.category, []);
+      filesByCategory.get(file.category)!.push(file);
+    }
+
+    for (const category of Object.keys(
+      FILE_CATEGORY_CONFIG,
+    ) as (keyof typeof FILE_CATEGORY_CONFIG)[]) {
+      const formCatFiles = formFiles.filter((f) => f.category === category);
+      if (formCatFiles.length > 0) {
+        filesByCategory.set(category, formCatFiles);
+      } else if (
+        updatedData[FILE_CATEGORY_CONFIG[category].fileKey] !== undefined
+      ) {
+        filesByCategory.delete(category);
+      }
+    }
+
+    updatedData.agrementFiles = Array.from(filesByCategory.values()).flat();
+
+    const agrementFiles = getFileByCategory(
+      { ...agrementEnTraitement, agrementFiles: updatedData.agrementFiles },
+      updatedData,
+    );
 
     const rawOrganismeId = organismeStore.organismeCourant?.organismeId;
     const organismeId = rawOrganismeId != null ? Number(rawOrganismeId) : null;
+
+    if (organismeId == null) {
+      toaster.error({
+        titleTag: "h2",
+        title: "Erreur",
+        description: "Impossible d'enregistrer l'agrément : organisme inconnu.",
+      });
+      return;
+    }
+
     const newAgrement = {
       ...agrementEnTraitement,
       ...updatedData,
@@ -184,15 +225,6 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       organismeId,
       statut: updatedData.statut ?? agrementEnTraitement.statut ?? null,
     };
-
-    if (organismeId == null) {
-      toaster.error({
-        titleTag: "h2",
-        title: "Erreur",
-        description: "Impossible d’enregistrer l’agrément : organisme inconnu.",
-      });
-      return;
-    }
 
     await agrementStore.postAgrement({
       agrement: newAgrement,
