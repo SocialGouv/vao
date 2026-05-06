@@ -1132,4 +1132,11 @@ describe("Messagerie d'agrément", () => {
     );
     expect(getResponse.body.unreadCount).toBe(0);
   });
+
+  it("PATCH /messages devrait remonter une erreur", async () => {
+    const patchResponse = await request(app).patch(
+      `/agrements/999/messages/read`,
+    );
+    expect(patchResponse.status).toBe(404);
+  });
 });
