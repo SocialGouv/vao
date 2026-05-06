@@ -201,8 +201,6 @@ export const AgrementService = {
     let eventType: AGREMENT_HISTORY_TYPE;
     if (statut === AGREMENT_STATUT.TRANSMIS) {
       eventType = AGREMENT_HISTORY_TYPE.TRANSMISSION;
-    } else if (statut === AGREMENT_STATUT.DEPOSE) {
-      eventType = AGREMENT_HISTORY_TYPE.MODIFICATION;
     } else {
       eventType = AGREMENT_HISTORY_TYPE.STATUT_CHANGE;
     }
