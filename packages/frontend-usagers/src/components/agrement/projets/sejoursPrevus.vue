@@ -83,12 +83,10 @@
       représentant légal, afin de connaître ses besoins ou ses problèmes de
       santé
     </p>
-    <DsfrFileDownload
-      format="pdf"
-      size="61.88 Ko"
-      :href="urlPdfQuestionnaireVacanciers"
-      download=""
-      title="questionnaire-vacanciers.pdf"
+    <UtilsDownloadFile
+      label="questionnaire-vacanciers.pdf"
+      :url="urlPdfQuestionnaireVacanciers"
+      filename="questionnaire-vacanciers.pdf"
     />
   </div>
 </template>
