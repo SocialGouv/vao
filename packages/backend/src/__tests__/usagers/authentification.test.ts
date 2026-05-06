@@ -13,7 +13,7 @@ import { User, UserRequest } from "../../types/request";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
 
 jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
@@ -428,5 +428,142 @@ describe("POST /authentication/email/renew-password", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.user.statusCode).toBe("NEED_SIRET_VALIDATION");
+  });
+});
+
+describe("POST /authentication/email/renew-token", () => {
+  it("should return 400 when email is missing", async () => {
+    const response = await request(app)
+      .post("/authentication/email/renew-token")
+      .send({});
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 200 for existing user waiting email validation", async () => {
+    const timestamp = Date.now();
+    const email = `fo-renew-${timestamp}@example.com`;
+
+    await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: false,
+        email,
+        nom: "Doe",
+        password: "HelloHello1!!",
+        prenom: "John",
+        siret: "12345678900011",
+        status_code: STATUS_USER_FRONT.NEED_EMAIL_VALIDATION,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+    (mailService.send as jest.Mock).mockResolvedValue(undefined);
+
+    const response = await request(app)
+      .post("/authentication/email/renew-token")
+      .send({ email });
+
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("POST /authentication/email/validate", () => {
+  it("should return 400 when token is missing", async () => {
+    const response = await request(app)
+      .post("/authentication/email/validate")
+      .send({});
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should return 200 and user for a valid token", async () => {
+    const timestamp = Date.now();
+    const email = `fo-validate-${timestamp}@example.com`;
+
+    await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: false,
+        email,
+        nom: "Doe",
+        password: "HelloHello1!!",
+        prenom: "John",
+        siret: "12345678900011",
+        status_code: STATUS_USER_FRONT.NEED_EMAIL_VALIDATION,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+    (mailService.send as jest.Mock).mockResolvedValue(undefined);
+
+    const token = jwt.sign({ email }, config.tokenSecret as string, {
+      algorithm: config.algorithm as jwt.Algorithm,
+      expiresIn: 60,
+    });
+
+    const response = await request(app)
+      .post("/authentication/email/validate")
+      .send({ token });
+
+    expect(response.status).toBe(200);
+    expect(
+      response.body.user !== undefined ||
+        response.body.status === STATUS_USER_FRONT.NEED_SIRET_VALIDATION,
+    ).toBe(true);
+  });
+});
+
+describe("GET /authentication/check-token", () => {
+  it("GET /authentication/check-token retourne 200", async () => {
+    const response = await request(app).get("/authentication/check-token");
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe("OK");
+  });
+});
+
+describe("POST /authentication/disconnect", () => {
+  it("POST /authentication/disconnect retourne 400 sans refresh token", async () => {
+    const response = await request(app).post("/authentication/disconnect");
+
+    expect(response.status).toBe(400);
+    expect(response.body.name).toBe("MissingRefreshToken");
+  });
+
+  it("POST /authentication/disconnect retourne 200 avec des cookies valides", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `front-disconnect-${timestamp}@example.com`;
+
+    await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        email,
+        nom: "FrontNom",
+        password,
+        prenom: "FrontPrenom",
+        siret: `123456789012${timestamp.toString().slice(-2)}`,
+        status_code: STATUS_USER_FRONT.VALIDATED,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+
+    const loginResponse = await request(app)
+      .post("/authentication/email/login")
+      .send({ email, password });
+
+    const setCookieHeader = loginResponse.headers["set-cookie"];
+    const cookies = Array.isArray(setCookieHeader)
+      ? setCookieHeader
+      : setCookieHeader
+        ? [setCookieHeader]
+        : [];
+
+    const response = await request(app)
+      .post("/authentication/disconnect")
+      .set("Cookie", cookies);
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Déconnexion");
   });
 });

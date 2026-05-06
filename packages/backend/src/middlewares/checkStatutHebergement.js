@@ -24,6 +24,14 @@ function checkStatutHebergement(statut) {
       return next(error);
     }
 
+    if (!hebergementStatut) {
+      return next(
+        new AppError("Hébergement non trouvé", {
+          statusCode: 404,
+        }),
+      );
+    }
+
     if (statut !== hebergementStatut) {
       return next(
         new AppError("Vous n'êtes pas autorisé à modifier cet hébergement", {

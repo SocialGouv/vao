@@ -1,8 +1,6 @@
 const axios = require("axios");
 const { getEtablissement } = require("../Insee");
 
-jest.mock("axios");
-
 jest.mock("../../utils/logger", () => {
   return jest.fn(() => ({
     e: jest.fn(),

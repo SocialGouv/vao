@@ -4,13 +4,13 @@ import request from "supertest";
 
 import app from "../../app";
 import { UserRequest } from "../../types/request";
-import { createHebergement } from "../helper/fixtures/hebergementHelper";
-import { createOrganisme } from "../helper/fixtures/organismeHelper";
-import { createUsagersUser } from "../helper/fixtures/userHelper";
+import { createHebergement } from "../helpers/hebergementHelper";
+import { createOrganisme } from "../helpers/organismeHelper";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
+import { createUsagersUser } from "../helpers/userHelper";
 
 let authUser = { id: 1, role: "admin" };
 
@@ -45,5 +45,31 @@ describe("GET /hebergement/admin/:id", () => {
     // Vérification des résultats
     expect(response.status).toBe(200);
     expect(response.body.hebergement.id).toEqual(hebergementId);
+  });
+
+  it("retourne 404 si l'hebergement n'existe pas", async () => {
+    authUser = await createUsagersUser();
+    const response = await request(app).get("/hebergement/admin/999999");
+
+    expect(response.status).toBe(404);
+  });
+});
+
+describe("GET /hebergement/admin", () => {
+  it("retourne 200 pour la liste admin", async () => {
+    authUser = await createUsagersUser({ territoireCode: "IDF" });
+    const response = await request(app).get("/hebergement/admin/");
+
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("GET /hebergement/extract", () => {
+  it("retourne 200 et un CSV pour l'extract admin", async () => {
+    authUser = await createUsagersUser({ territoireCode: "IDF" });
+    const response = await request(app).get("/hebergement/extract/");
+
+    expect(response.status).toBe(200);
+    expect(response.headers["content-type"]).toContain("text/csv");
   });
 });

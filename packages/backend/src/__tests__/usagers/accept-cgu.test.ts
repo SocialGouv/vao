@@ -3,11 +3,11 @@ import request from "supertest";
 import app from "../../app";
 // @ts-expect-error: js file
 import jwtMiddleware from "../../middlewares/checkJWTWithoutCGU";
-import { createUsagersUserValide } from "../helper/fixtures/userHelper";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
+import { createUsagersUserValide } from "../helpers/userHelper";
 
 const mockJwtMiddleware = jwtMiddleware as jest.Mock;
 jest.mock("../../middlewares/checkJWTWithoutCGU", () => jest.fn());
@@ -21,7 +21,7 @@ beforeAll(async () => {
 
 beforeEach(() => {
   mockJwtMiddleware.mockImplementation((req, res, next) => {
-    req.decoded = user[0];
+    req.decoded = user;
     next();
   });
 });

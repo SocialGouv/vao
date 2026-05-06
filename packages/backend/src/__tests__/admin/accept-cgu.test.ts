@@ -2,11 +2,11 @@ import request from "supertest";
 
 import app from "../../app";
 import checkJWTWithoutCGU from "../../middlewares/bo-check-JWT-without-CGU";
-import { createAdminUserValide } from "../helper/fixtures/userHelper";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
+import { createAdminUserValide } from "../helpers/userHelper";
 
 jest.mock("../../middlewares/bo-check-JWT-without-CGU", () => ({
   __esModule: true,

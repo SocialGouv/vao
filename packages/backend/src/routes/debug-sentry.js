@@ -1,4 +1,5 @@
 const Sentry = require("@sentry/node");
+const axios = require("axios");
 const express = require("express");
 const Organisme = require("../services/Organisme");
 const DemandeSejour = require("../services/DemandeSejour");
@@ -26,8 +27,8 @@ async function mainHandler(req, res, next) {
     // add additional context to debug errors
     Sentry.setContext("context", { debug_status: true });
 
-    // add external fetch api in trace
-    const response = await fetch("https://www.google.com");
+    // add external axios api in trace
+    const response = await axios.get("https://www.google.com");
     Sentry.addBreadcrumb({
       data: { status: response.status },
       level: "error",

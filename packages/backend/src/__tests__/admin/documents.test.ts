@@ -5,12 +5,12 @@ import app from "../../app";
 import * as DocumentService from "../../services/Document";
 import { User, UserRequest } from "../../types/request";
 import { getPool as getPoolDoc } from "../../utils/pgpoolDoc";
-import { createMinimalPdf } from "../helper/fileHelper";
-import { createUsagersUser } from "../helper/fixtures/userHelper";
+import { createMinimalPdf } from "../helpers/fileHelper";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
+import { createUsagersUser } from "../helpers/userHelper";
 
 jest.mock("../../middlewares/bo-check-JWT", () =>
   jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {

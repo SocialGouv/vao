@@ -13,12 +13,12 @@ import {
   createMinimalPdf,
   createMinimalPng,
   detectFileType,
-} from "../helper/fileHelper";
-import { createUsagersUser } from "../helper/fixtures/userHelper";
+} from "../helpers/fileHelper";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
+import { createUsagersUser } from "../helpers/userHelper";
 
 jest.mock("../../middlewares/checkJWT", () =>
   jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
