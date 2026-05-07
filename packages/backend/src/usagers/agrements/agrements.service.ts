@@ -29,19 +29,10 @@ import { AgrementsRepository } from "./agrements.repository";
 const log = logger(module.filename);
 
 async function getEmailRegion(codeRegion: string): Promise<string | null> {
-  try {
-    const fiche = await TerritoireService.readFicheIdByTerCode(codeRegion);
-    if (!fiche?.id) return null;
-    const ficheTerritoire = await TerritoireService.readOne(fiche.id);
-    return ficheTerritoire?.service_mail || null;
-  } catch (e) {
-    log.w(
-      "Erreur lors de la récupération de l'email de la région",
-      codeRegion,
-      e,
-    );
-    return null;
-  }
+  const fiche = await TerritoireService.readFicheIdByTerCode(codeRegion);
+  if (!fiche?.id) return null;
+  const ficheTerritoire = await TerritoireService.readOne(fiche.id);
+  return ficheTerritoire?.service_mail || null;
 }
 
 export const AgrementService = {
@@ -174,9 +165,15 @@ export const AgrementService = {
       log.w("Agrement non trouvé", agrementId);
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
+    const dateDepot = agrement?.dateDepot
+      ? agrement?.dateDepot
+      : statut === AGREMENT_STATUT.TRANSMIS
+        ? new Date()
+        : null;
     await withTransaction(async (tx: PoolClient) => {
       const updated = await AgrementsRepository.updateStatut({
         agrementId,
+        dateDepot,
         statut,
         tx,
       });
@@ -195,8 +192,6 @@ export const AgrementService = {
     let eventType: AGREMENT_HISTORY_TYPE;
     if (statut === AGREMENT_STATUT.TRANSMIS) {
       eventType = AGREMENT_HISTORY_TYPE.TRANSMISSION;
-    } else if (statut === AGREMENT_STATUT.DEPOSE) {
-      eventType = AGREMENT_HISTORY_TYPE.MODIFICATION;
     } else {
       eventType = AGREMENT_HISTORY_TYPE.STATUT_CHANGE;
     }
@@ -262,34 +257,47 @@ export const AgrementService = {
 
       if (emailRegion) {
         try {
-          await mailService.send(
-            AgrementMailAdmin.sendStatutTransmisRegionMail({
-              agrementId,
-              date,
-              email: emailRegion,
-              organismeName,
-              siret,
-            }),
-          );
+          const mailToSend =
+            agrement.statut === AGREMENT_STATUT.BROUILLON
+              ? // Première Transmission
+                AgrementMailAdmin.sendStatutTransmisRegionMail({
+                  agrementId,
+                  date,
+                  email: emailRegion,
+                  organismeName,
+                  siret,
+                })
+              : // Transmission après demande de modification
+                AgrementMailAdmin.sendStatutModificationTransmisRegionMail({
+                  agrementId,
+                  email: emailRegion,
+                  organismeName,
+                });
+          await mailService.send(mailToSend);
         } catch (e) {
           log.w("Erreur lors de l'envoi de l'email à la région", e);
         }
       }
+      // Envoie de mail à l'OVA uniquement lors de la première transmission
+      if (agrement.statut !== AGREMENT_STATUT.BROUILLON) {
+        return true;
+      }
 
-      if (email) {
-        try {
-          await mailService.send(
-            AgrementMailUsagers.sendStatutTransmisMail({
-              date,
-              email,
-              regionDreets: nomObtentionRegion,
-            }),
-          );
-        } catch (e) {
-          log.w("Erreur lors de l'envoi de l'email de transmission", e);
-        }
-      } else {
+      if (!email) {
         log.w("Aucun email trouvé pour l'agrément", agrementId);
+        return true;
+      }
+
+      try {
+        await mailService.send(
+          AgrementMailUsagers.sendStatutTransmisMail({
+            date,
+            email,
+            regionDreets: nomObtentionRegion,
+          }),
+        );
+      } catch (e) {
+        log.w("Erreur lors de l'envoi de l'email de transmission", e);
       }
     }
     return true;

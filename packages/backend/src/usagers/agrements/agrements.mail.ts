@@ -217,7 +217,7 @@ export const AgrementMailUsagers = {
           type: "p",
         },
       ],
-      `Cordialement,<br>L’équipe du SI VAO<br><a href='${frontUsagersDomain}'>Portail VAO</a>`,
+      `<br>L’équipe du SI VAO<br><a href='${frontUsagersDomain}'>Portail VAO</a>`,
     );
     const params = {
       from: senderEmail,

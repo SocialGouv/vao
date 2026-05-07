@@ -172,12 +172,14 @@ async function onNext() {
     return;
   }
   try {
+    const stepDemandeTransmise =
+      props.initAgrement.statut === AGREMENT_STATUT.BROUILLON ? 0 : 1;
     const success = await agrementStore.changeStatutAgrement({
       agrementId: props.initAgrement?.id,
       statut: AGREMENT_STATUT.TRANSMIS,
     });
     if (success) {
-      navigateTo("/demande-agrement-transmise");
+      navigateTo(`/demande-agrement-transmise?step=${stepDemandeTransmise}`);
     } else {
       toaster.error({
         description:

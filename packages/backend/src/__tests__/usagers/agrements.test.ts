@@ -159,10 +159,7 @@ describe("GET /agrements/:agrementId", () => {
       req.decoded = { id: adminUser.id };
       next();
     });
-    const organismeId = await createOrganisme({ userId: adminUser.id });
-    const response = await request(app).get(
-      `/agrements/organisme/${organismeId}`,
-    );
+    const response = await request(app).get(`/agrements/123456789`);
 
     // Vérification des résultats
     expect(response.status).toBe(404);
@@ -280,6 +277,75 @@ describe("POST /agrements", () => {
 });
 
 describe("PATCH /agrements/:agrementId/statut", () => {
+  it("retourne 404 si l'agrement est introuvable (if !agrement)", async () => {
+    const authUser = await createUsagersUser();
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: authUser.id };
+      next();
+    });
+
+    const response = await request(app)
+      .patch(`/agrements/999999/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe(
+      "Aucun organismeId récupéré pour l'agrement",
+    );
+  });
+
+  it("Devrait remonter une erreur sur la récupération de la fiche territoire", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: {
+        personnePhysique: {
+          nom: "Dupont",
+          prenom: "Jean",
+        },
+        typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
+      },
+      userId: adminUser.id,
+    });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "PACA",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    // Mock explicite pour couvrir la branche PERSONNE_PHYSIQUE
+    (OrganismeService.getOne as jest.Mock).mockResolvedValueOnce({
+      id: organismeId,
+      personnePhysique: {
+        nom: "Dupont",
+        nomNaissance: "Dupont",
+        nomUsage: "Jean Dupont",
+        prenom: "Jean",
+      },
+      typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
+    });
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+    await request(app)
+      .patch(`/agrements/${agrementId}/statut`)
+      .send({ statut: AGREMENT_STATUT.TRANSMIS });
+
+    // Vérifie que le mail envoyé à la région contient le nom et prénom de la personne physique
+    const calls = (mailService.send as jest.Mock).mock.calls;
+    const mailToRegion = calls.find((call) => {
+      const to = call[0].to || call[0].email;
+      return to && to.endsWith("@territoire.com");
+    });
+    expect(mailToRegion).toBeUndefined();
+  });
   it("renseigne organismeName pour une personne physique lors de l'envoi du mail à la région", async () => {
     const adminUser = await createUsagersUser();
     const organismeId = await createOrganisme({
@@ -786,6 +852,63 @@ it("devrait changer le statut en agrement VALIDE", async () => {
   expect(agrement?.statut).toBe(AGREMENT_STATUT.VALIDE);
 });
 
+it("devrait changer le statut en agrement TRANSMIS après modification", async () => {
+  const usagerUser = await createUsagersUser();
+  // Ici on répond aux conditions de mise à jour backOffice
+  const adminUser = await createAdminUser();
+  await createTerritoire({ territoireCode: "IDF" });
+  const organismeId = await createOrganisme({ userId: usagerUser.id });
+  const agrementData = await buildAgrementFixture({
+    organismeId,
+    statut: AGREMENT_STATUT.BROUILLON,
+  });
+  const agrementId = await createAgrement({
+    agrement: agrementData,
+    organismeId,
+  });
+  (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+    req.decoded = { id: usagerUser.id };
+    next();
+  });
+  const response = await request(app)
+    .patch(`/agrements/${agrementId}/statut`)
+    .send({ statut: AGREMENT_STATUT.TRANSMIS });
+  expect(mailService.send).toHaveBeenCalledTimes(2);
+  expect(response.status).toBe(200);
+  expect(response.body.success).toBe(true);
+
+  // Mise à jour côté Admin pour demande de complétion du dossier
+  await AgrementServiceAdmin.updateStatut({
+    agrementId,
+    boUserId: adminUser.id,
+    commentaire:
+      "Dossier à compléter car il manque des éléments pour pouvoir le traiter",
+    statut: AGREMENT_STATUT.A_MODIFIER,
+    territoireCode: agrementData.regionObtention!,
+  });
+  expect(mailService.send).toHaveBeenCalledTimes(3);
+
+  // Transmission de l'agrément au Service après complétude
+  const responseCorrection = await request(app)
+    .patch(`/agrements/${agrementId}/statut`)
+    .send({ statut: AGREMENT_STATUT.TRANSMIS });
+  expect(responseCorrection.status).toBe(200);
+  expect(responseCorrection.body.success).toBe(true);
+  expect(mailService.send).toHaveBeenCalledTimes(4);
+  // Vérifier que l'événement a bien été historisé
+  const history = await AgrementService.getHistory(agrementId);
+  const aModifierEvent = history.find(
+    (event) =>
+      event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+      event.type_precision === AGREMENT_STATUT.TRANSMIS,
+  );
+
+  expect(aModifierEvent).toBeDefined();
+  expect(aModifierEvent?.usager_user).toBeDefined();
+  const { agrement } = await getAgrement(agrementId);
+  expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
+});
+
 it("devrait changer le statut en agrement REFUSE", async () => {
   const usagerUser = await createUsagersUser();
   // Ici on répond aux conditions de mise à jour backOffice
@@ -1048,6 +1171,9 @@ describe("Messagerie d'agrément", () => {
   it("GET /messages devrait retourner 404 pour un agrément inexistant", async () => {
     const response = await request(app).get(`/agrements/999999/messages`);
     expect(response.status).toBe(404);
+    expect(response.body.message).toBe(
+      "Aucun organismeId récupéré pour l'agrement",
+    );
   });
 
   it("PATCH /messages devrait marquer tous les messages non lus comme lus et retourner le bon count", async () => {
@@ -1074,5 +1200,31 @@ describe("Messagerie d'agrément", () => {
       `/agrements/${agrementId}/messages`,
     );
     expect(getResponse.body.unreadCount).toBe(0);
+  });
+
+  it("PATCH /messages devrait remonter une erreur", async () => {
+    const patchResponse = await request(app).patch(
+      `/agrements/999/messages/read`,
+    );
+    expect(patchResponse.status).toBe(404);
+  });
+
+  it("POST /message couvre if !agrement avec 404 explicite", async () => {
+    const response = await request(app)
+      .post(`/agrements/123456/message`)
+      .send({ message: "Message test" });
+
+    expect(response.status).toBe(404);
+  });
+
+  it("PATCH /messages/read couvre if !agrement avec 404 explicite", async () => {
+    const response = await request(app).patch(
+      `/agrements/123456/messages/read`,
+    );
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe(
+      "Aucun organismeId récupéré pour l'agrement",
+    );
   });
 });

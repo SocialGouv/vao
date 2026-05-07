@@ -50,6 +50,9 @@ export const AgrementsMapper = {
       budgetPersoGestionComplementaire:
         entity.budget_perso_gestion_complementaire,
       commentaire: entity.commentaire,
+      commentaireCompletude: entity.commentaire_completude,
+      commentaireCorrection: entity.commentaire_correction,
+      commentaireRefus: entity.commentaire_refus,
       dateConfirmCompletude: entity.date_confirm_completude,
       dateDepot: entity.date_depot,
       dateFinValidite: entity.date_fin_validite,

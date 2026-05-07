@@ -38,7 +38,6 @@ const label = computed(() => {
 const caseBo = () => {
   switch (props.statut) {
     case AGREMENT_STATUT.TRANSMIS:
-    case AGREMENT_STATUT.DEPOSE:
       return "new";
 
     case AGREMENT_STATUT.PRIS_EN_CHARGE:
@@ -63,7 +62,6 @@ const caseBo = () => {
 const caseFo = () => {
   switch (props.statut) {
     case AGREMENT_STATUT.TRANSMIS:
-    case AGREMENT_STATUT.DEPOSE:
     case AGREMENT_STATUT.PRIS_EN_CHARGE:
     case AGREMENT_STATUT.EN_COURS:
     case AGREMENT_STATUT.COMPLETUDE_CONFIRME:

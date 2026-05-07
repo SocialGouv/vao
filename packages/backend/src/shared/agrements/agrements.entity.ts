@@ -57,6 +57,9 @@ export interface AgrementEntity {
   date_fin_validite: Date | null;
   date_obtention: Date | null;
   file: object | null;
+  commentaire_completude: string | null;
+  commentaire_refus: string | null;
+  commentaire_correction: string | null;
 }
 
 /**

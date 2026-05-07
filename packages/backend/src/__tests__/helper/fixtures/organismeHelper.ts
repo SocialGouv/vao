@@ -8,11 +8,23 @@ import { generateRandomSiret } from "../organismeHelper";
 export const createOrganisme = async ({
   userId,
   organisme = {},
+  typeOrganisme = partOrganisme.PERSONNE_PHYSIQUE,
 }: {
   organisme?: Partial<object>;
   userId?: number;
+  typeOrganisme?: string;
 } = {}): Promise<number> => {
   const timestamp = Date.now();
+  const fixtureByTypeOrganisme =
+    typeOrganisme === partOrganisme.PERSONNE_PHYSIQUE
+      ? {
+          nomNaissance: `TestNaissance${timestamp}`,
+          nomUsage: `TestNom${timestamp}`,
+          prenom: `TestPrenom${timestamp}`,
+        }
+      : {
+          raisonSociale: `TestRaisonSociale${timestamp}`,
+        };
   const fixture = {
     adresseDomicile: {
       cleInsee: "12345",
@@ -33,16 +45,14 @@ export const createOrganisme = async ({
       lat: 48.8566,
       long: 2.3522,
     },
-    nomNaissance: `TestNaissance${timestamp}`,
-    nomUsage: `TestNom${timestamp}`,
-    prenom: `TestPrenom${timestamp}`,
     profession: "Testeur",
     siret: generateRandomSiret(),
     telephone: "0102030405",
+    ...fixtureByTypeOrganisme,
     ...organisme,
   };
   const organismeId = await createOrganismeService(
-    partOrganisme.PERSONNE_PHYSIQUE,
+    typeOrganisme,
     fixture,
     userId,
   );

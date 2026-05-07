@@ -18,7 +18,7 @@ export default async function adminDownload(
   log.i("IN", { uuid });
   try {
     const metaData = await DocumentService.getFileMetaData(uuid);
-    if (!metaData || metaData.userId == null) {
+    if (!metaData) {
       next(new AppError("fichier introuvable", { statusCode: 404 }));
       return;
     }
