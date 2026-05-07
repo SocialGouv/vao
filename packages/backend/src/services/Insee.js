@@ -61,7 +61,7 @@ module.exports.getEtablissement = async (siret) => {
       return null;
     }
 
-    log.e("Erreur lors de la récupération de l'établissement", {
+    log.w("Erreur lors de la récupération de l'établissement", {
       error: error.message,
       siret,
       status: error.response?.status,
