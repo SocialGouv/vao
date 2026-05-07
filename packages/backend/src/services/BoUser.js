@@ -149,7 +149,8 @@ const query = {
         WHEN us.ter_code = 'FRA' THEN 'Nationale'
         WHEN ter.parent_code = 'FRA' THEN 'Régionale'
         ELSE 'Départementale'
-      END AS "competence"
+      END AS "competence",
+      us.cgu_accepted AS "cguAccepted"
       ${selectQuery}
     FROM back.users AS us
     LEFT OUTER JOIN (
