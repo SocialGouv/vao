@@ -3,7 +3,7 @@
     <DsfrAlert
       class="fr-grid-row fr-alert--sm fr-my-3v"
       :role="'alert'"
-      description="Vous devez confirmer la complétude du dossier et fournir un récépissé. Vous pourrez ensuite valider l’agrément et fournir l’arrêté."
+      :description="alerteDescription"
       type="info"
       :closeable="false"
     />
@@ -85,6 +85,26 @@
         @update:file="fileUpdate"
       />
     </DsfrModal>
+    <DsfrModal
+      name="modalModaleValidation"
+      :opened="isModalModaleValidationOpened"
+      title="Validation de l'agrément"
+      size="lg"
+      @close="isModalModaleValidationOpened = false"
+    >
+      <AgrementsModaleConfirmations
+        :cdn-url="props.cdnUrl"
+        description="Pour l’obtention de l’agrément, veuillez fournir l’arrêté qui sera transmis à l’organisateur."
+        :have-commentaire="false"
+        :have-required-file="true"
+        :have-agrement-number="true"
+        valid-button="Valider"
+        @valid="(payload) => onValidForm(payload, AGREMENT_STATUT.VALIDE)"
+        @close="isModalModaleValidationOpened = false"
+        @update:file="fileUpdate"
+      />
+    </DsfrModal>
+
     <DsfrButtonGroup :inline-layout-when="true">
       <DsfrButton
         v-if="!isActionsCompletude"
@@ -108,10 +128,18 @@
         @click="isModalRefusOpened = true"
       />
       <DsfrButton
+        v-if="!isActionsCompletude"
         label="Confirmer la complétude du dossier"
         primary
         type="button"
         @click="isModalModaleConfirmationsOpened = true"
+      />
+      <DsfrButton
+        v-if="isActionsCompletude"
+        label="Valider l'agrément"
+        primary
+        type="button"
+        @click="isModalModaleValidationOpened = true"
       />
     </DsfrButtonGroup>
   </div>
@@ -146,6 +174,7 @@ const ALLOWED_STATUTS_ACTIONS = [
 const isModalComplementOpened = ref(false);
 const isModalCorrectionOpened = ref(false);
 const isModalModaleConfirmationsOpened = ref(false);
+const isModalModaleValidationOpened = ref(false);
 const isModalRefusOpened = ref(false);
 const textAlertModaleConfirmations = [
   "Cette étape ne constitue pas une décision d’agrément. Elle atteste uniquement que le dossier est complet.",
@@ -163,6 +192,11 @@ const isActionsVisible = computed(() =>
     : false,
 );
 
+const alerteDescription = computed(() =>
+  !isActionsCompletude.value
+    ? "Vous devez confirmer la complétude du dossier et fournir un récépissé. Vous pourrez ensuite valider l’agrément et fournir l’arrêté."
+    : "Valider l’agrément pour déposer le fichier de l’arrêté",
+);
 const isActionsCompletude = computed(
   () =>
     agrementStore?.agrementCourant?.statut ===
