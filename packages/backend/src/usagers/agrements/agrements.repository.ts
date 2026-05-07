@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import type {
   AGREMENT_HISTORY_TYPE,
   AgrementDto,
@@ -15,6 +16,7 @@ import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repo
 import AppError from "../../utils/error";
 import Logger from "../../utils/logger";
 import { getPool, withTransaction } from "../../utils/pgpool";
+import { getPool as getPoolDoc } from "../../utils/pgpoolDoc";
 
 const log = Logger(module.filename);
 
@@ -549,6 +551,16 @@ export const AgrementsRepository = {
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
 
+    const filesToDelete =
+      (agrementOld.agrementFiles || []).filter(
+        (oldFile) =>
+          !agrement.agrementFiles?.some(
+            (newFile) =>
+              newFile.category === oldFile.category &&
+              newFile.fileUuid === oldFile.fileUuid,
+          ),
+      ) ?? [];
+
     await withTransaction(async (tx: PoolClient) => {
       // ✅ 1. Mise à jour du principal
       const agrementUpdateQuery = `
@@ -690,19 +702,28 @@ export const AgrementsRepository = {
       await insertAgrementSejours(tx, agrementId, agrement);
       await insertAgrementAnimations(tx, agrementId, agrement);
       await insertAgrementBilans(tx, agrementId, agrement);
+    });
 
-      // suppression des documents orphelins
-      const filesToDelete =
-        (agrementOld.agrementFiles || []).filter(
-          (file) =>
-            !agrement.agrementFiles?.some((f) => f.fileUuid === file.fileUuid),
-        ) ?? [];
-      for (const file of filesToDelete) {
-        if (file.fileUuid) {
-          await deleteFile(file.fileUuid, tx);
+    for (const file of filesToDelete) {
+      if (file.fileUuid) {
+        try {
+          await deleteFile(file.fileUuid, getPoolDoc());
+        } catch (err) {
+          Sentry.addBreadcrumb({
+            category: "document",
+            data: {
+              agrementId,
+              category: file.category,
+              error: err instanceof Error ? err.message : String(err),
+              fileUuid: file.fileUuid,
+            },
+            level: "error",
+            message: `Erreur suppression fichier orphelin`,
+          });
+          Sentry.captureException(err);
         }
       }
-    });
+    }
 
     return agrementId;
   },
