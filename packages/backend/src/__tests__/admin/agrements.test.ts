@@ -16,20 +16,17 @@ import app from "../../app";
 import { partOrganisme } from "../../helpers/org-part";
 import { mailService } from "../../services/mail";
 import { User, UserRequest } from "../../types/request";
-import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
-import { createAgrement } from "../helper/fixtures/agrementsHelper";
-import { createAgrementMessage } from "../helper/fixtures/agrementsMessageHelper";
-import { createDocument } from "../helper/fixtures/documentHelper";
-import { createOrganisme } from "../helper/fixtures/organismeHelper";
-import { createTerritoire } from "../helper/fixtures/territoireHelper";
-import {
-  createAdminUser,
-  createUsagersUser,
-} from "../helper/fixtures/userHelper";
+import { buildAgrementFixture } from "../fixtures/agrementsFixture";
+import { createAgrement } from "../helpers/agrementsHelper";
+import { createAgrementMessage } from "../helpers/agrementsMessageHelper";
+import { createDocument } from "../helpers/documentHelper";
+import { createOrganisme } from "../helpers/organismeHelper";
+import { createTerritoire } from "../helpers/territoireHelper";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
+import { createAdminUser, createUsagersUser } from "../helpers/userHelper";
 
 let authUser = { id: 1, role: "admin" };
 let authUser2 = { id: 2, role: "admin" };

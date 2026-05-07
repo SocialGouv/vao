@@ -1,14 +1,14 @@
-import { NextFunction } from "express";
+import { NextFunction, Response } from "express";
 import request from "supertest";
 
 import app from "../../app";
 import checkJWT from "../../middlewares/checkJWT";
 import { User, UserRequest } from "../../types/request";
-import { createUsagersUser } from "../helper/fixtures/userHelper";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
+import { createUsagersUser } from "../helpers/userHelper";
 
 jest.mock("../../middlewares/checkJWT", () =>
   jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
@@ -51,5 +51,46 @@ describe("GET /users/me", () => {
     const response = await request(app).get("/users/me");
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("name", "UserNotFound");
+  });
+});
+
+describe("PATCH /users/me", () => {
+  it("met a jour le profil et retourne 200", async () => {
+    const frontUser = await createUsagersUser();
+
+    (checkJWT as jest.Mock).mockImplementation(
+      (req: UserRequest, _res: Response, next: NextFunction) => {
+        req.decoded = { id: frontUser.id } as unknown as User;
+        next();
+      },
+    );
+
+    const response = await request(app).patch("/users/me").send({
+      nom: "Updated",
+      prenom: "User",
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body.user).toBeDefined();
+    expect(response.body.user.id).toBe(frontUser.id);
+  });
+
+  it("retourne 400 si les donnees sont invalides", async () => {
+    const frontUser = await createUsagersUser();
+
+    (checkJWT as jest.Mock).mockImplementation(
+      (req: UserRequest, _res: Response, next: NextFunction) => {
+        req.decoded = { id: frontUser.id } as unknown as User;
+        next();
+      },
+    );
+
+    const response = await request(app).patch("/users/me").send({
+      nom: "",
+      prenom: "",
+    });
+
+    expect(response.status).toBe(400);
+    expect(response.body.name).toBe("ValidationError");
   });
 });

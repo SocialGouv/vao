@@ -6,9 +6,14 @@ alwaysApply: true
 
 # TI
 
-Les tests d'intégrations sont présent dans le dossier backend/\__tests_
-Les tests d'intégrations ne doivent pas mocker les services
-Les tests d'intégrations ne doivent pas mocker les requetes en base de données
+Les tests d'intégrations :
+
+- sont présent dans le dossier backend/\__tests_
+- ne doivent pas mocker les services
+- ne doivent pas mocker les requetes en base de données
+- doivent mocker les appels externe (axios, services/mail, etc)
+- sont séparés en deux macro-domaines admin (aussi appelé bo) et usagers (aussi appelé fo)
+- le code http retourné doit être testé de façon stricte pour un use case précis (ex: `.toBe(404)` et non `.toBeLessThan(500)` ni `[401, 409, 500]).toContain(response.status)`)
 
 # Exemple
 

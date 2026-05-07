@@ -30,6 +30,14 @@ async function checkPermissionHebergement(req, res, next) {
     );
   }
 
+  if (!organisme) {
+    return next(
+      new AppError("Organisme non trouvé", {
+        statusCode: 404,
+      }),
+    );
+  }
+
   const siren =
     organisme.typeOrganisme === "personne_morale"
       ? organisme.personneMorale?.siren

@@ -18,22 +18,16 @@ import * as OrganismeService from "../../services/Organisme";
 import { User, UserRequest } from "../../types/request";
 import { AgrementsRepository } from "../../usagers/agrements/agrements.repository";
 import { AgrementService } from "../../usagers/agrements/agrements.service";
-import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
-import {
-  createAgrement,
-  getAgrement,
-} from "../helper/fixtures/agrementsHelper";
-import { createAgrementMessage } from "../helper/fixtures/agrementsMessageHelper";
-import { createOrganisme } from "../helper/fixtures/organismeHelper";
-import { createTerritoire } from "../helper/fixtures/territoireHelper";
-import {
-  createAdminUser,
-  createUsagersUser,
-} from "../helper/fixtures/userHelper";
+import { buildAgrementFixture } from "../fixtures/agrementsFixture";
+import { createAgrement, getAgrement } from "../helpers/agrementsHelper";
+import { createAgrementMessage } from "../helpers/agrementsMessageHelper";
+import { createOrganisme } from "../helpers/organismeHelper";
+import { createTerritoire } from "../helpers/territoireHelper";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
+import { createAdminUser, createUsagersUser } from "../helpers/userHelper";
 
 jest.mock("../../middlewares/checkJWT", () =>
   jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {

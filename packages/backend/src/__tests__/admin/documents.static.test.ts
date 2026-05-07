@@ -6,7 +6,7 @@ import { User, UserRequest } from "../../types/request";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
 
 jest.mock("../../middlewares/bo-check-JWT", () =>
   jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {

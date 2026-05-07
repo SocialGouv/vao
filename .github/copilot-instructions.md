@@ -32,17 +32,18 @@ if (condition) {
 - Les TU ne doivent pas acceder a la base de donnees.
 - Les TU ne doivent pas appeler de services externes.
 - Les tests sont ecrits en TypeScript (`.ts` avec `import`).
-- Se referer a `docs/tests/INTEGRATIONS_TEST` pour les conventions de tests du projet.
+- Se referer a `docs/tests/UNIT_TESTS.md` pour les conventions de tests du projet.
 
 ## Regles tests d'integration (TI)
 
 - Les tests d'integration sont dans `*-server/src/__tests__`.
 - Ne pas mocker les services dans les tests d'integration.
 - Ne pas mocker les requetes base de donnees dans les tests d'integration.
+- sont séparés en deux macro-domaines admin (aussi appelé bo) et usagers (aussi appelé fo)
 - Decouper les fichiers de tests par domaine (premier mot du chemin de route).
 - Nommer les fichiers de tests avec une minuscule.
 - Les tests sont ecrits en TypeScript (`.ts` avec `import`).
-- Se referer a `docs/tests/INTEGRATIONS_TEST` pour le cadre de reference.
+- Se referer a `docs/tests/INTEGRATIONS_TEST.md` pour le cadre de reference.
 
 ## Regles globales
 

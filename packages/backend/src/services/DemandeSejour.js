@@ -690,7 +690,7 @@ WHERE uo.org_id = $1 AND u.status_code = 'VALIDATED'
         WHERE dsth.demande_sejour_id = ds.id
         AND a.departement = ANY ($1)
       )
-  AND statut <> 'BROUILLON'
+  AND ds.statut <> 'BROUILLON'
   OR a.region_obtention = '${territoireCode}')`,
   getExtractFO: `SELECT
       ds.id as "declarationId",

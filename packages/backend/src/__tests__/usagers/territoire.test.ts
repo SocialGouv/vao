@@ -4,15 +4,15 @@ import request from "supertest";
 
 import app from "../../app";
 import { User, UserRequest } from "../../types/request";
-import { buildAgrementFixture } from "../helper/fixtures/agrementsFixture";
-import { createAgrement } from "../helper/fixtures/agrementsHelper";
-import { createOrganisme } from "../helper/fixtures/organismeHelper";
-import { createTerritoire } from "../helper/fixtures/territoireHelper";
-import { createUsagersUser } from "../helper/fixtures/userHelper";
+import { buildAgrementFixture } from "../fixtures/agrementsFixture";
+import { createAgrement } from "../helpers/agrementsHelper";
+import { createOrganisme } from "../helpers/organismeHelper";
+import { createTerritoire } from "../helpers/territoireHelper";
 import {
   createTestContainer,
   removeTestContainer,
-} from "../helper/testContainer";
+} from "../helpers/testContainer";
+import { createUsagersUser } from "../helpers/userHelper";
 
 let authUser = { id: 1, role: "admin" };
 

@@ -1,5 +1,5 @@
 const axios = require("axios");
-
+const Sentry = require("@sentry/node");
 const logger = require("../../utils/logger");
 
 const log = logger(module.filename);
@@ -21,12 +21,14 @@ module.exports = {
         })
         .catch((error) => {
           log.w(error);
+          Sentry.captureException(error);
           res
             .status(400)
             .json({ message: "erreur lors de l'appel à l'API adresse" });
         });
     } catch (error) {
       log.w("DONE with error");
+      Sentry.captureException(error);
       return res
         .status(404)
         .json({ message: "erreur lors de l'appel à l'API adresse" });

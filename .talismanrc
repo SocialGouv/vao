@@ -50,7 +50,7 @@ fileignoreconfig:
 - filename: docker-compose.prod.yaml
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
 - filename: docker-compose.yaml
-  checksum: 4c29834d1782647485b51852dc7921ff87bd72bbe55134f21830f226ed9bc06d
+  checksum: c9749cbb6dc02437d7c2d00f7754b7a8a40c07d03a7b58a6e5340211eba5eb2c
 - filename: docs/tests/E2E_TESTS.md
   checksum: dfe0de0276abfc1876610d297f96594742046ca920775faaa5e79c76ee348715
 - filename: e2e/register-login-organisateur.spec.ts
@@ -66,7 +66,9 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/admin/accept-cgu.test.ts
   checksum: 692450d4fc33a59b516dab82ef8a447c1b0afa242acfac281b9c4584e330cbda
 - filename: packages/backend/src/__tests__/admin/authentication.test.ts
-  checksum: dde064b2fcd87842c396e0d05808ed9f674188ec69d03cebc59915818c44cadd
+  checksum: 528b8fad9ce9931d961b9ed7f7d3da8b779ff2a189dfba4edf4ec788aa83c709
+- filename: packages/backend/src/__tests__/admin/sejour.test.ts
+  checksum: d6e5b48000a21797f60865b4c59c09c9860f55c72376b785a21777e1f31d9b40
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
   checksum: 1cd24bcc2b9ad1e9c238c3ad905b5b1a7114370d0c19dffad9475a6e443b3e94
 - filename: packages/backend/src/__tests__/usagers/accept-cgu.test.ts
@@ -74,7 +76,7 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/usagers/agrements.test.ts
   checksum: 464bc103d92f763f3e4f8bef33db6902046255fbbda528f508a8073625dc5cd9
 - filename: packages/backend/src/__tests__/usagers/authentification.test.ts
-  checksum: c15d2aeea878e0da568caa3a14d4dc58287fad8ee1cd6d026626c38870e8bc47
+  checksum: 957632f5ccd2a7da70633b5291a95bb62110b47d3c78454f645e5a0501ce7e1d
 - filename: packages/backend/src/__tests__/usagers/documents.test.ts
   checksum: d5d23d8aa40adf45f04cb47587350ba4c52423bb669307779f9be0254e77b695
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
