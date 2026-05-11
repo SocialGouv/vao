@@ -84,6 +84,15 @@ const validateAllForms = async (formulaires: FormulaireItem[]) => {
   resultats.forEach((result, index) => {
     if (result.status === "fulfilled" && result.value.data) {
       formsData[result.value.cle] = result.value.data;
+      if (
+        typeof result.value.data.filesValid === "boolean" &&
+        !result.value.data.filesValid
+      ) {
+        formsErrors.push(
+          `Le formulaire "${result.value.nom}" contient des erreurs de fichiers`,
+        );
+      }
+      delete formsData[result.value.cle].filesValid;
     } else {
       const nomFormulaire = formulaires[index].nom;
       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);

@@ -119,6 +119,7 @@ const validateForm = async () => {
     return {
       ...result,
       filesChangeEvol: filesChangeEvol.value,
+      filesValid: true,
     };
   }
   return result;

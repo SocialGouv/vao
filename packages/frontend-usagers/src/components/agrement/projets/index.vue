@@ -78,6 +78,7 @@ const props = defineProps({
   message: { type: String, default: null },
   isDownloading: { type: Boolean, default: false },
   modifiable: { type: Boolean, default: true },
+  onUpdate: { type: Function, required: false, default: null },
 });
 
 interface FormulaireItem {
@@ -121,6 +122,19 @@ const validateAllForms = async (formulaires: FormulaireItem[]) => {
   resultats.forEach((result, index) => {
     if (result.status === "fulfilled" && result.value.data) {
       formsData[result.value.cle] = result.value.data;
+
+      if (
+        typeof result.value.data.filesValid === "boolean" &&
+        !result.value.data.filesValid
+      ) {
+        console.error(
+          `Le formulaire projets "${result.value.nom}" contient des erreurs de fichiers.`,
+        );
+        formsErrors.push(
+          `Le formulaire "${result.value.nom}" contient des erreurs de fichiers`,
+        );
+      }
+      delete formsData[result.value.cle].filesValid;
     } else {
       const nomFormulaire = formulaires[index].nom;
       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
@@ -205,7 +219,11 @@ const handleSuivant = async () => {
 
       delete transformedData.statut;
 
-      emit("update", transformedData);
+      if (props.onUpdate) {
+        await props.onUpdate(transformedData);
+      } else {
+        emit("update", transformedData);
+      }
       emit("next");
     } else {
       toaster.error({

@@ -56,7 +56,7 @@
               :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :modifiable="canModify"
               :cdn-url="`${config.public.backendUrl}/documents/`"
-              @update="(formValues: any) => updateOrCreate(formValues)"
+              @update="updateOrCreate"
               @next="nextHash"
               @previous="previousHash"
             />
@@ -70,7 +70,7 @@
               :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :modifiable="canModify"
               :cdn-url="`${config.public.backendUrl}/documents/`"
-              @update="(formValues) => updateOrCreate(formValues)"
+              @update="updateOrCreate"
               @next="nextHash"
               @previous="previousHash"
             />
@@ -83,7 +83,7 @@
             <AgrementProjets
               :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :cdn-url="`${config.public.backendUrl}/documents/`"
-              @update="(formValues) => updateOrCreate(formValues)"
+              :on-update="updateOrCreate"
               @next="nextHash"
               @previous="previousHash"
             />
