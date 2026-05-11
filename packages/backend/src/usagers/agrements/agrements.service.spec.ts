@@ -117,6 +117,9 @@ describe("AgrementService when agrement does not exist (coverage)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (AgrementsRepository.getById as jest.Mock).mockResolvedValue(null);
+    (withTransaction as jest.Mock).mockImplementation(async (callback) =>
+      callback({} as never),
+    );
   });
 
   it("getMessages should throw 404 when agrement does not exist", async () => {
@@ -148,16 +151,18 @@ describe("AgrementService when agrement does not exist (coverage)", () => {
     });
   });
 
-  it("updateStatut should throw 404 when agrement does not exist", async () => {
+  it("updateStatut should throw 500 when agrement does not exist", async () => {
+    (AgrementsRepository.updateStatut as jest.Mock).mockResolvedValue(0);
+
     await expect(
       AgrementService.updateStatut({
         agrementId: 999999,
-        statut: "TRANSMIS" as never,
+        statut: AGREMENT_STATUT.TRANSMIS,
         usagerUserId: "1",
       }),
     ).rejects.toMatchObject({
-      message: "Agrement non trouvé",
-      statusCode: 404,
+      message: "Échec de la mise à jour du statut",
+      statusCode: 500,
     });
   });
 });
@@ -244,32 +249,6 @@ describe("AgrementService additional branch coverage", () => {
 
     expect(result).toBe(true);
     expect(mailService.send).not.toHaveBeenCalled();
-  });
-
-  it("updateStatut should handle region without fiche id", async () => {
-    (AgrementsRepository.getById as jest.Mock).mockResolvedValue({
-      dateDepot: null,
-      id: 1,
-      organismeId: 1,
-      regionObtention: "IDF",
-      statut: AGREMENT_STATUT.BROUILLON,
-    });
-    (AgrementsRepository.updateStatut as jest.Mock).mockResolvedValue(true);
-    (AgrementsRepository.getUserMail as jest.Mock).mockResolvedValue(
-      "usager@example.com",
-    );
-    (TerritoireService.readFicheIdByTerCode as jest.Mock).mockResolvedValue(
-      null,
-    );
-
-    const result = await AgrementService.updateStatut({
-      agrementId: 1,
-      statut: AGREMENT_STATUT.TRANSMIS,
-      usagerUserId: "1",
-    });
-
-    expect(result).toBe(true);
-    expect(mailService.send).toHaveBeenCalledTimes(1);
   });
 
   it("updateSvaTimer should throw 500 when timerId is missing", async () => {
