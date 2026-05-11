@@ -70,7 +70,7 @@
               :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :modifiable="canModify"
               :cdn-url="`${config.public.backendUrl}/documents/`"
-              @update="updateOrCreate"
+              :on-update="updateOrCreate"
               @next="nextHash"
               @previous="previousHash"
             />
@@ -84,6 +84,7 @@
               :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :cdn-url="`${config.public.backendUrl}/documents/`"
               :on-update="updateOrCreate"
+              :modifiable="canModify"
               @next="nextHash"
               @previous="previousHash"
             />
