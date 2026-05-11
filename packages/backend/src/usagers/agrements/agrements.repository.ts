@@ -551,15 +551,14 @@ export const AgrementsRepository = {
       throw new AppError("Agrement non trouvé", { statusCode: 404 });
     }
 
-    const filesToDelete =
-      (agrementOld.agrementFiles || []).filter(
-        (oldFile) =>
-          !agrement.agrementFiles?.some(
-            (newFile) =>
-              newFile.category === oldFile.category &&
-              newFile.fileUuid === oldFile.fileUuid,
-          ),
-      ) ?? [];
+    const filesToDelete = (agrementOld.agrementFiles || []).filter(
+      (oldFile) =>
+        !agrement.agrementFiles?.some(
+          (newFile) =>
+            newFile.category === oldFile.category &&
+            newFile.fileUuid === oldFile.fileUuid,
+        ),
+    );
 
     await withTransaction(async (tx: PoolClient) => {
       // ✅ 1. Mise à jour du principal
