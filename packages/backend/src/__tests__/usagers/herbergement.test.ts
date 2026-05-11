@@ -217,3 +217,34 @@ describe("PUT /hebergement/:id/activate", () => {
     expect(response.status).toBe(400);
   });
 });
+
+describe("PUT /hebergement/:id/desactivate)", () => {
+  it("retourne 200 quand l'utilisateur est autorise sur l'hebergement", async () => {
+    authUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: authUser.id });
+    const hebergementId = await createHebergement({
+      organismeId,
+      userId: authUser.id,
+    });
+    const response = await request(app).put(
+      `/hebergement/${hebergementId}/desactivate`,
+    );
+
+    expect(response.statusCode).toBe(200);
+  });
+
+  it("retourne 403 quand l'utilisateur n'est pas autorise sur l'hebergement", async () => {
+    const owner = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: owner.id });
+    const hebergementId = await createHebergement({
+      organismeId,
+      userId: owner.id,
+    });
+    authUser = await createUsagersUser();
+    const response = await request(app).put(
+      `/hebergement/${hebergementId}/desactivate`,
+    );
+
+    expect(response.statusCode).toBe(403);
+  });
+});
