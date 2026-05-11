@@ -5,9 +5,11 @@ import { AgrementService } from "../../usagers/agrements/agrements.service";
 export const createAgrement = async ({
   organismeId = null,
   agrement = {},
+  userId = null,
 }: {
   agrement?: Partial<AgrementDto> | null;
   organismeId?: number | null;
+  userId?: string | number | null;
 } = {}): Promise<number> => {
   const fixture: AgrementDto = {
     dateObtentionCertificat: new Date("2025-01-01"),
@@ -16,7 +18,7 @@ export const createAgrement = async ({
     regionObtention: "IDF",
     ...agrement,
   } as unknown as AgrementDto;
-  const agrementId = await AgrementService.save(fixture);
+  const agrementId = await AgrementService.save(fixture, userId as string);
   return agrementId;
 };
 
