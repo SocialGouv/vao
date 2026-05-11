@@ -62,6 +62,9 @@
         label="Ajouter des fichiers"
         :modifiable="props.modifiable"
       />
+      <p v-if="filesBilanQualitPerceptionError" class="fr-error-text">
+        {{ filesBilanQualitPerceptionError }}
+      </p>
     </div>
   </div>
   <div class="border fr-p-4v fr-mt-6v">
@@ -112,6 +115,9 @@
         label="Ajouter des fichiers"
         :modifiable="props.modifiable"
       />
+      <p v-if="filesBilanQualitPerspectivesError" class="fr-error-text">
+        {{ filesBilanQualitPerspectivesError }}
+      </p>
     </div>
   </div>
   <div class="border fr-p-4v fr-mt-6v">
@@ -159,6 +165,9 @@
         label="Ajouter des fichiers complémentaires"
         :modifiable="props.modifiable"
       />
+      <p v-if="filesBilanQualitElementsMarquantsError" class="fr-error-text">
+        {{ filesBilanQualitElementsMarquantsError }}
+      </p>
     </div>
   </div>
   <div class="fr-fieldset__element fr-mt-6v">
@@ -210,6 +219,10 @@ const filesBilanQualitComplementaires = ref(
   ) || [],
 );
 
+const filesBilanQualitPerceptionError = ref<string | null>(null);
+const filesBilanQualitPerspectivesError = ref<string | null>(null);
+const filesBilanQualitElementsMarquantsError = ref<string | null>(null);
+
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
   bilanQualPerceptionSensibilite: requiredUnlessBrouillon(
@@ -260,7 +273,29 @@ const {
 } = useField<string | null>("bilanQualElementsMarquants");
 
 const validateForm = async () => {
+  let filesValid = true;
   const result = await handleSubmit((values) => values)();
+
+  filesBilanQualitPerceptionError.value = null;
+  filesBilanQualitPerspectivesError.value = null;
+  filesBilanQualitElementsMarquantsError.value = null;
+
+  if (filesBilanQualitPerception.value.length === 0) {
+    filesBilanQualitPerceptionError.value =
+      "Veuillez ajouter au moins un fichier pour la partie perception et ressenti.";
+    filesValid = false;
+  }
+  if (filesBilanQualitPerspectives.value.length === 0) {
+    filesBilanQualitPerspectivesError.value =
+      "Veuillez ajouter au moins un fichier pour la partie perspectives.";
+    filesValid = false;
+  }
+  if (filesBilanQualitElementsMarquants.value.length === 0) {
+    filesBilanQualitElementsMarquantsError.value =
+      "Veuillez ajouter au moins un fichier pour la partie éléments marquants.";
+    filesValid = false;
+  }
+
   if (result) {
     return {
       ...result,
@@ -269,8 +304,10 @@ const validateForm = async () => {
       filesBilanQualitElementsMarquants:
         filesBilanQualitElementsMarquants.value,
       filesBilanQualitComplementaires: filesBilanQualitComplementaires.value,
+      filesValid,
     };
   }
+
   return result;
 };
 

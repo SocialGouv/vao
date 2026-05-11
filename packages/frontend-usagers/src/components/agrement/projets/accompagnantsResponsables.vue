@@ -68,6 +68,12 @@
         :modifiable="props.modifiable"
         label="Ajouter des fichiers"
       />
+      <p
+        v-if="filesProjetsSejoursCompetencesExperienceError"
+        class="fr-error-text"
+      >
+        {{ filesProjetsSejoursCompetencesExperienceError }}
+      </p>
     </div>
   </div>
   <div class="border fr-p-4v fr-mt-6v">
@@ -107,6 +113,9 @@
         :modifiable="props.modifiable"
         label="Ajouter des fichiers"
       />
+      <p v-if="filesProjetsSejoursMesuresError" class="fr-error-text">
+        {{ filesProjetsSejoursMesuresError }}
+      </p>
     </div>
   </div>
   <!-- <div class="fr-fieldset__element fr-mt-6v">
@@ -168,6 +177,9 @@ const filesProjetsSejoursComplementaires = ref(
   ) || [],
 );
 
+const filesProjetsSejoursCompetencesExperienceError = ref<string | null>(null);
+const filesProjetsSejoursMesuresError = ref<string | null>(null);
+
 const initialValues = {
   statut: props.initAgrement.statut || AGREMENT_STATUT.BROUILLON,
   accompRespNb: props.initAgrement.accompRespNb || 0,
@@ -203,12 +215,26 @@ const {
 } = useField<string>("accompRespRecruteUrg");
 
 const validateForm = async () => {
+  let filesValid = true;
   const formValid = true;
 
+  filesProjetsSejoursCompetencesExperienceError.value = null;
+  filesProjetsSejoursMesuresError.value = null;
+
   try {
-    const result = await handleSubmit((values) => {
-      return values;
-    })();
+    const result = await handleSubmit((values) => values)();
+
+    if (filesProjetsSejoursCompetencesExperience.value.length === 0) {
+      filesProjetsSejoursCompetencesExperienceError.value =
+        "Veuillez ajouter au moins un fichier pour la partie compétences et expériences des accompagnants.";
+      filesValid = false;
+    }
+
+    if (filesProjetsSejoursMesures.value.length === 0) {
+      filesProjetsSejoursMesuresError.value =
+        "Veuillez ajouter au moins un fichier pour la partie mesures envisagées en cas de recrutement d'accompagnants supplémentaires en urgence.";
+      filesValid = false;
+    }
 
     if (!formValid) {
       console.error("Le formulaire n'est pas valide.");
@@ -224,7 +250,9 @@ const validateForm = async () => {
         filesProjetsSejoursMesures: filesProjetsSejoursMesures.value,
         filesProjetsSejoursComplementaires:
           filesProjetsSejoursComplementaires.value,
+        filesValid,
       };
+
       return finalData;
     }
   } catch (error) {

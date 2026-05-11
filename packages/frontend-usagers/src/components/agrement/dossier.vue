@@ -49,10 +49,12 @@
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <FileUpload
-          v-model="fileImmatriculation"
+          :model-value="fileImmatriculation"
           :cdn-url="props.cdnUrl"
           label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
           :modifiable="props.modifiable"
+          :error-message="fileImmatriculationErrorMessage"
+          @update:model-value="setFileImmatriculation"
         />
       </div>
     </div>
@@ -96,20 +98,24 @@
     </TitleWithIcon>
     <div class="fr-fieldset__element">
       <FileUpload
-        v-model="fileAttestationsRespCivile"
+        :model-value="fileAttestationsRespCivile"
         :cdn-url="props.cdnUrl"
         label="Attestation d’assurance responsabilité civile"
         hint="Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
         :modifiable="props.modifiable"
+        :error-message="fileAttestationsRespCivileErrorMessage"
+        @update:model-value="setFileAttestationsRespCivile"
       />
     </div>
     <div class="fr-fieldset__element">
       <FileUpload
-        v-model="fileAttestationsRapatriement"
+        :model-value="fileAttestationsRapatriement"
         :cdn-url="props.cdnUrl"
         label="Attestation d’assurance en cas de rapatriement"
         hint="Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
         :modifiable="props.modifiable"
+        :error-message="fileAttestationsRapatriementErrorMessage"
+        @update:model-value="setFileAttestationsRapatriement"
       />
     </div>
   </div>
@@ -159,6 +165,14 @@ const toaster = useToaster();
 
 const emit = defineEmits(["previous", "next", "update:valid", "update"]);
 
+const getFileByCategory = (category: string): AgrementFilesDto | null => {
+  return (
+    props.initAgrement?.agrementFiles?.find(
+      (file: AgrementFilesDto) => file.category === category,
+    ) || null
+  );
+};
+
 const dateDDMMYYYY = yup
   .string()
   .transform((value, originalValue) => originalValue || "")
@@ -181,6 +195,19 @@ const validationSchema = yup.object({
     yup.string().min(20, "Merci de décrire au moins 20 caractères."),
   ),
   dateObtentionCertificat: requiredUnlessBrouillon(dateDDMMYYYY),
+  fileImmatriculation: yup
+    .mixed()
+    .required("Le certificat d'immatriculation est obligatoire."),
+  fileAttestationsRespCivile: yup
+    .mixed()
+    .required(
+      "L'attestation d'assurance responsabilité civile est obligatoire.",
+    ),
+  fileAttestationsRapatriement: yup
+    .mixed()
+    .required(
+      "L'attestation d'assurance en cas de rapatriement est obligatoire.",
+    ),
 });
 
 const initialValues = {
@@ -189,10 +216,15 @@ const initialValues = {
   dateObtentionCertificat: props.initAgrement.dateObtentionCertificat
     ? formatFR(props.initAgrement.dateObtentionCertificat)
     : "",
+  fileImmatriculation: getFileByCategory(FILE_CATEGORY.IMMATRICUL) || null,
+  fileAttestationsRespCivile:
+    getFileByCategory(FILE_CATEGORY.ASSURRESP) || null,
+  fileAttestationsRapatriement:
+    getFileByCategory(FILE_CATEGORY.ASSURRAPAT) || null,
   //synthese: props.initAgrement.synthese || false,
 };
 
-const { handleSubmit, meta } = useForm({
+const { handleSubmit, meta, validate } = useForm({
   validationSchema,
   initialValues,
   validateOnMount: false,
@@ -212,26 +244,28 @@ const {
   meta: dateObtentionCertificatMeta,
 } = useField<string | null>("dateObtentionCertificat");
 
-const getFileByCategory = (category: string): AgrementFilesDto | null => {
-  return (
-    props.initAgrement?.agrementFiles?.find(
-      (file: AgrementFilesDto) => file.category === category,
-    ) || null
-  );
-};
+const {
+  value: fileImmatriculation,
+  errorMessage: fileImmatriculationErrorMessage,
+  setValue: setFileImmatriculation,
+} = useField<AgrementFilesDto | null>("fileImmatriculation");
+
+const {
+  value: fileAttestationsRespCivile,
+  errorMessage: fileAttestationsRespCivileErrorMessage,
+  setValue: setFileAttestationsRespCivile,
+} = useField<AgrementFilesDto | null>("fileAttestationsRespCivile");
+
+const {
+  value: fileAttestationsRapatriement,
+  errorMessage: fileAttestationsRapatriementErrorMessage,
+  setValue: setFileAttestationsRapatriement,
+} = useField<AgrementFilesDto | null>("fileAttestationsRapatriement");
+
 const filesMotivation = ref(
   props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) => file.category === FILE_CATEGORY.MOTIVATION,
   ) || [],
-);
-const fileImmatriculation = ref(getFileByCategory(FILE_CATEGORY.IMMATRICUL));
-
-const fileAttestationsRespCivile = ref(
-  getFileByCategory(FILE_CATEGORY.ASSURRESP),
-);
-
-const fileAttestationsRapatriement = ref(
-  getFileByCategory(FILE_CATEGORY.ASSURRAPAT),
 );
 
 watch(
@@ -272,6 +306,13 @@ const trySubmit = async () => {
     emit("next");
   }
 };
+
+async function validateDossier() {
+  const result = await validate();
+  return result;
+}
+
+defineExpose({ validateDossier });
 </script>
 
 <style scoped>

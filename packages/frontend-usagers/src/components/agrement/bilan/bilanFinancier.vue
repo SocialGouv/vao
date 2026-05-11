@@ -239,6 +239,7 @@ const validateForm = async () => {
     return {
       ...result,
       filesBilanFinancierQuatreAnnees: filesBilanFinancierQuatreAnnees.value,
+      filesValid: true,
     };
   }
   return result;

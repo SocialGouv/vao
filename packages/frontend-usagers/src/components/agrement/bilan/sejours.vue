@@ -36,6 +36,13 @@
         :agrement-id="props.initAgrement?.id"
         :modifiable="props.modifiable"
       />
+      <p v-if="invalidYears.length > 0" class="fr-error-text fr-mt-2w">
+        {{
+          invalidYears.length > 1
+            ? `Aucun séjour renseigné pour les années ${invalidYears.sort((a, b) => b - a).join(", ")}. Veuillez ajouter au moins un séjour par année.`
+            : `Aucun séjour renseigné pour l'année ${invalidYears[0]}. Veuillez ajouter au moins un séjour.`
+        }}
+      </p>
     </DsfrTabContent>
   </DsfrTabs>
 </template>
@@ -56,6 +63,7 @@ const initialSelectedIndex = 0;
 const selectedTabIndex = ref<number>(initialSelectedIndex);
 const asc = ref<boolean>(true);
 const sejourDetailsRefs = ref<any[]>([]);
+const invalidYears = ref<number[]>([]);
 
 function setSejourDetailsRef(el: any, idx: number) {
   sejourDetailsRefs.value[idx] = el;
@@ -115,6 +123,7 @@ const selectTab = async (idx: number) => {
 async function validateAllYears() {
   let allValid = true;
   const allResults = [];
+  const yearsInvalid: number[] = [];
 
   for (const ref of sejourDetailsRefs.value) {
     if (ref && ref.validateForm) {
@@ -122,12 +131,18 @@ async function validateAllYears() {
       if (!result || result === false) {
         allValid = false;
       } else if (result?.annee) {
+        if (!result.bilanHebergement || result.bilanHebergement.length === 0) {
+          yearsInvalid.push(result.annee);
+        }
         allResults.push(result);
       }
     } else {
       allValid = false;
     }
   }
+
+  // Mise à jour de la ref — déclenche le rendu du message d'erreur dans le template
+  invalidYears.value = yearsInvalid;
 
   if (!allValid) {
     toaster.error({
@@ -137,7 +152,11 @@ async function validateAllYears() {
     return false;
   }
 
-  return allResults;
+  return {
+    data: allResults,
+    sejoursValid: yearsInvalid.length === 0,
+    invalidYears: yearsInvalid,
+  };
 }
 
 defineExpose({

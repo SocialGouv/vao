@@ -58,6 +58,7 @@ const props = defineProps({
   message: { type: String, default: null },
   isDownloading: { type: Boolean, default: false },
   modifiable: { type: Boolean, default: true },
+  onUpdate: { type: Function, required: false, default: null },
 });
 
 const toaster = useToaster();
@@ -83,11 +84,38 @@ const validateAllForms = async (formulaires: FormulaireItem[]) => {
 
   resultats.forEach((result, index) => {
     if (result.status === "fulfilled" && result.value.data) {
-      formsData[result.value.cle] = result.value.data;
+      const { cle, nom, data } = result.value;
+
+      // validation spécifique pour le formulaire des séjours
+      if (cle === "sejours" && data.data !== undefined) {
+        formsData[cle] = data.data;
+
+        if (!data.sejoursValid) {
+          const yearsLabel = data.invalidYears
+            .sort((a: number, b: number) => b - a)
+            .join(", ");
+
+          formsErrors.push(
+            `Le bilan des séjours est incomplet : aucun séjour renseigné pour ${
+              data.invalidYears.length > 1
+                ? `les années ${yearsLabel}`
+                : `l'année ${yearsLabel}`
+            }`,
+          );
+        }
+      } else {
+        formsData[cle] = data;
+
+        if (typeof data.filesValid === "boolean" && !data.filesValid) {
+          formsErrors.push(
+            `Le formulaire "${nom}" contient des erreurs de fichiers`,
+          );
+        }
+        delete formsData[cle].filesValid;
+      }
     } else {
       const nomFormulaire = formulaires[index].nom;
       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
-
       if (result.status === "rejected") {
         console.error(`Erreur dans ${nomFormulaire}:`, result.reason);
       }
@@ -201,7 +229,11 @@ const handleSuivant = async () => {
 
     delete transformedData.statut;
 
-    emit("update", transformedData);
+    if (props.onUpdate) {
+      await props.onUpdate(transformedData);
+    } else {
+      emit("update", transformedData);
+    }
     emit("next");
   } else {
     toaster.error({

@@ -34,11 +34,12 @@
           />
         </template>
         <AgrementDossier
-          v-model:valid="dossierValid"
+          ref="dossierRef"
           class="fr-my-2w"
           :init-agrement="props.initAgrement ?? {}"
           :modifiable="false"
           :cdn-url="cdnUrl"
+          :valid="dossierValid"
         />
         <DsfrButton class="fr-mb-6v fr-mt-6v" @click.prevent="onModifierDossier"
           >Modifier</DsfrButton
@@ -129,11 +130,15 @@ const dossierValid = ref<boolean>(false);
 const bilanValid = ref<boolean>(false);
 const projetValid = ref<boolean>(false);
 const coordonneesRef = ref();
+const dossierRef = ref();
 
-//verification manuelle de l'etape 1 (coordonnees) / check si le fichier pour le proces verbal est bien present
 onMounted(async () => {
   if (coordonneesRef.value?.coordonneesIsValid) {
     coordonneesValid.value = await coordonneesRef.value.coordonneesIsValid();
+  }
+  if (dossierRef.value?.validateDossier) {
+    const result = await dossierRef.value.validateDossier();
+    dossierValid.value = result.valid;
   }
 });
 
@@ -142,6 +147,10 @@ watch(
   async () => {
     if (coordonneesRef.value?.coordonneesIsValid) {
       coordonneesValid.value = await coordonneesRef.value.coordonneesIsValid();
+    }
+    if (dossierRef.value?.validateDossier) {
+      const result = await dossierRef.value.validateDossier();
+      dossierValid.value = result.valid;
     }
   },
   { deep: true },
@@ -156,6 +165,59 @@ watch(
   },
   { immediate: true },
 );
+
+watch(
+  dossierRef,
+  async (newRef) => {
+    if (newRef?.validateDossier) {
+      const result = await newRef.validateDossier();
+      dossierValid.value = result.valid;
+    }
+  },
+  { immediate: true },
+);
+
+const agrementStore = useAgrementStore();
+const { agrementCourant } = storeToRefs(agrementStore);
+
+const toaster = useToaster();
+
+const log = logger("components/agrement/synthese.vue");
+
+async function onNext() {
+  if (!agrementCourant.value?.id) {
+    toaster.error({
+      description: "Aucun agrément trouvé. Veuillez réessayer.",
+      role: "alert",
+    });
+
+    return;
+  }
+  try {
+    const stepDemandeTransmise =
+      props.initAgrement.statut === AGREMENT_STATUT.BROUILLON ? 0 : 1;
+    const success = await agrementStore.changeStatutAgrement({
+      agrementId: props.initAgrement?.id,
+      statut: AGREMENT_STATUT.TRANSMIS,
+    });
+    if (success) {
+      navigateTo(`/demande-agrement-transmise?step=${stepDemandeTransmise}`);
+    } else {
+      toaster.error({
+        description:
+          "Erreur lors de la transmission de votre demande. Veuillez réessayer.",
+        role: "alert",
+      });
+    }
+  } catch (err) {
+    log.w("Erreur lors de la transmission de la demande d'agrément", err);
+    toaster.error({
+      description:
+        "Erreur lors de la transmission de votre demande. Veuillez réessayer.",
+      role: "alert",
+    });
+  }
+}
 
 async function transmitAgrement() {
   emit("update");
