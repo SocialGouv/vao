@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/node";
 import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
@@ -1170,6 +1171,78 @@ describe("upload fichiers", () => {
 
     // Nettoyage
     deleteFileSpy.mockRestore();
+  });
+
+  it("log une erreur Sentry si la suppression d'un fichier orphelin échoue lors de la mise à jour", async () => {
+    const adminUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: adminUser.id });
+
+    const fileUuid1 = crypto.randomUUID();
+    const fileUuid2 = crypto.randomUUID();
+    const agrementData = await buildAgrementFixture({
+      agrementFiles: [
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid1,
+        },
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid2,
+        },
+      ],
+      organismeId,
+    });
+
+    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+      req.decoded = { id: adminUser.id };
+      next();
+    });
+
+    // Mock deleteFile pour throw une erreur
+    const deleteFileSpy = jest
+      .spyOn(DocumentService, "deleteFile")
+      .mockImplementationOnce(() => {
+        throw new Error("Suppression échouée");
+      })
+      .mockImplementationOnce(() => Promise.resolve());
+
+    // Mock Sentry
+    const sentryCaptureSpy = jest
+      .spyOn(Sentry, "captureException")
+      .mockImplementation(() => "mocked-sentry-id");
+    const sentryBreadcrumbSpy = jest
+      .spyOn(Sentry, "addBreadcrumb")
+      .mockImplementation(() => {});
+
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+
+    const updateData = {
+      ...agrementData,
+      agrementFiles: [
+        {
+          agrementId: null,
+          category: FILE_CATEGORY.CHANGEEVOL,
+          fileUuid: fileUuid2,
+        },
+      ],
+      id: agrementId,
+    };
+    const response = await request(app).post(`/agrements/`).send(updateData);
+    expect(response.status).toBe(200);
+
+    // Vérifie que Sentry.captureException a été appelé
+    expect(sentryCaptureSpy).toHaveBeenCalledTimes(1);
+    expect(sentryBreadcrumbSpy).toHaveBeenCalledTimes(1);
+
+    // Nettoyage
+    deleteFileSpy.mockRestore();
+    sentryCaptureSpy.mockRestore();
+    sentryBreadcrumbSpy.mockRestore();
   });
 });
 
