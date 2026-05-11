@@ -27,20 +27,6 @@ jest.mock("../../middlewares/bo-check-role", () =>
     () => (_req: UserRequest, _res: Response, next: NextFunction) => next(),
   ),
 );
-jest.mock("../../middlewares/bo-check-terr-for-account-creation", () =>
-  jest.fn((_req: UserRequest, _res: Response, next: NextFunction) => next()),
-);
-jest.mock("../../middlewares/getDepartements", () =>
-  jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
-    req.departements = [{ value: "75" }] as never;
-    next();
-  }),
-);
-jest.mock("../../middlewares/trackBoUser", () =>
-  jest.fn(
-    () => (_req: UserRequest, _res: Response, next: NextFunction) => next(),
-  ),
-);
 
 beforeAll(async () => {
   await createTestContainer();
@@ -51,20 +37,22 @@ afterAll(async () => {
 });
 
 describe("Domaine /bo-user", () => {
-  it("GET /bo-user retourne une liste", async () => {
-    const adminUser = await createAdminUserValide();
+  describe("GET /bo-user", () => {
+    it("retourne 200 avec la liste des utilisateurs BO", async () => {
+      const adminUser = await createAdminUserValide();
 
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id, roles: ["Compte"] };
-      next();
+      (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+        req.decoded = { id: adminUser.id, roles: ["Compte"] };
+        next();
+      });
+      const response = await request(app).get("/bo-user");
+
+      expect(response.status).toBe(200);
     });
-    const response = await request(app).get("/bo-user");
-
-    expect(response.status).toBe(200);
   });
 
   describe("GET /bo-user/me", () => {
-    it("devrait retourner le user courant avec ses feature flags", async () => {
+    it("retourne 200 avec l'utilisateur courant et ses feature flags", async () => {
       const adminUser = await createAdminUserValide();
 
       (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
@@ -82,20 +70,154 @@ describe("Domaine /bo-user", () => {
     });
   });
 
-  it("couvre les autres endpoints /bo-user", async () => {
-    const responses = await Promise.all([
-      request(app).post("/bo-user/accept-cgu").send({}),
-      request(app).get("/bo-user/extract"),
-      request(app).get("/bo-user/territoires/FRA"),
-      request(app).get("/bo-user/1"),
-      request(app).post("/bo-user/me").send({}),
-      request(app).post("/bo-user").send({}),
-      request(app).post("/bo-user/1").send({}),
-      request(app).get("/bo-user/FRA"),
-    ]);
+  describe("POST /bo-user/me", () => {
+    it("retourne 400 sans contexte JWT valide (decoded manquant)", async () => {
+      const response = await request(app).post("/bo-user/me").send({});
+      expect(response.status).toBe(400);
+    });
 
-    responses.forEach((response) => {
-      expect(response.status).not.toBe(404);
+    it("retourne 200 et met à jour le profil avec historique BO", async () => {
+      const adminUser = await createAdminUserValide();
+
+      (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+        req.decoded = { id: adminUser.id };
+        next();
+      });
+
+      const response = await request(app)
+        .post("/bo-user/me")
+        .send({
+          nom: "NomMisAJourTracking",
+          prenom: adminUser.prenom ?? "Prenom",
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe("Utilisateur mis à jour");
+    });
+  });
+
+  describe("POST /bo-user/accept-cgu", () => {
+    it("retourne 403 sans utilisateur authentifié (JWT sans CGU)", async () => {
+      const response = await request(app).post("/bo-user/accept-cgu").send({});
+
+      expect(response.status).toBe(403);
+    });
+  });
+
+  describe("GET /bo-user/extract", () => {
+    it("retourne 200 avec un export CSV", async () => {
+      const adminUser = await createAdminUserValide();
+
+      (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+        req.decoded = {
+          id: adminUser.id,
+          roles: ["Compte"],
+          territoireCode: "FRA",
+        } as unknown as User;
+        next();
+      });
+
+      const response = await request(app).get("/bo-user/extract");
+
+      expect(response.status).toBe(200);
+      expect(response.headers["content-type"]).toContain("text/csv");
+    });
+  });
+
+  describe("GET /bo-user/territoires/:territoireCode", () => {
+    it("retourne 200 avec les utilisateurs du territoire", async () => {
+      const adminUser = await createAdminUserValide();
+
+      (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+        req.decoded = {
+          id: adminUser.id,
+          roles: ["Compte"],
+          territoireCode: "FRA",
+        } as unknown as User;
+        next();
+      });
+
+      const response = await request(app).get("/bo-user/territoires/FRA");
+
+      expect(response.status).toBe(200);
+      expect(Array.isArray(response.body.users)).toBe(true);
+    });
+  });
+
+  describe("GET /bo-user/:userId", () => {
+    it("retourne 200 avec le détail de l'utilisateur", async () => {
+      const adminUser = await createAdminUserValide();
+
+      (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+        req.decoded = {
+          id: adminUser.id,
+          roles: ["Compte"],
+          territoireCode: "FRA",
+        } as unknown as User;
+        next();
+      });
+
+      const response = await request(app).get(`/bo-user/${adminUser.id}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.id).toBe(adminUser.id);
+    });
+
+    it("retourne 400 pour un identifiant utilisateur inexistant", async () => {
+      const adminUser = await createAdminUserValide();
+
+      (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+        req.decoded = {
+          id: adminUser.id,
+          roles: ["Compte"],
+          territoireCode: "FRA",
+        } as unknown as User;
+        next();
+      });
+
+      const response = await request(app).get("/bo-user/999999999");
+
+      expect(response.status).toBe(400);
+    });
+  });
+
+  describe("POST /bo-user", () => {
+    it("retourne 400 avec un corps vide (validation)", async () => {
+      const adminUser = await createAdminUserValide();
+
+      (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+        req.decoded = {
+          id: adminUser.id,
+          roles: ["Compte"],
+          territoireCode: "FRA",
+        } as unknown as User;
+        next();
+      });
+
+      const response = await request(app).post("/bo-user").send({});
+
+      expect(response.status).toBe(400);
+    });
+  });
+
+  describe("POST /bo-user/:userId", () => {
+    it("retourne 400 avec un corps vide (validation)", async () => {
+      const adminUser = await createAdminUserValide();
+
+      (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
+        req.decoded = {
+          id: adminUser.id,
+          roles: ["Compte"],
+          territoireCode: "FRA",
+        } as unknown as User;
+        next();
+      });
+
+      const response = await request(app)
+        .post(`/bo-user/${adminUser.id}`)
+        .send({});
+
+      expect(response.status).toBe(400);
     });
   });
 });

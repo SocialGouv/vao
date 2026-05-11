@@ -1,8 +1,10 @@
+import { DEMANDE_SEJOUR_STATUTS } from "@vao/shared-bridge";
 import dayjs from "dayjs";
 import { NextFunction, Response } from "express";
 import request from "supertest";
 
 import app from "../../app";
+import { partOrganisme } from "../../helpers/org-part";
 import checkJWT from "../../middlewares/checkJWT";
 import DemandeSejour from "../../services/DemandeSejour";
 import { mailService } from "../../services/mail";
@@ -20,7 +22,10 @@ import {
   createTestContainer,
   removeTestContainer,
 } from "../helpers/testContainer";
-import { createUsagersUserValide } from "../helpers/userHelper";
+import {
+  createAdminUserValide,
+  createUsagersUserValide,
+} from "../helpers/userHelper";
 
 const buildResponsableSejour = () => ({
   adresse: { label: "1 rue Test" },
@@ -165,6 +170,11 @@ describe("Domaine /sejour", () => {
       expect(response.status).toBe(500);
       historiqueSpy.mockRestore();
     });
+
+    it("retourne une erreur quand le declarationId n'est pas un nombre", async () => {
+      const response = await request(app).get("/sejour/historique/abc");
+      expect(response.status).toBeGreaterThanOrEqual(400);
+    });
   });
 
   describe("GET /sejour", () => {
@@ -191,6 +201,47 @@ describe("Domaine /sejour", () => {
         .send({});
       expect(response.status).toBe(400);
     });
+
+    it("retourne 400 quand l'attestation n'est pas validée", async () => {
+      const response = await request(app)
+        .post(`/sejour/depose/${declarationId}`)
+        .send({ attestation: false });
+      expect(response.status).toBe(400);
+    });
+
+    it("retourne 400 quand le schéma de la déclaration est incomplet", async () => {
+      const dsId = await createDemandeSejour({
+        idFonctionnelle: "TST-DEP-SCHEMA",
+        libelle: "Depose schema test",
+        organismeId,
+      });
+      await createHebergement({ declarationId: dsId, organismeId });
+
+      const response = await request(app)
+        .post(`/sejour/depose/${dsId}`)
+        .send({
+          attestation: {
+            at: "2026-01-01",
+            by: { nom: "Doe", prenom: "John" },
+          },
+        });
+      expect(response.status).toBeGreaterThanOrEqual(400);
+    });
+
+    it("retourne 400 quand le statut ne permet pas le dépôt", async () => {
+      const dsId = await createDemandeSejour({
+        idFonctionnelle: "TST-DEP-STATUT",
+        libelle: "Depose statut test",
+        organismeId,
+        statut: "TRANSMISE",
+      });
+      await createHebergement({ declarationId: dsId, organismeId });
+
+      const response = await request(app)
+        .post(`/sejour/depose/${dsId}`)
+        .send({ attestation: { at: "2026-01-01" } });
+      expect([400, 409]).toContain(response.status);
+    });
   });
 
   describe("POST /sejour/:declarationId/copy", () => {
@@ -200,6 +251,20 @@ describe("Domaine /sejour", () => {
         .send({});
       expect(response.status).toBe(200);
       expect(response.body.declarationId).toBeDefined();
+    });
+
+    it("retourne 404 quand le statut ne permet pas la copie", async () => {
+      const dsId = await createDemandeSejour({
+        idFonctionnelle: "TST-COPY-KO",
+        libelle: "Copy KO",
+        organismeId,
+        statut: "REFUSEE",
+      });
+      await createHebergement({ declarationId: dsId, organismeId });
+
+      const response = await request(app).post(`/sejour/${dsId}/copy`).send({});
+
+      expect(response.status).toBe(404);
     });
   });
 
@@ -226,6 +291,142 @@ describe("Domaine /sejour", () => {
       expect(response.status).toBe(500);
       updateSpy.mockRestore();
     });
+
+    it("retourne null/200 quand le type n'est pas reconnu", async () => {
+      const dsId = await createDemandeSejour({
+        idFonctionnelle: "TST-UPD-TYPE",
+        libelle: "Update type inconnu",
+        organismeId,
+      });
+      await createHebergement({ declarationId: dsId, organismeId });
+
+      const response = await request(app)
+        .post(`/sejour/${dsId}`)
+        .send({
+          parametre: { foo: "bar" },
+          type: "type_inconnu",
+        });
+      expect(response.status).toBeGreaterThanOrEqual(200);
+    });
+
+    it("retourne 200 et met à jour les informations vacanciers", async () => {
+      const dsId = await createDemandeSejour({
+        idFonctionnelle: "TST-UPD-VAC",
+        libelle: "Update vacanciers",
+        organismeId,
+      });
+      await createHebergement({ declarationId: dsId, organismeId });
+
+      const response = await request(app)
+        .post(`/sejour/${dsId}`)
+        .send({
+          parametre: { total: 10, tranchesAge: [] },
+          type: "informationsVacanciers",
+        });
+      expect(response.status).toBe(200);
+    });
+
+    it("retourne 200 et met à jour le protocole transport", async () => {
+      const dsId = await createDemandeSejour({
+        idFonctionnelle: "TST-UPD-TRA",
+        libelle: "Update transport",
+        organismeId,
+      });
+      await createHebergement({ declarationId: dsId, organismeId });
+
+      const response = await request(app)
+        .post(`/sejour/${dsId}`)
+        .send({
+          parametre: { id: 1, transports: [] },
+          type: "protocole_transport",
+        });
+      expect(response.status).toBe(200);
+    });
+
+    it("retourne 200 et met à jour le protocole sanitaire", async () => {
+      const dsId = await createDemandeSejour({
+        idFonctionnelle: "TST-UPD-SAN",
+        libelle: "Update sanitaire",
+        organismeId,
+      });
+      await createHebergement({ declarationId: dsId, organismeId });
+
+      const response = await request(app)
+        .post(`/sejour/${dsId}`)
+        .send({
+          parametre: { id: 1, infosSanitaires: {} },
+          type: "protocole_sanitaire",
+        });
+      expect(response.status).toBe(200);
+    });
+
+    it("retourne 200 et envoie le courriel BO pour informationsPersonnel (8J validée)", async () => {
+      await createAdminUserValide({
+        email: `bo-ds8j-${Date.now()}@example.com`,
+        roles: ["DemandeSejour_Ecriture"],
+        ter_code: "75",
+      });
+
+      const personnelAvant = {
+        accompagnants: [{ attestation: true, nom: "Martin", prenom: "Paul" }],
+        encadrants: [{ attestation: true, nom: "Dupont", prenom: "Jean" }],
+      };
+      const organismeJson = {
+        personnePhysique: { nom: "Organisme test" },
+        typeOrganisme: partOrganisme.PERSONNE_PHYSIQUE,
+      };
+      const vacanciersJson = {
+        effectifPrevisionnel: 10,
+        effectifPrevisionnelFemme: 5,
+        effectifPrevisionnelHomme: 5,
+      };
+
+      const dsId = await createDemandeSejour({
+        departementSuivi: "75",
+        idFonctionnelle: `8J${Date.now().toString(36)}`.slice(0, 14),
+        libelle: "Séjour 8J personnel",
+        organisme: organismeJson,
+        organismeId,
+        personnel: personnelAvant,
+        statut: DEMANDE_SEJOUR_STATUTS.VALIDEE_8J,
+        vacanciers: vacanciersJson,
+      });
+      await createHebergement({ declarationId: dsId, organismeId });
+
+      const parametre = {
+        ...personnelAvant,
+        encadrants: [{ attestation: true, nom: "Durand", prenom: "Jean" }],
+      };
+
+      const response = await request(app).post(`/sejour/${dsId}`).send({
+        parametre,
+        type: "informationsPersonnel",
+      });
+
+      expect(response.status).toBe(200);
+      expect(mailService.send).toHaveBeenCalled();
+      const payload = (mailService.send as jest.Mock).mock.calls[0][0];
+      expect(payload.subject).toContain("personnel");
+      expect(payload.html).toContain("Organisme test");
+    });
+
+    it("retourne 200 et met à jour le projet de séjour", async () => {
+      const dsId = await createDemandeSejour({
+        idFonctionnelle: "TST-UPD-OK",
+        libelle: "Update OK",
+        organismeId,
+      });
+      await createHebergement({ declarationId: dsId, organismeId });
+
+      const response = await request(app)
+        .post(`/sejour/${dsId}`)
+        .send({
+          parametre: { description: "Nouveau projet" },
+          type: "projetSejour",
+        });
+
+      expect(response.status).toBe(200);
+    });
   });
 
   describe("POST /sejour", () => {
@@ -233,37 +434,7 @@ describe("Domaine /sejour", () => {
       const response = await request(app).post("/sejour").send({});
       expect(response.status).toBe(400);
     });
-  });
 
-  describe("DELETE /sejour/:declarationId", () => {
-    it("retourne 200 et supprime la declaration au statut BROUILLON", async () => {
-      const declarationToDelete = await createDemandeSejour({
-        idFonctionnelle: "TSTDEL001",
-        libelle: "Declaration a supprimer",
-        organismeId,
-      });
-      await createHebergement({
-        declarationId: declarationToDelete,
-        organismeId,
-      });
-
-      const response = await request(app).delete(
-        `/sejour/${declarationToDelete}`,
-      );
-      expect(response.status).toBe(200);
-    });
-  });
-
-  describe("POST /sejour/cancel/:declarationId", () => {
-    it("retourne 400 quand le statut ne permet pas l'annulation", async () => {
-      const response = await request(app)
-        .post(`/sejour/cancel/${declarationId}`)
-        .send({});
-      expect(response.status).toBe(400);
-    });
-  });
-
-  describe("POST /sejour avec organisme complet", () => {
     it("retourne 200 et crée la déclaration avec un body valide", async () => {
       await markOrganismeComplet(organismeId);
       const response = await request(app)
@@ -297,27 +468,47 @@ describe("Domaine /sejour", () => {
     });
   });
 
-  describe("POST /sejour/:declarationId avec un type valide", () => {
-    it("retourne 200 et met à jour le projet de séjour", async () => {
-      const dsId = await createDemandeSejour({
-        idFonctionnelle: "TST-UPD-OK",
-        libelle: "Update OK",
+  describe("DELETE /sejour/:declarationId", () => {
+    it("retourne 200 et supprime la declaration au statut BROUILLON", async () => {
+      const declarationToDelete = await createDemandeSejour({
+        idFonctionnelle: "TSTDEL001",
+        libelle: "Declaration a supprimer",
         organismeId,
+      });
+      await createHebergement({
+        declarationId: declarationToDelete,
+        organismeId,
+      });
+
+      const response = await request(app).delete(
+        `/sejour/${declarationToDelete}`,
+      );
+      expect(response.status).toBe(200);
+    });
+
+    it("retourne 400 quand la déclaration n'est plus en BROUILLON", async () => {
+      const dsId = await createDemandeSejour({
+        idFonctionnelle: "TST-DEL-KO",
+        libelle: "Del KO",
+        organismeId,
+        statut: "TRANSMISE",
       });
       await createHebergement({ declarationId: dsId, organismeId });
 
-      const response = await request(app)
-        .post(`/sejour/${dsId}`)
-        .send({
-          parametre: { description: "Nouveau projet" },
-          type: "projetSejour",
-        });
+      const response = await request(app).delete(`/sejour/${dsId}`);
 
-      expect(response.status).toBe(200);
+      expect(response.status).toBe(400);
     });
   });
 
-  describe("POST /sejour/cancel/:declarationId avec TRANSMISE", () => {
+  describe("POST /sejour/cancel/:declarationId", () => {
+    it("retourne 400 quand le statut ne permet pas l'annulation", async () => {
+      const response = await request(app)
+        .post(`/sejour/cancel/${declarationId}`)
+        .send({});
+      expect(response.status).toBe(400);
+    });
+
     it("retourne 200 et annule la déclaration", async () => {
       const dsId = await createDemandeSejour({
         idFonctionnelle: "TST-CAN-OK",
@@ -351,174 +542,10 @@ describe("Domaine /sejour", () => {
         .send({});
 
       expect(response.status).toBe(500);
-      expect(response.body.name).toBe("UnexpectedError");
+      expect(response.body.name).toBe("AppError");
     });
-  });
 
-  describe("DELETE /sejour/:declarationId avec un statut différent de BROUILLON", () => {
-    it("retourne 400 quand la déclaration n'est plus en BROUILLON", async () => {
-      const dsId = await createDemandeSejour({
-        idFonctionnelle: "TST-DEL-KO",
-        libelle: "Del KO",
-        organismeId,
-        statut: "TRANSMISE",
-      });
-      await createHebergement({ declarationId: dsId, organismeId });
-
-      const response = await request(app).delete(`/sejour/${dsId}`);
-
-      expect(response.status).toBe(400);
-    });
-  });
-
-  describe("POST /sejour/:declarationId/copy avec un statut non copiable", () => {
-    it("retourne 404 quand le statut ne permet pas la copie", async () => {
-      const dsId = await createDemandeSejour({
-        idFonctionnelle: "TST-COPY-KO",
-        libelle: "Copy KO",
-        organismeId,
-        statut: "REFUSEE",
-      });
-      await createHebergement({ declarationId: dsId, organismeId });
-
-      const response = await request(app).post(`/sejour/${dsId}/copy`).send({});
-
-      expect(response.status).toBe(404);
-    });
-  });
-
-  describe("GET /sejour/historique/:declarationId avec id invalide", () => {
-    it("retourne une erreur quand le declarationId n'est pas un nombre", async () => {
-      const response = await request(app).get("/sejour/historique/abc");
-      expect(response.status).toBeGreaterThanOrEqual(400);
-    });
-  });
-
-  describe("POST /sejour/depose/:declarationId avec attestation false", () => {
-    it("retourne 400 quand l'attestation n'est pas validée", async () => {
-      const response = await request(app)
-        .post(`/sejour/depose/${declarationId}`)
-        .send({ attestation: false });
-      expect(response.status).toBe(400);
-    });
-  });
-
-  describe("POST /sejour/depose/:declarationId avec attestation truthy", () => {
-    it("retourne 400 quand le schéma de la déclaration est incomplet", async () => {
-      const dsId = await createDemandeSejour({
-        idFonctionnelle: "TST-DEP-SCHEMA",
-        libelle: "Depose schema test",
-        organismeId,
-      });
-      await createHebergement({ declarationId: dsId, organismeId });
-
-      const response = await request(app)
-        .post(`/sejour/depose/${dsId}`)
-        .send({
-          attestation: {
-            at: "2026-01-01",
-            by: { nom: "Doe", prenom: "John" },
-          },
-        });
-      expect(response.status).toBeGreaterThanOrEqual(400);
-    });
-  });
-
-  describe("POST /sejour/depose/:declarationId avec un statut non autorisé", () => {
-    it("retourne 400 quand le statut ne permet pas le dépôt", async () => {
-      const dsId = await createDemandeSejour({
-        idFonctionnelle: "TST-DEP-STATUT",
-        libelle: "Depose statut test",
-        organismeId,
-        statut: "TRANSMISE",
-      });
-      await createHebergement({ declarationId: dsId, organismeId });
-
-      const response = await request(app)
-        .post(`/sejour/depose/${dsId}`)
-        .send({ attestation: { at: "2026-01-01" } });
-      expect([400, 409]).toContain(response.status);
-    });
-  });
-
-  describe("POST /sejour/:declarationId avec un type non géré", () => {
-    it("retourne null/200 quand le type n'est pas reconnu", async () => {
-      const dsId = await createDemandeSejour({
-        idFonctionnelle: "TST-UPD-TYPE",
-        libelle: "Update type inconnu",
-        organismeId,
-      });
-      await createHebergement({ declarationId: dsId, organismeId });
-
-      const response = await request(app)
-        .post(`/sejour/${dsId}`)
-        .send({
-          parametre: { foo: "bar" },
-          type: "type_inconnu",
-        });
-      expect(response.status).toBeGreaterThanOrEqual(200);
-    });
-  });
-
-  describe("POST /sejour/:declarationId update informationsVacanciers", () => {
-    it("retourne 200 et met à jour les informations vacanciers", async () => {
-      const dsId = await createDemandeSejour({
-        idFonctionnelle: "TST-UPD-VAC",
-        libelle: "Update vacanciers",
-        organismeId,
-      });
-      await createHebergement({ declarationId: dsId, organismeId });
-
-      const response = await request(app)
-        .post(`/sejour/${dsId}`)
-        .send({
-          parametre: { total: 10, tranchesAge: [] },
-          type: "informationsVacanciers",
-        });
-      expect(response.status).toBe(200);
-    });
-  });
-
-  describe("POST /sejour/:declarationId update protocole_transport", () => {
-    it("retourne 200 et met à jour le protocole transport", async () => {
-      const dsId = await createDemandeSejour({
-        idFonctionnelle: "TST-UPD-TRA",
-        libelle: "Update transport",
-        organismeId,
-      });
-      await createHebergement({ declarationId: dsId, organismeId });
-
-      const response = await request(app)
-        .post(`/sejour/${dsId}`)
-        .send({
-          parametre: { id: 1, transports: [] },
-          type: "protocole_transport",
-        });
-      expect(response.status).toBe(200);
-    });
-  });
-
-  describe("POST /sejour/:declarationId update protocole_sanitaire", () => {
-    it("retourne 200 et met à jour le protocole sanitaire", async () => {
-      const dsId = await createDemandeSejour({
-        idFonctionnelle: "TST-UPD-SAN",
-        libelle: "Update sanitaire",
-        organismeId,
-      });
-      await createHebergement({ declarationId: dsId, organismeId });
-
-      const response = await request(app)
-        .post(`/sejour/${dsId}`)
-        .send({
-          parametre: { id: 1, infosSanitaires: {} },
-          type: "protocole_sanitaire",
-        });
-      expect(response.status).toBe(200);
-    });
-  });
-
-  describe("POST /sejour/cancel/:declarationId sans déclaration", () => {
-    it("retourne 404 quand la déclaration n'existe pas", async () => {
+    it("retourne 403 quand la déclaration a été supprimée (accès refusé par le middleware)", async () => {
       const dsTemp = await createDemandeSejour({
         idFonctionnelle: "TST-CAN-NF",
         libelle: "Cancel inexistant",
@@ -531,7 +558,8 @@ describe("Domaine /sejour", () => {
       const response = await request(app)
         .post(`/sejour/cancel/${dsTemp}`)
         .send({});
-      expect([403, 404]).toContain(response.status);
+      expect(response.status).toBe(403);
+      expect(response.body.name).toBe("AppError");
     });
   });
 });

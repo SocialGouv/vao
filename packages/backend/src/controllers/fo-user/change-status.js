@@ -80,7 +80,7 @@ module.exports = async function changeStatus(req, res, next) {
     }
   }
   try {
-    User.addAsyncUserHistoric({
+    await User.addAsyncUserHistoric({
       action: TRACKING_ACTIONS.modification,
       data: {
         newData: { motif, status, userConnectedId, userId },

@@ -1,4 +1,4 @@
-const runLocal = process.env.E2E_LOCAL === "true" || false;
+export const runLocal = process.env.E2E_LOCAL === "true" || false;
 const baseUrl =
   process.env.E2E_BASE_URL || "vao-main.ovh.fabrique.social.gouv.fr";
 

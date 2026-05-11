@@ -116,14 +116,14 @@ beforeEach(() => {
 });
 
 describe("GET /organisme", () => {
-  it("retourne l'organisme lié à l'utilisateur", async () => {
+  it("retourne 200 et l'organisme lié à l'utilisateur", async () => {
     const response = await request(app).get("/organisme");
 
     expect(response.status).toBe(200);
     expect(response.body.organisme.organismeId).toBe(organismeId);
   });
 
-  it("retourne organisme null si aucun organisme n'est lié", async () => {
+  it("retourne 200 et organisme null si aucun organisme n'est lié", async () => {
     const orphanUser = await createUsagersUser();
     checkJWTMock.mockImplementationOnce(
       (req: UserRequest, _res: Response, next: NextFunction) => {
@@ -140,7 +140,7 @@ describe("GET /organisme", () => {
 });
 
 describe("GET /organisme/:organismeId", () => {
-  it("retourne l'organisme lorsque l'utilisateur est autorisé", async () => {
+  it("retourne 200 et l'organisme lorsque l'utilisateur est autorisé", async () => {
     const response = await request(app).get(`/organisme/${organismeId}`);
 
     expect(response.status).toBe(200);
@@ -169,7 +169,7 @@ describe("GET /organisme/:organismeId", () => {
 });
 
 describe("GET /organisme/siret/:siret", () => {
-  it("retourne l'organisme pour un SIRET présent en base", async () => {
+  it("retourne 200 et l'organisme pour un SIRET présent en base", async () => {
     const response = await request(app).get(
       `/organisme/siret/${organismeFixtureSiret}`,
     );
@@ -178,7 +178,7 @@ describe("GET /organisme/siret/:siret", () => {
     expect(response.body.organisme.organismeId).toBe(organismeId);
   });
 
-  it("retourne organisme null pour un SIRET inconnu", async () => {
+  it("retourne 200 et organisme null pour un SIRET inconnu", async () => {
     const response = await request(app).get("/organisme/siret/00000000000000");
 
     expect(response.status).toBe(200);
@@ -187,7 +187,7 @@ describe("GET /organisme/siret/:siret", () => {
 });
 
 describe("POST /organisme", () => {
-  it("crée un organisme personne physique et lie l'utilisateur", async () => {
+  it("retourne 200 et crée un organisme personne physique et lie l'utilisateur", async () => {
     const postUser = await createUsagersUser();
     checkJWTMock.mockImplementationOnce(
       (req: UserRequest, _res: Response, next: NextFunction) => {
@@ -272,6 +272,64 @@ describe("POST /organisme/:organismeId", () => {
       });
 
     expect(response.status).toBe(403);
+  });
+
+  it("retourne 200 et remplace la personne physique lorsque le SIRET change (historique suppression + création)", async () => {
+    const postUser = await createUsagersUser();
+    const siretInitial = generateRandomSiret();
+    const siretNouveau = generateRandomSiret();
+    const orgPourChangementSiret = await createOrganisme({
+      organisme: {
+        nomNaissance: "SiretChangeNaissance",
+        nomUsage: "SiretChangeUsage",
+        prenom: "SiretChangePrenom",
+        profession: "Construction",
+        siret: siretInitial,
+      },
+      userId: postUser.id,
+    });
+    checkJWTMock.mockImplementationOnce(
+      (req: UserRequest, _res: Response, next: NextFunction) => {
+        req.decoded = { id: postUser.id } as unknown as User;
+        next();
+      },
+    );
+
+    const stamp = Date.now();
+    const response = await request(app)
+      .post(`/organisme/${orgPourChangementSiret}`)
+      .send({
+        parametre: {
+          adresseDomicile: {
+            cleInsee: "12345",
+            codeInsee: "12345",
+            codePostal: "75001",
+            departement: "75",
+            label: "10 rue Siret",
+            lat: 48.8566,
+            long: 2.3522,
+          },
+          adresseIdentique: true,
+          adresseSiege: {
+            cleInsee: "12345",
+            codeInsee: "12345",
+            codePostal: "75001",
+            departement: "75",
+            label: "10 rue Siret",
+            lat: 48.8566,
+            long: 2.3522,
+          },
+          nomNaissance: `SiretChangeNaissance${stamp}`,
+          nomUsage: `SiretChangeUsage${stamp}`,
+          prenom: "SiretChangePrenom",
+          profession: "Construction",
+          siret: siretNouveau,
+          telephone: "0102030405",
+        },
+        type: partOrganisme.PERSONNE_PHYSIQUE,
+      });
+
+    expect(response.status).toBe(200);
   });
 });
 

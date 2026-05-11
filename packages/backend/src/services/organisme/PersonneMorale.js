@@ -241,7 +241,7 @@ module.exports.create = async (client, organismeId, parametre, userId) => {
     parametre?.etablissementPrincipal?.email ?? null,
   ]);
 
-  addHistoric({
+  await addHistoric({
     action: TRACKING_ACTIONS.creation,
     data: { newData: { ...parametre, organismeId } },
     entity: TRACKING_ENTITIES.personneMorale,
@@ -268,7 +268,7 @@ module.exports.createOrUpdate = async (
   if (rowCount === 0 || parametre?.siret !== personneMorale[0]?.siret) {
     if (rowCount !== 0) {
       await client.query(query.changeCurrent, [personneMorale[0].id]);
-      addHistoric({
+      await addHistoric({
         action: TRACKING_ACTIONS.deletion,
         data: { newData: parametre, oldData: personneMorale[0] },
         entity: TRACKING_ENTITIES.personneMorale,
@@ -315,7 +315,7 @@ module.exports.createOrUpdate = async (
     parametre?.etablissementPrincipal?.pays ?? null,
     parametre?.etablissementPrincipal?.email ?? null,
   ]);
-  addHistoric({
+  await addHistoric({
     action: TRACKING_ACTIONS.modification,
     data: { newData: parametre, oldData: personneMorale[0] ?? {} },
     entity: TRACKING_ENTITIES.personneMorale,
