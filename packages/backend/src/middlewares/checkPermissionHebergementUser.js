@@ -1,3 +1,5 @@
+const { asyncErrorHandler } = require("../utils/asyncErrorHandler");
+
 const logger = require("../utils/logger");
 const AppError = require("../utils/error").default;
 const Hebergement = require("../services/hebergement/Hebergement");
@@ -29,4 +31,4 @@ async function checkPermissionHebergementUser(req, _res, next) {
   next();
 }
 
-module.exports = checkPermissionHebergementUser;
+module.exports = asyncErrorHandler(checkPermissionHebergementUser);
