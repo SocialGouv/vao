@@ -3,7 +3,6 @@
     <a
       href="https://jedonnemonavis.numerique.gouv.fr/Demarches/4077?button=4503"
       rel="noopener noreferrer"
-      title="Je donne mon avis"
       target="_blank"
     >
       <img
@@ -11,6 +10,7 @@
         alt="Je donne mon avis"
         style="display: block"
       />
+      <span class="fr-sr-only"> - nouvel onglet </span>
     </a>
   </div>
 </template>
