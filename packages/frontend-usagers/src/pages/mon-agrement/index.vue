@@ -175,7 +175,7 @@ const agrementAnneeRenouvellement = computed(() => {
 });
 
 useHead({
-  title: "Déclaration de séjour détaillée | Vacances Adaptées Organisées",
+  title: "Détail de mon agrément | Vacances Adaptées Organisées",
   meta: [
     {
       name: "description",

@@ -155,13 +155,15 @@ export const AgrementController = {
     const agrement = req.validatedBody!;
     const { id: usagerUserId } = req.decoded!;
     try {
-      const id = await AgrementService.save(agrement);
+      const id = await AgrementService.save(agrement, usagerUserId);
       log.i("Agrement saved", { id });
 
       await AgrementService.trackEvent({
         agrementId: id,
         source: "usager",
-        type: AGREMENT_HISTORY_TYPE.CREATION,
+        type: agrement?.id
+          ? AGREMENT_HISTORY_TYPE.MODIFICATION
+          : AGREMENT_HISTORY_TYPE.CREATION,
         usagerUserId: Number(usagerUserId),
       });
 

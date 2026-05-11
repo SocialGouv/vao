@@ -712,21 +712,18 @@ export const AgrementsRepository = {
   async updateStatut({
     agrementId,
     statut,
-    dateDepot,
     tx,
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
-    dateDepot: Date | null;
     tx: PoolClient;
   }): Promise<number | null> {
     const result = await tx.query(
       `UPDATE front.agrements
       SET statut = $1,
-        updated_at = NOW(),
-        date_depot = $3
-      WHERE id = $2`,
-      [statut, agrementId, dateDepot],
+        updated_at = NOW()
+        WHERE id = $2`,
+      [statut, agrementId],
     );
     return result.rowCount;
   },

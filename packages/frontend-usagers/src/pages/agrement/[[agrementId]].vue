@@ -99,6 +99,7 @@
               :init-agrement="agrementStore.agrementEnTraitement ?? {}"
               :modifiable="false"
               :cdn-url="`${config.public.backendUrl}/documents/`"
+              @update="saveAndTransmitAgrement"
             />
           </div>
         </div>
@@ -125,7 +126,7 @@ const agrementStore = useAgrementStore();
 const organismeStore = useOrganismeStore();
 const documentStore = useDocumentStore();
 const config = useRuntimeConfig();
-
+const log = logger("components/agrement/[[agrementId]].vue");
 const readOnly = false;
 
 type AgrementFormValues = Partial<AgrementDto> & {
@@ -133,6 +134,34 @@ type AgrementFormValues = Partial<AgrementDto> & {
 };
 
 const canModify = true;
+
+async function saveAndTransmitAgrement() {
+  try {
+    const stepDemandeTransmise =
+      agrementStore.agrementEnTraitement?.statut === AGREMENT_STATUT.BROUILLON
+        ? 0
+        : 1;
+    const success = await updateOrCreate({
+      statut: AGREMENT_STATUT.TRANSMIS,
+    });
+    if (success) {
+      navigateTo(`/demande-agrement-transmise?step=${stepDemandeTransmise}`);
+    } else {
+      toaster.error({
+        description:
+          "Erreur lors de la transmission de votre demande. Veuillez réessayer.",
+        role: "alert",
+      });
+    }
+  } catch (err) {
+    log.w("Erreur lors de la transmission de la demande d'agrément", err);
+    toaster.error({
+      description:
+        "Erreur lors de la transmission de votre demande. Veuillez réessayer.",
+      role: "alert",
+    });
+  }
+}
 
 async function updateOrCreate(formValues: AgrementFormValues) {
   const updatedData: AgrementFormValues = { ...formValues };
@@ -234,6 +263,7 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       titleTag: "h2",
       description: "Données enregistrées avec succès !",
     });
+    return true;
   } catch (error) {
     toaster.error({
       titleTag: "h2",

@@ -103,7 +103,7 @@
       :disabled="
         !(coordonneesValid && projetValid && dossierValid && bilanValid)
       "
-      @click.prevent="onNext"
+      @click.prevent="transmitAgrement"
       >Confirmer ma demande d'agrément</DsfrButton
     >
   </div>
@@ -120,6 +120,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
 });
+
+const emit = defineEmits(["update"]);
 
 const expandedIndex = ref<number>(-1);
 const coordonneesValid = ref<boolean>(false);
@@ -155,46 +157,8 @@ watch(
   { immediate: true },
 );
 
-const agrementStore = useAgrementStore();
-const { agrementCourant } = storeToRefs(agrementStore);
-
-const toaster = useToaster();
-
-const log = logger("components/agrement/synthese.vue");
-
-async function onNext() {
-  if (!agrementCourant.value?.id) {
-    toaster.error({
-      description: "Aucun agrément trouvé. Veuillez réessayer.",
-      role: "alert",
-    });
-
-    return;
-  }
-  try {
-    const stepDemandeTransmise =
-      props.initAgrement.statut === AGREMENT_STATUT.BROUILLON ? 0 : 1;
-    const success = await agrementStore.changeStatutAgrement({
-      agrementId: props.initAgrement?.id,
-      statut: AGREMENT_STATUT.TRANSMIS,
-    });
-    if (success) {
-      navigateTo(`/demande-agrement-transmise?step=${stepDemandeTransmise}`);
-    } else {
-      toaster.error({
-        description:
-          "Erreur lors de la transmission de votre demande. Veuillez réessayer.",
-        role: "alert",
-      });
-    }
-  } catch (err) {
-    log.w("Erreur lors de la transmission de la demande d'agrément", err);
-    toaster.error({
-      description:
-        "Erreur lors de la transmission de votre demande. Veuillez réessayer.",
-      role: "alert",
-    });
-  }
+async function transmitAgrement() {
+  emit("update");
 }
 
 function onModifierCoordonnees() {
