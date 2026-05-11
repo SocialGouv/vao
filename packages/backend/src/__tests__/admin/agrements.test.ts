@@ -66,6 +66,7 @@ describe("GET /admin/agrements", () => {
     const agrementId1 = await createAgrement({
       agrement: agrementData,
       organismeId: organismeId1,
+      userId: authUser.id,
     });
     authUser2 = await createUsagersUser();
     const organismeId2 = await createOrganisme({ userId: authUser2.id });
@@ -75,6 +76,7 @@ describe("GET /admin/agrements", () => {
     const agrementId2 = await createAgrement({
       agrement: agrementData2,
       organismeId: organismeId2,
+      userId: authUser2.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const response = await request(app).get(`/admin/agrements`);
@@ -95,6 +97,7 @@ describe("GET /admin/agrements", () => {
     await createAgrement({
       agrement: agrementData,
       organismeId: organismeId1,
+      userId: authUser.id,
     });
     authUser2 = await createUsagersUser();
     const organismeId2 = await createOrganisme({ userId: authUser2.id });
@@ -104,6 +107,7 @@ describe("GET /admin/agrements", () => {
     await createAgrement({
       agrement: agrementData2,
       organismeId: organismeId2,
+      userId: authUser2.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const response = await request(app).get(
@@ -138,6 +142,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
 
@@ -176,6 +181,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const uuid = await createDocument({ userId: null });
@@ -219,6 +225,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     await createTerritoire({ territoireCode: "IDF" });
 
@@ -271,6 +278,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     await createTerritoire({ territoireCode: "IDF" });
 
@@ -340,6 +348,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     await createTerritoire({ territoireCode: "IDF" });
 
@@ -429,6 +438,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const response = await request(app)
@@ -452,6 +462,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     await createTerritoire({ territoireCode: "IDF" });
 
@@ -498,6 +509,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const response = await request(app)
@@ -525,6 +537,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
 
@@ -550,6 +563,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
 
@@ -569,6 +583,7 @@ describe("GET /admin/agrements/:id", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
 
@@ -597,6 +612,7 @@ describe("GET /admin/agrements/history/:agrementId", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     await request(app)
@@ -622,6 +638,7 @@ describe("GET /admin/agrements/history/:agrementId", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const response = await request(app).get(
@@ -650,6 +667,7 @@ describe("Messagerie d'agrément", () => {
     agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
+      userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
   });

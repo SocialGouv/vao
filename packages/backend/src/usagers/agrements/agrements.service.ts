@@ -121,14 +121,131 @@ export const AgrementService = {
       });
     }
   },
-  async save(agrement: AgrementDto): Promise<number> {
+  async save(agrement: AgrementDto, userId: string): Promise<number> {
     agrement.dateFinValidite = addYears(agrement?.dateObtention, 5);
     let agrementId = null;
-
     if (agrement && agrement?.id) {
+      const agrementAvant = await AgrementsRepository.getById({
+        agrementId: agrement?.id,
+        withDetails: false,
+      });
+      const premiereTransmission =
+        agrementAvant?.statut === AGREMENT_STATUT.BROUILLON &&
+        agrement.statut === AGREMENT_STATUT.TRANSMIS;
+      // Ajout de la date de dépôt lorqu'il s'agit de la première transmission
+      agrement.dateDepot = premiereTransmission
+        ? new Date()
+        : agrement?.dateDepot;
+
       agrementId = await AgrementsRepository.update({
         agrement,
       });
+      if (agrement.statut === AGREMENT_STATUT.TRANSMIS) {
+        try {
+          await AgrementService.trackEvent({
+            agrementId,
+            source: "usager",
+            type: AGREMENT_HISTORY_TYPE.TRANSMISSION,
+            typePrecision: AGREMENT_STATUT.TRANSMIS,
+            usagerUserId: Number(userId),
+          });
+        } catch (e) {
+          log.w(
+            "Impossible de tracer l'historique. AgrementId=" + agrementId,
+            e,
+          );
+        }
+
+        const email = await AgrementsRepository.getUserMail(agrementId);
+        const date = new Date().toLocaleDateString("fr-FR", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        });
+
+        let organismeName = "";
+        let siret = "";
+        let nomObtentionRegion = null;
+        let emailRegion: string | null = null;
+
+        try {
+          const organisme: OrganismeDto | null = await Organisme.getOne({
+            "o.id": agrement.organismeId,
+          });
+
+          if (!organisme) {
+            log.w(`Organisme introuvable pour agrementId=${agrementId}`);
+          } else if (
+            organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_MORALE &&
+            organisme.personneMorale
+          ) {
+            organismeName = organisme.personneMorale.raisonSociale || "";
+            siret = organisme.personneMorale.siret || "";
+          } else if (
+            organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_PHYSIQUE &&
+            organisme.personnePhysique
+          ) {
+            organismeName =
+              organisme.personnePhysique.nomUsage?.trim() ||
+              organisme.personnePhysique.nomNaissance ||
+              "";
+            siret = organisme.personnePhysique.siret || "";
+          }
+
+          const codeObtentionRegion = agrement.regionObtention || null;
+          if (codeObtentionRegion) {
+            const region = await Region.fetchOne(codeObtentionRegion);
+            nomObtentionRegion = region.text;
+            emailRegion = await getEmailRegion(codeObtentionRegion);
+          }
+        } catch (e) {
+          log.w(
+            "Impossible d'envoyer l'email à la région : informations manquantes ou erreur lors de la récupération. AgrementId=" +
+              agrementId,
+            e,
+          );
+        }
+
+        if (emailRegion) {
+          try {
+            const mailToSend = premiereTransmission
+              ? // Première Transmission
+                AgrementMailAdmin.sendStatutTransmisRegionMail({
+                  agrementId,
+                  date,
+                  email: emailRegion,
+                  organismeName,
+                  siret,
+                })
+              : // Transmission après demande de modification
+                AgrementMailAdmin.sendStatutModificationTransmisRegionMail({
+                  agrementId,
+                  email: emailRegion,
+                  organismeName,
+                });
+            await mailService.send(mailToSend);
+          } catch (e) {
+            log.w("Erreur lors de l'envoi de l'email à la région", e);
+          }
+        }
+
+        if (!email) {
+          log.w("Aucun email trouvé pour l'agrément", agrementId);
+          return agrementId;
+        }
+
+        try {
+          await mailService.send(
+            AgrementMailUsagers.sendStatutTransmisMail({
+              date,
+              email,
+              regionDreets: nomObtentionRegion,
+            }),
+          );
+        } catch (e) {
+          log.w("Erreur lors de l'envoi de l'email de transmission", e);
+        }
+      }
       log.d("updated meta values - DONE", { agrementId });
     } else {
       agrementId = await AgrementsRepository.create({
@@ -136,6 +253,7 @@ export const AgrementService = {
       });
       log.d("Add meta values - DONE", { agrementId });
     }
+
     return agrementId;
   },
   async trackEvent(event: {
@@ -157,23 +275,9 @@ export const AgrementService = {
     statut: AGREMENT_STATUT;
     usagerUserId: string;
   }): Promise<boolean> {
-    const agrement = await AgrementsRepository.getById({
-      agrementId,
-      withDetails: false,
-    });
-    if (!agrement) {
-      log.w("Agrement non trouvé", agrementId);
-      throw new AppError("Agrement non trouvé", { statusCode: 404 });
-    }
-    const dateDepot = agrement?.dateDepot
-      ? agrement?.dateDepot
-      : statut === AGREMENT_STATUT.TRANSMIS
-        ? new Date()
-        : null;
     await withTransaction(async (tx: PoolClient) => {
       const updated = await AgrementsRepository.updateStatut({
         agrementId,
-        dateDepot,
         statut,
         tx,
       });
@@ -189,117 +293,14 @@ export const AgrementService = {
       });
     });
 
-    let eventType: AGREMENT_HISTORY_TYPE;
-    if (statut === AGREMENT_STATUT.TRANSMIS) {
-      eventType = AGREMENT_HISTORY_TYPE.TRANSMISSION;
-    } else {
-      eventType = AGREMENT_HISTORY_TYPE.STATUT_CHANGE;
-    }
-
     await AgrementService.trackEvent({
       agrementId,
       source: "usager",
-      type: eventType,
+      type: AGREMENT_HISTORY_TYPE.STATUT_CHANGE,
       typePrecision: statut,
       usagerUserId: Number(usagerUserId),
     });
 
-    if (statut === AGREMENT_STATUT.TRANSMIS) {
-      const email = await AgrementsRepository.getUserMail(agrementId);
-      const date = new Date().toLocaleDateString("fr-FR", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
-
-      let organismeName = "";
-      let siret = "";
-      let nomObtentionRegion = null;
-      let emailRegion: string | null = null;
-
-      try {
-        const organisme: OrganismeDto | null = await Organisme.getOne({
-          "o.id": agrement.organismeId,
-        });
-
-        if (!organisme) {
-          log.w(`Organisme introuvable pour agrementId=${agrementId}`);
-        } else if (
-          organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_MORALE &&
-          organisme.personneMorale
-        ) {
-          organismeName = organisme.personneMorale.raisonSociale || "";
-          siret = organisme.personneMorale.siret || "";
-        } else if (
-          organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_PHYSIQUE &&
-          organisme.personnePhysique
-        ) {
-          organismeName =
-            organisme.personnePhysique.nomUsage?.trim() ||
-            organisme.personnePhysique.nomNaissance ||
-            "";
-          siret = organisme.personnePhysique.siret || "";
-        }
-
-        const codeObtentionRegion = agrement.regionObtention || null;
-        if (codeObtentionRegion) {
-          const region = await Region.fetchOne(codeObtentionRegion);
-          nomObtentionRegion = region.text;
-          emailRegion = await getEmailRegion(codeObtentionRegion);
-        }
-      } catch (e) {
-        log.w(
-          "Impossible d'envoyer l'email à la région : informations manquantes ou erreur lors de la récupération. AgrementId=" +
-            agrementId,
-          e,
-        );
-      }
-
-      if (emailRegion) {
-        try {
-          const mailToSend =
-            agrement.statut === AGREMENT_STATUT.BROUILLON
-              ? // Première Transmission
-                AgrementMailAdmin.sendStatutTransmisRegionMail({
-                  agrementId,
-                  date,
-                  email: emailRegion,
-                  organismeName,
-                  siret,
-                })
-              : // Transmission après demande de modification
-                AgrementMailAdmin.sendStatutModificationTransmisRegionMail({
-                  agrementId,
-                  email: emailRegion,
-                  organismeName,
-                });
-          await mailService.send(mailToSend);
-        } catch (e) {
-          log.w("Erreur lors de l'envoi de l'email à la région", e);
-        }
-      }
-      // Envoie de mail à l'OVA uniquement lors de la première transmission
-      if (agrement.statut !== AGREMENT_STATUT.BROUILLON) {
-        return true;
-      }
-
-      if (!email) {
-        log.w("Aucun email trouvé pour l'agrément", agrementId);
-        return true;
-      }
-
-      try {
-        await mailService.send(
-          AgrementMailUsagers.sendStatutTransmisMail({
-            date,
-            email,
-            regionDreets: nomObtentionRegion,
-          }),
-        );
-      } catch (e) {
-        log.w("Erreur lors de l'envoi de l'email de transmission", e);
-      }
-    }
     return true;
   },
   async updateSvaTimer({

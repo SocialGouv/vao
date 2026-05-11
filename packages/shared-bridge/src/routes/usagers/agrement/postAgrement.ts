@@ -3,7 +3,7 @@ import * as yup from "yup";
 import type { BasicRoute, RouteResponseBody, RouteSchema } from "../../..";
 import { AGREMENT_STATUT } from "../../../constantes/agrement";
 import { FILE_CATEGORY } from "../../../constantes/file";
-import type { AgrementDto } from "../../../dto";
+import type { AgrementDto, AgrementFilesDto } from "../../../dto";
 
 export interface PostAgrementRoute extends BasicRoute {
   method: "POST";
@@ -11,6 +11,19 @@ export interface PostAgrementRoute extends BasicRoute {
   body: AgrementDto;
   response: RouteResponseBody<{ id: number | null }>;
 }
+
+const REQUIRED_FILE_CATEGORIES: FILE_CATEGORY[] = [
+  FILE_CATEGORY.PROCVERBAL,
+  FILE_CATEGORY.MOTIVATION,
+  FILE_CATEGORY.IMMATRICUL,
+  FILE_CATEGORY.ASSURRESP,
+  FILE_CATEGORY.ASSURRAPAT,
+  FILE_CATEGORY.BILANQUALITPERCEPTION,
+  FILE_CATEGORY.BILANQUALITPERSPECTIVE,
+  FILE_CATEGORY.BILANQUALITELEMARQ,
+  FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
+  FILE_CATEGORY.PROJETSSEJOURSMESURES,
+];
 
 const requiredUnlessBrouillon = (field: yup.AnySchema) =>
   field.when("statut", {
@@ -105,21 +118,50 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
         )
         .nullable(),
     ),
-    agrementFiles: requiredUnlessBrouillon(
-      yup
-        .array(
-          yup.object({
-            category: requiredUnlessBrouillon(
-              yup
-                .mixed<FILE_CATEGORY>()
-                .oneOf(Object.values(FILE_CATEGORY))
-                .nullable(),
-            ),
-            fileUuid: requiredUnlessBrouillon(yup.string().uuid().nullable()),
+    agrementFiles: yup
+      .array(
+        yup.object({
+          category: requiredUnlessBrouillon(
+            yup
+              .mixed<FILE_CATEGORY>()
+              .oneOf(Object.values(FILE_CATEGORY))
+              .nullable(),
+          ),
+          fileUuid: requiredUnlessBrouillon(yup.string().uuid().nullable()),
+        }),
+      )
+      .nullable()
+      .when("statut", {
+        is: (val: string) =>
+          val !== AGREMENT_STATUT.BROUILLON && val !== AGREMENT_STATUT.VALIDE,
+
+        otherwise: (schema) => schema.nullable(),
+
+        then: (schema) =>
+          schema.test("required-file-categories", function (files) {
+            if (!files) {
+              return this.createError({
+                message: "Des fichiers obligatoires sont manquants",
+              });
+            }
+
+            const categories = files
+              .map((f: Partial<AgrementFilesDto>) => f.category)
+              .filter(Boolean);
+
+            const missing = REQUIRED_FILE_CATEGORIES.filter(
+              (category) => !categories.includes(category),
+            );
+
+            if (missing.length > 0) {
+              return this.createError({
+                message: `Catégories obligatoires manquantes : ${missing.join(", ")}`,
+              });
+            }
+
+            return true;
           }),
-        )
-        .nullable(),
-    ),
+      }),
     agrementSejours: requiredUnlessBrouillon(
       yup
         .array(
@@ -144,19 +186,17 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
         )
         .nullable(),
     ),
-    animationAutre: requiredUnlessBrouillon(yup.string().nullable()),
+    animationAutre: yup.string().nullable(),
     bilanAucunChangementEvolution: requiredUnlessBrouillon(
       yup.boolean().nullable(),
     ),
     bilanChangementEvolution: requiredUnlessBrouillon(yup.string().nullable()),
-    bilanFinancierCommentaire: requiredUnlessBrouillon(yup.string().nullable()),
+    bilanFinancierCommentaire: yup.string().nullable(),
     bilanFinancierComparatif: requiredUnlessBrouillon(yup.string().nullable()),
     bilanFinancierComptabilite: requiredUnlessBrouillon(
       yup.string().nullable(),
     ),
-    bilanFinancierRessourcesHumaines: requiredUnlessBrouillon(
-      yup.string().nullable(),
-    ),
+    bilanFinancierRessourcesHumaines: yup.string().nullable(),
     bilanQualElementsMarquants: requiredUnlessBrouillon(
       yup.string().nullable(),
     ),
@@ -164,32 +204,32 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
       yup.string().nullable(),
     ),
     bilanQualPerspectiveEvol: requiredUnlessBrouillon(yup.string().nullable()),
-    budgetComplement: requiredUnlessBrouillon(yup.string().nullable()),
+    budgetComplement: yup.string().nullable(),
     budgetGestionPerso: requiredUnlessBrouillon(yup.string().nullable()),
-    budgetPaiementSecurise: requiredUnlessBrouillon(yup.string().nullable()),
+    budgetPaiementSecurise: yup.string().nullable(),
     budgetPersoGestionComplementaire: requiredUnlessBrouillon(
       yup.string().nullable(),
     ),
-    commentaire: requiredUnlessBrouillon(yup.string().nullable()),
-    dateConfirmCompletude: requiredUnlessBrouillon(yup.date().nullable()),
-    dateDepot: requiredUnlessBrouillon(yup.date().nullable()),
-    dateObtention: requiredUnlessBrouillon(yup.date().nullable()),
+    commentaire: yup.string().nullable(),
+    dateConfirmCompletude: yup.date().nullable(),
+    dateDepot: yup.date().nullable(),
+    dateObtention: yup.date().nullable(),
     dateObtentionCertificat: requiredUnlessBrouillon(yup.date().nullable()),
-    dateVerifCompleture: requiredUnlessBrouillon(yup.date().nullable()),
-    file: requiredUnlessBrouillon(yup.mixed().nullable()),
+    dateVerifCompleture: yup.date().nullable(),
+    file: yup.mixed().nullable(),
     id: requiredUnlessBrouillon(yup.number().nullable()),
-    immatriculation: requiredUnlessBrouillon(yup.string().nullable()),
+    immatriculation: yup.string().nullable(),
     motivations: requiredUnlessBrouillon(yup.string().nullable()),
-    numero: requiredUnlessBrouillon(yup.string().nullable()),
+    numero: yup.string().nullable(),
     organismeId: requiredUnlessBrouillon(yup.number().required()),
     protocoleEvacUrg: requiredUnlessBrouillon(yup.string().nullable()),
     protocoleInfoFamille: requiredUnlessBrouillon(yup.string().nullable()),
-    protocoleMateriel: requiredUnlessBrouillon(yup.string().nullable()),
+    protocoleMateriel: yup.string().nullable(),
     protocoleRapatEtranger: requiredUnlessBrouillon(yup.string().nullable()),
     protocoleRapatUrg: requiredUnlessBrouillon(yup.string().nullable()),
-    protocoleRemboursement: requiredUnlessBrouillon(yup.string().nullable()),
+    protocoleRemboursement: yup.string().nullable(),
     regionObtention: requiredUnlessBrouillon(yup.string().nullable()),
-    sejourCommentaire: requiredUnlessBrouillon(yup.string().nullable()),
+    sejourCommentaire: yup.string().nullable(),
     sejourNbEnvisage: requiredUnlessBrouillon(yup.number().nullable()),
     sejourTypeHandicap: requiredUnlessBrouillon(
       yup.array(yup.string().nullable()).nullable(),

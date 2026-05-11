@@ -77,6 +77,38 @@ export async function buildAgrementFixture({
         category: FILE_CATEGORY.IMMATRICUL,
         fileUuid: randomUUID(),
       } as AgrementFilesDto,
+      {
+        category: FILE_CATEGORY.PROCVERBAL,
+        fileUuid: randomUUID(),
+      } as AgrementFilesDto,
+      {
+        category: FILE_CATEGORY.ASSURRESP,
+        fileUuid: randomUUID(),
+      } as AgrementFilesDto,
+      {
+        category: FILE_CATEGORY.ASSURRAPAT,
+        fileUuid: randomUUID(),
+      } as AgrementFilesDto,
+      {
+        category: FILE_CATEGORY.BILANQUALITPERCEPTION,
+        fileUuid: randomUUID(),
+      } as AgrementFilesDto,
+      {
+        category: FILE_CATEGORY.BILANQUALITPERSPECTIVE,
+        fileUuid: randomUUID(),
+      } as AgrementFilesDto,
+      {
+        category: FILE_CATEGORY.BILANQUALITELEMARQ,
+        fileUuid: randomUUID(),
+      } as AgrementFilesDto,
+      {
+        category: FILE_CATEGORY.PROJETSSEJOURSCOMPETENCESEXPERIENCE,
+        fileUuid: randomUUID(),
+      } as AgrementFilesDto,
+      {
+        category: FILE_CATEGORY.PROJETSSEJOURSMESURES,
+        fileUuid: randomUUID(),
+      } as AgrementFilesDto,
     ],
     agrementSejours: agrementSejours ?? [
       {
@@ -120,7 +152,7 @@ export async function buildAgrementFixture({
     regionObtention: regionObtention ?? "IDF",
     sejourCommentaire: "Commentaire de test",
     sejourNbEnvisage: 2,
-    sejourTypeHandicap: [],
+    sejourTypeHandicap: [TYPE_HANDICAP.MOTEUR],
     statut,
     suiviMedAccordSejour: "Oui",
     suiviMedDistribution: "Oui",
