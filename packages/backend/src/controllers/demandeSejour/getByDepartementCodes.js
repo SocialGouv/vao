@@ -2,7 +2,7 @@ const yup = require("yup");
 
 const DemandeSejour = require("../../services/DemandeSejour");
 const Organisme = require("../../services/Organisme");
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error").default;
 const Sentry = require("@sentry/node");
 

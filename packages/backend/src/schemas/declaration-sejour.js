@@ -1,7 +1,7 @@
 const yup = require("yup");
 const dayjs = require("dayjs");
 
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 
 const hebergementUtils = require("./hebergement");
 const informationsVacanciersSchema = require("./parts/informations-vacanciers");

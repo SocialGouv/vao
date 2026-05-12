@@ -1,9 +1,9 @@
 import { formatFR } from "@vao/shared-bridge";
 
-import config, { frontUsagersDomain, senderEmail } from "../../config";
-import sendTemplate from "../../helpers/mail";
+import { config } from "../../config";
+import * as sendTemplate from "../../helpers/mail";
 import AppError from "../../utils/error";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 
@@ -35,19 +35,19 @@ export const AgrementMailUsagers = {
             "<strong>Commentaire de l’agent instructeur :</strong>",
             commentaire?.replace(/\n/g, "<br>"),
             "Nous vous invitons à vous connecter au portail <strong>VAO</strong> afin de consulter le détail de cette demande et de transmettre les informations ou documents demandés :",
-            `<a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+            `<a href=${config.frontUsagersDomain}>${config.frontUsagersDomain}</a>`,
             "Pour toute question ou précision concernant cette demande de compléments, merci d’utiliser la <strong>messagerie intégrée au portail VAO</strong>, accessible depuis votre page agrément.",
             assistanceText,
           ],
           type: "p",
         },
       ],
-      `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+      `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
     );
     const params = {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject:
         "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
       to: email,
@@ -81,19 +81,19 @@ export const AgrementMailUsagers = {
             "<strong>Commentaire de l’agent instructeur :</strong>",
             commentaire?.replace(/\n/g, "<br>"),
             "Nous vous invitons à vous connecter au portail <strong>VAO</strong> afin de consulter le détail de cette demande et de transmettre les informations ou documents demandés :",
-            `<a href=${frontUsagersDomain}>${frontUsagersDomain}</a>`,
+            `<a href=${config.frontUsagersDomain}>${config.frontUsagersDomain}</a>`,
             "Pour toute question ou précision concernant cette demande de compléments, merci d’utiliser la <strong>messagerie intégrée au portail VAO</strong>, accessible depuis votre page agrément.",
             assistanceText,
           ],
           type: "p",
         },
       ],
-      `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+      `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
     );
     const params = {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject:
         "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
       to: email,
@@ -114,7 +114,7 @@ export const AgrementMailUsagers = {
         "Email manquant pour l'envoi du mail la validation de la complétude de l'agrément",
       );
     }
-    const urlAgrement = frontUsagersDomain + "/mon-agrement";
+    const urlAgrement = config.frontUsagersDomain + "/mon-agrement";
     const html = sendTemplate.getBody(
       "Portail VAO – Confirmation de la complétude de votre dossier de renouvellement d’agrément",
       [
@@ -130,12 +130,12 @@ export const AgrementMailUsagers = {
           type: "p",
         },
       ],
-      `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+      `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
     );
     const params = {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject:
         "Portail VAO – Confirmation de la complétude de votre dossier de renouvellement d’agrément",
       to: email,
@@ -156,7 +156,7 @@ export const AgrementMailUsagers = {
         "Email manquant pour l'envoi du mail de refus d'agrément",
       );
     }
-    const urlAgrement = frontUsagersDomain + "/mon-agrement";
+    const urlAgrement = config.frontUsagersDomain + "/mon-agrement";
     const html = sendTemplate.getBody(
       "Portail VAO - Refus de votre agrément",
       [
@@ -171,12 +171,12 @@ export const AgrementMailUsagers = {
           type: "p",
         },
       ],
-      `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+      `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
     );
     const params = {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject: "Portail VAO - Refus de votre agrément",
       to: email,
     };
@@ -213,18 +213,18 @@ export const AgrementMailUsagers = {
             "Bonjour,",
             regionPhrase,
             "Vous pouvez suivre l’avancement de votre dossier à tout moment depuis votre espace personnel sur le portail VAO :",
-            `<a href='${frontUsagersDomain}/mon-agrement'>Lien direct vers le dossier</a>`,
+            `<a href='${config.frontUsagersDomain}/mon-agrement'>Lien direct vers le dossier</a>`,
             "Un email vous sera envoyé à chaque évolution du traitement de votre demande.",
           ],
           type: "p",
         },
       ],
-      `<br>L’équipe du SI VAO<br><a href='${frontUsagersDomain}'>Portail VAO</a>`,
+      `<br>L’équipe du SI VAO<br><a href='${config.frontUsagersDomain}'>Portail VAO</a>`,
     );
     const params = {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject:
         "Portail VAO – Confirmation de transmission de votre demande de renouvellement d’agrément",
       to: email,
@@ -251,7 +251,7 @@ export const AgrementMailUsagers = {
         "Email manquant pour l'envoi du mail de validation d'agrément",
       );
     }
-    const urlAgrement = frontUsagersDomain + "/mon-agrement";
+    const urlAgrement = config.frontUsagersDomain + "/mon-agrement";
     const html = sendTemplate.getBody(
       "Portail VAO - Validation de votre demande d’agrément",
       [
@@ -268,12 +268,12 @@ export const AgrementMailUsagers = {
           type: "p",
         },
       ],
-      `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+      `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
     );
     const params = {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject: "Portail VAO - Validation de votre demande d’agrément",
       to: email,
     };

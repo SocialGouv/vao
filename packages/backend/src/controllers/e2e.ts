@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { PoolClient } from "pg";
 
-import config from "../config";
+import { config } from "../config";
 import AppError from "../utils/error";
-import logger from "../utils/logger";
+import { logger } from "../utils/logger";
 import { withTransaction } from "../utils/pgpool";
 
 const log = logger(module.filename);

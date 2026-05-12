@@ -3,7 +3,7 @@ import type { NextFunction, Response } from "express";
 import User from "../../services/BoUser";
 import { FeatureFlagService } from "../../services/featureFlagService";
 import { UserRequest } from "../../types/request";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 

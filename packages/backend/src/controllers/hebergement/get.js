@@ -1,7 +1,7 @@
 const Hebergement = require("../../services/hebergement/Hebergement");
 const Organisme = require("../../services/Organisme");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 
 const log = logger(module.filename);
 

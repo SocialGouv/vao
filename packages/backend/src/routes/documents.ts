@@ -1,12 +1,12 @@
 import { NextFunction, Request, Response, Router } from "express";
 import multer from "multer";
 
-import config from "../config";
+import { config } from "../config";
 import { documentsController } from "../controllers";
 import boCheckJWT from "../middlewares/bo-check-JWT";
 import checkJWT from "../middlewares/checkJWT";
 import scanFile from "../middlewares/scan-file";
-import logger from "../utils/logger";
+import { logger } from "../utils/logger";
 
 const log = logger(module.filename);
 const router = Router();

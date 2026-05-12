@@ -1,9 +1,8 @@
-import { NextFunction, Response } from "express";
+import { STATUS_USER_FRONT } from "@vao/shared-bridge";
 import request from "supertest";
 
-import app from "../../app";
-import boCheckJWT from "../../middlewares/bo-check-JWT";
-import { User, UserRequest } from "../../types/request";
+import { mailService } from "../../services/mail";
+import { AppHelperUser, getBoAppHelper } from "../helpers/appHelper";
 import {
   createTestContainer,
   removeTestContainer,
@@ -13,22 +12,18 @@ import {
   createUsagersUser,
 } from "../helpers/userHelper";
 
-jest.mock("../../middlewares/bo-check-JWT", () => jest.fn());
-jest.mock("../../middlewares/checkPermissionBOForUpdateStatusFo", () =>
-  jest.fn((_req: UserRequest, _res: Response, next: NextFunction) => next()),
-);
-jest.mock("../../middlewares/checkPermissionBoForFoStatus", () =>
-  jest.fn((_req: UserRequest, _res: Response, next: NextFunction) => next()),
-);
+jest.mock("../../services/mail", () => ({
+  mailService: { send: jest.fn() },
+}));
 
-let adminBoId = 1;
-let adminBoTerCode = "FRA";
+let boUser: AppHelperUser;
 
 beforeAll(async () => {
   await createTestContainer();
-  const admin = await createAdminUserValide();
-  adminBoId = admin.id;
-  adminBoTerCode = admin.territoireCode ?? "FRA";
+  boUser = await createAdminUserValide({ ter_code: "IDF" });
+  if (!boUser.territoireCode) {
+    boUser.territoireCode = "IDF";
+  }
 });
 
 afterAll(async () => {
@@ -36,21 +31,16 @@ afterAll(async () => {
 });
 
 beforeEach(() => {
-  (boCheckJWT as jest.Mock).mockImplementation(
-    (req: UserRequest, _res: Response, next: NextFunction) => {
-      req.decoded = {
-        id: adminBoId,
-        territoireCode: adminBoTerCode,
-      } as unknown as User;
-      next();
-    },
-  );
+  jest.clearAllMocks();
+  (mailService.send as jest.Mock).mockResolvedValue(undefined);
 });
 
 describe("Domaine /fo-user (admin)", () => {
   describe("GET /fo-user/admin/list", () => {
     it("retourne 200 avec la liste paginée des utilisateurs FO", async () => {
-      const response = await request(app).get("/fo-user/admin/list");
+      const response = await request(getBoAppHelper(boUser)).get(
+        "/fo-user/admin/list",
+      );
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("users");
@@ -61,7 +51,7 @@ describe("Domaine /fo-user (admin)", () => {
 
   describe("GET /fo-user/admin/list-to-validate", () => {
     it("retourne 200 avec les comptes à valider", async () => {
-      const response = await request(app).get(
+      const response = await request(getBoAppHelper(boUser)).get(
         "/fo-user/admin/list-to-validate",
       );
 
@@ -73,22 +63,63 @@ describe("Domaine /fo-user (admin)", () => {
   });
 
   describe("POST /fo-user/admin/update-status/:userId", () => {
-    it("retourne 200 et envoie l'email (source BO)", async () => {
+    it("retourne 403 pour un changement de statut non autorisé par le BO", async () => {
       const cible = await createUsagersUser();
 
-      const response = await request(app)
+      const response = await request(getBoAppHelper(boUser))
         .post(`/fo-user/admin/update-status/${cible.id}`)
-        .query({ status: "NEED_SIRET_VALIDATION" })
+        .query({ status: STATUS_USER_FRONT.NEED_SIRET_VALIDATION })
+        .send({});
+
+      expect(response.status).toBe(403);
+    });
+
+    it("retourne 200 et envoie le mail de validation de compte OVA", async () => {
+      const cible = await createUsagersUser({
+        statusCode: STATUS_USER_FRONT.NEED_SIRET_VALIDATION,
+      });
+
+      const response = await request(getBoAppHelper(boUser))
+        .post(`/fo-user/admin/update-status/${cible.id}`)
+        .query({ status: STATUS_USER_FRONT.VALIDATED })
         .send({});
 
       expect(response.status).toBe(200);
       expect(response.body.message).toBe("Email sent");
+      expect(mailService.send).toHaveBeenCalledTimes(1);
+      const mailPayload = (mailService.send as jest.Mock).mock.calls[0][0];
+      expect(mailPayload.to).toBe(cible.email);
+      expect(mailPayload.subject).toContain("Inscription validée");
+    });
+
+    it("retourne 200 et envoie le mail de refus DREETS", async () => {
+      const cible = await createUsagersUser({
+        statusCode: STATUS_USER_FRONT.NEED_SIRET_VALIDATION,
+        terCode: "FRA",
+      });
+
+      const response = await request(getBoAppHelper(boUser))
+        .post(`/fo-user/admin/update-status/${cible.id}`)
+        .query({
+          motif: "Dossier incomplet",
+          status: STATUS_USER_FRONT.BLOCKED,
+        })
+        .send({});
+
+      expect(response.status).toBe(200);
+      expect(response.body.message).toBe("Email sent");
+      expect(mailService.send).toHaveBeenCalledTimes(1);
+      const mailPayload = (mailService.send as jest.Mock).mock.calls[0][0];
+      expect(mailPayload.to).toBe(cible.email);
+      expect(mailPayload.subject).toContain("Refus d’inscription");
     });
   });
 
   describe("GET /fo-user/admin/extract/", () => {
     it("retourne 200 avec un corps CSV", async () => {
-      const response = await request(app).get("/fo-user/admin/extract/");
+      const response = await request(getBoAppHelper(boUser)).get(
+        "/fo-user/admin/extract/",
+      );
 
       expect(response.status).toBe(200);
       expect(response.headers["content-type"]).toContain("text/csv");

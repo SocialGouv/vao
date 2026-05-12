@@ -1,7 +1,7 @@
 import { ERRORS_LOGIN, FeatureFlagName, UserDto } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
 
-import config from "../../../config";
+import { config } from "../../../config";
 import { schema } from "../../../helpers/schema";
 import { status } from "../../../helpers/users";
 import User from "../../../services/BoUser";
@@ -11,7 +11,7 @@ import { FeatureFlagService } from "../../../services/featureFlagService";
 import { UserRequest } from "../../../types/request";
 import { signAccessToken, signRefreshToken } from "../../../utils/bo-token";
 import AppError from "../../../utils/error";
-import logger from "../../../utils/logger";
+import { logger } from "../../../utils/logger";
 
 const log = logger(module.filename);
 
@@ -70,7 +70,7 @@ export default async function login(
     );
   }
 
-  log.d({ user });
+  log.d("user", user);
   // @ts-expect-error FIXME statusCode n'existe pas dans la requête sql
   if (user.statusCode === status.NEED_EMAIL_VALIDATION) {
     log.w("Compte non validé");
@@ -86,6 +86,7 @@ export default async function login(
     const accessToken = signAccessToken({ ...user, id: Number(user.id) });
     const refreshToken = signRefreshToken({ ...user, id: Number(user.id) });
 
+    await Session.clean({ id: user.id }, schema.BACK);
     await Session.create(user.id, refreshToken, schema.BACK);
 
     res.cookie("VAO_BO_access_token", accessToken, {

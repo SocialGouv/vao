@@ -8,7 +8,7 @@ import type { NextFunction } from "express";
 
 import type { RouteRequest, RouteResponse } from "../../types/request";
 import AppError from "../../utils/error";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { AgrementService } from "./agrements.service";
 
 const log = logger(module.filename);
@@ -53,7 +53,7 @@ export const AgrementController = {
         statut,
         userId: Number(usagerUserId),
       });
-      log.d(agrements);
+      log.d("agrements", agrements);
       res.json({ agrements });
     } catch (error) {
       log.w("DONE with error");
@@ -97,7 +97,7 @@ export const AgrementController = {
         agrementId,
         withDetails: true,
       });
-      log.d(agrement);
+      log.d("agrement", agrement);
       if (!agrement) throw new AppError("NotFound", { statusCode: 404 });
       res.json({ agrement });
     } catch (error) {

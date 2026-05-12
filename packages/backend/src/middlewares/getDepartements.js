@@ -1,5 +1,5 @@
 const AppError = require("../utils/error").default;
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const Departement = require("../services/geo/Departement");
 
 const log = logger(module.filename);

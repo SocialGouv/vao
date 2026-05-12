@@ -26,4 +26,4 @@ router.get(
 );
 router.put("/:id", BOcheckJWT, update);
 
-module.exports = router;
+export default router;

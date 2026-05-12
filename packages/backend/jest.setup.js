@@ -17,6 +17,8 @@ process.env.PG_VAO_CIPHER_DATA =
 process.env.S3_BUCKET_NAME = "vao";
 
 process.env.DEBUG = "*warn*";
+process.env.FRONTEND_BO_URL = "http://localhost:3001";
+process.env.FRONTEND_USAGERS_URL = "http://localhost:3000";
 process.env.TOKEN_SECRET_FO = "test";
 process.env.TOKEN_SECRET_BO = "test";
 process.env.TOKEN_SECRET = "test";

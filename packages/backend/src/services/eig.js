@@ -1,8 +1,8 @@
 const Sentry = require("@sentry/node");
 
-const { sentry } = require("../config");
+const { config } = require("../config");
 const { statuts, Types, Categorie } = require("../helpers/eig");
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const AppError = require("../utils/error").default;
 const { getPool } = require("../utils/pgpool");
 const { addHistoric } = require("./Tracking");
@@ -824,7 +824,7 @@ const getByEigId = async (eigId) => {
     return response.rows[0];
   } catch (error) {
     log.w("getByEigId - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
     return null;
@@ -854,7 +854,7 @@ module.exports.addAsyncEigHistoric = async ({
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
   }

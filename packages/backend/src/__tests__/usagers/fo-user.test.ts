@@ -1,12 +1,11 @@
 import { STATUS_USER_FRONT } from "@vao/shared-bridge";
-import { NextFunction, Response } from "express";
 import request from "supertest";
 
-import app from "../../app";
-import checkJWT from "../../middlewares/checkJWT";
+import { roles } from "../../helpers/users";
 import { UsersRepository } from "../../repositories/usagers/Users";
+import { mailService } from "../../services/mail";
 import { link as linkOrganisme } from "../../services/Organisme";
-import { User, UserRequest } from "../../types/request";
+import { getFoAppHelper } from "../helpers/appHelper";
 import {
   createOrganisme,
   generateRandomSiret,
@@ -15,31 +14,14 @@ import {
   createTestContainer,
   removeTestContainer,
 } from "../helpers/testContainer";
-import { createUsagersUser } from "../helpers/userHelper";
+import {
+  createUsagersUser,
+  createUsagersUserValide,
+} from "../helpers/userHelper";
 
-jest.mock("../../middlewares/checkJWT", () =>
-  jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
-    req.decoded = { id: 1 } as unknown as User;
-    next();
-  }),
-);
-jest.mock("../../middlewares/checkJWTWithoutCGU", () =>
-  jest.fn((_req: UserRequest, _res: Response, next: NextFunction) => next()),
-);
-jest.mock("../../middlewares/checkPermissionFoRole", () =>
-  jest.fn(
-    () => (_req: UserRequest, _res: Response, next: NextFunction) => next(),
-  ),
-);
-jest.mock("../../middlewares/checkPermissionBOForUpdateStatusFo", () =>
-  jest.fn((_req: UserRequest, _res: Response, next: NextFunction) => next()),
-);
-jest.mock("../../middlewares/checkPermissionBoForFoStatus", () =>
-  jest.fn((_req: UserRequest, _res: Response, next: NextFunction) => next()),
-);
-jest.mock("../../middlewares/checkPermissionFOForUpdateStatusFo", () =>
-  jest.fn((_req: UserRequest, _res: Response, next: NextFunction) => next()),
-);
+jest.mock("../../services/mail", () => ({
+  mailService: { send: jest.fn() },
+}));
 
 beforeAll(async () => {
   await createTestContainer();
@@ -51,21 +33,16 @@ afterAll(async () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  (mailService.send as jest.Mock).mockResolvedValue(undefined);
 });
 
 describe("Domaine /fo-user", () => {
   describe("GET /fo-user/get-roles/", () => {
     it("retourne 500 (UnexpectedError) avec la stack actuelle", async () => {
       const user = await createUsagersUser();
-
-      (checkJWT as jest.Mock).mockImplementation(
-        (req: UserRequest, _res: Response, next: NextFunction) => {
-          req.decoded = { id: user.id } as unknown as User;
-          next();
-        },
+      const response = await request(getFoAppHelper({ id: user.id })).get(
+        "/fo-user/get-roles/",
       );
-
-      const response = await request(app).get("/fo-user/get-roles/");
 
       expect(response.status).toBe(500);
       expect(response.body.name).toBe("UnexpectedError");
@@ -94,15 +71,7 @@ describe("Domaine /fo-user", () => {
       });
       const target = created[0];
       await linkOrganisme(target.id, orgId);
-
-      (checkJWT as jest.Mock).mockImplementation(
-        (req: UserRequest, _res: Response, next: NextFunction) => {
-          req.decoded = { id: actor.id } as unknown as User;
-          next();
-        },
-      );
-
-      const response = await request(app)
+      const response = await request(getFoAppHelper({ id: actor.id }))
         .post(`/fo-user/change-status/${target.id}`)
         .query({ status: STATUS_USER_FRONT.VALIDATED })
         .send({});
@@ -112,19 +81,58 @@ describe("Domaine /fo-user", () => {
     });
 
     it("retourne 400 quand le statut est invalide", async () => {
-      const response = await request(app)
+      const actor = await createUsagersUser({
+        statusCode: STATUS_USER_FRONT.VALIDATED,
+      });
+      const response = await request(getFoAppHelper({ id: actor.id }))
         .post("/fo-user/change-status/1")
         .send({});
+
       expect(response.status).toBe(400);
       expect(response.body.name).toBe("AppError");
+    });
+
+    it("retourne 200 et envoie le mail de désactivation lors du blocage", async () => {
+      const actor = await createUsagersUser({
+        statusCode: STATUS_USER_FRONT.VALIDATED,
+      });
+      const orgId = await createOrganisme({ userId: actor.id });
+      const stamp = Date.now();
+
+      const { user: secondUserCreated } = await UsersRepository.create({
+        user: {
+          email: `second-user-${stamp}@example.com`,
+          nom: "Second",
+          password: "Motdepassevalid1!",
+          prenom: "User",
+          siret: generateRandomSiret(),
+          status_code: STATUS_USER_FRONT.VALIDATED,
+          telephone: "0102030405",
+          ter_code: "FRA",
+        },
+      });
+      const target = secondUserCreated[0];
+      await linkOrganisme(target.id, orgId);
+      const response = await request(getFoAppHelper({ id: actor.id }))
+        .post(`/fo-user/change-status/${target.id}`)
+        .query({ status: STATUS_USER_FRONT.BLOCKED })
+        .send({});
+
+      expect(response.status).toBe(200);
+      expect(mailService.send).toHaveBeenCalledTimes(1);
+      const mailPayload = (mailService.send as jest.Mock).mock.calls[0][0];
+      expect(mailPayload.to).toBe(target.email);
+      expect(mailPayload.subject).toContain("DESACTIVATION");
     });
   });
 
   describe("POST /fo-user/accept-cgu", () => {
-    it("retourne 403 sans utilisateur authentifié (JWT sans CGU)", async () => {
-      const response = await request(app).post("/fo-user/accept-cgu").send({});
+    it("retourne 409 sans session", async () => {
+      const response = await request(getFoAppHelper())
+        .post("/fo-user/accept-cgu")
+        .send({});
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(409);
     });
   });
 
@@ -132,15 +140,9 @@ describe("Domaine /fo-user", () => {
     it("retourne 200 avec le détail utilisateur", async () => {
       const user = await createUsagersUser();
       await createOrganisme({ userId: user.id });
-
-      (checkJWT as jest.Mock).mockImplementation(
-        (req: UserRequest, _res: Response, next: NextFunction) => {
-          req.decoded = { id: user.id } as unknown as User;
-          next();
-        },
+      const response = await request(getFoAppHelper({ id: user.id })).get(
+        `/fo-user/get-one/${user.id}`,
       );
-
-      const response = await request(app).get(`/fo-user/get-one/${user.id}`);
 
       expect(response.status).toBe(200);
       expect(response.body.user).toBeDefined();
@@ -150,15 +152,9 @@ describe("Domaine /fo-user", () => {
   describe("GET /fo-user/list", () => {
     it("retourne 200 avec users et total", async () => {
       const user = await createUsagersUser();
-
-      (checkJWT as jest.Mock).mockImplementation(
-        (req: UserRequest, _res: Response, next: NextFunction) => {
-          req.decoded = { id: user.id } as unknown as User;
-          next();
-        },
+      const response = await request(getFoAppHelper({ id: user.id })).get(
+        "/fo-user/list",
       );
-
-      const response = await request(app).get("/fo-user/list");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("users");
@@ -170,15 +166,9 @@ describe("Domaine /fo-user", () => {
     it("retourne 200 avec les utilisateurs de l'organisme", async () => {
       const user = await createUsagersUser();
       await createOrganisme({ userId: user.id });
-
-      (checkJWT as jest.Mock).mockImplementation(
-        (req: UserRequest, _res: Response, next: NextFunction) => {
-          req.decoded = { id: user.id } as unknown as User;
-          next();
-        },
+      const response = await request(getFoAppHelper({ id: user.id })).get(
+        "/fo-user/get-by-organisme",
       );
-
-      const response = await request(app).get("/fo-user/get-by-organisme");
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty("users");
@@ -188,16 +178,12 @@ describe("Domaine /fo-user", () => {
 
   describe("POST /fo-user/roles/:userId", () => {
     it("retourne 200 et met à jour les rôles", async () => {
-      const user = await createUsagersUser();
-
-      (checkJWT as jest.Mock).mockImplementation(
-        (req: UserRequest, _res: Response, next: NextFunction) => {
-          req.decoded = { id: user.id } as unknown as User;
-          next();
-        },
-      );
-
-      const response = await request(app)
+      const user = await createUsagersUserValide({
+        roles: [roles.EIG_ECRITURE],
+        status_code: STATUS_USER_FRONT.VALIDATED,
+      });
+      await createOrganisme({ userId: user.id });
+      const response = await request(getFoAppHelper({ id: user.id }))
         .post(`/fo-user/roles/${user.id}`)
         .send({ roles: [] });
 
@@ -208,22 +194,44 @@ describe("Domaine /fo-user", () => {
 
   describe("POST /fo-user/update-status/:userId", () => {
     it("retourne 200 et envoie l'email (source FO)", async () => {
-      const cible = await createUsagersUser();
-
-      (checkJWT as jest.Mock).mockImplementation(
-        (req: UserRequest, _res: Response, next: NextFunction) => {
-          req.decoded = { id: cible.id } as unknown as User;
-          next();
-        },
-      );
-
-      const response = await request(app)
+      const actor = await createUsagersUser({
+        statusCode: STATUS_USER_FRONT.VALIDATED,
+      });
+      const orgId = await createOrganisme({ userId: actor.id });
+      const cible = await createUsagersUser({
+        statusCode: STATUS_USER_FRONT.NEED_SIRET_VALIDATION,
+      });
+      await linkOrganisme(cible.id, orgId);
+      const response = await request(getFoAppHelper({ id: actor.id }))
         .post(`/fo-user/update-status/${cible.id}`)
-        .query({ status: STATUS_USER_FRONT.NEED_SIRET_VALIDATION })
+        .query({ status: STATUS_USER_FRONT.VALIDATED })
         .send({});
 
       expect(response.status).toBe(200);
       expect(response.body.message).toBe("Email sent");
+    });
+
+    it("retourne 200 et envoie le mail de refus organisme", async () => {
+      const actor = await createUsagersUser({
+        statusCode: STATUS_USER_FRONT.VALIDATED,
+      });
+      const orgId = await createOrganisme({ userId: actor.id });
+      const cible = await createUsagersUser({
+        statusCode: STATUS_USER_FRONT.NEED_SIRET_VALIDATION,
+      });
+      await linkOrganisme(cible.id, orgId);
+      const response = await request(getFoAppHelper({ id: actor.id }))
+        .post(`/fo-user/update-status/${cible.id}`)
+        .query({
+          motif: "Non reconnu par l'organisme",
+          status: STATUS_USER_FRONT.BLOCKED,
+        })
+        .send({});
+
+      expect(response.status).toBe(200);
+      expect(mailService.send).toHaveBeenCalledTimes(1);
+      const mailPayload = (mailService.send as jest.Mock).mock.calls[0][0];
+      expect(mailPayload.subject).toContain("Refus d’inscription");
     });
   });
 });

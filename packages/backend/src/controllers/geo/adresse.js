@@ -1,9 +1,9 @@
 const axios = require("axios");
 const Sentry = require("@sentry/node");
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 
 const log = logger(module.filename);
-const config = require("../../config");
+const { config } = require("../../config");
 
 module.exports = {
   fetch: async function fetch(req, res) {

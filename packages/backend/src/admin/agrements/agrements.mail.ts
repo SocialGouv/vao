@@ -1,9 +1,9 @@
 import { OrganismeDto } from "@vao/shared-bridge";
 
-import { frontBODomain, senderEmail } from "../../config";
-import sendTemplate from "../../helpers/mail";
+import { config } from "../../config";
+import * as sendTemplate from "../../helpers/mail";
 import { partOrganisme } from "../../helpers/org-part";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 
@@ -19,14 +19,14 @@ export const AgrementMailAdmin = {
     agrementId: number;
     commentaire: string | undefined;
   }) => {
-    const urlAgrement = frontBODomain + "/agrements/" + agrementId;
+    const urlAgrement = config.frontBODomain + "/agrements/" + agrementId;
     const html = sendTemplate.getBody(
       "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
       [
         {
           p: [
             "Bonjour,",
-            `Vous venez de transmettre à l’organisateur ${Organisme.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme.personneMorale.raisonSociale : (Organisme.personnePhysique?.nomUsage ?? Organisme.personnePhysique?.nomNaissance)} une demande de compléments d’information dans le cadre de son dossier de renouvellement d’agrément.`,
+            `Vous venez de transmettre à l’organisateur ${Organisme?.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme?.personneMorale?.raisonSociale : (Organisme?.personnePhysique?.nomUsage ?? Organisme?.personnePhysique?.nomNaissance)} une demande de compléments d’information dans le cadre de son dossier de renouvellement d’agrément.`,
             "<strong>Commentaire de l’agent instructeur :</strong>",
             commentaire?.replace(/\n/g, "<br>"),
             `Conformément à la réglementation, le délai légal d’instruction de <strong>2 mois</strong> est suspendu jusqu’à réception complète des pièces complémentaires.\n
@@ -37,13 +37,13 @@ export const AgrementMailAdmin = {
           type: "p",
         },
       ],
-      `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+      `L'équipe du SI VAO<BR><a href=${config.frontBODomain}>Portail VAO</a>`,
     );
 
     return {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject:
         "Portail VAO - Demande de compléments d’informations suite à votre demande de renouvellement d’agrément",
       to: mailDreets,
@@ -58,14 +58,14 @@ export const AgrementMailAdmin = {
     Organisme: OrganismeDto;
     agrementId: number;
   }) => {
-    const urlAgrement = frontBODomain + "/agrements/" + agrementId;
+    const urlAgrement = config.frontBODomain + "/agrements/" + agrementId;
     const html = sendTemplate.getBody(
       "Portail VAO – Confirmation de complétude du dossier de renouvellement d’agrément",
       [
         {
           p: [
             "Bonjour,",
-            `Vous venez de confirmer la complétude du dossier de renouvellement d’agrément de l’OVA ${Organisme.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme.personneMorale.raisonSociale : (Organisme.personnePhysique?.nomUsage ?? Organisme.personnePhysique?.nomNaissance)}.`,
+            `Vous venez de confirmer la complétude du dossier de renouvellement d’agrément de l’OVA ${Organisme?.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme.personneMorale.raisonSociale : (Organisme?.personnePhysique?.nomUsage ?? Organisme?.personnePhysique?.nomNaissance)}.`,
             "À partir de cette date, un délai légal de <strong>2 mois calendaires</strong> est activé pour instruire la demande et rendre une décision expresse.",
             "Sans décision expresse à l’issue de ce délai, la demande sera automatiquement <strong>validée par tacite accord</strong>. La décision implicite d’acceptation du dossier ne court qu'à compter du moment où l’ensemble des pièces sont fournies par l’OVA. En cas de demande de compléments d’information par la DREETS, le délai est donc suspendu.",
             "Un accusé a été adressé automatiquement à l’OVA concerné.",
@@ -75,13 +75,13 @@ export const AgrementMailAdmin = {
           type: "p",
         },
       ],
-      `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+      `L'équipe du SI VAO<BR><a href=${config.frontBODomain}>Portail VAO</a>`,
     );
 
     return {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject:
         "Portail VAO – Confirmation de complétude du dossier de renouvellement d’agrément",
       to: mailDreets,
@@ -110,18 +110,18 @@ export const AgrementMailAdmin = {
             "Bonjour,",
             `L’OVA <strong>${organismeName}</strong> a renvoyé sa demande de renouvellement d’agrément après avoir apporté les modifications demandées.`,
             "Vous pouvez désormais reprendre l’instruction de la demande, accessible via votre espace sur le portail VAO :",
-            `<a href='${frontBODomain}/agrements/${agrementId}'>Lien direct vers le dossier</a>`,
+            `<a href='${config.frontBODomain}/agrements/${agrementId}'>Lien direct vers le dossier</a>`,
             "Le dossier est retourné au statut <strong>« Transmis »</strong> et peut être analysé à partir de l’étape « Vérification et confirmation de la complétude du dossier ».",
           ],
           type: "p",
         },
       ],
-      `<br>L’équipe du SI VAO<br><a href='${frontBODomain}'>Portail VAO</a>`,
+      `<br>L’équipe du SI VAO<br><a href='${config.frontBODomain}'>Portail VAO</a>`,
     );
     const params = {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject:
         "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
       to: email,
@@ -163,17 +163,17 @@ export const AgrementMailAdmin = {
             `<strong>Date de transmission</strong> : ${date}`,
             "",
             "Vous pouvez consulter le dossier directement depuis le portail VAO :",
-            `<a href='${frontBODomain}/agrements/${agrementId}'>Lien direct vers le dossier</a>`,
+            `<a href='${config.frontBODomain}/agrements/${agrementId}'>Lien direct vers le dossier</a>`,
           ],
           type: "p",
         },
       ],
-      `<br>L’équipe du SI VAO<br><a href='${frontBODomain}'>Portail VAO</a>`,
+      `<br>L’équipe du SI VAO<br><a href='${config.frontBODomain}'>Portail VAO</a>`,
     );
     const params = {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject:
         "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
       to: email,
@@ -192,7 +192,7 @@ export const AgrementMailAdmin = {
     numeroAgrement: string;
     agrementId: number;
   }) => {
-    const urlAgrement = frontBODomain + "/agrements/" + agrementId;
+    const urlAgrement = config.frontBODomain + "/agrements/" + agrementId;
     const html = sendTemplate.getBody(
       `Portail VAO – Validation de l’agrément N°${numeroAgrement} enregistrée`,
       [
@@ -208,13 +208,13 @@ export const AgrementMailAdmin = {
           type: "p",
         },
       ],
-      `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+      `L'équipe du SI VAO<BR><a href=${config.frontBODomain}>Portail VAO</a>`,
     );
 
     return {
-      from: senderEmail,
+      from: config.senderEmail,
       html,
-      replyTo: senderEmail,
+      replyTo: config.senderEmail,
       subject: `Portail VAO – Validation de l’agrément N°${numeroAgrement} enregistrée`,
       to: mailDreets,
     };

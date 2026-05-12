@@ -1,7 +1,7 @@
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const DemandeSejour = require("../../services/DemandeSejour");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const AppError = require("../../utils/error").default;
 
 const log = logger(module.filename);

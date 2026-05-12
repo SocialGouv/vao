@@ -78,6 +78,11 @@ export const generateRandomSiret = (): string => {
   throw new Error("Unable to generate random SIRET");
 };
 
+export const getRandomSiretAndSiren = (): { siren: string; siret: string } => {
+  const siret = generateRandomSiret();
+  return { siren: siret.slice(0, 9), siret };
+};
+
 export const markOrganismeComplet = async (id: number): Promise<void> => {
   await getPool().query(
     "UPDATE front.organismes SET complet = TRUE WHERE id = $1",

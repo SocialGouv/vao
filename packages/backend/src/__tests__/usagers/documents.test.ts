@@ -1,12 +1,11 @@
 import { NextFunction, Response } from "express";
 import request from "supertest";
 
-import app from "../../app";
-import CheckJWT from "../../middlewares/checkJWT";
 import * as DocumentService from "../../services/Document";
-import { User, UserRequest } from "../../types/request";
+import { UserRequest } from "../../types/request";
 import { getFileTypeFromBuffer } from "../../utils/file";
-import { getPool as getPoolDoc } from "../../utils/pgpoolDoc";
+import { getPoolDoc } from "../../utils/pgpoolDoc";
+import { getFoAppHelper } from "../helpers/appHelper";
 import {
   createLargePdf,
   createMinimalGif,
@@ -19,13 +18,6 @@ import {
   removeTestContainer,
 } from "../helpers/testContainer";
 import { createUsagersUser } from "../helpers/userHelper";
-
-jest.mock("../../middlewares/checkJWT", () =>
-  jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
-    req.decoded = { id: 1, role: "admin" } as unknown as User;
-    next();
-  }),
-);
 
 jest.mock("../../middlewares/scan-file", () => {
   return (_req: UserRequest, _res: Response, next: NextFunction) => next();
@@ -55,7 +47,7 @@ beforeEach(() => {
 
 describe("GET /documents/:uuid", () => {
   it("devrait retourner 404 si le fichier n'est pas trouvé", async () => {
-    const response = await request(app).get(
+    const response = await request(getFoAppHelper({ id: 1 })).get(
       "/documents/550e8400-e29b-41d4-a716-446655440000",
     );
 
@@ -77,7 +69,7 @@ describe("GET /documents/:uuid", () => {
       ],
     );
     const uuid = rows.rows[0].uuid;
-    const response = await request(app).get(`/documents/${uuid}`);
+    const response = await request(getFoAppHelper()).get(`/documents/${uuid}`);
 
     expect(response.status).toBe(404);
   });
@@ -92,7 +84,7 @@ describe("GET /documents/:uuid", () => {
       ["declaration", "document.pdf", "application/pdf", user.id, fileContent],
     );
     const uuid = rows.rows[0].uuid;
-    const response = await request(app).get(`/documents/${uuid}`);
+    const response = await request(getFoAppHelper()).get(`/documents/${uuid}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual(fileContent);
@@ -114,7 +106,7 @@ describe("GET /documents/:uuid", () => {
       [Buffer.from(""), uuid],
     );
 
-    const response = await request(app).get(`/documents/${uuid}`);
+    const response = await request(getFoAppHelper()).get(`/documents/${uuid}`);
 
     expect(response.status).toBe(200);
     expect(response.headers["content-disposition"]).toBe(
@@ -128,15 +120,9 @@ describe("GET /documents/:uuid", () => {
 describe("POST /documents", () => {
   it("devrait accepter un PDF valide et retourner l'uuid", async () => {
     const user = await createUsagersUser();
-    (CheckJWT as jest.Mock).mockImplementation(
-      (req: UserRequest, _res: Response, next: NextFunction) => {
-        req.decoded = user;
-        next();
-      },
-    );
     const pdfBuffer = await createMinimalPdf();
 
-    const response = await request(app)
+    const response = await request(getFoAppHelper(user))
       .post("/documents")
       .field("category", "declaration")
       .attach("file", pdfBuffer, "document.pdf");
@@ -148,7 +134,7 @@ describe("POST /documents", () => {
   it("devrait accepter un PDF pour la catégorie agrement", async () => {
     const pdfBuffer = await createMinimalPdf();
 
-    const response = await request(app)
+    const response = await request(getFoAppHelper())
       .post("/documents")
       .field("category", "agrement")
       .attach("file", pdfBuffer, "agrement.pdf");
@@ -160,7 +146,7 @@ describe("POST /documents", () => {
   it("devrait retourner 400 si category est manquant", async () => {
     const pdfBuffer = await createMinimalPdf();
 
-    const response = await request(app)
+    const response = await request(getFoAppHelper())
       .post("/documents")
       .attach("file", pdfBuffer, "document.pdf");
 
@@ -169,7 +155,7 @@ describe("POST /documents", () => {
   });
 
   it("devrait retourner 400 si le fichier est manquant", async () => {
-    const response = await request(app)
+    const response = await request(getFoAppHelper())
       .post("/documents")
       .field("category", "declaration");
 
@@ -179,7 +165,7 @@ describe("POST /documents", () => {
   it("devrait retourner 415 pour une extension non supportée", async () => {
     const txtBuffer = Buffer.from("contenu texte");
 
-    const response = await request(app)
+    const response = await request(getFoAppHelper())
       .post("/documents")
       .field("category", "declaration")
       .attach("file", txtBuffer, "fichier.txt");
@@ -191,7 +177,7 @@ describe("POST /documents", () => {
   it("devrait retourner 415 pour une extension reconnue mais non supportée", async () => {
     const gifBuffer = createMinimalGif();
 
-    const response = await request(app)
+    const response = await request(getFoAppHelper())
       .post("/documents")
       .field("category", "declaration")
       .attach("file", gifBuffer, "image.gif");
@@ -203,7 +189,7 @@ describe("POST /documents", () => {
   it("devrait retourner 415 pour agrement avec un fichier non-PDF (agrement)", async () => {
     const pngBuffer = createMinimalPng();
 
-    const response = await request(app)
+    const response = await request(getFoAppHelper())
       .post("/documents")
       .field("category", "agrement")
       .attach("file", pngBuffer, "image.png");
@@ -220,7 +206,7 @@ describe("POST /documents", () => {
       mime: "image/gif",
     });
 
-    const response = await request(app)
+    const response = await request(getFoAppHelper())
       .post("/documents")
       .field("category", "declaration")
       .attach("file", gifBuffer, "image.png");
@@ -232,7 +218,7 @@ describe("POST /documents", () => {
   it("devrait retourner 413 si le fichier dépasse 5 Mo", async () => {
     const largeBuffer = await createLargePdf();
 
-    const response = await request(app)
+    const response = await request(getFoAppHelper())
       .post("/documents")
       .field("category", "declaration")
       .attach("file", largeBuffer, "gros-fichier.pdf");

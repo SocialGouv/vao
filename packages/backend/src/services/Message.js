@@ -1,5 +1,5 @@
 const { getPool } = require("../utils/pgpool");
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 
 const AppError = require("../utils/error").default;
 

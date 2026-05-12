@@ -1,7 +1,7 @@
 const dayjs = require("dayjs");
 
 module.exports = function buildPrestataire(personnes, label) {
-  if (personnes.length > 0) {
+  if (personnes && personnes.length > 0) {
     return [
       {
         columns: [

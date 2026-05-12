@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken");
-const config = require("../../../config");
+const { config } = require("../../../config");
 
 const User = require("../../../services/User");
 const Send = require("../../../services/mail").mailService.send;
 
-const logger = require("../../../utils/logger");
-const normalize = require("../../../utils/normalize");
-const MailUtils = require("../../../utils/mail");
+const { logger } = require("../../../utils/logger");
+const { normalize } = require("../../../utils/normalize");
+const { MailUtils } = require("../../../utils/mail");
 const { buildEmailToken } = require("../../../utils/token");
 const { status } = require("../../../helpers/users");
 const AppError = require("../../../utils/error").default;

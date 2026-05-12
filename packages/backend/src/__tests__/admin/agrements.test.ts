@@ -7,18 +7,16 @@ import {
   FUNCTIONAL_ERRORS,
   USER_TYPE,
 } from "@vao/shared-bridge";
-import { NextFunction, Response } from "express";
 import request from "supertest";
 
 import { AgrementsRepository } from "../../admin/agrements/agrements.repository";
 import { AgrementService } from "../../admin/agrements/agrements.service";
-import app from "../../app";
 import { partOrganisme } from "../../helpers/org-part";
 import { mailService } from "../../services/mail";
-import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../fixtures/agrementsFixture";
 import { createAgrement } from "../helpers/agrementsHelper";
 import { createAgrementMessage } from "../helpers/agrementsMessageHelper";
+import { AppHelperUser, getBoAppHelper } from "../helpers/appHelper";
 import { createDocument } from "../helpers/documentHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
 import { createTerritoire } from "../helpers/territoireHelper";
@@ -30,14 +28,7 @@ import { createAdminUser, createUsagersUser } from "../helpers/userHelper";
 
 let authUser = { id: 1, role: "admin" };
 let authUser2 = { id: 2, role: "admin" };
-let authUserBo = { territoireCode: "IDF" };
-
-jest.mock("../../middlewares/common/checkJWT", () => {
-  return async (req: UserRequest, res: Response, next: NextFunction) => {
-    req.decoded = authUserBo as unknown as User;
-    next();
-  };
-});
+let authUserBo: AppHelperUser;
 
 beforeAll(async () => await createTestContainer());
 afterAll(async () => await removeTestContainer());
@@ -49,7 +40,9 @@ afterEach(() => {
 describe("GET /admin/agrements/activites", () => {
   it("devrait retourner une liste d'activités avec succès", async () => {
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app).get(`/admin/agrements/activites`);
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements/activites`,
+    );
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
     expect(response.body.length).toBe(22);
@@ -79,7 +72,9 @@ describe("GET /admin/agrements", () => {
       userId: authUser2.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app).get(`/admin/agrements`);
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements`,
+    );
 
     expect(response.status).toBe(200);
     expect(response.body.agrements).toBeDefined();
@@ -110,7 +105,7 @@ describe("GET /admin/agrements", () => {
       userId: authUser2.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app).get(
+    const response = await request(getBoAppHelper(authUserBo)).get(
       `/admin/agrements?limit=1&offset=0&search={"numero":"${agrementData.numero}"}`,
     );
 
@@ -126,7 +121,7 @@ describe("GET /admin/agrements", () => {
       organismeId: organismeId1,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app).get(
+    const response = await request(getBoAppHelper(authUserBo)).get(
       `/admin/agrements?limit=1&offset=0&siret=80399410200025`,
     );
     expect(response.status).toBe(200);
@@ -146,7 +141,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
 
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.EN_COURS });
 
@@ -154,7 +149,9 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(response.body.success).toBe(true);
 
     // Vérifier que le statut a bien changé en base
-    const listResponse = await request(app).get(`/admin/agrements`);
+    const listResponse = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements`,
+    );
     const agrement = listResponse.body.agrements.find(
       (a: AgrementDto) => a.id === agrementId,
     );
@@ -166,7 +163,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     await createOrganisme({ userId: authUser.id });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
 
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/999/statut`)
       .send({ statut: AGREMENT_STATUT.EN_COURS });
 
@@ -185,7 +182,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const uuid = await createDocument({ userId: null });
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         commentaire: "L'agrément est à modifier",
@@ -231,7 +228,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const uuid = await createDocument({ userId: null });
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         file: {
@@ -284,7 +281,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const uuid = await createDocument({ userId: null });
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         file: {
@@ -318,7 +315,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     // Passage au statut à CORRIGER
     const uuidACorriger = await createDocument({ userId: null });
 
-    const responseACorriger = await request(app)
+    const responseACorriger = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         commentaire: "Dossier à corriger rapidement sinon refus du dossier",
@@ -354,7 +351,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const uuid = await createDocument({ userId: null });
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         file: {
@@ -388,7 +385,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     // Passage au statut à CORRIGER
     const uuidACorriger = await createDocument({ userId: null });
 
-    const responseACorriger = await request(app)
+    const responseACorriger = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         commentaire: "Dossier à corriger rapidement sinon refus du dossier",
@@ -441,7 +438,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
       userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
@@ -471,7 +468,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const uuid = await createDocument({ userId: null });
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         file: {
@@ -487,7 +484,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     // Passage au statut à VALIDE
     const uuidArreteAgrement = await createDocument({ userId: null });
 
-    const responseAgrementValide = await request(app)
+    const responseAgrementValide = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         file: {
@@ -528,7 +525,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     const uuid = await createDocument({ userId: null });
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         file: {
@@ -572,7 +569,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
       userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
         statut: AGREMENT_STATUT.REFUSE,
@@ -583,7 +580,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
   it("devrait retourner une 422 si l'agrément n'existe pas", async () => {
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/999999/statut`)
       .send({ statut: "PRIS_EN_CHARGE" });
     expect(response.status).toBe(422);
@@ -601,7 +598,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
 
-    await request(app)
+    await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.EN_COURS });
 
@@ -627,7 +624,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
 
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.A_MODIFIER });
 
@@ -647,7 +644,9 @@ describe("GET /admin/agrements/:id", () => {
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
 
-    const response = await request(app).get(`/admin/agrements/${agrementId}`);
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements/${agrementId}`,
+    );
     expect(response.status).toBe(200);
     expect(response.body.agrement).toBeDefined();
     expect(response.body.agrement.id).toBe(agrementId);
@@ -659,7 +658,9 @@ describe("GET /admin/agrements/:id", () => {
 
   it("devrait retourner une 404 si l'agrément n'existe pas", async () => {
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app).get(`/admin/agrements/999999`);
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements/999999`,
+    );
     expect(response.status).toBe(404);
   });
 });
@@ -675,10 +676,10 @@ describe("GET /admin/agrements/history/:agrementId", () => {
       userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    await request(app)
+    await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.EN_COURS });
-    const response = await request(app).get(
+    const response = await request(getBoAppHelper(authUserBo)).get(
       `/admin/agrements/history/${agrementId}`,
     );
     expect(response.status).toBe(200);
@@ -701,7 +702,7 @@ describe("GET /admin/agrements/history/:agrementId", () => {
       userId: authUser.id,
     });
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app).get(
+    const response = await request(getBoAppHelper(authUserBo)).get(
       `/admin/agrements/history/${agrementId}`,
     );
     expect(response.status).toBe(200);
@@ -710,7 +711,9 @@ describe("GET /admin/agrements/history/:agrementId", () => {
   });
   it("devrait retourner 200 et un tableau vide pour un agrément inexistant", async () => {
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
-    const response = await request(app).get(`/admin/agrements/history/9999999`);
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements/history/9999999`,
+    );
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body.history)).toBe(true);
     expect(response.body.history.length).toBe(0);
@@ -733,7 +736,7 @@ describe("Messagerie d'agrément", () => {
   });
 
   it("POST /message devrait créer un message et retourner 201", async () => {
-    const postResponse = await request(app)
+    const postResponse = await request(getBoAppHelper(authUserBo))
       .post(`/admin/agrements/${agrementId}/message`)
       .send({ message: "Message de test" });
     expect(postResponse.status).toBe(201);
@@ -741,11 +744,11 @@ describe("Messagerie d'agrément", () => {
   });
 
   it("GET /messages devrait retourner les messages existants", async () => {
-    await request(app)
+    await request(getBoAppHelper(authUserBo))
       .post(`/admin/agrements/${agrementId}/message`)
       .send({ message: "Message de test" });
 
-    const getResponse = await request(app).get(
+    const getResponse = await request(getBoAppHelper(authUserBo)).get(
       `/admin/agrements/${agrementId}/messages`,
     );
     expect(getResponse.status).toBe(200);
@@ -756,14 +759,16 @@ describe("Messagerie d'agrément", () => {
   });
 
   it("POST /message devrait retourner 404 pour un agrément inexistant", async () => {
-    const response = await request(app)
+    const response = await request(getBoAppHelper(authUserBo))
       .post(`/admin/agrements/999999/message`)
       .send({ message: "test" });
     expect(response.status).toBe(404);
   });
 
   it("GET /messages devrait retourner 404 pour un agrément inexistant", async () => {
-    const response = await request(app).get(`/admin/agrements/999999/messages`);
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements/999999/messages`,
+    );
     expect(response.status).toBe(404);
   });
 
@@ -780,20 +785,20 @@ describe("Messagerie d'agrément", () => {
       userType: USER_TYPE.FU,
     });
 
-    const patchResponse = await request(app).patch(
+    const patchResponse = await request(getBoAppHelper(authUserBo)).patch(
       `/admin/agrements/${agrementId}/messages/read`,
     );
     expect(patchResponse.status).toBe(200);
     expect(patchResponse.body.count).toBe(2);
 
-    const getResponse = await request(app).get(
+    const getResponse = await request(getBoAppHelper(authUserBo)).get(
       `/admin/agrements/${agrementId}/messages`,
     );
     expect(getResponse.body.unreadCount).toBe(0);
   });
 
   it("PATCH /messages/read devrait retourner 0 si aucun message non lu", async () => {
-    const response = await request(app).patch(
+    const response = await request(getBoAppHelper(authUserBo)).patch(
       `/admin/agrements/${agrementId}/messages/read`,
     );
 
@@ -802,7 +807,7 @@ describe("Messagerie d'agrément", () => {
   });
 
   it("PATCH /messages devrait remonter une erreur si l'agrément n'existe pas", async () => {
-    const patchResponse = await request(app).patch(
+    const patchResponse = await request(getBoAppHelper(authUserBo)).patch(
       `/admin/agrements/999/messages/read`,
     );
     expect(patchResponse.status).toBe(404);

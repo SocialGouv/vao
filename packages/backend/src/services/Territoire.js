@@ -1,7 +1,7 @@
 const AppError = require("../utils/error").default;
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const { getPool } = require("../utils/pgpool");
-const getCodeTerritoireByInseeCode = require("../utils/geo");
+const { getCodeTerritoireByInseeCode } = require("../utils/geo");
 
 const log = logger(module.filename);
 const {

@@ -7,21 +7,18 @@ import {
   ORGANISME_TYPE,
   USER_TYPE,
 } from "@vao/shared-bridge";
-import { NextFunction, Response } from "express";
 import request from "supertest";
 
 import { AgrementService as AgrementServiceAdmin } from "../../admin/agrements/agrements.service";
-import app from "../../app";
-import checkJwt from "../../middlewares/checkJWT";
 import * as DocumentService from "../../services/Document";
 import { mailService } from "../../services/mail";
 import * as OrganismeService from "../../services/Organisme";
-import { User, UserRequest } from "../../types/request";
 import { AgrementsRepository } from "../../usagers/agrements/agrements.repository";
 import { AgrementService } from "../../usagers/agrements/agrements.service";
 import { buildAgrementFixture } from "../fixtures/agrementsFixture";
 import { createAgrement, getAgrement } from "../helpers/agrementsHelper";
 import { createAgrementMessage } from "../helpers/agrementsMessageHelper";
+import { getFoAppHelper } from "../helpers/appHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
 import { createTerritoire } from "../helpers/territoireHelper";
 import {
@@ -29,13 +26,6 @@ import {
   removeTestContainer,
 } from "../helpers/testContainer";
 import { createAdminUser, createUsagersUser } from "../helpers/userHelper";
-
-jest.mock("../../middlewares/checkJWT", () =>
-  jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
-    req.decoded = { id: 1, role: "admin" } as unknown as User;
-    next();
-  }),
-);
 
 jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
@@ -58,18 +48,16 @@ afterEach(() => {
 
 describe("GET /agrements/", () => {
   it("devrait retourner une liste d'agréments lié à l'utilisateur connecté", async () => {
-    const authUser = await createUsagersUser();
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: authUser.id };
-      next();
-    });
-    const organismeId = await createOrganisme({ userId: authUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
     });
-    const response = await request(app).get(`/agrements/`);
+    const response = await request(getFoAppHelper(frontUser)).get(
+      `/agrements/`,
+    );
 
     // Vérification des résultats
     expect(response.status).toBe(200);
@@ -83,12 +71,8 @@ describe("GET /agrements/", () => {
     expect(agrementById?.id).toEqual(agrementId);
   });
   it("devrait retourner une liste avec un agrement valide à l'utilisateur connecté", async () => {
-    const authUser = await createUsagersUser();
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: authUser.id };
-      next();
-    });
-    const organismeId = await createOrganisme({ userId: authUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData1 = await buildAgrementFixture({ organismeId });
     await createAgrement({
       agrement: agrementData1,
@@ -102,7 +86,9 @@ describe("GET /agrements/", () => {
       agrement: agrementData2,
       organismeId,
     });
-    const response = await request(app).get(`/agrements?statut=VALIDE`);
+    const response = await request(getFoAppHelper(frontUser)).get(
+      `/agrements?statut=VALIDE`,
+    );
 
     // Vérification des résultats
     expect(response.status).toBe(200);
@@ -113,18 +99,16 @@ describe("GET /agrements/", () => {
 
 describe("GET /agrements/:agrementId", () => {
   it("devrait retourner un agrément", async () => {
-    const authUser = await createUsagersUser();
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: authUser.id };
-      next();
-    });
-    const organismeId = await createOrganisme({ userId: authUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
     });
-    const response = await request(app).get(`/agrements/${agrementId}`);
+    const response = await request(getFoAppHelper(frontUser)).get(
+      `/agrements/${agrementId}`,
+    );
 
     // Vérification des résultats
     expect(response.status).toBe(200);
@@ -133,28 +117,24 @@ describe("GET /agrements/:agrementId", () => {
   });
 
   it("devrait retourner un agrément introuvable", async () => {
-    const authUser = await createUsagersUser();
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: authUser.id };
-      next();
-    });
-    const organismeId = await createOrganisme({ userId: authUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
     await createAgrement({
       agrement: agrementData,
       organismeId,
     });
-    const response = await request(app).get(`/agrements/invalid`);
+    const response = await request(getFoAppHelper(frontUser)).get(
+      `/agrements/invalid`,
+    );
 
     expect(response.status).toBe(400);
   });
   it("devrait retourner un agrement introuvable", async () => {
-    const adminUser = await createUsagersUser();
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-    const response = await request(app).get(`/agrements/123456789`);
+    const frontUser = await createUsagersUser();
+    const response = await request(getFoAppHelper(frontUser)).get(
+      `/agrements/123456789`,
+    );
 
     // Vérification des résultats
     expect(response.status).toBe(404);
@@ -163,80 +143,64 @@ describe("GET /agrements/:agrementId", () => {
 
 describe("POST /agrements", () => {
   it("devrait créer un agrément sans bilan annuel", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     // On force agrementBilanAnnuel à []
     const agrementData = await buildAgrementFixture({
       agrementBilanAnnuel: [],
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-
-    const response = await request(app).post(`/agrements/`).send(agrementData);
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrementData);
 
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
   it("devrait créer un agrément sans animation (coverage)", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     // On force agrementAnimation à []
     const agrementData = await buildAgrementFixture({
       agrementAnimation: [],
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-
-    const response = await request(app).post(`/agrements/`).send(agrementData);
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrementData);
 
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
   it("devrait créer un agrément sans séjour", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     // On force agrementSejours à []
     const agrementData = await buildAgrementFixture({
       agrementSejours: [],
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-
-    const response = await request(app).post(`/agrements/`).send(agrementData);
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrementData);
 
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
   it("devrait créer un agrément (POST /agrements)", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-
-    const response = await request(app).post(`/agrements/`).send(agrementData);
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrementData);
 
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
   it("devrait mettre à jour un agrément (POST /agrements)", async () => {
-    const adminUser = await createUsagersUser();
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
       statut: AGREMENT_STATUT.VALIDE,
@@ -246,24 +210,21 @@ describe("POST /agrements", () => {
       organismeId,
     });
     const { agrement } = await getAgrement(agrementId);
-    const response = await request(app).post(`/agrements/`).send(agrement!);
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(agrement!);
 
     expect(response.status).toBe(200);
     expect(response.body).toBeDefined();
   });
 
   it("retourne une erreur 404 si l'ancien agrément est introuvable lors de la mise à jour", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
 
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-
     // Utilise un id inexistant
-    const response = await request(app)
+    const response = await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({ ...agrementData, id: 99999999 });
 
@@ -271,8 +232,8 @@ describe("POST /agrements", () => {
   });
 
   it("devrait changer le statut d'un agrément avec succès", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
 
     const agrementData = await buildAgrementFixture({
       organismeId,
@@ -288,12 +249,7 @@ describe("POST /agrements", () => {
       agrement: { ...agrementData },
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-
-    const response = await request(app)
+    const response = await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -323,7 +279,7 @@ describe("POST /agrements", () => {
   });
 
   it("renseigne organismeName et siret pour une personne morale lors de l'envoi du mail à la région", async () => {
-    const adminUser = await createUsagersUser();
+    const frontUser = await createUsagersUser();
     const organismeId = await createOrganisme({
       organisme: {
         personneMorale: {
@@ -332,7 +288,7 @@ describe("POST /agrements", () => {
         },
         typeOrganisme: ORGANISME_TYPE.PERSONNE_MORALE,
       },
-      userId: adminUser.id,
+      userId: frontUser.id,
     });
     const agrementData = await buildAgrementFixture({
       organismeId,
@@ -356,12 +312,7 @@ describe("POST /agrements", () => {
       },
       typeOrganisme: ORGANISME_TYPE.PERSONNE_MORALE,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-
-    await request(app)
+    await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -389,7 +340,7 @@ describe("POST /agrements", () => {
     expect(mailToRegion[0].html).toContain("12345678900000");
   });
   it("renseigne organismeName pour une personne physique lors de l'envoi du mail à la région", async () => {
-    const adminUser = await createUsagersUser();
+    const frontUser = await createUsagersUser();
     const organismeId = await createOrganisme({
       organisme: {
         personnePhysique: {
@@ -398,7 +349,7 @@ describe("POST /agrements", () => {
         },
         typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
       },
-      userId: adminUser.id,
+      userId: frontUser.id,
     });
     const agrementData = await buildAgrementFixture({
       organismeId,
@@ -424,12 +375,8 @@ describe("POST /agrements", () => {
       },
       typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
 
-    await request(app)
+    await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -458,8 +405,8 @@ describe("POST /agrements", () => {
   });
 
   it("envoie un mail à la région et à l’usager lors du passage à TRANSMIS", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     await createTerritoire({
       territoire: { service_mail: "region-idf@example.com" },
       territoireCode: "IDF",
@@ -473,12 +420,8 @@ describe("POST /agrements", () => {
       agrement: agrementData,
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
 
-    await request(app)
+    await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -495,8 +438,8 @@ describe("POST /agrements", () => {
   });
 
   it("n’envoie pas de mail à la région si la région est inconnue", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
       regionObtention: "AAA",
@@ -506,12 +449,8 @@ describe("POST /agrements", () => {
       agrement: agrementData,
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
 
-    await request(app)
+    await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -524,8 +463,8 @@ describe("POST /agrements", () => {
     expect(call.html).toMatch(/DREETS compétente/);
   });
   it("log une erreur si l'envoi du mail à la région échoue", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
       regionObtention: "IDF",
@@ -544,11 +483,7 @@ describe("POST /agrements", () => {
         throw new Error("Erreur d'envoi mail région");
       })
       .mockImplementationOnce(() => {}); // usager
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-    await request(app)
+    await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -559,8 +494,8 @@ describe("POST /agrements", () => {
   });
 
   it("log une erreur si l'envoi du mail à l'usager échoue", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
       regionObtention: "IDF",
@@ -579,12 +514,8 @@ describe("POST /agrements", () => {
       .mockImplementationOnce(() => {
         throw new Error("Erreur d'envoi mail usager");
       });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
 
-    await request(app)
+    await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -595,8 +526,8 @@ describe("POST /agrements", () => {
   });
 
   it("n’envoie pas de mail à la région si l’email de la région est manquant", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
       regionObtention: "IDF",
@@ -611,12 +542,8 @@ describe("POST /agrements", () => {
       agrement: agrementData,
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
 
-    await request(app)
+    await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -630,8 +557,8 @@ describe("POST /agrements", () => {
   });
 
   it("n’envoie pas de mail si l’organisme est introuvable", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
       regionObtention: "IDF",
@@ -642,11 +569,7 @@ describe("POST /agrements", () => {
       organismeId,
     });
     (OrganismeService.getOne as jest.Mock).mockResolvedValueOnce(null);
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-    await request(app)
+    await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -660,8 +583,8 @@ describe("POST /agrements", () => {
   });
 
   it("envoie un mail à l’usager avec fallback si la région est inconnue", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
       regionObtention: "AAA",
@@ -671,11 +594,7 @@ describe("POST /agrements", () => {
       agrement: agrementData,
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-    await request(app)
+    await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -706,11 +625,7 @@ describe("POST /agrements", () => {
       agrement: agrementData,
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: usagerUser.id };
-      next();
-    });
-    const response = await request(app)
+    const response = await request(getFoAppHelper({ id: usagerUser.id }))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -724,7 +639,7 @@ describe("POST /agrements", () => {
     // Mise à jour côté Admin pour demande de complétion du dossier
     await AgrementServiceAdmin.updateStatut({
       agrementId,
-      boUserId: adminUser.id,
+      boUserId: String(adminUser.id),
       commentaire:
         "Dossier à compléter car il manque des éléments pour pouvoir le traiter",
       statut: AGREMENT_STATUT.A_MODIFIER,
@@ -733,7 +648,9 @@ describe("POST /agrements", () => {
     expect(mailService.send).toHaveBeenCalledTimes(3);
 
     // Transmission de l'agrément au Service après complétude
-    const responseCorrection = await request(app)
+    const responseCorrection = await request(
+      getFoAppHelper({ id: usagerUser.id }),
+    )
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -760,13 +677,8 @@ describe("POST /agrements", () => {
 
 describe("PATCH /agrements/:agrementId/statut", () => {
   it("retourne 404 si l'agrement est introuvable (if !agrement)", async () => {
-    const authUser = await createUsagersUser();
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: authUser.id };
-      next();
-    });
-
-    const response = await request(app)
+    const frontUser = await createUsagersUser();
+    const response = await request(getFoAppHelper(frontUser))
       .patch(`/agrements/999999/statut`)
       .send({ statut: AGREMENT_STATUT.TRANSMIS });
 
@@ -777,7 +689,7 @@ describe("PATCH /agrements/:agrementId/statut", () => {
   });
 
   it("Devrait remonter une erreur sur la récupération de la fiche territoire", async () => {
-    const adminUser = await createUsagersUser();
+    const frontUser = await createUsagersUser();
     const organismeId = await createOrganisme({
       organisme: {
         personnePhysique: {
@@ -786,7 +698,7 @@ describe("PATCH /agrements/:agrementId/statut", () => {
         },
         typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
       },
-      userId: adminUser.id,
+      userId: frontUser.id,
     });
     const agrementData = await buildAgrementFixture({
       organismeId,
@@ -812,17 +724,14 @@ describe("PATCH /agrements/:agrementId/statut", () => {
       },
       typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-
     const newAgrementData = {
       ...agrementData,
       id: agrementId,
       statut: AGREMENT_STATUT.TRANSMIS,
     };
-    await request(app).post(`/agrements/`).send(newAgrementData);
+    await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(newAgrementData);
 
     // Vérifie que le mail envoyé à la région contient le nom et prénom de la personne physique
     const calls = (mailService.send as jest.Mock).mock.calls;
@@ -834,8 +743,8 @@ describe("PATCH /agrements/:agrementId/statut", () => {
   });
 
   it("workflow changement statut de l'agrement", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
       statut: AGREMENT_STATUT.BROUILLON,
@@ -848,11 +757,7 @@ describe("PATCH /agrements/:agrementId/statut", () => {
       agrement: agrementData,
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
-    const response = await request(app)
+    const response = await request(getFoAppHelper(frontUser))
       .patch(`/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.TRANSMIS });
 
@@ -879,16 +784,12 @@ describe("PATCH /agrements/:agrementId/statut", () => {
       agrement: agrementData,
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: usagerUser.id };
-      next();
-    });
-    const response = await request(app)
+    const response = await request(getFoAppHelper({ id: usagerUser.id }))
       .patch(`/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.TRANSMIS });
     await AgrementServiceAdmin.updateStatut({
       agrementId,
-      boUserId: adminUser.id,
+      boUserId: String(adminUser.id),
       statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
       territoireCode: agrementData.regionObtention!,
     });
@@ -909,12 +810,14 @@ describe("PATCH /agrements/:agrementId/statut", () => {
     expect(agrement?.statut).toBe(AGREMENT_STATUT.COMPLETUDE_CONFIRME);
     await AgrementServiceAdmin.updateStatut({
       agrementId,
-      boUserId: adminUser.id,
+      boUserId: String(adminUser.id),
       commentaire: "commentaire à corriger",
       statut: AGREMENT_STATUT.A_CORRIGER,
       territoireCode: agrementData.regionObtention!,
     });
-    const responseCorrection = await request(app)
+    const responseCorrection = await request(
+      getFoAppHelper({ id: usagerUser.id }),
+    )
       .patch(`/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME });
     expect(responseCorrection.status).toBe(200);
@@ -934,23 +837,21 @@ describe("PATCH /agrements/:agrementId/statut", () => {
       agrement: agrementData,
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: usagerUser.id };
-      next();
-    });
-    const response = await request(app)
+    const response = await request(getFoAppHelper({ id: usagerUser.id }))
       .patch(`/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.TRANSMIS });
     await AgrementServiceAdmin.updateStatut({
       agrementId,
-      boUserId: adminUser.id,
+      boUserId: String(adminUser.id),
       statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
       territoireCode: agrementData.regionObtention!,
     });
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
 
-    const responseCorrection = await request(app)
+    const responseCorrection = await request(
+      getFoAppHelper({ id: usagerUser.id }),
+    )
       .patch(`/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.VALIDE });
     expect(responseCorrection.status).toBe(200);
@@ -984,23 +885,21 @@ describe("PATCH /agrements/:agrementId/statut", () => {
       agrement: agrementData,
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: usagerUser.id };
-      next();
-    });
-    const response = await request(app)
+    const response = await request(getFoAppHelper({ id: usagerUser.id }))
       .patch(`/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.TRANSMIS });
     await AgrementServiceAdmin.updateStatut({
       agrementId,
-      boUserId: adminUser.id,
+      boUserId: String(adminUser.id),
       statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
       territoireCode: agrementData.regionObtention!,
     });
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
 
-    const responseCorrection = await request(app)
+    const responseCorrection = await request(
+      getFoAppHelper({ id: usagerUser.id }),
+    )
       .patch(`/agrements/${agrementId}/statut`)
       .send({ statut: AGREMENT_STATUT.REFUSE });
     expect(responseCorrection.status).toBe(200);
@@ -1023,8 +922,8 @@ describe("PATCH /agrements/:agrementId/statut", () => {
 
 describe("upload fichiers", () => {
   it("supprime le fichier single-upload orphelin lors de la mise à jour", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const initialFileUuid = crypto.randomUUID();
     const agrementData = await buildAgrementFixture({
       agrementFiles: [
@@ -1036,10 +935,6 @@ describe("upload fichiers", () => {
       ],
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
@@ -1050,7 +945,9 @@ describe("upload fichiers", () => {
       agrementFiles: [],
       id: agrementId,
     };
-    const response = await request(app).post(`/agrements/`).send(updateData);
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(updateData);
     expect(response.status).toBe(200);
 
     const { agrement } = await getAgrement(agrementId);
@@ -1058,8 +955,8 @@ describe("upload fichiers", () => {
   });
 
   it("supprime les fichiers multi-upload orphelins lors de la mise à jour", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
 
     const fileUuid1 = crypto.randomUUID();
     const fileUuid2 = crypto.randomUUID();
@@ -1084,10 +981,6 @@ describe("upload fichiers", () => {
       ],
       organismeId,
     });
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
-    });
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
@@ -1105,7 +998,9 @@ describe("upload fichiers", () => {
       ],
       id: agrementId,
     };
-    const response = await request(app).post(`/agrements/`).send(updateData);
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(updateData);
     expect(response.status).toBe(200);
 
     const { agrement } = await getAgrement(agrementId);
@@ -1117,8 +1012,8 @@ describe("upload fichiers", () => {
     ]);
   });
   it("supprime les fichiers orphelins lors de la mise à jour d'un agrément", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
 
     const fileUuid1 = crypto.randomUUID();
     const fileUuid2 = crypto.randomUUID();
@@ -1136,11 +1031,6 @@ describe("upload fichiers", () => {
         },
       ],
       organismeId,
-    });
-
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
     });
 
     // Spy sur la fonction deleteFile
@@ -1163,7 +1053,9 @@ describe("upload fichiers", () => {
       ],
       id: agrementId,
     };
-    const response = await request(app).post(`/agrements/`).send(updateData);
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(updateData);
     expect(response.status).toBe(200);
 
     // Vérifie que deleteFile a été appelée pour fileUuid1
@@ -1174,8 +1066,8 @@ describe("upload fichiers", () => {
   });
 
   it("log une erreur Sentry si la suppression d'un fichier orphelin échoue lors de la mise à jour", async () => {
-    const adminUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: adminUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
 
     const fileUuid1 = crypto.randomUUID();
     const fileUuid2 = crypto.randomUUID();
@@ -1193,11 +1085,6 @@ describe("upload fichiers", () => {
         },
       ],
       organismeId,
-    });
-
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: adminUser.id };
-      next();
     });
 
     // Mock deleteFile pour throw une erreur
@@ -1232,7 +1119,9 @@ describe("upload fichiers", () => {
       ],
       id: agrementId,
     };
-    const response = await request(app).post(`/agrements/`).send(updateData);
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send(updateData);
     expect(response.status).toBe(200);
 
     // Vérifie que Sentry.captureException a été appelé
@@ -1248,14 +1137,11 @@ describe("upload fichiers", () => {
 
 describe("Messagerie d'agrément", () => {
   let agrementId: number;
+  let messageAuthUser: { id: number };
 
   beforeEach(async () => {
-    const authUser = await createUsagersUser();
-    (checkJwt as jest.Mock).mockImplementation((req, _res, next) => {
-      req.decoded = { id: authUser.id };
-      next();
-    });
-    const organismeId = await createOrganisme({ userId: authUser.id });
+    messageAuthUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: messageAuthUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
     agrementId = await createAgrement({
       agrement: agrementData,
@@ -1264,7 +1150,7 @@ describe("Messagerie d'agrément", () => {
   });
 
   it("POST /message devrait créer un message et retourner 201", async () => {
-    const postResponse = await request(app)
+    const postResponse = await request(getFoAppHelper(messageAuthUser))
       .post(`/agrements/${agrementId}/message`)
       .send({ message: "Message de test" });
     expect(postResponse.status).toBe(201);
@@ -1272,11 +1158,11 @@ describe("Messagerie d'agrément", () => {
   });
 
   it("GET /messages devrait retourner les messages existants", async () => {
-    await request(app)
+    await request(getFoAppHelper(messageAuthUser))
       .post(`/agrements/${agrementId}/message`)
       .send({ message: "Message de test" });
 
-    const getResponse = await request(app).get(
+    const getResponse = await request(getFoAppHelper(messageAuthUser)).get(
       `/agrements/${agrementId}/messages`,
     );
     expect(getResponse.status).toBe(200);
@@ -1287,23 +1173,27 @@ describe("Messagerie d'agrément", () => {
   });
   // Agrément inexistant
   it("GET /messages devrait retourner une erreur agrement inexistant", async () => {
-    await request(app)
+    await request(getFoAppHelper(messageAuthUser))
       .post(`/agrements/${agrementId}/message`)
       .send({ message: "Message de test" });
 
-    const getResponse = await request(app).get(`/agrements/999/messages`);
+    const getResponse = await request(getFoAppHelper(messageAuthUser)).get(
+      `/agrements/999/messages`,
+    );
     expect(getResponse.status).toBe(404);
   });
 
   it("POST /message devrait retourner 404 pour un agrément inexistant", async () => {
-    const response = await request(app)
+    const response = await request(getFoAppHelper(messageAuthUser))
       .post(`/agrements/999999/message`)
       .send({ message: "test" });
     expect(response.status).toBe(404);
   });
 
   it("GET /messages devrait retourner 404 pour un agrément inexistant", async () => {
-    const response = await request(app).get(`/agrements/999999/messages`);
+    const response = await request(getFoAppHelper(messageAuthUser)).get(
+      `/agrements/999999/messages`,
+    );
     expect(response.status).toBe(404);
     expect(response.body.message).toBe(
       "Aucun organismeId récupéré pour l'agrement",
@@ -1314,37 +1204,39 @@ describe("Messagerie d'agrément", () => {
     const authUserBo = await createAdminUser({ territoireCode: "IDF" });
     await createAgrementMessage({
       agrementId,
-      agrementMessage: { back_user_id: authUserBo.id },
+      agrementMessage: { back_user_id: authUserBo.id as number },
       userType: USER_TYPE.BO,
     });
     await createAgrementMessage({
       agrementId,
-      agrementMessage: { back_user_id: authUserBo.id },
+      agrementMessage: { back_user_id: authUserBo.id as number },
       userType: USER_TYPE.BO,
     });
-    await request(app).get(`/agrements/${agrementId}/messages`);
+    await request(getFoAppHelper(messageAuthUser)).get(
+      `/agrements/${agrementId}/messages`,
+    );
 
-    const patchResponse = await request(app).patch(
+    const patchResponse = await request(getFoAppHelper(messageAuthUser)).patch(
       `/agrements/${agrementId}/messages/read`,
     );
     expect(patchResponse.status).toBe(200);
     expect(patchResponse.body.count).toBe(2);
 
-    const getResponse = await request(app).get(
+    const getResponse = await request(getFoAppHelper(messageAuthUser)).get(
       `/agrements/${agrementId}/messages`,
     );
     expect(getResponse.body.unreadCount).toBe(0);
   });
 
   it("PATCH /messages devrait remonter une erreur", async () => {
-    const patchResponse = await request(app).patch(
+    const patchResponse = await request(getFoAppHelper(messageAuthUser)).patch(
       `/agrements/999/messages/read`,
     );
     expect(patchResponse.status).toBe(404);
   });
 
   it("POST /message couvre if !agrement avec 404 explicite", async () => {
-    const response = await request(app)
+    const response = await request(getFoAppHelper(messageAuthUser))
       .post(`/agrements/123456/message`)
       .send({ message: "Message test" });
 
@@ -1352,7 +1244,7 @@ describe("Messagerie d'agrément", () => {
   });
 
   it("PATCH /messages/read couvre if !agrement avec 404 explicite", async () => {
-    const response = await request(app).patch(
+    const response = await request(getFoAppHelper(messageAuthUser)).patch(
       `/agrements/123456/messages/read`,
     );
 

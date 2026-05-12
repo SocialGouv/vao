@@ -3,8 +3,8 @@ import type { NextFunction, Response } from "express";
 import { FeatureFlagService } from "../../services/featureFlagService";
 import User from "../../services/User";
 import { UserRequest } from "../../types/request";
-import logger from "../../utils/logger";
-import normalize from "../../utils/normalize";
+import { logger } from "../../utils/logger";
+import { normalize } from "../../utils/normalize";
 
 const log = logger(module.filename);
 
@@ -18,7 +18,7 @@ async function getMe(req: UserRequest, res: Response, next: NextFunction) {
       return res.status(404).json({ name: "UserNotFound" });
     }
     const [user] = users;
-    log.d({ user });
+    log.d("user", { user });
     const featureFlags = await FeatureFlagService.getFeatureFlagsAvailable();
     log.i("DONE");
     return res.json({ user: { ...user, featureFlags } });

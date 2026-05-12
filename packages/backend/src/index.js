@@ -1,8 +1,8 @@
-const app = require("./app");
-const logger = require("./utils/logger");
+const app = require("./app").default;
+const { logger } = require("./utils/logger");
 
-const pgpool = require("./utils/pgpool");
-const pgpoolDoc = require("./utils/pgpoolDoc");
+const { disconnect } = require("./utils/pgpool");
+const { disconnectDoc } = require("./utils/pgpoolDoc");
 
 const log = logger(module.filename);
 
@@ -27,8 +27,8 @@ function shutdown(signal) {
         resolve();
       });
     });
-    await pgpool.disconnect();
-    await pgpoolDoc.disconnect();
+    await disconnect();
+    await disconnectDoc();
     log.d("shutdown - exiting...");
     setTimeout(() => {
       process.exit(err ? 1 : 0);

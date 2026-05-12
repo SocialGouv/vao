@@ -1,7 +1,7 @@
 const { escapeCsvField } = require("../../utils/csv");
 const Organisme = require("../../services/Organisme");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const dayjs = require("dayjs");
 const { formatSiren, formatSiret } = require("@vao/shared-bridge");
 

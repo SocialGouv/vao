@@ -1,9 +1,9 @@
 import { STATUS_USER_FRONT } from "@vao/shared-bridge";
 
-import Logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 
-const log = Logger(module.filename);
+const log = logger(module.filename);
 
 export const UsersRepository = {
   create: async ({ user }: { user: any }) => {

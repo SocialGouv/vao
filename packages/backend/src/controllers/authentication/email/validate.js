@@ -1,9 +1,11 @@
 const jwt = require("jsonwebtoken");
-const config = require("../../../config");
+const { config } = require("../../../config");
 const AppError = require("../../../utils/error").default;
-const logger = require("../../../utils/logger")(module.filename);
+const { logger } = require("../../../utils/logger");
 
-const MailUtils = require("../../../utils/mail");
+const log = logger(module.filename);
+
+const { MailUtils } = require("../../../utils/mail");
 const {
   mailService: { send: Send },
 } = require("../../../services/mail");
@@ -16,7 +18,7 @@ const { status } = require("../../../helpers/users");
 
 module.exports = async (req, res, next) => {
   const { token } = req.body;
-  logger.i("IN", { token });
+  log.i("IN", { token });
 
   if (!token)
     return next(new AppError("Paramètre incorrect", { statusCode: 400 }));
@@ -37,7 +39,7 @@ module.exports = async (req, res, next) => {
     await Send(MailUtils.usagers.authentication.sendAccountValided(email));
     return res.status(200).json({ user });
   } catch (error) {
-    logger.w(error);
+    log.w(error);
     return next(
       new AppError("Erreur lors du traitement", {
         cause: error,

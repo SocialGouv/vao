@@ -31,22 +31,15 @@ function handleOrganismes(organisme) {
   ];
 
   if (!organisme.personneMorale.porteurAgrement) {
+    const etablissementPrincipal =
+      organisme.personneMorale.etablissementPrincipal ?? {};
     const principalLines = [
-      ["SIRET :", organisme.personneMorale.etablissementPrincipal.siret],
-      [
-        "Raison sociale :",
-        organisme.personneMorale.etablissementPrincipal.raisonSociale,
-      ],
-      [
-        "Nom commercial :",
-        organisme.personneMorale.etablissementPrincipal.nomCommercial ?? "",
-      ],
-      ["Adresse :", organisme.personneMorale.etablissementPrincipal.adresse],
-      [
-        "Téléphone :",
-        organisme.personneMorale.etablissementPrincipal.telephone,
-      ],
-      ["Email :", organisme.personneMorale.etablissementPrincipal.email],
+      ["SIRET :", etablissementPrincipal.siret ?? ""],
+      ["Raison sociale :", etablissementPrincipal.raisonSociale ?? ""],
+      ["Nom commercial :", etablissementPrincipal.nomCommercial ?? ""],
+      ["Adresse :", etablissementPrincipal.adresse ?? ""],
+      ["Téléphone :", etablissementPrincipal.telephone ?? ""],
+      ["Email :", etablissementPrincipal.email ?? ""],
     ];
 
     stack.unshift(
@@ -72,7 +65,7 @@ module.exports = function displayOrganisme(responsableSejour, organisme) {
   if (organisme.typeOrganisme === "personne_morale") {
     const stack = handleOrganismes(organisme);
     stack.push(
-      RepresentantLegaux(organisme.personneMorale.representantsLegaux),
+      RepresentantLegaux(organisme.personneMorale.representantsLegaux ?? []),
       ResponsableOrganisation(responsableSejour),
     );
     return {

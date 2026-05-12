@@ -4,12 +4,12 @@ import * as Sentry from "@sentry/node";
 import type { NextFunction, Response } from "express";
 import { PDFDocument } from "pdf-lib";
 
-import { sentry } from "../../config";
+import { config } from "../../config";
 import * as DocumentService from "../../services/Document";
 import type { UserRequest } from "../../types/request";
 import AppError from "../../utils/error";
 import { getFileTypeFromBuffer } from "../../utils/file";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 
@@ -138,7 +138,7 @@ async function detectJavaScriptInPDF(fileBuffer: Buffer): Promise<boolean> {
     });
   } catch (error) {
     log.w("DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
     throw error;

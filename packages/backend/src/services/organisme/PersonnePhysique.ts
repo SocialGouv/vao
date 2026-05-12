@@ -5,7 +5,7 @@ import {
 } from "@vao/shared-bridge";
 import type { PoolClient } from "pg";
 
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 import { addHistoric } from "../Tracking";
 

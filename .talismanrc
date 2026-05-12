@@ -66,7 +66,7 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/admin/accept-cgu.test.ts
   checksum: 692450d4fc33a59b516dab82ef8a447c1b0afa242acfac281b9c4584e330cbda
 - filename: packages/backend/src/__tests__/admin/authentication.test.ts
-  checksum: 528b8fad9ce9931d961b9ed7f7d3da8b779ff2a189dfba4edf4ec788aa83c709
+  checksum: 63edd76b2f24c07687a9952a288ec5bed831a3b14fdbb69909d897a0ad847dca
 - filename: packages/backend/src/__tests__/admin/sejour.test.ts
   checksum: d6e5b48000a21797f60865b4c59c09c9860f55c72376b785a21777e1f31d9b40
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
@@ -76,11 +76,11 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/usagers/agrements.test.ts
   checksum: d0422a97e0bf3177d51d97c0253f50d254331976b359d55341760928e10cab16
 - filename: packages/backend/src/__tests__/usagers/authentification.test.ts
-  checksum: 957632f5ccd2a7da70633b5291a95bb62110b47d3c78454f645e5a0501ce7e1d
+  checksum: 95b280ea570c9959104c314b772ac6e8de4b0b2be0328239a259a01883114a0f
 - filename: packages/backend/src/__tests__/usagers/documents.test.ts
   checksum: d5d23d8aa40adf45f04cb47587350ba4c52423bb669307779f9be0254e77b695
 - filename: packages/backend/src/__tests__/usagers/fo-user.test.ts
-  checksum: e69b758f68ad9f9981a1c6e060727e29b8018d913639b7d6245c1ee4ef7355eb
+  checksum: 1592485597a9d3c481163fc6f495367be3e70c112cb3cbe3d528afc6a7919860
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
   checksum: 7a829c5b141bb9761e1d3fcebacc6d0a5b0ca699af877295d671d33d84728f33
 - filename: packages/backend/src/config.js
@@ -94,7 +94,7 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/authentication/email/__tests__/renew-password.test.js
   checksum: 83ed8fdaec5e47e65e05fc8586202a8e2637ebc995fc326a79322cccaac25555
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
-  checksum: 6d0565ac2c741533e6ee3347a1aa2a6c11544dd081907d63bf817d89a2ec1668
+  checksum: 2f5296972c87285ed4e2d46aafed33a49f1e2efb39284d30bf3d81d0ec54be88
 - filename: packages/backend/src/controllers/authentication/email/forgottenPassword.js
   checksum: d66401c29c51850346868ff2d7c097fbd572bbfd8cfae77c87ae5274a7cc8409
 - filename: packages/backend/src/controllers/authentication/email/index.js
@@ -104,11 +104,11 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/authentication/email/register.js
   checksum: ffe8f1a18fa67c4f00aed6f9ae5ccff003d55a30d9abffa3b66e178b3c0bb08a
 - filename: packages/backend/src/controllers/authentication/email/renew-password.js
-  checksum: b137ab7a643c341d0a2396864d4f65abc4367b8d4b1dcce06a0274bb497c2473
+  checksum: 3478527de3f1a06d217d02319704991dc59dbf2a559327ab6767edc95d31aa2f
 - filename: packages/backend/src/controllers/authentication/email/renewPassword.js
   checksum: 71c7f6afdca8903cb4ad4120ac93e5296cc5bac40dac63391722bb4c2079b422
 - filename: packages/backend/src/controllers/bo-authentication/email/forgotten-password.js
-  checksum: 9c7a31b3ba790969c6f469bbfd69d3b32200783f3f7d044215cbdeef6611141b
+  checksum: 221afaa33cea62b2008e81f07584c4c11f2e98feca7034271133858225344ec3
 - filename: packages/backend/src/controllers/bo-authentication/email/index.js
   checksum: eed33b015aa92afe378f008ff56de976385b5dccddf1157fadafbe2854884336
 - filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
@@ -119,6 +119,8 @@ fileignoreconfig:
   checksum: 5c6862263cb7030aac2429eb09b35ab9a54e13c15e633944cdfac95747ec768f
 - filename: packages/backend/src/helpers/__tests__/queryParams.test.js
   checksum: c8b87f647822d4193d521e1d5630de0afbedc9f5273741bb5b419008e059b3fa
+- filename: packages/backend/src/helpers/declaration/mise-en-page.ts
+  checksum: 11396ec3010ca7db3c3fe349da3cd20e6aada4bd176762cdeb3b0515b0e6d282
 - filename: packages/backend/src/helpers/queryParams.js
   checksum: 5c840a9346e912b48660122bb3fd206d4cbedb6f0cb73972724ba95be6f4043b
 - filename: packages/backend/src/middlewares/requestValidatorMiddleware.ts
@@ -159,22 +161,30 @@ fileignoreconfig:
   checksum: 224832f0b2175b2785a6d45d297e23e2018d068912682e73d411c390fd05a80a
 - filename: packages/backend/src/services/geo/Region.js
   checksum: 5c4d9a0edd3496c3b18663a1f330797b5fa89b541b4c9470e060d60c278f3fd7
+- filename: packages/backend/src/services/pdf/parts/Prestataire.js
+  checksum: 88151ad6029d183e17249c7d330d6f763696fb046b03467d274f96dde554d165
 - filename: packages/backend/src/sonar-project.properties
   checksum: 971c26e540505ee376587d3fbafb0efb226dbb3202ecf91b1f7820b279ecd28c
 - filename: packages/backend/src/types/reorgQueryParams.ts
   checksum: 48c16e791d844e7d30d14fec5fcf36798ecb4235b685a204ecf7456ca84364ac
 - filename: packages/backend/src/usagers/agrements/agrements.mail.ts
   checksum: 9435876e82a33a64481b490c8d148c9db042fd15ec42e72e6a8ddb23d5356af8
+- filename: packages/backend/src/utils/canBeActivated.ts
+  checksum: 212a9a708b5135da12f93d9d98e2f9d2dcb8a3408bd3c6d56910f3c1d78cb66a
 - filename: packages/backend/src/utils/mail-service.js
   checksum: bf5f3c01e2edcf3a7ef6d8cbde306deb931a01df88ef90fe911c0c9ace41135c
 - filename: packages/backend/src/utils/mail.js
-  checksum: b7cbdb67f3627bfef8139a2bf9a92c81dd5d448becd069f3a6322c2bfa2c5978
+  checksum: 0cc74581f89fa2652cfa938481f3dfb14f30dc1353d3adec183d269ad3e5bd7b
 - filename: packages/backend/src/utils/pgpool.js
   checksum: 10d6ecbb906b6283646a6b2607cacbe2b6189059c321f3b85b49f73dbbe489be
 - filename: packages/backend/src/utils/pgpoolDoc.js
   checksum: 777a2c86e16769a1305d8fd2cd6a67eb195c2084855fe7fd0b6544af5028b72a
+- filename: packages/backend/src/utils/pgpoolDoc.ts
+  checksum: d55d2efa238244acd799b9fe1d322a1b9fcefea36adc4f534469f70fda630bdf
 - filename: packages/backend/src/utils/regex.js
   checksum: 9e58840c352b67fb278a7409352b7afc6c8a628fb30d19d13f0d52993a5d9463
+- filename: packages/backend/src/utils/regex.ts
+  checksum: 37980111f65aa47d942a24532df417df7c8b7520f009aba83e65388fb88aa0b9
 - filename: packages/backend/src/utils/validation-error.ts
   checksum: 4bec11a784b24d563235f78e271db6c1a9a7f2ebd0bf06544899c3da4f15b533
 - filename: packages/cron/src/notifySuppressionCompteInactif/notifySuppressionCompteInactif.email.ts

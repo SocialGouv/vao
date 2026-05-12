@@ -6,7 +6,7 @@ import type {
 import { USER_TYPE } from "@vao/shared-bridge";
 import { PoolClient } from "pg";
 
-import Logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 import { ActiviteEntity, AgrementEntity } from "./agrements.entity";
 import {
@@ -17,7 +17,7 @@ import {
   AgrementsMapper,
 } from "./agrements.mapper";
 
-const log = Logger(module.filename);
+const log = logger(module.filename);
 // ------------------------------------------------------------
 // 🏗️ Repository Shared
 // ------------------------------------------------------------
@@ -254,7 +254,7 @@ export const AgrementsRepositoryShared = {
       RETURNING id;
     `;
       const result = await client.query(query, [agrementId]);
-      return result.rowCount;
+      return result.rowCount!;
     } finally {
       client.release();
     }

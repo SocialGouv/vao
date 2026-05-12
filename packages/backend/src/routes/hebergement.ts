@@ -5,7 +5,7 @@ import {
 import express from "express";
 
 import hebergementController from "../controllers/hebergement";
-import HebergementHelper from "../helpers/hebergement";
+import { statuts as HebergementStatuts } from "../helpers/hebergement";
 import boCheckJWT from "../middlewares/bo-check-JWT";
 import checkJWT from "../middlewares/checkJWT";
 import checkPermissionHebergement from "../middlewares/checkPermissionHebergement";
@@ -39,7 +39,7 @@ router.get(
 router.get(
   "/admin/:id",
   boCheckJWT,
-  checkStatutHebergement(HebergementHelper.statuts.ACTIF),
+  checkStatutHebergement(HebergementStatuts.ACTIF),
   requestValidatorMiddleware(HebergementAdminRoutesSchema["GetOne"]),
   hebergementController.getById,
 );
@@ -50,26 +50,26 @@ router.post("/brouillon", checkJWT, hebergementController.postBrouillon);
 router.put(
   "/:id/brouillon",
   checkJWT,
-  checkStatutHebergement(HebergementHelper.statuts.BROUILLON),
+  checkStatutHebergement(HebergementStatuts.BROUILLON),
   hebergementController.updateBrouillon,
 );
 router.put(
   "/:id/activate",
   checkJWT,
-  checkStatutHebergement(HebergementHelper.statuts.BROUILLON),
+  checkStatutHebergement(HebergementStatuts.BROUILLON),
   hebergementController.activate,
 );
 router.put(
   "/:id/desactivate",
   checkJWT,
-  checkStatutHebergement(HebergementHelper.statuts.ACTIF),
+  checkStatutHebergement(HebergementStatuts.ACTIF),
   checkPermissionHebergementUser,
   hebergementController.desactivate,
 );
 router.put(
   "/:id/reactivate",
   checkJWT,
-  checkStatutHebergement(HebergementHelper.statuts.DESACTIVE),
+  checkStatutHebergement(HebergementStatuts.DESACTIVE),
   checkPermissionHebergementUser,
   hebergementController.reactivate,
 );
@@ -77,7 +77,7 @@ router.put(
 router.post(
   "/:id",
   checkJWT,
-  checkStatutHebergement(HebergementHelper.statuts.ACTIF),
+  checkStatutHebergement(HebergementStatuts.ACTIF),
   checkPermissionHebergement,
   hebergementController.update,
 );

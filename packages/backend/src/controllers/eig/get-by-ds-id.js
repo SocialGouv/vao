@@ -1,4 +1,4 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const eigService = require("../../services/eig");
 
 const log = logger(module.filename);

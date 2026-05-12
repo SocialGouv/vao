@@ -1,8 +1,8 @@
-const { authentification } = require("../../config");
+const { config } = require("../../config");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const { getPool } = require("../../utils/pgpool");
-const normalize = require("../../utils/normalize");
+const { normalize } = require("../../utils/normalize");
 
 const log = logger(module.filename);
 
@@ -62,9 +62,11 @@ module.exports.verifyLoginAttempt = async (email, userSchema) => {
   }
   const account = response.rows[0];
   log.d("verifyLoginAttempt", { account });
-  if (account.attempt_count >= authentification.maxLoginAttempts) {
+  if (account.attempt_count >= config.authentification.maxLoginAttempts) {
     log.w("verifyLoginAttempt - DONE - Too many attempts");
-    if (account.minutes_since_last_attempt > authentification.lockoutTime) {
+    if (
+      account.minutes_since_last_attempt > config.authentification.lockoutTime
+    ) {
       getPool().query(query.resetLoginAttempt(userSchema), [normalize(email)]);
       log.i("verifyLoginAttempt - DONE - Resetting attempt count");
       return false;
