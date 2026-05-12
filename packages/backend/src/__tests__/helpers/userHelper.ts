@@ -22,7 +22,19 @@ export const createAdminUser = async (user = {}) => {
   return result;
 };
 
-export const createUsagersUser = async (user = {}) => {
+export const createUsagersUser = async (
+  user: {
+    email?: string;
+    nom?: string;
+    password?: string;
+    prenom?: string;
+    siret?: string;
+    statusCode?: string;
+    telephone?: string;
+    terCode?: string;
+  } & Record<string, unknown> = {},
+) => {
+  const { statusCode, ...userFields } = user;
   const timestamp = Date.now();
   const fixture: any = {
     email: `frontuser${timestamp}@example.com`,
@@ -31,16 +43,34 @@ export const createUsagersUser = async (user = {}) => {
     siret: `${timestamp.toString().slice(-2)}123456789012`,
     telephone: "0102030405",
     terCode: "FRA",
-    ...user,
+    ...userFields,
   };
   const result = await createFrontUserService(fixture as any);
-  return {
+  const created = {
     ...result.user,
     territoireCode: result.user.terCode,
   };
+  if (statusCode) {
+    await getPool().query(
+      "UPDATE front.users SET status_code = $1 WHERE id = $2",
+      [statusCode, created.id],
+    );
+  }
+  return created;
 };
 
-export const createUsagersUserValide = async (user = {}) => {
+export const createUsagersUserValide = async (
+  user: {
+    email?: string;
+    nom?: string;
+    prenom?: string;
+    roles?: string[];
+    siret?: string;
+    telephone?: string;
+    terCode?: string;
+  } & Record<string, unknown> = {},
+) => {
+  const { roles: roleLabels, ...userFields } = user;
   const timestamp = Date.now();
   const fixture = {
     email: `frontuser${timestamp}@example.com`,
@@ -49,33 +79,13 @@ export const createUsagersUserValide = async (user = {}) => {
     siret: `123456789012${timestamp.toString().slice(-2)}`,
     telephone: "0102030405",
     terCode: "FRA",
-    ...user,
+    ...userFields,
   };
   const result = await UsagerUsersRepository.create({ user: fixture });
-  return result.user[0];
-};
-
-export const createAdminUserValide = async (user = {}) => {
-  const timestamp = Date.now();
-  const fixture = {
-    email: `bouser${timestamp}@example.com`,
-    nom: "boNom",
-    prenom: "boPrenom",
-    telephone: "0102030405",
-    ter_code: "FRA",
-    verified: true,
-    ...user,
-  };
-  const result = await AdminUsersRepository.create({ user: fixture });
-  return result.user[0];
-};
-
-export const assignRolesToUsager = async (
-  userId: number,
-  roleLabels: string[],
-): Promise<void> => {
-  await getPool().query(
-    `
+  const created = result.user[0];
+  if (roleLabels?.length) {
+    await getPool().query(
+      `
       INSERT INTO front.user_roles (use_id, rol_id)
       SELECT $1, r.id
       FROM front.roles r
@@ -87,6 +97,52 @@ export const assignRolesToUsager = async (
         AND ur.rol_id = r.id
       )
     `,
-    [userId, roleLabels],
-  );
+      [created.id, roleLabels],
+    );
+  }
+  return created;
+};
+
+export const createAdminUserValide = async (
+  user: {
+    email?: string;
+    nom?: string;
+    prenom?: string;
+    roles?: string[];
+    telephone?: string;
+    ter_code?: string;
+    verified?: boolean;
+  } & Record<string, unknown> = {},
+) => {
+  const { roles: roleLabels, ...userFields } = user;
+  const timestamp = Date.now();
+  const fixture = {
+    email: `bouser${timestamp}@example.com`,
+    nom: "boNom",
+    prenom: "boPrenom",
+    telephone: "0102030405",
+    ter_code: "FRA",
+    verified: true,
+    ...userFields,
+  };
+  const result = await AdminUsersRepository.create({ user: fixture });
+  const created = result.user[0];
+  if (roleLabels?.length) {
+    await getPool().query(
+      `
+      INSERT INTO back.user_roles (use_id, rol_id)
+      SELECT $1, r.id
+      FROM back.roles r
+      WHERE r.label = ANY($2)
+      AND NOT EXISTS (
+        SELECT 1
+        FROM back.user_roles ur
+        WHERE ur.use_id = $1
+        AND ur.rol_id = r.id
+      )
+    `,
+      [created.id, roleLabels],
+    );
+  }
+  return created;
 };

@@ -8,7 +8,7 @@ module.exports = () =>
       "telephone",
       "Format de numéro de téléphone invalide",
       (telephone) => {
-        return telephone === null || numTelephoneRegex.test(telephone);
+        return !telephone || numTelephoneRegex.test(telephone);
       },
     )
     .required();

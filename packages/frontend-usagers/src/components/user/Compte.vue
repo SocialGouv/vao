@@ -51,10 +51,10 @@
               id="toggle-valide"
               :label="!isActive ? 'Activer le compte' : 'Désactiver le compte'"
               :model-value="isActive"
-              aria-describedby="toggle-valide"
+              aria-describedby="toggle-valide-texte"
               @update:model-value="openModal"
             />
-            <p v-if="true" id="toggle-valide" class="fr-hint-text">
+            <p v-if="true" id="toggle-valide-texte" class="fr-hint-text">
               {{
                 statut === statusUser.status.BLOCKED
                   ? "Compte désactivé"
@@ -96,7 +96,12 @@
 
 <script setup>
 import { DsfrButton } from "@gouvminint/vue-dsfr";
-import { DisplayInput, statusUser, ValidationModal, useToaster } from "@vao/shared-ui";
+import {
+  DisplayInput,
+  statusUser,
+  ValidationModal,
+  useToaster,
+} from "@vao/shared-ui";
 import { defineProps } from "vue";
 import { useField, useForm } from "vee-validate";
 import FoUser from "~/utils/fo-user";

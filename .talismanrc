@@ -79,6 +79,8 @@ fileignoreconfig:
   checksum: 957632f5ccd2a7da70633b5291a95bb62110b47d3c78454f645e5a0501ce7e1d
 - filename: packages/backend/src/__tests__/usagers/documents.test.ts
   checksum: d5d23d8aa40adf45f04cb47587350ba4c52423bb669307779f9be0254e77b695
+- filename: packages/backend/src/__tests__/usagers/fo-user.test.ts
+  checksum: e69b758f68ad9f9981a1c6e060727e29b8018d913639b7d6245c1ee4ef7355eb
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
   checksum: 7a829c5b141bb9761e1d3fcebacc6d0a5b0ca699af877295d671d33d84728f33
 - filename: packages/backend/src/config.js
@@ -164,7 +166,7 @@ fileignoreconfig:
 - filename: packages/backend/src/utils/mail-service.js
   checksum: bf5f3c01e2edcf3a7ef6d8cbde306deb931a01df88ef90fe911c0c9ace41135c
 - filename: packages/backend/src/utils/mail.js
-  checksum: 0110e20273092996ed397f2530fe3e5b323f8fdb396abc4846e754bb00713089
+  checksum: b7cbdb67f3627bfef8139a2bf9a92c81dd5d448becd069f3a6322c2bfa2c5978
 - filename: packages/backend/src/utils/pgpool.js
   checksum: 10d6ecbb906b6283646a6b2607cacbe2b6189059c321f3b85b49f73dbbe489be
 - filename: packages/backend/src/utils/pgpoolDoc.js

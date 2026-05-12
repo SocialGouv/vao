@@ -1946,15 +1946,17 @@ module.exports.updateStatut = async (
       statut,
       declarationId,
     ]);
-    await client.query(query.insertEvent, [
-      event.source,
-      event.declarationId,
-      event.userId,
-      event.boUserId,
-      event.type,
-      event.typePrecision,
-      event.metaData,
-    ]);
+    if (event) {
+      await client.query(query.insertEvent, [
+        event.source,
+        event.declarationId,
+        event.userId,
+        event.boUserId,
+        event.type,
+        event.typePrecision,
+        event.metaData,
+      ]);
+    }
     if (cb) {
       await cb();
     }
@@ -1980,7 +1982,7 @@ module.exports.addAsyncDeclarationSejourHistoric = async ({
   userType,
 }) => {
   try {
-    addHistoric({
+    await addHistoric({
       action,
       data: {
         after: newData,

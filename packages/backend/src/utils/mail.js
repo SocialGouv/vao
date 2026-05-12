@@ -392,7 +392,7 @@ module.exports = {
             break;
           }
           case "informationsPersonnel": {
-            Object.entries(dataUpdated).map(([key, value]) => {
+            Object.entries(dataUpdated).forEach(([key, value]) => {
               const includesKeysPersonnel = [
                 { cle: "encadrants", valeur: "personnel d'encadrement" },
                 { cle: "accompagnants", valeur: "personnel d'accompagnement" },

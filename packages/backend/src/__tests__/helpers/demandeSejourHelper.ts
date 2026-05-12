@@ -1,19 +1,25 @@
 import { getPool } from "../../utils/pgpool";
 
 type CreateDemandeSejourParams = {
-  organismeId: number;
+  departementSuivi?: string;
   idFonctionnelle?: string;
   libelle?: string;
+  organisme?: object;
+  organismeId: number;
+  personnel?: object;
   statut?: string;
-  departementSuivi?: string;
+  vacanciers?: object;
 };
 
 export const createDemandeSejour = async ({
-  organismeId,
+  departementSuivi = "75",
   idFonctionnelle = "TSTMSG001",
   libelle = "Declaration message test",
+  organisme,
+  organismeId,
+  personnel,
   statut = "BROUILLON",
-  departementSuivi = "75",
+  vacanciers,
 }: CreateDemandeSejourParams): Promise<number> => {
   const declarationResponse = await getPool().query(
     `INSERT INTO front.demande_sejour (
@@ -44,7 +50,29 @@ export const createDemandeSejour = async ({
     [organismeId, idFonctionnelle, libelle, statut, departementSuivi],
   );
 
-  return declarationResponse.rows[0]?.id ?? 1;
+  const declarationId = declarationResponse.rows[0]?.id ?? 1;
+
+  if (
+    personnel !== undefined &&
+    vacanciers !== undefined &&
+    organisme !== undefined
+  ) {
+    await getPool().query(
+      `UPDATE front.demande_sejour
+       SET personnel = $1::jsonb,
+           vacanciers = $2::jsonb,
+           organisme = $3::jsonb
+       WHERE id = $4`,
+      [
+        JSON.stringify(personnel),
+        JSON.stringify(vacanciers),
+        JSON.stringify(organisme),
+        declarationId,
+      ],
+    );
+  }
+
+  return declarationId;
 };
 
 export const deleteDemandeSejour = async (

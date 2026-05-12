@@ -841,7 +841,7 @@ module.exports.addAsyncEigHistoric = async ({
   userType,
 }) => {
   try {
-    addHistoric({
+    await addHistoric({
       action,
       data: {
         after: newData,
