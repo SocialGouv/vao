@@ -96,7 +96,7 @@
         >
           {{
             isCertificatExpire
-              ? "Votre certificat est expiré, veuillez le renouveler."
+              ? "Ce certificat a expiré. Veuillez le renouveler afin de rétablir l’accès  aux services."
               : "Ce certificat est valable 3 ans, il devra être renouvelé à son échéance."
           }}
         </DsfrAlert>
@@ -205,7 +205,7 @@ const dateDDMMYYYY = yup
   })
   .test(
     "is-not-expired",
-    "Votre certificat est expiré, veuillez le renouveler.",
+    "Ce certificat a expiré. Veuillez le renouveler afin de rétablir l’accès  aux services.",
     (value) => {
       if (!value) return true;
       const [day, month, year] = value.split("/").map(Number);
