@@ -65,8 +65,16 @@
           v-if="props.modifiable"
           name="dateObtentionCertificat"
           :label="displayInput.AgrementInput['dateObtentionCertificat'].label"
-          :error-message="dateObtentionCertificatErrorMessage"
-          :is-valid="dateObtentionCertificatMeta.valid"
+          :error-message="
+            dateObtentionCertificatMeta.touched
+              ? dateObtentionCertificatErrorMessage
+              : undefined
+          "
+          :is-valid="
+            dateObtentionCertificatMeta.touched
+              ? dateObtentionCertificatMeta.valid
+              : undefined
+          "
           :label-visible="true"
           :model-value="dateObtentionCertificat"
           hint="format attendu : JJ/MM/AAAA"
@@ -74,15 +82,23 @@
         />
         <UtilsDisplayInput
           v-else
-          label="Date d’obtention du certificat d’immatriculation"
+          label="Date d'obtention du certificat d'immatriculation"
           :value="dateObtentionCertificat"
           :input="displayInput.AgrementInput['dateObtentionCertificat']"
           :error-message="dateObtentionCertificatErrorMessage"
           :is-valid="dateObtentionCertificatMeta.valid"
         />
-        <DsfrAlert class="fr-grid-row fr-my-3v" type="info" :closeable="false">
-          Ce certificat est valable 3 ans, il devra être renouvelé à son
-          échéance.
+        <DsfrAlert
+          v-if="props.modifiable"
+          class="fr-grid-row fr-my-3v"
+          :type="isCertificatExpire ? 'warning' : 'info'"
+          :closeable="false"
+        >
+          {{
+            isCertificatExpire
+              ? "Votre certificat est expiré, veuillez le renouveler."
+              : "Ce certificat est valable 3 ans, il devra être renouvelé à son échéance."
+          }}
         </DsfrAlert>
       </div>
     </div>
@@ -187,6 +203,21 @@ const dateDDMMYYYY = yup
       date.getDate() === day
     );
   })
+  .test(
+    "is-not-expired",
+    "Votre certificat est expiré, veuillez le renouveler.",
+    (value) => {
+      if (!value) return true;
+      const [day, month, year] = value.split("/").map(Number);
+      if (!day || !month || !year) return true;
+
+      const dateObtention = new Date(year, month - 1, day);
+      const dateExpiration = new Date(dateObtention);
+      dateExpiration.setFullYear(dateExpiration.getFullYear() + 3);
+
+      return new Date() <= dateExpiration;
+    },
+  )
   .nullable();
 
 const validationSchema = yup.object({
@@ -223,6 +254,20 @@ const initialValues = {
     getFileByCategory(FILE_CATEGORY.ASSURRAPAT) || null,
   //synthese: props.initAgrement.synthese || false,
 };
+
+const isCertificatExpire = computed(() => {
+  const val = dateObtentionCertificat.value;
+  if (!val) return false;
+
+  const [day, month, year] = val.split("/").map(Number);
+  if (!day || !month || !year) return false;
+
+  const dateObtention = new Date(year, month - 1, day);
+  const dateExpiration = new Date(dateObtention);
+  dateExpiration.setFullYear(dateExpiration.getFullYear() + 3);
+
+  return new Date() > dateExpiration;
+});
 
 const { handleSubmit, meta, validate } = useForm({
   validationSchema,
@@ -277,6 +322,12 @@ watch(
   },
   { immediate: true },
 );
+
+onMounted(async () => {
+  if (!props.modifiable) {
+    await validate();
+  }
+});
 
 const trySubmit = async () => {
   let valid = false;
