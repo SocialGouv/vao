@@ -450,6 +450,61 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(response.status).toBe(400);
   });
 
+  it("devrait modifier le statut de l'agrément à VALIDE Organisme Personne Morale", async () => {
+    const sendSpy = jest.spyOn(mailService, "send");
+    authUser = await createUsagersUser();
+
+    const organismeId = await createOrganisme({
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: authUser.id,
+    });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.EN_COURS,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+      userId: authUser.id,
+    });
+    await createTerritoire({ territoireCode: "IDF" });
+
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const uuid = await createDocument({ userId: null });
+    const response = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        file: {
+          agrementId,
+          category: FILE_CATEGORY.COMPLETUDE,
+          fileUuid: uuid.toString(),
+        },
+        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      });
+
+    expect(response.status).toBe(200);
+
+    // Passage au statut à VALIDE
+    const uuidArreteAgrement = await createDocument({ userId: null });
+
+    const responseAgrementValide = await request(app)
+      .patch(`/admin/agrements/${agrementId}/statut`)
+      .send({
+        file: {
+          agrementId,
+          category: FILE_CATEGORY.ARRETE_AGREMENT,
+          fileUuid: uuidArreteAgrement.toString(),
+        },
+        numeroAgrement: "AGR-2026-075-00001",
+        statut: AGREMENT_STATUT.VALIDE,
+      });
+
+    expect(responseAgrementValide.status).toBe(200);
+
+    expect(responseAgrementValide.body.success).toBe(true);
+    expect(sendSpy).toHaveBeenCalledTimes(4); // BO + usager
+  });
+
   it("devrait modifier le statut REFUSE et historiser", async () => {
     const sendSpy = jest.spyOn(mailService, "send");
     authUser = await createUsagersUser();

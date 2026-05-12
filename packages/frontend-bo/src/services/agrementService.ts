@@ -11,12 +11,13 @@ const AgrementService = {
     statut: AGREMENT_STATUT,
     commentaire?: string,
     file?: AgrementFilesDto,
+    numeroAgrement?: string,
   ) => {
     return await buildRequest<AgrementAdminRoutes["PatchStatut"]>({
       path: "admin/agrements/{agrementId}/statut",
       method: "PATCH",
       params: { agrementId: String(agrementId) },
-      body: { statut, commentaire, file },
+      body: { statut, commentaire, file, numeroAgrement },
     })();
   },
   markMessagesAsRead: async (agrementId: string) => {

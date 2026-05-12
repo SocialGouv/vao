@@ -228,10 +228,14 @@ const statutConfig: Partial<
     category: FILE_CATEGORY.AMODIFER,
     description: `La demande de complétion de l'agrément a été envoyée`,
   },
+  [AGREMENT_STATUT.VALIDE]: {
+    category: FILE_CATEGORY.ARRETE_AGREMENT,
+    description: `La validation de l'agrément a été envoyée`,
+  },
 };
 
 const onValidForm = async (
-  payload: { commentaire: string },
+  payload: { commentaire?: string; numeroAgrement?: string },
   statut: AGREMENT_STATUT,
 ) => {
   isModalModaleConfirmationsOpened.value = false;
@@ -260,6 +264,7 @@ const onValidForm = async (
         statut: AGREMENT_STATUT;
         file?: AgrementFilesDto;
         commentaire?: string;
+        numeroAgrement?: string;
       } = {
         agrementId: agrementStore.agrementCourant.id,
         statut,
@@ -269,7 +274,9 @@ const onValidForm = async (
       if (payload.commentaire && payload.commentaire.trim().length > 0) {
         body.commentaire = payload.commentaire;
       }
-
+      if (payload.numeroAgrement && payload.numeroAgrement.trim().length > 0) {
+        body.numeroAgrement = payload.numeroAgrement;
+      }
       await agrementStore.changeStatutAgrement(body);
       toaster.success({
         titleTag: "h2",

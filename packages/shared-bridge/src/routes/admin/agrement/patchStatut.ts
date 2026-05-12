@@ -14,6 +14,7 @@ export interface PatchStatutRoute extends BasicRoute {
     statut: AGREMENT_STATUT;
     commentaire?: string;
     file?: AgrementFilesDto;
+    numeroAgrement?: string;
   };
   response: RouteResponseBody<{ success: boolean }>;
 }
@@ -42,10 +43,18 @@ const requiredFileStatut = (field: yup.AnySchema) =>
     then: (schema) => schema.required("Champ obligatoire"),
   });
 
+const requiredNumeroAgrementStatut = (field: yup.AnySchema) =>
+  field.when("statut", {
+    is: (val: AGREMENT_STATUT) => val === AGREMENT_STATUT.VALIDE,
+    otherwise: (schema) => schema.notRequired().nullable(),
+    then: (schema) => schema.required("Champ obligatoire"),
+  });
+
 export const PatchStatutRouteSchema: RouteSchema<PatchStatutRoute> = {
   body: yup.object({
     commentaire: requiredCommentaireStatut(yup.string().min(20)),
     file: requiredFileStatut(yup.mixed()),
+    numeroAgrement: requiredNumeroAgrementStatut(yup.string().min(5)),
     statut: yup
       .mixed<AGREMENT_STATUT>()
       .oneOf(Object.values(AGREMENT_STATUT))

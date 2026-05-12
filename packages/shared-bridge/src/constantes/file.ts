@@ -1,4 +1,5 @@
 export enum FILE_CATEGORY {
+  ARRETE_AGREMENT = "AGR_ARRETE_AGREMENT",
   AMODIFER = "AGR_AMODIFIER",
   ACORRIGER = "AGR_ACORRIGER",
   COMPLETUDE = "AGR_COMPLETUDE",
@@ -33,6 +34,7 @@ export enum FILE_CATEGORY {
 }
 
 export type FileKey =
+  | "fileArreteAgrement"
   | "fileAModifier"
   | "fileRefus"
   | "filesMotivation"
@@ -67,6 +69,11 @@ export const FILE_CATEGORY_CONFIG = {
   [FILE_CATEGORY.AMODIFER]: {
     fileKey: "fileAModifier",
     label: "Fichier associé à la demande de complétion",
+    multiple: false,
+  },
+  [FILE_CATEGORY.ARRETE_AGREMENT]: {
+    fileKey: "fileArreteAgrement",
+    label: "Arrêté d'agrément",
     multiple: false,
   },
   [FILE_CATEGORY.REFUS]: {
