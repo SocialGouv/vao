@@ -16,6 +16,8 @@ module.exports.documents = require("./documents").default;
 
 module.exports.geo = require("./geo");
 module.exports.debugSentry = require("./debug-sentry");
-module.exports.healthz = require("./healthz");
 
 module.exports.eig = require("./eig");
+
+module.exports.healthz = require("./healthz");
+module.exports.e2e = require("./e2e").default;
