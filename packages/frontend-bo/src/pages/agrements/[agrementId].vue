@@ -70,26 +70,30 @@
         :selected="selectedTabIndex === 1"
         :asc="asc"
       >
-        <AgrementDocuments
-          :init-agrement="agrementStore.agrementCourant ?? {}"
-          :cdn-url="`${config.public.backendUrl}/documents/`"
-        ></AgrementDocuments>
+        <div class="tab-scroll">
+          <AgrementDocuments
+            :init-agrement="agrementStore.agrementCourant ?? {}"
+            :cdn-url="`${config.public.backendUrl}/documents/`"
+          ></AgrementDocuments>
+        </div>
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="agrement-content-2"
         tab-id="agrement-tab-2"
         :selected="selectedTabIndex === 2"
         :asc="asc"
-      >
-        <Historique :history="agrementStore.history ?? []" />
+        ><div class="tab-scroll">
+          <Historique :history="agrementStore.history ?? []" />
+        </div>
       </DsfrTabContent>
       <DsfrTabContent
         panel-id="agrement-content-3"
         tab-id="agrement-tab-3"
         :selected="selectedTabIndex === 3"
         :asc="asc"
-      >
-        <AgrementsMessagerie :messages="messages" />
+        ><div ref="messagerieScroll" class="tab-scroll">
+          <AgrementsMessagerie :messages="messages" />
+        </div>
       </DsfrTabContent>
     </DsfrTabs>
   </div>
@@ -111,9 +115,21 @@ const organismeStore = useOrganismeStore();
 
 const route = useRoute();
 const agrementStore = useAgrementStore();
-
+const messagerieScroll = ref<HTMLElement | null>(null);
 const agrementId = computed(() => Number(route.params.agrementId));
 const agrementCourant = computed(() => agrementStore.agrementCourant);
+const messages = computed(() => agrementStore.messages ?? []);
+
+watch(messages, async () => {
+  if (selectedTabIndex.value === Tab.Messages) {
+    await nextTick();
+
+    const el = messagerieScroll.value;
+    if (el) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }
+});
 
 onMounted(async () => {
   if (agrementId.value) {
@@ -197,8 +213,6 @@ const selectTab = async (idx: Tab) => {
   tabActions[idx]();
 };
 
-const messages = computed(() => agrementStore.messages ?? []);
-
 const unreadCount = computed(() => agrementStore.messagesUnreadCount ?? 0);
 
 const tabTitles = computed(() => [
@@ -247,5 +261,11 @@ dd {
 }
 dt {
   font-weight: bold;
+}
+
+.tab-scroll {
+  max-height: calc(100vh - 210px);
+  overflow-y: auto;
+  padding-bottom: 4rem;
 }
 </style>
