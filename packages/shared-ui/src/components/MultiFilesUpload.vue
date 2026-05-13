@@ -47,7 +47,7 @@ const rows = computed(() => {
         ? {
             component: "a",
             text: (file as UploadedFile).name,
-            href: `${props.cdnUrl}${(file as UploadedFile).uuid}`,
+            href: `${props.cdnUrl}${props.cdnUrl.endsWith("/") ? "" : "/"}${(file as UploadedFile).uuid}`,
             download: true,
           }
         : (file as UploadedFile).name;

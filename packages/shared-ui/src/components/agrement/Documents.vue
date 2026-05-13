@@ -72,7 +72,7 @@ const headers = [
     component: (file: DocumentDto) => {
       return {
         component: "a",
-        href: `${props.cdnUrl}${file.uuid}`,
+        href: `${props.cdnUrl}${props.cdnUrl.endsWith("/") ? "" : "/"}${file.uuid}`,
         target: "_blank",
         rel: "noopener noreferrer",
         class: "fr-icon-file-download-fill",
