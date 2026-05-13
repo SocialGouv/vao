@@ -92,17 +92,13 @@ export const parseIntToMonthFR = (mois: number[] | null): string => {
   return mois.map((m) => moisLabels[m - 1] || m).join(", ");
 };
 
-export function isValidFrShort(dateString?: string): boolean {
-  if (!dateString) {
-    return false;
-  }
-  return dayjs(dateString, "DD/MM/YYYY", true).isValid();
-}
+export const isValidFrShort = (date?: string): boolean => {
+  if (!date) return false;
+  return dayjs(date, "DD/MM/YYYY", true).isValid();
+};
 
-export function parseFrShort(dateString?: string): dayjs.Dayjs | undefined {
-  if (!dateString) {
-    return undefined;
-  }
-  const parsed = dayjs(dateString, "DD/MM/YYYY", true);
+export const parseFrShort = (date?: string): dayjs.Dayjs | undefined => {
+  if (!date) return undefined;
+  const parsed = dayjs(date, "DD/MM/YYYY", true);
   return parsed.isValid() ? parsed : undefined;
-}
+};

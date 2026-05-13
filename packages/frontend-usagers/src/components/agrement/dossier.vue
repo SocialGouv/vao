@@ -65,11 +65,7 @@
           v-if="props.modifiable"
           name="dateObtentionCertificat"
           :label="displayInput.AgrementInput['dateObtentionCertificat'].label"
-          :error-message="
-            dateObtentionCertificatMeta.touched
-              ? dateObtentionCertificatErrorMessage
-              : undefined
-          "
+          :error-message="dateObtentionCertificatErrorMessage"
           :is-valid="
             dateObtentionCertificatMeta.touched
               ? dateObtentionCertificatMeta.valid
@@ -153,7 +149,11 @@ import { ref, watch } from "vue";
 import { useForm, useField } from "vee-validate";
 import { FileUpload, TitleWithIcon, useToaster } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
-import { isValidFrShort, parseFrShort } from "@vao/shared-bridge/utils/date";
+import {
+  isValidFrShort,
+  parseFrShort,
+  addYears,
+} from "@vao/shared-bridge/utils/date";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import regex from "../../utils/regex";
 import * as yup from "yup";
@@ -192,29 +192,30 @@ const getFileByCategory = (category: string): AgrementFilesDto | null => {
 
 const dateDDMMYYYY = yup
   .string()
-  .transform((value, originalValue) => originalValue || "")
   .matches(dateDDMMYYYYRegex, "Format JJ/MM/AAAA invalide")
   .test("is-valid-date", "La date n'est pas valide", (value) => {
-    if (!value) return true; // nullable
-    const [day, month, year] = value.split("/").map(Number);
-    const date = new Date(year, month - 1, day);
-    return (
-      date.getFullYear() === year &&
-      date.getMonth() === month - 1 &&
-      date.getDate() === day
-    );
+    if (!value) {
+      return true;
+    }
+    return isValidFrShort(value);
   })
   .test(
     "is-not-expired",
     "Ce certificat a expiré. Veuillez le renouveler afin de rétablir l’accès  aux services.",
     (value) => {
       if (!value) return true;
-      const [day, month, year] = value.split("/").map(Number);
-      if (!day || !month || !year) return true;
+      if (!isValidFrShort(value)) {
+        return true;
+      }
+      const dateObtention = parseFrShort(value)?.toDate();
+      if (!dateObtention) {
+        return true;
+      }
+      const dateExpiration = addYears(dateObtention, 3);
 
-      const dateObtention = new Date(year, month - 1, day);
-      const dateExpiration = new Date(dateObtention);
-      dateExpiration.setFullYear(dateExpiration.getFullYear() + 3);
+      if (!dateExpiration) {
+        return false;
+      }
 
       return new Date() <= dateExpiration;
     },
@@ -257,23 +258,22 @@ const initialValues = {
 };
 
 const isCertificatExpire = computed(() => {
-  const val = dateObtentionCertificat.value;
-  if (!val) {
+  if (!isValidFrShort(dateObtentionCertificat.value ?? undefined)) {
     return false;
   }
 
-  if (!isValidFrShort(val)) {
-    return false;
-  }
-
-  const dateObtention = parseFrShort(val)?.toDate();
+  const dateObtention = parseFrShort(
+    dateObtentionCertificat.value || undefined,
+  )?.toDate();
   if (!dateObtention) {
     return false;
   }
 
-  const dateExpiration = new Date(dateObtention);
-  dateExpiration.setFullYear(dateExpiration.getFullYear() + 3);
+  const dateExpiration = addYears(dateObtention, 3);
 
+  if (!dateExpiration) {
+    return false;
+  }
   return new Date() > dateExpiration;
 });
 
@@ -352,9 +352,11 @@ const trySubmit = async () => {
 
   if (valid || initialValues.statut === AGREMENT_STATUT.BROUILLON) {
     const formValues = {
-      dateObtentionCertificat: dateObtentionCertificat.value
-        ? parseToISODate(dateObtentionCertificat.value)
-        : null,
+      dateObtentionCertificat:
+        dateObtentionCertificat.value &&
+        isValidFrShort(dateObtentionCertificat.value)
+          ? parseToISODate(dateObtentionCertificat.value)
+          : null,
       motivations: motivations.value,
       filesMotivation: filesMotivation.value,
       fileImmatriculation: fileImmatriculation.value,
