@@ -10,6 +10,8 @@ import {
   isAfter,
   isBefore,
   isBetweenDates,
+  isValidFrShort,
+  parseFrShort,
   parseIntToMonthFR,
   parseToISODate,
 } from "./date";
@@ -173,5 +175,70 @@ describe("parseIntToMonthFR", () => {
 
   it("should mix valid and invalid months", () => {
     expect(parseIntToMonthFR([1, 13])).toBe("janvier, 13");
+  });
+});
+
+describe("isValidFrShort", () => {
+  it("should return false for undefined", () => {
+    expect(isValidFrShort(undefined)).toBe(false);
+  });
+
+  it("should return false for empty string", () => {
+    expect(isValidFrShort("")).toBe(false);
+  });
+
+  it("should return true for valid date", () => {
+    expect(isValidFrShort("01/02/2023")).toBe(true);
+  });
+
+  it("should return false for invalid day", () => {
+    expect(isValidFrShort("32/01/2023")).toBe(false);
+  });
+
+  it("should return false for invalid month", () => {
+    expect(isValidFrShort("01/13/2023")).toBe(false);
+  });
+
+  it("should return false for invalid date (31/02/2023)", () => {
+    expect(isValidFrShort("31/02/2023")).toBe(false);
+  });
+
+  it("should return false for wrong format", () => {
+    expect(isValidFrShort("2023-01-01")).toBe(false);
+    expect(isValidFrShort("01-01-2023")).toBe(false);
+  });
+});
+
+describe("parseFrShort", () => {
+  it("should return undefined for undefined", () => {
+    expect(parseFrShort(undefined)).toBeUndefined();
+  });
+
+  it("should return undefined for empty string", () => {
+    expect(parseFrShort("")).toBeUndefined();
+  });
+
+  it("should return dayjs object for valid date", () => {
+    const result = parseFrShort("01/02/2023");
+    expect(result).toBeDefined();
+    expect(result?.isValid()).toBe(true);
+    expect(result?.format("DD/MM/YYYY")).toBe("01/02/2023");
+  });
+
+  it("should return undefined for invalid day", () => {
+    expect(parseFrShort("32/01/2023")).toBeUndefined();
+  });
+
+  it("should return undefined for invalid month", () => {
+    expect(parseFrShort("01/13/2023")).toBeUndefined();
+  });
+
+  it("should return undefined for invalid date (31/02/2023)", () => {
+    expect(parseFrShort("31/02/2023")).toBeUndefined();
+  });
+
+  it("should return undefined for wrong format", () => {
+    expect(parseFrShort("2023-01-01")).toBeUndefined();
+    expect(parseFrShort("01-01-2023")).toBeUndefined();
   });
 });
