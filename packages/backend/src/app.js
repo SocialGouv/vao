@@ -102,6 +102,7 @@ app.use(`/healthz`, routes.healthz);
 
 if (config.sentry.environment !== "production") {
   app.use("/", routes.debugSentry);
+  app.use(`/e2e`, routes.e2e);
 }
 
 app.use((req, res, next) => {

@@ -70,9 +70,10 @@ async function runMigrations(container: StartedPostgreSqlContainer) {
 export async function createTestContainer({
   s3 = false,
   pg = true,
-}: { s3?: boolean; pg?: boolean } = {}) {
+  withSeeds = false,
+}: { s3?: boolean; pg?: boolean; withSeeds?: boolean } = {}) {
   if (pg) {
-    await createPgTestContainer();
+    await createPgTestContainer({ withSeeds });
   }
   if (s3) {
     await createS3TestContainer();
@@ -114,7 +115,16 @@ export async function createS3TestContainer() {
   }
 }
 
-export async function createPgTestContainer() {
+export async function createPgTestContainer({
+  withSeeds = false,
+}: { withSeeds?: boolean } = {}) {
+  const sqlFiles = withSeeds
+    ? [
+        ...SQL_FILES,
+        "/seeds/BO-1-back-user.sql",
+        "/seeds/PG-1-proc-data-deletion.sql",
+      ]
+    : SQL_FILES;
   if (global.postgresContainer) {
     console.warn("Postgres container already started");
     return;
@@ -125,7 +135,7 @@ export async function createPgTestContainer() {
     .withUsername("vao_u")
     .withPassword("vao_pwd")
     .withCopyFilesToContainer(
-      SQL_FILES.map((file) => ({
+      sqlFiles.map((file) => ({
         source: `../../pg/${file}`,
         target: `/${file}`,
       })),
@@ -135,7 +145,7 @@ export async function createPgTestContainer() {
   console.timeEnd("StartingPostgres");
 
   console.time("PostgresInit");
-  for (const file of SQL_FILES) {
+  for (const file of sqlFiles) {
     await runSqlFile(container, file);
   }
   // run migrations
