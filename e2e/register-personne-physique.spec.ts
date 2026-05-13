@@ -8,7 +8,7 @@ import {
   loginBo,
   loginUsagers,
 } from "./utils/helper";
-import { agentsRegionalIDF, getUser } from "./utils/users";
+import { getAgentsRegionalIDFUser, getOvaUser } from "./utils/users";
 import { getUrls, runLocal } from "./utils/urls";
 
 const { appUsagersUrl, appBoUrl, maildevUrl } = getUrls();
@@ -19,7 +19,7 @@ test.describe.serial("Création de compte OVA - Personne physique", () => {
   let password: string;
 
   test.beforeAll(() => {
-    const ctx = getUser();
+    const ctx = getOvaUser();
     username = ctx.username;
     password = ctx.password;
   });
@@ -80,7 +80,6 @@ test.describe.serial("Création de compte OVA - Personne physique", () => {
 
   test("Étape 2 — Validation de la demande", async ({ page }) => {
     console.log("Étape 2 — Validation de la demande");
-    test.skip(!runLocal, "Skipping test on CI, waiting for new PIC");
     await page.goto(`${maildevUrl}/#/`);
     await page
       .getByRole("link", {
@@ -108,9 +107,10 @@ test.describe.serial("Création de compte OVA - Personne physique", () => {
 
   test("Étape 3 — Activation du compte", async ({ page }) => {
     console.log("Étape 3 — Activation du compte");
-    test.skip(!runLocal, "Skipping test on CI, waiting for new PIC");
+    const agentsRegionalIDF = getAgentsRegionalIDFUser();
+    // test.skip(!runLocal, "Skipping test on CI, waiting for new PIC");
     await page.goto(`${appBoUrl}`);
-    await loginBo(page, agentsRegionalIDF.email, agentsRegionalIDF.password);
+    await loginBo(page, agentsRegionalIDF.username, agentsRegionalIDF.password);
 
     // Validation du compte
     await page.getByRole("button", { name: "Comptes" }).click();
@@ -126,7 +126,7 @@ test.describe.serial("Création de compte OVA - Personne physique", () => {
 
   test("Étape 4 — Complétion du compte", async ({ page }) => {
     console.log("Étape 4 — Complétion du compte");
-    test.skip(!runLocal, "Skipping test on CI, waiting for new PIC");
+    // test.skip(!runLocal, "Skipping test on CI, waiting for new PIC");
     await page.goto(`${appUsagersUrl}`);
     await loginUsagers(page, username, password);
 

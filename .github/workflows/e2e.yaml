@@ -3,11 +3,31 @@ name: 🧪 E2E Tests
 on:
   deployment_status:
 
+env:
+  BRANCH_NAME: ${{ github.event.pull_request.head.ref || github.event.ref }}
+
 jobs:
+  # resolve-playwright-version:
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     version: ${{ steps['resolve-playwright-version'].outputs.version }}
+  #   steps:
+  #     - uses: actions/checkout@v5
+  #     - name: resolve-playwright-version
+  #       id: resolve-playwright-version
+  #       run: |
+  #         version="$(yq -r '.devDependencies["@playwright/test"] // .dependencies["@playwright/test"] // ""' package.json)"
+  #         test -n "$version" || { echo "No @playwright/test version found in package.json"; exit 1; }
+  #         echo "version=$version" >> "$GITHUB_OUTPUT"
+
   e2e:
     if: ${{ github.event.deployment_status.state == 'success' }}
+    # needs: resolve-playwright-version
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    # container:
+    #   image: mcr.microsoft.com/playwright:v${{ needs['resolve-playwright-version'].outputs.version }}
+    #   options: --user 1001
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -27,9 +47,16 @@ jobs:
           echo "SITE_URL=${{ steps.env.outputs.subdomain }}.ovh.fabrique.social.gouv.fr" >> $GITHUB_ENV
       - name: Install Playwright Browsers
         run: pnpm playwright install --with-deps
-      - name: Run Playwright tests
+      - name: Run Playwright tests (main or prepod)
+        if: ${{ env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'prepod' }}
         run: |
           E2E_BASE_URL=${{ env.SITE_URL }} pnpm playwright test
+
+      - name: Run Playwright tests (PR)
+        if: ${{ env.BRANCH_NAME != 'main' && env.BRANCH_NAME != 'prepod' }}
+        run: |
+          E2E_BASE_URL=${{ env.SITE_URL }} E2E_BO_PASSWORD="" pnpm playwright test
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
