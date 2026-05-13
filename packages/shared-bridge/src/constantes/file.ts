@@ -66,9 +66,19 @@ export type FileKey =
   | "filesProjSejoursBudgetPersonnes";
 
 export const FILE_CATEGORY_CONFIG = {
+  [FILE_CATEGORY.COMPLETUDE]: {
+    fileKey: "fileCompletude",
+    label: "Fichier associé à la confirmation de complétude",
+    multiple: false,
+  },
   [FILE_CATEGORY.AMODIFER]: {
     fileKey: "fileAModifier",
     label: "Fichier associé à la demande de complétion",
+    multiple: false,
+  },
+  [FILE_CATEGORY.ACORRIGER]: {
+    fileKey: "fileACorriger",
+    label: "Fichier associé à la demande de correction",
     multiple: false,
   },
   [FILE_CATEGORY.ARRETE_AGREMENT]: {

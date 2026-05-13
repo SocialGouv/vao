@@ -245,6 +245,19 @@ export const AgrementService = {
     }
 
     await withTransaction(async (tx: PoolClient) => {
+      agrement.commentaireRefus =
+        statut === AGREMENT_STATUT.REFUSE
+          ? commentaire
+          : agrement.commentaireRefus;
+      agrement.commentaireCorrection =
+        statut === AGREMENT_STATUT.A_CORRIGER
+          ? commentaire
+          : agrement.commentaireCorrection;
+      agrement.commentaireCompletude =
+        statut === AGREMENT_STATUT.A_MODIFIER
+          ? commentaire
+          : agrement.commentaireCompletude;
+
       if (statut === AGREMENT_STATUT.VALIDE) {
         agrement.dateObtention = new Date();
         agrement.dateFinValidite = addYears(new Date(), 5);
@@ -260,7 +273,7 @@ export const AgrementService = {
           (a) => a.statut === AGREMENT_STATUT.VALIDE,
         );
         if (activeAgrements.length === 1) {
-          AgrementsRepository.desactiverAgrement({
+          await AgrementsRepository.desactiverAgrement({
             agrementId: activeAgrements[0].id!,
             tx,
           });
@@ -273,14 +286,13 @@ export const AgrementService = {
             typePrecision: "Désactivation de l'agrément",
           });
         }
-      } else {
-        agrement.dateObtention = null;
-        agrement.dateFinValidite = null;
       }
 
       const updated = await AgrementsRepository.updateStatut({
         agrementId,
-        commentaire,
+        commentaireCompletude: agrement.commentaireCompletude,
+        commentaireCorrection: agrement.commentaireCorrection,
+        commentaireRefus: agrement.commentaireRefus,
         dateFinValidite: agrement.dateFinValidite!,
         dateObtention: agrement.dateObtention!,
         file,

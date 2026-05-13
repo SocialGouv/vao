@@ -334,7 +334,9 @@ export const AgrementsRepository = {
   async updateStatut({
     agrementId,
     statut,
-    commentaire,
+    commentaireCompletude,
+    commentaireCorrection,
+    commentaireRefus,
     numeroAgrement,
     dateObtention,
     dateFinValidite,
@@ -343,38 +345,33 @@ export const AgrementsRepository = {
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
-    commentaire?: string;
-    numeroAgrement?: string;
-    dateObtention?: Date;
-    dateFinValidite?: Date;
+    commentaireCompletude: string;
+    commentaireCorrection: string;
+    commentaireRefus: string;
+    numeroAgrement: string;
+    dateObtention: Date;
+    dateFinValidite: Date;
     file?: AgrementFilesDto;
     tx: PoolClient;
   }): Promise<boolean> {
     const result = await tx.query(
       `UPDATE front.agrements
           SET
-            statut = $1::front.agrement_statut,
-            commentaire_refus = CASE
-              WHEN $1::text = '${AGREMENT_STATUT.REFUSE}' THEN $3
-              ELSE commentaire_refus
-            END,
-            commentaire_completude = CASE
-              WHEN $1::text = '${AGREMENT_STATUT.A_MODIFIER}' THEN $3
-              ELSE commentaire_completude
-            END,
-            commentaire_correction = CASE
-              WHEN $1::text = '${AGREMENT_STATUT.A_CORRIGER}' THEN $3
-              ELSE commentaire_correction
-            END,
-            numero = $4,
-            date_obtention = $5,
-            date_fin_validite = $6,
+            statut = $2::front.agrement_statut,
+            commentaire_refus = $3,
+            commentaire_completude = $4,
+            commentaire_correction = $5,
+            numero = $6,
+            date_obtention = $7,
+            date_fin_validite = $8,
             updated_at = NOW()
-          WHERE id = $2`,
+          WHERE id = $1`,
       [
-        statut,
         agrementId,
-        commentaire,
+        statut,
+        commentaireRefus,
+        commentaireCompletude,
+        commentaireCorrection,
         numeroAgrement,
         dateObtention,
         dateFinValidite,

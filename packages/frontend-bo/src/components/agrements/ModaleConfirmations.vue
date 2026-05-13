@@ -126,7 +126,7 @@ const validationSchema = computed(() =>
     numeroAgrement: props.haveAgrementNumber
       ? yup
           .string()
-          .min(1, "Il est impératif de fournir le numéro d'agrément")
+          .min(5, "Il est impératif de fournir le numéro d'agrément")
           .required("Il est impératif de fournir le numéro d'agrément")
       : yup.string().notRequired(),
   }),
@@ -164,7 +164,7 @@ const enableValidationButton = computed(() => {
 
   const isAgrementNumberOk =
     !props.haveAgrementNumber ||
-    (numeroAgrement.value && numeroAgrement.value.length > 1);
+    (numeroAgrement.value && numeroAgrement.value.length >= 5);
 
   return isCommentaireOk && isFileOk && isAgrementNumberOk;
 });
