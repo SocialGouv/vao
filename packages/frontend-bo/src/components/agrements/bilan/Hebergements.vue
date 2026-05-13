@@ -8,6 +8,9 @@
       :total="hebergements.length"
       row-id="nomHebergement"
     >
+      <template #cell-adresse="{ row }">
+        {{ row.adresse?.label || "" }}
+      </template>
       <template #cell-mois="{ row }">
         {{ row.mois ? parseIntToMonthFR(row.mois) : "" }}
       </template>
