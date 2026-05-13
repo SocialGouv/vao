@@ -30,6 +30,24 @@
         @update:model-value="handleFileChange"
       />
     </div>
+    <div v-if="props.haveAgrementNumber" class="fr-fieldset">
+      <div class="fr-fieldset__element">
+        <div class="fr-input-group fr-col-12">
+          <DsfrInputGroup
+            name="numeroAgrement"
+            label="Numéro de l'agrément"
+            label-visible
+            :model-value="numeroAgrement"
+            :is-valid="numeroAgrementMeta.valid"
+            :error-message="numeroAgrementErrorMessage"
+            hint="Entrez le numéro d'agrément associé à l'arrêté"
+            placeholder=""
+            @update:model-value="onNumeroAgrementChange"
+          />
+        </div>
+      </div>
+    </div>
+
     <DsfrAlert
       v-if="textAlert"
       class="fr-grid-row fr-alert--sm fr-my-3v"
@@ -77,6 +95,7 @@ const props = defineProps<{
   description: string;
   haveCommentaire: boolean;
   haveRequiredFile: boolean;
+  haveAgrementNumber?: boolean;
   validButton: string;
 }>();
 
@@ -104,6 +123,12 @@ const validationSchema = computed(() =>
           .min(20, "Il est impératif de fournir un commentaire")
           .required("Il est impératif de fournir un commentaire")
       : yup.string().notRequired(),
+    numeroAgrement: props.haveAgrementNumber
+      ? yup
+          .string()
+          .min(5, "Il est impératif de fournir le numéro d'agrément")
+          .required("Il est impératif de fournir le numéro d'agrément")
+      : yup.string().notRequired(),
   }),
 );
 
@@ -121,6 +146,15 @@ const {
   initialValue: "",
 });
 
+const {
+  value: numeroAgrement,
+  errorMessage: numeroAgrementErrorMessage,
+  handleChange: onNumeroAgrementChange,
+  meta: numeroAgrementMeta,
+} = useField<string>("numeroAgrement", undefined, {
+  initialValue: "",
+});
+
 const enableValidationButton = computed(() => {
   const isCommentaireOk =
     !props.haveCommentaire ||
@@ -128,7 +162,11 @@ const enableValidationButton = computed(() => {
 
   const isFileOk = !props.haveRequiredFile || localFile.value !== null;
 
-  return isCommentaireOk && isFileOk;
+  const isAgrementNumberOk =
+    !props.haveAgrementNumber ||
+    (numeroAgrement.value && numeroAgrement.value.length >= 5);
+
+  return isCommentaireOk && isFileOk && isAgrementNumberOk;
 });
 const emit = defineEmits(["valid", "update:file", "close"]);
 

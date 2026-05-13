@@ -1,3 +1,5 @@
+import { formatFR } from "@vao/shared-bridge";
+
 import config, { frontUsagersDomain, senderEmail } from "../../config";
 import sendTemplate from "../../helpers/mail";
 import AppError from "../../utils/error";
@@ -228,6 +230,54 @@ export const AgrementMailUsagers = {
       to: email,
     };
     log.d("sendStatutTransmisMail post email", { params });
+    return params;
+  },
+  sendStatutValideMail: ({
+    email,
+    numeroAgrement,
+    dateObtention,
+    dateFinValidite,
+    regionDreets,
+  }: {
+    email: string[];
+    numeroAgrement: string;
+    dateObtention: Date;
+    dateFinValidite: Date;
+    regionDreets: string;
+  }) => {
+    log.i("sendStatutValideMail - In", { email });
+    if (!email) {
+      throw new AppError(
+        "Email manquant pour l'envoi du mail de validation d'agrément",
+      );
+    }
+    const urlAgrement = frontUsagersDomain + "/mon-agrement";
+    const html = sendTemplate.getBody(
+      "Portail VAO - Validation de votre demande d’agrément",
+      [
+        {
+          p: [
+            "Bonjour,",
+            `Suite à l’instruction de votre demande de renouvellement d’agrément, la DREETS ${regionDreets}  vous informe que votre demande d'agrément a été validée sous le N°${numeroAgrement}.`,
+            "Vous trouverez en pièce jointe l’arrêté officiel correspondant à cette décision.",
+            `Votre nouvel agrément est valable à partir du ${formatFR(dateObtention)} et jusqu’au ${formatFR(dateFinValidite)}.`,
+            "Vous pouvez dès à présent continuer à déclarer vos séjours adaptés sur le portail VAO.",
+            "Pour consulter le détail de votre dossier, rendez-vous sur le portail VAO :",
+            `<a href='${urlAgrement}'>Lien direct vers le dossier</a>`,
+          ],
+          type: "p",
+        },
+      ],
+      `L'équipe du SI VAO<BR><a href=${frontUsagersDomain}>Portail VAO</a>`,
+    );
+    const params = {
+      from: senderEmail,
+      html,
+      replyTo: senderEmail,
+      subject: "Portail VAO - Validation de votre demande d’agrément",
+      to: email,
+    };
+    log.d("sendStatutValideMail post email", { params });
     return params;
   },
 };

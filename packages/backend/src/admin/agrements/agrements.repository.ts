@@ -33,6 +33,18 @@ const log = Logger(module.filename);
 // 🏗️ Repository Admin
 // ------------------------------------------------------------
 export const AgrementsRepository = {
+  async desactiverAgrement({
+    agrementId,
+    tx,
+  }: {
+    agrementId: number;
+    tx: PoolClient;
+  }): Promise<void> {
+    await tx.query(
+      `UPDATE front.agrements SET supprime = true, updated_at = NOW() WHERE id = $1`,
+      [agrementId],
+    );
+  },
   async getById({
     agrementId,
     withDetails,
@@ -42,6 +54,32 @@ export const AgrementsRepository = {
   }): Promise<AgrementDto | null> {
     return AgrementsRepositoryShared.getById({ agrementId, withDetails });
   },
+
+  async getByOrganismeId({
+    organismeId,
+  }: {
+    organismeId: number;
+  }): Promise<{ count: number; result: AgrementDto[] }> {
+    const query = () => `
+      SELECT
+        agr.*
+      FROM front.agrements agr
+      WHERE agr.organisme_id = $1
+    `;
+    const response = await getPool().query(query(), [organismeId]);
+    const agrements = [];
+    for (const row of response.rows) {
+      const agrement = AgrementsMapper.toModel(row as AgrementEntity);
+      agrements.push(agrement);
+    }
+    log.i("getByOrganismeId - DONE");
+
+    return {
+      count: agrements.length,
+      result: agrements,
+    };
+  },
+
   /**
    * Récupère une liste d'agréments par région d'obtention
    */
@@ -203,6 +241,7 @@ export const AgrementsRepository = {
       client.release();
     }
   },
+
   async insertAgrementFiles(
     client: PoolClient,
     agrementId: number | null | undefined,
@@ -215,7 +254,6 @@ export const AgrementsRepository = {
       [agrementId, file.category, file.fileUuid],
     );
   },
-
   async insertHistoryEvent({
     source,
     agrementId,
@@ -296,35 +334,48 @@ export const AgrementsRepository = {
   async updateStatut({
     agrementId,
     statut,
-    commentaire,
+    commentaireCompletude,
+    commentaireCorrection,
+    commentaireRefus,
+    numeroAgrement,
+    dateObtention,
+    dateFinValidite,
     file,
     tx,
   }: {
     agrementId: number;
     statut: AGREMENT_STATUT;
-    commentaire?: string;
+    commentaireCompletude: string;
+    commentaireCorrection: string;
+    commentaireRefus: string;
+    numeroAgrement: string;
+    dateObtention: Date;
+    dateFinValidite: Date;
     file?: AgrementFilesDto;
     tx: PoolClient;
   }): Promise<boolean> {
     const result = await tx.query(
       `UPDATE front.agrements
           SET
-            statut = $1::front.agrement_statut,
-            commentaire_refus = CASE
-              WHEN $1::text = '${AGREMENT_STATUT.REFUSE}' THEN $3
-              ELSE commentaire_refus
-            END,
-            commentaire_completude = CASE
-              WHEN $1::text = '${AGREMENT_STATUT.A_MODIFIER}' THEN $3
-              ELSE commentaire_completude
-            END,
-            commentaire_correction = CASE
-              WHEN $1::text = '${AGREMENT_STATUT.A_CORRIGER}' THEN $3
-              ELSE commentaire_correction
-            END,
+            statut = $2::front.agrement_statut,
+            commentaire_refus = $3,
+            commentaire_completude = $4,
+            commentaire_correction = $5,
+            numero = $6,
+            date_obtention = $7,
+            date_fin_validite = $8,
             updated_at = NOW()
-          WHERE id = $2`,
-      [statut, agrementId, commentaire],
+          WHERE id = $1`,
+      [
+        agrementId,
+        statut,
+        commentaireRefus,
+        commentaireCompletude,
+        commentaireCorrection,
+        numeroAgrement,
+        dateObtention,
+        dateFinValidite,
+      ],
     );
     if (file) {
       await AgrementsRepository.insertAgrementFiles(tx, agrementId, file);

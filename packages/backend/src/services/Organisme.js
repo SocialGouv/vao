@@ -92,6 +92,7 @@ const query = {
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm2.id
             WHERE pm.siret = etab.siret AND a.statut = '${AGREMENT_STATUT.VALIDE}'
             AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
+            LIMIT 1
         )
         ELSE (
           SELECT
@@ -107,6 +108,7 @@ const query = {
           FROM front.agrements a
           WHERE organisme_id = o.id
           AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
+          LIMIT 1
         )
       END AS agrement,
       o.created_at as "createdAt",
@@ -326,7 +328,7 @@ const query = {
                 SELECT JSON_BUILD_OBJECT('numero', numero, 'regionObtention', region_obtention, 'dateObtention', date_obtention,
                                           'file', file, 'yearObtention', EXTRACT(YEAR FROM a.date_obtention)) AS "agrement"
                 FROM front.agrements a
-                WHERE organisme_id = o.id AND a.supprime = FALSE AND a.statut = '${AGREMENT_STATUT.VALIDE}' 
+                WHERE organisme_id = o.id AND a.supprime = FALSE AND a.statut = '${AGREMENT_STATUT.VALIDE}'
               )
             END AS "agrement"
       FROM front.organismes o
@@ -391,7 +393,7 @@ FROM back.organisme_non_agree ona
             INNER JOIN front.personne_morale pm2 ON pm2.organisme_id = o2.id
             INNER JOIN front.opm_etablissements etab ON etab.personne_morale_id = pm.id
             WHERE pm2.siret = etab.siret AND
-            a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}' 
+            a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
         )
         ELSE (
           SELECT
@@ -404,7 +406,7 @@ FROM back.organisme_non_agree ona
               ) as "agrement"
           FROM front.agrements a
           WHERE organisme_id = o.id
-          AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}' 
+          AND a.supprime = false AND a.statut = '${AGREMENT_STATUT.VALIDE}'
         )
       END AS agrement,
       o.created_at as "createdAt",
