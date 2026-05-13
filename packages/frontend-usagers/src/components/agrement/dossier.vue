@@ -153,6 +153,7 @@ import { ref, watch } from "vue";
 import { useForm, useField } from "vee-validate";
 import { FileUpload, TitleWithIcon, useToaster } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
+import { isValidFrShort, parseFrShort } from "@vao/shared-bridge/utils/date";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import regex from "../../utils/regex";
 import * as yup from "yup";
@@ -257,12 +258,19 @@ const initialValues = {
 
 const isCertificatExpire = computed(() => {
   const val = dateObtentionCertificat.value;
-  if (!val) return false;
+  if (!val) {
+    return false;
+  }
 
-  const [day, month, year] = val.split("/").map(Number);
-  if (!day || !month || !year) return false;
+  if (!isValidFrShort(val)) {
+    return false;
+  }
 
-  const dateObtention = new Date(year, month - 1, day);
+  const dateObtention = parseFrShort(val)?.toDate();
+  if (!dateObtention) {
+    return false;
+  }
+
   const dateExpiration = new Date(dateObtention);
   dateExpiration.setFullYear(dateExpiration.getFullYear() + 3);
 

@@ -1,4 +1,7 @@
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 export function isBefore(
   date: string | number | Date,
@@ -88,3 +91,18 @@ export const parseIntToMonthFR = (mois: number[] | null): string => {
 
   return mois.map((m) => moisLabels[m - 1] || m).join(", ");
 };
+
+export function isValidFrShort(dateString?: string): boolean {
+  if (!dateString) {
+    return false;
+  }
+  return dayjs(dateString, "DD/MM/YYYY", true).isValid();
+}
+
+export function parseFrShort(dateString?: string): dayjs.Dayjs | undefined {
+  if (!dateString) {
+    return undefined;
+  }
+  const parsed = dayjs(dateString, "DD/MM/YYYY", true);
+  return parsed.isValid() ? parsed : undefined;
+}
