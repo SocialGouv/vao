@@ -503,6 +503,11 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     expect(responseAgrementValide.body.success).toBe(true);
     expect(sendSpy).toHaveBeenCalledTimes(4); // BO + usager
+    const svaTimer = await AgrementsRepository.getSvaTimerByStatut({
+      agrementId,
+      statut: AGREMENT_SVA_TIMER_STATUT.STOPPED,
+    });
+    expect(svaTimer?.createdAt).toBeDefined();
   });
 
   it("devrait modifier le statut REFUSE et historiser", async () => {
