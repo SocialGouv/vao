@@ -113,11 +113,13 @@ export const useAgrementStore = defineStore("agrement", {
       statut,
       commentaire,
       file,
+      numeroAgrement,
     }: {
       agrementId: number;
       statut: AGREMENT_STATUT;
       commentaire?: string;
       file?: AgrementFilesDto;
+      numeroAgrement?: string;
     }): Promise<boolean> {
       log.i("changeStatutAgrement - IN", { agrementId, statut });
       try {
@@ -126,6 +128,7 @@ export const useAgrementStore = defineStore("agrement", {
           statut,
           commentaire,
           file,
+          numeroAgrement,
         );
         if (success && this.agrementCourant?.id === agrementId) {
           this.agrementCourant.statut = statut;

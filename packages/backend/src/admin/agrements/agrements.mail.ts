@@ -87,6 +87,7 @@ export const AgrementMailAdmin = {
       to: mailDreets,
     };
   },
+
   sendStatutModificationTransmisRegionMail: ({
     email,
     organismeName,
@@ -179,5 +180,43 @@ export const AgrementMailAdmin = {
     };
     log.d("sendStatutTransmisRegionMail post email", { params });
     return params;
+  },
+  sendStatutValideMail: ({
+    mailDreets,
+    Organisme,
+    numeroAgrement,
+    agrementId,
+  }: {
+    mailDreets: string[];
+    Organisme: OrganismeDto;
+    numeroAgrement: string;
+    agrementId: number;
+  }) => {
+    const urlAgrement = frontBODomain + "/agrements/" + agrementId;
+    const html = sendTemplate.getBody(
+      `Portail VAO – Validation de l’agrément N°${numeroAgrement} enregistrée`,
+      [
+        {
+          p: [
+            "Bonjour,",
+            `Vous avez validé la demande de renouvellement d’agrément N°${numeroAgrement} de l’OVA ${Organisme.typeOrganisme === partOrganisme.PERSONNE_MORALE ? Organisme.personneMorale.raisonSociale : (Organisme.personnePhysique?.nomUsage ?? Organisme.personnePhysique?.nomNaissance)}.`,
+            "L’arrêté officiel fourni a bien été enregistré et transmis à l’organisateur.",
+            "Le statut du dossier est désormais : <strong>Agrément renouvelé.</strong>.",
+            "Consultez l’historique du dossier :",
+            `<a href="${urlAgrement}">${urlAgrement}</a>`,
+          ],
+          type: "p",
+        },
+      ],
+      `L'équipe du SI VAO<BR><a href=${frontBODomain}>Portail VAO</a>`,
+    );
+
+    return {
+      from: senderEmail,
+      html,
+      replyTo: senderEmail,
+      subject: `Portail VAO – Validation de l’agrément N°${numeroAgrement} enregistrée`,
+      to: mailDreets,
+    };
   },
 };

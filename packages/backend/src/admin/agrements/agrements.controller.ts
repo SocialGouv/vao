@@ -124,13 +124,14 @@ export const AgrementController = {
 
     const { id: boUserId, territoireCode } = req.decoded!;
     const agrementId = Number(req.validatedParams!.agrementId);
-    const { statut, commentaire, file } = req.validatedBody!;
+    const { statut, commentaire, file, numeroAgrement } = req.validatedBody!;
     try {
       await AgrementService.updateStatut({
         agrementId,
         boUserId,
         commentaire,
         file,
+        numeroAgrement,
         statut,
         territoireCode,
       });

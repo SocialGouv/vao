@@ -1,6 +1,7 @@
 import type { AgrementMessage } from "@vao/shared-bridge";
 import {
   ActiviteDto,
+  addYears,
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
@@ -211,6 +212,7 @@ export const AgrementService = {
     boUserId,
     file,
     commentaire,
+    numeroAgrement,
     territoireCode,
   }: {
     agrementId: number;
@@ -218,6 +220,7 @@ export const AgrementService = {
     boUserId: string;
     file?: AgrementFilesDto;
     commentaire?: string;
+    numeroAgrement?: string;
     territoireCode: string;
   }): Promise<boolean> {
     const agrement = await AgrementsRepository.getById({
@@ -228,20 +231,72 @@ export const AgrementService = {
       log.w("Agrement non trouvé", agrementId);
       throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_NOT_FOUND);
     }
+
     if (
-      [AGREMENT_STATUT.A_MODIFIER, AGREMENT_STATUT.A_CORRIGER].includes(
-        statut,
-      ) &&
-      !commentaire
+      [
+        AGREMENT_STATUT.A_MODIFIER,
+        AGREMENT_STATUT.A_CORRIGER,
+        AGREMENT_STATUT.VALIDE,
+      ].includes(statut) &&
+      !commentaire &&
+      !numeroAgrement
     ) {
       throw new FunctionalException(FUNCTIONAL_ERRORS.AGREMENT_INCONSISTENT);
     }
 
     await withTransaction(async (tx: PoolClient) => {
+      agrement.commentaireRefus =
+        statut === AGREMENT_STATUT.REFUSE
+          ? commentaire
+          : agrement.commentaireRefus;
+      agrement.commentaireCorrection =
+        statut === AGREMENT_STATUT.A_CORRIGER
+          ? commentaire
+          : agrement.commentaireCorrection;
+      agrement.commentaireCompletude =
+        statut === AGREMENT_STATUT.A_MODIFIER
+          ? commentaire
+          : agrement.commentaireCompletude;
+
+      if (statut === AGREMENT_STATUT.VALIDE) {
+        agrement.dateObtention = new Date();
+        agrement.dateFinValidite = addYears(new Date(), 5);
+        agrement.numero = numeroAgrement!;
+
+        // On change le statut de l'agrément en validé, on considère que l'agrément est désormais actif,
+        // On désactive les autres agréments actifs de l'organisme pour n'avoir qu'un seul agrément actif par organisme
+        const { result: agrements } =
+          await AgrementsRepository.getByOrganismeId({
+            organismeId: agrement.organismeId!,
+          });
+        const activeAgrements = agrements.filter(
+          (a) => a.statut === AGREMENT_STATUT.VALIDE,
+        );
+        if (activeAgrements.length === 1) {
+          await AgrementsRepository.desactiverAgrement({
+            agrementId: activeAgrements[0].id!,
+            tx,
+          });
+
+          await AgrementService.trackEvent({
+            agrementId: activeAgrements[0].id!,
+            boUserId: Number(boUserId),
+            source: "DREETS",
+            type: AGREMENT_HISTORY_TYPE.MODIFICATION,
+            typePrecision: "Désactivation de l'agrément",
+          });
+        }
+      }
+
       const updated = await AgrementsRepository.updateStatut({
         agrementId,
-        commentaire,
+        commentaireCompletude: agrement.commentaireCompletude!,
+        commentaireCorrection: agrement.commentaireCorrection!,
+        commentaireRefus: agrement.commentaireRefus!,
+        dateFinValidite: agrement.dateFinValidite!,
+        dateObtention: agrement.dateObtention!,
         file,
+        numeroAgrement: agrement.numero!,
         statut,
         tx,
       });
@@ -285,12 +340,14 @@ export const AgrementService = {
       });
     }
 
-    if (
-      statut === AGREMENT_STATUT.A_MODIFIER ||
-      statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME ||
-      statut === AGREMENT_STATUT.REFUSE ||
-      statut === AGREMENT_STATUT.A_CORRIGER
-    ) {
+    const allowedStatutsMailDreets = [
+      AGREMENT_STATUT.A_MODIFIER,
+      AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      AGREMENT_STATUT.A_CORRIGER,
+      AGREMENT_STATUT.REFUSE,
+      AGREMENT_STATUT.VALIDE,
+    ];
+    if (allowedStatutsMailDreets.includes(statut)) {
       const regionDreets = await Region.fetchOne(territoireCode);
       if (!regionDreets) {
         throw new AppError("Échec, une région devrait exister", {
@@ -299,7 +356,8 @@ export const AgrementService = {
       }
       if (
         statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME ||
-        statut === AGREMENT_STATUT.A_CORRIGER
+        statut === AGREMENT_STATUT.A_CORRIGER ||
+        statut === AGREMENT_STATUT.VALIDE
       ) {
         const territoire =
           await TerritoireService.readFicheIdByTerCode(territoireCode);
@@ -311,20 +369,37 @@ export const AgrementService = {
           const fiche = await TerritoireService.readOne(territoire.id);
           if (fiche?.service_mail) {
             try {
-              await mailService.send(
-                statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME
-                  ? AgrementMailAdmin.sendStatutCompletudeMail({
-                      Organisme: organisme,
-                      agrementId,
-                      mailDreets: fiche.service_mail,
-                    })
-                  : AgrementMailAdmin.sendStatutACorrigerMail({
-                      Organisme: organisme,
-                      agrementId,
-                      commentaire,
-                      mailDreets: fiche.service_mail,
-                    }),
-              );
+              let mailToSend = null;
+              switch (statut) {
+                case AGREMENT_STATUT.COMPLETUDE_CONFIRME:
+                  mailToSend = AgrementMailAdmin.sendStatutCompletudeMail({
+                    Organisme: organisme,
+                    agrementId,
+                    mailDreets: fiche.service_mail,
+                  });
+                  break;
+                case AGREMENT_STATUT.A_CORRIGER:
+                  mailToSend = AgrementMailAdmin.sendStatutACorrigerMail({
+                    Organisme: organisme,
+                    agrementId,
+                    commentaire,
+                    mailDreets: fiche.service_mail,
+                  });
+                  break;
+                case AGREMENT_STATUT.VALIDE:
+                  mailToSend = AgrementMailAdmin.sendStatutValideMail({
+                    Organisme: organisme,
+                    agrementId,
+                    mailDreets: fiche.service_mail,
+                    numeroAgrement: agrement.numero!,
+                  });
+                  break;
+                default:
+                  throw new Error(
+                    `Statut non géré pour l'envoie de mail à la Dreets : ${statut}`,
+                  );
+              }
+              await mailService.send(mailToSend);
             } catch (e) {
               log.w("Erreur lors de l'envoi de l'email à la Dreets", e);
             }
@@ -333,14 +408,15 @@ export const AgrementService = {
           }
         }
       }
-      const allowedStatuts = [
+      const allowedStatutsMailOva = [
         AGREMENT_STATUT.A_MODIFIER,
         AGREMENT_STATUT.COMPLETUDE_CONFIRME,
         AGREMENT_STATUT.A_CORRIGER,
         AGREMENT_STATUT.REFUSE,
+        AGREMENT_STATUT.VALIDE,
       ];
 
-      if (!allowedStatuts.includes(statut)) {
+      if (!allowedStatutsMailOva.includes(statut)) {
         return true;
       }
       const resultat = await AgrementsRepository.getUserMail(agrementId);
@@ -373,6 +449,15 @@ export const AgrementService = {
             case AGREMENT_STATUT.REFUSE:
               mailToSend = AgrementMailUsagers.sendStatutRefuseMail({
                 email: mailsOVA,
+                regionDreets: regionDreets.text,
+              });
+              break;
+            case AGREMENT_STATUT.VALIDE:
+              mailToSend = AgrementMailUsagers.sendStatutValideMail({
+                dateFinValidite: agrement.dateFinValidite!,
+                dateObtention: agrement.dateObtention!,
+                email: mailsOVA,
+                numeroAgrement: agrement.numero!,
                 regionDreets: regionDreets.text,
               });
               break;
