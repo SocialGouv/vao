@@ -34,6 +34,8 @@ export enum FILE_CATEGORY {
 }
 
 export type FileKey =
+  | "fileCompletude"
+  | "fileACorriger"
   | "fileArreteAgrement"
   | "fileAModifier"
   | "fileRefus"
