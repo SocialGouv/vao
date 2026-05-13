@@ -290,13 +290,13 @@ export const AgrementService = {
 
       const updated = await AgrementsRepository.updateStatut({
         agrementId,
-        commentaireCompletude: agrement.commentaireCompletude,
-        commentaireCorrection: agrement.commentaireCorrection,
-        commentaireRefus: agrement.commentaireRefus,
+        commentaireCompletude: agrement.commentaireCompletude!,
+        commentaireCorrection: agrement.commentaireCorrection!,
+        commentaireRefus: agrement.commentaireRefus!,
         dateFinValidite: agrement.dateFinValidite!,
         dateObtention: agrement.dateObtention!,
         file,
-        numeroAgrement,
+        numeroAgrement: agrement.numero!,
         statut,
         tx,
       });
