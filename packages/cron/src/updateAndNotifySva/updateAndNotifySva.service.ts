@@ -97,7 +97,7 @@ const handlePassedFinished = async (
 
     await UpdateAndNotifySvaRepository.insertHistoryEvent({
       agrementId: svaToNotify.agrement_id,
-      source: "Automate - Accord Tacite",
+      source: "Automate VAO- Accord Tacite",
       type: AGREMENT_HISTORY_TYPE.STATUT_CHANGE,
       typePrecision: `${AGREMENT_STATUT.VALIDE} par accord tacite suite à la fin du SVA`,
       client,
