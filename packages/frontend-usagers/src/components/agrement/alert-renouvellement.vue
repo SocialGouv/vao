@@ -39,23 +39,38 @@
 </template>
 
 <script setup lang="ts">
+import type { AgrementDto } from "@vao/shared-bridge";
 import { formatFR, FeatureFlagName, AGREMENT_STATUT } from "@vao/shared-bridge";
-
 const agrementStore = useAgrementStore();
 const userStore = useUserStore();
+
+onMounted(async () => {
+  await agrementStore.getEnRenouvellement();
+});
+
 const displayRenouvellement = computed(
   () =>
     (agrementStore.isExpiryMedium || agrementStore.isExpirySoon) &&
-    agrementStore.agrementEnTraitement?.statut === AGREMENT_STATUT.BROUILLON,
+    agrementStore.agrementEnTraitement &&
+    [AGREMENT_STATUT.BROUILLON, AGREMENT_STATUT.VALIDE].includes(
+      agrementStore.agrementEnTraitement.statut!,
+    ),
 );
 
 const onClickRenouvellement = async () => {
   await agrementStore.getEnRenouvellement();
-
-  if (agrementStore.agrementEnTraitement) {
+  if (
+    agrementStore.agrementEnTraitement?.statut === AGREMENT_STATUT.BROUILLON
+  ) {
     return navigateTo(`/agrement/${agrementStore.agrementEnTraitement.id}`);
+  } else if (
+    agrementStore.agrementEnTraitement?.statut === AGREMENT_STATUT.VALIDE
+  ) {
+    agrementStore.agrementEnTraitement = {
+      statut: AGREMENT_STATUT.BROUILLON,
+      regionObtention: agrementStore.agrementCourant?.regionObtention || null,
+    } as AgrementDto;
+    return navigateTo("/agrement/new");
   }
-
-  return navigateTo("/agrement/");
 };
 </script>

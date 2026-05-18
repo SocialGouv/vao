@@ -10,6 +10,11 @@ import { pool } from "../db";
 import { Actions, Entities, UserTypes } from "../helpers/tracking";
 import * as Sentry from "@sentry/node";
 import { sentry } from "../config";
+import {
+  addYears,
+  AGREMENT_HISTORY_TYPE,
+  AGREMENT_STATUT,
+} from "@vao/shared-bridge";
 
 /**
  * Envoi des notifications liées à l'accord tacite
@@ -77,8 +82,24 @@ const handlePassedFinished = async (
       client,
     });
 
+    await UpdateAndNotifySvaRepository.desactiverAgrement({
+      organismeId: svaToNotify.organisme_id,
+      client,
+    });
+
     await UpdateAndNotifySvaRepository.updateStatutAgrement({
       id: svaToNotify.agrement_id,
+      statut: AGREMENT_STATUT.VALIDE,
+      dateObtention: new Date(),
+      dateFinValidite: addYears(new Date(), 5),
+      client,
+    });
+
+    await UpdateAndNotifySvaRepository.insertHistoryEvent({
+      agrementId: svaToNotify.agrement_id,
+      source: "Automate VAO- Accord Tacite",
+      type: AGREMENT_HISTORY_TYPE.STATUT_CHANGE,
+      typePrecision: `${AGREMENT_STATUT.VALIDE} par accord tacite suite à la fin du SVA`,
       client,
     });
 

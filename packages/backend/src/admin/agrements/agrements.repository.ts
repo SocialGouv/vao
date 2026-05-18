@@ -340,6 +340,8 @@ export const AgrementsRepository = {
     numeroAgrement,
     dateObtention,
     dateFinValidite,
+    dateVerifCompletude,
+    dateConfirmCompletude,
     file,
     tx,
   }: {
@@ -351,6 +353,8 @@ export const AgrementsRepository = {
     numeroAgrement: string;
     dateObtention: Date;
     dateFinValidite: Date;
+    dateVerifCompletude: Date;
+    dateConfirmCompletude: Date;
     file?: AgrementFilesDto;
     tx: PoolClient;
   }): Promise<boolean> {
@@ -364,6 +368,8 @@ export const AgrementsRepository = {
             numero = $6,
             date_obtention = $7,
             date_fin_validite = $8,
+            date_verif_completure = $9,
+            date_confirm_completude = $10,
             updated_at = NOW()
           WHERE id = $1`,
       [
@@ -375,6 +381,8 @@ export const AgrementsRepository = {
         numeroAgrement,
         dateObtention,
         dateFinValidite,
+        dateVerifCompletude,
+        dateConfirmCompletude,
       ],
     );
     if (file) {

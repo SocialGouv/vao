@@ -257,7 +257,14 @@ export const AgrementService = {
         statut === AGREMENT_STATUT.A_MODIFIER
           ? commentaire
           : agrement.commentaireCompletude;
-
+      agrement.dateConfirmCompletude =
+        statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME
+          ? new Date()
+          : agrement.dateConfirmCompletude;
+      agrement.dateVerifCompleture =
+        statut === AGREMENT_STATUT.EN_COURS
+          ? new Date()
+          : agrement.dateVerifCompleture;
       if (statut === AGREMENT_STATUT.VALIDE) {
         agrement.dateObtention = new Date();
         agrement.dateFinValidite = addYears(new Date(), 5);
@@ -293,8 +300,10 @@ export const AgrementService = {
         commentaireCompletude: agrement.commentaireCompletude!,
         commentaireCorrection: agrement.commentaireCorrection!,
         commentaireRefus: agrement.commentaireRefus!,
+        dateConfirmCompletude: agrement.dateConfirmCompletude!,
         dateFinValidite: agrement.dateFinValidite!,
         dateObtention: agrement.dateObtention!,
+        dateVerifCompletude: agrement.dateVerifCompleture!,
         file,
         numeroAgrement: agrement.numero!,
         statut,

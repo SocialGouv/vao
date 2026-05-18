@@ -1,4 +1,8 @@
-import { AGREMENT_STATUT, AGREMENT_SVA_TIMER_STATUT } from "@vao/shared-bridge";
+import {
+  AGREMENT_STATUT,
+  AGREMENT_SVA_TIMER_STATUT,
+  AGREMENT_HISTORY_TYPE,
+} from "@vao/shared-bridge";
 import { pool } from "../db";
 import { UpdateAndNotifySvaRow } from "./updateAndNotifySva.type";
 
@@ -100,20 +104,77 @@ export const UpdateAndNotifySvaRepository = {
 
     await client.query(query, [id]);
   },
+  desactiverAgrement: async ({
+    organismeId,
+    client,
+  }: {
+    organismeId: number;
+    client: any;
+  }): Promise<void> => {
+    await client.query(
+      `UPDATE front.agrements SET supprime = true, updated_at = NOW() WHERE organisme_id = $1 AND supprime = false AND statut = '${AGREMENT_STATUT.VALIDE}'`,
+      [organismeId],
+    );
+  },
   updateStatutAgrement: async ({
     id,
+    statut,
+    dateObtention,
+    dateFinValidite,
     client,
   }: {
     id: number;
+    statut?: AGREMENT_STATUT;
+    dateObtention?: Date | null;
+    dateFinValidite?: Date | null;
     client: any;
   }): Promise<void> => {
     const query = `
       UPDATE front.agrements
-        SET statut = '${AGREMENT_STATUT.VALIDE}'
+        SET statut = $2,
+        updated_at = NOW(),
+        date_obtention = $3,
+        date_fin_validite = $4
         WHERE id = $1
       RETURNING id;
     `;
 
-    await client.query(query, [id]);
+    await client.query(query, [id, statut, dateObtention, dateFinValidite]);
+  },
+  insertHistoryEvent: async ({
+    source,
+    agrementId,
+    type,
+    typePrecision,
+    metadata,
+    client,
+  }: {
+    source: string;
+    agrementId: number;
+    type?: AGREMENT_HISTORY_TYPE | null;
+    typePrecision?: string | null;
+    metadata?: Record<string, unknown> | null;
+    client: any;
+  }): Promise<number> => {
+    const query = `
+    INSERT INTO front.agrement_history (
+      source,
+      agrement_id,
+      type,
+      type_precision,
+      metadata,
+      created_at
+    ) VALUES ($1,$2, $3, $4, $5, NOW())
+    RETURNING id;
+  `;
+    const values = [
+      source,
+      agrementId,
+      type ?? null,
+      typePrecision ?? null,
+      metadata ?? null,
+    ];
+    const { rows } = await client.query(query, values);
+    return rows[0].id;
   },
 };

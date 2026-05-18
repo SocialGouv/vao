@@ -207,9 +207,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     budgetComplement: yup.string().nullable(),
     budgetGestionPerso: requiredUnlessBrouillon(yup.string().nullable()),
     budgetPaiementSecurise: yup.string().nullable(),
-    budgetPersoGestionComplementaire: requiredUnlessBrouillon(
-      yup.string().nullable(),
-    ),
+    budgetPersoGestionComplementaire: yup.string().nullable(),
     commentaire: yup.string().nullable(),
     dateConfirmCompletude: yup.date().nullable(),
     dateDepot: yup.date().nullable(),
@@ -230,7 +228,7 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     protocoleRemboursement: yup.string().nullable(),
     regionObtention: requiredUnlessBrouillon(yup.string().nullable()),
     sejourCommentaire: yup.string().nullable(),
-    sejourNbEnvisage: requiredUnlessBrouillon(yup.number().nullable()),
+    sejourNbEnvisage: yup.number().nullable(),
     sejourTypeHandicap: requiredUnlessBrouillon(
       yup.array(yup.string().nullable()).nullable(),
     ),
@@ -242,7 +240,6 @@ export const PostAgrementRouteSchema: RouteSchema<PostAgrementRoute> = {
     suiviMedDistribution: requiredUnlessBrouillon(yup.string().nullable()),
     transportAllerRetour: requiredUnlessBrouillon(yup.string().nullable()),
     transportSejour: requiredUnlessBrouillon(yup.string().nullable()),
-    updatedAt: requiredUnlessBrouillon(yup.date().nullable()),
-    vacanciersNbEnvisage: requiredUnlessBrouillon(yup.number().nullable()),
+    vacanciersNbEnvisage: yup.number().nullable(),
   }) as yup.ObjectSchema<AgrementDto>,
 };

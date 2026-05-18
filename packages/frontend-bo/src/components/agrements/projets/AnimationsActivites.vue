@@ -8,12 +8,11 @@
   </TitleWithIcon>
   <div class="flex flex-col">
     <div>
-      <DisplayLabel
-        :input="
-          AgrementDisplayInput.AgrementProjetsInput.activitesSelectionnees
-        "
-        :value="props.initAgrement?.activitesSelectionnees"
-      />
+      {{
+        (props.initAgrement?.agrementAnimation as any)
+          ?.map((item: any) => item.activite?.libelle)
+          .join(", ")
+      }}
     </div>
     <div class="fr-mt-4v">
       <DisplayLabel
