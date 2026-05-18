@@ -31,7 +31,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
-    "@playwright/test": "^1.47.0",
+    "@playwright/test": "^1.59.1",
     "@socialgouv/eslint-config-recommended": "^1.131.0",
     "@types/node": "^22.5.4",
     "@typescript-eslint/eslint-plugin": "^8.46.0",
