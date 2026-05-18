@@ -54,7 +54,7 @@
     "@vue/test-utils": "^2.4.6",
     "eslint": "^9.39.1",
     "eslint-config-prettier": "^10.1.8",
-    "happy-dom": "^20.0.4",
+    "happy-dom": "^20.9.0",
     "prettier": "^3.2.5",
     "sass": "~1.79.3",
     "sass-loader": "~16.0.2",
