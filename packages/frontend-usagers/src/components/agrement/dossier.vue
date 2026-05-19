@@ -153,6 +153,8 @@ import {
   isValidFrShort,
   parseFrShort,
   addYears,
+  isBefore,
+  isAfter,
 } from "@vao/shared-bridge/utils/date";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import regex from "../../utils/regex";
@@ -203,21 +205,14 @@ const dateDDMMYYYY = yup
     "is-not-expired",
     "Ce certificat a expiré. Veuillez le renouveler afin de rétablir l’accès  aux services.",
     (value) => {
-      if (!value) return true;
-      if (!isValidFrShort(value)) {
-        return true;
-      }
       const dateObtention = parseFrShort(value)?.toDate();
       if (!dateObtention) {
-        return true;
-      }
-      const dateExpiration = addYears(dateObtention, 3);
-
-      if (!dateExpiration) {
         return false;
       }
 
-      return new Date() <= dateExpiration;
+      const dateExpiration = addYears(dateObtention, 3);
+
+      return isBefore(new Date(), dateExpiration!);
     },
   )
   .nullable();
@@ -258,23 +253,14 @@ const initialValues = {
 };
 
 const isCertificatExpire = computed(() => {
-  if (!isValidFrShort(dateObtentionCertificat.value ?? undefined)) {
-    return false;
-  }
-
-  const dateObtention = parseFrShort(
-    dateObtentionCertificat.value || undefined,
-  )?.toDate();
+  const dateObtention = parseFrShort(dateObtentionCertificat.value)?.toDate();
   if (!dateObtention) {
     return false;
   }
 
   const dateExpiration = addYears(dateObtention, 3);
 
-  if (!dateExpiration) {
-    return false;
-  }
-  return new Date() > dateExpiration;
+  return isAfter(new Date(), dateExpiration!);
 });
 
 const { handleSubmit, meta, validate } = useForm({
