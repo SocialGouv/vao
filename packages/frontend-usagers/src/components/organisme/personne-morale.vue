@@ -406,21 +406,28 @@ const randomId = ref(random.getRandomId());
 const keyRepresentantLegaux = ref(1);
 const currentPersonnesPage = ref(1);
 
-const representantsLegauxRO = computed(() =>
-  representantsLegaux.value.map((r) => [r.nom, r.prenom, r.fonction]),
-);
+const representantsLegauxRO = computed(() => {
+  const rows = representantsLegaux.value.map((r) => [
+    r.nom,
+    r.prenom,
+    r.fonction,
+  ]);
+
+  return rows.length ? rows : [["Aucune donnée à afficher", "", ""]];
+});
 
 const validationSchema = computed(() =>
   yup.object(organisme.personneMoraleSchema),
 );
-const usersWithSiret = computed(() =>
-  organismeStore.usersFO.map((user) => [
+const usersWithSiret = computed(() => {
+  const rows = organismeStore.usersFO.map((user) => [
     user.nom,
     user.prenom,
     user.email,
     formatFRDateTime(new Date(user.dateCreation)),
-  ]),
-);
+  ]);
+  return rows.length ? rows : [["Aucune donnée à afficher", "", ""]];
+});
 
 const initialValues: Partial<PersonneMoraleDto> = {
   siret: userStore.user?.userSiret,
