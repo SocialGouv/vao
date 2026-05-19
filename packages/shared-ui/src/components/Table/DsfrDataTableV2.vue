@@ -104,7 +104,7 @@ const props = withDefaults(
     isSortable: false,
     sort: "",
     sortDirection: "asc",
-    emptyPlaceholder: "No data",
+    emptyPlaceholder: "Aucune donnée à afficher",
     isBordered: false,
     size: "md",
     tableTitle: "",
