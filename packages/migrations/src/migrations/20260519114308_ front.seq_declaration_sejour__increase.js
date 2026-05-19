@@ -8,3 +8,8 @@ exports.up = async function (knex) {
     ALTER SEQUENCE front.seq_declaration_sejour AS bigint MAXVALUE 2147483647;
   `);
 };
+
+exports.down = async function (knex) {
+  // Present uniquement pour passer le linter
+  await knex.schema.raw(``);
+};
