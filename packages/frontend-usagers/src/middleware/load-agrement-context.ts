@@ -4,16 +4,26 @@ import { useAgrementStore } from "~/stores/agrement";
 
 const log = logger("middlewares/load-agrement-context");
 
-type RouteParamValue = string | string[] | undefined;
+type RouteParamValue = string | undefined;
+
+const getAgrementIdParam = (
+  params: Record<string, unknown>,
+): RouteParamValue => {
+  const { agrementId } = params;
+
+  if (typeof agrementId === "string") {
+    return agrementId;
+  }
+
+  return undefined;
+};
 
 const parseAgrementId = (value: RouteParamValue): number | null => {
-  const rawValue: string | undefined = Array.isArray(value) ? value[0] : value;
-
-  if (!rawValue) {
+  if (!value) {
     return null;
   }
 
-  const parsedValue: number = Number(rawValue);
+  const parsedValue: number = Number(value);
 
   if (!Number.isInteger(parsedValue) || parsedValue <= 0) {
     return null;
@@ -32,9 +42,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
       await agrementStore.getCurrent();
     }
 
-    const agrementId: number | null = parseAgrementId(
-      to.params.agrementId as RouteParamValue,
+    const agrementIdParam: RouteParamValue = getAgrementIdParam(
+      to.params as Record<string, unknown>,
     );
+    const agrementId: number | null = parseAgrementId(agrementIdParam);
 
     if (agrementId !== null) {
       const currentEnTraitementId: number | null =
