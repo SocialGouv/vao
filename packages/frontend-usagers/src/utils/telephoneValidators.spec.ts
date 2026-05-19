@@ -45,7 +45,7 @@ describe("telephoneValidators", () => {
 
     it("rejects invalid phone value", async () => {
       await expect(telephoneYupNullable().validate("123")).rejects.toThrow(
-        "Format de numéro de téléphone invalide",
+        "Le numéro de téléphone doit être au format national ou international. Exemple : 0612345678",
       );
     });
   });
