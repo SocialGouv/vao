@@ -98,6 +98,7 @@ export async function resetE2e(
         WHERE mail LIKE '%e2e-%@test.com'
           OR mail LIKE '%e2e-%@example.com'
           OR mail LIKE 'tnra-%@example.com'
+          OR mail LIKE 'tnra.%@example.com'
       `);
       const testsUserIds: number[] = testsUsers.map(
         ({ id }: { id: number }) => id,
