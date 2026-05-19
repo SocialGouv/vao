@@ -66,7 +66,11 @@
           name="dateObtentionCertificat"
           :label="displayInput.AgrementInput['dateObtentionCertificat'].label"
           :error-message="dateObtentionCertificatErrorMessage"
-          :is-valid="dateObtentionCertificatMeta.valid"
+          :is-valid="
+            dateObtentionCertificatMeta.touched
+              ? dateObtentionCertificatMeta.valid
+              : undefined
+          "
           :label-visible="true"
           :model-value="dateObtentionCertificat"
           hint="format attendu : JJ/MM/AAAA"
@@ -74,15 +78,23 @@
         />
         <UtilsDisplayInput
           v-else
-          label="Date d’obtention du certificat d’immatriculation"
+          label="Date d'obtention du certificat d'immatriculation"
           :value="dateObtentionCertificat"
           :input="displayInput.AgrementInput['dateObtentionCertificat']"
           :error-message="dateObtentionCertificatErrorMessage"
           :is-valid="dateObtentionCertificatMeta.valid"
         />
-        <DsfrAlert class="fr-grid-row fr-my-3v" type="info" :closeable="false">
-          Ce certificat est valable 3 ans, il devra être renouvelé à son
-          échéance.
+        <DsfrAlert
+          v-if="props.modifiable"
+          class="fr-grid-row fr-my-3v"
+          :type="isCertificatExpire ? 'warning' : 'info'"
+          :closeable="false"
+        >
+          {{
+            isCertificatExpire
+              ? "Ce certificat a expiré. Veuillez le renouveler afin de rétablir l’accès  aux services."
+              : "Ce certificat est valable 3 ans, il devra être renouvelé à son échéance."
+          }}
         </DsfrAlert>
       </div>
     </div>
@@ -137,6 +149,13 @@ import { ref, watch } from "vue";
 import { useForm, useField } from "vee-validate";
 import { FileUpload, TitleWithIcon, useToaster } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
+import {
+  isValidFrShort,
+  parseFrShort,
+  addYears,
+  isBefore,
+  isAfter,
+} from "@vao/shared-bridge/utils/date";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 import regex from "../../utils/regex";
 import * as yup from "yup";
@@ -175,18 +194,27 @@ const getFileByCategory = (category: string): AgrementFilesDto | null => {
 
 const dateDDMMYYYY = yup
   .string()
-  .transform((value, originalValue) => originalValue || "")
   .matches(dateDDMMYYYYRegex, "Format JJ/MM/AAAA invalide")
   .test("is-valid-date", "La date n'est pas valide", (value) => {
-    if (!value) return true; // nullable
-    const [day, month, year] = value.split("/").map(Number);
-    const date = new Date(year, month - 1, day);
-    return (
-      date.getFullYear() === year &&
-      date.getMonth() === month - 1 &&
-      date.getDate() === day
-    );
+    if (!value) {
+      return true;
+    }
+    return isValidFrShort(value);
   })
+  .test(
+    "is-not-expired",
+    "Ce certificat a expiré. Veuillez le renouveler afin de rétablir l’accès  aux services.",
+    (value) => {
+      const dateObtention = parseFrShort(value)?.toDate();
+      if (!dateObtention) {
+        return false;
+      }
+
+      const dateExpiration = addYears(dateObtention, 3);
+
+      return isBefore(new Date(), dateExpiration!);
+    },
+  )
   .nullable();
 
 const validationSchema = yup.object({
@@ -223,6 +251,17 @@ const initialValues = {
     getFileByCategory(FILE_CATEGORY.ASSURRAPAT) || null,
   //synthese: props.initAgrement.synthese || false,
 };
+
+const isCertificatExpire = computed(() => {
+  const dateObtention = parseFrShort(dateObtentionCertificat.value)?.toDate();
+  if (!dateObtention) {
+    return false;
+  }
+
+  const dateExpiration = addYears(dateObtention, 3);
+
+  return isAfter(new Date(), dateExpiration!);
+});
 
 const { handleSubmit, meta, validate } = useForm({
   validationSchema,
@@ -278,6 +317,12 @@ watch(
   { immediate: true },
 );
 
+onMounted(async () => {
+  if (!props.modifiable) {
+    await validate();
+  }
+});
+
 const trySubmit = async () => {
   let valid = false;
   try {
@@ -293,9 +338,11 @@ const trySubmit = async () => {
 
   if (valid || initialValues.statut === AGREMENT_STATUT.BROUILLON) {
     const formValues = {
-      dateObtentionCertificat: dateObtentionCertificat.value
-        ? parseToISODate(dateObtentionCertificat.value)
-        : null,
+      dateObtentionCertificat:
+        dateObtentionCertificat.value &&
+        isValidFrShort(dateObtentionCertificat.value)
+          ? parseToISODate(dateObtentionCertificat.value)
+          : null,
       motivations: motivations.value,
       filesMotivation: filesMotivation.value,
       fileImmatriculation: fileImmatriculation.value,
