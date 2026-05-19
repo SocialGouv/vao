@@ -8,9 +8,3 @@ exports.up = async function (knex) {
     ALTER SEQUENCE front.seq_declaration_sejour AS bigint MAXVALUE 2147483647;
   `);
 };
-
-exports.down = async function (knex) {
-  await knex.schema.raw(`
-    ALTER SEQUENCE front.seq_declaration_sejour AS bigint MAXVALUE 9999;
-`);
-};
