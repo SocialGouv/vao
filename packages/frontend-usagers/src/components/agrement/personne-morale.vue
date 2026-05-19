@@ -22,7 +22,8 @@
             as="button"
             icon-name="icon-edit-line"
             @click="startEditTelephone"
-            >modifier <span class="fr-sr-only">le numéro de téléphone</span></DsfrLinkV2
+            >modifier
+            <span class="fr-sr-only">le numéro de téléphone</span></DsfrLinkV2
           >
         </dd>
       </template>
@@ -50,7 +51,8 @@
             as="button"
             icon-name="icon-edit-line"
             @click="startEditEmail"
-            >modifier <span class="fr-sr-only">l'adresse email</span></DsfrLinkV2
+            >modifier
+            <span class="fr-sr-only">l'adresse email</span></DsfrLinkV2
           >
         </dd>
       </template>
@@ -114,7 +116,12 @@ const requiredUnlessBrouillon = (schema) =>
 const validationSchema = yup.object({
   telephone: requiredUnlessBrouillon(telephoneYupNullable()),
   email: requiredUnlessBrouillon(
-    yup.string().email("Format d'email invalide").nullable(),
+    yup
+      .string()
+      .email(
+        "L’adresse courriel est invalide. Merci de saisir une adresse au format nom@domaine.fr",
+      )
+      .nonNullable(),
   ),
   adresse: requiredUnlessBrouillon(yup.string().nullable()),
 });

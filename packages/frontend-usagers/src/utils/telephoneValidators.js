@@ -13,7 +13,7 @@ export function telephoneYup(
 }
 
 export function telephoneYupNullable(
-  invalidMsg = "Format de numéro de téléphone invalide",
+  invalidMsg = "Le numéro de téléphone doit être au format national ou international. Exemple : 0612345678",
 ) {
   return yup
     .string()
