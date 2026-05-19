@@ -21,7 +21,7 @@ import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repo
 import { AgrementServiceShared } from "../../shared/agrements/agrements.service";
 import { AgrementMailUsagers } from "../../usagers/agrements/agrements.mail";
 import AppError from "../../utils/error";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { withTransaction } from "../../utils/pgpool";
 import { AgrementMailAdmin } from "./agrements.mail";
 import { AgrementsRepository } from "./agrements.repository";

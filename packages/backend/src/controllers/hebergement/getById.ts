@@ -7,7 +7,7 @@ import type { NextFunction } from "express";
 
 import Hebergement from "../../services/hebergement/Hebergement";
 import type { RouteRequest, RouteResponse } from "../../types/request";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 
@@ -28,7 +28,7 @@ export default async function get(
         name: ERRORS_COMMON.NOT_FOUND,
       } as any);
     }
-    log.d(hebergement);
+    log.d("hebergement", hebergement);
     res.json({ hebergement });
   } catch (error) {
     log.w("DONE with error");

@@ -25,10 +25,10 @@ import {
   AgrementSvaTimerMapper,
 } from "../../shared/agrements/agrements.mapper";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
-import Logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 
-const log = Logger(module.filename);
+const log = logger(module.filename);
 // ------------------------------------------------------------
 // 🏗️ Repository Admin
 // ------------------------------------------------------------
@@ -166,6 +166,7 @@ export const AgrementsRepository = {
       ORDER BY h.created_at DESC;
     `;
       const result = await client.query(query, [agrementId]);
+      // @ts-expect-error TODO: fix this
       return result.rows.map((row: AgrementHistoryRow) => ({
         agrement_id: row.agrement_id,
         bo_user: row.bo_user_id

@@ -1,9 +1,9 @@
-import { NextFunction, Response } from "express";
+import { STATUS_USER_FRONT } from "@vao/shared-bridge";
 import request from "supertest";
 
-import app from "../../app";
-import boCheckJWT from "../../middlewares/bo-check-JWT";
-import { User, UserRequest } from "../../types/request";
+import { roles } from "../../helpers/users";
+import { mailService } from "../../services/mail";
+import { AppHelperUser, getBoAppHelper } from "../helpers/appHelper";
 import { createDemandeSejour } from "../helpers/demandeSejourHelper";
 import { createHebergement } from "../helpers/hebergementHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
@@ -16,21 +16,22 @@ import {
   createUsagersUserValide,
 } from "../helpers/userHelper";
 
-jest.mock("../../middlewares/bo-check-JWT", () => jest.fn());
 jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
 }));
 
-const boCheckJWTMock = boCheckJWT as unknown as jest.Mock;
-
-let boUserID = 0;
+let boUser: AppHelperUser;
 let declarationId = 0;
 
 beforeAll(async () => {
   await createTestContainer();
-  const foUser = await createUsagersUserValide();
-  const boUser = await createAdminUserValide();
-  boUserID = boUser.id;
+  const foUser = await createUsagersUserValide({
+    statusCode: STATUS_USER_FRONT.VALIDATED,
+  });
+  boUser = await createAdminUserValide({
+    roles: [roles.DEMANDE_SEJOUR_LECTURE, roles.DEMANDE_SEJOUR_ECRITURE],
+    ter_code: "FRA",
+  });
   const organismeId = await createOrganisme({ userId: foUser.id });
   declarationId = await createDemandeSejour({ organismeId });
   await createHebergement({ declarationId, organismeId });
@@ -42,30 +43,23 @@ afterAll(async () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  boCheckJWTMock.mockImplementation(
-    (req: UserRequest, _res: Response, next: NextFunction) => {
-      req.decoded = {
-        id: boUserID,
-        roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
-        territoireCode: "FRA",
-      } as unknown as User;
-      next();
-    },
-  );
 });
 
 describe("POST /message/admin/:declarationId", () => {
   it("retourne 200", async () => {
-    const response = await request(app)
+    const response = await request(getBoAppHelper(boUser))
       .post(`/message/admin/${declarationId}`)
       .send({
         message: "Message BO valide",
       });
     expect(response.status).toBe(200);
+    expect(mailService.send).toHaveBeenCalledTimes(1);
+    const mailPayload = (mailService.send as jest.Mock).mock.calls[0][0];
+    expect(mailPayload.subject).toContain("nouveau message");
   });
 
   it("retourne 400 si le body est invalide", async () => {
-    const response = await request(app)
+    const response = await request(getBoAppHelper(boUser))
       .post(`/message/admin/${declarationId}`)
       .send({});
     expect(response.status).toBe(400);
@@ -74,26 +68,32 @@ describe("POST /message/admin/:declarationId", () => {
 
 describe("GET /message/admin/read/:declarationId", () => {
   it("retourne 200", async () => {
-    const response = await request(app).get(
+    const response = await request(getBoAppHelper(boUser)).get(
       `/message/admin/read/${declarationId}`,
     );
     expect(response.status).toBe(200);
   });
 
   it("retourne 400 si declarationId est invalide", async () => {
-    const response = await request(app).get("/message/admin/read/abc");
+    const response = await request(getBoAppHelper(boUser)).get(
+      "/message/admin/read/abc",
+    );
     expect(response.status).toBe(400);
   });
 });
 
 describe("GET /message/admin/:declarationId", () => {
   it("retourne 200", async () => {
-    const response = await request(app).get(`/message/admin/${declarationId}`);
+    const response = await request(getBoAppHelper(boUser)).get(
+      `/message/admin/${declarationId}`,
+    );
     expect(response.status).toBe(200);
   });
 
   it("retourne 400 si declarationId est invalide", async () => {
-    const response = await request(app).get("/message/admin/abc");
+    const response = await request(getBoAppHelper(boUser)).get(
+      "/message/admin/abc",
+    );
     expect(response.status).toBe(400);
   });
 });

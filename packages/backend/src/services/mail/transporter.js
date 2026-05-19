@@ -1,9 +1,9 @@
 const nodemailer = require("nodemailer");
 
-const { smtp: smtpConfig } = require("../../config");
+const { config } = require("../../config");
 
 const AppError = require("../../utils/error").default;
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 
 const log = logger(module.filename);
 
@@ -14,9 +14,9 @@ function getTransporter() {
     return transporterPool;
   }
 
-  const smtpSettings = { ...smtpConfig };
+  const smtpSettings = { ...config.smtp };
 
-  if (smtpConfig.auth.user === undefined) {
+  if (config.smtp.auth.user === undefined) {
     delete smtpSettings.auth;
   }
 

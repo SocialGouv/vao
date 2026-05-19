@@ -1,4 +1,4 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const yup = require("yup");
 const { updateSchemaAdapteur } = require("../../schemas/eig");
 const { UpdateTypes, isDeclarationligibleToEig } = require("../../helpers/eig");

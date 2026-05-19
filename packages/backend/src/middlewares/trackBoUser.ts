@@ -13,7 +13,7 @@ interface TrackingRequest extends UserRequest {
   tracking?: Tracking;
 }
 
-function trackFoUser({
+export default function trackBoUser({
   action,
   userType,
   itself,
@@ -44,7 +44,7 @@ function trackFoUser({
         newUser = await boUser.getByUserId(id);
       }
 
-      boUser.addAsyncUserHistoric({
+      await boUser.addAsyncUserHistoric({
         action,
         boUserId: id,
         data: { newData: newUser, oldData: oldUser },
@@ -56,5 +56,3 @@ function trackFoUser({
     next();
   };
 }
-
-module.exports = trackFoUser;

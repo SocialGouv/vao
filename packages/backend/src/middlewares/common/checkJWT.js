@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const config = require("../../config");
+const { config } = require("../../config");
 
 const UserBo = require("../../services/BoUser");
 const UserFo = require("../../services/FoUser");
@@ -7,7 +7,7 @@ const Session = require("../../services/common/Session");
 const { schema } = require("../../helpers/schema");
 
 const AppError = require("../../utils/error").default;
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const {
   buildAccessToken: buildAccessTokenBo,
   buildRefreshToken: buildRefreshTokenBo,

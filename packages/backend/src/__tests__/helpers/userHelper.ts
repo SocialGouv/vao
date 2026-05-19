@@ -6,8 +6,9 @@ import {
 } from "../../services/BoUser";
 import { registerByEmail as createFrontUserService } from "../../services/User";
 import { getPool } from "../../utils/pgpool";
+import { AppHelperUser } from "./appHelper";
 
-export const createAdminUser = async (user = {}) => {
+export const createAdminUser = async (user = {}): Promise<AppHelperUser> => {
   const timestamp = Date.now();
   const fixture = {
     email: `userbo${timestamp}@example.com`,
@@ -66,11 +67,19 @@ export const createUsagersUserValide = async (
     prenom?: string;
     roles?: string[];
     siret?: string;
+    statusCode?: string;
     telephone?: string;
     terCode?: string;
+    territoireCode?: string;
   } & Record<string, unknown> = {},
 ) => {
-  const { roles: roleLabels, ...userFields } = user;
+  const {
+    roles: roleLabels,
+    statusCode,
+    terCode,
+    territoireCode,
+    ...userFields
+  } = user;
   const timestamp = Date.now();
   const fixture = {
     email: `frontuser${timestamp}@example.com`,
@@ -78,7 +87,8 @@ export const createUsagersUserValide = async (
     prenom: "FrontPrenom",
     siret: `123456789012${timestamp.toString().slice(-2)}`,
     telephone: "0102030405",
-    terCode: "FRA",
+    ter_code: terCode ?? territoireCode ?? "FRA",
+    ...(statusCode ? { status_code: statusCode } : {}),
     ...userFields,
   };
   const result = await UsagerUsersRepository.create({ user: fixture });
@@ -100,7 +110,11 @@ export const createUsagersUserValide = async (
       [created.id, roleLabels],
     );
   }
-  return created;
+  return {
+    ...created,
+    roles: roleLabels ?? [],
+    territoireCode: created.territoireCode ?? fixture.ter_code,
+  };
 };
 
 export const createAdminUserValide = async (
@@ -111,17 +125,18 @@ export const createAdminUserValide = async (
     roles?: string[];
     telephone?: string;
     ter_code?: string;
+    territoireCode?: string;
     verified?: boolean;
   } & Record<string, unknown> = {},
 ) => {
-  const { roles: roleLabels, ...userFields } = user;
+  const { roles: roleLabels, ter_code, territoireCode, ...userFields } = user;
   const timestamp = Date.now();
   const fixture = {
     email: `bouser${timestamp}@example.com`,
     nom: "boNom",
     prenom: "boPrenom",
     telephone: "0102030405",
-    ter_code: "FRA",
+    ter_code: ter_code ?? territoireCode ?? "FRA",
     verified: true,
     ...userFields,
   };
@@ -144,5 +159,9 @@ export const createAdminUserValide = async (
       [created.id, roleLabels],
     );
   }
-  return created;
+  return {
+    ...created,
+    roles: roleLabels ?? [],
+    territoireCode: created.territoireCode ?? fixture.ter_code,
+  };
 };

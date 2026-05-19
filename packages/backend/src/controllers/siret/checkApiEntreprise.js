@@ -1,4 +1,4 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const { checkTokenApiEntreprise } = require("../../services/Insee");
 const AppError = require("../../utils/error").default;
 

@@ -1,4 +1,4 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const AppError = require("../../utils/error").default;
 const Organisme = require("../../services/Organisme");
 const DemandeSejour = require("../../services/DemandeSejour");

@@ -9,7 +9,7 @@ const BOcheckRole = require("../middlewares/bo-check-role.js");
 const BOUserController = require("../controllers/bo-user");
 const checkTerrForAccountCreation = require("../middlewares/bo-check-terr-for-account-creation");
 const getDepartements = require("../middlewares/getDepartements");
-const trackBoUser = require("../middlewares/trackBoUser");
+const trackBoUser = require("../middlewares/trackBoUser").default;
 
 const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 

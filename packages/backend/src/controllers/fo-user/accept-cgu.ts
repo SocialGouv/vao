@@ -1,12 +1,12 @@
 import type { NextFunction, Response } from "express";
 
-import config from "../../config";
+import { config } from "../../config";
 import { schema } from "../../helpers/schema";
 import Session from "../../services/common/Session";
 import CommonUserService from "../../services/common/Users";
 import { UserRequest } from "../../types/request";
 import AppError from "../../utils/error";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { signAccessToken, signRefreshToken } from "../../utils/token";
 
 const log = logger(module.filename);

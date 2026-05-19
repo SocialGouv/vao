@@ -1,9 +1,9 @@
 const Sentry = require("@sentry/node");
 
-const { sentry } = require("../config");
-const logger = require("../utils/logger");
+const { config } = require("../config");
+const { logger } = require("../utils/logger");
 const { getPool } = require("../utils/pgpool");
-const normalize = require("../utils/normalize");
+const { normalize } = require("../utils/normalize");
 const usersCommon = require("./common/Users");
 const { schema } = require("../helpers/schema");
 const {
@@ -776,7 +776,7 @@ module.exports.login = async ({ email, password }) => {
   if (user.rowCount === 0) {
     return null;
   }
-  getPool().query(query.connection, [user.rows[0].id]);
+  await getPool().query(query.connection, [user.rows[0].id]);
   usersCommon.resetLoginAttempt(email, schema.BACK);
   log.i("login - DONE");
   return user.rows[0];
@@ -791,7 +791,7 @@ const getByUserId = async (userId) => {
     return response.rows[0];
   } catch (error) {
     log.w("getByUserId - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
     return null;
@@ -821,7 +821,7 @@ const addAsyncUserHistoric = async ({
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
   }

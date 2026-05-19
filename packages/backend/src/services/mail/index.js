@@ -1,5 +1,5 @@
 const Sentry = require("@sentry/node");
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const AppError = require("../../utils/error").default;
 const { getTransporter } = require("./transporter");
 

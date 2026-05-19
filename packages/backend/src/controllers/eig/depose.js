@@ -1,10 +1,10 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const eigService = require("../../services/eig");
 const yup = require("yup");
 const { syntheseSchema } = require("../../schemas/eig");
 const ValidationAppError = require("../../utils/validation-error").default;
 const DemandeSejour = require("../../services/DemandeSejour");
-const MailUtils = require("../../utils/mail");
+const { MailUtils } = require("../../utils/mail");
 const AppError = require("../../utils/error").default;
 const { getEmails } = require("../../helpers/eigMail");
 const Commune = require("../../services/geo/Commune");

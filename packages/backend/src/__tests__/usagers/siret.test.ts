@@ -1,21 +1,12 @@
 import { ERRORS_SIRET } from "@vao/shared-bridge";
 import axios from "axios";
-import { NextFunction, Response } from "express";
 import request from "supertest";
 
-import app from "../../app";
-import { User, UserRequest } from "../../types/request";
+import { getFoAppHelper } from "../helpers/appHelper";
 import {
   createTestContainer,
   removeTestContainer,
 } from "../helpers/testContainer";
-
-jest.mock("../../middlewares/checkJWT", () =>
-  jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
-    req.decoded = { id: 1 } as unknown as User;
-    next();
-  }),
-);
 
 const axiosGetMock = axios.get as jest.Mock;
 
@@ -36,7 +27,7 @@ beforeEach(() => {
 
 describe("Domaine /siret", () => {
   it("GET /siret/:siret retourne 400 si le format est invalide", async () => {
-    const response = await request(app).get("/siret/123");
+    const response = await request(getFoAppHelper({ id: 1 })).get("/siret/123");
 
     expect(response.status).toBe(400);
   });
@@ -45,7 +36,9 @@ describe("Domaine /siret", () => {
     axiosGetMock.mockRejectedValueOnce({
       response: { status: 500 },
     });
-    const response = await request(app).get("/siret/12345678901234");
+    const response = await request(getFoAppHelper()).get(
+      "/siret/12345678901234",
+    );
 
     expect(response.status).toBe(404);
   });
@@ -55,15 +48,15 @@ describe("Domaine /siret", () => {
       .mockResolvedValueOnce({
         data: {
           etablissement: {
+            adresseEtablissement: {
+              codePostalEtablissement: "75001",
+              coordonneeLambertAbscisseEtablissement: "[ND]",
+            },
+            etablissementSiege: true,
             nic: "00012",
             uniteLegale: {
               categorieJuridiqueUniteLegale: "5499",
               denominationUniteLegale: "Association test",
-            },
-            etablissementSiege: true,
-            adresseEtablissement: {
-              codePostalEtablissement: "75001",
-              coordonneeLambertAbscisseEtablissement: "[ND]",
             },
           },
         },
@@ -83,20 +76,26 @@ describe("Domaine /siret", () => {
         },
       });
 
-    const response = await request(app).get("/siret/12345678901234");
+    const response = await request(getFoAppHelper()).get(
+      "/siret/12345678901234",
+    );
 
     expect(response.status).toBe(200);
     expect(response.body.uniteLegale).toBeDefined();
   });
 
   it("GET /siret/check-api-insee existe", async () => {
-    const response = await request(app).get("/siret/check-api-insee");
+    const response = await request(getFoAppHelper()).get(
+      "/siret/check-api-insee",
+    );
 
     expect(response.status).toBe(503);
   });
 
   it("GET /siret/check-api-entreprise existe", async () => {
-    const response = await request(app).get("/siret/check-api-entreprise");
+    const response = await request(getFoAppHelper()).get(
+      "/siret/check-api-entreprise",
+    );
 
     expect(response.status).toBe(503);
   });
@@ -113,7 +112,7 @@ describe("Domaine /siret", () => {
         },
       });
 
-      const response = await request(app).get(
+      const response = await request(getFoAppHelper()).get(
         "/siret/get-lien-succession/12345678901234",
       );
 
@@ -128,7 +127,7 @@ describe("Domaine /siret", () => {
         response: { status: 404 },
       });
 
-      const response = await request(app).get(
+      const response = await request(getFoAppHelper()).get(
         "/siret/get-lien-succession/12345678901234",
       );
 
@@ -141,7 +140,7 @@ describe("Domaine /siret", () => {
         response: { status: 500 },
       });
 
-      const response = await request(app).get(
+      const response = await request(getFoAppHelper()).get(
         "/siret/get-lien-succession/12345678901234",
       );
 

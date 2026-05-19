@@ -5,7 +5,7 @@ import type { NextFunction, Response } from "express";
 import * as DocumentService from "../../services/Document";
 import type { UserRequest } from "../../types/request";
 import AppError from "../../utils/error";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 
 const log = logger(module.filename);
 

@@ -1,4 +1,4 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const { checkApiSearchAdresse } = require("../../services/AdresseApi");
 const AppError = require("../../utils/error").default;
 

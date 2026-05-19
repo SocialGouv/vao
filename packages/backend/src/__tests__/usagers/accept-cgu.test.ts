@@ -1,47 +1,42 @@
 import request from "supertest";
 
-import app from "../../app";
-// @ts-expect-error: js file
-import jwtMiddleware from "../../middlewares/checkJWTWithoutCGU";
+import {
+  createFoUserSessionCookies,
+  getFoAppHelper,
+} from "../helpers/appHelper";
 import {
   createTestContainer,
   removeTestContainer,
 } from "../helpers/testContainer";
 import { createUsagersUserValide } from "../helpers/userHelper";
 
-const mockJwtMiddleware = jwtMiddleware as jest.Mock;
-jest.mock("../../middlewares/checkJWTWithoutCGU", () => jest.fn());
-
-let user: any;
-
 beforeAll(async () => {
   await createTestContainer();
-  user = await createUsagersUserValide();
-});
-
-beforeEach(() => {
-  mockJwtMiddleware.mockImplementation((req, res, next) => {
-    req.decoded = user;
-    next();
-  });
 });
 
 afterAll(async () => {
   await removeTestContainer();
 });
-afterEach(() => {
-  jest.clearAllMocks();
-});
 
 describe("POST /fo-user/accept-cgu/", () => {
   it("devrait retourner 200 avec un user", async () => {
-    const response = await request(app).post(`/fo-user/accept-cgu/`);
-    expect(response.status).toBe(200);
-  });
-  it("devrait retourner 403 si pas de decoded", async () => {
-    mockJwtMiddleware.mockImplementation((req, res, next) => next());
+    const user = await createUsagersUserValide({ cgu_accepted: false });
+    const cookies = await createFoUserSessionCookies(user);
 
-    const response = await request(app).post("/fo-user/accept-cgu/");
-    expect(response.status).toBe(403);
+    const response = await request(getFoAppHelper())
+      .post("/fo-user/accept-cgu/")
+      .set("Cookie", cookies);
+
+    expect(response.status).toBe(200);
+    expect(response.body.user).toHaveProperty("cguAccepted", true);
+  });
+
+  it("devrait retourner 409 sans session", async () => {
+    const response = await request(getFoAppHelper()).post(
+      "/fo-user/accept-cgu/",
+    );
+
+    expect(response.status).toBe(409);
+    expect(response.body.name).toBe("TokenRevoked");
   });
 });

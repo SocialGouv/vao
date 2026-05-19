@@ -21,7 +21,7 @@ import TerritoireService from "../../services/Territoire";
 import { AgrementsRepositoryShared } from "../../shared/agrements/agrements.repository";
 import { AgrementServiceShared } from "../../shared/agrements/agrements.service";
 import AppError from "../../utils/error";
-import logger from "../../utils/logger";
+import { logger } from "../../utils/logger";
 import { withTransaction } from "../../utils/pgpool";
 import { AgrementMailUsagers } from "./agrements.mail";
 import { AgrementsRepository } from "./agrements.repository";

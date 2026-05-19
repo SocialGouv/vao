@@ -130,7 +130,7 @@ const applyFilters = (query, initialParams, filters, groupBy = "") => {
   };
 };
 
-const applyGroupBy = (queryInitial, groupByParams = []) => {
+const applyGroupBy = (queryInitial, groupByParams = {}) => {
   if (Object.keys(groupByParams).length === 0) {
     return queryInitial;
   }

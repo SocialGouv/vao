@@ -1,9 +1,9 @@
 const Sentry = require("@sentry/node");
 
-const { sentry } = require("../config");
-const logger = require("../utils/logger");
+const { config } = require("../config");
+const { logger } = require("../utils/logger");
 const { getPool } = require("../utils/pgpool");
-const normalize = require("../utils/normalize");
+const { normalize } = require("../utils/normalize");
 const AppError = require("../utils/error").default;
 const { status } = require("../helpers/users");
 const { addHistoric } = require("./Tracking");
@@ -282,7 +282,7 @@ module.exports.login = async ({ email, password }) => {
     return null;
   }
   CommonUser.resetLoginAttempt(normalize(email), schema.FRONT);
-  getPool().query(query.updateLastConnection, [user.rows[0].id]);
+  await getPool().query(query.updateLastConnection, [user.rows[0].id]);
   log.i("read - DONE", { user: user.rows[0] });
   return user.rows[0];
 };
@@ -300,7 +300,7 @@ const getByUserId = async (userId) => {
     return response.rows[0];
   } catch (error) {
     log.w("getByUserId - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
     return null;
@@ -323,14 +323,14 @@ module.exports.addAsyncUserHistoric = async ({
         after: newData,
         before: oldData,
       },
-      entity: entities.userFront,
+      entity: entities?.userFront,
       entityId: userId,
       userId: foUserId,
       userType: userType ?? userTypes.front,
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
   }

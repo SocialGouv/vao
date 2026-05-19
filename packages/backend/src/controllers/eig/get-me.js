@@ -1,4 +1,4 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const eigService = require("../../services/eig");
 const yup = require("yup");
 const ValidationAppError = require("../../utils/validation-error").default;

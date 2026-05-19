@@ -1,5 +1,5 @@
 /* eslint-disable no-param-reassign */
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const { getPool } = require("../utils/pgpool");
 const AppError = require("../utils/error").default;
 

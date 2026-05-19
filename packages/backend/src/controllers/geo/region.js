@@ -1,6 +1,6 @@
 const Regions = require("../../services/geo/Region");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 
 const log = logger(module.filename);
 

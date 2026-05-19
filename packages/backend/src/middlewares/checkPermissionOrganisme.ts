@@ -2,7 +2,7 @@ import { NextFunction, Response } from "express";
 
 import { UserRequest } from "../types/request";
 import AppError from "../utils/error";
-import logger from "../utils/logger";
+import { logger } from "../utils/logger";
 import { getPool } from "../utils/pgpool";
 
 const log = logger(module.filename);

@@ -1,6 +1,6 @@
-const logger = require("../../../utils/logger");
+const { logger } = require("../../../utils/logger");
 const Session = require("../../../services/common/Session");
-const config = require("../../../config");
+const { config } = require("../../../config");
 const jwt = require("jsonwebtoken");
 const { schema } = require("../../../helpers/schema");
 

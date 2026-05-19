@@ -1,12 +1,14 @@
-import { NextFunction, Response } from "express";
 import request from "supertest";
 
-import app from "../../app";
-import HebergementHelper from "../../helpers/hebergement";
-import { User, UserRequest } from "../../types/request";
+import { statuts as HebergementStatuts } from "../../helpers/hebergement";
+import { partOrganisme } from "../../helpers/org-part";
 import { buildHebergementFixture } from "../fixtures/hebergementFixture";
+import { getFoAppHelper } from "../helpers/appHelper";
 import { createHebergement } from "../helpers/hebergementHelper";
-import { createOrganisme } from "../helpers/organismeHelper";
+import {
+  createOrganisme,
+  getRandomSiretAndSiren,
+} from "../helpers/organismeHelper";
 import {
   createTestContainer,
   removeTestContainer,
@@ -14,13 +16,6 @@ import {
 import { createUsagersUser } from "../helpers/userHelper";
 
 let authUser = { id: 1, role: "admin" };
-
-jest.mock("../../middlewares/checkJWT", () =>
-  jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
-    req.decoded = authUser as unknown as User;
-    next();
-  }),
-);
 
 beforeAll(async () => {
   await createTestContainer();
@@ -38,7 +33,9 @@ describe("GET /hebergement/:id", () => {
       organismeId,
       userId: authUser.id,
     });
-    const response = await request(app).get(`/hebergement/${hebergementId}`);
+    const response = await request(getFoAppHelper(authUser)).get(
+      `/hebergement/${hebergementId}`,
+    );
 
     // Vérification des résultats
     expect(response.status).toBe(200);
@@ -47,7 +44,9 @@ describe("GET /hebergement/:id", () => {
 
   it("retourne 400 si l'id est invalide", async () => {
     authUser = await createUsagersUser();
-    const response = await request(app).get("/hebergement/abc");
+    const response = await request(getFoAppHelper(authUser)).get(
+      "/hebergement/abc",
+    );
 
     // TODO: add controller validation to return 400 if the id is invalid
     expect(response.status).toBe(404);
@@ -66,7 +65,7 @@ describe("POST /hebergement/:id/desactivate - middleware checkPermissionHebergem
 
     // Authentification avec un utilisateur B (qui n'a pas accès)
     authUser = await createUsagersUser();
-    const response = await request(app).put(
+    const response = await request(getFoAppHelper(authUser)).put(
       `/hebergement/${hebergementId}/desactivate`,
     );
 
@@ -80,7 +79,9 @@ describe("POST /hebergement/:id/desactivate - middleware checkPermissionHebergem
 describe("POST /hebergement", () => {
   it("retourne 400 si le body est invalide", async () => {
     authUser = await createUsagersUser();
-    const response = await request(app).post("/hebergement").send({ nom: "" });
+    const response = await request(getFoAppHelper(authUser))
+      .post("/hebergement")
+      .send({ nom: "" });
 
     expect(response.status).toBe(400);
   });
@@ -88,7 +89,7 @@ describe("POST /hebergement", () => {
   it("retourne 200 si le body est valide", async () => {
     authUser = await createUsagersUser();
     await createOrganisme({ userId: authUser.id });
-    const response = await request(app)
+    const response = await request(getFoAppHelper(authUser))
       .post("/hebergement")
       .send(buildHebergementFixture());
 
@@ -104,7 +105,7 @@ describe("POST /hebergement/:id", () => {
       organismeId,
       userId: authUser.id,
     });
-    const response = await request(app)
+    const response = await request(getFoAppHelper(authUser))
       .post(`/hebergement/${hebergementId}`)
       .send({ nom: "" });
 
@@ -115,7 +116,9 @@ describe("POST /hebergement/:id", () => {
 describe("PUT /hebergement/:id/desactivate", () => {
   it("retourne 404 si l'hebergement n'existe pas", async () => {
     authUser = await createUsagersUser();
-    const response = await request(app).put("/hebergement/999999/desactivate");
+    const response = await request(getFoAppHelper(authUser)).put(
+      "/hebergement/999999/desactivate",
+    );
 
     expect(response.status).toBe(404);
   });
@@ -128,7 +131,7 @@ describe("PUT /hebergement/:id/desactivate", () => {
       userId: authUser.id,
     });
 
-    const response = await request(app).put(
+    const response = await request(getFoAppHelper(authUser)).put(
       `/hebergement/${hebergementId}/desactivate`,
     );
 
@@ -141,11 +144,11 @@ describe("PUT /hebergement/:id/reactivate", () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const hebergementId = await createHebergement({
-      hebergement: { statut: HebergementHelper.statuts.DESACTIVE },
+      hebergement: { statut: HebergementStatuts.DESACTIVE },
       organismeId,
       userId: authUser.id,
     });
-    const response = await request(app).put(
+    const response = await request(getFoAppHelper(authUser)).put(
       `/hebergement/${hebergementId}/reactivate`,
     );
 
@@ -157,18 +160,142 @@ describe("GET /hebergement", () => {
   it("retourne 200 pour la liste", async () => {
     authUser = await createUsagersUser();
     await createOrganisme({ userId: authUser.id });
-    const response = await request(app).get("/hebergement");
+    const response = await request(getFoAppHelper(authUser)).get(
+      "/hebergement",
+    );
 
     expect(response.status).toBe(200);
+  });
+
+  it("retourne tous les hébergements du SIREN siège lorsque search sans statut", async () => {
+    authUser = await createUsagersUser();
+    const autreUtilisateur = await createUsagersUser();
+    const siege = getRandomSiretAndSiren();
+    const autreOrganismePm = getRandomSiretAndSiren();
+    const siegeOrganismeId = await createOrganisme({
+      organisme: {
+        siegeSocial: true,
+        siren: siege.siren,
+        siret: siege.siret,
+      },
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: authUser.id,
+    });
+    const organismeIdHorsProfil = await createOrganisme({
+      organisme: {
+        siegeSocial: true,
+        siren: autreOrganismePm.siren,
+        siret: autreOrganismePm.siret,
+      },
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: autreUtilisateur.id,
+    });
+    await createHebergement({
+      hebergement: { statut: HebergementStatuts.ACTIF },
+      organismeId: siegeOrganismeId,
+      userId: authUser.id,
+    });
+    await createHebergement({
+      hebergement: { statut: HebergementStatuts.BROUILLON },
+      organismeId: siegeOrganismeId,
+      userId: authUser.id,
+    });
+
+    const response = await request(getFoAppHelper(authUser))
+      .get("/hebergement")
+      .query({
+        search: JSON.stringify({ organismeId: organismeIdHorsProfil }),
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.hebergements).toHaveLength(2);
+  });
+
+  it("retourne uniquement les hébergements du statut demandé lorsque search contient statut", async () => {
+    authUser = await createUsagersUser();
+    const autreUtilisateur = await createUsagersUser();
+    const siege = getRandomSiretAndSiren();
+    const autreOrganismePm = getRandomSiretAndSiren();
+    const siegeOrganismeId = await createOrganisme({
+      organisme: {
+        siegeSocial: true,
+        siren: siege.siren,
+        siret: siege.siret,
+      },
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: authUser.id,
+    });
+    const organismeIdHorsProfil = await createOrganisme({
+      organisme: {
+        siegeSocial: true,
+        siren: autreOrganismePm.siren,
+        siret: autreOrganismePm.siret,
+      },
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: autreUtilisateur.id,
+    });
+    await createHebergement({
+      hebergement: { statut: HebergementStatuts.ACTIF },
+      organismeId: siegeOrganismeId,
+      userId: authUser.id,
+    });
+    await createHebergement({
+      hebergement: { statut: HebergementStatuts.BROUILLON },
+      organismeId: siegeOrganismeId,
+      userId: authUser.id,
+    });
+
+    const response = await request(getFoAppHelper(authUser))
+      .get("/hebergement")
+      .query({
+        search: JSON.stringify({
+          organismeId: organismeIdHorsProfil,
+          statut: HebergementStatuts.ACTIF,
+        }),
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.hebergements).toHaveLength(1);
+    expect(response.body.hebergements[0].statut).toBe(HebergementStatuts.ACTIF);
   });
 });
 
 describe("GET /hebergement/siren/:siren", () => {
-  it("retourne 200 pour la recherche par siren", async () => {
+  it("retourne 200 avec une liste vide si aucun hébergement pour ce SIREN", async () => {
     authUser = await createUsagersUser();
-    const response = await request(app).get("/hebergement/siren/123456789");
+    const { siret, siren } = getRandomSiretAndSiren();
+    await createOrganisme({
+      organisme: { siren, siret },
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: authUser.id,
+    });
+    const response = await request(getFoAppHelper(authUser)).get(
+      `/hebergement/siren/${siren}`,
+    );
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(200);
+    expect(response.body.hebergement).toEqual([]);
+  });
+
+  it("retourne 200 avec les hébergements du SIREN", async () => {
+    authUser = await createUsagersUser();
+    const { siret, siren } = getRandomSiretAndSiren();
+    const organismeId = await createOrganisme({
+      organisme: { siren, siret },
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: authUser.id,
+    });
+    await createHebergement({
+      organismeId,
+      userId: authUser.id,
+    });
+    const response = await request(getFoAppHelper(authUser)).get(
+      `/hebergement/siren/${siren}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body.hebergement).toHaveLength(1);
+    expect(response.body.hebergement[0].statut).toBe(HebergementStatuts.ACTIF);
   });
 });
 
@@ -176,7 +303,7 @@ describe("POST /hebergement/brouillon", () => {
   it("retourne 200 avec un body valide", async () => {
     authUser = await createUsagersUser();
     await createOrganisme({ userId: authUser.id });
-    const response = await request(app)
+    const response = await request(getFoAppHelper(authUser))
       .post("/hebergement/brouillon")
       .send(buildHebergementFixture());
 
@@ -189,11 +316,11 @@ describe("PUT /hebergement/:id/brouillon", () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const hebergementId = await createHebergement({
-      hebergement: { statut: HebergementHelper.statuts.BROUILLON },
+      hebergement: { statut: HebergementStatuts.BROUILLON },
       organismeId,
       userId: authUser.id,
     });
-    const response = await request(app)
+    const response = await request(getFoAppHelper(authUser))
       .put(`/hebergement/${hebergementId}/brouillon`)
       .send(buildHebergementFixture());
 
@@ -206,11 +333,11 @@ describe("PUT /hebergement/:id/activate", () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const hebergementId = await createHebergement({
-      hebergement: { statut: HebergementHelper.statuts.BROUILLON },
+      hebergement: { statut: HebergementStatuts.BROUILLON },
       organismeId,
       userId: authUser.id,
     });
-    const response = await request(app)
+    const response = await request(getFoAppHelper(authUser))
       .put(`/hebergement/${hebergementId}/activate`)
       .send(buildHebergementFixture());
 
@@ -226,7 +353,7 @@ describe("PUT /hebergement/:id/desactivate)", () => {
       organismeId,
       userId: authUser.id,
     });
-    const response = await request(app).put(
+    const response = await request(getFoAppHelper(authUser)).put(
       `/hebergement/${hebergementId}/desactivate`,
     );
 
@@ -241,7 +368,7 @@ describe("PUT /hebergement/:id/desactivate)", () => {
       userId: owner.id,
     });
     authUser = await createUsagersUser();
-    const response = await request(app).put(
+    const response = await request(getFoAppHelper(authUser)).put(
       `/hebergement/${hebergementId}/desactivate`,
     );
 

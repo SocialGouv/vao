@@ -1,7 +1,7 @@
 const BoUser = require("../../services/BoUser");
 
 const AppError = require("../../utils/error").default;
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 
 const log = logger(module.filename);
 

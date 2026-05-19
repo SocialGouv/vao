@@ -1,7 +1,7 @@
 const express = require("express");
 const BOAuthenticationController = require("../controllers/bo-authentication");
 const BOcheckJWT = require("../middlewares/bo-check-JWT");
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 
 const router = express.Router();
 const log = logger(module.filename);

@@ -1,7 +1,7 @@
 const FoUser = require("../../services/FoUser");
 const Territoire = require("../../services/Territoire");
-const logger = require("../../utils/logger");
-const MailUtils = require("../../utils/mail");
+const { logger } = require("../../utils/logger");
+const { MailUtils } = require("../../utils/mail");
 const Send = require("../../services/mail").mailService.send;
 
 const { status: refStatus } = require("../../helpers/users");

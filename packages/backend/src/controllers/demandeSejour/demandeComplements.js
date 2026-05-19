@@ -2,9 +2,9 @@ const { number } = require("yup");
 
 const DemandeSejour = require("../../services/DemandeSejour");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
-const MailUtils = require("../../utils/mail");
+const { MailUtils } = require("../../utils/mail");
 const AppError = require("../../utils/error").default;
 const ValidationAppError = require("../../utils/validation-error").default;
 

@@ -1,4 +1,4 @@
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const { USER_COMPETENCE_BO } = require("@vao/shared-bridge");
 
 const log = logger(module.filename);

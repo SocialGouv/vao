@@ -13,7 +13,7 @@ import {
   FILE_CATEGORY,
   FileMetaDataDto,
 } from "@vao/shared-bridge";
-import { PoolClient } from "pg";
+import { Pool, PoolClient } from "pg";
 
 import AppError from "../utils/error";
 import {
@@ -21,8 +21,8 @@ import {
   getFileNameAndExtension,
   streamToBuffer,
 } from "../utils/file";
-import logger from "../utils/logger";
-import { getPool as getPoolDoc } from "../utils/pgpoolDoc";
+import { logger } from "../utils/logger";
+import { getPoolDoc } from "../utils/pgpoolDoc";
 
 const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME;
 const S3_BUCKET_ROOT_DIR = process.env.S3_BUCKET_ROOT_DIR;
@@ -65,14 +65,14 @@ const query = {
     mime_type: string,
     userId: string | number | null,
     file: Buffer,
-  ) => [
+  ): [string, any[]] => [
     `
       INSERT INTO doc.documents
         (category, filename, mime_type, user_id, file)
       VALUES ($1, $2, $3, $4, $5) RETURNING uuid`,
     [category, filename, mime_type, userId, file],
   ],
-  getByUuid: (uuid: string) => [
+  getByUuid: (uuid: string): [string, any[]] => [
     `
       SELECT uuid,
         category,
@@ -84,7 +84,7 @@ const query = {
       WHERE uuid = $1;`,
     [uuid],
   ],
-  getFileMetaData: (uuid: string) => [
+  getFileMetaData: (uuid: string): [string, any[]] => [
     `
     SELECT
       uuid,
@@ -179,7 +179,7 @@ export const getFileMetaData = async (
 
 export const deleteFile = async (
   uuid: string,
-  tx: PoolClient,
+  tx: PoolClient | Pool,
 ): Promise<void> => {
   log.i("IN deleteFile");
   try {

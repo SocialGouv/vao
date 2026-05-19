@@ -24,7 +24,7 @@ function trackFoUser({ action, userType, itself }) {
         newUser = await foUser.getByUserId(id);
       }
       if (foUserId) {
-        foUser.addAsyncUserHistoric({
+        await foUser.addAsyncUserHistoric({
           action,
           data: { newData: newUser, olData: oldUser },
           foUserId: id,

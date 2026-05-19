@@ -1,9 +1,9 @@
-import { NextFunction, Response } from "express";
+import { STATUS_USER_FRONT } from "@vao/shared-bridge";
 import request from "supertest";
 
-import app from "../../app";
-import checkJWT from "../../middlewares/checkJWT";
-import { User, UserRequest } from "../../types/request";
+import { roles } from "../../helpers/users";
+import { mailService } from "../../services/mail";
+import { AppHelperUser, getFoAppHelper } from "../helpers/appHelper";
 import { createDemandeSejour } from "../helpers/demandeSejourHelper";
 import { createHebergement } from "../helpers/hebergementHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
@@ -11,24 +11,35 @@ import {
   createTestContainer,
   removeTestContainer,
 } from "../helpers/testContainer";
-import { createUsagersUserValide } from "../helpers/userHelper";
+import {
+  createAdminUserValide,
+  createUsagersUserValide,
+} from "../helpers/userHelper";
 
-jest.mock("../../middlewares/checkJWT", () => jest.fn());
 jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
 }));
 
-const checkJWTMock = checkJWT as unknown as jest.Mock;
-
-let foUserID = 0;
+let foUser: AppHelperUser;
 let declarationId = 0;
 
 beforeAll(async () => {
   await createTestContainer();
-  const foUser = await createUsagersUserValide();
-  foUserID = foUser.id;
-  const organismeId = await createOrganisme({ userId: foUserID });
-  declarationId = await createDemandeSejour({ organismeId });
+  foUser = await createUsagersUserValide({
+    roles: [roles.DEMANDE_SEJOUR_LECTURE, roles.DEMANDE_SEJOUR_ECRITURE],
+    statusCode: STATUS_USER_FRONT.VALIDATED,
+    territoireCode: "FRA",
+  });
+  await createAdminUserValide({
+    email: `bo-message-fo-${Date.now()}@example.com`,
+    roles: [roles.DEMANDE_SEJOUR_ECRITURE],
+    ter_code: "75",
+  });
+  const organismeId = await createOrganisme({ userId: foUser.id });
+  declarationId = await createDemandeSejour({
+    departementSuivi: "75",
+    organismeId,
+  });
   await createHebergement({ declarationId, organismeId });
 });
 
@@ -38,28 +49,23 @@ afterAll(async () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  checkJWTMock.mockImplementation(
-    (req: UserRequest, _res: Response, next: NextFunction) => {
-      req.decoded = {
-        id: foUserID,
-        roles: ["DemandeSejour_Lecture", "DemandeSejour_Ecriture"],
-        territoireCode: "FRA",
-      } as unknown as User;
-      next();
-    },
-  );
 });
 
 describe("POST /message/:declarationId", () => {
   it("retourne 200", async () => {
-    const response = await request(app).post(`/message/${declarationId}`).send({
-      message: "Message FO valide",
-    });
+    const response = await request(getFoAppHelper(foUser))
+      .post(`/message/${declarationId}`)
+      .send({
+        message: "Message FO valide",
+      });
     expect(response.status).toBe(200);
+    expect(mailService.send).toHaveBeenCalledTimes(1);
+    const mailPayload = (mailService.send as jest.Mock).mock.calls[0][0];
+    expect(mailPayload.subject).toContain("nouveau message");
   });
 
   it("retourne 400 si le body est invalide", async () => {
-    const response = await request(app)
+    const response = await request(getFoAppHelper(foUser))
       .post(`/message/${declarationId}`)
       .send({});
     expect(response.status).toBe(400);
@@ -68,24 +74,30 @@ describe("POST /message/:declarationId", () => {
 
 describe("GET /message/read/:declarationId", () => {
   it("retourne 200", async () => {
-    const response = await request(app).get(`/message/read/${declarationId}`);
+    const response = await request(getFoAppHelper(foUser)).get(
+      `/message/read/${declarationId}`,
+    );
     expect(response.status).toBe(200);
   });
 
   it("retourne 400 si declarationId est invalide", async () => {
-    const response = await request(app).get("/message/read/abc");
+    const response = await request(getFoAppHelper(foUser)).get(
+      "/message/read/abc",
+    );
     expect(response.status).toBe(500); // FIXME: add input validation
   });
 });
 
 describe("GET /message/:declarationId", () => {
   it("retourne 200", async () => {
-    const response = await request(app).get(`/message/${declarationId}`);
+    const response = await request(getFoAppHelper(foUser)).get(
+      `/message/${declarationId}`,
+    );
     expect(response.status).toBe(200);
   });
 
   it("retourne 400 si declarationId est invalide", async () => {
-    const response = await request(app).get("/message/abc");
+    const response = await request(getFoAppHelper(foUser)).get("/message/abc");
     expect(response.status).toBe(500); // FIXME: add input validation
   });
 });

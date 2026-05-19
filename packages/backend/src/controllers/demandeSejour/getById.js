@@ -1,7 +1,7 @@
 const { number } = require("yup");
 const DemandeSejour = require("../../services/DemandeSejour");
 const AppError = require("../../utils/error").default;
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const ValidationAppError = require("../../utils/validation-error").default;
 
 const log = logger(module.filename);

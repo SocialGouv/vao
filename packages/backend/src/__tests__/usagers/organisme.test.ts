@@ -1,16 +1,17 @@
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
-import { NextFunction, Response } from "express";
+import { randomInt } from "crypto";
 import request from "supertest";
 
-import app from "../../app";
 import { partOrganisme } from "../../helpers/org-part";
-import checkJWT from "../../middlewares/checkJWT";
+import { mailService } from "../../services/mail";
 import { update as updateOrganismeService } from "../../services/Organisme";
-import { User, UserRequest } from "../../types/request";
+import { getPool } from "../../utils/pgpool";
 import { createAgrement } from "../helpers/agrementsHelper";
+import { getFoAppHelper } from "../helpers/appHelper";
 import {
   createOrganisme,
   generateRandomSiret,
+  getRandomSiretAndSiren,
 } from "../helpers/organismeHelper";
 import {
   createTestContainer,
@@ -18,9 +19,9 @@ import {
 } from "../helpers/testContainer";
 import { createUsagersUser } from "../helpers/userHelper";
 
-jest.mock("../../middlewares/checkJWT", () => jest.fn());
-
-const checkJWTMock = checkJWT as unknown as jest.Mock;
+jest.mock("../../services/mail", () => ({
+  mailService: { send: jest.fn() },
+}));
 
 let authUserId = 1;
 let organismeId = 1;
@@ -107,17 +108,14 @@ afterAll(async () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
-  checkJWTMock.mockImplementation(
-    (req: UserRequest, _res: Response, next: NextFunction) => {
-      req.decoded = { id: authUserId } as unknown as User;
-      next();
-    },
-  );
+  (mailService.send as jest.Mock).mockResolvedValue(undefined);
 });
 
 describe("GET /organisme", () => {
   it("retourne 200 et l'organisme lié à l'utilisateur", async () => {
-    const response = await request(app).get("/organisme");
+    const response = await request(getFoAppHelper({ id: authUserId })).get(
+      "/organisme",
+    );
 
     expect(response.status).toBe(200);
     expect(response.body.organisme.organismeId).toBe(organismeId);
@@ -125,14 +123,9 @@ describe("GET /organisme", () => {
 
   it("retourne 200 et organisme null si aucun organisme n'est lié", async () => {
     const orphanUser = await createUsagersUser();
-    checkJWTMock.mockImplementationOnce(
-      (req: UserRequest, _res: Response, next: NextFunction) => {
-        req.decoded = { id: orphanUser.id } as unknown as User;
-        next();
-      },
+    const response = await request(getFoAppHelper({ id: orphanUser.id })).get(
+      "/organisme",
     );
-
-    const response = await request(app).get("/organisme");
 
     expect(response.status).toBe(200);
     expect(response.body.organisme).toBeNull();
@@ -141,7 +134,9 @@ describe("GET /organisme", () => {
 
 describe("GET /organisme/:organismeId", () => {
   it("retourne 200 et l'organisme lorsque l'utilisateur est autorisé", async () => {
-    const response = await request(app).get(`/organisme/${organismeId}`);
+    const response = await request(getFoAppHelper({ id: authUserId })).get(
+      `/organisme/${organismeId}`,
+    );
 
     expect(response.status).toBe(200);
     expect(response.body.organisme.organismeId).toBe(organismeId);
@@ -149,20 +144,17 @@ describe("GET /organisme/:organismeId", () => {
 
   it("retourne 403 si l'utilisateur n'est pas lié à l'organisme", async () => {
     const otherUser = await createUsagersUser();
-    checkJWTMock.mockImplementationOnce(
-      (req: UserRequest, _res: Response, next: NextFunction) => {
-        req.decoded = { id: otherUser.id } as unknown as User;
-        next();
-      },
+    const response = await request(getFoAppHelper(otherUser)).get(
+      `/organisme/${organismeId}`,
     );
-
-    const response = await request(app).get(`/organisme/${organismeId}`);
 
     expect(response.status).toBe(403);
   });
 
   it("retourne 400 si organismeId n'est pas un entier", async () => {
-    const response = await request(app).get("/organisme/invalide");
+    const response = await request(getFoAppHelper({ id: authUserId })).get(
+      "/organisme/invalide",
+    );
 
     expect(response.status).toBe(400);
   });
@@ -170,7 +162,7 @@ describe("GET /organisme/:organismeId", () => {
 
 describe("GET /organisme/siret/:siret", () => {
   it("retourne 200 et l'organisme pour un SIRET présent en base", async () => {
-    const response = await request(app).get(
+    const response = await request(getFoAppHelper({ id: authUserId })).get(
       `/organisme/siret/${organismeFixtureSiret}`,
     );
 
@@ -179,7 +171,9 @@ describe("GET /organisme/siret/:siret", () => {
   });
 
   it("retourne 200 et organisme null pour un SIRET inconnu", async () => {
-    const response = await request(app).get("/organisme/siret/00000000000000");
+    const response = await request(getFoAppHelper({ id: authUserId })).get(
+      "/organisme/siret/00000000000000",
+    );
 
     expect(response.status).toBe(200);
     expect(response.body.organisme).toBeNull();
@@ -189,16 +183,9 @@ describe("GET /organisme/siret/:siret", () => {
 describe("POST /organisme", () => {
   it("retourne 200 et crée un organisme personne physique et lie l'utilisateur", async () => {
     const postUser = await createUsagersUser();
-    checkJWTMock.mockImplementationOnce(
-      (req: UserRequest, _res: Response, next: NextFunction) => {
-        req.decoded = { id: postUser.id } as unknown as User;
-        next();
-      },
-    );
-
     const siret = generateRandomSiret();
     const stamp = Date.now();
-    const response = await request(app)
+    const response = await request(getFoAppHelper({ id: postUser.id }))
       .post("/organisme")
       .send({
         parametre: {
@@ -237,34 +224,69 @@ describe("POST /organisme", () => {
   });
 
   it("retourne 400 si type ou parametre est absent", async () => {
-    const response = await request(app).post("/organisme").send({});
+    const response = await request(getFoAppHelper({ id: authUserId }))
+      .post("/organisme")
+      .send({});
 
     expect(response.status).toBe(400);
   });
 });
 
 describe("POST /organisme/:organismeId", () => {
-  it("retourne 200 quand la mise a jour est valide", async () => {
-    const response = await request(app)
-      .post(`/organisme/${organismeId}`)
+  it("retourne 200 lors de la mise a jour d'un organisme personne morale", async () => {
+    const personneMoraleUser = await createUsagersUser();
+    const organismePersonneMoraleId = await createOrganisme({
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: personneMoraleUser.id,
+    });
+    const response = await request(
+      getFoAppHelper({ id: personneMoraleUser.id }),
+    )
+      .post(`/organisme/${organismePersonneMoraleId}`)
       .send({
-        parametre: { siret: "38456094200045" },
-        type: "personne_morale",
+        parametre: { siret: generateRandomSiret() },
+        type: partOrganisme.PERSONNE_MORALE,
       });
 
     expect(response.status).toBe(200);
+    expect(response.body.message).toBe("sauvegarde organisme OK");
+  });
+
+  it("retourne 200 lors de la mise a jour des etablissements secondaires", async () => {
+    const personneMoraleUser = await createUsagersUser();
+    const organismePersonneMoraleId = await createOrganisme({
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: personneMoraleUser.id,
+    });
+    const response = await request(
+      getFoAppHelper({ id: personneMoraleUser.id }),
+    )
+      .post(`/organisme/${organismePersonneMoraleId}`)
+      .send({
+        parametre: {
+          etablissements: [
+            {
+              adresse: "1 rue du test",
+              codePostal: "75001",
+              commune: "Paris",
+              denomination: "Etablissement secondaire test",
+              enabled: true,
+              etatAdministratif: "A",
+              nic: "00001",
+              siret: generateRandomSiret(),
+            },
+          ],
+        },
+        type: partOrganisme.ETABLISSEMENTS_SECONDAIRES,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("sauvegarde organisme OK");
   });
 
   it("retourne 403 si l'utilisateur ne peut pas modifier l'organisme", async () => {
     const otherUser = await createUsagersUser();
-    checkJWTMock.mockImplementationOnce(
-      (req: UserRequest, _res: Response, next: NextFunction) => {
-        req.decoded = { id: otherUser.id } as unknown as User;
-        next();
-      },
-    );
-
-    const response = await request(app)
+    const response = await request(getFoAppHelper(otherUser))
       .post(`/organisme/${organismeId}`)
       .send({
         parametre: { siret: "38456094200045" },
@@ -288,15 +310,17 @@ describe("POST /organisme/:organismeId", () => {
       },
       userId: postUser.id,
     });
-    checkJWTMock.mockImplementationOnce(
-      (req: UserRequest, _res: Response, next: NextFunction) => {
-        req.decoded = { id: postUser.id } as unknown as User;
-        next();
+    await createAgrement({
+      agrement: {
+        dateObtention: new Date("2025-01-01"),
+        file: { uuid: "fixture-agrement-siret-change" },
+        regionObtention: "IDF",
+        statut: AGREMENT_STATUT.VALIDE,
       },
-    );
-
+      organismeId: orgPourChangementSiret,
+    });
     const stamp = Date.now();
-    const response = await request(app)
+    const response = await request(getFoAppHelper({ id: postUser.id }))
       .post(`/organisme/${orgPourChangementSiret}`)
       .send({
         parametre: {
@@ -330,6 +354,96 @@ describe("POST /organisme/:organismeId", () => {
       });
 
     expect(response.status).toBe(200);
+    expect(mailService.send).toHaveBeenCalledTimes(1);
+    const mailPayload = (mailService.send as jest.Mock).mock.calls[0][0];
+    expect(mailPayload.subject).toContain("Changement de SIRET");
+  });
+
+  it("retourne 200 et notifie le siège lors du changement de SIRET d'un établissement secondaire", async () => {
+    const { siren, siret: siretSiege } = getRandomSiretAndSiren();
+    const siretSecondaire = `${siren}${String(randomInt(10000, 99999))}`;
+    const siretNouveau = `${siren}${String(randomInt(10000, 99999))}`;
+    const userSiege = await createUsagersUser();
+    const userSecondaire = await createUsagersUser();
+    await getPool().query(
+      `UPDATE front.users SET status_code = 'VALIDATED' WHERE id = ANY($1::int[])`,
+      [[userSiege.id, userSecondaire.id]],
+    );
+
+    const orgSiegeId = await createOrganisme({
+      organisme: {
+        email: `siege-${Date.now()}@example.com`,
+        porteurAgrement: true,
+        raisonSociale: "Org Siege Test",
+        siegeSocial: true,
+        siren,
+        siret: siretSiege,
+      },
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: userSiege.id,
+    });
+    await createAgrement({
+      agrement: {
+        dateObtention: new Date("2025-01-01"),
+        file: { uuid: "fixture-agrement-siege" },
+        regionObtention: "IDF",
+        statut: AGREMENT_STATUT.VALIDE,
+      },
+      organismeId: orgSiegeId,
+    });
+
+    const orgSecondaireId = await createOrganisme({
+      organisme: {
+        email: `etab-${Date.now()}@example.com`,
+        porteurAgrement: false,
+        raisonSociale: "Org Secondaire Test",
+        siegeSocial: false,
+        siren,
+        siret: siretSecondaire,
+      },
+      typeOrganisme: partOrganisme.PERSONNE_MORALE,
+      userId: userSecondaire.id,
+    });
+    const response = await request(getFoAppHelper({ id: userSecondaire.id }))
+      .post(`/organisme/${orgSecondaireId}`)
+      .send({
+        parametre: {
+          adresseDomicile: {
+            cleInsee: "12345",
+            codeInsee: "12345",
+            codePostal: "75001",
+            departement: "75",
+            label: "10 rue Secondaire",
+            lat: 48.8566,
+            long: 2.3522,
+          },
+          adresseIdentique: true,
+          adresseSiege: {
+            cleInsee: "12345",
+            codeInsee: "12345",
+            codePostal: "75001",
+            departement: "75",
+            label: "10 rue Secondaire",
+            lat: 48.8566,
+            long: 2.3522,
+          },
+          email: `etab-updated-${Date.now()}@example.com`,
+          porteurAgrement: false,
+          raisonSociale: "Org Secondaire Test",
+          siegeSocial: false,
+          siret: siretNouveau,
+          telephone: "0102030405",
+        },
+        type: partOrganisme.PERSONNE_MORALE,
+      });
+
+    expect(response.status).toBe(200);
+    const secondaryMail = (mailService.send as jest.Mock).mock.calls.find(
+      ([payload]: [{ subject: string }]) =>
+        payload.subject.includes("établissement secondaire"),
+    );
+    expect(secondaryMail).toBeDefined();
+    expect(secondaryMail?.[0].to).toContain(userSiege.email);
   });
 });
 
@@ -357,16 +471,10 @@ describe("POST /organisme/:organismeId/finalize", () => {
       },
       organismeId: finalizeOrganismeId,
     });
-    checkJWTMock.mockImplementation(
-      (req: UserRequest, _res: Response, next: NextFunction) => {
-        req.decoded = { id: finalizeUserId } as unknown as User;
-        next();
-      },
-    );
   });
 
   it("retourne 400 si l'organisme n'est pas dans le bon état pour la finalisation", async () => {
-    const response = await request(app).post(
+    const response = await request(getFoAppHelper({ id: finalizeUserId })).post(
       `/organisme/${finalizeOrganismeId}/finalize`,
     );
 
@@ -380,7 +488,7 @@ describe("POST /organisme/:organismeId/finalize", () => {
       userId: finalizeUserId,
     });
 
-    const response = await request(app).post(
+    const response = await request(getFoAppHelper({ id: finalizeUserId })).post(
       `/organisme/${finalizeOrganismeId}/finalize`,
     );
 
@@ -390,14 +498,7 @@ describe("POST /organisme/:organismeId/finalize", () => {
 
   it("retourne 403 si l'utilisateur ne peut pas finaliser l'organisme", async () => {
     const otherUser = await createUsagersUser();
-    checkJWTMock.mockImplementationOnce(
-      (req: UserRequest, _res: Response, next: NextFunction) => {
-        req.decoded = { id: otherUser.id } as unknown as User;
-        next();
-      },
-    );
-
-    const response = await request(app).post(
+    const response = await request(getFoAppHelper(otherUser)).post(
       `/organisme/${finalizeOrganismeId}/finalize`,
     );
 

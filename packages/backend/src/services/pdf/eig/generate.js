@@ -1,4 +1,4 @@
-const logger = require("../../../utils/logger");
+const { logger } = require("../../../utils/logger");
 const build = require("./build");
 const AppError = require("../../../utils/error").default;
 

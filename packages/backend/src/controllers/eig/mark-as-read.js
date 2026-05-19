@@ -3,7 +3,7 @@ const eigService = require("../../services/eig");
 const Departement = require("../../services/geo/Departement");
 const Region = require("../../services/geo/Region");
 
-const logger = require("../../utils/logger");
+const { logger } = require("../../utils/logger");
 const {
   statuts,
   isUserDreetsWhoDeliveredAgrement,
@@ -11,7 +11,7 @@ const {
   mustMarkAsRead,
 } = require("../../helpers/eig");
 const DemandeSejour = require("../../services/DemandeSejour");
-const MailUtils = require("../../utils/mail");
+const { MailUtils } = require("../../utils/mail");
 const Send = require("../../services/mail").mailService.send;
 
 const log = logger(module.filename);

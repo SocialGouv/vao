@@ -21,7 +21,8 @@ const s3Client = new S3Client({
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = (knex) => {
+exports.up = async (knex) => {
+  return true;
   // console.log("Migrating files to S3");
   // console.log("S3_BUCKET_NAME", S3_BUCKET_NAME);
   // console.log("S3_BUCKET_ROOT_DIR", S3_BUCKET_ROOT_DIR);

@@ -3,9 +3,9 @@ const axios = require("axios");
 
 const { createReadStream } = require("node:fs");
 
-const config = require("../config");
+const { config } = require("../config");
 const AppError = require("../utils/error").default;
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 
 const log = logger(module.filename);
 

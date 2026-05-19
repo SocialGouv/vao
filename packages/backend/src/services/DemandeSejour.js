@@ -3,9 +3,9 @@ const {
 } = require("../repositories/usagers/DemandeSejour");
 
 const Sentry = require("@sentry/node");
-const { sentry } = require("../config");
+const { config } = require("../config");
 const dayjs = require("dayjs");
-const logger = require("../utils/logger");
+const { logger } = require("../utils/logger");
 const { getPool } = require("../utils/pgpool");
 const { DEMANDE_SEJOUR_STATUTS } = require("@vao/shared-bridge");
 const PersonneMorale = require("./organisme/PersonneMorale");
@@ -1995,7 +1995,7 @@ module.exports.addAsyncDeclarationSejourHistoric = async ({
     });
   } catch (error) {
     log.w("addAsyncHistoric - DONE with error", error);
-    if (sentry.enabled) {
+    if (config.sentry.enabled) {
       Sentry.captureException(error);
     }
   }

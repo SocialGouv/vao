@@ -1,7 +1,7 @@
 import { ERRORS_LOGIN, FeatureFlagName } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
 
-import config from "../../../config";
+import { config } from "../../../config";
 import { schema } from "../../../helpers/schema";
 import { status } from "../../../helpers/users";
 import Session from "../../../services/common/Session";
@@ -10,7 +10,7 @@ import { FeatureFlagService } from "../../../services/featureFlagService";
 import User from "../../../services/User";
 import { UserRequest } from "../../../types/request";
 import AppError from "../../../utils/error";
-import logger from "../../../utils/logger";
+import { logger } from "../../../utils/logger";
 import { signAccessToken, signRefreshToken } from "../../../utils/token";
 
 const log = logger(module.filename);
@@ -70,7 +70,7 @@ export default async function login(
       );
     }
 
-    log.d({ user });
+    log.d("user", { user });
     if (
       user.statusCode === status.NEED_EMAIL_VALIDATION ||
       user.statusCode === status.NEED_SIRET_VALIDATION
@@ -108,6 +108,7 @@ export default async function login(
     const accessToken = signAccessToken(user);
     const refreshToken = signRefreshToken(user);
 
+    await Session.clean({ id: user.id }, schema.FRONT);
     await Session.create(user.id, refreshToken, schema.FRONT);
 
     res.cookie("VAO_access_token", accessToken, {

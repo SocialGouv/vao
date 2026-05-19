@@ -4,12 +4,12 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../../../services/User");
 
-const config = require("../../../config");
+const { config } = require("../../../config");
 const passwordSchema = require("../../../schemas/parts/password");
 
 const AppError = require("../../../utils/error").default;
 const ValidationAppError = require("../../../utils/validation-error").default;
-const logger = require("../../../utils/logger");
+const { logger } = require("../../../utils/logger");
 const { canBeActivated } = require("../../../utils/canBeActivated");
 
 const log = logger(module.filename);

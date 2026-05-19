@@ -7,7 +7,7 @@ import { S3MockContainer } from "@testcontainers/s3mock";
 import { knex } from "knex";
 
 import { disconnect } from "../../utils/pgpool";
-import { disconnect as disconnectDoc } from "../../utils/pgpoolDoc";
+import { disconnectDoc } from "../../utils/pgpoolDoc";
 
 // cf lancement.sh
 const SQL_FILES = [
@@ -157,9 +157,16 @@ export async function createPgTestContainer({
   global.postgresContainer = container;
 }
 
+function waitForTrackingMiddlewareHandlers(): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, 150);
+  });
+}
+
 export async function removeTestContainer() {
-  disconnectDoc();
-  disconnect();
+  await waitForTrackingMiddlewareHandlers();
+  await disconnectDoc();
+  await disconnect();
   if (global.postgresContainer) {
     await global.postgresContainer.stop();
     global.postgresContainer = undefined;

@@ -5,7 +5,7 @@ const router = express.Router();
 
 const BOcheckJWT = require("../middlewares/bo-check-JWT");
 const checkJWT = require("../middlewares/checkJWT");
-const checkJWTWithoutCGU = require("../middlewares/checkJWTWithoutCGU");
+const checkJWTWithoutCGU = require("../middlewares/checkJWTWithoutCGU").default;
 const FOUserController = require("../controllers/fo-user");
 const checkPermissionFoRole = require("../middlewares/checkPermissionFoRole");
 const checkPermissionBOForUpdateStatusFo = require("../middlewares/checkPermissionBOForUpdateStatusFo");

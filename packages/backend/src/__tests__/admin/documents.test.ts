@@ -1,23 +1,14 @@
-import { NextFunction, Response } from "express";
 import request from "supertest";
 
-import app from "../../app";
 import * as DocumentService from "../../services/Document";
-import { User, UserRequest } from "../../types/request";
-import { getPool as getPoolDoc } from "../../utils/pgpoolDoc";
+import { getPoolDoc } from "../../utils/pgpoolDoc";
+import { getBoAppHelper } from "../helpers/appHelper";
 import { createMinimalPdf } from "../helpers/fileHelper";
 import {
   createTestContainer,
   removeTestContainer,
 } from "../helpers/testContainer";
 import { createUsagersUser } from "../helpers/userHelper";
-
-jest.mock("../../middlewares/bo-check-JWT", () =>
-  jest.fn((req: UserRequest, _res: Response, next: NextFunction) => {
-    req.decoded = { id: 1, role: "admin" } as unknown as User;
-    next();
-  }),
-);
 
 beforeAll(async () => {
   await createTestContainer({ pg: true, s3: true });
@@ -33,7 +24,7 @@ beforeEach(() => {
 
 describe("GET /documents/admin/:uuid", () => {
   it("devrait retourner 404 si les métadonnées du fichier sont introuvables", async () => {
-    const response = await request(app).get(
+    const response = await request(getBoAppHelper({ id: 1 })).get(
       "/documents/admin/550e8400-e29b-41d4-a716-446655440000",
     );
 
@@ -55,7 +46,9 @@ describe("GET /documents/admin/:uuid", () => {
       ],
     );
     const uuid = rows.rows[0].uuid;
-    const response = await request(app).get(`/documents/admin/${uuid}`);
+    const response = await request(getBoAppHelper()).get(
+      `/documents/admin/${uuid}`,
+    );
 
     expect(response.status).toBe(404);
   });
@@ -70,7 +63,9 @@ describe("GET /documents/admin/:uuid", () => {
       ["declaration", "document.pdf", "application/pdf", user.id, fileContent],
     );
     const uuid = rows.rows[0].uuid;
-    const response = await request(app).get(`/documents/admin/${uuid}`);
+    const response = await request(getBoAppHelper()).get(
+      `/documents/admin/${uuid}`,
+    );
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual(fileContent);
@@ -86,7 +81,9 @@ describe("GET /documents/admin/:uuid", () => {
       fileContent,
       user.id,
     );
-    const response = await request(app).get(`/documents/admin/${uuid}`);
+    const response = await request(getBoAppHelper()).get(
+      `/documents/admin/${uuid}`,
+    );
 
     expect(response.status).toBe(200);
     expect(response.headers["content-disposition"]).toBe(

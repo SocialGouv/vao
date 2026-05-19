@@ -1,11 +1,9 @@
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
-import type { NextFunction, Response } from "express";
 import request from "supertest";
 
-import app from "../../app";
-import { User, UserRequest } from "../../types/request";
 import { buildAgrementFixture } from "../fixtures/agrementsFixture";
 import { createAgrement } from "../helpers/agrementsHelper";
+import { getFoAppHelper } from "../helpers/appHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
 import { createTerritoire } from "../helpers/territoireHelper";
 import {
@@ -13,15 +11,6 @@ import {
   removeTestContainer,
 } from "../helpers/testContainer";
 import { createUsagersUser } from "../helpers/userHelper";
-
-let authUser = { id: 1, role: "admin" };
-
-jest.mock("../../middlewares/common/checkJWT", () => {
-  return async (req: UserRequest, res: Response, next: NextFunction) => {
-    req.decoded = authUser as unknown as User;
-    next();
-  };
-});
 
 beforeAll(async () => {
   await createTestContainer();
@@ -33,8 +22,8 @@ afterAll(async () => {
 
 describe("GET /territoire/get-by-agrement-region-user", () => {
   it("devrait retourner un territoire pour l'utilisateur l'agrément avec succès", async () => {
-    authUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: authUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
       statut: AGREMENT_STATUT.VALIDE,
@@ -46,7 +35,7 @@ describe("GET /territoire/get-by-agrement-region-user", () => {
     const territoireId = await createTerritoire({
       territoireCode: "IDF",
     });
-    const response = await request(app).get(
+    const response = await request(getFoAppHelper(frontUser)).get(
       `/territoire/get-by-agrement-region-user`,
     );
     expect(response.status).toBe(200);
@@ -54,9 +43,9 @@ describe("GET /territoire/get-by-agrement-region-user", () => {
   });
 
   it("devrait retourner 404 si aucun organisme n'est lié à l'utilisateur", async () => {
-    authUser = await createUsagersUser();
+    const frontUser = await createUsagersUser();
 
-    const response = await request(app).get(
+    const response = await request(getFoAppHelper(frontUser)).get(
       `/territoire/get-by-agrement-region-user`,
     );
 
@@ -64,8 +53,8 @@ describe("GET /territoire/get-by-agrement-region-user", () => {
   });
 
   it("devrait retourner 422 si la région d'obtention de l'agrément est manquante", async () => {
-    authUser = await createUsagersUser();
-    const organismeId = await createOrganisme({ userId: authUser.id });
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
       statut: AGREMENT_STATUT.VALIDE,
@@ -78,7 +67,7 @@ describe("GET /territoire/get-by-agrement-region-user", () => {
       organismeId,
     });
 
-    const response = await request(app).get(
+    const response = await request(getFoAppHelper(frontUser)).get(
       `/territoire/get-by-agrement-region-user`,
     );
 

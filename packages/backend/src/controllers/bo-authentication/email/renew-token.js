@@ -3,11 +3,11 @@ const jwt = require("jsonwebtoken");
 const User = require("../../../services/BoUser");
 const Send = require("../../../services/mail").mailService.send;
 
-const config = require("../../../config");
+const { config } = require("../../../config");
 
-const MailUtils = require("../../../utils/mail");
+const { MailUtils } = require("../../../utils/mail");
 const AppError = require("../../../utils/error").default;
-const logger = require("../../../utils/logger");
+const { logger } = require("../../../utils/logger");
 const { buildEmailToken } = require("../../../utils/bo-token");
 
 const log = logger(module.filename);

@@ -1,5 +1,5 @@
 //import * as DocumentService from "../../../services/Document";
-import { getPool as getPoolDoc } from "../../utils/pgpoolDoc";
+import { getPoolDoc } from "../../utils/pgpoolDoc";
 import { createMinimalPdf } from "./fileHelper";
 
 export const createDocument = async ({
