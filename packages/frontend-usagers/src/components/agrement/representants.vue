@@ -174,11 +174,13 @@ const props = defineProps<{
 const representantSchema = yup.object({
   statut: yup.string(),
   prenom: requiredUnlessBrouillon(
-    yup.string().required("Le prénom est requis"),
+    yup.string().required("Le prénom est requis. Exemple: Pierre"),
   ),
-  nom: requiredUnlessBrouillon(yup.string().required("Le nom est requis")),
+  nom: requiredUnlessBrouillon(
+    yup.string().required("Le nom est requis. Exemple: Dupont"),
+  ),
   fonction: requiredUnlessBrouillon(
-    yup.string().required("La fonction est requise"),
+    yup.string().required("La fonction est requise. Exemple: Président"),
   ),
 });
 
