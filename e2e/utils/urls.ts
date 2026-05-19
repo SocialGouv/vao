@@ -17,6 +17,5 @@ export function getUrls() {
       maildevUrl: `https://maildev-${baseUrl}`,
     };
   }
-  console.log("e2e urls", urls);
   return urls;
 }
