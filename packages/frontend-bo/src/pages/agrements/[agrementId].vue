@@ -268,4 +268,12 @@ dt {
   overflow-y: auto;
   padding-bottom: 4rem;
 }
+/* fix un problème de hauteur au niveau des tabs > le dsfr injecte une classe --tabs-height pour calculer la hauteur du tab, mais cette valeur n'est pas correcte. On force donc la hauteur du tab à auto pour que la hauteur corresponde à son contenu */
+.fr-tabs {
+  height: auto !important;
+}
+
+.fr-tabs__panel {
+  height: auto !important;
+}
 </style>
