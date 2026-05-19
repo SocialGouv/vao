@@ -8,7 +8,8 @@ import { withTransaction } from "../utils/pgpool";
 
 const log = logger(module.filename);
 
-// const E2E_BO_USER_EMAIL = "tnra.agent.idf@example.com";
+const E2E_BO_USER_EMAIL = "tnra.agent.idf@example.com";
+const E2E_BO_USER_DEPT_EMAIL = "tnra.agent.75-paris@example.com";
 
 export const E2E_SIRET = "43286010400301";
 
@@ -29,50 +30,81 @@ export async function resetE2e(
   try {
     await withTransaction(async (tx: PoolClient) => {
       // check if tnra.agent.idf@example.com back.user exists
-      // const { rows: userRows } = await tx.query(
-      //   `
-      //     SELECT COUNT(*) AS count FROM back.users WHERE mail = $1
-      //   `,
-      //   [E2E_BO_USER_EMAIL],
-      // );
-      const insertedUserCount = 0;
-      // if (Number(userRows[0].count) === 0) {
-      //   // and create user with role in one query
-      //   await tx.query(
-      //     `
-      //     WITH new_user AS (
-      //       INSERT INTO back.users (
-      //         validated,
-      //         mail,
-      //         prenom,
-      //         nom,
-      //         pwd,
-      //         ter_code,
-      //         enddate
-      //       )
-      //       VALUES (
-      //         true,
-      //         $1,
-      //         'IDF',
-      //         'TNRA',
-      //         crypt('Azertyuiop1!', gen_salt('bf')),
-      //         'IDF',
-      //         now()
-      //       )
-      //       RETURNING id
-      //     )
-      //     INSERT INTO back.user_roles (use_id, rol_id)
-      //     SELECT id, rol_id
-      //     FROM new_user
-      //     CROSS JOIN (VALUES (1), (4), (5), (6), (7)) AS roles(rol_id);
-      //   `,
-      //     [E2E_BO_USER_EMAIL],
-      //   );
-      //   insertedUserCount++;
-      //   console.log("insertedUserCount", insertedUserCount);
-      // } else {
-      //   console.log("user already exists");
-      // }
+      const { rows: userRows } = await tx.query(
+        `
+          SELECT COUNT(*) AS count FROM back.users WHERE mail = $1
+        `,
+        [E2E_BO_USER_EMAIL],
+      );
+      let insertedUserCount = 0;
+      if (Number(userRows[0].count) === 0) {
+        // and create user with role in one query
+        await tx.query(
+          `
+          WITH new_user AS (
+            INSERT INTO back.users (
+              validated,
+              mail,
+              prenom,
+              nom,
+              pwd,
+              ter_code,
+              enddate
+            )
+            VALUES (
+              true,
+              $1,
+              'IDF',
+              'TNRA',
+              crypt('Azertyuiop1!', gen_salt('bf')),
+              'IDF',
+              now()
+            )
+            RETURNING id
+          )
+          INSERT INTO back.user_roles (use_id, rol_id)
+          SELECT id, rol_id
+          FROM new_user
+          CROSS JOIN (VALUES (1), (4), (5), (6), (7)) AS roles(rol_id);
+        `,
+          [E2E_BO_USER_EMAIL],
+        );
+        insertedUserCount++;
+        await tx.query(
+          `
+          WITH new_user AS (
+            INSERT INTO back.users (
+              validated,
+              mail,
+              prenom,
+              nom,
+              pwd,
+              ter_code,
+              enddate
+            )
+            VALUES (
+              true,
+              $1,
+              'IDF',
+              'TNRA',
+              crypt('Azertyuiop1!', gen_salt('bf')),
+              'IDF',
+              now()
+            )
+            RETURNING id
+          )
+          INSERT INTO back.user_roles (use_id, rol_id)
+          SELECT id, rol_id
+          FROM new_user
+          CROSS JOIN (VALUES (1), (2), (3), (4), (5)) AS roles(rol_id);
+        `,
+          [E2E_BO_USER_DEPT_EMAIL],
+        );
+        insertedUserCount++;
+        log.i("insertedUserCount", insertedUserCount);
+      } else {
+        log.i("user already exists");
+      }
 
       log.i("reset - Update fiche_territoire");
       await tx.query(
@@ -81,7 +113,7 @@ export async function resetE2e(
         SET service_mail = $1
         WHERE service_mail IS NULL
       `,
-        ["tnra@example.com"],
+        [E2E_BO_USER_EMAIL],
       );
 
       log.i("reset - Update users (cgu_accepted)");
@@ -93,6 +125,18 @@ export async function resetE2e(
       `,
         ["tnra%@example.com"],
       );
+
+      await tx.query(`
+        DELETE FROM back.login_attempts
+        WHERE mail LIKE 'tnra%@example.com'
+      `);
+      await tx.query(`
+        DELETE FROM front.login_attempts
+        WHERE mail LIKE '%e2e-%@test.com'
+          OR mail LIKE '%e2e-%@example.com'
+          OR mail LIKE 'tnra-%@example.com'
+          OR mail LIKE 'tnra.%@example.com'
+      `);
 
       const { rows: testsUsers } = await tx.query(`
         SELECT id
@@ -117,6 +161,15 @@ export async function resetE2e(
           insertedUserCount,
         });
       }
+
+      log.i("reset - Clear e2e sessions");
+      await tx.query(
+        `
+          DELETE FROM front.sessions
+          WHERE cle::integer = ANY($1::int[])
+        `,
+        [testsUserIds],
+      );
 
       const { rows: organismes } = await tx.query(
         `

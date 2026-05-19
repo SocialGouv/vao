@@ -20,6 +20,7 @@ const SQL_FILES = [
   "/scripts/03/03-1-geo-data.sql",
   "/scripts/03/03-2-back-data.sql",
   "/scripts/03/03-3-ref-data.sql",
+  "/seeds/PG-1-proc-data-deletion.sql",
 ];
 
 async function runSqlFile(container: StartedPostgreSqlContainer, file: string) {
@@ -119,11 +120,7 @@ export async function createPgTestContainer({
   withSeeds = false,
 }: { withSeeds?: boolean } = {}) {
   const sqlFiles = withSeeds
-    ? [
-        ...SQL_FILES,
-        "/seeds/BO-1-back-user.sql",
-        "/seeds/PG-1-proc-data-deletion.sql",
-      ]
+    ? [...SQL_FILES, "/seeds/BO-1-back-user.sql"]
     : SQL_FILES;
   if (global.postgresContainer) {
     console.warn("Postgres container already started");

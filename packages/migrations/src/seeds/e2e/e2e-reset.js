@@ -18,7 +18,7 @@ exports.seed = async function (knex) {
 
   console.log("- Update fiche_territoire");
   await knex("back.fiche_territoire")
-    .update({ service_mail: "tnra@example.com" })
+    .update({ service_mail: "tnra.agent.idf@example.com" })
     .where("service_mail", null);
 
   console.log("- Update users (cgu_accepted)");
@@ -31,7 +31,8 @@ exports.seed = async function (knex) {
     .select("id")
     .where("mail", "like", "%e2e-%@test.com")
     .orWhere("mail", "like", "%e2e-%@example.com")
-    .orWhere("mail", "like", "tnra-%@example.com");
+    .orWhere("mail", "like", "tnra-%@example.com")
+    .orWhere("mail", "like", "tnra.%@example.com");
 
   console.log(`- ${testsUsers.length} Tests users founds`, testsUsers);
   const testsUserIds = testsUsers.map((u) => u.id);

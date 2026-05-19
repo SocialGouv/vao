@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
 dayjs.extend(customParseFormat);
@@ -56,6 +56,11 @@ export function formatFRDateTime(date: Date) {
 
 export function formatFRTime(date: Date) {
   return dayjs(date).format("HH:mm");
+}
+
+export function formatISOShort(date?: Date | Dayjs | string | null) {
+  if (!date) return undefined;
+  return dayjs(date).format("YYYY-MM-DD");
 }
 
 export function getYear4k(date: Date) {

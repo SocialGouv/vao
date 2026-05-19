@@ -33,7 +33,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { DsfrFileUpload } from "@gouvminint/vue-dsfr";
 import { computed } from "vue";
 import dayjs from "dayjs";
@@ -63,7 +63,7 @@ const rows = computed(() => {
           component: "a",
           innerHTML:
             '<span class="fr-icon-file-download-fill" aria-hidden="true"></span>',
-          href: `${props.cdnUrl}${props.cdnUrl.endsWith("/") ? "" : "/"}${file.value.uuid}`,
+          href: `${props.cdnUrl}${props.cdnUrl?.endsWith("/") ? "" : "/"}${file.value.uuid}`,
           download: true,
           "aria-label": `Télécharger le fichier ${file.value.name}`,
           title: `Télécharger le fichier ${file.value.name}`,
@@ -74,7 +74,7 @@ const rows = computed(() => {
   } else return [];
 });
 
-function changeFile(fileList) {
+function changeFile(fileList: FileList) {
   file.value = fileList.length > 0 ? fileList[0] : null;
 }
 </script>

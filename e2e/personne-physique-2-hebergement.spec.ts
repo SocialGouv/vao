@@ -4,30 +4,28 @@ import {
   alertLocator,
   getBasicFile,
   loginUsagers,
+  logSuiteName,
+  logTestName,
+  logTestResult,
 } from "./utils/helper";
 import { getOvaUser } from "./utils/users";
 import { getUrls } from "./utils/urls";
 
 const { appUsagersUrl } = getUrls();
+const userOva = getOvaUser();
 
 const testName = "Création hébergement compte OVA - Personne physique";
 test.describe.serial(testName, () => {
-  let username: string;
-  let password: string;
-
-  test.beforeAll(() => {
-    const ctx = getOvaUser();
-    username = ctx.username;
-    password = ctx.password;
+  test.afterEach(async ({ page }, testInfo) => {
+    await logTestResult(page, testInfo);
   });
-
-  test("Étape 1 - Soumission du formulaire de création d'hébergement", async ({
+  test("Étape 1 - Soumission du formulaire de création d'hébergement (OVA)", async ({
     page,
   }, testInfo) => {
-    console.log(`===== ${testName} =====`);
-    console.log(`-> ${testInfo.title}`);
+    await logSuiteName(testName, testInfo, false);
+    logTestName(testInfo);
     await page.goto(`${appUsagersUrl}`);
-    await loginUsagers(page, username, password);
+    await loginUsagers(page, userOva.username, userOva.password);
 
     await page.getByRole("link", { name: "Mes hébergements" }).click();
     await page
