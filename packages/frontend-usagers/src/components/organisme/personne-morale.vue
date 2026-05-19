@@ -261,7 +261,7 @@
         </div>
       </DsfrFieldset>
       <div class="fr-fieldset__element">
-        <div class="fr-input-group fr-col-12">
+        <div v-if="props.modifiable" class="fr-input-group fr-col-12">
           <Personnes
             :key="keyRepresentantLegaux"
             :personnes="representantsLegaux"
@@ -274,13 +274,27 @@
             :show-fonction="true"
             :show-liste-fonction="false"
             :show-telephone="false"
-            titre="Représentant légaux"
             :headers="headers"
             :current-page="currentPersonnesPage"
+            title="Représentants légaux"
             label-bouton-ajouter="Ajouter un représentant légal"
             @valid="onRepresentantsLegauxChangeWithKeyChange"
           >
           </Personnes>
+        </div>
+        <div v-else class="fr-input-group fr-col-12">
+          <DsfrTable
+            :key="'table-' + representantsLegaux.length"
+            :headers="['Nom', 'Prénom', 'Fonction']"
+            title="Représentants légaux"
+            :rows="representantsLegauxRO"
+          />
+          <p
+            v-if="representantsLegauxErrorMessage"
+            class="fr-error-text fr-mt-1v"
+          >
+            {{ representantsLegauxErrorMessage }}
+          </p>
         </div>
       </div>
       <DsfrFieldset
@@ -335,7 +349,12 @@
 <script setup lang="ts">
 import { useField, useForm } from "vee-validate";
 import * as yup from "yup";
-import { IsDownloading, ApiUnavailable, apiModel, useToaster } from "@vao/shared-ui";
+import {
+  IsDownloading,
+  ApiUnavailable,
+  apiModel,
+  useToaster,
+} from "@vao/shared-ui";
 import type { PersonneMoraleDto } from "@vao/shared-bridge";
 import { SiretService } from "../../services/siretService";
 
@@ -386,6 +405,10 @@ const headers = [
 const randomId = ref(random.getRandomId());
 const keyRepresentantLegaux = ref(1);
 const currentPersonnesPage = ref(1);
+
+const representantsLegauxRO = computed(() =>
+  representantsLegaux.value.map((r) => [r.nom, r.prenom, r.fonction]),
+);
 
 const validationSchema = computed(() =>
   yup.object(organisme.personneMoraleSchema),
@@ -470,6 +493,14 @@ const { value: etablissementPrincipal } = useField<Record<string, any>>(
 );
 const { value: responsableSejour, handleChange: onResponsableSejourChange } =
   useField<Record<string, any>>("responsableSejour");
+
+const representantsLegauxErrorMessage = computed(() => {
+  if (representantsLegaux.value?.length === 0) {
+    return "Au moins un représentant légal est requis";
+  }
+
+  return "";
+});
 
 const formatedSiret = computed(() => {
   if (!siret.value) {
@@ -679,7 +710,7 @@ async function searchOrganisme() {
         titleTag: "h2",
         description:
           "Un établissement principal est nécessairement titulaire d'un agrément",
-          role: "alert",
+        role: "alert",
       });
       setValues({
         siren: null,
@@ -732,10 +763,14 @@ const onRepresentantsLegauxChangeWithKeyChange = (
   onRepresentantsLegauxChange(event);
 
   if (action === "edit") {
-    toaster.success({ description: "Le représentant légal a bien été modifié." });
+    toaster.success({
+      description: "Le représentant légal a bien été modifié.",
+    });
   }
   if (action === "delete") {
-    toaster.success({ description: "Le représentant légal a bien été supprimé." });
+    toaster.success({
+      description: "Le représentant légal a bien été supprimé.",
+    });
   }
   /* Le fait de changer la clé rernder le composant. Il semble que
   la cloture de la popup rentre en conflit avec ce rerender ce qui casse le scroll.
@@ -749,7 +784,10 @@ const onRepresentantsLegauxChangeWithKeyChange = (
     // Force le re-render du composant Personnes
     keyRepresentantLegaux.value += 1;
     // Après suppression ou une édition, on reste sur la page où était la personne supprimée/éditée
-    if ((action === "delete" || action === "edit")  && typeof personneIndex === "number") {
+    if (
+      (action === "delete" || action === "edit") &&
+      typeof personneIndex === "number"
+    ) {
       const page = Math.floor(personneIndex / ITEMS_PER_PAGE) + 1;
       currentPersonnesPage.value = page;
       return;
