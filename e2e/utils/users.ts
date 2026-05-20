@@ -1,8 +1,5 @@
-import { randomUUID } from "crypto";
-
 export function getOvaUser() {
-  const username =
-    process.env.E2E_USERNAME || `e2e-${randomUUID()}@example.com`;
+  const username = process.env.E2E_USERNAME || "tnra.ovapphy.idf@example.com";
   const password = process.env.E2E_PASSWORD || "Azertyuiop1!";
 
   const params = {
@@ -10,7 +7,11 @@ export function getOvaUser() {
     password,
   };
 
-  console.log("e2e user", params);
+  console.log(
+    "[ova user",
+    params.username,
+    params.password.slice(0, 2) + "***]",
+  );
   return params;
 }
 
@@ -20,9 +21,9 @@ export function getAgentsRegionalIDFUser() {
     password: process.env.E2E_BO_PASSWORD || "Azertyuiop1!",
   };
   console.log(
-    "agentsRegionalIDF",
+    "[bo user idf",
     user.username,
-    user.password.slice(0, 3) + "***",
+    user.password.slice(0, 2) + "***]",
   );
   return user;
 }

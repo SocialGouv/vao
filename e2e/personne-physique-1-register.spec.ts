@@ -9,11 +9,15 @@ import {
   loginUsagers,
 } from "./utils/helper";
 import { getAgentsRegionalIDFUser, getOvaUser } from "./utils/users";
-import { getUrls, runLocal } from "./utils/urls";
+import { getUrls } from "./utils/urls";
+import { resetSeeds } from "./utils/seed";
+import { E2E_SIRET } from "../packages/backend/src/controllers/e2e";
 
 const { appUsagersUrl, appBoUrl, maildevUrl } = getUrls();
 
-test.describe.serial("Création de compte OVA - Personne physique", () => {
+const testName = "Création de compte OVA - Personne physique";
+
+test.describe.serial(testName, () => {
   let validationPage: Page;
   let username: string;
   let password: string;
@@ -24,8 +28,17 @@ test.describe.serial("Création de compte OVA - Personne physique", () => {
     password = ctx.password;
   });
 
-  test("Étape 1 — Création de la demande de compte", async ({ page }) => {
-    console.log("Étape 1 — Création de la demande de compte");
+  test(`Étape 1 - Création de la demande de compte`, async ({
+    page,
+  }, testInfo) => {
+    if (testInfo.retry > 0) {
+      console.log(
+        `>>>>>>>>>>>>>>>>> RETRY ATTEMPT ${testInfo.retry} <<<<<<<<<<<<<<<<<<`,
+      );
+      await resetSeeds();
+    }
+    console.log(`===== ${testName} =====`);
+    console.log(`-> ${testInfo.title}`);
     await page.goto(`${appUsagersUrl}/connexion`);
     await expect(page.getByText("Connexion à VAO")).toBeVisible();
 
@@ -71,20 +84,21 @@ test.describe.serial("Création de compte OVA - Personne physique", () => {
       .click();
     await page
       .getByRole("textbox", { name: "SIRET Veuillez indiquer le" })
-      .fill("43286010400301");
+      .fill(E2E_SIRET);
     await page.getByRole("button", { name: "Créer mon compte" }).click();
     await expect(page.locator(alertLocator).first()).toContainText(
       "Votre formulaire a été envoyé. Veuillez valider votre adresse mail en cliquant sur le lien reçu par mail.",
     );
   });
 
-  test("Étape 2 — Validation de la demande", async ({ page }) => {
-    console.log("Étape 2 — Validation de la demande");
+  test("Étape 2 - Validation de la demande", async ({ page }, testInfo) => {
+    console.log(`-> ${testInfo.title}`);
     await page.goto(`${maildevUrl}/#/`);
     await page
       .getByRole("link", {
         name: `Portail VAO - Validez votre adresse courriel To: ${username}`,
       })
+      .first()
       .click();
     const popupPromise = page.waitForEvent("popup");
     await page
@@ -105,8 +119,8 @@ test.describe.serial("Création de compte OVA - Personne physique", () => {
     );
   });
 
-  test("Étape 3 — Activation du compte", async ({ page }) => {
-    console.log("Étape 3 — Activation du compte");
+  test("Étape 3 - Activation du compte", async ({ page }, testInfo) => {
+    console.log(`-> ${testInfo.title}`);
     const agentsRegionalIDF = getAgentsRegionalIDFUser();
     // test.skip(!runLocal, "Skipping test on CI, waiting for new PIC");
     await page.goto(`${appBoUrl}`);
@@ -124,8 +138,8 @@ test.describe.serial("Création de compte OVA - Personne physique", () => {
     );
   });
 
-  test("Étape 4 — Complétion du compte", async ({ page }) => {
-    console.log("Étape 4 — Complétion du compte");
+  test("Étape 4 - Complétion du compte", async ({ page }, testInfo) => {
+    console.log(`-> ${testInfo.title}`);
     // test.skip(!runLocal, "Skipping test on CI, waiting for new PIC");
     await page.goto(`${appUsagersUrl}`);
     await loginUsagers(page, username, password);
