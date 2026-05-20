@@ -87,6 +87,48 @@ export const AgrementMailAdmin = {
       to: mailDreets,
     };
   },
+  sendStatutCorrectionRegionMail: ({
+    email,
+    organismeName,
+    agrementId,
+  }: {
+    email: string;
+    organismeName: string;
+    agrementId: number;
+  }) => {
+    log.i("sendStatutCorrectionRegionMail - In", {
+      agrementId,
+      email,
+      organismeName,
+    });
+    const html = sendTemplate.getBody(
+      "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      [
+        {
+          p: [
+            "Bonjour,",
+            `L’OVA <strong>${organismeName}</strong> a renvoyé sa demande de renouvellement d’agrément après avoir apporté les corrections demandées.`,
+            "Vous pouvez désormais reprendre l’instruction de la demande, accessible via votre espace sur le portail VAO :",
+            `<a href='${config.frontBODomain}/agrements/${agrementId}'>Lien direct vers le dossier</a>`,
+            "Le dossier est retourné au statut <strong>« Complétude confirmée »</strong> et peut être à nouveau examiné.",
+            "Conformément à la réglementation, le délai légal d’instruction de <strong>2 mois</strong> qui a été suspendu reprend dès à présent.",
+          ],
+          type: "p",
+        },
+      ],
+      `<br>L’équipe du SI VAO<br><a href='${config.frontBODomain}'>Portail VAO</a>`,
+    );
+    const params = {
+      from: config.senderEmail,
+      html,
+      replyTo: config.senderEmail,
+      subject:
+        "Portail VAO – Nouvelle demande de renouvellement d’agrément reçue",
+      to: email,
+    };
+    log.d("sendStatutCorrectionRegionMail post email", { params });
+    return params;
+  },
 
   sendStatutModificationTransmisRegionMail: ({
     email,

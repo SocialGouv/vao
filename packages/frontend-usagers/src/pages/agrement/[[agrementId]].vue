@@ -138,12 +138,32 @@ const canModify = true;
 
 async function saveAndTransmitAgrement() {
   try {
-    const stepDemandeTransmise =
-      agrementStore.agrementEnTraitement?.statut === AGREMENT_STATUT.BROUILLON
-        ? 0
-        : 1;
+    const stepDemandeTransmise = (() => {
+      switch (agrementStore.agrementEnTraitement?.statut) {
+        case AGREMENT_STATUT.BROUILLON:
+          return 0;
+
+        case AGREMENT_STATUT.A_MODIFIER:
+          return 1;
+
+        case AGREMENT_STATUT.A_CORRIGER:
+          return 2;
+
+        default:
+          toaster.error({
+            description:
+              "Statut de l'agrément incompatible pour la transmission.",
+            role: "alert",
+          });
+          return null;
+      }
+    })();
     const success = await updateOrCreate({
-      statut: AGREMENT_STATUT.TRANSMIS,
+      statut:
+        agrementStore.agrementEnTraitement?.statut ===
+        AGREMENT_STATUT.A_CORRIGER
+          ? AGREMENT_STATUT.COMPLETUDE_CONFIRME
+          : AGREMENT_STATUT.TRANSMIS,
     });
     if (success) {
       navigateTo(`/demande-agrement-transmise?step=${stepDemandeTransmise}`);

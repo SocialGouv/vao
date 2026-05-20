@@ -1,20 +1,32 @@
 <template>
   <div
     v-if="
-      agrementStore.agrementEnTraitement?.statut ===
-        AGREMENT_STATUT.A_MODIFIER &&
+      isAmodifierOrCorriger &&
       userStore.user?.featureFlags?.[FeatureFlagName.RENOUVELLEMENT_AGREMENT]
     "
     :class="['fr-alert fr-mb-5v', 'fr-alert--warning']"
   >
-    <h2>Demande de compléments d'informations</h2>
+    <h2>
+      Demande de
+      {{
+        agrementStore.agrementEnTraitement?.statut ===
+        AGREMENT_STATUT.A_COMPLETER
+          ? "compléments"
+          : "corrections"
+      }}
+      d'informations
+    </h2>
 
     La DREETS en charge de l'instruction de votre dossier d'agrément vous
     sollicite pour des compléments d'informations Accédes à votre agrément,
     complétez le puis transmettez le à nouveau à votre DREETS qui reprendra
     l'instruction du dossier<br /><br />
     <strong>Commentaire de la DREETS :</strong><br />
-    {{ agrementStore.agrementEnTraitement.commentaireCompletude }}
+    {{
+      agrementStore.agrementEnTraitement?.statut === AGREMENT_STATUT.A_COMPLETER
+        ? agrementStore.agrementEnTraitement?.commentaireCompletude
+        : agrementStore.agrementEnTraitement?.commentaireCorrection
+    }}
     <br /><br />
     <div v-if="fileCompletude" class="fr-fieldset__element">
       <FileUpload
@@ -26,7 +38,12 @@
       />
     </div>
     <DsfrButton class="fr-mt-3v" @click.prevent="onClickModifier">
-      Modifier mon renouvellement d'agrément
+      {{
+        agrementStore.agrementEnTraitement?.statut ===
+        AGREMENT_STATUT.A_COMPLETER
+          ? "Modifier mon renouvellement d'agrément"
+          : "Corriger mon agrément"
+      }}
     </DsfrButton>
   </div>
 </template>
@@ -43,10 +60,21 @@ const config = useRuntimeConfig();
 const agrementStore = useAgrementStore();
 const userStore = useUserStore();
 
+const isAmodifierOrCorriger = computed(() => {
+  const statut = agrementStore.agrementEnTraitement?.statut;
+  return (
+    statut != null &&
+    [AGREMENT_STATUT.A_MODIFIER, AGREMENT_STATUT.A_CORRIGER].includes(statut)
+  );
+});
+
 const fileCompletude = computed(() => {
   return getFileByCategory({
     files: agrementStore.agrementEnTraitement?.agrementFiles,
-    category: FILE_CATEGORY.AMODIFER,
+    category:
+      agrementStore.agrementEnTraitement?.statut === AGREMENT_STATUT.A_COMPLETER
+        ? FILE_CATEGORY.AMODIFER
+        : FILE_CATEGORY.ACORRIGER,
   });
 });
 

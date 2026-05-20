@@ -137,16 +137,28 @@ export const AgrementService = {
         ? new Date()
         : agrement?.dateDepot;
 
-      agrementId = await AgrementsRepository.update({
-        agrement,
+      await withTransaction(async (tx: PoolClient) => {
+        agrementId = await AgrementsRepository.update({
+          agrement,
+          tx,
+        });
+        await AgrementService.updateSvaTimer({
+          agrementId: agrement.id!,
+          statut: agrement.statut!,
+          tx,
+        });
       });
-      if (agrement.statut === AGREMENT_STATUT.TRANSMIS) {
+
+      if (
+        agrement.statut === AGREMENT_STATUT.TRANSMIS ||
+        agrement.statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME
+      ) {
         try {
           await AgrementService.trackEvent({
             agrementId,
             source: "usager",
             type: AGREMENT_HISTORY_TYPE.TRANSMISSION,
-            typePrecision: AGREMENT_STATUT.TRANSMIS,
+            typePrecision: agrement.statut,
             usagerUserId: Number(userId),
           });
         } catch (e) {
@@ -156,7 +168,7 @@ export const AgrementService = {
           );
         }
 
-        const email = await AgrementsRepository.getUserMail(agrementId);
+        const email = await AgrementsRepository.getUserMail(agrementId!);
         const date = new Date().toLocaleDateString("fr-FR", {
           day: "numeric",
           month: "long",
@@ -208,22 +220,32 @@ export const AgrementService = {
 
         if (emailRegion) {
           try {
-            const mailToSend = premiereTransmission
-              ? // Première Transmission
-                AgrementMailAdmin.sendStatutTransmisRegionMail({
-                  agrementId,
-                  date,
-                  email: emailRegion,
-                  organismeName,
-                  siret,
-                })
-              : // Transmission après demande de modification
-                AgrementMailAdmin.sendStatutModificationTransmisRegionMail({
+            if (agrement.statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME) {
+              const mailToSend =
+                AgrementMailAdmin.sendStatutCorrectionRegionMail({
                   agrementId,
                   email: emailRegion,
                   organismeName,
                 });
-            await mailService.send(mailToSend);
+              await mailService.send(mailToSend);
+            } else {
+              const mailToSend = premiereTransmission
+                ? // Première Transmission
+                  AgrementMailAdmin.sendStatutTransmisRegionMail({
+                    agrementId,
+                    date,
+                    email: emailRegion,
+                    organismeName,
+                    siret,
+                  })
+                : // Transmission après demande de modification
+                  AgrementMailAdmin.sendStatutModificationTransmisRegionMail({
+                    agrementId,
+                    email: emailRegion,
+                    organismeName,
+                  });
+              await mailService.send(mailToSend);
+            }
           } catch (e) {
             log.w("Erreur lors de l'envoi de l'email à la région", e);
           }
