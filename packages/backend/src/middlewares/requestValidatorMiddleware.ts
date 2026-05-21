@@ -30,8 +30,12 @@ export function requestValidatorMiddleware<T extends BasicRoute>(
       req.validatedBody = requestBodyValidator(validator.body, req.body);
     } catch (error) {
       log.w("missing or invalid parameter", error);
+      const e = (error as Error).cause as yup.ValidationError;
+
       return next(
-        new AppError("Paramètre incorrect", {
+        new AppError(`${e.errors} : ${e.path}`, {
+          cause: e,
+          name: (error as Error).message,
           statusCode: 400,
         }),
       );
@@ -49,7 +53,9 @@ export function requestParamsValidator<T>(
       return validator.validateSync(params, { stripUnknown: true });
     } catch (error) {
       log.w("INVALID_PARAMS", error);
-      throw new Error(ERRORS_COMMON.INVALID_PARAMS);
+      throw new Error(ERRORS_COMMON.INVALID_PARAMS, {
+        cause: error,
+      });
     }
   }
   return {};
@@ -81,7 +87,9 @@ export function requestQueryValidator<T>(
       return validatedQuery;
     } catch (error) {
       log.d("INVALID_QUERY", (error as Error).message, error);
-      throw new Error(ERRORS_COMMON.INVALID_QUERY);
+      throw new Error(ERRORS_COMMON.INVALID_QUERY, {
+        cause: error,
+      });
     }
   }
   return {};
@@ -100,7 +108,9 @@ export function requestBodyValidator<T>(
       const e = error as yup.ValidationError;
       log.d("🚨 Invalid field paths:", e.path);
       log.d("🚨 Validation error details:", e.errors);
-      throw new Error(ERRORS_COMMON.INVALID_BODY);
+      throw new Error(ERRORS_COMMON.INVALID_BODY, {
+        cause: e,
+      });
     }
   }
   return {};

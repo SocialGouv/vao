@@ -85,7 +85,7 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
   cdnUrl: { type: String, required: true },
 });
-const emit = defineEmits(["next", "update", "update:valid"]);
+const emit = defineEmits(["update", "update:valid"]);
 const log = logger("components/agrement/coordonnees");
 
 const toaster = useToaster();
@@ -228,9 +228,6 @@ async function saveCoordonneesStep() {
       description:
         "Des erreurs sont présentes dans le formulaire. Veuillez les corriger avant de continuer.",
     });
-  }
-  if (props.modifiable) {
-    emit("next");
   }
 }
 

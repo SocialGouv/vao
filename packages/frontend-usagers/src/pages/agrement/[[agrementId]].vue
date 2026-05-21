@@ -43,7 +43,6 @@
               :modifiable="canModify"
               :cdn-url="`${config.public.backendUrl}/documents/`"
               @update="updateOrCreate"
-              @next="nextHash"
             />
           </div>
           <div
@@ -57,7 +56,6 @@
               :modifiable="canModify"
               :cdn-url="`${config.public.backendUrl}/documents/`"
               @update="updateOrCreate"
-              @next="nextHash"
               @previous="previousHash"
             />
           </div>
@@ -71,7 +69,6 @@
               :modifiable="canModify"
               :cdn-url="`${config.public.backendUrl}/documents/`"
               :on-update="updateOrCreate"
-              @next="nextHash"
               @previous="previousHash"
             />
           </div>
@@ -85,7 +82,6 @@
               :cdn-url="`${config.public.backendUrl}/documents/`"
               :on-update="updateOrCreate"
               :modifiable="canModify"
-              @next="nextHash"
               @previous="previousHash"
             />
           </div>
@@ -284,12 +280,15 @@ async function updateOrCreate(formValues: AgrementFormValues) {
       titleTag: "h2",
       description: "Données enregistrées avec succès !",
     });
+    nextHash();
     return true;
   } catch (error) {
+    const e = error as ApiError;
+
     toaster.error({
       titleTag: "h2",
       title: "Erreur lors de l'enregistrement de l'agrément",
-      description: error instanceof Error ? error.message : String(error),
+      description: e.data?.message || String(error),
     });
   }
 }

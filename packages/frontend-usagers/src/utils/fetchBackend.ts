@@ -5,8 +5,11 @@ import {
   buildRequestQueryString,
   hashToFormData,
 } from "@vao/shared-bridge";
+import type { FetchError } from "ofetch";
+import { $fetch } from "ofetch";
 
 export type FetchBackendOptions = Record<string, unknown>;
+export type ApiError = FetchError<{ message: string; name: string }>;
 
 export const $fetchBackend = <T = any>(
   url: string,
