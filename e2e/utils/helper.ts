@@ -17,9 +17,8 @@ export async function loginBo(page: Page, email: string, password: string) {
     .getByRole("textbox", { name: "Mot de passe * Veuillez" })
     .fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
-  await expect(page.locator(alertLocator).first()).not.toContainText(
-    "Échec de l'authentification",
-  );
+  await page.waitForTimeout(200);
+  await expect(page.getByText("Échec de l'authentification")).toHaveCount(0);
 }
 
 export async function loginUsagers(
@@ -38,9 +37,8 @@ export async function loginUsagers(
     .getByRole("textbox", { name: "Mot de passe * Veuillez" })
     .fill(password);
   await page.getByRole("button", { name: "Se connecter" }).click();
-  // await expect(page.locator(alertLocator).first()).not.toContainText(
-  //   "Échec de l'authentification",
-  // );
+  await page.waitForTimeout(200);
+  await expect(page.getByText("Échec de l'authentification")).toHaveCount(0);
 }
 
 export async function addInputFile(
@@ -60,4 +58,8 @@ export function getAgrementFile() {
 
 export function getTransportsFile() {
   return path.join(__dirname, "../data/transports.pdf");
+}
+
+export function getBasicFile() {
+  return path.join(__dirname, "../data/basic-file.pdf");
 }

@@ -30,6 +30,7 @@ describe("POST /e2e/reset", () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
       deletedOrganismesCount: 1,
+      deletedOrganismesForcedCount: 0,
       deletedUsersCount: 1,
       deletedUsersForcedCount: 0,
       insertedUserCount: 0,
@@ -39,6 +40,7 @@ describe("POST /e2e/reset", () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
       deletedOrganismesCount: 0,
+      deletedOrganismesForcedCount: 0,
       deletedUsersCount: 0,
       deletedUsersForcedCount: 0,
       insertedUserCount: 0,

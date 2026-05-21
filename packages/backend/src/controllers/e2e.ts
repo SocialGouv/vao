@@ -8,7 +8,9 @@ import { withTransaction } from "../utils/pgpool";
 
 const log = logger(module.filename);
 
-const E2E_BO_USER_EMAIL = "tnra.agent.idf@example.com";
+// const E2E_BO_USER_EMAIL = "tnra.agent.idf@example.com";
+
+export const E2E_SIRET = "43286010400301";
 
 export async function resetE2e(
   req: Request,
@@ -27,50 +29,50 @@ export async function resetE2e(
   try {
     await withTransaction(async (tx: PoolClient) => {
       // check if tnra.agent.idf@example.com back.user exists
-      const { rows: userRows } = await tx.query(
-        `
-          SELECT COUNT(*) AS count FROM back.users WHERE mail = $1
-        `,
-        [E2E_BO_USER_EMAIL],
-      );
-      let insertedUserCount = 0;
-      if (Number(userRows[0].count) === 0) {
-        // and create user with role in one query
-        await tx.query(
-          `
-          WITH new_user AS (
-            INSERT INTO back.users (
-              validated,
-              mail,
-              prenom,
-              nom,
-              pwd,
-              ter_code,
-              enddate
-            )
-            VALUES (
-              true,
-              $1,
-              'IDF',
-              'TNRA',
-              crypt('Azertyuiop1!', gen_salt('bf')),
-              'IDF',
-              now()
-            )
-            RETURNING id
-          )
-          INSERT INTO back.user_roles (use_id, rol_id)
-          SELECT id, rol_id
-          FROM new_user
-          CROSS JOIN (VALUES (1), (4), (5), (6), (7)) AS roles(rol_id);
-        `,
-          [E2E_BO_USER_EMAIL],
-        );
-        insertedUserCount++;
-        console.log("insertedUserCount", insertedUserCount);
-      } else {
-        console.log("user already exists");
-      }
+      // const { rows: userRows } = await tx.query(
+      //   `
+      //     SELECT COUNT(*) AS count FROM back.users WHERE mail = $1
+      //   `,
+      //   [E2E_BO_USER_EMAIL],
+      // );
+      const insertedUserCount = 0;
+      // if (Number(userRows[0].count) === 0) {
+      //   // and create user with role in one query
+      //   await tx.query(
+      //     `
+      //     WITH new_user AS (
+      //       INSERT INTO back.users (
+      //         validated,
+      //         mail,
+      //         prenom,
+      //         nom,
+      //         pwd,
+      //         ter_code,
+      //         enddate
+      //       )
+      //       VALUES (
+      //         true,
+      //         $1,
+      //         'IDF',
+      //         'TNRA',
+      //         crypt('Azertyuiop1!', gen_salt('bf')),
+      //         'IDF',
+      //         now()
+      //       )
+      //       RETURNING id
+      //     )
+      //     INSERT INTO back.user_roles (use_id, rol_id)
+      //     SELECT id, rol_id
+      //     FROM new_user
+      //     CROSS JOIN (VALUES (1), (4), (5), (6), (7)) AS roles(rol_id);
+      //   `,
+      //     [E2E_BO_USER_EMAIL],
+      //   );
+      //   insertedUserCount++;
+      //   console.log("insertedUserCount", insertedUserCount);
+      // } else {
+      //   console.log("user already exists");
+      // }
 
       log.i("reset - Update fiche_territoire");
       await tx.query(
@@ -109,6 +111,7 @@ export async function resetE2e(
       if (testsUserIds.length === 0) {
         return res.status(200).json({
           deletedOrganismesCount: 0,
+          deletedOrganismesForcedCount: 0,
           deletedUsersCount: 0,
           deletedUsersForcedCount: 0,
           insertedUserCount,
@@ -128,6 +131,21 @@ export async function resetE2e(
         await tx.query("CALL vao_supprimer_organisme($1, $2)", [orgId, true]);
       }
 
+      const { rows: organismesBySiret } = await tx.query(
+        `
+          SELECT DISTINCT o.id 
+          FROM front.organismes o
+          LEFT JOIN front.personne_morale pm ON pm.organisme_id = o.id AND pm.current = true
+          LEFT JOIN front.personne_physique pp ON pp.organisme_id = o.id AND pp.current = TRUE
+          WHERE pm.siret = $1 OR pp.siret = $1;
+      `,
+        [E2E_SIRET],
+      );
+
+      for (const { id: orgId } of organismesBySiret) {
+        await tx.query("CALL vao_supprimer_organisme($1, $2)", [orgId, true]);
+      }
+
       const { rowCount: deletedUsersForcedCount } = await tx.query(
         `
         DELETE FROM front.users
@@ -139,6 +157,7 @@ export async function resetE2e(
       log.i("reset - DONE");
       return res.status(200).json({
         deletedOrganismesCount: organismes.length,
+        deletedOrganismesForcedCount: organismesBySiret.length,
         deletedUsersCount: testsUserIds.length,
         deletedUsersForcedCount,
         insertedUserCount,

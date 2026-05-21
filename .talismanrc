@@ -2,7 +2,7 @@ fileignoreconfig:
 - filename: .env.dev.example.env
   checksum: 6d2b816034eceab035c41b6b6be08c11b18b011f16cb47f0112e48f2547499c6
 - filename: .github/workflows/e2e.yaml
-  checksum: 28fd1f466cc405a3fba26089081fe69964d0c7db904728040b8d1f39c23616e2
+  checksum: 24e563933fffe782c7d7b44e80a0384dcf80bbfcfb2c0e240f7164cbedde5524
 - filename: .github/workflows/lint-format-tests.yaml
   checksum: eeca39face10741f484b738a467b8a5d7dd8da4b8306cae058bb0fbf2ff4cf3c
 - filename: .kontinuous/env/preprod/templates/smtp/ingress.yaml
@@ -53,12 +53,14 @@ fileignoreconfig:
   checksum: c9749cbb6dc02437d7c2d00f7754b7a8a40c07d03a7b58a6e5340211eba5eb2c
 - filename: docs/tests/E2E_TESTS.md
   checksum: dfe0de0276abfc1876610d297f96594742046ca920775faaa5e79c76ee348715
+- filename: e2e/personne-physique-2-hebergement.spec.ts
+  checksum: c61577f5c812343e93ac9e683e5606818f258ea1ef63e0af1e4c16fabbb4c8f1
 - filename: e2e/register-login-organisateur.spec.ts
   checksum: 28122f4f8a3e21312046f7347bdffa570e24c8a38976417d011efc1e5004a0cf
 - filename: e2e/register-personne-physique.spec.ts
   checksum: 2def9cd46ba58e8b1a354a0594e2f13c9ac7b3bcdb1f265f1225ab1af484e7ee
 - filename: e2e/utils/users.ts
-  checksum: 58569fadd94ad5fe994268c5f1d94a238b7eed0b5f97a4657d1f7cd23a44a892
+  checksum: 8253943e46e17b7d6c0554d5c88409824cffcc2fcf3197f30de5632cb217722c
 - filename: package-lock.json
   checksum: 1f161d556f83694bf1d4f728591667cdaeef494e6d24ea2b475b4d7cb054383f
 - filename: package.json
@@ -114,7 +116,7 @@ fileignoreconfig:
 - filename: packages/backend/src/controllers/bo-authentication/email/renew-password.js
   checksum: b2cfd04d94c5131c43cb80f0d9f210784da4c61fd42f6defd16f2ef93e83c913
 - filename: packages/backend/src/controllers/e2e.ts
-  checksum: 2ea1c3b90d8e0a58d209411580ca1cf9332d289d8447b2d318bccd4214a64db1
+  checksum: a2706b88a2ab741936878cf2425703ea45ad856b6968c27a28466090155b6f33
 - filename: packages/backend/src/controllers/siret/getLienSuccession.spec.ts
   checksum: 5c6862263cb7030aac2429eb09b35ab9a54e13c15e633944cdfac95747ec768f
 - filename: packages/backend/src/helpers/__tests__/queryParams.test.js
