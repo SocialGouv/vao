@@ -627,7 +627,7 @@ describe("POST /agrements", () => {
       agrement: agrementData,
       organismeId,
     });
-    const response = await request(getFoAppHelper({ id: usagerUser.id }))
+    const response = await request(getFoAppHelper(usagerUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -650,9 +650,7 @@ describe("POST /agrements", () => {
     expect(mailService.send).toHaveBeenCalledTimes(3);
 
     // Transmission de l'agrément au Service après complétude
-    const responseCorrection = await request(
-      getFoAppHelper({ id: usagerUser.id }),
-    )
+    const responseCorrection = await request(getFoAppHelper(usagerUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -696,7 +694,7 @@ describe("POST /agrements", () => {
       agrement: agrementData,
       organismeId,
     });
-    const response = await request(getFoAppHelper({ id: usagerUser.id }))
+    const response = await request(getFoAppHelper(usagerUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -729,9 +727,7 @@ describe("POST /agrements", () => {
     });
     expect(mailService.send).toHaveBeenCalledTimes(6);
     // Transmission de l'agrément au Service après complétude
-    const responseCorrection = await request(
-      getFoAppHelper({ id: usagerUser.id }),
-    )
+    const responseCorrection = await request(getFoAppHelper(usagerUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
