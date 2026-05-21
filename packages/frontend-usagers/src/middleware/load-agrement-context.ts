@@ -4,34 +4,6 @@ import { useAgrementStore } from "~/stores/agrement";
 
 const log = logger("middlewares/load-agrement-context");
 
-type RouteParamValue = string | undefined;
-
-const getAgrementIdParam = (
-  params: Record<string, unknown>,
-): RouteParamValue => {
-  const { agrementId } = params;
-
-  if (typeof agrementId === "string") {
-    return agrementId;
-  }
-
-  return undefined;
-};
-
-const parseAgrementId = (value: RouteParamValue): number | null => {
-  if (!value) {
-    return null;
-  }
-
-  const parsedValue: number = Number(value);
-
-  if (!Number.isInteger(parsedValue) || parsedValue <= 0) {
-    return null;
-  }
-
-  return parsedValue;
-};
-
 export default defineNuxtRouteMiddleware(async (to) => {
   log.i("IN");
 
@@ -42,18 +14,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
       await agrementStore.getCurrent();
     }
 
-    const agrementIdParam: RouteParamValue = getAgrementIdParam(
-      to.params as Record<string, unknown>,
-    );
-    const agrementId: number | null = parseAgrementId(agrementIdParam);
+    const { agrementId: agrementIdParam } = to.params;
 
-    if (agrementId !== null) {
-      const currentEnTraitementId: number | null =
+    if (agrementIdParam && /^\d+$/.test(String(agrementIdParam))) {
+      const agrementId = Number(agrementIdParam);
+      const currentEnTraitementId =
         agrementStore.agrementEnTraitement?.id ?? null;
 
       if (currentEnTraitementId !== agrementId) {
-        const isLoaded: boolean =
-          await agrementStore.getEnTraitementById(agrementId);
+        const isLoaded = await agrementStore.getEnTraitementById(agrementId);
 
         if (!isLoaded) {
           log.w("Agrement not found, redirect home", { agrementId });
