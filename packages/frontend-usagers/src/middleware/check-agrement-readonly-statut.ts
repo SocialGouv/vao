@@ -12,6 +12,7 @@ export default defineNuxtRouteMiddleware(async () => {
   const agrementStatutModification = [
     AGREMENT_STATUT.BROUILLON,
     AGREMENT_STATUT.A_MODIFIER,
+    AGREMENT_STATUT.A_CORRIGER,
   ];
 
   if (

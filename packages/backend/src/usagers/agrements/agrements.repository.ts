@@ -535,7 +535,13 @@ export const AgrementsRepository = {
     });
   },
 
-  async update({ agrement }: { agrement: AgrementDto }): Promise<number> {
+  async update({
+    agrement,
+    tx,
+  }: {
+    agrement: AgrementDto;
+    tx: PoolClient;
+  }): Promise<number> {
     const agrementId: number = agrement.id!;
 
     if (agrementId == null) {
@@ -561,9 +567,8 @@ export const AgrementsRepository = {
         ),
     );
 
-    await withTransaction(async (tx: PoolClient) => {
-      // ✅ 1. Mise à jour du principal
-      const agrementUpdateQuery = `
+    // ✅ 1. Mise à jour du principal
+    const agrementUpdateQuery = `
       UPDATE front.agrements
       SET
         statut = $1,
@@ -616,93 +621,91 @@ export const AgrementsRepository = {
       WHERE id = $48;
     `;
 
-      const agrementValues = [
-        agrement.statut,
-        agrement.organismeId,
-        agrement.updatedAt,
-        agrement.dateObtentionCertificat,
-        agrement.dateDepot,
-        agrement.dateVerifCompleture,
-        agrement.dateConfirmCompletude,
-        agrement.commentaire,
-        agrement.motivations,
-        agrement.immatriculation,
-        agrement.sejourNbEnvisage,
-        agrement.sejourCommentaire,
-        agrement.vacanciersNbEnvisage,
-        agrement.animationAutre,
-        agrement.accompRespNb,
-        agrement.accompRespCompExp,
-        agrement.accompRespRecruteUrg,
-        agrement.accompRespAttestHono,
-        agrement.transportAllerRetour,
-        agrement.transportSejour,
-        agrement.suiviMedDistribution,
-        agrement.suiviMedAccordSejour,
-        agrement.protocoleEvacUrg,
-        agrement.protocoleRapatUrg,
-        agrement.protocoleRapatEtranger,
-        agrement.protocoleMateriel,
-        agrement.protocoleInfoFamille,
-        agrement.protocoleRemboursement,
-        agrement.budgetGestionPerso,
-        agrement.budgetPersoGestionComplementaire,
-        agrement.budgetPaiementSecurise,
-        agrement.budgetComplement,
-        agrement.bilanChangementEvolution,
-        agrement.bilanAucunChangementEvolution,
-        agrement.bilanQualPerceptionSensibilite,
-        agrement.bilanQualPerspectiveEvol,
-        agrement.bilanQualElementsMarquants,
-        agrement.bilanFinancierComptabilite,
-        agrement.bilanFinancierComparatif,
-        agrement.bilanFinancierRessourcesHumaines,
-        agrement.bilanFinancierCommentaire,
-        agrement.dateFinValidite,
-        agrement.sejourTypeHandicap,
-        agrement.regionObtention,
-        agrement.numero,
-        agrement.dateObtention,
-        agrement.file,
-        agrementId,
-      ];
+    const agrementValues = [
+      agrement.statut,
+      agrement.organismeId,
+      agrement.updatedAt,
+      agrement.dateObtentionCertificat,
+      agrement.dateDepot,
+      agrement.dateVerifCompleture,
+      agrement.dateConfirmCompletude,
+      agrement.commentaire,
+      agrement.motivations,
+      agrement.immatriculation,
+      agrement.sejourNbEnvisage,
+      agrement.sejourCommentaire,
+      agrement.vacanciersNbEnvisage,
+      agrement.animationAutre,
+      agrement.accompRespNb,
+      agrement.accompRespCompExp,
+      agrement.accompRespRecruteUrg,
+      agrement.accompRespAttestHono,
+      agrement.transportAllerRetour,
+      agrement.transportSejour,
+      agrement.suiviMedDistribution,
+      agrement.suiviMedAccordSejour,
+      agrement.protocoleEvacUrg,
+      agrement.protocoleRapatUrg,
+      agrement.protocoleRapatEtranger,
+      agrement.protocoleMateriel,
+      agrement.protocoleInfoFamille,
+      agrement.protocoleRemboursement,
+      agrement.budgetGestionPerso,
+      agrement.budgetPersoGestionComplementaire,
+      agrement.budgetPaiementSecurise,
+      agrement.budgetComplement,
+      agrement.bilanChangementEvolution,
+      agrement.bilanAucunChangementEvolution,
+      agrement.bilanQualPerceptionSensibilite,
+      agrement.bilanQualPerspectiveEvol,
+      agrement.bilanQualElementsMarquants,
+      agrement.bilanFinancierComptabilite,
+      agrement.bilanFinancierComparatif,
+      agrement.bilanFinancierRessourcesHumaines,
+      agrement.bilanFinancierCommentaire,
+      agrement.dateFinValidite,
+      agrement.sejourTypeHandicap,
+      agrement.regionObtention,
+      agrement.numero,
+      agrement.dateObtention,
+      agrement.file,
+      agrementId,
+    ];
 
-      await tx.query(agrementUpdateQuery, agrementValues);
+    await tx.query(agrementUpdateQuery, agrementValues);
 
-      // ✅ 2. Suppression des sous-tables existantes
+    // ✅ 2. Suppression des sous-tables existantes
+    await tx.query(`DELETE FROM front.agrement_files WHERE agrement_id = $1`, [
+      agrementId,
+    ]);
+    await tx.query(
+      `DELETE FROM front.agrement_sejours WHERE agrement_id = $1`,
+      [agrementId],
+    );
+    await tx.query(
+      `DELETE FROM front.agrement_animation WHERE agrement_id = $1`,
+      [agrementId],
+    );
+    const bilansToDelete = await tx.query(
+      `SELECT id FROM front.agrement_bilan_annuel WHERE agrement_id = $1`,
+      [agrementId],
+    );
+    for (const bil of bilansToDelete.rows) {
       await tx.query(
-        `DELETE FROM front.agrement_files WHERE agrement_id = $1`,
-        [agrementId],
+        `DELETE FROM front.bilan_hebergement WHERE agr_bilan_annuel_id = $1`,
+        [bil.id],
       );
-      await tx.query(
-        `DELETE FROM front.agrement_sejours WHERE agrement_id = $1`,
-        [agrementId],
-      );
-      await tx.query(
-        `DELETE FROM front.agrement_animation WHERE agrement_id = $1`,
-        [agrementId],
-      );
-      const bilansToDelete = await tx.query(
-        `SELECT id FROM front.agrement_bilan_annuel WHERE agrement_id = $1`,
-        [agrementId],
-      );
-      for (const bil of bilansToDelete.rows) {
-        await tx.query(
-          `DELETE FROM front.bilan_hebergement WHERE agr_bilan_annuel_id = $1`,
-          [bil.id],
-        );
-      }
-      await tx.query(
-        `DELETE FROM front.agrement_bilan_annuel WHERE agrement_id = $1`,
-        [agrementId],
-      );
+    }
+    await tx.query(
+      `DELETE FROM front.agrement_bilan_annuel WHERE agrement_id = $1`,
+      [agrementId],
+    );
 
-      // ✅ 3. Réinsertion des nouvelles données via les helpers existants
-      await insertAgrementFiles(tx, agrementId, agrement);
-      await insertAgrementSejours(tx, agrementId, agrement);
-      await insertAgrementAnimations(tx, agrementId, agrement);
-      await insertAgrementBilans(tx, agrementId, agrement);
-    });
+    // ✅ 3. Réinsertion des nouvelles données via les helpers existants
+    await insertAgrementFiles(tx, agrementId, agrement);
+    await insertAgrementSejours(tx, agrementId, agrement);
+    await insertAgrementAnimations(tx, agrementId, agrement);
+    await insertAgrementBilans(tx, agrementId, agrement);
 
     for (const file of filesToDelete) {
       if (file.fileUuid) {

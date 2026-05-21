@@ -46,6 +46,7 @@ const caseBo = () => {
       return "success";
 
     case AGREMENT_STATUT.A_MODIFIER:
+    case AGREMENT_STATUT.A_CORRIGER:
       return "warning";
 
     case AGREMENT_STATUT.REFUSE:
@@ -72,6 +73,7 @@ const caseFo = () => {
       return "info";
 
     case AGREMENT_STATUT.A_MODIFIER:
+    case AGREMENT_STATUT.A_CORRIGER:
       return "warning";
 
     case AGREMENT_STATUT.REFUSE:

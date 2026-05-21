@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/node";
 import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
+  AGREMENT_SVA_TIMER_STATUT,
   FILE_CATEGORY,
   formatFR,
   ORGANISME_TYPE,
@@ -9,6 +10,7 @@ import {
 } from "@vao/shared-bridge";
 import request from "supertest";
 
+import { AgrementsRepository as AgrementsRepositoryAdmin } from "../../admin/agrements/agrements.repository";
 import { AgrementService as AgrementServiceAdmin } from "../../admin/agrements/agrements.service";
 import * as DocumentService from "../../services/Document";
 import { mailService } from "../../services/mail";
@@ -625,7 +627,7 @@ describe("POST /agrements", () => {
       agrement: agrementData,
       organismeId,
     });
-    const response = await request(getFoAppHelper({ id: usagerUser.id }))
+    const response = await request(getFoAppHelper(usagerUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -648,9 +650,7 @@ describe("POST /agrements", () => {
     expect(mailService.send).toHaveBeenCalledTimes(3);
 
     // Transmission de l'agrément au Service après complétude
-    const responseCorrection = await request(
-      getFoAppHelper({ id: usagerUser.id }),
-    )
+    const responseCorrection = await request(getFoAppHelper(usagerUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
@@ -672,6 +672,89 @@ describe("POST /agrements", () => {
     expect(aModifierEvent?.usager_user).toBeDefined();
     const { agrement } = await getAgrement(agrementId);
     expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
+  });
+
+  it("devrait changer le statut en agrement COMPLETUDE_CONFIRME après demande de correction", async () => {
+    const usagerUser = await createUsagersUser();
+    // Ici on répond aux conditions de mise à jour backOffice
+    const adminUser = await createAdminUser();
+    await createTerritoire({ territoireCode: "IDF" });
+    const organismeId = await createOrganisme({ userId: usagerUser.id });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    const response = await request(getFoAppHelper(usagerUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementData,
+        id: agrementId,
+        statut: AGREMENT_STATUT.TRANSMIS,
+      });
+    expect(mailService.send).toHaveBeenCalledTimes(2);
+    expect(response.status).toBe(200);
+    expect(response.body.id).toBe(agrementId);
+
+    // Mise à jour côté Admin pour demande de complétion du dossier
+    await AgrementServiceAdmin.updateStatut({
+      agrementId,
+      boUserId: String(adminUser.id),
+      commentaire:
+        "Dossier à compléter car il manque des éléments pour pouvoir le traiter",
+      statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      territoireCode: agrementData.regionObtention!,
+    });
+    expect(mailService.send).toHaveBeenCalledTimes(4);
+
+    // Mise à jour côté Admin pour demande de CORRECTION du dossier
+    await AgrementServiceAdmin.updateStatut({
+      agrementId,
+      boUserId: String(adminUser.id),
+      commentaire:
+        "Dossier à corriger car il manque des éléments pour pouvoir le traiter",
+      statut: AGREMENT_STATUT.A_CORRIGER,
+      territoireCode: agrementData.regionObtention!,
+    });
+    expect(mailService.send).toHaveBeenCalledTimes(6);
+    // Transmission de l'agrément au Service après complétude
+    const responseCorrection = await request(getFoAppHelper(usagerUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementData,
+        id: agrementId,
+        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      });
+    expect(responseCorrection.status).toBe(200);
+    expect(responseCorrection.body.id).toBe(agrementId);
+    expect(mailService.send).toHaveBeenCalledTimes(7);
+    // Vérifier que l'événement a bien été historisé
+    const history = await AgrementService.getHistory(agrementId);
+    const completudeEvent = history.find(
+      (event) =>
+        event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
+        event.type_precision === AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+    );
+
+    expect(completudeEvent).toBeDefined();
+    expect(completudeEvent?.usager_user).toBeDefined();
+    const { agrement } = await getAgrement(agrementId);
+    expect(agrement?.statut).toBe(AGREMENT_STATUT.COMPLETUDE_CONFIRME);
+
+    const svaTimer = await AgrementsRepositoryAdmin.getSvaTimerByStatut({
+      agrementId,
+      statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
+    });
+    expect(svaTimer?.createdAt).toBeDefined();
   });
 });
 
