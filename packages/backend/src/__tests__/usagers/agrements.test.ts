@@ -3,6 +3,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
+  ERRORS_COMMON,
   FILE_CATEGORY,
   formatFR,
   ORGANISME_TYPE,
@@ -755,6 +756,39 @@ describe("POST /agrements", () => {
       statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
     });
     expect(svaTimer?.createdAt).toBeDefined();
+  });
+
+  it("devrait récupérer l'erreur lorsqu'un agrément est incomplet", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({ userId: frontUser.id });
+    await createTerritoire({
+      territoire: { service_mail: "region-idf@example.com" },
+      territoireCode: "IDF",
+    });
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+    const agrementId = await createAgrement({
+      agrement: agrementData,
+      organismeId,
+    });
+    const agrementIncomplet = {
+      ...agrementData,
+      motivations: "",
+    };
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementIncomplet,
+        id: agrementId,
+        statut: AGREMENT_STATUT.TRANSMIS,
+      });
+    expect(response.status).toBe(400);
+    expect(response.body.message).toContain("Champ obligatoire");
+    expect(response.body.message).toContain("motivations");
+    expect(response.body.name).toContain(ERRORS_COMMON.INVALID_BODY);
   });
 });
 
