@@ -87,7 +87,7 @@
       :modifiable="props.modifiable"
     />
 
-    <hr class="fr-mt-8v fr-mb-0v" />
+    <div class="separator fr-mt-8v fr-mb-8v"></div>
 
     <!-- Hébergements -->
     <AgrementBilanHebergements

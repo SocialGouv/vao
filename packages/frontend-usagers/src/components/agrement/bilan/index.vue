@@ -18,7 +18,7 @@
       :cdn-url="props.cdnUrl"
       :modifiable="props.modifiable"
     />
-    <hr class="fr-mt-4w" />
+    <div class="separator"></div>
     <AgrementBilanFinancier
       ref="financierRef"
       :init-agrement="props.initAgrement ?? {}"

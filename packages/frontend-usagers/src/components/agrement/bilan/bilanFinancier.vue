@@ -16,7 +16,7 @@
             displayInput.AgrementBilanAnnuelInput['bilanFinancierComptabilite']
               .label
           "
-          hint="Détaillez les dépenses et recettes rattachées spécifiquement à l’activité concernée, en précisant les postes budgétaires si possible."
+          hint="Minimum 20 caractères. Détaillez les dépenses et recettes rattachées spécifiquement à l’activité concernée, en précisant les postes budgétaires si possible."
           :model-value="bilanFinancierComptabilite"
           :label-visible="true"
           :is-textarea="true"

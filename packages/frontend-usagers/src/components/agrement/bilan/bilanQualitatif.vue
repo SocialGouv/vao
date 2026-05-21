@@ -9,22 +9,24 @@
   <p class="light-decisions-text-text-default-info fr-text--xs">
     <span class="fr-icon-info-fill" aria-hidden="true"></span>
     Pour chaque section, renseignez
-    <strong>au choix une description texte et/ou un fichier joint</strong>. L’un
-    des deux est requis.
+    <span class="fr-text--bold"
+      >au choix une description texte et/ou un fichier joint</span
+    >. L’un des deux est requis.
   </p>
   <div class="border fr-p-4v">
     <h4 class="fr-text fr-text--lg">
-      <strong>
+      <span class="fr-text--bold">
         Perception et ressenti des vacanciers sur les séjours réalisés.
-      </strong>
+      </span>
     </h4>
     <div class="fr-fieldset__element">
       <p
         id="bilanQualPerceptionSensibilite-desc"
         class="light-decisions-text-text-mention-grey"
       >
-        Objectif : recueillir la perception globale du public accueilli
-        (satisfaction, ressenti, difficultés rencontrées…)
+        Minimum 20 caractères. Objectif : recueillir la perception globale du
+        public accueilli (satisfaction, ressenti, difficultés rencontrées…). Le
+        nombre de caractères est insuffisant.
       </p>
       <div class="fr-col-12">
         <DsfrInputGroup
@@ -69,9 +71,9 @@
   </div>
   <div class="border fr-p-4v fr-mt-6v">
     <h4 class="fr-text fr-text--lg">
-      <strong
+      <span class="fr-text--bold"
         >Évolutions prévues des activités VAO et perspectives de développement à
-        venir</strong
+        venir</span
       >
     </h4>
     <div class="fr-fieldset__element">
@@ -79,8 +81,8 @@
         id="bilanQualPerspectiveEvol-desc"
         class="light-decisions-text-text-mention-grey"
       >
-        Objectif : décrire les projets d’évolution de l’offre ou les ajustements
-        envisagés à partir de l’expérience passée.
+        Minimum 20 caractères. Objectif : décrire les projets d’évolution de
+        l’offre ou les ajustements envisagés à partir de l’expérience passée.
       </p>
       <div class="fr-col-12">
         <DsfrInputGroup
@@ -122,15 +124,17 @@
   </div>
   <div class="border fr-p-4v fr-mt-6v">
     <h4 class="fr-text fr-text--lg">
-      <strong>Eléments marquants autour des activités VAO</strong>
+      <span class="fr-text--bold"
+        >Eléments marquants autour des activités VAO</span
+      >
     </h4>
     <div class="fr-fieldset__element">
       <p
         id="bilanQualElementsMarquants-desc"
         class="light-decisions-text-text-mention-grey"
       >
-        Objectif : mettre en avant les faits saillants, réussites, incidents, ou
-        points d’attention de l’année.
+        Minimum 20 caractères. Objectif : mettre en avant les faits saillants,
+        réussites, incidents, ou points d’attention de l’année.
       </p>
       <div class="fr-col-12">
         <DsfrInputGroup
@@ -226,13 +230,28 @@ const filesBilanQualitElementsMarquantsError = ref<string | null>(null);
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
   bilanQualPerceptionSensibilite: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez saisir une description pour la perception et le ressenti. Minimum 20 caractères.",
+      ),
   ),
   bilanQualPerspectiveEvol: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez saisir une description pour les évolutions prévues des activités. Minimum 20 caractères.",
+      ),
   ),
   bilanQualElementsMarquants: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez saisir une description pour les éléments marquants. Minimum 20 caractères.",
+      ),
   ),
 });
 

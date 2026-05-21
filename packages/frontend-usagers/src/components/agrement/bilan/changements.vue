@@ -49,7 +49,6 @@
       :readonly="!props.modifiable"
       :error-message="bilanAucunChangementEvolutionErrorMessage"
       :value="true"
-      required
     />
   </div>
 </template>
