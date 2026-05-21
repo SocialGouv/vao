@@ -293,5 +293,31 @@ export const useAgrementStore = defineStore("agrement", {
         throw err;
       }
     },
+    async getEnTraitementById(agrementId: number): Promise<boolean> {
+      log.i("getById - IN", { agrementId });
+
+      if (!Number.isInteger(agrementId) || agrementId <= 0) {
+        log.w("getEnTraitementById - invalid id", { agrementId });
+        return false;
+      }
+
+      try {
+        const { agrement } = await AgrementService.get(agrementId);
+
+        if (!agrement) {
+          log.w("getEnTraitementById - agrement not found", { agrementId });
+          return false;
+        }
+
+        this.agrementEnTraitement = agrement;
+
+        log.i("getEnTraitementById - DONE", { agrementId });
+        return true;
+      } catch (err: unknown) {
+        this.agrementEnTraitement = null;
+        log.w("getEnTraitementById - FAIL", { agrementId, err });
+        return false;
+      }
+    },
   },
 });

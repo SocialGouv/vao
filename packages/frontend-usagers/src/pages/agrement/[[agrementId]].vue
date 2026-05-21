@@ -371,6 +371,7 @@ definePageMeta({
     "is-connected",
     "check-organisme-is-complet",
     "check-feature-flags",
+    "load-agrement-context",
     "check-agrement-readonly-statut",
   ],
 });
