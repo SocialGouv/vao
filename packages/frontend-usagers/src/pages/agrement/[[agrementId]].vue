@@ -286,7 +286,7 @@ async function updateOrCreate(formValues: AgrementFormValues) {
     toaster.error({
       titleTag: "h2",
       title: "Erreur lors de l'enregistrement de l'agrément",
-      description: getErrorMessage(error),
+      description: getApiErrorMessage(error),
     });
   }
 }

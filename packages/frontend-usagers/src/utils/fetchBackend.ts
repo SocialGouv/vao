@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from "#app";
-import type { BasicRoute } from "@vao/shared-bridge";
+import type { BasicRoute, RouteResponseError } from "@vao/shared-bridge";
 import {
   buildRequestPath,
   buildRequestQueryString,
@@ -9,7 +9,7 @@ import { $fetch, type FetchError } from "ofetch";
 
 export type FetchBackendOptions = Record<string, unknown>;
 
-export type ApiError = FetchError<{ message: string; name: string }>;
+export type ApiError = FetchError<RouteResponseError>;
 
 export const $fetchBackend = <T = any>(
   url: string,
@@ -104,6 +104,11 @@ export function buildRequestFile<Route extends BasicRoute>({
   }
 }
 
-export function getErrorMessage(error: unknown): string {
-  return (error as ApiError)?.data?.message || String(error);
+export function getApiErrorMessage(error: unknown): string {
+  return (
+    (error as ApiError)?.data?.message ??
+    (error as ApiError)?.data?.name ??
+    (error as Error).message ??
+    String(error)
+  );
 }
