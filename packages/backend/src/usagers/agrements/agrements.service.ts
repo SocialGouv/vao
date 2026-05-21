@@ -125,8 +125,9 @@ export const AgrementService = {
     agrement.dateFinValidite = addYears(agrement?.dateObtention, 5);
     let agrementId = null;
     if (agrement && agrement?.id) {
+      agrementId = agrement.id;
       const agrementAvant = await AgrementsRepository.getById({
-        agrementId: agrement?.id,
+        agrementId,
         withDetails: false,
       });
       const premiereTransmission =
@@ -143,7 +144,7 @@ export const AgrementService = {
           tx,
         });
         await AgrementService.updateSvaTimer({
-          agrementId: agrement.id!,
+          agrementId,
           statut: agrement.statut!,
           tx,
         });
@@ -255,17 +256,18 @@ export const AgrementService = {
           log.w("Aucun email trouvé pour l'agrément", agrementId);
           return agrementId;
         }
-
-        try {
-          await mailService.send(
-            AgrementMailUsagers.sendStatutTransmisMail({
-              date,
-              email,
-              regionDreets: nomObtentionRegion,
-            }),
-          );
-        } catch (e) {
-          log.w("Erreur lors de l'envoi de l'email de transmission", e);
+        if (agrement.statut === AGREMENT_STATUT.TRANSMIS) {
+          try {
+            await mailService.send(
+              AgrementMailUsagers.sendStatutTransmisMail({
+                date,
+                email,
+                regionDreets: nomObtentionRegion,
+              }),
+            );
+          } catch (e) {
+            log.w("Erreur lors de l'envoi de l'email de transmission", e);
+          }
         }
       }
       log.d("updated meta values - DONE", { agrementId });
