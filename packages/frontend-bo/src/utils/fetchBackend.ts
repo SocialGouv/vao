@@ -5,8 +5,11 @@ import {
   buildRequestQueryString,
   hashToFormData,
 } from "@vao/shared-bridge";
+import { $fetch, type FetchError } from "ofetch";
 
 export type FetchBackendOptions = Record<string, unknown>;
+
+export type ApiError = FetchError<{ message: string; name: string }>;
 
 export const $fetchBackend = <T = any>(
   url: string,
@@ -99,4 +102,8 @@ export function buildRequestFile<Route extends BasicRoute>({
     default:
       throw new Error("Method not supported");
   }
+}
+
+export function getErrorMessage(error: unknown): string {
+  return (error as ApiError)?.data?.message || String(error);
 }

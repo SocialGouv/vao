@@ -788,7 +788,7 @@ describe("POST /agrements", () => {
     expect(response.status).toBe(400);
     expect(response.body.message).toContain("Champ obligatoire");
     expect(response.body.message).toContain("motivations");
-    expect(response.body.name).toContain(ERRORS_COMMON.INVALID_BODY);
+    expect(response.body.name).toEqual(ERRORS_COMMON.INVALID_BODY);
   });
 });
 

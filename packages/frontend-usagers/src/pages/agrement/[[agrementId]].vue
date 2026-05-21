@@ -283,12 +283,10 @@ async function updateOrCreate(formValues: AgrementFormValues) {
     nextHash();
     return true;
   } catch (error) {
-    const e = error as ApiError;
-
     toaster.error({
       titleTag: "h2",
       title: "Erreur lors de l'enregistrement de l'agrément",
-      description: e.data?.message || String(error),
+      description: getErrorMessage(error),
     });
   }
 }

@@ -29,14 +29,36 @@ export function requestValidatorMiddleware<T extends BasicRoute>(
       req.validatedQuery = requestQueryValidator(validator.query, req.query);
       req.validatedBody = requestBodyValidator(validator.body, req.body);
     } catch (error) {
-      log.w("missing or invalid parameter", error);
-      const e = (error as Error).cause as yup.ValidationError;
+      log.w("request validation error", error);
+      const errorMessage = (error as Error).message || "";
+      if (
+        [
+          ERRORS_COMMON.INVALID_PARAMS,
+          ERRORS_COMMON.INVALID_QUERY,
+          ERRORS_COMMON.INVALID_BODY,
+        ].includes(errorMessage as ERRORS_COMMON)
+      ) {
+        const validationError = (error as Error).cause as yup.ValidationError;
+        log.d(
+          "🚨 Invalid request, paths:",
+          validationError.path,
+          "errors:",
+          validationError.errors,
+        );
+        return next(
+          new AppError(`${validationError.errors} : ${validationError.path}`, {
+            cause: error,
+            name: errorMessage,
+            statusCode: 400,
+          }),
+        );
+      }
 
       return next(
-        new AppError(`${e.errors} : ${e.path}`, {
-          cause: e,
-          name: (error as Error).message,
-          statusCode: 400,
+        new AppError(errorMessage, {
+          cause: error,
+          name: ERRORS_COMMON.INTERNAL_SERVER_ERROR,
+          statusCode: 500,
         }),
       );
     }
@@ -105,11 +127,8 @@ export function requestBodyValidator<T>(
       return validator.validateSync(body, { stripUnknown: true });
     } catch (error) {
       log.d("INVALID_BODY", error);
-      const e = error as yup.ValidationError;
-      log.d("🚨 Invalid field paths:", e.path);
-      log.d("🚨 Validation error details:", e.errors);
       throw new Error(ERRORS_COMMON.INVALID_BODY, {
-        cause: e,
+        cause: error,
       });
     }
   }
