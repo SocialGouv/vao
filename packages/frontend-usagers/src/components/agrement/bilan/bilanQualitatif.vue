@@ -23,14 +23,15 @@
           id="bilanQualPerceptionSensibilite-desc"
           class="light-decisions-text-text-mention-grey"
         >
-          Minimum 20 caractères. Objectif : recueillir la perception globale du
-          public accueilli (satisfaction, ressenti, difficultés rencontrées…).
-          Le nombre de caractères est insuffisant.
+          Objectif : recueillir la perception globale du public accueilli
+          (satisfaction, ressenti, difficultés rencontrées…). Le nombre de
+          caractères est insuffisant.
         </p>
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
             name="bilanQualPerceptionSensibilite"
+            hint="Minimum 20 caractères."
             :label="
               displayInput.AgrementBilanAnnuelInput[
                 'bilanQualPerceptionSensibilite'
@@ -78,13 +79,14 @@
           id="bilanQualPerspectiveEvol-desc"
           class="light-decisions-text-text-mention-grey"
         >
-          Minimum 20 caractères. Objectif : décrire les projets d’évolution de
-          l’offre ou les ajustements envisagés à partir de l’expérience passée.
+          Objectif : décrire les projets d’évolution de l’offre ou les
+          ajustements envisagés à partir de l’expérience passée.
         </p>
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
             name="bilanQualPerspectiveEvol"
+            hint="Minimum 20 caractères."
             :label="
               displayInput.AgrementBilanAnnuelInput['bilanQualPerspectiveEvol']
                 .label
@@ -128,13 +130,14 @@
           id="bilanQualElementsMarquants-desc"
           class="light-decisions-text-text-mention-grey"
         >
-          Minimum 20 caractères. Objectif : mettre en avant les faits saillants,
-          réussites, incidents, ou points d’attention de l’année.
+          Objectif : mettre en avant les faits saillants, réussites, incidents,
+          ou points d’attention de l’année.
         </p>
         <div class="fr-col-12">
           <DsfrInputGroup
             v-if="props.modifiable"
             name="bilanQualElementsMarquants"
+            hint="Minimum 20 caractères."
             :label="
               displayInput.AgrementBilanAnnuelInput[
                 'bilanQualElementsMarquants'
