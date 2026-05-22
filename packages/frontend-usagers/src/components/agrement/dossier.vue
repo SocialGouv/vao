@@ -1,13 +1,8 @@
 <template>
   <fieldset>
-    <legend class="fr-sr-only">Motivations</legend>
-    <TitleWithIcon
-      icon="fr-icon-award-fill"
-      :level="3"
-      title-class="fr-text--lead fr-mb-0"
-    >
-      Motivations
-    </TitleWithIcon>
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-award-fill" aria-hidden="true"></span>Motivations
+    </legend>
 
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
@@ -41,107 +36,93 @@
       />
     </div>
   </fieldset>
-  <fieldset>
-    <legend class="fr-sr-only">Immatriculation</legend>
-    <div class="fr-mt-8v">
-      <TitleWithIcon
-        icon="fr-icon-briefcase-fill"
-        :level="3"
-        title-class="fr-text--lead fr-mb-0"
-      >
-        Immatriculation
-      </TitleWithIcon>
-
-      <div class="fr-fieldset__element">
-        <div class="fr-col-12">
-          <FileUpload
-            :model-value="fileImmatriculation"
-            :cdn-url="props.cdnUrl"
-            label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
-            :modifiable="props.modifiable"
-            :error-message="fileImmatriculationErrorMessage"
-            @update:model-value="setFileImmatriculation"
-          />
-        </div>
+  <fieldset class="fr-mt-8v">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-briefcase-fill" aria-hidden="true"></span
+      >Immatriculation
+    </legend>
+    <div class="fr-fieldset__element">
+      <div class="fr-col-12">
+        <FileUpload
+          :model-value="fileImmatriculation"
+          :cdn-url="props.cdnUrl"
+          label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
+          :modifiable="props.modifiable"
+          :error-message="fileImmatriculationErrorMessage"
+          @update:model-value="setFileImmatriculation"
+        />
       </div>
+    </div>
 
-      <div class="fr-fieldset__element">
-        <div class="fr-col-12">
-          <DsfrInputGroup
-            v-if="props.modifiable"
-            name="dateObtentionCertificat"
-            :label="displayInput.AgrementInput['dateObtentionCertificat'].label"
-            :error-message="dateObtentionCertificatErrorMessage"
-            :is-valid="
-              dateObtentionCertificatMeta.touched
-                ? dateObtentionCertificatMeta.valid
-                : undefined
-            "
-            :label-visible="true"
-            :model-value="dateObtentionCertificat"
-            hint="format attendu : JJ/MM/AAAA"
-            @update:model-value="onDateObtentionCertificatChange"
-          />
-          <UtilsDisplayInput
-            v-else
-            label="Date d'obtention du certificat d'immatriculation"
-            :value="dateObtentionCertificat"
-            :input="displayInput.AgrementInput['dateObtentionCertificat']"
-            :error-message="dateObtentionCertificatErrorMessage"
-            :is-valid="dateObtentionCertificatMeta.valid"
-          />
-          <div class="fr-grid-row fr-my-3v">
-            <DsfrAlert
-              v-if="isCertificatExpire"
-              :type="'warning'"
-              :closeable="false"
-            >
-              Ce certificat a expiré. Veuillez le renouveler afin de rétablir
-              l’accès aux services.
-            </DsfrAlert>
-            <p v-else class="fr-message fr-message--info">
-              Ce certificat est valable 3 ans, il devra être renouvelé à son
-              échéance.
-            </p>
-          </div>
+    <div class="fr-fieldset__element">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          v-if="props.modifiable"
+          name="dateObtentionCertificat"
+          :label="displayInput.AgrementInput['dateObtentionCertificat'].label"
+          :error-message="dateObtentionCertificatErrorMessage"
+          :is-valid="
+            dateObtentionCertificatMeta.touched
+              ? dateObtentionCertificatMeta.valid
+              : undefined
+          "
+          :label-visible="true"
+          :model-value="dateObtentionCertificat"
+          hint="format attendu : JJ/MM/AAAA"
+          @update:model-value="onDateObtentionCertificatChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          label="Date d'obtention du certificat d'immatriculation"
+          :value="dateObtentionCertificat"
+          :input="displayInput.AgrementInput['dateObtentionCertificat']"
+          :error-message="dateObtentionCertificatErrorMessage"
+          :is-valid="dateObtentionCertificatMeta.valid"
+        />
+        <div class="fr-grid-row fr-my-3v">
+          <DsfrAlert
+            v-if="isCertificatExpire"
+            :type="'warning'"
+            :closeable="false"
+          >
+            Ce certificat a expiré. Veuillez le renouveler afin de rétablir
+            l’accès aux services.
+          </DsfrAlert>
+          <p v-else class="fr-message fr-message--info">
+            Ce certificat est valable 3 ans, il devra être renouvelé à son
+            échéance.
+          </p>
         </div>
       </div>
     </div>
   </fieldset>
 
-  <fieldset>
-    <legend class="fr-sr-only">Attestations</legend>
-    <div class="fr-mt-8v">
-      <legend class="fr-sr-only">Attestations</legend>
-      <TitleWithIcon
-        icon="fr-icon-file-text-fill"
-        :level="3"
-        title-class="fr-text--lead fr-mb-0"
-      >
-        Attestations
-      </TitleWithIcon>
-      <div class="fr-fieldset__element">
-        <FileUpload
-          :model-value="fileAttestationsRespCivile"
-          :cdn-url="props.cdnUrl"
-          label="Attestation d’assurance responsabilité civile"
-          hint="Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
-          :modifiable="props.modifiable"
-          :error-message="fileAttestationsRespCivileErrorMessage"
-          @update:model-value="setFileAttestationsRespCivile"
-        />
-      </div>
-      <div class="fr-fieldset__element">
-        <FileUpload
-          :model-value="fileAttestationsRapatriement"
-          :cdn-url="props.cdnUrl"
-          label="Attestation d’assurance en cas de rapatriement"
-          hint="Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
-          :modifiable="props.modifiable"
-          :error-message="fileAttestationsRapatriementErrorMessage"
-          @update:model-value="setFileAttestationsRapatriement"
-        />
-      </div>
+  <fieldset class="fr-mt-8v">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-file-text-fill" aria-hidden="true"></span
+      >Attestations
+    </legend>
+    <div class="fr-fieldset__element">
+      <FileUpload
+        :model-value="fileAttestationsRespCivile"
+        :cdn-url="props.cdnUrl"
+        label="Attestation d’assurance responsabilité civile"
+        hint="Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
+        :modifiable="props.modifiable"
+        :error-message="fileAttestationsRespCivileErrorMessage"
+        @update:model-value="setFileAttestationsRespCivile"
+      />
+    </div>
+    <div class="fr-fieldset__element">
+      <FileUpload
+        :model-value="fileAttestationsRapatriement"
+        :cdn-url="props.cdnUrl"
+        label="Attestation d’assurance en cas de rapatriement"
+        hint="Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
+        :modifiable="props.modifiable"
+        :error-message="fileAttestationsRapatriementErrorMessage"
+        @update:model-value="setFileAttestationsRapatriement"
+      />
     </div>
   </fieldset>
   <div v-if="props.showButtons && props.modifiable">
@@ -387,10 +368,5 @@ defineExpose({ validateDossier });
 <style scoped>
 .default-success {
   color: var(--text-default-success);
-}
-fieldset {
-  border: none;
-  margin: 0;
-  padding: 0;
 }
 </style>
