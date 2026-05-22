@@ -45,6 +45,7 @@
           v-if="props.modifiable"
           name="accompRespCompExp"
           label="description"
+          hint="Minimum 20 caractères."
           :model-value="accompRespCompExp"
           :label-visible="true"
           :is-textarea="true"
@@ -86,6 +87,7 @@
         <DsfrInputGroup
           v-if="props.modifiable"
           name="accompRespRecruteUrg"
+          hint="Minimum 20 caractères."
           :label="
             displayInput.AgrementProjetsInput['accompRespRecruteUrg'].label
           "
