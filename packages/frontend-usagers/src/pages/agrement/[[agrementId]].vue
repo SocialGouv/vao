@@ -143,7 +143,7 @@ async function saveAndTransmitAgrement() {
         case AGREMENT_STATUT.BROUILLON:
           return 0;
 
-        case AGREMENT_STATUT.A_MODIFIER:
+        case AGREMENT_STATUT.A_COMPLETER:
           return 1;
 
         case AGREMENT_STATUT.A_CORRIGER:
@@ -162,7 +162,7 @@ async function saveAndTransmitAgrement() {
       statut:
         agrementStore.agrementEnTraitement?.statut ===
         AGREMENT_STATUT.A_CORRIGER
-          ? AGREMENT_STATUT.COMPLETUDE_CONFIRME
+          ? AGREMENT_STATUT.EN_INSTRUCTION
           : AGREMENT_STATUT.TRANSMIS,
     });
     if (success) {

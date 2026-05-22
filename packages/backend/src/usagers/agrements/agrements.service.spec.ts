@@ -259,7 +259,7 @@ describe("AgrementService additional branch coverage", () => {
     await expect(
       AgrementService.updateSvaTimer({
         agrementId: 1,
-        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        statut: AGREMENT_STATUT.EN_INSTRUCTION,
         tx: {} as never,
       }),
     ).rejects.toMatchObject({

@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware(async () => {
   const agrementStore = useAgrementStore();
   const agrementStatutModification = [
     AGREMENT_STATUT.BROUILLON,
-    AGREMENT_STATUT.A_MODIFIER,
+    AGREMENT_STATUT.A_COMPLETER,
     AGREMENT_STATUT.A_CORRIGER,
   ];
 

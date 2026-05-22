@@ -64,7 +64,7 @@ const isAmodifierOrCorriger = computed(() => {
   const statut = agrementStore.agrementEnTraitement?.statut;
   return (
     statut != null &&
-    [AGREMENT_STATUT.A_MODIFIER, AGREMENT_STATUT.A_CORRIGER].includes(statut)
+    [AGREMENT_STATUT.A_COMPLETER, AGREMENT_STATUT.A_CORRIGER].includes(statut)
   );
 });
 

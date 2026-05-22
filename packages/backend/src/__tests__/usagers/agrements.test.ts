@@ -655,7 +655,7 @@ describe("POST /agrements", () => {
       boUserId: String(adminUser.id),
       commentaire:
         "Dossier à compléter car il manque des éléments pour pouvoir le traiter",
-      statut: AGREMENT_STATUT.A_MODIFIER,
+      statut: AGREMENT_STATUT.A_COMPLETER,
       territoireCode: agrementData.regionObtention!,
     });
     expect(mailService.send).toHaveBeenCalledTimes(3);
@@ -685,7 +685,7 @@ describe("POST /agrements", () => {
     expect(agrement?.statut).toBe(AGREMENT_STATUT.TRANSMIS);
   });
 
-  it("devrait changer le statut en agrement COMPLETUDE_CONFIRME après demande de correction", async () => {
+  it("devrait changer le statut en agrement EN_INSTRUCTION après demande de correction", async () => {
     const usagerUser = await createUsagersUser();
     // Ici on répond aux conditions de mise à jour backOffice
     const adminUser = await createAdminUser();
@@ -722,7 +722,7 @@ describe("POST /agrements", () => {
       boUserId: String(adminUser.id),
       commentaire:
         "Dossier à compléter car il manque des éléments pour pouvoir le traiter",
-      statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      statut: AGREMENT_STATUT.EN_INSTRUCTION,
       territoireCode: agrementData.regionObtention!,
     });
     expect(mailService.send).toHaveBeenCalledTimes(4);
@@ -743,7 +743,7 @@ describe("POST /agrements", () => {
       .send({
         ...agrementData,
         id: agrementId,
-        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        statut: AGREMENT_STATUT.EN_INSTRUCTION,
       });
     expect(responseCorrection.status).toBe(200);
     expect(responseCorrection.body.id).toBe(agrementId);
@@ -753,13 +753,13 @@ describe("POST /agrements", () => {
     const completudeEvent = history.find(
       (event) =>
         event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
-        event.type_precision === AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        event.type_precision === AGREMENT_STATUT.EN_INSTRUCTION,
     );
 
     expect(completudeEvent).toBeDefined();
     expect(completudeEvent?.usager_user).toBeDefined();
     const { agrement } = await getAgrement(agrementId);
-    expect(agrement?.statut).toBe(AGREMENT_STATUT.COMPLETUDE_CONFIRME);
+    expect(agrement?.statut).toBe(AGREMENT_STATUT.EN_INSTRUCTION);
 
     const svaTimer = await AgrementsRepositoryAdmin.getSvaTimerByStatut({
       agrementId,
@@ -927,7 +927,7 @@ describe("PATCH /agrements/:agrementId/statut", () => {
     await AgrementServiceAdmin.updateStatut({
       agrementId,
       boUserId: String(adminUser.id),
-      statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      statut: AGREMENT_STATUT.EN_INSTRUCTION,
       territoireCode: agrementData.regionObtention!,
     });
     expect(response.status).toBe(200);
@@ -938,13 +938,13 @@ describe("PATCH /agrements/:agrementId/statut", () => {
     const aModifierEvent = history.find(
       (event) =>
         event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
-        event.type_precision === AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        event.type_precision === AGREMENT_STATUT.EN_INSTRUCTION,
     );
 
     expect(aModifierEvent).toBeDefined();
     expect(aModifierEvent?.usager_user).toBeDefined();
     const { agrement } = await getAgrement(agrementId);
-    expect(agrement?.statut).toBe(AGREMENT_STATUT.COMPLETUDE_CONFIRME);
+    expect(agrement?.statut).toBe(AGREMENT_STATUT.EN_INSTRUCTION);
     await AgrementServiceAdmin.updateStatut({
       agrementId,
       boUserId: String(adminUser.id),
@@ -956,7 +956,7 @@ describe("PATCH /agrements/:agrementId/statut", () => {
       getFoAppHelper({ id: usagerUser.id }),
     )
       .patch(`/agrements/${agrementId}/statut`)
-      .send({ statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME });
+      .send({ statut: AGREMENT_STATUT.EN_INSTRUCTION });
     expect(responseCorrection.status).toBe(200);
     expect(responseCorrection.body.success).toBe(true);
   });
@@ -980,7 +980,7 @@ describe("PATCH /agrements/:agrementId/statut", () => {
     await AgrementServiceAdmin.updateStatut({
       agrementId,
       boUserId: String(adminUser.id),
-      statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      statut: AGREMENT_STATUT.EN_INSTRUCTION,
       territoireCode: agrementData.regionObtention!,
     });
     expect(response.status).toBe(200);
@@ -1028,7 +1028,7 @@ describe("PATCH /agrements/:agrementId/statut", () => {
     await AgrementServiceAdmin.updateStatut({
       agrementId,
       boUserId: String(adminUser.id),
-      statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      statut: AGREMENT_STATUT.EN_INSTRUCTION,
       territoireCode: agrementData.regionObtention!,
     });
     expect(response.status).toBe(200);
