@@ -1,15 +1,13 @@
 import { useRuntimeConfig } from "#app";
-import type { BasicRoute, RouteResponseError } from "@vao/shared-bridge";
+import type { BasicRoute } from "@vao/shared-bridge";
 import {
   buildRequestPath,
   buildRequestQueryString,
   hashToFormData,
 } from "@vao/shared-bridge";
-import { $fetch, type FetchError } from "ofetch";
+import { $fetch } from "ofetch";
 
 export type FetchBackendOptions = Record<string, unknown>;
-
-export type ApiError = FetchError<RouteResponseError>;
 
 export const $fetchBackend = <T = any>(
   url: string,
@@ -102,13 +100,4 @@ export function buildRequestFile<Route extends BasicRoute>({
     default:
       throw new Error("Method not supported");
   }
-}
-
-export function getApiErrorMessage(error: unknown): string {
-  return (
-    (error as ApiError)?.data?.message ??
-    (error as ApiError)?.data?.name ??
-    (error as Error).message ??
-    String(error)
-  );
 }

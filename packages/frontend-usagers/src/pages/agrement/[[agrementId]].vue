@@ -112,7 +112,11 @@ import type {
   FileKey,
 } from "@vao/shared-bridge";
 import { AGREMENT_STATUT, FILE_CATEGORY_CONFIG } from "@vao/shared-bridge";
-import { useToaster, handleDocumentUploadError } from "@vao/shared-ui";
+import {
+  useToaster,
+  handleDocumentUploadError,
+  getApiErrorMessage,
+} from "@vao/shared-ui";
 import { getFileByCategory } from "~/utils/agrementFile";
 
 const route = useRoute();

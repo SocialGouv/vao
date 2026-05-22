@@ -10,6 +10,7 @@ import statusUser from "./statusUser";
 import * as columnsTable from "./columnsTable";
 import * as fileUtils from "./file";
 import { handleDocumentUploadError } from "./handleDocumentUploadError";
+export * from "./fetchBackend";
 
 const regex = hebergement;
 const eigUtilsHebergement = hebergement;
