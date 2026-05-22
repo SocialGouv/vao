@@ -29,10 +29,36 @@ export function requestValidatorMiddleware<T extends BasicRoute>(
       req.validatedQuery = requestQueryValidator(validator.query, req.query);
       req.validatedBody = requestBodyValidator(validator.body, req.body);
     } catch (error) {
-      log.w("missing or invalid parameter", error);
+      log.w("request validation error", error);
+      const errorMessage = (error as Error).message || "";
+      if (
+        [
+          ERRORS_COMMON.INVALID_PARAMS,
+          ERRORS_COMMON.INVALID_QUERY,
+          ERRORS_COMMON.INVALID_BODY,
+        ].includes(errorMessage as ERRORS_COMMON)
+      ) {
+        const validationError = (error as Error).cause as yup.ValidationError;
+        log.d(
+          "🚨 Invalid request, paths:",
+          validationError.path,
+          "errors:",
+          validationError.errors,
+        );
+        return next(
+          new AppError(`${validationError.errors} : ${validationError.path}`, {
+            cause: error,
+            name: errorMessage,
+            statusCode: 400,
+          }),
+        );
+      }
+
       return next(
-        new AppError("Paramètre incorrect", {
-          statusCode: 400,
+        new AppError(errorMessage, {
+          cause: error,
+          name: ERRORS_COMMON.INTERNAL_SERVER_ERROR,
+          statusCode: 500,
         }),
       );
     }
@@ -49,7 +75,9 @@ export function requestParamsValidator<T>(
       return validator.validateSync(params, { stripUnknown: true });
     } catch (error) {
       log.w("INVALID_PARAMS", error);
-      throw new Error(ERRORS_COMMON.INVALID_PARAMS);
+      throw new Error(ERRORS_COMMON.INVALID_PARAMS, {
+        cause: error,
+      });
     }
   }
   return {};
@@ -81,7 +109,9 @@ export function requestQueryValidator<T>(
       return validatedQuery;
     } catch (error) {
       log.d("INVALID_QUERY", (error as Error).message, error);
-      throw new Error(ERRORS_COMMON.INVALID_QUERY);
+      throw new Error(ERRORS_COMMON.INVALID_QUERY, {
+        cause: error,
+      });
     }
   }
   return {};
@@ -97,10 +127,9 @@ export function requestBodyValidator<T>(
       return validator.validateSync(body, { stripUnknown: true });
     } catch (error) {
       log.d("INVALID_BODY", error);
-      const e = error as yup.ValidationError;
-      log.d("🚨 Invalid field paths:", e.path);
-      log.d("🚨 Validation error details:", e.errors);
-      throw new Error(ERRORS_COMMON.INVALID_BODY);
+      throw new Error(ERRORS_COMMON.INVALID_BODY, {
+        cause: error,
+      });
     }
   }
   return {};

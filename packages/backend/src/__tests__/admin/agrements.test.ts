@@ -3,6 +3,7 @@ import {
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
   AgrementDto,
+  ERRORS_COMMON,
   FILE_CATEGORY,
   FUNCTIONAL_ERRORS,
   USER_TYPE,
@@ -126,6 +127,16 @@ describe("GET /admin/agrements", () => {
     );
     expect(response.status).toBe(200);
     expect(response.body.agrements.length).toBe(0);
+  });
+
+  it("retourne 400 si le filtre statut est invalide", async () => {
+    authUserBo = await createAdminUser({ territoireCode: "IDF" });
+    const response = await request(getBoAppHelper(authUserBo)).get(
+      `/admin/agrements?statut=STATUT_INVALIDE`,
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.body.name).toBe(ERRORS_COMMON.INVALID_QUERY);
   });
 });
 

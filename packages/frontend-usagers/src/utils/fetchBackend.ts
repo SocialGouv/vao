@@ -5,6 +5,7 @@ import {
   buildRequestQueryString,
   hashToFormData,
 } from "@vao/shared-bridge";
+import { $fetch } from "ofetch";
 
 export type FetchBackendOptions = Record<string, unknown>;
 

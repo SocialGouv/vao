@@ -89,7 +89,7 @@ interface FormulaireItem {
 
 const toaster = useToaster();
 
-const emit = defineEmits(["update:valid", "update", "previous", "next"]);
+const emit = defineEmits(["update:valid", "update", "previous"]);
 
 const sejoursPrevusRef = ref(null);
 const animationsActivitesRef = ref(null);
@@ -224,7 +224,6 @@ const handleSuivant = async () => {
       } else {
         emit("update", transformedData);
       }
-      emit("next");
     } else {
       toaster.error({
         titleTag: "h2",

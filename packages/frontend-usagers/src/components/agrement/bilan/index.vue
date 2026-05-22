@@ -63,7 +63,7 @@ const props = defineProps({
 
 const toaster = useToaster();
 
-const emit = defineEmits(["update:valid", "update", "previous", "next"]);
+const emit = defineEmits(["update:valid", "update", "previous"]);
 
 const changementsRef = ref(null);
 const financierRef = ref(null);
@@ -234,7 +234,6 @@ const handleSuivant = async () => {
     } else {
       emit("update", transformedData);
     }
-    emit("next");
   } else {
     toaster.error({
       titleTag: "h2",

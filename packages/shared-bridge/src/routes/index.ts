@@ -19,6 +19,11 @@ export interface BasicRoute {
 
 export type RouteResponseBody<T> = T;
 
+export type RouteResponseError = {
+  message: string;
+  name: string;
+};
+
 export type RouteSchema<T extends BasicRoute> = {
   params?: yup.ObjectSchema<NonNullable<T["params"]>>;
   body?: yup.ObjectSchema<NonNullable<T["body"]>>;
