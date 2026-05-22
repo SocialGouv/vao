@@ -31,15 +31,14 @@
     Pour chaque section, renseignez au choix une description texte et/ou un
     fichier joint. L’un des deux est requis.
   </p>
-  <div class="border fr-p-4v">
-    <h4 class="fr-text fr-text--lg">
-      <strong>
-        Compétences et expériences des accompagnants prévus par lieu de
-        vacances, notamment pour ce qui concerne l’encadrement de certaines
-        activités sportives. Ou expériences du responsable du déroulement du
-        séjour sur le lieu de vacances.
-      </strong>
-    </h4>
+  <fieldset class="fr-p-4v">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      Compétences et expériences des accompagnants prévus par lieu de vacances,
+      notamment pour ce qui concerne l’encadrement de certaines activités
+      sportives. Ou expériences du responsable du déroulement du séjour sur le
+      lieu de vacances.
+    </legend>
+
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
@@ -75,14 +74,13 @@
         {{ filesProjetsSejoursCompetencesExperienceError }}
       </p>
     </div>
-  </div>
-  <div class="border fr-p-4v fr-mt-6v">
-    <h4 class="fr-text fr-text--lg">
-      <strong>
-        Mesures envisagées au cas où des accompagnants supplémentaires devraient
-        être recrutés en urgence
-      </strong>
-    </h4>
+  </fieldset>
+  <fieldset class="fr-p-4v fr-mt-6v">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      Mesures envisagées au cas où des accompagnants supplémentaires devraient
+      être recrutés en urgence
+    </legend>
+
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
@@ -117,7 +115,7 @@
         {{ filesProjetsSejoursMesuresError }}
       </p>
     </div>
-  </div>
+  </fieldset>
   <!-- <div class="fr-fieldset__element fr-mt-6v">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursComplementaires"

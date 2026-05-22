@@ -1,68 +1,69 @@
 <template>
-  <TitleWithIcon
-    icon="fr-icon-capsule-fill"
-    :level="3"
-    title-class="fr-text--lead fr-mb-0"
-  >
-    Suivi médical prévu
-  </TitleWithIcon>
+  <fieldset>
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-capsule-fill" aria-hidden="true"></span>
+      Suivi médical prévu
+    </legend>
+    <div class="fr-fieldset__element">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          v-if="props.modifiable"
+          name="suiviMedDistribution"
+          :label="
+            displayInput.AgrementProjetsInput['suiviMedDistribution'].label
+          "
+          :model-value="suiviMedDistribution"
+          :label-visible="true"
+          :is-textarea="true"
+          :is-valid="suiviMedDistributionMeta.valid"
+          :error-message="suiviMedDistributionErrorMessage"
+          @update:model-value="onSuiviMedDistributionChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          :value="suiviMedDistribution"
+          :input="displayInput.AgrementProjetsInput['suiviMedDistribution']"
+          :is-valid="suiviMedDistributionMeta.valid"
+          :error-message="suiviMedDistributionErrorMessage"
+        />
+      </div>
+    </div>
 
-  <div class="fr-fieldset__element">
-    <div class="fr-col-12">
-      <DsfrInputGroup
-        v-if="props.modifiable"
-        name="suiviMedDistribution"
-        :label="displayInput.AgrementProjetsInput['suiviMedDistribution'].label"
-        :model-value="suiviMedDistribution"
-        :label-visible="true"
-        :is-textarea="true"
-        :is-valid="suiviMedDistributionMeta.valid"
-        :error-message="suiviMedDistributionErrorMessage"
-        @update:model-value="onSuiviMedDistributionChange"
-      />
-      <UtilsDisplayInput
-        v-else
-        :value="suiviMedDistribution"
-        :input="displayInput.AgrementProjetsInput['suiviMedDistribution']"
-        :is-valid="suiviMedDistributionMeta.valid"
-        :error-message="suiviMedDistributionErrorMessage"
+    <div class="fr-fieldset__element fr-mt-8v">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          v-if="props.modifiable"
+          name="suiviMedAccordSejour"
+          :label="
+            displayInput.AgrementProjetsInput['suiviMedAccordSejour'].label
+          "
+          :model-value="suiviMedAccordSejour"
+          :label-visible="true"
+          :is-textarea="true"
+          :is-valid="suiviMedAccordSejourMeta.valid"
+          :error-message="suiviMedAccordSejourErrorMessage"
+          @update:model-value="onSuiviMedAccordSejourChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          :value="suiviMedAccordSejour"
+          :input="displayInput.AgrementProjetsInput['suiviMedAccordSejour']"
+          :is-valid="suiviMedAccordSejourMeta.valid"
+          :error-message="suiviMedAccordSejourErrorMessage"
+        />
+      </div>
+    </div>
+    <div class="fr-fieldset__element">
+      <UtilsMultiFilesUpload
+        v-model="filesProjetsSejoursSuiviMed"
+        :modifiable="props.modifiable"
+        label="Ajouter des fichiers (optionnel)"
       />
     </div>
-  </div>
-
-  <div class="fr-fieldset__element fr-mt-8v">
-    <div class="fr-col-12">
-      <DsfrInputGroup
-        v-if="props.modifiable"
-        name="suiviMedAccordSejour"
-        :label="displayInput.AgrementProjetsInput['suiviMedAccordSejour'].label"
-        :model-value="suiviMedAccordSejour"
-        :label-visible="true"
-        :is-textarea="true"
-        :is-valid="suiviMedAccordSejourMeta.valid"
-        :error-message="suiviMedAccordSejourErrorMessage"
-        @update:model-value="onSuiviMedAccordSejourChange"
-      />
-      <UtilsDisplayInput
-        v-else
-        :value="suiviMedAccordSejour"
-        :input="displayInput.AgrementProjetsInput['suiviMedAccordSejour']"
-        :is-valid="suiviMedAccordSejourMeta.valid"
-        :error-message="suiviMedAccordSejourErrorMessage"
-      />
-    </div>
-  </div>
-  <div class="fr-fieldset__element">
-    <UtilsMultiFilesUpload
-      v-model="filesProjetsSejoursSuiviMed"
-      :modifiable="props.modifiable"
-      label="Ajouter des fichiers (optionnel)"
-    />
-  </div>
+  </fieldset>
 </template>
 
 <script setup lang="ts">
-import { TitleWithIcon } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
