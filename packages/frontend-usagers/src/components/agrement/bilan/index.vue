@@ -18,7 +18,7 @@
       :cdn-url="props.cdnUrl"
       :modifiable="props.modifiable"
     />
-    <div class="separator"></div>
+    <div class="separator fr-mt-8v"></div>
     <AgrementBilanFinancier
       ref="financierRef"
       :init-agrement="props.initAgrement ?? {}"

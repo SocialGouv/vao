@@ -1,50 +1,50 @@
 <template>
-  <TitleWithIcon
-    icon="fr-icon-map-pin-2-fill"
-    :level="3"
-    title-class="fr-text--lead fr-mb-0"
-  >
-    Séjours (par années)
-  </TitleWithIcon>
-  <p class="light-decisions-text-text-default-info fr-text--xs">
-    <span class="fr-icon-info-fill" aria-hidden="true"></span>
-    Ces informations ont été automatiquement remplies à partir de vos
-    déclarations de séjour. Veuillez les vérifier et les corriger si nécessaire.
-  </p>
-  <p>Sélectionner les années</p>
-  <p class="fr-hint-text">Toutes les années doivent être renseignées</p>
-  <DsfrTabs
-    v-model="selectedTabIndex"
-    tab-list-name="display-sejours-tabs"
-    :tab-titles="tabTitles"
-    :initial-selected-index="initialSelectedIndex"
-    @update:model-value="selectTab"
-  >
-    <DsfrTabContent
-      v-for="(tab, idx) in tabTitles"
-      :key="tab.tabId"
-      :panel-id="tab.panelId"
-      :tab-id="tab.tabId"
-      :selected="selectedTabIndex === idx"
-      :asc="asc"
+  <fieldset class="fr-mt-8v">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
+      Séjours (par années)
+    </legend>
+    <p class="light-decisions-text-text-default-info fr-text--xs">
+      <span class="fr-icon-info-fill" aria-hidden="true"></span>
+      Ces informations ont été automatiquement remplies à partir de vos
+      déclarations de séjour. Veuillez les vérifier et les corriger si
+      nécessaire.
+    </p>
+    <p>Sélectionner les années</p>
+    <p class="fr-hint-text">Toutes les années doivent être renseignées</p>
+    <DsfrTabs
+      v-model="selectedTabIndex"
+      tab-list-name="display-sejours-tabs"
+      :tab-titles="tabTitles"
+      :initial-selected-index="initialSelectedIndex"
+      @update:model-value="selectTab"
     >
-      <AgrementBilanSejourDetails
-        :ref="(el) => setSejourDetailsRef(el, idx)"
-        :year="parseInt(tab.title)"
-        :bilan-annuel="bilanAnnuelByYear[parseInt(tab.title)]"
-        :agrement-status="props.initAgrement?.statut"
-        :agrement-id="props.initAgrement?.id"
-        :modifiable="props.modifiable"
-      />
-      <p v-if="invalidYears.length > 0" class="fr-error-text fr-mt-2w">
-        {{
-          invalidYears.length > 1
-            ? `Aucun séjour renseigné pour les années ${invalidYears.sort((a, b) => b - a).join(", ")}. Veuillez ajouter au moins un séjour par année.`
-            : `Aucun séjour renseigné pour l'année ${invalidYears[0]}. Veuillez ajouter au moins un séjour.`
-        }}
-      </p>
-    </DsfrTabContent>
-  </DsfrTabs>
+      <DsfrTabContent
+        v-for="(tab, idx) in tabTitles"
+        :key="tab.tabId"
+        :panel-id="tab.panelId"
+        :tab-id="tab.tabId"
+        :selected="selectedTabIndex === idx"
+        :asc="asc"
+      >
+        <AgrementBilanSejourDetails
+          :ref="(el) => setSejourDetailsRef(el, idx)"
+          :year="parseInt(tab.title)"
+          :bilan-annuel="bilanAnnuelByYear[parseInt(tab.title)]"
+          :agrement-status="props.initAgrement?.statut"
+          :agrement-id="props.initAgrement?.id"
+          :modifiable="props.modifiable"
+        />
+        <p v-if="invalidYears.length > 0" class="fr-error-text fr-mt-2w">
+          {{
+            invalidYears.length > 1
+              ? `Aucun séjour renseigné pour les années ${invalidYears.sort((a, b) => b - a).join(", ")}. Veuillez ajouter au moins un séjour par année.`
+              : `Aucun séjour renseigné pour l'année ${invalidYears[0]}. Veuillez ajouter au moins un séjour.`
+          }}
+        </p>
+      </DsfrTabContent>
+    </DsfrTabs>
+  </fieldset>
 </template>
 
 <script setup lang="ts">
