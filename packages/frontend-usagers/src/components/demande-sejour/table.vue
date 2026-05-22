@@ -38,12 +38,12 @@
       <div class="buttons-group">
         <NuxtLink
           :to="`/demande-sejour/${String(row.declarationId ?? '')}?defaultTabIndex=0`"
-          title="Naviguer vers la demande séjour"
+          title="Naviguer vers la demande de séjour"
           class="fr-btn fr-btn--sm inline-flex justify-center no-background-image"
         >
           <span class="fr-icon-arrow-right-s-line" aria-hidden="true"></span>
           <span class="fr-sr-only">
-            Naviguer vers la demande séjour: {{ row.idFonctionnelle }}
+            Naviguer vers la demande de séjour: {{ row.idFonctionnelle }}
           </span>
         </NuxtLink>
         <DsfrButton
@@ -62,7 +62,7 @@
           "
           :disabled="
             !enabledDeleteCancelStatus.includes(String(row.statut ?? '')) ||
-            userStore.user?.userSiret !== row.siret
+            siretUser !== row.siret
           "
           @click="
             handleRemoveClose(
@@ -167,6 +167,7 @@ interface ApiQuery extends Record<string, unknown> {
 
 const route = useRoute();
 const demandeSejourStore = useDemandeSejourStore();
+const organismeStore = useOrganismeStore();
 const departementStore = useDepartementStore();
 const toaster = useToaster();
 const userStore = useUserStore();
@@ -178,6 +179,13 @@ const optionType = columnsTable.optionType;
 const { query } = route;
 
 const title = "Liste des séjours";
+
+const siretUser = computed(
+  () =>
+    userStore.user?.userSiret ??
+    organismeStore.organismeCourant?.personneMorale?.siret ??
+    organismeStore.organismeCourant?.personnePhysique?.siret,
+);
 
 const draftStatus = statusUtils.defaultStatus.BROUILLON;
 const enabledCopyStatus: string[] = [
