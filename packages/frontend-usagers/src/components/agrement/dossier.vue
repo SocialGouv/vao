@@ -3,7 +3,6 @@
     <legend class="fr-fieldset__legend fr-text--lead">
       <span class="fr-icon-award-fill" aria-hidden="true"></span>Motivations
     </legend>
-
     <div class="fr-fieldset__element">
       <div class="fr-col-12">
         <DsfrInputGroup
