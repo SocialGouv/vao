@@ -12,7 +12,7 @@ import {
 } from "./helpers/userHelper";
 
 beforeAll(async () => {
-  await createTestContainer({ withSeeds: true });
+  await createTestContainer();
 });
 
 afterAll(async () => {
@@ -25,7 +25,7 @@ describe("POST /e2e/reset", () => {
       email: "e2e-test@example.com",
     });
     await createOrganisme({ userId: usager.id });
-    createAdminUserValide({ email: "tnra-test@example.com" });
+    await createAdminUserValide({ email: "tnra-test@example.com" });
     let response = await request(app).post("/e2e/reset");
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
@@ -33,7 +33,7 @@ describe("POST /e2e/reset", () => {
       deletedOrganismesForcedCount: 0,
       deletedUsersCount: 1,
       deletedUsersForcedCount: 0,
-      insertedUserCount: 0,
+      insertedUserCount: 2,
     });
 
     response = await request(app).post("/e2e/reset");

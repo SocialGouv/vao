@@ -7,38 +7,31 @@ import {
   getTransportsFile,
   loginBo,
   loginUsagers,
+  logSuiteName,
+  logTestName,
+  logTestResult,
 } from "./utils/helper";
-import { getAgentsRegionalIDFUser, getOvaUser } from "./utils/users";
+import { getAgentRegionalIDFUser, getOvaUser } from "./utils/users";
 import { getUrls } from "./utils/urls";
-import { resetSeeds } from "./utils/seed";
 import { E2E_SIRET } from "../packages/backend/src/controllers/e2e";
 
 const { appUsagersUrl, appBoUrl, maildevUrl } = getUrls();
+const userOva = getOvaUser();
+const agentsRegionalIDF = getAgentRegionalIDFUser();
 
 const testName = "Création de compte OVA - Personne physique";
 
 test.describe.serial(testName, () => {
   let validationPage: Page;
-  let username: string;
-  let password: string;
-
-  test.beforeAll(() => {
-    const ctx = getOvaUser();
-    username = ctx.username;
-    password = ctx.password;
+  test.afterEach(async ({ page }, testInfo) => {
+    await logTestResult(page, testInfo);
   });
 
-  test(`Étape 1 - Création de la demande de compte`, async ({
+  test(`Étape 1 - Création de la demande de compte (OVA)`, async ({
     page,
   }, testInfo) => {
-    if (testInfo.retry > 0) {
-      console.log(
-        `>>>>>>>>>>>>>>>>> RETRY ATTEMPT ${testInfo.retry} <<<<<<<<<<<<<<<<<<`,
-      );
-      await resetSeeds();
-    }
-    console.log(`===== ${testName} =====`);
-    console.log(`-> ${testInfo.title}`);
+    await logSuiteName(testName, testInfo, true);
+    logTestName(testInfo);
     await page.goto(`${appUsagersUrl}/connexion`);
     await expect(page.getByText("Connexion à VAO")).toBeVisible();
 
@@ -48,19 +41,19 @@ test.describe.serial(testName, () => {
       .click();
     await page
       .getByRole("textbox", { name: "Adresse courriel Format" })
-      .fill(username);
+      .fill(userOva.username);
     await page
       .getByRole("textbox", { name: "Mot de passe Veuillez saisir" })
       .click();
     await page
       .getByRole("textbox", { name: "Mot de passe Veuillez saisir" })
-      .fill(password);
+      .fill(userOva.password);
     await page
       .getByRole("textbox", { name: "Confirmation mot de passe" })
       .click();
     await page
       .getByRole("textbox", { name: "Confirmation mot de passe" })
-      .fill(password);
+      .fill(userOva.password);
     await page
       .getByRole("textbox", { name: "Nom Veuillez saisir votre nom" })
       .click();
@@ -91,12 +84,14 @@ test.describe.serial(testName, () => {
     );
   });
 
-  test("Étape 2 - Validation de la demande", async ({ page }, testInfo) => {
-    console.log(`-> ${testInfo.title}`);
+  test("Étape 2 - Validation de la demande (OVA)", async ({
+    page,
+  }, testInfo) => {
+    logTestName(testInfo);
     await page.goto(`${maildevUrl}/#/`);
     await page
       .getByRole("link", {
-        name: `Portail VAO - Validez votre adresse courriel To: ${username}`,
+        name: `Portail VAO - Validez votre adresse courriel To: ${userOva.username}`,
       })
       .first()
       .click();
@@ -119,10 +114,11 @@ test.describe.serial(testName, () => {
     );
   });
 
-  test("Étape 3 - Activation du compte", async ({ page }, testInfo) => {
-    console.log(`-> ${testInfo.title}`);
-    const agentsRegionalIDF = getAgentsRegionalIDFUser();
-    // test.skip(!runLocal, "Skipping test on CI, waiting for new PIC");
+  test("Étape 3 - Activation du compte (Agent IDF)", async ({
+    page,
+  }, testInfo) => {
+    logTestName(testInfo);
+
     await page.goto(`${appBoUrl}`);
     await loginBo(page, agentsRegionalIDF.username, agentsRegionalIDF.password);
 
@@ -138,11 +134,11 @@ test.describe.serial(testName, () => {
     );
   });
 
-  test("Étape 4 - Complétion du compte", async ({ page }, testInfo) => {
-    console.log(`-> ${testInfo.title}`);
-    // test.skip(!runLocal, "Skipping test on CI, waiting for new PIC");
+  test("Étape 4 - Complétion du compte (OVA)", async ({ page }, testInfo) => {
+    logTestName(testInfo);
+
     await page.goto(`${appUsagersUrl}`);
-    await loginUsagers(page, username, password);
+    await loginUsagers(page, userOva.username, userOva.password, true);
 
     await page
       .getByText(

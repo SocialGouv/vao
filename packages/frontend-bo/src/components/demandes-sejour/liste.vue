@@ -489,7 +489,7 @@ const validatePriseEnCharge = async () => {
       credentials: "include",
     });
     declarationAPrendreEnCharge.value = null;
-    navigateTo({
+    await navigateTo({
       path: `/sejours/${declarationId}/${nestedPage.value}`,
     });
   } catch (error) {

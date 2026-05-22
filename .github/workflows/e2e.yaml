@@ -5,14 +5,16 @@ on:
 
 env:
   BRANCH_NAME: ${{ github.event.deployment.ref || github.event.pull_request.head.ref || github.ref_name }}
+  E2E_BO_PASSWORD: ${{ secrets.E2E_BO_PASSWORD }}
+  TZ: Europe/Paris
 jobs:
   e2e:
     if: ${{ github.event.deployment_status.state == 'success' }}
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.50.1
-      options: --user 1001
+      image: mcr.microsoft.com/playwright:v1.50.1-noble
+      options: --user 1001 --ipc=host
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -30,8 +32,6 @@ jobs:
       - name: Set env
         run: |
           echo "SITE_URL=${{ steps.env.outputs.subdomain }}.ovh.fabrique.social.gouv.fr" >> $GITHUB_ENV
-      # - name: Install Playwright Browsers
-      #   run: pnpm playwright install --with-deps
       - name: Run Playwright tests (main or prepod)
         if: ${{ env.BRANCH_NAME == 'main' || env.BRANCH_NAME == 'prepod' }}
         run: |

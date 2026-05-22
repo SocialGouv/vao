@@ -173,6 +173,7 @@
             name="modal-confirm-transmission"
             :opened="isModalConfirmTransmissionOpened"
             size="md"
+            title=""
             @close="onCloseConfirmTransmissionModal"
           >
             <DemandeSejourConfirmTransmission />
@@ -248,14 +249,18 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import dayjs from "dayjs";
 import {
   Chat,
   DemandeStatusBadge,
   fileUtils,
   useToaster,
+  type ApiError,
 } from "@vao/shared-ui";
+import type { DemandeSejourCourante } from "~/stores/demande-sejour";
+import type { UploadedFile } from "@vao/shared-bridge";
+
 const getFileUploadErrorMessage = fileUtils.getFileUploadErrorMessage;
 
 const route = useRoute();
@@ -282,7 +287,7 @@ useHead({
   ],
 });
 const links =
-  parseInt(route.query?.defaultTabIndex) === 0
+  parseInt(route.query?.defaultTabIndex as string) === 0
     ? [
         {
           to: "/",
@@ -314,9 +319,16 @@ const log = logger("pages/demande-sejour/[[declarationId]]");
 
 const config = useRuntimeConfig();
 const demandeSejourStore = useDemandeSejourStore();
-const demandeCourante = computed(() => {
-  return demandeSejourStore.demandeCourante;
-});
+const demandeCourante = computed(
+  () =>
+    demandeSejourStore.demandeCourante as DemandeSejourCourante & {
+      organisme?: {
+        typeOrganisme?: string;
+        personneMorale?: { siegeSocial?: boolean };
+        organismeId?: string;
+      };
+    },
+);
 
 const organismeStore = useOrganismeStore();
 
@@ -326,22 +338,28 @@ const organismeEnCours = computed(() => {
     demandeSejourStore?.demandeCourante.statut ===
       DeclarationSejour.statuts.BROUILLON
   ) {
-    return organismeStore.organismeCourant;
+    return organismeStore.organismeCourant as unknown as Record<
+      string,
+      unknown
+    >;
   } else {
-    return demandeSejourStore.demandeCourante.organisme;
+    return demandeSejourStore.demandeCourante.organisme as unknown as Record<
+      string,
+      unknown
+    >;
   }
 });
 
 const initialSelectedIndex = parseInt(
-  route.query?.defaultTabIndex ? route.query.defaultTabIndex : 0,
+  route.query?.defaultTabIndex ? (route.query.defaultTabIndex as string) : "0",
 );
 
-const chatRef = ref(null);
+const chatRef = ref<{ resetForm: () => void } | null>(null);
 const asc = ref(true);
 const selectedTabIndex = ref(initialSelectedIndex);
 
 if (route.params.declarationId) {
-  demandeSejourStore.fetchMessages(route.params.declarationId);
+  demandeSejourStore.fetchMessages(route.params.declarationId as string);
 }
 
 const {
@@ -364,7 +382,7 @@ const {
   credentials: "include",
 });
 
-const selectTab = async (idx) => {
+const selectTab = async (idx: number) => {
   asc.value = selectedTabIndex.value < idx;
   if (idx === 2 && !historique.value) {
     executeHistorique();
@@ -373,18 +391,18 @@ const selectTab = async (idx) => {
     executeEig();
   }
   if (idx === 3) {
-    await demandeSejourStore.readMessages(route.params.declarationId);
-    demandeSejourStore.fetchMessages(route.params.declarationId);
+    await demandeSejourStore.readMessages(route.params.declarationId as string);
+    demandeSejourStore.fetchMessages(route.params.declarationId as string);
   }
 };
 
 const unreadMessages = computed(() => {
-  const nb = demandeSejourStore.messages.filter(
+  const nb = demandeSejourStore.messages!.filter(
     (m) => !m.readAt && m.backUserId != null,
   ).length;
   return nb && nb > 0 ? `(${nb})` : "";
 });
-const sejourId = ref(route.params.declarationId);
+const sejourId = ref(route.params.declarationId as string | string[] | number);
 
 const tabTitles = computed(() => [
   {
@@ -431,7 +449,7 @@ const sommaireOptions = demandeSejourMenus
   .filter(
     (menu) =>
       !menu.statutsMasques ||
-      !menu.statutsMasques.includes(demandeCourante.value.statut),
+      !menu.statutsMasques.includes(demandeCourante.value.statut as string),
   )
   .map((m) => m.id);
 
@@ -440,7 +458,7 @@ const titleStart = computed(() =>
 );
 const titleEnd = " | Vacances Adaptées Organisées";
 
-const titles = {
+const titles: Record<string | number, () => string> = {
   "#info-generales": () =>
     titleStart.value + "étape 1 sur 8 | Informations générales" + titleEnd,
   "#info-vacanciers": () =>
@@ -546,7 +564,13 @@ const demandeDetails = computed(() => {
 
 const isSendingMessage = ref(false);
 
-const sendMessage = async ({ message, file }) => {
+const sendMessage = async ({
+  message,
+  file,
+}: {
+  message?: string;
+  file?: File;
+}) => {
   let newFile;
   isSendingMessage.value = true;
   if (file) {
@@ -563,7 +587,7 @@ const sendMessage = async ({ message, file }) => {
       log.w(error);
       const description = getFileUploadErrorMessage(
         file?.name,
-        error?.data?.name,
+        (error as ApiError)?.data?.name,
       );
       toaster.error({
         titleTag: "h2",
@@ -575,13 +599,13 @@ const sendMessage = async ({ message, file }) => {
   }
   try {
     const url = `/message/${sejourId.value}`;
-    const response = await $fetchBackend(url, {
+    const response = (await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
       body: { message: message ?? "", file: newFile },
-    });
+    })) as { id?: number };
     if (response.id) {
-      chatRef.value.resetForm();
+      chatRef.value!.resetForm();
     }
     isSendingMessage.value = false;
   } catch (error) {
@@ -593,10 +617,10 @@ const sendMessage = async ({ message, file }) => {
       role: "alert",
     });
   }
-  demandeSejourStore.fetchMessages(sejourId.value);
+  demandeSejourStore.fetchMessages(sejourId.value as string);
 };
 
-async function updateOrCreate(data, type) {
+async function updateOrCreate(data: Record<string, unknown>, type: string) {
   log.i("updateOrCreate - IN", { data, type });
   setApiStatut(
     `${sejourId.value ? "Sauvegarde" : "Création"} de la demande de séjour en cours`,
@@ -605,7 +629,7 @@ async function updateOrCreate(data, type) {
 
   if (data.file) {
     log.d("updateOrCreate - look at data.file");
-    const file = unref(data.file);
+    const file = unref(data.file) as UploadedFile;
     if (!file.uuid) {
       try {
         const uuid = await UploadFile(type, file);
@@ -617,8 +641,8 @@ async function updateOrCreate(data, type) {
         toaster.info({ titleTag: "h2", description: `Document déposé` });
       } catch (error) {
         const description = getFileUploadErrorMessage(
-          file?.name,
-          error?.data?.name,
+          file.name ?? "",
+          (error as ApiError)?.data?.name,
         );
         toaster.error({
           titleTag: "h2",
@@ -630,11 +654,12 @@ async function updateOrCreate(data, type) {
     }
   }
 
-  if (data.files && data.files.length) {
+  const dataFiles = data.files as unknown[] | undefined;
+  if (dataFiles && dataFiles.length) {
     log.d("updateOrCreate - look at data.files");
     const files = [];
-    for (let i = 0; i < data.files.length; i++) {
-      const file = unref(data.files[i]);
+    for (let i = 0; i < dataFiles.length; i++) {
+      const file = unref(dataFiles[i]) as UploadedFile;
       if (!file.name) {
         continue;
       }
@@ -653,8 +678,8 @@ async function updateOrCreate(data, type) {
         counter++;
       } catch (error) {
         const description = getFileUploadErrorMessage(
-          file?.name,
-          error?.data?.name,
+          file.name ?? "",
+          (error as ApiError)?.data?.name,
         );
         toaster.error({
           titleTag: "h2",
@@ -674,14 +699,14 @@ async function updateOrCreate(data, type) {
   try {
     const url = sejourId.value ? `/sejour/${sejourId.value}` : "/sejour";
     log.d(url);
-    const response = await $fetchBackend(url, {
+    const response = (await $fetchBackend(url, {
       method: "POST",
       credentials: "include",
       body: {
         parametre: { ...data },
         type: type,
       },
-    });
+    })) as { id: number };
 
     toaster.success({
       titleTag: "h2",
@@ -689,13 +714,15 @@ async function updateOrCreate(data, type) {
     });
     log.d(`demande de séjour ${sejourId.value} mis à jour`);
     sejourId.value = response.id;
+    // force refresh
+    await demandeSejourStore.setDemandeCourante(sejourId.value as number);
     return await nextHash();
   } catch (error) {
     log.w("Creation/modification de declaration de sejour: ", { error });
     return toaster.error({
       titleTag: "h2",
       description:
-        error.data.message ??
+        (error as ApiError).data?.message ??
         `Une erreur est survenue lors de la mise à jour de la déclaration de séjour`,
       role: "alert",
     });
@@ -704,7 +731,7 @@ async function updateOrCreate(data, type) {
   }
 }
 
-async function finalize(attestation) {
+async function finalize(attestation: Record<string, unknown>) {
   log.i("finalize -IN");
   setApiStatut("Transmission de la déclaration en cours");
   try {
@@ -756,7 +783,7 @@ async function finalize(attestation) {
     isModalConfirmTransmissionOpened.value = true;
   } catch (error) {
     log.w("Finalisation de la declaration de sejour : ", { error });
-    const codeError = error?.data?.name;
+    const codeError = (error as ApiError)?.data?.name;
     const displayMessage =
       codeError === "SaveDeclarationError"
         ? "Une erreur est survenue à l'enregistement de la déclaration. L'enregistrement a échoué."
@@ -785,12 +812,13 @@ function nextHash() {
     path: `/demande-sejour/${sejourId.value}`,
     hash: "#" + sommaireOptions[index + 1],
     "#synthese": () => titleStart.value + "étape 8 sur 8 | Synthèse" + titleEnd,
-  });
+  } as Parameters<typeof navigateTo>[0]);
 }
 
 onMounted(async () => {
-  if (parseInt(route.query?.defaultTabIndex) === 3)
-    await demandeSejourStore.readMessages(route.params.declarationId);
+  if (parseInt(route.query?.defaultTabIndex as string) === 3) {
+    await demandeSejourStore.readMessages(route.params.declarationId as string);
+  }
 });
 </script>
 

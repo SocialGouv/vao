@@ -1,5 +1,6 @@
 import * as yup from "yup";
 import dayjs from "dayjs";
+import { formatISOShort } from "@vao/shared-bridge";
 import {
   informationsPersonnel,
   informationsVacanciers,
@@ -47,22 +48,26 @@ function isSejourComplet(hebergements, dateDebut, dateFin) {
     return false;
   }
 
-  let memoDate = dateDebut;
+  const dateFinSejour = formatISOShort(dateFin);
+  let memoDate = formatISOShort(dateDebut);
+  if (!dateFinSejour || !memoDate) {
+    return false;
+  }
 
   for (let i = 0; i < hebergements.length; i++) {
     log.d("isSejourComplet", hebergements[i].dateDebut, memoDate);
-    const dateDebut = dayjs(hebergements[i].dateDebut).format("YYYY-MM-DD");
-    if (dateDebut !== memoDate) {
+    const hebergementDateDebut = formatISOShort(hebergements[i].dateDebut);
+    if (!hebergementDateDebut || hebergementDateDebut !== memoDate) {
       return false;
     }
-    memoDate = dayjs(hebergements[i].dateFin).format("YYYY-MM-DD");
+    memoDate = formatISOShort(hebergements[i].dateFin);
+    if (!memoDate) {
+      return false;
+    }
   }
 
-  log.d("isSejourComplet", memoDate, dateFin);
-  if (memoDate !== dateFin) {
-    return false;
-  }
-  return true;
+  log.d("isSejourComplet", memoDate, dateFinSejour);
+  return memoDate === dateFinSejour;
 }
 
 const baseSchema = {

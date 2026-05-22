@@ -15,7 +15,7 @@ export function getOvaUser() {
   return params;
 }
 
-export function getAgentsRegionalIDFUser() {
+export function getAgentRegionalIDFUser() {
   const user = {
     username: "tnra.agent.idf@example.com",
     password: process.env.E2E_BO_PASSWORD || "Azertyuiop1!",
@@ -25,5 +25,14 @@ export function getAgentsRegionalIDFUser() {
     user.username,
     user.password.slice(0, 2) + "***]",
   );
+  return user;
+}
+
+export function getAgentDepartement75Paris() {
+  const user = {
+    username: "tnra.agent.75-paris@example.com",
+    password: process.env.E2E_BO_PASSWORD || "Azertyuiop1!",
+  };
+  console.log("[bo user 75", user.username, user.password.slice(0, 2) + "***]");
   return user;
 }

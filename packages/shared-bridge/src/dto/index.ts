@@ -1,5 +1,6 @@
 export * from "./adresse.dto";
 export * from "./agrement.dto";
+export * from "./demandeSejour.dto";
 export * from "./document.dto";
 export * from "./featureFlag.dto";
 export * from "./ficheTerritoire.dto";

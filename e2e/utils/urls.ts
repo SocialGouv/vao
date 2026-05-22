@@ -1,4 +1,5 @@
-export const runLocal = process.env.E2E_LOCAL === "true" || false;
+export const isRunLocal = process.env.E2E_LOCAL === "true" || false;
+
 const baseUrl =
   process.env.E2E_BASE_URL || "vao-main.ovh.fabrique.social.gouv.fr";
 
@@ -9,7 +10,7 @@ export function getUrls() {
     appBoUrl: `http://localhost:8001`,
     maildevUrl: `http://localhost:1080`,
   };
-  if (!runLocal) {
+  if (!isRunLocal) {
     urls = {
       apiUrl: `https://api-${baseUrl}`,
       appUsagersUrl: `https://${baseUrl}`,

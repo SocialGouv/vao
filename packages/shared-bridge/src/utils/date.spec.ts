@@ -6,6 +6,7 @@ import {
   formatFR,
   formatFRDateTime,
   formatFRTime,
+  formatISOShort,
   getYear4k,
   isAfter,
   isBefore,
@@ -240,5 +241,29 @@ describe("parseFrShort", () => {
   it("should return undefined for wrong format", () => {
     expect(parseFrShort("2023-01-01")).toBeUndefined();
     expect(parseFrShort("01-01-2023")).toBeUndefined();
+  });
+});
+
+describe("formatISOShort", () => {
+  it("should return undefined when date is undefined", () => {
+    expect(formatISOShort(undefined)).toBeUndefined();
+  });
+
+  it("should format a Date in YYYY-MM-DD", () => {
+    const isoShortFormatter = new Intl.DateTimeFormat("en-CA", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
+    const d = new Date(2026, 2, 16);
+    expect(formatISOShort(d)).toBe(isoShortFormatter.format(d));
+  });
+
+  it("should format a Dayjs instance in YYYY-MM-DD", () => {
+    const fromFr = parseFrShort("16/03/2026");
+    expect(fromFr).toBeDefined();
+    expect(Number.isNaN(fromFr!.toDate().getTime())).toBe(false);
+    expect(formatISOShort(fromFr)).toBe("2026-03-16");
   });
 });

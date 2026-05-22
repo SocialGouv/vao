@@ -33,6 +33,7 @@
 
 <script setup lang="ts">
 import { DsfrButton } from "@gouvminint/vue-dsfr";
+import type { PropType } from "vue";
 
 defineProps({
   modalRef: { type: String, required: true },
