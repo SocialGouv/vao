@@ -48,7 +48,7 @@
 </template>
 
 <script setup lang="ts">
-import { TitleWithIcon, useToaster } from "@vao/shared-ui";
+import { useToaster } from "@vao/shared-ui";
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },

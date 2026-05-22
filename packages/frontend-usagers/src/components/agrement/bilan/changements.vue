@@ -57,7 +57,6 @@ import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
-import { TitleWithIcon } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import displayInput from "../../../utils/display-input";
 
