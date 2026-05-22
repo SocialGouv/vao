@@ -15,7 +15,7 @@
           :is-textarea="true"
           :is-valid="motivationsMeta.valid"
           :error-message="motivationsErrorMessage"
-          hint="Décrivez vos motivations en retraçant les principales activités. Ou vos compétences et expériences en organisation de séjours de vacances et de séjours adaptés pour les personnes handicapées majeures. Minimum 20 caractères."
+          hint="Minimum 20 caractères. Décrivez vos motivations en retraçant les principales activités. Ou vos compétences et expériences en organisation de séjours de vacances et de séjours adaptés pour les personnes handicapées majeures."
           @update:model-value="onMotivationsChange"
         />
         <UtilsDisplayInput
@@ -32,7 +32,7 @@
       <UtilsMultiFilesUpload
         v-model="filesMotivation"
         :modifiable="props.modifiable"
-        label="Vous avez la possibilité de joindre des documents relatifs aux informations d’ordre sanitaire (optionnel)"
+        label="Ajouter des fichiers (optionnel)"
       />
     </div>
   </fieldset>
@@ -128,6 +128,7 @@
   <div v-if="props.showButtons && props.modifiable">
     <div class="fr-fieldset__element">
       <UtilsNavigationButtons
+        class="fr-mt-6v"
         :show-buttons="props.showButtons"
         :is-downloading="props.isDownloading"
         :message="props.message"
@@ -188,7 +189,10 @@ const getFileByCategory = (category: string): AgrementFilesDto | null => {
 
 const dateDDMMYYYY = yup
   .string()
-  .matches(dateDDMMYYYYRegex, "Format JJ/MM/AAAA invalide")
+  .matches(
+    dateDDMMYYYYRegex,
+    "Le champ “Date d’obtention du certificat” est invalide. Merci de saisir une date au format JJ/MM/AAAA.",
+  )
   .test(
     "is-valid-date",
     "La date n'est pas valide. Veuillez entrer une date valide au format JJ/MM/AAAA.",
