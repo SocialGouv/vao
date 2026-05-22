@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
+import { ERRORS_COMMON } from "@vao/shared-bridge";
 // @ts-expect-error BodyParser is not typed
 import bodyParser from "body-parser";
 // @ts-expect-error CookieParser is not typed
@@ -114,7 +115,7 @@ if (config.sentry.environment !== "production") {
 app.use((req, res, next) => {
   next(
     new AppError(`Path "${req.url}" not found`, {
-      name: "PATH_NOT_FOUND",
+      name: ERRORS_COMMON.PATH_NOT_FOUND,
       statusCode: 404,
     }),
   );

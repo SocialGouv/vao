@@ -790,6 +790,16 @@ describe("POST /agrements", () => {
     expect(response.body.message).toContain("motivations");
     expect(response.body.name).toEqual(ERRORS_COMMON.INVALID_BODY);
   });
+
+  it("devrait retourner un path not found", async () => {
+    const frontUser = await createUsagersUser();
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/test`)
+      .send({});
+    expect(response.status).toBe(404);
+    expect(response.body.name).toEqual(ERRORS_COMMON.PATH_NOT_FOUND);
+  });
 });
 
 describe("PATCH /agrements/:agrementId/statut", () => {
