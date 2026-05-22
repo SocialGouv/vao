@@ -98,6 +98,16 @@ describe("GET /agrements/", () => {
     expect(response.body.agrements).not.toBeNull();
     expect(response.body.agrements[0].id).toEqual(agrementId2);
   });
+
+  it("retourne 400 si le filtre statut est invalide", async () => {
+    const frontUser = await createUsagersUser();
+    const response = await request(getFoAppHelper(frontUser)).get(
+      `/agrements?statut=STATUT_INVALIDE`,
+    );
+
+    expect(response.status).toBe(400);
+    expect(response.body.name).toBe(ERRORS_COMMON.INVALID_QUERY);
+  });
 });
 
 describe("GET /agrements/:agrementId", () => {
