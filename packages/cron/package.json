@@ -16,7 +16,7 @@
     "src/**/*.{js,ts}": "corepack pnpm lint"
   },
   "devDependencies": {
-    "@eslint/js": "^9.22.0",
+    "@eslint/js": "^10.0.1",
     "@types/jest": "^29.5.12",
     "@types/nodemailer": "^6.4.17",
     "@types/nodemailer-smtp-transport": "^2.7.8",
