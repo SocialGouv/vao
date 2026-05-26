@@ -1,77 +1,73 @@
 <template>
-  <div class="border fr-p-4v">
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lead">
-        <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
-        Budget des personnes prévu
-      </legend>
-      <div class="fr-fieldset__element">
-        <div class="fr-col-12">
-          <DsfrInputGroup
-            v-if="props.modifiable"
-            name="budgetGestionPerso"
-            :label="
-              displayInput.AgrementProjetsInput['budgetGestionPerso'].label
-            "
-            hint="Minimum 20 caractères. Précisez la manière dont vous organisez le budget de chaque vacancier"
-            :model-value="budgetGestionPerso"
-            :label-visible="true"
-            :is-textarea="true"
-            :is-valid="budgetGestionPersoMeta.valid"
-            :error-message="budgetGestionPersoErrorMessage"
-            @update:model-value="onBudgetGestionPersoChange"
-          />
-          <UtilsDisplayInput
-            v-else
-            :value="budgetGestionPerso"
-            :input="displayInput.AgrementProjetsInput['budgetGestionPerso']"
-            :is-valid="budgetGestionPersoMeta.valid"
-            :error-message="budgetGestionPersoErrorMessage"
-          />
-        </div>
-      </div>
-
-      <div class="fr-fieldset__element fr-mt-8v">
-        <div class="fr-col-12">
-          <DsfrInputGroup
-            v-if="props.modifiable"
-            name="budgetPersoGestionComplementaire"
-            :label="
-              displayInput.AgrementProjetsInput[
-                'budgetPersoGestionComplementaire'
-              ].label
-            "
-            :model-value="budgetPersoGestionComplementaire"
-            :label-visible="true"
-            :is-textarea="true"
-            :is-valid="budgetPersoGestionComplementaireMeta.valid"
-            :error-message="budgetPersoGestionComplementaireErrorMessage"
-            @update:model-value="onBudgetPersoGestionComplementaireChange"
-          />
-          <UtilsDisplayInput
-            v-else
-            :value="budgetGestionPerso"
-            :input="
-              displayInput.AgrementProjetsInput[
-                'budgetPersoGestionComplementaire'
-              ]
-            "
-            :is-valid="budgetPersoGestionComplementaireMeta.valid"
-            :error-message="budgetPersoGestionComplementaireErrorMessage"
-          />
-        </div>
-      </div>
-
-      <div class="fr-fieldset__element fr-mt-8v">
-        <UtilsMultiFilesUpload
-          v-model="filesProjSejoursBudgetPersonnes"
-          hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
-          :modifiable="props.modifiable"
-          label="Ajouter des fichiers (optionnel)"
+  <fieldset class="no-border">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
+      Budget des personnes prévu
+    </legend>
+    <div class="fr-fieldset__element">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          v-if="props.modifiable"
+          name="budgetGestionPerso"
+          :label="displayInput.AgrementProjetsInput['budgetGestionPerso'].label"
+          hint="Minimum 20 caractères. Précisez la manière dont vous organisez le budget de chaque vacancier"
+          :model-value="budgetGestionPerso"
+          :label-visible="true"
+          :is-textarea="true"
+          :is-valid="budgetGestionPersoMeta.valid"
+          :error-message="budgetGestionPersoErrorMessage"
+          @update:model-value="onBudgetGestionPersoChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          :value="budgetGestionPerso"
+          :input="displayInput.AgrementProjetsInput['budgetGestionPerso']"
+          :is-valid="budgetGestionPersoMeta.valid"
+          :error-message="budgetGestionPersoErrorMessage"
         />
       </div>
-    </fieldset>
-  </div>
+    </div>
+
+    <div class="fr-fieldset__element fr-mt-8v">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          v-if="props.modifiable"
+          name="budgetPersoGestionComplementaire"
+          :label="
+            displayInput.AgrementProjetsInput[
+              'budgetPersoGestionComplementaire'
+            ].label
+          "
+          :model-value="budgetPersoGestionComplementaire"
+          :label-visible="true"
+          :is-textarea="true"
+          :is-valid="budgetPersoGestionComplementaireMeta.valid"
+          :error-message="budgetPersoGestionComplementaireErrorMessage"
+          @update:model-value="onBudgetPersoGestionComplementaireChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          :value="budgetGestionPerso"
+          :input="
+            displayInput.AgrementProjetsInput[
+              'budgetPersoGestionComplementaire'
+            ]
+          "
+          :is-valid="budgetPersoGestionComplementaireMeta.valid"
+          :error-message="budgetPersoGestionComplementaireErrorMessage"
+        />
+      </div>
+    </div>
+
+    <div class="fr-fieldset__element fr-mt-8v">
+      <UtilsMultiFilesUpload
+        v-model="filesProjSejoursBudgetPersonnes"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        :modifiable="props.modifiable"
+        label="Ajouter des fichiers (optionnel)"
+      />
+    </div>
+  </fieldset>
 </template>
 
 <script setup lang="ts">
@@ -101,7 +97,7 @@ const validationSchema = yup.object({
       .string()
       .min(
         20,
-        "Veuillez préciser la manière dont vous organisez le budget de chaque vacancier. Minimum 20 caractères.",
+        "Veuillez préciser les conditions de gestion sur place. Minimum 20 caractères.",
       )
       .nullable(),
   ),
@@ -165,3 +161,12 @@ defineExpose({
   validateForm,
 });
 </script>
+<style scoped>
+fieldset.no-border {
+  border: none;
+  padding: 0;
+}
+legend {
+  padding-left: 0;
+}
+</style>

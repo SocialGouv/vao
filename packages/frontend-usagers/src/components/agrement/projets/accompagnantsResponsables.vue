@@ -1,7 +1,7 @@
 <template>
   <TitleWithIcon
     icon="fr-icon-team-fill"
-    :level="2"
+    :level="3"
     title-class="fr-text--lead fr-mb-0"
   >
     Accompagnants et responsable prévus

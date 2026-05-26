@@ -1,57 +1,55 @@
 <template>
-  <div class="border fr-p-4v">
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lead">
-        <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
-        Animation et activités prévues
-      </legend>
+  <fieldset class="no-border fr-py-0v">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
+      Animation et activités prévues
+    </legend>
 
-      <div class="flex flex-col">
-        <div>
-          <DsfrMultiselect
-            v-if="props.modifiable"
-            v-model="activitesSelectionnees"
-            :options="options"
-            search
-            select-all
-            :button-label="buttonLabel"
-            label="Vous pouvez sélectionner une ou plusieurs options."
-          />
-          <UtilsDisplayInput
-            v-else
-            :input="displayInput.AgrementProjetsInput.activitesSelectionnees"
-            :value="activitesSelectionnees"
-            :error-message="activitesSelectionneesErrorMessage"
-          />
-          <p
-            v-if="activitesSelectionneesErrorMessage"
-            class="fr-error-text fr-mt-1v"
-          >
-            {{ activitesSelectionneesErrorMessage }}
-          </p>
-        </div>
-        <div class="fr-mt-4v">
-          <DsfrInputGroup
-            v-if="props.modifiable"
-            name="animationAutre"
-            label="Autres (optionnel)"
-            :model-value="animationAutre"
-            :label-visible="true"
-            :is-valid="animationAutreMeta.valid"
-            :error-message="animationAutreErrorMessage"
-            @update:model-value="onAnimationAutreChange"
-          />
-          <UtilsDisplayInput
-            v-else
-            :value="animationAutre"
-            :input="displayInput.AgrementProjetsInput['animationAutre']"
-            :is-valid="animationAutreMeta.valid"
-            :error-message="animationAutreErrorMessage"
-          />
-        </div>
+    <div class="flex flex-col">
+      <div>
+        <DsfrMultiselect
+          v-if="props.modifiable"
+          v-model="activitesSelectionnees"
+          :options="options"
+          search
+          select-all
+          :button-label="buttonLabel"
+          label="Vous pouvez sélectionner une ou plusieurs options."
+        />
+        <UtilsDisplayInput
+          v-else
+          :input="displayInput.AgrementProjetsInput.activitesSelectionnees"
+          :value="activitesSelectionnees"
+          :error-message="activitesSelectionneesErrorMessage"
+        />
+        <p
+          v-if="activitesSelectionneesErrorMessage"
+          class="fr-error-text fr-mt-1v"
+        >
+          {{ activitesSelectionneesErrorMessage }}
+        </p>
       </div>
-    </fieldset>
-  </div>
+      <div class="fr-mt-4v">
+        <DsfrInputGroup
+          v-if="props.modifiable"
+          name="animationAutre"
+          label="Autres (optionnel)"
+          :model-value="animationAutre"
+          :label-visible="true"
+          :is-valid="animationAutreMeta.valid"
+          :error-message="animationAutreErrorMessage"
+          @update:model-value="onAnimationAutreChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          :value="animationAutre"
+          :input="displayInput.AgrementProjetsInput['animationAutre']"
+          :is-valid="animationAutreMeta.valid"
+          :error-message="animationAutreErrorMessage"
+        />
+      </div>
+    </div>
+  </fieldset>
 </template>
 
 <script setup>
@@ -227,3 +225,13 @@ defineExpose({
   validateForm,
 });
 </script>
+
+<style scoped>
+fieldset.no-border {
+  border: none;
+  padding: 0;
+}
+legend {
+  padding-left: 0;
+}
+</style>

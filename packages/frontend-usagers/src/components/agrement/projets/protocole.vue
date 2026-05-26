@@ -6,7 +6,7 @@
   >
     Protocole de réorientation, évacuation, rapatriement prévu
   </TitleWithIcon>
-  <div class="border fr-p-4v">
+  <div>
     <fieldset class="no-border">
       <legend class="fr-fieldset__legend fr-text--lg">
         Réorientation, évacuation
@@ -71,67 +71,65 @@
     </fieldset>
   </div>
   <div class="fr-my-4w separator"></div>
-  <div class="border fr-p-4v">
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lg">Rapatriement</legend>
+  <fieldset class="no-border">
+    <legend class="fr-fieldset__legend fr-text--lg">Rapatriement</legend>
+    <div class="fr-col-12">
+      <DsfrInputGroup
+        v-if="props.modifiable"
+        name="protocoleRapatEtranger"
+        :label="
+          displayInput.AgrementProjetsInput['protocoleRapatEtranger'].label
+        "
+        hint="Minimum 20 caractères. Identification des risques potentiels, actions prévues par le responsable du séjour, information sur la sécurité du site et modes d’évacuation prévus, information du lieu d’hébergement sur la nature du public et possibles besoins d’aides en cas d’alerte"
+        :model-value="protocoleRapatEtranger"
+        :label-visible="true"
+        :is-textarea="true"
+        :is-valid="protocoleRapatEtrangerMeta.valid"
+        :error-message="protocoleRapatEtrangerErrorMessage"
+        @update:model-value="onProtocoleRapatEtrangerChange"
+      />
+      <UtilsDisplayInput
+        v-else
+        :value="protocoleRapatEtranger"
+        :input="displayInput.AgrementProjetsInput['protocoleRapatEtranger']"
+        :is-valid="protocoleRapatEtrangerMeta.valid"
+        :error-message="protocoleRapatEtrangerErrorMessage"
+      />
+    </div>
+    <div class="fr-fieldset__element fr-mt-8v">
       <div class="fr-col-12">
         <DsfrInputGroup
           v-if="props.modifiable"
-          name="protocoleRapatEtranger"
+          name="protocoleInfoFamille"
           :label="
-            displayInput.AgrementProjetsInput['protocoleRapatEtranger'].label
+            displayInput.AgrementProjetsInput['protocoleInfoFamille'].label
           "
-          hint="Minimum 20 caractères. Identification des risques potentiels, actions prévues par le responsable du séjour, information sur la sécurité du site et modes d’évacuation prévus, information du lieu d’hébergement sur la nature du public et possibles besoins d’aides en cas d’alerte"
-          :model-value="protocoleRapatEtranger"
+          hint="Minimum 20 caractères. Expliciter les mesures organisationnelles prévues (transports, lien avec ambassade, modalités d’information de l’entourage du vacancier, conditions de retour vers l’ESSMS, le domicile ou autre lieu de séjour, liens avec les services médicaux et de secours) "
+          :model-value="protocoleInfoFamille"
           :label-visible="true"
           :is-textarea="true"
-          :is-valid="protocoleRapatEtrangerMeta.valid"
-          :error-message="protocoleRapatEtrangerErrorMessage"
-          @update:model-value="onProtocoleRapatEtrangerChange"
+          :is-valid="protocoleInfoFamilleMeta.valid"
+          :error-message="protocoleInfoFamilleErrorMessage"
+          @update:model-value="onProtocoleInfoFamilleChange"
         />
         <UtilsDisplayInput
           v-else
-          :value="protocoleRapatEtranger"
-          :input="displayInput.AgrementProjetsInput['protocoleRapatEtranger']"
-          :is-valid="protocoleRapatEtrangerMeta.valid"
-          :error-message="protocoleRapatEtrangerErrorMessage"
+          :value="protocoleInfoFamille"
+          :input="displayInput.AgrementProjetsInput['protocoleInfoFamille']"
+          :is-valid="protocoleInfoFamilleMeta.valid"
+          :error-message="protocoleInfoFamilleErrorMessage"
         />
       </div>
-      <div class="fr-fieldset__element fr-mt-8v">
-        <div class="fr-col-12">
-          <DsfrInputGroup
-            v-if="props.modifiable"
-            name="protocoleInfoFamille"
-            :label="
-              displayInput.AgrementProjetsInput['protocoleInfoFamille'].label
-            "
-            hint="Minimum 20 caractères. Expliciter les mesures organisationnelles prévues (transports, lien avec ambassade, modalités d’information de l’entourage du vacancier, conditions de retour vers l’ESSMS, le domicile ou autre lieu de séjour, liens avec les services médicaux et de secours) "
-            :model-value="protocoleInfoFamille"
-            :label-visible="true"
-            :is-textarea="true"
-            :is-valid="protocoleInfoFamilleMeta.valid"
-            :error-message="protocoleInfoFamilleErrorMessage"
-            @update:model-value="onProtocoleInfoFamilleChange"
-          />
-          <UtilsDisplayInput
-            v-else
-            :value="protocoleInfoFamille"
-            :input="displayInput.AgrementProjetsInput['protocoleInfoFamille']"
-            :is-valid="protocoleInfoFamilleMeta.valid"
-            :error-message="protocoleInfoFamilleErrorMessage"
-          />
-        </div>
-      </div>
-      <div class="fr-fieldset__element fr-mt-8v">
-        <UtilsMultiFilesUpload
-          v-model="filesProjetsSejoursProtocoleRapatriement"
-          hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
-          :modifiable="props.modifiable"
-          label="Ajouter des fichiers (optionnel)"
-        />
-      </div>
-    </fieldset>
-  </div>
+    </div>
+    <div class="fr-fieldset__element fr-mt-8v">
+      <UtilsMultiFilesUpload
+        v-model="filesProjetsSejoursProtocoleRapatriement"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        :modifiable="props.modifiable"
+        label="Ajouter des fichiers (optionnel)"
+      />
+    </div>
+  </fieldset>
 </template>
 
 <script setup lang="ts">
@@ -277,3 +275,13 @@ defineExpose({
   validateForm,
 });
 </script>
+
+<style scoped>
+fieldset.no-border {
+  border: none;
+  padding: 0;
+}
+legend {
+  padding-left: 0;
+}
+</style>

@@ -38,59 +38,57 @@
       :statut="props.initAgrement.statut || AGREMENT_STATUT.BROUILLON"
     />
     <div class="separator fr-mb-6v"></div>
-    <div class="border fr-p-4v">
-      <fieldset class="no-border">
-        <legend class="fr-fieldset__legend fr-text--lg">
-          Informations complémentaires
-        </legend>
-        <div class="fr-col-6 fr-mb-4v">
-          <DsfrInput
-            v-if="props.modifiable"
-            name="sejourNbEnvisage"
-            :label="displayInput.AgrementProjetsInput['sejourNbEnvisage'].label"
-            type="number"
-            :model-value="sejourNbEnvisage"
-            :label-visible="true"
-            :is-valid="sejourNbEnvisageMeta.valid"
-            :error-message="sejourNbEnvisageErrorMessage"
-            @update:model-value="onsejourNbEnvisageChange"
-          />
-          <UtilsDisplayInput
-            v-else
-            :value="sejourNbEnvisage"
-            :input="displayInput.AgrementProjetsInput['sejourNbEnvisage']"
-            :is-valid="sejourNbEnvisageMeta.valid"
-            :error-message="sejourNbEnvisageErrorMessage"
-          />
-        </div>
-        <DsfrInputGroup
+    <fieldset class="no-border">
+      <legend class="fr-fieldset__legend fr-text--lg">
+        Informations complémentaires
+      </legend>
+      <div class="fr-col-6 fr-mb-4v">
+        <DsfrInput
           v-if="props.modifiable"
-          name="sejourCommentaire"
-          label="Ajouter un commentaire (optionnel)"
-          :model-value="sejourCommentaire"
+          name="sejourNbEnvisage"
+          :label="displayInput.AgrementProjetsInput['sejourNbEnvisage'].label"
+          type="number"
+          :model-value="sejourNbEnvisage"
           :label-visible="true"
-          :is-textarea="true"
-          :is-valid="commentaireMeta.valid"
-          :error-message="commentaireErrorMessage"
-          @update:model-value="onCommentaireChange"
+          :is-valid="sejourNbEnvisageMeta.valid"
+          :error-message="sejourNbEnvisageErrorMessage"
+          @update:model-value="onsejourNbEnvisageChange"
         />
         <UtilsDisplayInput
           v-else
-          :value="sejourCommentaire"
-          :input="displayInput.AgrementProjetsInput['sejourCommentaire']"
-          :is-valid="commentaireMeta.valid"
-          :error-message="commentaireErrorMessage"
+          :value="sejourNbEnvisage"
+          :input="displayInput.AgrementProjetsInput['sejourNbEnvisage']"
+          :is-valid="sejourNbEnvisageMeta.valid"
+          :error-message="sejourNbEnvisageErrorMessage"
         />
-        <div class="fr-fieldset__element">
-          <UtilsMultiFilesUpload
-            v-model="filesProjetsSejoursPrevus"
-            hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
-            label="Ajouter des fichiers (optionnel)"
-            :modifiable="props.modifiable"
-          />
-        </div>
-      </fieldset>
-    </div>
+      </div>
+      <DsfrInputGroup
+        v-if="props.modifiable"
+        name="sejourCommentaire"
+        label="Ajouter un commentaire (optionnel)"
+        :model-value="sejourCommentaire"
+        :label-visible="true"
+        :is-textarea="true"
+        :is-valid="commentaireMeta.valid"
+        :error-message="commentaireErrorMessage"
+        @update:model-value="onCommentaireChange"
+      />
+      <UtilsDisplayInput
+        v-else
+        :value="sejourCommentaire"
+        :input="displayInput.AgrementProjetsInput['sejourCommentaire']"
+        :is-valid="commentaireMeta.valid"
+        :error-message="commentaireErrorMessage"
+      />
+      <div class="fr-fieldset__element">
+        <UtilsMultiFilesUpload
+          v-model="filesProjetsSejoursPrevus"
+          hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+          label="Ajouter des fichiers (optionnel)"
+          :modifiable="props.modifiable"
+        />
+      </div>
+    </fieldset>
     <div class="fr-p-4v fr-mt-6v bg-light-blue">
       <p>
         <span class="fr-text--bold"
@@ -250,5 +248,13 @@ defineExpose({
 .flex {
   display: flex;
   gap: 0.5rem;
+}
+
+fieldset.no-border {
+  border: none;
+  padding: 0;
+}
+legend {
+  padding-left: 0;
 }
 </style>

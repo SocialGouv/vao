@@ -1,63 +1,59 @@
 <template>
-  <div class="border fr-p-4v">
-    <fieldset class="no-border">
-      <legend class="fr-fieldset__legend fr-text--lead">
-        <span class="fr-icon-bus-fill" aria-hidden="true"></span>
-        Organisation des transports prévus
-      </legend>
-      <div class="fr-col-12">
-        <DsfrInputGroup
-          v-if="props.modifiable"
-          name="transportAllerRetour"
-          :label="
-            displayInput.AgrementProjetsInput['transportAllerRetour'].label
-          "
-          hint="Exemple : Car"
-          :model-value="transportAllerRetour"
-          :label-visible="true"
-          :is-valid="transportAllerRetourMeta.valid"
-          :error-message="transportAllerRetourErrorMessage"
-          @update:model-value="onTransportAllerRetourChange"
-        />
-        <UtilsDisplayInput
-          v-else
-          :value="transportAllerRetour"
-          :input="displayInput.AgrementProjetsInput['transportAllerRetour']"
-          :is-valid="transportAllerRetourMeta.valid"
-          :error-message="transportAllerRetourErrorMessage"
-        />
-      </div>
-      <div class="fr-col-12 fr-mt-6v">
-        <DsfrInputGroup
-          v-if="props.modifiable"
-          name="transportSejour"
-          :label="displayInput.AgrementProjetsInput['transportSejour'].label"
-          hint="Exemple : Mini-bus"
-          :model-value="transportSejour"
-          :label-visible="true"
-          :is-valid="transportSejourMeta.valid"
-          :error-message="transportSejourErrorMessage"
-          @update:model-value="onTransportSejourChange"
-        />
-        <UtilsDisplayInput
-          v-else
-          :value="transportSejour"
-          :input="displayInput.AgrementProjetsInput['transportSejour']"
-          :is-valid="transportSejourMeta.valid"
-          :error-message="transportSejourErrorMessage"
-        />
-      </div>
+  <fieldset class="no-border">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-bus-fill" aria-hidden="true"></span>
+      Organisation des transports prévus
+    </legend>
+    <div class="fr-col-12">
+      <DsfrInputGroup
+        v-if="props.modifiable"
+        name="transportAllerRetour"
+        :label="displayInput.AgrementProjetsInput['transportAllerRetour'].label"
+        hint="Exemple : Car"
+        :model-value="transportAllerRetour"
+        :label-visible="true"
+        :is-valid="transportAllerRetourMeta.valid"
+        :error-message="transportAllerRetourErrorMessage"
+        @update:model-value="onTransportAllerRetourChange"
+      />
+      <UtilsDisplayInput
+        v-else
+        :value="transportAllerRetour"
+        :input="displayInput.AgrementProjetsInput['transportAllerRetour']"
+        :is-valid="transportAllerRetourMeta.valid"
+        :error-message="transportAllerRetourErrorMessage"
+      />
+    </div>
+    <div class="fr-col-12 fr-mt-6v">
+      <DsfrInputGroup
+        v-if="props.modifiable"
+        name="transportSejour"
+        :label="displayInput.AgrementProjetsInput['transportSejour'].label"
+        hint="Exemple : Mini-bus"
+        :model-value="transportSejour"
+        :label-visible="true"
+        :is-valid="transportSejourMeta.valid"
+        :error-message="transportSejourErrorMessage"
+        @update:model-value="onTransportSejourChange"
+      />
+      <UtilsDisplayInput
+        v-else
+        :value="transportSejour"
+        :input="displayInput.AgrementProjetsInput['transportSejour']"
+        :is-valid="transportSejourMeta.valid"
+        :error-message="transportSejourErrorMessage"
+      />
+    </div>
 
-      <div class="fr-fieldset__element fr-mt-6v">
-        <UtilsMultiFilesUpload
-          v-model="filesProjetsSejoursOrgaTransports"
-          hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
-          :modifiable="props.modifiable"
-          label="Ajouter des fichiers (optionnel)"
-        />
-      </div>
-    </fieldset>
-  </div>
+    <div class="fr-fieldset__element fr-mt-6v">
+      <UtilsMultiFilesUpload
+        v-model="filesProjetsSejoursOrgaTransports"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        :modifiable="props.modifiable"
+        label="Ajouter des fichiers (optionnel)"
+      />
+    </div>
+  </fieldset>
 </template>
 
 <script setup lang="ts">
@@ -166,3 +162,13 @@ defineExpose({
   validateForm,
 });
 </script>
+
+<style scoped>
+fieldset.no-border {
+  border: none;
+  padding: 0;
+}
+legend {
+  padding-left: 0;
+}
+</style>
