@@ -161,7 +161,13 @@ const filesBilanFinancierQuatreAnnees = ref(
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
   bilanFinancierComptabilite: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères."),
+    yup
+      .string()
+      .min(
+        20,
+        " Veuillez indiquer la compatibilité analytique de l’activité. Minimum 20 caractères.",
+      )
+      .nullable(),
   ),
   bilanFinancierComparatif: yup
     .string()

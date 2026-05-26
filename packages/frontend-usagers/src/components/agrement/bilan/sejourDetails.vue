@@ -1,7 +1,7 @@
 <template>
   <div class="fr-container">
-    <p class="fr-text fr-text--lg">
-      <b>Informations sur les vacanciers</b>
+    <p class="fr-text fr-text--lg fr-text--bold">
+      Informations sur les vacanciers
     </p>
     <div class="flex-inputs">
       <div class="fr-col-4">

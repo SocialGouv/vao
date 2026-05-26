@@ -1,5 +1,5 @@
 <template>
-  <fieldset class="fr-mt-8v">
+  <fieldset class="fr-mt-8v no-border">
     <legend class="fr-fieldset__legend fr-text--lead">
       <span class="fr-icon-map-pin-2-fill" aria-hidden="true"></span>
       Séjours (par années)
