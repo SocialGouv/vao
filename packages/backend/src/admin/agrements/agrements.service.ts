@@ -381,7 +381,7 @@ export const AgrementService = {
               let mailToSend = null;
               switch (statut) {
                 case AGREMENT_STATUT.EN_INSTRUCTION:
-                  mailToSend = AgrementMailAdmin.sendStatutCompletudeMail({
+                  mailToSend = AgrementMailAdmin.sendCompletudeConfirmedMail({
                     Organisme: organisme,
                     agrementId,
                     mailDreets: fiche.service_mail,
@@ -443,7 +443,7 @@ export const AgrementService = {
               });
               break;
             case AGREMENT_STATUT.EN_INSTRUCTION:
-              mailToSend = AgrementMailUsagers.sendStatutCompletudeMail({
+              mailToSend = AgrementMailUsagers.sendCompletudeConfirmedMail({
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
               });
