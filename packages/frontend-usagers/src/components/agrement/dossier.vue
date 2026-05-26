@@ -1,5 +1,5 @@
 <template>
-  <fieldset>
+  <fieldset class="no-border">
     <legend class="fr-fieldset__legend fr-text--lead">
       <span class="fr-icon-award-fill" aria-hidden="true"></span>Motivations
     </legend>
@@ -30,12 +30,13 @@
     <div class="fr-fieldset__element">
       <UtilsMultiFilesUpload
         v-model="filesMotivation"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
         :modifiable="props.modifiable"
         label="Ajouter des fichiers (optionnel)"
       />
     </div>
   </fieldset>
-  <fieldset class="fr-mt-8v">
+  <fieldset class="fr-mt-8v no-border">
     <legend class="fr-fieldset__legend fr-text--lead">
       <span class="fr-icon-briefcase-fill" aria-hidden="true"></span
       >Immatriculation
@@ -45,6 +46,7 @@
         <FileUpload
           :model-value="fileImmatriculation"
           :cdn-url="props.cdnUrl"
+          hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
           label="Certificat d’immatriculation au registre des opérateurs de voyages et de séjours (code du tourisme)"
           :modifiable="props.modifiable"
           :error-message="fileImmatriculationErrorMessage"
@@ -96,7 +98,7 @@
     </div>
   </fieldset>
 
-  <fieldset class="fr-mt-8v">
+  <fieldset class="fr-mt-8v no-border">
     <legend class="fr-fieldset__legend fr-text--lead">
       <span class="fr-icon-file-text-fill" aria-hidden="true"></span
       >Attestations
@@ -106,7 +108,7 @@
         :model-value="fileAttestationsRespCivile"
         :cdn-url="props.cdnUrl"
         label="Attestation d’assurance responsabilité civile"
-        hint="Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf. Cette assurance prouve que vous êtes couvert(e) pour tout dommage (matériel, immatériel) causé involontairement à autrui pendant les activités du séjour."
         :modifiable="props.modifiable"
         :error-message="fileAttestationsRespCivileErrorMessage"
         @update:model-value="setFileAttestationsRespCivile"
@@ -117,7 +119,7 @@
         :model-value="fileAttestationsRapatriement"
         :cdn-url="props.cdnUrl"
         label="Attestation d’assurance en cas de rapatriement"
-        hint="Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf. Cette assurance garantit la prise en charge des frais de retour ou d’assistance en cas de maladie, d’accident ou d’urgence pendant le séjour."
         :modifiable="props.modifiable"
         :error-message="fileAttestationsRapatriementErrorMessage"
         @update:model-value="setFileAttestationsRapatriement"
@@ -194,7 +196,7 @@ const dateDDMMYYYY = yup
   )
   .test(
     "is-valid-date",
-    "La date n'est pas valide. Veuillez entrer une date valide au format JJ/MM/AAAA.",
+    "Le champ “Date d’obtention du certificat” est invalide.",
     (value) => {
       if (!value) {
         return true;
@@ -371,5 +373,11 @@ defineExpose({ validateDossier });
 <style scoped>
 .default-success {
   color: var(--text-default-success);
+}
+fieldset.no-border {
+  padding: 0;
+}
+legend {
+  padding-left: 0;
 }
 </style>
