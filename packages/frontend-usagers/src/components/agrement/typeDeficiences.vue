@@ -1,19 +1,20 @@
 <template>
   <div>
     <div v-if="props.modifiable">
-      <p class="fr-mb-1v fr-text--bold">Type de handicaps</p>
-      <p class="fr-hint-text fr-mb-0">
-        Vous pouvez sélectionner une ou plusieurs options.
-      </p>
       <DsfrCheckboxSet
         v-model="typeDeficiencesField"
         name="typeDeficiences"
-        legend=""
+        legend="Type de handicaps"
+        hint="Vous pouvez sélectionner une ou plusieurs options."
         :options="handicapOptions"
         :inline="true"
         :small="true"
         :error-message="typeDeficiencesErrorMessage"
-      />
+      >
+        <template #legend>
+          <span class="fr-text--bold">Type de handicaps</span>
+        </template>
+      </DsfrCheckboxSet>
     </div>
     <UtilsDisplayInput
       v-else

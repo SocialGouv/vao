@@ -1,28 +1,27 @@
 <template>
   <div>
-    <p v-if="props.modifiable" class="fr-mb-1v"><b>Tranches d’âge</b></p>
-    <p v-if="props.modifiable" class="fr-hint-text fr-mb-0">
-      Vous pouvez sélectionner une ou plusieurs options.
-    </p>
-    <div>
-      <DsfrCheckboxSet
-        v-if="props.modifiable"
-        :model-value="trancheAgeField"
-        name="trancheAge"
-        legend=""
-        :options="ageRangeOptions"
-        :inline="true"
-        :small="true"
-        :error-message="trancheAgeErrorMessage"
-        @update:model-value="onTrancheAgeChange"
-      />
-      <UtilsDisplayInput
-        v-else
-        :input="displayInput.AgrementBilanAnnuelInput.trancheAge"
-        :value="trancheAgeField"
-        :error-message="trancheAgeErrorMessage"
-      />
-    </div>
+    <DsfrCheckboxSet
+      v-if="props.modifiable"
+      :model-value="trancheAgeField"
+      name="trancheAge"
+      legend="Tranches d’âge"
+      hint="Vous pouvez sélectionner une ou plusieurs options."
+      :options="ageRangeOptions"
+      :inline="true"
+      :small="true"
+      :error-message="trancheAgeErrorMessage"
+      @update:model-value="onTrancheAgeChange"
+    >
+      <template #legend>
+        <span class="fr-text--bold">Tranches d’âge</span>
+      </template>
+    </DsfrCheckboxSet>
+    <UtilsDisplayInput
+      v-else
+      :input="displayInput.AgrementBilanAnnuelInput.trancheAge"
+      :value="trancheAgeField"
+      :error-message="trancheAgeErrorMessage"
+    />
   </div>
 </template>
 

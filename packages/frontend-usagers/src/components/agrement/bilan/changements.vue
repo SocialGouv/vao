@@ -1,57 +1,56 @@
 <template>
-  <TitleWithIcon
-    icon="fr-icon-arrow-up-down-line"
-    :level="3"
-    title-class="fr-text--lead fr-mb-0"
-  >
-    Changement ou évolution
-  </TitleWithIcon>
-  <div class="fr-fieldset__element">
-    <div class="fr-col-12">
-      <DsfrInputGroup
-        v-if="props.modifiable"
-        name="bilanChangementEvolution"
-        :label="
-          displayInput.AgrementBilanAnnuelInput['bilanChangementEvolution']
-            .label
-        "
-        :model-value="bilanChangementEvolution"
-        :label-visible="true"
-        :is-textarea="true"
-        :is-valid="bilanChangementEvolutionMeta.valid"
-        :error-message="bilanChangementEvolutionErrorMessage"
-        hint="De votre propre initiative ou suite aux observations des inspecteurs de l'action sanitaire et sociale, les médecins inspecteurs de santé publique ou les inspecteurs des agences régionales de santé ayant la qualité de médecin à l'issue des contrôles effectués au cours de l'agrément."
-        @update:model-value="onBilanChangementEvolutionChange"
-      />
-      <UtilsDisplayInput
-        v-else
-        :value="bilanChangementEvolution"
-        :input="
-          displayInput.AgrementBilanAnnuelInput['bilanChangementEvolution']
-        "
-        :is-valid="bilanChangementEvolutionMeta.valid"
-        :error-message="bilanChangementEvolutionErrorMessage"
+  <fieldset class="no-border">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
+      Changement ou évolution
+    </legend>
+    <div class="fr-fieldset__element">
+      <div class="fr-col-12">
+        <DsfrInputGroup
+          v-if="props.modifiable"
+          name="bilanChangementEvolution"
+          :label="
+            displayInput.AgrementBilanAnnuelInput['bilanChangementEvolution']
+              .label
+          "
+          :model-value="bilanChangementEvolution"
+          :label-visible="true"
+          :is-textarea="true"
+          :is-valid="bilanChangementEvolutionMeta.valid"
+          :error-message="bilanChangementEvolutionErrorMessage"
+          hint="De votre propre initiative ou suite aux observations des inspecteurs de l'action sanitaire et sociale, les médecins inspecteurs de santé publique ou les inspecteurs des agences régionales de santé ayant la qualité de médecin à l'issue des contrôles effectués au cours de l'agrément."
+          @update:model-value="onBilanChangementEvolutionChange"
+        />
+        <UtilsDisplayInput
+          v-else
+          :value="bilanChangementEvolution"
+          :input="
+            displayInput.AgrementBilanAnnuelInput['bilanChangementEvolution']
+          "
+          :is-valid="bilanChangementEvolutionMeta.valid"
+          :error-message="bilanChangementEvolutionErrorMessage"
+        />
+      </div>
+    </div>
+    <div class="fr-fieldset__element">
+      <UtilsMultiFilesUpload
+        v-model="filesChangeEvol"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        label="Ajouter des fichiers (optionnel)"
+        :modifiable="props.modifiable"
       />
     </div>
-  </div>
-  <div class="fr-fieldset__element">
-    <UtilsMultiFilesUpload
-      v-model="filesChangeEvol"
-      label="Ajouter des fichiers (optionnel)"
-      :modifiable="props.modifiable"
-    />
-  </div>
-  <div class="fr-fieldset__element">
-    <DsfrCheckbox
-      v-model="bilanAucunChangementEvolution"
-      name="checkbox-required-custom"
-      label="Aucun changement ou évolution à déclarer."
-      :readonly="!props.modifiable"
-      :error-message="bilanAucunChangementEvolutionErrorMessage"
-      :value="true"
-      required
-    />
-  </div>
+    <div class="fr-fieldset__element">
+      <DsfrCheckbox
+        v-model="bilanAucunChangementEvolution"
+        name="checkbox-required-custom"
+        label="Aucun changement ou évolution à déclarer."
+        :readonly="!props.modifiable"
+        :error-message="bilanAucunChangementEvolutionErrorMessage"
+        :value="true"
+      />
+    </div>
+  </fieldset>
 </template>
 
 <script setup lang="ts">
@@ -59,7 +58,6 @@ import { ref } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { AGREMENT_STATUT, FILE_CATEGORY } from "@vao/shared-bridge";
-import { TitleWithIcon } from "@vao/shared-ui";
 import type { AgrementFilesDto } from "@vao/shared-bridge";
 import displayInput from "../../../utils/display-input";
 
@@ -129,3 +127,11 @@ defineExpose({
   validateForm,
 });
 </script>
+<style scoped>
+fieldset.no-border {
+  padding: 0;
+}
+legend {
+  padding-left: 0;
+}
+</style>
