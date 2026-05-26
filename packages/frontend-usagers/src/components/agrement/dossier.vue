@@ -196,7 +196,7 @@ const dateDDMMYYYY = yup
   )
   .test(
     "is-valid-date",
-    "Le champ “Date d’obtention du certificat” est invalide.",
+    "Le champ “Date d’obtention du certificat” est invalide. Merci de saisir une date au format JJ/MM/AAAA.",
     (value) => {
       if (!value) {
         return true;
