@@ -141,7 +141,7 @@ describe("GET /admin/agrements", () => {
 });
 
 describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
-  it("devrait changer le statut d'un agrément avec succès BROUILLON => EN_COURS", async () => {
+  it("devrait changer le statut d'un agrément avec succès BROUILLON => PRIS_EN_CHARGE", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
@@ -154,7 +154,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
-      .send({ statut: AGREMENT_STATUT.EN_COURS });
+      .send({ statut: AGREMENT_STATUT.PRIS_EN_CHARGE });
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
@@ -166,7 +166,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const agrement = listResponse.body.agrements.find(
       (a: AgrementDto) => a.id === agrementId,
     );
-    expect(agrement.statut).toBe(AGREMENT_STATUT.EN_COURS);
+    expect(agrement.statut).toBe(AGREMENT_STATUT.PRIS_EN_CHARGE);
   });
 
   it("devrait remonter une erreur si le statut d'un agrément n'est pas valide", async () => {
@@ -176,7 +176,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/999/statut`)
-      .send({ statut: AGREMENT_STATUT.EN_COURS });
+      .send({ statut: AGREMENT_STATUT.PRIS_EN_CHARGE });
 
     expect(response.status).toBe(422);
   });
@@ -202,7 +202,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
           category: FILE_CATEGORY.AMODIFER,
           fileUuid: uuid.toString(),
         },
-        statut: AGREMENT_STATUT.A_MODIFIER,
+        statut: AGREMENT_STATUT.A_COMPLETER,
       });
 
     expect(response.status).toBe(200);
@@ -214,21 +214,21 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const aModifierEvent = history.find(
       (event) =>
         event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
-        event.type_precision === AGREMENT_STATUT.A_MODIFIER,
+        event.type_precision === AGREMENT_STATUT.A_COMPLETER,
     );
 
     expect(aModifierEvent).toBeDefined();
     expect(aModifierEvent?.bo_user).toBeDefined();
   });
 
-  it("devrait modifier le statut COMPLETUDE et historiser", async () => {
+  it("devrait modifier le statut EN_INSTRUCTION et historiser", async () => {
     const sendSpy = jest.spyOn(mailService, "send");
     authUser = await createUsagersUser();
 
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
-      statut: AGREMENT_STATUT.EN_COURS,
+      statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     });
     const agrementId = await createAgrement({
       agrement: agrementData,
@@ -247,7 +247,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
           category: FILE_CATEGORY.COMPLETUDE,
           fileUuid: uuid.toString(),
         },
-        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        statut: AGREMENT_STATUT.EN_INSTRUCTION,
       });
 
     expect(response.status).toBe(200);
@@ -264,7 +264,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const aModifierEvent = history.find(
       (event) =>
         event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
-        event.type_precision === AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        event.type_precision === AGREMENT_STATUT.EN_INSTRUCTION,
     );
 
     expect(aModifierEvent).toBeDefined();
@@ -281,7 +281,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     });
     const agrementData = await buildAgrementFixture({
       organismeId,
-      statut: AGREMENT_STATUT.EN_COURS,
+      statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     });
     const agrementId = await createAgrement({
       agrement: agrementData,
@@ -300,7 +300,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
           category: FILE_CATEGORY.COMPLETUDE,
           fileUuid: uuid.toString(),
         },
-        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        statut: AGREMENT_STATUT.EN_INSTRUCTION,
       });
 
     expect(response.status).toBe(200);
@@ -317,7 +317,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const completudeConfirmeEvent = history.find(
       (event) =>
         event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
-        event.type_precision === AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        event.type_precision === AGREMENT_STATUT.EN_INSTRUCTION,
     );
 
     expect(completudeConfirmeEvent).toBeDefined();
@@ -351,7 +351,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
-      statut: AGREMENT_STATUT.EN_COURS,
+      statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     });
     const agrementId = await createAgrement({
       agrement: agrementData,
@@ -370,7 +370,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
           category: FILE_CATEGORY.COMPLETUDE,
           fileUuid: uuid.toString(),
         },
-        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        statut: AGREMENT_STATUT.EN_INSTRUCTION,
       });
 
     expect(response.status).toBe(200);
@@ -387,7 +387,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const completudeConfirmeEvent = history.find(
       (event) =>
         event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
-        event.type_precision === AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        event.type_precision === AGREMENT_STATUT.EN_INSTRUCTION,
     );
 
     expect(completudeConfirmeEvent).toBeDefined();
@@ -422,7 +422,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const aCorrigerEvent = historyACorriger.find(
       (event) =>
         event.type === AGREMENT_HISTORY_TYPE.VERIFICATION ||
-        event.type_precision === AGREMENT_STATUT.A_MODIFIER,
+        event.type_precision === AGREMENT_STATUT.A_COMPLETER,
     );
     expect(aCorrigerEvent).toBeDefined();
     expect(aCorrigerEvent?.bo_user).toBeDefined();
@@ -436,12 +436,12 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(commentaireEvent?.bo_user).toBeDefined();
   });
 
-  it("devrait remonter une erreur file required pour statut COMPLETUDE_CONFIRME", async () => {
+  it("devrait remonter une erreur file required pour statut EN_INSTRUCTION", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
-      statut: AGREMENT_STATUT.EN_COURS,
+      statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     });
     const agrementId = await createAgrement({
       agrement: agrementData,
@@ -452,7 +452,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
       .send({
-        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        statut: AGREMENT_STATUT.EN_INSTRUCTION,
       });
 
     expect(response.status).toBe(400);
@@ -468,7 +468,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     });
     const agrementData = await buildAgrementFixture({
       organismeId,
-      statut: AGREMENT_STATUT.EN_COURS,
+      statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     });
     const agrementId = await createAgrement({
       agrement: agrementData,
@@ -487,7 +487,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
           category: FILE_CATEGORY.COMPLETUDE,
           fileUuid: uuid.toString(),
         },
-        statut: AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        statut: AGREMENT_STATUT.EN_INSTRUCTION,
       });
 
     expect(response.status).toBe(200);
@@ -525,7 +525,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
-      statut: AGREMENT_STATUT.EN_COURS,
+      statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     });
     const agrementId = await createAgrement({
       agrement: agrementData,
@@ -572,7 +572,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({
       organismeId,
-      statut: AGREMENT_STATUT.EN_COURS,
+      statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     });
     const agrementId = await createAgrement({
       agrement: agrementData,
@@ -611,14 +611,14 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
-      .send({ statut: AGREMENT_STATUT.EN_COURS });
+      .send({ statut: AGREMENT_STATUT.PRIS_EN_CHARGE });
 
     // Vérifier que l'événement a bien été historisé
     const history = await AgrementService.getHistory(agrementId);
     const priseEnChargeEvent = history.find(
       (event) =>
         event.type === AGREMENT_HISTORY_TYPE.STATUT_CHANGE ||
-        event.type_precision === AGREMENT_STATUT.EN_COURS,
+        event.type_precision === AGREMENT_STATUT.PRIS_EN_CHARGE,
     );
     expect(priseEnChargeEvent).toBeDefined();
     expect(priseEnChargeEvent?.bo_user).toBeDefined();
@@ -637,7 +637,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
 
     const response = await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
-      .send({ statut: AGREMENT_STATUT.A_MODIFIER });
+      .send({ statut: AGREMENT_STATUT.A_COMPLETER });
 
     expect(response.status).toBe(400);
   });
@@ -689,7 +689,7 @@ describe("GET /admin/agrements/history/:agrementId", () => {
     authUserBo = await createAdminUser({ territoireCode: "IDF" });
     await request(getBoAppHelper(authUserBo))
       .patch(`/admin/agrements/${agrementId}/statut`)
-      .send({ statut: AGREMENT_STATUT.EN_COURS });
+      .send({ statut: AGREMENT_STATUT.PRIS_EN_CHARGE });
     const response = await request(getBoAppHelper(authUserBo)).get(
       `/admin/agrements/history/${agrementId}`,
     );

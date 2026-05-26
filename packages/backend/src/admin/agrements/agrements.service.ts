@@ -234,7 +234,7 @@ export const AgrementService = {
 
     if (
       [
-        AGREMENT_STATUT.A_MODIFIER,
+        AGREMENT_STATUT.A_COMPLETER,
         AGREMENT_STATUT.A_CORRIGER,
         AGREMENT_STATUT.VALIDE,
       ].includes(statut) &&
@@ -254,15 +254,15 @@ export const AgrementService = {
           ? commentaire
           : agrement.commentaireCorrection;
       agrement.commentaireCompletude =
-        statut === AGREMENT_STATUT.A_MODIFIER
+        statut === AGREMENT_STATUT.A_COMPLETER
           ? commentaire
           : agrement.commentaireCompletude;
       agrement.dateConfirmCompletude =
-        statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME
+        statut === AGREMENT_STATUT.EN_INSTRUCTION
           ? new Date()
           : agrement.dateConfirmCompletude;
       agrement.dateVerifCompleture =
-        statut === AGREMENT_STATUT.EN_COURS
+        statut === AGREMENT_STATUT.PRIS_EN_CHARGE
           ? new Date()
           : agrement.dateVerifCompleture;
       if (statut === AGREMENT_STATUT.VALIDE) {
@@ -324,8 +324,8 @@ export const AgrementService = {
     });
 
     let eventType: AGREMENT_HISTORY_TYPE;
-    if (statut === AGREMENT_STATUT.EN_COURS) {
-      eventType = AGREMENT_HISTORY_TYPE.EN_COURS;
+    if (statut === AGREMENT_STATUT.PRIS_EN_CHARGE) {
+      eventType = AGREMENT_HISTORY_TYPE.PRISE_EN_CHARGE;
     } else {
       eventType = AGREMENT_HISTORY_TYPE.STATUT_CHANGE;
     }
@@ -350,8 +350,8 @@ export const AgrementService = {
     }
 
     const allowedStatutsMailDreets = [
-      AGREMENT_STATUT.A_MODIFIER,
-      AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+      AGREMENT_STATUT.A_COMPLETER,
+      AGREMENT_STATUT.EN_INSTRUCTION,
       AGREMENT_STATUT.A_CORRIGER,
       AGREMENT_STATUT.REFUSE,
       AGREMENT_STATUT.VALIDE,
@@ -364,7 +364,7 @@ export const AgrementService = {
         });
       }
       if (
-        statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME ||
+        statut === AGREMENT_STATUT.EN_INSTRUCTION ||
         statut === AGREMENT_STATUT.A_CORRIGER ||
         statut === AGREMENT_STATUT.VALIDE
       ) {
@@ -380,8 +380,8 @@ export const AgrementService = {
             try {
               let mailToSend = null;
               switch (statut) {
-                case AGREMENT_STATUT.COMPLETUDE_CONFIRME:
-                  mailToSend = AgrementMailAdmin.sendStatutCompletudeMail({
+                case AGREMENT_STATUT.EN_INSTRUCTION:
+                  mailToSend = AgrementMailAdmin.sendCompletudeConfirmedMail({
                     Organisme: organisme,
                     agrementId,
                     mailDreets: fiche.service_mail,
@@ -418,8 +418,8 @@ export const AgrementService = {
         }
       }
       const allowedStatutsMailOva = [
-        AGREMENT_STATUT.A_MODIFIER,
-        AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+        AGREMENT_STATUT.A_COMPLETER,
+        AGREMENT_STATUT.EN_INSTRUCTION,
         AGREMENT_STATUT.A_CORRIGER,
         AGREMENT_STATUT.REFUSE,
         AGREMENT_STATUT.VALIDE,
@@ -435,15 +435,15 @@ export const AgrementService = {
           let mailToSend;
 
           switch (statut) {
-            case AGREMENT_STATUT.A_MODIFIER:
-              mailToSend = AgrementMailUsagers.sendStatutAModifierMail({
+            case AGREMENT_STATUT.A_COMPLETER:
+              mailToSend = AgrementMailUsagers.sendStatutACompleterMail({
                 commentaire,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
               });
               break;
-            case AGREMENT_STATUT.COMPLETUDE_CONFIRME:
-              mailToSend = AgrementMailUsagers.sendStatutCompletudeMail({
+            case AGREMENT_STATUT.EN_INSTRUCTION:
+              mailToSend = AgrementMailUsagers.sendCompletudeConfirmedMail({
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
               });
@@ -503,7 +503,7 @@ export const AgrementService = {
       withDetails: false,
     });
     // Complétude confirmée : On déclenche le début du délai du SVA
-    if (statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME) {
+    if (statut === AGREMENT_STATUT.EN_INSTRUCTION) {
       const timerId = await AgrementsRepository.insertSvaTimer({
         agrementId,
         tx,
@@ -516,7 +516,7 @@ export const AgrementService = {
       return;
     }
     if (
-      agrementPrecedent?.statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME &&
+      agrementPrecedent?.statut === AGREMENT_STATUT.EN_INSTRUCTION &&
       (statut === AGREMENT_STATUT.VALIDE || statut === AGREMENT_STATUT.REFUSE)
     ) {
       const timerId = await AgrementsRepositoryShared.updateSvaTimer({

@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="
-      isAmodifierOrCorriger &&
+      isACompleterOrCorriger &&
       userStore.user?.featureFlags?.[FeatureFlagName.RENOUVELLEMENT_AGREMENT]
     "
     :class="['fr-alert fr-mb-5v', 'fr-alert--warning']"
@@ -60,11 +60,11 @@ const config = useRuntimeConfig();
 const agrementStore = useAgrementStore();
 const userStore = useUserStore();
 
-const isAmodifierOrCorriger = computed(() => {
+const isACompleterOrCorriger = computed(() => {
   const statut = agrementStore.agrementEnTraitement?.statut;
   return (
     statut != null &&
-    [AGREMENT_STATUT.A_MODIFIER, AGREMENT_STATUT.A_CORRIGER].includes(statut)
+    [AGREMENT_STATUT.A_COMPLETER, AGREMENT_STATUT.A_CORRIGER].includes(statut)
   );
 });
 

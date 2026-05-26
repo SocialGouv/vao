@@ -41,11 +41,10 @@ const caseBo = () => {
       return "new";
 
     case AGREMENT_STATUT.PRIS_EN_CHARGE:
-    case AGREMENT_STATUT.EN_COURS:
-    case AGREMENT_STATUT.COMPLETUDE_CONFIRME:
+    case AGREMENT_STATUT.EN_INSTRUCTION:
       return "success";
 
-    case AGREMENT_STATUT.A_MODIFIER:
+    case AGREMENT_STATUT.A_COMPLETER:
     case AGREMENT_STATUT.A_CORRIGER:
       return "warning";
 
@@ -64,15 +63,14 @@ const caseFo = () => {
   switch (props.statut) {
     case AGREMENT_STATUT.TRANSMIS:
     case AGREMENT_STATUT.PRIS_EN_CHARGE:
-    case AGREMENT_STATUT.EN_COURS:
-    case AGREMENT_STATUT.COMPLETUDE_CONFIRME:
+    case AGREMENT_STATUT.EN_INSTRUCTION:
     case AGREMENT_STATUT.VALIDE:
       return "success";
 
     case AGREMENT_STATUT.BROUILLON:
       return "info";
 
-    case AGREMENT_STATUT.A_MODIFIER:
+    case AGREMENT_STATUT.A_COMPLETER:
     case AGREMENT_STATUT.A_CORRIGER:
       return "warning";
 

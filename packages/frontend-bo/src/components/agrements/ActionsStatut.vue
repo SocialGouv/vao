@@ -20,7 +20,7 @@
         :have-commentaire="true"
         :have-required-file="false"
         valid-button="Confirmer"
-        @valid="(payload) => onValidForm(payload, AGREMENT_STATUT.A_MODIFIER)"
+        @valid="(payload) => onValidForm(payload, AGREMENT_STATUT.A_COMPLETER)"
         @close="isModalComplementOpened = false"
         @update:file="fileUpdate"
       />
@@ -61,7 +61,7 @@
         :have-required-file="true"
         valid-button="Confirmer"
         @valid="
-          (payload) => onValidForm(payload, AGREMENT_STATUT.COMPLETUDE_CONFIRME)
+          (payload) => onValidForm(payload, AGREMENT_STATUT.EN_INSTRUCTION)
         "
         @close="isModalModaleConfirmationsOpened = false"
         @update:file="fileUpdate"
@@ -167,8 +167,7 @@ const props = defineProps<{
 
 const ALLOWED_STATUTS_ACTIONS = [
   AGREMENT_STATUT.PRIS_EN_CHARGE,
-  AGREMENT_STATUT.EN_COURS,
-  AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+  AGREMENT_STATUT.EN_INSTRUCTION,
 ];
 
 const isModalComplementOpened = ref(false);
@@ -199,8 +198,7 @@ const alerteDescription = computed(() =>
 );
 const isActionsCompletude = computed(
   () =>
-    agrementStore?.agrementCourant?.statut ===
-    AGREMENT_STATUT.COMPLETUDE_CONFIRME,
+    agrementStore?.agrementCourant?.statut === AGREMENT_STATUT.EN_INSTRUCTION,
 );
 
 const statutConfig: Partial<
@@ -212,7 +210,7 @@ const statutConfig: Partial<
     }
   >
 > = {
-  [AGREMENT_STATUT.COMPLETUDE_CONFIRME]: {
+  [AGREMENT_STATUT.EN_INSTRUCTION]: {
     category: FILE_CATEGORY.COMPLETUDE,
     description: "La confirmation de complétude de l'agrément a été envoyée",
   },
@@ -224,7 +222,7 @@ const statutConfig: Partial<
     category: FILE_CATEGORY.ACORRIGER,
     description: `La demande de correction a été envoyée`,
   },
-  [AGREMENT_STATUT.A_MODIFIER]: {
+  [AGREMENT_STATUT.A_COMPLETER]: {
     category: FILE_CATEGORY.AMODIFER,
     description: `La demande de complétion de l'agrément a été envoyée`,
   },

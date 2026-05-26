@@ -221,7 +221,7 @@ async function validerPriseEnCharge() {
   try {
     const success = await agrementStore.changeStatutAgrement({
       agrementId: agrementAPrendreEnCharge.value.id,
-      statut: AGREMENT_STATUT.EN_COURS,
+      statut: AGREMENT_STATUT.PRIS_EN_CHARGE,
     });
     if (success) {
       await router.push(`/agrements/${agrementAPrendreEnCharge.value.id}`);

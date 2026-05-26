@@ -152,7 +152,7 @@ export const AgrementService = {
 
       if (
         agrement.statut === AGREMENT_STATUT.TRANSMIS ||
-        agrement.statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME
+        agrement.statut === AGREMENT_STATUT.EN_INSTRUCTION
       ) {
         try {
           await AgrementService.trackEvent({
@@ -221,7 +221,7 @@ export const AgrementService = {
 
         if (emailRegion) {
           try {
-            if (agrement.statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME) {
+            if (agrement.statut === AGREMENT_STATUT.EN_INSTRUCTION) {
               const mailToSend =
                 AgrementMailAdmin.sendStatutCorrectionRegionMail({
                   agrementId,
@@ -339,7 +339,7 @@ export const AgrementService = {
     // Côté OVA, lorsque l'utilisateur fait le retour, alors on redéclenche le SVA.
     // - changement de statut du timer en RUNNING
     // - Nouvelle période
-    if (statut === AGREMENT_STATUT.COMPLETUDE_CONFIRME) {
+    if (statut === AGREMENT_STATUT.EN_INSTRUCTION) {
       const timerId = await AgrementsRepositoryShared.updateSvaTimer({
         agrementId,
         statut: AGREMENT_SVA_TIMER_STATUT.RUNNING,
