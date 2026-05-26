@@ -13,7 +13,7 @@ export enum AGREMENT_STATUT {
   // ACTION 6 : DREETS : En instruction (Complétude confirmée, SVA en cours)
   EN_INSTRUCTION = "EN_INSTRUCTION",
   // ACTION 7 : A_CORRIGER : DREETS demande des corrections à l'OVA après la confirmation de complétude (Avant la prise de décision finale)
-  A_CORRIGER = "A_CORRIGER", //  ???
+  A_CORRIGER = "A_CORRIGER",
   // ACTION 8 : DREETS valide l'agrément, agrément actif (Statut final)
   VALIDE = "VALIDE",
 }

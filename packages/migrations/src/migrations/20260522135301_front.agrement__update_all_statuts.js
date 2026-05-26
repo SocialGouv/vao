@@ -51,7 +51,6 @@ exports.up = async function (knex) {
       'EN_INSTRUCTION',
       'A_COMPLETER',
       'REFUSE',
-      'COMPLETUDE_CONFIRME',
       'VALIDE',
       'A_CORRIGER'
     );
@@ -70,7 +69,6 @@ exports.up = async function (knex) {
     ALTER COLUMN statut SET DEFAULT 'BROUILLON';
   `);
 };
-exports.config = { transaction: false };
 
 exports.down = async function (knex) {
   // 1. alter en text pour éviter les problèmes de rollback (ajout de valeurs dans l'enum)

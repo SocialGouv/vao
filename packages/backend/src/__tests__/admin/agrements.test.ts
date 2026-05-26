@@ -141,7 +141,7 @@ describe("GET /admin/agrements", () => {
 });
 
 describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
-  it("devrait changer le statut d'un agrément avec succès BROUILLON => EN_COURS", async () => {
+  it("devrait changer le statut d'un agrément avec succès BROUILLON => PRIS_EN_CHARGE", async () => {
     authUser = await createUsagersUser();
     const organismeId = await createOrganisme({ userId: authUser.id });
     const agrementData = await buildAgrementFixture({ organismeId });
@@ -221,7 +221,7 @@ describe("PATCH /admin/agrements/{idAgrement}/statut", () => {
     expect(aModifierEvent?.bo_user).toBeDefined();
   });
 
-  it("devrait modifier le statut COMPLETUDE et historiser", async () => {
+  it("devrait modifier le statut EN_INSTRUCTION et historiser", async () => {
     const sendSpy = jest.spyOn(mailService, "send");
     authUser = await createUsagersUser();
 

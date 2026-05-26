@@ -436,7 +436,7 @@ export const AgrementService = {
 
           switch (statut) {
             case AGREMENT_STATUT.A_COMPLETER:
-              mailToSend = AgrementMailUsagers.sendStatutAModifierMail({
+              mailToSend = AgrementMailUsagers.sendStatutACompleterMail({
                 commentaire,
                 email: mailsOVA,
                 regionDreets: regionDreets.text,
