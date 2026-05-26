@@ -184,16 +184,10 @@ const {
 } = useField<string>("sejourCommentaire");
 
 const urlPdfQuestionnaireVacanciers = computed(() => {
-  const url = new URL(
+  return new URL(
     "/documents/public/annexe-5-questionnaire-vacanciers.pdf",
     config.public.backendUrl,
-  );
-
-  if (url.protocol !== "https:" && url.protocol !== "http:") {
-    throw new Error("Invalid URL protocol");
-  }
-
-  return url.toString();
+  ).toString();
 });
 
 const validateForm = async () => {
