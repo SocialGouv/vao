@@ -1,6 +1,6 @@
 <template>
-  <fieldset class="fr-mt-8v">
-    <legend class="fr-fieldset__legend fr-text--lead">
+  <fieldset class="fr-mt-8v no-border">
+    <legend class="fr-fieldset__legend fr-text--lead fr-mb-0">
       <span class="fr-icon-bank-card-fill" aria-hidden="true"></span>
       Bilan financier sur les 4 dernières années
     </legend>
@@ -131,6 +131,7 @@
   <div class="fr-fieldset__element fr-mt-6v fr-mb-10v">
     <UtilsMultiFilesUpload
       v-model="filesBilanFinancierQuatreAnnees"
+      hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
       :modifiable="props.modifiable"
       label="Ajouter des fichiers complémentaires (optionnel)"
     />
@@ -251,3 +252,11 @@ defineExpose({
   validateForm,
 });
 </script>
+<style scoped>
+fieldset.no-border {
+  padding: 0;
+}
+legend {
+  padding-left: 0;
+}
+</style>

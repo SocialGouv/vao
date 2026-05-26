@@ -14,171 +14,187 @@
         >au choix une description texte et/ou un fichier joint</span
       >. L’un des deux est requis.
     </p>
-    <fieldset>
-      <legend class="fr-fieldset__legend fr-text--lead">
-        Perception et ressenti des vacanciers sur les séjours réalisés
-      </legend>
-      <div class="fr-fieldset__element">
-        <p
-          id="bilanQualPerceptionSensibilite-desc"
-          class="light-decisions-text-text-mention-grey"
-        >
-          Objectif : recueillir la perception globale du public accueilli
-          (satisfaction, ressenti, difficultés rencontrées…). Le nombre de
-          caractères est insuffisant.
-        </p>
-        <div class="fr-col-12">
-          <DsfrInputGroup
-            v-if="props.modifiable"
-            name="bilanQualPerceptionSensibilite"
-            hint="Minimum 20 caractères."
-            :label="
-              displayInput.AgrementBilanAnnuelInput[
-                'bilanQualPerceptionSensibilite'
-              ].label
-            "
-            :model-value="bilanQualPerceptionSensibilite"
-            :label-visible="true"
-            :is-textarea="true"
-            :is-valid="bilanQualPerceptionSensibiliteMeta.valid"
-            :error-message="bilanQualPerceptionSensibiliteErrorMessage"
-            aria-describedby="bilanQualPerceptionSensibilite-desc"
-            @update:model-value="onBilanQualPerceptionSensibiliteChange"
-          />
-          <UtilsDisplayInput
-            v-else
-            :value="bilanQualPerceptionSensibilite"
-            :input="
-              displayInput.AgrementBilanAnnuelInput[
-                'bilanQualPerceptionSensibilite'
-              ]
-            "
-            :is-valid="bilanQualPerceptionSensibiliteMeta.valid"
-            :error-message="bilanQualPerceptionSensibiliteErrorMessage"
-          />
+    <div class="border fr-p-4v">
+      <fieldset class="no-border">
+        <legend class="fr-fieldset__legend fr-text--lead">
+          Perception et ressenti des vacanciers sur les séjours réalisés
+        </legend>
+        <div class="fr-fieldset__element">
+          <p
+            id="bilanQualPerceptionSensibilite-desc"
+            class="light-decisions-text-text-mention-grey"
+          >
+            Objectif : recueillir la perception globale du public accueilli
+            (satisfaction, ressenti, difficultés rencontrées…). Le nombre de
+            caractères est insuffisant.
+          </p>
+          <div class="fr-col-12">
+            <DsfrInputGroup
+              v-if="props.modifiable"
+              name="bilanQualPerceptionSensibilite"
+              hint="Minimum 20 caractères."
+              :label="
+                displayInput.AgrementBilanAnnuelInput[
+                  'bilanQualPerceptionSensibilite'
+                ].label
+              "
+              :model-value="bilanQualPerceptionSensibilite"
+              :label-visible="true"
+              :is-textarea="true"
+              :is-valid="bilanQualPerceptionSensibiliteMeta.valid"
+              :error-message="bilanQualPerceptionSensibiliteErrorMessage"
+              aria-describedby="bilanQualPerceptionSensibilite-desc"
+              @update:model-value="onBilanQualPerceptionSensibiliteChange"
+            />
+            <UtilsDisplayInput
+              v-else
+              :value="bilanQualPerceptionSensibilite"
+              :input="
+                displayInput.AgrementBilanAnnuelInput[
+                  'bilanQualPerceptionSensibilite'
+                ]
+              "
+              :is-valid="bilanQualPerceptionSensibiliteMeta.valid"
+              :error-message="bilanQualPerceptionSensibiliteErrorMessage"
+            />
+          </div>
         </div>
-      </div>
-      <div class="fr-fieldset__element">
-        <UtilsMultiFilesUpload
-          v-model="filesBilanQualitPerception"
-          label="Ajouter des fichiers"
-          :modifiable="props.modifiable"
-        />
-        <p v-if="filesBilanQualitPerceptionError" class="fr-error-text">
-          {{ filesBilanQualitPerceptionError }}
-        </p>
-      </div>
-    </fieldset>
-    <fieldset class="fr-p-4v fr-mt-6v">
-      <legend class="fr-fieldset__legend fr-text--lead">
-        Évolutions prévues des activités VAO et perspectives de développement à
-        venir
-      </legend>
-      <div class="fr-fieldset__element">
-        <p
-          id="bilanQualPerspectiveEvol-desc"
-          class="light-decisions-text-text-mention-grey"
-        >
-          Objectif : décrire les projets d’évolution de l’offre ou les
-          ajustements envisagés à partir de l’expérience passée.
-        </p>
-        <div class="fr-col-12">
-          <DsfrInputGroup
-            v-if="props.modifiable"
-            name="bilanQualPerspectiveEvol"
-            hint="Minimum 20 caractères."
-            :label="
-              displayInput.AgrementBilanAnnuelInput['bilanQualPerspectiveEvol']
-                .label
-            "
-            :model-value="bilanQualPerspectiveEvol"
-            :label-visible="true"
-            :is-textarea="true"
-            :is-valid="bilanQualPerspectiveEvolMeta.valid"
-            :error-message="bilanQualPerspectiveEvolErrorMessage"
-            aria-describedby="bilanQualPerspectiveEvol-desc"
-            @update:model-value="onBilanQualPerspectiveEvolChange"
+        <div class="fr-fieldset__element">
+          <UtilsMultiFilesUpload
+            v-model="filesBilanQualitPerception"
+            label="Ajouter des fichiers"
+            hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+            :modifiable="props.modifiable"
           />
-          <UtilsDisplayInput
-            v-else
-            :value="bilanQualPerspectiveEvol"
-            :input="
-              displayInput.AgrementBilanAnnuelInput['bilanQualPerspectiveEvol']
-            "
-            :is-valid="bilanQualPerspectiveEvolMeta.valid"
-            :error-message="bilanQualPerspectiveEvolErrorMessage"
-          />
+          <p v-if="filesBilanQualitPerceptionError" class="fr-error-text">
+            {{ filesBilanQualitPerceptionError }}
+          </p>
         </div>
-      </div>
-      <div class="fr-fieldset__element">
-        <UtilsMultiFilesUpload
-          v-model="filesBilanQualitPerspectives"
-          label="Ajouter des fichiers"
-          :modifiable="props.modifiable"
-        />
-        <p v-if="filesBilanQualitPerspectivesError" class="fr-error-text">
-          {{ filesBilanQualitPerspectivesError }}
-        </p>
-      </div>
-    </fieldset>
-    <fieldset class="fr-p-4v fr-mt-6v">
-      <legend class="fr-fieldset__legend fr-text--lead">
-        Eléments marquants autour des activités VAO
-      </legend>
-      <div class="fr-fieldset__element">
-        <p
-          id="bilanQualElementsMarquants-desc"
-          class="light-decisions-text-text-mention-grey"
-        >
-          Objectif : mettre en avant les faits saillants, réussites, incidents,
-          ou points d’attention de l’année.
-        </p>
-        <div class="fr-col-12">
-          <DsfrInputGroup
-            v-if="props.modifiable"
-            name="bilanQualElementsMarquants"
-            hint="Minimum 20 caractères."
-            :label="
-              displayInput.AgrementBilanAnnuelInput[
-                'bilanQualElementsMarquants'
-              ].label
-            "
-            :model-value="bilanQualElementsMarquants"
-            :label-visible="true"
-            :is-textarea="true"
-            :is-valid="bilanQualElementsMarquantsMeta.valid"
-            :error-message="bilanQualElementsMarquantsErrorMessage"
-            aria-describedby="bilanQualElementsMarquants-desc"
-            @update:model-value="onBilanQualElementsMarquantsChange"
-          />
-          <UtilsDisplayInput
-            v-else
-            :value="bilanQualPerspectiveEvol"
-            :input="
-              displayInput.AgrementBilanAnnuelInput[
-                'bilanQualElementsMarquants'
-              ]
-            "
-            :is-valid="bilanQualElementsMarquantsMeta.valid"
-            :error-message="bilanQualElementsMarquantsErrorMessage"
-          />
+      </fieldset>
+    </div>
+    <div class="border fr-p-4v fr-mt-6v">
+      <fieldset class="no-border fr-p-4v">
+        <legend class="fr-fieldset__legend fr-text--lead">
+          Évolutions prévues des activités VAO et perspectives de développement
+          à venir
+        </legend>
+        <div class="fr-fieldset__element">
+          <p
+            id="bilanQualPerspectiveEvol-desc"
+            class="light-decisions-text-text-mention-grey"
+          >
+            Objectif : décrire les projets d’évolution de l’offre ou les
+            ajustements envisagés à partir de l’expérience passée.
+          </p>
+          <div class="fr-col-12">
+            <DsfrInputGroup
+              v-if="props.modifiable"
+              name="bilanQualPerspectiveEvol"
+              hint="Minimum 20 caractères."
+              :label="
+                displayInput.AgrementBilanAnnuelInput[
+                  'bilanQualPerspectiveEvol'
+                ].label
+              "
+              :model-value="bilanQualPerspectiveEvol"
+              :label-visible="true"
+              :is-textarea="true"
+              :is-valid="bilanQualPerspectiveEvolMeta.valid"
+              :error-message="bilanQualPerspectiveEvolErrorMessage"
+              aria-describedby="bilanQualPerspectiveEvol-desc"
+              @update:model-value="onBilanQualPerspectiveEvolChange"
+            />
+            <UtilsDisplayInput
+              v-else
+              :value="bilanQualPerspectiveEvol"
+              :input="
+                displayInput.AgrementBilanAnnuelInput[
+                  'bilanQualPerspectiveEvol'
+                ]
+              "
+              :is-valid="bilanQualPerspectiveEvolMeta.valid"
+              :error-message="bilanQualPerspectiveEvolErrorMessage"
+            />
+          </div>
         </div>
-      </div>
-      <div class="fr-fieldset__element">
-        <UtilsMultiFilesUpload
-          v-model="filesBilanQualitElementsMarquants"
-          label="Ajouter des fichiers complémentaires"
-          :modifiable="props.modifiable"
-        />
-        <p v-if="filesBilanQualitElementsMarquantsError" class="fr-error-text">
-          {{ filesBilanQualitElementsMarquantsError }}
-        </p>
-      </div>
-    </fieldset>
+        <div class="fr-fieldset__element">
+          <UtilsMultiFilesUpload
+            v-model="filesBilanQualitPerspectives"
+            label="Ajouter des fichiers"
+            hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+            :modifiable="props.modifiable"
+          />
+          <p v-if="filesBilanQualitPerspectivesError" class="fr-error-text">
+            {{ filesBilanQualitPerspectivesError }}
+          </p>
+        </div>
+      </fieldset>
+    </div>
+    <div class="border fr-p-4v fr-mt-6v">
+      <fieldset class="no-border fr-p-4v">
+        <legend class="fr-fieldset__legend fr-text--lead">
+          Eléments marquants autour des activités VAO
+        </legend>
+        <div class="fr-fieldset__element">
+          <p
+            id="bilanQualElementsMarquants-desc"
+            class="light-decisions-text-text-mention-grey"
+          >
+            Objectif : mettre en avant les faits saillants, réussites,
+            incidents, ou points d’attention de l’année.
+          </p>
+          <div class="fr-col-12">
+            <DsfrInputGroup
+              v-if="props.modifiable"
+              name="bilanQualElementsMarquants"
+              hint="Minimum 20 caractères."
+              :label="
+                displayInput.AgrementBilanAnnuelInput[
+                  'bilanQualElementsMarquants'
+                ].label
+              "
+              :model-value="bilanQualElementsMarquants"
+              :label-visible="true"
+              :is-textarea="true"
+              :is-valid="bilanQualElementsMarquantsMeta.valid"
+              :error-message="bilanQualElementsMarquantsErrorMessage"
+              aria-describedby="bilanQualElementsMarquants-desc"
+              @update:model-value="onBilanQualElementsMarquantsChange"
+            />
+            <UtilsDisplayInput
+              v-else
+              :value="bilanQualPerspectiveEvol"
+              :input="
+                displayInput.AgrementBilanAnnuelInput[
+                  'bilanQualElementsMarquants'
+                ]
+              "
+              :is-valid="bilanQualElementsMarquantsMeta.valid"
+              :error-message="bilanQualElementsMarquantsErrorMessage"
+            />
+          </div>
+        </div>
+        <div class="fr-fieldset__element">
+          <UtilsMultiFilesUpload
+            v-model="filesBilanQualitElementsMarquants"
+            label="Ajouter des fichiers complémentaires"
+            hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+            :modifiable="props.modifiable"
+          />
+          <p
+            v-if="filesBilanQualitElementsMarquantsError"
+            class="fr-error-text"
+          >
+            {{ filesBilanQualitElementsMarquantsError }}
+          </p>
+        </div>
+      </fieldset>
+    </div>
     <div class="fr-fieldset__element fr-mt-6v">
       <UtilsMultiFilesUpload
         v-model="filesBilanQualitComplementaires"
         label="Ajouter des fichiers complémentaires (optionnel)"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
         :modifiable="props.modifiable"
       />
     </div>
@@ -336,3 +352,11 @@ defineExpose({
   validateForm,
 });
 </script>
+<style scoped>
+fieldset.no-border {
+  padding: 0;
+}
+legend {
+  padding-left: 0;
+}
+</style>

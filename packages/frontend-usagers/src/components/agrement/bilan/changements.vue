@@ -1,5 +1,5 @@
 <template>
-  <fieldset>
+  <fieldset class="no-border">
     <legend class="fr-fieldset__legend fr-text--lead">
       <span class="fr-icon-arrow-up-down-line" aria-hidden="true"></span>
       Changement ou évolution
@@ -35,6 +35,7 @@
     <div class="fr-fieldset__element">
       <UtilsMultiFilesUpload
         v-model="filesChangeEvol"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
         label="Ajouter des fichiers (optionnel)"
         :modifiable="props.modifiable"
       />
@@ -126,3 +127,11 @@ defineExpose({
   validateForm,
 });
 </script>
+<style scoped>
+fieldset.no-border {
+  padding: 0;
+}
+legend {
+  padding-left: 0;
+}
+</style>
