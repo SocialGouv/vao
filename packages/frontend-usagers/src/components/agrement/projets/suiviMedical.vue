@@ -1,66 +1,71 @@
 <template>
-  <fieldset>
-    <legend class="fr-fieldset__legend fr-text--lead">
-      <span class="fr-icon-capsule-fill" aria-hidden="true"></span>
-      Suivi médical prévu
-    </legend>
-    <div class="fr-fieldset__element">
-      <div class="fr-col-12">
-        <DsfrInputGroup
-          v-if="props.modifiable"
-          name="suiviMedDistribution"
-          :label="
-            displayInput.AgrementProjetsInput['suiviMedDistribution'].label
-          "
-          :model-value="suiviMedDistribution"
-          :label-visible="true"
-          :is-textarea="true"
-          :is-valid="suiviMedDistributionMeta.valid"
-          :error-message="suiviMedDistributionErrorMessage"
-          @update:model-value="onSuiviMedDistributionChange"
-        />
-        <UtilsDisplayInput
-          v-else
-          :value="suiviMedDistribution"
-          :input="displayInput.AgrementProjetsInput['suiviMedDistribution']"
-          :is-valid="suiviMedDistributionMeta.valid"
-          :error-message="suiviMedDistributionErrorMessage"
-        />
+  <div class="border fr-p-4v">
+    <fieldset class="no-border">
+      <legend class="fr-fieldset__legend fr-text--lead">
+        <span class="fr-icon-capsule-fill" aria-hidden="true"></span>
+        Suivi médical prévu
+      </legend>
+      <div class="fr-fieldset__element">
+        <div class="fr-col-12">
+          <DsfrInputGroup
+            v-if="props.modifiable"
+            name="suiviMedDistribution"
+            hint="Minimum 20 caractères."
+            :label="
+              displayInput.AgrementProjetsInput['suiviMedDistribution'].label
+            "
+            :model-value="suiviMedDistribution"
+            :label-visible="true"
+            :is-textarea="true"
+            :is-valid="suiviMedDistributionMeta.valid"
+            :error-message="suiviMedDistributionErrorMessage"
+            @update:model-value="onSuiviMedDistributionChange"
+          />
+          <UtilsDisplayInput
+            v-else
+            :value="suiviMedDistribution"
+            :input="displayInput.AgrementProjetsInput['suiviMedDistribution']"
+            :is-valid="suiviMedDistributionMeta.valid"
+            :error-message="suiviMedDistributionErrorMessage"
+          />
+        </div>
       </div>
-    </div>
 
-    <div class="fr-fieldset__element fr-mt-8v">
-      <div class="fr-col-12">
-        <DsfrInputGroup
-          v-if="props.modifiable"
-          name="suiviMedAccordSejour"
-          :label="
-            displayInput.AgrementProjetsInput['suiviMedAccordSejour'].label
-          "
-          :model-value="suiviMedAccordSejour"
-          :label-visible="true"
-          :is-textarea="true"
-          :is-valid="suiviMedAccordSejourMeta.valid"
-          :error-message="suiviMedAccordSejourErrorMessage"
-          @update:model-value="onSuiviMedAccordSejourChange"
-        />
-        <UtilsDisplayInput
-          v-else
-          :value="suiviMedAccordSejour"
-          :input="displayInput.AgrementProjetsInput['suiviMedAccordSejour']"
-          :is-valid="suiviMedAccordSejourMeta.valid"
-          :error-message="suiviMedAccordSejourErrorMessage"
+      <div class="fr-fieldset__element fr-mt-8v">
+        <div class="fr-col-12">
+          <DsfrInputGroup
+            v-if="props.modifiable"
+            name="suiviMedAccordSejour"
+            hint="Minimum 20 caractères."
+            :label="
+              displayInput.AgrementProjetsInput['suiviMedAccordSejour'].label
+            "
+            :model-value="suiviMedAccordSejour"
+            :label-visible="true"
+            :is-textarea="true"
+            :is-valid="suiviMedAccordSejourMeta.valid"
+            :error-message="suiviMedAccordSejourErrorMessage"
+            @update:model-value="onSuiviMedAccordSejourChange"
+          />
+          <UtilsDisplayInput
+            v-else
+            :value="suiviMedAccordSejour"
+            :input="displayInput.AgrementProjetsInput['suiviMedAccordSejour']"
+            :is-valid="suiviMedAccordSejourMeta.valid"
+            :error-message="suiviMedAccordSejourErrorMessage"
+          />
+        </div>
+      </div>
+      <div class="fr-fieldset__element">
+        <UtilsMultiFilesUpload
+          v-model="filesProjetsSejoursSuiviMed"
+          hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+          :modifiable="props.modifiable"
+          label="Ajouter des fichiers (optionnel)"
         />
       </div>
-    </div>
-    <div class="fr-fieldset__element">
-      <UtilsMultiFilesUpload
-        v-model="filesProjetsSejoursSuiviMed"
-        :modifiable="props.modifiable"
-        label="Ajouter des fichiers (optionnel)"
-      />
-    </div>
-  </fieldset>
+    </fieldset>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -86,10 +91,22 @@ const filesProjetsSejoursSuiviMed = ref(
 const validationSchema = yup.object({
   statut: yup.mixed().oneOf(Object.values(AGREMENT_STATUT)).required(),
   suiviMedDistribution: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez indiquer les mesures prévues pour la distribution et le stockage des médicaments. Minimum 20 caractères.",
+      )
+      .nullable(),
   ),
   suiviMedAccordSejour: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez indiquer les accords passés avec un cabinet paramédical ou un médecin à proximité du lieu de séjour. Minimum 20 caractères.",
+      )
+      .nullable(),
   ),
 });
 

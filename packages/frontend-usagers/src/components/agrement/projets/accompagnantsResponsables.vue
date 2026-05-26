@@ -31,93 +31,99 @@
     Pour chaque section, renseignez au choix une description texte et/ou un
     fichier joint. L’un des deux est requis.
   </p>
-  <fieldset class="fr-p-4v">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      Compétences et expériences des accompagnants prévus par lieu de vacances,
-      notamment pour ce qui concerne l’encadrement de certaines activités
-      sportives. Ou expériences du responsable du déroulement du séjour sur le
-      lieu de vacances.
-    </legend>
+  <div class="border fr-p-4v">
+    <fieldset class="no-border">
+      <legend class="fr-fieldset__legend fr-text--lead">
+        Compétences et expériences des accompagnants prévus par lieu de
+        vacances, notamment pour ce qui concerne l’encadrement de certaines
+        activités sportives. Ou expériences du responsable du déroulement du
+        séjour sur le lieu de vacances.
+      </legend>
 
-    <div class="fr-fieldset__element">
-      <div class="fr-col-12">
-        <DsfrInputGroup
-          v-if="props.modifiable"
-          name="accompRespCompExp"
-          label="description"
-          hint="Minimum 20 caractères."
-          :model-value="accompRespCompExp"
-          :label-visible="true"
-          :is-textarea="true"
-          :is-valid="accompRespCompExpMeta.valid"
-          :error-message="accompRespCompExpErrorMessage"
-          @update:model-value="onAccompRespCompExpChange"
-        />
-        <UtilsDisplayInput
-          v-else
-          :value="accompRespCompExp"
-          :input="displayInput.AgrementProjetsInput['accompRespCompExp']"
-          :is-valid="accompRespCompExpMeta.valid"
-          :error-message="accompRespCompExpErrorMessage"
-        />
+      <div class="fr-fieldset__element">
+        <div class="fr-col-12">
+          <DsfrInputGroup
+            v-if="props.modifiable"
+            name="accompRespCompExp"
+            label="Description"
+            hint="Minimum 20 caractères."
+            :model-value="accompRespCompExp"
+            :label-visible="true"
+            :is-textarea="true"
+            :is-valid="accompRespCompExpMeta.valid"
+            :error-message="accompRespCompExpErrorMessage"
+            @update:model-value="onAccompRespCompExpChange"
+          />
+          <UtilsDisplayInput
+            v-else
+            :value="accompRespCompExp"
+            :input="displayInput.AgrementProjetsInput['accompRespCompExp']"
+            :is-valid="accompRespCompExpMeta.valid"
+            :error-message="accompRespCompExpErrorMessage"
+          />
+        </div>
       </div>
-    </div>
-    <div class="fr-fieldset__element">
-      <UtilsMultiFilesUpload
-        v-model="filesProjetsSejoursCompetencesExperience"
-        :modifiable="props.modifiable"
-        label="Ajouter des fichiers"
-      />
-      <p
-        v-if="filesProjetsSejoursCompetencesExperienceError"
-        class="fr-error-text"
-      >
-        {{ filesProjetsSejoursCompetencesExperienceError }}
-      </p>
-    </div>
-  </fieldset>
-  <fieldset class="fr-p-4v fr-mt-6v">
-    <legend class="fr-fieldset__legend fr-text--lead">
-      Mesures envisagées au cas où des accompagnants supplémentaires devraient
-      être recrutés en urgence
-    </legend>
+      <div class="fr-fieldset__element">
+        <UtilsMultiFilesUpload
+          v-model="filesProjetsSejoursCompetencesExperience"
+          hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+          :modifiable="props.modifiable"
+          label="Ajouter des fichiers"
+        />
+        <p
+          v-if="filesProjetsSejoursCompetencesExperienceError"
+          class="fr-error-text"
+        >
+          {{ filesProjetsSejoursCompetencesExperienceError }}
+        </p>
+      </div>
+    </fieldset>
+  </div>
+  <div class="border fr-p-4v fr-mt-6v">
+    <fieldset class="no-border">
+      <legend class="fr-fieldset__legend fr-text--lead">
+        Mesures envisagées au cas où des accompagnants supplémentaires devraient
+        être recrutés en urgence
+      </legend>
 
-    <div class="fr-fieldset__element">
-      <div class="fr-col-12">
-        <DsfrInputGroup
-          v-if="props.modifiable"
-          name="accompRespRecruteUrg"
-          hint="Minimum 20 caractères."
-          :label="
-            displayInput.AgrementProjetsInput['accompRespRecruteUrg'].label
-          "
-          :model-value="accompRespRecruteUrg"
-          :label-visible="true"
-          :is-textarea="true"
-          :is-valid="accompRespRecruteUrgMeta.valid"
-          :error-message="accompRespRecruteUrgErrorMessage"
-          @update:model-value="onAccompRespRecruteUrgChange"
-        />
-        <UtilsDisplayInput
-          v-else
-          :value="accompRespRecruteUrg"
-          :input="displayInput.AgrementProjetsInput['accompRespRecruteUrg']"
-          :is-valid="accompRespRecruteUrgMeta.valid"
-          :error-message="accompRespRecruteUrgErrorMessage"
-        />
+      <div class="fr-fieldset__element">
+        <div class="fr-col-12">
+          <DsfrInputGroup
+            v-if="props.modifiable"
+            name="accompRespRecruteUrg"
+            hint="Minimum 20 caractères."
+            :label="
+              displayInput.AgrementProjetsInput['accompRespRecruteUrg'].label
+            "
+            :model-value="accompRespRecruteUrg"
+            :label-visible="true"
+            :is-textarea="true"
+            :is-valid="accompRespRecruteUrgMeta.valid"
+            :error-message="accompRespRecruteUrgErrorMessage"
+            @update:model-value="onAccompRespRecruteUrgChange"
+          />
+          <UtilsDisplayInput
+            v-else
+            :value="accompRespRecruteUrg"
+            :input="displayInput.AgrementProjetsInput['accompRespRecruteUrg']"
+            :is-valid="accompRespRecruteUrgMeta.valid"
+            :error-message="accompRespRecruteUrgErrorMessage"
+          />
+        </div>
       </div>
-    </div>
-    <div class="fr-fieldset__element">
-      <UtilsMultiFilesUpload
-        v-model="filesProjetsSejoursMesures"
-        :modifiable="props.modifiable"
-        label="Ajouter des fichiers"
-      />
-      <p v-if="filesProjetsSejoursMesuresError" class="fr-error-text">
-        {{ filesProjetsSejoursMesuresError }}
-      </p>
-    </div>
-  </fieldset>
+      <div class="fr-fieldset__element">
+        <UtilsMultiFilesUpload
+          v-model="filesProjetsSejoursMesures"
+          :modifiable="props.modifiable"
+          label="Ajouter des fichiers"
+          hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        />
+        <p v-if="filesProjetsSejoursMesuresError" class="fr-error-text">
+          {{ filesProjetsSejoursMesuresError }}
+        </p>
+      </div>
+    </fieldset>
+  </div>
   <!-- <div class="fr-fieldset__element fr-mt-6v">
     <UtilsMultiFilesUpload
       v-model="filesProjetsSejoursComplementaires"
@@ -151,10 +157,22 @@ const validationSchema = yup.object({
       .min(0, "Le nombre d'accompagnants ne peut pas être négatif."),
   ),
   accompRespCompExp: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez saisir une description pour les mesures envisagées au cas où des accompagnants supplémentaires devraient être recrutés en urgence. Minimum 20 caractères.",
+      )
+      .nullable(),
   ),
   accompRespRecruteUrg: requiredUnlessBrouillon(
-    yup.string().min(20, "Merci de décrire au moins 20 caractères.").nullable(),
+    yup
+      .string()
+      .min(
+        20,
+        "Veuillez saisir une description pour les mesures envisagées au cas où des accompagnants supplémentaires devraient être recrutés en urgence. Minimum 20 caractères.",
+      )
+      .nullable(),
   ),
 });
 
