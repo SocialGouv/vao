@@ -22,23 +22,30 @@
       />
     </div>
 
-    <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
-    <FileUpload
-      v-model="fileProcesVerbal"
-      :cdn-url="props.cdnUrl"
-      label="Dernier procès verbal d'assemblée générale"
-      hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
-      :modifiable="props.modifiable"
-    />
     <div
-      v-if="showProcesVerbalError"
-      class="fr-input-group fr-input-group--error"
+      v-if="
+        organismeStore.organismeCourant?.typeOrganisme ===
+        ORGANISME_TYPE.PERSONNE_MORALE
+      "
     >
-      <label class="fr-label">
-        {{ fileProcesVerbalError || procesVerbalRequiredMsg }}
-      </label>
+      <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
+      <FileUpload
+        v-model="fileProcesVerbal"
+        :cdn-url="props.cdnUrl"
+        label="Dernier procès verbal d'assemblée générale"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        :modifiable="props.modifiable"
+      />
+      <div
+        v-if="showProcesVerbalError"
+        class="fr-input-group fr-input-group--error"
+      >
+        <label class="fr-label">
+          {{ fileProcesVerbalError || procesVerbalRequiredMsg }}
+        </label>
+      </div>
     </div>
-    <div class="separator fr-my-2w"></div>
+    <div class="separator fr-my-4w"></div>
 
     <AgrementCommentaire
       ref="commentaireRef"
@@ -76,7 +83,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { FileUpload, useToaster } from "@vao/shared-ui";
-import { FILE_CATEGORY, AGREMENT_STATUT } from "@vao/shared-bridge";
+import {
+  FILE_CATEGORY,
+  AGREMENT_STATUT,
+  ORGANISME_TYPE,
+} from "@vao/shared-bridge";
 
 const props = defineProps({
   valid: { type: Boolean, default: true },
