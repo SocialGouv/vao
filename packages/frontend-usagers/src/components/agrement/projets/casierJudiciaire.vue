@@ -1,36 +1,36 @@
 <template>
-  <TitleWithIcon
-    icon="fr-icon-check-line"
-    :level="3"
-    title-class="fr-text--lead fr-mb-0"
-  >
-    Casier judiciaire
-  </TitleWithIcon>
+  <fieldset class="no-border">
+    <legend class="fr-fieldset__legend fr-text--lead">
+      <span class="fr-icon-check-line" aria-hidden="true"></span>
+      Casier judiciaire
+    </legend>
 
-  <DsfrCheckbox
-    v-model="accompRespAttestHono"
-    name="accompRespAttestHono"
-    label="J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire"
-    :error-message="
-      accompRespAttestHonoMeta.touched ? accompRespAttestHonoErrorMessage : ''
-    "
-    :readonly="!props.modifiable"
-    :required="props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON"
-    :value="true"
-  />
-
-  <div class="fr-fieldset__element">
-    <FileUpload
-      v-model="fileProjetsSejoursCasier"
-      :cdn-url="props.cdnUrl"
-      :modifiable="props.modifiable"
-      label="Ajouter un fichier (optionnel)"
+    <DsfrCheckbox
+      v-model="accompRespAttestHono"
+      name="accompRespAttestHono"
+      label="J'atteste que les accompagnants et le responsable du déroulement du séjour sur le lieu de vacances n'ont pas fait l'objet d'une condamnation inscrite au bulletin n° 3 du casier judiciaire"
+      :error-message="
+        accompRespAttestHonoMeta.touched ? accompRespAttestHonoErrorMessage : ''
+      "
+      :readonly="!props.modifiable"
+      :required="props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON"
+      :value="true"
     />
-  </div>
+
+    <div class="fr-fieldset__element">
+      <FileUpload
+        v-model="fileProjetsSejoursCasier"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        :cdn-url="props.cdnUrl"
+        :modifiable="props.modifiable"
+        label="Ajouter un fichier (optionnel)"
+      />
+    </div>
+  </fieldset>
 </template>
 
 <script setup lang="ts">
-import { FileUpload, TitleWithIcon } from "@vao/shared-ui";
+import { FileUpload } from "@vao/shared-ui";
 import * as yup from "yup";
 import { useForm, useField } from "vee-validate";
 import {
@@ -101,5 +101,12 @@ defineExpose({
   color: var(--error-425-625);
   margin-top: 0.5rem;
   font-size: 0.875rem;
+}
+fieldset.no-border {
+  border: none;
+  padding: 0;
+}
+legend {
+  padding-left: 0;
 }
 </style>

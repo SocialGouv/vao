@@ -5,49 +5,49 @@
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
   />
-  <hr class="fr-mt-8v" />
+  <div class="fr-my-4w separator"></div>
   <AgrementProjetsAnimationsActivites
     ref="animationsActivitesRef"
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
   />
-  <hr class="fr-mt-8v" />
+  <div class="fr-my-4w separator"></div>
   <AgrementProjetsAccompagnantsResponsables
     ref="accompagnantsResponsablesRef"
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
   />
-  <hr class="fr-mt-8v" />
+  <div class="fr-my-4w separator"></div>
   <AgrementProjetsCasierJudiciaire
     ref="casierJudiciaireRef"
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
   />
-  <hr class="fr-mt-8v" />
+  <div class="fr-my-4w separator"></div>
   <AgrementProjetsOrganisationTransports
     ref="organisationTransportsRef"
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
   />
-  <hr class="fr-mt-8v" />
+  <div class="fr-my-4w separator"></div>
   <AgrementProjetsSuiviMedical
     ref="suiviMedicalRef"
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
   />
-  <hr class="fr-mt-8v" />
+  <div class="fr-my-4w separator"></div>
   <AgrementProjetsProtocole
     ref="protocoleRef"
     :cdn-url="props.cdnUrl"
     :init-agrement="props.initAgrement"
     :modifiable="props.modifiable"
   />
-  <hr class="fr-mt-8v" />
+  <div class="fr-my-4w separator"></div>
   <AgrementProjetsBudget
     ref="financierRef"
     :cdn-url="props.cdnUrl"
@@ -57,6 +57,7 @@
   <div v-if="props.showButtons && props.modifiable">
     <div class="fr-fieldset__element">
       <UtilsNavigationButtons
+        class="fr-mt-8v"
         :show-buttons="props.showButtons"
         :is-downloading="props.isDownloading"
         :message="props.message"
