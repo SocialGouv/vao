@@ -1001,6 +1001,55 @@ export const MailUtils = {
       },
     },
     authentication: {
+      getAuth2FaCode({ email, code }: { email: string; code: string }) {
+        log.i("getAuth2FaCode - In", {
+          code,
+          email,
+        });
+        if (!email) {
+          const message = `Le paramètre de l'adresse courriel manque à la requête`;
+          log.w(`getAuth2FaCode - ${message}`);
+          throw new AppError(message);
+        }
+        if (!code) {
+          const message = `Le paramètre code manque à la requête`;
+          log.w(`getAuth2FaCode - ${message}`);
+          throw new AppError(message);
+        }
+
+        const link = `${config.frontUsagersDomain}/connexion/reset-mot-de-passe?token=${code}`;
+
+        const html = sendTemplate.getBody(
+          "Portail VAO - Réinitialisation du mot de passe",
+          [
+            {
+              p: [
+                "Bonjour,",
+                "Vous recevez ce mail car vous ne trouvez plus votre mot de passe sur le portail VAO",
+                "Afin de modifier votre mot de passe, veuillez cliquer sur le lien ci dessous qui vous redirigera vers le portail",
+              ],
+              type: "p",
+            },
+            {
+              link,
+              text: "Je réinitialise mon mot de passe",
+              type: "link",
+            },
+          ],
+          `L'équipe du SI VAO<BR><a href=${config.frontUsagersDomain}>Portail VAO</a>`,
+        );
+
+        const params = {
+          from: config.senderEmail,
+          html,
+          replyTo: config.senderEmail,
+          subject: `Portail VAO - Réinitialisation du mot de passe`,
+          to: email,
+        };
+        log.d("getAuth2FaCode post email", { params });
+
+        return params;
+      },
       sendAccountAlreadyExist: ({ email }: { email: string }) => {
         log.i("sendAccountAlreadyExist - In", {
           email,

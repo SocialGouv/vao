@@ -1,6 +1,7 @@
 import { ERRORS_LOGIN, FeatureFlagName, UserDto } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
 
+import { UsersService } from "../../../admin/users/users.service";
 import { config } from "../../../config";
 import { schema } from "../../../helpers/schema";
 import { status } from "../../../helpers/users";
@@ -109,6 +110,11 @@ export default async function login(
     const requires2FA = await FeatureFlagService.isFeatureAvailable(
       FeatureFlagName.AUTH_2FA,
     );
+    if (requires2FA) {
+      await UsersService.updateOtpCode({
+        userId: Number(user.id),
+      });
+    }
     return res.json({ user: { ...user, featureFlags, requires2FA } });
   } catch (error) {
     log.w("DONE with error");

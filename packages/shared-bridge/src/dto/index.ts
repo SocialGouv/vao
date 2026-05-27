@@ -13,3 +13,5 @@ export * from "./personnePhysique.dto";
 export * from "./siret.dto";
 export * from "./territoire.dto";
 export * from "./user.dto";
+export * from "./userAdmin.dto";
+export * from "./userUsagers.dto";

@@ -3,10 +3,10 @@ import jwt from "jsonwebtoken";
 import request from "supertest";
 
 import { config } from "../../config";
-import { UsersRepository as UsagersUsersRepository } from "../../repositories/usagers/Users";
 import { getEtablissement } from "../../services/Insee";
 import { mailService } from "../../services/mail";
 import * as UserService from "../../services/User";
+import { UsersRepository as UsagersUsersRepository } from "../../usagers/users/users.repository";
 import { getPool } from "../../utils/pgpool";
 import { getFoAppHelper } from "../helpers/appHelper";
 import { createOrganisme } from "../helpers/organismeHelper";

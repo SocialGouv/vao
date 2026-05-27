@@ -2,8 +2,8 @@ import { ERRORS_LOGIN } from "@vao/shared-bridge";
 import jwt from "jsonwebtoken";
 import request from "supertest";
 
+import { UsersRepository as AdminUsersRepository } from "../../admin/users/users.repository";
 import { config } from "../../config";
-import { UsersRepository as AdminUsersRepository } from "../../repositories/admin/Users";
 import { mailService } from "../../services/mail";
 import { getBoAppHelper } from "../helpers/appHelper";
 import {
