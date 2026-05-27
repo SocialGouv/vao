@@ -3,7 +3,8 @@
     <div id="personne-physique">
       <AgrementPersonnePhysique
         v-if="
-          organismeStore.organismeCourant?.typeOrganisme === 'personne_physique'
+          organismeStore.organismeCourant?.typeOrganisme ===
+          ORGANISME_TYPE.PERSONNE_PHYSIQUE
         "
         ref="personnePhysiqueRef"
         :init-organisme="props.initOrganisme"
@@ -12,9 +13,7 @@
       />
       <div class="separator fr-my-2w"></div>
       <AgrementPersonneMorale
-        v-if="
-          organismeStore.organismeCourant?.typeOrganisme === 'personne_morale'
-        "
+        v-if="isPersonneMorale"
         ref="personneMoraleRef"
         :init-organisme="props.initOrganisme"
         :init-agrement="props.initAgrement"
@@ -22,12 +21,7 @@
       />
     </div>
 
-    <div
-      v-if="
-        organismeStore.organismeCourant?.typeOrganisme ===
-        ORGANISME_TYPE.PERSONNE_MORALE
-      "
-    >
+    <div v-if="isPersonneMorale">
       <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
       <FileUpload
         v-model="fileProcesVerbal"
@@ -126,6 +120,12 @@ const showProcesVerbalError = computed(
     fileProcesVerbalError.value,
 );
 
+const isPersonneMorale = computed(
+  () =>
+    organismeStore.organismeCourant?.typeOrganisme ===
+    ORGANISME_TYPE.PERSONNE_MORALE,
+);
+
 async function saveAgrement() {
   fileProcesVerbalError.value = "";
   let commentaire;
@@ -134,6 +134,7 @@ async function saveAgrement() {
   }
 
   if (
+    isPersonneMorale.value &&
     props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON &&
     !fileProcesVerbal.value
   ) {
@@ -243,7 +244,7 @@ async function saveCoordonneesStep() {
 }
 
 async function coordonneesIsValid() {
-  if (!fileProcesVerbal.value) {
+  if (isPersonneMorale.value && !fileProcesVerbal.value) {
     return false;
   }
 
