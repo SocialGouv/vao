@@ -10,6 +10,7 @@ export interface UserDto {
   roles: string[];
   territoireCode: string;
   userSiret?: string;
+  requires2FA?: boolean | null;
   cguAccepted: boolean | null;
   cguAcceptedAt: Date | null;
   serviceCompetent?: USER_COMPETENCE_BO | null;
