@@ -1,30 +1,7 @@
 {
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "strict": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "strictBindCallApply": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "removeComments": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "esModuleInterop": true,
-    "types": ["node", "jest"],
-    "preserveWatchOutput": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "incremental": true,
-    "allowJs": true,
-    "isolatedModules": true,
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "tsBuildInfoFile": "dist/tsconfig.tsbuildinfo"
+    "types": ["node", "jest"]
   },
-  "include": ["src/**/*.ts", "src/**/*.js"],
-  "exclude": ["node_modules"],
-  "references": [{ "path": "../shared-bridge" }]
+  "include": ["src/**/*.ts"]
 }

@@ -13,7 +13,7 @@
     "test:debug": "pnpm test --debug --detectOpenHandles",
     "test:watch": "pnpm test --watch",
     "test:coverage": "pnpm test --coverage",
-    "build": "tsc -b ./tsconfig.json",
+    "build": "tsc -b ./tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   },
   "lint-staged": {
