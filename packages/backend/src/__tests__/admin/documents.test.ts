@@ -10,6 +10,8 @@ import {
 } from "../helpers/testContainer";
 import { createUsagersUser } from "../helpers/userHelper";
 
+jest.setTimeout(30000);
+
 beforeAll(async () => {
   await createTestContainer({ pg: true, s3: true });
 });

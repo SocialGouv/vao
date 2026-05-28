@@ -19,6 +19,8 @@ import {
 } from "../helpers/testContainer";
 import { createUsagersUser } from "../helpers/userHelper";
 
+jest.setTimeout(30000);
+
 jest.mock("../../middlewares/scan-file", () => {
   return (_req: UserRequest, _res: Response, next: NextFunction) => next();
 });

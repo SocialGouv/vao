@@ -13,6 +13,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
+    "types": ["node", "jest"],
     "preserveWatchOutput": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
