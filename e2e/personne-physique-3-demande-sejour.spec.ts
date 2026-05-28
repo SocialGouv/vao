@@ -1,13 +1,13 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import {
   alertLocator,
   apiGet,
+  ensureFilterIsChecked,
   loginBo,
   loginUsagers,
   logSuiteName,
   logTestName,
   logTestResult,
-  multiselectCheckboxLocator,
   waitReadyPage,
 } from "./utils/helper";
 import { getAgentDepartement75Paris, getOvaUser } from "./utils/users";
@@ -302,14 +302,9 @@ test.describe.serial(testName, () => {
       .click();
     await page.getByLabel("Nombre de lignes par page").selectOption("20");
     await page.getByRole("button", { name: "options sélectionnées" }).click();
-    await page
-      .locator(multiselectCheckboxLocator)
-      .getByText("EN COURS", { exact: true })
-      .click();
-    await page
-      .locator(multiselectCheckboxLocator)
-      .getByText("TRANSMISE", { exact: true })
-      .click();
+    await ensureFilterIsChecked(page, "EN COURS");
+    await ensureFilterIsChecked(page, "TRANSMISE");
+
     await page
       .getByRole("row", { name: `${sejour.idFonctionnelle} Musée Rodin Six` })
       .getByRole("button")
