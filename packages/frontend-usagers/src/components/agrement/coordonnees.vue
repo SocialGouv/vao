@@ -38,8 +38,8 @@
           {{ fileProcesVerbalError || procesVerbalRequiredMsg }}
         </label>
       </div>
+      <div class="separator fr-my-4w"></div>
     </div>
-    <div class="separator fr-my-4w"></div>
 
     <AgrementCommentaire
       ref="commentaireRef"
