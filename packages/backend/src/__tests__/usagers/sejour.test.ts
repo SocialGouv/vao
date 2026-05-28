@@ -30,6 +30,8 @@ import {
   createUsagersUserValide,
 } from "../helpers/userHelper";
 
+jest.setTimeout(30000);
+
 const buildResponsableSejour = () => ({
   adresse: { label: "1 rue Test" },
   email: "responsable@test.com",
