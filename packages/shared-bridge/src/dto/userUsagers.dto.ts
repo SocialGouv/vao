@@ -5,7 +5,7 @@ export interface UserUsagersDto {
   email: string;
   nom: string;
   prenom: string;
-  createdAt: Date | null;
+  dateCreation: Date | null;
   roles?: string[];
   userSiret?: string;
   cguAccepted: boolean | null;

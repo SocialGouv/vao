@@ -10,7 +10,7 @@ export const UsersUsagersMapper = {
     return {
       cguAccepted: entity.cgu_accepted,
       cguAcceptedAt: entity.cgu_accepted_at,
-      createdAt: entity.created_at,
+      dateCreation: entity.created_at,
       deleted: entity.deleted,
       deletedDate: entity.deleted_date,
       deletedUseId: entity.deleted_use_id,

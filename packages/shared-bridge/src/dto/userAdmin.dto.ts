@@ -6,7 +6,7 @@ export interface UserAdminDto {
   email: string;
   nom: string;
   prenom: string;
-  createdAt: Date | null;
+  dateCreation: Date | null;
   roles?: string[];
   territoireCode: string;
   cguAccepted: boolean | null;
