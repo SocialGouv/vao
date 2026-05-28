@@ -9,7 +9,7 @@ export const createFeatureFlag = async ({
 }: {
   name?: FeatureFlagName | null;
   label?: string | null;
-  enabled: boolean | null;
+  enabled?: boolean | null;
 }): Promise<string> => {
   const rows = await getPool().query(
     `INSERT INTO public.feature_flags ("name", description, enabled, date_from, date_to, created_at, updated_at) VALUES($1, $2, $3, null, null,now(),now()) RETURNING name`,
