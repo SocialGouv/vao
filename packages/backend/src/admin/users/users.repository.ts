@@ -1,5 +1,6 @@
-import { UserAdminDto, UserAdminEntity } from "@vao/shared-bridge";
+import { UserAdminDto } from "@vao/shared-bridge";
 
+import { UserAdminEntity } from "../../shared/admin/users/users.entity";
 import { UsersAdminMapper } from "../../shared/admin/users/users.mapper";
 import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";

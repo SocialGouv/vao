@@ -84,8 +84,13 @@ export default async function login(
   }
 
   try {
-    const accessToken = signAccessToken({ ...user, id: Number(user.id) });
-    const refreshToken = signRefreshToken({ ...user, id: Number(user.id) });
+    const payload = {
+      ...user,
+      cguAccepted: Boolean(user.cguAccepted),
+      id: Number(user.id),
+    };
+    const accessToken = signAccessToken(payload);
+    const refreshToken = signRefreshToken(payload);
 
     await Session.clean({ id: user.id }, schema.BACK);
     await Session.create(user.id, refreshToken, schema.BACK);
