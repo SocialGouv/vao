@@ -304,6 +304,11 @@ test.describe.serial(testName, () => {
     await page.getByRole("button", { name: "options sélectionnées" }).click();
     await ensureFilterIsChecked(page, "EN COURS");
     await ensureFilterIsChecked(page, "TRANSMISE");
+    await page.getByRole("button", { name: "Trier par Numéro de dé" }).click();
+    await page.getByRole("textbox", { name: "Numéro de déclaration" }).click();
+    await page
+      .getByRole("textbox", { name: "Numéro de déclaration" })
+      .fill(sejour.idFonctionnelle);
 
     await page
       .getByRole("row", { name: `${sejour.idFonctionnelle} Musée Rodin Six` })
