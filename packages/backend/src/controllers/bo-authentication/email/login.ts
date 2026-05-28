@@ -88,6 +88,7 @@ export default async function login(
       ...user,
       cguAccepted: Boolean(user.cguAccepted),
       id: Number(user.id),
+      roles: user.roles ?? [],
     };
     const accessToken = signAccessToken(payload);
     const refreshToken = signRefreshToken(payload);

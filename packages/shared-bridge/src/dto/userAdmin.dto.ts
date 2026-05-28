@@ -3,7 +3,7 @@ import { USER_COMPETENCE_BO } from "../constantes/users";
 
 export interface UserAdminDto {
   id: string;
-  mail: string;
+  email: string;
   nom: string;
   prenom: string;
   createdAt: Date | null;

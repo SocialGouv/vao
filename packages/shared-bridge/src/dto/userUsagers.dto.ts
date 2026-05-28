@@ -2,7 +2,7 @@ import { FeatureFlagName } from "../constantes";
 
 export interface UserUsagersDto {
   id: string;
-  mail: string;
+  email: string;
   nom: string;
   prenom: string;
   createdAt: Date | null;

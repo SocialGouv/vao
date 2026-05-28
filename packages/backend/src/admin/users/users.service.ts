@@ -34,7 +34,7 @@ export const UsersService = {
 
     await mailService.send(
       UserMailAdmin.getOtpCode({
-        mail: user.mail,
+        mail: user.email,
         otpCode,
       }),
     );
