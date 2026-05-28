@@ -159,3 +159,30 @@ export function getTransportsFile() {
 export function getBasicFile() {
   return path.join(__dirname, "../data/basic-file.pdf");
 }
+
+export async function ensureFilterIsChecked(page: Page, label: string) {
+  const option = page
+    .locator(multiselectCheckboxLocator)
+    .getByText(label, { exact: true });
+  const checkbox = option.locator("input[type='checkbox']");
+
+  if ((await checkbox.count()) > 0) {
+    if (!(await checkbox.first().isChecked())) {
+      await option.click();
+    }
+    return;
+  }
+
+  const isSelected =
+    (await option.locator("[aria-checked='true']").count()) > 0 ||
+    (await option.evaluate((element) => {
+      if (element.getAttribute("aria-checked") === "true") {
+        return true;
+      }
+      return element.closest("[aria-checked='true']") !== null;
+    }));
+
+  if (!isSelected) {
+    await option.click();
+  }
+}
