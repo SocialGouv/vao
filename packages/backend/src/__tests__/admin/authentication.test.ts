@@ -6,6 +6,7 @@ import { UsersRepository as AdminUsersRepository } from "../../admin/users/users
 import { config } from "../../config";
 import { mailService } from "../../services/mail";
 import { getBoAppHelper } from "../helpers/appHelper";
+import { createFeatureFlag } from "../helpers/featureFlagHelper";
 import {
   createTestContainer,
   removeTestContainer,
@@ -53,6 +54,7 @@ describe("POST /bo-authentication/email/login", () => {
     });
 
     expect(createdUsers[0]).toBeDefined();
+    await createFeatureFlag({});
 
     const response = await request(getBoAppHelper())
       .post("/bo-authentication/email/login")
@@ -62,6 +64,7 @@ describe("POST /bo-authentication/email/login", () => {
     expect(response.body.user).toBeDefined();
     expect(response.body.user.email).toBe(email);
     expect(response.body.user.featureFlags).toBeDefined();
+    expect(mailService.send).toHaveBeenCalledTimes(1);
 
     const setCookieHeader = response.headers["set-cookie"] || [];
     expect(setCookieHeader).toEqual(
