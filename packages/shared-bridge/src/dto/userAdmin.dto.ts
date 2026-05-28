@@ -13,6 +13,7 @@ export interface UserAdminDto {
   cguAcceptedAt: Date | null;
   serviceCompetent?: USER_COMPETENCE_BO | null;
   featureFlags?: Partial<Record<FeatureFlagName, boolean>>;
+  requires2FA?: boolean | null;
   otpCode?: number | null;
   otpCodeExpiresAt?: Date | null;
   deleted?: boolean | null;

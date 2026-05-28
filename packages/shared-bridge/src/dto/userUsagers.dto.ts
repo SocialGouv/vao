@@ -11,6 +11,7 @@ export interface UserUsagersDto {
   cguAccepted: boolean | null;
   cguAcceptedAt: Date | null;
   featureFlags?: Partial<Record<FeatureFlagName, boolean>>;
+  requires2FA?: boolean | null;
   otpCode?: number | null;
   otpCodeExpiresAt?: Date | null;
   deleted?: boolean | null;
