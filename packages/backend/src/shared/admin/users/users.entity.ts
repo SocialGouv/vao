@@ -8,7 +8,7 @@ export interface UserAdminEntity {
   nom: string;
   pwd: string;
   enddate: Date | null;
-  created_at: Date | null;
+  created_at: Date;
   edited_at: Date | null;
   blocked: boolean | null;
   ter_code: string;
