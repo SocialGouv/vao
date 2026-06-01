@@ -25,6 +25,7 @@ export const UsersUsagersMapper = {
       prenom: entity.prenom,
       pwd: entity.pwd,
       roles: [],
+      userSiret: entity.siret,
       validated: entity.validated,
       validatedAt: entity.validated_at,
     };
