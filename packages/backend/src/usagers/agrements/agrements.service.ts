@@ -237,10 +237,6 @@ export const AgrementService = {
             emailRegion = await getEmailRegion(codeObtentionRegion);
           }
         } catch (e) {
-          console.error(
-            "Erreur lors de la récupération des informations de l'organisme ou de la région",
-            e,
-          );
           log.w(
             "Impossible d'envoyer l'email à la région : informations manquantes ou erreur lors de la récupération. AgrementId=" +
               agrementId,
