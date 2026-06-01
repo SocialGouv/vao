@@ -1,16 +1,4 @@
-import { FeatureFlagName } from "../constantes";
-import { USER_COMPETENCE_BO } from "../constantes/users";
+import type { UserAdminDto } from "./userAdmin.dto";
+import type { UserUsagersDto } from "./userUsagers.dto";
 
-export interface UserDto {
-  id: string;
-  email: string;
-  nom: string;
-  prenom: string;
-  dateCreation: string;
-  roles: string[];
-  territoireCode: string;
-  userSiret: string;
-  cguAccepted: boolean;
-  serviceCompetent?: USER_COMPETENCE_BO | null;
-  featureFlags?: Partial<Record<FeatureFlagName, boolean>>;
-}
+export type UserDto = UserAdminDto & UserUsagersDto;

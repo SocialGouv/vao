@@ -3,12 +3,13 @@ import jwt from "jsonwebtoken";
 import request from "supertest";
 
 import { config } from "../../config";
-import { UsersRepository as UsagersUsersRepository } from "../../repositories/usagers/Users";
 import { getEtablissement } from "../../services/Insee";
 import { mailService } from "../../services/mail";
 import * as UserService from "../../services/User";
+import { UsersRepository as UsagersUsersRepository } from "../../usagers/users/users.repository";
 import { getPool } from "../../utils/pgpool";
 import { getFoAppHelper } from "../helpers/appHelper";
+import { createFeatureFlag } from "../helpers/featureFlagHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
 import { createTerritoire } from "../helpers/territoireHelper";
 import {
@@ -288,9 +289,10 @@ describe("POST /authentication/email/login", () => {
         ter_code: "FRA",
       },
     });
-
     expect(createdUsers[0]).toBeDefined();
-
+    const userCreation = await UserService.getByUserId(createdUsers[0].id);
+    expect(userCreation?.statusCode).toContain(STATUS_USER_FRONT.VALIDATED);
+    await createFeatureFlag({});
     const response = await request(getFoAppHelper())
       .post("/authentication/email/login")
       .send({ email, password });
@@ -300,6 +302,7 @@ describe("POST /authentication/email/login", () => {
     expect(response.body.user.email).toBe(email);
     expect(response.body.user.featureFlags).toBeDefined();
 
+    expect(mailService.send).toHaveBeenCalledTimes(1);
     const setCookieHeader = response.headers["set-cookie"] || [];
     expect(setCookieHeader).toEqual(
       expect.arrayContaining([

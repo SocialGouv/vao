@@ -1,10 +1,10 @@
-import { UsersRepository as AdminUsersRepository } from "../../repositories/admin/Users";
-import { UsersRepository as UsagerUsersRepository } from "../../repositories/usagers/Users";
+import { UsersRepository as AdminUsersRepository } from "../../admin/users/users.repository";
 import {
   create as createBoUserService,
   readOneByMail as readOneByMailBoUserService,
 } from "../../services/BoUser";
 import { registerByEmail as createFrontUserService } from "../../services/User";
+import { UsersRepository as UsagerUsersRepository } from "../../usagers/users/users.repository";
 import { getPool } from "../../utils/pgpool";
 import { AppHelperUser } from "./appHelper";
 

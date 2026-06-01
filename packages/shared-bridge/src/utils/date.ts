@@ -38,6 +38,10 @@ export function addYears(date: Date | null, years: number) {
   return date ? dayjs(date).add(years, "year").toDate() : null;
 }
 
+export function addMinutes(date: Date | null, minutes: number) {
+  return date ? dayjs(date).add(minutes, "minutes").toDate() : null;
+}
+
 export function addDays(date: Date, days: number) {
   return dayjs(date).add(days, "day").toDate();
 }

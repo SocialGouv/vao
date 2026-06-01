@@ -29,7 +29,7 @@
           :class="{ 'has-error': hasValidationError }"
         >
           <label id="code-label" for="code-input-0" class="fr-label">
-            Code de sécurité valable 30 minutes
+            Code de sécurité valable 15 minutes
             <span id="code-hint" class="fr-sr-only">
               Saisissez les 6 chiffres du code reçu par email
             </span>
@@ -147,9 +147,9 @@
             <li>Attention aux confusions : 0 (zéro) / O, 1 / l, 5 / S</li>
             <li>Si vous copiez-collez, vérifiez que le code est complet</li>
             <li>Utilisez le code le plus récent reçu</li>
-            <li>Le code expire après 30 minutes</li>
+            <li>Le code expire après 15 minutes</li>
           </ul>
-            <hr class="fr-mt-5v" />
+          <hr class="fr-mt-5v" />
           <h3 class="fr-text--lg">
             Si vous n'avez pas reçu votre code de connexion :
           </h3>

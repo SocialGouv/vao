@@ -2,9 +2,9 @@ import { STATUS_USER_FRONT } from "@vao/shared-bridge";
 import request from "supertest";
 
 import { roles } from "../../helpers/users";
-import { UsersRepository } from "../../repositories/usagers/Users";
 import { mailService } from "../../services/mail";
 import { link as linkOrganisme } from "../../services/Organisme";
+import { UsersRepository } from "../../usagers/users/users.repository";
 import { getFoAppHelper } from "../helpers/appHelper";
 import {
   createOrganisme,

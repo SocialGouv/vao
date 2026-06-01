@@ -1,5 +1,7 @@
-import { STATUS_USER_FRONT } from "@vao/shared-bridge";
+import { STATUS_USER_FRONT, UserUsagersDto } from "@vao/shared-bridge";
 
+import { UserUsagersEntity } from "../../shared/usagers/users/users.entity";
+import { UsersUsagersMapper } from "../../shared/usagers/users/users.mapper";
 import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 
@@ -65,5 +67,46 @@ export const UsersRepository = {
     ]);
     log.i("create - DONE");
     return { code: "CreationCompte", user: response.rows };
+  },
+  getById: async ({ userId }: { userId: number }): Promise<UserUsagersDto> => {
+    log.i("getById - IN");
+    const query = `
+      SELECT *
+      FROM front.users
+      WHERE id = $1
+      `;
+    const response = await getPool().query(query, [userId]);
+    const row = response.rows[0] as UserUsagersEntity;
+    const userAdminDto = UsersUsagersMapper.toDto(row);
+
+    return userAdminDto;
+  },
+  updateOtpCode: async ({
+    userId,
+    otpCode,
+    otpCodeExpiratedAt,
+  }: {
+    userId: number;
+    otpCode: number;
+    otpCodeExpiratedAt: Date | null;
+  }): Promise<UserUsagersDto> => {
+    log.i("getById - IN");
+    const query = `
+      UPDATE front.users
+      SET
+        otp_code = $2,
+        otp_code_expires_at = $3
+      WHERE id = $1
+      RETURNING *
+      `;
+    const response = await getPool().query(query, [
+      userId,
+      otpCode,
+      otpCodeExpiratedAt,
+    ]);
+    const row = response.rows[0] as UserUsagersEntity;
+    const userUsagersDto = UsersUsagersMapper.toDto(row);
+
+    return userUsagersDto;
   },
 };

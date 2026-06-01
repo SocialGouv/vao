@@ -1,3 +1,7 @@
+import { UserAdminDto } from "@vao/shared-bridge";
+
+import { UserAdminEntity } from "../../shared/admin/users/users.entity";
+import { UsersAdminMapper } from "../../shared/admin/users/users.mapper";
 import { logger } from "../../utils/logger";
 import { getPool } from "../../utils/pgpool";
 
@@ -57,5 +61,46 @@ export const UsersRepository = {
     ]);
     log.i("create - DONE");
     return { code: "CreationCompte", user: response.rows };
+  },
+  getById: async ({ userId }: { userId: number }): Promise<UserAdminDto> => {
+    log.i("getById - IN");
+    const query = `
+      SELECT *
+      FROM back.users
+      WHERE id = $1
+      `;
+    const response = await getPool().query(query, [userId]);
+    const row = response.rows[0] as UserAdminEntity;
+    const userAdminDto = UsersAdminMapper.toDto(row);
+
+    return userAdminDto;
+  },
+  updateOtpCode: async ({
+    userId,
+    otpCode,
+    otpCodeExpiratedAt,
+  }: {
+    userId: number;
+    otpCode: number;
+    otpCodeExpiratedAt: Date | null;
+  }): Promise<UserAdminDto> => {
+    log.i("getById - IN");
+    const query = `
+      UPDATE back.users
+      SET
+        otp_code = $2,
+        otp_code_expires_at = $3
+      WHERE id = $1
+      RETURNING *
+      `;
+    const response = await getPool().query(query, [
+      userId,
+      otpCode,
+      otpCodeExpiratedAt,
+    ]);
+    const row = response.rows[0] as UserAdminEntity;
+    const userAdminDto = UsersAdminMapper.toDto(row);
+
+    return userAdminDto;
   },
 };

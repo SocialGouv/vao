@@ -1,5 +1,6 @@
 import {
   addDays,
+  addMinutes,
   addMonths,
   addYears,
   daysBetween,
@@ -77,6 +78,38 @@ describe("addYears", () => {
   });
 });
 
+describe("addMinutes", () => {
+  it("ajoute le nombre de minutes à une date", () => {
+    const date = new Date("2026-05-27T10:00:00Z");
+
+    const result = addMinutes(date, 30);
+
+    expect(result).toEqual(new Date("2026-05-27T10:30:00Z"));
+  });
+
+  it("retourne null si la date est null", () => {
+    const result = addMinutes(null, 30);
+
+    expect(result).toBeNull();
+  });
+
+  it("gère les minutes négatives", () => {
+    const date = new Date("2026-05-27T10:00:00Z");
+
+    const result = addMinutes(date, -15);
+
+    expect(result).toEqual(new Date("2026-05-27T09:45:00Z"));
+  });
+
+  it("ne modifie pas la date originale", () => {
+    const date = new Date("2026-05-27T10:00:00Z");
+    const originalTime = date.getTime();
+
+    addMinutes(date, 45);
+
+    expect(date.getTime()).toBe(originalTime);
+  });
+});
 describe("daysBetween", () => {
   it("should return number of days between two dates", () => {
     expect(daysBetween("2023-01-01", "2023-01-05")).toBe(4);

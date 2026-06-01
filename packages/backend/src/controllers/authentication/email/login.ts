@@ -9,6 +9,7 @@ import CommonUser from "../../../services/common/Users";
 import { FeatureFlagService } from "../../../services/featureFlagService";
 import User from "../../../services/User";
 import { UserRequest } from "../../../types/request";
+import { UsersService } from "../../../usagers/users/users.service";
 import AppError from "../../../utils/error";
 import { logger } from "../../../utils/logger";
 import { signAccessToken, signRefreshToken } from "../../../utils/token";
@@ -131,6 +132,11 @@ export default async function login(
     const requires2FA = await FeatureFlagService.isFeatureAvailable(
       FeatureFlagName.AUTH_2FA,
     );
+    if (requires2FA) {
+      await UsersService.updateOtpCode({
+        userId: Number(user.id),
+      });
+    }
 
     return res.json({ user: { ...user, featureFlags, requires2FA } });
   } catch (error) {
