@@ -124,7 +124,10 @@ export const AgrementService = {
   },
   async save(agrement: AgrementDto, userId: string): Promise<number> {
     agrement.dateFinValidite = addYears(agrement?.dateObtention, 5);
-
+    // Validation métier spécifique au type d'organisme.
+    // Le schéma partagé ne connaît pas le type d'organisme (personne morale
+    // vs personne physique), donc la vérification du procès-verbal est faite
+    // ici.
     const organisme: OrganismeDto | null = await Organisme.getOne({
       "o.id": agrement.organismeId,
     });

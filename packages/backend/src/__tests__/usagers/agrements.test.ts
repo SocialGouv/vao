@@ -33,11 +33,6 @@ jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
 }));
 
-// jest.mock("../../services/Organisme", () => ({
-//   ...jest.requireActual("../../services/Organisme"),
-//   getOne: jest.fn(),
-// }));
-
 beforeAll(async () => await createTestContainer());
 afterAll(async () => await removeTestContainer());
 
@@ -314,14 +309,6 @@ describe("POST /agrements", () => {
       agrement: agrementData,
       organismeId,
     });
-
-    await request(getFoAppHelper(frontUser))
-      .post(`/agrements/`)
-      .send({
-        ...agrementData,
-        id: agrementId,
-        statut: AGREMENT_STATUT.TRANSMIS,
-      });
 
     const response = await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)

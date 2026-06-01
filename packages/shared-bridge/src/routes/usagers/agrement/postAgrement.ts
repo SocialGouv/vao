@@ -12,6 +12,8 @@ export interface PostAgrementRoute extends BasicRoute {
   response: RouteResponseBody<{ id: number | null }>;
 }
 
+// La validation du fichier PROCVERBAL pour une personne morale est effectuée
+// côté backend car elle dépend du type d'organisme.
 const REQUIRED_FILE_CATEGORIES: FILE_CATEGORY[] = [
   FILE_CATEGORY.IMMATRICUL,
   FILE_CATEGORY.ASSURRESP,
