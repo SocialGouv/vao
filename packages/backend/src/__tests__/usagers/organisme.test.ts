@@ -6,6 +6,7 @@ import { partOrganisme } from "../../helpers/org-part";
 import { mailService } from "../../services/mail";
 import { update as updateOrganismeService } from "../../services/Organisme";
 import { getPool } from "../../utils/pgpool";
+import { buildAgrementFixture } from "../fixtures/agrementsFixture";
 import { createAgrement } from "../helpers/agrementsHelper";
 import { getFoAppHelper } from "../helpers/appHelper";
 import {
@@ -382,13 +383,13 @@ describe("POST /organisme/:organismeId", () => {
       typeOrganisme: partOrganisme.PERSONNE_MORALE,
       userId: userSiege.id,
     });
+    const agrementSiegeData = await buildAgrementFixture({
+      organismeId: orgSiegeId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.VALIDE,
+    });
     await createAgrement({
-      agrement: {
-        dateObtention: new Date("2025-01-01"),
-        file: { uuid: "fixture-agrement-siege" },
-        regionObtention: "IDF",
-        statut: AGREMENT_STATUT.VALIDE,
-      },
+      agrement: agrementSiegeData,
       organismeId: orgSiegeId,
     });
 
@@ -404,6 +405,16 @@ describe("POST /organisme/:organismeId", () => {
       typeOrganisme: partOrganisme.PERSONNE_MORALE,
       userId: userSecondaire.id,
     });
+    const agrementSecondaireData = await buildAgrementFixture({
+      organismeId: orgSecondaireId,
+      regionObtention: "IDF",
+      statut: AGREMENT_STATUT.VALIDE,
+    });
+    await createAgrement({
+      agrement: agrementSecondaireData,
+      organismeId: orgSecondaireId,
+    });
+
     const response = await request(getFoAppHelper({ id: userSecondaire.id }))
       .post(`/organisme/${orgSecondaireId}`)
       .send({
