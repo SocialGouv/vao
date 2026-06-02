@@ -1,3 +1,5 @@
 packages:
   - "packages/*"
-minimumReleaseAge: 60000
+minimumReleaseAge: 20000
+overrides:
+  h3: "^1.15.9"

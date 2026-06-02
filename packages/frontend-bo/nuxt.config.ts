@@ -107,4 +107,8 @@ export default defineNuxtConfig({
   devServer: {
     port: 8001,
   },
+  experimental: {
+    // https://github.com/nuxt/nuxt/issues/34957
+    viteEnvironmentApi: true,
+  },
 });
