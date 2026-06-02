@@ -137,7 +137,7 @@ export const AgrementService = {
         organismeId: agrement.organismeId,
       });
       throw new AppError("Organisme introuvable pour l'agrément", {
-        statusCode: 400,
+        statusCode: 422,
       });
     }
 
