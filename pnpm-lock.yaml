@@ -504,8 +504,8 @@ importers:
         specifier: ~2.2.2
         version: 2.2.8(typescript@5.6.3)(vue@3.5.27(typescript@5.6.3))
       query-string:
-        specifier: ^9.3.1
-        version: 9.3.1
+        specifier: ^7.1.3
+        version: 7.1.3
       ufo:
         specifier: ^1.5.4
         version: 1.6.1
@@ -625,8 +625,8 @@ importers:
         specifier: ~2.2.2
         version: 2.2.8(typescript@5.6.3)(vue@3.5.27(typescript@5.6.3))
       query-string:
-        specifier: ^9.3.1
-        version: 9.3.1
+        specifier: ^7.1.3
+        version: 7.1.3
       vee-validate:
         specifier: ~4.13.0
         version: 4.13.2(vue@3.5.27(typescript@5.6.3))
@@ -732,8 +732,8 @@ importers:
         specifier: ~4.3.4
         version: 4.3.7
       query-string:
-        specifier: ^9.3.1
-        version: 9.3.1
+        specifier: ^7.1.3
+        version: 7.1.3
       yup:
         specifier: ~1.4.0
         version: 1.4.0
@@ -5429,9 +5429,9 @@ packages:
       supports-color:
         optional: true
 
-  decode-uri-component@0.4.1:
-    resolution: {integrity: sha512-+8VxcR21HhTy8nOt6jf20w0c9CADrw1O8d+VZ/YzzCt4bJ3uBjw+D1q2osAB8RnpwwaeYBxy0HyKQxD5JBMuuQ==}
-    engines: {node: '>=14.16'}
+  decode-uri-component@0.2.2:
+    resolution: {integrity: sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==}
+    engines: {node: '>=0.10'}
 
   dedent@1.5.3:
     resolution: {integrity: sha512-NHQtfOOW68WD8lgypbLA5oT+Bt0xXJhiYvoR6SmmNXZfpzOGXwdKWmcwG8N7PwVVWV3eF/68nmD9BaJSsTBhyQ==}
@@ -6217,9 +6217,9 @@ packages:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
 
-  filter-obj@5.1.0:
-    resolution: {integrity: sha512-qWeTREPoT7I0bifpPUXtxkZJ1XJzxWtfoWWkdVGqa+eCr3SHW/Ocp89o8vLvbUuQnadybJpjOKu4V+RwO6sGng==}
-    engines: {node: '>=14.16'}
+  filter-obj@1.1.0:
+    resolution: {integrity: sha512-8rXg1ZnX7xzy2NGDVkBVaAy+lSlPNwad13BtgSlLuxfIslyt5Vg64U7tFcCt4WS1R0hvtnQybT/IyCkGZ3DpXQ==}
+    engines: {node: '>=0.10.0'}
 
   finalhandler@1.3.1:
     resolution: {integrity: sha512-6BN9trH7bp3qvnrRyzsBz+g3lZxTNZTbVO2EV1CS0WIcDbawYVdYvGflME/9QP0h0pYlCDBCTjYa9nZzMDpyxQ==}
@@ -8713,9 +8713,9 @@ packages:
   quansync@0.2.11:
     resolution: {integrity: sha512-AifT7QEbW9Nri4tAwR5M/uzpBuqfZf+zwaEM/QkzEjj7NBuFD2rBuy0K3dE+8wltbezDV7JMA0WfnCPYRSYbXA==}
 
-  query-string@9.3.1:
-    resolution: {integrity: sha512-5fBfMOcDi5SA9qj5jZhWAcTtDfKF5WFdd2uD9nVNlbxVv1baq65aALy6qofpNEGELHvisjjasxQp7BlM9gvMzw==}
-    engines: {node: '>=18'}
+  query-string@7.1.3:
+    resolution: {integrity: sha512-hh2WYhq4fi8+b+/2Kg9CEge4fDPvHS534aOOvOZeQ3+Vf2mCFsaFBYj0i+iXcAq6I9Vzp5fjMFBlONvayDC1qg==}
+    engines: {node: '>=6'}
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
@@ -9200,9 +9200,9 @@ packages:
   split-ca@1.0.1:
     resolution: {integrity: sha512-Q5thBSxp5t8WPTTJQS59LrGqOZqOsrhDGDVm8azCqIBjSBd7nd9o2PM+mDulQQkh8h//4U6hFZnc/mul8t5pWQ==}
 
-  split-on-first@3.0.0:
-    resolution: {integrity: sha512-qxQJTx2ryR0Dw0ITYyekNQWpz6f8dGd7vffGNflQQ3Iqj9NJ6qiZ7ELpZsJ/QBhIVAiDfXdag3+Gp8RvWa62AA==}
-    engines: {node: '>=12'}
+  split-on-first@1.1.0:
+    resolution: {integrity: sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==}
+    engines: {node: '>=6'}
 
   split2@4.2.0:
     resolution: {integrity: sha512-UcjcJOWknrNkF6PLX83qcHM6KHgVKNkV62Y8a5uYDVv9ydGQVwAHMKqHdJje1VTWpljG0WYpCDhrCdAOYH4TWg==}
@@ -9270,6 +9270,10 @@ packages:
 
   streamx@2.23.0:
     resolution: {integrity: sha512-kn+e44esVfn2Fa/O0CPFcex27fjIL6MkVae0Mm6q+E6f0hWv578YCERbv+4m02cjxvDsPKLnmxral/rR6lBMAg==}
+
+  strict-uri-encode@2.0.0:
+    resolution: {integrity: sha512-QwiXZgpRcKkhTj2Scnn++4PKtWsH0kpzZ62L2R6c/LUVYv7hVnZqcg2+sMuT6R7Jusu1vviK/MFsu6kNJfWlEQ==}
+    engines: {node: '>=4'}
 
   string-argv@0.3.2:
     resolution: {integrity: sha512-aqD2Q0144Z+/RqG52NeHEkZauTAUWJO8c6yTftGJKO3Tja5tUgIfmIl6kExvhtxSDP7fXB6DvzkfMpCd/F3G+Q==}
@@ -16716,7 +16720,7 @@ snapshots:
     optionalDependencies:
       supports-color: 5.5.0
 
-  decode-uri-component@0.4.1: {}
+  decode-uri-component@0.2.2: {}
 
   dedent@1.5.3: {}
 
@@ -17940,7 +17944,7 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  filter-obj@5.1.0: {}
+  filter-obj@1.1.0: {}
 
   finalhandler@1.3.1:
     dependencies:
@@ -20966,11 +20970,12 @@ snapshots:
 
   quansync@0.2.11: {}
 
-  query-string@9.3.1:
+  query-string@7.1.3:
     dependencies:
-      decode-uri-component: 0.4.1
-      filter-obj: 5.1.0
-      split-on-first: 3.0.0
+      decode-uri-component: 0.2.2
+      filter-obj: 1.1.0
+      split-on-first: 1.1.0
+      strict-uri-encode: 2.0.0
 
   queue-microtask@1.2.3: {}
 
@@ -21528,7 +21533,7 @@ snapshots:
 
   split-ca@1.0.1: {}
 
-  split-on-first@3.0.0: {}
+  split-on-first@1.1.0: {}
 
   split2@4.2.0: {}
 
@@ -21597,6 +21602,8 @@ snapshots:
       text-decoder: 1.2.3
     transitivePeerDependencies:
       - bare-abort-controller
+
+  strict-uri-encode@2.0.0: {}
 
   string-argv@0.3.2: {}
 
