@@ -5,6 +5,7 @@
   "author": "orgs/SocialGouv/teams/vao",
   "license": "MIT",
   "scripts": {
+    "build": "tsc -b ./tsconfig.json",
     "dev": "tsx watch ./src",
     "lint": "eslint ./src",
     "lint:fix": "corepack pnpm lint --fix",
@@ -13,11 +14,13 @@
     "test:coverage": "corepack pnpm test --coverage --passWithNoTests"
   },
   "lint-staged": {
-    "src/**/*.{js,ts}": "corepack pnpm lint"
+    "src/**/*.{js,ts}": "corepack pnpm lint",
+    "src/**/*.ts": "corepack pnpm build"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/jest": "^29.5.12",
+    "@types/pg": "^8.15.5",
     "@types/nodemailer": "^6.4.17",
     "@types/nodemailer-smtp-transport": "^2.7.8",
     "eslint": "^9.39.1",

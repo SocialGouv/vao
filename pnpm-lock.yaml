@@ -274,6 +274,9 @@ importers:
       '@types/nodemailer-smtp-transport':
         specifier: ^2.7.8
         version: 2.7.8
+      '@types/pg':
+        specifier: ^8.15.5
+        version: 8.15.5
       eslint:
         specifier: ^9.39.1
         version: 9.39.2(jiti@2.7.0)
@@ -15025,7 +15028,7 @@ snapshots:
 
   '@types/pg@8.15.5':
     dependencies:
-      '@types/node': 24.9.1
+      '@types/node': 20.19.19
       pg-protocol: 1.10.0
       pg-types: 2.2.0
 

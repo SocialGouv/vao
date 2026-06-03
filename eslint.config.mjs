@@ -1,5 +1,9 @@
 import eslint from "@eslint/js";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import tseslint from "typescript-eslint";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default tseslint.config(
   {
@@ -20,12 +24,13 @@ export default tseslint.config(
     },
   },
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["e2e/**/*.{ts,tsx}"],
     extends: [eslint.configs.recommended, ...tseslint.configs.recommended],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: "module",
+        tsconfigRootDir: __dirname,
       },
     },
   },

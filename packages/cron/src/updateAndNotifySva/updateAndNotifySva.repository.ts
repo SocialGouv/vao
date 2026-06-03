@@ -59,7 +59,7 @@ export const UpdateAndNotifySvaRepository = {
         );
       `;
 
-    const response = await pool.query<UpdateAndNotifySvaRow[]>(
+    const response = await pool.query<UpdateAndNotifySvaRow>(
       querySelectTempsCumuleSva,
     );
     return response.rows;

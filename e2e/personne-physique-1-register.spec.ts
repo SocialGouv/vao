@@ -91,6 +91,7 @@ test.describe.serial(testName, () => {
     await page.goto(`${maildevUrl}/#/`);
     await page
       .getByRole("link", {
+        // eslint-disable-next-line no-irregular-whitespace
         name: `Portail VAO - Validez votre adresse courriel To: ${userOva.username}`,
       })
       .first()
