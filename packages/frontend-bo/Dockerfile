@@ -64,5 +64,4 @@ RUN --mount=type=secret,id=sentry_auth_token \
 
 FROM ghcr.io/socialgouv/docker/nginx4spa:8.2.4
 
-COPY docker/nginx-spa.conf /etc/nginx/nginx.conf
 COPY --from=builder --chown=101:101 /app/packages/frontend-bo/.output/public /usr/share/nginx/html
