@@ -14,7 +14,7 @@
     "seed:run": "knex seed:run --cwd src"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.649.0",
+    "@aws-sdk/client-s3": "^3.1045.0",
     "@vao/shared-bridge": "workspace:^",
     "debug": "~4.3.4",
     "knex": "~3.1.0",
