@@ -9,6 +9,7 @@ Sentry.init({
   ignoreTransactions: [/^GET \/$/],
   includeLocalVariables: true,
   integrations: [
+    // eslint-disable-next-line import/namespace
     Sentry.requestDataIntegration({
       include: {
         cookies: false,

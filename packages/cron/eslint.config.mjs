@@ -1,14 +1,23 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
-import tseslint from "typescript-eslint";
+import eslint from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier/flat";
+import tseslint from "typescript-eslint";
 
-/** @type {import('eslint').Linter.Config[]} */
-export default [
-  { files: ["**/*.{js,mjs,cjs,ts}"] },
-  { languageOptions: { globals: globals.browser } },
-  pluginJs.configs.recommended,
+export default tseslint.config(
+  {
+    ignores: ["**/node_modules/**", "**/dist/**"],
+  },
+  {
+    files: ["src/**/*.{js,ts}"],
+    languageOptions: {
+      ecmaVersion: "latest",
+    },
+  },
+  eslint.configs.recommended,
   ...tseslint.configs.recommended,
-  { rules: { "@typescript-eslint/no-explicit-any": ["warn"] } },
+  {
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
   eslintConfigPrettier,
-];
+);

@@ -196,7 +196,7 @@ module.exports = async function post(req, res, next) {
           }),
         );
       }
-    } catch (error) {
+    } catch {
       log.w("DONE with error");
       return next(
         new AppError("Une erreur est survenue lors de l'envoi de mails", {
@@ -326,7 +326,7 @@ module.exports = async function post(req, res, next) {
           ),
         );
       }
-    } catch (error) {
+    } catch {
       log.w("DONE with error");
       return next(
         new AppError("Une erreur est survenue lors de l'envoi de mails", {

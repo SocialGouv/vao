@@ -44,7 +44,7 @@ module.exports = async function changeStatus(req, res, next) {
   let motif = null;
   try {
     userBeforeUpdate = await FoUser.readOne(userId);
-  } catch (err) {
+  } catch {
     return next(
       new AppError("Utilisateur inexistant", {
         name: "UserNotFound",

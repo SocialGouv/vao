@@ -11,7 +11,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "eslint --ext .vue,.js,.ts ./src",
+    "lint": "eslint ./src",
     "lint:fix": "corepack pnpm lint --fix",
     "typecheck": "nuxi typecheck",
     "test": "vitest --project nuxt --passWithNoTests",
