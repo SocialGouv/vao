@@ -15,7 +15,6 @@ import { AgrementsRepository as AgrementsRepositoryAdmin } from "../../admin/agr
 import { AgrementService as AgrementServiceAdmin } from "../../admin/agrements/agrements.service";
 import * as DocumentService from "../../services/Document";
 import { mailService } from "../../services/mail";
-import * as OrganismeService from "../../services/Organisme";
 import { AgrementsRepository } from "../../usagers/agrements/agrements.repository";
 import { AgrementService } from "../../usagers/agrements/agrements.service";
 import { buildAgrementFixture } from "../fixtures/agrementsFixture";
@@ -32,11 +31,6 @@ import { createAdminUser, createUsagersUser } from "../helpers/userHelper";
 
 jest.mock("../../services/mail", () => ({
   mailService: { send: jest.fn() },
-}));
-
-jest.mock("../../services/Organisme", () => ({
-  ...jest.requireActual("../../services/Organisme"),
-  getOne: jest.fn(),
 }));
 
 beforeAll(async () => await createTestContainer());
@@ -293,14 +287,13 @@ describe("POST /agrements", () => {
 
   it("renseigne organismeName et siret pour une personne morale lors de l'envoi du mail à la région", async () => {
     const frontUser = await createUsagersUser();
+    const regionEmail = "region-idf@example.com";
     const organismeId = await createOrganisme({
       organisme: {
-        personneMorale: {
-          raisonSociale: "ACME Corp",
-          siret: "12345678900000",
-        },
-        typeOrganisme: ORGANISME_TYPE.PERSONNE_MORALE,
+        raisonSociale: "ACME Corp",
+        siret: "12345678900000",
       },
+      typeOrganisme: ORGANISME_TYPE.PERSONNE_MORALE,
       userId: frontUser.id,
     });
     const agrementData = await buildAgrementFixture({
@@ -309,59 +302,45 @@ describe("POST /agrements", () => {
       statut: AGREMENT_STATUT.BROUILLON,
     });
     await createTerritoire({
-      territoire: { service_mail: "region-idf@example.com" },
+      territoire: { service_mail: regionEmail },
       territoireCode: "IDF",
     });
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
     });
-    // Mock explicite pour couvrir la branche PERSONNE_MORALE
-    (OrganismeService.getOne as jest.Mock).mockResolvedValueOnce({
-      id: organismeId,
-      personneMorale: {
-        raisonSociale: "ACME Corp",
-        siret: "12345678900000",
-      },
-      typeOrganisme: ORGANISME_TYPE.PERSONNE_MORALE,
-    });
-    await request(getFoAppHelper(frontUser))
+
+    const response = await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
         ...agrementData,
         id: agrementId,
         statut: AGREMENT_STATUT.TRANSMIS,
       });
+    expect(response.status).toBe(200);
 
     // Vérifie que le mail envoyé à la région contient la raison sociale et le siret
     const calls = (mailService.send as jest.Mock).mock.calls;
-
     const mailToRegion = calls.find((call) => {
       const to = call[0].to || call[0].email;
       return to && to.endsWith("@territoire.com");
     });
-    if (!mailToRegion) {
-      // Debug: afficher tous les appels pour comprendre la structure
-      // eslint-disable-next-line no-console
-      console.error(
-        "mailService.send calls:",
-        calls.map((c) => c[0]),
-      );
-    }
     expect(mailToRegion).toBeDefined();
     expect(mailToRegion[0].html).toContain("ACME Corp");
     expect(mailToRegion[0].html).toContain("12345678900000");
   });
   it("renseigne organismeName pour une personne physique lors de l'envoi du mail à la région", async () => {
     const frontUser = await createUsagersUser();
+    const regionEmail = "region-idf@example.com";
     const organismeId = await createOrganisme({
       organisme: {
-        personnePhysique: {
-          nom: "Dupont",
-          prenom: "Jean",
-        },
-        typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
+        nom: "Dupont",
+        nomNaissance: "Dupont",
+        nomUsage: "Jean Dupont",
+        prenom: "Jean",
+        siret: null, // override du SIRET random du helper
       },
+      typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
       userId: frontUser.id,
     });
     const agrementData = await buildAgrementFixture({
@@ -370,25 +349,13 @@ describe("POST /agrements", () => {
       statut: AGREMENT_STATUT.BROUILLON,
     });
     await createTerritoire({
-      territoire: { service_mail: "region-idf@example.com" },
+      territoire: { service_mail: regionEmail },
       territoireCode: "IDF",
     });
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
     });
-    // Mock explicite pour couvrir la branche PERSONNE_PHYSIQUE
-    (OrganismeService.getOne as jest.Mock).mockResolvedValueOnce({
-      id: organismeId,
-      personnePhysique: {
-        nom: "Dupont",
-        nomNaissance: "Dupont",
-        nomUsage: "Jean Dupont",
-        prenom: "Jean",
-      },
-      typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
-    });
-
     await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
@@ -403,14 +370,6 @@ describe("POST /agrements", () => {
       const to = call[0].to || call[0].email;
       return to && to.endsWith("@territoire.com");
     });
-    if (!mailToRegion) {
-      // Debug: afficher tous les appels pour comprendre la structure
-      // eslint-disable-next-line no-console
-      console.error(
-        "mailService.send calls:",
-        calls.map((c) => c[0]),
-      );
-    }
     expect(mailToRegion).toBeDefined();
     expect(mailToRegion[0].html).toContain("Jean Dupont");
     // Pas de siret pour une personne physique
@@ -581,7 +540,6 @@ describe("POST /agrements", () => {
       agrement: agrementData,
       organismeId,
     });
-    (OrganismeService.getOne as jest.Mock).mockResolvedValueOnce(null);
     await request(getFoAppHelper(frontUser))
       .post(`/agrements/`)
       .send({
@@ -810,6 +768,85 @@ describe("POST /agrements", () => {
     expect(response.status).toBe(404);
     expect(response.body.name).toEqual(ERRORS_COMMON.PATH_NOT_FOUND);
   });
+  it("retourne une erreur 400 si une personne morale transmet un agrément sans procès verbal", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: {
+        raisonSociale: "ACME Corp",
+        siret: "12345678900000",
+      },
+      typeOrganisme: ORGANISME_TYPE.PERSONNE_MORALE,
+      userId: frontUser.id,
+    });
+
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+
+    const agrementDataWithoutProcVerbal = {
+      ...agrementData,
+      agrementFiles: (agrementData.agrementFiles ?? []).filter(
+        (file) => file.category !== FILE_CATEGORY.PROCVERBAL,
+      ),
+    };
+
+    const agrementId = await createAgrement({
+      agrement: agrementDataWithoutProcVerbal,
+      organismeId,
+    });
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementDataWithoutProcVerbal,
+        id: agrementId,
+        statut: AGREMENT_STATUT.TRANSMIS,
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toContain("procès verbal");
+  });
+  it("autorise une personne physique sans procès verbal lors de la transmission", async () => {
+    const frontUser = await createUsagersUser();
+    const organismeId = await createOrganisme({
+      organisme: {
+        nomNaissance: "Dupont",
+        nomUsage: "Jean Dupont",
+        prenom: "Jean",
+      },
+      typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
+      userId: frontUser.id,
+    });
+
+    const agrementData = await buildAgrementFixture({
+      organismeId,
+      statut: AGREMENT_STATUT.BROUILLON,
+    });
+
+    const agrementDataWithoutProcVerbal = {
+      ...agrementData,
+      agrementFiles: (agrementData.agrementFiles ?? []).filter(
+        (file) => file.category !== FILE_CATEGORY.PROCVERBAL,
+      ),
+    };
+
+    const agrementId = await createAgrement({
+      agrement: agrementDataWithoutProcVerbal,
+      organismeId,
+    });
+
+    const response = await request(getFoAppHelper(frontUser))
+      .post(`/agrements/`)
+      .send({
+        ...agrementDataWithoutProcVerbal,
+        id: agrementId,
+        statut: AGREMENT_STATUT.TRANSMIS,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toBeDefined();
+  });
 });
 
 describe("PATCH /agrements/:agrementId/statut", () => {
@@ -849,17 +886,6 @@ describe("PATCH /agrements/:agrementId/statut", () => {
     const agrementId = await createAgrement({
       agrement: agrementData,
       organismeId,
-    });
-    // Mock explicite pour couvrir la branche PERSONNE_PHYSIQUE
-    (OrganismeService.getOne as jest.Mock).mockResolvedValueOnce({
-      id: organismeId,
-      personnePhysique: {
-        nom: "Dupont",
-        nomNaissance: "Dupont",
-        nomUsage: "Jean Dupont",
-        prenom: "Jean",
-      },
-      typeOrganisme: ORGANISME_TYPE.PERSONNE_PHYSIQUE,
     });
     const newAgrementData = {
       ...agrementData,

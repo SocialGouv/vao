@@ -3,7 +3,8 @@
     <div id="personne-physique">
       <AgrementPersonnePhysique
         v-if="
-          organismeStore.organismeCourant?.typeOrganisme === 'personne_physique'
+          organismeStore.organismeCourant?.typeOrganisme ===
+          ORGANISME_TYPE.PERSONNE_PHYSIQUE
         "
         ref="personnePhysiqueRef"
         :init-organisme="props.initOrganisme"
@@ -12,9 +13,7 @@
       />
       <div class="separator fr-my-2w"></div>
       <AgrementPersonneMorale
-        v-if="
-          organismeStore.organismeCourant?.typeOrganisme === 'personne_morale'
-        "
+        v-if="isPersonneMorale"
         ref="personneMoraleRef"
         :init-organisme="props.initOrganisme"
         :init-agrement="props.initAgrement"
@@ -22,23 +21,25 @@
       />
     </div>
 
-    <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
-    <FileUpload
-      v-model="fileProcesVerbal"
-      :cdn-url="props.cdnUrl"
-      label="Dernier procès verbal d'assemblée générale"
-      hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
-      :modifiable="props.modifiable"
-    />
-    <div
-      v-if="showProcesVerbalError"
-      class="fr-input-group fr-input-group--error"
-    >
-      <label class="fr-label">
-        {{ fileProcesVerbalError || procesVerbalRequiredMsg }}
-      </label>
+    <div v-if="isPersonneMorale">
+      <h3 class="fr-text--lg fr-mt-4w">Procès verbal</h3>
+      <FileUpload
+        v-model="fileProcesVerbal"
+        :cdn-url="props.cdnUrl"
+        label="Dernier procès verbal d'assemblée générale"
+        hint="Taille maximale à 5 Mo, les formats supportés sont jpg, png, pdf."
+        :modifiable="props.modifiable"
+      />
+      <div
+        v-if="showProcesVerbalError"
+        class="fr-input-group fr-input-group--error"
+      >
+        <label class="fr-label">
+          {{ fileProcesVerbalError || procesVerbalRequiredMsg }}
+        </label>
+      </div>
+      <div class="separator fr-my-4w"></div>
     </div>
-    <div class="separator fr-my-2w"></div>
 
     <AgrementCommentaire
       ref="commentaireRef"
@@ -76,7 +77,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { FileUpload, useToaster } from "@vao/shared-ui";
-import { FILE_CATEGORY, AGREMENT_STATUT } from "@vao/shared-bridge";
+import {
+  FILE_CATEGORY,
+  AGREMENT_STATUT,
+  ORGANISME_TYPE,
+} from "@vao/shared-bridge";
 
 const props = defineProps({
   valid: { type: Boolean, default: true },
@@ -115,6 +120,12 @@ const showProcesVerbalError = computed(
     fileProcesVerbalError.value,
 );
 
+const isPersonneMorale = computed(
+  () =>
+    organismeStore.organismeCourant?.typeOrganisme ===
+    ORGANISME_TYPE.PERSONNE_MORALE,
+);
+
 async function saveAgrement() {
   fileProcesVerbalError.value = "";
   let commentaire;
@@ -123,6 +134,7 @@ async function saveAgrement() {
   }
 
   if (
+    isPersonneMorale.value &&
     props.initAgrement.statut !== AGREMENT_STATUT.BROUILLON &&
     !fileProcesVerbal.value
   ) {
@@ -232,7 +244,7 @@ async function saveCoordonneesStep() {
 }
 
 async function coordonneesIsValid() {
-  if (!fileProcesVerbal.value) {
+  if (isPersonneMorale.value && !fileProcesVerbal.value) {
     return false;
   }
 

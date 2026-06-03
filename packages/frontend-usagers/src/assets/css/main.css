@@ -92,10 +92,6 @@
   border: none;
 }
 
-.no-border {
-  border: none;
-}
-
 .separator {
   border-bottom: 1px solid var(--border-default-grey);
 }

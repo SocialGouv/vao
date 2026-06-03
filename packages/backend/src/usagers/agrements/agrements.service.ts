@@ -9,6 +9,7 @@ import {
   AGREMENT_HISTORY_TYPE,
   AGREMENT_STATUT,
   AGREMENT_SVA_TIMER_STATUT,
+  FILE_CATEGORY,
   ORGANISME_TYPE,
 } from "@vao/shared-bridge";
 import { PoolClient } from "pg";
@@ -123,6 +124,41 @@ export const AgrementService = {
   },
   async save(agrement: AgrementDto, userId: string): Promise<number> {
     agrement.dateFinValidite = addYears(agrement?.dateObtention, 5);
+    // Validation métier spécifique au type d'organisme.
+    // Le schéma partagé ne connaît pas le type d'organisme (personne morale
+    // vs personne physique), donc la vérification du procès-verbal est faite
+    // ici.
+    const organisme: OrganismeDto | null = await Organisme.getOne({
+      "o.id": agrement.organismeId,
+    });
+
+    if (!organisme) {
+      log.w("Organisme introuvable pour l'agrément", {
+        organismeId: agrement.organismeId,
+      });
+      throw new AppError("Organisme introuvable pour l'agrément", {
+        statusCode: 422,
+      });
+    }
+
+    const isPersonneMorale =
+      organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_MORALE;
+    const isAgrementBrouillon = agrement.statut === AGREMENT_STATUT.BROUILLON;
+    const hasProcesVerbal = agrement.agrementFiles?.some(
+      (file) => file.category === FILE_CATEGORY.PROCVERBAL,
+    );
+
+    if (isPersonneMorale && !isAgrementBrouillon && !hasProcesVerbal) {
+      log.w(
+        "Validation échouée : procès verbal manquant pour personne morale",
+        { agrementId: agrement.id },
+      );
+      throw new AppError(
+        "Le procès verbal est requis pour une personne morale",
+        { statusCode: 400 },
+      );
+    }
+
     let agrementId = null;
     if (agrement && agrement?.id) {
       agrementId = agrement.id;
@@ -130,6 +166,7 @@ export const AgrementService = {
         agrementId,
         withDetails: false,
       });
+
       const premiereTransmission =
         agrementAvant?.statut === AGREMENT_STATUT.BROUILLON &&
         agrement.statut === AGREMENT_STATUT.TRANSMIS;
@@ -182,16 +219,7 @@ export const AgrementService = {
         let emailRegion: string | null = null;
 
         try {
-          const organisme: OrganismeDto | null = await Organisme.getOne({
-            "o.id": agrement.organismeId,
-          });
-
-          if (!organisme) {
-            log.w(`Organisme introuvable pour agrementId=${agrementId}`);
-          } else if (
-            organisme.typeOrganisme === ORGANISME_TYPE.PERSONNE_MORALE &&
-            organisme.personneMorale
-          ) {
+          if (isPersonneMorale && organisme.personneMorale) {
             organismeName = organisme.personneMorale.raisonSociale || "";
             siret = organisme.personneMorale.siret || "";
           } else if (
