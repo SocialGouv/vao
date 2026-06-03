@@ -47,7 +47,7 @@
         />
         <UtilsDisplayInput
           v-else
-          :value="budgetGestionPerso"
+          :value="budgetPersoGestionComplementaire"
           :input="
             displayInput.AgrementProjetsInput[
               'budgetPersoGestionComplementaire'
@@ -131,30 +131,54 @@ const {
   handleChange: onBudgetPersoGestionComplementaireChange,
 } = useField<string>("budgetPersoGestionComplementaire");
 
+// const validateForm = async () => {
+//   const formValid = true;
+
+//   try {
+//     const result = await handleSubmit((values) => {
+//       console.log("Form values on submit", values);
+//       return values;
+//     })();
+
+//     if (!formValid) {
+//       console.error("Le formulaire n'est pas valide.");
+//     }
+
+//     if (result) {
+//       const data = { ...result };
+//       delete data.statut;
+//       const finalData = {
+//         ...data,
+//         filesProjSejoursBudgetPersonnes: filesProjSejoursBudgetPersonnes.value,
+//       };
+//       return finalData;
+//     }
+//   } catch (error) {
+//     console.error("Erreur lors de la validation du formulaire :", error);
+//   }
+// };
+
 const validateForm = async () => {
-  const formValid = true;
+  const finalData = {
+    values: {
+      budgetGestionPerso: budgetGestionPerso.value,
+      budgetPersoGestionComplementaire: budgetPersoGestionComplementaire.value,
+    },
+    filesProjSejoursBudgetPersonnes: filesProjSejoursBudgetPersonnes.value,
+    valid: false,
+  };
 
   try {
-    const result = await handleSubmit((values) => {
-      return values;
-    })();
-
-    if (!formValid) {
-      console.error("Le formulaire n'est pas valide.");
-    }
-
+    const result = await handleSubmit((values) => values)();
     if (result) {
-      const data = { ...result };
-      delete data.statut;
-      const finalData = {
-        ...data,
-        filesProjSejoursBudgetPersonnes: filesProjSejoursBudgetPersonnes.value,
-      };
-      return finalData;
+      finalData.values = result;
+      finalData.valid = true;
     }
   } catch (error) {
     console.error("Erreur lors de la validation du formulaire :", error);
   }
+
+  return finalData;
 };
 
 defineExpose({
