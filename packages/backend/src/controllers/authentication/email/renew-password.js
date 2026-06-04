@@ -1,5 +1,4 @@
-import { ERRORS_COMMON } from "@vao/shared-bridge";
-
+const { ERRORS_COMMON } = require("@vao/shared-bridge");
 const jwt = require("jsonwebtoken");
 
 const User = require("../../../services/User");

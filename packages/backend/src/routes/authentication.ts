@@ -1,12 +1,12 @@
-const express = require("express");
-const checkJWT = require("../middlewares/checkJWT");
-const { logger } = require("../utils/logger");
+import express from "express";
+
+import { authenticationController } from "../controllers";
+import checkJWT from "../middlewares/checkJWT";
+import { logger } from "../utils/logger";
 
 const log = logger(module.filename);
 
 const router = express.Router();
-
-const authenticationController = require("../controllers/authentication");
 
 // Gère une connexion via mot de passe.
 router.get("/check-token", checkJWT, (req, res) => {
@@ -28,4 +28,4 @@ router.post(
 
 router.post("/disconnect", authenticationController.disconnect);
 
-module.exports = router;
+export default router;

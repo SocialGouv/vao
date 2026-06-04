@@ -1,19 +1,18 @@
-const express = require("express");
+import { TRACKING_ACTIONS, TRACKING_USER_TYPE } from "@vao/shared-bridge";
+import express from "express";
+
+import { demandeSejourController } from "../controllers";
+import boCheckJWT from "../middlewares/bo-check-JWT";
+import boCheckRole from "../middlewares/bo-check-role";
+import canUpdateDs from "../middlewares/can-update-ds";
+import checkJWT from "../middlewares/checkJWT";
+import checkPermissionBODeclarationSejour from "../middlewares/checkPermissionBODeclarationSejour";
+import checkPermissionBODeclarationSejourUpdate from "../middlewares/checkPermissionBODeclarationSejourUpdate";
+import checkPermissionDeclarationSejour from "../middlewares/checkPermissionDeclarationSejour";
+import getDepartements from "../middlewares/getDepartements";
+import trackDemandeSejour from "../middlewares/trackDemandeSejour";
 
 const router = express.Router();
-
-const checkJWT = require("../middlewares/checkJWT");
-const boCheckJWT = require("../middlewares/bo-check-JWT");
-const boCheckRole = require("../middlewares/bo-check-role");
-const checkPermissionDeclarationSejour = require("../middlewares/checkPermissionDeclarationSejour");
-const checkPermissionBODeclarationSejour = require("../middlewares/checkPermissionBODeclarationSejour");
-const checkPermissionBODeclarationSejourUpdate = require("../middlewares/checkPermissionBODeclarationSejourUpdate");
-
-const demandeSejourController = require("../controllers/demandeSejour");
-const getDepartements = require("../middlewares/getDepartements");
-const canUpdateDs = require("../middlewares/can-update-ds");
-const trackDemandeSejour = require("../middlewares/trackDemandeSejour");
-const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 
 const boCheckRoleDS = boCheckRole([
   "DemandeSejour_Lecture",
@@ -163,4 +162,5 @@ router.post(
   checkPermissionDeclarationSejour,
   demandeSejourController.cancel,
 );
-module.exports = router;
+
+export default router;

@@ -1,12 +1,15 @@
-const express = require("express");
-const BOAuthenticationController = require("../controllers/bo-authentication");
-const BOcheckJWT = require("../middlewares/bo-check-JWT");
-const { logger } = require("../utils/logger");
+import express, { Response } from "express";
 
-const router = express.Router();
+import { BOAuthenticationController } from "../controllers";
+import BOcheckJWT from "../middlewares/bo-check-JWT";
+import { UserRequest } from "../types/request";
+import { logger } from "../utils/logger";
+
 const log = logger(module.filename);
 
-router.get("/check-token", BOcheckJWT, (req, res) => {
+const router = express.Router();
+
+router.get("/check-token", BOcheckJWT, (req: UserRequest, res: Response) => {
   log.d("check token is OK! ");
   res.send("OK");
 });
@@ -25,4 +28,4 @@ router.post(
 
 router.post("/disconnect", BOAuthenticationController.disconnect);
 
-module.exports = router;
+export default router;

@@ -1,9 +1,9 @@
-const express = require("express");
+import express from "express";
+
+import { siretController } from "../controllers";
+import checkJWT from "../middlewares/checkJWT";
 
 const router = express.Router();
-
-const checkJWT = require("../middlewares/checkJWT");
-const siretController = require("../controllers/siret");
 
 router.get("/check-api-insee", siretController.checkApiInsee);
 router.get("/check-api-entreprise", siretController.checkApiEntreprise);
@@ -14,4 +14,4 @@ router.get(
   siretController.getLienSuccession,
 );
 
-module.exports = router;
+export default router;
