@@ -216,6 +216,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
 });
 
+const log = logger("components/agrement/bilan/bilanQualitatif");
+
 const filesBilanQualitPerception = ref(
   props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
@@ -310,42 +312,53 @@ const {
 } = useField<string | null>("bilanQualElementsMarquants");
 
 const validateForm = async () => {
-  let filesValid = true;
-  const result = await handleSubmit((values) => values)();
+  const finalData = {
+    valid: false,
+    bilanQualPerceptionSensibilite: bilanQualPerceptionSensibilite.value,
+    bilanQualPerspectiveEvol: bilanQualPerspectiveEvol.value,
+    bilanQualElementsMarquants: bilanQualElementsMarquants.value,
+    filesBilanQualitPerception: filesBilanQualitPerception.value,
+    filesBilanQualitPerspectives: filesBilanQualitPerspectives.value,
+    filesBilanQualitElementsMarquants: filesBilanQualitElementsMarquants.value,
+    filesBilanQualitComplementaires: filesBilanQualitComplementaires.value,
+  };
 
   filesBilanQualitPerceptionError.value = null;
   filesBilanQualitPerspectivesError.value = null;
   filesBilanQualitElementsMarquantsError.value = null;
 
+  let filesAreValid = true;
+
   if (filesBilanQualitPerception.value.length === 0) {
     filesBilanQualitPerceptionError.value =
       "Veuillez ajouter au moins un fichier pour la partie perception et ressenti.";
-    filesValid = false;
+    filesAreValid = false;
   }
   if (filesBilanQualitPerspectives.value.length === 0) {
     filesBilanQualitPerspectivesError.value =
       "Veuillez ajouter au moins un fichier pour la partie perspectives.";
-    filesValid = false;
+    filesAreValid = false;
   }
   if (filesBilanQualitElementsMarquants.value.length === 0) {
     filesBilanQualitElementsMarquantsError.value =
       "Veuillez ajouter au moins un fichier pour la partie éléments marquants.";
-    filesValid = false;
+    filesAreValid = false;
   }
 
-  if (result) {
-    return {
-      ...result,
-      filesBilanQualitPerception: filesBilanQualitPerception.value,
-      filesBilanQualitPerspectives: filesBilanQualitPerspectives.value,
-      filesBilanQualitElementsMarquants:
-        filesBilanQualitElementsMarquants.value,
-      filesBilanQualitComplementaires: filesBilanQualitComplementaires.value,
-      filesValid,
-    };
+  try {
+    const result = await handleSubmit((values) => values)();
+    if (result && filesAreValid) {
+      finalData.bilanQualPerceptionSensibilite =
+        result.bilanQualPerceptionSensibilite;
+      finalData.bilanQualPerspectiveEvol = result.bilanQualPerspectiveEvol;
+      finalData.bilanQualElementsMarquants = result.bilanQualElementsMarquants;
+      finalData.valid = true;
+    }
+  } catch (error) {
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
 
-  return result;
+  return finalData;
 };
 
 defineExpose({
