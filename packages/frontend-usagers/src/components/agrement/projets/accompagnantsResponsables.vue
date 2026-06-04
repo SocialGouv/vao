@@ -149,6 +149,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: false },
 });
 
+const log = logger("components/agrement/projets/accompagnantsResponsables");
+
 const validationSchema = yup.object({
   accompRespNb: requiredUnlessBrouillon(
     yup
@@ -272,7 +274,7 @@ const validateForm = async () => {
       finalData.valid = true;
     }
   } catch (error) {
-    console.error("Erreur lors de la validation du formulaire :", error);
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
 
   return finalData;

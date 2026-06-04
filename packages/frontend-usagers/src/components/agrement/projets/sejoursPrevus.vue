@@ -216,7 +216,7 @@ const validateForm = async () => {
       finalData.sejourTypeHandicap = typeDeficiencesValidation.value;
     }
 
-    if (result) {
+    if (result && typeDeficiencesValidation?.valid !== false) {
       finalData.sejourNbEnvisage = result.sejourNbEnvisage;
       finalData.sejourCommentaire = result.sejourCommentaire;
       finalData.valid = true;

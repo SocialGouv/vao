@@ -125,10 +125,6 @@ const validateAllForms = async (formulaires: FormulaireItem[]) => {
     const nomFormulaire = formulaires[index].nom;
 
     if (result.status !== "fulfilled" || !result.value?.data) {
-      log.w(
-        `Erreur dans ${nomFormulaire}:`,
-        result.status === "rejected" ? result.reason : "No data returned",
-      );
       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
       if (result.status === "rejected") {
         log.w(`Erreur dans ${nomFormulaire}:`, result.reason);

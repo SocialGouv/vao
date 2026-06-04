@@ -347,6 +347,7 @@ const validateForm = async () => {
 
   try {
     const result = await handleSubmit((values) => values)();
+
     if (result && filesAreValid) {
       finalData.bilanQualPerceptionSensibilite =
         result.bilanQualPerceptionSensibilite;
@@ -357,7 +358,6 @@ const validateForm = async () => {
   } catch (error) {
     log.w("Erreur lors de la validation du formulaire :", error);
   }
-
   return finalData;
 };
 
