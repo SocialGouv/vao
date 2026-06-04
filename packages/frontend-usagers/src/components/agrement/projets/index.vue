@@ -89,6 +89,7 @@ interface FormulaireItem {
 }
 
 const toaster = useToaster();
+const log = logger("AgrementProjets");
 
 const emit = defineEmits(["update:valid", "update", "previous"]);
 
@@ -124,62 +125,26 @@ const validateAllForms = async (formulaires: FormulaireItem[]) => {
     const nomFormulaire = formulaires[index].nom;
 
     if (result.status !== "fulfilled" || !result.value?.data) {
+      log.w(
+        `Erreur dans ${nomFormulaire}:`,
+        result.status === "rejected" ? result.reason : "No data returned",
+      );
       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
       if (result.status === "rejected") {
-        console.error(`Erreur dans ${nomFormulaire}:`, result.reason);
+        log.w(`Erreur dans ${nomFormulaire}:`, result.reason);
       }
       return;
     }
 
-    const { cle, nom, data: rawData } = result.value;
-    console.log(`Validation result for ${nom}:`, rawData);
+    const { cle, nom, data } = result.value;
+    const { valid, ...dataToStore } = data;
 
-    let dataToStore: any;
-    let isValid = true;
-
-    if (rawData && typeof rawData === "object" && "valid" in rawData) {
-      isValid = Boolean(rawData.valid);
-
-      if (rawData.values !== undefined) {
-        dataToStore = { ...rawData.values };
-        Object.entries(rawData).forEach(([key, value]) => {
-          if (key !== "values" && key !== "valid") {
-            dataToStore[key] = value;
-          }
-        });
-      } else {
-        dataToStore = { ...rawData };
-        delete dataToStore.valid;
-      }
-    } else {
-      dataToStore = rawData;
-    }
-
-    if (isValid === false) {
+    if (!valid) {
       formsErrors.push(`Le formulaire "${nom}" contient des erreurs`);
     }
 
-    if (
-      typeof dataToStore.filesValid === "boolean" &&
-      !dataToStore.filesValid
-    ) {
-      console.error(
-        `Le formulaire projets "${nom}" contient des erreurs de fichiers.`,
-      );
-      formsErrors.push(
-        `Le formulaire "${nom}" contient des erreurs de fichiers`,
-      );
-    }
-
     formsData[cle] = dataToStore;
-
-    if (formsData[cle] && formsData[cle].filesValid !== undefined) {
-      delete formsData[cle].filesValid;
-    }
   });
-
-  console.log("Forms data collected:", formsData);
-  console.log("Forms errors collected:", formsErrors);
 
   return {
     formsData,
@@ -188,89 +153,45 @@ const validateAllForms = async (formulaires: FormulaireItem[]) => {
   };
 };
 
-// const validateAllForms = async (formulaires: FormulaireItem[]) => {
-//   const formsErrors: string[] = [];
-//   const formsData: Record<string, any> = {};
-
-//   const resultats = await Promise.allSettled(
-//     formulaires.map(async (form) => {
-//       const data = await form.ref.value.validateForm();
-//       return { cle: form.cle, nom: form.nom, data };
-//     }),
-//   );
-
-//   resultats.forEach((result, index) => {
-//     if (result.status === "fulfilled" && result.value.data) {
-//       formsData[result.value.cle] = result.value.data;
-
-//       if (
-//         typeof result.value.data.filesValid === "boolean" &&
-//         !result.value.data.filesValid
-//       ) {
-//         console.error(
-//           `Le formulaire projets "${result.value.nom}" contient des erreurs de fichiers.`,
-//         );
-//         formsErrors.push(
-//           `Le formulaire "${result.value.nom}" contient des erreurs de fichiers`,
-//         );
-//       }
-//       delete formsData[result.value.cle].filesValid;
-//     } else {
-//       const nomFormulaire = formulaires[index].nom;
-//       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
-
-//       if (result.status === "rejected") {
-//         console.error(`Erreur dans ${nomFormulaire}:`, result.reason);
-//       }
-//     }
-//   });
-
-//   return {
-//     formsData,
-//     formsErrors,
-//     allFormsAreValid: formsErrors.length === 0,
-//   };
-// };
-
 const handleSuivant = async () => {
   validationErrors.value = [];
 
   const forms = [
-    // {
-    //   ref: sejoursPrevusRef,
-    //   nom: "Séjours prévus",
-    //   cle: "sejoursPrevus",
-    // },
-    // {
-    //   ref: animationsActivitesRef,
-    //   nom: "Animations et activités",
-    //   cle: "animationsActivites",
-    // },
-    // {
-    //   ref: accompagnantsResponsablesRef,
-    //   nom: "Accompagnants et responsables",
-    //   cle: "accompagnantsResponsables",
-    // },
-    // {
-    //   ref: casierJudiciaireRef,
-    //   nom: "Casier judiciaire",
-    //   cle: "casierJudiciaire",
-    // },
-    // {
-    //   ref: organisationTransportsRef,
-    //   nom: "Organisation des transports",
-    //   cle: "organisationTransports",
-    // },
-    // {
-    //   ref: suiviMedicalRef,
-    //   nom: "Suivi médical",
-    //   cle: "suiviMedical",
-    // },
-    // {
-    //   ref: protocoleRef,
-    //   nom: "Protocole",
-    //   cle: "protocole",
-    // },
+    {
+      ref: sejoursPrevusRef,
+      nom: "Séjours prévus",
+      cle: "sejoursPrevus",
+    },
+    {
+      ref: animationsActivitesRef,
+      nom: "Animations et activités",
+      cle: "animationsActivites",
+    },
+    {
+      ref: accompagnantsResponsablesRef,
+      nom: "Accompagnants et responsables",
+      cle: "accompagnantsResponsables",
+    },
+    {
+      ref: casierJudiciaireRef,
+      nom: "Casier judiciaire",
+      cle: "casierJudiciaire",
+    },
+    {
+      ref: organisationTransportsRef,
+      nom: "Organisation des transports",
+      cle: "organisationTransports",
+    },
+    {
+      ref: suiviMedicalRef,
+      nom: "Suivi médical",
+      cle: "suiviMedical",
+    },
+    {
+      ref: protocoleRef,
+      nom: "Protocole",
+      cle: "protocole",
+    },
     {
       ref: financierRef,
       nom: "Budget",

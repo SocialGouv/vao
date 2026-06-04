@@ -147,6 +147,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: false },
 });
 
+const log = logger("components/agrement/projets/protocole");
+
 const filesProjetsSejoursProtocoleReorientation = ref(
   props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
@@ -243,32 +245,33 @@ const {
 } = useField<string>("protocoleInfoFamille");
 
 const validateForm = async () => {
-  const formValid = true;
+  const finalData = {
+    valid: false,
+    protocoleEvacUrg: protocoleEvacUrg.value || null,
+    protocoleRapatUrg: protocoleRapatUrg.value || null,
+    protocoleRapatEtranger: protocoleRapatEtranger.value || null,
+    protocoleInfoFamille: protocoleInfoFamille.value || null,
+    filesProjetsSejoursProtocoleReorientation:
+      filesProjetsSejoursProtocoleReorientation.value,
+    filesProjetsSejoursProtocoleRapatriement:
+      filesProjetsSejoursProtocoleRapatriement.value,
+  };
 
   try {
-    const result = await handleSubmit((values) => {
-      return values;
-    })();
-
-    if (!formValid) {
-      console.error("Le formulaire n'est pas valide.");
-    }
+    const result = await handleSubmit((values) => values)();
 
     if (result) {
-      const data = { ...result };
-      delete data.statut;
-      const finalData = {
-        ...data,
-        filesProjetsSejoursProtocoleReorientation:
-          filesProjetsSejoursProtocoleReorientation.value,
-        filesProjetsSejoursProtocoleRapatriement:
-          filesProjetsSejoursProtocoleRapatriement.value,
-      };
-      return finalData;
+      finalData.protocoleEvacUrg = result.protocoleEvacUrg || null;
+      finalData.protocoleRapatUrg = result.protocoleRapatUrg || null;
+      finalData.protocoleRapatEtranger = result.protocoleRapatEtranger || null;
+      finalData.protocoleInfoFamille = result.protocoleInfoFamille || null;
+      finalData.valid = true;
     }
   } catch (error) {
-    console.error("Erreur lors de la validation du formulaire :", error);
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
+
+  return finalData;
 };
 
 defineExpose({

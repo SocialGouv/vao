@@ -45,6 +45,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: false },
 });
 
+const log = logger("components/agrement/projets/casierJudiciaire");
+
 const fileProjetsSejoursCasier = ref(
   getFileByCategory({
     category: FILE_CATEGORY.PROJETSSEJOURSCASIER,
@@ -81,14 +83,24 @@ const {
 });
 
 const validateForm = async () => {
-  const result = await handleSubmit((values) => values)();
-  if (result) {
-    return {
-      ...result,
-      fileProjetsSejoursCasier: fileProjetsSejoursCasier.value,
-    };
+  const finalData = {
+    valid: false,
+    accompRespAttestHono: accompRespAttestHono.value,
+    fileProjetsSejoursCasier: fileProjetsSejoursCasier.value,
+  };
+
+  try {
+    const result = await handleSubmit((values) => values)();
+
+    if (result) {
+      finalData.accompRespAttestHono = result.accompRespAttestHono;
+      finalData.valid = true;
+    }
+  } catch (error) {
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
-  return result;
+
+  return finalData;
 };
 
 defineExpose({

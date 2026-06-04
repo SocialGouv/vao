@@ -127,6 +127,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: false },
 });
 
+const log = logger("components/agrement/projets/sejoursPrevus");
+
 const config = useRuntimeConfig();
 
 const typeDeficiencesRef = ref<any>(null);
@@ -191,43 +193,39 @@ const urlPdfQuestionnaireVacanciers = computed(() => {
 });
 
 const validateForm = async () => {
-  let formValid = true;
+  const finalData = {
+    valid: false,
+    sejourNbEnvisage: sejourNbEnvisage.value,
+    sejourCommentaire: sejourCommentaire.value,
+    agrementSejours: [],
+    sejourTypeHandicap: null,
+    filesProjetsSejoursPrevus: filesProjetsSejoursPrevus.value,
+  };
 
   try {
     const sejoursData = await listeSejoursRef.value?.validateForm();
-
-    const result = await handleSubmit((values) => {
-      return values;
-    })();
-
+    const result = await handleSubmit((values) => values)();
     const typeDeficiencesValidation =
       await typeDeficiencesRef.value?.validateTypeDeficiences();
 
-    if (!typeDeficiencesValidation?.valid) {
-      console.error("Le type de déficiences n'est pas valide.");
-      formValid = false;
+    if (sejoursData?.sejours) {
+      finalData.agrementSejours = sejoursData.sejours;
     }
 
-    if (!formValid) {
-      console.error("Le formulaire n'est pas valide.");
+    if (typeDeficiencesValidation?.value !== undefined) {
+      finalData.sejourTypeHandicap = typeDeficiencesValidation.value;
     }
 
     if (result) {
-      const { statut: _statut, ...dataSansStatut } = result;
-      const finalData = {
-        ...dataSansStatut,
-        agrementSejours: sejoursData?.sejours || [],
-        sejourTypeHandicap: typeDeficiencesValidation.value,
-        filesProjetsSejoursPrevus: filesProjetsSejoursPrevus.value,
-      };
-      return finalData;
+      finalData.sejourNbEnvisage = result.sejourNbEnvisage;
+      finalData.sejourCommentaire = result.sejourCommentaire;
+      finalData.valid = true;
     }
   } catch (error) {
-    console.error(
-      "Erreur lors de la validation du formulaire sejoursPrevus :",
-      error,
-    );
+    log.w("Erreur lors de la validation du formulaire sejoursPrevus :", error);
   }
+
+  return finalData;
 };
 
 defineExpose({

@@ -84,6 +84,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: false },
 });
 
+const log = logger("components/agrement/projets/budget");
+
 const filesProjSejoursBudgetPersonnes = ref(
   props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
@@ -131,51 +133,24 @@ const {
   handleChange: onBudgetPersoGestionComplementaireChange,
 } = useField<string>("budgetPersoGestionComplementaire");
 
-// const validateForm = async () => {
-//   const formValid = true;
-
-//   try {
-//     const result = await handleSubmit((values) => {
-//       console.log("Form values on submit", values);
-//       return values;
-//     })();
-
-//     if (!formValid) {
-//       console.error("Le formulaire n'est pas valide.");
-//     }
-
-//     if (result) {
-//       const data = { ...result };
-//       delete data.statut;
-//       const finalData = {
-//         ...data,
-//         filesProjSejoursBudgetPersonnes: filesProjSejoursBudgetPersonnes.value,
-//       };
-//       return finalData;
-//     }
-//   } catch (error) {
-//     console.error("Erreur lors de la validation du formulaire :", error);
-//   }
-// };
-
 const validateForm = async () => {
   const finalData = {
-    values: {
-      budgetGestionPerso: budgetGestionPerso.value,
-      budgetPersoGestionComplementaire: budgetPersoGestionComplementaire.value,
-    },
-    filesProjSejoursBudgetPersonnes: filesProjSejoursBudgetPersonnes.value,
     valid: false,
+    budgetGestionPerso: budgetGestionPerso.value,
+    budgetPersoGestionComplementaire: budgetPersoGestionComplementaire.value,
+    filesProjSejoursBudgetPersonnes: filesProjSejoursBudgetPersonnes.value,
   };
 
   try {
     const result = await handleSubmit((values) => values)();
     if (result) {
-      finalData.values = result;
+      finalData.budgetGestionPerso = result.budgetGestionPerso;
+      finalData.budgetPersoGestionComplementaire =
+        result.budgetPersoGestionComplementaire;
       finalData.valid = true;
     }
   } catch (error) {
-    console.error("Erreur lors de la validation du formulaire :", error);
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
 
   return finalData;

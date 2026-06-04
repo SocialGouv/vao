@@ -61,6 +61,7 @@ import * as yup from "yup";
 import displayInput from "../../../utils/display-input";
 
 const agrementStore = useAgrementStore();
+const log = logger("components/agrement/projets/animationsActivites");
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
@@ -74,7 +75,7 @@ onMounted(async () => {
   try {
     await agrementStore.getAllActivites();
   } catch (error) {
-    console.error("Erreur lors de la récupération des activités:", error);
+    log.w("Erreur lors de la récupération des activités:", error);
     loadError.value = true;
   }
 });
@@ -85,7 +86,7 @@ const activitesMap = computed(() => {
   const activites = agrementStore.activites || [];
 
   if (activites.length === 0) {
-    console.warn("Aucune activité disponible dans le store");
+    log.w("Aucune activité disponible dans le store");
     return map;
   }
 
@@ -190,7 +191,7 @@ const convertToAgrementAnimation = (activitesLibelles, agrementId = null) => {
         },
       });
     } else {
-      console.warn(`Activité non trouvée dans le mapping: "${libelle}"`);
+      log.w(`Activité non trouvée dans le mapping: "${libelle}"`);
     }
   });
 
@@ -198,27 +199,30 @@ const convertToAgrementAnimation = (activitesLibelles, agrementId = null) => {
 };
 
 const validateForm = async () => {
-  try {
-    const result = await handleSubmit((values) => {
-      return values;
-    })();
+  const finalData = {
+    valid: false,
+    agrementAnimation: convertToAgrementAnimation(
+      activitesSelectionnees.value,
+      props.initAgrement.id || null,
+    ),
+    animationAutre: animationAutre.value || null,
+  };
 
+  try {
+    const result = await handleSubmit((values) => values)();
     if (result) {
-      const agrementAnimation = convertToAgrementAnimation(
+      finalData.agrementAnimation = convertToAgrementAnimation(
         activitesSelectionnees.value,
         props.initAgrement.id || null,
       );
-
-      const finalData = {
-        agrementAnimation: agrementAnimation,
-        animationAutre: result.animationAutre || null,
-      };
-
-      return finalData;
+      finalData.animationAutre = result.animationAutre || null;
+      finalData.valid = true;
     }
   } catch (error) {
-    console.error("Détails:", error);
+    log.e("Erreur lors de la validation du formulaire :", error);
   }
+
+  return finalData;
 };
 
 defineExpose({
