@@ -65,6 +65,7 @@ export interface AgrementDto {
 }
 
 export interface ActiviteDto {
+  id: number | null;
   code: string | null;
   libelle: string | null;
   activiteType: ACTIVITE_TYPE | null;

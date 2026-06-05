@@ -51,25 +51,23 @@
     </div>
   </fieldset>
 </template>
-
-<script setup>
-import { ref, computed, onMounted } from "vue";
-import { DsfrMultiselect } from "@gouvminint/vue-dsfr";
+<script setup lang="ts">
+import { computed, onMounted } from "vue";
 import { useForm, useField } from "vee-validate";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import type { ActiviteDto, AgrementAnimationDto } from "@vao/shared-bridge";
 import * as yup from "yup";
-import displayInput from "../../../utils/display-input";
 
 const agrementStore = useAgrementStore();
 const log = logger("components/agrement/projets/animationsActivites");
+
+const loadError = ref<boolean>(false);
 
 const props = defineProps({
   initAgrement: { type: Object, required: true },
   cdnUrl: { type: String, required: true },
   modifiable: { type: Boolean, default: false },
 });
-
-const loadError = ref(false);
 
 onMounted(async () => {
   try {
@@ -80,9 +78,8 @@ onMounted(async () => {
   }
 });
 
-const activitesMap = computed(() => {
-  const map = {};
-
+const activitesMap = computed<Record<string, ActiviteDto>>(() => {
+  const map: Record<string, ActiviteDto> = {};
   const activites = agrementStore.activites || [];
 
   if (activites.length === 0) {
@@ -92,18 +89,18 @@ const activitesMap = computed(() => {
 
   activites.forEach((activite) => {
     if (activite.libelle) {
-      map[activite.libelle] = {
-        id: activite.id,
-        code: activite.code,
-        type: activite.activiteType,
-      };
+      map[activite.libelle] = activite;
     }
   });
 
   return map;
 });
 
-const options = computed(() => {
+// options, buttonLabel, animationAutreErrorMessage, onAnimationAutreChange,
+// animationAutreMeta, activitesSelectionneesErrorMessage :
+// utilisés dans le <template> — les avertissements TS sont des faux positifs
+
+const options = computed<string[]>(() => {
   const activites = agrementStore.activites || [];
 
   if (activites.length === 0) {
@@ -111,29 +108,31 @@ const options = computed(() => {
   }
 
   return activites.map((a) =>
-    a.code.includes("AUTRES") ? `${a.libelle} (${a.activiteType})` : a.libelle,
+    a.code?.includes("AUTRES")
+      ? `${a.libelle} (${a.activiteType})`
+      : (a.libelle ?? ""),
   );
 });
 
-const initActivitesFromStore = () => {
+const initActivitesFromStore = (): string[] => {
   if (!props.initAgrement.agrementAnimation?.length) {
     return [];
   }
 
   return props.initAgrement.agrementAnimation
-    .map((animation) =>
-      animation.activite?.code.includes("AUTRES")
+    .map((animation: AgrementAnimationDto) =>
+      animation.activite?.code?.includes("AUTRES")
         ? `${animation.activite.libelle} (${animation.activite.activiteType})`
-        : animation.activite?.libelle,
+        : (animation.activite?.libelle ?? ""),
     )
-    .filter(Boolean);
+    .filter(Boolean) as string[];
 };
 
-const requiredUnlessBrouillon = (schema) =>
+const requiredUnlessBrouillon = (schema: yup.Schema) =>
   schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
+    is: (val: AGREMENT_STATUT) => val !== AGREMENT_STATUT.BROUILLON,
+    then: (schema: yup.Schema) => schema.required("Champ obligatoire"),
+    otherwise: (schema: yup.Schema) => schema.nullable(),
   });
 
 const validationSchema = yup.object({
@@ -161,9 +160,9 @@ const {
   errorMessage: animationAutreErrorMessage,
   handleChange: onAnimationAutreChange,
   meta: animationAutreMeta,
-} = useField("animationAutre");
+} = useField<string>("animationAutre");
 
-const buttonLabel = computed(() => {
+const buttonLabel = computed<string>(() => {
   return activitesSelectionnees.value.length === 0
     ? "Sélectionner une ou plusieurs options."
     : `${activitesSelectionnees.value.length} option(s) sélectionnée(s)`;
@@ -172,22 +171,27 @@ const buttonLabel = computed(() => {
 const {
   value: activitesSelectionnees,
   errorMessage: activitesSelectionneesErrorMessage,
-} = useField("activitesSelectionnees");
+} = useField<string[]>("activitesSelectionnees");
 
-const convertToAgrementAnimation = (activitesLibelles, agrementId = null) => {
-  const agrementAnimations = [];
-  activitesLibelles.forEach((libelle) => {
+const convertToAgrementAnimation = (
+  activitesLibelles: string[],
+  agrementId: number | null = null,
+): AgrementAnimationDto[] => {
+  const agrementAnimations: AgrementAnimationDto[] = [];
+
+  activitesLibelles.forEach((libelle: string) => {
     const cleanedLibelle = libelle.replace(/ \(.*\)$/, "");
     const activiteInfo = activitesMap.value[cleanedLibelle];
 
     if (activiteInfo) {
       agrementAnimations.push({
-        activiteId: activiteInfo.id,
-        agrementId: agrementId,
+        activiteId: activiteInfo.id || null,
+        agrementId,
         activite: {
+          id: activiteInfo.id,
           code: activiteInfo.code,
           libelle: cleanedLibelle,
-          activiteType: activiteInfo.type,
+          activiteType: activiteInfo.activiteType,
         },
       });
     } else {
@@ -213,13 +217,13 @@ const validateForm = async () => {
     if (result) {
       finalData.agrementAnimation = convertToAgrementAnimation(
         activitesSelectionnees.value,
-        props.initAgrement.id || null,
+        props.initAgrement.id ?? null,
       );
       finalData.animationAutre = result.animationAutre || null;
       finalData.valid = true;
     }
   } catch (error) {
-    log.e("Erreur lors de la validation du formulaire :", error);
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
 
   return finalData;
