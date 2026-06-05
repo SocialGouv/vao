@@ -202,6 +202,7 @@ async function saveCoordonneesStep() {
   personnePhysiqueError.value = "";
   personneMoraleError.value = "";
   let isValid = true;
+
   const personnePhysiqueData = await validatePersonne(
     personnePhysiqueRef,
     "savePersonnePhysique",

@@ -171,15 +171,15 @@ const validationSchema = yup.object({
       )
       .nullable(),
   ),
-  bilanFinancierComparatif: yup
-    .string()
-    .nullable()
-    .when([], {
-      is: (val: string | null) => val && val.length > 0,
-      then: (schema) =>
-        schema.min(20, "Merci de décrire au moins 20 caractères."),
-      otherwise: (schema) => schema,
-    }),
+  bilanFinancierComparatif: requiredUnlessBrouillon(
+    yup
+      .string()
+      .min(
+        20,
+        " Veuillez indiquer le comparatif entre les périodes N et N-1. Minimum 20 caractères.",
+      )
+      .nullable(),
+  ),
   bilanFinancierRessourcesHumaines: yup
     .string()
     .nullable()
