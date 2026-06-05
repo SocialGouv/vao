@@ -97,6 +97,7 @@ export const ActiviteMapper = {
     return {
       activiteType: entity.activite_type as any,
       code: entity.code,
+      id: entity.id,
       libelle: entity.libelle,
     };
   },
@@ -110,7 +111,7 @@ export const AgrementAnimationMapper = {
     return {
       activite: entity.activite
         ? ActiviteMapper.toModel(entity.activite)
-        : { activiteType: null, code: null, libelle: null },
+        : { activiteType: null, code: null, id: null, libelle: null },
       activiteId: entity.activite_id ?? null,
       agrementId: entity.agrement_id ?? null,
     };
