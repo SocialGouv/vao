@@ -32,7 +32,10 @@ export default async function upload(
   }
 
   try {
-    const { path, originalname: filename } = file;
+    const { path, originalname } = file;
+    const filename = Buffer.from(originalname, "latin1")
+      .toString("utf8")
+      .normalize("NFC");
     const fileBuffer = await fs.readFile(path);
     const fileType = await getFileTypeFromBuffer(fileBuffer);
 
