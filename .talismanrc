@@ -1,4 +1,5 @@
 fileignoreconfig:
+
 - filename: .env.dev.example.env
   checksum: 6d2b816034eceab035c41b6b6be08c11b18b011f16cb47f0112e48f2547499c6
 - filename: .github/workflows/e2e.yaml
@@ -45,7 +46,7 @@ fileignoreconfig:
   checksum: bfa8870f696549d178edd6992541e3c7c2eb10a911abac24f97575436183fdaa
 - filename: README.md
   checksum: 3627cd363d1cfc640df689ce74d5467e13707a2cc9c44b0bffaba14f217296e2
-- filename: _scripts/dev/local-node.dockerfile
+- filename: \_scripts/dev/local-node.dockerfile
   checksum: e18bef015dc55696295aefdd6610b20447e690cced1214ccf126842b7f1315db
 - filename: docker-compose.prod.yaml
   checksum: a9495759b787f06a1d8d5ff1bdb5fad2c9f3cf40e6fad67cad8dddf6fd3e6d15
@@ -65,35 +66,35 @@ fileignoreconfig:
   checksum: 1f161d556f83694bf1d4f728591667cdaeef494e6d24ea2b475b4d7cb054383f
 - filename: package.json
   checksum: 52f91a0a30ade63600c4994f2f5b85c64290ebbb9d09e353e5ad28bb276986c0
-- filename: packages/backend/src/__tests__/admin/accept-cgu.test.ts
+- filename: packages/backend/src/**tests**/admin/accept-cgu.test.ts
   checksum: 692450d4fc33a59b516dab82ef8a447c1b0afa242acfac281b9c4584e330cbda
-- filename: packages/backend/src/__tests__/admin/authentication.test.ts
+- filename: packages/backend/src/**tests**/admin/authentication.test.ts
   checksum: 63edd76b2f24c07687a9952a288ec5bed831a3b14fdbb69909d897a0ad847dca
-- filename: packages/backend/src/__tests__/admin/sejour.test.ts
+- filename: packages/backend/src/**tests**/admin/sejour.test.ts
   checksum: d6e5b48000a21797f60865b4c59c09c9860f55c72376b785a21777e1f31d9b40
-- filename: packages/backend/src/__tests__/helper/testContainer.ts
+- filename: packages/backend/src/**tests**/helper/testContainer.ts
   checksum: 1cd24bcc2b9ad1e9c238c3ad905b5b1a7114370d0c19dffad9475a6e443b3e94
-- filename: packages/backend/src/__tests__/usagers/accept-cgu.test.ts
+- filename: packages/backend/src/**tests**/usagers/accept-cgu.test.ts
   checksum: ab7a0f54777521ceb0cf4f2f253cc6f804e24ad7e27015eb9d66961366510a12
-- filename: packages/backend/src/__tests__/usagers/agrements.test.ts
+- filename: packages/backend/src/**tests**/usagers/agrements.test.ts
   checksum: d0422a97e0bf3177d51d97c0253f50d254331976b359d55341760928e10cab16
-- filename: packages/backend/src/__tests__/usagers/authentification.test.ts
+- filename: packages/backend/src/**tests**/usagers/authentification.test.ts
   checksum: 95b280ea570c9959104c314b772ac6e8de4b0b2be0328239a259a01883114a0f
-- filename: packages/backend/src/__tests__/usagers/documents.test.ts
+- filename: packages/backend/src/**tests**/usagers/documents.test.ts
   checksum: d5d23d8aa40adf45f04cb47587350ba4c52423bb669307779f9be0254e77b695
-- filename: packages/backend/src/__tests__/usagers/fo-user.test.ts
+- filename: packages/backend/src/**tests**/usagers/fo-user.test.ts
   checksum: 1592485597a9d3c481163fc6f495367be3e70c112cb3cbe3d528afc6a7919860
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
   checksum: 7a829c5b141bb9761e1d3fcebacc6d0a5b0ca699af877295d671d33d84728f33
 - filename: packages/backend/src/config.js
   checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
-- filename: packages/backend/src/controllers/__tests__/bo-user/accept-cgu.test.js
+- filename: packages/backend/src/controllers/**tests**/bo-user/accept-cgu.test.js
   checksum: 67fab1c87f31673cfb776142da3403e9bd600bc6c6151e691ec6fa66c70c4788
-- filename: packages/backend/src/controllers/__tests__/fo-user/accept-cgu.test.js
+- filename: packages/backend/src/controllers/**tests**/fo-user/accept-cgu.test.js
   checksum: 780ed3b307da64a2b755d41c983d4276ee61c23f4ea33eebd12949af5631242e
-- filename: packages/backend/src/controllers/authentication/email/__tests__/register.test.js
+- filename: packages/backend/src/controllers/authentication/email/**tests**/register.test.js
   checksum: 61e6150f8c247506f5a67901fe427b681dc8ec9d259e123beefa0fa4971e01b8
-- filename: packages/backend/src/controllers/authentication/email/__tests__/renew-password.test.js
+- filename: packages/backend/src/controllers/authentication/email/**tests**/renew-password.test.js
   checksum: 83ed8fdaec5e47e65e05fc8586202a8e2637ebc995fc326a79322cccaac25555
 - filename: packages/backend/src/controllers/authentication/email/forgotten-password.js
   checksum: 2f5296972c87285ed4e2d46aafed33a49f1e2efb39284d30bf3d81d0ec54be88
@@ -119,7 +120,7 @@ fileignoreconfig:
   checksum: a2706b88a2ab741936878cf2425703ea45ad856b6968c27a28466090155b6f33
 - filename: packages/backend/src/controllers/siret/getLienSuccession.spec.ts
   checksum: 5c6862263cb7030aac2429eb09b35ab9a54e13c15e633944cdfac95747ec768f
-- filename: packages/backend/src/helpers/__tests__/queryParams.test.js
+- filename: packages/backend/src/helpers/**tests**/queryParams.test.js
   checksum: c8b87f647822d4193d521e1d5630de0afbedc9f5273741bb5b419008e059b3fa
 - filename: packages/backend/src/helpers/declaration/mise-en-page.ts
   checksum: 11396ec3010ca7db3c3fe349da3cd20e6aada4bd176762cdeb3b0515b0e6d282
@@ -313,6 +314,8 @@ fileignoreconfig:
   checksum: 3ddc3235a0b76aa6c7557d666c72e8e419a590db9fe84ec4c9a20de0fb3ab4e8
 - filename: packages/frontend-usagers/src/components/agrement/projets/index.vue
   checksum: 9f97b81400c9543b979e5ee15bb7ebfb4e76c0e7aef020f59e374a5066bd9925
+- filename: packages/frontend-usagers/src/components/agrement/personne-physique.vue
+  checksum: 934f231653f1b7d7659de7c54675cf5fb59ef89bc87e5616c7f3fae8c24e119a
 - filename: packages/frontend-usagers/src/components/agrement/representants.vue
   checksum: 17c287f11e26438a1bccb79d81152c7662283823bc9355a62e4dba851e5f5556
 - filename: packages/frontend-usagers/src/components/customInput.vue
@@ -465,6 +468,6 @@ fileignoreconfig:
   checksum: f93c69228f6832f4417ca3e432f481e23a30aa4b6d4c07082da17d2312c0cd52
 - filename: s/env/preprod/templates/smtp.sealed.secret.yaml
   checksum: 732f20ddab64e6f0e55484fe8bf16f08b1cc0aaccd9ec5b9107e1d058d72ee47
-scopeconfig:
+  scopeconfig:
 - scope: node
-version: "1.0"
+  version: "1.0"
