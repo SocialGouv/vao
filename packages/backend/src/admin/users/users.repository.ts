@@ -62,6 +62,26 @@ export const UsersRepository = {
     log.i("create - DONE");
     return { code: "CreationCompte", user: response.rows };
   },
+  getByEmail: async ({
+    email,
+  }: {
+    email: string;
+  }): Promise<UserAdminDto | null> => {
+    log.i("getByEmail - IN");
+    const query = `
+      SELECT *
+      FROM back.users
+      WHERE mail = $1
+      `;
+    const response = await getPool().query(query, [email]);
+    const row = response.rows[0] as UserAdminEntity;
+    if (!row) {
+      return null;
+    }
+    const userAdminDto = UsersAdminMapper.toDto(row);
+
+    return userAdminDto;
+  },
   getById: async ({ userId }: { userId: number }): Promise<UserAdminDto> => {
     log.i("getById - IN");
     const query = `
@@ -75,21 +95,55 @@ export const UsersRepository = {
 
     return userAdminDto;
   },
+  updateOtpAttempts: async ({
+    userId,
+    otpAttempts,
+    otpAttemptsAt,
+  }: {
+    userId: number;
+    otpAttempts: number;
+    otpAttemptsAt: Date | null;
+  }): Promise<UserAdminDto> => {
+    log.i("getById - IN");
+    const query = `
+      UPDATE back.users
+      SET
+        otp_attempts = $2,
+        otp_attempts_at = $3
+      WHERE id = $1
+      RETURNING *
+      `;
+    const response = await getPool().query(query, [
+      userId,
+      otpAttempts,
+      otpAttemptsAt,
+    ]);
+    const row = response.rows[0] as UserAdminEntity;
+    const userAdminDto = UsersAdminMapper.toDto(row);
+
+    return userAdminDto;
+  },
   updateOtpCode: async ({
     userId,
     otpCode,
     otpCodeExpiratedAt,
+    otpAttemtps,
+    otpAttemtpsAt,
   }: {
     userId: number;
     otpCode: number;
     otpCodeExpiratedAt: Date | null;
+    otpAttemtps: number;
+    otpAttemtpsAt: Date | null;
   }): Promise<UserAdminDto> => {
     log.i("getById - IN");
     const query = `
       UPDATE back.users
       SET
         otp_code = $2,
-        otp_code_expires_at = $3
+        otp_code_expires_at = $3,
+        otp_attempts = $4,
+        otp_attempts_at = $5
       WHERE id = $1
       RETURNING *
       `;
@@ -97,6 +151,8 @@ export const UsersRepository = {
       userId,
       otpCode,
       otpCodeExpiratedAt,
+      otpAttemtps,
+      otpAttemtpsAt,
     ]);
     const row = response.rows[0] as UserAdminEntity;
     const userAdminDto = UsersAdminMapper.toDto(row);

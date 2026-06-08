@@ -11,7 +11,44 @@ export enum ERRORS_COMMON {
 export enum FUNCTIONAL_ERRORS {
   AGREMENT_NOT_FOUND = "AGREMENT_NOT_FOUND",
   AGREMENT_INCONSISTENT = "AGREMENT_INCONSISTENT",
+  USER_OTP_CODE_INVALID = "USER_OTP_CODE_INVALID",
+  USER_OTP_CODE_EXPIRED = "USER_OTP_CODE_EXPIRED",
+  USER_OTP_MAX_ATTEMPTS = "USER_OTP_MAX_ATTEMPTS",
+  USER_OTP_PROVISOIRLY_BLOCKED = "USER_OTP_PROVISOIRLY_BLOCKED",
+  USER_OTP_CODE_NOT_FOUND = "USER_OTP_CODE_NOT_FOUND",
+  USER_NOT_FOUND = "USER_NOT_FOUND",
+  USER_TEMPORARILY_BLOCKED = "USER_TEMPORARILY_BLOCKED",
+  USER_EMAIL_UNAUTHORIZED = "USER_EMAIL_UNAUTHORIZED",
 }
+export const FUNCTIONAL_ERROR_MESSAGES: Record<FUNCTIONAL_ERRORS, string> = {
+  [FUNCTIONAL_ERRORS.AGREMENT_NOT_FOUND]: "Agrément introuvable.",
+  [FUNCTIONAL_ERRORS.AGREMENT_INCONSISTENT]: "Agrément incohérent.",
+
+  [FUNCTIONAL_ERRORS.USER_OTP_CODE_INVALID]: "Le code est erroné.",
+  [FUNCTIONAL_ERRORS.USER_OTP_CODE_EXPIRED]: "Code OTP expiré.",
+  [FUNCTIONAL_ERRORS.USER_OTP_MAX_ATTEMPTS]:
+    "Nombre maximal de tentatives OTP atteint.",
+  [FUNCTIONAL_ERRORS.USER_OTP_PROVISOIRLY_BLOCKED]:
+    "Utilisateur temporairement bloqué suite à trop de tentatives OTP.",
+  [FUNCTIONAL_ERRORS.USER_OTP_CODE_NOT_FOUND]: "Code OTP introuvable.",
+
+  [FUNCTIONAL_ERRORS.USER_NOT_FOUND]: "Utilisateur introuvable.",
+  [FUNCTIONAL_ERRORS.USER_TEMPORARILY_BLOCKED]:
+    "Utilisateur temporairement bloqué.",
+  [FUNCTIONAL_ERRORS.USER_EMAIL_UNAUTHORIZED]: "Adresse email non autorisée.",
+};
+
+export function getFunctionalErrorMessage(
+  code: FUNCTIONAL_ERRORS | string,
+): string {
+  return (
+    FUNCTIONAL_ERROR_MESSAGES[code as FUNCTIONAL_ERRORS] ??
+    "Erreur fonctionnelle inconnue."
+  );
+}
+export const FUNCTIONAL_ERROR_VALUES = Object.values(
+  FUNCTIONAL_ERRORS,
+) as string[];
 
 export enum ERRORS_LOGIN {
   TooManyLoginAttempts = "TooManyLoginAttempts",

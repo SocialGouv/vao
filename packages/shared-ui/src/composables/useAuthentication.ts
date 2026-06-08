@@ -4,12 +4,8 @@ import { ERRORS_LOGIN, USER_COMPETENCE_BO } from "@vao/shared-bridge";
 import type { UserDto, TwoFactorErrorCode } from "@vao/shared-bridge";
 import { useToaster } from "../composables/useToaster";
 import createLogger from "../utils/createLogger";
-import {
-  maskEmail,
-  getErrorMessage2FA,
-  isValidPassword,
-  createAuthState,
-} from "../utils/auth";
+import { maskEmail, isValidPassword, createAuthState } from "../utils/auth";
+
 import type {
   UseAuthenticationReturn,
   LoginResponse,
@@ -34,6 +30,8 @@ interface AuthConfig {
   endpoints: ApiEndpoints;
   sessionStorageKey: string;
   expirationKey: string;
+  otpunlockAt: string;
+  optAttemptsKey: string;
   route2FA: string;
   routeLogin: string;
   useOrganismeStore: boolean;
@@ -49,13 +47,15 @@ function getAuthConfig(type: AuthType): AuthConfig {
     return {
       endpoints: {
         LOGIN: "/bo-authentication/email/login",
-        VERIFY_2FA: "/bo-authentication/verify-2fa",
-        RESEND_2FA: "/bo-authentication/resend-2fa",
+        VERIFY_OTP: "/bo-authentication/email/verify-otp",
+        RESEND_OTP: "/bo-authentication/email/resend-otp",
         ACCEPT_CGU: "/bo-user/accept-cgu",
       },
-      sessionStorageKey: "2fa-email-bo",
-      expirationKey: "2fa-expiration-bo",
-      route2FA: "/connexion/verification-2fa",
+      sessionStorageKey: "otp-email-bo",
+      expirationKey: "otp-expiration-bo",
+      otpunlockAt: "otp-unlock-at-bo",
+      optAttemptsKey: "otp-attempts-bo",
+      route2FA: "/connexion/verification-otp",
       routeLogin: "/connexion",
       useOrganismeStore: false,
       useRefreshProfile: false,
@@ -67,13 +67,15 @@ function getAuthConfig(type: AuthType): AuthConfig {
   return {
     endpoints: {
       LOGIN: "/authentication/email/login",
-      VERIFY_2FA: "/authentication/verify-2fa",
-      RESEND_2FA: "/authentication/resend-2fa",
+      VERIFY_OTP: "/authentication/email/verify-otp",
+      RESEND_OTP: "/authentication/email/resend-otp",
       ACCEPT_CGU: "/fo-user/accept-cgu",
     },
-    sessionStorageKey: "2fa-email",
-    expirationKey: "2fa-expiration",
-    route2FA: "/connexion/verification-2fa",
+    sessionStorageKey: "otp-email",
+    expirationKey: "otp-expiration",
+    otpunlockAt: "otp-unlock-at",
+    optAttemptsKey: "otp-attempts",
+    route2FA: "/connexion/verification-otp",
     routeLogin: "/connexion",
     useOrganismeStore: true,
     useRefreshProfile: true,
@@ -198,7 +200,6 @@ export const useAuthentication = (
       });
       if (response.user?.requires2FA) {
         log.i("login - 2FA requis, navigation vers page dédiée");
-
         if (typeof window !== "undefined") {
           sessionStorage.setItem(authConfig.sessionStorageKey, email.value);
 
@@ -212,9 +213,10 @@ export const useAuthentication = (
             });
           }
         }
-
         if (navigateTo) {
-          navigateTo(authConfig.route2FA);
+          navigateTo(
+            `${authConfig.route2FA}?otpAttemptsAt=${response.user?.otpAttemptsAt}&otpAttempts=${response.user?.otpAttempts}&otpCodeExpiresAt=${response.user?.otpCodeExpiresAt}`,
+          );
         }
         return;
       }
@@ -263,8 +265,10 @@ export const useAuthentication = (
     }
   }
 
-  async function verify2FACode(payload: Verify2FAPayload): Promise<void> {
-    console.log("verify2FACode", { payload }); // Garder ce log pour le debug, à supprimer si trop verbeux
+  async function verify2FACode(
+    payload: Verify2FAPayload,
+    email: string,
+  ): Promise<void> {
     const { code, rememberDevice } = payload;
     log.i("verify2FACode", { codeLength: code?.length, rememberDevice });
 
@@ -272,35 +276,28 @@ export const useAuthentication = (
 
     try {
       const response = await $fetch<Verify2FAResponse>(
-        backendUrl + API.VERIFY_2FA,
+        backendUrl + API.VERIFY_OTP,
         {
           credentials: "include",
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: { code, rememberDevice },
+          body: { code, rememberDevice, email },
         },
       );
 
       log.i("verify2FACode - succès");
-
       if (typeof window !== "undefined") {
         sessionStorage.removeItem(authConfig.sessionStorageKey);
         sessionStorage.removeItem(authConfig.expirationKey);
       }
-
       await continueAuthenticationFlow(response.user);
     } catch (error) {
       const apiError = error as ApiError;
       const codeError = apiError?.data?.name as TwoFactorErrorCode | undefined;
       log.w("verify2FACode - erreur", { error: codeError ?? apiError });
-
-      throw {
-        type: "error",
-        title: "Code invalide",
-        description: getErrorMessage2FA(codeError),
-      };
+      throw error;
     } finally {
       isVerifying2FA.value = false;
     }
@@ -312,7 +309,7 @@ export const useAuthentication = (
     isResendingCode.value = true;
 
     try {
-      await $fetch(backendUrl + API.RESEND_2FA, {
+      await $fetch(backendUrl + API.RESEND_OTP, {
         credentials: "include",
         method: "POST",
       });

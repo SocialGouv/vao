@@ -68,6 +68,26 @@ export const UsersRepository = {
     log.i("create - DONE");
     return { code: "CreationCompte", user: response.rows };
   },
+  getByEmail: async ({
+    email,
+  }: {
+    email: string;
+  }): Promise<UserUsagersDto | null> => {
+    log.i("getByEmail - IN");
+    const query = `
+        SELECT *
+        FROM front.users
+        WHERE mail = $1
+        `;
+    const response = await getPool().query(query, [email]);
+    const row = response.rows[0] as UserUsagersEntity;
+    if (!row) {
+      return null;
+    }
+    const userAdminDto = UsersUsagersMapper.toDto(row);
+
+    return userAdminDto;
+  },
   getById: async ({ userId }: { userId: number }): Promise<UserUsagersDto> => {
     log.i("getById - IN");
     const query = `
@@ -81,32 +101,69 @@ export const UsersRepository = {
 
     return userAdminDto;
   },
+
+  updateOtpAttempts: async ({
+    userId,
+    otpAttempts,
+    otpAttemptsAt,
+  }: {
+    userId: number;
+    otpAttempts: number;
+    otpAttemptsAt: Date | null;
+  }): Promise<UserUsagersDto> => {
+    log.i("getById - IN");
+    const query = `
+        UPDATE front.users
+        SET
+          otp_attempts = $2,
+          otp_attempts_at = $3
+        WHERE id = $1
+        RETURNING *
+        `;
+    const response = await getPool().query(query, [
+      userId,
+      otpAttempts,
+      otpAttemptsAt,
+    ]);
+    const row = response.rows[0] as UserUsagersEntity;
+    const userAdminDto = UsersUsagersMapper.toDto(row);
+
+    return userAdminDto;
+  },
   updateOtpCode: async ({
     userId,
     otpCode,
     otpCodeExpiratedAt,
+    otpAttemtps,
+    otpAttemtpsAt,
   }: {
     userId: number;
     otpCode: number;
     otpCodeExpiratedAt: Date | null;
+    otpAttemtps: number;
+    otpAttemtpsAt: Date | null;
   }): Promise<UserUsagersDto> => {
     log.i("getById - IN");
     const query = `
-      UPDATE front.users
-      SET
-        otp_code = $2,
-        otp_code_expires_at = $3
-      WHERE id = $1
-      RETURNING *
-      `;
+        UPDATE front.users
+        SET
+          otp_code = $2,
+          otp_code_expires_at = $3,
+          otp_attempts = $4,
+          otp_attempts_at = $5
+        WHERE id = $1
+        RETURNING *
+        `;
     const response = await getPool().query(query, [
       userId,
       otpCode,
       otpCodeExpiratedAt,
+      otpAttemtps,
+      otpAttemtpsAt,
     ]);
     const row = response.rows[0] as UserUsagersEntity;
-    const userUsagersDto = UsersUsagersMapper.toDto(row);
+    const userAdminDto = UsersUsagersMapper.toDto(row);
 
-    return userUsagersDto;
+    return userAdminDto;
   },
 };

@@ -85,6 +85,8 @@ fileignoreconfig:
   checksum: 1592485597a9d3c481163fc6f495367be3e70c112cb3cbe3d528afc6a7919860
 - filename: packages/backend/src/admin/agrements/agrements.service.ts
   checksum: 7a829c5b141bb9761e1d3fcebacc6d0a5b0ca699af877295d671d33d84728f33
+- filename: packages/backend/src/admin/users/users.service.ts
+  checksum: 3263ede3a41a662307af17ed84d3b2ff62be383c4d758783109e701f8aa91d11
 - filename: packages/backend/src/config.js
   checksum: 5e974a98e40b4f10974b9e57127b8b71e4abef208494d69218b17b3721453ada
 - filename: packages/backend/src/controllers/__tests__/bo-user/accept-cgu.test.js
@@ -175,6 +177,8 @@ fileignoreconfig:
   checksum: 48c16e791d844e7d30d14fec5fcf36798ecb4235b685a204ecf7456ca84364ac
 - filename: packages/backend/src/usagers/agrements/agrements.mail.ts
   checksum: 9435876e82a33a64481b490c8d148c9db042fd15ec42e72e6a8ddb23d5356af8
+- filename: packages/backend/src/usagers/users/users.service.ts
+  checksum: 0876f425ef73ea4b029c1ddebf586a639170ac978156b6446338523e70a22ff6
 - filename: packages/backend/src/utils/canBeActivated.ts
   checksum: 212a9a708b5135da12f93d9d98e2f9d2dcb8a3408bd3c6d56910f3c1d78cb66a
 - filename: packages/backend/src/utils/mail-service.js
@@ -402,7 +406,7 @@ fileignoreconfig:
 - filename: packages/shared-ui/src/composables/index.js
   checksum: 1a41578cc15aa2da2b59efa2c378e9ed2552a2912c7d7cd666527e148d4d15f6
 - filename: packages/shared-ui/src/composables/useAuthentication.ts
-  checksum: cca73e0d096e3c7fa35123c8a53888966abdcb6eed089dc2251e4127652ae809
+  checksum: 685d0e302f58f682353b6b641108f4d7768743517fe7c58c30640d1ed096c3b3
 - filename: packages/shared-ui/src/composables/useToaster.ts
   checksum: 704ad956e4817e92ca2df2f4cbdf14cc7a39218cdacdfef070dd91c8d1e4c563
 - filename: packages/shared-ui/src/types/Auth.type.ts

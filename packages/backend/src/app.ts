@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/node";
 import { nodeProfilingIntegration } from "@sentry/profiling-node";
-import { ERRORS_COMMON } from "@vao/shared-bridge";
+import { ERRORS_COMMON, FunctionalException } from "@vao/shared-bridge";
 // @ts-expect-error BodyParser is not typed
 import bodyParser from "body-parser";
 // @ts-expect-error CookieParser is not typed
@@ -138,6 +138,15 @@ app.use(
 
     if (res.headersSent) {
       next(err);
+      return;
+    }
+
+    if (err instanceof FunctionalException) {
+      res.status(422).send({
+        code: err.code,
+        detail: err.detail,
+        name: err.name,
+      });
       return;
     }
 

@@ -16,6 +16,8 @@ export interface UserAdminDto {
   requires2FA?: boolean | null;
   otpCode?: number | null;
   otpCodeExpiresAt?: Date | null;
+  otpAttempts?: number | null;
+  otpAttemptsAt?: Date | null;
   deleted?: boolean | null;
   deletedDate?: Date | null;
   deletedUseId?: number | null;

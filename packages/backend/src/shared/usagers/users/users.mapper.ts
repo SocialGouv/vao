@@ -20,6 +20,8 @@ export const UsersUsagersMapper = {
       id: entity.id,
       lastConnectionAt: entity.lastconnection_at,
       nom: entity.nom,
+      otpAttempts: entity.otp_attempts,
+      otpAttemptsAt: entity.otp_attempts_at,
       otpCode: entity.otp_code,
       otpCodeExpiresAt: entity.otp_code_expires_at,
       prenom: entity.prenom,

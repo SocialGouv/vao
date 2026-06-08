@@ -13,6 +13,7 @@ import { UserRequest } from "../../../types/request";
 import { signAccessToken, signRefreshToken } from "../../../utils/bo-token";
 import AppError from "../../../utils/error";
 import { logger } from "../../../utils/logger";
+import { OtpService } from "../../../utils/otp";
 
 const log = logger(module.filename);
 
@@ -90,37 +91,48 @@ export default async function login(
       id: Number(user.id),
       roles: user.roles ?? [],
     };
-    const accessToken = signAccessToken(payload);
-    const refreshToken = signRefreshToken(payload);
-
-    await Session.clean({ id: user.id }, schema.BACK);
-    await Session.create(user.id, refreshToken, schema.BACK);
-
-    res.cookie("VAO_BO_access_token", accessToken, {
-      httpOnly: true,
-      maxAge: config.accessToken.expiresIn,
-      sameSite: "strict",
-      secure: true,
-    });
-
-    res.cookie("VAO_BO_refresh_token", refreshToken, {
-      httpOnly: true,
-      maxAge: config.refreshToken.expiresIn,
-      sameSite: "strict",
-      secure: true,
-    });
-
-    log.i("DONE");
 
     const featureFlags = await FeatureFlagService.getFeatureFlagsAvailable();
     const requires2FA = await FeatureFlagService.isFeatureAvailable(
       FeatureFlagName.AUTH_2FA,
     );
     if (requires2FA) {
-      await UsersService.updateOtpCode({
-        userId: Number(user.id),
+      const { isLocked } = OtpService.isLocked({
+        otpAttempts: user.otpAttempts ?? 0,
+        otpAttemptsAt: user.otpAttemptsAt ?? null,
+      });
+      const isExpired = OtpService.isExpired({
+        otpCodeExpiresAt: user.otpCodeExpiresAt ?? null,
+      });
+      if (!isLocked) {
+        if (isExpired) {
+          await UsersService.updateOtpCode({
+            userId: Number(user.id),
+          });
+        }
+      }
+    } else {
+      const accessToken = signAccessToken(payload);
+      const refreshToken = signRefreshToken(payload);
+
+      await Session.clean({ id: user.id }, schema.BACK);
+      await Session.create(user.id, refreshToken, schema.BACK);
+
+      res.cookie("VAO_BO_access_token", accessToken, {
+        httpOnly: true,
+        maxAge: config.accessToken.expiresIn,
+        sameSite: "strict",
+        secure: true,
+      });
+
+      res.cookie("VAO_BO_refresh_token", refreshToken, {
+        httpOnly: true,
+        maxAge: config.refreshToken.expiresIn,
+        sameSite: "strict",
+        secure: true,
       });
     }
+    log.i("DONE");
     return res.json({ user: { ...user, featureFlags, requires2FA } });
   } catch (error) {
     log.w("DONE with error");

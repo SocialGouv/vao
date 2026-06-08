@@ -253,7 +253,10 @@ ${Object.keys(criterias)
       us.validated AS validated,
       us.ter_code as "territoireCode",
       ur.roles,
-      us.cgu_accepted AS "cguAccepted"
+      us.cgu_accepted AS "cguAccepted",
+      us.otp_code_expires_at AS "otpCodeExpiresAt",
+      us.otp_attempts AS "otpAttempts",
+      us.otp_attempts_at AS "otpAttemptsAt"
     FROM back.users us
     LEFT OUTER JOIN (
       SELECT
