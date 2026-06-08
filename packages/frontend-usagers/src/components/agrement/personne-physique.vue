@@ -81,13 +81,14 @@
   </DsfrAlert>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
 import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
 import { telephoneYupNullable } from "@/utils/telephoneValidators";
+import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
 const props = defineProps({
   initOrganisme: { type: Object, required: true },
@@ -117,13 +118,6 @@ const warnings = computed(() => {
   return msgs;
 });
 
-const requiredUnlessBrouillon = (schema) =>
-  schema.when("statut", {
-    is: (val) => val !== AGREMENT_STATUT.BROUILLON,
-    then: (schema) => schema.required("Champ obligatoire"),
-    otherwise: (schema) => schema.nullable(),
-  });
-
 const validationSchema = yup.object({
   telephone: requiredUnlessBrouillon(telephoneYupNullable()),
 });
@@ -144,7 +138,7 @@ const {
   errorMessage: telephoneError,
   handleChange: onTelephoneChange,
   meta: telephoneMeta,
-} = useField("telephone");
+} = useField<string | null>("telephone");
 
 function startEditTelephone() {
   isEditingTelephone.value = true;
