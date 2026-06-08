@@ -68,7 +68,7 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/admin/accept-cgu.test.ts
   checksum: 692450d4fc33a59b516dab82ef8a447c1b0afa242acfac281b9c4584e330cbda
 - filename: packages/backend/src/__tests__/admin/authentication.test.ts
-  checksum: 63edd76b2f24c07687a9952a288ec5bed831a3b14fdbb69909d897a0ad847dca
+  checksum: 3232182343c91bf59cf38d62665ada413c854a2b5c37143737e6bfb60232ad68
 - filename: packages/backend/src/__tests__/admin/sejour.test.ts
   checksum: d6e5b48000a21797f60865b4c59c09c9860f55c72376b785a21777e1f31d9b40
 - filename: packages/backend/src/__tests__/helper/testContainer.ts
@@ -78,7 +78,7 @@ fileignoreconfig:
 - filename: packages/backend/src/__tests__/usagers/agrements.test.ts
   checksum: d0422a97e0bf3177d51d97c0253f50d254331976b359d55341760928e10cab16
 - filename: packages/backend/src/__tests__/usagers/authentification.test.ts
-  checksum: 95b280ea570c9959104c314b772ac6e8de4b0b2be0328239a259a01883114a0f
+  checksum: c983ba2061410c5f2b51bcd915db72cbba419324f05de36ad270e0daf52fc13e
 - filename: packages/backend/src/__tests__/usagers/documents.test.ts
   checksum: d5d23d8aa40adf45f04cb47587350ba4c52423bb669307779f9be0254e77b695
 - filename: packages/backend/src/__tests__/usagers/fo-user.test.ts

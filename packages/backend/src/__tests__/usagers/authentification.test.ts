@@ -1,4 +1,8 @@
-import { ERRORS_COMMON, STATUS_USER_FRONT } from "@vao/shared-bridge";
+import {
+  ERRORS_COMMON,
+  FUNCTIONAL_ERRORS,
+  STATUS_USER_FRONT,
+} from "@vao/shared-bridge";
 import jwt from "jsonwebtoken";
 import request from "supertest";
 
@@ -9,7 +13,10 @@ import * as UserService from "../../services/User";
 import { UsersRepository as UsagersUsersRepository } from "../../usagers/users/users.repository";
 import { getPool } from "../../utils/pgpool";
 import { getFoAppHelper } from "../helpers/appHelper";
-import { createFeatureFlag } from "../helpers/featureFlagHelper";
+import {
+  createFeatureFlag,
+  resetFeatureFlag,
+} from "../helpers/featureFlagHelper";
 import { createOrganisme } from "../helpers/organismeHelper";
 import { createTerritoire } from "../helpers/territoireHelper";
 import {
@@ -34,8 +41,9 @@ afterAll(async () => {
   await removeTestContainer();
 });
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.clearAllMocks();
+  await resetFeatureFlag();
   (mailService.send as jest.Mock).mockResolvedValue(undefined);
 });
 
@@ -292,6 +300,45 @@ describe("POST /authentication/email/login", () => {
     expect(createdUsers[0]).toBeDefined();
     const userCreation = await UserService.getByUserId(createdUsers[0].id);
     expect(userCreation?.statusCode).toContain(STATUS_USER_FRONT.VALIDATED);
+    const response = await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+
+    expect(response.status).toBe(200);
+    expect(response.body.user).toBeDefined();
+    expect(response.body.user.email).toBe(email);
+    expect(response.body.user.featureFlags).toBeDefined();
+
+    expect(mailService.send).toHaveBeenCalledTimes(0);
+    const setCookieHeader = response.headers["set-cookie"] || [];
+    expect(setCookieHeader).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining("VAO_access_token="),
+        expect.stringContaining("VAO_refresh_token="),
+      ]),
+    );
+  });
+  it("should send a OTP Code for login", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `frontlogin${timestamp}@example.com`;
+
+    const { user: createdUsers } = await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        email,
+        nom: "FrontNom",
+        password,
+        prenom: "FrontPrenom",
+        siret: `123456789012${timestamp.toString().slice(-2)}`,
+        status_code: STATUS_USER_FRONT.VALIDATED,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+    expect(createdUsers[0]).toBeDefined();
+    const userCreation = await UserService.getByUserId(createdUsers[0].id);
+    expect(userCreation?.statusCode).toContain(STATUS_USER_FRONT.VALIDATED);
     await createFeatureFlag({});
     const response = await request(getFoAppHelper())
       .post("/authentication/email/login")
@@ -303,13 +350,6 @@ describe("POST /authentication/email/login", () => {
     expect(response.body.user.featureFlags).toBeDefined();
 
     expect(mailService.send).toHaveBeenCalledTimes(1);
-    const setCookieHeader = response.headers["set-cookie"] || [];
-    expect(setCookieHeader).toEqual(
-      expect.arrayContaining([
-        expect.stringContaining("VAO_access_token="),
-        expect.stringContaining("VAO_refresh_token="),
-      ]),
-    );
   });
 
   it("should return 400 if email or password is missing", async () => {
@@ -419,7 +459,125 @@ describe("POST /authentication/email/login", () => {
     expect(response.body.name).toBe("UserTemporarilyBlocked");
   });
 });
+describe("POST /bo-authentication/email/verify-otp", () => {
+  it("should return 422 reject OTP code admin 1 attemps", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `frontlogin${timestamp}@example.com`;
 
+    const { user: createdUsers } = await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        email,
+        nom: "FrontNom",
+        password,
+        prenom: "FrontPrenom",
+        siret: `123456789012${timestamp.toString().slice(-2)}`,
+        status_code: STATUS_USER_FRONT.VALIDATED,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+    expect(createdUsers[0]).toBeDefined();
+    const userCreation = await UserService.getByUserId(createdUsers[0].id);
+    expect(userCreation?.statusCode).toContain(STATUS_USER_FRONT.VALIDATED);
+    await createFeatureFlag({});
+    await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+    const responseAttemps1 = await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: 999999, email });
+    expect(responseAttemps1.status).toBe(422);
+    expect(responseAttemps1.body.code).toBe(
+      FUNCTIONAL_ERRORS.USER_OTP_CODE_INVALID,
+    );
+    expect(responseAttemps1.body.detail.otpAttempts).toEqual(1);
+  });
+  it("should return 422 reject OTP code admin 3 attemps", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `frontlogin${timestamp}@example.com`;
+
+    const { user: createdUsers } = await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        email,
+        nom: "FrontNom",
+        password,
+        prenom: "FrontPrenom",
+        siret: `123456789012${timestamp.toString().slice(-2)}`,
+        status_code: STATUS_USER_FRONT.VALIDATED,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+    expect(createdUsers[0]).toBeDefined();
+    const userCreation = await UserService.getByUserId(createdUsers[0].id);
+    expect(userCreation?.statusCode).toContain(STATUS_USER_FRONT.VALIDATED);
+    await createFeatureFlag({});
+    await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+    await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: 999999, email });
+    await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: 999999, email });
+    const responseAttemps3 = await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: 999999, email });
+    expect(responseAttemps3.status).toBe(422);
+    expect(responseAttemps3.body.code).toBe(
+      FUNCTIONAL_ERRORS.USER_OTP_MAX_ATTEMPTS,
+    );
+    expect(responseAttemps3.body.detail.otpAttempts).toEqual(3);
+  });
+  it("should return 422 reject OTP temporary locked", async () => {
+    const password = "HelloHello1!!";
+    const timestamp = Date.now();
+    const email = `frontlogin${timestamp}@example.com`;
+
+    const { user: createdUsers } = await UsagersUsersRepository.create({
+      user: {
+        cgu_accepted: true,
+        email,
+        nom: "FrontNom",
+        password,
+        prenom: "FrontPrenom",
+        siret: `123456789012${timestamp.toString().slice(-2)}`,
+        status_code: STATUS_USER_FRONT.VALIDATED,
+        telephone: "0102030405",
+        ter_code: "FRA",
+      },
+    });
+    expect(createdUsers[0]).toBeDefined();
+    const userCreation = await UserService.getByUserId(createdUsers[0].id);
+    expect(userCreation?.statusCode).toContain(STATUS_USER_FRONT.VALIDATED);
+    await createFeatureFlag({});
+    await request(getFoAppHelper())
+      .post("/authentication/email/login")
+      .send({ email, password });
+    await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: 999999, email });
+    await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: 999999, email });
+    await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: 999999, email });
+    const reponseTemporaryLocked = await request(getFoAppHelper())
+      .post("/authentication/email/verify-otp")
+      .send({ code: 999999, email });
+    expect(reponseTemporaryLocked.status).toBe(422);
+    expect(reponseTemporaryLocked.body.code).toBe(
+      FUNCTIONAL_ERRORS.USER_OTP_PROVISOIRLY_BLOCKED,
+    );
+    expect(reponseTemporaryLocked.body.detail.otpAttempts).toEqual(3);
+  });
+});
 describe("POST /authentication/email/renew-password", () => {
   it("should reactivate a TEMPORARY_BLOCKED user and return 200", async () => {
     const timestamp = Date.now();
