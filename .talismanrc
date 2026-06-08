@@ -171,6 +171,8 @@ fileignoreconfig:
   checksum: 5f6b6a0476a6e4bd63fd0d4290e148f9586ba2494d85bf1041a8d81857cfca2e
 - filename: packages/backend/src/shared/usagers/users/users.mapper.ts
   checksum: 2711081c83e2193ca85b6c8caf775da8bab9accde046840e65b916b5a4fb2e5c
+- filename: packages/backend/src/shared/users/users.mapper.ts
+  checksum: a235158b1fba5035254bd7f85298a06b36887e97936f25b6d072c1be8a59432e
 - filename: packages/backend/src/sonar-project.properties
   checksum: 971c26e540505ee376587d3fbafb0efb226dbb3202ecf91b1f7820b279ecd28c
 - filename: packages/backend/src/types/reorgQueryParams.ts
