@@ -38,12 +38,12 @@ export async function buildAgrementFixture({
     accompRespRecruteUrg: "Non",
     agrementAnimation: agrementAnimation ?? [
       {
-        activite: { activiteType: null, code: null, libelle: null },
+        activite: { activiteType: null, code: null, id: null, libelle: null },
         activiteId,
         agrementId: null,
       },
       {
-        activite: { activiteType: null, code: null, libelle: null },
+        activite: { activiteType: null, code: null, id: null, libelle: null },
         activiteId: 21 - activiteId,
         agrementId: null,
       },

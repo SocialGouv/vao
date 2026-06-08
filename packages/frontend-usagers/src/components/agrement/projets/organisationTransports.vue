@@ -69,6 +69,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: false },
 });
 
+const log = logger("components/agrement/projets/organisationTransports");
+
 const filesProjetsSejoursOrgaTransports = ref(
   props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
@@ -131,31 +133,26 @@ const {
 } = useField<string>("transportSejour");
 
 const validateForm = async () => {
-  const formValid = true;
+  const finalData = {
+    valid: false,
+    transportAllerRetour: transportAllerRetour.value || null,
+    transportSejour: transportSejour.value || null,
+    filesProjetsSejoursOrgaTransports: filesProjetsSejoursOrgaTransports.value,
+  };
 
   try {
-    const result = await handleSubmit((values) => {
-      return values;
-    })();
-
-    if (!formValid) {
-      console.error("Le formulaire n'est pas valide.");
-    }
+    const result = await handleSubmit((values) => values)();
 
     if (result) {
-      const data = { ...result };
-      delete data.statut;
-      const finalData = {
-        ...data,
-        filesProjetsSejoursOrgaTransports:
-          filesProjetsSejoursOrgaTransports.value,
-      };
-      return finalData;
+      finalData.transportAllerRetour = result.transportAllerRetour || null;
+      finalData.transportSejour = result.transportSejour || null;
+      finalData.valid = true;
     }
   } catch (error) {
-    console.error("Erreur lors de la validation du formulaire :", error);
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
-  console.error("Erreur lors de la validation du formulaire transports");
+
+  return finalData;
 };
 
 defineExpose({

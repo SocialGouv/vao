@@ -151,6 +151,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: false },
 });
 
+const log = logger("components/agrement/bilan/bilanFinancier");
+
 const filesBilanFinancierQuatreAnnees = ref(
   props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) =>
@@ -243,15 +245,30 @@ const {
 } = useField<string | null>("bilanFinancierCommentaire");
 
 const validateForm = async () => {
-  const result = await handleSubmit((values) => values)();
-  if (result) {
-    return {
-      ...result,
-      filesBilanFinancierQuatreAnnees: filesBilanFinancierQuatreAnnees.value,
-      filesValid: true,
-    };
+  const finalData = {
+    valid: false,
+    bilanFinancierComptabilite: bilanFinancierComptabilite.value,
+    bilanFinancierComparatif: bilanFinancierComparatif.value,
+    bilanFinancierRessourcesHumaines: bilanFinancierRessourcesHumaines.value,
+    bilanFinancierCommentaire: bilanFinancierCommentaire.value,
+    filesBilanFinancierQuatreAnnees: filesBilanFinancierQuatreAnnees.value,
+  };
+
+  try {
+    const result = await handleSubmit((values) => values)();
+    if (result) {
+      finalData.bilanFinancierComptabilite = result.bilanFinancierComptabilite;
+      finalData.bilanFinancierComparatif = result.bilanFinancierComparatif;
+      finalData.bilanFinancierRessourcesHumaines =
+        result.bilanFinancierRessourcesHumaines;
+      finalData.bilanFinancierCommentaire = result.bilanFinancierCommentaire;
+      finalData.valid = true;
+    }
+  } catch (error) {
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
-  return result;
+
+  return finalData;
 };
 
 defineExpose({

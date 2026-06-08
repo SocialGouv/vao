@@ -149,6 +149,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: false },
 });
 
+const log = logger("components/agrement/projets/accompagnantsResponsables");
+
 const validationSchema = yup.object({
   accompRespNb: requiredUnlessBrouillon(
     yup
@@ -233,49 +235,49 @@ const {
 } = useField<string>("accompRespRecruteUrg");
 
 const validateForm = async () => {
-  let filesValid = true;
-  const formValid = true;
+  const finalData = {
+    valid: false,
+    accompRespNb: accompRespNb.value,
+    accompRespCompExp: accompRespCompExp.value || null,
+    accompRespRecruteUrg: accompRespRecruteUrg.value || null,
+    filesProjetsSejoursCompetencesExperience:
+      filesProjetsSejoursCompetencesExperience.value,
+    filesProjetsSejoursMesures: filesProjetsSejoursMesures.value,
+    filesProjetsSejoursComplementaires:
+      filesProjetsSejoursComplementaires.value,
+  };
 
   filesProjetsSejoursCompetencesExperienceError.value = null;
   filesProjetsSejoursMesuresError.value = null;
 
+  let filesAreValid = true;
+
+  if (filesProjetsSejoursCompetencesExperience.value.length === 0) {
+    filesProjetsSejoursCompetencesExperienceError.value =
+      "Veuillez ajouter au moins un fichier pour la partie compétences et expériences des accompagnants.";
+    filesAreValid = false;
+  }
+
+  if (filesProjetsSejoursMesures.value.length === 0) {
+    filesProjetsSejoursMesuresError.value =
+      "Veuillez ajouter au moins un fichier pour la partie mesures envisagées en cas de recrutement d'accompagnants supplémentaires en urgence.";
+    filesAreValid = false;
+  }
+
   try {
     const result = await handleSubmit((values) => values)();
 
-    if (filesProjetsSejoursCompetencesExperience.value.length === 0) {
-      filesProjetsSejoursCompetencesExperienceError.value =
-        "Veuillez ajouter au moins un fichier pour la partie compétences et expériences des accompagnants.";
-      filesValid = false;
-    }
-
-    if (filesProjetsSejoursMesures.value.length === 0) {
-      filesProjetsSejoursMesuresError.value =
-        "Veuillez ajouter au moins un fichier pour la partie mesures envisagées en cas de recrutement d'accompagnants supplémentaires en urgence.";
-      filesValid = false;
-    }
-
-    if (!formValid) {
-      console.error("Le formulaire n'est pas valide.");
-    }
-
-    if (result) {
-      const data = { ...result };
-      delete data.statut;
-      const finalData = {
-        ...data,
-        filesProjetsSejoursCompetencesExperience:
-          filesProjetsSejoursCompetencesExperience.value,
-        filesProjetsSejoursMesures: filesProjetsSejoursMesures.value,
-        filesProjetsSejoursComplementaires:
-          filesProjetsSejoursComplementaires.value,
-        filesValid,
-      };
-
-      return finalData;
+    if (result && filesAreValid) {
+      finalData.accompRespNb = result.accompRespNb;
+      finalData.accompRespCompExp = result.accompRespCompExp || null;
+      finalData.accompRespRecruteUrg = result.accompRespRecruteUrg || null;
+      finalData.valid = true;
     }
   } catch (error) {
-    console.error("Erreur lors de la validation du formulaire :", error);
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
+
+  return finalData;
 };
 
 defineExpose({

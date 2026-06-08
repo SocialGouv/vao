@@ -141,7 +141,6 @@ async function validateAllYears() {
     }
   }
 
-  // Mise à jour de la ref — déclenche le rendu du message d'erreur dans le template
   invalidYears.value = yearsInvalid;
 
   if (!allValid) {
@@ -149,12 +148,11 @@ async function validateAllYears() {
       titleTag: "h2",
       description: "Toutes les années doivent être renseignées et valides.",
     });
-    return false;
   }
 
   return {
+    valid: allValid && yearsInvalid.length === 0,
     data: allResults,
-    sejoursValid: yearsInvalid.length === 0,
     invalidYears: yearsInvalid,
   };
 }

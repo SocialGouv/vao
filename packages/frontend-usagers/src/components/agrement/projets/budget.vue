@@ -47,7 +47,7 @@
         />
         <UtilsDisplayInput
           v-else
-          :value="budgetGestionPerso"
+          :value="budgetPersoGestionComplementaire"
           :input="
             displayInput.AgrementProjetsInput[
               'budgetPersoGestionComplementaire'
@@ -83,6 +83,8 @@ const props = defineProps({
   cdnUrl: { type: String, required: true },
   modifiable: { type: Boolean, default: false },
 });
+
+const log = logger("components/agrement/projets/budget");
 
 const filesProjSejoursBudgetPersonnes = ref(
   props.initAgrement?.agrementFiles?.filter(
@@ -132,29 +134,26 @@ const {
 } = useField<string>("budgetPersoGestionComplementaire");
 
 const validateForm = async () => {
-  const formValid = true;
+  const finalData = {
+    valid: false,
+    budgetGestionPerso: budgetGestionPerso.value,
+    budgetPersoGestionComplementaire: budgetPersoGestionComplementaire.value,
+    filesProjSejoursBudgetPersonnes: filesProjSejoursBudgetPersonnes.value,
+  };
 
   try {
-    const result = await handleSubmit((values) => {
-      return values;
-    })();
-
-    if (!formValid) {
-      console.error("Le formulaire n'est pas valide.");
-    }
-
+    const result = await handleSubmit((values) => values)();
     if (result) {
-      const data = { ...result };
-      delete data.statut;
-      const finalData = {
-        ...data,
-        filesProjSejoursBudgetPersonnes: filesProjSejoursBudgetPersonnes.value,
-      };
-      return finalData;
+      finalData.budgetGestionPerso = result.budgetGestionPerso;
+      finalData.budgetPersoGestionComplementaire =
+        result.budgetPersoGestionComplementaire;
+      finalData.valid = true;
     }
   } catch (error) {
-    console.error("Erreur lors de la validation du formulaire :", error);
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
+
+  return finalData;
 };
 
 defineExpose({

@@ -89,6 +89,7 @@ interface FormulaireItem {
 }
 
 const toaster = useToaster();
+const log = logger("AgrementProjets");
 
 const emit = defineEmits(["update:valid", "update", "previous"]);
 
@@ -121,29 +122,24 @@ const validateAllForms = async (formulaires: FormulaireItem[]) => {
   );
 
   resultats.forEach((result, index) => {
-    if (result.status === "fulfilled" && result.value.data) {
-      formsData[result.value.cle] = result.value.data;
+    const nomFormulaire = formulaires[index].nom;
 
-      if (
-        typeof result.value.data.filesValid === "boolean" &&
-        !result.value.data.filesValid
-      ) {
-        console.error(
-          `Le formulaire projets "${result.value.nom}" contient des erreurs de fichiers.`,
-        );
-        formsErrors.push(
-          `Le formulaire "${result.value.nom}" contient des erreurs de fichiers`,
-        );
-      }
-      delete formsData[result.value.cle].filesValid;
-    } else {
-      const nomFormulaire = formulaires[index].nom;
+    if (result.status !== "fulfilled" || !result.value?.data) {
       formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
-
       if (result.status === "rejected") {
-        console.error(`Erreur dans ${nomFormulaire}:`, result.reason);
+        log.w(`Erreur dans ${nomFormulaire}:`, result.reason);
       }
+      return;
     }
+
+    const { cle, nom, data } = result.value;
+    const { valid, ...dataToStore } = data;
+
+    if (!valid) {
+      formsErrors.push(`Le formulaire "${nom}" contient des erreurs`);
+    }
+
+    formsData[cle] = dataToStore;
   });
 
   return {

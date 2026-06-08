@@ -63,6 +63,8 @@ const props = defineProps({
 
 const toaster = useToaster();
 
+const log = logger("AgrementBilan");
+
 const emit = defineEmits(["update:valid", "update", "previous"]);
 
 const changementsRef = ref(null);
@@ -70,6 +72,13 @@ const financierRef = ref(null);
 const sejoursRef = ref(null);
 const qualitatifRef = ref(null);
 const validationErrors = ref<string[]>([]);
+
+const forms: FormulaireItem[] = [
+  { ref: changementsRef, nom: "Changements et évolutions", cle: "changements" },
+  { ref: financierRef, nom: "Bilan financier", cle: "financier" },
+  { ref: sejoursRef, nom: "Bilan des séjours", cle: "sejours" },
+  { ref: qualitatifRef, nom: "Bilan qualitatif", cle: "qualitatif" },
+];
 
 const validateAllForms = async (formulaires: FormulaireItem[]) => {
   const formsErrors: string[] = [];
@@ -83,18 +92,26 @@ const validateAllForms = async (formulaires: FormulaireItem[]) => {
   );
 
   resultats.forEach((result, index) => {
-    if (result.status === "fulfilled" && result.value.data) {
-      const { cle, nom, data } = result.value;
+    const nomFormulaire = formulaires[index].nom;
 
-      // validation spécifique pour le formulaire des séjours
-      if (cle === "sejours" && data.data !== undefined) {
-        formsData[cle] = data.data;
+    if (result.status !== "fulfilled" || !result.value?.data) {
+      formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
+      if (result.status === "rejected") {
+        log.w(`Erreur dans ${nomFormulaire}:`, result.reason);
+      }
+      return;
+    }
 
-        if (!data.sejoursValid) {
+    const { cle, nom, data } = result.value;
+
+    if (cle === "sejours") {
+      formsData[cle] = data.data;
+
+      if (!data.valid) {
+        if (data.invalidYears?.length > 0) {
           const yearsLabel = data.invalidYears
             .sort((a: number, b: number) => b - a)
             .join(", ");
-
           formsErrors.push(
             `Le bilan des séjours est incomplet : aucun séjour renseigné pour ${
               data.invalidYears.length > 1
@@ -102,23 +119,16 @@ const validateAllForms = async (formulaires: FormulaireItem[]) => {
                 : `l'année ${yearsLabel}`
             }`,
           );
+        } else {
+          formsErrors.push(`Le formulaire "${nom}" contient des erreurs`);
         }
-      } else {
-        formsData[cle] = data;
-
-        if (typeof data.filesValid === "boolean" && !data.filesValid) {
-          formsErrors.push(
-            `Le formulaire "${nom}" contient des erreurs de fichiers`,
-          );
-        }
-        delete formsData[cle].filesValid;
       }
     } else {
-      const nomFormulaire = formulaires[index].nom;
-      formsErrors.push(`Le formulaire "${nomFormulaire}" contient des erreurs`);
-      if (result.status === "rejected") {
-        console.error(`Erreur dans ${nomFormulaire}:`, result.reason);
+      const { valid, ...dataToStore } = data;
+      if (!valid) {
+        formsErrors.push(`Le formulaire "${nom}" contient des erreurs`);
       }
+      formsData[cle] = dataToStore;
     }
   });
 
@@ -137,97 +147,32 @@ onMounted(async () => {
 
 const validationForm = async () => {
   validationErrors.value = [];
-
-  const forms = [
-    {
-      ref: changementsRef,
-      nom: "Changements et évolutions",
-      cle: "changements",
-    },
-    {
-      ref: financierRef,
-      nom: "Bilan financier",
-      cle: "financier",
-    },
-    {
-      ref: sejoursRef,
-      nom: "Bilan des séjours",
-      cle: "sejours",
-    },
-    {
-      ref: qualitatifRef,
-      nom: "Bilan qualitatif",
-      cle: "qualitatif",
-    },
-  ];
-
-  // Valide tous les forms
-  const { formsData, formsErrors, allFormsAreValid } =
-    await validateAllForms(forms);
-
+  const { formsErrors, allFormsAreValid } = await validateAllForms(forms);
   validationErrors.value = formsErrors;
   if (!props.modifiable) {
     emit("update:valid", allFormsAreValid);
   }
-  if (allFormsAreValid || props.initAgrement.statut === "BROUILLON") {
-    const transformedData = {
-      ...formsData.changements,
-      ...formsData.financier,
-      agrementBilanAnnuel: formsData.sejours,
-      ...formsData.qualitatif,
-    };
+};
 
-    delete transformedData.statut;
-  } else {
-    toaster.error({
-      titleTag: "h2",
-      description: "Tous les formulaires doivent être renseignés et valides.",
-    });
-    console.warn("Erreurs de validation :", validationErrors.value);
-  }
+const buildTransformedData = (formsData: Record<string, any>) => {
+  const transformedData = {
+    ...formsData.changements,
+    ...formsData.financier,
+    agrementBilanAnnuel: formsData.sejours,
+    ...formsData.qualitatif,
+  };
+  delete transformedData.statut;
+  return transformedData;
 };
 
 const handleSuivant = async () => {
   validationErrors.value = [];
-
-  const forms = [
-    {
-      ref: changementsRef,
-      nom: "Changements et évolutions",
-      cle: "changements",
-    },
-    {
-      ref: financierRef,
-      nom: "Bilan financier",
-      cle: "financier",
-    },
-    {
-      ref: sejoursRef,
-      nom: "Bilan des séjours",
-      cle: "sejours",
-    },
-    {
-      ref: qualitatifRef,
-      nom: "Bilan qualitatif",
-      cle: "qualitatif",
-    },
-  ];
-
-  // Valide tous les forms
   const { formsData, formsErrors, allFormsAreValid } =
     await validateAllForms(forms);
-
   validationErrors.value = formsErrors;
 
   if (allFormsAreValid || props.initAgrement.statut === "BROUILLON") {
-    const transformedData = {
-      ...formsData.changements,
-      ...formsData.financier,
-      agrementBilanAnnuel: formsData.sejours,
-      ...formsData.qualitatif,
-    };
-
-    delete transformedData.statut;
+    const transformedData = buildTransformedData(formsData);
 
     if (props.onUpdate) {
       await props.onUpdate(transformedData);
@@ -239,7 +184,6 @@ const handleSuivant = async () => {
       titleTag: "h2",
       description: "Tous les formulaires doivent être renseignés et valides.",
     });
-    console.warn("Erreurs de validation :", validationErrors.value);
   }
 };
 </script>

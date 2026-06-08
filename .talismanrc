@@ -311,6 +311,8 @@ fileignoreconfig:
   checksum: 66638e3856d5d9d0820ada95cac2d6c377b475a545927cb24b52bf1a27afcfde
 - filename: packages/frontend-usagers/src/components/agrement/bilan/sejours.vue
   checksum: 3ddc3235a0b76aa6c7557d666c72e8e419a590db9fe84ec4c9a20de0fb3ab4e8
+- filename: packages/frontend-usagers/src/components/agrement/projets/index.vue
+  checksum: 9f97b81400c9543b979e5ee15bb7ebfb4e76c0e7aef020f59e374a5066bd9925
 - filename: packages/frontend-usagers/src/components/agrement/representants.vue
   checksum: 17c287f11e26438a1bccb79d81152c7662283823bc9355a62e4dba851e5f5556
 - filename: packages/frontend-usagers/src/components/customInput.vue

@@ -67,6 +67,8 @@ const props = defineProps({
   modifiable: { type: Boolean, default: true },
 });
 
+const log = logger("components/agrement/bilan/changements");
+
 const filesChangeEvol = ref(
   props.initAgrement?.agrementFiles?.filter(
     (file: AgrementFilesDto) => file.category === FILE_CATEGORY.CHANGEEVOL,
@@ -112,15 +114,26 @@ const {
 } = useField<boolean>("bilanAucunChangementEvolution");
 
 const validateForm = async () => {
-  const result = await handleSubmit((values) => values)();
-  if (result) {
-    return {
-      ...result,
-      filesChangeEvol: filesChangeEvol.value,
-      filesValid: true,
-    };
+  const finalData = {
+    valid: false,
+    bilanChangementEvolution: bilanChangementEvolution.value,
+    bilanAucunChangementEvolution: bilanAucunChangementEvolution.value,
+    filesChangeEvol: filesChangeEvol.value,
+  };
+
+  try {
+    const result = await handleSubmit((values) => values)();
+    if (result) {
+      finalData.bilanChangementEvolution = result.bilanChangementEvolution;
+      finalData.bilanAucunChangementEvolution =
+        result.bilanAucunChangementEvolution;
+      finalData.valid = true;
+    }
+  } catch (error) {
+    log.w("Erreur lors de la validation du formulaire :", error);
   }
-  return result;
+
+  return finalData;
 };
 
 defineExpose({
