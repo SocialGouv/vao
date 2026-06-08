@@ -5,14 +5,73 @@ import {
   UserUsagersDto,
 } from "@vao/shared-bridge";
 
+import { UserMailAdmin } from "../../admin/users/users.mail";
 import { UsersRepository as UsersRepositoryAdmin } from "../../admin/users/users.repository";
+import { mailService } from "../../services/mail";
+import { UserMailUsagers } from "../../usagers/users/users.mail";
 import { UsersRepository as UsersRepositoryUsagers } from "../../usagers/users/users.repository";
+import AppError from "../../utils/error";
 import { logger } from "../../utils/logger";
 import { OtpService } from "../../utils/otp";
 
 const log = logger(module.filename);
 
 export const UsersService = {
+  async updateOtpCode({
+    userId,
+    from,
+  }: {
+    userId: number;
+    from: string;
+  }): Promise<boolean> {
+    const user =
+      from === "bo"
+        ? await UsersRepositoryAdmin.getById({ userId })
+        : await UsersRepositoryUsagers.getById({ userId });
+    if (!user) {
+      log.w("Utilisateur non trouvé", userId);
+      throw new AppError("Utilisateur non trouvé", { statusCode: 404 });
+    }
+
+    const { code, expiresAt } = OtpService.generate();
+    const userUpdated =
+      from === "bo"
+        ? await UsersRepositoryAdmin.updateOtpCode({
+            otpAttemtps: 0,
+            otpAttemtpsAt: null,
+            otpCode: code,
+            otpCodeExpiratedAt: expiresAt,
+            userId,
+          })
+        : await UsersRepositoryUsagers.updateOtpCode({
+            otpAttemtps: 0,
+            otpAttemtpsAt: null,
+            otpCode: code,
+            otpCodeExpiratedAt: expiresAt,
+            userId,
+          });
+
+    if (!userUpdated) {
+      log.w("Échec de la mise à jour du code 2FA", { userId });
+      throw new AppError("Échec de la mise à jour du code 2FA", {
+        statusCode: 500,
+      });
+    }
+
+    await mailService.send(
+      from === "bo"
+        ? UserMailAdmin.getOtpCode({
+            mail: user.email,
+            otpCode: code,
+          })
+        : UserMailUsagers.getOtpCode({
+            mail: user.email,
+            otpCode: code,
+          }),
+    );
+
+    return true;
+  },
   async verifyOtpCode({
     email,
     code,
