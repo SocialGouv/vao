@@ -20,10 +20,14 @@
 
 <script setup lang="ts">
 import { computed, ref, onMounted } from "vue";
-import { TwoFactorCodeVerification, useAuthentication } from "@vao/shared-ui";
+import {
+  otpUnlockAt,
+  TwoFactorCodeVerification,
+  useAuthentication,
+} from "@vao/shared-ui";
 import type { Verify2FAPayload } from "@vao/shared-ui/types/Auth.type";
 import { maskEmail } from "@vao/shared-ui/utils/auth";
-import { addMinutes, getFunctionalErrorMessage } from "@vao/shared-bridge";
+import { getFunctionalErrorMessage } from "@vao/shared-bridge";
 
 const log = logger("pages/connexion/verification-otp");
 const router = useRouter();
@@ -63,18 +67,7 @@ const otpAttemptsAt = computed<string | null>(() => {
 });
 
 const unlockAt = computed(() => {
-  if (
-    otpAttemptsAt.value === "null" ||
-    otpAttemptsAt.value === undefined ||
-    otpAttemptsAt.value === "undefined"
-  ) {
-    return null;
-  } else {
-    return addMinutes(
-      new Date(otpAttemptsAt.value ?? new Date()),
-      15,
-    )?.toISOString();
-  }
+  return otpUnlockAt(otpAttemptsAt.value);
 });
 
 const maskedEmail = computed<string>(() => {

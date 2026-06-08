@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import type { AuthState, LoginErrorType } from "../types/Auth.type";
 import { emailRegex } from "./regex";
-import { TwoFactorErrorCode } from "@vao/shared-bridge";
+import { TwoFactorErrorCode, addMinutes } from "@vao/shared-bridge";
 
 export function maskEmail(emailAddress: string): string {
   if (!emailAddress || !emailAddress.includes("@")) return emailAddress;
@@ -14,7 +14,7 @@ export function maskEmail(emailAddress: string): string {
 }
 
 export function getErrorMessage2FA(
-  errorCode?: TwoFactorErrorCode | string, 
+  errorCode?: TwoFactorErrorCode | string,
 ): string {
   const messages: Record<string, string> = {
     [TwoFactorErrorCode.INVALID_CODE]:
@@ -23,11 +23,12 @@ export function getErrorMessage2FA(
       "Ce code a expiré. Veuillez en demander un nouveau.",
     [TwoFactorErrorCode.TOO_MANY_ATTEMPTS]:
       "Trop de tentatives. Veuillez attendre avant de réessayer.",
-    [TwoFactorErrorCode.CODE_ALREADY_USED]: 
-      "Ce code a déjà été utilisé.",
+    [TwoFactorErrorCode.CODE_ALREADY_USED]: "Ce code a déjà été utilisé.",
   };
 
-  return messages[errorCode || ""] || "Une erreur est survenue. Veuillez réessayer.";
+  return (
+    messages[errorCode || ""] || "Une erreur est survenue. Veuillez réessayer."
+  );
 }
 
 export function isValidEmail(email: string): boolean {
@@ -50,4 +51,21 @@ export function createAuthState(): AuthState {
     isVerifying2FA: ref<boolean>(false),
     isResendingCode: ref<boolean>(false),
   };
+}
+
+export function otpUnlockAt(
+  otpAttemptsAt: string | null | undefined,
+): string | null {
+  if (
+    otpAttemptsAt === "null" ||
+    otpAttemptsAt === undefined ||
+    otpAttemptsAt === "undefined"
+  ) {
+    return null;
+  } else {
+    return (
+      addMinutes(new Date(otpAttemptsAt ?? new Date()), 15)?.toISOString() ??
+      null
+    );
+  }
 }
