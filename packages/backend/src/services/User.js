@@ -87,7 +87,10 @@ const query = {
       us.status_code as "statusCode",
       pm.siret as "siret",
       pm.raison_sociale as "raisonSociale",
-      us.cgu_accepted as "cguAccepted"
+      us.cgu_accepted as "cguAccepted",
+      us.otp_code_expires_at AS "otpCodeExpiresAt",
+      us.otp_attempts AS "otpAttempts",
+      us.otp_attempts_at AS "otpAttemptsAt"
     FROM front.users us
     LEFT JOIN front.user_organisme uo ON us.id = uo.use_id
     LEFT JOIN front.organismes o ON uo.org_id = o.id

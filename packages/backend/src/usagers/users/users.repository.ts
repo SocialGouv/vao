@@ -84,9 +84,9 @@ export const UsersRepository = {
     if (!row) {
       return null;
     }
-    const userAdminDto = UsersUsagersMapper.toDto(row);
+    const userUsagersDto = UsersUsagersMapper.toDto(row);
 
-    return userAdminDto;
+    return userUsagersDto;
   },
   getById: async ({ userId }: { userId: number }): Promise<UserUsagersDto> => {
     log.i("getById - IN");
