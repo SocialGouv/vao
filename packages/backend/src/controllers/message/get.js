@@ -20,7 +20,7 @@ module.exports = async function get(req, res, next) {
   try {
     const messages = await Message.select(declarationId);
     return res.status(200).json(messages);
-  } catch (error) {
+  } catch {
     log.w("DONE with error");
     return res.status(400).json({
       message: "une erreur est survenue durant la récupération des messages",

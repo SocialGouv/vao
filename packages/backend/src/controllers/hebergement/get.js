@@ -36,7 +36,7 @@ module.exports = async function get(req, res) {
       return res.status(200).json(hebergements);
     }
     log.d(hebergements);
-  } catch (error) {
+  } catch {
     log.w("DONE with error");
     return res.status(400).json({
       message:

@@ -22,7 +22,7 @@ async function checkPermissionHebergement(req, res, next) {
     organisme = await Organisme.getOne({
       use_id: userId,
     });
-  } catch (error) {
+  } catch {
     return next(
       new AppError("Vous n'êtes pas autorisé à accéder à cet hébergement", {
         statusCode: 403,
