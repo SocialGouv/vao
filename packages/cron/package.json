@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@eslint/js": "catalog:",
-    "@types/jest": "^29.5.12",
+    "@types/jest": "^30.0.0",
     "@types/pg": "^8.15.5",
     "@types/nodemailer": "^6.4.17",
     "@types/nodemailer-smtp-transport": "^2.7.8",
