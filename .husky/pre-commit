@@ -31,7 +31,8 @@ throw_if_occurence () {
 
 throw_if_occurence "console.log" "There are debug console calls in your staged changes"
 
-corepack pnpm --filter vao... install
-corepack pnpm exec lint-staged --concurrent false
+corepack enable
+pnpm --filter vao... install
+pnpm exec lint-staged --concurrent false
 
-if sh -c ': >/dev/tty' >/dev/null 2>/dev/null; then exec </dev/tty; corepack pnpm exec node-talisman --githook pre-commit -i; else corepack pnpm exec node-talisman --githook pre-commit; fi
+if sh -c ': >/dev/tty' >/dev/null 2>/dev/null; then exec </dev/tty; pnpm exec node-talisman --githook pre-commit -i; else pnpm exec node-talisman --githook pre-commit; fi

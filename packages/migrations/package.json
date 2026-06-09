@@ -16,18 +16,17 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1045.0",
     "@vao/shared-bridge": "workspace:^",
-    "debug": "~4.3.4",
+    "debug": "catalog:",
     "knex": "~3.1.0",
     "pg": "~8.12.0",
     "pg-query-stream": "^4.7.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.39.1",
-    "@socialgouv/eslint-config-recommended": "^1.131.0",
-    "eslint": "^9.39.1",
-    "jest": "29.7.0",
-    "nodemon": "^3.1.0",
-    "prettier": "^3.2.5"
+    "@eslint/eslintrc": "catalog:",
+    "@eslint/js": "catalog:",
+    "eslint": "catalog:",
+    "jest": "catalog:",
+    "nodemon": "catalog:",
+    "prettier": "catalog:"
   }
 }
