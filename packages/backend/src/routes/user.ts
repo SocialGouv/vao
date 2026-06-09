@@ -1,11 +1,11 @@
-const express = require("express");
+import { TRACKING_ACTIONS, TRACKING_USER_TYPE } from "@vao/shared-bridge";
+import express from "express";
+
+import { userController } from "../controllers";
+import checkJWT from "../middlewares/checkJWT";
+import trackFoUser from "../middlewares/trackFoUser";
 
 const router = express.Router();
-
-const checkJWT = require("../middlewares/checkJWT");
-const userController = require("../controllers/user");
-const trackFoUser = require("../middlewares/trackFoUser");
-const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 
 // Gère une connexion via mot de passe.
 router.get("/me", checkJWT, userController.getMe);
@@ -21,4 +21,4 @@ router.patch(
 router.post("/generate-api-token", checkJWT, userController.generateApiToken);
 router.get("/api-token", checkJWT, userController.getApiToken);
 
-module.exports = router;
+export default router;

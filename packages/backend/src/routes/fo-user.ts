@@ -1,16 +1,16 @@
-const express = require("express");
-const { roles } = require("../helpers/users");
+import express from "express";
+
+import { FOUserController } from "../controllers";
+import { roles } from "../helpers/users";
+import BOcheckJWT from "../middlewares/bo-check-JWT";
+import checkJWT from "../middlewares/checkJWT";
+import checkJWTWithoutCGU from "../middlewares/checkJWTWithoutCGU";
+import checkPermissionBOForFoStatus from "../middlewares/checkPermissionBoForFoStatus";
+import checkPermissionBOForUpdateStatusFo from "../middlewares/checkPermissionBOForUpdateStatusFo";
+import checkPermissionFOForUpdateStatusFo from "../middlewares/checkPermissionFOForUpdateStatusFo";
+import checkPermissionFoRole from "../middlewares/checkPermissionFoRole";
 
 const router = express.Router();
-
-const BOcheckJWT = require("../middlewares/bo-check-JWT");
-const checkJWT = require("../middlewares/checkJWT");
-const checkJWTWithoutCGU = require("../middlewares/checkJWTWithoutCGU").default;
-const FOUserController = require("../controllers/fo-user");
-const checkPermissionFoRole = require("../middlewares/checkPermissionFoRole");
-const checkPermissionBOForUpdateStatusFo = require("../middlewares/checkPermissionBOForUpdateStatusFo");
-const checkPermissionBOForFoStatus = require("../middlewares/checkPermissionBoForFoStatus");
-const checkPermissionFOForUpdateStatusFo = require("../middlewares/checkPermissionFOForUpdateStatusFo");
 
 // Acceptation des CGU
 router.post("/accept-cgu", checkJWTWithoutCGU, FOUserController.acceptCgu);
@@ -57,4 +57,4 @@ router.post(
   FOUserController.updateStatus({ source: "FO" }),
 );
 
-module.exports = router;
+export default router;

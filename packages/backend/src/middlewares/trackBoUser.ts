@@ -20,7 +20,7 @@ export default function trackBoUser({
 }: {
   action: Action;
   userType: UserType;
-  itself: boolean;
+  itself?: boolean;
 }) {
   return async (req: TrackingRequest, res: Response, next: NextFunction) => {
     const userId = req.decoded?.id;

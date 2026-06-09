@@ -1,19 +1,18 @@
-const express = require("express");
-const checkJWT = require("../middlewares/checkJWT");
-const canUpdateEig = require("../middlewares/can-update-or-delete-eig");
-const checkPermissionDeclarationSejourForEig = require("../middlewares/checkPermissionDeclarationSejourEig");
-const checkPermissionDeclarationSejour = require("../middlewares/checkPermissionDeclarationSejour");
-const checkPermissionEIG = require("../middlewares/checkPermissionEIG");
-const checkPermissionBOEIG = require("../middlewares/checkPermissionBOEIG");
-const boCheckRole = require("../middlewares/bo-check-role");
-const boCheckJWT = require("../middlewares/bo-check-JWT");
-const trackEig = require("../middlewares/trackEig");
+import { TRACKING_ACTIONS, TRACKING_USER_TYPE } from "@vao/shared-bridge";
+import express from "express";
 
-const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
-
-const { eigController } = require("../controllers");
-const getDepartements = require("../middlewares/getDepartements");
-const checkPermissionBODeclarationSejour = require("../middlewares/checkPermissionBODeclarationSejour");
+import { eigController } from "../controllers";
+import boCheckJWT from "../middlewares/bo-check-JWT";
+import boCheckRole from "../middlewares/bo-check-role";
+import canUpdateEig from "../middlewares/can-update-or-delete-eig";
+import checkJWT from "../middlewares/checkJWT";
+import checkPermissionBODeclarationSejour from "../middlewares/checkPermissionBODeclarationSejour";
+import checkPermissionBOEIG from "../middlewares/checkPermissionBOEIG";
+import checkPermissionDeclarationSejour from "../middlewares/checkPermissionDeclarationSejour";
+import checkPermissionDeclarationSejourForEig from "../middlewares/checkPermissionDeclarationSejourEig";
+import checkPermissionEIG from "../middlewares/checkPermissionEIG";
+import getDepartements from "../middlewares/getDepartements";
+import trackEig from "../middlewares/trackEig";
 
 const router = express.Router();
 
@@ -126,4 +125,4 @@ router.post(
   eigController.markAsRead,
 );
 
-module.exports = router;
+export default router;

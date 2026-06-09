@@ -1,13 +1,5 @@
-import getFicheByAgrementRegionUser from "./get-fiche-by-agrement-region-user";
-import getFicheIdByTerCode from "./get-fiche-id-by-ter-code";
-import getOne from "./get-one";
-import list from "./list";
-import update from "./update";
-
-export {
-  getFicheByAgrementRegionUser,
-  getFicheIdByTerCode,
-  getOne,
-  list,
-  update,
-};
+export { default as getFicheByAgrementRegionUser } from "./get-fiche-by-agrement-region-user";
+export { default as getFicheIdByTerCode } from "./get-fiche-id-by-ter-code";
+export { default as getOne } from "./get-one";
+export { default as list } from "./list";
+export { default as update } from "./update";

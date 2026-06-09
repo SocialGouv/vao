@@ -1,17 +1,15 @@
-const express = require("express");
+import { TRACKING_ACTIONS, TRACKING_USER_TYPE } from "@vao/shared-bridge";
+import express from "express";
+
+import { BOUserController } from "../controllers";
+import BOcheckJWT from "../middlewares/bo-check-JWT";
+import BOcheckJWTWithoutCGU from "../middlewares/bo-check-JWT-without-CGU";
+import BOcheckRole from "../middlewares/bo-check-role";
+import checkTerrForAccountCreation from "../middlewares/bo-check-terr-for-account-creation";
+import getDepartements from "../middlewares/getDepartements";
+import trackBoUser from "../middlewares/trackBoUser";
 
 const router = express.Router();
-
-const BOcheckJWT = require("../middlewares/bo-check-JWT");
-const BOcheckJWTWithoutCGU =
-  require("../middlewares/bo-check-JWT-without-CGU").default;
-const BOcheckRole = require("../middlewares/bo-check-role.js");
-const BOUserController = require("../controllers/bo-user");
-const checkTerrForAccountCreation = require("../middlewares/bo-check-terr-for-account-creation");
-const getDepartements = require("../middlewares/getDepartements");
-const trackBoUser = require("../middlewares/trackBoUser").default;
-
-const { TRACKING_ACTIONS, TRACKING_USER_TYPE } = require("@vao/shared-bridge");
 
 const BOcheckRoleCompte = BOcheckRole(["Compte"]);
 // Acceptation des CGU
@@ -80,4 +78,4 @@ router.get(
   BOUserController.serviceCompetence,
 );
 
-module.exports = router;
+export default router;

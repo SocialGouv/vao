@@ -1,13 +1,12 @@
-const express = require("express");
+import express from "express";
+
+import { organismeController } from "../controllers";
+import BOcheckJWT from "../middlewares/bo-check-JWT";
+import checkComingFrom from "../middlewares/checkComingFrom";
+import checkJWT from "../middlewares/checkJWT";
+import checkPermissionOrganisme from "../middlewares/checkPermissionOrganisme";
 
 const router = express.Router();
-
-const checkJWT = require("../middlewares/checkJWT");
-const BOcheckJWT = require("../middlewares/bo-check-JWT");
-const checkPermissionOrganisme =
-  require("../middlewares/checkPermissionOrganisme").default;
-const checkComingFrom = require("../middlewares/checkComingFrom");
-const organismeController = require("../controllers/organisme");
 
 router.get("/bo/liste", BOcheckJWT, organismeController.getListe);
 router.get("/bo/extract", BOcheckJWT, organismeController.getListeExtract);
@@ -41,4 +40,4 @@ router.post(
 );
 router.post("/", checkJWT, organismeController.post);
 
-module.exports = router;
+export default router;

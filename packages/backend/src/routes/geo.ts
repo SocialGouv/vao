@@ -1,8 +1,8 @@
-const express = require("express");
+import express from "express";
+
+import { geoController } from "../controllers";
 
 const router = express.Router();
-
-const geoController = require("../controllers/geo");
 
 // Gère une connexion via mot de passe.
 router.get("/communes", geoController.commune.fetch);
@@ -12,4 +12,4 @@ router.get("/regions", geoController.region.fetch);
 router.post("/adresse", geoController.adresse.fetch);
 router.get("/check-api-adresse", geoController.checkApiAdresse);
 
-module.exports = router;
+export default router;

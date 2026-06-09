@@ -4,7 +4,7 @@ import {
 } from "@vao/shared-bridge";
 import express from "express";
 
-import hebergementController from "../controllers/hebergement";
+import { hebergementController } from "../controllers";
 import { statuts as HebergementStatuts } from "../helpers/hebergement";
 import boCheckJWT from "../middlewares/bo-check-JWT";
 import checkJWT from "../middlewares/checkJWT";

@@ -1,16 +1,16 @@
-const express = require("express");
+import express from "express";
+
+import { messageController } from "../controllers";
+import boCheckJWT from "../middlewares/bo-check-JWT";
+import boCheckRole from "../middlewares/bo-check-role";
+import checkComingFrom from "../middlewares/checkComingFrom";
+import checkJWT from "../middlewares/checkJWT";
+import checkPermissionBODeclarationSejour from "../middlewares/checkPermissionBODeclarationSejour";
+import checkPermissionBODeclarationSejourUpdate from "../middlewares/checkPermissionBODeclarationSejourUpdate";
+import checkPermissionDeclarationSejour from "../middlewares/checkPermissionDeclarationSejour";
+import getDepartements from "../middlewares/getDepartements";
 
 const router = express.Router();
-
-const checkJWT = require("../middlewares/checkJWT");
-const boCheckJWT = require("../middlewares/bo-check-JWT");
-const boCheckRole = require("../middlewares/bo-check-role");
-const checkPermissionBODeclarationSejour = require("../middlewares/checkPermissionBODeclarationSejour");
-const checkPermissionBODeclarationSejourUpdate = require("../middlewares/checkPermissionBODeclarationSejourUpdate");
-const checkPermissionDeclarationSejour = require("../middlewares/checkPermissionDeclarationSejour");
-const getDepartements = require("../middlewares/getDepartements");
-const checkComingFrom = require("../middlewares/checkComingFrom");
-const messageController = require("../controllers/message");
 
 const boCheckRoleDS = boCheckRole([
   "DemandeSejour_Lecture",
@@ -62,4 +62,4 @@ router.get(
   messageController.get,
 );
 
-module.exports = router;
+export default router;
