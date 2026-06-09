@@ -16,9 +16,9 @@ import type {
   ApiEndpoints,
 } from "../types/Auth.type";
 
-type AuthType = "fo" | "bo";
+export type AuthType = "fo" | "bo";
 
-interface IUserStore {
+export interface IUserStore {
   user: UserDto | null;
   refreshProfile: () => Promise<void>;
 }
@@ -71,10 +71,10 @@ function getAuthConfig(type: AuthType): AuthConfig {
       RESEND_OTP: "/authentication/email/resend-otp",
       ACCEPT_CGU: "/fo-user/accept-cgu",
     },
-    sessionStorageKey: "otp-email",
-    expirationKey: "otp-expiration",
-    otpunlockAt: "otp-unlock-at",
-    optAttemptsKey: "otp-attempts",
+    sessionStorageKey: "otp-email-fo",
+    expirationKey: "otp-expiration-fo",
+    otpunlockAt: "otp-unlock-at-fo",
+    optAttemptsKey: "otp-attempts-fo",
     route2FA: "/connexion/verification-otp",
     routeLogin: "/connexion",
     useOrganismeStore: true,

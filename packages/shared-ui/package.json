@@ -23,6 +23,7 @@
     "dayjs": "catalog:",
     "debug": "catalog:",
     "ofetch": "catalog:",
+    "nuxt": "catalog:",
     "vee-validate": "catalog:",
     "vue": "latest",
     "yup": "catalog:"
