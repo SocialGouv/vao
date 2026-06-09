@@ -11,4 +11,23 @@ export interface PersonnePhysiqueDto {
   nomNaissance: string;
   prenom: string;
   telephone: string;
+  profession: string;
+  adresseSiege: {
+    label: string | null;
+    cleInsee: string | null;
+    codeInsee: string | null;
+    codePostal: string | null;
+    long: number | null;
+    lat: number | null;
+    departement: string | null;
+  };
+  adresseDomicile: {
+    label: string | null;
+    cleInsee: string | null;
+    codeInsee: string | null;
+    codePostal: string | null;
+    long: number | null;
+    lat: number | null;
+    departement: string | null;
+  };
 }

@@ -62,7 +62,7 @@
       <dt>
         <strong>Adresse de ses activités: </strong>
       </dt>
-      <dd>{{ personnePhysique.adresseSiegeLabel || "-" }}</dd>
+      <dd>{{ personnePhysique.adresseSiege.label || "-" }}</dd>
     </dl>
   </div>
   <DsfrAlert
@@ -87,6 +87,7 @@ import { useForm, useField } from "vee-validate";
 import * as yup from "yup";
 import { TitleWithIcon, DsfrLinkV2 } from "@vao/shared-ui";
 import { AGREMENT_STATUT } from "@vao/shared-bridge";
+import type { PersonnePhysiqueDto } from "@vao/shared-bridge";
 import { telephoneYupNullable } from "@/utils/telephoneValidators";
 import { requiredUnlessBrouillon } from "@/helpers/requiredUnlessBrouillon";
 
@@ -98,7 +99,7 @@ const props = defineProps({
 
 const isEditingTelephone = ref(false);
 
-const personnePhysique = computed(() => {
+const personnePhysique = computed<PersonnePhysiqueDto>(() => {
   return props.initOrganisme?.personnePhysique || {};
 });
 
