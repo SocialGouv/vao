@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 
 import * as Sentry from "@sentry/node";
+import { normalizeFilename } from "@vao/shared-bridge";
 import type { NextFunction, Response } from "express";
 import { PDFDocument } from "pdf-lib";
 
@@ -32,7 +33,8 @@ export default async function upload(
   }
 
   try {
-    const { path, originalname: filename } = file;
+    const { path, originalname } = file;
+    const filename = normalizeFilename(originalname);
     const fileBuffer = await fs.readFile(path);
     const fileType = await getFileTypeFromBuffer(fileBuffer);
 

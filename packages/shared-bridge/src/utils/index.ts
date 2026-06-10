@@ -2,6 +2,7 @@ export * from "./date";
 export * from "./errors";
 export * from "./file";
 export * from "./normalizeAdresse";
+export * from "./normalizeFilename";
 export * from "./request";
 export * from "./siret";
 export * from "./stringUtils";
