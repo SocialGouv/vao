@@ -45,6 +45,9 @@ afterAll(async () => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  (getFileTypeFromBuffer as jest.Mock).mockImplementation((buf: Buffer) =>
+    Promise.resolve(detectFileType(buf)),
+  );
 });
 
 describe("GET /documents/:uuid", () => {
