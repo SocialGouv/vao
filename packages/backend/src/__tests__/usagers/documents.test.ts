@@ -229,3 +229,24 @@ describe("POST /documents", () => {
     expect(response.body.name).toBe("FileIsTooLargeError");
   });
 });
+
+describe("POST /documents - encodage du nom de fichier", () => {
+  it("devrait stocker le nom avec accents correctement normalisé (NFC)", async () => {
+    const user = await createUsagersUser();
+    const pdfBuffer = await createMinimalPdf();
+
+    const response = await request(getFoAppHelper(user))
+      .post("/documents")
+      .field("category", "declaration")
+      .attach("file", pdfBuffer, "déclaration-été.pdf");
+
+    expect(response.status).toBe(200);
+    expect(response.body.uuid).toBeDefined();
+
+    const metaData = await DocumentService.getFileMetaData(response.body.uuid);
+
+    expect(metaData).not.toBeNull();
+    expect(metaData!.name).toEqual("declaration-ete.pdf");
+    expect(metaData!.name).not.toEqual("dÃ©claration-Ã©tÃ©.pdf");
+  });
+});
